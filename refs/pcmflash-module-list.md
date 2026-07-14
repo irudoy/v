@@ -1,0 +1,922 @@
+PCMflash Module List
+
+Legend: RD – reading, VR – virtual reading (converter or stock roms), WR – writing, CK – checksum
+correction/checking, NC – checksum not applicable
+
+1.  Ford Focus 3
+
+Ford Focus 3: 1.6L Sigma Ti-VCT 85/105/125PS (EMS2204) [RD/WR/CK]
+Ford Focus 3: 2.0L Duratec GDI Ti-VCT 150/170PS (MED17) [RD/WR/CK]
+Ford Focus 3 ST: 2.0L Ecoboost GTDI 250PS (MED17) [RD/WR/CK]
+Ford Focus 3: 1.6L, 2.0L PowerShift TCM (6DCT250) [RD/WR/CK]
+
+2.  Ford Kuga 2, Ford Explorer from 2011
+
+Ford Focus 3: 1.0L Ecoboost 2015+ GTDI 100/125PS [FV6A] (MEDG17) [RD/WR/CK]
+Ford Kuga 2: 1.6L Ecoboost GTDI AWD 150/182PS (MEDG17) [RD/WR/CK]
+Ford Kuga 2: 2.5L Duratec Ti-VCT 150/171PS [RD/WR/CK]
+Ford Explorer 2011-: 3.5L Cyclone V6 Ti-VCT 294PS [RD/WR/CK]
+Ford Explorer 2011-: 3.5L Ecoboost V6 GTDI 360PS (MEDG17) [RD/WR/CK]
+Ford Mondeo 5: 1.5L Ecoboost GTDI AT 150/180PS (MEDG17) [RD/WR/CK]
+Ford Mondeo 5: 2.0L Ecoboost GTDI 200PS (MEDG17) [RD/WR/CK]
+Ford Mondeo 5: 2.5L Duratec Ti-VCT 150/171PS [RD/WR/CK]
+Ford Mondeo 5: 2.0L Duratec Hybrid (EMS2208) [DS7A] [RD/WR/CK]
+Lincoln MKZ: 3.7L Duratec V6 Ti-VCT [DG9A] [RD/WR/CK]
+
+3.  Diesel Engines 2.0L, DCM3.5/DCM6.1/SID206
+
+Ford Focus 3: 2.0L DW10C STAGE 5 140/163PS (DCM3.5) [RD/WR/CK]
+Ford Kuga 1: 2.0L DW10C STAGE 5 140/163PS (DCM3.5) [RD/WR/CK]
+Ford Kuga 2: 2.0L DW10C STAGE 5 140/163PS (DCM3.5) [RD/WR/CK]
+Ford Mondeo 4: 2.0L DW10C STAGE 5 140/163PS (DCM3.5) [RD/WR/CK]
+Ford Mondeo 4: 1.8L Lynx, 2.0L DW10C STAGE 4 (SID206) [RD/WR/CK]
+Ford Mondeo 5: 2.0L DW10F STAGE 5/6 150/180PS (DCM6.1) [RD/WR/CK]
+Ford Focus 2: 1.8L, 2.0L Duratorq Lynx/DW10C (SID202/SID206) [RD/WR/CK]
+
+4.  Gasoline Engines 1.25-1.6L, Ford Fiesta from 2008, Ford Mondeo 4
+Ford Fiesta: 1.25L, 1.4L Sigma Ti-VCT (EMS2102) [RD/WR/CK]
+Ford Fiesta: 1.6L Sigma Ti-VCT (EMS2101) [RD/WR/CK]
+Ford Fiesta: 1.6L Sigma Ti-VCT USA [AE81] (EMS2205) [RD/WR/CK]
+Ford Mondeo 4: 1.6L Sigma Ti-VCT 110/125PS (EMS2101) [RD/WR/CK]
+
+5.  Gasoline Engines 1.6, 2.0L, Ecoboost T-PROT7
+
+Ford Focus 3: 1.6L Ecoboost GTDI 150/180PS (MED17) [RD/WR/CK]
+Ford Mondeo 4: 2.0L Ecoboost GTDI 200/240PS (MED17) [RD/WR/CK]
+
+6.  Gasoline Engines 1.0, 1.6L, Ecoboost T-PROT12
+
+Ford Focus 3: 1.0L Ecoboost GTDI 100/125PS (MED17) [RD/WR/CK]
+
+Ford Kuga 2: 1.6L Ecoboost GTDI FWD 150PS (MED17) [RD/WR/CK]
+Ford Fiesta: 1.0L Ecoboost GTDI 100/125PS (MED17) [RD/WR/CK]
+
+7.  Ford Transit/Tourneo/Ranger, Land Rover Defender
+
+Ford Transit 2007: 2.2L, 2.4L Diesel 85/100/115/140PS (DCU101-108, DCU201-208) [RD/WR/CK]
+Ford Transit 2012: 2.2L Diesel 100/125/140/155PS (SID208) [RD/WR/CK/UNLOCK]
+Land Rover Defender 2012: 2.2L TD4 (SID208) [RD/WR/CK/UNLOCK]
+Ford Transit: 2.0L Diesel (SID211) [RD/WR/CK/UNLOCK]
+Ford Ranger: 3.2L Diesel (SID209) [WR/CK] need to unlock under BSL mode in order to write
+Ford Ranger: 3.2L Diesel (SID209/BSL) [RD]
+Ford Ranger: 2.5L Duratec (EMS2219) [GB3A] [RD/WR/CK]
+
+8.  Mazda Gen 1 (2004-2008/10)
+
+Mazda: 1.6L Z6 AT (Mazda3 2004+) [RD/WR]
+Mazda: 1.6L Z6 MT (Mazda3 2004+) [RD/WR]
+Mazda: 1.3L ZJ (Mazda Demio 2003+) [RD/WR/CK]
+Mazda: 1.8L, 2.0L, 2.3L L8/LF/L3 (Mazda3/6/CX7 2003+) [RD/WR/CK]
+Mazda: 2.0L LF USA (Mazda3 -2009/1MB) [RD/WR/CK]
+Mazda: 1.3L N3 (Mazda RX8 2003+) [RD/WR/CK]
+Mazda: 1.3L N3 (Mazda RX8 -2008) [RD/WR/CK]
+Mazda: 1.3L N3 (Mazda RX8 2009-2012) [RD/WR/CK]
+Mazda: Melco TCM (Mazda5/6 512KB) [RD/WR/CK]
+Mazda: Aisin TCM (Mazda MX5 512KB) [RD/WR/CK]
+
+9.  Mazda Gen 2 (2008/10-2012/13)
+
+1.3L, 1.5L ZJ/ZY (Mazda2 2011+) [RD/WR/CK]
+1.5L ZY (Mazda2 US 2011+) [RD/WR/CK]
+1.6L Z6 (Mazda3 2010+) [RD/WR/CK]
+1.8L, 2.0L, 2.5L L8/LF/L5 (Mazda6 2008+) [RD/WR/CK]
+2.0L, 2.3L, 2.5L LF/L3/L5 (Mazda3/5/CX7 2010+) [RD/WR/CK]
+2.0L LF (Mazda Biante 2013+/2MB) [RD/WR/CK]
+
+10. Mazda Gen 3
+
+Mazda: 1.5L, 2.0L, 2.5L SKYACTIV-G P5/PE/PY (Mazda3/CX5/6 SkyActiv Mitsubishi) [RD/WR/CK]
+Mazda: 1.5L, 2.0L, 2.5L SKYACTIV-G P5/PE/PY (Mazda3/CX5/6 SkyActiv Denso) [RD/WR/CK]
+Mazda: 2.5T SKYACTIV-G PY (Mazda CX9 SkyActiv Mitsubishi) [RD/WR/CK]
+Mazda: 2.2L SKYACTIV-D SH (Mazda3/CX5/6 SkyActiv Denso) [RD/WR/CK]
+Mazda: 1.6L Z6 (Denso) [RD/WR/CK]
+
+11. Mazda Gen 3 Crypto
+
+Mazda: 1.5L, 2.0L, 2.5L SKYACTIV-G P5/PE/PY (Mazda3/CX5/6 SkyActiv Denso Crypted)
+[RD/WR/CK]
+Mazda: 2.2L SKYACTIV-D SH (Mazda3/CX5/6 Denso Crypted 2MB) [RD/WR/CK]
+Mazda: 1.5L, 2.2L SKYACTIV-D S5/SH (Mazda2/3/CX5/6 Denso Crypted 3.75MB) [RD/WR/CK]
+Mazda: 1.6L Z6 (Denso Crypted) [RD/WR/CK]
+
+12. Honda/Acura CAN-bus
+
+PGM-FI Generic Read-Only [RD]
+AT/CVT/DCT Generic Read-Only [RD]
+
+PGM-FI (Keihin SH7058/1MB) [RD/WR/CK]
+PGM-FI (Keihin SH72543/2MB) [RD/WR/CK]
+PGM-FI (Keihin SH72546/3.75MB) [RD/WR/CK]
+PGM-FI (Keihin MPC5566/3MB) [RD/WR/CK]
+PGM-FI (Keihin TC1782/2.5MB) [RD/WR/CK]
+AT/CVT/DCT (Keihin 512KB) [RD/WR/CK]
+AT/CVT/DCT (Keihin 1MB) [RD/WR/CK]
+
+PGM-FI (Matsushita SH7058/1MB) [RD/WR/CK]
+PGM-FI (Matsushita SH72543/2MB) [RD/WR/CK]
+PGM-FI 2013+ (Matsushita SH72543/2MB) (Test) [RD/WR/CK]
+PGM-FI (Panasonic TC179X/4MB) [RD/WR/CK]
+AT/CVT/DCT (Matsushita 512KB) (Test) [RD/WR/CK]
+
+PGM-FI (Continental MPC5554/2MB) [RD/WR/CK]
+UDCT (Continental TC1782/2.5MB) [WR/CK]
+
+PGM-FI (Hitachi SH7058/1MB) (Test) [RD/WR/CK]
+PGM-FI (Hitachi SH7059/1.5MB) (Test) [RD/WR/CK]
+PGM-FI (Hitachi SH72543/2MB) [RD/WR/CK]
+PGM-FI (Hitachi MPC5554/2MB) (Test) [RD/WR/CK]
+AT/CVT/DCT (Hitachi SH72531/1280KB) [RD/WR/CK]
+AT/CVT/DCT (Hitachi SH725x3/2048KB) [RD/WR/CK]
+
+13. Honda/Acura K-Line
+
+Honda: Accord 7 2003-2005 (Matsushita RBA/RBB SH7055/512KB) [VR/WR/CK]
+Honda: Accord 7 2006-2007/TSX 2004-2005 (Matsushita RBA/RBB SH7055/512KB) [VR/WR/CK]
+Acura: TSX 2006 (Matsushita RBB A56-A62 SH7058/1MB) [VR/WR/CK]
+Honda: Accord/CR-V/Element/Legend/Odyssey/Ridgeline (Keihin SH7058/1MB) [VR/WR/CK]
+Honda: Element/Inspire (Keihin SH7055/512KB) [VR/WR/CK]
+Honda: Legend/Acura TL 2005-2007 (Keihin RJA SH7058/1MB) [VR/WR/CK]
+Honda: CR-V 2002/2005-2007 (Keihin PPA/PNL SH7058/1MB) [VR/WR/CK]
+Honda: Fit/Jazz/Airwave 2001-2007 (Keihin OKI ML66Q592/192KB) [VR/WR/CK]
+Acura: MDX 2003-2007 (Motorola RDJ SH7055/512KB) [VR/WR/CK]
+Honda: Accord 7 USA (Motorola RCA SH7055/512KB SH7058/1024K) [VR/WR/CK]
+
+14. Gasoline Engines 1.6L, 2.0L, 2.3L, 2.5L Ford Mondeo 4
+
+Ford Mondeo 4: 1.6L Sigma Ti-VCT 110/125PS (EMS2101) [RD/WR/CK]
+Ford Mondeo 4: 2.0L Duratec HE (ESU312 Galaxy/S-Max 2006) [RD/WR/CK]
+Ford Mondeo 4: 2.0L, 2.3L Duratec HE (ESU412/415) [RD/WR/CK]
+Ford Mondeo 4: 2.5L Duratec I5 225PS (ME9.0) [WR/CK]
+
+15. Nissan/Infiniti K-Line
+
+EFI SH705415N (Hitachi SH7054/384KB) [RD/WR/CK]
+EFI SH705507N (UJ/Hitachi SH7055/512KB) [RD/WR/CK]
+EFI SH705513N (Hitachi SH7055/512KB) [RD/WR/CK]
+EFI SH705520N (Hitachi SH7055/512KB) [RD/WR/CK]
+EFI SH705821N (Hitachi SH7058/1MB) [RD/WR/CK]
+EFI SH705823N (Hitachi SH7058/1MB) [RD/WR/CK]
+EFI SH705524N Almera Classic (Hitachi SH7055/512KB) [RD/WR/CK]
+EFI SH705826N (Hitachi SH7058/1MB) [RD/WR/CK]
+EFI SH705529N Almera Classic (Hitachi SH7055/512KB) [RD/WR/CK]
+
+16. Subaru Hitachi
+
+Forester, Impreza, Legacy 2000-2002 K-Line (UJ WA12212920/128KB)[RD/WR/NC]
+Forester, Impreza, Legacy 2000-2002 K-Line (UJ WA12212930/256KB) [RD/WR/NC]
+Forester, Impreza, Legacy 2002-2005 K-Line (UJ/Hitachi WA12212940/384KB)[RD/WR/NC]
+Forester, Impreza, Legacy 2002-2005 K-Line (UJ/Hitachi WA12212970/512KB) [RD/WR/NC]
+Forester 2006, Impreza 2006-2007 K-Line (Hitachi WA12212970WWW/512KB) [RD/WR/CK]
+Forester 2007-2008, Impreza 2008+, Legacy 2006+ CAN (Hitachi WA12212970WWW/512KB)
+[RD/WR/CK]
+Forester 2009-2011/Legacy 2010-2011 CAN (Hitachi SH7058/1MB) [RD/WR/CK]
+Forester 2013+ CAN (Hitachi SH7059/1.5MB) [RD/WR/CK]
+Forester 2013+ CAN (Hitachi SH72543/2MB) [RD/WR/CK]
+
+17. VAG K-Line
+
+1.6L CFNA/CFNB/CLRA 7GV K-Line (Marelli 7GV/832KB) [RD/WR/CK]
+1.4L CGGB K-Line (Marelli 7GVE/832KB) [RD/WR/CK]
+1.6L BFQ K-Line (Simos 3.3A/512KB) [RD/WR/CK]
+1.4L BUD/BXW/CGGA/CGGB K-Line (Marelli 4HV/832KB) [RD/WR/CK]
+1.6L BSA/BSE/BSF Calibration K-Line (Simos 7.1/512KB) [RD/WR/CK]
+1.6L BSA/BSE/BSF Calibration K-Line (Simos 7PP/1MB) [RD/WR/CK]
+1.2L BME/BZG/CGPA Calibration K-Line (Simos 9.1/512KB) [RD/WR/CK]
+
+18. Nissan/Infiniti CAN-bus
+
+EFI Generic Read-Only (Hitachi) [RD]
+EFI SH705519N (Hitachi SH7055/512KB) [RD/WR/CK]
+EFI SH705822N, SH705828N (Hitachi SH7058/1MB) [RD/WR/CK]
+EFI SH705927N (Hitachi SH7059/1.5MB) [RD/WR/CK]
+EFI SH725331N (Hitachi SH72531/1.25MB) [RD/WR/CK]
+EFI S7253332N (Hitachi SH72533/2MB) [RD/WR/CK]
+Koleos/Latitude 2.5 SH705822N (Hitachi SH7058/1MB) [RD/WR/CK]
+Koleos 2 2.5L S7253332N (Hitachi SH72533/2MB) [RD/WR/CK]
+
+19. Kia/Hyundai
+
+Kia/Hyundai: 1.4L, 1.6L (ME17.9.11/12/13) [RD/WR/CK]
+Kia/Hyundai: 1.4L, 1.6L (ME(G)17.9.21/17.9.21.1) [RD/WR/CK]
+Kia/Hyundai: 1.6L, 3.0L (ME17.9.2/ME(D)(G)17.9.8) [RD/WR/CK]
+
+Kia/Hyundai: 1.4L, 1.6L (M(G)7.9.8) [WR/CK]
+Kia/Hyundai: 1.1L-1.6L (M(G)7.9.7) [WR/CK]
+
+20. Ford Focus 2/Fiesta/Fusion (automatic transfer of VID block)
+
+Ford Focus 2: 1.4L, 1.6L Duratec 85/100/115PS (SIM28/29) [RD/WR/CK]
+Ford Focus 2: 1.8L, 2.0L Duratec HE 125/145PS (ESU121/131/411/418) [RD/WR/CK]
+Ford Focus 2: 1.8L, 2.0L Duratorq Lynx/DW10C (SID202/SID206) [RD/WR/CK]
+Ford Fiesta/Fusion: 1.4L, 1.6L Duratec 85/100PS (SIM210) [RD/WR/CK]
+Ford Focus 2 ST: 2.5L Duratec I5 225PS (ME9.0) [RD/WR/CK]
+Ford Focus 2 RS: 2.5L Duratec I5 305PS (ME9.0) [WR/CK]
+Ford Kuga 1: 2.5L Duratec I5 200PS (ME9.0) [WR/CK]
+
+21. Ford USA (automatic transfer of VID block)
+Mazda6 3.0L AJ 2003-2005 [RD/WR/CK]
+Escape, Explorer, Mazda CX9 -2009 (PCM150F) [RD/WR/CK]
+Mustang 2005-2009 (PCM170F) [RD/WR/CK]
+Explorer, Mazda CX9 2010-2011/2012 (M799G) [RD/WR/CK]
+Focus 2008-2011 (GreenOak/PCM190) [RD/WR/CK]
+Escape, Mariner, Tribute 2009-2011 (9L8A) [RD/WR/CK]
+Ford F350 6.0L (BlackOak/PCM122/448KB) [RD/WR/CK]
+Expedition, Navigator 5.4L (Bosch ME9.8/2048KB) [RD/WR/CK]
+F-150 5.4L (Bosch MEG9.8.1/2536KB) [RD/WR/CK]
+
+22. Renault
+
+Valeo V40/V42 (SH7058/1024KB) [RD/WR/CK]
+Sagem 3000 (SH7055/512KB) [RD/WR/CK]
+EMS3110 (TC1766/1504KB) [RD/WR/CK]
+Logan, Sandero, Fluence, Megane, Almera EMS3120 (TC1738/2048KB) [RD/WR/CK]
+Duster, X-Ray EMS3125 (TC1782/2560KB) [RD/WR/CK]
+Clio 4 1.6T EMS3150 (TC1767/2048KB) [RD/WR/CK]
+Juke 1.2T EMS3155 (TC1782/2560KB) [RD/WR/CK]
+
+23. Subaru Denso
+
+2.5L, 3.0L, 2.0T, 2.5T Denso 2003+ K-Line (SH7055/512KB) [RD/WR/CK]
+2.5L, 3.0L, 2.0T, 2.5T Denso 2003+ K-Line (SH7055S/512KB) [RD/WR/CK]
+2.5L, 3.0L, 2.0T, 2.5T Denso 2003+ K-Line (SH7058/1MB) [RD/WR/CK]
+2.5L, 3.0L, 2.0T, 2.5T Denso 2007+ CAN-bus (SH7058S/1MB) [RD/WR/CK]
+2.0L, 2.5L, 3.0L, BRZ Denso 2013+ CAN-bus (SH72531/1.25MB) [RD/WR/CK]
+1.6L, 2.0L DI Denso 2018-2021 CAN-bus (1N83M/1.5MB) [RD/WR/CK]
+Forester 2.5L DI Denso 2018-2021 CAN-bus (1N83M/4MB) [RD/WR/CK]
+Outback/Legacy 2.5L DI Denso 2019-2021 CAN-bus (1N83M/4MB) [RD/WR/CK]
+2.0L Denso Diesel Euro 4 CAN-bus (SH7058S/1MB) [RD/WR/CK]
+2.0L Denso Diesel Euro 5 CAN-bus (SH7059/1.5MB) [RD/WR/CK]
+2.0L Denso Diesel Euro 6 CAN-bus (SH72543/2MB) [RD/WR/CK]
+
+24. Mitsubishi CAN-bus
+
+MH Generic Read-Only [RD]
+
+Colt MT (MH8304F/512KB) [RD/WR/CK]
+Colt AT (MH8304F/768KB) [RD/WR/CK]
+Colt RallyArt 1.5T (MH8104F/512KB) [RD/WR/CK]
+Galant 9 2.4L (2005-) (MH8304F/768KB) [RD/WR/CK]
+Pajero MT (2007-) (MH8302F/512KB) [RD/WR/CK]
+Pajero AT (2007-) (MH8304F/768KB) [RD/WR/CK]
+Pajero Sport (2010-) (MH8106F/1MB) [RD/WR/CK]
+L200 2.4L MT (2008-) (MH8302F/512KB) [RD/WR/CK]
+Lancer X 1.5L (2007-), Outlander XL JDM (MH8104F/512KB) [RD/WR/CK]
+ASX (-2013), Lancer X 1.6/1.8/2.0L, Outlander XL (MH8106F/1MB) [RD/WR/CK]
+ASX (2013-), Mirage, Outlander 3 (2013-) (MH8115F/1.25MB) [RD/WR/CK]
+Eclipse Cross (2018-) (MH8601/4MB) [RD/WR/CK]
+Expander (2018-) (MH8611/2MB) [RD/WR/CK]
+
+25. Renault/Nissan dCi
+
+1.5L dCi Delphi DCM 1.2 (ST10/512KB) [RD/WR/CK]
+1.5L dCi Delphi DCM 3.4 (SH7059/1536KB) [RD/WR/CK]
+1.5L dCi SID 301/303/304 (MPC562/2MB) [RD/WR/CK]
+1.5L dCi SID 305/306 (TC1766/1504KB) [RD/WR/CK]
+1.5L dCi SID 307 (TC1767/2MB) [RD/WR/CK]
+2.3L dCi SID 309 (TC1767/2MB) [RD/WR/CK]
+Nissan Juke 1.5L dCi SID 310 (TC1791/3MB) [RD/WR/CK]
+
+26. Mitsubishi Diesel CAN-bus
+
+Denso Diesel (SH7058/SH7058S/1MB SH7059/1.5MB SH72543/2MB) [RD/WR/CK]
+
+27. Nissan CAN-bus Generation 2
+
+EFI SH72533 Gen 2 (2014+) Calibration (Hitachi SH72533/2MB) [RD/WR/CK]
+Renault Samsung 1.6T (Hitachi SH72533/2MB) [RD/WR/CK]
+
+28. VAZ/UAZ
+
+Priora, Kalina 1.6L/16V, Niva 1.7L (M(E)17.9.7) [RD/WR/CK]
+Patriot/Hunter/Bukhanka 2.7L (M(E)17.9.7) [RD/WR/CK]
+
+29. Ford PWM requires Ford VCM2 or Scanmatik 2 Pro!
+
+Mondeo 3 1.8L, 2.0L, 2.5L, 3.0L Duratec HE (LEVANTA) [RD/WR/CK]
+EEC-V 216K (EEC-V) [RD/WR/CK]
+3.0L, 4.0L, 4.6L Duratec V6/V8 (PCM150) [RD/WR/CK]
+1.8L, 2.0L, 2.2L Duratorq TDCi (Visteon) [RD/WR]
+1.8L, 2.0L, 2.2L Duratorq TDCi (Delphi) [RD/WR/CK]
+Jaguar X 2.2L Duratorq TDCi DPF (Delphi) [9X43] [RD/WR/CK]
+
+30. Kia/Hyundai SIM2K
+
+2.0L, 2.4L (SIM2K-140) [RD/WR/CK]
+2.0L, 2.5L (SIM2K-D160) [RD/WR/CK]
+2.0L, 2.4L (SIM2K-141/142/341) [RD/WR/CK]
+
+2.0L (SIM2K-C201) [RD/WR/CK]
+2.0L, 2.0T (SIM2K-240/241/242/245) [RD/WR/CK]
+
+31. Mitsubishi K-Line
+
+K-Line/Bootloader (MH720xF/MH810xF/MH820xF/MH830xF/MH8115) [RD/WR/CK]
+
+32. Ford Focus 3 2015, Ford Explorer 2016, Ford Kuga 2 2017
+
+Ford Fiesta: 1.0L Ecoboost GTDI 100/125PS [C1BA] (MED17) [RD/WR/CK]
+Ford Focus 3 2015: 1.0L Ecoboost 2015+ GTDI 100/125PS [DA6A] (MED17) [RD/WR/CK]
+Ford Focus 3 2015: 1.5L Ecoboost 2015+ GTDI 150/180PS [FV6A] (EMS2510/EMS2511)
+[RD/WR/CK]
+Ford Kuga 2 2017: 1.5L Ecoboost 2015+ GTDI 150/180PS [FV6A] (EMS2510/EMS2511)
+[RD/WR/CK]
+Ford Explorer 2016: 3.5L Cyclone V6 Ti-VCT 249/294PS (2016) [RD/WR/CK]
+Ford Mondeo 5: 1.5L Ecoboost GTDI MT 150/180PS (MED17) [RD/WR/CK]
+Ford Kuga 2: 2.5L Duratec Ti-VCT MY2017 150/171PS [GV6A] (EMS24XX) [RD/WR/CK]
+Ford Kuga 3: 2.5L Duratec Hybrid [LV4A] (EMS2701) [RD/WR/CK]
+
+33. Ford EcoSport/Fiesta 2015+
+
+2.0L Duratec HE 140PS (IAW 7GFR.HR) [RD/WR/CK]
+1.6L Sigma Ti-VCT 85/105/110/122PS (EMS2211) [RD/WR/CK]
+1.6L Sigma Ti-VCT USA [C1BA] (EMS2214) [RD/WR/CK]
+
+34. Kia/Hyundai EDC15/EDC16
+
+2.0L, 2.5L CRDI K-Line (EDC15C7) [RD/WR/CK]
+2.0L, 2.2L, 2.5L CRDI (EDC16C39) [WR/CK]
+2.0L, 2.2L, 2.5L CRDI K-Line Calibration (EDC16C39) [RD/WR/CK]
+3.0L CRDI (EDC16CP34) [WR/CK]
+3.0L CRDI K-Line Calibration (EDC16CP34) [RD/WR/CK]
+
+35. Toyota/Lexus/Scion/Hino
+
+76F0038/39/40/70/85, MPC565/SH72512/SH72544 CAN-bus [WR/CK]
+76F0038/39/40/50/70/85, 70F4019 GearBox CAN-bus [WR/CK]
+76F0038/39/40/50/70/85 HV Control CAN-bus [WR/CK]
+76F0004/23/38/39/40/70/85, MPC565 K-Line [WR/CK]
+
+36. Kia/Hyundai EDC17
+
+1.6L, 2.0L CRDI (EDC17C08/TPROT3) [RD/WR/CK]
+2.0L, 2.2L CRDI (EDC17CP14/TPROT3) [RD/WR/CK]
+2.0L, 2.2L, 3.0L CRDI (EDC17CP14/TPROT11) [RD/WR/CK]
+1.6L, 2.0L CRDI (EDC17C53) [RD/WR/CK]
+2.0L, 2.2L, 3.0L CRDI (EDC17C57/EDC17CP62) [Unlocked] [RD/WR/CK/UNLOCK] for SB V24 you
+need to unlock ECU using module 53 or71
+2.0L, 2.2L, 3.0L AdBlue CRDI (DCU17PC42/DCU17PC43) [RD/WR/CK] SB V24 you need to unlock
+ECU using module 53 or71
+
+37. UAZ EDC16
+
+Patriot/Hunter 2.2L ZMZ 5143.1 (EDC16C39-6.H1) [WR/CK]
+Patriot 2.3L Iveco F1A (EDC16C39-5.A3) [RD/WR/CK]
+
+38. Renault K-Line
+
+Duster 1.6L 2WD EMS3130 (ST10/512KB) [RD/WR/CK]
+EMS3132 MT (C167/256KB) [RD/WR/CK]
+EMS3134 AT (C167/512KB) [RD/WR/CK]
+Sagem 3000 (SH7055/512KB) [RD/WR/CK]
+Sirius 35 (C167/512KB) [RD/WR/CK]
+
+39. VAZ/UAZ ME17.9.71
+
+UAZ: Patriot/Hunter/Bukhanka 2.7L (ME17.9.71) [RD/WR/CK] write is possible after unlock
+VAZ: Niva 1.7L (ME17.9.71) [RD/WR/CK] write is possible after unlock
+ME17.9.71 (TC1724/BSL) [RD/UNLOCK]
+
+40. Kia/Hyundai SIMK
+
+1.8L, 2.0L, 2.7L K-Line (SIMK-41/43) [RD/WR/CK]
+2.0L, 2.4L CAN (SIMK-43/SIM2K-47) [RD/WR/CK]
+
+41. Scania EMS/EDC S6
+
+Scania EMS/EDC S6 250Kbps (MPC555) [RD/WR/CK]
+Scania EMS S6 500Kbps (MPC555) [RD/WR/CK]
+
+42. Denso SH705X Bootloader
+
+SH7055/SH7058(S)/SH7059 FLASH (512KB/1024KB/1536KB) [RD/WR/CK]
+Jaguar X 2001-2008, S/XJ/XK 2003-2006 SH7055 FLASH (512KB) [RD/WR]
+Jaguar X 2001-2008, S/XJ/XK 2003-2006 SH7055 EEPROM (86) [RD/WR]
+Mazda3 Z6 -2009 SH7055/SH7058 EEPROM (56) [RD/WR]
+Mitsubishi/Nissan/Subaru Diesel SH7058(S)/SH7059 EEPROM (86) [RD/WR]
+Subaru Metal-Case SH7055/SH7058 EEPROM (56) [RD/WR]
+Subaru Plastic-Case SH7058 EEPROM (86) [RD/WR]
+Subaru Plastic-Case SH7058S EEPROM (56) [RD/WR]
+Subaru Plastic-Case SH7058S EEPROM (86) [RD/WR]
+Suzuki Liana/Jimny SH7055 EEPROM (56) [RD/WR]
+Suzuki SH7055/SH7058 EEPROM (56) [RD/WR]
+Suzuki SH7058S EEPROM (56) [RD/WR]
+Volvo SH7055/SH7058 EEPROM (56) [RD/WR]
+Opel 1.7L CDTI SH7058/SH7059 EEPROM (86) [RD/WR]
+Trucks SH7058(S)/SH7059 EEPROM (25A320/640/128) [RD/WR]
+
+43. JLR
+
+Discovery 3 2.7L TDV6 (SID201/SID204) [RD/WR/CK]
+Range Rover 3.6L TDV8 (SID203) [RD/WR/CK]
+Range Rover 2010+ 3.6L TDV8 (SID203) [RD/WR/CK]
+Jaguar S/XF/XJ (X200/X250/X350) 2.7L TDV6 (SID204) [RD/WR/CK]
+Discovery 4 2.7L TDV6 (SID204) [RD/WR/CK]
+
+Territory 2.7L Duratorq V6 (SID204) [RD/WR/CK]
+Freelander 2/Evoque/Discovery Sport 2.2L I4 Diesel (EDC17CP42) [RD/WR/CK]
+Ford Mondeo 4 2.2L DW12C STAGE 5 (EDC17CP42) [RD/WR/CK]
+Freelander 2 2.2L I4 Diesel (EDC16CP39) [RD/WR/CK]
+Freelander 2/Evoque 2.0L Ecoboost GTDI (MED17) [RD/WR/CK]
+Jaguar XF (X250) 2.0L Ecoboost GTDI (MED17.9.7) [RD/WR/CK]
+Jaguar XE/F 2.0L Ingenium GTDI (MED17.9.9) [RD/WR/CK]
+Jaguar XJ/Range Rover (X351/L405/L494) 3.0L V6/5.0L V8 SC (MED17.8.31) [RD/WR/CK]
+Jaguar XE/XJ/F/Range Rover (X152/X351/X760/X761/L405/L494) 5.0L V8 SC (MED17.8.32)
+[RD/WR/CK]
+Range Rover Velar (L560) 3.0L V6 SC (MED17.8.32) [RD/WR/CK]
+Evoque/Discovery Sport/Velar/Defender 2.0L Diesel (MEDC17.9) [RD/WR/CK]
+Jaguar/Range Rover 3.0L V6, 4.4L V8 Diesel (EDC17CP55) [RD/WR/CK]
+
+44. Scania EMS S7/S8/EMD1
+
+EMS S8/EMD1 requires direct ECU connection for readout!
+Scania EMS S7 250Kbps (MPC563) [RD/WR/CK]
+Scania EMS S8 250Kbps (MPC5566) [RD/WR/CK]
+Scania EMS S8/EMD1 500Kbps (MPC5566) [RD/WR/CK]
+
+45. MB Sprinter 906/909 EDC16CP31
+
+Sprinter (906) 2.2L CDI (EDC16CP31-6) [RD/WR/CK]
+Sprinter Classic (909) 2.2L CDI (EDC16CP31-8) [RD/WR/CK]
+Dodge Sprinter (906) 3.0L CDI (EDC16CP31-6) [RD/WR/CK]
+
+46. Toyota/Lexus/Scion/Hino Generation 2
+
+76F0196/198/199/219 CAN-bus [WR/CK]
+76F0196/198/199/219 P5-CAN-bus [RD/WR/CK]
+76F0199 GearBox P5-CAN-bus [RD/WR/CK]
+
+47. Mitsubishi Gearbox CAN-bus
+
+CVT Lancer X/ASX 1.8/2.0L, Outlander XL/3 2.0/2.4L (MH8104F/512KB MH8106F/1MB)
+[RD/WR/CK]
+AT Pajero Sport (2010-), Lancer X 1.5/1.6L (MH8102F/512KB) [RD/WR/CK]
+AT Outlander XL 3.0L (MH8104F/512KB) [RD/WR/CK]
+AT Outlander 3 3.0L (MH8106F/1MB) [RD/WR/CK]
+CVT ASX/Outlander 3/Eclipse Cross 1.5T/2.0L/2.4L (MH8115F/1.25MB) [WR/CK]
+TC-SST Getrag 6DCT470 [RD/WR/CK]
+Getrag 6DCT470 Boot (MICRO) [RD/WR/CK]
+Getrag 6DCT470 Boot (EEPROM) [RD/WR/CK]
+
+48. VAG ME(D)17 UDS
+
+1.4L, 1.8L TSI (MED17.5/MED17.5.2/MED17.5.5) [VR/WR/CK]
+1.0L, 1.2L, 1.4L TSI (MED17.5.21/MED17.5.25/MED17.1.27) [VR/WR/CK]
+1.0L, 1.6L MPI (ME17.5.20/ME17.5.24/ME17.5.26) [VR/WR/CK]
+1.4L TSI, 2.0L, 2.5L, 4.0L TSI, 4.2L FSI (MED17.1/17.1.1/17.1.10/17.1.61/17.1.62) [VR/WR/CK]
+
+1.4L TSI, 3.6L FSI (MED17.1.6/MED17.1.21) [VR/WR/CK]
+5.2L FSI Master/Salve (MED17.1.1) [VR/WR/CK]
+
+49. Merged with 50
+
+50. VAG EDC17 UDS
+
+2.0L, 3.0L TDI (EDC17CP04/EDC17CP14/EDC17CP20/EDC17CP24) [VR/WR/CK]
+3.0L TDI (EDC17CP44) [VR/WR/CK]
+4.2L TDI (EDC17CP24/EDC17CP44) [VR/WR/CK]
+2.0L TDI (EDC17C46) [VR/WR/CK]
+2.0L TDI (EDC17C54) [VR/WR/CK]
+1.6L, 2.0L TDI (EDC17C64) [VR/WR/CK]
+2.0L TDI (EDC17C74) [VR/WR/CK]
+3.0L TDI (EDC17CP54) [VR/WR/CK]
+
+51. China
+
+Great Wall/Lifan ME17 (ME17.8.8) [RD/WR/CK]
+Chery 1.5L/1.6L/2.0L D4G15/E4G16/SQR484 (ME17.8.8) [RD/WR/CK]
+Chery 2.0L D4G20 (ME17.8.8) [RD/WR/CK]
+Chery 1.5L/1.5T/2.0T E4G15C/E4T15C/D4T20 (ME17U6) [RD/WR/CK]
+Chery 1.6T F4J16 (MED17.8.10) [RD/WR/CK]
+Jetour 1.6T F4J16 (MED17.8.10) [RD/WR/CK]
+GAC 1.5T/2.0T 4A15M1/4B20M1 (ME17.8.8.1) [Test] [RD/WR/CK]
+Great Wall/Haval MED17 (MED17.8.10) [RD/WR/CK]
+Geely ME17 (ME17.8.8.1) [RD/WR/CK] direct connection to ECU required for readout
+Geely 1.8T MED17 (MED17.8.10/TC1728) [RD/WR/CK]
+Geely 1.5T MED17 (MED17.8.10/TC1782) [RD/WR/CK]
+MG MED17 (MED17.8.10) [RD/WR/CK]
+Chevrolet 1.5L Aveo/Sail 3 (ME17.8.8) [RD/WR/CK]
+GAC 2.0T 4B20J1D (Delphi MT92.1) [RD/WR/CK]
+Geely/Great Wall/LuxGen MT80 K-Line [RD/WR/CK]
+Geely/Great Wall/LuxGen MT80 CAN-bus [RD/WR/CK]
+Great Wall/Haval 1.5T, 2.0T (Delphi MT92/MT92.1) [RD/WR/CK]
+Changan CS35PLUS 1.6L, Eado 1.5T (Delphi MT92.1) [RD/WR/CK]
+Changan CS75PLUS 1.5T (Delphi MT92.1E) [RD/WR/CK]
+Great Wall/Tank 3.0T Master/Slave (Delphi MT95.1) [RD/WR/NC]
+JAC 1.5T (Delphi MT62.1) [RD/WR/CK]
+JAC 1.5T (Delphi MT92.1E) [RD/WR/CK]
+
+52. Kia/Hyundai Delphi MT38/86
+
+2.7L, 3.3L, 3.8L (MT38/CAN) [WR/CK]
+2.7L, 3.3L (MT38/K-Line) [RD/WR/CK]
+2.7L, 3.3L, 3.8L (MT38/BSL) [RD/WR/CK]
+3.0L, 3.3L, 3.8L, 5.0L (MT86) [RD/WR/CK]
+
+53. Infineon Tricore BSL
+
+TC1762/TC1766 MICRO (1504KB)
+
+TC1762/TC1766 EEPROM (32KB)
+TC1792/TC1796 MICRO (2048KB)
+TC1796 MICRO+EXT (4096KB/6144KB)
+TC1796 EXT (2048KB/4096KB)
+TC1792 EEPROM (64KB)
+TC1796 EEPROM (128KB)
+TC1736 MICRO (1024KB)
+TC1736 EEPROM (32KB)
+TC1738/TC1767 MICRO (2048KB)
+TC1738/TC1767 EEPROM (64KB)
+TC1797 MICRO (4096KB)
+TC1797 EEPROM (64KB)
+TC1797 MICRO+EXT (6144KB/8192KB)
+TC1797 EXT (2048KB/4096KB)
+TC1724/TC1728 MICRO (1536KB)
+TC1724/TC1728 EEPROM (64KB)
+TC1782/TC1784 MICRO (2560KB)
+TC1782/TC1784 EEPROM (128KB)
+TC1791/TC1793 MICRO (4096KB)
+TC1791/TC1793 EEPROM (192KB)
+TC1791/TC1793 MICRO+EXT (6144KB/8192KB)
+TC1791/TC1793 EXT (2048KB/4096KB)
+Delphi MT86 EEPROM (16KB)
+Delphi CRD3.1 EEPROM (32KB)
+EDC17C06 EEPROM (8KB)
+EDC17CV41 EEPROM (32KB)
+
+54. Delphi DCM3.7/AP (SH72513/72543/72544)
+
+Kia/Hyundai 2.5L CRDI (DCM3.7AP) [RD/WR/CK]
+Opel/Chevrolet 2.0L, 2.2L CDTI (DCM3.7) [RD/WR/CK]
+SsangYong 2.0L XDI (DCM3.7AP) [RD/WR/CK]
+VAG 1.2L TDI (DCM3.7) [RD/WR/CK]
+Great Wall/Haval 2.0L TD (DCM3.7) [RD/WR/CK]
+Bobcat/Kioti/McCormick (DCM3.7AP) [RD/WR/CK]
+
+55. Kia/Hyundai Kefico/Denso
+
+Kia/Hyundai 2.5L CRDI (SH72546) [RD/WR/CK]
+Hyundai Euro 5 (Denso SH7058S) [RD/WR/CK]
+Hyundai Euro 6 (Denso SH72543/SH72546) [RD/WR/CK]
+
+56. Ford SID807EVO/EDC17C10/EDC17C70
+
+Ford Focus 3: 1.6L DV6C (SID807EVO)[RD/WR/CK/UNLOCK]
+Ford Mondeo 4: 1.6L DV6C (SID807EVO)[RD/WR/CK/UNLOCK]
+Ford Focus 3: 1.6L ECOnetic 105PS 2012+ (EDC17C10) [RD/WR/CK]
+Ford Fiesta: 1.4L, 1.6L DV4/DV6 75/95PS 2010-2011 (EDC17C10) [RD/WR/CK]
+Ford Fiesta: 1.5L, 1.6L DV5/DV6 70/75/95PS 2012+ (EDC17C10) [RD/WR/CK]
+
+Ford Focus 3: 1.5L DV5F 90/105/120PS (EDC17C70) [RD/WR/CK]
+Ford Fiesta: 1.5L DV5F 90/105/120PS (EDC17C70) [RD/WR/CK]
+
+57. SIMOS 8/10/11/12/PCR2.1
+
+2.8L V6 FSI (SIMOS8.1) [RD/WR/CK]
+3.2L V6 FSI (SIMOS8.2) [RD/WR/CK]
+3.0L V6 TFSI (SIMOS8.3) [VR/WR/CK]
+3.0L V6 TFSI (SIMOS8.4) [VR/WR/CK]
+3.0L V6 TFSI (SIMOS8.5) [VR/WR/CK]
+2.8L V6 FSI (SIMOS8.6) [RD/WR/CK] (calibration read-write after unlocking in BSL!)
+SIMOS8.6 (EEPROM/UNLOCK/BSL) [RD/WR/UNLOCK] (EEPROM read-wire, ECU unlock)
+1.2L TSI (SIMOS10) [RD/VR/WR/CK]
+1.2L MPI (SIMOS11) [RD/VR/WR/CK]
+1.8L, 2.0L TSI (SIMOS12.1/SIMOS12.2) [VR/WR/CK]
+1.6L TDI (PCR2.1) [RD/WR/CK] (calibration read-write after unlocking in BSL!)
+PCR2.1 (EEPROM/UNLOCK/BSL) [RD/WR/UNLOCK] (EEPROM read-wire, ECU unlock
+
+58. VAG DSG/CVT
+
+DQ200 (0AM) [VR/WR/CK]
+DQ200MQB/G2 (0CW) [RD/VR/WR/CK]
+DQ250C (02E) [RD/VR/WR/CK]
+DQ250E/F (02E) [VR/WR/CK]
+DQ250MQB (0D9) [RD/VR/WR/CK]
+DQ400 (0DD) [RD/WR/CK]
+DQ500 (0BH/0BT) [RD/WR/CK]
+VL300/V30 (01J/0AN) [VR/WR/CK]
+VL381/DL382 (0AW/0CK) [VR/WR/CK]
+DL501/G2 (0B5) [VR/WR/CK]
+DQ200/MQB/G2/DQ400 Boot (MICRO) [RD/WR/CK]
+DQ200/MQB/G2/DQ400 Boot (EEPROM) [RD/WR]
+DQ250E/F/MQB Boot (MICRO) [RD/WR/CK]
+DQ250E/F/MQB Boot (EEPROM) [RD/WR]
+VL300/V30 BSL (FLASH) [RD/WR/CK]
+VL300/V30 BSL (EEPROM) [RD/WR/CK]
+VL381 Boot (MICRO) [RD/WR/CK]
+VL381 Boot (EEPROM) [RD/WR]
+DL501/G2 Boot (MICRO) [RD/WR/CK]
+DL501/G2 Boot (EEPROM) [RD/WR]
+DL382 Boot (MICRO) [RD/WR/CK]
+DL382 Boot (EEPROM) [RD/WR]
+Honda UDCT Boot (Continental TC1782/MICRO) [RD/WR/CK]
+Honda UDCT Boot (Continental TC1782/EEPROM) [RD/WR]
+EDC DC0/DC4 Gen2 (DKG250 Gen2) Boot (TC1784/MICRO) [RD/WR]
+EDC DC0/DC4 Gen2 (DKG250 Gen2) Boot (TC1784/EEPROM) [RD/WR]
+VGS-FDCT Boot (TC1766/MICRO) [RD/WR]
+
+VGS-FDCT Boot (EEPROM) [RD/WR]
+VGS2-FDCT Boot (TC1784/MICRO) [RD/WR]
+VGS2-FDCT Boot (TC1784/EEPROM) [RD/WR]
+
+59. Renault/Nissan UDS
+
+1.2T EMS3155 UDS (TC1782/2.5MB) [RD/WR/CK]
+1.5L dCi SID309 UDS (TC1767/2MB) [RD/WR/CK]
+1.5L, 2.3L dCi SID310 UDS (TC1791/3MB) [RD/WR/CK]
+1.6L dCi EDC17C84 UDS (TC1782/2.5MB) [RD/WR/CK]
+1.6L dCi EDC17C84 UDS (Injectors) [RD/WR]
+1.8T, 2.0T Hitachi UDS (RH850/4MB) [RD/WR/CK]
+0.66L, 1.6L Hitachi UDS (R7F701205/2MB) [RD/WR/CK]
+
+60. Citroen/Peugeot (PSA) SID208
+
+Citroen/Peugeot 2.2L HDi (SID208) [RD/WR/CK] write after unlocking
+Citroen/Peugeot 2.2L HDi (SID208/BSL) [RD/UNLOCK]
+Citroen/Peugeot 2.2L HDi (DCU 102) [RD/WR/CK] direct connection to ECU required for readout
+
+61. Kia/Hyundai CPGDSH/CPEGD
+
+1.6L (CPGDSH2.24.1/CPEGD2.20.1/UDS) [RD/WR/CK]
+1.4T, 1.6L (CPEGD2.20.3/CPEGD2.20.4/UDS) [RD/WR/CK/UNLOCK] direct connection to ECU
+required
+1.0L, 1.2L (CPEGP2.10.1/CPGPSH2.14.1/UDS) [RD/WR/CK/UNLOCK]
+
+62. Ford/Getrag 6DCT450
+
+PowerShift TCM (6DCT450) [RD/WR]
+PowerShift 6DCT450 Boot (MICRO) [RD/WR]
+PowerShift 6DCT450 Boot (EEPROM) [RD/WR]
+PowerShift 6DCT451 TCM GGDS [RD/WR/CK]
+PowerShift 6DCT451 [XPS6 Gen3] Boot (MICRO) [RD/WR]
+PowerShift 6DCT451 [XPS6 Gen3] Boot (EEPROM) [RD/WR]
+
+63. Renault DC4
+
+EDC DC4 Gearbox (TC1766/1506KB) [RD/WR/CK]
+EDC DC0/DC4 Gen2 (DKG250 Gen2) (TC1784/2560KB) [RD/WR]
+
+64. Mitsubishi Fuso Canter
+
+Fuso Canter (EDC7C4-6/EDC16C31) [RD/WR/CK]
+Fuso Canter Euro 5 CAN-bus (EDC17CP15) [RD/WR/CK]
+Fuso Canter Euro 5 CAN-bus (EDC17CP52) [RD/WR/CK]
+
+65. VAG ME(D)17/EDC17 CAN TP2.0/K-Line
+
+EDC17U01/U05/CP04/CP14 K-Line [VR/WR/CK]
+ME17/MED17/EDC17 CAN TP2.0 [VR/WR/CK]
+
+66. Honda Bosch
+
+PGM-FI (Bosch EDC17CP06/EDC17CP16/2MB) [WR/CK]
+PGM-FI (Bosch EDC17CP50/4MB) [Unlocked] [WR/CK] writing is possible after unlocking with
+
+Module 71 or 53
+PGM-FI (Bosch EDC17C58/4MB) [Unlocked] [WR/CK] writing is possible after unlocking with
+Module 71 or 53
+PGM-FI (Bosch EDC17C72/2.5MB) [Unlocked] [WR/CK] writing is possible after unlocking with
+Module 71 or 53
+PGM-FI (Bosch MED17.9.3/4MB) [Unlocked] [WR/CK] writing is possible after unlocking with
+Module 71 or 53
+PGM-FI (Bosch ME17.9.55/1.5MB) [Unlocked] [WR/CK] writing is possible after unlocking with
+Module 71 or 53
+
+67. Nissan Bosch ME7
+
+EFI ME7.9.20 Calibration (Bosch ST10F275 EXT/512KB) [WR/CK]
+
+68. JLR Denso
+
+Jaguar XF/XJ/XK (X250/X350/X351/X150) 3.0L V6, 3.5L V8, 4.2L V8/SC (Denso) [RD/WR/CK]
+Range Rover/Sport/Discovery 3 4.0L V6, 4.4L V8, 4.2L V8/SC (Denso) [RD/WR/CK]
+Freelander 2 (L359) 3.2L V6 233PS (Denso) [RD/WR/CK]
+Range Rover (L320/L322/L319), Jaguar (X150/X250/X351) 5.0L V8/SC (Denso)[RD/WR/CK]
+Volvo XC90 29bit 2006-2010 3.2L (Denso) [Test] [RD/WR/CK]
+Volvo XC90 29bit 2006-2010 4.4L (Denso) [Test] [RD/WR/CK]
+
+69. Mercedes-Benz MED17/EDC17
+
+MED17.7.1/17.7.2/17.7.3/17.7.3.1/17.7.5 [VR/WR/CK]
+EDC17CP01/CP10 [RD/WR/CK] external flash ECU only
+EDC17C43/CP46/CP57/CP60/C66 [RD/WR/CK]
+M156/M272/M273 (ME9.7) [RD/WR/CK]
+Aston Martin M177 (MED17.7.5) [WR/CK]
+
+70. Jeep EDC17
+
+2.8L CRDI (EDC17CP27)[RD/WR/CK]
+3.0L CRDI (EDC17C49/C79) [RD/WR/CK] дLя чтения может требоваться прямое
+подкLючение к ЭБУ
+
+71. Bosch MEDC17 Bootloader
+
+Requires direct connection to ECU and Scanmatik 2  Pro adapter
+MEDC17 (TC1762/1766/1792/1796) FLASH [RD/WR/CK]
+MEDC17 (TC1762/1766/1792/1796) EEPROM [RD/WR]
+MEDC17 (TC1724/1728/1767/1782/1784/1797) FLASH [RD/WR/CK]
+MEDC17 (TC1724/1728/1767/1782/1784/1797) EEPROM [RD/WR]
+MEDC17 (TC1791/1793) FLASH [RD/WR/CK]
+MEDC17 (TC1791/1793) EEPROM [RD/WR]
+MEDC17 BSL PASSWORD [RD]
+EDC17C06 EEPROM (8KB) [RD/WR]
+EDC17CV41 EEPROM (32KB) [RD/WR]
+
+72. Mazda Gen 4
+
+1.5L, 2.0L, 2.5L SKYACTIV-G P5/PA/PE/PY MY2019 (Mitsubishi) [PYFA] [RD/WR/CK]
+1.5L, 2.0L, 2.5L SKYACTIV-G P5/PA/PE/PY MY2019 (Denso) [PYFB] [RD/WR/CK]
+1.8L, 2.2L SKYACTIV-D S8/SH MY2019 (Denso) [S801/SH9V] [RD/WR/CK]
+
+73. Ford MG1
+
+Ford F-150: 3.5L Ecoboost V6 (MG1CS015) [HL3A] [RD/WR/CK]
+Ford Fiesta 8: 1.5L Ecoboost MT (MG1CS016) [JX6A] [RD/WR/CK]
+Ford Focus 4: 1.0L, 1.5L Ecoboost MT (MG1CS016) [JX6A] [RD/WR/CK]
+Ford Focus 4: 1.5L Ecoboost AT (MG1CS017) [JX6A] [RD/WR/CK]
+Ford Mustang 6: 2.3L Ecoboost (MG1CS017) [JR3A] [RD/WR/CK]
+Ford Edge: 2.7L Ecoboost (MG1CS018) [K2GA] [RD/WR/CK]
+Ford F-150: 2.7L Ecoboost (MG1CS018) [JL3A] [RD/WR/CK]
+Ford Mustang 6: 5.0L Coyote V8 (MG1CS019) [JR3A] [RD/WR/CK]
+Ford F350: 6.2L, 7.3L Boss V8 (MG1CS019) [LC3A] [RD/WR/CK]
+
+74. Toyota/Lexus Generation 3
+
+R7F701202/R7F701216 P5-UDS [RD/WR/CK]
+LC300/LX500d 3.3TD P5-UDS (F33A-FTV/R7F701216) [RD/WR/CK]
+LC300/LX500d 3.3TD MCU #2 P5-UDS (F33A-FTV/R7F701216) [RD/WR/CK]
+LC150/Hiace/Hilux/Revo/Fortuner 2.4TD, 2.8TD P5-UDS (1GD-FTV/2GD-FTV/R7F701216)
+[RD/WR/CK]
+LC150/Hiace/Hilux/Revo/Fortuner 2.4TD, 2.8TD 6AT Gearbox P5-UDS (AC60F/R7F701201)
+[RD/WR/CK]
+Camry/ES/Rav4/UX 2.0L, 2.5L P5-UDS (M20A-FKS/A25A-FKS/R7F701202) [RD/WR/CK]
+Camry/ES/Rav4 2.5L 8AT Gearbox P5-UDS (UB80/R7F701201) [RD/WR/CK]
+Camry/ES/Rav4 2.5L HV P5-UDS (A25A-FXS/R7F701202) [Test] [RD/WR/CK]
+Corolla 2.0L P5-UDS (M20A-FKS/R7F701202) [Test] [RD/WR/CK]
+Highlander/Siena 2.5L HV P5-UDS (A25A-FXS/R7F701216) [Test] [RD/WR/CK]
+Yaris GR 1.6T P5-UDS (G16E-GTS/R7F701216) [Test] [RD/WR/CK]
+
+75. Ford Power Stroke
+
+Ford Truck: 6.7L Power Stroke V8 (EDC17CP05) [BC3A] [RD/WR/CK]
+Ford Truck: 6.7L Power Stroke V8 (EDC17CP05) [DC3A/FC3A] [RD/WR/CK]
+Ford Truck: 6.7L Power Stroke V8 (EDC17CP65) [HC3A] [RD/WR/CK]
+Ford Truck: 3.0L Power Stroke V6 (EDC17CP65) [JL3A] [RD/WR/CK]
+
+76. Kia/Hyundai Gearbox
+
+Kia/Hyundai: MG7.9.8/MEG17.9.12 Gearbox (ST10F275/TCU) [RD/WR]
+TC14 Gearbox (MPC562/TCU) [RD/WR/CK]
+TC60/TC80/ME(D)G17.9.8/13 Gearbox (SH72549/TCU) [RD/WR/CK]
+MEG17.9.21 Gearbox (SH72549/TCU) [WR/CK]
+SIM2K-24x/341 Gearbox (TC1766/TCU) [RD/WR/CK]
+SIM2K-24x Gearbox (TC1738/TCU) [RD/WR/CK]
+SIM2K-341 Gearbox (TC1738/TCU) [RD/WR/CK]
+
+SIM2K-143 Gearbox (TC1738/TCU) [RD/WR/CK]
+CPTSH2.08.1/CPTSH2.08.2 Gearbox (SH72544/TCU) [RD/WR/CK]
+
+77. Bosch ME9/MED9/EDC7/EDC16/PSG16/TCU Bootloader
+
+Requires direct connection to ECU and Scanmatik 2  Pro adapter
+ME9/MED9/EDC7/EDC16/PSG16/TCU (MPC556/MPC562/MPC564) [RD/WR/CK]
+ME9/MED9/EDC7/EDC16/PSG16/TCU MICRO (MPC556/MPC564) [RD/WR/CK]
+ME9/MED9/EDC7/EDC16/PSG16/TCU EXT (MPC556/MPC562/MPC564) [RD/WR/CK]
+ME9/MED9/EDC7/EDC16/PSG16/TCU EEPROM (MPC556/MPC562/MPC564) [RD/WR]
+
+78. Subaru Gearbox
+
+Melco CVT CAN-bus (1N83M/1552KB MH8111/1536KB MH5006/1024KB MH8104/512KB)
+[RD/WR/CK]
+
+79. Mitsubishi CAN-bus Bootloader
+
+дLя работы требуется прямое подкLючение к разъёму ЭБУ!
+CAN-bus Bootloader FLASH (MH8114F/MH8115F/MH8501F) [RD/WR/CK]
+CAN-bus Bootloader FLASH (MH8601F/MH8610F/MH8611F/1N83M) [RD/WR/CK]
+
+80. Denso SH725xx/1N83M Bootloader
+
+дLя работы требуется прямое подкLючение к разъёму ЭБУ!
+SH725xx FLASH [RD/WR/CK]
+SH725xx EEPROM [RD/WR]
+1N83M FLASH [RD/WR/CK]
+1N83M EEPROM [RD/WR]
+
+81. JLR Gearbox
+
+ZF 6HP26/6HP28 TCM (MPC5xx/TC1766) [RD/WR/CK]
+ZF 8HP70 TCM (SH725xx) [RD/WR/CK]
+ZF 8HP45/8HP70 TCM (TC2xx) [RD/WR/CK]
+ZF 9HP48 TCM (TC1782) [RD/WR/CK]
+ZF 9HP48 TCM EEPROM (TC1782) [RD/WR]
+AWF21 Freelander 2/Evoque TCM [Test] [RD/WR/CK]
+
+82. Bosch SH725xx TCU Bootloader
+
+Requires direct connection to ECU. OpenPort adapter is NOT SUPPORTED.
+Tested adapters: Scanmatik 2/PRO, Dialink, Chipsoft, Mongoose, CarDAQ.
+Bosch SH725xx TCU (FLASH) [RD/WR/CK]
+Bosch SH725xx TCU (EEPROM) [RD/WR]
+
+83. VAG Bosch DQ380/DQ381/DQ500/ZF 8HP
+
+DQ380/381/500 (0DE/0DL/0GC) [VR/WR/CK]
+AL420/AL600 (09L/09E) K-Line [Test] [VR/WR/CK]
+AL420/AL600 (09L/09E) CAN TP2.0 [Test] [VR/WR/CK]
+AL450/AL551/AL951 (0CM/0BK/0BL) [VR/RD/WR/CK]
+AL552/AL952 (0D5/0D6) [VR/WR/CK]
+AL1000/AQ250/AQ450 (0C8/09G) UDS [VR/WR/CK]
+
+AL600/AL750/AQ250 (09D/09G) K-Line [Test] [RD/WR/CK]
+AL750/AQ250 (09D/09G) CAN TP2.0 [Test] [RD/WR/CK]
+
+84. VAG Delphi DCM6.2
+
+1.4L, 1.6L, 2.0L TDI (DCM6.2) [VR/RD/WR/CK]
+
+85. Ford Gearbox
+
+6HP26 TCM [RD/WR/CK]
+6HP26 TCM [RD/WR/CK]
+5R110 TCM [RD/WR/CK]
+6R80/6R140 TCM [BC3A] [RD/WR/CK]
+6F55/8F40/10R80/10R140 TCM [HC3A/HL3A/JL3A/JX6A/LC4A] [RD/WR/CK]
+8F40/10R80/10R140 TCM [K1GA/K2GA/LC3A/LK4A] [RD/WR/CK]
+
+86. China Gearbox
+
+Chery Tiggo 4/7 CVT19 (EAST80.11/MPC5534) [VR/WR/CK]
+Chery Tiggo 8 CVT25 (EAST80.13/SPC563M) [VR/WR/CK]
+Chery CVT25 Bootloader (EAST80.13/SPC563M) [RD/CK]
+Geely DSI 6AT [RD/WR/CK]
+Geely Coolray 7DCT330 [VR/RD/WR/CK]
+Haval 7DCT450 (EAST80.D1) [VR/RD/WR/CK]
+Haval 7DCT300 (HYCET) [VR/RD/WR/CK]
+
+87. PSA DCM6.2
+
+Citroen/Peugeot 2.0L HDi (DCM6.2A) [RD/WR/CK]
+Citroen/Peugeot 2.0L HDi (DCM6.2C) [RD/WR/CK]
+
+88. Ford AdBlue
+
+AdBlue REDCM (DCU17PC01) [CK41] [RD/WR/CK]
+AdBlue REDCM (DCU17PC43) [KV6A] [RD/WR/CK]
+
+89. China MG1
+
+BAIC 1.5L A151A1 (MG1UA008) [RD/WR/CK] [RD/WR/CK]
+Changan 1.4T, 1.5T, 2.0T (UD8/MG1US008) [RD/WR/CK]
+Chery/Exeed 2.0T F4J20 (MG1US008) [RD/WR/CK]
+FAW 1.5T, 2.0T (UD8/MG1US008) [RD/WR/CK]
+Geely 1.5L (MG1UA008) [RD/WR/CK]
+Geely/Livan 1.5T (MG1US708) [Test] [RD/WR/CK]
+Great Wall/Haval 1.5T, 2.0T (MG1US008) [RD/WR/CK]
+Haval Jolion 1.5T (MG1UA008) [RD/WR/CK]
+JAC T9 2.0T (UD8/MG1US008) [RD/WR/CK]
+JAC J7 1.5T (UP8/MG1UA008) [RD/WR/CK]
+SWM 1.5T (MG1UA008) [RD/WR/CK]
+
+90. China DCM6.2AP/DCM7.1AP
+
+Dongfeng 2.3L TD (DCM7.1AP) [RD/WR/CK]
+Great Wall/Haval 2.0L TD (DCM6.2AP) [RD/WR/CK]
+
+Great Wall/Haval 2.0L TD (DCM7.1AP) [RD/WR/CK]
+JAC 2.0L TD (DCM6.2AP) [RD/WR/CK]
+Qingling/Isuzu 3.0L TD (DCM6.2AP) [RD/WR/CK]
+Qingling/Isuzu 3.0L TD (DCM7.1AP) [RD/WR/CK]
+Trucks (DCM6.24) [Test] [RD/WR/CK]
+
+91. Mercedes Benz CRD3/CRD3P
+
+Mercedes-Benz CRD3/CRD3P FLASH [RD/WR/CK]
+Mercedes-Benz CRD3/CRD3P EEPROM [RD/WR]
+
+92. Bosch MD1/MG1 Bootloader - 18000р
+
+Requires direct connection to ECU and Scanmatik 2 PRO adapter
+MD1/MG1 FLASH
+(SPC572L/SPC5777M/SPC58/TC275TP/TC277TP/TC298TP/TC299TP/TC387QP/TC399XP) [RD/WR/
+CK]
+MD1/MG1 EEPROM
+(SPC572L/SPC5777M/SPC58/TC275TP/TC277TP/TC298TP/TC299TP/TC387QP/TC399XP) [RD/WR]
+
+93. India DCM7.1AP
+
+Ashok Leyland 1.5L TD (DCM7.1AP) [RD/WR/CK]
+Eicher E366/E474 2.0L, 3.0L TD (DCM7.1AP) [RD/WR/CK]
+Force Motors 2.6L TD (DCM7.1AP) [RD/WR/CK]
+Kia/Hyundai 1.6L TD (DCM7.1AP) [RD/WR/CK]
+Mahindra 1.6L TD (DCM2.7AP) [RD/WR/CK]
+Mahindra 1.6L TD EEPROM (DCM2.7AP) [Bench] [RD/WR]
+Mahindra 1.5L TD (DCM7.1AP) [RD/WR/CK]
+Mahindra 1.5L TD EEPROM (DCM7.1AP) [Boot] [RD/WR]
+Tata 1.5L TD (DCM7.1AP) [RD/WR/CK]
+
+94. Aisin SH705x TCU Bootloader
+
+Aisin SH705x TCU (FLASH) [RD/WR/CK]
+Aisin SH705x TCU (EEPROM) [RD/WR]
+
+
