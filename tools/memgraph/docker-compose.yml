@@ -1,0 +1,47 @@
+# Memgraph (MAGE) + Lab для RE-стека VQ HR ECU.
+# Граф структуры прошивки (функции, call/xref-рёбра), community detection (Louvain)
+# и граф-дифф для гомологии родственных прошивок. См. ../../AGENTS.md, ноту "RE-стек".
+#
+# Контекст: поднимать ТОЛЬКО в Docker Desktop (docker context use desktop-linux).
+#   Параллельный запуск в другом контексте (Lima/colima) поднимает второй комплект,
+#   который перехватывает localhost по IPv4/IPv6 и расщепляет данные. Проверка:
+#   docker context show  ->  desktop-linux
+#
+# Поднять:   docker compose -f tools/memgraph/docker-compose.yml up -d
+# Остановить: docker compose -f tools/memgraph/docker-compose.yml down
+# Lab UI:    http://localhost:3000   Bolt: bolt://localhost:7687 (auth пустой)
+#
+# Персистентность: данные (snapshots + WAL) в bind-mount ./data (= tools/memgraph/data,
+#   git-ignored). Переживают пересоздание контейнера и не зависят от VM контекста –
+#   в отличие от именованного volume, который живёт внутри VM и теряется при смене
+#   контекста. Восстановление на старте: --data-recovery-on-startup=true.
+services:
+  memgraph:
+    image: memgraph/memgraph-mage:3.11.0   # multi-arch, нативный arm64
+    container_name: vq-memgraph-mage
+    ports:
+      - "127.0.0.1:7687:7687"   # Bolt: драйверы (neo4j) и Lab; IPv4-loopback явно
+      - "127.0.0.1:7444:7444"   # стрим логов -> Lab
+    command:
+      - "--storage-snapshot-interval-sec=300"   # периодический snapshot (5 мин)
+      - "--storage-snapshot-on-exit=true"       # snapshot при остановке
+      - "--storage-snapshot-retention-count=3"
+      - "--storage-wal-enabled=true"            # WAL между snapshot'ами
+      - "--data-recovery-on-startup=true"       # восстановление графа при старте
+      - "--log-level=WARNING"
+    volumes:
+      - ./data/lib:/var/lib/memgraph   # snapshots + WAL (персистентность графа)
+      - ./data/log:/var/log/memgraph
+    restart: unless-stopped
+
+  lab:
+    image: memgraph/lab:latest
+    container_name: vq-memgraph-lab
+    ports:
+      - "127.0.0.1:3000:3000"   # веб-UI: http://localhost:3000
+    depends_on:
+      - memgraph
+    environment:
+      - QUICK_CONNECT_MG_HOST=memgraph   # имя сервиса в docker-сети
+      - QUICK_CONNECT_MG_PORT=7687
+    restart: unless-stopped

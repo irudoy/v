@@ -1,0 +1,39 @@
+# Курируемый реестр имён функций 1ND0A – источник истины по реверсу (версионируется в git).
+# Применяется к Ghidra-проекту скриптом RenameFuncs.java; оттуда ExportGraph.java кладёт
+# имена в funcs.csv -> load_graph.py -> Memgraph. Правка здесь -> оба потребителя обновляются.
+# Формат: addr,name,note   (addr – hex без 0x; note -> plate comment функции; без запятых).
+addr,name,note
+0011363c,hcan1_init,HCAN1 controller init (MCR/BCR/mailbox)
+00113a3e,hcan0_init,HCAN0 controller init
+00113c7c,hcan1_rx_dispatch,HCAN1 RX dispatch: RXPR -> msg-table FFFEAFAB
+00113e6e,hcan0_rx_dispatch,HCAN0 RX dispatch
+000d41da,can1_comm_diag,CAN1 link diagnostics
+000d4596,can0_comm_diag,CAN0 link diagnostics
+000b741e,immo_dtc_status_engine,DTC status engine (group;bit) -> RAM status FFFED700; immo group 0x0d
+000b6988,immo_dtc_dispatcher,DTC monitor dispatcher; immo struct base FFFEB81E
+00116ad6,dtc_mil_prioritizer,DTC/MIL priority scan (331 rec x12); not the immo gate
+000b8c60,immo_cond_monitor_1,immo condition guard (base+0x34/37/38/39/3b) + attempt counters; twin 000b955c
+000b955c,immo_cond_monitor_2,twin of immo_cond_monitor_1 (second channel)
+00045f30,immo_status_aggregate,DTC-aggregate: пишет 0xFFFED704 bit0x10; clear при Lock 0xFFFEB852&2 valid + 0xFFFEB8C8&0x40; set по DTC-fault 0xFFFED4F2/F5/0xFFFED32D
+000302b6,inj_oneshot_pulse_driver,ATU ch8 one-shot; 6-cyl loop -> DCNT8A-8F pulse width; enable 0xFFFEB7F3&0x40 + override 0xFFFEB8FB&2 (оба НЕ immo)
+0007d3e8,inj_pulse_scheduler,injection pulse-width scheduler; cyl-data 0xFFFE9210; override 0xFFFEB8FB&2 (НЕ immo)
+000799d4,inj_oneshot_dispatch,dispatch -> inj_oneshot_pulse_driver; пишет cyl-mask 0xFFFEB862
+0002975a,atu2_init,ATU-II full init (каналы 0-11 + ch8 one-shot DCNT/DSTR/OTR)
+00021218,canram_enable_commit,периодический копир 0xFFFEB7F4 -> 0xFFFEB7F3 (injection-enable байт); безусловно; НЕ immo
+0012604c,consult_actuator_test,CONSULT active-test; param==3 форсит inj override 0xFFFEB8FB|2; читает immo-DTC 0xFFFED704
+000bef34,immo_lock_task,корень периодической immo-задачи -> immo_lock_state_machine + indirect PTR
+000bef44,immo_lock_state_machine,диспетчер: reset-clear 000bf8e0 -> setter 000bf0ac -> DTC-мониторы 000bf53a/000bf756; управляет reset-gate 0xFFFEB8F7&2
+000bf0ac,immo_lock_setter,SET Lock 0xFFFEB852|2 при *0xFFFE81AC>0x1f; плюс immo-cond/DTC биты 0xFFFEB852-859 и immo-present 0xFFFEB8C8&0x40
+000bf8e0,immo_struct_reset,CLEAR Lock 0xFFFEB852&~2 + cond-биты +0x34..+0x3b + большая DTC-структура 0xFFFED16C; gated 0xFFFEB8F7&2
+000bf53a,immo_dtc_fault_counters,immo/DTC fault-счётчики с насыщением до 0xff
+000bf756,immo_dtc_table_scan,скан 331-записной DTC-таблицы (stride 3) порог 0x28
+000ccf08,immo_registration,marriage/регистрация: латч registered-бита 0xFFFEB852&0x01 и 0xFFFEB853&0x40 из source-битов 0xFFFEA232/A233; счётчик попыток <0xb; запись ID-слотов в массивы от 0xFFFEC7FA (logged-val 0xFFFE880C); вызывает immo_channel_evaluator
+000cd374,immo_channel_evaluator,evaluator immo-канала (param 0/1): counts/levels vs калиброванные пороги -> source-биты 0xFFFEA232&1 / 0xFFFEA233&2 (condition met) + event-коды 0xa8..0xab через indirect PTR_000cd830; вход immo_registration; НЕ побайтовая крипто-сверка ID
+0007cab0,fueltrim_correction,fuel-trim коррекция; ставит 0xFFFEB852 бит 0x08 после порога счётчика; Lock читает как RMW не гейт
+00067cce,diag_status_eval,диагностический статус (misfire/rationality) -> биты 0xFFFE94xx; Lock один из входов; актуаторы не трогает
+00068104,diag_periodic_task,периодическая диаг-задача; читает Lock; callee пишут только RAM 0xFFFE82xx (нет ATU)
+0008719c,immo_present_deriver,большой периодический destager CAN-RAM 0xFFFEE2xx + арбитр лимитов (клампы к 0x6400 = 100%); среди сотен выходов immo-present 0xFFFE930E/0xFFFE92E5; callee-кластер 0x00088xxx – под-шаги destage/scale по слайсам буфера fffee2xx НЕ ID-компаратор
+00078450,immo_signal_conditioner,кондиционер immo-канала (param ch 0/1): источник – indirect-геттер PTR_FUN=00022310/00022318; scale/offset/clamp по ROM-калибрам 0x92d2/d4/d6 и 0x89a6/a7; выход 16-бит 0xFFFE880C[ch] + биты качества/насыщения 0xFFFE8808-8816; вход immo_channel_evaluator; НЕ побайтовый приём CAN-ID
+000812fa,engine_immo_status_reporter,читает immo-present 0xFFFE930E среди engine-сигналов; пишет статус-образы 0xFFFE830E/0xFFFEA366 (+ staged 0xFFFEB3A2/B440); питает статус-кадр под generic CAN-TX; 0 HW-регистров
+000c7bc4,immo_status_byte_stager,читает immo-present 0xFFFE930E; стейджит статус-байты 0xFFFEB3A2-A4/0xFFFEB440/0xFFFEB294 для frame-кластера 0x000c8xxx; 0 HW-регистров
+000d3ed0,hcan_mailbox_config,init-time конфиг mailbox-control 0xFFFFD904 (=0x700); вызов из hcan1_init; НЕ рантайм TX-serializer (mailbox-data 0xFFFFD900+ пишется через base-pointer)

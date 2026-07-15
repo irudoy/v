@@ -28,21 +28,32 @@ MCU Renesas SH7058 / SH7059, ядро SH-2E):
 **Ghidra** (декомп + экспорт call / xref / data-flow) -> **Memgraph** (граф
 структуры, гомология, персистентная память проекта) -> **LLM-агент через MCP**.
 
+Развёрнуто локально (arm64): Ghidra 12.1.2 (JDK 21, нативы) + плагин и мост GhydraMCP
+(stdio MCP-сервер `ghydra` в Claude Code) + Memgraph MAGE (Louvain / Leiden). Версии,
+порты и команды поднятия – `tools/README.md`.
+
 Дисциплина верификации: **ground truth – в кремнии.** Структура графа != семантика.
 Любое техническое утверждение до заливки проверяется на железе (CONSULT3P live-data,
 стенд) – результат заливается в мотор.
 
 ## Карта репозитория
 
-- `rom-images/` – ROM-дампы (`*.bin`) с RomRaider forum, все VQ37VHR (гомолог-пара
-  SH7058 USDM / SH7059 JDM). **git-ignored**; трекается только `rom-images/README.md`
-  (манифест: sha256, part #, идентификация, источники). Дамп опознаётся по sha256.
+- `rom-images/` – ROM-дампы (`*.bin` + архивы) с RomRaider forum, все VQ37VHR (гомолог-пара
+  SH7058 USDM / SH7059 JDM), плюс immo-патченные варианты. Версионируются в git; манифест
+  `rom-images/README.md` (sha256, part #, идентификация, источники). Дамп опознаётся по sha256.
 - `refs/` – внешние даташиты / мануалы (Renesas SH7059 HW manual, PCMflash module list,
-  Bosch LSU 4.9, NERS, MoTeC M150, UpRev). PDF **git-ignored** (как rom-images);
-  трекаются markitdown-конверсии `*.md` + манифест `refs/README.md`.
+  Bosch LSU 4.9, NERS, MoTeC M150, UpRev) + зеркало NissanECU RE wiki (`refs/nissanecu-wiki/`).
+  PDF-оригиналы, markitdown-конверсии `*.md` и манифест `refs/README.md` – всё в git.
+- `tools/` – инфраструктура RE-стека: `memgraph/docker-compose.yml` (Memgraph MAGE + Lab),
+  `ghidra/headless-analyze.sh` (обёртка `analyzeHeadless` с JDK 21), `README.md` (версии,
+  порты, команды). Сами инструменты (Ghidra, GhydraMCP) и Ghidra-проекты – вне git.
 - `AGENTS.md` – этот файл.
-- `.gitignore` – правила игнора (ROM-бинарники, дизасм-артефакты, scratch).
-- (по мере работы) `defs/`, `ghidra/`, `tools/`, `logs/`.
+- `.gitignore` – правила игнора (мусор ОС, scratch, регенерируемые кэши Ghidra / Memgraph).
+  Контентные артефакты (ROM, даташиты, дефы, зеркала) версионируются.
+- `defs/` – деф-файлы таблиц. `defs/reference/` – submodules открытых RomRaider Nissan-дефов
+  (Pytrex, a33b) как референс карт (манифест и релевантность – `defs/README.md`); свои дефы
+  под целевой ROM – по мере RE.
+- (по мере работы) `ghidra/` (экспорты графа), `logs/`.
 
 ## Конвенции
 
@@ -57,5 +68,11 @@ MCU Renesas SH7058 / SH7059, ядро SH-2E):
 ## Скоуп
 
 P0 – отшитие NATS на тестовом ЭБУ (VQ25HR) и перенос метода на VQ35HR / VQ37VHR;
-далее тюнинг. Reflash закрывается KESS V2; DIY-реверс – immo-рутина, чексумма, деф
-таблиц. Готовых дефов / immo-off под VQ HR CAN публично нет.
+далее тюнинг. DIY-реверс – immo-рутина, чексумма, деф таблиц.
+
+Открытая экосистема: RomRaider-дефы (submodules в `defs/reference/`, манифест
+`defs/README.md`) покрывают VQ35HR (Pytrex `EV18A` – 190 таблиц; `CF92A` – кузов V36) и
+поверхностно VQ37VHR (a33b `1NX4A` – 30 таблиц); под VQ25HR дефа нет. HR – класс late
+K-line: дамп по K-line доступен, открытый reflash есть под SH7058, под SH7059 (наш JDM)
+нет – закрывается KESS V2 по OBD. Immo-off / NATS в открытом виде отсутствует (NATS-ключи
+в отдельном EEPROM, вне flash-ROM и вне дефов).
