@@ -78,6 +78,7 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `ghidra/FindTableRefs.java` | кто адресует диапазон ROM (база таблицы): direct + literal-pool | `table_refs.csv` |
 | `ghidra/DumpListing.java` | дизассемблинг окрестностей адреса с разрешёнными ссылками | `listing_<addr>.txt` |
 | `ghidra/RenameFuncs.java` | применить курируемые имена (`symbols.csv`) к функциям проекта | Ghidra-проект |
+| `ghidra/ImmoConfirm.java` | подтверждение immo-контура: декомпиляция registration/lock_setter, их callers, listing патч-сайтов; форсирует дизасм GBR-кода. Аргументы: `<reg_entry> <lock_entry> <site...>` | stdout |
 | `ghidra/symbols.csv` | реестр имён функций (addr,name,note) – источник истины по реверсу | (в git) |
 | `memgraph/load_graph.py` | `:Func` + `:CALLS`, Louvain (сообщества-подсистемы) | Memgraph |
 | `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |

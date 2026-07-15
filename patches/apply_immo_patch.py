@@ -7,6 +7,10 @@ apply_immo_patch.py -- патч immo-контура "always ID OK" для HR-Э�
   JK78C  (SH7058, 1.0 MiB, USDM Infiniti G37)  -- структурный порт: независимый компайл,
          immo-латч разнесён по иным RAM-адресам (registered 0xffff4521 b0, Lock 0xffff4567 b1),
          локализован реверсом и выверен round-trip'ом. Обоснование -- immo-always-id-ok.md.
+  JK03A  (SH7058, 1.0 MiB, JDM V36 Skyline VQ25HR)  -- структурный порт: независимый компайл,
+         Lock кодируется bit2 (or.b #4, не #2), registered 0xffff41c1 b0, ch1 0xffff41c2 b6,
+         Lock 0xffff4201 b2. Локализован реверсом (структурная гомология + counter-пороги
+         0x0b/0x20), подтверждён Ghidra listing/декомпиляцией. Обоснование -- immo-always-id-ok.md.
 
 Читает сток-образ, применяет латч-патчи NATS-контура ECM и пишет патченый образ ЛОКАЛЬНО.
 
@@ -76,6 +80,36 @@ ROMS = {
             (0x0B3FA2, b"\xcd\xbf", b"\x00\x09",
              "L2b' reset-clear ch1 immo_registration FUN_0b3f28: and.b #191,@(r0,gbr) -> nop "
              "(reset-путь не сбрасывает 0xffff4522 bit6)"),
+        ],
+    },
+    "JK03A": {
+        "stock": "v36-vq25hr-jk03a/as7058.bin",
+        "core": [
+            (0x08D7C8, b"\xcf\x04", b"\x00\x09",
+             "L1  Lock-suppress    immo_lock_setter FUN_0008d724: or.b #4,@(r0,gbr) -> nop  "
+             "(0xffff4201 bit2 'Lock' не выставляется; за counter-гейтом порога 0x20; delay-slot "
+             "безусл. bra 0x8d7ce цел, clear-путь 0x8d7cc and.b #251 не тронут)"),
+            (0x0938BE, b"\x89\x09", b"\x00\x09",
+             "L2  registered-force immo_registration FUN_000937dc: bt 0x938d4 (skip set) -> nop "
+             "(всегда fall-through в set-путь or.b #1 @0x938ce -> 0xffff41c1 bit0 'registered' "
+             "липнет в 1; set-путь идемпотентен по tst #1; counter<0x0b гейт)"),
+        ],
+        # Спутник: снять reset-clear registered bit0 (устойчивость к reset-пути):
+        "l2b": [
+            (0x09384A, b"\xcd\xfe", b"\x00\x09",
+             "L2b reset-clear-neuter immo_registration FUN_000937dc: and.b #254,@(r0,gbr) -> nop "
+             "(reset-путь больше не сбрасывает 0xffff41c1 bit0)"),
+        ],
+        # Эскалация: 2-й канал регистрации (ch1, 0xffff41c2 bit6). Добавлять, только если
+        # marriage требует обоих каналов (проверяется на стенде). L2' -- bt/s (delay-slot
+        # mov.l r6,@(8,r15) исполняется в обеих ветвях, nop его сохраняет).
+        "esc": [
+            (0x093892, b"\x8d\x08", b"\x00\x09",
+             "L2' reg-force ch1    immo_registration FUN_000937dc: bt/s 0x938a6 -> nop "
+             "(force set-путь or.b #64 @0x938a4 -> 0xffff41c2 bit6)"),
+            (0x093846, b"\xcd\xbf", b"\x00\x09",
+             "L2b' reset-clear ch1 immo_registration FUN_000937dc: and.b #191,@(r0,gbr) -> nop "
+             "(reset-путь не сбрасывает 0xffff41c2 bit6)"),
         ],
     },
 }
