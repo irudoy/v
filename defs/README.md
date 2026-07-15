@@ -49,8 +49,11 @@
   (`flashmethod=nis-can`).
 - `a33b-NissanDefs/table_templates/` – шаблон NISSAN_BASE.
 
-**VQ25HR** (SH7059, JDM V36 Skyline 250GT) – открытого дефа нет нигде. Донор структуры –
-`EV18A` / `CF92A` (та же Hitachi CAN + dual CVTC); MCU-специфика SH7059/1.5 MB – из `1NX4A`.
+**VQ25HR** (JDM V36 Skyline 250GT) – открытого дефа нет нигде. Не-VVEL dual-CVTC, класс
+VQ35HR -> **вероятно SH7058 / 1 MB**: в def-корпусе SH7059 только у VVEL VQ37VHR (`1NX4A`,
+`6GE2C`), весь не-VVEL VQ – на SH7058 / более старых. Донор структуры – `EV18A` / `CF92A`
+(SH7058, та же Hitachi CAN + dual CVTC). Точный чип дампом не подтверждён – TO-VERIFY по
+стендовому ЭБУ (маркировка / размер 1.0 vs 1.5 MiB / loader 705822/705823 vs 705927).
 
 Атрибут `flashmethod` в HR-дефах (`Nisprog` у SH7058 `EV18A`/`CF92A` и SH7059 `1NX4A`) –
 ненадёжная метаданная: открытый nisprog/npkern флеш-бэкенда под SH7059 не имеет. Ценность
