@@ -1,9 +1,8 @@
 # refs – внешние даташиты и мануалы
 
 Локальные копии первоисточников проекта **VQ HR ECU** (см. `../AGENTS.md`).
-PDF-оригиналы **git-ignored** (проприетарные, крупные); трекаются markitdown-конверсии
-`*.md` (кроме крупного Renesas HW manual) и этот манифест. Конверсия: markitdown.
-Ноты в Obsidian ссылаются на эти файлы как `refs/<имя>.md` / `.pdf`.
+PDF-оригиналы и markitdown-конверсии `*.md` версионируются в git вместе с этим манифестом.
+Конверсия: markitdown. Ноты в Obsidian ссылаются на эти файлы как `refs/<имя>.md` / `.pdf`.
 
 ## Документы
 
@@ -33,5 +32,39 @@ PDF-оригиналы **git-ignored** (проприетарные, крупны
 - Nissan NERS TechInfo: https://www.nissan-techinfo.com/documents/Nissan_TechInfo_Ners.pdf
 - MoTeC M150 datasheet (зеркало): https://www.milspecwiring.com/DATA%20SHEETS/ECU/M150.pdf
 - UpRev Nissan Tuning Guide: https://uprev.com/wp-content/uploads/2023/05/UpRev-Nissan-Tuning-Guide-Rev2.pdf
+- NissanECU RE wiki (зеркало -> `nissanecu-wiki/`): https://nissanecu.miraheze.org/wiki/Main_Page
 
 Восстановить локально: скачать PDF по URL в `refs/`, конвертировать markitdown в `*.md`.
+
+## NissanECU RE wiki (локальное зеркало)
+
+`nissanecu-wiki/` – полное зеркало community-вики реверса Nissan-ЭБУ (fenugrec),
+**30 страниц + 34 изображения**, markdown-конверсия рендер-HTML (`?action=render` ->
+html2text) с локальными картинками (`img/`). Источник: https://nissanecu.miraheze.org
+(**CC BY-SA 4.0**), retrieved 2026-07-15. Индекс и P0-релевантность – `nissanecu-wiki/README.md`.
+Ключевое: `Firmware_re` (SID-tree, seed-key SID27/36, LOADER/FID-метаданные), `Checksums`,
+`Eeprom_code` / `Eeprom_dumps` (immo / NV вне flash), `Communication_Protocols` / `C2_14230` /
+`Std_14230`, `Ecu_hw` / `Bootmode` (HW, boot-режим SH705x), размеченные референс-ROM
+`Rom_an_cf43d` / `cf48d` / `al500`. В отличие от PDF-первоисточников, зеркало трекается в git
+целиком (текст + мелкие изображения).
+
+## Внешние первоисточники (локально, вне репозитория)
+
+Крупные проприетарные наборы, которые не копируются в `refs/` и не трекаются git;
+подключаются как указатель на локальный путь (iCloud Drive). Применяются для точного
+определения механики и логики узлов: штатная схемотехника, распиновка разъёмов,
+описание работы систем.
+
+- **Nissan ESM – 2007 Infiniti G35 Sedan (V36), мотор VQ35HR.** Полный заводской
+  сервис-мануал, 56 PDF по всем системам. 2007 G35 Sedan несёт VQ35HR, поэтому раздел
+  ECM – прямой гомолог целевого HR-firmware (1ND*, VQ37VHR – та же HR-архитектура immo).
+  Путь: `~/Library/Mobile Documents/com~apple~CloudDocs/Auto/Nissan/V36/scheme/2007_G35_Sedan/`
+  Ключевые разделы для проекта:
+  - `SECURITY CONTROL SYSTEM.pdf` – NATS / immobilizer (IMMU), master-логика BCM, security-ID, индикатор.
+  - `ENGINE CONTROL SYSTEM.pdf` – ECM VQ35HR: вход immo, разрешение запуска, входы/выходы.
+  - `STARTING SYSTEM.pdf` – стартер / crank-permission (вероятное место enforcement блокировки запуска).
+  - `BODY CONTROL SYSTEM.pdf` – BCM (master immo), интеграция с ключом/антенной.
+  - `LAN SYSTEM.pdf` – топология CAN, gateway, распределение шин и CAN ID.
+  - `POWER SUPPLY, GROUND & CIRCUIT ELEMENTS.pdf` – распиновка разъёмов, цепи питания/земли.
+  - `METER, WARNING LAMP & INDICATOR.pdf` – security-индикатор (immo-blink), логика лампы.
+  - `POWER CONTROL SYSTEM.pdf`, `STEERING CONTROL SYSTEM.pdf` – power/ignition mode, рулевой замок (где применимо).
