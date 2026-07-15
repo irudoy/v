@@ -4,3 +4,4 @@
 [submodule "defs/reference/a33b-NissanDefs"]
 	path = defs/reference/a33b-NissanDefs
 	url = https://github.com/a33b/NissanDefs
+	ignore = dirty
