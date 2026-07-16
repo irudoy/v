@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Рабочий RomRaider-деф под целевой дамп проекта VQ HR ECU:
+    Nissan Skyline V36 250GT, VQ25HR, ECM 23710-JK03A, SH7058 / 1 MiB (JDM).
+    ROM: rom-images/v36-vq25hr-jk03a/as7058.bin
+    sha256 f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4
+
+  Отличается от reference/Pytrex .../G35/JK03A.xml: тот - пустой опознаватель
+  (romid + checksum, 0 таблиц). Здесь адреса найдены в НАШЕМ дампе и размечаются
+  по мере RE. Донор структуры (имена/оси/scaling) - EV18A (350Z HR, тот же
+  SH7058/1MB non-VVEL), но его storageaddress на наш дамп не ложатся: layout
+  калибровки JDM 2.5L отличается от USDM 3.5L. Journal и метод - JK03A.notes.md.
+
+  Уровни уверенности разметки помечены в комментариях: [CONFIRMED] / [CANDIDATE].
+-->
+<roms>
+  <rom>
+    <romid>
+      <xmlid>JK03A</xmlid>
+      <internalidaddress>8205</internalidaddress>
+      <internalidstring>JK03A</internalidstring>
+      <ecuid>1JK03A</ecuid>
+      <caseid>7MFKAVN86</caseid>
+      <make>Nissan</make>
+      <model>Skyline V36 250GT</model>
+      <submodel>VQ25HR</submodel>
+      <market>JDM</market>
+      <transmission>AT</transmission>
+      <memmodel>SH7058</memmodel>
+      <endian>big</endian>
+      <flashmethod>Nisprog</flashmethod>
+      <filesize>1024kb</filesize>
+      <author>VQ HR ECU project</author>
+      <version>WIP</version>
+    </romid>
+
+    <!--
+      checksum унаследован из reference Pytrex JK03A (type "alt"). Помечен upstream
+      как EXPERIMENTAL, под наш дамп НЕ верифицирован. Не полагаться при флеше до
+      сверки алгоритма (RomRaider NissanChecksum, тип alt vs alt2 под HR). См. notes.
+    -->
+    <checksum type="alt" start="0x2040C" end="0x2259A" sumloc="0x20404" xorloc="0x20408"/>
+
+    <!-- ================================================================
+         ОСИ ПОДСИСТЕМЫ-ИНТЕРПОЛЯТОРА FUN_0004bbee
+         Ghidra-трейс (JK03A в проекте vq-hr, проанализирован):
+           - FindTableRefs: 0x11EBE грузится как literal @0x4bccc, 0x11ECD -
+             direct ref @0x4bcd0, оба в FUN_0004bbee - подтверждённый аксессор.
+           - Тот же аксессор грузит ROM-таблицы 0x11E9E / 0x1243A / 0x12462 и
+             RAM-входы/выходы (0xFFFF119C сенсор, пишет 0xFFFF15ED) - это
+             интерполятор конкретной подсистемы, НЕ общие оси ignition-триплета.
+         Подтверждено [CONFIRMED]:
+           - Y @0x11ECE: * 50 = [400,600,800,1200,1600,2000,2400,2800,3200,
+             3600,4400,5200,6000,6400,6800,7400] - RPM-ось VQ25HR (idle..~7400),
+             и читается кодом. Семантика оборотов твёрдая.
+         Не подтверждено (снято по трейсу):
+           - "общая пара осей для 16x16 ignition/fuel/afr карт" - была гипотезой
+             pattern-scan по аналогии с EV18A; трейс показал локальную роль.
+           - X @0x11EBE: семантика ("load/cylinder filling") не доказана - ось
+             X аксессора 0x4bbee, размечена raw.
+         ================================================================ -->
+
+    <table type="2D" name="Engine Speed Axis [RPM] (ref)" category="Reference Axes"
+           storagetype="uint8" storageaddress="0x11ECE" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*50" to_byte="x/50"
+               format="0" fineincrement="50" coarseincrement="200"/>
+      <table type="Static X Axis" name="Index" sizex="16">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+        <data>8</data><data>9</data><data>10</data><data>11</data>
+        <data>12</data><data>13</data><data>14</data><data>15</data>
+      </table>
+    </table>
+
+    <!--
+      Ось X аксессора FUN_0004bbee: [8,16,24,...,128], линейный шаг 8.
+      Семантика (load/cylinder filling) трейсом не доказана -> raw.
+    -->
+    <table type="2D" name="FUN_0004bbee Axis X (ref)" category="Reference Axes"
+           storagetype="uint8" storageaddress="0x11EBE" sizex="16" endian="big">
+      <scaling units="raw (filling)" expression="x" to_byte="x"
+               format="0" fineincrement="1" coarseincrement="8"/>
+      <table type="Static X Axis" name="Index" sizex="16">
+        <data>0</data><data>1</data><data>2</data><data>3</data>
+        <data>4</data><data>5</data><data>6</data><data>7</data>
+        <data>8</data><data>9</data><data>10</data><data>11</data>
+        <data>12</data><data>13</data><data>14</data><data>15</data>
+      </table>
+    </table>
+
+    <!-- ================================================================
+         IGNITION-СЕМЕЙСТВО - код-трейс, аксессор FUN_00082c8a (@0x82c8a).
+         Три 16x16 uint8 карты, выбор по RAM-флагам (gbr+0x93 bit0); все идут
+         в один интерполятор FUN_00026320 (@0x26320 - обёртка над примитивами
+         0x26350/0x26354) с общими осями. asm @0x832a0: r4=table, r5=0x11B6B,
+         r6=0x11B8B, jsr 0x26320.
+         [CONFIRMED] кодом: адреса карт, размер 16x16 uint8, оси (по 16 монотонных
+           точек, читаются кодом как r5/r6).
+         [CONFIRMED] оси (трейс kernel 0x26944 + finisher 0x268a4, см. notes):
+           обёртка ищет позицию сначала по 0x11B6B с current=byte[0xFFFF11AE]
+           (глобальный RPM-индекс, тот же в AFR-аксессоре), затем по 0x11B8B.
+           finisher: cell = table + load_idx + rpm_idx*16 => RPM=строки,
+           нагрузка=столбцы. RomRaider: X Axis=нагрузка (0x11B8B), Y Axis=RPM
+           (0x11B6B). Физика 5/5 карт: timing растёт с RPM, падает с нагрузкой.
+         [CANDIDATE] по A2L: идентичность Cold/HiOct/HiDet и scaling
+           "Degrees Adjustment x-64"; множитель RPM x*50 (оценка по диапазону
+           600..7500, writer 0xFFFF11AE не трейсен) и единицы нагрузки.
+         Порядок: 0xB81A вычисляется всегда; {0xB61A|0xB71A} - по флагу.
+         ================================================================ -->
+
+    <table type="3D" name="Ignition Adj Map [flag=set] (0xB61A)" category="Ignition (traced)"
+           storagetype="uint8" storageaddress="0x0B61A" sizex="16" sizey="16" endian="big">
+      <scaling units="deg (adj)" expression="x-64" to_byte="x+64"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load / Cylinder Filling" storagetype="uint8"
+             storageaddress="0x11B8B" sizex="16" endian="big">
+        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11B6B" sizey="16" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <table type="3D" name="Ignition Adj Map [flag=clr] (0xB71A)" category="Ignition (traced)"
+           storagetype="uint8" storageaddress="0x0B71A" sizex="16" sizey="16" endian="big">
+      <scaling units="deg (adj)" expression="x-64" to_byte="x+64"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load / Cylinder Filling" storagetype="uint8"
+             storageaddress="0x11B8B" sizex="16" endian="big">
+        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11B6B" sizey="16" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <table type="3D" name="Ignition Adj Map [always] (0xB81A)" category="Ignition (traced)"
+           storagetype="uint8" storageaddress="0x0B81A" sizex="16" sizey="16" endian="big">
+      <scaling units="deg (adj)" expression="x-64" to_byte="x+64"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load / Cylinder Filling" storagetype="uint8"
+             storageaddress="0x11B8B" sizex="16" endian="big">
+        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11B6B" sizey="16" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- ================================================================
+         AFR / LAMBDA - код-трейс через inventory (общий kernel 0x26944).
+         16x16-2D обёртки, кроме ignition: 0x261b8 и 0x261f0. Карты опознаны по
+         сигнатуре шкалы 1881.6/x (стехиометрия 14.7 => байт 128):
+           - 0xB33A [CONFIRMED]: Target AFR (power). Плато 14.7 на idle/cruise,
+             обогащение до 11.2 в углу нагрузка/RPM - эталонная форма целевого AFR
+             атмосферника. Аксессор FUN_000BFDC0 (@0xBFE22), обёртка 0x261b8.
+             Оси gbr-relative (gbr=0x12EA2): X 0x12F2E, Y 0x12F0E.
+           - 0xA29A [CONFIRMED]: второй lambda-таргет, плоский 14.0..14.8
+             (замкнутый контур). Аксессор FUN_0002C648 (@0x2CC9C, также @0x3C292),
+             обёртка 0x261f0. Оси X 0x11CF0, Y 0x11D4C.
+         Шкала карт 1881.6/x подтверждена значениями. [CONFIRMED] оси (тот же
+         kernel 0x26944 + finisher 0x26770, см. notes): RPM=строки, нагрузка=
+         столбцы; RomRaider X Axis=нагрузка, Y Axis=RPM. Физика: raw богатеет к
+         высокой нагрузке (столбцы). [CANDIDATE]: множитель RPM x*50 (оценка по
+         диапазону) и точные единицы нагрузки.
+         ================================================================ -->
+
+    <table type="3D" name="Target AFR - Power (0xB33A)" category="AFR / Lambda (traced)"
+           storagetype="uint8" storageaddress="0x0B33A" sizex="16" sizey="16" endian="big">
+      <scaling units="AFR" expression="1881.6/x" to_byte="1881.6/x" format="0.00"
+               fineincrement="0.1" coarseincrement="0.5"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8"
+             storageaddress="0x12F0E" sizex="16" endian="big">
+        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12F2E" sizey="16" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <table type="3D" name="Lambda Target - flat (0xA29A)" category="AFR / Lambda (traced)"
+           storagetype="uint8" storageaddress="0x0A29A" sizex="16" sizey="16" endian="big">
+      <scaling units="AFR" expression="1881.6/x" to_byte="1881.6/x" format="0.00"
+               fineincrement="0.1" coarseincrement="0.5"/>
+      <table type="X Axis" name="Engine Load (0-255)" storagetype="uint8"
+             storageaddress="0x11D4C" sizex="16" endian="big">
+        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11CF0" sizey="16" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- ================================================================
+         ТРАНЗИЕНТНАЯ ТОПЛИВНАЯ КОРРЕКЦИЯ (accel/decel) - код-трейс,
+         аксессор FUN_000befb0 (@0xbefb0), 8-wide обёртка 0x26140.
+         Две 8x8 uint8 карты, обе индексируются (RPM, нагрузка); направление
+         разгон/сброс задаётся знаком производной расхода dQ/dt (ветвление вокруг
+         нейтрали 0x32000000 = 50.0 в Q24). Значения обеих карт используются в
+         обеих ветвях: 0xAB0A - величина коррекции, 0xB23A - весовой коэффициент.
+         [CONFIRMED] кодом: адреса карт/осей, размер 8x8, ориентация осей.
+           curX = byte[0xFFFF11AE] (глобальный RPM-индекс) -> ось X-обёртки;
+           curY = старший байт word[0xFFFF1024] (нагрузка, тот же вход, что у
+           ignition) -> ось Y. finisher 8-wide (шаг 8): RPM=строки, нагрузка=
+           столбцы; RomRaider X Axis=нагрузка, Y Axis=RPM. Множитель RPM x*50.
+         Сток: 0xAB0A зависит только от RPM (плоская по нагрузке, 4..37), 0xB23A
+           плоская (27). [CANDIDATE]: идентичность по A2L (mMITANDD/mMITANDA -
+           Decel/Accel Fuel Compensation) и физические единицы значений/нагрузки.
+         ================================================================ -->
+
+    <table type="3D" name="Transient Fuel Corr - magnitude (0xAB0A)" category="Transient / Decel (traced)"
+           storagetype="uint8" storageaddress="0x0AB0A" sizex="8" sizey="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8"
+             storageaddress="0x120B6" sizex="8" endian="big">
+        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x120AE" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <table type="3D" name="Transient Fuel Corr - weight (0xB23A)" category="Transient / Decel (traced)"
+           storagetype="uint8" storageaddress="0x0B23A" sizex="8" sizey="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8"
+             storageaddress="0x12860" sizex="8" endian="big">
+        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12858" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- ================================================================
+         REV-ЛИМИТЕР (топливная отсечка по оборотам) - код-трейс,
+         FUN_00047a56, листинг 0x47b8a-0x47bb4. Источник RPM: word[0xFFFF266E]
+         (единственный писатель FUN_00020dfe - планировщик 124 задач; читается
+         лимитером/топливом/зажиганием, обработанная скорость двигателя в
+         единицах rpm/12.5). Порог выбирается флагом byte[0xFFFF246D] bit7:
+           - флаг=0: 0x8FDC = 0x0262 = 7625 rpm (номинальная отсечка, у redline);
+           - флаг=1: 0x8FDE = 0x0210 = 6600 rpm (сниженный режим).
+         cmp/hs word[0xFFFF266E] >= порог => установка бита отсечки
+         byte[0xFFFF246A] bit7 (иначе сброс).
+         [CONFIRMED] кодом: источник RPM, оба порога и их адреса, выходной флаг,
+           сама логика сравнения (листинг 0x47b8a-0x47bb4).
+         [CANDIDATE]: множитель x*12.5 (стандарт A2L mNMAX2 + точное совпадение
+           7625 с redline VQ25HR 7500; инструкцией деления не доказан) и семантика
+           селектора 0xFFFF246D bit7 (номинал/нейтраль либо гистерезис cut->restore).
+         Смежные слова 0x8FD8=[6325,6050] rpm используются иными функциями
+           (0x6edbc/0x7054a), не rev-лимитером => в карту не включены.
+         ================================================================ -->
+
+    <table type="2D" name="Rev Limit - Fuel Cut Speed (0x8FDC)" category="Limiters (traced)"
+           storagetype="uint16" storageaddress="0x08FDC" sizex="2" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5"
+               format="0" fineincrement="12" coarseincrement="125"/>
+      <table type="Static X Axis" name="Selector byte[0xFFFF246D] bit7" sizex="2">
+        <data>nominal</data>
+        <data>reduced</data>
+      </table>
+    </table>
+
+    <!-- ================================================================
+         TODO (см. JK03A.notes.md): систематический каталог 2D-карт через граф.
+         Общий interp - примитивы 0x26350/0x26354 (обёрнуты 0x26320), вызовы
+         через PTR_FUN-слоты => перечислять по call-графу (ExportGraph -> Memgraph,
+         высокая in-degree у листа). Для каждого вызова из r4/r5/r6 снять
+         table+оси, классифицировать по A2L (Target AFR, MAF, injector, limiter).
+         Локальный аксессор FUN_0004bbee (0x11E9E/0x1243A/0x12462) и FUN_00082c8a
+         (ignition) - первые разобранные узлы.
+         ================================================================ -->
+  </rom>
+</roms>

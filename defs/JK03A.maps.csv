@@ -1,0 +1,114 @@
+table,wrapper,dim,axis_x,axis_y,accessors,sites,status,name,note
+0000a29a,000261f0,16x16,00011cf0,00011d4c,0002c648,2,in-def,Lambda Target - flat,"CONFIRMED: 16x16, плоский 14.0..14.8"
+0000b33a,000261b8,16x16,,,000bfdc0,1,in-def,Target AFR - Power,"CONFIRMED: 16x16, scaling 1881.6/x, плато 14.7 + обогащение 11.2"
+0000b61a,00026320,16x16,00011b6b,00011b8b,00082c8a,1,in-def,Ignition Adj Map [flag=set],CONFIRMED: выбор по gbr+0x93 bit0
+0000b71a,00026320,16x16,00011b6b,00011b8b,00082c8a,1,in-def,Ignition Adj Map [flag=clr],CONFIRMED: выбор по gbr+0x93 bit0
+0000b81a,00026320,16x16,00011b6b,00011b8b,00082c8a,1,in-def,Ignition Adj Map [always],"CONFIRMED: аксессор 0x82c8a, оси RPM 0x11b6b x нагрузка 0x11b8b"
+00008fdc,-,2-cell,,,00047a56,0,in-def,Rev Limit - Fuel Cut Speed,"не через kernel: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги 0x8fdc=7625/0x8fde=6600 rpm, выбор 0xFFFF246D bit7"
+0000ab0a,00026140,8x8,000120ae,000120b6,000befb0,1,in-def,Transient Fuel Corr - magnitude,CONFIRMED геометрия/оси; [CANDIDATE] единицы значений
+0000b23a,00026140,8x8,00012858,00012860,000befb0,1,in-def,Transient Fuel Corr - weight,CONFIRMED геометрия/оси; [CANDIDATE] единицы значений
+0001236a,000264a0,1D-16,0001238a,,0008152a;00081d74,2,identified,Fuel enrichment vs MBT-like axis,"CONFIRMED: ось 0x1238a (0..128 шаг 8), вход byte[0xFFFF11AE]; питает топливо, не угол - разбор K2Y"
+000129d2,000264a0,1D-16,00011b7b,,000b997c,1,geometry,,"1D-16 через 0x264a0, ось 0x11b7b; семантика TBD"
+0000a49a,00026084,4x4,00011d00,00011b67,00054ee0,1,geometry,,"4x4 через 0x26084, оси 0x11d00/0x11b67; семантика TBD"
+0000ab6a,00026084,4x4,00011d00,00011b67,00052f00,1,geometry,,"4x4 через 0x26084, оси 0x11d00/0x11b67; семантика TBD"
+0000abba,00026140,8x8,00012be2,,000a52e4,1,geometry,,условный выбор карт через аксессор 0xa52e4; семантика TBD
+0000abfa,00026140,8x8,00012be2,,000a52e4,1,geometry,,условный выбор карт через аксессор 0xa52e4; семантика TBD
+0001261a,000264a0,1D-16,,,00082c8a,1,not-a-map,RPM-window comparator (lo),"CONFIRMED: порог по оси RPM 0x1264a, ставит флаг; не карта угла"
+0001263a,000264a0,1D-16,,,00082c8a,1,not-a-map,RPM-window comparator (hi),"CONFIRMED: порог по оси RPM 0x1264a, ставит флаг; не карта угла"
+00012cbe,000264a0,1D-16,,,00082c8a,1,not-a-map,RPM-window comparator,"CONFIRMED: то же семейство, что 0x1261a/0x1263a"
+00009f1a,000261b8,16x16,000124a2,00012492,0004d2a6,1,unopened,,
+0000a4aa,000261b8,16x16,000125ea,000125da,0004d2a6,1,unopened,,
+0000b43a,000261b8,16x16,,,000bda64,1,unopened,,
+00011d24,000264a0,1D-16,0001199e,,0006469c;00065b08;000655b4,7,unopened,,
+00012292,000264a0,1D-16,00011b47,,0003ef74,1,unopened,,
+00012312,000264a0,1D-16,00012f9e,,0005d6ae;00088bba,2,unopened,,
+000124b2,000264a0,1D-16,000124c2,,0004d2a6,1,unopened,,
+000124f2,000264a0,1D-16,00023814,,00069374,1,unopened,,
+00012870,000264a0,1D-16,00012880,,000aacc0,1,unopened,,
+00012ede,000264a0,1D-16,00011bfb,,00055098,1,unopened,,
+00009c5a,00026084,4x4,000119ae,,0007a43e,1,unopened,,
+00009d2a,00026084,4x4,,00011abf,0004ac7a,1,unopened,,
+00009eca,00026084,4x4,00011a51,00011a45,0007a090,1,unopened,,
+0000ab4a,00026084,4x4,,,000bfdc0,1,unopened,,
+0000ab5a,00026084,4x4,,,000bda64,1,unopened,,
+0000b5ca,00026084,4x4,00011e15,00011e11,00077dec,1,unopened,,
+0000b5da,00026084,4x4,00011e15,00011e11,00077dec,1,unopened,,
+0000b5ea,00026084,4x4,00011e15,00011e11,00077892;00077dec,2,unopened,,
+0000b5fa,00026084,4x4,00011fe2,00011fde,000647e8,1,unopened,,
+00011efa,00026474,8-wide,00011eea,00009010,0004afdc,1,unopened,,
+00011f02,00026474,8-wide,00011eea,ffff1068,0004bdc2,1,unopened,,
+00011f3a,00026474,8-wide,00011aef,,00069374,1,unopened,,
+00011fd6,00026474,8-wide,00011a83,,0007a090,1,unopened,,
+0001200e,00026474,8-wide,00012186,ffff22dc,000420b8,1,unopened,,
+0001205a,00026474,8-wide,00012850,ffff267a,000c1dec,1,unopened,,
+00012116,00026474,8-wide,,,0004f662,1,unopened,,
+0001221e,00026474,8-wide,00012fce,,0005fdb0,1,unopened,,
+000122aa,00026474,8-wide,00012fd6,,0005fdb0,1,unopened,,
+0001233a,00026474,8-wide,0001223a,,000473ac,1,unopened,,
+00012362,00026474,8-wide,00012fde,,@0006161a,1,unopened,,
+000123fa,00026474,8-wide,00011beb,,000c0d90,1,unopened,,
+00012412,00026474,8-wide,00011be3,,000be32a,1,unopened,,
+0001245a,00026474,8-wide,00011a55,,000659ae,1,unopened,,
+0001252a,00026474,8-wide,0001302e,,000c0d90,1,unopened,,
+00012552,00026474,8-wide,00011cd8,ffff2464,0005594a,1,unopened,,
+00012572,00026474,8-wide,00011b57,,00054ee0,1,unopened,,
+00012582,00026474,8-wide,00011b5f,,00054ee0,1,unopened,,
+0001259a,00026474,8-wide,00012a5a,,000b2096,1,unopened,,
+000125b2,00026474,8-wide,00012fe6,,00041750,1,unopened,,
+000128b0,00026474,8-wide,00011aff,,00069374,1,unopened,,
+00012964,00026474,8-wide,00013006,,00044500,1,unopened,,
+00012984,00026474,8-wide,,,0004f662,1,unopened,,
+00012a1a,00026474,8-wide,00012ff6,,000602f2,1,unopened,,
+00012a42,00026474,8-wide,00011dd5,,00046c70,1,unopened,,
+00012a7a,00026474,8-wide,00012ffe,,000602f2,1,unopened,,
+00012a8a,00026474,8-wide,00011ba3,00008616,000bd20a,1,unopened,,
+00012a92,00026474,8-wide,00011bab,,000bd20a,1,unopened,,
+00012ae2,00026474,8-wide,00012b02,,@00038ab6,1,unopened,,
+00012af2,00026474,8-wide,00012b02,,@00038b2c,1,unopened,,
+00012b32,00026474,8-wide,00012b42,,0006425a,1,unopened,,
+00012bda,00026474,8-wide,0001255a,ffff1094,000b1e48,1,unopened,,
+00012c12,00026474,8-wide,00011bb3,00008729,@00056cd8,1,unopened,,
+00012c1a,00026474,8-wide,00011d04,,00046c70,1,unopened,,
+00012c4a,00026474,8-wide,00011bbb,,0003aa12,1,unopened,,
+00012d0a,00026474,8-wide,00011d04,ffff256a,00046c70,1,unopened,,
+00012d82,00026474,8-wide,00011bc3,,0003aa12,1,unopened,,
+00012daa,00026474,8-wide,00012d9a,ffff119c,0006f48c,1,unopened,,
+00012db2,00026474,8-wide,00012da2,ffff119c,0007249e,1,unopened,,
+00012e3a,00026474,8-wide,00011bd3,,000bcd44;000bec52,2,unopened,,
+00012e82,00026474,8-wide,00011bdb,ffff267a,000be5bc,1,unopened,,
+00012e8a,00026474,8-wide,00011bdb,ffff267a,000be5bc,1,unopened,,
+00012f7e,00026474,8-wide,00012f6e,ffff119c,000bfc2e,1,unopened,,
+00023752,00026474,8-wide,0002374a,,0005cbec,1,unopened,,
+00009caa,00026140,8x8,00011a49,00011a3d,0007a090,1,unopened,,
+00009d3a,00026140,8x8,00011b37,,0004b790,1,unopened,,
+00009dba,00026140,8x8,00012eba,00012e92,0004afdc,2,unopened,,
+0000a05a,00026140,8x8,00013026,,000be32a,1,unopened,,
+0000b2fa,00026140,8x8,,,000bfdc0,1,unopened,,
+0000b53a,00026140,8x8,,,000bda64,1,unopened,,
+0000991a,00026230,?,,,@0004e550,1,unopened,,
+00009a1a,00026230,?,,,@000495fa,1,unopened,,
+00009b1a,00026230,?,,,@00049610,1,unopened,,
+00009cea,00026100,?,00011a2d,00011a31,@0003bf3e,1,unopened,,
+00009e3a,00026100,?,00011ac3,00011abf,@0003c2ae,1,unopened,,
+00009e4a,00026178,?,00011aaf,00011ab7,@0003c0a2,1,unopened,,
+0000a9aa,00026178,?,00011cc0,00011ac7,0005594a,1,unopened,,
+0000aaea,000260bc,?,,,00079538,1,unopened,,
+0000aafa,000260bc,?,,,00079538,1,unopened,,
+,000264a0,1D-16,00011d24,,0006469c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,0004569c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,0004569c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,000264a0,1D-16,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,00026474,8-wide,00012f66,,000bdb66,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,00026474,8-wide,00012a5a,,000b2096,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,00026230,?,,,@0004e50a,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,00026230,?,,,@0004e250,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,00026230,?,,,@0004e2d2,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,00026230,?,,,@0004e2f8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,00026230,?,,,@0004e33e,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+,00026230,?,,,@0004e362,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
