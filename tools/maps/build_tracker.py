@@ -1,19 +1,31 @@
 #!/usr/bin/env python3
-"""Сборка ledger'а карт JK03A.maps.csv из переписи MapInventory.
+"""Сборка ledger'а карт JK03A.maps.csv из переписей обоих семейств доступа.
 
-Перепись (defs/reference/JK03A.map_inventory.csv) снимается Ghidra-скриптом
-MapInventory.java по kernel'у 0x26944 и содержит все ссылки на обёртки-
-интерполяторы. Строки reftype=DATA - это pool-слоты с адресом обёртки, а не
-места вызова; в ценз карт входят только is_call=true.
+Карты в JK03A читаются двумя независимыми механизмами; переписи снимаются
+разными Ghidra-скриптами и не пересекаются ни таблицами, ни сайтами вызова:
 
-Охват: только interp-семейство (карты с явными указателями осей). Второе
-семейство - прямой lookup 0x26370 с неявной осью - в перепись не попадает и в
-ledger'е не представлено, см. JK03A.notes.md, раздел "Прямой lookup 0x26370".
+- interp (defs/reference/JK03A.map_inventory.csv, MapInventory.java по kernel'у
+  0x26944): обёртка по размерности + явные указатели осей в r5/r6. Строки
+  reftype=DATA - это pool-слоты с адресом обёртки, а не места вызова; в ценз
+  входят только is_call=true.
+- direct (defs/reference/JK03A.direct_lookup_inventory.csv,
+  DirectLookupInventory.java по примитиву 0x26370): обёрток нет, аксессор зовёт
+  примитив напрямую, указателя оси нет. Ось неявная: 8 точек с шагом 32 по сырому
+  байту 0..224, значения - беззнаковые байты. См. JK03A.notes.md, раздел
+  "Прямой lookup 0x26370".
 
-Скрипт merge-aware: механические колонки (обёртка, размерность, оси, аксессоры,
-число сайтов) пересобираются из переписи, а разметка (status/name/note)
-переносится из существующего ledger'а. Значит после повторного прогона
-MapInventory прогресс не теряется.
+Скрипт merge-aware: механические колонки (семейство, вход, размерность, оси,
+значения, аксессоры, число сайтов) пересобираются из переписей, а разметка
+(status/name/note) сохраняется. Значит после повторного прогона переписей прогресс
+не теряется.
+
+Приоритет разметки: SEED этого файла -> существующий ledger -> статус по умолчанию.
+SEED старше ledger'а намеренно: он живёт в коде, виден в диффах и проходит ревью,
+поэтому исправление разметки в SEED обязано доходить до файла. Разметка, введённая
+правкой самого ledger'а, сохраняется для всех ключей, которых нет в SEED.
+
+Ключ строки - адрес таблицы; для сайтов, где backtrack не снял r4, ключ "@<сайт>"
+(адрес сайта уникален, в отличие от функции-аксессора).
 
 Запуск: python3 tools/maps/build_tracker.py
 """
@@ -21,14 +33,15 @@ import csv
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-CENSUS = os.path.join(ROOT, "defs", "reference", "JK03A.map_inventory.csv")
+CENSUS_INTERP = os.path.join(ROOT, "defs", "reference", "JK03A.map_inventory.csv")
+CENSUS_DIRECT = os.path.join(ROOT, "defs", "reference", "JK03A.direct_lookup_inventory.csv")
 TRACKER = os.path.join(ROOT, "defs", "JK03A.maps.csv")
 
-FIELDS = ["table", "wrapper", "dim", "axis_x", "axis_y", "accessors", "sites",
-          "status", "name", "note"]
+FIELDS = ["table", "family", "via", "dim", "axis_x", "axis_y", "vals",
+          "accessors", "sites", "status", "name", "note"]
 
-# Размерность по обёртке. Доказано трейсом (см. JK03A.notes.md, разделы
-# "Интерполяторный кластер" и "Оси карт"): константа в обёртке = размер оси.
+# Размерность по обёртке interp-семейства. Доказано трейсом (см. JK03A.notes.md,
+# разделы "Интерполяторный кластер" и "Оси карт"): константа в обёртке = размер оси.
 # Обёртки без записи - размерность ещё не снята.
 WRAPPER_DIM = {
     "00026084": "4x4",
@@ -41,7 +54,9 @@ WRAPPER_DIM = {
 }
 
 # Разметка-затравка. Пополняется правкой самого ledger'а, не этого файла.
-# status: in-def | identified | geometry | not-a-map | unopened | unresolved
+# status: in-def | identified | geometry | not-a-map | inactive | unopened | unresolved
+#   inactive - таблица сослана кодом, но её ветка отключена калибровочным байтом
+#   в ROM, поэтому в этой прошивке не читается: правка значений ни на что не влияет.
 SEED = {
     "0000b81a": ("in-def", "Ignition Adj Map [always]",
                  "CONFIRMED: аксессор 0x82c8a, оси RPM 0x11b6b x нагрузка 0x11b8b"),
@@ -76,15 +91,23 @@ SEED = {
                  "CONFIRMED: порог по оси RPM 0x1264a, ставит флаг; не карта угла"),
     "00012cbe": ("not-a-map", "RPM-window comparator",
                  "CONFIRMED: то же семейство, что 0x1261a/0x1263a"),
+    "000121fe": ("identified", "Over Run Fuel Cut threshold [CANDIDATE]",
+                 "CONFIRMED: безусловный вызов из 0x5185c, вход byte[0xFFFF106F]; "
+                 "[CANDIDATE] смысл - порог по ProECU-словарю, множитель не снят"),
+    "00012206": ("inactive", "",
+                 "CONFIRMED: вызов из 0x51700, вход byte[0xFFFF106F]; ветка выбрана "
+                 "калибровкой byte[0x8d92] bit3=1 в пользу 0x121e6/0x121ae/0x121ce, "
+                 "поэтому таблица не читается"),
 }
 
-# Карты вне kernel-переписи: читаются не через интерполятор, поэтому в
-# MapInventory не попадают, но в дефе присутствуют.
+# Карты вне обеих переписей: читаются не через таблицу-lookup, поэтому ни один
+# ценз их не видит, но в дефе присутствуют.
 EXTRA = [{
-    "table": "00008fdc", "wrapper": "-", "dim": "2-cell", "axis_x": "", "axis_y": "",
+    "table": "00008fdc", "family": "compare", "via": "-", "dim": "2-cell",
+    "axis_x": "", "axis_y": "", "vals": "7625 6600",
     "accessors": "00047a56", "sites": "0", "status": "in-def",
     "name": "Rev Limit - Fuel Cut Maximum",
-    "note": "не через kernel: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги "
+    "note": "не через lookup: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги "
             "0x8fdc=7625 (отсечка)/0x8fde=6600 (восстановление), селектор 0xFFFF246D "
             "bit7; имя пары по ProECU [CANDIDATE]",
 }]
@@ -98,72 +121,97 @@ def join_uniq(values):
     return ";".join(seen)
 
 
-def main():
-    with open(CENSUS, newline="") as fh:
-        rows = [r for r in csv.DictReader(fh) if r["is_call"] == "true"]
-
-    # Группировка: разрешённые таблицы по адресу, неразрешённые - по сайту вызова.
-    groups = {}
+def group(rows, key_of):
+    out = {}
     for r in rows:
-        key = r["r4"] if r["r4"] else "@" + r["from"]
-        groups.setdefault(key, []).append(r)
+        out.setdefault(key_of(r), []).append(r)
+    return out
 
+
+def load_interp():
+    with open(CENSUS_INTERP, newline="") as fh:
+        rows = [r for r in csv.DictReader(fh) if r["is_call"] == "true"]
     out = []
-    for key, grp in groups.items():
-        resolved = not key.startswith("@")
-        wrapper = join_uniq(g["wrapper"] for g in grp)
-        dim = join_uniq(WRAPPER_DIM.get(g["wrapper"], "?") for g in grp)
-        status, name, note = SEED.get(key, ("", "", ""))
-        if not status:
-            status = "unopened" if resolved else "unresolved"
-        if not resolved:
-            note = note or "backtrack не снял r4: таблица определяется вручную по аксессору"
+    for key, grp in group(rows, lambda r: r["r4"] or "@" + r["from"]).items():
         out.append({
-            "table": key if resolved else "",
-            "wrapper": wrapper,
-            "dim": dim,
+            "table": key,
+            "family": "interp",
+            "via": join_uniq(g["wrapper"] for g in grp),
+            "dim": join_uniq(WRAPPER_DIM.get(g["wrapper"], "?") for g in grp),
             "axis_x": join_uniq(g["r5"] for g in grp),
             "axis_y": join_uniq(g["r6"] for g in grp),
+            "vals": "",
             "accessors": join_uniq(g["from_func"] for g in grp if g["from_func"] != "?")
                          or join_uniq("@" + g["from"] for g in grp),
             "sites": str(len(grp)),
-            "status": status,
-            "name": name,
-            "note": note,
         })
+    return out
+
+
+def load_direct():
+    with open(CENSUS_DIRECT, newline="") as fh:
+        rows = list(csv.DictReader(fh))
+    out = []
+    for key, grp in group(rows, lambda r: r["table"] or "@" + r["from"]).items():
+        out.append({
+            "table": key,
+            "family": "direct",
+            "via": "00026370",
+            "dim": "1D-8",
+            "axis_x": "implicit-32",   # 8 точек, шаг 32 по сырому байту 0..224
+            "axis_y": "",
+            "vals": join_uniq(g["vals"] for g in grp),
+            "accessors": join_uniq(g["from_func"] for g in grp if g["from_func"] != "?")
+                         or join_uniq("@" + g["from"] for g in grp),
+            "sites": str(len(grp)),
+        })
+    return out
+
+
+def main():
+    out = load_interp() + load_direct()
+    for row in out:
+        resolved = not row["table"].startswith("@")
+        status, name, note = SEED.get(row["table"], ("", "", ""))
+        row["status"] = status or ("unopened" if resolved else "unresolved")
+        row["name"] = name
+        row["note"] = note or ("" if resolved else
+                               "backtrack не снял r4: таблица определяется вручную "
+                               "по аксессору")
     out.extend(EXTRA)
 
     # Перенос разметки из существующего ledger'а: правки status/name/note переживают
-    # пересборку механических колонок.
+    # пересборку механических колонок. Ключи из SEED не трогаются - там источник код.
     if os.path.exists(TRACKER):
         with open(TRACKER, newline="") as fh:
-            prev = {r["table"] or "@" + r["accessors"]: r for r in csv.DictReader(fh)}
+            prev = {r["table"]: r for r in csv.DictReader(fh)}
         for row in out:
-            key = row["table"] or "@" + row["accessors"]
-            old = prev.get(key)
+            if row["table"] in SEED:
+                continue
+            old = prev.get(row["table"])
             if old and old.get("status") not in ("", "unopened", "unresolved"):
                 row["status"] = old["status"]
                 row["name"] = old["name"]
                 row["note"] = old["note"]
 
     order = {"in-def": 0, "identified": 1, "geometry": 2, "not-a-map": 3,
-             "unopened": 4, "unresolved": 5}
-    out.sort(key=lambda r: (order.get(r["status"], 9), r["dim"], r["table"]))
+             "inactive": 4, "unopened": 5, "unresolved": 6}
+    out.sort(key=lambda r: (order.get(r["status"], 9), r["family"], r["dim"], r["table"]))
 
     with open(TRACKER, "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=FIELDS)
         w.writeheader()
         w.writerows(out)
 
-    tally = {}
+    tally, fam = {}, {}
     for r in out:
         tally[r["status"]] = tally.get(r["status"], 0) + 1
-    total = len(out)
-    done = tally.get("in-def", 0)
-    print(f"{TRACKER}: {total} записей")
+        fam[r["family"]] = fam.get(r["family"], 0) + 1
+    print(f"{TRACKER}: {len(out)} записей")
     for k in sorted(tally, key=lambda s: order.get(s, 9)):
         print(f"  {k:11s} {tally[k]}")
-    print(f"закрыто (in-def): {done}/{total}")
+    print("  " + " ".join(f"{k}={v}" for k, v in sorted(fam.items())))
+    print(f"закрыто (in-def): {tally.get('in-def', 0)}/{len(out)}")
 
 
 if __name__ == "__main__":
