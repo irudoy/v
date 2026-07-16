@@ -1,210 +1,461 @@
-table,family,via,dim,axis_x,axis_y,vals,accessors,sites,status,name,note
-00008fdc,compare,-,2-cell,,,7625 6600,00047a56,0,in-def,Rev Limit - Fuel Cut Maximum,"не через lookup: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги 0x8fdc=7625 (отсечка)/0x8fde=6600 (восстановление), селектор 0xFFFF246D bit7; имя пары по ProECU [CANDIDATE]"
-0000a29a,interp,000261f0,16x16,00011cf0,00011d4c,,0002c648,2,in-def,Lambda Target - flat,"CONFIRMED: 16x16, плоский 14.0..14.8"
-0000b33a,interp,000261b8,16x16,,,,000bfdc0,1,in-def,Target AFR - Power,"CONFIRMED: 16x16, scaling 1881.6/x, плато 14.7 + обогащение 11.2"
-0000b61a,interp,00026320,16x16,00011b6b,00011b8b,,00082c8a,1,in-def,Ignition Adj Map [flag=set],CONFIRMED: выбор по gbr+0x93 bit0
-0000b71a,interp,00026320,16x16,00011b6b,00011b8b,,00082c8a,1,in-def,Ignition Adj Map [flag=clr],CONFIRMED: выбор по gbr+0x93 bit0
-0000b81a,interp,00026320,16x16,00011b6b,00011b8b,,00082c8a,1,in-def,Ignition Adj Map [always],"CONFIRMED: аксессор 0x82c8a, оси RPM 0x11b6b x нагрузка 0x11b8b"
-0000ab0a,interp,00026140,8x8,000120ae,000120b6,,000befb0,1,in-def,Transient Fuel Corr - magnitude,CONFIRMED геометрия/оси; [CANDIDATE] единицы значений
-0000b23a,interp,00026140,8x8,00012858,00012860,,000befb0,1,in-def,Transient Fuel Corr - weight,CONFIRMED геометрия/оси; [CANDIDATE] единицы значений
-000121fe,direct,00026370,1D-8,implicit-32,,82 70 60 58 55 52 50 50,0005185c,1,identified,Over Run Fuel Cut threshold [CANDIDATE],"CONFIRMED: безусловный вызов из 0x5185c, вход byte[0xFFFF106F]; [CANDIDATE] смысл - порог по ProECU-словарю, множитель не снят"
-0001236a,interp,000264a0,1D-16,0001238a,,,0008152a;00081d74,2,identified,Fuel enrichment vs MBT-like axis,"CONFIRMED: ось 0x1238a (0..128 шаг 8), вход byte[0xFFFF11AE]; питает топливо, не угол - разбор K2Y"
-000129d2,interp,000264a0,1D-16,00011b7b,,,000b997c,1,geometry,,"1D-16 через 0x264a0, ось 0x11b7b; семантика TBD"
-0000a49a,interp,00026084,4x4,00011d00,00011b67,,00054ee0,1,geometry,,"4x4 через 0x26084, оси 0x11d00/0x11b67; семантика TBD"
-0000ab6a,interp,00026084,4x4,00011d00,00011b67,,00052f00,1,geometry,,"4x4 через 0x26084, оси 0x11d00/0x11b67; семантика TBD"
-0000abba,interp,00026140,8x8,00012be2,,,000a52e4,1,geometry,,условный выбор карт через аксессор 0xa52e4; семантика TBD
-0000abfa,interp,00026140,8x8,00012be2,,,000a52e4,1,geometry,,условный выбор карт через аксессор 0xa52e4; семантика TBD
-0001261a,interp,000264a0,1D-16,,,,00082c8a,1,not-a-map,RPM-window comparator (lo),"CONFIRMED: порог по оси RPM 0x1264a, ставит флаг; не карта угла"
-0001263a,interp,000264a0,1D-16,,,,00082c8a,1,not-a-map,RPM-window comparator (hi),"CONFIRMED: порог по оси RPM 0x1264a, ставит флаг; не карта угла"
-00012cbe,interp,000264a0,1D-16,,,,00082c8a,1,not-a-map,RPM-window comparator,"CONFIRMED: то же семейство, что 0x1261a/0x1263a"
-00012206,direct,00026370,1D-8,implicit-32,,54 53 50 46 44 39 36 36,00051700,1,inactive,,"CONFIRMED: вызов из 0x51700, вход byte[0xFFFF106F]; ветка выбрана калибровкой byte[0x8d92] bit3=1 в пользу 0x121e6/0x121ae/0x121ce, поэтому таблица не читается"
-00011c6d,direct,00026370,1D-8,implicit-32,,255 255 61 50 35 26 26 26,@000787d2,1,unopened,,
-00011ede,direct,00026370,1D-8,implicit-32,,254 254 254 254 254 254 254 254,0005651c,1,unopened,,
-00011f0a,direct,00026370,1D-8,implicit-32,,17 16 15 12 10 8 2 2,0004afdc,1,unopened,,
-00011f12,direct,00026370,1D-8,implicit-32,,15 14 13 11 10 9 5 5,0004afdc,1,unopened,,
-00011f1a,direct,00026370,1D-8,implicit-32,,0 0 5 5 5 0 0 0,0004afdc,1,unopened,,
-00011f22,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,0004afdc,1,unopened,,
-00011f4a,direct,00026370,1D-8,implicit-32,,30 80 102 114 120 126 132 138,000bb844,1,unopened,,
-00011fb6,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,000a2ee4;000a3c00,2,unopened,,
-00011fbe,direct,00026370,1D-8,implicit-32,,30 30 30 26 20 20 10 10,0004c02e,1,unopened,,
-00012006,direct,00026370,1D-8,implicit-32,,0 32 64 96 128 160 192 224,0004ac60,1,unopened,,
-00012026,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,00082c8a,1,unopened,,
-00012032,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,000638b4,1,unopened,,
-00012086,direct,00026370,1D-8,implicit-32,,62 65 70 82 93 104 115 124,0004f758,1,unopened,,
-0001208e,direct,00026370,1D-8,implicit-32,,1 59 96 124 150 164 180 196,0004c1e4,1,unopened,,
-00012096,direct,00026370,1D-8,implicit-32,,255 255 255 255 178 143 127 79,0004c1e4,1,unopened,,
-000120ce,direct,00026370,1D-8,implicit-32,,47 55 62 78 117 254 254 254,00068cb8,1,unopened,,
-0001211e,direct,00026370,1D-8,implicit-32,,128 128 128 128 128 128 128 128,0004ac7a,1,unopened,,
-0001212e,direct,00026370,1D-8,implicit-32,,102 106 111 115 119 123 128 128,0004ac7a,1,unopened,,
-00012136,direct,00026370,1D-8,implicit-32,,20 20 20 20 20 10 0 0,00056ea6,1,unopened,,
-0001215e,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,00052be8,1,unopened,,
-00012176,direct,00026370,1D-8,implicit-32,,70 70 72 74 77 84 93 102,000528be,1,unopened,,
-0001218e,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,0002c648;000420b8,2,unopened,,
-00012196,direct,00026370,1D-8,implicit-32,,128 137 137 137 138 140 143 145,0004afdc,1,unopened,,
-0001219e,direct,00026370,1D-8,implicit-32,,128 137 140 144 148 152 156 160,0004afdc,1,unopened,,
-000121a6,direct,00026370,1D-8,implicit-32,,128 137 137 137 138 140 143 145,0004afdc,1,unopened,,
-000121ae,direct,00026370,1D-8,implicit-32,,64 64 64 64 64 64 64 64,0005185c;00051700,3,unopened,,
-000121c6,direct,00026370,1D-8,implicit-32,,128 128 128 96 90 90 90 90,0005185c,1,unopened,,
-000121ce,direct,00026370,1D-8,implicit-32,,128 128 128 96 90 90 90 90,00051700,1,unopened,,
-000121e6,direct,00026370,1D-8,implicit-32,,76 53 38 25 15 10 8 8,00051700,1,unopened,,
-000121ee,direct,00026370,1D-8,implicit-32,,77 77 51 51 77 90 102 102,00051a98,1,unopened,,
-000121f6,direct,00026370,1D-8,implicit-32,,66 64 52 41 37 36 25 25,00051700,1,unopened,,
-0001220e,direct,00026370,1D-8,implicit-32,,135 131 129 124 112 85 35 24,0005185c,1,unopened,,
-000122e2,direct,00026370,1D-8,implicit-32,,170 170 170 170 170 170 170 170,0002c626,1,unopened,,
-00012302,direct,00026370,1D-8,implicit-32,,133 133 133 133 133 133 133 133,@00056e36,1,unopened,,
-0001230a,direct,00026370,1D-8,implicit-32,,160 160 160 165 170 185 200 200,@00056cb2,1,unopened,,
-00012332,direct,00026370,1D-8,implicit-32,,64 80 96 112 128 160 200 224,0002c59c,3,unopened,,
-00012342,direct,00026370,1D-8,implicit-32,,85 60 25 25 25 28 25 25,0004673c,1,unopened,,
-00012352,direct,00026370,1D-8,implicit-32,,128 128 128 128 129 137 145 154,000473ac,1,unopened,,
-0001239a,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,0004cadc,1,unopened,,
-000123a2,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,0004cadc,1,unopened,,
-000123aa,direct,00026370,1D-8,implicit-32,,64 56 48 40 40 40 40 40,0002c648,2,unopened,,
-000123e2,direct,00026370,1D-8,implicit-32,,90 100 109 128 120 115 110 105,000a5560,1,unopened,,
-00012422,direct,00026370,1D-8,implicit-32,,0 0 0 4 7 10 13 16,0005525a,1,unopened,,
-0001242a,direct,00026370,1D-8,implicit-32,,64 64 64 64 64 64 64 64,000526a0,1,unopened,,
-00012562,direct,00026370,1D-8,implicit-32,,58 51 38 19 0 0 0 0,00054ee0,1,unopened,,
-000126a0,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,0004ba48,1,unopened,,
-000126b0,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,00052f00,1,unopened,,
-000126b8,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,00052f00,1,unopened,,
-00012758,direct,00026370,1D-8,implicit-32,,44 44 44 44 44 44 44 44,000420b8,1,unopened,,
-00012868,direct,00026370,1D-8,implicit-32,,56 56 56 56 78 100 124 148,0008152a;00081d74,2,unopened,,
-000128d8,direct,00026370,1D-8,implicit-32,,0 16 36 48 55 61 65 69,000464de,1,unopened,,
-000128e0,direct,00026370,1D-8,implicit-32,,255 255 255 255 255 255 255 255,000b5c36,1,unopened,,
-00012944,direct,00026370,1D-8,implicit-32,,0 14 28 42 56 70 84 98,00044910,1,unopened,,
-00012954,direct,00026370,1D-8,implicit-32,,240 240 240 240 240 240 240 240,00044910,1,unopened,,
-0001295c,direct,00026370,1D-8,implicit-32,,128 128 128 128 128 128 128 128,00044910,1,unopened,,
-0001296c,direct,00026370,1D-8,implicit-32,,84 44 13 16 1 0 0 0,00045758;0006e3d8,3,unopened,,
-000129ca,direct,00026370,1D-8,implicit-32,,128 128 128 128 128 128 128 128,0004ac7a,1,unopened,,
-00012a22,direct,00026370,1D-8,implicit-32,,128 128 128 128 128 128 128 128,00071650,1,unopened,,
-00012a32,direct,00026370,1D-8,implicit-32,,255 255 255 255 255 255 255 255,000507ce,1,unopened,,
-00012a3a,direct,00026370,1D-8,implicit-32,,0 0 0 0 0 0 0 0,@0003a772,1,unopened,,
-00012a62,direct,00026370,1D-8,implicit-32,,255 234 117 39 39 39 39 39,000a543c,1,unopened,,
-00012a82,direct,00026370,1D-8,implicit-32,,68 56 32 4 0 0 0 0,00052f00,1,unopened,,
-00012a9a,direct,00026370,1D-8,implicit-32,,90 90 90 90 90 90 90 90,@00038e74,1,unopened,,
-00012ab2,direct,00026370,1D-8,implicit-32,,30 30 20 14 14 10 10 10,@0003bdc8,1,unopened,,
-00012ac2,direct,00026370,1D-8,implicit-32,,154 145 137 130 123 118 113 108,0008152a;00081d74,2,unopened,,
-00012ada,direct,00026370,1D-8,implicit-32,,6 6 6 6 6 6 6 6,@00038a6e,1,unopened,,
-00012aea,direct,00026370,1D-8,implicit-32,,13 13 5 5 5 5 5 5,@00038b1a,1,unopened,,
-00012afa,direct,00026370,1D-8,implicit-32,,6 6 6 6 6 6 6 6,00043aee,1,unopened,,
-00012c66,direct,00026370,1D-8,implicit-32,,1 1 50 50 50 1 1 1,000420b8,1,unopened,,
-00012dca,direct,00026370,1D-8,implicit-32,,102 106 111 115 119 123 128 128,0004ac7a,1,unopened,,
-00012de2,direct,00026370,1D-8,implicit-32,,255 255 255 43 43 43 43 43,00082c8a,1,unopened,,
-00012e72,direct,00026370,1D-8,implicit-32,,99 102 103 106 110 112 112 114,000be5bc,1,unopened,,
-00012e7a,direct,00026370,1D-8,implicit-32,,99 102 103 106 110 112 112 114,000be5bc,1,unopened,,
-00012f06,direct,00026370,1D-8,implicit-32,,5 5 5 5 5 5 5 5,000bdc66,1,unopened,,
-00012fb6,direct,00026370,1D-8,implicit-32,,255 255 255 255 255 255 255 255,000a643c,1,unopened,,
-0001300e,direct,00026370,1D-8,implicit-32,,6 6 6 6 6 6 32 32,@0005231e,1,unopened,,
-00013016,direct,00026370,1D-8,implicit-32,,128 128 128 128 128 128 128 128,000763e2,1,unopened,,
-00023dd4,direct,00026370,1D-8,implicit-32,,34 47 60 120 160 160 160 160,000a71a0,1,unopened,,
-00023ddc,direct,00026370,1D-8,implicit-32,,22 28 35 60 80 80 80 80,000a773a,1,unopened,,
-00009f1a,interp,000261b8,16x16,000124a2,00012492,,0004d2a6,1,unopened,,
-0000a4aa,interp,000261b8,16x16,000125ea,000125da,,0004d2a6,1,unopened,,
-0000b43a,interp,000261b8,16x16,,,,000bda64,1,unopened,,
-00011d24,interp,000264a0,1D-16,0001199e,,,0006469c;00065b08;000655b4,7,unopened,,
-00012292,interp,000264a0,1D-16,00011b47,,,0003ef74,1,unopened,,
-00012312,interp,000264a0,1D-16,00012f9e,,,0005d6ae;00088bba,2,unopened,,
-000124b2,interp,000264a0,1D-16,000124c2,,,0004d2a6,1,unopened,,
-000124f2,interp,000264a0,1D-16,00023814,,,00069374,1,unopened,,
-00012870,interp,000264a0,1D-16,00012880,,,000aacc0,1,unopened,,
-00012ede,interp,000264a0,1D-16,00011bfb,,,00055098,1,unopened,,
-00009c5a,interp,00026084,4x4,000119ae,,,0007a43e,1,unopened,,
-00009d2a,interp,00026084,4x4,,00011abf,,0004ac7a,1,unopened,,
-00009eca,interp,00026084,4x4,00011a51,00011a45,,0007a090,1,unopened,,
-0000ab4a,interp,00026084,4x4,,,,000bfdc0,1,unopened,,
-0000ab5a,interp,00026084,4x4,,,,000bda64,1,unopened,,
-0000b5ca,interp,00026084,4x4,00011e15,00011e11,,00077dec,1,unopened,,
-0000b5da,interp,00026084,4x4,00011e15,00011e11,,00077dec,1,unopened,,
-0000b5ea,interp,00026084,4x4,00011e15,00011e11,,00077892;00077dec,2,unopened,,
-0000b5fa,interp,00026084,4x4,00011fe2,00011fde,,000647e8,1,unopened,,
-00011efa,interp,00026474,8-wide,00011eea,00009010,,0004afdc,1,unopened,,
-00011f02,interp,00026474,8-wide,00011eea,ffff1068,,0004bdc2,1,unopened,,
-00011f3a,interp,00026474,8-wide,00011aef,,,00069374,1,unopened,,
-00011fd6,interp,00026474,8-wide,00011a83,,,0007a090,1,unopened,,
-0001200e,interp,00026474,8-wide,00012186,ffff22dc,,000420b8,1,unopened,,
-0001205a,interp,00026474,8-wide,00012850,ffff267a,,000c1dec,1,unopened,,
-00012116,interp,00026474,8-wide,,,,0004f662,1,unopened,,
-0001221e,interp,00026474,8-wide,00012fce,,,0005fdb0,1,unopened,,
-000122aa,interp,00026474,8-wide,00012fd6,,,0005fdb0,1,unopened,,
-0001233a,interp,00026474,8-wide,0001223a,,,000473ac,1,unopened,,
-00012362,interp,00026474,8-wide,00012fde,,,@0006161a,1,unopened,,
-000123fa,interp,00026474,8-wide,00011beb,,,000c0d90,1,unopened,,
-00012412,interp,00026474,8-wide,00011be3,,,000be32a,1,unopened,,
-0001245a,interp,00026474,8-wide,00011a55,,,000659ae,1,unopened,,
-0001252a,interp,00026474,8-wide,0001302e,,,000c0d90,1,unopened,,
-00012552,interp,00026474,8-wide,00011cd8,ffff2464,,0005594a,1,unopened,,
-00012572,interp,00026474,8-wide,00011b57,,,00054ee0,1,unopened,,
-00012582,interp,00026474,8-wide,00011b5f,,,00054ee0,1,unopened,,
-0001259a,interp,00026474,8-wide,00012a5a,,,000b2096,1,unopened,,
-000125b2,interp,00026474,8-wide,00012fe6,,,00041750,1,unopened,,
-000128b0,interp,00026474,8-wide,00011aff,,,00069374,1,unopened,,
-00012964,interp,00026474,8-wide,00013006,,,00044500,1,unopened,,
-00012984,interp,00026474,8-wide,,,,0004f662,1,unopened,,
-00012a1a,interp,00026474,8-wide,00012ff6,,,000602f2,1,unopened,,
-00012a42,interp,00026474,8-wide,00011dd5,,,00046c70,1,unopened,,
-00012a7a,interp,00026474,8-wide,00012ffe,,,000602f2,1,unopened,,
-00012a8a,interp,00026474,8-wide,00011ba3,00008616,,000bd20a,1,unopened,,
-00012a92,interp,00026474,8-wide,00011bab,,,000bd20a,1,unopened,,
-00012ae2,interp,00026474,8-wide,00012b02,,,@00038ab6,1,unopened,,
-00012af2,interp,00026474,8-wide,00012b02,,,@00038b2c,1,unopened,,
-00012b32,interp,00026474,8-wide,00012b42,,,0006425a,1,unopened,,
-00012bda,interp,00026474,8-wide,0001255a,ffff1094,,000b1e48,1,unopened,,
-00012c12,interp,00026474,8-wide,00011bb3,00008729,,@00056cd8,1,unopened,,
-00012c1a,interp,00026474,8-wide,00011d04,,,00046c70,1,unopened,,
-00012c4a,interp,00026474,8-wide,00011bbb,,,0003aa12,1,unopened,,
-00012d0a,interp,00026474,8-wide,00011d04,ffff256a,,00046c70,1,unopened,,
-00012d82,interp,00026474,8-wide,00011bc3,,,0003aa12,1,unopened,,
-00012daa,interp,00026474,8-wide,00012d9a,ffff119c,,0006f48c,1,unopened,,
-00012db2,interp,00026474,8-wide,00012da2,ffff119c,,0007249e,1,unopened,,
-00012e3a,interp,00026474,8-wide,00011bd3,,,000bcd44;000bec52,2,unopened,,
-00012e82,interp,00026474,8-wide,00011bdb,ffff267a,,000be5bc,1,unopened,,
-00012e8a,interp,00026474,8-wide,00011bdb,ffff267a,,000be5bc,1,unopened,,
-00012f7e,interp,00026474,8-wide,00012f6e,ffff119c,,000bfc2e,1,unopened,,
-00023752,interp,00026474,8-wide,0002374a,,,0005cbec,1,unopened,,
-00009caa,interp,00026140,8x8,00011a49,00011a3d,,0007a090,1,unopened,,
-00009d3a,interp,00026140,8x8,00011b37,,,0004b790,1,unopened,,
-00009dba,interp,00026140,8x8,00012eba,00012e92,,0004afdc,2,unopened,,
-0000a05a,interp,00026140,8x8,00013026,,,000be32a,1,unopened,,
-0000b2fa,interp,00026140,8x8,,,,000bfdc0,1,unopened,,
-0000b53a,interp,00026140,8x8,,,,000bda64,1,unopened,,
-0000991a,interp,00026230,?,,,,@0004e550,1,unopened,,
-00009a1a,interp,00026230,?,,,,@000495fa,1,unopened,,
-00009b1a,interp,00026230,?,,,,@00049610,1,unopened,,
-00009cea,interp,00026100,?,00011a2d,00011a31,,@0003bf3e,1,unopened,,
-00009e3a,interp,00026100,?,00011ac3,00011abf,,@0003c2ae,1,unopened,,
-00009e4a,interp,00026178,?,00011aaf,00011ab7,,@0003c0a2,1,unopened,,
-0000a9aa,interp,00026178,?,00011cc0,00011ac7,,0005594a,1,unopened,,
-0000aaea,interp,000260bc,?,,,,00079538,1,unopened,,
-0000aafa,interp,000260bc,?,,,,00079538,1,unopened,,
-@0002c324,direct,00026370,1D-8,implicit-32,,,0002c254,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0002c33a,direct,00026370,1D-8,implicit-32,,,0002c254,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0002cfc0,direct,00026370,1D-8,implicit-32,,,0002c648,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0003c51c,direct,00026370,1D-8,implicit-32,,,@0003c51c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@00046822,direct,00026370,1D-8,implicit-32,,,0004673c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004b9e4,direct,00026370,1D-8,implicit-32,,,0004b9b4,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004bade,direct,00026370,1D-8,implicit-32,,,0004ba48,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000518e0,direct,00026370,1D-8,implicit-32,,,0005185c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000519e0,direct,00026370,1D-8,implicit-32,,,0005185c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000526de,direct,00026370,1D-8,implicit-32,,,000526a0,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0006442c,direct,00026370,1D-8,implicit-32,,,0006425a,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000649f0,direct,00026370,1D-8,implicit-32,,,000647e8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@00068d3a,direct,00026370,1D-8,implicit-32,,,00068cb8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000716c0,direct,00026370,1D-8,implicit-32,,,00071650,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000bdc2a,direct,00026370,1D-8,implicit-32,,,000bdb66,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000456f4,interp,000264a0,1D-16,,,,0004569c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004571a,interp,000264a0,1D-16,,,,0004569c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004d3e6,interp,000264a0,1D-16,,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004d404,interp,000264a0,1D-16,,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004d432,interp,000264a0,1D-16,,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@00063fd8,interp,000264a0,1D-16,,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@00063ffe,interp,000264a0,1D-16,,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000640ba,interp,000264a0,1D-16,,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000640dc,interp,000264a0,1D-16,,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@00064714,interp,000264a0,1D-16,00011d24,,,0006469c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000b2150,interp,00026474,8-wide,00012a5a,,,000b2096,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@000bdb80,interp,00026474,8-wide,00012f66,,,000bdb66,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004e250,interp,00026230,?,,,,@0004e250,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004e2d2,interp,00026230,?,,,,@0004e2d2,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004e2f8,interp,00026230,?,,,,@0004e2f8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004e33e,interp,00026230,?,,,,@0004e33e,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004e362,interp,00026230,?,,,,@0004e362,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
-@0004e50a,interp,00026230,?,,,,@0004e50a,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+table,family,via,kernel,dim,elem,axis_x,axis_y,vals,accessors,sites,status,name,note
+00008fdc,compare,-,-,2-cell,u16,,,7625 6600,00047a56,0,in-def,Rev Limit - Fuel Cut Maximum,"не через lookup: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги 0x8fdc=7625 (отсечка)/0x8fde=6600 (восстановление), селектор 0xFFFF246D bit7; имя пары по ProECU [CANDIDATE]"
+0000a29a,interp,000261f0,00026944,16x16,,00011cf0,00011d4c,,0002c648,2,in-def,Lambda Target - flat,"CONFIRMED: 16x16, плоский 14.0..14.8"
+0000b33a,interp,000261b8,00026944,16x16,,,,,000bfdc0,1,in-def,Target AFR - Power,"CONFIRMED: 16x16, scaling 1881.6/x, плато 14.7 + обогащение 11.2"
+0000b61a,interp,00026320,00026944,16x16,,00011b6b,00011b8b,,00082c8a,1,in-def,Ignition Adj Map [flag=set],CONFIRMED: выбор по gbr+0x93 bit0
+0000b71a,interp,00026320,00026944,16x16,,00011b6b,00011b8b,,00082c8a,1,in-def,Ignition Adj Map [flag=clr],CONFIRMED: выбор по gbr+0x93 bit0
+0000b81a,interp,00026320,00026944,16x16,,00011b6b,00011b8b,,00082c8a,1,in-def,Ignition Adj Map [always],"CONFIRMED: аксессор 0x82c8a, оси RPM 0x11b6b x нагрузка 0x11b8b"
+0000ab0a,interp,00026140,00026944,8x8,,000120ae,000120b6,,000befb0,1,in-def,Transient Fuel Corr - magnitude,CONFIRMED геометрия/оси; [CANDIDATE] единицы значений
+0000b23a,interp,00026140,00026944,8x8,,00012858,00012860,,000befb0,1,in-def,Transient Fuel Corr - weight,CONFIRMED геометрия/оси; [CANDIDATE] единицы значений
+000121fe,direct,00026370,-,1D-8,u8,implicit-32,,82 70 60 58 55 52 50 50,0005185c,1,identified,Over Run Fuel Cut threshold [CANDIDATE],"CONFIRMED: безусловный вызов из 0x5185c, вход byte[0xFFFF106F]; [CANDIDATE] смысл - порог по ProECU-словарю, множитель не снят"
+0001236a,interp,000264a0,00026944,1D-16,u8,0001238a,,,0008152a;00081d74,2,identified,Fuel enrichment vs MBT-like axis,"CONFIRMED: ось 0x1238a (0..128 шаг 8), вход byte[0xFFFF11AE]; питает топливо, не угол - разбор K2Y"
+00009eda,direct-2d,00026040,-,8x8,,implicit,implicit,,000526a0,1,geometry,,"CONFIRMED: тот же вход 0x26040, что и 0xa8ea, те же оси; [OPEN] кодировка элемента (см. elem)"
+0000a8ea,direct-2d,00026040,-,8x8,,implicit,implicit,,00052576,1,geometry,,CONFIRMED: 2D с неявными осями - 0x26040 зовёт 0x26ae0 на каждую ось и 0x26770 с шагом строки 8; входы byte[0xFFFF106F] и byte[0xFFFF10F0]; [OPEN] кодировка элемента (см. elem)
+000129d2,interp,000264a0,00026944,1D-16,u8,00011b7b,,,000b997c,1,geometry,,"1D-16 через 0x264a0, ось 0x11b7b; семантика TBD"
+0000a49a,interp,00026084,00026944,4x4,,00011d00,00011b67,,00054ee0,1,geometry,,"4x4 через 0x26084, оси 0x11d00/0x11b67; семантика TBD"
+0000ab6a,interp,00026084,00026944,4x4,,00011d00,00011b67,,00052f00,1,geometry,,"4x4 через 0x26084, оси 0x11d00/0x11b67; семантика TBD"
+0000abba,interp,00026140,00026944,8x8,,00012be2,,,000a52e4,1,geometry,,условный выбор карт через аксессор 0xa52e4; семантика TBD
+0000abfa,interp,00026140,00026944,8x8,,00012be2,,,000a52e4,1,geometry,,условный выбор карт через аксессор 0xa52e4; семантика TBD
+0001261a,interp,000264a0,00026944,1D-16,u8,,,,00082c8a,1,not-a-map,RPM-window comparator (lo),"CONFIRMED: порог по оси RPM 0x1264a, ставит флаг; не карта угла"
+0001263a,interp,000264a0,00026944,1D-16,u8,,,,00082c8a,1,not-a-map,RPM-window comparator (hi),"CONFIRMED: порог по оси RPM 0x1264a, ставит флаг; не карта угла"
+00012cbe,interp,000264a0,00026944,1D-16,u8,,,,00082c8a,1,not-a-map,RPM-window comparator,"CONFIRMED: то же семейство, что 0x1261a/0x1263a"
+00012206,direct,00026370,-,1D-8,u8,implicit-32,,54 53 50 46 44 39 36 36,00051700,1,inactive,,"CONFIRMED: вызов из 0x51700, вход byte[0xFFFF106F]; ветка выбрана калибровкой byte[0x8d92] bit3=1 в пользу 0x121e6/0x121ae/0x121ce, поэтому таблица не читается"
+0001198e,direct,0002642c,-,1D-16,u8,implicit-16,,34 31 28 22 16 10 1 255 0 0 0 0 0 0 0 0,00052f00,1,unopened,,
+00011e46,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 255 255 255 255 255 0 0 0 0 0 0 0 0,0004b9b4,1,unopened,,
+00011e8e,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0,0004bbac,1,unopened,,
+00011e9e,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0,0004bbac,1,unopened,,
+00011f2a,direct,00026388,-,1D-16,u8,implicit-16,,128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128,@00056870,1,unopened,,
+00011ff6,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 48 50 50 50 92 92 92 92 92 92 92 92,00047120,2,unopened,,
+00012016,direct,00026388,-,1D-16,u8,implicit-16,,5 5 5 8 11 13 51 51 20 20 20 8 8 8 8 8,00055098,1,unopened,,
+00012042,direct,00026388,-,1D-16,u8,implicit-16,,0 36 36 36 36 36 36 47 59 70 81 92 103 115 126 137,00046938,1,unopened,,
+000120be,direct,00026388,-,1D-16,u8,implicit-16,,255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255,0003995a,1,unopened,,
+000120f6,direct,00026388,-,1D-16,u8,implicit-16,,60 60 60 60 60 60 60 60 60 60 60 60 60 60 60 60,0004fe9c,1,unopened,,
+0001214e,direct,00026388,-,1D-16,u8,implicit-16,,200 200 200 200 200 200 200 200 200 200 200 200 200 200 200 200,0005594a,1,unopened,,
+00012282,direct,00026388,-,1D-16,u8,implicit-16,,128 128 128 128 128 128 128 128 128 128 0 0 0 0 0 0,000b2096,1,unopened,,
+000122b2,direct,00026388,-,1D-16,u8,implicit-16,,128 128 128 128 128 128 128 128 128 0 0 0 0 0 0 0,000b2096,1,unopened,,
+000123b2,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0,00055648,2,unopened,,
+000123c2,direct,00026388,-,1D-16,u8,implicit-16,,45 45 43 36 31 31 21 19 11 7 5 5 5 5 5 5,00055098,1,unopened,,
+000123d2,direct,00026388,-,1D-16,u8,implicit-16,,111 111 111 105 90 77 24 21 13 10 0 0 0 0 0 0,00055098,1,unopened,,
+0001243a,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0,0004bbee,1,unopened,,
+0001244a,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0,0004bbee,1,unopened,,
+00012462,direct,00026388,-,1D-16,u8,implicit-16,,255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255,0004bbee,1,unopened,,
+00012472,direct,00026388,-,1D-16,u8,implicit-16,,255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255,0004bbee,1,unopened,,
+000124d2,direct,00026388,-,1D-16,u8,implicit-16,,128 129 129 129 130 130 130 130 132 133 169 255 255 255 255 255,0004f324,1,unopened,,
+000124e2,direct,00026388,-,1D-16,u8,implicit-16,,255 255 255 210 182 156 128 102 84 70 62 53 41 26 26 26,@0005677e,1,unopened,,
+0001265a,direct,00026388,-,1D-16,u8,implicit-16,,255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255,00082c8a,1,unopened,,
+0001266a,direct,00026388,-,1D-16,u8,implicit-16,,254 254 254 254 254 254 254 254 254 254 254 254 254 254 254 254,00082c8a,1,unopened,,
+0001267a,direct,00026388,-,1D-16,u8,implicit-16,,253 253 253 253 253 253 253 253 253 253 253 253 253 253 253 253,00082c8a,1,unopened,,
+0001268a,direct,00026388,-,1D-16,u8,implicit-16,,252 252 252 252 252 252 252 252 252 252 252 252 252 252 252 252,00082c8a,1,unopened,,
+000126e4,direct,00026388,-,1D-16,u8,implicit-16,,120 120 120 120 120 112 108 104 100 96 88 80 72 72 72 72,0004fbe2,1,unopened,,
+00012704,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 6 34 160 168 168 168 168 168 168 168 168 168,000413cc,1,unopened,,
+00012718,direct,00026388,-,1D-16,u8,implicit-16,,120 120 120 120 120 112 88 84 80 76 72 56 42 42 42 56,0004fbe2,1,unopened,,
+00012738,direct,00026388,-,1D-16,u8,implicit-16,,64 64 64 64 64 64 64 64 64 64 64 52 44 44 44 52,000420b8;00044910,2,unopened,,
+00012748,direct,00026388,-,1D-16,u8,implicit-16,,64 64 64 64 64 64 64 64 64 64 64 52 44 44 44 52,000420b8;00044910,2,unopened,,
+00012768,direct,00026388,-,1D-16,u8,implicit-16,,100 100 99 99 98 97 110 110 110 82 67 52 52 52 52 52,000420b8,1,unopened,,
+00012798,direct,00026388,-,1D-16,u8,implicit-16,,35 35 35 35 35 35 44 55 68 83 101 101 101 101 101 101,000413cc,2,unopened,,
+000127d8,direct,00026388,-,1D-16,u8,implicit-16,,28 28 28 28 28 28 36 43 50 58 65 73 80 87 94 122,000413cc,2,unopened,,
+00012808,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 0 9 16 25 38 38 38 38 38 38 38 38,00046c70,1,unopened,,
+00012818,direct,00026388,-,1D-16,u8,implicit-16,,80 80 80 80 80 72 68 64 60 56 56 48 36 36 36 48,00050018,1,unopened,,
+00012930,direct,00026388,-,1D-16,u8,implicit-16,,0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0,00044910,1,unopened,,
+0001298c,direct,00026388,-,1D-16,u8,implicit-16,,108 108 108 108 108 100 96 92 88 84 76 48 36 36 36 48,00050018,1,unopened,,
+000129e2,direct,00026388,-,1D-16,u8,implicit-16,,34 54 74 94 114 134 154 174 194 214 234 255 255 255 255 255,@000537b0,1,unopened,,
+000129f2,direct,00026388,-,1D-16,u8,implicit-16,,33 26 18 14 11 11 5 4 8 3 0 0 0 0 0 0,@000537c4,1,unopened,,
+00012a02,direct,00026388,-,1D-16,u8,implicit-16,,0 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75,00062c68,1,unopened,,
+00012c02,direct,00026388,-,1D-16,u8,implicit-16,,128 128 128 128 128 128 124 120 116 112 108 104 101 97 93 89,000b5c36,1,unopened,,
+00012c3a,direct,00026388,-,1D-16,u8,implicit-16,,255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255,0003995a,1,unopened,,
+00012c56,direct,00026388,-,1D-16,u8,implicit-16,,64 64 64 64 64 64 64 58 53 47 42 37 32 27 22 17,00055098,1,unopened,,
+00012c9e,direct,00026388,-,1D-16,u8,implicit-16,,101 101 255 255 255 255 255 255 255 255 255 255 255 255 255 255,@0003bbfe,1,unopened,,
+00012d22,direct,00026388,-,1D-16,u8,implicit-16,,92 92 76 43 0 0 0 0 0 0 0 0 0 0 0 0,00056a7a,2,unopened,,
+00012d32,direct,00026388,-,1D-16,u8,implicit-16,,93 93 93 88 88 71 50 38 27 20 17 17 17 17 17 17,00056a7a,2,unopened,,
+00012d42,direct,00026388,-,1D-16,u8,implicit-16,,93 93 93 88 88 71 50 38 27 20 17 17 17 17 17 17,00056a7a,2,unopened,,
+00012d52,direct,00026388,-,1D-16,u8,implicit-16,,157 157 141 103 66 55 39 29 21 15 13 13 13 13 13 13,00056a7a,2,unopened,,
+00012d62,direct,00026388,-,1D-16,u8,implicit-16,,93 93 93 88 88 71 50 38 27 20 17 17 17 17 17 17,00056a7a,2,unopened,,
+00012d72,direct,00026388,-,1D-16,u8,implicit-16,,128 122 115 109 102 96 90 83 77 70 64 58 51 45 38 32,00062c68,1,unopened,,
+00012d8a,direct,00026388,-,1D-16,u8,implicit-16,,76 76 76 76 76 76 76 76 76 76 76 76 76 76 76 76,0002c4f8,1,unopened,,
+00012dd2,direct,00026388,-,1D-16,u8,implicit-16,,128 128 128 128 128 128 128 128 128 128 128 128 128 128 128 128,000473ac,1,unopened,,
+00012e1a,direct,00026388,-,1D-16,u8,implicit-16,,102 102 99 96 93 90 87 84 82 80 78 76 76 76 76 76,000793d2,1,unopened,,
+00012e52,direct,00026388,-,1D-16,u8,implicit-16,,255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 255,000a6838,1,unopened,,
+00012e62,direct,00026388,-,1D-16,u8,implicit-16,,42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42,000a681c,1,unopened,,
+0001465a,direct,000263f4,-,1D-16,u16,implicit-4096,,1757 1583 1404 1247 1083 1086 1823 1774 1691 646 567 567 567 567 567 567,000476d2,1,unopened,,
+0001491a,direct,000263f4,-,1D-16,u16,implicit-4096,,0 20971 20971 21975 23470 24699 25825 26051 26214 26767 27996 29389 29389 29655 29860 29737,0008083c,1,unopened,,
+00014cea,direct,000263f4,-,1D-16,u16,implicit-4096,,65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535,00075c48,1,unopened,,
+00014e52,direct,000263f4,-,1D-16,u16,implicit-4096,,8000 8000 8000 8000 8000 8000 8000 8000 8000 8000 8000 8000 8000 8000 8000 8000,00064a1c,1,unopened,,
+00015022,direct,000263f4,-,1D-16,u16,implicit-4096,,52479 53247 54271 55039 55807 55999 56191 56383 56575 56767 56959 57152 57344 57344 57344 57344,0003b498;0008152a;00081d74,5,unopened,,
+00015062,direct,000263f4,-,1D-16,u16,implicit-4096,,64848 64848 64848 64848 64848 64848 64848 64848 64848 64848 64848 64848 64848 64848 64848 64848,@00073156,1,unopened,,
+000151d2,direct,000263f4,-,1D-16,u16,implicit-4096,,65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535 65535,000a6516,1,unopened,,
+00015770,direct,000263f4,-,1D-16,u16,implicit-4096,,1884 1873 1854 1814 1771 1725 1670 1612 1555 1495 1426 1352 1271 1197 1128 1024,@000751fc,1,unopened,,
+00018c96,direct,000266a0,-,1D-16,u16,implicit-4096,,1757 1583 1404 1247 1083 1086 1823 1774 1691 646 567 567 567 567 567 567,@00072390,1,unopened,,
+00019190,direct,000266a0,-,1D-16,u16,implicit-4096,,1884 1873 1854 1814 1771 1725 1670 1612 1555 1495 1426 1352 1271 1197 1128 1024,@00074442,1,unopened,,
+00012c6e,direct,000263a0,-,1D-32,u8,implicit-8,,255 241 200 174 160 149 141 134 128 122 118 113 109 105 101 97 93 90 86 82 78 74 70 66 61 57 51 45 38 27 8 0,0003eb84,1,unopened,,
+00012dea,direct,000263a0,-,1D-32,u8,implicit-8,,255 241 200 174 160 149 141 134 128 122 118 113 109 105 101 97 93 90 86 82 78 74 70 66 61 57 51 45 38 27 8 0,00039550;000397e8;0003995a;0003d4a8;0003d2dc;0008092e,6,unopened,,
+00011f6a,direct,00026358,-,1D-4,u8,implicit-64,,21 39 56 73,0007b650,1,unopened,,
+0001202e,direct,00026358,-,1D-4,u8,implicit-64,,200 200 200 200,0003e1da,1,unopened,,
+00012522,direct,00026358,-,1D-4,u8,implicit-64,,100 100 100 100,0005ac54,1,unopened,,
+00012526,direct,00026358,-,1D-4,u8,implicit-64,,100 100 100 100,0005ac54,1,unopened,,
+0001292c,direct,00026358,-,1D-4,u8,implicit-64,,90 90 90 90,00044910,1,unopened,,
+0001497a,direct,000263bc,-,1D-4,u16,implicit-16384,,33 33 33 33,00082c8a,1,unopened,,
+00014982,direct,000263bc,-,1D-4,u16,implicit-16384,,60 60 60 60,00082c8a,1,unopened,,
+000153b0,direct,000263bc,-,1D-4,u16,implicit-16384,,4509 3159 1802 451,00074c82,1,unopened,,
+000141f4,direct,00026410,-,1D-64,u16,implicit-256,,222 222 222 222 222 222 222 231 253 290 341 408 491 592 711 850 1009 1189 1391 1618 1869 2146 2451 2784 3148 3544 3972 4436 4936 5473 6051 6670 7332 8039 8793 9597 10451 11358 12320 13339 14418 15558 16762 18032 19371 20781 22265 23824 25462 27182 28985 30875 32854 34925 37091 39356 41721 44190 46766 49452 52252 55168 58203 61362,@0003a946,1,unopened,,
+00014274,direct,00026410,-,1D-64,u16,implicit-256,,211 211 211 211 211 211 211 224 249 288 341 410 494 595 715 853 1011 1191 1394 1620 1871 2148 2454 2788 3153 3550 3981 4446 4949 5490 6072 6696 7363 8076 8837 9647 10509 11424 12396 13424 14513 15664 16879 18161 19512 20935 22431 24004 25655 27388 29206 31109 33102 35188 37368 39646 42025 44507 47095 49794 52604 55531 58576 61744,@0003a930,1,unopened,,
+00011c6d,direct,00026370,-,1D-8,u8,implicit-32,,255 255 61 50 35 26 26 26,@000787d2,1,unopened,,
+00011ede,direct,00026370,-,1D-8,u8,implicit-32,,254 254 254 254 254 254 254 254,0005651c,1,unopened,,
+00011f0a,direct,00026370,-,1D-8,u8,implicit-32,,17 16 15 12 10 8 2 2,0004afdc,1,unopened,,
+00011f12,direct,00026370,-,1D-8,u8,implicit-32,,15 14 13 11 10 9 5 5,0004afdc,1,unopened,,
+00011f1a,direct,00026370,-,1D-8,u8,implicit-32,,0 0 5 5 5 0 0 0,0004afdc,1,unopened,,
+00011f22,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,0004afdc,1,unopened,,
+00011f4a,direct,00026370,-,1D-8,u8,implicit-32,,30 80 102 114 120 126 132 138,000bb844,1,unopened,,
+00011fb6,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,000a2ee4;000a3c00,2,unopened,,
+00011fbe,direct,00026370,-,1D-8,u8,implicit-32,,30 30 30 26 20 20 10 10,0004c02e,1,unopened,,
+00012006,direct,00026370,-,1D-8,u8,implicit-32,,0 32 64 96 128 160 192 224,0004ac60,1,unopened,,
+00012026,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,00082c8a,1,unopened,,
+00012032,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,000638b4,1,unopened,,
+00012086,direct,00026370,-,1D-8,u8,implicit-32,,62 65 70 82 93 104 115 124,0004f758,1,unopened,,
+0001208e,direct,00026370,-,1D-8,u8,implicit-32,,1 59 96 124 150 164 180 196,0004c1e4,1,unopened,,
+00012096,direct,00026370,-,1D-8,u8,implicit-32,,255 255 255 255 178 143 127 79,0004c1e4,1,unopened,,
+000120ce,direct,00026370,-,1D-8,u8,implicit-32,,47 55 62 78 117 254 254 254,00068cb8,1,unopened,,
+0001211e,direct,00026370,-,1D-8,u8,implicit-32,,128 128 128 128 128 128 128 128,0004ac7a,1,unopened,,
+0001212e,direct,00026370,-,1D-8,u8,implicit-32,,102 106 111 115 119 123 128 128,0004ac7a,1,unopened,,
+00012136,direct,00026370,-,1D-8,u8,implicit-32,,20 20 20 20 20 10 0 0,00056ea6,1,unopened,,
+0001215e,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,00052be8,1,unopened,,
+00012176,direct,00026370,-,1D-8,u8,implicit-32,,70 70 72 74 77 84 93 102,000528be,1,unopened,,
+0001218e,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,0002c648;000420b8,2,unopened,,
+00012196,direct,00026370,-,1D-8,u8,implicit-32,,128 137 137 137 138 140 143 145,0004afdc,1,unopened,,
+0001219e,direct,00026370,-,1D-8,u8,implicit-32,,128 137 140 144 148 152 156 160,0004afdc,1,unopened,,
+000121a6,direct,00026370,-,1D-8,u8,implicit-32,,128 137 137 137 138 140 143 145,0004afdc,1,unopened,,
+000121ae,direct,00026370,-,1D-8,u8,implicit-32,,64 64 64 64 64 64 64 64,0005185c;00051700,3,unopened,,
+000121c6,direct,00026370,-,1D-8,u8,implicit-32,,128 128 128 96 90 90 90 90,0005185c,1,unopened,,
+000121ce,direct,00026370,-,1D-8,u8,implicit-32,,128 128 128 96 90 90 90 90,00051700,1,unopened,,
+000121e6,direct,00026370,-,1D-8,u8,implicit-32,,76 53 38 25 15 10 8 8,00051700,1,unopened,,
+000121ee,direct,00026370,-,1D-8,u8,implicit-32,,77 77 51 51 77 90 102 102,00051a98,1,unopened,,
+000121f6,direct,00026370,-,1D-8,u8,implicit-32,,66 64 52 41 37 36 25 25,00051700,1,unopened,,
+0001220e,direct,00026370,-,1D-8,u8,implicit-32,,135 131 129 124 112 85 35 24,0005185c,1,unopened,,
+000122e2,direct,00026370,-,1D-8,u8,implicit-32,,170 170 170 170 170 170 170 170,0002c626,1,unopened,,
+00012302,direct,00026370,-,1D-8,u8,implicit-32,,133 133 133 133 133 133 133 133,@00056e36,1,unopened,,
+0001230a,direct,00026370,-,1D-8,u8,implicit-32,,160 160 160 165 170 185 200 200,@00056cb2,1,unopened,,
+00012332,direct,00026370,-,1D-8,u8,implicit-32,,64 80 96 112 128 160 200 224,0002c59c,3,unopened,,
+00012342,direct,00026370,-,1D-8,u8,implicit-32,,85 60 25 25 25 28 25 25,0004673c,1,unopened,,
+00012352,direct,00026370,-,1D-8,u8,implicit-32,,128 128 128 128 129 137 145 154,000473ac,1,unopened,,
+0001239a,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,0004cadc,1,unopened,,
+000123a2,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,0004cadc,1,unopened,,
+000123aa,direct,00026370,-,1D-8,u8,implicit-32,,64 56 48 40 40 40 40 40,0002c648,2,unopened,,
+000123e2,direct,00026370,-,1D-8,u8,implicit-32,,90 100 109 128 120 115 110 105,000a5560,1,unopened,,
+00012422,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 4 7 10 13 16,0005525a,1,unopened,,
+0001242a,direct,00026370,-,1D-8,u8,implicit-32,,64 64 64 64 64 64 64 64,000526a0,1,unopened,,
+00012562,direct,00026370,-,1D-8,u8,implicit-32,,58 51 38 19 0 0 0 0,00054ee0,1,unopened,,
+000126a0,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,0004ba48,1,unopened,,
+000126b0,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,00052f00,1,unopened,,
+000126b8,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,00052f00,1,unopened,,
+00012758,direct,00026370,-,1D-8,u8,implicit-32,,44 44 44 44 44 44 44 44,000420b8,1,unopened,,
+00012868,direct,00026370,-,1D-8,u8,implicit-32,,56 56 56 56 78 100 124 148,0008152a;00081d74,2,unopened,,
+000128d8,direct,00026370,-,1D-8,u8,implicit-32,,0 16 36 48 55 61 65 69,000464de,1,unopened,,
+000128e0,direct,00026370,-,1D-8,u8,implicit-32,,255 255 255 255 255 255 255 255,000b5c36,1,unopened,,
+00012944,direct,00026370,-,1D-8,u8,implicit-32,,0 14 28 42 56 70 84 98,00044910,1,unopened,,
+00012954,direct,00026370,-,1D-8,u8,implicit-32,,240 240 240 240 240 240 240 240,00044910,1,unopened,,
+0001295c,direct,00026370,-,1D-8,u8,implicit-32,,128 128 128 128 128 128 128 128,00044910,1,unopened,,
+0001296c,direct,00026370,-,1D-8,u8,implicit-32,,84 44 13 16 1 0 0 0,00045758;0006e3d8,3,unopened,,
+000129ca,direct,00026370,-,1D-8,u8,implicit-32,,128 128 128 128 128 128 128 128,0004ac7a,1,unopened,,
+00012a22,direct,00026370,-,1D-8,u8,implicit-32,,128 128 128 128 128 128 128 128,00071650,1,unopened,,
+00012a32,direct,00026370,-,1D-8,u8,implicit-32,,255 255 255 255 255 255 255 255,000507ce,1,unopened,,
+00012a3a,direct,00026370,-,1D-8,u8,implicit-32,,0 0 0 0 0 0 0 0,@0003a772,1,unopened,,
+00012a62,direct,00026370,-,1D-8,u8,implicit-32,,255 234 117 39 39 39 39 39,000a543c,1,unopened,,
+00012a82,direct,00026370,-,1D-8,u8,implicit-32,,68 56 32 4 0 0 0 0,00052f00,1,unopened,,
+00012a9a,direct,00026370,-,1D-8,u8,implicit-32,,90 90 90 90 90 90 90 90,@00038e74,1,unopened,,
+00012ab2,direct,00026370,-,1D-8,u8,implicit-32,,30 30 20 14 14 10 10 10,@0003bdc8,1,unopened,,
+00012ac2,direct,00026370,-,1D-8,u8,implicit-32,,154 145 137 130 123 118 113 108,0008152a;00081d74,2,unopened,,
+00012ada,direct,00026370,-,1D-8,u8,implicit-32,,6 6 6 6 6 6 6 6,@00038a6e,1,unopened,,
+00012aea,direct,00026370,-,1D-8,u8,implicit-32,,13 13 5 5 5 5 5 5,@00038b1a,1,unopened,,
+00012afa,direct,00026370,-,1D-8,u8,implicit-32,,6 6 6 6 6 6 6 6,00043aee,1,unopened,,
+00012c66,direct,00026370,-,1D-8,u8,implicit-32,,1 1 50 50 50 1 1 1,000420b8,1,unopened,,
+00012dca,direct,00026370,-,1D-8,u8,implicit-32,,102 106 111 115 119 123 128 128,0004ac7a,1,unopened,,
+00012de2,direct,00026370,-,1D-8,u8,implicit-32,,255 255 255 43 43 43 43 43,00082c8a,1,unopened,,
+00012e72,direct,00026370,-,1D-8,u8,implicit-32,,99 102 103 106 110 112 112 114,000be5bc,1,unopened,,
+00012e7a,direct,00026370,-,1D-8,u8,implicit-32,,99 102 103 106 110 112 112 114,000be5bc,1,unopened,,
+00012f06,direct,00026370,-,1D-8,u8,implicit-32,,5 5 5 5 5 5 5 5,000bdc66,1,unopened,,
+00012fb6,direct,00026370,-,1D-8,u8,implicit-32,,255 255 255 255 255 255 255 255,000a643c,1,unopened,,
+0001300e,direct,00026370,-,1D-8,u8,implicit-32,,6 6 6 6 6 6 32 32,@0005231e,1,unopened,,
+00013016,direct,00026370,-,1D-8,u8,implicit-32,,128 128 128 128 128 128 128 128,000763e2,1,unopened,,
+0001473a,direct,000263d8,-,1D-8,u16,implicit-8192,,610 610 610 610 610 610 610 610,00047a56,1,unopened,,
+000148ea,direct,000263d8,-,1D-8,u16,implicit-8192,,65535 65535 65535 65535 65535 65535 65535 65535,0007173c,1,unopened,,
+00014a2a,direct,000263d8,-,1D-8,u16,implicit-8192,,64 64 64 58 58 128 128 128,00055098,1,unopened,,
+00014ed2,direct,000263d8,-,1D-8,u16,implicit-8192,,32768 32768 32768 27853 22938 22938 22938 22938,00052576,1,unopened,,
+00015082,direct,000263d8,-,1D-8,u16,implicit-8192,,65535 65535 65535 65535 65535 65535 65535 65535,@000731b2,1,unopened,,
+00015630,direct,000263d8,-,1D-8,u16,implicit-8192,,24257 22892 21599 20332 19032 17889 16876 15971,0002c648,2,unopened,,
+00015640,direct,000263d8,-,1D-8,u16,implicit-8192,,65535 65535 65535 65535 65535 65535 65535 65535,000b5c36,1,unopened,,
+00015750,direct,000263d8,-,1D-8,u16,implicit-8192,,32767 32767 32767 32767 32767 32767 32767 32767,00071448,1,unopened,,
+00023824,direct,000263d8,-,1D-8,u16,implicit-8192,,19 50 91 159 160 160 160 160,0006f8fa,1,unopened,,
+00023dd4,direct,00026370,-,1D-8,u8,implicit-32,,34 47 60 120 160 160 160 160,000a71a0,1,unopened,,
+00023ddc,direct,00026370,-,1D-8,u8,implicit-32,,22 28 35 60 80 80 80 80,000a773a,1,unopened,,
+0000991a,interp,00026230,00026944,16x16,,,,,@0004e550,1,unopened,,
+00009a1a,interp,00026230,00026944,16x16,,,,,@000495fa,1,unopened,,
+00009b1a,interp,00026230,00026944,16x16,,,,,@00049610,1,unopened,,
+00009f1a,interp,000261b8,00026944,16x16,,000124a2,00012492,,0004d2a6,1,unopened,,
+0000a4aa,interp,000261b8,00026944,16x16,,000125ea,000125da,,0004d2a6,1,unopened,,
+0000b43a,interp,000261b8,00026944,16x16,,,,,000bda64,1,unopened,,
+0000c78e,interp,000262a8,00026984,16x16,,00014f62,00013ea4,,000a5a06,1,unopened,,
+0000c98e,interp,000262a8,00026984,16x16,,00013478,00013498,,0007b2c8,1,unopened,,
+0000d40e,interp,000262a8,00026984,16x16,,00013d74,00013db4,,000b7b98,1,unopened,,
+0000de8e,interp,000262a8,00026984,16x16,,,,,0007604c,1,unopened,,
+0000e08e,interp,000262a8,00026984,16x16,,,,,0007604c,1,unopened,,
+0000e98e,interp,000262e0,00026984,16x16,,00011d0c,00014114,,00075c48;000702c6;0007584e;0007a9fc;0007ab18;000753d4;00075540,8,unopened,,
+0001050e,interp,000262a8,00026984,16x16,,,,,00070e4c,1,unopened,,
+0001070e,interp,000262a8,00026984,16x16,,,,,00070e4c,1,unopened,,
+00010b8e,interp,000262a8,00026984,16x16,,00014b4a,,,00065928,1,unopened,,
+00016948,interp,00026628,00026b84,16x16,,00018846,00018866,,0007b3f4,1,unopened,,
+00016fc8,interp,00026628,00026b84,16x16,,,,,00074028,1,unopened,,
+000171c8,interp,00026628,00026b84,16x16,,,,,00074028,1,unopened,,
+000175c8,interp,00026660,00026b84,16x16,,00018716,00018ac6,,000749bc;00074728;0007acb4,4,unopened,,
+00017cc8,interp,00026628,00026b84,16x16,,,,,000720c4,1,unopened,,
+00017ec8,interp,00026628,00026b84,16x16,,,,,000720c4,1,unopened,,
+00011d24,interp,000264a0,00026944,1D-16,u8,0001199e,,,0006469c;00065b08;000655b4,7,unopened,,
+00012262,interp,00026550,00026984,1D-16,u8,00013ae8,,,0009426e,1,unopened,,
+00012272,interp,00026550,00026984,1D-16,u8,,,,0009426e,1,unopened,,
+00012292,interp,000264a0,00026944,1D-16,u8,00011b47,,,0003ef74,1,unopened,,
+000122d2,interp,00026550,00026984,1D-16,u8,00014d2a,ffff11d4,,0004776c;0004121c;00041750,3,unopened,,
+00012312,interp,000264a0,00026944,1D-16,u8,00012f9e,,,0005d6ae;00088bba,2,unopened,,
+000124b2,interp,000264a0,00026944,1D-16,u8,000124c2,,,0004d2a6,1,unopened,,
+000124f2,interp,000264a0,00026944,1D-16,u8,00023814,,,00069374,1,unopened,,
+00012870,interp,000264a0,00026944,1D-16,u8,00012880,,,000aacc0,1,unopened,,
+00012908,interp,00026550,00026984,1D-16,u8,000140d4,ffff119c,,00046938,1,unopened,,
+00012918,interp,00026550,00026984,1D-16,u8,000140d4,ffff119c,,00046938,1,unopened,,
+00012ede,interp,000264a0,00026944,1D-16,u8,00011bfb,,,00055098,1,unopened,,
+00013182,interp,000264f8,00026984,1D-16,u16,,9a300ab0,,0006205c,1,unopened,,
+000131a2,interp,000264f8,00026984,1D-16,u16,,,,0006205c,1,unopened,,
+000131c2,interp,000264f8,00026984,1D-16,u16,,9a24963d,,0006205c,1,unopened,,
+000133d2,interp,000264f8,00026984,1D-16,u16,,,,0006205c,1,unopened,,
+00014114,interp,000264f8,00026984,1D-16,u16,0000e98e;00008000,,,00073432,4,unopened,,
+000145ca,interp,000264f8,00026984,1D-16,u16,,,,0006205c,1,unopened,,
+0001469a,interp,000264f8,00026984,1D-16,u16,000146ba,ffff119c,,000476d2,1,unopened,,
+0001480a,interp,000264f8,00026984,1D-16,u16,,,,0007a592,1,unopened,,
+0001482a,interp,000264f8,00026984,1D-16,u16,,,,0007a592,1,unopened,,
+0001484a,interp,000264f8,00026984,1D-16,u16,,ffff245c,,0007a592,1,unopened,,
+0001488a,interp,000264f8,00026984,1D-16,u16,00014c7a,,,00070e4c,1,unopened,,
+0001495a,interp,000264f8,00026984,1D-16,u16,00013a98,,,0006205c,1,unopened,,
+00014bca,interp,000264f8,00026984,1D-16,u16,00013ac8,,,@0003dd94;@0003dc18,2,unopened,,
+00014cca,interp,000264f8,00026984,1D-16,u16,00013b38,,,000b78da,1,unopened,,
+00014de2,interp,000264f8,00026984,1D-16,u16,,,,0006205c,1,unopened,,
+00014e02,interp,000264f8,00026984,1D-16,u16,,,,0006205c,1,unopened,,
+00014e22,interp,000264f8,00026984,1D-16,u16,00013798,925a08e4,,00069374,1,unopened,,
+00014ea2,interp,000264f8,00026984,1D-16,u16,00013498,,,0007ab18,1,unopened,,
+00014fa2,interp,000264f8,00026984,1D-16,u16,00014f82,,,0007a4de,1,unopened,,
+000150f2,interp,000264f8,00026984,1D-16,u16,00013c68,,,0009de58,2,unopened,,
+00015112,interp,000264f8,00026984,1D-16,u16,00013c68,,,0009de58,2,unopened,,
+000151f2,interp,000264f8,00026984,1D-16,u16,00013bf8,,,000b7a3c,1,unopened,,
+000152d6,interp,000264f8,00026984,1D-16,u16,00013c18,,,000b29b8;000b2096,2,unopened,,
+00015360,interp,000264f8,00026984,1D-16,u16,,,,0007a592,1,unopened,,
+000153f0,interp,000264f8,00026984,1D-16,u16,000145ea,,,0007ab18,1,unopened,,
+000154c0,interp,000264f8,00026984,1D-16,u16,,,,0007af78,1,unopened,,
+000154e0,interp,000264f8,00026984,1D-16,u16,,,,0007af78,1,unopened,,
+00015b10,interp,000264f8,00026984,1D-16,u16,000149ca,,,000c0d90,1,unopened,,
+00018ac6,interp,000266e8,00026b84,1D-16,u16,,,,00073628,1,unopened,,
+00018c76,interp,000266e8,00026b84,1D-16,u16,000146da,ffff119c,,@000723a6,1,unopened,,
+00018cf6,interp,000266e8,00026b84,1D-16,u16,,,,0007a804,1,unopened,,
+00018d16,interp,000266e8,00026b84,1D-16,u16,,,,0007a804,1,unopened,,
+00018d36,interp,000266e8,00026b84,1D-16,u16,,,,0007a804,1,unopened,,
+00018de6,interp,000266e8,00026b84,1D-16,u16,00018e26,,,0007b0a0,1,unopened,,
+00018e06,interp,000266e8,00026b84,1D-16,u16,00018e26,,,0007b0a0,1,unopened,,
+00019090,interp,000266e8,00026b84,1D-16,u16,,,,0007a804,1,unopened,,
+00013202,interp,00026524,00026984,1D-32,u16,000155a0,0b5c04ac,,0008152a;00081d74,7,unopened,,
+00014b0a,interp,00026524,00026984,1D-32,u16,00013ff4,,,000b7768,1,unopened,,
+00015500,interp,00026524,00026984,1D-32,u16,00015690,,,0003b520,2,unopened,,
+00015540,interp,00026524,00026984,1D-32,u16,000156d0,,,0003b520,3,unopened,,
+000155a0,interp,00026524,00026984,1D-32,u16,00013202,,,0006f464;0006e4c8,3,unopened,,
+00015690,interp,00026524,00026984,1D-32,u16,00015500,00021ce0,,00072dfc;0007a9fc;000753d4,4,unopened,,
+000156d0,interp,00026524,00026984,1D-32,u16,00015540,,,00072dfc,2,unopened,,
+00015bf0,interp,00026524,00026984,1D-32,u16,,,,000b784e,1,unopened,,
+00015c40,interp,00026524,00026984,1D-32,u16,,,,000b784e,1,unopened,,
+00015c80,interp,00026524,00026984,1D-32,u16,,,,000b784e,1,unopened,,
+00018766,interp,00026714,00026b84,1D-32,u16,000190d0,,,0007acb4,3,unopened,,
+00018e46,interp,00026714,00026b84,1D-32,u16,00018f96,,,@00073878,1,unopened,,
+00018e86,interp,00026714,00026b84,1D-32,u16,00018fd6,,,@0007386c,1,unopened,,
+00018f96,interp,00026714,00026b84,1D-32,u16,00018e46,,,00072f1e,2,unopened,,
+00018fd6,interp,00026714,00026b84,1D-32,u16,00018e86,00021ce0,,00072f1e;00074728;0007acb4,3,unopened,,
+000190d0,interp,00026714,00026b84,1D-32,u16,00018766,,,0007240c;0007249e,3,unopened,,
+00011efa,interp,00026474,00026944,1D-8,u8,00011eea,00009010,,0004afdc,1,unopened,,
+00011f02,interp,00026474,00026944,1D-8,u8,00011eea,ffff1068,,0004bdc2,1,unopened,,
+00011f3a,interp,00026474,00026944,1D-8,u8,00011aef,,,00069374,1,unopened,,
+00011fd6,interp,00026474,00026944,1D-8,u8,00011a83,,,0007a090,1,unopened,,
+0001200e,interp,00026474,00026944,1D-8,u8,00012186,ffff22dc,,000420b8,1,unopened,,
+0001205a,interp,00026474,00026944,1D-8,u8,00012850,ffff267a,,000c1dec,1,unopened,,
+00012116,interp,00026474,00026944,1D-8,u8,,,,0004f662,1,unopened,,
+0001221e,interp,00026474,00026944,1D-8,u8,00012fce,,,0005fdb0,1,unopened,,
+000122aa,interp,00026474,00026944,1D-8,u8,00012fd6,,,0005fdb0,1,unopened,,
+0001233a,interp,00026474,00026944,1D-8,u8,0001223a,,,000473ac,1,unopened,,
+00012362,interp,00026474,00026944,1D-8,u8,00012fde,,,@0006161a,1,unopened,,
+000123fa,interp,00026474,00026944,1D-8,u8,00011beb,,,000c0d90,1,unopened,,
+00012412,interp,00026474,00026944,1D-8,u8,00011be3,,,000be32a,1,unopened,,
+0001245a,interp,00026474,00026944,1D-8,u8,00011a55,,,000659ae,1,unopened,,
+0001252a,interp,00026474,00026944,1D-8,u8,0001302e,,,000c0d90,1,unopened,,
+00012552,interp,00026474,00026944,1D-8,u8,00011cd8,ffff2464,,0005594a,1,unopened,,
+00012572,interp,00026474,00026944,1D-8,u8,00011b57,,,00054ee0,1,unopened,,
+00012582,interp,00026474,00026944,1D-8,u8,00011b5f,,,00054ee0,1,unopened,,
+0001259a,interp,00026474,00026944,1D-8,u8,00012a5a,,,000b2096,1,unopened,,
+000125b2,interp,00026474,00026944,1D-8,u8,00012fe6,,,00041750,1,unopened,,
+000128b0,interp,00026474,00026944,1D-8,u8,00011aff,,,00069374,1,unopened,,
+00012964,interp,00026474,00026944,1D-8,u8,00013006,,,00044500,1,unopened,,
+00012984,interp,00026474,00026944,1D-8,u8,,,,0004f662,1,unopened,,
+00012a1a,interp,00026474,00026944,1D-8,u8,00012ff6,,,000602f2,1,unopened,,
+00012a42,interp,00026474,00026944,1D-8,u8,00011dd5,,,00046c70,1,unopened,,
+00012a7a,interp,00026474,00026944,1D-8,u8,00012ffe,,,000602f2,1,unopened,,
+00012a8a,interp,00026474,00026944,1D-8,u8,00011ba3,00008616,,000bd20a,1,unopened,,
+00012a92,interp,00026474,00026944,1D-8,u8,00011bab,,,000bd20a,1,unopened,,
+00012ae2,interp,00026474,00026944,1D-8,u8,00012b02,,,@00038ab6,1,unopened,,
+00012af2,interp,00026474,00026944,1D-8,u8,00012b02,,,@00038b2c,1,unopened,,
+00012b32,interp,00026474,00026944,1D-8,u8,00012b42,,,0006425a,1,unopened,,
+00012bda,interp,00026474,00026944,1D-8,u8,0001255a,ffff1094,,000b1e48,1,unopened,,
+00012c12,interp,00026474,00026944,1D-8,u8,00011bb3,00008729,,@00056cd8,1,unopened,,
+00012c1a,interp,00026474,00026944,1D-8,u8,00011d04,,,00046c70,1,unopened,,
+00012c4a,interp,00026474,00026944,1D-8,u8,00011bbb,,,0003aa12,1,unopened,,
+00012d0a,interp,00026474,00026944,1D-8,u8,00011d04,ffff256a,,00046c70,1,unopened,,
+00012d82,interp,00026474,00026944,1D-8,u8,00011bc3,,,0003aa12,1,unopened,,
+00012daa,interp,00026474,00026944,1D-8,u8,00012d9a,ffff119c,,0006f48c,1,unopened,,
+00012db2,interp,00026474,00026944,1D-8,u8,00012da2,ffff119c,,0007249e,1,unopened,,
+00012e3a,interp,00026474,00026944,1D-8,u8,00011bd3,,,000bcd44;000bec52,2,unopened,,
+00012e82,interp,00026474,00026944,1D-8,u8,00011bdb,ffff267a,,000be5bc,1,unopened,,
+00012e8a,interp,00026474,00026944,1D-8,u8,00011bdb,ffff267a,,000be5bc,1,unopened,,
+00012f7e,interp,00026474,00026944,1D-8,u8,00012f6e,ffff119c,,000bfc2e,1,unopened,,
+00013468,interp,000264cc,00026984,1D-8,u16,000137d8,91358de6,,00069374,1,unopened,,
+00013ce8,interp,000264cc,00026984,1D-8,u16,00015c30,,,000a5a06,1,unopened,,
+0001452a,interp,000264cc,00026984,1D-8,u16,00013c38,,,0009b8aa,1,unopened,,
+0001453a,interp,000264cc,00026984,1D-8,u16,00013c38,,,@000606c4,1,unopened,,
+0001454a,interp,000264cc,00026984,1D-8,u16,00013c38,,,@00060770,1,unopened,,
+0001462a,interp,000264cc,00026984,1D-8,u16,00015d00,,,@000a144a;@000a1410,2,unopened,,
+0001463a,interp,000264cc,00026984,1D-8,u16,,,,@000a1648;@000a1682,2,unopened,,
+000147ca,interp,000264cc,00026984,1D-8,u16,0001460a,ffff1094,,0004afdc,1,unopened,,
+000147da,interp,000264cc,00026984,1D-8,u16,00013c48,,,0004d99c,1,unopened,,
+00014a4a,interp,000264cc,00026984,1D-8,u16,00015aa0,,,000c1152,1,unopened,,
+00014a7a,interp,000264cc,00026984,1D-8,u16,,,,000b1e48,1,unopened,,
+00014afa,interp,000264cc,00026984,1D-8,u16,000134b8,ffff1094,,0007b2c8,1,unopened,,
+00014c1a,interp,000264cc,00026984,1D-8,u16,00014aba,ffff119c,,000658a4,1,unopened,,
+00014c2a,interp,000264cc,00026984,1D-8,u16,00015cc0,,,00041750,1,unopened,,
+00014c9a,interp,000264cc,00026984,1D-8,u16,,,,0005fdb0,2,unopened,,
+00014caa,interp,000264cc,00026984,1D-8,u16,00015d90,,,00041750,1,unopened,,
+00014cba,interp,000264cc,00026984,1D-8,u16,,,,0005fdb0,2,unopened,,
+00014e42,interp,000264cc,00026984,1D-8,u16,00013bb8,,,000b7a3c,1,unopened,,
+00014e82,interp,000264cc,00026984,1D-8,u16,00013a68,,,000617ea,2,unopened,,
+00014e92,interp,000264cc,00026984,1D-8,u16,00015d90,,,00041750,1,unopened,,
+00014f32,interp,000264cc,00026984,1D-8,u16,00013c58,,,0009b1b4;0009b8aa,2,unopened,,
+00014f42,interp,000264cc,00026984,1D-8,u16,00013c58,ffff4185,,@00060664,1,unopened,,
+00014f52,interp,000264cc,00026984,1D-8,u16,00013c58,,,@00060672,1,unopened,,
+00014fc2,interp,000264cc,00026984,1D-8,u16,00013ab8,,,000617ea,1,unopened,,
+00014fd2,interp,000264cc,00026984,1D-8,u16,,,,@0005e756,1,unopened,,
+00014fe2,interp,000264cc,00026984,1D-8,u16,,,,@0005e766,1,unopened,,
+00014ff2,interp,000264cc,00026984,1D-8,u16,00013bd8,,,0009b1b4;0009b8aa,2,unopened,,
+00015002,interp,000264cc,00026984,1D-8,u16,00013bd8,,,@000608a6,1,unopened,,
+00015012,interp,000264cc,00026984,1D-8,u16,00013be8,,,@00060934,1,unopened,,
+00015172,interp,000264cc,00026984,1D-8,u16,00013c88,,,0009cdd8,1,unopened,,
+00015182,interp,000264cc,00026984,1D-8,u16,00013c88,,,0009cdd8,1,unopened,,
+00015276,interp,000264cc,00026984,1D-8,u16,00015286,,,000cf020;0007654c,2,unopened,,
+00015306,interp,000264cc,00026984,1D-8,u16,,,,000602f2,2,unopened,,
+000153a0,interp,000264cc,00026984,1D-8,u16,,,,000602f2,2,unopened,,
+000153e0,interp,000264cc,00026984,1D-8,u16,00015246,,,00076770,1,unopened,,
+000154a0,interp,000264cc,00026984,1D-8,u16,00014aba,ffff119c,,00065c26,1,unopened,,
+000154b0,interp,000264cc,00026984,1D-8,u16,00013b28,,,000554f8,1,unopened,,
+00015580,interp,000264cc,00026984,1D-8,u16,00015d50,,,000617ea,1,unopened,,
+00015590,interp,000264cc,00026984,1D-8,u16,00015d50,,,000617ea,1,unopened,,
+000157d0,interp,000264cc,00026984,1D-8,u16,00013c98,,,0009b816,1,unopened,,
+00018dd6,interp,000266bc,00026b84,1D-8,u16,00018886,ffff1094,,0007b3f4,1,unopened,,
+00023752,interp,00026474,00026944,1D-8,u8,0002374a,,,0005cbec,1,unopened,,
+000237c4,interp,000264cc,00026984,1D-8,u16,000237b4,,,00069374,1,unopened,,
+000237e4,interp,000264cc,00026984,1D-8,u16,000237d4,,,00069374,1,unopened,,
+00023804,interp,000264cc,00026984,1D-8,u16,000237f4,,,00069374,1,unopened,,
+00009c5a,interp,00026084,00026944,4x4,,000119ae,,,0007a43e,1,unopened,,
+00009cea,interp,00026100,00026944,4x4,,00011a2d,00011a31,,@0003bf3e,1,unopened,,
+00009d2a,interp,00026084,00026944,4x4,,,00011abf,,0004ac7a,1,unopened,,
+00009e3a,interp,00026100,00026944,4x4,,00011ac3,00011abf,,@0003c2ae,1,unopened,,
+00009eca,interp,00026084,00026944,4x4,,00011a51,00011a45,,0007a090,1,unopened,,
+0000aaea,interp,000260bc,00026944,4x4,s8,,,,00079538,1,unopened,,
+0000aafa,interp,000260bc,00026944,4x4,s8,,,,00079538,1,unopened,,
+0000ab4a,interp,00026084,00026944,4x4,,,,,000bfdc0,1,unopened,,
+0000ab5a,interp,00026084,00026944,4x4,,,,,000bda64,1,unopened,,
+0000b5ca,interp,00026084,00026944,4x4,,00011e15,00011e11,,00077dec,1,unopened,,
+0000b5da,interp,00026084,00026944,4x4,,00011e15,00011e11,,00077dec,1,unopened,,
+0000b5ea,interp,00026084,00026944,4x4,,00011e15,00011e11,,00077892;00077dec,2,unopened,,
+0000b5fa,interp,00026084,00026944,4x4,,00011fe2,00011fde,,000647e8,1,unopened,,
+00009caa,interp,00026140,00026944,8x8,,00011a49,00011a3d,,0007a090,1,unopened,,
+00009d3a,interp,00026140,00026944,8x8,,00011b37,,,0004b790,1,unopened,,
+00009dba,interp,00026140,00026944,8x8,,00012eba,00012e92,,0004afdc,2,unopened,,
+00009e4a,interp,00026178,00026944,8x8,,00011aaf,00011ab7,,@0003c0a2,1,unopened,,
+0000a05a,interp,00026140,00026944,8x8,,00013026,,,000be32a,1,unopened,,
+0000a9aa,interp,00026178,00026944,8x8,,00011cc0,00011ac7,,0005594a,1,unopened,,
+0000b2fa,interp,00026140,00026944,8x8,,,,,000bfdc0,1,unopened,,
+0000b53a,interp,00026140,00026944,8x8,,,,,000bda64,1,unopened,,
+0000bb5a,interp,00026270,00026984,8x8,,000133b2,000133c2,,00073bdc,1,unopened,,
+0000c10e,interp,00026270,00026984,8x8,,,,,@0003ede4,1,unopened,,
+0000c18e,interp,00026270,00026984,8x8,,,,,@0003edf8,1,unopened,,
+0000c50e,interp,00026270,00026984,8x8,,0001461a,0001464a,,0004bdc2,1,unopened,,
+0000d68e,interp,00026270,00026984,8x8,,00013fb4,,,0007ab18,1,unopened,,
+0000d78e,interp,00026270,00026984,8x8,,,00013fd4,,0007a592,1,unopened,,
+0000d80e,interp,00026270,00026984,8x8,,00015d40,00015d80,,00044500,1,unopened,,
+0000f38e,interp,00026270,00026984,8x8,,,,,000c0d90,2,unopened,,
+0000f40e,interp,00026270,00026984,8x8,,,,,000c0d90,2,unopened,,
+0000fc0e,interp,00026270,00026984,8x8,,000137e8,000137c8,,00069374,1,unopened,,
+0000fc8e,interp,00026270,00026984,8x8,,000137f8,000137b8,,00069374,1,unopened,,
+00010b0e,interp,00026270,00026984,8x8,,,00014ada,,000753d4,1,unopened,,
+00016f48,interp,000265f0,00026b84,8x8,,,00018a86,,0007a804,1,unopened,,
+@00042084,direct,00026388,-,1D-16,u8,implicit-16,,,0004207a,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000456e6,direct,00026388,-,1D-16,u8,implicit-16,,,0004569c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00045704,direct,00026388,-,1D-16,u8,implicit-16,,,0004569c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004ba02,direct,00026388,-,1D-16,u8,implicit-16,,,0004b9b4,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004c0ea,direct,000263f4,-,1D-16,u16,implicit-4096,,,0004c02e,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000bdb94,direct,00026388,-,1D-16,u8,implicit-16,,,000bdb66,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0002c52a,direct,000263a0,-,1D-32,u8,implicit-8,,,0002c4f8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0002c55c,direct,000263a0,-,1D-32,u8,implicit-8,,,0002c4f8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00074cf4,direct,000263bc,-,1D-4,u16,implicit-16384,,,00074c82,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0002c324,direct,00026370,-,1D-8,u8,implicit-32,,,0002c254,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0002c33a,direct,00026370,-,1D-8,u8,implicit-32,,,0002c254,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0002cfc0,direct,00026370,-,1D-8,u8,implicit-32,,,0002c648,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003c51c,direct,00026370,-,1D-8,u8,implicit-32,,,@0003c51c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00046822,direct,00026370,-,1D-8,u8,implicit-32,,,0004673c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004b9e4,direct,00026370,-,1D-8,u8,implicit-32,,,0004b9b4,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004bade,direct,00026370,-,1D-8,u8,implicit-32,,,0004ba48,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004c0ce,direct,000263d8,-,1D-8,u16,implicit-8192,,,0004c02e,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000518e0,direct,00026370,-,1D-8,u8,implicit-32,,,0005185c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000519e0,direct,00026370,-,1D-8,u8,implicit-32,,,0005185c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000526de,direct,00026370,-,1D-8,u8,implicit-32,,,000526a0,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0006442c,direct,00026370,-,1D-8,u8,implicit-32,,,0006425a,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000649f0,direct,00026370,-,1D-8,u8,implicit-32,,,000647e8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000661be,direct,000263d8,-,1D-8,u16,implicit-8192,,,@000661be,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00068d3a,direct,00026370,-,1D-8,u8,implicit-32,,,00068cb8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000716c0,direct,00026370,-,1D-8,u8,implicit-32,,,00071650,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00074f36,direct,000263d8,-,1D-8,u16,implicit-8192,,,00074e4e,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000bdc2a,direct,00026370,-,1D-8,u8,implicit-32,,,000bdb66,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004e250,interp,00026230,00026944,16x16,,,,,@0004e250,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004e2d2,interp,00026230,00026944,16x16,,,,,@0004e2d2,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004e2f8,interp,00026230,00026944,16x16,,,,,@0004e2f8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004e33e,interp,00026230,00026944,16x16,,,,,@0004e33e,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004e362,interp,00026230,00026944,16x16,,,,,@0004e362,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004e50a,interp,00026230,00026944,16x16,,,,,@0004e50a,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003ee86,interp,000264f8,00026984,1D-16,u16,,,,@0003ee86,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003ee98,interp,000264f8,00026984,1D-16,u16,,,,@0003ee98,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000456f4,interp,000264a0,00026944,1D-16,u8,,,,0004569c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004571a,interp,000264a0,00026944,1D-16,u8,,,,0004569c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004a02c,interp,000264f8,00026984,1D-16,u16,00015340,ffff11d4,,00049ffc,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004d3e6,interp,000264a0,00026944,1D-16,u8,,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004d404,interp,000264a0,00026944,1D-16,u8,,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0004d432,interp,000264a0,00026944,1D-16,u8,,,,0004d2a6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00063fd8,interp,000264a0,00026944,1D-16,u8,,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00063ffe,interp,000264a0,00026944,1D-16,u8,,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000640ba,interp,000264a0,00026944,1D-16,u8,,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000640dc,interp,000264a0,00026944,1D-16,u8,,,,00063f30,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00064714,interp,000264a0,00026944,1D-16,u8,00011d24,,,0006469c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00076f38,interp,000264f8,00026984,1D-16,u16,,,,@00076f38,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003b6c2,interp,00026524,00026984,1D-32,u16,000155a0,,,0003b520,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003b6e0,interp,00026524,00026984,1D-32,u16,000155a0,,,0003b520,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003e5e6,interp,00026524,00026984,1D-32,u16,,,,@0003e5e6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003e5f0,interp,00026524,00026984,1D-32,u16,,,,@0003e5f0,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003e604,interp,00026524,00026984,1D-32,u16,,,,@0003e604,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003e6ce,interp,00026524,00026984,1D-32,u16,,,,@0003e6ce,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003e6ea,interp,00026524,00026984,1D-32,u16,,,,@0003e6ea,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0003e6f8,interp,00026524,00026984,1D-32,u16,,,,@0003e6f8,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0006f4c4,interp,00026524,00026984,1D-32,u16,,,,0006f48c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0006f52e,interp,00026524,00026984,1D-32,u16,,,,0006f48c,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00072cb6,interp,00026524,00026984,1D-32,u16,,,,@00072cb6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00072cc6,interp,00026524,00026984,1D-32,u16,,,,@00072cc6,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00072d98,interp,00026524,00026984,1D-32,u16,,,,00072d32,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@00072da8,interp,00026524,00026984,1D-32,u16,,,,00072d32,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0007309e,interp,00026714,00026b84,1D-32,u16,,,,@0007309e,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000730ae,interp,00026714,00026b84,1D-32,u16,,,,@000730ae,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@0007628a,interp,000264cc,00026984,1D-8,u16,00013518,ffff1114,,00076250,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000b2150,interp,00026474,00026944,1D-8,u8,00012a5a,,,000b2096,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору
+@000bdb80,interp,00026474,00026944,1D-8,u8,00012f66,,,000bdb66,1,unresolved,,backtrack не снял r4: таблица определяется вручную по аксессору

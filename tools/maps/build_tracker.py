@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
-"""Сборка ledger'а карт JK03A.maps.csv из переписей обоих семейств доступа.
+"""Сборка ledger'а карт JK03A.maps.csv из переписей всех семейств доступа.
 
-Карты в JK03A читаются двумя независимыми механизмами; переписи снимаются
-разными Ghidra-скриптами и не пересекаются ни таблицами, ни сайтами вызова:
+Карты в JK03A читаются библиотекой примитивов, занимающей 0x26000..0x26E00. У неё
+39 точек входа (чётные значения, на которые ссылается код вне региона); 35 из них -
+доступ к таблицам, 4 - арифметика и работа с RAM. Внутри региона живут ядра, finisher'ы
+и цепочки сдвигов, которые прикладной код не зовёт. См. JK03A.notes.md, раздел
+"Библиотека доступа к таблицам".
 
-- interp (defs/reference/JK03A.map_inventory.csv, MapInventory.java по kernel'у
-  0x26944): обёртка по размерности + явные указатели осей в r5/r6. Строки
-  reftype=DATA - это pool-слоты с адресом обёртки, а не места вызова; в ценз
-  входят только is_call=true.
-- direct (defs/reference/JK03A.direct_lookup_inventory.csv,
-  DirectLookupInventory.java по примитиву 0x26370): обёрток нет, аксессор зовёт
-  примитив напрямую, указателя оси нет. Ось неявная: 8 точек с шагом 32 по сырому
-  байту 0..224, значения - беззнаковые байты. См. JK03A.notes.md, раздел
-  "Прямой lookup 0x26370".
+Семейства и их переписи (пересечений по таблицам между ними нет, это проверяется
+на сборке):
 
-Скрипт merge-aware: механические колонки (семейство, вход, размерность, оси,
-значения, аксессоры, число сайтов) пересобираются из переписей, а разметка
+- interp (MapInventory.java, по одному прогону на ядро): обёртка задаёт геометрию,
+  оси передаются указателями в r5/r6, ядро ищет точку по массиву оси. Три ядра:
+  0x26944 (ось - байты), 0x26984 и 0x26b84 (ось - слова). Строки reftype=DATA - это
+  pool-слоты с адресом обёртки, а не места вызова; в ценз входят только is_call=true.
+- direct (DirectLookupInventory.java, один прогон на весь банк): обёрток нет, аксессор
+  зовёт примитив напрямую, массива оси нет. Ось неявная и равномерная: N точек с шагом
+  step по сырому входу. Значения беззнаковые.
+- прочее (EXTRA ниже): доступ вне обеих моделей, вносится вручную.
+
+Скрипт merge-aware: механические колонки (семейство, вход, ядро, размерность, элемент,
+оси, значения, аксессоры, число сайтов) пересобираются из переписей, а разметка
 (status/name/note) сохраняется. Значит после повторного прогона переписей прогресс
 не теряется.
 
@@ -31,26 +36,58 @@ SEED старше ledger'а намеренно: он живёт в коде, в�
 """
 import csv
 import os
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-CENSUS_INTERP = os.path.join(ROOT, "defs", "reference", "JK03A.map_inventory.csv")
-CENSUS_DIRECT = os.path.join(ROOT, "defs", "reference", "JK03A.direct_lookup_inventory.csv")
+REF = os.path.join(ROOT, "defs", "reference")
 TRACKER = os.path.join(ROOT, "defs", "JK03A.maps.csv")
 
-FIELDS = ["table", "family", "via", "dim", "axis_x", "axis_y", "vals",
-          "accessors", "sites", "status", "name", "note"]
+CENSUS_INTERP = {
+    "00026944": "JK03A.map_inventory.26944.csv",
+    "00026984": "JK03A.map_inventory.26984.csv",
+    "00026b84": "JK03A.map_inventory.26b84.csv",
+}
+CENSUS_DIRECT = "JK03A.direct_lookup_inventory.csv"
 
-# Размерность по обёртке interp-семейства. Доказано трейсом (см. JK03A.notes.md,
-# разделы "Интерполяторный кластер" и "Оси карт"): константа в обёртке = размер оси.
-# Обёртки без записи - размерность ещё не снята.
-WRAPPER_DIM = {
-    "00026084": "4x4",
-    "00026140": "8x8",
-    "000261b8": "16x16",
-    "000261f0": "16x16",
-    "00026320": "16x16",
-    "00026474": "8-wide",
-    "000264a0": "1D-16",
+FIELDS = ["table", "family", "via", "kernel", "dim", "elem", "axis_x", "axis_y",
+          "vals", "accessors", "sites", "status", "name", "note"]
+
+# Геометрия обёрток explicit-axis, снятая с кода каждой обёртки: клэмп в delay slot
+# (MOV #imm,R4) задаёт число точек оси, шаг строки (MOV #imm,R5 либо константа пула) -
+# ширину ряда. Правило воспроизводит все пять обёрток, размерность которых установлена
+# независимым трейсом раньше: 0x26084=4x4, 0x26140=8x8, 0x261b8/0x261f0/0x26320=16x16.
+# При word-оси клэмп задан в байтах, поэтому 14 = 2*7 - это 8 точек, а 30 = 2*15 - 16.
+#
+# elem - ширина и знак элемента. Для 1D-обёрток снимается прямо с их кода (MOV.B+EXTU.B
+# либо MOV.W+EXTU.W). Для 2D-обёрток элемент читает общий 2D-finisher (0x26770, 0x26b28,
+# 0x267cc): там путь точного попадания знаковый, а путь интерполяции маскирует значение
+# 0x7f, и какой из них выбирается - не снято. Поэтому elem у 2D пуст: ширина и знак
+# элемента 2D-карт остаются открытым вопросом.
+WRAPPERS = {
+    "00026084": ("4x4",   ""),
+    "000260bc": ("4x4",   "s8"),   # без интерполяции: RTS + MOV.B @R4,R0 в delay slot
+    "00026100": ("4x4",   ""),
+    "00026140": ("8x8",   ""),
+    "00026178": ("8x8",   ""),
+    "000261b8": ("16x16", ""),
+    "000261f0": ("16x16", ""),
+    "00026230": ("16x16", ""),
+    "00026270": ("8x8",   ""),
+    "000262a8": ("16x16", ""),
+    "000262e0": ("16x16", ""),     # оси разной ширины: клэмпы 15 (байт) и 30 (слово)
+    "00026320": ("16x16", ""),
+    "00026474": ("1D-8",  "u8"),
+    "000264a0": ("1D-16", "u8"),
+    "000264cc": ("1D-8",  "u16"),
+    "000264f8": ("1D-16", "u16"),
+    "00026524": ("1D-32", "u16"),
+    "00026550": ("1D-16", "u8"),   # word-ось, байтовый элемент: SHLR R4 после ядра
+    "000265f0": ("8x8",   ""),
+    "00026628": ("16x16", ""),
+    "00026660": ("16x16", ""),     # оси разной ширины: клэмпы 15 (байт) и 30 (слово)
+    "000266bc": ("1D-8",  "u16"),
+    "000266e8": ("1D-16", "u16"),
+    "00026714": ("1D-32", "u16"),
 }
 
 # Разметка-затравка. Пополняется правкой самого ledger'а, не этого файла.
@@ -100,16 +137,28 @@ SEED = {
                  "поэтому таблица не читается"),
 }
 
-# Карты вне обеих переписей: читаются не через таблицу-lookup, поэтому ни один
-# ценз их не видит, но в дефе присутствуют.
+# Карты вне обеих моделей ценза, вносятся вручную.
 EXTRA = [{
-    "table": "00008fdc", "family": "compare", "via": "-", "dim": "2-cell",
-    "axis_x": "", "axis_y": "", "vals": "7625 6600",
+    "table": "00008fdc", "family": "compare", "via": "-", "kernel": "-", "dim": "2-cell",
+    "elem": "u16", "axis_x": "", "axis_y": "", "vals": "7625 6600",
     "accessors": "00047a56", "sites": "0", "status": "in-def",
     "name": "Rev Limit - Fuel Cut Maximum",
     "note": "не через lookup: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги "
             "0x8fdc=7625 (отсечка)/0x8fde=6600 (восстановление), селектор 0xFFFF246D "
             "bit7; имя пары по ProECU [CANDIDATE]",
+}, {
+    "table": "0000a8ea", "family": "direct-2d", "via": "00026040", "kernel": "-",
+    "dim": "8x8", "elem": "", "axis_x": "implicit", "axis_y": "implicit", "vals": "",
+    "accessors": "00052576", "sites": "1", "status": "geometry", "name": "",
+    "note": "CONFIRMED: 2D с неявными осями - 0x26040 зовёт 0x26ae0 на каждую ось и "
+            "0x26770 с шагом строки 8; входы byte[0xFFFF106F] и byte[0xFFFF10F0]; "
+            "[OPEN] кодировка элемента (см. elem)",
+}, {
+    "table": "00009eda", "family": "direct-2d", "via": "00026040", "kernel": "-",
+    "dim": "8x8", "elem": "", "axis_x": "implicit", "axis_y": "implicit", "vals": "",
+    "accessors": "000526a0", "sites": "1", "status": "geometry", "name": "",
+    "note": "CONFIRMED: тот же вход 0x26040, что и 0xa8ea, те же оси; "
+            "[OPEN] кодировка элемента (см. elem)",
 }]
 
 
@@ -129,36 +178,42 @@ def group(rows, key_of):
 
 
 def load_interp():
-    with open(CENSUS_INTERP, newline="") as fh:
-        rows = [r for r in csv.DictReader(fh) if r["is_call"] == "true"]
     out = []
-    for key, grp in group(rows, lambda r: r["r4"] or "@" + r["from"]).items():
-        out.append({
-            "table": key,
-            "family": "interp",
-            "via": join_uniq(g["wrapper"] for g in grp),
-            "dim": join_uniq(WRAPPER_DIM.get(g["wrapper"], "?") for g in grp),
-            "axis_x": join_uniq(g["r5"] for g in grp),
-            "axis_y": join_uniq(g["r6"] for g in grp),
-            "vals": "",
-            "accessors": join_uniq(g["from_func"] for g in grp if g["from_func"] != "?")
-                         or join_uniq("@" + g["from"] for g in grp),
-            "sites": str(len(grp)),
-        })
+    for kernel, fname in CENSUS_INTERP.items():
+        with open(os.path.join(REF, fname), newline="") as fh:
+            rows = [r for r in csv.DictReader(fh) if r["is_call"] == "true"]
+        for key, grp in group(rows, lambda r: r["r4"] or "@" + r["from"]).items():
+            geom = [WRAPPERS.get(g["wrapper"], ("?", "")) for g in grp]
+            out.append({
+                "table": key,
+                "family": "interp",
+                "via": join_uniq(g["wrapper"] for g in grp),
+                "kernel": kernel,
+                "dim": join_uniq(d for d, _ in geom),
+                "elem": join_uniq(e for _, e in geom),
+                "axis_x": join_uniq(g["r5"] for g in grp),
+                "axis_y": join_uniq(g["r6"] for g in grp),
+                "vals": "",
+                "accessors": join_uniq(g["from_func"] for g in grp if g["from_func"] != "?")
+                             or join_uniq("@" + g["from"] for g in grp),
+                "sites": str(len(grp)),
+            })
     return out
 
 
 def load_direct():
-    with open(CENSUS_DIRECT, newline="") as fh:
+    with open(os.path.join(REF, CENSUS_DIRECT), newline="") as fh:
         rows = list(csv.DictReader(fh))
     out = []
     for key, grp in group(rows, lambda r: r["table"] or "@" + r["from"]).items():
         out.append({
             "table": key,
             "family": "direct",
-            "via": "00026370",
-            "dim": "1D-8",
-            "axis_x": "implicit-32",   # 8 точек, шаг 32 по сырому байту 0..224
+            "via": join_uniq(g["prim"] for g in grp),
+            "kernel": "-",
+            "dim": join_uniq("1D-" + g["points"] for g in grp),
+            "elem": join_uniq("u%d" % (int(g["width"]) * 8) for g in grp),
+            "axis_x": join_uniq("implicit-" + g["step"] for g in grp),
             "axis_y": "",
             "vals": join_uniq(g["vals"] for g in grp),
             "accessors": join_uniq(g["from_func"] for g in grp if g["from_func"] != "?")
@@ -170,6 +225,18 @@ def load_direct():
 
 def main():
     out = load_interp() + load_direct()
+
+    # Семейства не должны делить таблицу: у таблицы одна геометрия, и чтение её двумя
+    # разными примитивами означало бы ошибку ценза, а не находку. Проверка держит это
+    # утверждение фактом, а не допущением.
+    seen = {}
+    for row in out:
+        if row["table"] in seen:
+            other = seen[row["table"]]
+            sys.exit("таблица %s в двух семействах: %s/%s и %s/%s" % (
+                row["table"], other["family"], other["via"], row["family"], row["via"]))
+        seen[row["table"]] = row
+
     for row in out:
         resolved = not row["table"].startswith("@")
         status, name, note = SEED.get(row["table"], ("", "", ""))

@@ -1,24 +1,30 @@
-// DirectLookupInventory.java – инвентаризация карт через примитив прямого lookup.
+// DirectLookupInventory.java – инвентаризация карт через банк примитивов с неявной осью.
 //
-// Модель отличается от MapInventory (interp-kernel): обёрток нет, аксессор зовёт
-// примитив напрямую через pool-слот, указателей осей нет (ось неявная, шаг 32 по
-// сырому байту). Слот != вызов: один загруженный в callee-saved регистр указатель
-// обслуживает несколько jsr подряд.
+// Модель отличается от MapInventory (explicit-axis): обёрток нет, аксессор зовёт
+// примитив напрямую через pool-слот, указателя оси нет. Ось неявная и равномерная:
+// точки 0..(N-1) с шагом step по сырому входу, последняя точка = лимит. Слот != вызов:
+// один загруженный в callee-saved регистр указатель обслуживает несколько jsr подряд.
 //
 // Уровни: (1) слоты со значением примитива (BE u32) -> (2) инструкция-загрузка
 // mov.l @(disp,pc),rN внутри аксессора -> (3) forward-скан по функции: каждый
 // jsr/jmp @rN, пока rN не переопределён, = место вызова -> (4) снятие r4 (таблица,
 // pc-relative pool load) и r5 (вход) с учётом delay slot.
 //
-// Таблица примитива - ровно 8 беззнаковых байт, поэтому содержимое выкладывается
-// прямо в ценз. Ширина и знак сняты с кода: 0x26370 ставит R0=224 и не трогает его
-// до JMP, поэтому селектор ширины в 0x26A80 (SHLR8 R0; TST R0,R0) всегда выбирает
-// byte-путь, а тот зануляет старшие биты через EXTU.B. Word-путь 0x26A80 из этого
-// входа недостижим.
+// Геометрия каждого примитива задаётся аргументом и снята с его кода: примитив
+// сравнивает вход с лимитом (CMP/HS) и на выходе за диапазон читает крайнюю точку
+// (MOV.B @(N-1,R4) / MOV.W @(2*(N-1),R4)), а шаг задаётся точкой входа в общую
+// цепочку SHLR/ROTCR: вход на K пар выше слияния даёт index = raw >> K, step = 2^K.
+// Оба вывода независимы и сходятся на всех входах банка (см. JK03A.notes.md,
+// раздел "Банк примитивов с неявной осью").
 //
-// Запуск (headless): -postScript DirectLookupInventory.java <out_dir> <prim_hex>
+// Ширина элемента здесь выводится тем же правилом, что и в ПЗУ: цепочка делает
+// SHLR8 R0; TST R0,R0 над лимитом, то есть лимит >= 256 означает word-таблицу.
+// Отдельного флага ширины в коде нет. Оба пути читают элемент беззнаково (EXTU.B/EXTU.W).
+//
+// Запуск (headless):
+//   -postScript DirectLookupInventory.java <out_dir> <prim_hex:points:step> [...]
 // Выход: direct_lookup_inventory.csv
-//   slot,aligned,load_at,reg,from,from_func,mnem,table,vals,r5_src
+//   prim,points,step,width,slot,aligned,load_at,reg,from,from_func,mnem,table,vals,r5_src
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.Register;
@@ -50,11 +56,49 @@ public class DirectLookupInventory extends GhidraScript {
     public void run() throws Exception {
         String[] a = getScriptArgs();
         String outDir = a[0];
-        long prim = Long.parseLong(a[1], 16);
 
         mem = currentProgram.getMemory();
         listing = currentProgram.getListing();
         fm = currentProgram.getFunctionManager();
+
+        PrintWriter w = new PrintWriter(new FileWriter(new File(outDir, "direct_lookup_inventory.csv")));
+        w.println("prim,points,step,width,slot,aligned,load_at,reg,from,from_func,mnem,table,vals,r5_src");
+
+        LinkedHashSet<String> allSites = new LinkedHashSet<>();
+        LinkedHashSet<String> allTables = new LinkedHashSet<>();
+        int allSlots = 0, allLoads = 0;
+
+        for (int i = 1; i < a.length; i++) {
+            String[] spec = a[i].split(":");
+            long prim = Long.parseLong(spec[0], 16);
+            int points = Integer.parseInt(spec[1]);
+            int step = Integer.parseInt(spec[2]);
+            long limit = (long) (points - 1) * step;
+            int width = ((limit >> 8) != 0) ? 2 : 1;   // SHLR8 R0; TST R0,R0
+
+            Res r = census(w, prim, points, step, width);
+            allSlots += r.slots;
+            allLoads += r.loads;
+            allSites.addAll(r.sites);
+            allTables.addAll(r.tables);
+            println(String.format("VQ_DLI %05x points=%d step=%d width=%d limit=%d"
+                    + " slots=%d loads=%d no_load=%d sites=%d tables=%d",
+                    prim, points, step, width, limit,
+                    r.slots, r.loads, r.noload, r.sites.size(), r.tables.size()));
+        }
+        w.close();
+        println("VQ_DLI_TOTAL slots=" + allSlots + " loads=" + allLoads
+                + " call_sites=" + allSites.size() + " tables=" + allTables.size());
+    }
+
+    static class Res {
+        int slots, loads, noload;
+        LinkedHashSet<String> sites = new LinkedHashSet<>();
+        LinkedHashSet<String> tables = new LinkedHashSet<>();
+    }
+
+    Res census(PrintWriter w, long prim, int points, int step, int width) throws Exception {
+        Res res = new Res();
         ReferenceManager rm = currentProgram.getReferenceManager();
 
         // 1. слоты: локации со значением примитива (BE u32)
@@ -70,13 +114,7 @@ public class DirectLookupInventory extends GhidraScript {
             slots.add(found);
             start = found.add(1);
         }
-
-        PrintWriter w = new PrintWriter(new FileWriter(new File(outDir, "direct_lookup_inventory.csv")));
-        w.println("slot,aligned,load_at,reg,from,from_func,mnem,table,vals,r5_src");
-
-        int loads = 0, noload = 0;
-        LinkedHashSet<String> sites = new LinkedHashSet<>();
-        LinkedHashSet<String> tables = new LinkedHashSet<>();
+        res.slots = slots.size();
 
         // 2. загрузки слота в регистр
         for (Address slot : slots) {
@@ -91,7 +129,7 @@ public class DirectLookupInventory extends GhidraScript {
                 Register reg = soleResultReg(ins);
                 if (reg == null) continue;
                 any = true;
-                loads++;
+                res.loads++;
                 Function host = fm.getFunctionContaining(at);
 
                 // 3. forward-скан: вызовы через этот регистр
@@ -101,25 +139,24 @@ public class DirectLookupInventory extends GhidraScript {
                     String vals = "", tbl = "";
                     if (t != -1 && t < ROM_HI) {
                         tbl = String.format("%08x", t);
-                        vals = readVals(t);
-                        tables.add(tbl);
+                        vals = readVals(t, points, width);
+                        res.tables.add(tbl);
                     }
                     Instruction s5 = lastSetter(site, "r5");
                     w.println(String.join(",",
+                            String.format("%08x", prim), String.valueOf(points),
+                            String.valueOf(step), String.valueOf(width),
                             slot.toString(), String.valueOf(aligned), at.toString(),
                             reg.getName(), site.toString(),
                             host == null ? "?" : host.getEntryPoint().toString(),
                             ci == null ? "?" : ci.getMnemonicString(),
                             tbl, q(vals), q(s5 == null ? "" : s5.toString())));
-                    sites.add(site.toString());
+                    res.sites.add(site.toString());
                 }
             }
-            if (!any) noload++;
+            if (!any) res.noload++;
         }
-        w.close();
-        println("VQ_DLI slots=" + slots.size() + " loads=" + loads
-                + " slots_without_load=" + noload
-                + " call_sites=" + sites.size() + " tables=" + tables.size());
+        return res;
     }
 
     // Единственный регистр-результат инструкции (mov.l @(disp,pc),rN).
@@ -210,15 +247,16 @@ public class DirectLookupInventory extends GhidraScript {
         return -1;
     }
 
-    // 8 беззнаковых байт таблицы (точки 0..7 неявной оси с шагом 32)
-    String readVals(long addr) {
+    // Точки таблицы, беззнаково (обе ветви цепочки заканчиваются EXTU.B/EXTU.W).
+    String readVals(long addr, int points, int width) {
         StringBuilder sb = new StringBuilder();
         try {
             Address base = currentProgram.getAddressFactory()
                     .getDefaultAddressSpace().getAddress(addr);
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < points; i++) {
                 if (i > 0) sb.append(' ');
-                sb.append(mem.getByte(base.add(i)) & 0xff);
+                if (width == 1) sb.append(mem.getByte(base.add(i)) & 0xff);
+                else sb.append(mem.getShort(base.add(2L * i)) & 0xffff);
             }
         } catch (Exception e) { return ""; }
         return sb.toString();
