@@ -245,26 +245,33 @@
          (единственный писатель FUN_00020dfe - планировщик 124 задач; читается
          лимитером/топливом/зажиганием, обработанная скорость двигателя в
          единицах rpm/12.5). Порог выбирается флагом byte[0xFFFF246D] bit7:
-           - флаг=0: 0x8FDC = 0x0262 = 7625 rpm (номинальная отсечка, у redline);
-           - флаг=1: 0x8FDE = 0x0210 = 6600 rpm (сниженный режим).
+           - флаг=0: 0x8FDC = 0x0262 = 7625 rpm;
+           - флаг=1: 0x8FDE = 0x0210 = 6600 rpm.
          cmp/hs word[0xFFFF266E] >= порог => установка бита отсечки
          byte[0xFFFF246A] bit7 (иначе сброс).
          [CONFIRMED] кодом: источник RPM, оба порога и их адреса, выходной флаг,
            сама логика сравнения (листинг 0x47b8a-0x47bb4).
          [CANDIDATE]: множитель x*12.5 (стандарт A2L mNMAX2 + точное совпадение
-           7625 с redline VQ25HR 7500; инструкцией деления не доказан) и семантика
-           селектора 0xFFFF246D bit7 (номинал/нейтраль либо гистерезис cut->restore).
+           7625 с redline VQ25HR 7500; инструкцией деления не доказан).
+         [CANDIDATE] идентичность пары по ProECU-гайду 370Z (refs/ecutek/) -
+           "Rev Limit - Fuel Cut Maximum": верхнее значение = обороты отсечки,
+           нижнее = обороты восстановления. То есть флаг 0xFFFF246D bit7 = состояние
+           "отсечка активна", а пара образует гистерезис cut/restore. Закрывается
+           трейсом писателя 0xFFFF246D bit7: совпадение с выходом 0xFFFF246A bit7
+           доказывает гистерезис, иной писатель - режимный селектор.
+         Тот же гайд перечисляет отдельные 2D-карты рабочего лимита
+           "Rev Limit - Fuel Cut"/"Restore" ниже максимума - в дампе не локализованы.
          Смежные слова 0x8FD8=[6325,6050] rpm используются иными функциями
            (0x6edbc/0x7054a), не rev-лимитером => в карту не включены.
          ================================================================ -->
 
-    <table type="2D" name="Rev Limit - Fuel Cut Speed (0x8FDC)" category="Limiters (traced)"
+    <table type="2D" name="Rev Limit - Fuel Cut Maximum (0x8FDC)" category="Limiters (traced)"
            storagetype="uint16" storageaddress="0x08FDC" sizex="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5"
                format="0" fineincrement="12" coarseincrement="125"/>
       <table type="Static X Axis" name="Selector byte[0xFFFF246D] bit7" sizex="2">
-        <data>nominal</data>
-        <data>reduced</data>
+        <data>cut (bit7=0)</data>
+        <data>restore (bit7=1)</data>
       </table>
     </table>
 

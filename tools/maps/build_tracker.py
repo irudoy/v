@@ -6,6 +6,10 @@ MapInventory.java по kernel'у 0x26944 и содержит все ссылки
 интерполяторы. Строки reftype=DATA - это pool-слоты с адресом обёртки, а не
 места вызова; в ценз карт входят только is_call=true.
 
+Охват: только interp-семейство (карты с явными указателями осей). Второе
+семейство - прямой lookup 0x26370 с неявной осью - в перепись не попадает и в
+ledger'е не представлено, см. JK03A.notes.md, раздел "Прямой lookup 0x26370".
+
 Скрипт merge-aware: механические колонки (обёртка, размерность, оси, аксессоры,
 число сайтов) пересобираются из переписи, а разметка (status/name/note)
 переносится из существующего ledger'а. Значит после повторного прогона
@@ -79,9 +83,10 @@ SEED = {
 EXTRA = [{
     "table": "00008fdc", "wrapper": "-", "dim": "2-cell", "axis_x": "", "axis_y": "",
     "accessors": "00047a56", "sites": "0", "status": "in-def",
-    "name": "Rev Limit - Fuel Cut Speed",
-    "note": "не через kernel: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), "
-            "пороги 0x8fdc=7625/0x8fde=6600 rpm, выбор 0xFFFF246D bit7",
+    "name": "Rev Limit - Fuel Cut Maximum",
+    "note": "не через kernel: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги "
+            "0x8fdc=7625 (отсечка)/0x8fde=6600 (восстановление), селектор 0xFFFF246D "
+            "bit7; имя пары по ProECU [CANDIDATE]",
 }]
 
 

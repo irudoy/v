@@ -4,7 +4,7 @@ table,wrapper,dim,axis_x,axis_y,accessors,sites,status,name,note
 0000b61a,00026320,16x16,00011b6b,00011b8b,00082c8a,1,in-def,Ignition Adj Map [flag=set],CONFIRMED: выбор по gbr+0x93 bit0
 0000b71a,00026320,16x16,00011b6b,00011b8b,00082c8a,1,in-def,Ignition Adj Map [flag=clr],CONFIRMED: выбор по gbr+0x93 bit0
 0000b81a,00026320,16x16,00011b6b,00011b8b,00082c8a,1,in-def,Ignition Adj Map [always],"CONFIRMED: аксессор 0x82c8a, оси RPM 0x11b6b x нагрузка 0x11b8b"
-00008fdc,-,2-cell,,,00047a56,0,in-def,Rev Limit - Fuel Cut Speed,"не через kernel: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги 0x8fdc=7625/0x8fde=6600 rpm, выбор 0xFFFF246D bit7"
+00008fdc,-,2-cell,,,00047a56,0,in-def,Rev Limit - Fuel Cut Maximum,"не через kernel: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги 0x8fdc=7625 (отсечка)/0x8fde=6600 (восстановление), селектор 0xFFFF246D bit7; имя пары по ProECU [CANDIDATE]"
 0000ab0a,00026140,8x8,000120ae,000120b6,000befb0,1,in-def,Transient Fuel Corr - magnitude,CONFIRMED геометрия/оси; [CANDIDATE] единицы значений
 0000b23a,00026140,8x8,00012858,00012860,000befb0,1,in-def,Transient Fuel Corr - weight,CONFIRMED геометрия/оси; [CANDIDATE] единицы значений
 0001236a,000264a0,1D-16,0001238a,,0008152a;00081d74,2,identified,Fuel enrichment vs MBT-like axis,"CONFIRMED: ось 0x1238a (0..128 шаг 8), вход byte[0xFFFF11AE]; питает топливо, не угол - разбор K2Y"
