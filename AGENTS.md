@@ -6,7 +6,8 @@ MCU Renesas SH7058 / SH7059, ядро SH-2E):
 - **VQ37VHR** – VVEL + dual CVTC;
 - **VQ35HR**, **VQ25HR** – dual CVTC, без VVEL.
 
-Тестовая платформа – **V36 Skyline 250GT** (VQ25HR, в доступе). Целевое применение –
+Тестовая платформа – **V36 Skyline 250GT** (VQ25HR, в доступе), ЭБУ `23710-JK08A`; дампа с
+него нет, RE VQ25HR идёт по донорскому `JK03A` (`rom-images/README.md`). Целевое применение –
 **VQ35HR** и **VQ37VHR**. **P0-веха – отшитие NATS** (PoC). Reflash – **KESS V2**
 (OBD); заводская диагностика – **CONSULT-III Plus** через **Nissan VCI WiFi**.
 
@@ -25,12 +26,17 @@ MCU Renesas SH7058 / SH7059, ядро SH-2E):
 
 ## RE-стек
 
-**Ghidra** (декомп + экспорт call / xref / data-flow) -> **Memgraph** (граф
-структуры, гомология, персистентная память проекта) -> **LLM-агент через MCP**.
+Канонический путь – headless: **Ghidra** (декомп + экспорт call / xref / data-flow, Java
+GhidraScript) -> **Memgraph** (граф структуры, гомология, персистентная память проекта) ->
+**LLM-агент** (поверх графа и headless-артефактов). Пайплайн от GUI не зависит, идёт в
+автономном/пакетном режиме.
 
-Развёрнуто локально (arm64): Ghidra 12.1.2 (JDK 21, нативы) + плагин и мост GhydraMCP
-(stdio MCP-сервер `ghydra` в Claude Code) + Memgraph MAGE (Louvain / Leiden). Версии,
-порты и команды поднятия – `tools/README.md`.
+Развёрнуто локально (arm64): Ghidra 12.1.2 (JDK 21, нативы) + Memgraph MAGE (Louvain /
+Leiden). Граф агент читает через MCP-сервер `mcp-memgraph` (stdio, scope project, read-only) –
+он headless-native и потому часть канонического пути; запись в граф остаётся за загрузчиками.
+GhydraMCP (плагин + мост `ghydra`, stdio MCP в Claude Code) – опциональный интерактивный
+ускоритель live-сессий реверса, требует открытый GUI, вне критического пути.
+Версии, порты, команды поднятия и роли – `tools/README.md`, `tools/map-flag-pipeline.md`.
 
 Дисциплина верификации: **ground truth – в кремнии.** Структура графа != семантика.
 Любое техническое утверждение до заливки проверяется на железе (CONSULT3P live-data,
