@@ -128,6 +128,7 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `memgraph/load_graph.py` | `:Func` + `:CALLS`, Louvain на проекции call-графа ROM | Memgraph |
 | `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |
 | `memgraph/load_maps.py` | калибровочный слой из `accessors.csv`: `:Interp`/`:Map`/`:Axis` + `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
+| `memgraph/load_a2l.py` | `:A2LEntry` из `A2L.xml` – rom-независимый эталон семейства HR (карты, скаляры, switch'и), без адресов | Memgraph |
 
 ```bash
 D=~/tools/ghidra-projects/export-1ND0A
@@ -156,7 +157,15 @@ $H -readOnly -postScript MapInventory.java     "$D" 26944   # слоты -> об
 $H -readOnly -postScript ResolveAccessors.java "$D" 26944   # data-flow против backtrack
 # 3. калибровочный слой в граф (после load_graph: тот пересоздаёт :Func вместе с :ACCESSES)
 uv run --no-project --with neo4j python tools/memgraph/load_maps.py "$D" JK03A 26944
+# 4. эталон каталога HR: rom-независим, грузится раз на семейство, не на дамп
+uv run --no-project --with neo4j python tools/memgraph/load_a2l.py
 ```
+
+`load_a2l` кладёт в граф каталог `A2L.xml` (188 `:A2LEntry`: 106 карт, 36 скаляров, 46
+switch'ей). Адресов в базовом дефе нет – каталог задаёт классы, а не размещение, и между
+дампами переносится идентичность, а не смещения. Нотация RomRaider нормализуется по числу
+осей (`2D` -> `dims=1`, `3D` -> `dims=2`), `shape` пишется словарём обёрток (`16x16`, `1D-8`).
+Рёбра `:MATCHES` строятся после Stage 4: у `:Map` из ключей матча есть только `dims`.
 
 `RecoverFuncs` под `-readOnly` считает и отчитывается, не сохраняя разметку (dry-run); без
 `-readOnly` она идёт в проект, и её видит `ExportGraph`. JK03A: 38627 инструкций в 494 участках
