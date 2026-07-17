@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # Загрузка call-графа Ghidra (funcs.csv + calls.csv из ExportGraph.java) в Memgraph
-# и кластеризация подсистем (Louvain). Узлы :Func {rom,addr,name,size,is_thunk,
-# is_external}, рёбра (:Func)-[:CALLS]->(:Func). Повторный прогон для того же rom
-# идемпотентен (узлы этого rom пересоздаются).
+# и кластеризация подсистем (Louvain на проекции call-графа этого rom). Узлы
+# :Func {rom,addr,name,size,is_thunk,is_external}, рёбра (:Func)-[:CALLS]->(:Func).
+# Повторный прогон для того же rom идемпотентен (узлы этого rom пересоздаются).
 #
 # Запуск: uv run --no-project --with neo4j python tools/memgraph/load_graph.py \
 #           <export_dir> <rom_label>
@@ -68,19 +68,30 @@ def main():
         ).single()["n"]
         print(f"Memgraph: {nn} nodes, {ne} CALLS edges")
 
-        # Louvain: community_detection.get() кластеризует весь граф в storage.
+        # Louvain на проекции call-графа этого rom: алгоритму видны только :Func и
+        # CALLS. По всему storage кластеризация непригодна - :Reg связывает любые две
+        # функции, обращающиеся к общему адресу, и граф схлопывается в один мегакластер.
+        # Функции без вызовов в проекцию не входят и остаются без community.
+        s.run("MATCH (f:Func {rom:$rom}) REMOVE f.community", rom=rom)
         s.run(
             """
-            CALL community_detection.get() YIELD node, community_id
+            MATCH p=(:Func {rom:$rom})-[:CALLS]->(:Func {rom:$rom})
+            WITH project(p) AS g
+            CALL community_detection.get(g) YIELD node, community_id
             SET node.community = community_id
-            """
+            """,
+            rom=rom,
         )
         nc = s.run(
             "MATCH (f:Func {rom:$rom}) WHERE f.community IS NOT NULL "
             "RETURN count(DISTINCT f.community) AS c",
             rom=rom,
         ).single()["c"]
-        print(f"Louvain: {nc} communities")
+        iso = s.run(
+            "MATCH (f:Func {rom:$rom}) WHERE f.community IS NULL RETURN count(f) AS n",
+            rom=rom,
+        ).single()["n"]
+        print(f"Louvain: {nc} communities, {iso} функций без вызовов (вне проекции)")
         print("Top communities (size, sample funcs):")
         rows = s.run(
             """
