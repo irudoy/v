@@ -8,12 +8,14 @@ PDF-оригиналы и markitdown-конверсии `*.md` версиони�
 
 | Файл (`.pdf` + `.md`) | Стр | Тип | Что внутри |
 |-----------------------|----:|-----|------------|
-| `renesas-sh7059-sh7058s-hardware-manual` | 1050 | Renesas datasheet | SH7058S / SH7059 F-ZTAT HW manual: ядро **SH-2E**, flash (1.0 / 1.5 MB), RAM, on-chip **HCAN-II** (CAN 2.0B), FPU, периферия, регистры. `.md` git-ignored (крупный). |
+| `renesas-sh7059-sh7058s-hardware-manual` | 1050 | Renesas datasheet | SH7058S / SH7059 F-ZTAT HW manual: ядро **SH-2E**, flash (1.0 / 1.5 MB), RAM, on-chip **HCAN-II** (CAN 2.0B), FPU, периферия, регистры. |
 | `pcmflash-module-list` | 18 | PCMflash list | Модули reflash. **Module 18 "Nissan/Infiniti CAN-bus"** – `EFI SH705927N (Hitachi SH7059/1.5MB) [RD/WR/CK]`; **Module 42 "Denso SH705X Bootloader"**. |
 | `bosch-lsu-4.9-datasheet` | 4 | Bosch datasheet | Сенсор Bosch LSU 4.9 (планарный ZrO2, 5-провод, single-cell), основа AEM UEGO X-Series. |
 | `nissan-ners-techinfo` | 9 | Nissan (first-party) | NERS (Nissan ECU Reprogramming Software) через J2534: только подписанные калибровки по part #, без сырого дампа. |
 | `motec-m150-datasheet` | 7 | MoTeC datasheet | ЭБУ M150: I/O (10 half-bridge выходов и др.), спецификации. |
-| `uprev-nissan-tuning-guide` | 28 | UpRev (vendor) | Тюнинг-гайд Nissan/Infiniti (reflash стокового ЭБУ, boost, failsafes; контекст NATS / лицензии). |
+| `uprev/UpRev-Nissan-Tuning-Guide-Rev2` | 28 | UpRev (vendor) | Тюнинг-гайд Nissan/Infiniti (reflash стокового ЭБУ, boost, failsafes; контекст NATS / лицензии). `.pdf` + markitdown `.md`. |
+| `uprev/UpRev-User-Guide-Rev2` | 12 | UpRev (vendor) | Руководство пользователя UpRev (тулинг reflash, workflow). Только `.pdf`. |
+| `uprev/ECU-Bench-Harness-Pinouts` | 1 | UpRev (vendor) | Распиновка стендового bench-harness ЭБУ (одностраничник). Только `.pdf`. |
 
 ## sha256 (PDF-оригиналы)
 
@@ -22,7 +24,9 @@ PDF-оригиналы и markitdown-конверсии `*.md` версиони�
 - `bosch-lsu-4.9-datasheet.pdf` – `049837312a1edfb9e01e5fa767e86ab2a67697cc3fafd20c9b02674e51dac8c7`
 - `nissan-ners-techinfo.pdf` – `5488a68bacd51bb4f77f0ad628184530d690abb9ab81ab3d06ba0801922b1b6a`
 - `motec-m150-datasheet.pdf` – `ca9f400d314ebeecd7e3cdbd7c7a4bab9280737154519ab6c2286dbd4845910c`
-- `uprev-nissan-tuning-guide.pdf` – `e337931010c4c9996f7f9556947f63613c73fe847c66a5b810878a665e48707e`
+- `uprev/UpRev-Nissan-Tuning-Guide-Rev2.pdf` – `e337931010c4c9996f7f9556947f63613c73fe847c66a5b810878a665e48707e`
+- `uprev/UpRev-User-Guide-Rev2.pdf` – `f6ade3f275e234c6533c640ff0fadba4ceb3ffa212aa846c2b488ee83dd3d5bd`
+- `uprev/ECU-Bench-Harness-Pinouts.pdf` – `335650facbc45a3a3d056e196fb78c715f8c352f4e92bad75c158fa425cbe4f8`
 
 ## Источники (URL)
 

@@ -1,4 +1,4 @@
-# Патч immo "always ID OK" – 1ND0A (черновик)
+# Патч immo "always ID OK" (черновик) – 1ND0A эталон, порты 1ND3B / JK78C / JK03A
 
 ЭБУ Hitachi, MCU Renesas SH7059 (ядро SH-2E), образ `rom-images/1ND0A_Stock.bin`
 (1.5 MiB, big-endian, base 0x0). Загрузка в Ghidra: `SuperH:BE:32:SH-2A`.
@@ -24,7 +24,7 @@ FKEY/FTDAR/FCCS, reset-вектор без restore immo-RAM; SCI-кластер 
 Поэтому ECU-side рычаг здесь один – правка кода immo-контура (always-ID-OK); virgin/re-marry
 на ECM сбрасывать нечего.
 
-Достаточность: UpRev-гайд (`refs/uprev`) сообщает, что тщательный ECU-side NATS-off
+Достаточность: UpRev-гайд (`refs/uprev/UpRev-Nissan-Tuning-Guide-Rev2.pdf`) сообщает, что тщательный ECU-side NATS-off
 "completely bypass NATS code inside the ECU" и позволяет пускать мотор без married-ключа
 при свапе ЭБУ между машинами. ECM не транслирует immo-состояние в CAN (immo<->CAN мост
 пуст, раздел "immo и CAN" ниже), поэтому чужой BCM пассивно не видит от ECM "immo not-OK", и
@@ -80,7 +80,7 @@ ROM-константы):
 
 Согласуется с Model B' (immo-состояние – live RAM-латч, NV/калибровочной идентичности нет):
 вкл/выкл-калибровки не существует by design. UpRev-тумблер "NATS off" ("completely bypass the
-NATS code inside the ECU", `refs/uprev`) – кодовая правка их тулингом (pro-tuner-only, не
+NATS code inside the ECU", `refs/uprev/UpRev-Nissan-Tuning-Guide-Rev2.pdf`) – кодовая правка их тулингом (pro-tuner-only, не
 выведен значением мапы), класс тот же, что L1/L2. Lock и registered – **независимые** латч-биты,
 поэтому минимальный рычаг на первичном канале – 2 инструкции (L1 Lock-suppress + L2
 registered-force); свести к одному биту нельзя.
@@ -202,7 +202,7 @@ python3 patches/apply_immo_patch.py --verify-only
 - `0xFFFEB852 b0` (registered) читается 1 безусловно; `b1` (Lock) не встаёт.
 - immo-DTC P1610-P1615 / P1611-P1612 не пишутся.
 - Пуск без married BCM: UpRev сообщает, что тщательного ECU-side NATS-off достаточно для
-  свапа ЭБУ (`refs/uprev`); на конкретном стендовом BCM подтверждается по live CAN. Патч
+  свапа ЭБУ (`refs/uprev/UpRev-Nissan-Tuning-Guide-Rev2.pdf`); на конкретном стендовом BCM подтверждается по live CAN. Патч
   закрывает ECM-side состояние; ECM не вещает immo на CAN, поэтому репорт-полнота – уже в ядре.
 
 ## Эскалация (если ядра недостаточно)
@@ -345,7 +345,7 @@ JK78C. L2' – `bt/s` с delay-slot `mov.l r6,@(8,r15)`: инструкция de
 ### JK03A: верификация
 
 Подтверждено дизасмом (capstone SH-2A BE + round-trip) и Ghidra 12.1.2 (headless import +
-`ghidra/ImmoConfirm.java`): (a) стоковые байты всех 5 сайтов совпали; (b) Ghidra listing
+`tools/ghidra/ImmoConfirm.java`): (a) стоковые байты всех 5 сайтов совпали; (b) Ghidra listing
 патч-сайтов совпал байт-в-байт (`cf 04`, `89 09`, `cd fe`, `cd bf`); (c) декомпилятор
 подтвердил двухканальный registered-латч (`pbVar2[0x3d]&1`, `pbVar2[0x3e]&0x40`), counter-гейты
 `<0x0b` (registration) и `<0x20` (lock); (d) обе функции – в общем immo-диспетчере `0x7c0xx`.
