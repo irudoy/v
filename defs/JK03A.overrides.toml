@@ -1,0 +1,132 @@
+# Презентационный слой дефа JK03A: имена, категории, порядок, шаги редактора и блок
+# опознавателя ROM. Факты (адреса, форма, элемент, оси, шкала, уровень) сюда не идут -
+# их несёт граф, а расходятся источники ровно тогда, когда один факт объявлен дважды.
+#
+# Читает tools/mapkit/emit_def.py; ключ слияния - адрес карты либо оси, как в графе
+# (8 hex-цифр, нижний регистр).
+
+[rom]
+xmlid = "JK03A"
+internalidaddress = "8205"
+internalidstring = "JK03A"
+ecuid = "1JK03A"
+caseid = "7MFKAVN86"
+make = "Nissan"
+model = "Skyline V36 250GT"
+submodel = "VQ25HR"
+market = "JDM"
+transmission = "AT"
+memmodel = "SH7058"
+endian = "big"
+flashmethod = "Nisprog"
+filesize = "1024kb"
+author = "VQ HR ECU project"
+version = "WIP"
+
+# Целевой дамп: rom-images/v36-vq25hr-jk03a/as7058.bin,
+# sha256 f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4.
+# Отличается от reference/Pytrex .../G35/JK03A.xml: тот - пустой опознаватель (romid +
+# checksum, 0 таблиц). Донор структуры - EV18A (350Z HR, тот же SH7058/1MB non-VVEL), но
+# его storageaddress на этот дамп не ложатся: layout калибровки JDM 2.5L отличается от
+# USDM 3.5L.
+[rom.comment]
+text = """
+Разбор и метод - defs/JK03A.notes.md. Уровень каждой таблицы - в её комментарии.
+Категория с суффиксом (candidate) - карта опознана, но не трейсом; единицы с
+суффиксом [cand] - множитель взят из каталога A2L либо по форме данных и кодом
+не закреплён.
+"""
+
+[checksum]
+type = "alt"
+start = "0x2040C"
+end = "0x2259A"
+sumloc = "0x20404"
+xorloc = "0x20408"
+comment = """
+Унаследован из reference Pytrex JK03A. Помечен upstream как EXPERIMENTAL, под этот
+дамп НЕ верифицирован: до флеша сверить алгоритм (RomRaider NissanChecksum, тип alt
+vs alt2 под HR).
+"""
+
+# Оси, показанные отдельными таблицами: своей карты с разобранной семантикой у них нет,
+# но значения читаются кодом и служат опорой при разборе соседних подсистем.
+[axisview.00011ece]
+name = "Engine Speed Axis [RPM] (ref)"
+category = "Reference Axes"
+order = 1
+fine = 50
+coarse = 200
+
+[axisview.00011ebe]
+name = "FUN_0004bbee Axis X (ref)"
+category = "Reference Axes"
+order = 2
+coarse = 8
+
+[table.0000b61a]
+name = "Ignition Adj Map [flag=set] (0xB61A)"
+category = "Ignition (traced)"
+order = 10
+coarse = 4
+
+[table.0000b71a]
+name = "Ignition Adj Map [flag=clr] (0xB71A)"
+category = "Ignition (traced)"
+order = 11
+coarse = 4
+
+[table.0000b81a]
+name = "Ignition Adj Map [always] (0xB81A)"
+category = "Ignition (traced)"
+order = 12
+coarse = 4
+
+[table.0000b33a]
+name = "Target AFR - Power (0xB33A)"
+category = "AFR / Lambda (traced)"
+order = 20
+format = "0.00"
+fine = 0.1
+coarse = 0.5
+
+[table.0000a29a]
+name = "Lambda Target - flat (0xA29A)"
+category = "AFR / Lambda (traced)"
+order = 21
+format = "0.00"
+fine = 0.1
+coarse = 0.5
+
+[table.0000ab0a]
+name = "Transient Fuel Corr - magnitude (0xAB0A)"
+category = "Transient / Decel (traced)"
+order = 30
+coarse = 4
+
+[table.0000b23a]
+name = "Transient Fuel Corr - weight (0xB23A)"
+category = "Transient / Decel (traced)"
+order = 31
+coarse = 4
+
+[table.00008fdc]
+name = "Rev Limit - Fuel Cut Maximum (0x8FDC)"
+category = "Limiters (traced)"
+order = 40
+fine = 12
+coarse = 125
+# Ось - не массив в ПЗУ, а выбор ветвлением: пара порогов читается прямым компаратором.
+static_axis = ["cut (bit7=0)", "restore (bit7=1)"]
+
+[table.000121fe]
+name = "Over Run Fuel Cut threshold (0x121FE)"
+category = "Limiters (traced)"
+order = 41
+coarse = 4
+
+[table.0001236a]
+name = "Fuel enrichment vs MBT-like axis (0x1236A)"
+category = "Fuel (traced)"
+order = 50
+coarse = 4

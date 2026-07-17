@@ -44,22 +44,27 @@ GhydraMCP (плагин + мост `ghydra`, stdio MCP в Claude Code) – оп�
 
 ## Карта репозитория
 
-- `rom-images/` – ROM-дампы (`*.bin` + архивы) с RomRaider forum, все VQ37VHR (гомолог-пара
-  SH7058 USDM / SH7059 JDM), плюс immo-патченные варианты. Версионируются в git; манифест
+- `rom-images/` – ROM-дампы (`*.bin` + архивы) с RomRaider forum: VQ37VHR (гомолог-пара
+  SH7058 USDM / SH7059 JDM) и донорский `JK03A` (VQ25HR, тот же мотор, что тестовая платформа),
+  плюс immo-патченные варианты. Версионируются в git; манифест
   `rom-images/README.md` (sha256, part #, идентификация, источники). Дамп опознаётся по sha256.
 - `refs/` – внешние даташиты / мануалы (Renesas SH7059 HW manual, PCMflash module list,
   Bosch LSU 4.9, NERS, MoTeC M150, UpRev) + зеркало NissanECU RE wiki (`refs/nissanecu-wiki/`).
   PDF-оригиналы, markitdown-конверсии `*.md` и манифест `refs/README.md` – всё в git.
-- `tools/` – инфраструктура RE-стека: `memgraph/docker-compose.yml` (Memgraph MAGE + Lab),
-  `ghidra/headless-analyze.sh` (обёртка `analyzeHeadless` с JDK 21), `README.md` (версии,
-  порты, команды). Сами инструменты (Ghidra, GhydraMCP) и Ghidra-проекты – вне git.
+- `tools/` – инфраструктура RE-стека: `ghidra/` (Java-экстракторы, `headless-analyze.sh`,
+  `symbols.csv`), `memgraph/` (`docker-compose.yml` Memgraph MAGE + Lab, загрузчики `load_*.py`),
+  `maps/build_tracker.py` (ledger) и `mapkit/emit_def.py` (генератор дефа), спека пайплайна
+  карт `map-flag-pipeline.md`, `README.md` (версии, порты, команды). Сами инструменты
+  (Ghidra, GhydraMCP) и Ghidra-проекты – вне git.
 - `AGENTS.md` – этот файл.
 - `.gitignore` – правила игнора (мусор ОС, scratch, регенерируемые кэши Ghidra / Memgraph).
   Контентные артефакты (ROM, даташиты, дефы, зеркала) версионируются.
 - `defs/` – деф-файлы таблиц. `defs/reference/` – submodules открытых RomRaider Nissan-дефов
   (Pytrex, a33b) как референс карт (манифест и релевантность – `defs/README.md`); свои дефы
   под целевой ROM – по мере RE.
-- (по мере работы) `ghidra/` (экспорты графа), `logs/`.
+- `patches/` – спеки и скрипты патчей immo (`immo-always-id-ok.md`; `apply_immo_patch.py`,
+  `lock_setbit_scan.py`); патченые образы – в `rom-images/`. Экспорты Ghidra и Ghidra-проект –
+  вне репозитория (`~/tools/ghidra-projects/`, регенерируемы).
 
 ## Конвенции
 
@@ -68,8 +73,7 @@ GhydraMCP (плагин + мост `ghydra`, stdio MCP в Claude Code) – оп�
 - Тексты декларативны: описывают состояние, а не ход работы над ним.
 - Форматирование (глобальный CLAUDE.md): en-dash `–`; ASCII-стрелки (`->`);
   ASCII-кавычки; `<=` / `>=`; `x` вместо знака умножения.
-- Не коммитить и не пушить без явной просьбы. ROM-бинарники не коммитить (правила в
-  `.gitignore`).
+- Не коммитить и не пушить без явной просьбы.
 
 ## Скоуп
 

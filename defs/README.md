@@ -24,6 +24,20 @@
 `NissanChecksum.java`, тип `alt2` под HR) – в `RomRaider/RomRaider` (GPL v2), как submodule
 не подключён; ссылка: https://github.com/RomRaider/RomRaider.
 
+## Рабочие файлы (JK03A)
+
+Свой слой разметки VQ25HR-донора `JK03A` – прямо в `defs/`, отдельно от `reference/`:
+
+- `JK03A.xml` – деф RomRaider (проекция графа + презентация, генератор `mapkit/emit_def.py`).
+- `JK03A.maps.csv` – ledger каталога (проекция графа, `maps/build_tracker.py`).
+- `JK03A.notes.md` – рукописный журнал реверса (обоснования, листинги, трейсы; в граф не грузится).
+- Рукописные источники калибровочного слоя: `JK03A.interp.csv` (геометрия входов интерполяции),
+  `JK03A.findings.csv` (находки о картах), `JK03A.axes.csv` (семантика осей),
+  `JK03A.overrides.toml` (презентация дефа). Контракт – `../tools/map-flag-pipeline.md`.
+- Эталонные цензы резолвера (сравнительный baseline, регенерируются Ghidra):
+  `JK03A.map_inventory.{26944,26984,26b84}.csv` (`MapInventory` на ядро),
+  `JK03A.direct_lookup_inventory.csv` (`DirectLookupInventory` на банк implicit-axis).
+
 ## Релевантность под целевые моторы
 
 Идентификация дефа – по `romid` (ecuid/model/year/market/memmodel), не по имени мотора.
@@ -50,10 +64,11 @@
 - `a33b-NissanDefs/table_templates/` – шаблон NISSAN_BASE.
 
 **VQ25HR** (JDM V36 Skyline 250GT) – открытого дефа нет нигде. Не-VVEL dual-CVTC, класс
-VQ35HR -> **вероятно SH7058 / 1 MB**: в def-корпусе SH7059 только у VVEL VQ37VHR (`1NX4A`,
-`6GE2C`), весь не-VVEL VQ – на SH7058 / более старых. Донор структуры – `EV18A` / `CF92A`
-(SH7058, та же Hitachi CAN + dual CVTC). Точный чип дампом не подтверждён – TO-VERIFY по
-стендовому ЭБУ (маркировка / размер 1.0 vs 1.5 MiB / loader 705822/705823 vs 705927).
+VQ35HR: в def-корпусе SH7059 только у VVEL VQ37VHR (`1NX4A`, `6GE2C`), весь не-VVEL VQ –
+на SH7058 / более старых. Донор структуры – `EV18A` / `CF92A` (SH7058, та же Hitachi CAN +
+dual CVTC). Чип донорского дампа `JK03A` – **SH705822N (SH7058, 1 MB)**, самоидентифицируется
+строками внутри образа (`../rom-images/README.md`). Стендовый ЭБУ `JK08A` дампом не снят –
+его чип, размер флеша и loader (705822/705823 vs 705927) остаются TO-VERIFY.
 
 Атрибут `flashmethod` в HR-дефах (`Nisprog` у SH7058 `EV18A`/`CF92A` и SH7059 `1NX4A`) –
 ненадёжная метаданная: открытый nisprog/npkern флеш-бэкенда под SH7059 не имеет. Ценность

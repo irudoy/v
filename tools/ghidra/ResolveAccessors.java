@@ -31,8 +31,11 @@
 // Инвариант принятия - data-flow покрывает backtrack, то есть bt_only = 0.
 //
 // Запуск (headless): -postScript ResolveAccessors.java <out_dir> <kernel_hex>
-// Выход: accessors.csv
-//   wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,df_r7,
+// Выход: accessors.<kernel>.csv - файл на ценз. Ядер доступа к таблицам несколько
+// (JK03A: 0x26944 по байтовой оси, 0x26984 и 0x26b84 по словной), прогон идёт на каждое,
+// и загрузчик собирает калибровочный слой из всех цензов сразу - поэтому имя несёт ядро,
+// а строка - колонку kernel.
+//   kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,df_r7,
 //   k4,k5,k6,k7,verdict
 // func: orig (функция была размечена) | recovered (восстановлена) | none.
 // Источник каждого df-операнда - колонки k4..k7: pool (разыменован слот пула), const,
@@ -133,7 +136,7 @@ public class ResolveAccessors extends GhidraScript {
             ifc.dispose();
         }
 
-        write(new File(outDir, "accessors.csv"), sites);
+        write(new File(outDir, "accessors." + Long.toHexString(kernel) + ".csv"), sites, kernel);
         summary(sites, wrappers);
     }
 
@@ -471,13 +474,14 @@ public class ResolveAccessors extends GhidraScript {
         return any ? "agree" : "none";
     }
 
-    void write(File f, List<Site> sites) throws Exception {
+    void write(File f, List<Site> sites, long kernel) throws Exception {
         PrintWriter w = new PrintWriter(new FileWriter(f));
-        w.println("wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,"
+        w.println("kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,"
                 + "df_r4,df_r5,df_r6,df_r7,k4,k5,k6,k7,verdict");
+        String khex = String.format("%08x", kernel);
         for (Site s : sites) {
-            w.println(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                    s.wrapper, s.slot, s.accessor, s.at, s.fsrc,
+            w.println(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                    khex, s.wrapper, s.slot, s.accessor, s.at, s.fsrc,
                     hx(s.bt[0]), hx(s.bt[1]), hx(s.bt[2]),
                     hx(s.df[0]), hx(s.df[1]), hx(s.df[2]), hx(s.df[3]),
                     s.kind[0], s.kind[1], s.kind[2], s.kind[3], verdict(s)));

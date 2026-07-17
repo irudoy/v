@@ -1,0 +1,6 @@
+path,rom,sha256,note
+1ND0A_Stock.bin,1ND0A,650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978,
+1ND3B_Stock.bin,1ND3B,0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e,
+JK78C.bin,JK78C,86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d,
+v36-vq25hr-jk03a/as7058.bin,JK03A,f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4,
+v36-vq25hr-jk03a/95320my_sinhro.bin,,68bb95f6ed70ec247f752a2d6817c83f14cdb7dc9db55c316852c0be0d362aaf,"внешний SPI EEPROM ST95320 (NATS synchro/adaptation); не флеш ЭБУ, метки в графе нет"

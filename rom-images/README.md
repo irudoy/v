@@ -30,6 +30,7 @@ Ground-truth ROM-дампы проекта **VQ HR ECU**, происхожден
 внешний **SPI EEPROM ST95320** `95320my_sinhro.bin` (4096 B, NATS synchro/adaptation store).
 MCU (`SH705822N`), софт (`7MFKAVN86`) и калибровка (`1JK03A00000`) самоидентифицируются
 строками внутри образа; immo-контур разобран в `../patches/immo-always-id-ok.md` (секция JK03A).
+Провенанс форумного поста – `v36-vq25hr-jk03a/README.md`.
 
 `*` Размеры флеша (1.0 / 1.5 MiB) и ядро **SH-2E** подтверждены даташитом Renesas;
 конкретная модель чипа на плате (SH7058 vs SH7059) и шина CAN выведены из размера флеша
@@ -40,13 +41,13 @@ MCU (`SH705822N`), софт (`7MFKAVN86`) и калибровка (`1JK03A00000`
 
 ### sha256 (идентификация)
 
-- `1ND0A_Stock.bin` – `650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978`
-- `1ND3B_Stock.bin` – `0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e`
-- `JK78C.bin`       – `86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d`
-- `v36-vq25hr-jk03a/as7058.bin`        – `f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4`
-- `v36-vq25hr-jk03a/95320my_sinhro.bin` – `68bb95f6ed70ec247f752a2d6817c83f14cdb7dc9db55c316852c0be0d362aaf`
+Реестр `roms.csv` (строка = файл дампа: путь, метка ROM в графе, sha256). Он машинный:
+пайплайн карт берёт образ по метке и сверяет хеш перед чтением значений
+(`../tools/mapkit/rom.py`, Stage 4), поэтому опознание дампа – условие прогона, а не
+справка для человека. Метка пуста у образа, которого граф не несёт (EEPROM).
 
-Компрессированные копии (`1ND0A_Stock.zip`, `1ND3B_Stock.zip`, `JK78C.7z`) – архивы
+Компрессированные копии (`1ND0A_Stock.zip`, `1ND3B_Stock.zip`, `JK78C.7z`,
+`v36-vq25hr-jk03a/as7058.bin.zip`, `v36-vq25hr-jk03a/95320my_sinhro.bin.zip`) – архивы
 соответствующих `.bin`.
 
 ### Происхождение и уверенность
@@ -80,6 +81,28 @@ MCU (`SH705822N`), софт (`7MFKAVN86`) и калибровка (`1JK03A00000`
 - VQ engine / VVEL: https://en.wikipedia.org/wiki/Nissan_VQ_engine
 
 Ground truth – в железе; part # и тред – ориентир, финальная сверка дизассемблированием.
+
+## Патченые образы (immo always-ID-OK)
+
+Выходы `../patches/apply_immo_patch.py` (спека – `../patches/immo-always-id-ok.md`): форсируют
+ECM-side "ID OK" и снимают immo-Lock. Суффикс `_UNCHECKSUMMED` – checksum не пересчитан
+(пересчёт на стороне флешера, KESS V2). Версионируются в git.
+
+| Файл | База | Патч |
+|------|------|------|
+| `1ND0A_immo-id-ok_UNCHECKSUMMED.bin` | `1ND0A_Stock.bin` | L1+L2 (ядро) |
+| `1ND0A_immo-id-ok_l2b_UNCHECKSUMMED.bin` | `1ND0A_Stock.bin` | L1+L2+L2b |
+| `JK03A_immo-id-ok_UNCHECKSUMMED.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2 (ядро) |
+| `JK03A_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2+L2b+esc |
+| `JK78C_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` | `JK78C.bin` | L1+L2+L2b+esc |
+
+### sha256 (патченые)
+
+- `1ND0A_immo-id-ok_UNCHECKSUMMED.bin` – `f860581a64517309b1e66c0b1e96024c250d28bc777e25c32a7fba615e730d35`
+- `1ND0A_immo-id-ok_l2b_UNCHECKSUMMED.bin` – `d60828140946fd6c1cd5e5ca211252e338f952182293f296522ca5ad3bee3d13`
+- `JK03A_immo-id-ok_UNCHECKSUMMED.bin` – `432ef461acad0373176244e1123c3c2b8a0908c48887ac3f1d32a2e204b6ba06`
+- `JK03A_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` – `d39661b71def4a768280c46134cff2e378d7a55a36935d5609026bc0f55957d0`
+- `JK78C_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` – `a7cf5b91789e934b5f4febd6579a15e8b609eb0d45b8261b13e61d5bef520cc9`
 
 ## Блок тестовой платформы – 23710-JK08A
 
