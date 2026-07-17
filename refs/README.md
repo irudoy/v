@@ -33,6 +33,7 @@ PDF-оригиналы и markitdown-конверсии `*.md` версиони�
 - MoTeC M150 datasheet (зеркало): https://www.milspecwiring.com/DATA%20SHEETS/ECU/M150.pdf
 - UpRev Nissan Tuning Guide: https://uprev.com/wp-content/uploads/2023/05/UpRev-Nissan-Tuning-Guide-Rev2.pdf
 - NissanECU RE wiki (зеркало -> `nissanecu-wiki/`): https://nissanecu.miraheze.org/wiki/Main_Page
+- EcuTek Support KB, 370Z ProECU (конверсия -> `ecutek/`): https://ecutek.atlassian.net/wiki/spaces/SUPPORT/pages/7143430
 
 Восстановить локально: скачать PDF по URL в `refs/`, конвертировать markitdown в `*.md`.
 
@@ -47,6 +48,27 @@ html2text) с локальными картинками (`img/`). Источни
 `Std_14230`, `Ecu_hw` / `Bootmode` (HW, boot-режим SH705x), размеченные референс-ROM
 `Rom_an_cf43d` / `cf48d` / `al500`. В отличие от PDF-первоисточников, зеркало трекается в git
 целиком (текст + мелкие изображения).
+
+## EcuTek 370Z ProECU (локальная конверсия)
+
+`ecutek/` – две страницы базы знаний EcuTek Support (Confluence, пространство `SUPPORT`,
+раздел `Vehicle Specific Guides / Nissan / 370Z`), **173 изображения**, markdown-конверсия
+рендер-HTML из публичного REST API (`body.export_view`) с локальными картинками, retrieved
+2026-07-16. Трекается в git целиком, как и зеркало вики. Индекс, решения при конвертации и
+два невосстановимых изображения – `ecutek/README.md`.
+
+370Z несёт VQ37VHR (VVEL) – ту же HR-архитектуру, что и целевые `1ND*`, поэтому обе страницы
+релевантны напрямую. В отличие от A2L (структурный каталог: геометрия и scaling без
+семантики), это **вендорское описание смысла** калибровок:
+
+- `tuning-guide/` – таблицы ProECU по системам: `Ignition`, `Fuelling`, `Camshaft Timing`,
+  `Boost Control`, `Accelerator and Throttle`, `Limiters`, `Sensor Scaling`, `Torque`, `Idle`.
+- `racerom-supplement/` – функции RaceROM: `Map Switching`, `Launch Control`,
+  `Per Gear Rev Limits`, `Flat Foot Shifting`, `Flex Fuel`, `Speed Density`, `Custom Maps`,
+  `Failsafe`, CAN I/O, `Valet Mode`.
+
+`Map Switching` и `Limiters` описывают механику, которую пайплайн размечает как
+`:Flag {role:'selector'}` и `threshold` (Stage 6, `tools/map-flag-pipeline.md`).
 
 ## Внешние первоисточники (локально, вне репозитория)
 
