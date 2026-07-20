@@ -8,8 +8,8 @@ MCU Renesas SH7058 / SH7059, ядро SH-2E):
 
 Тестовая платформа – **V36 Skyline 250GT** (VQ25HR, в доступе), ЭБУ `23710-JK08A`; дампа с
 него нет, RE VQ25HR идёт по донорскому `JK03A` (`rom-images/README.md`). Целевое применение –
-**VQ35HR** и **VQ37VHR**. **P0-веха – отшитие NATS** (PoC). Reflash – **KESS V2**
-(OBD); заводская диагностика – **CONSULT-III Plus** через **Nissan VCI WiFi**.
+**VQ35HR** и **VQ37VHR**. **P0-веха – отшитие NATS** (PoC). Reflash – **SM2PRO**
+(J2534, bench/boot); заводская диагностика – **CONSULT-III Plus** через **Nissan VCI WiFi**.
 
 ## Принцип работы: два контура
 
@@ -84,5 +84,5 @@ P0 – отшитие NATS на тестовом ЭБУ (VQ25HR) и перено
 `defs/README.md`) покрывают VQ35HR (Pytrex `EV18A` – 190 таблиц; `CF92A` – кузов V36) и
 поверхностно VQ37VHR (a33b `1NX4A` – 30 таблиц); под VQ25HR дефа нет. HR – класс late
 K-line: дамп по K-line доступен, открытый reflash есть под SH7058, под SH7059 (наш JDM)
-нет – закрывается KESS V2 по OBD. Immo-off / NATS в открытом виде отсутствует (NATS-ключи
+нет – закрывается SM2PRO (J2534, bench/boot). Immo-off / NATS в открытом виде отсутствует (NATS-ключи
 в отдельном EEPROM, вне flash-ROM и вне дефов).
