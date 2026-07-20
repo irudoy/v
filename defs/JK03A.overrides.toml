@@ -64,23 +64,10 @@ category = "Reference Axes"
 order = 2
 coarse = 8
 
-[table.0000b61a]
-name = "Ignition Adj Map [flag=set] (0xB61A)"
-category = "Ignition (traced)"
-order = 10
-coarse = 4
-
-[table.0000b71a]
-name = "Ignition Adj Map [flag=clr] (0xB71A)"
-category = "Ignition (traced)"
-order = 11
-coarse = 4
-
-[table.0000b81a]
-name = "Ignition Adj Map [always] (0xB81A)"
-category = "Ignition (traced)"
-order = 12
-coarse = 4
+# Трио 0xB61A/0xB71A/0xB81A - базовые пороги детектора пропусков воспламенения
+# (неравномерность вращения коленвала), аксессор 0x82c8a. Структура снята кодом, но
+# физическая шкала не выведена (offset-binary, 0x80 = сентинел), поэтому по воротам §9
+# деф их не выпускает и презентации у них нет. Разбор - в defs/JK03A.notes.md.
 
 [table.0000b33a]
 name = "Target AFR - Power (0xB33A)"

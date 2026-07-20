@@ -7,6 +7,8 @@ LLM-агент**: детерминированные экстракторы (Jav
 каноническом пути. GhydraMCP – опциональный интерактивный ускоритель live-сессий реверса
 (раздел "Мост GhydraMCP"), требует GUI, вне критического пути. Замысел, пайплайн карт/флагов
 и роли – `../AGENTS.md`, `map-flag-pipeline.md`, нота "RE-стек и реверс таблиц" в Obsidian.
+Массовый проход по каталогу карт – `map-sweep.md`: единица работы, порядок волн, ослепление
+пилота, схема заявки и ворота.
 
 В git трекается только конфигурация и обёртки. Сами инструменты и Ghidra-проекты –
 вне репозитория (крупные / машинно-локальные), их расположение указано ниже.
@@ -119,6 +121,8 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `ghidra/ScanImmoAnchors.java` | скан immo-DTC констант (P1610-P1615, B2193), кластеры DTC-таблиц | `immo_anchors.csv`, `immo_tables.csv` |
 | `ghidra/FindTableRefs.java` | кто адресует диапазон ROM (база таблицы): direct + literal-pool | `table_refs.csv` |
 | `ghidra/MapInventory.java` | ценз карт от interp-kernel: слоты-значения -> обёртки -> call-сайты, `r4/r5/r6` линейным backtrack | `map_inventory.csv` |
+| `ghidra/FindInterpCore.java` | детект ядер интерполяции и их входов data-сканом (Stage 1): слот с адресом кода + два уровня косвенности. Аргументы: `<outdir> [<min_wrappers>]` | `interp_core.csv` |
+| `ghidra/ScanFlags.java` | детект gbr-флагов локально у аксессоров и guard-функций (Stage 6): тройка "загрузка – проверка бита – ветвление", роль по ветвям из CFG. Аргументы: `<outdir> <func_addr>...` | `flags.csv` |
 | `ghidra/ResolveAccessors.java` | операнды аксессоров: data-flow декомпилятора против backtrack, восстановление функций под сайтами вне разметки; прогон на ядро | `accessors.<kernel>.csv` |
 | `ghidra/ProbeResolver.java` | headless-спайк условия А резолвера: снимает ли декомпилятор константные `r4/r5/r6` на CALLIND интерполятора (baseline vs форс сигнатуры `0x26320`); `-readOnly`-диагностика | stdout |
 | `ghidra/DirectLookupInventory.java` | ценз банка implicit-axis форвард-сканом от слота, геометрия примитива по его коду; операнды – линейным backtrack | `direct_lookup_inventory.csv` |
@@ -135,7 +139,9 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |
 | `memgraph/load_maps.py` | калибровочный слой: переписи резолвера + реестр входов `defs/<rom>.interp.csv` + ручной слой карт `defs/<rom>.findings.csv` и осей `defs/<rom>.axes.csv` + значения из образа (Stage 4) -> `:Interp`/`:Map`/`:Axis` + `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
 | `memgraph/load_a2l.py` | `:A2LEntry` из `A2L.xml` – rom-независимый эталон семейства HR (карты, скаляры, switch'и), без адресов | Memgraph |
+| `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны, ворота раздела 11 одним запросом. Параметр `$rom` | (в git) |
 | `maps/build_tracker.py` | ledger `defs/<rom>.maps.csv` – проекция каталога из графа (worklist разбора) | (в git) |
+| `sweep/build_artifacts.py` | артефакт на компоненту графа "аксессор -> карта" для массового прохода (контракт – `map-sweep.md`): форма, значения, оси, псевдокод и листинги, операнды переписи, каталоги. Разметку компоненты не несёт – ослепление белым списком, проверяется каждым прогоном. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N]` | `comp-<addr>.md` |
 | `mapkit/rom.py` | образ: реестр `rom-images/roms.csv` со сверкой sha256, чтение массивов, их измерение. Библиотека – её зовут `load_maps.py` и скрипты пакета | (в git) |
 | `mapkit/emit_def.py` | деф `defs/<rom>.xml` – проекция графа плюс презентационный слой `defs/<rom>.overrides.toml` (контракт – `map-flag-pipeline.md`, раздел 9) | (git, по мере коммита P5) |
 | `mapkit/show.py` | карта либо ось в физических единицах: граф даёт форму, оси и шкалу, образ – значения. Аргументы: `[<rom>] <addr>...` | stdout |

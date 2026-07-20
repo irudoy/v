@@ -24,7 +24,11 @@ public class DumpListing extends GhidraScript {
         Memory mem = currentProgram.getMemory();
 
         for (int i = 1; i < a.length; i++) {
-            Address target = currentProgram.getAddressFactory().getAddress(a[i]);
+            Address target;
+            try {
+                target = currentProgram.getAddressFactory().getDefaultAddressSpace()
+                        .getAddress(Long.parseLong(a[i], 16));
+            } catch (Exception e) { println("VQ_LST bad addr " + a[i]); continue; }
             Instruction ins = listing.getInstructionContaining(target);
             if (ins == null) { println("VQ_LST no instr @ " + a[i]); continue; }
             // отойти назад 24 инструкции

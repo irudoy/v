@@ -5,6 +5,7 @@
 //           -scriptPath tools/ghidra -postScript DecompileFuncs.java <outdir> <addr> [<addr>...]
 // Адреса – hex без 0x (как в funcs.csv). Пишет <outdir>/decomp_<addr>.c на каждую функцию.
 import ghidra.app.decompiler.DecompInterface;
+import ghidra.app.decompiler.DecompileOptions;
 import ghidra.app.decompiler.DecompileResults;
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
@@ -23,16 +24,29 @@ public class DecompileFuncs extends GhidraScript {
         String outdir = a[0];
         new File(outdir).mkdirs();
         DecompInterface di = new DecompInterface();
+        // Крупные функции (~17 КБ) упираются в лимит буфера ответа декомпилятора
+        // ("Response buffer size exceeded"), а не в таймаут; payload по умолчанию мал.
+        DecompileOptions opts = new DecompileOptions();
+        opts.setMaxPayloadMBytes(256);
+        di.setOptions(opts);
         di.openProgram(currentProgram);
         int ok = 0;
         for (int i = 1; i < a.length; i++) {
-            Address ep = currentProgram.getAddressFactory().getAddress(a[i]);
+            Address ep;
+            try {
+                ep = currentProgram.getAddressFactory().getDefaultAddressSpace()
+                        .getAddress(Long.parseLong(a[i], 16));
+            } catch (Exception e) {
+                println("VQ_DECOMP bad addr " + a[i]);
+                continue;
+            }
             Function f = getFunctionAt(ep);
             if (f == null) {
                 println("VQ_DECOMP no function at " + a[i]);
                 continue;
             }
-            DecompileResults res = di.decompileFunction(f, 60, monitor);
+            // 240 с - запас по времени для крупных функций (штатно хватает <10 с)
+            DecompileResults res = di.decompileFunction(f, 240, monitor);
             String c = res.decompileCompleted() ? res.getDecompiledFunction().getC()
                                                 : "// decompile failed: " + res.getErrorMessage();
             PrintWriter w = new PrintWriter(new File(outdir, "decomp_" + a[i] + ".c"));

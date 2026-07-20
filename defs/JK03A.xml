@@ -35,63 +35,6 @@
          vs alt2 под HR). -->
     <checksum type="alt" start="0x2040C" end="0x2259A" sumloc="0x20404" xorloc="0x20408"/>
 
-    <!-- 0x0B61A  16x16 uint8  карта [code]; вход 0x26320 (explicit, ядро 0x26944)
-         аксессор 0x82C8A; операнд r4: pool
-         шкала x-64 deg (adj) [candidate]; Y Axis 0x11B6B rpm [code]; X Axis 0x11B8B load
-         выбор по gbr+0x93 bit0; значения >= 128 насыщают выход в finisher'е 0x268a4
-         Разбор и метод - defs/JK03A.notes.md -->
-    <table type="3D" name="Ignition Adj Map [flag=set] (0xB61A)" category="Ignition (traced)"
-           storagetype="uint8" storageaddress="0x0B61A" sizex="16" sizey="16" endian="big">
-      <scaling units="deg (adj) [cand]" expression="x-64" to_byte="x+64" format="0"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11B8B"
-             sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11B6B" sizey="16" endian="big">
-        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
-      </table>
-    </table>
-
-    <!-- 0x0B71A  16x16 uint8  карта [code]; вход 0x26320 (explicit, ядро 0x26944)
-         аксессор 0x82C8A; операнд r4: pool
-         шкала x-64 deg (adj) [candidate]; Y Axis 0x11B6B rpm [code]; X Axis 0x11B8B load
-         выбор по gbr+0x93 bit0; значения >= 128 насыщают выход в finisher'е 0x268a4
-         Разбор и метод - defs/JK03A.notes.md -->
-    <table type="3D" name="Ignition Adj Map [flag=clr] (0xB71A)" category="Ignition (traced)"
-           storagetype="uint8" storageaddress="0x0B71A" sizex="16" sizey="16" endian="big">
-      <scaling units="deg (adj) [cand]" expression="x-64" to_byte="x+64" format="0"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11B8B"
-             sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11B6B" sizey="16" endian="big">
-        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
-      </table>
-    </table>
-
-    <!-- 0x0B81A  16x16 uint8  карта [code]; вход 0x26320 (explicit, ядро 0x26944)
-         аксессор 0x82C8A; операнд r4: pool
-         шкала x-64 deg (adj) [candidate]; Y Axis 0x11B6B rpm [code]; X Axis 0x11B8B load
-         оси RPM x нагрузка
-         Разбор и метод - defs/JK03A.notes.md -->
-    <table type="3D" name="Ignition Adj Map [always] (0xB81A)" category="Ignition (traced)"
-           storagetype="uint8" storageaddress="0x0B81A" sizex="16" sizey="16" endian="big">
-      <scaling units="deg (adj) [cand]" expression="x-64" to_byte="x+64" format="0"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11B8B"
-             sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11B6B" sizey="16" endian="big">
-        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
-      </table>
-    </table>
-
     <!-- 0x0B33A  16x16 uint8  карта [code]; вход 0x261B8 (explicit, ядро 0x26944)
          аксессор 0xBFDC0; операнд r4: slice
          шкала 1881.6/x AFR [code]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
@@ -187,8 +130,9 @@
     <!-- 0x121FE  8 uint8  карта [candidate]; вход 0x26370 (implicit, ядро 0x26A80)
          аксессор 0x5185C; операнд r4: pool
          шкала x raw
-         вход byte[0xFFFF106F], вызов безусловный; [CANDIDATE] смысл - порог по ProECU-словарю,
-         множитель не снят
+         РАСХОЖДЕНИЕ (§6, см. notes.md): каталожное имя 'Over Run Fuel Cut threshold' (ProECU,
+         по форме) против трейса FUN_0005185c - сайт 00051882, второй множитель
+         мультипликативной цепи, результат @(0x4,r15). Ни одно не на уровне code.
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="2D" name="Over Run Fuel Cut threshold (0x121FE)"
            category="Limiters (traced) (candidate)" storagetype="uint8" storageaddress="0x121FE"
