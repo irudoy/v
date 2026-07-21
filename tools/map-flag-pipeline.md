@@ -144,8 +144,8 @@ defs/<rom>.notes.md – рукописный журнал: обосновани�
 
 | Метка | Ключевые свойства | Смысл | Статус |
 |-------|-------------------|-------|--------|
-| `:Func` | rom, addr, name, size, is_thunk, community | функция | есть |
-| `:Reg` | rom, addr, region, name | периферия/RAM (сенсоры, выходы) | есть |
+| `:Func` | rom, addr, name, size, is_thunk, community, role, semantics, confidence, evidence | функция; слой понимания кода (`role`/`semantics`/`confidence`/`evidence`) – проекция `defs/<rom>.funcs.csv` | есть |
+| `:Reg` | rom, addr, region, name, semantics, units, confidence, evidence | периферия/RAM (сенсоры, выходы); слой понимания кода – проекция `defs/<rom>.vars.csv` | есть |
 | `:Interp` | rom, addr, role(`kernel`\|`wrapper`\|`finisher`), family, slot, dims, width, height, storagetype, step, limit | примитивы интерполяции; геометрия (`width`/`height`/`storagetype`, у implicit-axis плюс `step`/`limit`) снята с кода входа и его finisher'а, объявлена в `defs/<rom>.interp.csv` | новый |
 | `:Map` | rom, addr, family, dims, width, height, storagetype, units, scale_expr, to_byte, scale_conf, vmin, vmax, values_hash, semantics, role(`table`\|`threshold`\|`dead`), note, category, confidence, evidence, a2l_id | таблица; геометрия – геометрия её входа, `role` отделяет тюнингуемую таблицу от порога компаратора и от ветки, отключённой калибровкой; `vmin`/`vmax`/`values_hash` – измерение по образу (Stage 4) | новый |
 | `:Axis` | rom, addr, len, storagetype, values, monotonic, kind(`rpm`\|`load`\|`temp`\|`raw`), units, scale_expr, to_byte, scale_conf, confidence | ось таблицы; `len` и `storagetype` – не её собственные факты: и число точек, и элемент задаёт клэмп её поиска во входе | новый |
@@ -171,6 +171,7 @@ defs/<rom>.notes.md – рукописный журнал: обосновани�
 | `(:Map)-[:MATCHES {score}]->(:A2LEntry)` | кандидат-идентичность по каталогу |
 | `(:Map)-[:HOMOLOG {score}]->(:Map)` | та же карта в другом ROM (cross-rom) |
 | `(:Func)-[:HOMOLOG {score}]->(:Func)` | гомолог функции в другом ROM |
+| `(:Func\|:Reg)-[:RESTS_ON {role}]->(:Func\|:Reg\|:Map\|:Axis)` | вывод слоя кода опирается на этот узел-свидетельство; `role` – тип опоры (`consumer`\|`writes`\|`indexed_by`\|`selector`\|`from_map`\|`threshold`\|`trace`\|`homolog`\|`base`\|`match`). Проекция поля `evidence`, словарь и направление – `tools/code-provenance-proposal.md` |
 
 Внутри каталожного слоя рёбер нет: `:A2LEntry` и `:VendorEntry` соединяет свойство `concept`
 (записи с одним значением описывают одну сущность), а материализованное ребро было бы копией
@@ -800,6 +801,19 @@ C-псевдокод, листинги). Затем: **fan-out** -> **adversaria
 
 Эти числа – определение эффективности пайплайна и регрессионный контроль: прогон, снизивший
 резолюцию или впустивший карту `< code` в активный деф, – провал ворот.
+
+### Слой понимания кода
+
+Ворота `load_code.py` (`tools/code-provenance-proposal.md`, раздел 8). Слой адресует функции и
+RAM-переменные, поэтому его метрики считаются по своим узлам, а не по `:Map`.
+
+| Метрика | Запрос | Baseline -> факт (JK03A) | Цель |
+|---------|--------|--------------------------|------|
+| Слой размечен | `:Func`/`:Reg` с `role`/`confidence` | 0 -> **165 из 2312** и **171 из 9176** | растёт с разбором |
+| Свидетельство резолвимо | `:RESTS_ON`, построенные из `evidence`, против ссылок мимо узла | 0 рёбер -> **627 рёбер, 0 промахов** | 100%; ссылка мимо узла останавливает загрузку |
+| Ворота уровня замкнуты | выводы `code`, чьё `evidence` несёт одни метаданные прохода | нет учёта -> **0 из 310** | 0 |
+| Свидетельство только терминальное | выводы `code` без единого резолвимого ребра | нет учёта -> **29 из 310** (кернелы интерполяции: уровень держат собственные инструкции, внешнего узла нет) | измеряется; ноль недостижим и не цель |
+| Пробелы каталога из слоя кода | ссылки `from_map:` на карту вне графа | не измерялось -> **2** (`0x170a` – correction-enable в `00044500`; `0x12e32` – живой двойник каталогизированной `0x12e3a`) | 0; закрывает слой карт |
 
 ## 12. Воспроизводимость и инварианты
 
