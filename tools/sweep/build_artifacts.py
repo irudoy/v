@@ -180,6 +180,19 @@ RETURN c2.addr AS consumer, c2.size AS size, collect(DISTINCT g.addr) AS regs,
 ORDER BY spec, size, consumer
 """
 
+# Потребители привязанного выхода. Отличие от CONSUMERS - в источнике набора регистров:
+# там он выводится из всех записей аксессора и потому несёт чужие величины, здесь задан
+# привязкой и несёт только величину целевой карты. Отсечка по разделяемости тут не нужна:
+# набор уже специфичен, а разделяемость привязанного регистра - факт о карте, и скрывать
+# его отсечкой значит терять свидетельство.
+CONSUMERS_OF = """
+UNWIND $regs AS reg
+MATCH (c:Func {rom:$rom})-[:USES {kind:'R'}]->(g:Reg {rom:$rom, addr:reg})
+WHERE NOT c.addr IN $addrs
+RETURN c.addr AS consumer, c.size AS size, collect(DISTINCT g.addr) AS regs, 1 AS spec
+ORDER BY size, consumer
+"""
+
 # Разбор пустого раздела потребителей. Пусто выходит по трём разным причинам, и они
 # значат для агента разное: аксессор вообще ничего не пишет в RAM (трейс кончается в
 # аксессоре), написанное никто снаружи не читает (выход мёртв либо читается тем же
@@ -312,6 +325,7 @@ def dumped(export_dir, addr, kind):
 POOL_SYM = re.compile(r"\b((?:PTR_)?(?:DAT|FUN)_00([0-9a-f]{6}))\b")
 POOL_ALIAS = re.compile(r"\b(\w+) = ((?:PTR_)?(?:DAT|FUN)_00[0-9a-f]{6})\s*;")
 POOL_EXPR = re.compile(r"\(\s*(\w+)\s*\+\s*(\w+|0x[0-9a-fA-F]+)\s*\)")
+NUMERIC = re.compile(r"0x[0-9a-fA-F]+[uUlL]*|\d+[uUlL]*")
 
 
 def literal(image, addr):
@@ -358,18 +372,19 @@ def pool(image, text, regs):
         return syms.get(sym, (None, {}))[1].get("mov.l"), sym
 
     def disp(term):
-        if term.startswith("0x"):
-            # декомпилятор эмитит C-суффиксы (0x1c00U, ...L); одиночный странный
-            # литерал не должен ронять сборку - вызывающий пропускает None
+        if NUMERIC.fullmatch(term):
+            # декомпилятор эмитит C-суффиксы (0x1c00U, ...L) и печатает малые смещения
+            # десятичными (`iVar3 + 100`); одиночный странный литерал не должен ронять
+            # сборку - вызывающий пропускает None
             try:
-                return int(term.rstrip("uUlL"), 16), term
+                return int(term.rstrip("uUlL"), 0), term
             except ValueError:
                 return None, term
         sym = alias.get(term, term)
         v = syms.get(sym, (None, {}))[1]
         return v.get("mov.w"), sym
 
-    binds = {}
+    binds, raw = {}, {}
     for lhs, rhs in POOL_EXPR.findall(text):
         b, bsym = base(lhs)
         o, osym = disp(rhs)
@@ -377,7 +392,201 @@ def pool(image, text, regs):
             continue
         target = (b + o) & 0xFFFFFFFF
         binds[(bsym, osym)] = (target, known.get(target))
-    return syms, binds
+        # ключ по тексту как написан: базу декомпилятор кладёт в локальную переменную
+        # (`iVar3 = DAT_0002c7c8;`) и дальше адресует через неё, так что искать выражение
+        # в теле функции по имени пула нельзя - его там нет
+        raw[f"({lhs} + {rhs})"] = target
+    return syms, binds, raw, base
+
+
+CALL = re.compile(r"(?:\(\*\(code \*\)\s*(?:\w+)\s*\)|\bFUN_[0-9a-f]{8})\s*\(")
+VAR = re.compile(r"\b([a-zA-Z_]\w*)\b")
+# `*(тип *)(A + B) = rhs` либо `*(тип *)A = rhs`; звёздочка обязательна - без неё
+# присваивание идёт в локальную переменную, а не в память
+STORE = re.compile(r"\*\s*\(\s*(\w+)\s*\*\s*\)\s*(\([^;]*?\)|\w+)\s*=\s*([^;=][^;]*)$")
+# ширина записи задаёт, по каким адресам величину читают: 16-битная запись занимает два
+# байта, и читатель старшей половины обращается к A, младшей - к A+1
+STORE_WIDTH = {"char": 1, "uchar": 1, "byte": 1, "undefined1": 1,
+               "short": 2, "ushort": 2, "undefined2": 2,
+               "int": 4, "uint": 4, "undefined4": 4, "float": 4}
+# Граница ставится по числу переприсваиваний, а не по расстоянию в тексте: между вызовом
+# и записью стоят несвязанные операторы, и величина к моменту записи - та же переменная,
+# нетронутая. Расползается пометка с глубиной, не с расстоянием.
+#
+# На JK03A граница не работает: 2, 3, 4 и 6 дают один и тот же результат - 254 привязки на
+# 586 рёбер. Величина этого ПЗУ либо доходит до памяти за пару присваиваний, либо не
+# доходит вовсе, и 135 обрывов трейса - свойство кода, а не следствие отсечки. Параметр
+# остаётся защитой от кода другой формы, а не настройкой под ответ.
+TAINT_DEPTH = 2
+
+
+def attribute(image, text, regs, bases):
+    """Регистры RAM, принимающие величину карты, по сайтам вызова обёртки.
+
+    Аксессор широкий: у самого широкого в ПЗУ 274 записываемых регистра, и раздел
+    потребителей, собранный по всем сразу, величину карты растворяет. Граф связи не даёт -
+    ребро ACCESSES знает сайт и базу, ребро USES знает записанные регистры, общего между
+    ними нет. Псевдокод даёт: обёртка вызывается с базой карты первым аргументом, её
+    результат связывается именем, и запись этого имени в память видна текстом.
+
+    Обрыв трейса - факт, а не пробел: величина, которая до памяти не доходит, либо
+    возвращается вызывающему, либо потребляется на месте, и регистра выхода у карты нет.
+    """
+    _syms, _binds, raw, resolve = pool(image, text, regs)
+    known = {int(r["addr"], 16) for r in regs}
+    stmts = split_stmts(text)
+    out = []
+    for i, st in enumerate(stmts):
+        m = CALL.search(st)
+        if not m:
+            continue
+        args = call_args(st, st.index("(", m.end() - 1))
+        if not args:
+            continue
+        target, _sym = resolve(args[0])
+        if target is None or f"{target:08x}" not in bases:
+            continue
+        rec = {"base": f"{target:08x}", "sink": None, "kind": None, "width": 0,
+               "stmt": st}
+        name = re.fullmatch(r"\w+", st[:m.start()].strip().rstrip("=").strip())
+        if not name:
+            # результат не связывается именем: либо возвращается наружу, либо тут же
+            # потребляется выражением, в которое вложен вызов
+            rec["kind"] = "return" if st.startswith("return") else "inline"
+            out.append(rec)
+            continue
+        rec.update(trace_sink(stmts, i, name.group(0), raw, resolve, known))
+        out.append(rec)
+    return out
+
+
+def trace_sink(stmts, call, name, raw, resolve, known):
+    """Первая запись в память, достижимая от результата вызова.
+
+    Величина от вызова до записи проходит через промежуточные имена, поэтому трейс идёт
+    вперёд по присваиваниям, а не по одному оператору.
+    """
+    live = {name: 0}
+    for j in range(call + 1, len(stmts)):
+        st = stmts[j]
+        used = set(VAR.findall(st)) & set(live)
+        if not used:
+            continue
+        sm = STORE.match(st) or STORE.search(st)
+        if sm and set(VAR.findall(sm.group(3))) & set(live):
+            key = re.sub(r"\s+", " ", sm.group(2))
+            addr = raw.get(key)
+            if addr is None and re.fullmatch(r"\w+", key):
+                # запись без смещения: база сама и есть адрес регистра
+                v, _sym = resolve(key)
+                addr = v if v is not None and 0xFFFF0000 <= v <= 0xFFFFFFFF else None
+            if addr is None:
+                return {"sink": key, "kind": "unresolved", "width": 0}
+            return {"sink": f"{addr:08x}",
+                    "kind": "reg" if addr in known else "ram",
+                    "width": STORE_WIDTH.get(sm.group(1), 1)}
+        asg = re.fullmatch(r"(\w+) = (.*)", st)
+        if asg:
+            src = set(VAR.findall(asg.group(2))) & set(live)
+            if src:
+                d = min(live[v] for v in src) + 1
+                if d <= TAINT_DEPTH:
+                    live[asg.group(1)] = min(live.get(asg.group(1), d), d)
+            elif asg.group(1) in live:
+                # имя переприсвоено чужой величиной - пометку с него снять, иначе она
+                # переезжает на постороннее значение и запись найдётся не та
+                del live[asg.group(1)]
+    return {"sink": None, "kind": "lost", "width": 0}
+
+
+def split_stmts(text):
+    """Тело функции, разбитое на операторы. Длинные Ghidra переносит - склеиваются."""
+    body = text[text.index("{", text.index(")")) + 1:]
+    out, cur = [], []
+    for ch in body:
+        if ch in "{};":
+            if "".join(cur).strip():
+                out.append("".join(cur).strip())
+            cur = []
+            continue
+        cur.append(" " if ch == "\n" else ch)
+    return [re.sub(r"\s+", " ", s) for s in out]
+
+
+def call_args(text, open_paren):
+    """Аргументы вызова: срез до парной скобки, разрезанный по запятым верхнего уровня."""
+    depth, start, out = 0, open_paren + 1, []
+    for i in range(open_paren, len(text)):
+        c = text[i]
+        if c == "(":
+            depth += 1
+        elif c == ")":
+            depth -= 1
+            if depth == 0:
+                out.append(text[start:i].strip())
+                return [a for a in out if a]
+        elif c == "," and depth == 1:
+            out.append(text[start:i].strip())
+            start = i + 1
+    return []
+
+
+ATTRIB_MISS = {
+    "return": "результат вызова не связывается именем - возвращается наружу. Регистра "
+              "выхода у карты в этом аксессоре нет, величину получает вызывающий.",
+    "inline": "результат вызова не связывается именем - потребляется выражением, в "
+              "которое вложен вызов. Что с ним происходит, читается по самому оператору.",
+    "unresolved": "запись найдена, но её адрес сложен в регистре, и арифметика литералов "
+                  "пула его не берёт. Адрес настоящий, привязка не выведена.",
+    "lost": "записи в память в пределах прослеживания не встретилось. Величина остаётся "
+            "в регистрах процессора: её либо сравнивают на месте, либо передают дальше "
+            "вызовом.",
+}
+
+
+def render_attrib(A, data):
+    """Раздел привязки выхода целевой карты."""
+    A("## Привязка выхода")
+    A("")
+    A("Регистр RAM, в который уходит величина именно этой карты. Аксессор пишет много "
+      "регистров сразу, и потребители всего набора о карте не говорят: там её величина "
+      "растворена среди чужих. Привязка снимается с псевдокода - обёртка вызывается с "
+      "базой карты первым аргументом, а её результат виден по имени до записи в память.")
+    A("")
+    if not data["attrib"]:
+        A("Сайтов вызова обёртки с базой этой карты в псевдокоде аксессоров не нашлось. "
+          "Обычная причина - база выбирается ветвлением либо считается, и первым "
+          "аргументом стоит не литерал. Набор потребителей ниже выведен из всех записей "
+          "аксессора и специфичным для карты не является.")
+        A("")
+        return
+    A("| Аксессор | Приёмник | Ширина | Состояние |")
+    A("|---|---|---|---|")
+    for r in data["attrib"]:
+        if r["kind"] in ("reg", "ram"):
+            state = ("подтверждён ребром графа" if r["kind"] == "reg"
+                     else "адрес разобран, ребра USES под ним нет")
+            A(f"| `{r['acc']}` | `{r['sink']}` | {r['width']} | {state} |")
+        else:
+            A(f"| `{r['acc']}` | нет | – | {ATTRIB_MISS[r['kind']]} |")
+    A("")
+    # Оператор вызова - самое короткое свидетельство из возможных: там стоит и база карты,
+    # и то, во что её величина уходит. Без приёмника он единственное, что о выходе есть.
+    miss = [r for r in data["attrib"] if r["kind"] not in ("reg", "ram")]
+    if miss:
+        A("Оператор вызова у сайтов без приёмника:")
+        A("")
+        A("```c")
+        for r in miss:
+            A(f"// {r['acc']}")
+            A(r["stmt"][:400] + ";")
+        A("```")
+        A("")
+    A(f"Величина прослеживается через {TAINT_DEPTH} переприсваивания, расстояние в тексте "
+      "не ограничено: между вызовом и записью стоят несвязанные операторы, а расползается "
+      "пометка с глубиной, не с расстоянием. Отсутствие приёмника - факт о карте, а не "
+      "пробел артефакта: величина, которая до памяти не доходит, потребляется на месте.")
+    A("")
 
 
 def bind_state(target, kind, all_regs):
@@ -391,7 +600,7 @@ def bind_state(target, kind, all_regs):
 
 def render_pool(A, image, text, regs, addr, all_regs):
     """Раздел резолва под псевдокодом функции."""
-    syms, binds = pool(image, text, regs)
+    syms, binds, _raw, _res = pool(image, text, regs)
     if not syms:
         return
     A(f"#### Символы пула `{addr}`")
@@ -646,6 +855,9 @@ def render(comp, rom, data, export_dir):
             A("```")
         A("")
 
+    if data["focus"]:
+        render_attrib(A, data)
+
     A("## Потребители выхода")
     A("")
     if not data["consumers"]:
@@ -653,7 +865,14 @@ def render(comp, rom, data, export_dir):
         A("Потребителей нет: раздел пуст не по недосмотру сборки, а по состоянию графа, и "
           "это факт о компоненте, а не пробел артефакта.")
         A("")
-        if not regs:
+        if data["sinks"]:
+            named = ", ".join("`%s`" % s for s in data["sinks"])
+            A(f"Набор задан привязкой: читателей у выхода {named} снаружи аксессора нет. "
+              "Величина карты либо потребляется внутри аксессора, либо не потребляется "
+              "вовсе - и то и другое читается по коду аксессора, а не по коду соседей. "
+              "Прочие регистры аксессора несут чужие величины, и разбирать их состав "
+              "здесь незачем: о целевой карте они не говорят.")
+        elif not regs:
             A("Аксессор компоненты не пишет ни одного регистра RAM. Трейс кончается внутри "
               "аксессора: выход карты дальше него не уходит - либо возвращается вызывателю "
               "значением, либо сравнивается на месте. Смысл, если он устанавливается, "
@@ -678,18 +897,30 @@ def render(comp, rom, data, export_dir):
               "другое семантику карты не закрывает: заявка идёт `candidate`.")
         A("")
     else:
-        A("Функции, читающие RAM, которую пишет аксессор компоненты. Смысл карты задаёт "
-          "то, что происходит с её выходом дальше: запись в RAM - середина трейса, а не "
-          "его конец. Отобраны потребители регистров, у которых читателей не больше "
-          f"{data['maxr']}: регистр с одним читателем частный для этой компоненты, "
-          "регистр с тремя десятками - разделяемая глобаль, и её потребитель о карте не "
-          "говорит ничего.")
+        A("Функции, читающие RAM, которую пишет аксессор. Смысл карты задаёт то, что "
+          "происходит с её выходом дальше: запись в RAM - середина трейса, а не его конец.")
         A("")
-        A("Таблица полна: в ней все потребители, прошедшие отсечку по разделяемости. "
-          "C-псевдокод идёт не у всех - он под отдельным бюджетом, и колонка "
-          "\"Код\" говорит, у кого он ниже есть. Порядок - по специфичности связи "
-          "(наименьшее число читателей у связывающего регистра), затем по размеру: "
-          "приватный регистр ближе к выходу карты, чем умеренно-разделяемый.")
+        if data["sinks"]:
+            named = ", ".join("`%s`" % s for s in data["sinks"])
+            A(f"Набор задан привязкой: это читатели выхода {named}, и только его. Прочие "
+              "регистры аксессора несут чужие величины и в отбор не входят - отсечка по "
+              "разделяемости тут не нужна, набор специфичен по построению. Разделяемость "
+              "самого привязанного регистра при этом не скрыта: если его читают десятки "
+              "функций, они здесь все, и это факт о карте.")
+        else:
+            A("Привязки выхода нет, поэтому набор выведен из всех записей аксессора и "
+              "несёт чужие величины вперемешку с величиной карты. Отобраны потребители "
+              f"регистров, у которых читателей не больше {data['maxr']}: регистр с одним "
+              "читателем частный для этого аксессора, регистр с тремя десятками - "
+              "разделяемая глобаль, и её потребитель о карте не говорит ничего. Связь "
+              "потребителя именно с этой картой отсюда не следует - она предмет проверки "
+              "по коду, а не вывод из состава таблицы.")
+        A("")
+        A("Таблица полна: в ней все отобранные потребители. C-псевдокод идёт не у всех - "
+          "он под отдельным бюджетом, и колонка \"Код\" говорит, у кого он ниже есть. "
+          "Порядок - по специфичности связи (наименьшее число читателей у связывающего "
+          "регистра), затем по размеру: приватный регистр ближе к выходу карты, чем "
+          "умеренно-разделяемый.")
         A("")
         A("| Потребитель | Размер | Читателей у регистра | Читает регистров | Код "
           "| Регистры |")
@@ -848,10 +1079,16 @@ def verify_blind(text, answers, allowed):
             value = row.get(field)
             if not value or not isinstance(value, str) or len(value.strip()) < 4:
                 continue
-            if value in allowed:
+            if value not in text:
                 continue
-            if value in text:
-                leaks.append(f"{row['addr']}.{field} = {value!r}")
+            # Оправдание засчитывается подстрокой, как и сама утечка: шкала `x-128` стоит
+            # в каталожной строке `Degrees (x-128)*0.5`, и её появление объяснено тем же
+            # независимым источником, что и совпадение дословное. Сверять утечку
+            # подстрокой, а источник - полным равенством значит останавливать прогон на
+            # коротких общих значениях, которых у offset-binary шкал большинство.
+            if any(value in a for a in allowed):
+                continue
+            leaks.append(f"{row['addr']}.{field} = {value!r}")
     return leaks
 
 
@@ -880,8 +1117,6 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
         "callers": [r.data() for r in session.run(CALLERS, rom=rom, addrs=acc)],
         "uses": [r.data() for r in session.run(USES, rom=rom, addrs=acc)],
         "kernels": kernels,
-        "consumers": [r.data() for r in session.run(CONSUMERS, rom=rom,
-                                                    addrs=acc, maxr=maxr)],
         "write_regs": [r.data() for r in session.run(WRITE_REGS, rom=rom, addrs=acc)],
         "maxr": maxr,
         "a2l": {},
@@ -889,6 +1124,33 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
         "concepts": [],
         "anchors": [],
     }
+    # Привязка выхода идёт до потребителей и задаёт их набор. Без фокуса привязывать не к
+    # чему: компонента несёт много карт, и их выходы в один набор не сводятся.
+    data["all_regs"] = set(session.run(ALL_REGS, rom=rom).single()["addrs"])
+    acc_regs = {r["func"]: r["regs"] for r in session.run(FUNC_REGS, rom=rom, addrs=acc)}
+    data["attrib"] = []
+    if focus:
+        bases = {m["addr"] for m in maps}
+        for a in acc:
+            text, _p = dumped(export_dir, a, "decomp")
+            if text is None:
+                continue
+            for rec in attribute(image, text, acc_regs.get(a, []), bases):
+                if rec["base"] == focus:
+                    data["attrib"].append({"acc": a, **rec})
+    sinks = sorted({r["sink"] for r in data["attrib"] if r["kind"] in ("reg", "ram")})
+    # Величина шире байта занимает несколько адресов, и читатель берёт любой из них:
+    # окно задаётся шириной записи, а не догадкой о соседстве.
+    span = sorted({f"{int(r['sink'], 16) + k:08x}"
+                   for r in data["attrib"] if r["kind"] in ("reg", "ram")
+                   for k in range(max(r["width"], 1))})
+    data["sinks"] = sinks
+    if sinks:
+        data["consumers"] = [r.data() for r in
+                             session.run(CONSUMERS_OF, rom=rom, addrs=acc, regs=span)]
+    else:
+        data["consumers"] = [r.data() for r in
+                             session.run(CONSUMERS, rom=rom, addrs=acc, maxr=maxr)]
     # Таблица потребителей идёт полной, код - под бюджетом: запрос отдал их уже в порядке
     # специфичности, так что голова списка и есть наиболее близкое к выходу карты.
     data["consumers_decomp"] = data["consumers"][:maxdec]
@@ -907,7 +1169,6 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
                         | {c["consumer"] for c in data["consumers_decomp"]})
     data["func_regs"] = {r["func"]: r["regs"] for r in
                          session.run(FUNC_REGS, rom=rom, addrs=decompiled)}
-    data["all_regs"] = set(session.run(ALL_REGS, rom=rom).single()["addrs"])
     for m in maps:
         key = (m["dims"], shape(m["width"], m["height"]))
         if key not in data["a2l"]:
