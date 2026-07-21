@@ -159,6 +159,58 @@
       </table>
     </table>
 
+    <!-- 0x1491A  16 uint16  карта [code]; вход 0x263F4 (implicit, ядро 0x26A64)
+         аксессор 0x8083C; операнд r4: pool
+         шкала x*0.000488 мс BFS [candidate]
+         Аксессор 0008083c делит (ffff1024 << 8) на интерполированное значение карты, при
+         установленном ROM-бите 0x10 по 0000870e дополнительно нормирует на байт ffff329f (128 -
+         нейтраль поправки) и пишет min(результат, 255) в ffff413e. Байт ffff413e - расчётная
+         нагрузка J1979 mode 01 PID 0x04 (A*100/255 %): диспетчер 00035856 отдаёт его одним
+         байтом в ветке 4, он же ложится в стоп-кадр рядом с оборотами и температурой ОЖ.
+         Значение работает делителем, а не множителем: перед делением первый операнд охраняется
+         от нуля (000808f8 tst r0,r0 -> выход 0xff). Геометрия снята с машинерии: обёртка
+         000263f4 возвращает *(short *)(база + 0x1e) - ровно 16 двухбайтовых элементов, ядро
+         00026a64 даёт индекс b >> 4 и 4 бита дроби. Шкала x*0.000488 взята из каталога, а не из
+         кода, отсюда scale_conf = candidate.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Calculated Load Reference - 100% point (0x1491A)"
+           category="Load (traced)" storagetype="uint16" storageaddress="0x1491A" sizex="16"
+           endian="big">
+      <scaling units="мс BFS [cand]" expression="x*0.000488" to_byte="x/0.000488" format="0.000"
+               fineincrement="0.001" coarseincrement="0.01"/>
+      <table type="Static X Axis" name="Raw input (step 4096)" sizex="16">
+        <data>0</data><data>4096</data><data>8192</data><data>12288</data>
+        <data>16384</data><data>20480</data><data>24576</data><data>28672</data>
+        <data>32768</data><data>36864</data><data>40960</data><data>45056</data>
+        <data>49152</data><data>53248</data><data>57344</data><data>61440</data>
+      </table>
+    </table>
+
+    <!-- 0x14E52  16 uint16  карта [code]; вход 0x263F4 (implicit, ядро 0x26A64)
+         аксессор 0x64A1C; операнд r4: pool
+         шкала x/65536 доля Q16 (0..1) [code]
+         Выход K подставляется в new = (target*K + prev*(0x10000-K)) >> 16, где target =
+         clamp(ffff19c6 + ffff2408 + ffff2410, <= 0x7fff), а состояние фильтра - ffff199e (RW).
+         Дополнение до 0x10000 и сдвиг на 16 задают единицу и шкалу арифметически, без каталога.
+         Значения дампа десятичные, не шестнадцатеричные: аннотация листинга сайта даёт 00014e52
+         [=1f401f40], то есть 0x1f40 = 8000, откуда K = 0.1221, а не 0.5. Фильтрованная величина
+         уходит в кольцо транспортной задержки и служит знаменателем двух отношений,
+         нормированных в 0..255 (ffff186c, ffff1864). Физическая величина фильтруемого сигнала и
+         байта оси ffff11b3 не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Filter Weight - new-sample share Q16 (0x14E52)"
+           category="Filters (traced)" storagetype="uint16" storageaddress="0x14E52" sizex="16"
+           endian="big">
+      <scaling units="доля Q16 (0..1)" expression="x/65536" to_byte="x*65536" format="0.0000"
+               fineincrement="0.001" coarseincrement="0.01"/>
+      <table type="Static X Axis" name="Raw input (step 4096)" sizex="16">
+        <data>0</data><data>4096</data><data>8192</data><data>12288</data>
+        <data>16384</data><data>20480</data><data>24576</data><data>28672</data>
+        <data>32768</data><data>36864</data><data>40960</data><data>45056</data>
+        <data>49152</data><data>53248</data><data>57344</data><data>61440</data>
+      </table>
+    </table>
+
     <!-- 0x11ECE  ось 16 точек uint8, rpm [code]
          ось оборотов аксессора 0x4bbee; читается кодом
          Разбор и метод - defs/JK03A.notes.md -->

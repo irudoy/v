@@ -117,3 +117,19 @@ name = "Fuel enrichment vs MBT-like axis (0x1236A)"
 category = "Fuel (traced)"
 order = 50
 coarse = 4
+
+[table.0001491a]
+name = "Calculated Load Reference - 100% point (0x1491A)"
+category = "Load (traced)"
+order = 60
+format = "0.000"
+fine = 0.001
+coarse = 0.01
+
+[table.00014e52]
+name = "Filter Weight - new-sample share Q16 (0x14E52)"
+category = "Filters (traced)"
+order = 70
+format = "0.0000"
+fine = 0.001
+coarse = 0.01
