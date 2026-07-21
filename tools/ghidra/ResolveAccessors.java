@@ -23,12 +23,27 @@
 // Ghidra строит по flow. Прогон под -readOnly держит восстановленное в памяти; тот же
 // дефект разметки скрывает эти вызовы и от ExportGraph (обёртки без вызывателей в графе).
 //
-// verdict сайта - по тройке r4/r5/r6, приоритет conflict > bt_only > df_only > agree:
+// verdict сайта - по тройке r4/r5/r6, приоритет selector > conflict > bt_only > df_only > agree:
 //   agree     - обе тройки дали одно и то же;
 //   df_only   - data-flow снял то, чего backtrack не дал;
 //   bt_only   - backtrack снял то, чего data-flow не дал (регрессия на разбор);
 //   conflict  - базы расходятся (латентная ошибка nearestLoad-эвристики в цензе).
-// Инвариант принятия - data-flow покрывает backtrack, то есть bt_only = 0.
+//   selector  - операнд задан ветвлением: на сайте не одно значение, а множество.
+// Инвариант принятия - data-flow покрывает backtrack, то есть bt_only = 0. На сайтах
+// selector инвариант не применяется: backtrack по построению даёт один литерал и полным
+// на множестве быть не может.
+//
+// Ветвление операнда (MULTIEQUAL). База или ось, заданные условием, приходят в вызов
+// phi-узлом: `if (cfg) t = A; else t = B;` даёт на входе CALL не значение, а слияние по
+// числу входящих рёбер блока. Свёртка в одно значение здесь неверна по существу - обе
+// таблицы существуют, и какая из них исполняется, решает калибровка, а не разбор. Такой
+// сайт эмитится строкой на ветвь, номер - в колонке branch.
+//
+// Тройка собирается по индексу, а не перемножением множеств: i-й вход каждого phi одного
+// блока приходит по i-му ребру, поэтому (r4,r5,r6) i-й ветви - согласованная тройка, а
+// перекрёстные пары (база одной ветви с осью другой) в коде не встречаются. Условие
+// применимости - все phi операндов лежат в одном блоке и равной длины; иначе выравнивание
+// не обосновано, и сайт остаётся односрочным на резерве, как прежде.
 //
 // Запуск (headless): -postScript ResolveAccessors.java <out_dir> <kernel_hex>
 // Выход: accessors.<kernel>.csv - файл на ценз. Ядер доступа к таблицам несколько
@@ -55,6 +70,7 @@ import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.pcode.HighFunction;
+import ghidra.program.model.pcode.PcodeBlockBasic;
 import ghidra.program.model.pcode.PcodeOp;
 import ghidra.program.model.pcode.PcodeOpAST;
 import ghidra.program.model.pcode.Varnode;
@@ -100,6 +116,7 @@ public class ResolveAccessors extends GhidraScript {
         long[] bt = {-1, -1, -1};
         long[] df = {-1, -1, -1, -1};
         String[] kind = {"none", "none", "none", "none"};
+        List<long[]> alts = new ArrayList<>();   // ветви селектора помимо первой
     }
 
     public void run() throws Exception {
@@ -243,6 +260,7 @@ public class ResolveAccessors extends GhidraScript {
                     if (v != null) { s.df[k] = v; s.kind[k] = kindOf(in[k + 1]); }
                     else s.kind[k] = "dyn";
                 }
+                selectorBranches(s, in);
             }
         }
         // Резерв: varnode'ы, не свернувшиеся в slice.
@@ -253,6 +271,92 @@ public class ResolveAccessors extends GhidraScript {
             if (v != null) { s.df[k] = v; s.kind[k] = "sp"; }
             else if (lastGbrRel) s.kind[k] = "gbrrel";
         }
+        // Операнд, общий у всех ветвей, резерв снимает после разворота - раздать в ветви.
+        for (long[] t : s.alts)
+            for (int k = 0; k < 4; k++) if (t[k] == -1) t[k] = s.df[k];
+    }
+
+    // Phi под операндом: сквозь пересылки (COPY/CAST/расширения), которыми декомпилятор
+    // разделяет слияние и вызов. Дальше пересылок не идёт - арифметика над слиянием уже
+    // не выбор таблицы, а вычисление над её адресом.
+    PcodeOp phiOf(Varnode vn, int depth) {
+        if (vn == null || depth > SLICE_DEPTH) return null;
+        PcodeOp d = vn.getDef();
+        if (d == null) return null;
+        switch (d.getOpcode()) {
+            case PcodeOp.MULTIEQUAL:
+                return d;
+            case PcodeOp.COPY:
+            case PcodeOp.CAST:
+            case PcodeOp.SUBPIECE:
+            case PcodeOp.INT_ZEXT:
+            case PcodeOp.INT_SEXT:
+                return phiOf(d.getInput(0), depth + 1);
+            default:
+                return null;
+        }
+    }
+
+    // Разворот ветвления операнда в строку на ветвь. Первая ветвь занимает df/kind сайта,
+    // остальные ложатся в alts. Условия применимости проверяются до записи: phi операндов
+    // должны лежать в одном блоке и иметь равное число входов, иначе выравнивание по
+    // индексу не обосновано и сайт остаётся односрочным.
+    void selectorBranches(Site s, Varnode[] in) {
+        PcodeOp[] phi = new PcodeOp[3];
+        PcodeBlockBasic blk = null;
+        int n = 0;
+        for (int k = 0; k < 3 && k + 1 < in.length; k++) {
+            PcodeOp d = phiOf(in[k + 1], 0);
+            if (!(d instanceof PcodeOpAST)) continue;
+            PcodeBlockBasic b = ((PcodeOpAST) d).getParent();
+            if (b == null) continue;
+            // Выравнивание по индексу обосновано только внутри одного блока и при равной
+            // длине слияний. Операнд, слитый иначе, из разворота выпадает; порядок обхода
+            // ставит первой базу, поэтому длину задаёт она, а не побочный аргумент.
+            if (n == 0) { n = d.getNumInputs(); blk = b; }
+            else if (d.getNumInputs() != n || blk != b) continue;
+            phi[k] = d;
+        }
+        if (n < 2) return;
+
+        // Операнд, чьи ветви не сворачиваются в значения, из разворота выпадает и остаётся
+        // на прежнем разборе: у аксессора по ветвям расходятся не только указатели ПЗУ, но
+        // и runtime-вход из RAM, а он к выбору таблицы отношения не имеет.
+        long[][] val = new long[3][];
+        for (int k = 0; k < 3; k++) {
+            if (phi[k] == null) continue;
+            long[] col = new long[n];
+            for (int i = 0; i < n; i++) {
+                Long v = eval(phi[k].getInput(i), 0);
+                if (v == null) { col = null; break; }
+                col[i] = v & 0xFFFFFFFFL;
+            }
+            if (col == null) phi[k] = null;
+            else val[k] = col;
+        }
+        if (val[0] == null && val[1] == null && val[2] == null) return;
+
+        List<long[]> branches = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            long[] t = {s.df[0], s.df[1], s.df[2], s.df[3]};
+            for (int k = 0; k < 3; k++) if (val[k] != null) t[k] = val[k][i];
+            branches.add(t);
+        }
+        // Ветви, совпавшие значениями, - одно чтение по разным путям, а не разные таблицы.
+        List<long[]> uniq = new ArrayList<>();
+        for (long[] t : branches) {
+            boolean dup = false;
+            for (long[] u : uniq) if (u[0] == t[0] && u[1] == t[1] && u[2] == t[2]) dup = true;
+            if (!dup) uniq.add(t);
+        }
+        if (uniq.size() < 2) return;
+
+        for (int k = 0; k < 3; k++) {
+            if (phi[k] == null) continue;
+            s.df[k] = uniq.get(0)[k];
+            s.kind[k] = "phi";
+        }
+        for (int i = 1; i < uniq.size(); i++) s.alts.add(uniq.get(i));
     }
 
     // Значение аргумента вызова: ram-varnode - ячейка (слот пула), значение = содержимое;
@@ -457,8 +561,11 @@ public class ResolveAccessors extends GhidraScript {
         }
     }
 
-    // Приоритет: conflict (базы расходятся) > bt_only (регрессия) > df_only > agree.
+    // Приоритет: selector (операнд - множество) > conflict (базы расходятся) >
+    // bt_only (регрессия) > df_only > agree. Сравнивать одно значение backtrack с
+    // множеством нечем, поэтому ветвление вытесняет остальные вердикты, а не смешивается.
     String verdict(Site s) {
+        if (!s.alts.isEmpty()) return "selector";
         boolean conflict = false, btOnly = false, dfOnly = false, any = false;
         for (int k = 0; k < 3; k++) {
             long b = s.bt[k], d = s.df[k];
@@ -477,14 +584,23 @@ public class ResolveAccessors extends GhidraScript {
     void write(File f, List<Site> sites, long kernel) throws Exception {
         PrintWriter w = new PrintWriter(new FileWriter(f));
         w.println("kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,"
-                + "df_r4,df_r5,df_r6,df_r7,k4,k5,k6,k7,verdict");
+                + "df_r4,df_r5,df_r6,df_r7,k4,k5,k6,k7,verdict,branch");
         String khex = String.format("%08x", kernel);
         for (Site s : sites) {
-            w.println(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                    khex, s.wrapper, s.slot, s.accessor, s.at, s.fsrc,
-                    hx(s.bt[0]), hx(s.bt[1]), hx(s.bt[2]),
-                    hx(s.df[0]), hx(s.df[1]), hx(s.df[2]), hx(s.df[3]),
-                    s.kind[0], s.kind[1], s.kind[2], s.kind[3], verdict(s)));
+            String vd = verdict(s);
+            List<long[]> rows = new ArrayList<>();
+            rows.add(s.df);
+            rows.addAll(s.alts);
+            for (int i = 0; i < rows.size(); i++) {
+                long[] d = rows.get(i);
+                w.println(String.format(
+                        "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                        khex, s.wrapper, s.slot, s.accessor, s.at, s.fsrc,
+                        hx(s.bt[0]), hx(s.bt[1]), hx(s.bt[2]),
+                        hx(d[0]), hx(d[1]), hx(d[2]), hx(d[3]),
+                        s.kind[0], s.kind[1], s.kind[2], s.kind[3], vd,
+                        s.alts.isEmpty() ? "" : String.valueOf(i)));
+            }
         }
         w.close();
     }
@@ -500,8 +616,11 @@ public class ResolveAccessors extends GhidraScript {
             kd.merge(s.kind[0], 1, Integer::sum);
             fs.merge(s.fsrc, 1, Integer::sum);
         }
+        int selSites = 0, selRows = 0;
+        for (Site s : sites) if (!s.alts.isEmpty()) { selSites++; selRows += s.alts.size() + 1; }
         println("VQ_RES sites=" + n + " bt_r4=" + btR4 + " df_r4=" + dfR4
                 + " резолюция bt=" + pct(btR4, n) + "% df=" + pct(dfR4, n) + "%");
+        println("VQ_RES ветвление операнда: " + selSites + " сайтов -> " + selRows + " строк");
         println("VQ_RES операндов r4/r5/r6: bt=" + btAll + " df=" + dfAll + " из " + (n * 3));
         println("VQ_RES verdict: " + vd);
         println("VQ_RES источник df_r4: " + kd);
