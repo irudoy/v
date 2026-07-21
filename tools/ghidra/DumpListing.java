@@ -38,7 +38,11 @@ public class DumpListing extends GhidraScript {
                 if (prev == null) break;
                 cur = prev;
             }
-            PrintWriter w = new PrintWriter(new FileWriter(new File(outDir, "listing_" + a[i] + ".txt")));
+            // Имя файла - по разобранному адресу, а не по строке аргумента: потребитель
+            // (build_artifacts.py) берёт адрес из графа, где он всегда восьмизначный, и
+            // "26a80" от "00026a80" отличало бы только форму записи вызова.
+            String name = String.format("listing_%08x.txt", target.getOffset() & 0xFFFFFFFFL);
+            PrintWriter w = new PrintWriter(new FileWriter(new File(outDir, name)));
             for (int k = 0; k < 56 && cur != null; k++) {
                 StringBuilder line = new StringBuilder();
                 boolean mark = cur.getAddress().equals(ins.getAddress());
@@ -60,7 +64,7 @@ public class DumpListing extends GhidraScript {
                 cur = cur.getNext();
             }
             w.close();
-            println("VQ_LST wrote listing_" + a[i] + ".txt");
+            println("VQ_LST wrote " + name);
         }
     }
 }

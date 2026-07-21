@@ -39,12 +39,12 @@ RETURN component_id,
 
 | Карт в компоненте | Компонент | Карт | Аксессоров | Плоских карт |
 |---|---:|---:|---:|---:|
-| 13-20 | 3 | 53 | 29 | 21 |
-| 8-12 | 4 | 38 | 5 | 10 |
-| 4-7 | 22 | 105 | 39 | 29 |
-| 2-3 | 63 | 144 | 72 | 56 |
-| 1 | 79 | 79 | 85 | 36 |
-| **итого** | **171** | **419** | **230** | **152** |
+| 13-20 | 3 | 55 | 29 | 21 |
+| 8-12 | 5 | 47 | 6 | 12 |
+| 4-7 | 23 | 113 | 41 | 36 |
+| 2-3 | 66 | 150 | 75 | 60 |
+| 1 | 74 | 74 | 79 | 33 |
+| **итого** | **171** | **439** | **230** | **162** |
 
 ## 2. Агенты читают артефакты, а не граф
 
@@ -61,6 +61,9 @@ RETURN component_id,
 - оси: адрес, точки, монотонность, длина, элемент;
 - аксессоры: адрес, C-псевдокод (`DecompileFuncs`), листинг (`DumpListing`), дерево вызовов
   вверх, обращения к RAM/периферии (`:USES`);
+- код между картой и записью выхода: обёртка интерполяции, её ядро и finisher. Ядро, в
+  функцию не выделенное (обёртка уходит в него `jmp`, а не `jsr`), идёт листингом –
+  разметка функции нужна декомпилятору, а не дизассемблеру, и код ядра читается там же;
 - операнды сайтов из переписи резолвера: что передано в `r4`/`r5`/`r6` и чем это снято
   (`pool`/`slice`/`const`/`sp`);
 - каталоги-эталоны: кандидаты имён из `:A2LEntry` и `:VendorEntry` по геометрии и семантике
@@ -138,23 +141,27 @@ D=~/tools/ghidra-projects/export-JK03A
 H="tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr -process as7058.bin \
      -noanalysis -scriptPath tools/ghidra"
 $H -postScript DecompileFuncs.java "$D" <аксессоры волны>
-$H -postScript DumpListing.java    "$D" <сайты волны>
+$H -postScript DumpListing.java    "$D" <сайты волны> <ядра волны без разметки>
 uv run --no-project --with neo4j python tools/sweep/build_artifacts.py <out> --accessor <addr>
 ```
 
-Аксессоры волны даёт запрос раздела 1, её сайты – запрос по ним; списком они не хранятся по
-той же причине, что и компоненты:
+Аксессоры волны даёт запрос раздела 1, её сайты и неразмеченные ядра – запрос по ним; списком
+они не хранятся по той же причине, что и компоненты:
 
 ```cypher
-MATCH (f:Func {rom:$rom})-[x:ACCESSES]->(:Map {rom:$rom})
+MATCH (f:Func {rom:$rom})-[x:ACCESSES]->(m:Map {rom:$rom})
 WHERE f.addr IN $accessors
-RETURN collect(DISTINCT f.addr) AS funcs, collect(DISTINCT x.callsite) AS sites
+OPTIONAL MATCH (m)-[:VIA]->(:Interp {rom:$rom})-[:KERNEL]->(k:Interp {rom:$rom})
+OPTIONAL MATCH (kf:Func {rom:$rom, addr:k.addr})
+RETURN collect(DISTINCT f.addr) AS funcs, collect(DISTINCT x.callsite) AS sites,
+       collect(DISTINCT CASE WHEN kf IS NULL THEN k.addr ELSE NULL END) AS bare_kernels
 ```
 
 Псевдокод и листинги берёт `build_artifacts.py` из `<D>`; отсутствие файла он объявляет в
 артефакте, а не обходит молча – трейс без псевдокода не ведётся. Листинг снимается на адрес
 сайта, а не функции: операнды резолвятся там, и окно `DumpListing` вокруг входа функции до
-сайта не достаёт.
+сайта не достаёт. Для ядра адрес и есть точка входа, и окно вокруг него накрывает ядро
+целиком.
 
 GUI и GhydraMCP в прогоне не участвуют – плагин требует GUI и становится узким местом на
 десятке параллельных агентов.

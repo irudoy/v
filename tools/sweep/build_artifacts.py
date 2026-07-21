@@ -547,10 +547,10 @@ def render(comp, rom, data, export_dir):
         A(f"| `{k['addr']}` | {k['role']} | "
           f"{k['size'] if k['size'] is not None else 'НЕ РАЗМЕЧЕН'} | {cs or '-'} |")
     A("")
-    A("`НЕ РАЗМЕЧЕН`: обёртка уходит в это ядро через `jmp`, а не `jsr`, участок в функцию "
-      "не выделен и декомпилятор в него не дотягивается. Трейс через такое ядро не "
-      "ведётся - это факт артефакта, а не свойство карты, и заявка по такой карте "
-      "остаётся `candidate`.")
+    A("`НЕ РАЗМЕЧЕН`: обёртка уходит в это ядро через `jmp`, а не `jsr`, и в функцию "
+      "участок не выделен. C-псевдокода у такого ядра нет; листинг есть и идёт ниже - "
+      "разметка функции нужна декомпилятору, а не дизассемблеру. Трейс через такое ядро "
+      "ведётся по листингу, и уровень заявки оно само по себе не ограничивает.")
     A("")
     for f_addr in data["kernel_funcs"]:
         text, path = dumped(export_dir, f_addr, "decomp")
@@ -566,6 +566,19 @@ def render(comp, rom, data, export_dir):
             A("")
             render_pool(A, data["image"], text, data["func_regs"].get(f_addr, []), f_addr,
                         data["all_regs"])
+        A("")
+
+    for k_addr in data["kernel_listings"]:
+        text, path = dumped(export_dir, k_addr, "listing")
+        A(f"### Листинг `{k_addr}` – ядро без разметки функции")
+        A("")
+        if text is None:
+            A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на этот адрес не "
+              f"сделан.")
+        else:
+            A("```")
+            A(text)
+            A("```")
         A("")
 
     if data["consumers"]:
@@ -758,6 +771,9 @@ def build(session, image, rom, comp, export_dir, catalog, maxr):
         {k["addr"] for k in kernels if k["size"] is not None}
         | {c["addr"] for k in kernels for c in k["callees"] if c.get("addr")}
     )
+    # Ядро за jmp идёт листингом: разметка функции нужна декомпилятору, а дизассемблеру
+    # нет, и код ядра читается там же. Без этого агент видел адрес ядра и не видел ядра.
+    data["kernel_listings"] = sorted({k["addr"] for k in kernels if k["size"] is None})
     # Резолв пула: образ даёт значение литерала, граф - множество для его проверки.
     data["image"] = image
     decompiled = sorted(set(comp["accessors"]) | set(data["kernel_funcs"])
