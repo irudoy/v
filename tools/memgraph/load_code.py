@@ -49,6 +49,17 @@ FUNC_ROLES = {
     "wrapper", "finisher", "service", "dispatch", "handler", "selector",
 }
 ADDR_RE = re.compile(r"^[0-9a-f]{8}$")
+# Значение класса-ребра: адрес узла, за которым может стоять смещение внутри него
+# (base:ffff3100+4, base:ffff119c+0x12). Смещение говорит, как адрес субъекта сложен из
+# базы, и цели ссылки не меняет: зависимость идёт на базу. Форма записи адреса провенанса
+# не отменяет - канал массива держится на его голове и падает вместе с ней.
+EDGE_VALUE_RE = re.compile(r"^([0-9a-f]{8})(?:\+(?:0x[0-9a-f]+|\d+))?$")
+
+
+def edge_target(value):
+    """Узел, на который ссылается значение класса-ребра, или None."""
+    m = EDGE_VALUE_RE.match(value)
+    return m.group(1) if m else None
 
 # Словарь evidence (proposal раздел 4). Классы различаются не смыслом, а тем, адресует
 # ли значение узел графа: только адресуемое несёт провенанс и распространяет уверенность.
@@ -154,8 +165,8 @@ def build_rests_on(s, rom, funcs, vars_):
     """
     subjects = [("Func", r) for r in funcs] + [("Reg", r) for r in vars_]
     wanted = sorted({
-        v for _, r in subjects for role, v in r["_toks"]
-        if role in EDGE_ROLES and ADDR_RE.match(v)
+        t for _, r in subjects for role, v in r["_toks"]
+        if role in EDGE_ROLES for t in [edge_target(v)] if t
     })
     labels = sorted({lb for pref in EDGE_ROLES.values() for lb in pref})
     at = {
@@ -171,15 +182,21 @@ def build_rests_on(s, rom, funcs, vars_):
     edges, gaps, dangling = [], [], []
     for src_label, r in subjects:
         for role, value in r["_toks"]:
-            if role not in EDGE_ROLES or not ADDR_RE.match(value):
-                continue  # арифметика базы и свободный текст - терминал, не ссылка
-            dst = next((lb for lb in EDGE_ROLES[role] if value in at[lb]), None)
+            if role not in EDGE_ROLES:
+                continue  # терминал: узла не адресует, обходом графа не проверяется
+            target = edge_target(value)
+            if target is None:
+                # Класс-ребро обязан адресовать узел. Свободный текст здесь - не терминал,
+                # а потерянный провенанс: вывод объявляет опору и не получает ребра.
+                dangling.append((src_label, r["addr"], f"{role}:{value}"))
+                continue
+            dst = next((lb for lb in EDGE_ROLES[role] if target in at[lb]), None)
             if dst is None:
                 (gaps if role in CATALOG_ROLES else dangling).append(
                     (src_label, r["addr"], f"{role}:{value}"))
                 continue
             edges.append({"sl": src_label, "sa": r["addr"], "dl": dst,
-                          "da": value, "role": role})
+                          "da": target, "role": role})
     if dangling:
         sys.exit(f"свидетельство не резолвимо: {len(dangling)} ссылок мимо узла "
                  f"(промах, не пробел каталога): {dangling}")
@@ -286,7 +303,7 @@ def main():
         code = [r for r in funcs + vars_ if r["confidence"] == "code"]
         with_edge = sum(
             1 for r in code
-            if [1 for role, v in r["_toks"] if role in EDGE_ROLES and ADDR_RE.match(v)]
+            if [1 for role, v in r["_toks"] if role in EDGE_ROLES and edge_target(v)]
         )
         print(f"  выводы code: {len(code)}; с ребром {with_edge}, "
               f"только терминал {len(code) - with_edge}")
