@@ -1,0 +1,4 @@
+addr,semantics,units,confidence,evidence,note
+ffff16d4,"Измеряемый сигнал, сравниваемый с диагностическим нижним пределом (min-limit из карты 00012870) в мониторе DTC: ниже предела набирает дебаунс ffff1846. Физическая величина не установлена (источник входа FUN_00021bbc вне компоненты).",,code,trace:000ab6cc;below_limit_incr:ffff1846;base:ffff128c+0x448,
+ffff1846,"Дебаунс-счётчик монитора DTC при карте-пределе 00012870: инкремент разрешён гейтом ffff84c3 бит6, сравнивается с порогом 00008b71; по достижении взводится fault-бит 0x04 в ffff24a1 и зовётся реакция FUN_000b4ef8(0x2f).",count,code,trace:000ab6d6;gate:ffff84c3;threshold:00008b71;sets:ffff24a1;base:ffff128c+0x5ba,
+ffff24a1,"Статусный байт DTC; бит 0x04 – fault данного монитора (карта-предел 00012870).",bitfield,code,set_by:000aacc0;base:ffff244c+0x55,

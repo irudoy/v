@@ -139,6 +139,7 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |
 | `memgraph/load_maps.py` | калибровочный слой: переписи резолвера + реестр входов `defs/<rom>.interp.csv` + ручной слой карт `defs/<rom>.findings.csv` и осей `defs/<rom>.axes.csv` + значения из образа (Stage 4) -> `:Interp`/`:Map`/`:Axis` + `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
 | `memgraph/load_a2l.py` | `:A2LEntry` из `A2L.xml` – rom-независимый эталон семейства HR (карты, скаляры, switch'и), без адресов | Memgraph |
+| `memgraph/load_code.py` | слой понимания кода: ручной слой функций `defs/<rom>.funcs.csv` и RAM-переменных `defs/<rom>.vars.csv` (role/semantics/уровень/evidence) -> свойства на `:Func`/`:Reg`; после `load_graph`+`load_xrefs` (владельцы узлов) | Memgraph |
 | `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны, ворота раздела 11 одним запросом. Параметр `$rom` | (в git) |
 | `maps/build_tracker.py` | ledger `defs/<rom>.maps.csv` – проекция каталога из графа (worklist разбора) | (в git) |
 | `sweep/build_artifacts.py` | артефакт на компоненту графа "аксессор -> карта" для массового прохода (контракт – `map-sweep.md`): форма, значения, оси, псевдокод и листинги, операнды переписи, каталоги. Разметку компоненты не несёт – ослепление белым списком, проверяется каждым прогоном. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N]` | `comp-<addr>.md` |
@@ -194,6 +195,9 @@ uv run --no-project --with neo4j python tools/memgraph/load_a2l.py
 uv run --no-project --with neo4j python tools/maps/build_tracker.py JK03A
 # 6. деф RomRaider - проекция графа плюс defs/JK03A.overrides.toml (имена, категории, порядок)
 uv run --no-project --with neo4j python tools/mapkit/emit_def.py JK03A
+# 7. слой кода - проекция defs/JK03A.funcs.csv и defs/JK03A.vars.csv на :Func/:Reg (после
+#    load_graph: тот пересоздаёт :Func; :Reg владеет load_xrefs из графовой базы)
+uv run --no-project --with neo4j python tools/memgraph/load_code.py JK03A
 ```
 
 Разбор карты руками идёт теми же фактами, без Ghidra:

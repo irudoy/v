@@ -1,0 +1,3 @@
+addr,role,semantics,confidence,evidence,note
+00026944,kernel,"Ядро интерполяции: лист-функция бинарного поиска первого элемента оси <= ключа; общее для семейства HR, реестр defs/JK03A.interp.csv по клэмпу.",code,registry:defs/JK03A.interp.csv;spec:Stage1;clamp,"Локализовано Stage 1 (центральность + клэмп); один из 4 ядер JK03A."
+000b4ef8,consumer,"Реакция DTC: зовётся с кодом-идентификатором неисправности при взводе fault-бита монитора. Тело вне разобранной компоненты; роль по паттерну вызова.",candidate,called_with:0x2f;monitor:000aacc0,"Уровень candidate: вызов прослежен, тело функции не разобрано."
