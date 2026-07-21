@@ -24,9 +24,14 @@
 компоненты - младший адрес её аксессора; component_id от MAGE между прогонами не
 стабилен и именем файла служить не может.
 
+Артефакт строится либо на компоненту (заявка на каждую её карту), либо на карту
+(`--focus-map`): во втором случае свидетельство сужается до аксессоров целевой карты, и
+заявка требуется только по ней. Сужение состав карт не меняет - соседи остаются
+значениями и геометрией, - а снимает код, который к целевой карте отношения не имеет.
+
 Запуск: uv run --no-project --with neo4j python tools/sweep/build_artifacts.py \
           <out_dir> [--rom JK03A] [--accessor <addr>] [--min-maps N] [--max-maps N] \
-          [--export-dir <dir>]
+          [--focus-map <addr> | --focus-maps-file <path>] [--export-dir <dir>]
 """
 import argparse
 import os
@@ -91,6 +96,17 @@ RETURN component_id,
        [n IN nodes WHERE 'Func' IN labels(n) | n.addr] AS accessors
 """
 
+# Фокус: аксессоры, читающие одну заданную карту. Компонента задаёт СОСТАВ карт, но
+# свидетельство о карте лежит в её собственной окрестности - аксессорах, которые её читают,
+# и в том, что делают с их выходом. Аксессор компоненты, целевой карты не касающийся,
+# отстоит от неё на два и более шага и в трейс не входит; в артефакт он вносит объём.
+# Цена объёма не линейна: списание идёт как "ходов x контекст", а большой артефакт растит
+# оба множителя сразу (он читается кусками, и контекст пухнет от хода к ходу).
+FOCUS_ACC = """
+MATCH (f:Func {rom:$rom})-[:ACCESSES]->(m:Map {rom:$rom, addr:$map})
+RETURN collect(DISTINCT f.addr) AS accessors
+"""
+
 SITES = """
 MATCH (f:Func {rom:$rom})-[x:ACCESSES]->(m:Map {rom:$rom})
 WHERE f.addr IN $addrs
@@ -144,6 +160,14 @@ ORDER BY addr
 # машинном коде: декомпилят потребителя в ~5-7 раз длиннее его size. У самого широкого
 # аксессора ROM'а (000b29b8, 65 write-регистров) артефакт при 8 уже ~800 КБ, при 32 - многие
 # мегабайты; выше порог растит цену прогона, не разметку.
+#
+# Отсечка по разделяемости - не единственный источник объёма и не главный. Широкий аксессор
+# держит сотню приватных регистров (по одному читателю на каждый), и они проходят любой
+# порог: у карты 0001218e из 305 потребителей 56 приходят через 119 регистров с ровно одним
+# читателем. Поэтому декомпиляция потребителей идёт под своим бюджетом (--max-consumer-decomp),
+# а таблица потребителей печатается ПОЛНОЙ: состав выхода агент видит весь, код получает
+# наиболее специфичная часть. Порядок отбора - min(readers) по связывающим регистрам, затем
+# размер: приватный регистр ближе к выходу карты, чем умеренно-разделяемый.
 CONSUMERS = """
 MATCH (a:Func {rom:$rom})-[:USES {kind:'W'}]->(g:Reg {rom:$rom})
 WHERE a.addr IN $addrs
@@ -151,8 +175,9 @@ OPTIONAL MATCH (c:Func {rom:$rom})-[:USES {kind:'R'}]->(g) WHERE NOT c.addr IN $
 WITH g, count(DISTINCT c) AS readers
 WHERE readers >= 1 AND readers <= $maxr
 MATCH (c2:Func {rom:$rom})-[:USES {kind:'R'}]->(g) WHERE NOT c2.addr IN $addrs
-RETURN c2.addr AS consumer, c2.size AS size, collect(DISTINCT g.addr) AS regs
-ORDER BY consumer
+RETURN c2.addr AS consumer, c2.size AS size, collect(DISTINCT g.addr) AS regs,
+       min(readers) AS spec
+ORDER BY spec, size, consumer
 """
 
 # Регистры декомпилированных функций - сверщик резолва пула. Декомпилятор печатает литерал
@@ -402,9 +427,13 @@ def render(comp, rom, data, export_dir):
     """Артефакт компоненты - markdown: единственный вход агента прогона."""
     L = []
     A = L.append
-    A(f"# Компонента `{comp['key']}` ({rom})")
+    focus = data.get("focus")
+    if focus:
+        A(f"# Карта `{focus}` компоненты `{comp['key']}` ({rom})")
+    else:
+        A(f"# Компонента `{comp['key']}` ({rom})")
     A("")
-    A(f"Карт: {len(comp['maps'])}. Аксессоров: {len(comp['accessors'])}.")
+    A(f"Карт в компоненте: {len(comp['maps'])}. Аксессоров: {len(comp['accessors'])}.")
     A("")
     A("Компонента связного графа \"аксессор -> карта\": ни одна её карта не читается "
       "аксессором извне, и этим задан состав карт. Границей компоненты ограничен состав, "
@@ -414,9 +443,25 @@ def render(comp, rom, data, export_dir):
       "\"Потребители выхода\". Трейс, остановленный на записи в RAM, до семантики не "
       "дошёл: `code` требует довести его до потребителя.")
     A("")
-    A("Задача - раздел 6 контракта `tools/map-sweep.md`: вернуть заявку на каждую карту "
-      "(`semantics`, `role`, `units`, `scale_expr`, `confidence`) и на каждую ось. "
-      "Разметки в артефакте нет намеренно: она и есть то, что требуется вывести. "
+    if focus:
+        A(f"Целевая карта - `{focus}`, и свидетельство сужено до её окрестности: разделы "
+          f"\"Аксессоры\", \"Машинерия интерполяции\" и \"Потребители выхода\" построены "
+          f"по {len(data['acc'])} аксессорам, читающим именно её "
+          f"({', '.join(f'`{a}`' for a in data['acc'])}), а не по всем "
+          f"{len(comp['accessors'])} аксессорам компоненты. Свидетельства о целевой карте "
+          f"это не убавляет: аксессор, её не читающий, о ней и не говорит. Убавляет оно "
+          f"свидетельство о СОСЕДНИХ картах - они остаются в разделе \"Карты\" значениями "
+          f"и геометрией, без своего кода.")
+        A("")
+        A("Задача - раздел 6 контракта `tools/map-sweep.md`: вернуть заявку "
+          f"(`semantics`, `role`, `units`, `scale_expr`, `confidence`) РОВНО по карте "
+          f"`{focus}` и по её осям. Соседние карты - контекст: они показывают, что ещё "
+          f"читает общий аксессор, и требуют различать, чей трейс перед тобой.")
+    else:
+        A("Задача - раздел 6 контракта `tools/map-sweep.md`: вернуть заявку на каждую карту "
+          "(`semantics`, `role`, `units`, `scale_expr`, `confidence`) и на каждую ось.")
+    A("")
+    A("Разметки в артефакте нет намеренно: она и есть то, что требуется вывести. "
       "Заявка без трейса - `candidate`, а не `code`, каким бы убедительным ни было "
       "совпадение; сплошь `0xFF` по форме не заключается.")
     A("")
@@ -436,7 +481,9 @@ def render(comp, rom, data, export_dir):
     A("")
 
     for m in data["maps"]:
-        A(f"### Карта `{m['addr']}` – {shape(m['width'], m['height'])} {m['storagetype']}")
+        tag = " – ЦЕЛЕВАЯ" if m["addr"] == focus else ""
+        A(f"### Карта `{m['addr']}` – {shape(m['width'], m['height'])} "
+          f"{m['storagetype']}{tag}")
         A("")
         A(f"Диапазон {m['vmin']}..{m['vmax']}, хеш содержимого `{m['values_hash']}`.")
         A("")
@@ -463,7 +510,11 @@ def render(comp, rom, data, export_dir):
 
     A("## Аксессоры")
     A("")
-    for f_addr in comp["accessors"]:
+    if focus:
+        A(f"Аксессоры целевой карты `{focus}`. Сайты вызова у каждого показаны все, "
+          f"включая ведущие в соседние карты: по ним и различается, чей трейс.")
+        A("")
+    for f_addr in data["acc"]:
         sites = [s for s in data["sites"] if s["accessor"] == f_addr]
         name = sites[0]["name"] if sites else f_addr
         A(f"### `{f_addr}` ({name})")
@@ -592,13 +643,30 @@ def render(comp, rom, data, export_dir):
           "регистр с тремя десятками - разделяемая глобаль, и её потребитель о карте не "
           "говорит ничего.")
         A("")
-        A("| Потребитель | Размер | Читает регистров | Регистры |")
-        A("|---|---|---|---|")
+        A("Таблица полна: в ней все потребители, прошедшие отсечку по разделяемости. "
+          "C-псевдокод идёт не у всех - он под отдельным бюджетом, и колонка "
+          "\"Код\" говорит, у кого он ниже есть. Порядок - по специфичности связи "
+          "(наименьшее число читателей у связывающего регистра), затем по размеру: "
+          "приватный регистр ближе к выходу карты, чем умеренно-разделяемый.")
+        A("")
+        A("| Потребитель | Размер | Читателей у регистра | Читает регистров | Код "
+          "| Регистры |")
+        A("|---|---|---|---|---|---|")
+        shown = {c["consumer"] for c in data["consumers_decomp"]}
         for c in data["consumers"]:
-            A(f"| `{c['consumer']}` | {c['size']} | {len(c['regs'])} "
+            A(f"| `{c['consumer']}` | {c['size']} | {c['spec']} | {len(c['regs'])} "
+              f"| {'да' if c['consumer'] in shown else 'нет'} "
               f"| {', '.join('`%s`' % r for r in sorted(c['regs']))} |")
         A("")
-        for c in data["consumers"]:
+        if data["consumers_cut"]:
+            A(f"Псевдокода нет у {data['consumers_cut']} потребителей из "
+              f"{len(data['consumers'])}: бюджет на декомпиляцию - "
+              f"{len(data['consumers_decomp'])} наиболее специфичных. Это граница "
+              f"артефакта, а не факт о карте: если трейс упирается в потребителя без "
+              f"кода, заявка идёт `candidate` с указанием его адреса в `note`, а не "
+              f"домысливается по имени регистра.")
+            A("")
+        for c in data["consumers_decomp"]:
             text, path = dumped(export_dir, c["consumer"], "decomp")
             A(f"### C-псевдокод `{c['consumer']}`")
             A("")
@@ -745,28 +813,43 @@ def verify_blind(text, answers, allowed):
     return leaks
 
 
-def build(session, image, rom, comp, export_dir, catalog, maxr):
+def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
+          maxdec=24):
+    # Состав карт задаёт компонента, состав свидетельства - фокус: без фокуса окрестностью
+    # служит вся компонента, с фокусом - аксессоры целевой карты.
+    if focus:
+        acc = session.run(FOCUS_ACC, rom=rom, map=focus).single()["accessors"]
+        if not acc:
+            raise SystemExit(f"карту {focus} не читает ни один аксессор")
+    else:
+        acc = comp["accessors"]
     maps = [r.data() for r in session.run(MAP_FACTS, rom=rom, addrs=comp["maps"])]
     for m in maps:
         m["values"] = read_values(image, m)
     axes = sorted({a for m in maps for a in m["axis_x"] + m["axis_y"]})
-    kernels = [r.data() for r in session.run(KERNELS, rom=rom, maps=comp["maps"])]
+    kernels = [r.data() for r in session.run(KERNELS, rom=rom,
+                                             maps=[focus] if focus else comp["maps"])]
     data = {
         "maps": maps,
+        "focus": focus,
+        "acc": acc,
         "axes": [r.data() for r in session.run(AXIS_FACTS, rom=rom, addrs=axes)],
-        "sites": [r.data() for r in session.run(SITES, rom=rom, addrs=comp["accessors"])],
-        "callers": [r.data() for r in session.run(CALLERS, rom=rom,
-                                                  addrs=comp["accessors"])],
-        "uses": [r.data() for r in session.run(USES, rom=rom, addrs=comp["accessors"])],
+        "sites": [r.data() for r in session.run(SITES, rom=rom, addrs=acc)],
+        "callers": [r.data() for r in session.run(CALLERS, rom=rom, addrs=acc)],
+        "uses": [r.data() for r in session.run(USES, rom=rom, addrs=acc)],
         "kernels": kernels,
         "consumers": [r.data() for r in session.run(CONSUMERS, rom=rom,
-                                                    addrs=comp["accessors"], maxr=maxr)],
+                                                    addrs=acc, maxr=maxr)],
         "maxr": maxr,
         "a2l": {},
         "vendor": [],
         "concepts": [],
         "anchors": [],
     }
+    # Таблица потребителей идёт полной, код - под бюджетом: запрос отдал их уже в порядке
+    # специфичности, так что голова списка и есть наиболее близкое к выходу карты.
+    data["consumers_decomp"] = data["consumers"][:maxdec]
+    data["consumers_cut"] = len(data["consumers"]) - len(data["consumers_decomp"])
     # Декомпилируется то, что размечено функцией: у ядра за jmp размера нет и файла тоже.
     data["kernel_funcs"] = sorted(
         {k["addr"] for k in kernels if k["size"] is not None}
@@ -777,8 +860,8 @@ def build(session, image, rom, comp, export_dir, catalog, maxr):
     data["kernel_listings"] = sorted({k["addr"] for k in kernels if k["size"] is None})
     # Резолв пула: образ даёт значение литерала, граф - множество для его проверки.
     data["image"] = image
-    decompiled = sorted(set(comp["accessors"]) | set(data["kernel_funcs"])
-                        | {c["consumer"] for c in data["consumers"]})
+    decompiled = sorted(set(acc) | set(data["kernel_funcs"])
+                        | {c["consumer"] for c in data["consumers_decomp"]})
     data["func_regs"] = {r["func"]: r["regs"] for r in
                          session.run(FUNC_REGS, rom=rom, addrs=decompiled)}
     data["all_regs"] = set(session.run(ALL_REGS, rom=rom).single()["addrs"])
@@ -838,11 +921,19 @@ def main():
     p.add_argument("--rom", default="JK03A")
     p.add_argument("--accessor", action="append", default=[],
                    help="ключ компоненты - адрес её аксессора (волна 0: 00082c8a)")
+    p.add_argument("--focus-map", action="append", default=[],
+                   help="артефакт на карту, а не на компоненту: свидетельство сужается до "
+                        "аксессоров этой карты, файл идёт как map-<addr>.md")
+    p.add_argument("--focus-maps-file", default=None,
+                   help="то же списком: по адресу карты на строку")
     p.add_argument("--min-maps", type=int, default=0)
     p.add_argument("--max-maps", type=int, default=10 ** 6)
     p.add_argument("--max-readers", type=int, default=8,
                    help="потолок читателей регистра, при котором его потребитель идёт "
                         "в артефакт: мера специфичности выхода (умеренные да, горячие нет)")
+    p.add_argument("--max-consumer-decomp", type=int, default=24,
+                   help="бюджет на C-псевдокод потребителей: таблица печатается полной, "
+                        "код - у стольких наиболее специфичных")
     p.add_argument("--export-dir", default=None,
                    help="прогон подготовки: decomp_<addr>.c и listing_<addr>.txt")
     args = p.parse_args()
@@ -857,26 +948,39 @@ def main():
         if not comps:
             sys.exit(f"в графе нет компонент rom={args.rom} - слой строит "
                      f"tools/memgraph/load_maps.py")
-        if args.accessor:
-            want = {a.lower() for a in args.accessor}
-            picked = [c for c in comps if want & set(c["accessors"])]
-            missed = want - {a for c in picked for a in c["accessors"]}
+        focus_maps = [m.lower() for m in args.focus_map]
+        if args.focus_maps_file:
+            focus_maps += [ln.strip().lower() for ln in
+                           open(args.focus_maps_file) if ln.strip()]
+        if focus_maps:
+            by_map = {m: c for c in comps for m in c["maps"]}
+            missed = [m for m in focus_maps if m not in by_map]
             if missed:
-                sys.exit(f"аксессоров нет в графе: {', '.join(sorted(missed))}")
+                sys.exit(f"карт нет в графе: {', '.join(sorted(missed))}")
+            jobs = [(by_map[m], m, f"map-{m}.md") for m in focus_maps]
         else:
-            picked = [c for c in comps
-                      if args.min_maps <= len(c["maps"]) <= args.max_maps]
+            if args.accessor:
+                want = {a.lower() for a in args.accessor}
+                picked = [c for c in comps if want & set(c["accessors"])]
+                missed = want - {a for c in picked for a in c["accessors"]}
+                if missed:
+                    sys.exit(f"аксессоров нет в графе: {', '.join(sorted(missed))}")
+            else:
+                picked = [c for c in comps
+                          if args.min_maps <= len(c["maps"]) <= args.max_maps]
+            jobs = [(c, None, f"comp-{c['key']}.md") for c in picked]
         catalog = load_catalog(s)
-        print(f"компонент в графе: {len(comps)}, выбрано: {len(picked)}")
+        print(f"компонент в графе: {len(comps)}, артефактов к сборке: {len(jobs)}")
 
         leaked = 0
-        for c in picked:
+        for c, focus, fname in jobs:
             text, leaks = build(s, image, args.rom, c, export_dir, catalog,
-                                args.max_readers)
-            path = os.path.join(args.out_dir, f"comp-{c['key']}.md")
+                                args.max_readers, focus, args.max_consumer_decomp)
+            path = os.path.join(args.out_dir, fname)
             with open(path, "w") as f:
                 f.write(text)
-            note = f"{len(c['maps'])} карт, {len(c['accessors'])} аксессоров"
+            note = (f"компонента {c['key']}, {len(c['maps'])} карт" if focus
+                    else f"{len(c['maps'])} карт, {len(c['accessors'])} аксессоров")
             if leaks:
                 leaked += 1
                 print(f"  {os.path.basename(path)}: {note} - ОСЛЕПЛЕНИЕ НАРУШЕНО")
