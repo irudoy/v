@@ -85,6 +85,16 @@ RETURN a.addr AS addr, a.kind AS kind, a.units AS units, a.scale_expr AS scale_e
        a.note AS note, a.confidence AS confidence
 """
 
+# Разметка функций - тоже ответ: в semantics слоя кода копится знание проекта со ссылками
+# на конкретные карты ("домножение такой-то карты на такую-то константу"). В артефакт из
+# слоя идёт только contract, от карт не зависящий; проверяется это здесь, а не доверием к
+# RETURN запроса CONTRACTS. Берётся весь ПЗУ, а не показанные функции: утечь может и
+# разметка соседа, попавшая в текст через чужое поле.
+FUNC_ANSWERS = """
+MATCH (f:Func {rom:$rom}) WHERE f.semantics <> '' OR f.note <> ''
+RETURN f.addr AS addr, f.semantics AS semantics, f.note AS note
+"""
+
 # --- Перечисление компонент ---------------------------------------------------------
 COMPONENTS = """
 MATCH p=(:Func {rom:$rom})-[:ACCESSES]->(:Map {rom:$rom})
@@ -148,6 +158,28 @@ OPTIONAL MATCH (f)-[:CALLS]->(c:Func {rom:$rom})
 RETURN x.a AS addr, x.r AS role, f.size AS size,
        collect(DISTINCT {addr:c.addr, size:c.size}) AS callees
 ORDER BY addr
+"""
+
+# Контракты вызываемых функций из слоя понимания кода. RETURN здесь тоже белый список, и
+# `semantics` в него не входит намеренно: в semantics копится знание проекта со ссылками на
+# конкретные карты ("домножение 0x145ca на константу 0x1495a = 50000"), то есть готовый
+# ответ. Контракт - операция, соглашение о регистрах, побочные эффекты - от карт не зависит
+# и остаётся свидетельством, а не подсказкой.
+CONTRACTS = """
+MATCH (f:Func {rom:$rom}) WHERE f.addr IN $addrs AND f.contract <> ''
+RETURN f.addr AS addr, f.role AS role, f.size AS size, f.contract AS contract,
+       f.contract_conf AS contract_conf
+ORDER BY addr
+"""
+
+# Кого показанный код вызывает. Считать по тексту псевдокода нельзя: библиотека
+# вызывается через регистр, загруженный из литерального пула, и Ghidra печатает такой вызов
+# как `(*pcVar26)()` - адреса в тексте нет вовсе. Ребро CALLS его знает, потому что цель
+# разрешена на этапе анализа, а не при печати.
+CALLED = """
+MATCH (f:Func {rom:$rom})-[:CALLS]->(g:Func {rom:$rom})
+WHERE f.addr IN $addrs AND g.contract <> ''
+RETURN DISTINCT g.addr AS addr
 """
 
 # Потребители выхода: функции, читающие RAM, которую пишет аксессор компоненты. Смысл
@@ -322,6 +354,10 @@ def dumped(export_dir, addr, kind):
         return f.read().rstrip(), path
 
 
+# Вызов, у которого адрес виден прямо в тексте: `FUN_00021bbc` псевдокода и `jsr`-цель
+# листинга (`-> 00021bbc`). Основной канал - ребро :CALLS (запрос CALLED), потому что вызов
+# через регистр адреса в тексте не оставляет; здесь добирается то, чего нет в графе.
+CALLED_ADDR = re.compile(r"(?:\bFUN_|-> )(00[0-9a-f]{6})\b")
 POOL_SYM = re.compile(r"\b((?:PTR_)?(?:DAT|FUN)_00([0-9a-f]{6}))\b")
 POOL_ALIAS = re.compile(r"\b(\w+) = ((?:PTR_)?(?:DAT|FUN)_00[0-9a-f]{6})\s*;")
 POOL_EXPR = re.compile(r"\(\s*(\w+)\s*\+\s*(\w+|0x[0-9a-fA-F]+)\s*\)")
@@ -542,6 +578,47 @@ ATTRIB_MISS = {
             "в регистрах процессора: её либо сравнивают на месте, либо передают дальше "
             "вызовом.",
 }
+
+
+def render_library(A, data, export_dir):
+    """Контракты вызываемых функций плюс их листинг целиком.
+
+    Листинг, а не псевдокод: у этих функций тело - развёрнутый цикл, и декомпилятор даёт
+    31 КБ на 282 байта кода. Ассемблер тех же 282 байт читается прямо и стоит 4 КБ.
+    """
+    if not data["library"]:
+        return
+    A("## Вызываемые функции с разобранным контрактом")
+    A("")
+    A("Функции, вызываемые из показанного выше кода и разобранные отдельно. Аргументы они "
+      "принимают РЕГИСТРАМИ, а не по ABI, поэтому Ghidra соглашения не восстанавливает: в "
+      "псевдокоде их вызовы стоят без аргументов, а входы видны как необъявленные `in_r0`, "
+      "`in_r1`. Величина карты уходит в такую функцию именно так, и без контракта трейс на "
+      "ней обрывается.")
+    A("")
+    A("Контракт - операция, регистры аргументов и результата, побочные эффекты - о карте "
+      "не говорит ничего: это свойство функции, общей для всего ПЗУ. Что через неё "
+      "проходит величина ИМЕННО этой карты, остаётся предметом трейса.")
+    A("")
+    A("| Адрес | Роль | Размер | Уровень | Контракт |")
+    A("|---|---|---|---|---|")
+    for f in data["library"]:
+        size = f["size"] if f["size"] is not None else "-"
+        A(f"| `{f['addr']}` | {f['role'] or '-'} | {size} | {f['contract_conf']} | "
+          f"{f['contract']} |")
+    A("")
+    for f in data["library"]:
+        text, path = dumped(export_dir, f["addr"], "funclisting")
+        A(f"### Листинг `{f['addr']}`")
+        A("")
+        if text is None:
+            A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на эту функцию "
+              f"не сделан.")
+        else:
+            A("```")
+            A(text)
+            A("```")
+        A("")
 
 
 def render_attrib(A, data):
@@ -854,6 +931,8 @@ def render(comp, rom, data, export_dir):
             A(text)
             A("```")
         A("")
+
+    render_library(A, data, export_dir)
 
     if data["focus"]:
         render_attrib(A, data)
@@ -1169,6 +1248,23 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
                         | {c["consumer"] for c in data["consumers_decomp"]})
     data["func_regs"] = {r["func"]: r["regs"] for r in
                          session.run(FUNC_REGS, rom=rom, addrs=decompiled)}
+    # Функции, вызываемые из показанного кода и разобранные слоем кода. Библиотека
+    # арифметики (0x21000..0x23000) передаёт аргументы регистрами, Ghidra соглашения не
+    # восстанавливает, и в псевдокоде её вызовы стоят без аргументов - величина карты
+    # входит в такую функцию, и трейс на ней обрывается. Контракт обрыв снимает.
+    shown = sorted(set(decompiled) | set(data["kernel_listings"]))
+    called = {r["addr"] for r in session.run(CALLED, rom=rom, addrs=shown)}
+    # Листинги показывают цель jsr прямо (`-> 00021bbc`), и там, где Ghidra ребро не
+    # построила, текст остаётся единственным источником. Два канала складываются.
+    for a in shown:
+        text, _p = dumped(export_dir, a, "decomp")
+        if text is None:
+            text, _p = dumped(export_dir, a, "listing")
+        if text:
+            called |= {m.group(1) for m in CALLED_ADDR.finditer(text)}
+    called -= set(decompiled)
+    data["library"] = [r.data() for r in
+                       session.run(CONTRACTS, rom=rom, addrs=sorted(called))]
     for m in maps:
         key = (m["dims"], shape(m["width"], m["height"]))
         if key not in data["a2l"]:
@@ -1191,6 +1287,7 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
     text = render(comp, rom, data, export_dir)
     answers = [r.data() for r in session.run(MAP_ANSWERS, rom=rom, addrs=comp["maps"])]
     answers += [r.data() for r in session.run(AXIS_ANSWERS, rom=rom, addrs=axes)]
+    answers += [r.data() for r in session.run(FUNC_ANSWERS, rom=rom)]
     return text, verify_blind(text, answers, catalog_strings(data))
 
 

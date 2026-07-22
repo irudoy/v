@@ -127,6 +127,7 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `ghidra/ProbeResolver.java` | headless-спайк условия А резолвера: снимает ли декомпилятор константные `r4/r5/r6` на CALLIND интерполятора (baseline vs форс сигнатуры `0x26320`); `-readOnly`-диагностика | stdout |
 | `ghidra/DirectLookupInventory.java` | ценз банка implicit-axis форвард-сканом от слота, геометрия примитива по его коду; операнды – линейным backtrack | `direct_lookup_inventory.csv` |
 | `ghidra/DumpListing.java` | дизассемблинг окрестностей адреса с разрешёнными ссылками | `listing_<addr>.txt` |
+| `ghidra/DumpFuncListing.java` | дизассемблинг функции целиком, границу задаёт её тело. Для коротких функций, где предмет разбора – всё тело: библиотека арифметики передаёт аргументы регистрами, и соглашение читается только целиком. Аргументы: `<outdir> <addr...>` | `funclisting_<addr>.txt` |
 | `ghidra/FuncAt.java` | функция, содержащая адрес (вход, размер, границы) – относит pool-слоты к функциям по границам Ghidra. Аргументы: `<addr...>` | stdout |
 | `ghidra/RefsTo.java` | кто ссылается на адрес (инструкция, её функция, тип ссылки); владельца pool-слота даёт ссылающаяся инструкция. Аргументы: `<addr...>` | stdout |
 | `ghidra/PoolUsers.java` | функция-владелец адреса (pool-слот/тело) + её декомпиляция + инструкции, ссылающиеся на адрес. Аргументы: `<outdir> <addr...>` | `decomp_<addr>.c` |

@@ -156,6 +156,14 @@ def check(funcs, vars_, fpath, vpath):
     bad = sorted({r["confidence"] for r in funcs + vars_} - LEVELS)
     if bad:
         sys.exit(f"funcs/vars: confidence вне лестницы {sorted(LEVELS)}: {bad}")
+    bad = sorted({r["contract_conf"] for r in funcs} - LEVELS)
+    if bad:
+        sys.exit(f"{fpath}: contract_conf вне лестницы {sorted(LEVELS)}: {bad}")
+    # Контракт и его уровень идут парой: контракт без уровня попадает в артефакт
+    # неранжированным, уровень без контракта ранжирует пустоту.
+    half = [r["addr"] for r in funcs if bool(r["contract"]) != bool(r["contract_conf"])]
+    if half:
+        sys.exit(f"{fpath}: {len(half)} строк с контрактом без уровня либо наоборот: {half}")
 
 
 def build_rests_on(s, rom, funcs, vars_):
@@ -222,6 +230,17 @@ def main():
     vpath = os.path.join(DEFS, f"{rom}.vars.csv")
 
     funcs, vars_ = read(fpath), read(vpath)
+    # contract - контракт функции: операция, соглашение о регистрах, побочные эффекты.
+    # Отдельно от semantics потому, что попадает в артефакт прохода, а semantics нет:
+    # там копится знание проекта со ссылками на конкретные карты, и оно есть ответ,
+    # который агент обязан вывести сам. Контракт от карт не зависит.
+    #
+    # Уровень у контракта свой: contract и semantics - разные заявки об одной функции, и
+    # разбор тела бывает закрыт трейсом там, где смысл в системе остаётся кандидатом.
+    # Одна колонка confidence на две заявки печатала бы в артефакте чужой уровень.
+    for r in funcs:
+        r.setdefault("contract", "")
+        r.setdefault("contract_conf", "")
     check(funcs, vars_, fpath, vpath)
     for v in vars_:
         region, name = classify(int(v["addr"], 16))
@@ -251,6 +270,7 @@ def main():
             UNWIND $rows AS r
             MATCH (f:Func {rom:$rom, addr:r.addr})
             SET f.role = r.role, f.semantics = r.semantics,
+                f.contract = r.contract, f.contract_conf = r.contract_conf,
                 f.confidence = r.confidence, f.evidence = r.evidence
             """,
             rows=funcs, rom=rom,

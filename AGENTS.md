@@ -63,7 +63,9 @@ GhydraMCP (плагин + мост `ghydra`, stdio MCP в Claude Code) – оп�
   (Pytrex, a33b) как референс карт (манифест и релевантность – `defs/README.md`); свои дефы
   под целевой ROM – по мере RE.
 - `patches/` – спеки и скрипты патчей immo (`immo-always-id-ok.md`; `apply_immo_patch.py`,
-  `lock_setbit_scan.py`); патченые образы – в `rom-images/`. Экспорты Ghidra и Ghidra-проект –
+  `lock_setbit_scan.py`) и спека самотеста контрольной суммы ПЗУ
+  (`rom-selftest-checksum.md`: домены, эталоны, порядок пересчёта после правки образа);
+  патченые образы – в `rom-images/`. Экспорты Ghidra и Ghidra-проект –
   вне репозитория (`~/tools/ghidra-projects/`, регенерируемы).
 
 ## Конвенции
