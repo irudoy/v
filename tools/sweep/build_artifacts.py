@@ -126,7 +126,7 @@ WHERE f.addr IN $addrs
 RETURN f.addr AS accessor, f.name AS name, f.size AS size, m.addr AS tbl,
        x.callsite AS callsite, x.r4 AS r4, x.r5 AS r5, x.r6 AS r6,
        x.kind AS kind, x.kind5 AS kind5, x.kind6 AS kind6, x.verdict AS verdict
-ORDER BY accessor, callsite
+ORDER BY accessor, callsite, tbl
 """
 
 CALLERS = """
@@ -383,6 +383,29 @@ def literal(image, addr):
     return out
 
 
+def stable_addrs(values):
+    """Канонический порядок множества адресов."""
+    return sorted(set(values))
+
+
+def kinds_by_addr(rows):
+    """Свести все виды обращений к адресу без зависимости от порядка рёбер."""
+    kinds = {}
+    for row in rows:
+        kinds.setdefault(int(row["addr"], 16), set()).add(row["kind"])
+    return {addr: "".join(sorted(values)) for addr, values in kinds.items()}
+
+
+def stable_sites(rows):
+    """Канонический порядок обращений при совпадающих accessor и callsite."""
+    return sorted(rows, key=lambda row: (row["accessor"], row["callsite"], row["tbl"]))
+
+
+def stable_callees(rows):
+    """Канонический порядок множества вызываемых функций."""
+    return sorted(rows, key=lambda row: (row.get("addr") or "", row.get("size") or -1))
+
+
 def pool(image, text, regs):
     """Литералы пула псевдокода и привязка его выражений к регистрам.
 
@@ -404,7 +427,7 @@ def pool(image, text, regs):
         if addr < len(image.data):
             syms[full] = (addr, literal(image, addr))
     alias = {var: sym for var, sym in POOL_ALIAS.findall(text) if sym in syms}
-    known = {int(r["addr"], 16): r["kind"] for r in regs}
+    known = kinds_by_addr(regs)
 
     def base(term):
         sym = alias.get(term, term)
@@ -918,7 +941,7 @@ def render(comp, rom, data, export_dir):
     A("|---|---|---|---|")
     for k in data["kernels"]:
         cs = ", ".join(f"`{c['addr']}` ({c['size']} б)"
-                       for c in k["callees"] if c.get("addr"))
+                       for c in stable_callees(k["callees"]) if c.get("addr"))
         A(f"| `{k['addr']}` | {k['role']} | "
           f"{k['size'] if k['size'] is not None else 'НЕ РАЗМЕЧЕН'} | {cs or '-'} |")
     A("")
@@ -1202,11 +1225,11 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
     # Состав карт задаёт компонента, состав свидетельства - фокус: без фокуса окрестностью
     # служит вся компонента, с фокусом - аксессоры целевой карты.
     if focus:
-        acc = session.run(FOCUS_ACC, rom=rom, map=focus).single()["accessors"]
+        acc = stable_addrs(session.run(FOCUS_ACC, rom=rom, map=focus).single()["accessors"])
         if not acc:
             raise SystemExit(f"карту {focus} не читает ни один аксессор")
     else:
-        acc = comp["accessors"]
+        acc = stable_addrs(comp["accessors"])
     maps = [r.data() for r in session.run(MAP_FACTS, rom=rom, addrs=comp["maps"])]
     for m in maps:
         m["values"] = read_values(image, m)
@@ -1218,7 +1241,7 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
         "focus": focus,
         "acc": acc,
         "axes": [r.data() for r in session.run(AXIS_FACTS, rom=rom, addrs=axes)],
-        "sites": [r.data() for r in session.run(SITES, rom=rom, addrs=acc)],
+        "sites": stable_sites([r.data() for r in session.run(SITES, rom=rom, addrs=acc)]),
         "callers": [r.data() for r in session.run(CALLERS, rom=rom, addrs=acc)],
         "uses": [r.data() for r in session.run(USES, rom=rom, addrs=acc)],
         "kernels": kernels,
