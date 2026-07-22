@@ -199,7 +199,9 @@ GUI и GhydraMCP в прогоне не участвуют – плагин тр
 синтеза, после проверки. Причин две: параллельные агенты дрались бы за один CSV, а запись прямо
 в граф не пережила бы прогона – узлы слоя загрузчик пересоздаёт, и правка идёт в источник.
 
-Цепочка после синтеза – обычная: `load_maps.py` -> `build_tracker.py` -> `mapkit/emit_def.py`.
+Цепочка после синтеза – обычная: `ingest.py` (`load_graph.py -> load_xrefs.py ->
+load_maps.py -> load_code.py -> provenance_report.py audit`) -> `build_tracker.py` ->
+`mapkit/emit_def.py`.
 
 ## 6. Схема заявки
 
@@ -210,14 +212,16 @@ GUI и GhydraMCP в прогоне не участвуют – плагин тр
 |---|---|
 | `addr` | карта |
 | `confidence` | `code` – трейс ведёт к семантике; `candidate` – совпадение или сходство |
+| `evidence` | claim-specific токены, которые обосновывают семантику карты |
 | `role` | `table` \| `threshold` \| `dead` |
 | `semantics` | что это |
 | `units`, `scale_expr`, `to_byte`, `scale_conf` | шкала и её уровень |
-| `note` | свидетельство: функция, инструкция, адрес RAM |
+| `scale_evidence` | claim-specific токены, которые обосновывают шкалу |
+| `note` | контекст трейса для человека; автоматически в evidence не преобразуется |
 
-Заявка об оси – колонки `axes.csv` (`addr`, `kind`, `units`, `scale_expr`, `to_byte`, `conf`,
-`note`). Заявка о флаге (Stage 6) – адрес, бит, роль (`selector`/`gate`/`threshold`),
-семантика, уровень.
+Заявка об оси – колонки `axes.csv` (`addr`, `kind`, `units`, `scale_expr`, `to_byte`,
+`scale_conf`, `scale_evidence`, `note`). Заявка о флаге (Stage 6) – адрес, бит, роль
+(`selector`/`gate`/`threshold`), семантика, уровень.
 
 Правила уровня:
 

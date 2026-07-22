@@ -171,7 +171,19 @@ defs/<rom>.notes.md – рукописный журнал: обосновани�
 | `(:Map)-[:MATCHES {score}]->(:A2LEntry)` | кандидат-идентичность по каталогу |
 | `(:Map)-[:HOMOLOG {score}]->(:Map)` | та же карта в другом ROM (cross-rom) |
 | `(:Func)-[:HOMOLOG {score}]->(:Func)` | гомолог функции в другом ROM |
-| `(:Func\|:Reg\|:Map\|:Axis)-[:RESTS_ON {source_prop,role,target_prop,ref}]->(:Func\|:Reg\|:Map\|:Axis)` | claim-specific зависимость; полный ключ различает семантику, контракт, шкалу и structural-опору. Проекция колонок `evidence`/`contract_evidence`/`scale_evidence`; грамматика и направление – `tools/code-provenance-proposal.md` |
+| `(:Func\|:Reg\|:Map\|:Axis)-[:RESTS_ON {source_prop,role,target_prop,ref}]->(:Func\|:Reg\|:Map\|:Axis)` | claim-specific зависимость; полный ключ различает семантику, контракт, шкалу и structural-опору. Проекция колонок `evidence`/`contract_evidence`/`scale_evidence` |
+
+Адресный токен evidence имеет форму `role:addr@target_prop` или
+`role:addr+offset@target_prop`. Адресные роли: `consumer`, `writes`, `indexed_by`, `selector`,
+`threshold`, `from_map`, `trace`, `homolog`, `base`, `match`; свойства цели: `confidence`,
+`contract_conf`, `scale_conf`, `structural`. `from_map` всегда адресует `@structural`.
+Терминалы `rom_const`, `spec`, `registry`, `site` заземляют заявку без узла; `wave` и `arg`
+являются метаданными процесса, а не свидетельством.
+
+Строгий parser `tools/memgraph/provenance.py` запрещает legacy-адрес без свойства цели,
+неизвестную роль, пустое значение, дубликат нормализованного токена и нерезолвимую ссылку.
+Полный ключ ребра состоит из source label/address/property, role, target label/address/property
+и исходного `ref` со смещением.
 
 Внутри каталожного слоя рёбер нет: `:A2LEntry` и `:VendorEntry` соединяет свойство `concept`
 (записи с одним значением описывают одну сущность), а материализованное ребро было бы копией

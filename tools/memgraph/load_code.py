@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Слой понимания кода и провенанс заявок (tools/code-provenance-proposal.md).
+# Слой понимания кода и провенанс заявок (tools/map-flag-pipeline.md, разделы 5 и 11).
 # Источники истины: defs/<rom>.funcs.csv, vars.csv, findings.csv и axes.csv.
 # Узлы и :RESTS_ON в Memgraph являются проекцией и полностью пересобираются.
 #
