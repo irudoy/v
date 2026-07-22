@@ -836,6 +836,11 @@ def render(comp, rom, data, export_dir):
         A(f"Вызыватели ({len(callers)}): "
           + (", ".join(f"`{c['caller']}`" for c in callers) or "нет – корень"))
         A("")
+        if callers:
+            A("Вызыватель – производитель входа аксессора: аргумент, пришедший регистром или "
+              "стеком, внутри аксессора писателя не имеет, и его величину задаёт код "
+              "вызывателя. Единица оси, взятой из аргумента, устанавливается там.")
+            A("")
 
         uses = [u for u in data["uses"] if u["accessor"] == f_addr]
         if uses:
@@ -866,6 +871,23 @@ def render(comp, rom, data, export_dir):
             render_pool(A, data["image"], text, data["func_regs"].get(f_addr, []), f_addr,
                         data["all_regs"])
         A("")
+
+        for c in callers:
+            text, path = dumped(export_dir, c["caller"], "decomp")
+            A(f"#### C-псевдокод вызывателя `{c['caller']}`")
+            A("")
+            if text is None:
+                A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на эту функцию "
+                  f"не сделан. Это пропуск шага подготовки, а не свойство компоненты.")
+            else:
+                A("```c")
+                A(text)
+                A("```")
+                A("")
+                render_pool(A, data["image"], text,
+                            data["func_regs"].get(c["caller"], []), c["caller"],
+                            data["all_regs"])
+            A("")
 
         A(f"#### Листинги сайтов `{f_addr}`")
         A("")
@@ -1245,7 +1267,8 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
     # Резолв пула: образ даёт значение литерала, граф - множество для его проверки.
     data["image"] = image
     decompiled = sorted(set(acc) | set(data["kernel_funcs"])
-                        | {c["consumer"] for c in data["consumers_decomp"]})
+                        | {c["consumer"] for c in data["consumers_decomp"]}
+                        | {c["caller"] for c in data["callers"]})
     data["func_regs"] = {r["func"]: r["regs"] for r in
                          session.run(FUNC_REGS, rom=rom, addrs=decompiled)}
     # Функции, вызываемые из показанного кода и разобранные слоем кода. Библиотека
