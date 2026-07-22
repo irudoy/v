@@ -73,14 +73,19 @@
       </table>
     </table>
 
-    <!-- 0x0AB0A  8x8 uint8  карта [candidate]; вход 0x26140 (explicit, ядро 0x26944)
+    <!-- 0x0AB0A  8x8 uint8  карта [code]; вход 0x26140 (explicit, ядро 0x26944)
          аксессор 0xBEFB0; операнд r4: slice
          шкала x raw; Y Axis 0x120AE rpm [code]; X Axis 0x120B6 load
-         единицы значений не сняты
+         Второй lookup 0000ab0a -> ffff3219; значение входит слагаемым в (ffff1071 + map -
+         0x32)*K, где K даёт 0000b23a. Аккумуляторы ffff2d20/ffff2d24 имеют формат 8.24, поэтому
+         фильтр сходится к ffff1071 + map с возможной потерей до 1 отсчёта от целочисленного
+         усечения. Физическая природа ffff1071/ffff359c не установлена. Каталожное имя
+         "Transient Fuel Corr - magnitude" остаётся candidate-гипотезой. Ориентация индексов
+         опровергнута и не переносится.
          Разбор и метод - defs/JK03A.notes.md -->
-    <table type="3D" name="Transient Fuel Corr - magnitude (0xAB0A)"
-           category="Transient / Decel (traced) (candidate)" storagetype="uint8"
-           storageaddress="0x0AB0A" sizex="8" sizey="8" endian="big">
+    <table type="3D" name="Filter Target Additive Correction (0xAB0A)"
+           category="Filters (traced)" storagetype="uint8" storageaddress="0x0AB0A" sizex="8"
+           sizey="8" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x120B6"
              sizex="8" endian="big">
@@ -92,15 +97,22 @@
       </table>
     </table>
 
-    <!-- 0x0B23A  8x8 uint8  карта [candidate]; вход 0x26140 (explicit, ядро 0x26944)
+    <!-- 0x0B23A  8x8 uint8  карта [code]; вход 0x26140 (explicit, ядро 0x26944)
          аксессор 0xBEFB0; операнд r4: pool
-         шкала x raw; Y Axis 0x12858 rpm [code]; X Axis 0x12860 load
-         единицы значений не сняты
+         шкала x/65536 доля нового отсчёта (0..255/65536) [code]; Y Axis 0x12858 rpm [code]; X
+         Axis 0x12860 load
+         Lookup 0000b23a -> ffff3502; значение перечитывается, проверяется на 0 и используется
+         парой K и 0x10000-K при аккумуляторе 8.24. Цель задаётся ffff1071 + выходом 0000ab0a.
+         Карта плоская: K=27, доля нового отсчёта 27/65536 = 0.000412; это живой постоянный
+         коэффициент, а не dead-ветвь. Каталожное имя "Transient Fuel Corr - weight" остаётся
+         candidate-гипотезой.
          Разбор и метод - defs/JK03A.notes.md -->
-    <table type="3D" name="Transient Fuel Corr - weight (0xB23A)"
-           category="Transient / Decel (traced) (candidate)" storagetype="uint8"
-           storageaddress="0x0B23A" sizex="8" sizey="8" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" coarseincrement="4"/>
+    <table type="3D" name="Filter Weight - new-sample share Q16 (0xB23A)"
+           category="Filters (traced)" storagetype="uint8" storageaddress="0x0B23A" sizex="8"
+           sizey="8" endian="big">
+      <scaling units="доля нового отсчёта (0..255/65536)" expression="x/65536" to_byte="x*65536"
+               format="0.000000" fineincrement="1.52587890625e-05"
+               coarseincrement="6.103515625e-05"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12860"
              sizex="8" endian="big">
         <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>

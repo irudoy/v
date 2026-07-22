@@ -124,7 +124,7 @@ def main():
 
     out = project(rows)
     with open(tracker, "w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=FIELDS)
+        w = csv.DictWriter(fh, fieldnames=FIELDS, lineterminator="\n")
         w.writeheader()
         w.writerows(out)
     report(out, tracker)
