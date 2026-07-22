@@ -76,13 +76,14 @@ ORDER BY addr
 MAP_ANSWERS = """
 MATCH (m:Map {rom:$rom}) WHERE m.addr IN $addrs
 RETURN m.addr AS addr, m.semantics AS semantics, m.note AS note, m.role AS role,
-       m.units AS units, m.scale_expr AS scale_expr, m.confidence AS confidence
+       m.units AS units, m.scale_expr AS scale_expr, m.confidence AS confidence,
+       m.evidence AS evidence, m.scale_evidence AS scale_evidence
 """
 
 AXIS_ANSWERS = """
 MATCH (a:Axis {rom:$rom}) WHERE a.addr IN $addrs
 RETURN a.addr AS addr, a.kind AS kind, a.units AS units, a.scale_expr AS scale_expr,
-       a.note AS note, a.confidence AS confidence
+       a.note AS note, a.confidence AS confidence, a.scale_evidence AS scale_evidence
 """
 
 # Разметка функций - тоже ответ: в semantics слоя кода копится знание проекта со ссылками
@@ -91,8 +92,10 @@ RETURN a.addr AS addr, a.kind AS kind, a.units AS units, a.scale_expr AS scale_e
 # RETURN запроса CONTRACTS. Берётся весь ПЗУ, а не показанные функции: утечь может и
 # разметка соседа, попавшая в текст через чужое поле.
 FUNC_ANSWERS = """
-MATCH (f:Func {rom:$rom}) WHERE f.semantics <> '' OR f.note <> ''
-RETURN f.addr AS addr, f.semantics AS semantics, f.note AS note
+MATCH (f:Func {rom:$rom})
+WHERE f.semantics <> '' OR f.note <> '' OR f.evidence <> '' OR f.contract_evidence <> ''
+RETURN f.addr AS addr, f.semantics AS semantics, f.note AS note,
+       f.evidence AS evidence, f.contract_evidence AS contract_evidence
 """
 
 # --- Перечисление компонент ---------------------------------------------------------
@@ -1145,7 +1148,8 @@ def render(comp, rom, data, export_dir):
 # словарь замкнут и короток ('table', 'code', 'deg', 'rpm'), подстрока совпала бы
 # случайно, и сверка давала бы шум в обе стороны. Их не пускает белый список RETURN, а не
 # эта проверка - у двух механизмов разные роли.
-ANSWER_TEXT = ("semantics", "note", "scale_expr")
+ANSWER_TEXT = ("semantics", "note", "scale_expr", "evidence", "contract_evidence",
+               "scale_evidence")
 
 
 def catalog_strings(data):

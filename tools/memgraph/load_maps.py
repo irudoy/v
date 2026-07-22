@@ -73,7 +73,7 @@
 #     встречается (15 сайтов из 240), но аргументом r6 там не является - это значение
 #     регистра, снятое резервом на адресе сайта. Отброшенные значения считаются в отчёте.
 #   - kind операнда (pool | slice | const | sp | gbrrel | dyn) идёт на ребро :ACCESSES и в
-#     evidence карты. kind=sp означает, что декомпилятор не свернул базу в одно значение и
+#     resolver_kinds карты. kind=sp означает, что декомпилятор не свернул базу в одно значение и
 #     её снял резерв: r4 там задан ветвлением, и снятая база - один элемент множества
 #     (0x64344: шесть таблиц по r5; 0xbe39a: две по r13). Полный набор таких сайтов -
 #     вход Stage 6, где ветвление становится :Flag {role:'selector'}.
@@ -86,9 +86,9 @@
 # прослежена. Выше его поднимает только трейс, и приходит он ручным слоем.
 #
 # Запуск: uv run --no-project --with neo4j python tools/memgraph/load_maps.py \
-#           <export_dir> <rom_label> [<registry.csv>] [<findings.csv>]
+#           <export_dir> <rom_label> [<registry.csv>] [<findings.csv>] [<axes.csv>]
 # По умолчанию export_dir = ~/tools/ghidra-projects/export-JK03A, rom = JK03A,
-# реестр = defs/<rom>.interp.csv, ручной слой = defs/<rom>.findings.csv.
+# реестр = defs/<rom>.interp.csv, ручные слои = defs/<rom>.findings.csv и axes.csv.
 import csv
 import glob
 import os
@@ -110,6 +110,15 @@ FAMILIES = ("explicit", "implicit")           # модели доступа, р�
 ROLES = ("table", "threshold", "dead")        # роль базы в калибровке
 LEVELS = ("pattern", "candidate", "code", "silicon")   # лестница уверенности раздела 5
 AXIS_KINDS = ("rpm", "load", "temp", "raw")   # семантика оси, она же ключ матча Stage 5
+FINDING_FIELDS = [
+    "addr", "family", "width", "height", "storagetype", "accessor",
+    "confidence", "evidence", "role", "semantics", "units", "scale_expr",
+    "to_byte", "scale_conf", "scale_evidence", "note",
+]
+AXIS_FIELDS = [
+    "addr", "kind", "units", "scale_expr", "to_byte", "scale_conf",
+    "scale_evidence", "note",
+]
 
 # Словарь выражения шкалы: константы, x и арифметика. Шире не нужно - RomRaider читает
 # то же выражение, а всё, что не сводится к нему, шкалой карты не является.
@@ -354,8 +363,8 @@ def build(rows):
             if a:
                 x = axes.setdefault(a, {"addr": a, "confidence": "pattern", "kind": "",
                                         "units": "", "scale_expr": "", "to_byte": "",
-                                        "scale_conf": "", "note": "", "len": n,
-                                        "storagetype": el})
+                                        "scale_conf": "", "scale_evidence": "", "note": "",
+                                        "len": n, "storagetype": el})
                 if x["storagetype"] != el:
                     sys.exit(f"ось {a} читается входами с разным элементом: "
                              f"{x['storagetype']} и {el}")
@@ -364,7 +373,8 @@ def build(rows):
                 if k != "sp":
                     x["confidence"] = "candidate"
         m = maps.setdefault(base, dict(g, addr=base, family=family,
-                                       confidence="candidate", evidence=[],
+                                       confidence="candidate", resolver_kinds=[],
+                                       evidence="", scale_evidence="",
                                        role="table", semantics="", note="",
                                        units="", scale_expr="", to_byte="",
                                        scale_conf=""))
@@ -377,8 +387,8 @@ def build(rows):
             sys.exit(f"таблица {base} читается входами разной геометрии: "
                      f"{m['width']}x{m['height']}/{m['storagetype']}/шаг {m['step']} и "
                      f"{g['width']}x{g['height']}/{g['storagetype']}/шаг {g['step']}")
-        if r["k4"] not in m["evidence"]:
-            m["evidence"].append(r["k4"])
+        if r["k4"] not in m["resolver_kinds"]:
+            m["resolver_kinds"].append(r["k4"])
         accesses.append({"accessor": r["accessor"], "callsite": r["callsite"],
                          "base": base, "wrapper": w, "kernel": kern, "family": family,
                          "kind": r["k4"], "kind5": r["k5"], "kind6": r["k6"],
@@ -387,7 +397,7 @@ def build(rows):
                          "axis_x": ax or "", "axis_y": ay or ""})
 
     for m in maps.values():
-        m["evidence"] = sorted(m["evidence"])
+        m["resolver_kinds"] = sorted(m["resolver_kinds"])
     return maps, axes, interps, kernels, accesses, dropped
 
 
@@ -412,7 +422,10 @@ def apply_findings(path, maps, accesses):
     if not os.path.exists(path):
         sys.exit(f"нет ручного слоя {path}")
     with open(path, newline="") as f:
-        rows = list(csv.DictReader(f))
+        reader = csv.DictReader(f)
+        if reader.fieldnames != FINDING_FIELDS:
+            sys.exit(f"{path}: заголовок {reader.fieldnames}, ожидается {FINDING_FIELDS}")
+        rows = list(reader)
     declared = 0
     for r in rows:
         a, fam = r["addr"], r["family"]
@@ -432,13 +445,14 @@ def apply_findings(path, maps, accesses):
                 sys.exit(f"{path}: {a} объявлена без числа точек либо элемента - по её "
                          f"строке карту в образе не прочитать")
             declared += 1
-            maps[a] = {"addr": a, "family": fam, "evidence": ["manual"],
+            maps[a] = {"addr": a, "family": fam, "resolver_kinds": ["manual"],
                        "dims": 2 if r["height"] else 1,
                        "width": int(r["width"]) if r["width"] else None,
                        "height": int(r["height"]) if r["height"] else None,
                        "storagetype": r["storagetype"] or None,
                        "step": None, "limit": None}
-            maps[a].update(units="", scale_expr="", to_byte="", scale_conf="")
+            maps[a].update(units="", scale_expr="", to_byte="", scale_conf="",
+                           evidence="", scale_evidence="")
             if r["accessor"]:
                 accesses.append({"accessor": r["accessor"], "callsite": "", "base": a,
                                  "wrapper": "", "kernel": "", "family": fam,
@@ -453,10 +467,11 @@ def apply_findings(path, maps, accesses):
             if dup:
                 sys.exit(f"{path}: {a} - {', '.join(dup)} даёт перепись, находке это "
                          f"поле не переопределять")
-        maps[a].update(confidence=r["confidence"], role=r["role"],
-                       semantics=r["semantics"], note=r["note"], units=r["units"],
-                       scale_expr=r["scale_expr"], to_byte=r["to_byte"],
-                       scale_conf=r["scale_conf"])
+        maps[a].update(confidence=r["confidence"], evidence=r["evidence"],
+                       role=r["role"], semantics=r["semantics"], note=r["note"],
+                       units=r["units"], scale_expr=r["scale_expr"],
+                       to_byte=r["to_byte"], scale_conf=r["scale_conf"],
+                       scale_evidence=r["scale_evidence"])
     return len(rows), declared
 
 
@@ -471,7 +486,10 @@ def apply_axis_facts(path, axes):
     if not os.path.exists(path):
         sys.exit(f"нет осевого слоя {path}")
     with open(path, newline="") as f:
-        rows = list(csv.DictReader(f))
+        reader = csv.DictReader(f)
+        if reader.fieldnames != AXIS_FIELDS:
+            sys.exit(f"{path}: заголовок {reader.fieldnames}, ожидается {AXIS_FIELDS}")
+        rows = list(reader)
     seen = set()
     for r in rows:
         a = r["addr"]
@@ -483,9 +501,10 @@ def apply_axis_facts(path, axes):
                      f"неверен, либо строка пережила свою ось")
         if r["kind"] not in AXIS_KINDS:
             sys.exit(f"{path}: ось {a} - kind {r['kind']!r} вне словаря {AXIS_KINDS}")
-        check_scale(path, f"ось {a}", r, "conf")
+        check_scale(path, f"ось {a}", r, "scale_conf")
         axes[a].update(kind=r["kind"], units=r["units"], scale_expr=r["scale_expr"],
-                       to_byte=r["to_byte"], scale_conf=r["conf"], note=r["note"])
+                       to_byte=r["to_byte"], scale_conf=r["scale_conf"],
+                       scale_evidence=r["scale_evidence"], note=r["note"])
     return len(rows)
 
 
@@ -524,11 +543,17 @@ def characterize(img, maps, axes):
 def report(rows, maps, axes, interps, kernels, accesses, dropped, taken, findings, naxes):
     nfind, nmanual = findings
     d2 = sum(1 for i in interps.values() if i["dims"] == 2)
+    callsites = {row["callsite"] for row in rows}
+    projected = {
+        (row["accessor"], row["callsite"], row["base"])
+        for row in accesses
+    }
     print(f"переписи: {', '.join(sorted(os.path.basename(p) for p in taken))}")
-    print(f"CSV: {len(rows)} сайтов, {len(set(kernels.values()))} ядер, "
-          f"{len(kernels)} входов")
+    print(f"CSV: {len(rows)} строк для {len(callsites)} callsite, "
+          f"{len(set(kernels.values()))} ядер, {len(kernels)} входов")
     print(f"Слой: {len(maps)} карт, {len(axes)} осей, {len(interps)} узлов интерполяции "
-          f"({d2} входов 2D), {len(accesses)} доступов")
+          f"({d2} входов 2D), {len(accesses)} строк доступов / "
+          f"{len(projected)} уникальных")
     if dropped:
         print(f"  r6 у 1D-входов осью не считан: {dropped} значений (не аргумент вызова)")
 
@@ -567,10 +592,17 @@ def report(rows, maps, axes, interps, kernels, accesses, dropped, taken, finding
     # Сайты, где операнд не свёрнут в одно значение: снят резервом по одному пути либо
     # не снят вовсе. Вход Stage 6 - там операнд выбирает ветвление.
     sel = [a for a in accesses if a["kind"] == "sp"]
-    print(f"  база не свёрнута декомпилятором (kind=sp): {len(sel)} сайтов - вход Stage 6")
+    sel_projected = {
+        (a["accessor"], a["callsite"], a["base"])
+        for a in sel
+    }
+    print(f"  база не свёрнута декомпилятором (kind=sp): {len(sel)} строк / "
+          f"{len(sel_projected)} уникальных доступов - вход Stage 6")
     axsel = [a for a in accesses if "sp" in (a["kind5"], a["kind6"])]
+    axsel_sites = {a["callsite"] for a in axsel}
     weak = [x for x in axes.values() if x["confidence"] == "pattern"]
-    print(f"  ось не свёрнута декомпилятором (kind5/kind6=sp): {len(axsel)} сайтов; "
+    print(f"  ось не свёрнута декомпилятором (kind5/kind6=sp): "
+          f"{len(axsel)} доступов на {len(axsel_sites)} callsite; "
           f"{len(weak)} осей стоят только на резерве (уровень pattern) - туда же")
 
     # Stage 4 - что образ говорит о слое сам. Дедуп идёт по содержимому вместе с формой:
@@ -662,7 +694,9 @@ def main():
             MERGE (m:Map {rom:$rom, addr:r.addr})
             SET m.dims = toInteger(r.dims), m.family = r.family, m.width = r.width,
                 m.height = r.height, m.storagetype = r.storagetype,
-                m.confidence = r.confidence, m.evidence = r.evidence, m.role = r.role,
+                m.confidence = r.confidence, m.resolver_kinds = r.resolver_kinds,
+                m.evidence = r.evidence, m.scale_evidence = r.scale_evidence,
+                m.role = r.role,
                 m.semantics = r.semantics, m.note = r.note, m.units = r.units,
                 m.scale_expr = r.scale_expr, m.to_byte = r.to_byte,
                 m.scale_conf = r.scale_conf, m.vmin = r.vmin, m.vmax = r.vmax,
@@ -678,7 +712,8 @@ def main():
             SET x.confidence = r.confidence, x.storagetype = r.storagetype,
                 x.len = r.len, x.kind = r.kind, x.units = r.units,
                 x.scale_expr = r.scale_expr, x.to_byte = r.to_byte,
-                x.scale_conf = r.scale_conf, x.note = r.note, x.values = r.values,
+                x.scale_conf = r.scale_conf, x.scale_evidence = r.scale_evidence,
+                x.note = r.note, x.values = r.values,
                 x.monotonic = r.monotonic
             """,
             rows=list(axes.values()),

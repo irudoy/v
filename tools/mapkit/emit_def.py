@@ -169,7 +169,7 @@ def evidence_lines(m, axes, rom):
              f'карта [{m["confidence"]}]{via}']
     if m["accessors"]:
         lines.append("аксессор " + ", ".join(hexa(a) for a in sorted(m["accessors"]))
-                     + "; операнд r4: " + ", ".join(sorted(m["evidence"])))
+                     + "; операнд r4: " + ", ".join(sorted(m["resolver_kinds"])))
     scale = f'шкала {m["scale_expr"]} {m["units"]}'
     if m["scale_conf"]:
         scale += f' [{m["scale_conf"]}]'

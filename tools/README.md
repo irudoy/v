@@ -140,8 +140,10 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |
 | `memgraph/load_maps.py` | калибровочный слой: переписи резолвера + реестр входов `defs/<rom>.interp.csv` + ручной слой карт `defs/<rom>.findings.csv` и осей `defs/<rom>.axes.csv` + значения из образа (Stage 4) -> `:Interp`/`:Map`/`:Axis` + `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
 | `memgraph/load_a2l.py` | `:A2LEntry` из `A2L.xml` – rom-независимый эталон семейства HR (карты, скаляры, switch'и), без адресов | Memgraph |
-| `memgraph/load_code.py` | слой понимания кода: ручной слой функций `defs/<rom>.funcs.csv` и RAM-переменных `defs/<rom>.vars.csv` (role/semantics/уровень/evidence) -> свойства на `:Func`/`:Reg`; после `load_graph`+`load_xrefs` (владельцы узлов) | Memgraph |
-| `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны, ворота раздела 11 одним запросом. Параметр `$rom` | (в git) |
+| `memgraph/load_code.py` | claim-specific слой: `funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv` -> свойства заявок и точная проекция `:RESTS_ON`; запускается последним после владельцев `Func`/`Reg`/`Map`/`Axis` | Memgraph |
+| `memgraph/ingest.py` | полный per-ROM ingest: offline preflight, затем `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` не меняет граф | Memgraph |
+| `memgraph/provenance_report.py` | read-only exact audit, weakest path и reverse impact по полной claim identity; `--strict` включает effective/grounding gates | stdout |
+| `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны и отдельные структурные ворота. Claim-specific exact audit выполняет `provenance_report.py`. Параметр `$rom` | (в git) |
 | `maps/build_tracker.py` | ledger `defs/<rom>.maps.csv` – проекция каталога из графа (worklist разбора) | (в git) |
 | `sweep/build_artifacts.py` | артефакт на компоненту графа "аксессор -> карта" для массового прохода (контракт – `map-sweep.md`): форма, значения, оси, псевдокод и листинги (ядро без разметки функции – листингом), операнды переписи, каталоги. Разметку компоненты не несёт – ослепление белым списком, проверяется каждым прогоном. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N]` | `comp-<addr>.md` |
 | `mapkit/rom.py` | образ: реестр `rom-images/roms.csv` со сверкой sha256, чтение массивов, их измерение. Библиотека – её зовут `load_maps.py` и скрипты пакета | (в git) |
@@ -177,28 +179,25 @@ D=~/tools/ghidra-projects/export-JK03A
 # уходит в никуда молча.
 H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
         -process as7058.bin -noanalysis -scriptPath tools/ghidra "$@"; }
-# 1. разметка кода вне функций + экспорт графа – в ОДНОМ запуске (гонка за lock проекта).
-#    Идёт до резолвера: декомпилятор работает только по функциям, и на неразмеченном
-#    проекте сайты уходят в резерв.
+# 1. Разметка кода вне функций + экспорт графа – в ОДНОМ изменяющем запуске.
+#    ExportXrefs читает сохранённую разметку отдельным read-only запуском.
 H -postScript RecoverFuncs.java -postScript ExportGraph.java "$D"
-uv run --no-project --with neo4j python tools/memgraph/load_graph.py "$D" JK03A
-# 2. операнды: резолвер на каждый движок из реестра (проект не меняет). ~100 сек на ценз
+H -readOnly -postScript ExportXrefs.java "$D"
+# 2. Операнды: резолвер на каждый движок из реестра. ~100 сек на ценз.
 for K in 26944 26984 26b84 26a5c 26a60 26a64 26a74 26a7c 26a80 26a84 26a88 26740 26c1c; do
   H -readOnly -postScript ResolveAccessors.java "$D" $K
 done
-# 3. калибровочный слой в граф - все цензы разом (после load_graph: тот пересоздаёт :Func
-#    вместе с рёбрами :ACCESSES). Тем же прогоном идут ручной слой (defs/JK03A.findings.csv
-#    и defs/JK03A.axes.csv) и Stage 4 - значения из образа по rom-images/roms.csv
-uv run --no-project --with neo4j python tools/memgraph/load_maps.py "$D" JK03A
-# 4. эталон каталога HR: rom-независим, грузится раз на семейство, не на дамп
+# 3. Полный per-ROM ingest. Preflight проверяет заголовки, значения, внешние ключи,
+#    цензы, ROM/SHA и evidence до первого удаления узлов.
+#    Порядок: graph -> xrefs -> maps -> code -> exact audit.
+uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A --export-dir "$D"
+# Только preflight и точные команды, без изменения графа:
+uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A --export-dir "$D" --dry-run
+# 4. Эталон каталога HR: rom-независим, грузится раз на семейство, не на дамп.
 uv run --no-project --with neo4j python tools/memgraph/load_a2l.py
-# 5. ledger - проекция каталога из графа (в git, worklist разбора)
+# 5. Генерируемые проекции после успешного аудита.
 uv run --no-project --with neo4j python tools/maps/build_tracker.py JK03A
-# 6. деф RomRaider - проекция графа плюс defs/JK03A.overrides.toml (имена, категории, порядок)
 uv run --no-project --with neo4j python tools/mapkit/emit_def.py JK03A
-# 7. слой кода - проекция defs/JK03A.funcs.csv и defs/JK03A.vars.csv на :Func/:Reg (после
-#    load_graph: тот пересоздаёт :Func; :Reg владеет load_xrefs из графовой базы)
-uv run --no-project --with neo4j python tools/memgraph/load_code.py JK03A
 ```
 
 Разбор карты руками идёт теми же фактами, без Ghidra:
@@ -215,9 +214,23 @@ uv run --no-project python tools/mapkit/ptrscan.py 11ebe 11ece      # кто у�
 её оси неизвестна; так же останавливает и вход, через который перепись нашла таблицы, а
 геометрия его не объявлена.
 
+`load_code.py` идёт последним из владельцев provenance targets: предыдущие загрузчики удаляют
+свои узлы вместе с исходящими и входящими `:RESTS_ON`. Он читает четыре канонических CSV,
+сверяет наличие узлов и claim-specific свойства, строит 671 claim-specific ребро JK03A и
+выполняет exact expected-vs-actual audit в одной транзакции. Read-only проверка и
+интерактивные запросы:
+
+```bash
+uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK03A
+uv run --no-project --with neo4j python \
+  tools/memgraph/provenance_report.py weakest JK03A Func 00021ce0 confidence
+uv run --no-project --with neo4j python \
+  tools/memgraph/provenance_report.py impact JK03A Map 0001495a structural
+```
+
 Значения таблиц и осей рукописным источником не объявляются - их говорит образ, и Stage 4
 читает их оттуда каждым прогоном по адресу и форме из переписи. Образ берётся по метке ROM
-из реестра `rom-images/roms.csv` со сверкой sha256: подмена дампа дала бы не отказ, а 227
+из реестра `rom-images/roms.csv` со сверкой sha256: подмена дампа дала бы не отказ, а 229
 осей правдоподобных чисел не из того образа. Ось несёт свои точки и монотонность, карта -
 диапазон и хеш содержимого.
 
@@ -236,18 +249,21 @@ scale-family и семантику осей даёт разбор, не ката
 `-readOnly` она идёт в проект, и её видит `ExportGraph`. JK03A: 38627 инструкций в 494 участках
 -> 353 функции (1958 -> 2312), после чего обёртки `0x26100`/`0x26230` получают вызывателей.
 
-JK03A, 13 цензов: 783 сайта, база в ROM снята data-flow на 766 против 678 у backtrack. В графе – **439 карт**
-(248 explicit-axis, 188 implicit-axis, 3 ручных вне моделей доступа), 229 осей, 586 доступов,
-47 узлов интерполяции (34 обёртки + 13 движков).
+JK03A, 13 цензов: 587 строк для 554 callsite; база в ROM снята data-flow на 551
+callsite против 493 у backtrack. В графе – **439 карт** (248 explicit-axis, 188
+implicit-axis, 3 ручных вне моделей доступа), 229 осей, 586 уникальных доступов, 47 узлов
+интерполяции (34 обёртки + 13 движков). Один полный дубль строки ценза схлопывается ключом
+ребра `ACCESSES`.
 
 | семейство | движков | сайтов | `bt_r4` | `df_r4` | обёрток | карт |
 |-----------|---------|--------|---------|---------|---------|------|
 | explicit-axis | 3 | 327 | 288 | 326 | 24 | 232 |
 | implicit-axis | 10 | 227 | 205 | 225 | 10 | 184 |
 
-Источник базы: 407 сайтов – слот пула, 102 – backward-slice, 42 – резерв `SymbolicPropogator`,
-3 не сворачиваются (`dyn`). Семейства не пересекаются ни одной таблицей – загрузчик проверяет
-это из своих строк. Плюс к 436 картам переписи ручной слой объявляет три вне обеих моделей
+Источник базы по 554 callsite: 407 – слот пула, 102 – backward-slice, 27 – phi-узел
+(59 строк по ветвям), 15 – резерв `SymbolicPropogator` (16 строк ценза), 3 не
+сворачиваются (`dyn`). Семейства не пересекаются ни одной таблицей – загрузчик проверяет это
+из своих строк. Плюс к 436 картам переписи ручной слой объявляет три вне обеих моделей
 доступа: итог каталога – 439.
 
 Обе переписи-эталона резолвер воспроизводит сайт-в-сайт (327 и 227) и покрывает по базам:
@@ -262,15 +278,17 @@ backtrack, то есть база динамическая, а не пропущ
 
 Базу в граф даёт только data-flow. Линейный backtrack остаётся эталоном ворот и фактов не
 даёт: на всех десяти базовых расхождениях каталога он неверен – поднимает ось вместо базы,
-теряет арифметику delay slot либо берёт произвольный элемент селекторного множества. На 42
-сайтах (`kind=sp`) базу декомпилятор в одно значение не свернул, и снятая – один элемент
-множества, выбираемого ветвлением; полный набор снимает Stage 6.
+теряет арифметику delay slot либо берёт произвольный элемент селекторного множества. База не
+свёрнута на 15 проецированных доступах с `kind=sp` (16 строк ценза до схлопывания полного
+дубля), и снятая – один элемент множества, выбираемого ветвлением; полный набор снимает Stage
+6.
 
-На осях резерв ошибается так же: 256 сайтов несут несвёрнутую ось (`kind5`/`kind6=sp`), и 14
-осей из 229 стоят на нём одном – они помечены уровнем `pattern` (`candidate` даёт любой
-свёрнутый сайт). Довод прямой: сайт `0x735ac` объявляет осью `0x8000`, где лежит стёртая
-флешь. Тот же механизм даёт и неоднозначную геометрию – у `0x14114` две оси на одном ребре
-(`0xE98E` и `0x8000`); ворота дефа такую карту не пропускают, разбирает её Stage 6.
+На осях резерв ошибается так же: 256 проецированных доступов на 247 callsite несут
+несвёрнутую ось (`kind5`/`kind6=sp`), и 14 осей из 229 стоят на нём одном – они помечены
+уровнем `pattern` (`candidate` даёт любой свёрнутый сайт). Довод прямой: сайт `0x735ac`
+объявляет осью `0x8000`, где лежит стёртая флешь. Тот же механизм даёт и неоднозначную
+геометрию – у `0x14114` две оси на одном ребре (`0xE98E` и `0x8000`); ворота дефа такую карту
+не пропускают, разбирает её Stage 6.
 
 Элемент оси – свойство пары (обёртка, ось), а не движка: обёртка зовёт поиск на каждую ось
 отдельно и может звать разные. `0x262E0` берёт байтовый `0x26A0C` для `r5` (клэмп 15) и
@@ -288,10 +306,11 @@ immo-статус ECM представлен как DTC (P1610-P1615, group `0x0
 
 ```bash
 D=~/tools/ghidra-projects/export-1ND0A
-H="tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr -process 1ND0A_Stock.bin -noanalysis -scriptPath tools/ghidra"
-$H -postScript ScanImmoAnchors.java "$D"              # immo-DTC + кластер DTC-таблицы
-$H -postScript FindTableRefs.java  "$D" 1b000 1c400   # кто адресует таблицу
-$H -postScript DumpListing.java    "$D" <addr>...     # точки использования (ref -> value)
+H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+        -process 1ND0A_Stock.bin -noanalysis -scriptPath tools/ghidra "$@"; }
+H -postScript ScanImmoAnchors.java "$D"              # immo-DTC + кластер DTC-таблицы
+H -postScript FindTableRefs.java  "$D" 1b000 1c400   # кто адресует таблицу
+H -postScript DumpListing.java    "$D" <addr>...     # точки использования (ref -> value)
 ```
 
 Результат на 1ND0A: DTC-таблица `0x1bdfc` (запись 12 байт, DTC@`+0x0a`), immo-блок idx
@@ -307,10 +326,11 @@ $H -postScript DumpListing.java    "$D" <addr>...     # точки исполь�
 ```bash
 D=~/tools/ghidra-projects/export-1ND0A
 SYM=$(pwd)/tools/ghidra/symbols.csv
-H="tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr -process 1ND0A_Stock.bin -noanalysis -scriptPath tools/ghidra"
+H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+        -process 1ND0A_Stock.bin -noanalysis -scriptPath tools/ghidra "$@"; }
 # 1-2. RenameFuncs + ExportGraph – в ОДНОМ headless-запуске: раздельные прогоны подряд
 #       ловят гонку за lock проекта Ghidra (второй открывает read-only, имена не выгружаются).
-$H -postScript RenameFuncs.java "$SYM" -postScript ExportGraph.java "$D"   # имена -> проект -> funcs.csv
+H -postScript RenameFuncs.java "$SYM" -postScript ExportGraph.java "$D"   # имена -> проект -> funcs.csv
 uv run --no-project --with neo4j python tools/memgraph/load_graph.py "$D" 1ND0A   # 3. -> граф
 uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py "$D" 1ND0A   #    (USES восстановить)
 ```
