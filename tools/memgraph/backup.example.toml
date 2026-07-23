@@ -1,0 +1,8 @@
+# Локальный файл tools/memgraph/backup.local.toml не входит в git.
+smb_url = "smb://server/share"
+mount_point = "/Volumes/share"
+backup_subdir = "vq-memgraph"
+minimum_interval_hours = 24
+container_name = "vq-memgraph-mage"
+mount_timeout_seconds = 30
+command_timeout_seconds = 900

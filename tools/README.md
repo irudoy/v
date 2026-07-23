@@ -142,6 +142,7 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `memgraph/load_a2l.py` | `:A2LEntry` из `A2L.xml` – rom-независимый эталон семейства HR (карты, скаляры, switch'и), без адресов | Memgraph |
 | `memgraph/load_code.py` | claim-specific слой: `funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv` -> свойства заявок и точная проекция `:RESTS_ON`; запускается последним после владельцев `Func`/`Reg`/`Map`/`Axis` | Memgraph |
 | `memgraph/ingest.py` | полный per-ROM ingest: offline preflight, затем `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` не меняет граф | Memgraph |
+| `memgraph/backup.py` | завершающий шаг агентского workflow: проверка 24-часового интервала, SMB mount, `DUMP DATABASE` + native snapshot + manifest и SHA-256 непосредственно на NAS | NAS |
 | `memgraph/provenance_report.py` | read-only exact audit, weakest path и reverse impact по полной claim identity; `--strict` включает effective/grounding gates | stdout |
 | `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны и отдельные структурные ворота. Claim-specific exact audit выполняет `provenance_report.py`. Параметр `$rom` | (в git) |
 | `maps/build_tracker.py` | ledger `defs/<rom>.maps.csv` – проекция каталога из графа (worklist разбора) | (в git) |
@@ -199,6 +200,41 @@ uv run --no-project --with neo4j python tools/memgraph/load_a2l.py
 uv run --no-project --with neo4j python tools/maps/build_tracker.py JK03A
 uv run --no-project --with neo4j python tools/mapkit/emit_def.py JK03A
 ```
+
+### Резервное копирование Memgraph
+
+Резервное копирование запускается только как завершающий шаг агентского workflow. Cron и
+`launchd` не используются. Локальный конфиг создаётся из `memgraph/backup.example.toml` и
+не входит в git:
+
+```toml
+smb_url = "smb://Junkyard/Backup"
+mount_point = "/Volumes/Backup"
+backup_subdir = "vq-memgraph"
+minimum_interval_hours = 24
+container_name = "vq-memgraph-mage"
+mount_timeout_seconds = 30
+command_timeout_seconds = 900
+```
+
+Проверка срока не подключает NAS:
+
+```bash
+python3 tools/memgraph/backup.py --status
+```
+
+Запуск при истёкшем интервале монтирует share через macOS Keychain и пишет комплект сразу в
+`/Volumes/Backup/vq-memgraph/.<timestamp>.partial-*`. Готовый каталог публикуется rename
+только после проверки gzip и SHA-256:
+
+```bash
+python3 tools/memgraph/backup.py --if-due
+```
+
+`minimum_interval_hours` не может быть меньше 24. Локальное
+`memgraph/backup.state.json` содержит только время и путь последней успешной резервной копии.
+Native snapshot привязан к версии Memgraph; `manifest.json` фиксирует image контейнера,
+timestamp snapshot, числа узлов/рёбер/индексов, git commit и состояние worktree.
 
 Разбор карты руками идёт теми же фактами, без Ghidra:
 

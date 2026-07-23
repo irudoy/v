@@ -22,5 +22,10 @@ __pycache__/
 ghidra_projects/
 tools/memgraph/data/
 
+# Локальное назначение и состояние резервного копирования Memgraph.
+tools/memgraph/backup.local.toml
+tools/memgraph/backup.state.json
+tools/memgraph/backup.lock
+
 # Контентные артефакты (ROM-дампы, даташиты/PDF, дефы, зеркала wiki,
 # дизасм-экспорты) версионируются в git – правил игнора для них нет.
