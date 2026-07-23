@@ -309,6 +309,50 @@
       </table>
     </table>
 
+    <!-- 0x15306  8 uint16  карта [code]; вход 0x264CC (explicit, ядро 0x26984)
+         аксессор 0x602F2; операнд r4: pool
+         шкала x raw; ось 0x15DA0 raw [code]
+         Таблица выбирается только для неотрицательных элементов param_1; отрицательная ветвь
+         использует соседнюю 000153a0. Ее результат умножается на результат 8-битной таблицы,
+         сравнивается с порогом насыщения и при ненасыщенном пути сдвигается вправо на 7. Это
+         условное динамическое преобразование не является самостоятельной шкалой карты. Все
+         восемь ячеек равны нулю, что не доказывает физическую роль. Каталоги дают несколько
+         классов той же формы и не имеют совпадения документированного плоского значения. Судьба
+         результата: consumer. Физическая величина не устанавливается сверх узкой операционной
+         semantics.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Nonnegative Branch Multiplier (0x15306)"
+           category="Internal Calculations (traced)" storagetype="uint16"
+           storageaddress="0x15306" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x15DA0"
+             sizex="8" endian="big">
+        <scaling units="raw" expression="x-32768" to_byte="x+32768" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x153A0  8 uint16  карта [code]; вход 0x264CC (explicit, ядро 0x26984)
+         аксессор 0x602F2; операнд r4: pool
+         шкала x raw; ось 0x15DB0 raw [code]
+         Код доказывает только операционную роль: возвращённый uint16 умножается на uint8 из
+         ffff8c3c, после чего результат либо насыщается до 65535, либо сдвигается вправо на 7.
+         Это условное преобразование с динамическим множителем не задаёт обратимую шкалу карты.
+         Восемь нулевых ячеек не доказывают физическую семантику, пороговую роль или
+         недостижимость ветви. Судьба результата: consumer. Физическая величина не
+         устанавливается сверх узкой операционной semantics.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Negative Branch Multiplier (0x153A0)"
+           category="Internal Calculations (traced)" storagetype="uint16"
+           storageaddress="0x153A0" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x15DB0"
+             sizex="8" endian="big">
+        <scaling units="raw" expression="x-32768" to_byte="x+32768" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x11ECE  ось 16 точек uint8, rpm [code]
          ось оборотов аксессора 0x4bbee; читается кодом
          Разбор и метод - defs/JK03A.notes.md -->

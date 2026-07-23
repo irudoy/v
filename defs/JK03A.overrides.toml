@@ -167,3 +167,19 @@ order = 83
 format = "0"
 fine = 1
 coarse = 16
+
+[table.00015306]
+name = "Nonnegative Branch Multiplier (0x15306)"
+category = "Internal Calculations (traced)"
+order = 84
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000153a0]
+name = "Negative Branch Multiplier (0x153A0)"
+category = "Internal Calculations (traced)"
+order = 85
+format = "0"
+fine = 1
+coarse = 16
