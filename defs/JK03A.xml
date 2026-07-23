@@ -223,6 +223,92 @@
       </table>
     </table>
 
+    <!-- 0x13CE8  8 uint16  карта [code]; вход 0x264CC (explicit, ядро 0x26984)
+         аксессор 0xA5A06; операнд r4: pool
+         шкала x raw; ось 0x15C30 raw [code]
+         Судьба результата: consumer. Физическая величина не устанавливается сверх узкой
+         операционной semantics. Для сырого результата M из диапазона 32768..34688 код 000a5a06
+         вычисляет разность с внутренним sVar17. На достижимом для этой карты пути это
+         эквивалентно вычитанию M-32768 с нижним насыщением int16; далее действует
+         дополнительный условный clamp относительно ffff2733. Такое условное преобразование не
+         задаёт обратимой физической шкалы карты, поэтому заявлена только raw identity. Соседняя
+         карта 0000c78e и её приёмник ffff3080 в семантическое доказательство не включены.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Internal Subtractive Correction (0x13CE8)"
+           category="Internal Calculations (traced)" storagetype="uint16"
+           storageaddress="0x13CE8" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x15C30"
+             sizex="8" endian="big">
+        <scaling units="значение uint8 RAM ffff1071" expression="x/256" to_byte="x*256"
+                 format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x14C9A  8 uint16  карта [candidate]; вход 0x264CC (explicit, ядро 0x26984)
+         аксессор 0x5FDB0; операнд r4: slice
+         шкала x raw; ось 0x15D60 raw [code]
+         Все восемь ячеек равны 32768. После интерполяции код умножает результат на отдельную
+         величину, применяет условное насыщение и сдвиг вправо на 7. Эта цепочка смешивает две
+         карты и не задает отдельную обратимую шкалу 00014c9a, поэтому сохранена raw identity.
+         Судьба результата: writes. Блокер: В 0005feae и 0005ff6c доказано только умножение
+         результата целевой карты на анонимный uint8 результат. Прямые RAM-привязки в 0005fea4 и
+         0005ff62 ведут в ffff8bee и ffff8bec, у которых нет внешних читателей. Физический
+         потребитель и единица величины не установлены.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Unsigned Branch Multiplier (0x14C9A)"
+           category="Internal Calculations (candidate)" storagetype="uint16"
+           storageaddress="0x14C9A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x15D60"
+             sizex="8" endian="big">
+        <scaling units="raw" expression="x-32768" to_byte="x+32768" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x14CBA  8 uint16  карта [code]; вход 0x264CC (explicit, ядро 0x26984)
+         аксессор 0x5FDB0; операнд r4: pool
+         шкала x raw; ось 0x15D70 raw [code]
+         Судьба результата: consumer. Физическая величина не устанавливается сверх узкой
+         операционной semantics. Все 8 ячеек равны 32768. Константа сама по себе не доказывает
+         единичный коэффициент или физическую шкалу. После интерполяции выполняются зависимые от
+         другого табличного значения умножение, насыщение и ограничение без точной обратной
+         пары, поэтому шкала карты оставлена сырой.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Negative Branch Multiplier (0x14CBA)"
+           category="Internal Calculations (traced)" storagetype="uint16"
+           storageaddress="0x14CBA" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x15D70"
+             sizex="8" endian="big">
+        <scaling units="raw" expression="x-32768" to_byte="x+32768" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x14E82  8 uint16  карта [candidate]; вход 0x264CC (explicit, ядро 0x26984)
+         аксессор 0x617EA; операнд r4: pool
+         шкала x raw; ось 0x13A68 raw [code]
+         Карта вызывается для двух каналов. Первый результат также участвует в выборе максимума
+         на site:00061df6, но эта операция не устанавливает физическую величину. Для формы 1D-8
+         каталог содержит 22 разных класса, совпадения документированного дефолта нет. Судьба
+         результата: writes. Блокер: На site:00061de6 и site:00061dee трейс останавливается:
+         конечный RAM-адрес находится в r2 и не разрешён, а внешних читателей записей аксессора
+         нет. Физический потребитель и семантика величины не установлены.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Two-channel Constant Calibration (0x14E82)"
+           category="Internal Calculations (candidate)" storagetype="uint16"
+           storageaddress="0x14E82" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x13A68"
+             sizex="8" endian="big">
+        <scaling units="raw" expression="x-32768" to_byte="x+32768" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x11ECE  ось 16 точек uint8, rpm [code]
          ось оборотов аксессора 0x4bbee; читается кодом
          Разбор и метод - defs/JK03A.notes.md -->

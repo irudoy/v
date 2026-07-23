@@ -135,3 +135,35 @@ order = 70
 format = "0.0000"
 fine = 0.001
 coarse = 0.01
+
+[table.00013ce8]
+name = "Internal Subtractive Correction (0x13CE8)"
+category = "Internal Calculations (traced)"
+order = 80
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00014c9a]
+name = "Unsigned Branch Multiplier (0x14C9A)"
+category = "Internal Calculations"
+order = 81
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00014cba]
+name = "Negative Branch Multiplier (0x14CBA)"
+category = "Internal Calculations (traced)"
+order = 82
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00014e82]
+name = "Two-channel Constant Calibration (0x14E82)"
+category = "Internal Calculations"
+order = 83
+format = "0"
+fine = 1
+coarse = 16
