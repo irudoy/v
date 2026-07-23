@@ -216,7 +216,7 @@ uv run --no-project python tools/mapkit/ptrscan.py 11ebe 11ece      # кто у�
 
 `load_code.py` идёт последним из владельцев provenance targets: предыдущие загрузчики удаляют
 свои узлы вместе с исходящими и входящими `:RESTS_ON`. Он читает четыре канонических CSV,
-сверяет наличие узлов и claim-specific свойства, строит 671 claim-specific ребро JK03A и
+сверяет наличие узлов и claim-specific свойства, строит 1001 claim-specific ребро JK03A и
 выполняет exact expected-vs-actual audit в одной транзакции. Read-only проверка и
 интерактивные запросы:
 

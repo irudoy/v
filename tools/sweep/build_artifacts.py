@@ -362,8 +362,11 @@ def dumped(export_dir, addr, kind):
 # через регистр адреса в тексте не оставляет; здесь добирается то, чего нет в графе.
 CALLED_ADDR = re.compile(r"(?:\bFUN_|-> )(00[0-9a-f]{6})\b")
 POOL_SYM = re.compile(r"\b((?:PTR_)?(?:DAT|FUN)_00([0-9a-f]{6}))\b")
-POOL_ALIAS = re.compile(r"\b(\w+) = ((?:PTR_)?(?:DAT|FUN)_00[0-9a-f]{6})\s*;")
+POOL_ALIAS = re.compile(
+    r"(?<![!<>=])\b(\w+)\s*=(?!=)\s*((?:PTR_)?(?:DAT|FUN)_00[0-9a-f]{6})\s*$"
+)
 POOL_EXPR = re.compile(r"\(\s*(\w+)\s*\+\s*(\w+|0x[0-9a-fA-F]+)\s*\)")
+ASSIGN = re.compile(r"(?<![!<>=])\b(\w+)\s*=(?!=)\s*(.+)$")
 NUMERIC = re.compile(r"0x[0-9a-fA-F]+[uUlL]*|\d+[uUlL]*")
 
 
@@ -406,8 +409,31 @@ def stable_callees(rows):
     return sorted(rows, key=lambda row: (row.get("addr") or "", row.get("size") or -1))
 
 
+def alias_snapshots(stmts, syms):
+    """Значение локального alias перед каждым оператором псевдокода.
+
+    Ghidra повторно использует одно локальное имя для разных баз RAM. Глобальный словарь
+    alias в таком случае приписывает ранней записи последнее значение имени и связывает
+    результат карты с чужим регистром. Здесь действует ближайшее предшествующее
+    присваивание; любое присваивание не из пула снимает прежний alias.
+    """
+    aliases, snapshots = {}, []
+    for stmt in stmts:
+        snapshots.append(dict(aliases))
+        assigned = ASSIGN.search(stmt)
+        if not assigned:
+            continue
+        direct = POOL_ALIAS.search(stmt)
+        name = assigned.group(1)
+        if direct and direct.group(1) == name and direct.group(2) in syms:
+            aliases[name] = direct.group(2)
+        else:
+            aliases.pop(name, None)
+    return snapshots
+
+
 def pool(image, text, regs):
-    """Литералы пула псевдокода и привязка его выражений к регистрам.
+    """Литералы пула псевдокода и позиционные привязки выражений к регистрам.
 
     Декомпилятор печатает литерал именем `DAT_<адрес>`, значения не подставляя: в
     обращении `*(byte *)(DAT_0008625c + DAT_0008608e)` символы и база, и смещение, так что
@@ -426,14 +452,15 @@ def pool(image, text, regs):
         addr = int(hexa, 16)
         if addr < len(image.data):
             syms[full] = (addr, literal(image, addr))
-    alias = {var: sym for var, sym in POOL_ALIAS.findall(text) if sym in syms}
     known = kinds_by_addr(regs)
+    stmts = split_stmts(text)
+    aliases = alias_snapshots(stmts, syms)
 
-    def base(term):
-        sym = alias.get(term, term)
+    def base(term, current=None):
+        sym = (current or {}).get(term, term)
         return syms.get(sym, (None, {}))[1].get("mov.l"), sym
 
-    def disp(term):
+    def disp(term, current=None):
         if NUMERIC.fullmatch(term):
             # декомпилятор эмитит C-суффиксы (0x1c00U, ...L) и печатает малые смещения
             # десятичными (`iVar3 + 100`); одиночный странный литерал не должен ронять
@@ -442,23 +469,25 @@ def pool(image, text, regs):
                 return int(term.rstrip("uUlL"), 0), term
             except ValueError:
                 return None, term
-        sym = alias.get(term, term)
+        sym = (current or {}).get(term, term)
         v = syms.get(sym, (None, {}))[1]
         return v.get("mov.w"), sym
 
     binds, raw = {}, {}
-    for lhs, rhs in POOL_EXPR.findall(text):
-        b, bsym = base(lhs)
-        o, osym = disp(rhs)
-        if b is None or o is None or not 0xFFFF0000 <= b <= 0xFFFFFFFF:
-            continue
-        target = (b + o) & 0xFFFFFFFF
-        binds[(bsym, osym)] = (target, known.get(target))
-        # ключ по тексту как написан: базу декомпилятор кладёт в локальную переменную
-        # (`iVar3 = DAT_0002c7c8;`) и дальше адресует через неё, так что искать выражение
-        # в теле функции по имени пула нельзя - его там нет
-        raw[f"({lhs} + {rhs})"] = target
-    return syms, binds, raw, base
+    for index, (stmt, current) in enumerate(zip(stmts, aliases)):
+        for match in POOL_EXPR.finditer(stmt):
+            lhs, rhs = match.groups()
+            b, bsym = base(lhs, current)
+            o, osym = disp(rhs, current)
+            if b is None or o is None or not 0xFFFF0000 <= b <= 0xFFFFFFFF:
+                continue
+            target = (b + o) & 0xFFFFFFFF
+            binds[(bsym, osym)] = (target, known.get(target))
+            # Один и тот же текст выражения может означать разные адреса после
+            # переприсваивания локальной базы, поэтому индекс оператора входит в ключ.
+            key = re.sub(r"\s+", " ", match.group(0))
+            raw[(index, key)] = target
+    return syms, binds, raw, base, aliases, stmts
 
 
 CALL = re.compile(r"(?:\(\*\(code \*\)\s*(?:\w+)\s*\)|\bFUN_[0-9a-f]{8})\s*\(")
@@ -494,9 +523,8 @@ def attribute(image, text, regs, bases):
     Обрыв трейса - факт, а не пробел: величина, которая до памяти не доходит, либо
     возвращается вызывающему, либо потребляется на месте, и регистра выхода у карты нет.
     """
-    _syms, _binds, raw, resolve = pool(image, text, regs)
+    _syms, _binds, raw, resolve, aliases, stmts = pool(image, text, regs)
     known = {int(r["addr"], 16) for r in regs}
-    stmts = split_stmts(text)
     out = []
     for i, st in enumerate(stmts):
         m = CALL.search(st)
@@ -505,7 +533,7 @@ def attribute(image, text, regs, bases):
         args = call_args(st, st.index("(", m.end() - 1))
         if not args:
             continue
-        target, _sym = resolve(args[0])
+        target, _sym = resolve(args[0], aliases[i])
         if target is None or f"{target:08x}" not in bases:
             continue
         rec = {"base": f"{target:08x}", "sink": None, "kind": None, "width": 0,
@@ -517,12 +545,12 @@ def attribute(image, text, regs, bases):
             rec["kind"] = "return" if st.startswith("return") else "inline"
             out.append(rec)
             continue
-        rec.update(trace_sink(stmts, i, name.group(0), raw, resolve, known))
+        rec.update(trace_sink(stmts, i, name.group(0), raw, resolve, aliases, known))
         out.append(rec)
     return out
 
 
-def trace_sink(stmts, call, name, raw, resolve, known):
+def trace_sink(stmts, call, name, raw, resolve, aliases, known):
     """Первая запись в память, достижимая от результата вызова.
 
     Величина от вызова до записи проходит через промежуточные имена, поэтому трейс идёт
@@ -537,10 +565,10 @@ def trace_sink(stmts, call, name, raw, resolve, known):
         sm = STORE.match(st) or STORE.search(st)
         if sm and set(VAR.findall(sm.group(3))) & set(live):
             key = re.sub(r"\s+", " ", sm.group(2))
-            addr = raw.get(key)
+            addr = raw.get((j, key))
             if addr is None and re.fullmatch(r"\w+", key):
                 # запись без смещения: база сама и есть адрес регистра
-                v, _sym = resolve(key)
+                v, _sym = resolve(key, aliases[j])
                 addr = v if v is not None and 0xFFFF0000 <= v <= 0xFFFFFFFF else None
             if addr is None:
                 return {"sink": key, "kind": "unresolved", "width": 0}
@@ -703,7 +731,7 @@ def bind_state(target, kind, all_regs):
 
 def render_pool(A, image, text, regs, addr, all_regs):
     """Раздел резолва под псевдокодом функции."""
-    syms, binds, _raw, _res = pool(image, text, regs)
+    syms, binds, _raw, _res, _aliases, _stmts = pool(image, text, regs)
     if not syms:
         return
     A(f"#### Символы пула `{addr}`")
@@ -827,8 +855,8 @@ def render(comp, rom, data, export_dir):
               f"| {'да' if a['monotonic'] else 'НЕТ'} "
               f"| {', '.join(str(v) for v in a['values'])} |")
         A("")
-        A("Возрастание - требование ядра (бинарный поиск от старшей точки вниз до первой "
-          "`<=` текущего значения), а не догадка о смысле: массив, который правилу не "
+        A("Возрастание - требование ядра (обратный линейный проход от старшей точки вниз "
+          "до первой `<=` текущего значения), а не догадка о смысле: массив, который правилу не "
           "отвечает, осью не работает. Чем ось является и в чём измеряется - вывод о "
           "коде, и даёт его трейс RAM-входа.")
         A("")
