@@ -37,31 +37,66 @@
 
     <!-- 0x0B33A  16x16 uint8  карта [code]; вход 0x261B8 (explicit, ядро 0x26944)
          аксессор 0xBFDC0; операнд r4: slice
-         шкала 1881.6/x AFR [code]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
-         плато 14.7 + обогащение 11.2
+         шкала x-128 кодовые отсчёты относительно нейтрали 128 [code]; Y Axis 0x12F2E rpm
+         [candidate]; X Axis 0x12F0E load
+         Управляющая 2D-таблица: выход является offset-кодированным байтом с нейтралью 128; при
+         установленном флаге 0x40 образует насыщенную разность с выходом 0000ab4a по формуле
+         clamp_u8(this - map_0000ab4a + 128), иначе передаётся напрямую. Судьба результата:
+         writes. Цель результата: ffff1c5d. Машинный трейс: 0000b33a[uint8 128..178] ->
+         000bfe22/000261b8 -> 00026770/00026944/00026c78/00026740 -> 000bfe28 extu.b.
+         ffff2466[0x40]=0 -> 000bfe2e/000bfe30 -> 000bfe6c -> ffff1c5d. ffff2466[0x40]=1 ->
+         000bfe4c(0000ab4a, uint8 128..148) -> 000bfe50/000bfe52: this-other ->
+         000bfe54/000bfe56: +128 -> 000bfe58..000bfe68: clamp 0..255 -> 000bfe6c -> ffff1c5d.
+         Для фактических диапазонов разностный путь даёт 108..178. 000bfe88 читает ffff1c5d
+         через DAT_000c0284+DAT_000c01e6 и далее явно выделяет 0x80 как нейтральное состояние.
+         Уровень шкалы: code. Шкала: x-128; обратное кодирование: x+128; единицы: кодовые
+         отсчёты относительно нейтрали 128. Трейс шкалы: raw uint8 карты 0000b33a (128..178) ->
+         000bfe22/000261b8 -> 00026944/00026770/00026740, беззнаковая интерполяция без изменения
+         шкалы -> 000bfe28 extu.b в r13 -> 000bfe2e: при сброшенном флаге delay-slot 000bfe30
+         переносит raw напрямую в r6; при установленном флаге raw uint8 карты 0000ab4a
+         (128..148) -> 000bfe4c/00026084 -> 000bfe50 extu.b в r2 -> 000bfe52 r13=raw_target-
+         raw_reference -> 000bfe54 формирует константу 128 в r12 -> 000bfe56 r13+=128 ->
+         000bfe58..000bfe68 насыщение 0..255 в r6 -> обе ветви сходятся на 000bfe6c -> ffff1c5d
+         -> 000bfe88 читает ffff1c5d через DAT_000c0284+DAT_000c01e6, сохраняет байтовое
+         кодирование в local_60 и проверяет нейтраль local_60==0x80.
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="3D" name="Target AFR - Power (0xB33A)" category="AFR / Lambda (traced)"
            storagetype="uint8" storageaddress="0x0B33A" sizex="16" sizey="16" endian="big">
-      <scaling units="AFR" expression="1881.6/x" to_byte="1881.6/x" format="0.00"
-               fineincrement="0.1" coarseincrement="0.5"/>
+      <scaling units="кодовые отсчёты относительно нейтрали 128" expression="x-128"
+               to_byte="x+128" format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
         <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
-        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
     <!-- 0x0A29A  16x16 uint8  карта [code]; вход 0x261F0 (explicit, ядро 0x26944)
          аксессор 0x2C648, 0x3BE3C; операнд r4: pool
-         шкала 1881.6/x AFR [code]; Y Axis 0x11CF0 rpm [code]; X Axis 0x11D4C load
-         плоский 14.0..14.8
+         шкала 1881.6/x AFR [candidate]; Y Axis 0x11CF0 rpm [candidate]; X Axis 0x11D4C load
+         Беззнаковый байтовый выход таблицы используется как числитель безразмерного множителя
+         map_out/512 для 16-битного операнда: floor(map_out*uVar3/512). После вычисления код
+         проверяет верхнее насыщение до 0xffff. Физическое имя величины не установлено. Судьба
+         результата: consumer. Цель результата: 0002c648: uVar23=floor(map_out*uVar3/512), затем
+         проверка верхнего насыщения до 0xffff. Машинный трейс: 0000a29a -> site 0002cc9c ->
+         wrapper 000261f0 -> поиск долей по осям 000269c4/00026944 через 00026c78 -> выборка
+         00026770 -> беззнаковая интерполяция 00026740 -> r0 -> bVar18/r2/r6 -> ffff1160; тот же
+         bVar18 без переприсваивания участвует в (bVar18*uVar3 >> 8) >> 1 внутри 0002c648, где
+         uVar3 загружен 16-битно из 000090ee. Уровень шкалы: candidate. Блокирующее условие
+         шкалы: В `0002c648` деление на 512 относится только к промежуточному `uVar23`: после
+         записи этого представления код вычисляет `uVar23 << 2` и записывает умноженный на 4
+         результат в несколько RAM-приёмников, включая `ffff1026`. Поэтому машинный трейс
+         допускает как трактовку `raw/512` с последующим преобразованием единиц результата, так
+         и трактовку коэффициента порядка `raw/128` с промежуточным четвертным представлением.
+         Единицы второго множителя `uVar3` и выбранного итогового представления не установлены,
+         так что множитель карты и обратное кодирование однозначно не выводятся.
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="3D" name="Lambda Target - flat (0xA29A)" category="AFR / Lambda (traced)"
            storagetype="uint8" storageaddress="0x0A29A" sizex="16" sizey="16" endian="big">
-      <scaling units="AFR" expression="1881.6/x" to_byte="1881.6/x" format="0.00"
+      <scaling units="AFR [cand]" expression="1881.6/x" to_byte="1881.6/x" format="0.00"
                fineincrement="0.1" coarseincrement="0.5"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11D4C"
              sizex="16" endian="big">
@@ -69,19 +104,35 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11CF0" sizey="16" endian="big">
-        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
     <!-- 0x0AB0A  8x8 uint8  карта [code]; вход 0x26140 (explicit, ядро 0x26944)
          аксессор 0xBEFB0; операнд r4: slice
-         шкала x raw; Y Axis 0x120AE rpm [code]; X Axis 0x120B6 load
-         Второй lookup 0000ab0a -> ffff3219; значение входит слагаемым в (ffff1071 + map -
-         0x32)*K, где K даёт 0000b23a. Аккумуляторы ffff2d20/ffff2d24 имеют формат 8.24, поэтому
-         фильтр сходится к ffff1071 + map с возможной потерей до 1 отсчёта от целочисленного
-         усечения. Физическая природа ffff1071/ffff359c не установлена. Каталожное имя
-         "Transient Fuel Corr - magnitude" остаётся candidate-гипотезой. Ориентация индексов
-         опровергнута и не переносится.
+         шкала x raw; Y Axis 0x120AE rpm [candidate]; X Axis 0x120B6 load
+         Интерполируемая 8x8 uint8-таблица с выходом в диапазоне 4..37. Ее выход является
+         отдельным поправочным слагаемым: к нему прибавляется uint8 из ffff1071, сумма
+         центрируется вычитанием 0x32 и умножается на uint8 из ffff3502. ffff3502 несет не выход
+         целевой карты, а результат соседней карты 0000b23a, содержащей только значение 27.
+         Полученное произведение условно участвует в обновлении 32-битного ffff2d20; физическое
+         имя и физическая единица кодом не установлены. Судьба результата: consumer. Цель
+         результата: FUN_000befb0@000befb0: при установленном бите 3 в ffff41bc и ненулевом
+         uint8@ffff3502 выражение (uint8@ffff1071 + map_output - 0x32) * uint8@ffff3502 через
+         знакозависимую арифметику участвует в формировании 32-битного значения, записываемого в
+         ffff2d20. Машинный трейс: 0000ab0a (8x8 uint8, значения 4..37) -> загрузка базы в r4
+         @000befe0, осей 000120ae/000120b6 и raw-входов из старшего байта ffff1024 и байта
+         ffff11ae -> вызов 00026140 @000beff4 -> проходы ядра 00026944 и выбор raw-ячеек в
+         00026770 -> беззнаковая линейная интерполяция 00026740, сохраняющая результат между
+         соседними uint8-значениями -> r0 -> r6 -> запись байта в ffff3219 @000beffe. Этот же
+         результат остается отдельным от результата предыдущего вызова: предыдущий вызов
+         интерполирует соседнюю карту 0000b23a и пишет ее выход в ffff3502. Далее при (ffff41bc
+         & 8) != 0 код читает ffff3502 @000bf024 и при его ненулевом значении после проверки
+         @000bf02a вычисляет (uint8@ffff1071 + map_output - 0x32) * uint8@ffff3502; полученное
+         слагаемое комбинируется с величиной, вычисленной из ffff2d24 относительно 0x32000000, с
+         учетом знаковых ветвей и ограничений, после чего результат записывается в ffff2d20. При
+         сброшенном бите 3 выполняется только инициализация ffff2d20 из ffff106e, а при нулевом
+         ffff3502 арифметическая ветвь пропускается.
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="3D" name="Filter Target Additive Correction (0xAB0A)"
            category="Filters (traced)" storagetype="uint8" storageaddress="0x0AB0A" sizex="8"
@@ -93,19 +144,27 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x120AE" sizey="8" endian="big">
-        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
     <!-- 0x0B23A  8x8 uint8  карта [code]; вход 0x26140 (explicit, ядро 0x26944)
          аксессор 0xBEFB0; операнд r4: pool
-         шкала x/65536 доля нового отсчёта (0..255/65536) [code]; Y Axis 0x12858 rpm [code]; X
-         Axis 0x12860 load
-         Lookup 0000b23a -> ffff3502; значение перечитывается, проверяется на 0 и используется
-         парой K и 0x10000-K при аккумуляторе 8.24. Цель задаётся ffff1071 + выходом 0000ab0a.
-         Карта плоская: K=27, доля нового отсчёта 27/65536 = 0.000412; это живой постоянный
-         коэффициент, а не dead-ветвь. Каталожное имя "Transient Fuel Corr - weight" остаётся
-         candidate-гипотезой.
+         шкала x/65536 доля нового отсчёта (0..255/65536) [code]; Y Axis 0x12858 rpm
+         [candidate]; X Axis 0x12860 load
+         Коэффициент сглаживания апериодического фильтра первого порядка, то есть вес нового
+         отсчёта: new = old*(65536-K)/65536 + target*K/65536. K=0 отключает обновление;
+         физическая величина не установлена. Судьба результата: consumer. Цель результата:
+         FUN_000befb0@000bf024, итоговая запись RAM ffff2d20. Машинный трейс: 0000b23a ->
+         000befc4/000befd8 -> 00026140 -> 00026944/00026c78 -> 00026770/00026740 -> 000befe2 ->
+         ffff3502 -> 000bf024/000bf028/000bf02a -> FUN_000befb0 -> ffff2d20. Уровень шкалы:
+         code. Шкала: x/65536; обратное кодирование: x*65536; единицы: доля нового отсчёта
+         (0..255/65536). Трейс шкалы: 0000b23a -> 000befd8 -> 00026140 -> 00026944/00026c78 ->
+         00026770/00026740 -> r0 -> 000befe2(ffff3502) -> 000bf024 -> арифметика FUN_000befb0:
+         u=uint8, при u=0 обновление пропускается, иначе старое отклонение Q8.24 умножается на
+         (0x10000-u)/0x10000, а байтовое входное отклонение умножается на u*0x100; ветви знака
+         складывают или вычитают эти части, восстанавливают значение относительно 0x32000000 и
+         насыщают результат -> ffff2d20/ffff2d24 -> старший байт ffff359c.
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="3D" name="Filter Weight - new-sample share Q16 (0xB23A)"
            category="Filters (traced)" storagetype="uint8" storageaddress="0x0B23A" sizex="8"
@@ -119,19 +178,23 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12858" sizey="8" endian="big">
-        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0x08FDC  2 uint16  карта [code]
+    <!-- 0x08FDC  2 uint16  карта [candidate]
          аксессор 0x47A56; операнд r4: manual
          шкала x*12.5 RPM [candidate]
-         не через lookup: прямой word-компаратор vs 0xFFFF266E (rpm/12.5), пороги 0x8fdc=7625
-         (отсечка)/0x8fde=6600 (восстановление), селектор 0xFFFF246D bit7; имя пары по ProECU
-         [CANDIDATE]
+         Уровень семантики: candidate. Блокирующее условие: В коде выбор порога определяется
+         RAM[ffff246d].bit7, а обновляется RAM[ffff246a].bit7. Артефакт не доказывает, что
+         ffff246d.bit7 является предыдущим состоянием ffff246a.bit7 или эквивалентным
+         состоянием. Поэтому два сравнения могут быть режимно-зависимыми порогами, а не
+         гистерезисом. Кроме того, среди показанных потребителей RAM ffff246a нет
+         подтвержденного чтения именно bit7, поэтому трейс sink -> consumer не завершен.
          Разбор и метод - defs/JK03A.notes.md -->
-    <table type="2D" name="Rev Limit - Fuel Cut Maximum (0x8FDC)" category="Limiters (traced)"
-           storagetype="uint16" storageaddress="0x08FDC" sizex="2" endian="big">
+    <table type="2D" name="Rev Limit - Fuel Cut Maximum (0x8FDC)"
+           category="Limiters (traced) (candidate)" storagetype="uint16"
+           storageaddress="0x08FDC" sizex="2" endian="big">
       <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0"
                fineincrement="12" coarseincrement="125"/>
       <table type="Static X Axis" name="Selector" sizex="2">
@@ -158,7 +221,7 @@
 
     <!-- 0x1236A  16 uint8  карта [candidate]; вход 0x264A0 (explicit, ядро 0x26944)
          аксессор 0x8152A, 0x81D74; операнд r4: pool
-         шкала x raw; ось 0x1238A rpm [code]
+         шкала x raw; ось 0x1238A rpm [candidate]
          вход byte[0xFFFF11AE], ось с шагом 8; питает топливо, не угол - разбор K2Y
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="2D" name="Fuel enrichment vs MBT-like axis (0x1236A)"
@@ -167,27 +230,24 @@
       <scaling units="raw" expression="x" to_byte="x" format="0" coarseincrement="4"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1238A" sizex="16" endian="big">
-        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
-    <!-- 0x1491A  16 uint16  карта [code]; вход 0x263F4 (implicit, ядро 0x26A64)
+    <!-- 0x1491A  16 uint16  карта [candidate]; вход 0x263F4 (implicit, ядро 0x26A64)
          аксессор 0x8083C; операнд r4: pool
          шкала x*0.000488 мс BFS [candidate]
-         Аксессор 0008083c делит (ffff1024 << 8) на интерполированное значение карты, при
-         установленном ROM-бите 0x10 по 0000870e дополнительно нормирует на байт ffff329f (128 -
-         нейтраль поправки) и пишет min(результат, 255) в ffff413e. Байт ffff413e - расчётная
-         нагрузка J1979 mode 01 PID 0x04 (A*100/255 %): диспетчер 00035856 отдаёт его одним
-         байтом в ветке 4, он же ложится в стоп-кадр рядом с оборотами и температурой ОЖ.
-         Значение работает делителем, а не множителем: перед делением первый операнд охраняется
-         от нуля (000808f8 tst r0,r0 -> выход 0xff). Геометрия снята с машинерии: обёртка
-         000263f4 возвращает *(short *)(база + 0x1e) - ровно 16 двухбайтовых элементов, ядро
-         00026a64 даёт индекс b >> 4 и 4 бита дроби. Шкала x*0.000488 взята из каталога, а не из
-         кода, отсюда scale_conf = candidate.
+         Уровень семантики: candidate. Блокирующее условие: В blind-артефакт листинг пути ядра
+         00026a64 обрывается на 00026aa2 сразу после чтения двух соседних слов. Отсутствуют
+         последующая арифметика, сведение ветви 00026a9a и возврат результата в r0. Кроме того,
+         вход r5 имеет диапазон 0x0000..0xff00, поэтому достижимы обе ветви обёртки 000263f4:
+         путь через неполное ядро при r5 < 0xf000 и прямое чтение последнего элемента при r5 >=
+         0xf000. Связь значения r0 на 000808da со всей заявленной интерполяцией по машинному
+         свидетельству не замкнута.
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="2D" name="Calculated Load Reference - 100% point (0x1491A)"
-           category="Load (traced)" storagetype="uint16" storageaddress="0x1491A" sizex="16"
-           endian="big">
+           category="Load (traced) (candidate)" storagetype="uint16" storageaddress="0x1491A"
+           sizex="16" endian="big">
       <scaling units="мс BFS [cand]" expression="x*0.000488" to_byte="x/0.000488" format="0.000"
                fineincrement="0.001" coarseincrement="0.01"/>
       <table type="Static X Axis" name="Raw input (step 4096)" sizex="16">
@@ -198,21 +258,32 @@
       </table>
     </table>
 
-    <!-- 0x14E52  16 uint16  карта [code]; вход 0x263F4 (implicit, ядро 0x26A64)
+    <!-- 0x14E52  16 uint16  карта [candidate]; вход 0x263F4 (implicit, ядро 0x26A64)
          аксессор 0x64A1C; операнд r4: pool
          шкала x/65536 доля Q16 (0..1) [code]
-         Выход K подставляется в new = (target*K + prev*(0x10000-K)) >> 16, где target =
-         clamp(ffff19c6 + ffff2408 + ffff2410, <= 0x7fff), а состояние фильтра - ffff199e (RW).
-         Дополнение до 0x10000 и сдвиг на 16 задают единицу и шкалу арифметически, без каталога.
-         Значения дампа десятичные, не шестнадцатеричные: аннотация листинга сайта даёт 00014e52
-         [=1f401f40], то есть 0x1f40 = 8000, откуда K = 0.1221, а не 0.5. Фильтрованная величина
-         уходит в кольцо транспортной задержки и служит знаменателем двух отношений,
-         нормированных в 0..255 (ffff186c, ffff1864). Физическая величина фильтруемого сигнала и
-         байта оси ffff11b3 не установлена.
+         Уровень семантики: candidate. Блокирующее условие: Полный code-трейс не подтверждён по
+         blind-артефакт. Листинг ядра 00026a64 обрывается сразу после чтений ячеек
+         00026aa0/00026aa2 и не показывает вычисление и возврат r0 для ветви param_2 < 0xf000.
+         Кроме того, заявленная формула выдаётся за окончательное y, хотя после смешивания код
+         выполняет ветвь 00064a74..00064a9a: если усечённый результат меньше текущего значения и
+         совпал с предыдущим состоянием, он увеличивается на 1. Поэтому ни источник raw на всех
+         ветвях, ни указанная точная семантика результата независимо не доказаны. Уровень шкалы:
+         code. Шкала: x/65536; обратное кодирование: x*65536; единицы: доля Q16 (0..1). Трейс
+         шкалы: 00064a32 загружает базу целевой карты 00014e52, 00064a40 вызывает ее 1D-обертку
+         000263f4. Вход индекса ограничен беззнаковым байтом, сдвинутым на 8; ветвь обертки при
+         значении >= 0xf000 возвращает последний uint16-элемент карты, а ветвь ядра читает
+         соседние uint16-элементы на 00026aa0/00026aa2. Результат карты возвращается в r0, на
+         00064a44 расширяется как uint16 в r2 и на 00064a4a сохраняется в RAM ffff1608. Тот же
+         r2 без преобразования копируется в r5 на 00064a6c и используется внутри 00064a1c как
+         коэффициент: 00064a6e вычисляет current*raw; 00064a70/00064a74 строят 0x10000; 00064a76
+         вычисляет 0x10000-raw; 00064a7a вычисляет previous*(0x10000-raw); 00064a7e складывает
+         произведения; итоговое выражение функции сдвигается вправо на 16. Поэтому вклад current
+         равен raw/65536, а вклад previous равен 1-raw/65536. Диапазон raw после extu.w равен
+         0..65535, то есть физический коэффициент равен 0..65535/65536.
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="2D" name="Filter Weight - new-sample share Q16 (0x14E52)"
-           category="Filters (traced)" storagetype="uint16" storageaddress="0x14E52" sizex="16"
-           endian="big">
+           category="Filters (traced) (candidate)" storagetype="uint16" storageaddress="0x14E52"
+           sizex="16" endian="big">
       <scaling units="доля Q16 (0..1)" expression="x/65536" to_byte="x*65536" format="0.0000"
                fineincrement="0.001" coarseincrement="0.01"/>
       <table type="Static X Axis" name="Raw input (step 4096)" sizex="16">
@@ -3199,13 +3270,49 @@
       </table>
     </table>
 
+    <!-- 0x12E1A  16 uint8  карта [code]; вход 0x26388 (implicit, ядро 0x26A84)
+         аксессор 0x793D2; операнд r4: pool
+         шкала x raw
+         Интерполируемая 1D-таблица из 16 элементов uint8 по беззнаковому байтовому входу
+         ffff106f. Для входа >=0xf0 выбирается последний элемент; иначе результат линейно
+         интерполируется между соседними элементами. Полученный байт без арифметического
+         преобразования сохраняется в ffff351b и копируется потребителем 000c5558 в ffff3af5.
+         Судьба результата: consumer. Цель результата: 000c5558 (R ffff351b, W ffff3af5).
+         Машинный трейс: 000793ea: r4=00012e1a; 000793ec и delay slot 000793f4: байт из ffff106f
+         расширяется нулями в r5; 000793f2: вызов 00026388. Обёртка для входа >=0xf0 возвращает
+         последний элемент base+0x0f, иначе передаёт управление ядру 00026a84; ветвь
+         00026aaa..00026ab2 читает соседние элементы через mov.b и расширяет их нулями, затем
+         00026ab4 передаёт y0/y1 и Q0.16-долю в finisher 00026740. Finisher выполняет
+         беззнаковую линейную интерполяцию с результатом между y0 и y1. 000793f6 переносит r0 в
+         r2 без арифметики; 00079400 записывает младший байт в ffff351b. В 000c5558 выражение
+         *(ffff3ab5+0x40)=*(ffff28f8+0x0c23) напрямую копирует байт ffff351b в ffff3af5.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Interpolated State Byte - raw u8 (0x12E1A)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12E1A" sizex="16" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
+        <data>0</data><data>16</data><data>32</data><data>48</data>
+        <data>64</data><data>80</data><data>96</data><data>112</data>
+        <data>128</data><data>144</data><data>160</data><data>176</data>
+        <data>192</data><data>208</data><data>224</data><data>240</data>
+      </table>
+    </table>
+
     <!-- 0x11ECE  ось 16 точек uint8, rpm [code]
-         ось оборотов аксессора 0x4bbee; читается кодом
+         Уровень шкалы: code. Шкала: x*4; обратное кодирование: x/4; единицы: отсчёты RAM
+         ffff11bc. Трейс шкалы: 00011ece (16 значений uint8, 8..148) -> сайт 0004e250: адрес оси
+         передан через r5; 0004e24a читает mov.w из 0xffff11bc, 0004e252 выполняет extu.w в r7
+         -> wrapper 00026230 вызывает ядро поиска 000269c4 для этой оси -> 000269c4 читает
+         каждую точку как uint8, вычисляет uint8(x)*4, сравнивает с беззнаковым uint16-входом и
+         на промежуточной ветви использует (input-uint8(x)*4)*0x10000; равенство и обе граничные
+         ветви не вводят иной шкалы.
          Разбор и метод - defs/JK03A.notes.md -->
     <table type="2D" name="Engine Speed Axis [RPM] (ref)" category="Reference Axes"
            storagetype="uint8" storageaddress="0x11ECE" sizex="16" endian="big">
-      <scaling units="RPM" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
-               coarseincrement="200"/>
+      <scaling units="отсчёты RAM ffff11bc" expression="x*4" to_byte="x/4" format="0"
+               fineincrement="50" coarseincrement="200"/>
       <table type="Static X Axis" name="Index" sizex="16">
         <data>0</data><data>1</data><data>2</data><data>3</data>
         <data>4</data><data>5</data><data>6</data><data>7</data>

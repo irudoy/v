@@ -1,5 +1,6 @@
 import itertools
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -12,6 +13,137 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools" / "sweep"))
 
 import build_artifacts  # noqa: E402
+
+
+class FakeRecord(dict):
+    def data(self):
+        return dict(self)
+
+
+class FakeResult:
+    def __init__(self, rows):
+        self.rows = [row if isinstance(row, FakeRecord) else FakeRecord(row) for row in rows]
+
+    def __iter__(self):
+        return iter(self.rows)
+
+    def single(self):
+        return self.rows[0]
+
+
+class AxisContextSession:
+    def __init__(self, rows):
+        self.rows = rows
+        self.parameters = None
+
+    def run(self, query, **parameters):
+        if query != build_artifacts.AXIS_CONTEXTS:
+            raise AssertionError(f"неожиданный запрос: {query}")
+        self.parameters = parameters
+        return FakeResult(self.rows)
+
+
+class ArtifactImage:
+    data = b""
+
+    def table(self, addr, _width, _height, _storagetype):
+        return [[int(addr, 16)]]
+
+
+class AxisBuildSession:
+    def __init__(self, reverse=False):
+        map_rows = [
+            {
+                "addr": "00001010", "family": "explicit", "dims": 1,
+                "width": 2, "height": 0, "storagetype": "uint8",
+                "vmin": 3, "vmax": 4, "values_hash": "map-b",
+                "via": ["00003020", "00003010"],
+                "kernel": ["00004020", "00004010"],
+                "axis_x": ["00002000"], "axis_y": [],
+            },
+            {
+                "addr": "00001000", "family": "explicit", "dims": 2,
+                "width": 2, "height": 2, "storagetype": "uint8",
+                "vmin": 1, "vmax": 2, "values_hash": "map-a",
+                "via": ["00003010"], "kernel": ["00004010"],
+                "axis_x": ["00002000"], "axis_y": ["00002010"],
+            },
+        ]
+        axis_rows = [
+            {
+                "addr": "00002010", "len": 2, "storagetype": "uint8",
+                "values": [1, 2], "monotonic": True,
+            },
+            {
+                "addr": "00002000", "len": 2, "storagetype": "uint16",
+                "values": [10, 20], "monotonic": True,
+            },
+        ]
+        site_rows = [
+            {
+                "accessor": "00005010", "name": "second", "size": 20,
+                "tbl": "00001010", "callsite": "00005014", "r4": "00001010",
+                "r5": "00002000", "r6": "", "kind": "pool", "kind5": "pool",
+                "kind6": "", "verdict": "df_only",
+            },
+            {
+                "accessor": "00005000", "name": "first", "size": 18,
+                "tbl": "00001000", "callsite": "00005004", "r4": "00001000",
+                "r5": "00002000", "r6": "00002010", "kind": "pool",
+                "kind5": "pool", "kind6": "pool", "verdict": "df_only",
+            },
+        ]
+        if reverse:
+            map_rows.reverse()
+            axis_rows.reverse()
+            site_rows.reverse()
+            for row in map_rows:
+                for field in ("via", "kernel", "axis_x", "axis_y"):
+                    row[field] = list(reversed(row[field]))
+        self.rows = {
+            build_artifacts.MAP_FACTS: map_rows,
+            build_artifacts.AXIS_FACTS: axis_rows,
+            build_artifacts.SITES: site_rows,
+            build_artifacts.KERNELS: [],
+            build_artifacts.CALLERS: [],
+            build_artifacts.USES: [],
+            build_artifacts.WRITE_REGS: [],
+            build_artifacts.FUNC_REGS: [],
+            build_artifacts.CONSUMERS: [],
+            build_artifacts.CALLED: [],
+            build_artifacts.CONTRACTS: [],
+            build_artifacts.MAP_ANSWERS: [
+                {
+                    "addr": addr, "semantics": "", "note": "", "role": "",
+                    "units": "", "scale_expr": "", "to_byte": "",
+                    "confidence": "", "evidence": "", "scale_evidence": "",
+                }
+                for addr in ("00001010", "00001000")
+            ],
+            build_artifacts.AXIS_ANSWERS: [
+                {
+                    "addr": addr, "kind": "", "units": "", "scale_expr": "",
+                    "to_byte": "", "note": "", "confidence": "",
+                    "scale_evidence": "",
+                }
+                for addr in ("00002010", "00002000")
+            ],
+            build_artifacts.FUNC_ANSWERS: [],
+        }
+        self.calls = []
+
+    def run(self, query, **parameters):
+        self.calls.append((query, parameters))
+        if query == build_artifacts.ALL_REGS:
+            return FakeResult([{"addrs": []}])
+        if query == build_artifacts.CONSUMERS_OF:
+            return FakeResult([])
+        if query not in self.rows:
+            raise AssertionError(f"неожиданный запрос: {query}")
+        return FakeResult(self.rows[query])
+
+    def parameters_for(self, query):
+        return [parameters for called, parameters in self.calls if called == query]
 
 
 class StableArtifactOrderTest(unittest.TestCase):
@@ -53,6 +185,115 @@ class StableArtifactOrderTest(unittest.TestCase):
         expected = [rows[2], rows[1], rows[0]]
         for permutation in itertools.permutations(rows):
             self.assertEqual(build_artifacts.stable_callees(permutation), expected)
+
+
+class AxisFocusTest(unittest.TestCase):
+    def test_jobs_aggregate_every_related_map_and_accessor_stably(self):
+        rows = [
+            {"axis": "00011ece", "map": "00009b1a", "accessor": "000493e8"},
+            {"axis": "00011ece", "map": "00009a1a", "accessor": "0004e1c0"},
+            {"axis": "00011ece", "map": "0000991a", "accessor": "0004e1c0"},
+            {"axis": "00011ece", "map": "00009a1a", "accessor": "000493e8"},
+            {"axis": "00011ece", "map": "00009a1a", "accessor": "000493e8"},
+        ]
+        expected_context = {
+            "key": "00011ece",
+            "maps": ["0000991a", "00009a1a", "00009b1a"],
+            "accessors": ["000493e8", "0004e1c0"],
+        }
+
+        for permutation in itertools.permutations(rows):
+            session = AxisContextSession(permutation)
+            jobs = build_artifacts.axis_focus_jobs(session, "JK03A", ["00011ece"])
+            self.assertEqual(
+                jobs,
+                [(expected_context, None, "00011ece", "axis-00011ece.md")],
+            )
+            self.assertEqual(
+                session.parameters,
+                {"rom": "JK03A", "addrs": ["00011ece"]},
+            )
+
+    def test_focus_file_is_normalized_deduplicated_and_sorted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "axes.txt"
+            path.write_text("00002000\n00001000\n00002000\n", encoding="utf-8")
+
+            self.assertEqual(
+                build_artifacts.focus_addrs(["00003000", "00001000"], path),
+                ["00001000", "00002000", "00003000"],
+            )
+
+    def test_axis_build_is_complete_and_deterministic(self):
+        comp = {
+            "key": "00002000",
+            "maps": ["00001010", "00001000"],
+            "accessors": ["00005010", "00005000"],
+        }
+        catalog = {"a2l": {}, "vendor": [], "consts": []}
+        outputs = []
+        sessions = [AxisBuildSession(), AxisBuildSession(reverse=True)]
+
+        for session in sessions:
+            text, leaks = build_artifacts.build(
+                session,
+                ArtifactImage(),
+                "JK03A",
+                comp,
+                "/path/that/does/not/exist",
+                catalog,
+                8,
+                focus_axis="00002000",
+            )
+            self.assertEqual(leaks, [])
+            outputs.append(text)
+            self.assertEqual(
+                session.parameters_for(build_artifacts.MAP_FACTS)[0]["addrs"],
+                ["00001000", "00001010"],
+            )
+            self.assertEqual(
+                session.parameters_for(build_artifacts.KERNELS)[0]["maps"],
+                ["00001000", "00001010"],
+            )
+            self.assertEqual(
+                session.parameters_for(build_artifacts.SITES)[0]["addrs"],
+                ["00005000", "00005010"],
+            )
+
+        self.assertEqual(outputs[0], outputs[1])
+        text = outputs[0]
+        self.assertIn("# Ось `00002000` (JK03A)", text)
+        self.assertIn("`00002000` – ЦЕЛЕВАЯ", text)
+        self.assertLess(text.index("### Карта `00001000`"),
+                        text.index("### Карта `00001010`"))
+        for addr in comp["maps"] + comp["accessors"]:
+            self.assertIn(f"`{addr}`", text)
+
+
+class BlindLeakageTest(unittest.TestCase):
+    def test_map_and_axis_to_byte_are_hidden_answers_and_audited(self):
+        self.assertIn("m.to_byte AS to_byte", build_artifacts.MAP_ANSWERS)
+        self.assertIn("a.to_byte AS to_byte", build_artifacts.AXIS_ANSWERS)
+        self.assertIn("to_byte", build_artifacts.ANSWER_TEXT)
+        answers = [
+            {"addr": "00001000", "to_byte": "x/2"},
+            {"addr": "00002000", "to_byte": "x"},
+        ]
+        text = "short answers: `x/2` and standalone `x`"
+
+        self.assertEqual(
+            build_artifacts.verify_blind(text, answers, set()),
+            [
+                "00001000.to_byte = 'x/2'",
+                "00002000.to_byte = 'x'",
+            ],
+        )
+        self.assertFalse(
+            build_artifacts.answer_occurs("scale_expr and x/20", "x/2", "to_byte")
+        )
+        self.assertFalse(
+            build_artifacts.answer_occurs("scale_expr and x/20", "x", "to_byte")
+        )
 
 
 class SiteListingTest(unittest.TestCase):

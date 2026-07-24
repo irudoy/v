@@ -340,29 +340,29 @@ RETURN 'Слой измерен: :Axis без значений' AS metric,
        '0 из 229' AS anchor,
        '0, промах чтения останавливает загрузку' AS gate
 UNION ALL
-MATCH (m:Map {rom:$rom}) WHERE m.confidence = 'code'
+MATCH (m:Map {rom:$rom}) WHERE m.confidence IN ['code', 'silicon']
 WITH count(CASE WHEN coalesce(m.evidence, '') = '' THEN 1 END) AS debt,
      count(*) AS total
-RETURN 'Провенанс Map.confidence code' AS metric,
+RETURN 'Провенанс Map.confidence code/silicon' AS metric,
        toString(debt) + '/' + toString(total) AS fact,
-       '54/54 до backfill' AS anchor,
-       '0 без evidence перед strict gate' AS gate
+       '0 после backfill; frozen долг 52/52' AS anchor,
+       '0 без evidence' AS gate
 UNION ALL
-MATCH (m:Map {rom:$rom}) WHERE m.scale_conf = 'code'
+MATCH (m:Map {rom:$rom}) WHERE m.scale_conf IN ['code', 'silicon']
 WITH count(CASE WHEN coalesce(m.scale_evidence, '') = '' THEN 1 END) AS debt,
      count(*) AS total
-RETURN 'Провенанс Map.scale_conf code' AS metric,
+RETURN 'Провенанс Map.scale_conf code/silicon' AS metric,
        toString(debt) + '/' + toString(total) AS fact,
-       '20/20 до backfill' AS anchor,
-       '0 без scale_evidence перед strict gate' AS gate
+       '0 после backfill; frozen долг 20/20' AS anchor,
+       '0 без scale_evidence' AS gate
 UNION ALL
-MATCH (a:Axis {rom:$rom}) WHERE a.scale_conf = 'code'
+MATCH (a:Axis {rom:$rom}) WHERE a.scale_conf IN ['code', 'silicon']
 WITH count(CASE WHEN coalesce(a.scale_evidence, '') = '' THEN 1 END) AS debt,
      count(*) AS total
-RETURN 'Провенанс Axis.scale_conf code' AS metric,
+RETURN 'Провенанс Axis.scale_conf code/silicon' AS metric,
        toString(debt) + '/' + toString(total) AS fact,
-       '9/9 до backfill' AS anchor,
-       '0 без scale_evidence перед strict gate' AS gate
+       '0 после backfill; frozen долг 6/6' AS anchor,
+       '0 без scale_evidence' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 OPTIONAL MATCH (m)-[x:MATCHES]->(:A2LEntry)
@@ -396,7 +396,7 @@ RETURN labels(source) AS source_label, source.addr AS source,
        labels(target) AS target_label, target.addr AS target,
        properties(e) AS edge;
 
-// Состав проекции по типам заявок. Сумма для JK03A после ingest: 671.
+// Состав проекции по типам заявок. Сумма для JK03A после ingest: 2712.
 MATCH (source)-[e:RESTS_ON]->(target)
 WHERE source.rom = $rom AND target.rom = $rom
 RETURN labels(source) AS source_label, e.source_prop AS source_prop,

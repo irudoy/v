@@ -1167,3 +1167,11 @@ order = 207
 format = "0"
 fine = 1
 coarse = 16
+
+[table.00012e1a]
+name = "Interpolated State Byte - raw u8 (0x12E1A)"
+category = "Internal Calculations (traced)"
+order = 208
+format = "0"
+fine = 1
+coarse = 16

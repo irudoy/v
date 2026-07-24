@@ -140,13 +140,13 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |
 | `memgraph/load_maps.py` | калибровочный слой: переписи резолвера + реестр входов `defs/<rom>.interp.csv` + ручной слой карт `defs/<rom>.findings.csv` и осей `defs/<rom>.axes.csv` + значения из образа (Stage 4) -> `:Interp`/`:Map`/`:Axis` + `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
 | `memgraph/load_a2l.py` | `:A2LEntry` из `A2L.xml` – rom-независимый эталон семейства HR (карты, скаляры, switch'и), без адресов | Memgraph |
-| `memgraph/load_code.py` | claim-specific слой: `funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv` -> свойства заявок и точная проекция `:RESTS_ON`; запускается последним после владельцев `Func`/`Reg`/`Map`/`Axis` | Memgraph |
-| `memgraph/ingest.py` | полный per-ROM ingest: offline preflight, затем `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` не меняет граф | Memgraph |
+| `memgraph/load_code.py` | claim-specific слой: `funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv` -> свойства заявок и точная проекция `:RESTS_ON`; `code`/`silicon` требует factual evidence для Func/Reg/Map/Axis; запускается последним после владельцев targets | Memgraph |
+| `memgraph/ingest.py` | полный per-ROM ingest: offline preflight, затем `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` не меняет граф, `--strict` дополнительно требует effective confidence и grounding | Memgraph |
 | `memgraph/backup.py` | завершающий шаг агентского workflow: проверка 24-часового интервала, SMB mount, `DUMP DATABASE` + native snapshot + manifest и SHA-256 непосредственно на NAS | NAS |
 | `memgraph/provenance_report.py` | read-only exact audit, weakest path и reverse impact по полной claim identity; `--strict` включает effective/grounding gates | stdout |
 | `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны и отдельные структурные ворота. Claim-specific exact audit выполняет `provenance_report.py`. Параметр `$rom` | (в git) |
 | `maps/build_tracker.py` | ledger `defs/<rom>.maps.csv` – проекция каталога из графа (worklist разбора) | (в git) |
-| `sweep/build_artifacts.py` | артефакт на компоненту графа "аксессор -> карта" для массового прохода (контракт – `map-sweep.md`): форма, значения, оси, псевдокод и листинги (ядро без разметки функции – листингом), операнды переписи, каталоги. Разметку компоненты не несёт – ослепление белым списком, проверяется каждым прогоном. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N]` | `comp-<addr>.md` |
+| `sweep/build_artifacts.py` | blind-артефакты для массового прохода: компонента `comp-<addr>.md`, frozen-карта `map-<addr>.md` или общая ось `axis-<addr>.md`; Axis-focus агрегирует все связанные карты и аксессоры. Форма, значения, оси, псевдокод, листинги, операнды переписи и каталоги видимы; текущие ответы скрыты белым списком и проверяются каждым прогоном. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
 | `mapkit/rom.py` | образ: реестр `rom-images/roms.csv` со сверкой sha256, чтение массивов, их измерение. Библиотека – её зовут `load_maps.py` и скрипты пакета | (в git) |
 | `mapkit/emit_def.py` | деф `defs/<rom>.xml` – проекция графа плюс презентационный слой `defs/<rom>.overrides.toml` (контракт – `map-flag-pipeline.md`, раздел 9) | (git, по мере коммита P5) |
 | `mapkit/show.py` | карта либо ось в физических единицах: граф даёт форму, оси и шкалу, образ – значения. Аргументы: `[<rom>] <addr>...` | stdout |
@@ -189,7 +189,8 @@ for K in 26944 26984 26b84 26a5c 26a60 26a64 26a74 26a7c 26a80 26a84 26a88 26740
   H -readOnly -postScript ResolveAccessors.java "$D" $K
 done
 # 3. Полный per-ROM ingest. Preflight проверяет заголовки, значения, внешние ключи,
-#    цензы, ROM/SHA и evidence до первого удаления узлов.
+#    цензы, ROM/SHA, разрешимость evidence и наличие factual evidence у каждого
+#    Func/Reg/Map/Axis свойства уровня code/silicon до первого удаления узлов.
 #    Порядок: graph -> xrefs -> maps -> code -> exact audit.
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A --export-dir "$D"
 # Только preflight и точные команды, без изменения графа:
@@ -252,8 +253,11 @@ uv run --no-project python tools/mapkit/ptrscan.py 11ebe 11ece      # кто у�
 
 `load_code.py` идёт последним из владельцев provenance targets: предыдущие загрузчики удаляют
 свои узлы вместе с исходящими и входящими `:RESTS_ON`. Он читает четыре канонических CSV,
-сверяет наличие узлов и claim-specific свойства, строит 2159 claim-specific рёбер JK03A и
-выполняет exact expected-vs-actual audit в одной транзакции. Read-only проверка и
+сверяет наличие узлов и claim-specific свойства, требует factual evidence у каждого свойства
+уровня `code`/`silicon`, строит 2712 claim-specific рёбер JK03A и выполняет exact
+expected-vs-actual audit в одной транзакции. Локальные source gates проходят при нулевом долге
+Map/Axis. Глобальный `--strict` является отдельной диагностикой: текущий JK03A содержит 114
+заявок с effective confidence ниже declared и 13 заявок без grounding. Read-only проверка и
 интерактивные запросы:
 
 ```bash

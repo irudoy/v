@@ -96,5 +96,79 @@ class SourceProjectionTest(unittest.TestCase):
             )
 
 
+class SourceEvidenceGateTest(unittest.TestCase):
+    @staticmethod
+    def map_row(**updates):
+        row = {
+            "addr": "00000010",
+            "confidence": "",
+            "evidence": "",
+            "scale_conf": "",
+            "scale_evidence": "",
+        }
+        row.update(updates)
+        return row
+
+    @staticmethod
+    def axis_row(**updates):
+        row = {
+            "addr": "00000020",
+            "scale_conf": "",
+            "scale_evidence": "",
+        }
+        row.update(updates)
+        return row
+
+    @staticmethod
+    def claims(label, row):
+        return load_code.source_claims("TEST", [(label, [row], "fixture.csv")])
+
+    def test_map_semantics_code_without_evidence_is_rejected(self):
+        with self.assertRaisesRegex(load_code.LoadError, "Map:00000010.confidence"):
+            self.claims("Map", self.map_row(confidence="code"))
+
+    def test_map_scale_silicon_without_evidence_is_rejected(self):
+        with self.assertRaisesRegex(load_code.LoadError, "Map:00000010.scale_conf"):
+            self.claims("Map", self.map_row(scale_conf="silicon"))
+
+    def test_axis_scale_code_without_evidence_is_rejected(self):
+        with self.assertRaisesRegex(load_code.LoadError, "Axis:00000020.scale_conf"):
+            self.claims("Axis", self.axis_row(scale_conf="code"))
+
+    def test_process_metadata_is_not_factual_evidence(self):
+        with self.assertRaisesRegex(load_code.LoadError, "без свидетельства"):
+            self.claims(
+                "Map",
+                self.map_row(
+                    confidence="code", evidence="wave:backfill;arg:00000010"
+                ),
+            )
+
+    def test_factual_terminal_passes_local_gate(self):
+        claims = self.claims(
+            "Axis",
+            self.axis_row(scale_conf="code", scale_evidence="site:00000030"),
+        )
+        self.assertEqual(len(claims), 1)
+        self.assertTrue(claims[0]["strict"])
+
+    def test_candidate_without_evidence_is_allowed(self):
+        claims = self.claims(
+            "Map",
+            self.map_row(confidence="candidate", scale_conf="candidate"),
+        )
+        self.assertEqual(len(claims), 2)
+
+    def test_semantics_and_scale_evidence_are_independent(self):
+        row = self.map_row(
+            confidence="code",
+            evidence="site:00000030",
+            scale_conf="code",
+            scale_evidence="arg:scale-only",
+        )
+        with self.assertRaisesRegex(load_code.LoadError, "Map:00000010.scale_conf"):
+            self.claims("Map", row)
+
+
 if __name__ == "__main__":
     unittest.main()

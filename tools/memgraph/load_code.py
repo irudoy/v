@@ -61,10 +61,9 @@ SOURCE_COLUMNS = {
     "Func": (("confidence", "evidence", True),
              ("contract_conf", "contract_evidence", True)),
     "Reg": (("confidence", "evidence", True),),
-    # До ручного backfill map/scale gates работают в отчётном режиме.
-    "Map": (("confidence", "evidence", False),
-            ("scale_conf", "scale_evidence", False)),
-    "Axis": (("scale_conf", "scale_evidence", False),),
+    "Map": (("confidence", "evidence", True),
+            ("scale_conf", "scale_evidence", True)),
+    "Axis": (("scale_conf", "scale_evidence", True),),
 }
 
 

@@ -24,14 +24,15 @@
 компоненты - младший адрес её аксессора; component_id от MAGE между прогонами не
 стабилен и именем файла служить не может.
 
-Артефакт строится либо на компоненту (заявка на каждую её карту), либо на карту
-(`--focus-map`): во втором случае свидетельство сужается до аксессоров целевой карты, и
-заявка требуется только по ней. Сужение состав карт не меняет - соседи остаются
-значениями и геометрией, - а снимает код, который к целевой карте отношения не имеет.
+Артефакт строится на компоненту (заявка на каждую её карту), карту (`--focus-map`) или
+ось (`--focus-axis`). Фокус карты сужает свидетельство до аксессоров целевой карты; фокус
+оси агрегирует все карты с этой осью и все аксессоры этих карт. В обоих случаях заявка
+требуется только по цели, а соседние карты и оси остаются контекстом.
 
 Запуск: uv run --no-project --with neo4j python tools/sweep/build_artifacts.py \
           <out_dir> [--rom JK03A] [--accessor <addr>] [--min-maps N] [--max-maps N] \
-          [--focus-map <addr> | --focus-maps-file <path>] [--export-dir <dir>]
+          [--focus-map <addr> | --focus-maps-file <path> | \
+           --focus-axis <addr> | --focus-axes-file <path>] [--export-dir <dir>]
 """
 import argparse
 import os
@@ -49,7 +50,7 @@ EXPORT = os.path.expanduser("~/tools/ghidra-projects/export-{rom}")
 # Ниже - RETURN запросов о картах и осях компоненты. Он и есть белый список: разметка не
 # покидает базу, а не отфильтровывается после выборки. Свойства, которых здесь нет
 # (semantics, role, units, scale_expr, to_byte, scale_conf, confidence, evidence, note у
-# :Map; kind, units, scale_expr, confidence, note у :Axis), - заявка агента.
+# :Map; kind, units, scale_expr, to_byte, confidence, note у :Axis), - заявка агента.
 MAP_FACTS = """
 MATCH (m:Map {rom:$rom}) WHERE m.addr IN $addrs
 OPTIONAL MATCH (m)-[:VIA]->(w:Interp {rom:$rom})
@@ -76,14 +77,16 @@ ORDER BY addr
 MAP_ANSWERS = """
 MATCH (m:Map {rom:$rom}) WHERE m.addr IN $addrs
 RETURN m.addr AS addr, m.semantics AS semantics, m.note AS note, m.role AS role,
-       m.units AS units, m.scale_expr AS scale_expr, m.confidence AS confidence,
-       m.evidence AS evidence, m.scale_evidence AS scale_evidence
+       m.units AS units, m.scale_expr AS scale_expr, m.to_byte AS to_byte,
+       m.confidence AS confidence, m.evidence AS evidence,
+       m.scale_evidence AS scale_evidence
 """
 
 AXIS_ANSWERS = """
 MATCH (a:Axis {rom:$rom}) WHERE a.addr IN $addrs
 RETURN a.addr AS addr, a.kind AS kind, a.units AS units, a.scale_expr AS scale_expr,
-       a.note AS note, a.confidence AS confidence, a.scale_evidence AS scale_evidence
+       a.to_byte AS to_byte, a.note AS note, a.confidence AS confidence,
+       a.scale_evidence AS scale_evidence
 """
 
 # Разметка функций - тоже ответ: в semantics слоя кода копится знание проекта со ссылками
@@ -107,6 +110,18 @@ WITH component_id, collect(node) AS nodes
 RETURN component_id,
        [n IN nodes WHERE 'Map'  IN labels(n) | n.addr] AS maps,
        [n IN nodes WHERE 'Func' IN labels(n) | n.addr] AS accessors
+"""
+
+# Фокус оси не выбирает одну произвольную карту-представителя: общая ось может связывать
+# несколько карт и компонент. Контекстом служат ВСЕ карты с прямым ребром к оси и ВСЕ
+# аксессоры этих карт.
+# OPTIONAL MATCH сохраняет ось и карту без аксессора, чтобы неполнота графа не скрывала цель.
+AXIS_CONTEXTS = """
+MATCH (a:Axis {rom:$rom}) WHERE a.addr IN $addrs
+OPTIONAL MATCH (m:Map {rom:$rom})-[:AXIS_X|AXIS_Y]->(a)
+OPTIONAL MATCH (f:Func {rom:$rom})-[:ACCESSES]->(m)
+RETURN a.addr AS axis, m.addr AS map, f.addr AS accessor
+ORDER BY axis, map, accessor
 """
 
 # Фокус: аксессоры, читающие одну заданную карту. Компонента задаёт СОСТАВ карт, но
@@ -409,6 +424,56 @@ def literal(image, addr):
 def stable_addrs(values):
     """Канонический порядок множества адресов."""
     return sorted(set(values))
+
+
+def stable_map_facts(rows):
+    """Канонический порядок карт и их множественных связей."""
+    out = []
+    for row in rows:
+        fact = dict(row)
+        for field in ("via", "kernel", "axis_x", "axis_y"):
+            fact[field] = stable_addrs(fact.get(field) or [])
+        out.append(fact)
+    return sorted(out, key=lambda row: row["addr"])
+
+
+def axis_contexts(session, rom, addrs):
+    """Полный детерминированный контекст каждой целевой оси.
+
+    Карты выбираются прямыми рёбрами AXIS_X/AXIS_Y, аксессоры - прямыми ACCESSES к
+    выбранным картам. Множества агрегируются по оси, поэтому общая ось не сводится к
+    контексту одной произвольно выбранной карты.
+    """
+    wanted = stable_addrs(addrs)
+    grouped = {}
+    for row in session.run(AXIS_CONTEXTS, rom=rom, addrs=wanted):
+        axis = row["axis"]
+        context = grouped.setdefault(axis, {"maps": set(), "accessors": set()})
+        if row["map"]:
+            context["maps"].add(row["map"])
+        if row["accessor"]:
+            context["accessors"].add(row["accessor"])
+    return {
+        axis: {
+            "key": axis,
+            "maps": stable_addrs(context["maps"]),
+            "accessors": stable_addrs(context["accessors"]),
+        }
+        for axis, context in sorted(grouped.items())
+    }
+
+
+def axis_focus_jobs(session, rom, addrs):
+    """Задания axis-<addr>.md с полным контекстом либо точная ошибка состава."""
+    wanted = stable_addrs(addrs)
+    contexts = axis_contexts(session, rom, wanted)
+    missing = sorted(set(wanted) - set(contexts))
+    if missing:
+        raise SystemExit(f"осей нет в графе: {', '.join(missing)}")
+    unlinked = [axis for axis in wanted if not contexts[axis]["maps"]]
+    if unlinked:
+        raise SystemExit(f"оси не связаны с картами: {', '.join(unlinked)}")
+    return [(contexts[axis], None, axis, f"axis-{axis}.md") for axis in wanted]
 
 
 def kinds_by_addr(rows):
@@ -797,24 +862,42 @@ def render_pool(A, image, text, regs, addr, all_regs):
 
 
 def render(comp, rom, data, export_dir):
-    """Артефакт компоненты - markdown: единственный вход агента прогона."""
+    """Артефакт компоненты либо целевого фокуса - единственный вход агента прогона."""
     L = []
     A = L.append
     focus = data.get("focus")
-    if focus:
+    focus_axis = data.get("focus_axis")
+    if focus_axis:
+        A(f"# Ось `{focus_axis}` ({rom})")
+    elif focus:
         A(f"# Карта `{focus}` компоненты `{comp['key']}` ({rom})")
     else:
         A(f"# Компонента `{comp['key']}` ({rom})")
     A("")
-    A(f"Карт в компоненте: {len(comp['maps'])}. Аксессоров: {len(comp['accessors'])}.")
-    A("")
-    A("Компонента связного графа \"аксессор -> карта\": ни одна её карта не читается "
-      "аксессором извне, и этим задан состав карт. Границей компоненты ограничен состав, "
-      "а не свидетельство: физическую величину карты задают машинерия интерполяции "
-      "(обёртка, ядро, finisher) и то, что делает с выходом потребитель RAM. Оба лежат "
-      "за компонентой и оба в артефакте есть - разделы \"Машинерия интерполяции\" и "
-      "\"Потребители выхода\". Трейс, остановленный на записи в RAM, до семантики не "
-      "дошёл: `code` требует довести его до потребителя.")
+    if focus_axis:
+        A(f"Карт, непосредственно связанных с осью: {len(comp['maps'])}. "
+          f"Аксессоров этих карт: {len(comp['accessors'])}.")
+        A("")
+        A(f"Контекст целевой оси `{focus_axis}` агрегирован по прямым рёбрам "
+          f"`AXIS_X`/`AXIS_Y`: включены ВСЕ связанные карты "
+          f"({', '.join(f'`{m}`' for m in comp['maps'])}) и ВСЕ их аксессоры "
+          f"({', '.join(f'`{a}`' for a in comp['accessors']) or 'нет'}). Общая ось может "
+          f"обслуживать карты разных компонент, поэтому одна карта-представитель границу "
+          f"контекста не задаёт.")
+        A("")
+        A("Карты и аксессоры служат контекстом трейса входа оси. Машинерия интерполяции "
+          "показывает, как точки оси индексируют ячейку, а RAM и код аксессоров - откуда "
+          "приходит текущее значение и в каких единицах оно представлено.")
+    else:
+        A(f"Карт в компоненте: {len(comp['maps'])}. Аксессоров: {len(comp['accessors'])}.")
+        A("")
+        A("Компонента связного графа \"аксессор -> карта\": ни одна её карта не читается "
+          "аксессором извне, и этим задан состав карт. Границей компоненты ограничен состав, "
+          "а не свидетельство: физическую величину карты задают машинерия интерполяции "
+          "(обёртка, ядро, finisher) и то, что делает с выходом потребитель RAM. Оба лежат "
+          "за компонентой и оба в артефакте есть - разделы \"Машинерия интерполяции\" и "
+          "\"Потребители выхода\". Трейс, остановленный на записи в RAM, до семантики не "
+          "дошёл: `code` требует довести его до потребителя.")
     A("")
     if focus:
         A(f"Целевая карта - `{focus}`, и свидетельство сужено до её окрестности: разделы "
@@ -830,6 +913,11 @@ def render(comp, rom, data, export_dir):
           f"(`semantics`, `role`, `units`, `scale_expr`, `confidence`) РОВНО по карте "
           f"`{focus}` и по её осям. Соседние карты - контекст: они показывают, что ещё "
           f"читает общий аксессор, и требуют различать, чей трейс перед тобой.")
+    elif focus_axis:
+        A("Задача - раздел 6 контракта `tools/map-sweep.md`: вернуть заявку "
+          f"(`kind`, `units`, `scale_expr`, `to_byte`, `scale_conf`, `scale_evidence`, "
+          f"`note`) РОВНО по оси `{focus_axis}`. Связанные карты, их прочие оси и "
+          f"аксессоры - контекст, а не дополнительные цели заявки.")
     else:
         A("Задача - раздел 6 контракта `tools/map-sweep.md`: вернуть заявку на каждую карту "
           "(`semantics`, `role`, `units`, `scale_expr`, `confidence`) и на каждую ось.")
@@ -871,7 +959,8 @@ def render(comp, rom, data, export_dir):
         A("| Ось | Точек | Элемент | Возрастает | Значения |")
         A("|---|---|---|---|---|")
         for a in data["axes"]:
-            A(f"| `{a['addr']}` | {a['len']} | {a['storagetype']} "
+            tag = " – ЦЕЛЕВАЯ" if a["addr"] == focus_axis else ""
+            A(f"| `{a['addr']}`{tag} | {a['len']} | {a['storagetype']} "
               f"| {'да' if a['monotonic'] else 'НЕТ'} "
               f"| {', '.join(str(v) for v in a['values'])} |")
         A("")
@@ -886,6 +975,11 @@ def render(comp, rom, data, export_dir):
     if focus:
         A(f"Аксессоры целевой карты `{focus}`. Сайты вызова у каждого показаны все, "
           f"включая ведущие в соседние карты: по ним и различается, чей трейс.")
+        A("")
+    elif focus_axis:
+        A(f"Все аксессоры карт, непосредственно связанных с целевой осью `{focus_axis}`. "
+          f"Сайты каждого аксессора показаны полностью: в колонках `r5`/`r6` видно, "
+          f"какой вызов использует целевую ось, а какой относится к соседнему контексту.")
         A("")
     for f_addr in data["acc"]:
         sites = [s for s in data["sites"] if s["accessor"] == f_addr]
@@ -1028,7 +1122,7 @@ def render(comp, rom, data, export_dir):
     if not data["consumers"]:
         regs = data["write_regs"]
         A("Потребителей нет: раздел пуст не по недосмотру сборки, а по состоянию графа, и "
-          "это факт о компоненте, а не пробел артефакта.")
+          "это факт о данном наборе аксессоров, а не пробел артефакта.")
         A("")
         if data["sinks"]:
             named = ", ".join("`%s`" % s for s in data["sinks"])
@@ -1209,8 +1303,19 @@ def render(comp, rom, data, export_dir):
 # словарь замкнут и короток ('table', 'code', 'deg', 'rpm'), подстрока совпала бы
 # случайно, и сверка давала бы шум в обе стороны. Их не пускает белый список RETURN, а не
 # эта проверка - у двух механизмов разные роли.
-ANSWER_TEXT = ("semantics", "note", "scale_expr", "evidence", "contract_evidence",
-               "scale_evidence")
+ANSWER_TEXT = ("semantics", "note", "scale_expr", "to_byte", "evidence",
+               "contract_evidence", "scale_evidence")
+
+
+def answer_occurs(text, value, field):
+    """Совпадение ответа в тексте без ложных подстрок у короткого to_byte."""
+    if field == "to_byte" and len(value.strip()) < 4:
+        # `x`, `x/2`, `x/4` - реальные обратные шкалы. Обычный поиск подстроки нашёл бы
+        # `x` в `scale_expr` и `x/2` в `x/20`; границы выражения сохраняют аудит и убирают
+        # эти заведомые ложные совпадения.
+        pattern = rf"(?<![\w.+*/%-]){re.escape(value)}(?![\w.+*/%-])"
+        return re.search(pattern, text) is not None
+    return value in text
 
 
 def catalog_strings(data):
@@ -1243,42 +1348,58 @@ def verify_blind(text, answers, allowed):
     for row in answers:
         for field in ANSWER_TEXT:
             value = row.get(field)
-            if not value or not isinstance(value, str) or len(value.strip()) < 4:
+            if not value or not isinstance(value, str):
                 continue
-            if value not in text:
+            if len(value.strip()) < 4 and field != "to_byte":
                 continue
-            # Оправдание засчитывается подстрокой, как и сама утечка: шкала `x-128` стоит
-            # в каталожной строке `Degrees (x-128)*0.5`, и её появление объяснено тем же
-            # независимым источником, что и совпадение дословное. Сверять утечку
-            # подстрокой, а источник - полным равенством значит останавливать прогон на
-            # коротких общих значениях, которых у offset-binary шкал большинство.
-            if any(value in a for a in allowed):
+            if not answer_occurs(text, value, field):
+                continue
+            # Оправдание засчитывается тем же видом совпадения, что и сама утечка: шкала
+            # `x-128` стоит в каталожной строке `Degrees (x-128)*0.5`, и её появление
+            # объяснено тем же независимым источником, что и совпадение дословное. Сверять
+            # утечку подстрокой, а источник - полным равенством значит останавливать прогон
+            # на коротких общих значениях, которых у offset-binary шкал большинство.
+            if any(answer_occurs(a, value, field) for a in allowed):
                 continue
             leaks.append(f"{row['addr']}.{field} = {value!r}")
     return leaks
 
 
 def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
-          maxdec=24):
-    # Состав карт задаёт компонента, состав свидетельства - фокус: без фокуса окрестностью
-    # служит вся компонента, с фокусом - аксессоры целевой карты.
+          maxdec=24, focus_axis=None):
+    # Состав карт задаёт компонента либо полный контекст оси, состав свидетельства - фокус:
+    # без фокуса окрестностью служит вся компонента, с фокусом карты - её аксессоры. У оси
+    # comp уже содержит точное объединение всех непосредственно связанных карт и аксессоров.
+    if focus and focus_axis:
+        raise ValueError("фокус карты и оси взаимоисключающие")
     if focus:
         acc = stable_addrs(session.run(FOCUS_ACC, rom=rom, map=focus).single()["accessors"])
         if not acc:
             raise SystemExit(f"карту {focus} не читает ни один аксессор")
     else:
         acc = stable_addrs(comp["accessors"])
-    maps = [r.data() for r in session.run(MAP_FACTS, rom=rom, addrs=comp["maps"])]
+    maps = stable_map_facts(
+        r.data() for r in session.run(MAP_FACTS, rom=rom, addrs=stable_addrs(comp["maps"]))
+    )
     for m in maps:
         m["values"] = read_values(image, m)
     axes = sorted({a for m in maps for a in m["axis_x"] + m["axis_y"]})
-    kernels = [r.data() for r in session.run(KERNELS, rom=rom,
-                                             maps=[focus] if focus else comp["maps"])]
+    if focus_axis and focus_axis not in axes:
+        raise SystemExit(f"ось {focus_axis} не связана с картами контекста")
+    kernels = sorted(
+        (r.data() for r in session.run(KERNELS, rom=rom,
+                                       maps=[focus] if focus else stable_addrs(comp["maps"]))),
+        key=lambda row: row["addr"],
+    )
     data = {
         "maps": maps,
         "focus": focus,
+        "focus_axis": focus_axis,
         "acc": acc,
-        "axes": [r.data() for r in session.run(AXIS_FACTS, rom=rom, addrs=axes)],
+        "axes": sorted(
+            (r.data() for r in session.run(AXIS_FACTS, rom=rom, addrs=axes)),
+            key=lambda row: row["addr"],
+        ),
         "sites": stable_sites([r.data() for r in session.run(SITES, rom=rom, addrs=acc)]),
         "callers": [r.data() for r in session.run(CALLERS, rom=rom, addrs=acc)],
         "uses": [r.data() for r in session.run(USES, rom=rom, addrs=acc)],
@@ -1404,6 +1525,15 @@ def load_catalog(session):
     return {"a2l": a2l, "vendor": vendor, "consts": consts}
 
 
+def focus_addrs(values, path=None):
+    """Адреса из повторяемого флага и файла: нижний регистр, без дублей, стабильно."""
+    out = [value.strip().lower() for value in values if value.strip()]
+    if path:
+        with open(path, encoding="utf-8") as source:
+            out.extend(line.strip().lower() for line in source if line.strip())
+    return stable_addrs(out)
+
+
 def main():
     p = argparse.ArgumentParser(description="Артефакты компонент для sweep (map-sweep.md)")
     p.add_argument("out_dir")
@@ -1415,6 +1545,11 @@ def main():
                         "аксессоров этой карты, файл идёт как map-<addr>.md")
     p.add_argument("--focus-maps-file", default=None,
                    help="то же списком: по адресу карты на строку")
+    p.add_argument("--focus-axis", action="append", default=[],
+                   help="артефакт на ось: полный контекст всех связанных карт и их "
+                        "аксессоров, файл идёт как axis-<addr>.md")
+    p.add_argument("--focus-axes-file", default=None,
+                   help="то же списком: по адресу оси на строку")
     p.add_argument("--min-maps", type=int, default=0)
     p.add_argument("--max-maps", type=int, default=10 ** 6)
     p.add_argument("--max-readers", type=int, default=8,
@@ -1426,6 +1561,10 @@ def main():
     p.add_argument("--export-dir", default=None,
                    help="прогон подготовки: decomp_<addr>.c и listing_<addr>.txt")
     args = p.parse_args()
+    focus_maps = focus_addrs(args.focus_map, args.focus_maps_file)
+    focus_axes = focus_addrs(args.focus_axis, args.focus_axes_file)
+    if focus_maps and focus_axes:
+        p.error("фокус карты и фокус оси взаимоисключающие")
 
     export_dir = args.export_dir or EXPORT.format(rom=args.rom)
     image = romkit.load(args.rom)
@@ -1437,16 +1576,14 @@ def main():
         if not comps:
             sys.exit(f"в графе нет компонент rom={args.rom} - слой строит "
                      f"tools/memgraph/load_maps.py")
-        focus_maps = [m.lower() for m in args.focus_map]
-        if args.focus_maps_file:
-            focus_maps += [ln.strip().lower() for ln in
-                           open(args.focus_maps_file) if ln.strip()]
-        if focus_maps:
+        if focus_axes:
+            jobs = axis_focus_jobs(s, args.rom, focus_axes)
+        elif focus_maps:
             by_map = {m: c for c in comps for m in c["maps"]}
             missed = [m for m in focus_maps if m not in by_map]
             if missed:
                 sys.exit(f"карт нет в графе: {', '.join(sorted(missed))}")
-            jobs = [(by_map[m], m, f"map-{m}.md") for m in focus_maps]
+            jobs = [(by_map[m], m, None, f"map-{m}.md") for m in focus_maps]
         else:
             if args.accessor:
                 want = {a.lower() for a in args.accessor}
@@ -1457,19 +1594,26 @@ def main():
             else:
                 picked = [c for c in comps
                           if args.min_maps <= len(c["maps"]) <= args.max_maps]
-            jobs = [(c, None, f"comp-{c['key']}.md") for c in picked]
+            jobs = [(c, None, None, f"comp-{c['key']}.md") for c in picked]
         catalog = load_catalog(s)
         print(f"компонент в графе: {len(comps)}, артефактов к сборке: {len(jobs)}")
 
         leaked = 0
-        for c, focus, fname in jobs:
-            text, leaks = build(s, image, args.rom, c, export_dir, catalog,
-                                args.max_readers, focus, args.max_consumer_decomp)
+        for c, focus, focus_axis, fname in jobs:
+            text, leaks = build(
+                s, image, args.rom, c, export_dir, catalog, args.max_readers,
+                focus=focus, maxdec=args.max_consumer_decomp, focus_axis=focus_axis,
+            )
             path = os.path.join(args.out_dir, fname)
             with open(path, "w") as f:
                 f.write(text)
-            note = (f"компонента {c['key']}, {len(c['maps'])} карт" if focus
-                    else f"{len(c['maps'])} карт, {len(c['accessors'])} аксессоров")
+            if focus_axis:
+                note = (f"ось {focus_axis}, {len(c['maps'])} карт, "
+                        f"{len(c['accessors'])} аксессоров")
+            elif focus:
+                note = f"компонента {c['key']}, {len(c['maps'])} карт"
+            else:
+                note = f"{len(c['maps'])} карт, {len(c['accessors'])} аксессоров"
             if leaks:
                 leaked += 1
                 print(f"  {os.path.basename(path)}: {note} - ОСЛЕПЛЕНИЕ НАРУШЕНО")
