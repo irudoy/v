@@ -548,3 +548,214 @@ order = 130
 format = "0"
 fine = 1
 coarse = 4
+
+# Операционные имена калибровок прохода 0x11C6D..0x153B8 описывают доказанное
+# арифметическое потребление либо явно отмеченную каталоговую гипотезу. Физические
+# сигналы внутренних расчётов не установлены.
+[table.0001202e]
+name = "Initial Retard Quantity - unresolved mode (0x1202E)"
+category = "Ignition / Transient Correction"
+order = 131
+format = "0"
+fine = 1
+coarse = 4
+
+[table.00012522]
+name = "Positive Difference Coefficient /100 (0x12522)"
+category = "Internal Calculations (traced)"
+order = 132
+format = "0.00"
+fine = 0.01
+coarse = 0.1
+
+[table.00012526]
+name = "Negative Difference Coefficient /100 (0x12526)"
+category = "Internal Calculations (traced)"
+order = 133
+format = "0.00"
+fine = 0.01
+coarse = 0.1
+
+[table.0001292c]
+name = "Local Limit Base Term - raw u8 (0x1292C)"
+category = "Internal Calculations (traced)"
+order = 134
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000153b0]
+name = "Blend Coefficient Step A Q0.16 (0x153B0)"
+category = "Internal Calculations (traced)"
+order = 135
+format = "0.000000"
+fine = 0.0000152587890625
+coarse = 0.001
+
+[table.000153b8]
+name = "Blend Coefficient Step B Q0.16 (0x153B8)"
+category = "Internal Calculations (traced)"
+order = 136
+format = "0.000000"
+fine = 0.0000152587890625
+coarse = 0.001
+
+[table.000141f4]
+name = "MAF Transfer Curve - unresolved channel (0x141F4)"
+category = "Airflow (candidate)"
+order = 137
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00014274]
+name = "MAF Transfer Curve - unresolved channel (0x14274)"
+category = "Airflow (candidate)"
+order = 138
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00011e56]
+name = "Four-Factor Product Multiplier B Q0.8 (0x11E56)"
+category = "Internal Calculations (traced)"
+order = 139
+format = "0.0000"
+fine = 0.00390625
+coarse = 0.0625
+
+[table.00011f12]
+name = "Branching Saturated Calculation Base (0x11F12)"
+category = "Internal Calculations (traced)"
+order = 140
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011f1a]
+name = "Conditional Subtractive Term (0x11F1A)"
+category = "Internal Calculations (traced)"
+order = 141
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011f22]
+name = "Conditional Additive Term (0x11F22)"
+category = "Internal Calculations (traced)"
+order = 142
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011fbe]
+name = "Composite 7-bit Base / Multiplier (0x11FBE)"
+category = "Internal Calculations (traced)"
+order = 143
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011fe6]
+name = "Saturating State-Reduction Step Multiplier (0x11FE6)"
+category = "Internal Calculations (traced)"
+order = 144
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012006]
+name = "Piecewise Clamp y=min(x,224) (0x12006)"
+category = "Internal Calculations (traced)"
+order = 145
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001208e]
+name = "Composite Product Multiplier A - raw u8 (0x1208E)"
+category = "Internal Calculations (traced)"
+order = 146
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012096]
+name = "Composite Product Multiplier B - raw u8 (0x12096)"
+category = "Internal Calculations (traced)"
+order = 147
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000120ce]
+name = "Dual-Lookup Additive Correction (0x120CE)"
+category = "Internal Calculations (traced)"
+order = 148
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001211e]
+name = "Triple-Product Multiplier A - raw u8 (0x1211E)"
+category = "Internal Calculations (traced)"
+order = 149
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012126]
+name = "Local Correction Coefficient /2048 (0x12126)"
+category = "Internal Calculations (traced)"
+order = 150
+format = "0.000000"
+fine = 0.00048828125
+coarse = 0.0078125
+
+[table.0001212e]
+name = "Triple-Product Multiplier B Q0.7 (0x1212E)"
+category = "Internal Calculations (traced)"
+order = 151
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.0001215e]
+name = "Shifted Subtractive Correction - raw u8 (0x1215E)"
+category = "Internal Calculations (traced)"
+order = 152
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012176]
+name = "Negative-Branch Multiplier Source - raw u8 (0x12176)"
+category = "Internal Calculations (traced)"
+order = 153
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001218e]
+name = "Control Selector ffff23ed - raw u8 (0x1218E)"
+category = "Internal Calculations (traced)"
+order = 154
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012196]
+name = "Signed Additive Term A (x-128) (0x12196)"
+category = "Internal Calculations (traced)"
+order = 155
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001219e]
+name = "Signed Additive Term B (x-128) (0x1219E)"
+category = "Internal Calculations (traced)"
+order = 156
+format = "0"
+fine = 1
+coarse = 16
