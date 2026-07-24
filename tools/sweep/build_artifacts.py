@@ -357,6 +357,26 @@ def dumped(export_dir, addr, kind):
         return f.read().rstrip(), path
 
 
+def render_site_listing(A, export_dir, site):
+    """Листинг есть только у карты, пришедшей из переписи с callsite."""
+    callsite = site["callsite"]
+    A(f"##### Сайт `{callsite}` -> карта `{site['tbl']}`")
+    A("")
+    if not callsite:
+        A("Сайт вызова отсутствует: карта добавлена ручным слоем вне переписи "
+          "резолвера, поэтому листинга сайта для неё не существует.")
+    else:
+        text, path = dumped(export_dir, callsite, "listing")
+        if text is None:
+            A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки этот сайт не "
+              f"покрыл.")
+        else:
+            A("```")
+            A(text)
+            A("```")
+    A("")
+
+
 # Вызов, у которого адрес виден прямо в тексте: `FUN_00021bbc` псевдокода и `jsr`-цель
 # листинга (`-> 00021bbc`). Основной канал - ребро :CALLS (запрос CALLED), потому что вызов
 # через регистр адреса в тексте не оставляет; здесь добирается то, чего нет в графе.
@@ -946,17 +966,7 @@ def render(comp, rom, data, export_dir):
         A(f"#### Листинги сайтов `{f_addr}`")
         A("")
         for s in sites:
-            text, path = dumped(export_dir, s["callsite"], "listing")
-            A(f"##### Сайт `{s['callsite']}` -> карта `{s['tbl']}`")
-            A("")
-            if text is None:
-                A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки этот сайт не "
-                  f"покрыл.")
-            else:
-                A("```")
-                A(text)
-                A("```")
-            A("")
+            render_site_listing(A, export_dir, s)
 
     A("## Машинерия интерполяции")
     A("")

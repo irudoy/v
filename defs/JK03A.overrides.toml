@@ -959,3 +959,171 @@ order = 181
 format = "0"
 fine = 1
 coarse = 16
+
+[table.0001296c]
+name = "Shared Saturated Calculation Multiplier - raw u8 (0x1296C)"
+category = "Internal Calculations (traced)"
+order = 182
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000129ca]
+name = "Three-Factor Product Multiplier A - raw u8 (0x129CA)"
+category = "Internal Calculations (traced)"
+order = 183
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a22]
+name = "Paired Product Multiplier A - raw u8 (0x12A22)"
+category = "Internal Calculations (traced)"
+order = 184
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a2a]
+name = "Paired Product Multiplier B - raw u8 (0x12A2A)"
+category = "Internal Calculations (traced)"
+order = 185
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a3a]
+name = "Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)"
+category = "Internal Calculations (candidate)"
+order = 186
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a82]
+name = "Composite Output Coefficient K - raw u8 (0x12A82)"
+category = "Internal Calculations (traced)"
+order = 187
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a9a]
+name = "State Gate Byte Table - raw u8 (0x12A9A)"
+category = "Internal Calculations (traced)"
+order = 188
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012ab2]
+name = "State Transition Initial Value - raw u8 (0x12AB2)"
+category = "Internal Calculations (candidate)"
+order = 189
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012ac2]
+name = "Three-Factor Product Multiplier B - raw u8 (0x12AC2)"
+category = "Internal Calculations (traced)"
+order = 190
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012ada]
+name = "State 2 Hold Gate Table - raw u8 (0x12ADA)"
+category = "Internal Calculations (traced)"
+order = 191
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012afa]
+name = "Bit 7 Hold State Table - raw u8 (0x12AFA)"
+category = "Internal Calculations (traced)"
+order = 192
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012dca]
+name = "Three-Factor Product Multiplier B Q1.7 (0x12DCA)"
+category = "Internal Calculations (traced)"
+order = 193
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012e72]
+name = "Channel 0 Signed Additive Term (x-128) (0x12E72)"
+category = "Internal Calculations (traced)"
+order = 194
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012e7a]
+name = "Channel 1 Composite Addend - raw u8 (0x12E7A)"
+category = "Internal Calculations (traced)"
+order = 195
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012efe]
+name = "Conditional Paired State Value A - raw u8 (0x12EFE)"
+category = "Internal Calculations (candidate)"
+order = 196
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012f06]
+name = "Conditional Paired State Value B - raw u8 (0x12F06)"
+category = "Internal Calculations (traced)"
+order = 197
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001300e]
+name = "Signed Difference Multiplier Q0.6 (0x1300E)"
+category = "Internal Calculations (traced)"
+order = 198
+format = "0.0000"
+fine = 0.015625
+coarse = 0.125
+
+[table.00013016]
+name = "Conditional Signed State Value (x-128) (0x13016)"
+category = "Internal Calculations (traced)"
+order = 199
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00014304]
+name = "State Decrease Limit A - raw u16 (0x14304)"
+category = "Internal Calculations (traced)"
+order = 200
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00014314]
+name = "State Decrease Step B - raw u16 (0x14314)"
+category = "Internal Calculations (traced)"
+order = 201
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00014ed2]
+name = "Composite Product Multiplicand - raw u16 (0x14ED2)"
+category = "Internal Calculations (traced)"
+order = 202
+format = "0"
+fine = 1
+coarse = 256

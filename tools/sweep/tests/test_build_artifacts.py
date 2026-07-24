@@ -55,6 +55,22 @@ class StableArtifactOrderTest(unittest.TestCase):
             self.assertEqual(build_artifacts.stable_callees(permutation), expected)
 
 
+class SiteListingTest(unittest.TestCase):
+    def test_manual_map_without_callsite_is_not_missing_export(self):
+        lines = []
+
+        build_artifacts.render_site_listing(
+            lines.append,
+            "/unused",
+            {"callsite": "", "tbl": "0000a8ea"},
+        )
+
+        text = "\n".join(lines)
+        self.assertIn("Сайт вызова отсутствует", text)
+        self.assertNotIn("Нет файла", text)
+        self.assertNotIn("listing_.txt", text)
+
+
 class OutputAttributionTest(unittest.TestCase):
     def test_comparison_does_not_clear_pool_alias(self):
         syms = {

@@ -2467,6 +2467,592 @@
       </table>
     </table>
 
+    <!-- 0x1296C  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x45758, 0x6E3D8; операнд r4: pool
+         шкала x raw
+         Физическая подсистема и физическая единица не установлены. При RAM[ffff244f]&2 != 0
+         результат lookup непосредственно попадает в ffff1766. При нулевом бите и RAM[ffff16b1]
+         != 0 записывается min(255, floor(lookup*RAM[ffff16ae]/RAM[ffff16b1])); при нулевом
+         делителе записывается 255 независимо от карты. В 0006e490 вычисляется min(65535,
+         (1250*min(4*ROM_u16[000093c8]*RAM_u8[ffff1766], 0x00346dc5)) >> 16) и результат пишется
+         в ffff1300. Заявка опирается на привязанный приемник 0006e3d8/ffff1766, а не на прочие
+         регистры аксессоров. Индекс: x = uint8(RAM[ffff106f]); 8 неявных узлов
+         0,32,64,96,128,160,192,224; линейная интерполяция соседних uint8-ячеек при x < 224, при
+         x >= 224 возвращается ячейка 7. Трасса выхода: 0001296c -> site 0006e3ec -> 00026370 ->
+         (00026a80 -> 00026740 при x < 0xe0; 00012973 при x >= 0xe0) -> site 0006e3f2 -> site
+         0006e440 -> RAM ffff1766 -> {0006e490 -> RAM ffff1300; 0006e442 -> RAM ffff1f86}.
+         Альтернативная ветвь нормализации: 0001296c -> site 0006e40a -> 00026370 -> 00026a80 ->
+         00026740 -> site 0006e41a -> site 0006e426/00021bbc -> site 0006e440 -> RAM ffff1766.
+         Судьба выхода: consumer; цель: RAM ffff1766 at site 0006e440; consumers 0006e490 and
+         0006e442; downstream RAM ffff1300 and ffff1f86.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Shared Saturated Calculation Multiplier - raw u8 (0x1296C)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x1296C" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x129CA  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4AC7A; операнд r4: slice
+         шкала x raw
+         Все 8 ячеек равны 128, поэтому в данном ROM lookup всегда дает raw 128. Это само по
+         себе не доказывает единицу или физический смысл. Код доказывает только совместную
+         арифметику min(65535,(r14*x*y)>>14), где x является выходом 000129ca, а y является
+         выходом 00012dca. Делитель 2^14 нельзя однозначно распределить между шкалами x, y и r14
+         без независимой единицы одного из операндов, поэтому отдельная нетривиальная шкала
+         карты не заявлена. Адресуемой оси у карты нет, индексная сетка неявная. Индекс: 1D-8
+         implicit uint8. Селектор extu.b(r12): r12=0 при uint16(ffff18e2)<0x2000,
+         r12=(uint16(ffff18e2)-0x2000)>>6 при 0x2000<=uint16(ffff18e2)<0x6000, иначе r12=0xff.
+         Обертка 00026370 при селекторе >=0xe0 возвращает cell[7], при меньшем селекторе ядро
+         00026a80 читает соседние uint8-ячейки и finisher 00026740 выполняет беззнаковую
+         линейную интерполяцию. Трасса выхода: 000129ca -> site:0004ae20 -> site:0004ae24 ->
+         00026370 -> 00026a80 -> site:00026aac + site:00026aae -> 00026740 -> site:0004ae28 ->
+         [site:0004ae2c -> ffff179a; site:0004ae2e -> site:0004ae36 -> site:0004ae3e ->
+         site:0004ae42 -> site:0004ae44 -> site:0004ae46 -> site:0004ae48 -> site:0004ae4a ->
+         site:0004ae4e -> site:0004ae52 -> ffff14dc]. Судьба выхода: consumer; цель:
+         site:0004ae36.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Three-Factor Product Multiplier A - raw u8 (0x129CA)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x129CA" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12A22  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x71650; операнд r4: pool
+         шкала x raw
+         Физическая величина и подсистема не устанавливаются: у ffff17c7 нет внешних читателей,
+         а код доказывает локальную мультипликативную роль. Все 8 ячеек равны 128; это не
+         используется как самостоятельное доказательство семантики. Хранимой оси нет. Индекс:
+         1D-8 implicit: z=min(floor(max(u16[ffff4524]-0x4600,0)/160),255). При z<224 индекс
+         i=floor(z/32), доля Q0.16 равна (z mod 32)*2048; при z>=224 выбирается элемент 7.
+         Трасса выхода: 000716f8(map 00012a22) -> 000716fc(lookup) -> 00026370 ->
+         [00026aac/00026aae -> 00026740 при z<224; элемент 7 при z>=224] -> 00071700(r0->r2) ->
+         00071706(ffff17c7) -> 00071708(r2 без знака) -> 00071710(MACL) -> 00071716(r2) ->
+         00071718 -> 0007171c/0007171e -> 00071722(ffff19a4). Судьба выхода: writes; цель:
+         ffff17c7.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Paired Product Multiplier A - raw u8 (0x12A22)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12A22" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12A2A  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x71650; операнд r4: slice
+         шкала x raw
+         Все 8 ячеек текущего образа равны 128, поэтому lookup возвращает байт 128 при любом q.
+         Код доказывает только операционную роль множителя: результат сохраняется в ffff17c8,
+         перечитывается и умножается на выход соседней карты 00012a22; произведение
+         ограничивается снизу значением 0x4000 и записывается в ffff19a4. Физическая подсистема
+         и нетривиальная шкала из артефакта не следуют. Индекс: q = min(max((u8[ffff10f4] -
+         80)*2, 0), 255); при q < 224 обертка 00026370 передает q в ядро линейной интерполяции
+         соседних uint8-ячеек implicit 1D-8, при q >= 224 возвращает ячейку 7. Трасса выхода:
+         000716c0 -> 000716c2 -> 00026370 -> 00026a80 -> 00026aac -> 00026aae -> 00026740 ->
+         000716c4 -> 000716ca -> ffff17c8 -> 0007170c -> 00071710 -> 00071718 -> 00071722 ->
+         ffff19a4 -> 000718d8/00071a10/00071b7e. Судьба выхода: consumer; цель: site:00071710.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Paired Product Multiplier B - raw u8 (0x12A2A)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12A2A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12A3A  8 uint8  карта [candidate]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x3A750; операнд r4: pool
+         шкала x raw
+         Все восемь ячеек равны 0, поэтому результат lookup равен 0 при любом входе, но плоское
+         содержимое само по себе не доказывает назначение. Отдельной калибровочной оси у карты
+         нет. Индекс: implicit u8: x=RAM[ffff1077]; при x<224 i=x>>5 и q=(x&31)*2048 в Q0.16,
+         результат равен линейной интерполяции map[i] и map[i+1]; при x>=224 выбирается map[7].
+         Трасса выхода: 0003a76c[00012a3a->r4] -> 0003a76e/0003a774[RAM ffff1077->u8 r5] ->
+         0003a772[00026370] -> (x<224: 00026a80 -> 00026aac/00026aae -> 00026ab6 -> 00026740;
+         x>=224: map[7] в 00026370) -> 0003a776[r0->r2] -> 0003a780[r2->RAM ffff1f78]; читателей
+         ffff1f78 нет. Судьба выхода: writes; цель: ffff1f78. Граница доказательства: На
+         0003a780 результат только записывается в ffff1f78; в артефакте нет ни одного чтения
+         ffff1f78, а 0003a750 является корнем без вызывающих сайтов. Машинный трейс от приемника
+         до физического потребителя отсутствует, поэтому назначение и физические единицы не
+         устанавливаются.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)"
+           category="Internal Calculations (candidate) (candidate)" storagetype="uint8"
+           storageaddress="0x12A3A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12A82  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x52F00; операнд r4: pool
+         шкала x raw
+         Физическое имя коэффициента не установлено. В условной ветви 000532ae значение K из
+         ffff1601 входит в выражение iVar12 = 256*K - B*(K - 2*C) + 2*(D*E + F), где B = uint8
+         ffff15df, C = int8 ffff1660, D = uint8 ffff193d, E = uint8 ffff1680, F = uint16
+         ffff2ff0. Знак iVar12 и последующее масштабирование определяют записываемый в ffff1600
+         байт с насыщением до 255. Индекс: Неявная равномерная ось 1D-8 по uint8 из ffff106f:
+         точки 0, 32, 64, 96, 128, 160, 192, 224 raw; между соседними ячейками линейная
+         интерполяция, при входе >= 224 выбирается последняя ячейка. Трасса выхода: 00012a82 ->
+         00052f1e -> 00052f28 -> 00026370 -> 00026a80 -> 00026740 -> 00052f30 -> ffff1601 ->
+         000532ae -> ffff1600. Судьба выхода: consumer; цель: 000532ae.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Composite Output Coefficient K - raw u8 (0x12A82)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12A82" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12A9A  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x2C648, 0x38D44; операнд r4: pool, slice
+         шкала x raw
+         Физическая подсистема не установлена. Результат lookup копируется в ffff1fab и
+         ffff24e1; показанный потребитель есть только у ffff24e1. Обновление карты выполняется
+         при сброшенном бите 0x40 в ffff4185, а нулевая проверка сохраненного байта действует
+         при установленном бите, поэтому зависимость проходит через RAM между вызовами. Все
+         восемь ячеек равны 90: штатный lookup всегда дает 90, и целевой дизъюнкт ffff24e1 == 0
+         после записи карты ложен. Это не доказывает недостижимость всей ветви, поскольку у
+         установки бита есть другие дизъюнкты. Нетривиальная шкала не доказана. Индекс: Неявная
+         равномерная 8-точечная ось по x = u8 RAM ffff1077: при x < 224 индекс i = floor(x/32),
+         доля = (x-i*32)/32 и линейная интерполяция map[i]..map[i+1]; при x >= 224 берется
+         map[7]. Трасса выхода: 00012a9a -> 00038e6e -> 00038e74 -> 00026370 -> (00026a80 ->
+         00026740 при x < 224; map[7] при x >= 224) -> 00038e78 -> 00038e84 -> ffff24e1 ->
+         FUN_00038d44: (ffff4185 & 0x40) != 0 && ffff24e1 == 0 -> ffff24bc |= 0x02. Та же копия
+         RAM заполняется путем 00012a9a -> 0002cfc0 -> 0002cfd2 -> ffff24e1. Судьба выхода:
+         inline_comparison; цель: RAM ffff24e1 в FUN_00038d44: inline-проверка ffff24e1 == 0 под
+         селектором ffff4185 & 0x40; истинный дизъюнкт участвует в установке бита 0x02 RAM
+         ffff24bc. Зеркальная запись результата находится в RAM ffff1fab.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="State Gate Byte Table - raw u8 (0x12A9A)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12A9A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12AB2  8 uint8  карта [candidate]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x3BD74; операнд r4: pool
+         шкала x raw
+         Карта имеет восемь uint8-ячеек 30,30,20,14,14,10,10,10. Lookup выполняется в ветви
+         перехода внутреннего состояния 0 -> 1 и записывает результат в привязанный приемник
+         ffff1f81. Другие регистры этого аксессора не использованы для вывода семантики. Явной
+         ROM-оси нет, поэтому axes пуст. Каталожная форма 1D-8 неоднозначна и физическую
+         величину не определяет. Индекс: x=u8[ffff1078]; при x<224: i=floor(x/32),
+         Q0.16-доля=(x%32)*2048, линейная интерполяция table[i]..table[i+1]; при x>=224:
+         table[7]. Трасса выхода: 0003bdc4 -> 0003bdc8 -> 00026370 -> 00026a80 ->
+         00026aac/00026aae -> 00026740 -> 0003bdcc -> 0003bdd4 -> RAM ffff1f81; остановка: сайт
+         чтения ffff1f81 отсутствует. Судьба выхода: writes; цель: RAM ffff1f81, 1 байт, site
+         0003bdd4. Граница доказательства: После байтовой записи site:0003bdd4 в RAM ffff1f81
+         артефакт не содержит машинного сайта чтения или ребра USES этого приемника. Внутри
+         0003bd74 приемник ffff1f81 не читается, внешних потребителей нет, поэтому трейс не
+         достигает функционального потребления величины.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="State Transition Initial Value - raw u8 (0x12AB2)"
+           category="Internal Calculations (candidate) (candidate)" storagetype="uint8"
+           storageaddress="0x12AB2" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12AC2  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x8152A, 0x81D74; операнд r4: slice
+         шкала x raw
+         Оба аксессора выполняют один и тот же путь. Интерполированное значение записывается в
+         ffff183a, читается в том же аксессоре и входит в произведение с двумя другими
+         беззнаковыми байтовыми результатами. Произведение сдвигается вправо суммарно на 14 бит,
+         ограничивается значением 255 и записывается в ffff15c6. Физическое назначение
+         сомножителя кодом не установлено. Сдвиг нормирует совместное произведение, но без
+         независимых шкал остальных сомножителей не задает отдельную физическую шкалу карты,
+         поэтому значения оставлены raw. Индекс: 1D-8 uint8 с неявной равномерной осью: index =
+         min(floor(input/32), 7), fraction = (input mod 32)/32, input = uint8 из ffff10f5; при
+         input >= 224 выбирается ячейка 7, иначе выполняется линейная интерполяция соседних
+         ячеек. Трасса выхода: 00081730(00012ac2) -> 0008173c -> 00026370 -> 00026a80 ->
+         00026aac/00026aae -> 00026740 -> 00081740 -> 00081746 -> ffff183a -> 00081768 ->
+         0008176e -> 00081774 -> 00081778/0008177a/0008177c/0008177e -> 00081780/00081786 ->
+         00081788 -> ffff15c6; парный путь: 00081f62(00012ac2) -> 00081f6e -> 00026370 ->
+         00026a80 -> 00026aac/00026aae -> 00026740 -> 00081f72 -> 00081f78 -> ffff183a ->
+         00081f9a -> 00081fa0 -> 00081fa6 -> 00081faa/00081fac/00081fae/00081fb0 ->
+         00081fb2/00081fb8 -> 00081fbc -> ffff15c6. Судьба выхода: consumer; цель: ffff183a ->
+         0008152a/0008176e; ffff183a -> 00081d74/00081fa0.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Three-Factor Product Multiplier B - raw u8 (0x12AC2)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12AC2" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12ADA  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x38618; операнд r4: pool
+         шкала x raw
+         Физическая подсистема по артефакту не определяется. Все 8 ячеек штатной карты равны 6,
+         поэтому lookup всегда дает ненулевой результат и фактически разрешает проверку
+         u8[ffff1188] > 100. Запись и чтение находятся в 00038618, но относятся к разным
+         состояниям; внешних читателей ffff254b нет. Отдельного массива оси у implicit-карты
+         нет. Индекс: implicit 1D-8: x = u8[ffff107f]; при x < 224 i = floor(x/32), доля Q0.16 q
+         = (x mod 32)*2048, интерполяция map[i]..map[i+1]; при x >= 224 возвращается map[7].
+         Трасса выхода: 00038a68 -> 00038a6e -> 00026370 -> 00026a80 -> 00026740 -> 00038a74 ->
+         ffff254b -> 00038ad6 -> 00038ad8; zero -> 00038ada -> 00038b7c, nonzero -> 00038adc ->
+         00038ae2 -> 00038ae4 -> 00038ae6. Судьба выхода: inline_comparison; цель: RAM ffff254b;
+         consumer 00038618; site:00038ad8.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="State 2 Hold Gate Table - raw u8 (0x12ADA)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12ADA" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12AFA  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x43AEE; операнд r4: pool
+         шкала x raw
+         Физическая подсистема и инженерная единица не устанавливаются: внешних читателей
+         ffff254d нет, а каталожная форма неоднозначна. Все восемь ячеек равны 6, поэтому
+         интерполяция и предельная ветвь возвращают 6; это доказывает ненулевое состояние и
+         прохождение ветви, но не физическое имя величины. Индекс: x=uint8(ffff106f). При x<224:
+         i=floor(x/32), q=(x-32*i)*2048 в Q0.16, интерполируются cell[i] и cell[i+1]. При x>=224
+         возвращается cell[7]. Ось implicit, отдельного Axis claim нет. Трасса выхода: 00012afa
+         -> 00043afe -> 00043b04 -> 00026370 -> 00026a80 -> {00026aac,00026aae} -> 00026740 ->
+         00043b08 -> ffff254d; последующее чтение состояния: ffff254d -> 00043b10 -> 00043b12 ->
+         00043b14 -> 00043b1a. Значение 6 не проходит на нулевую ветвь 00043b18. Судьба выхода:
+         inline_comparison; цель: site:00043b12 via ffff254d.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Bit 7 Hold State Table - raw u8 (0x12AFA)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12AFA" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12DCA  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4AC7A; операнд r4: pool
+         шкала x/128 ratio [code]
+         Физическая подсистема не установлена. Внешних читателей ffff1a1f нет, но значение не
+         является мертвым: оно читается в той же функции на site:0004ae32 и впервые потребляется
+         умножением на site:0004ae36. Соседняя карта 000129ca постоянна и возвращает 128,
+         поэтому выражение с общим сдвигом на 14 дает эффективный коэффициент целевой карты
+         t/128. Численный round-trip: 102/128=0.796875, 0.796875*128=102; 128/128=1, 1*128=128.
+         При t=102..128 и r14<=65535 последующее насыщение uint16 результат не изменяет. Индекс:
+         Неявная 8-точечная uint8-ось. Беззнаковый селектор читается из ffff106f и передается в
+         r5; при значении >=224 обертка возвращает элемент 7, при меньшем значении используется
+         линейная интерполяция ядра 00026a80. Физическая единица селектора не установлена.
+         Трасса выхода: 00012dca -> site:0004ae16 -> site:0004ae18 -> 00026370 -> site:00026aac
+         -> site:00026ab6 -> 00026740 -> site:0004ae1c -> site:0004ae26 -> ffff1a1f ->
+         site:0004ae32 -> site:0004ae36 -> site:0004ae3e -> site:0004ae42 -> site:0004ae44 ->
+         site:0004ae46 -> site:0004ae48 -> site:0004ae52 -> ffff14dc. Судьба выхода: consumer;
+         цель: site:0004ae36.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Three-Factor Product Multiplier B Q1.7 (0x12DCA)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12DCA" sizex="8" endian="big">
+      <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.0000"
+               fineincrement="0.0078125" coarseincrement="0.0625"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12E72  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0xBE5BC; операнд r4: pool
+         шкала x-128 signed_raw_offset [code]
+         Физическая подсистема не установлена. Код доказывает центрированное слагаемое и его
+         путь. До насыщения A = RAM[ffff16e8] + (x-128)*65536; насыщение 0..16777215 относится к
+         составному A и не включено в обратимую шкалу карты. Одна целая единица шкалы равна
+         65536 внутренним отсчетам; round-trip точен: (x-128)+128=x для байтов 0..255. Строка
+         раздела "Привязка выхода" о том, что приемника нет, противоречит листингу: результат r0
+         переносится в r2 по адресу 000be792, пишется в ffff1a7b по адресу 000be798, затем
+         производная величина пишется в ffff1a9c по адресу 000be7b6 и читается 000be814 для
+         param_1=0. Ось 00011bdb относится только к соседним explicit-картам и в заявку не
+         включена. Индекс: 1D-8 implicit: байт RAM ffff106f передается в r5 обертки 00026370;
+         при значении <224 ядро 00026a80 выбирает соседние uint8-ячейки и 00026740 выполняет
+         беззнаковую линейную интерполяцию, при значении >=224 обертка выбирает элемент 7.
+         Трасса выхода: 00012e72 -> 000be786 -> 000be78e/00026370 -> 00026a80 ->
+         00026aac,00026aae -> 00026740 -> 000be792 -> 000be798/ffff1a7b; 000be79e -> 000be7a0 ->
+         000be7a2 -> 000be7a4 -> 000be7a6,000be7aa,000be7ae,000be7ac,000be7b2 ->
+         000be7b6/ffff1a9c -> 000be814(param_1=0). Судьба выхода: consumer; цель: FUN 000be814
+         через RAM ffff1a9c при param_1=0; сырая копия в RAM ffff1a7b.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Channel 0 Signed Additive Term (x-128) (0x12E72)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12E72" sizex="8" endian="big">
+      <scaling units="signed_raw_offset" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12E7A  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0xBE5BC; операнд r4: pool
+         шкала x raw
+         Физическое имя и единица не установлены. Каталог формы 1D-8 неоднозначен. Сдвиг на 16
+         разрядов относится к внутреннему пути потребления; из-за последующего сложения и
+         насыщения он не заявлен как самостоятельная обратимая физическая шкала. Ось 00011bdb
+         принадлежит только соседним explicit-картам и не включена. Сводная строка привязки
+         выхода противоречит машинному листингу: листинг прямо показывает обе записи результата
+         целевой карты. Индекс: 1D implicit, 8 uint8-ячеек; вход x = uint8(RAM[ffff106f]). При x
+         < 0x00e0 ядро 00026a80 интерполирует соседние байты через finisher 00026740; при x >=
+         0x00e0 обертка 00026370 возвращает ячейку 7. Явной ROM-оси нет. Трасса выхода: 00012e7a
+         -> 000be7d6 -> 000be7de -> 00026370 -> 00026a80 -> 00026aac/00026aae -> 00026740 ->
+         000be7e2 -> 000be7e8 -> ffff1a7c; 000be7e2 -> 000be7e6 -> 000be7ea -> 000be7ee ->
+         000be7f0 -> 000be7f2 -> 000be7f4/000be7f6/000be7f8 ->
+         000be7fa/000be7fc/000be7fe/000be800 -> 000be804 -> ffff1aa0. Судьба выхода: writes;
+         цель: RAM ffff1a7c (uint8, интерполированный байт); RAM ffff1aa0 (uint32, результат в
+         диапазоне 0..0x00ffffff).
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Channel 1 Composite Addend - raw u8 (0x12E7A)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12E7A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12EFE  8 uint8  карта [candidate]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0xBDB66, 0xBDC66; операнд r4: phi
+         шкала x raw
+         Физическая величина не установлена. При bit 0 по адресу 00008616, равном 1, оба
+         аксессора выбирают 00012efe; альтернативная ветвь выбирает соседнюю 00012f06. Все
+         восемь ячеек равны 5, поэтому lookup возвращает raw 5 при любом входе, но плоская
+         константа сама по себе семантику не доказывает. Результат также зеркально пишется в RAM
+         ffff25ee на 000bdc3c и 000bde94. Индекс: 1D-8 implicit по uint8-входу u: узлы 0, 32,
+         64, 96, 128, 160, 192, 224; при u < 224 индекс floor(u/32) и линейная
+         Q0.16-интерполяция соседних uint8-ячеек, при u >= 224 возвращается table[7]. Трасса
+         выхода: 00012efe, загрузка указателя 000bdc14 -> вызов wrapper 00026370 на 000bdc2a ->
+         kernel 00026a80 -> чтение uint8-ячеек 00026aac/00026aae -> finisher 00026740 -> r0/r6
+         на 000bdc2e -> RAM ffff1a1e на 000bdc34; 00012efe, загрузка указателя 000bde70 -> вызов
+         wrapper 00026370 на 000bde82 -> kernel 00026a80 -> чтение uint8-ячеек 00026aac/00026aae
+         -> finisher 00026740 -> r0/r5 на 000bde86 -> RAM ffff1a1e на 000bde8c. Оба пути
+         заканчиваются записью без доказанного последующего потребления. Судьба выхода: writes;
+         цель: RAM ffff1a1e, записи 000bdc34 и 000bde8c; зеркало RAM ffff25ee, записи 000bdc3c и
+         000bde94. Граница доказательства: Машинный трейс обрывается на записях RAM ffff1a1e в
+         000bdc34 и 000bde8c. На первом пути 000bdc3a безусловно переходит к 000bdc5c и минует
+         compare в 000bdc52. На втором пути результат в r5 после записи перезаписывается в
+         000bde9c, а return FUN_000bdc66 с lookup не связан. Показанное чтение ffff1a1e внутри
+         FUN_000bdc66 предшествует lookup и не образует внутривызовный downstream-трейс. Внешних
+         читателей ffff1a1e в артефакте нет.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Conditional Paired State Value A - raw u8 (0x12EFE)"
+           category="Internal Calculations (candidate) (candidate)" storagetype="uint8"
+           storageaddress="0x12EFE" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12F06  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0xBDB66, 0xBDC66; операнд r4: phi
+         шкала x raw
+         В ветви обновления 000bdc66 прежние значения ffff1a1e != 0 и ffff25ee == 0 входят в
+         gate перед lookup. Selector выбирает 00012f06 вместо 00012efe; все восемь ячеек
+         00012f06 равны 5, поэтому текущая калибровка возвращает 5 независимо от индекса.
+         Физическая подсистема, единица значения, механизм обнуления ffff25ee и точное изменение
+         ffff2326 не установлены. Индекс: implicit 1D-8 по uint8 ffff106f: линейная интерполяция
+         соседних байтов при x<224, element[7] при x>=224. Трасса выхода: 00012f06 ->
+         000bde7a/000bde82 -> 00026370 -> 00026a80 -> 00026aac/00026aae -> 00026740 -> 000bde86
+         -> 000bde8c/000bde94 -> ffff1a1e/ffff25ee; перед очередной записью прежние значения
+         ffff1a1e и ffff25ee проверяются в gate 000bdc66. Судьба выхода: consumer; цель: RAM
+         ffff1a1e и ffff25ee; функция-потребитель 000bdc66.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Conditional Paired State Value B - raw u8 (0x12F06)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12F06" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1300E  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x522C4; операнд r4: pool
+         шкала x/64 ratio [code]
+         Отдельного массива оси нет. Результат lookup зеркалируется в RAM ffff1ca6 через
+         site:00052328, но у этого RAM-приемника нет внешних читателей; фактический кодовый
+         потребитель того же r6 находится в site:00052338. Для отрицательного произведения
+         site:00052342 прибавляет 63 перед арифметическим сдвигом, поэтому целочисленный
+         результат округляется к нулю. Дальнейшее ограничение и комбинирование видны в
+         псевдокоде, но не входят в обратимую шкалу клетки. Численный round-trip: 6 -> 0.09375
+         -> 6; 32 -> 0.5 -> 32. Физическая подсистема артефактом не определяется. Индекс:
+         implicit 1D-8 по u=uint8[ffff106f]: при u<224 i=floor(u/32), доля=(u%32)/32 и линейная
+         интерполяция map[i]..map[i+1]; при u>=224 выбирается map[7]. Трасса выхода: map
+         0001300e -> site:0005231a -> site:0005231e -> function 00026370 -> (site:00026a80 ->
+         function 00026740 | saturation return in function 00026370) -> site:00052322 (r0->r6)
+         -> [site:00052328 -> RAM ffff1ca6; site:00052338 -> site:00052346 -> function 000224fa
+         -> site:0005234a -> site:0005234c]. Судьба выхода: consumer; цель: site:00052338
+         (FUN_000522c4).
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Signed Difference Multiplier Q0.6 (0x1300E)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x1300E" sizex="8" endian="big">
+      <scaling units="ratio" expression="x/64" to_byte="x*64" format="0.0000"
+               fineincrement="0.015625" coarseincrement="0.125"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x13016  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x763E2; операнд r4: pool
+         шкала x-128 signed_raw_offset [code]
+         Все 8 ячеек равны 128, поэтому lookup дает 128, декодирование дает 0, clamp не меняет
+         результат, а при снятом разрешающем бите записывается тот же 0. Внешних читателей
+         ffff15c8 в артефакте нет; это остается записью, а не доказанной мертвой ветвью.
+         Физическая величина не установлена. Шкала относится к значению до clamp. Численный
+         round-trip пары: 0 -> -128 -> 0; 128 -> 0 -> 128; 255 -> 127 -> 255. Индекс: Неявная
+         равномерная 8-точечная ось. q=min((u16 RAM[ffff1152] / 8),255). При q<224 ядро получает
+         индекс соседних uint8-ячеек пятью сдвигами q вправо и передает их в беззнаковую
+         линейную интерполяцию с Q0.16-долей; при q>=224 обертка возвращает ячейку 7. Бит 0x40
+         RAM[ffff249f] разрешает lookup. Трасса выхода: q<224: 00013016 -> 00076404 -> 00076408
+         -> 00026370 -> 00026a80 -> 00026aac/00026aae -> 00026740 -> 0007640c -> 00076410 ->
+         00076412 -> 00076416/00076422 -> 00076434 -> ffff15c8; q>=224: 00013016+7 -> 00026370
+         -> 0007640c -> 00076410 -> 00076412 -> 00076416/00076422 -> 00076434 -> ffff15c8.
+         Судьба выхода: writes; цель: RAM ffff15c8, byte store site 00076434.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Conditional Signed State Value (x-128) (0x13016)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x13016" sizex="8" endian="big">
+      <scaling units="signed_raw_offset" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x14304  8 uint16  карта [code]; вход 0x263D8 (implicit, ядро 0x26A60)
+         аксессор 0x74E4E; операнд r4: phi
+         шкала x raw
+         Карта выбирается, когда младший байт uVar8 лежит во включительном диапазоне
+         PTR_DAT_00074fb8[1]..PTR_DAT_00074fb8[0]; другая ветвь использует соседнюю 00014314.
+         Результат lookup переносится r0->r6 в 00074f48 и сравнивается с прежним ffff17c0 в
+         00074f70. Внешних читателей ffff17c0 нет, но запись достижима. Физическая величина и
+         единица не установлены. Индекс: 1D-8 implicit uint16; idx=(ffff1210<<7)&0xffff при
+         ffff1210<0x0200, иначе idx=0xffff; 000263d8 возвращает элемент 7 при idx>=0xe000, иначе
+         вызывает 00026a60 и линейный finisher 00026740. Трасса выхода: 00014304 -> 00074e4e ->
+         00074f36 -> 000263d8 -> (00026a60 -> 00026740 при idx < 0000e000; прямой элемент 7 в
+         000263d8 иначе) -> 00074f48 -> 00074f70 -> ffff17c0. Судьба выхода: writes; цель:
+         ffff17c0.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="State Decrease Limit A - raw u16 (0x14304)"
+           category="Internal Calculations (traced)" storagetype="uint16"
+           storageaddress="0x14304" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="256"/>
+      <table type="Static X Axis" name="Raw input (step 8192)" sizex="8">
+        <data>0</data><data>8192</data><data>16384</data><data>24576</data>
+        <data>32768</data><data>40960</data><data>49152</data><data>57344</data>
+      </table>
+    </table>
+
+    <!-- 0x14314  8 uint16  карта [code]; вход 0x263D8 (implicit, ядро 0x26A60)
+         аксессор 0x74E4E; операнд r4: phi
+         шкала x raw
+         Физическая подсистема не установлена. Карта выбирается ветвью с добавлением 0x10 к базе
+         00014304, когда вычисленный 8-битный селектор находится вне диапазона двух байтов по
+         00008ace. Результат lookup не записывается как самостоятельная величина: он
+         потребляется внутри 00074e4e при ограничении нисходящего обновления ffff17c0; внешние
+         читатели производного ffff23fc не используются как свидетельство семантики целевой
+         карты. Явной ROM-оси у карты нет, поэтому axes пуст. Индекс: 1D-8 с неявной осью.
+         Координата r5 формируется как насыщаемое uint16(RAM_ffff1210 << 7): при RAM_ffff1210 >=
+         0x0200 используется 0xffff. При координате < 0xe000 обертка 000263d8 интерполирует
+         соседние uint16 через 00026a60/00026740; иначе возвращает элемент 7 по смещению +0x0e.
+         Трасса выхода: 00014314 -> site:00074f30 -> site:00074f36 -> 000263d8 -> [00026a60 ->
+         00026740 | direct +0x0e return] -> site:00074f48 -> site:00074f6c -> site:00074f70 ->
+         00074e4e -> ffff17c0 -> ffff23fc. Судьба выхода: inline_comparison; цель:
+         site:00074f70.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="State Decrease Step B - raw u16 (0x14314)"
+           category="Internal Calculations (traced)" storagetype="uint16"
+           storageaddress="0x14314" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="256"/>
+      <table type="Static X Axis" name="Raw input (step 8192)" sizex="8">
+        <data>0</data><data>8192</data><data>16384</data><data>24576</data>
+        <data>32768</data><data>40960</data><data>49152</data><data>57344</data>
+      </table>
+    </table>
+
+    <!-- 0x14ED2  8 uint16  карта [code]; вход 0x263D8 (implicit, ядро 0x26A60)
+         аксессор 0x52576; операнд r4: pool
+         шкала x raw
+         Физическая величина, единица и неединичная шкала из кода не следуют. В ffff1652
+         находится уже произведение выходов 00014ed2 и 0000a8ea, поэтому его два читателя не
+         изолируют физический смысл целевой карты. Отдельной ROM-оси у implicit-карты нет.
+         Индекс: implicit 1D-8; q=min(RAM16[ffff1222]*32,65535); при q<57344 выполняется
+         интерполяция через 00026a60 и 00026740, при q>=57344 возвращается map[7]. Трасса
+         выхода: 00014ed2 -> 000525a6 -> 000525aa -> 000263d8 -> 00026a60 -> 00026740 ->
+         000525ae -> 000525b0; произведение -> 000525b6 -> 000525b8 -> 000525ba -> 000525bc ->
+         000525be -> 000525c0 -> 000525c2 -> 000525c4 -> 000525cc -> ffff1652; ffff1652 ->
+         000525d8, 0004e59c. Судьба выхода: consumer; цель: site:000525b0.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Composite Product Multiplicand - raw u16 (0x14ED2)"
+           category="Internal Calculations (traced)" storagetype="uint16"
+           storageaddress="0x14ED2" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="256"/>
+      <table type="Static X Axis" name="Raw input (step 8192)" sizex="8">
+        <data>0</data><data>8192</data><data>16384</data><data>24576</data>
+        <data>32768</data><data>40960</data><data>49152</data><data>57344</data>
+      </table>
+    </table>
+
     <!-- 0x11ECE  ось 16 точек uint8, rpm [code]
          ось оборотов аксессора 0x4bbee; читается кодом
          Разбор и метод - defs/JK03A.notes.md -->
