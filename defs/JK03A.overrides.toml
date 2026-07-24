@@ -1127,3 +1127,43 @@ order = 202
 format = "0"
 fine = 1
 coarse = 256
+
+[table.00015082]
+name = "Rounded UQ0.16 Threshold Coefficient (0x15082)"
+category = "Internal Calculations (traced)"
+order = 203
+format = "0.000000"
+fine = 1.52587890625e-05
+coarse = 0.0009765625
+
+[table.00015330]
+name = "Saturating Internal State Load - raw u16 (0x15330)"
+category = "Internal Calculations (traced)"
+order = 204
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00015630]
+name = "Internal Multiplicand - BFS candidate scale (0x15630)"
+category = "Internal Calculations (traced)"
+order = 205
+format = "0.000000"
+fine = 0.000488
+coarse = 0.062464
+
+[table.00023824]
+name = "Dual-Channel Saturating Addend - raw u16 (0x23824)"
+category = "Internal Calculations (traced)"
+order = 206
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00012026]
+name = "Latched Zero Condition Table - raw u8 (0x12026)"
+category = "Internal Calculations (traced)"
+order = 207
+format = "0"
+fine = 1
+coarse = 16
