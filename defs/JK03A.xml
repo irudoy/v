@@ -1998,6 +1998,475 @@
       </table>
     </table>
 
+    <!-- 0x121A6  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4AFDC; операнд r4: pool
+         шкала x-128 signed_raw_offset [code]
+         Трасса: условный lookup по uint8 ffff11b2 -> x-128 -> ffff1511 -> два насыщаемых
+         расчета ffff1513 и ffff23ee. Неявная 1D-8 сетка имеет узлы 0, 32, ..., 224 и насыщение
+         на элементе 7. Round-trip на достижимом диапазоне точен: 128 -> 0 -> 128; 145 -> 17 ->
+         145. Физическая подсистема и инженерная единица не установлены.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Conditional Signed Additive Term C (x-128) (0x121A6)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x121A6" sizex="8" endian="big">
+      <scaling units="signed_raw_offset" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x121AE  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x51700, 0x5185C; операнд r4: pool
+         шкала x raw
+         Три lookup по uint8 ffff106f формируют g=max(0,8192+(y-64)*uint8[ffff10bf]); g
+         масштабирует результаты соседних lookup перед сдвигом вправо на 13. Все ячейки равны
+         64, поэтому текущий g равен 8192. Результат потребляется в регистрах 00051700 и
+         0005185c; физическая подсистема не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Centered Q13 Multiplier Shaping Curve - raw u8 (0x121AE)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x121AE" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x121C6  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x5185C; операнд r4: slice
+         шкала x raw
+         Lookup по uint8 ffff11b3 записывает байт в ffff1528; чтение на 000519fe включает его
+         вместе с ffff1531 и ffff152b в трехфакторное произведение, нормируемое >>14, насыщаемое
+         до 255 и записываемое в ffff1532. Неявная 1D-8 сетка имеет шаг 32 и terminal element 7
+         при индексе >=224. Физическая величина не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Three-Factor Product Multiplier A - raw u8 (0x121C6)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x121C6" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x121CE  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x51700; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff11b3 записывает M в ffff1529; сохраненная регистровая копия
+         формирует ffff152c=min(255,(M*uint8[ffff152d])>>7). Сдвиг и насыщение принадлежат
+         составному расчету, а не шкале карты. Неявная RAM-ось не создает отдельную Axis row;
+         физическая величина не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Cascaded Product Multiplier A - raw u8 (0x121CE)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x121CE" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x121D6  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x5185C; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff11b3 записывает raw M в ffff152a; тот же M формирует
+         ffff1535=min(255,(M*uint8[ffff1534])>>7). Неявная 1D-8 сетка имеет шаг 32 и terminal
+         element 7 при индексе >=224. Физическая величина не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Cascaded Product Multiplier B - raw u8 (0x121D6)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x121D6" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x121DE  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x5185C; операнд r4: slice
+         шкала x raw
+         При uint8[ffff120c] >= ROM8[000086ad] lookup по min(uint16[ffff1024]>>7,255) обновляет
+         ffff152b; иначе сохраняется прежнее значение. ffff152b входит с ffff1531 и ffff1528 в
+         произведение >>14. Значение карты остается raw; физическая подсистема не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Conditional Three-Factor Product Multiplier - raw u8 (0x121DE)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x121DE" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x121E6  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x51700; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff106f является первым множителем каскада: вместе с центрированным
+         результатом 000121ae формирует ffff152d, после чего 000121ce формирует ffff152c.
+         Нормализации >>13 и >>7 относятся к составным выражениям. Неявная RAM-ось не создает
+         отдельную Axis row; физическая величина не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Cascaded First-Stage Multiplier - raw u8 (0x121E6)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x121E6" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x121EE  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x51A98; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff106f умножается на uint8 ffff1533 и сохраненный промежуточный
+         множитель, затем делится на 0x0640; дальнейшая цепочка пишет шестиканальные
+         uint16-массивы ffff155c и ffff1568. Значение карты остается raw, физическая подсистема
+         не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Per-Channel Product Multiplier - raw u8 (0x121EE)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x121EE" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1220E  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x5185C; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff106f умножается на
+         max(0,8192+(lookup(000121ae)-64)*uint8[ffff10bf]), сдвигается вправо на 13, насыщается
+         до 255 и записывается в ffff1534. Неявная 1D-8 индексация подтверждена; физическая
+         подсистема не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Cascaded Output Multiplier - raw u8 (0x1220E)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x1220E" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x122E2  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x2C626; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff1077 расширяется до uint16 и записывается в ffff1230. Потребители
+         используют ffff1230 как слагаемое насыщаемых сумм и накопителей, операнд равенства и
+         источник байта после локального деления на 4. Все ячейки равны 170; это не
+         устанавливает физическую величину. Неявная RAM-ось не эмитируется отдельно.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Shared Additive Base Term - raw u8 (0x122E2)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x122E2" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12302  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x56BD0; операнд r4: pool
+         шкала x raw
+         Обычная ветвь формирует ffff192e=2*min(lookup+uint8[ffff340c],209). Все ячейки равны
+         133; удвоение и насыщение выполняются после lookup и не являются шкалой карты. Читатель
+         ffff192e и физическая подсистема не установлены.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Offset-Summed State Term - raw u8 (0x12302)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12302" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1230A  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x56BD0; операнд r4: pool
+         шкала x raw
+         Специальная ветвь формирует ffff192e=2*min(lookup,209); значения 160..200 не достигают
+         насыщения. Удвоение выполняется после lookup и не является шкалой карты. Читатель
+         ffff192e и физическая подсистема не установлены.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Conditional State Base Term - raw u8 (0x1230A)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x1230A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12342  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4673C; операнд r4: slice
+         шкала x raw
+         Lookup по uint8 ffff1070 записывается в ffff15b0, представляется как x<<8 и насыщаемо
+         складывается с результатом 0001234a; старший байт суммы пишется в ffff15b1. Прямой
+         приемник ffff15b0 внешних читателей не имеет, но значение продолжает путь в регистрах.
+         Физическая величина не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Saturating Sum Addend A - raw u8 (0x12342)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12342" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1234A  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4673C; операнд r4: slice
+         шкала x raw
+         Lookup по uint8 ffff1070 представляется как x<<8, насыщаемо складывается с результатом
+         00012342 и через ffff15b1 используется в 000474a4 с коэффициентом 2. Несмешанный
+         результат также записывается в ffff15b5. Физическая величина не установлена; неявная
+         RAM-ось отдельно не эмитируется.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Saturating Sum Addend B - raw u8 (0x1234A)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x1234A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12352  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x473AC; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff10f4 записывается в ffff2fc1 и вместе с ffff2fc0 входит в
+         произведения 0005444c и 000474a4 с фиксированными сдвигами и насыщением. Диапазон
+         128..154 не используется для физической идентификации. Значение карты остается raw.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Paired Product Multiplier - raw u8 (0x12352)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12352" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1239A  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4CADC; операнд r4: pool
+         шкала x raw
+         При ffff15d2==0 и signed16 ffff140a<0 lookup умножает -ffff140a; raw-копия находится в
+         ffff15ca, а вычисление использует ее внутренним читателем 0004d0aa. Карта заполнена
+         нулями, но это не доказывает dead control flow. Физическая подсистема не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Negative-Branch Multiplier - raw u8 (0x1239A)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x1239A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x123A2  8 uint8  карта [candidate]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4CADC; операнд r4: slice
+         шкала x raw
+         Код подтверждает lookup и запись raw-байта в ffff15c9. Декомпиляция связывает результат
+         с отрицательным вкладом положительной ветви разности, но машинный листинг участка
+         0004d0ba..0004d0cc отсутствует, а у ffff15c9 нет читателей. Поэтому semantics и
+         confidence остаются candidate; нулевое содержимое не является доказательством.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)"
+           category="Internal Calculations (candidate) (candidate)" storagetype="uint8"
+           storageaddress="0x123A2" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x123E2  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0xA5560; операнд r4: pool
+         шкала x raw
+         Lookup использует q=4*uint8[ffff110e] при значении <64 и q=255 иначе; результат
+         записывается в ffff2ff2. 000a5284 включает этот байт в трехфакторное произведение и
+         насыщаемое 16-битное смешивание. На обходном пути в ffff2ff2 записывается raw 128;
+         физическая величина не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Saturated Blend Product Multiplier - raw u8 (0x123E2)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x123E2" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12422  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x5525A; операнд r4: pool
+         шкала x raw
+         Lookup по преобразованному uint8 ffff106f записывается в ffff15dd, умножается на
+         выбранный ROM8[0000990a] и после ограничения шага и верхнего clamp обновляет ffff15da.
+         Прямой приемник ffff15dd внешних читателей не имеет, но регистровая копия потребляется.
+         Физическая величина не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Rate-Limited State Multiplier - raw u8 (0x12422)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12422" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x1242A  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x526A0; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff106f преобразуется в 64+trunc0((x-64)*uint8[ffff10bf]/128) и
+         масштабирует базу из 00009eda и 00012432 перед записью ffff15de. Операции -64/+64
+         принадлежат потребителю, поэтому карта хранится как raw identity. Значение 64
+         нейтрально; неявная RAM-ось отдельно не эмитируется.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Centered Composite Multiplier Shaping Curve - raw u8 (0x1242A)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x1242A" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12432  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x526A0; операнд r4: slice
+         шкала x/128 ratio [code]
+         Lookup по min(uint16[ffff1222]>>3,255) является Q1.7-множителем первого этапа
+         составного расчета ffff15de. Пара x/128 и x*128 обратима на представимой сетке: 0 -> 0
+         -> 0; 128 -> 1 -> 128; 255 -> 1.9921875 -> 255. Физическая подсистема не установлена;
+         неявная RAM-ось отдельно не эмитируется.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Composite First-Stage Multiplier Q1.7 (0x12432)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12432" sizex="8" endian="big">
+      <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.0000"
+               fineincrement="0.0078125" coarseincrement="0.0625"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12562  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x54EE0; операнд r4: pool
+         шкала x raw
+         Lookup по uint8 ffff106f сохраняется на стеке, беззнаково восстанавливается и
+         последовательно умножается на результаты 00012572 и 00012582; нормировки >>6 и байт
+         ffff10bf формируют первое слагаемое аккумулятора 00054ee0, которое условная ветвь может
+         обнулить. Прямого RAM-приемника нет; физическая подсистема не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Conditional Accumulator Product Coefficient - raw u8 (0x12562)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12562" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x126A0  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4BA48; операнд r4: pool
+         шкала x raw
+         Lookup по clamp(uint16[ffff11bc]-0x20,0,255) записывается в ffff1658; сохраненная копия
+         умножается на ffff1659 от 000126a8 и входит в ограниченный расчет ffff1657. Прямой
+         приемник ffff1658 внешних читателей не имеет, но регистровая копия потребляется.
+         Нулевое содержимое не доказывает dead control flow.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Paired Product Multiplier A - raw u8 (0x126A0)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x126A0" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x126A8  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x4BA48; операнд r4: slice
+         шкала x raw
+         Lookup по min(uint16[ffff1024]>>7,255) записывается в ffff1659, умножается на результат
+         000126a0 и участвует в расчете ffff1657. 0004bb6a вычитает ffff1657>>4 из суммы
+         ffff22f8+ffff22fe и пишет ограниченный байт ffff23c5. Нулевое содержимое не
+         используется как семантическое свидетельство.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Paired Product Multiplier B - raw u8 (0x126A8)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x126A8" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
+    <!-- 0x12868  8 uint8  карта [code]; вход 0x26370 (implicit, ядро 0x26A80)
+         аксессор 0x8152A, 0x81D74; операнд r4: pool
+         шкала x raw
+         Оба аксессора используют старший байт uint16 ffff517c. Lookup записывается в ffff16ca и
+         одновременно умножается на uint8 ffff15be и ffff183a; произведение нормируется >>14,
+         насыщается до 255 и записывается в ffff15c6. Прямой приемник ffff16ca внешних читателей
+         не имеет, но регистровая копия потребляется; физическая подсистема не установлена.
+         Разбор и метод - defs/JK03A.notes.md -->
+    <table type="2D" name="Three-Factor Product Multiplier - raw u8 (0x12868)"
+           category="Internal Calculations (traced)" storagetype="uint8"
+           storageaddress="0x12868" sizex="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
+        <data>0</data><data>32</data><data>64</data><data>96</data>
+        <data>128</data><data>160</data><data>192</data><data>224</data>
+      </table>
+    </table>
+
     <!-- 0x11ECE  ось 16 точек uint8, rpm [code]
          ось оборотов аксессора 0x4bbee; читается кодом
          Разбор и метод - defs/JK03A.notes.md -->

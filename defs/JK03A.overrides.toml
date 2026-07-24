@@ -759,3 +759,203 @@ order = 156
 format = "0"
 fine = 1
 coarse = 16
+
+[table.000121a6]
+name = "Conditional Signed Additive Term C (x-128) (0x121A6)"
+category = "Internal Calculations (traced)"
+order = 157
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121ae]
+name = "Centered Q13 Multiplier Shaping Curve - raw u8 (0x121AE)"
+category = "Internal Calculations (traced)"
+order = 158
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121c6]
+name = "Three-Factor Product Multiplier A - raw u8 (0x121C6)"
+category = "Internal Calculations (traced)"
+order = 159
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121ce]
+name = "Cascaded Product Multiplier A - raw u8 (0x121CE)"
+category = "Internal Calculations (traced)"
+order = 160
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121d6]
+name = "Cascaded Product Multiplier B - raw u8 (0x121D6)"
+category = "Internal Calculations (traced)"
+order = 161
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121de]
+name = "Conditional Three-Factor Product Multiplier - raw u8 (0x121DE)"
+category = "Internal Calculations (traced)"
+order = 162
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121e6]
+name = "Cascaded First-Stage Multiplier - raw u8 (0x121E6)"
+category = "Internal Calculations (traced)"
+order = 163
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000121ee]
+name = "Per-Channel Product Multiplier - raw u8 (0x121EE)"
+category = "Internal Calculations (traced)"
+order = 164
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001220e]
+name = "Cascaded Output Multiplier - raw u8 (0x1220E)"
+category = "Internal Calculations (traced)"
+order = 165
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000122e2]
+name = "Shared Additive Base Term - raw u8 (0x122E2)"
+category = "Internal Calculations (traced)"
+order = 166
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012302]
+name = "Offset-Summed State Term - raw u8 (0x12302)"
+category = "Internal Calculations (traced)"
+order = 167
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001230a]
+name = "Conditional State Base Term - raw u8 (0x1230A)"
+category = "Internal Calculations (traced)"
+order = 168
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012342]
+name = "Saturating Sum Addend A - raw u8 (0x12342)"
+category = "Internal Calculations (traced)"
+order = 169
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001234a]
+name = "Saturating Sum Addend B - raw u8 (0x1234A)"
+category = "Internal Calculations (traced)"
+order = 170
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012352]
+name = "Paired Product Multiplier - raw u8 (0x12352)"
+category = "Internal Calculations (traced)"
+order = 171
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001239a]
+name = "Negative-Branch Multiplier - raw u8 (0x1239A)"
+category = "Internal Calculations (traced)"
+order = 172
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000123a2]
+name = "Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)"
+category = "Internal Calculations (candidate)"
+order = 173
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000123e2]
+name = "Saturated Blend Product Multiplier - raw u8 (0x123E2)"
+category = "Internal Calculations (traced)"
+order = 174
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012422]
+name = "Rate-Limited State Multiplier - raw u8 (0x12422)"
+category = "Internal Calculations (traced)"
+order = 175
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001242a]
+name = "Centered Composite Multiplier Shaping Curve - raw u8 (0x1242A)"
+category = "Internal Calculations (traced)"
+order = 176
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012432]
+name = "Composite First-Stage Multiplier Q1.7 (0x12432)"
+category = "Internal Calculations (traced)"
+order = 177
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012562]
+name = "Conditional Accumulator Product Coefficient - raw u8 (0x12562)"
+category = "Internal Calculations (traced)"
+order = 178
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000126a0]
+name = "Paired Product Multiplier A - raw u8 (0x126A0)"
+category = "Internal Calculations (traced)"
+order = 179
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000126a8]
+name = "Paired Product Multiplier B - raw u8 (0x126A8)"
+category = "Internal Calculations (traced)"
+order = 180
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012868]
+name = "Three-Factor Product Multiplier - raw u8 (0x12868)"
+category = "Internal Calculations (traced)"
+order = 181
+format = "0"
+fine = 1
+coarse = 16
