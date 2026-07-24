@@ -183,3 +183,368 @@ order = 85
 format = "0"
 fine = 1
 coarse = 16
+
+[table.0001198e]
+name = "Signed Weighted Reference Term - raw u8 (0x1198E)"
+category = "Internal Calculations (traced)"
+order = 86
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011e46]
+name = "Composite Product Multiplier A - raw u8 (0x11E46)"
+category = "Internal Calculations (traced)"
+order = 87
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011e5e]
+name = "Composite Product Window Coefficient (0x11E5E)"
+category = "Internal Calculations"
+order = 88
+format = "0.0000"
+fine = 0.00390625
+coarse = 0.0625
+
+# Операционные имена калибровок прохода 0x11E9E..0x12808 описывают только
+# подтверждённую роль значения в коде. Физические имена для них не установлены.
+[table.00011e9e]
+name = "Saturated Difference Minuend - raw u8 (0x11E9E)"
+category = "Internal Calculations (traced)"
+order = 89
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00011f2a]
+name = "Intermediate Coefficient Multiplier - raw u8 (0x11F2A)"
+category = "Internal Calculations (traced)"
+order = 90
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012042]
+name = "Unsigned Product Multiplier - raw u8 (0x12042)"
+category = "Internal Calculations (traced)"
+order = 91
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000120be]
+name = "Constant Output 255 - raw u8 (0x120BE)"
+category = "Unidentified Calibrations"
+order = 92
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000120f6]
+name = "Conditional Parameter High Byte - raw u8 (0x120F6)"
+category = "Internal Calculations"
+order = 93
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012282]
+name = "Conditional Triple-Product Multiplier - raw u8 (0x12282)"
+category = "Internal Calculations"
+order = 94
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000122f2]
+name = "Centered Blend Coefficient Q0.7 (0x122F2)"
+category = "Internal Calculations (traced)"
+order = 95
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.000123c2]
+name = "Four-Factor Product Multiplier - raw u8 (0x123C2)"
+category = "Internal Calculations (traced)"
+order = 96
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000123d2]
+name = "Accumulator Base Term - internal u16 (0x123D2)"
+category = "Internal Calculations (traced)"
+order = 97
+format = "0"
+fine = 256
+coarse = 4096
+
+[table.00012462]
+name = "Linear Transition Target and Upper Clamp (0x12462)"
+category = "Internal Calculations (traced)"
+order = 98
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000124d2]
+name = "Accumulator Additive Correction (0x124D2)"
+category = "Internal Calculations (traced)"
+order = 99
+format = "0"
+fine = 1
+coarse = 16
+
+[table.000124e2]
+name = "Unidentified Output to ffff15f1 - raw u8 (0x124E2)"
+category = "Unidentified Calibrations"
+order = 100
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012704]
+name = "Normalized-Byte Multiplier - raw u8 (0x12704)"
+category = "Internal Calculations (traced)"
+order = 101
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012768]
+name = "Consumer Multiplier Curve - catalog RPM scale (0x12768)"
+category = "Internal Calculations (traced)"
+order = 102
+format = "0.0"
+fine = 12.5
+coarse = 50
+
+[table.00012798]
+name = "Paired Normalization Curve A - catalog RPM scale (0x12798)"
+category = "Internal Calculations (traced)"
+order = 103
+format = "0"
+fine = 25
+coarse = 100
+
+[table.000127d8]
+name = "Paired Normalization Curve B - raw u8 (0x127D8)"
+category = "Internal Calculations (traced)"
+order = 104
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012808]
+name = "Weighted Calculation Multiplier A (0x12808)"
+category = "Internal Calculations (traced)"
+order = 105
+format = "0"
+fine = 2
+coarse = 16
+
+# Операционные имена калибровок прохода 0x11F6A..0x19190 описывают доказанное
+# арифметическое потребление либо явно отмеченную каталоговую гипотезу. Физические
+# сигналы внутренних расчётов не установлены.
+[table.00012930]
+name = "Signed Quotient Numerator Multiplier - raw u8 (0x12930)"
+category = "Internal Calculations (traced)"
+order = 106
+format = "0"
+fine = 1
+coarse = 16
+
+[table.0001298c]
+name = "Conditional Saturating Offset Curve - catalog RPM scale (0x1298C)"
+category = "Internal Calculations (traced)"
+order = 107
+format = "0"
+fine = 25
+coarse = 100
+
+[table.000129e2]
+name = "Normalized Reduction Share A Q0.8 (0x129E2)"
+category = "Internal Calculations (traced)"
+order = 108
+format = "0.0000"
+fine = 0.00390625
+coarse = 0.0625
+
+[table.000129f2]
+name = "Saturating Reduction Addend B - raw u8 (0x129F2)"
+category = "Internal Calculations (traced)"
+order = 109
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012a02]
+name = "Signed Difference Reference Term - raw u8 (0x12A02)"
+category = "Internal Calculations (traced)"
+order = 110
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012c02]
+name = "Internal Product Coefficient Q0.7 (0x12C02)"
+category = "Internal Calculations (traced)"
+order = 111
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012c3a]
+name = "Init-only Constant Output 255 - raw u8 (0x12C3A)"
+category = "Unidentified Calibrations"
+order = 112
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012c56]
+name = "Composite Product Multiplier - raw u8 (0x12C56)"
+category = "Internal Calculations (traced)"
+order = 113
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012d22]
+name = "Batch Scale Multiplier A - raw u8 (0x12D22)"
+category = "Internal Calculations (traced)"
+order = 114
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012d32]
+name = "Batch Scale Multiplier B - raw u8 (0x12D32)"
+category = "Internal Calculations (traced)"
+order = 115
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012d42]
+name = "Batch Scale Multiplier C - raw u8 (0x12D42)"
+category = "Internal Calculations (traced)"
+order = 116
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012d52]
+name = "Batch Scale Multiplier D - raw u8 (0x12D52)"
+category = "Internal Calculations (traced)"
+order = 117
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012d62]
+name = "Batch Scale Multiplier E - raw u8 (0x12D62)"
+category = "Internal Calculations (traced)"
+order = 118
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012d72]
+name = "Input-shaping Coefficient Q0.7 (0x12D72)"
+category = "Internal Calculations (traced)"
+order = 119
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012d8a]
+name = "Additive Initialization Term - raw u8 (0x12D8A)"
+category = "Internal Calculations (traced)"
+order = 120
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00012dd2]
+name = "Composite Correction Multiplier Q0.7 (0x12DD2)"
+category = "Internal Calculations (traced)"
+order = 121
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.0001465a]
+name = "Saturating Pair Base Term - catalog opening-area scale (0x1465A)"
+category = "Internal Calculations (traced)"
+order = 122
+format = "0.0000"
+fine = 0.0008
+coarse = 0.008
+
+[table.00014bfa]
+name = "Minimum-selected Product Multiplier - raw u16 (0x14BFA)"
+category = "Internal Calculations (traced)"
+order = 123
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00014cea]
+name = "Conditional Blend Reference - raw u16 (0x14CEA)"
+category = "Unidentified Calibrations"
+order = 124
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00015022]
+name = "High-range Quotient Divisor - raw u16 (0x15022)"
+category = "Internal Calculations (traced)"
+order = 125
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00015042]
+name = "Low-range Piecewise Source - raw u16 (0x15042)"
+category = "Internal Calculations (traced)"
+order = 126
+format = "0"
+fine = 1
+coarse = 256
+
+[table.00015770]
+name = "Protected Division Denominator - catalog torque-ratio scale (0x15770)"
+category = "Internal Calculations"
+order = 127
+format = "0.000000"
+fine = 0.000976563
+coarse = 0.00976563
+
+[table.00018c96]
+name = "Saturating Pair Base Term - catalog opening-area scale (0x18C96)"
+category = "Internal Calculations (traced)"
+order = 128
+format = "0.0000"
+fine = 0.0008
+coarse = 0.008
+
+[table.00019190]
+name = "Composite Product Multiplier - catalog torque-ratio scale (0x19190)"
+category = "Internal Calculations (traced)"
+order = 129
+format = "0.000000"
+fine = 0.000976563
+coarse = 0.00976563
+
+[table.00011f6a]
+name = "Initial Retard Quantity - unresolved mode (0x11F6A)"
+category = "Ignition / Transient Correction"
+order = 130
+format = "0"
+fine = 1
+coarse = 4
