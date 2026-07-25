@@ -256,9 +256,10 @@ uv run --no-project python tools/mapkit/ptrscan.py 11ebe 11ece      # кто у�
 сверяет наличие узлов и claim-specific свойства, требует factual evidence у каждого свойства
 уровня `code`/`silicon`, строит 2712 claim-specific рёбер JK03A и выполняет exact
 expected-vs-actual audit в одной транзакции. Локальные source gates проходят при нулевом долге
-Map/Axis. Глобальный `--strict` является отдельной диагностикой: текущий JK03A содержит 114
-заявок с effective confidence ниже declared и 13 заявок без grounding. Read-only проверка и
-интерактивные запросы:
+Map/Axis. Глобальный `--strict` также проходит: текущий JK03A содержит 957 source claims,
+2712 ожидаемых рёбер, 802 заявки уровня `code` и 155 уровня `candidate`;
+`effective below declared=0`, `without grounding=0`, 44 циклических SCC и 0
+незаземлённых SCC. Read-only проверка и интерактивные запросы:
 
 ```bash
 uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK03A

@@ -23,7 +23,7 @@ ffff1220,"Побайтовая per-cylinder enable-маска подачи то�
 ffff122a,"Величина воздушно-дроссельного целевого расчёта (множители opening-area) в 000474a4, к которой применяется нижний предел max(uVar4, ffff171a<<3).",,code,writes:000474a4@confidence;threshold:ffff171a@confidence;wave:3a,
 ffff1239,Гейт включения одного из членов суммы в 00054ee0.,bitfield,code,consumer:00054ee0@confidence;wave:2,
 ffff128c,Один из RAM-входов-сенсоров двухканального аксессора-интерполятора 0004bbee (наряду с ffff119c/ffff2466); в 00051a98 byte[ffff128c+off] - поцилиндровая маска AND-условия отсечки топлива.,,code,consumer:0004bbee@confidence;consumer:00051a98@confidence,
-ffff12db,Сумма компенсаций сумматора угла: выход карт 0x11f0a/0x11f12/0x11f1a/0x11f22 по индексу ffff106f.,,code,writes:0004afdc@confidence;indexed_by:ffff106f@confidence,
+ffff12db,Сумма компенсаций сумматора угла: выход карт 0x11f0a/0x11f12/0x11f1a/0x11f22 по индексу ffff106f.,,code,writes:0004afdc@confidence;indexed_by:ffff106f@structural,
 ffff14c8,Селектор варианта 1D-16 в 000c0d90: 0x15b10 против внекомпонентной 0x15ad0.,,code,consumer:000c0d90@confidence;from_map:00015b10@structural;wave:2,
 ffff1511,"Слагаемое суммы угла от базовых mode-selected карт, результат с биасом -0x80.",,code,writes:0004afdc@confidence;indexed_by:ffff11b2@confidence;from_map:00012196@structural,
 ffff1513,"Выход adaptive-learn пути сумматора угла, пишется под гейтом ffff248d бит4; потребитель - learn-рутина 0004e112.",,code,writes:0004afdc@confidence;consumer:0004e112@confidence;selector:ffff248d@confidence,
@@ -79,7 +79,7 @@ ffff24a1,Статусный байт DTC; бит 0x04 - fault монитора �
 ffff24a2,Бит 7 - enable бленд-выхода ffff15eb: при сброшенном бите выход форсится на нейтраль -128.,bitfield,code,consumer:0005594a@confidence;wave:3a,
 ffff24a4,Участвует в гистерезис-компараторах в 00071448 вместе с ffff24a1; роль (вход либо состояние) трейсом не разделена.,bitfield,code,consumer:00071448@confidence;wave:4,
 ffff24a7,Бит 1 - селектор ветви в 000bdb66: rate/const против сравнения с порогом.,bitfield,code,consumer:000bdb66@confidence;wave:3a,
-ffff24a9,Бит 3 - гистерезис по ffff1071 против ROM-калибровки 0x8e03; бит 6 - гейт из чётности результата FUN_000259d0. Обе ветви в 0004d2a6.,bitfield,code,consumer:0004d2a6@confidence;indexed_by:ffff1071@confidence;rom_const:00008e03;wave:2;indexed_by:000259d0@confidence,
+ffff24a9,Бит 3 - гистерезис по ffff1071 против ROM-калибровки 0x8e03; бит 6 - гейт из чётности результата FUN_000259d0. Обе ветви в 0004d2a6.,bitfield,code,consumer:0004d2a6@confidence;indexed_by:ffff1071@confidence;rom_const:00008e03;wave:2;indexed_by:000259d0@structural;site:0004d2fc;site:0004d308,
 ffff24ac,"Бит 6 - one-shot init-latch, гейтящий однократный baseline-lookup карты 0x18766 в 00073824 (test-then-set).",bitfield,code,consumer:00073824@confidence;from_map:00018766@structural;wave:2,"Заявка на бит 4 того же байта (threshold 'clamp сработал') осталась без вердикта - упавший рефьют, уровень candidate."
 ffff24b4,Условие монитора в 00047a56 (компонента rev-лимитера).,bitfield,code,writes:00047a56@confidence;consumer:00047a56@confidence;wave:3b,
 ffff24b8,Бит 2 - init-once защёлка одноразового чтения плоских карт 0x120be/0x12c3a в 0003995a (tst 0x4 / or 0x4).,bitfield,code,consumer:0003995a@confidence;wave:2,

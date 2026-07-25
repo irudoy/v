@@ -887,9 +887,9 @@ Offline preflight и `provenance_report.py audit` считают метрики 
 | Source claims | строгие строки всех четырёх CSV | **957**: Func semantics 232, Func contract 32, Reg 172, Map semantics 379, Map scale 126, Axis scale 16; ручные файлы содержат 261 строку `funcs.csv`, 379 строк `findings.csv` и 22 `axes.csv` | схема разрешима целиком |
 | Проекция evidence | expected против actual по полному ключу ребра | **2712 ожидаемых рёбер `:RESTS_ON`**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | все пять счётчиков равны 0 после ingest |
 | Локальные ворота слоя кода | `code`/`silicon` Func/Reg/Map/Axis без factual evidence | **0**; frozen долг Map semantics 52, Map scale 20 и Axis scale 6 закрыт | 0 |
-| Слабейшее звено | `code`/`silicon`, где effective ниже declared | **114** | диагностика `--strict`; цель 0 |
-| Транзитивный grounding | `code`/`silicon` без терминала, structural-опоры или заземлённого листа | **13** | диагностика `--strict`; цель 0 |
-| Циклы | SCC и незаземлённые SCC | **44 SCC, 6 незаземлённых** | цикл не подтверждает себя |
+| Слабейшее звено | `code`/`silicon`, где effective ниже declared | **0**; все 802 заявки `code` сохраняют declared level | 0 |
+| Транзитивный grounding | `code`/`silicon` без терминала, structural-опоры или заземлённого листа | **0** | 0 |
+| Циклы | SCC и незаземлённые SCC | **44 SCC, 0 незаземлённых** | цикл не подтверждает себя |
 | Evidence backfill Map/Axis | frozen решения по property identity | **78 из 78**: 28 `accept`, 27 `revise`, 23 `downgrade`; итог 55 `code` и 23 `candidate` | unresolved=0, локальный долг=0 |
 | Код ядра в артефакте | ядра без `:Func`, чей листинг несёт артефакт | **6 из 6** | 100% |
 

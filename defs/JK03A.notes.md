@@ -2224,12 +2224,18 @@ plane запрещает изменение адреса и повторно п�
 semantics (290 `code`, 89 `candidate`), 126 Map scale (90 `code`, 36 `candidate`) и 16 Axis
 scale (9 `code`, 7 `candidate`). Долг прежнего слоя `52 + 20 + 6` равен нулю.
 
-Полный ingest создаёт 957 source claims и 2712 рёбер `RESTS_ON`. Exact audit даёт
-`missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0`.
-Effective confidence ниже declared у 114 заявок, без grounding остаются 13, циклических SCC –
-44, незаземлённых SCC – 6. Поэтому локальные Map/Axis source gates проходят, а отдельная
-глобальная диагностика `--strict` не проходит. Тестовые наборы содержат 26 тестов sweep и 47
-тестов Memgraph; все 73 проходят.
+Глобальный strict-разбор сохраняет 957 source claims и 2712 рёбер `RESTS_ON`: 802 заявки
+имеют уровень `code`, 155 – `candidate`. Candidate blockers не повышаются без доказательств;
+зависимости, которым требуется только существование адреса или data-flow, используют
+`@structural`. Функция `0x6205C` понижена до `candidate`: код показывает два порога около
+7300, но не доказывает множитель, потребителя результатов и физическую семантику rev-limit.
+Шесть циклических Func/Reg-компонент получают независимый factual grounding на точных
+instruction sites без разрыва циклов.
+
+Strict ingest и exact audit проходят: `missing=0`, `extra=0`, `duplicate_expected=0`,
+`duplicate_actual=0`, `unresolved=0`, effective confidence ниже declared – 0, заявок без
+grounding – 0, циклических SCC – 44, незаземлённых SCC – 0. Тестовые наборы содержат 26
+тестов sweep и 47 тестов Memgraph; все 73 проходят.
 
 Двойная генерация выпускает 138 карт и две оси-опоры: 115 карт `code`, 23 `candidate`, у
 12 карт шкала не закреплена уровнем `code`. Новая code-таблица `0x12E1A` получает
