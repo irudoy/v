@@ -11,6 +11,10 @@ apply_immo_patch.py -- патч immo-контура "always ID OK" для HR-Э�
          Lock кодируется bit2 (or.b #4, не #2), registered 0xffff41c1 b0, ch1 0xffff41c2 b6,
          Lock 0xffff4201 b2. Локализован реверсом (структурная гомология + counter-пороги
          0x0b/0x20), подтверждён Ghidra listing/декомпиляцией. Обоснование -- immo-always-id-ok.md.
+  JK00D  (SH7058, 1.0 MiB, VQ35HR)  -- близкий структурный порт JK03A: registration имеет
+         тот же размер и те же относительные патч-сайты; Lock кодируется bit3
+         (0xffff43b8), registered 0xffff4374 b0, ch1 0xffff4375 b6. Локализован реверсом
+         и подтверждён Ghidra listing/декомпиляцией. Обоснование -- immo-always-id-ok.md.
 
 Читает сток-образ, применяет латч-патчи NATS-контура ECM и пишет патченый образ ЛОКАЛЬНО.
 
@@ -18,8 +22,8 @@ apply_immo_patch.py -- патч immo-контура "always ID OK" для HR-Э�
 только состояние/репорт immo-контура (registered / Lock / DTC). Итоговый эффект на старт
 без married BCM определяется handshake'ом BCM-стороны и проверяется на стенде.
 
-Checksum НЕ пересчитывается -- образ не для прошивки. Для первой стендовой заливки checksum
-корректирует KESS V2 при записи; независимая локализация хранимого слова отложена.
+Checksum НЕ пересчитывается -- образ не для прошивки. Перед записью требуется отдельно
+локализовать и проверить checksum-схему целевого ROM либо доказать коррекцию выбранным флешером.
 
 Идемпотентно: original-байты верифицируются перед записью; повторный прогон на уже патченом
 образе -- ошибка верификации (защита от двойного применения).
@@ -112,6 +116,35 @@ ROMS = {
              "(reset-путь не сбрасывает 0xffff41c2 bit6)"),
         ],
     },
+    "JK00D": {
+        "stock": (
+            "1JK00D_8MFK36N15-20260726-013734/"
+            "1JK00D_8MFK36N15-20260726-013734.bin"
+        ),
+        "core": [
+            (0x092488, b"\xcf\x08", b"\x00\x09",
+             "L1  Lock-suppress    immo_lock_setter FUN_000923e4: or.b #8,@(r0,gbr) -> nop  "
+             "(0xffff43b8 bit3 'Lock' не выставляется; за counter-гейтом порога 0x20; delay-slot "
+             "безусл. bra 0x9248e цел, clear-путь 0x9248c and.b #247 не тронут)"),
+            (0x0989EA, b"\x89\x09", b"\x00\x09",
+             "L2  registered-force immo_registration FUN_00098908: bt 0x98a00 (skip set) -> nop "
+             "(всегда fall-through в set-путь or.b #1 @0x989fa -> 0xffff4374 bit0 'registered' "
+             "липнет в 1; set-путь идемпотентен по tst #1; counter<0x0b гейт)"),
+        ],
+        "l2b": [
+            (0x098976, b"\xcd\xfe", b"\x00\x09",
+             "L2b reset-clear-neuter immo_registration FUN_00098908: and.b #254,@(r0,gbr) -> nop "
+             "(reset-путь больше не сбрасывает 0xffff4374 bit0)"),
+        ],
+        "esc": [
+            (0x0989BE, b"\x8d\x08", b"\x00\x09",
+             "L2' reg-force ch1    immo_registration FUN_00098908: bt/s 0x989d2 -> nop "
+             "(force set-путь or.b #64 @0x989d0 -> 0xffff4375 bit6)"),
+            (0x098972, b"\xcd\xbf", b"\x00\x09",
+             "L2b' reset-clear ch1 immo_registration FUN_00098908: and.b #191,@(r0,gbr) -> nop "
+             "(reset-путь не сбрасывает 0xffff4375 bit6)"),
+        ],
+    },
 }
 
 
@@ -140,13 +173,13 @@ def apply(patches, rom, verify_only=False):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Патч immo 'always ID OK' (1ND0A / JK78C)")
+    ap = argparse.ArgumentParser(description="Патч immo 'always ID OK' для поддерживаемых HR ROM")
     ap.add_argument("--rom", choices=sorted(ROMS), default="1ND0A",
                     help="целевой образ (по умолчанию 1ND0A)")
     ap.add_argument("--with-l2b", action="store_true",
                     help="добавить L2b (снять reset-clear registered)")
     ap.add_argument("--with-esc", action="store_true",
-                    help="добавить эскалацию 2-го канала (ch1); для JK78C -- L2'/L2b'")
+                    help="добавить эскалацию 2-го канала (ch1), если она поддерживается ROM")
     ap.add_argument("--out", default=None,
                     help="путь выходного образа (по умолчанию рядом со стоком)")
     ap.add_argument("--verify-only", action="store_true",

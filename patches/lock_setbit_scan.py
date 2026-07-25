@@ -16,7 +16,7 @@
   mov.b Rm,@Rn         -- абсолютный указатель (литерал == lock)
 Для mov.b-store провенанс r0 из old-байта трекается как (and_acc, or_acc) поверх @(disp,gbr).
 
-Результат (эталонные ROM проекта): по всем трём -- ровно 1 setter Lock-бита (L1), 0 mov.b
+Результат (эталонные ROM проекта): по всем четырём -- ровно 1 setter Lock-бита (L1), 0 mov.b
 поднимающих из 0, 0 неразрешённых у immo-базы, 0 записей через прямой литерал. Прогон из
 корня репозитория или откуда угодно (пути -- относительно этого файла)."""
 import os
@@ -38,6 +38,9 @@ ROMS = [
          benign_lit={0x0CD1D0}),
     dict(name="JK78C", path="JK78C.bin",        lock=0xFFFF4567, mask=0x02, site=0x0AF8A0),
     dict(name="JK03A", path="v36-vq25hr-jk03a/as7058.bin", lock=0xFFFF4201, mask=0x04, site=0x08D7C8),
+    dict(name="JK00D",
+         path="1JK00D_8MFK36N15-20260726-013734/1JK00D_8MFK36N15-20260726-013734.bin",
+         lock=0xFFFF43B8, mask=0x08, site=0x092488),
 ]
 
 
