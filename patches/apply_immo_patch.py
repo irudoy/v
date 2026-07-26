@@ -24,10 +24,13 @@ apply_immo_patch.py -- патч immo-контура "always ID OK" для HR-Э�
 только состояние/отчёт immo-контура (registered / Lock / DTC). Итоговый эффект на старт
 без married BCM определяется handshake BCM-стороны и проверяется на стенде.
 
-По умолчанию checksum не пересчитывается и результат получает суффикс `_UNCHECKSUMMED`.
-Флаг `--fix-checksums` доступен только для точных stock JK03A/JK08A с закреплённым SHA-256:
-он пересчитывает runtime selftest A/B и две SUM16, проверяет результат и пишет
-`_CHECKSUMMED`. Такой файл имеет уровень доказательства `code/offline`, не `silicon`.
+По умолчанию checksum не пересчитывается, а имя результата не содержит checksum-постфикса.
+Это штатный путь для проверенной связки JK08A + PCMFlash 1.2.0/module 18: флешер
+корректирует checksum перед записью. Флаг `--fix-checksums` доступен только для точных
+stock JK03A/JK08A с закреплённым SHA-256; он сохраняется как research-опора и независимый
+валидатор, пересчитывает runtime selftest A/B и две SUM16, проверяет результат и добавляет
+к имени `_CHECKSUMMED`. Такой файл имеет уровень доказательства `code/offline`, пока не
+пройдена отдельная аппаратная проверка.
 
 Идемпотентность patch-sites: original-байты верифицируются перед записью; повторное
 применение к уже патченому входу завершается ошибкой. Готовый output не перезаписывается:
@@ -440,8 +443,8 @@ def main(argv=None):
 
     s_after = sum32(rom)
     suffix = ("_l2b" if args.with_l2b else "") + ("_esc" if (args.with_esc and cfg["esc"]) else "")
-    state = "CHECKSUMMED" if args.fix_checksums else "UNCHECKSUMMED"
-    out = args.out or os.path.join(ROMDIR, f"{args.rom}_immo-id-ok{suffix}_{state}.bin")
+    checksum_suffix = "_CHECKSUMMED" if args.fix_checksums else ""
+    out = args.out or os.path.join(ROMDIR, f"{args.rom}_immo-id-ok{suffix}{checksum_suffix}.bin")
     try:
         created = write_output(out, stock, rom)
     except (OSError, ValueError) as exc:
@@ -456,7 +459,10 @@ def main(argv=None):
     if args.fix_checksums:
         print("Checksum самосогласованы. Уровень проверки: code/offline; hardware-проверка не выполнена.")
     else:
-        print("ВНИМАНИЕ: checksum не пересчитан. Образ не для записи (см. immo-always-id-ok.md).")
+        print(
+            "Checksum не пересчитан. Коррекция делегирована флешеру; hardware-проверка "
+            "подтверждена только для JK08A через PCMFlash 1.2.0/module 18."
+        )
     return 0
 
 

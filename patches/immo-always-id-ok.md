@@ -169,6 +169,9 @@ Sole-setter вывод опирается на Ghidra data-flow и консер�
 python3 patches/apply_immo_patch.py
 python3 patches/apply_immo_patch.py --with-l2b
 
+# Точный stock JK08A, L1+L2 со stock checksum fields для проверки auto-correction
+python3 patches/apply_immo_patch.py --rom JK08A
+
 # Точный stock JK08A, локальный полный пересчёт checksum
 python3 patches/apply_immo_patch.py --rom JK08A --fix-checksums
 python3 patches/apply_immo_patch.py --rom JK08A --with-l2b --with-esc --fix-checksums
@@ -178,11 +181,14 @@ python3 patches/apply_immo_patch.py --rom JK08A --with-l2b --with-esc --verify-o
 ```
 
 Скрипт проверяет original-байты и блокирует двойное применение. Обычный режим пишет
-`_UNCHECKSUMMED.bin`. `--fix-checksums` доступен только для pinned stock JK03A/JK08A:
-до патча проверяются размер, SHA-256 и шесть checksum fields, после патча выполняются
-полный пересчёт, повторная проверка и контроль whitelist изменённых смещений. Результат
-получает `_CHECKSUMMED.bin`. Совпадающий готовый output принимается идемпотентно,
-отличающийся output не перезаписывается; stock никогда не используется как output.
+файл без checksum-постфикса. Для проверенной связки JK08A + PCMFlash 1.2.0/module 18
+это штатный путь: флешер корректирует checksum перед записью. `--fix-checksums`
+доступен только для pinned stock JK03A/JK08A и сохраняется как research-опора и
+независимый валидатор: до патча проверяются размер, SHA-256 и шесть checksum fields,
+после патча выполняются полный пересчёт, повторная проверка и контроль whitelist
+изменённых смещений. Результат получает `_CHECKSUMMED.bin`. Совпадающий готовый output
+принимается идемпотентно, отличающийся output не перезаписывается; stock никогда не
+используется как output.
 
 ## Checksum
 
@@ -196,20 +202,30 @@ SUM16 A использует полуоткрытый диапазон `[0x8202,
 SUM16 B по `0x20000`.
 
 `--fix-checksums` закреплён на точных SHA-256 stock JK03A/JK08A и не применяется к
-похожему или уже изменённому входу. Для JK08A получены два самосогласованных результата:
+похожему или уже изменённому входу. Для JK08A получены следующие эталоны:
 
-- L1+L2: `768d8280eb6fd9d2e3261bd3710e8d6034fc1552b61c71c98cb2ce69565eb445`;
-- L1+L2+L2b+L2'/L2b':
+- L1+L2 со stock checksum fields, `JK08A_immo-id-ok.bin`:
+  `1882b06a6e58f7f0d3bef0e33e7b1df3566572781c6c586b4537052c2abe4879`;
+- L1+L2 с локальным пересчётом: `768d8280eb6fd9d2e3261bd3710e8d6034fc1552b61c71c98cb2ce69565eb445`;
+- L1+L2+L2b+L2'/L2b' с локальным пересчётом:
   `27e7e26da038af6e37c45efea2454335a7f4d02007fc51418af7a950d7490396`.
 
+PCMFlash 1.2.0, модуль 18, с включённой `Проверка/корректировка КС` принял L1+L2
+`_CHECKSUMMED`, записал его и после перезагрузки прочитал обратно. Для L1+L2 без
+checksum-постфикса PCMFlash сообщил `Контрольные суммы исправлены`; второй read-back
+побайтно совпал с первым. Все шесть полей равны локальному эталону. Поэтому
+auto-correction этого exact-layout подтверждена write/read-back на стендовом JK00D.
+Эксперимент не устанавливает независимый охват каждого поля валидатором и не проверяет
+реакцию runtime selftest на намеренно неверный образ.
+
 Для 1ND0A, JK78C и JK00D точные хранимые слова и охват не локализованы. Их локальные
-выходы остаются `_UNCHECKSUMMED`; коррекция делегируется SM2PRO/PCMFlash и должна быть
-проверена на стенде для конкретного part #. Поддержка флешером не доказывает автоматически
+выходы не имеют checksum-постфикса; коррекция делегируется SM2PRO/PCMFlash и должна
+быть проверена на стенде для конкретного part #. Поддержка флешером не доказывает автоматически
 покрытие всех content-слоёв. Отложенный запасной инструмент – nissutils `nisckfix2`.
 Lead 1ND0A: у границы контента `0x17ff80..0x17ff87` лежит
 `01 FF FF FF | 4E 48 55 F9`, кандидат в signature/checksum-блок.
 
-## Стендовая проверка (прогноз)
+## Поведенческая стендовая проверка (открыто)
 
 После заливки патченого образа:
 
@@ -395,13 +411,20 @@ registration `FUN_000937dc`, lock_setter `FUN_0008d724`, RAM-адреса и п�
 - sole-setter regression `0xffff4201 b2`: один setter L1 по `0x08d7c8`, семь
   адресно выверенных RMW иных битов, 0 опасных или непроверенных `mov.b`,
   0 неразрешённых GBR-записей и 0 прямых литеральных записей;
-- полный stock checksum round-trip и golden hashes двух патченых вариантов.
+- полный stock checksum round-trip и golden hashes трёх патченых вариантов.
 
-Core для первой hardware-проверки – `JK08A_immo-id-ok_CHECKSUMMED.bin` (L1+L2).
-`JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` является только условным fallback, если
-hardware-наблюдение покажет недостаточность core. Оба артефакта имеют статус
-`code/offline`, не `silicon`; они не подтверждают запись, BCM handshake, crank, запуск
-или отсутствие P1610-P1615.
+L1+L2 `JK08A_immo-id-ok_CHECKSUMMED.bin` записан в стендовый JK00D и прочитан после
+перезагрузки. L1+L2 `JK08A_immo-id-ok.bin` записан после auto-correction PCMFlash;
+ его read-back побайтно совпал с первым. Оба чтения сохраняют L1/L2 и все шесть
+локальных checksum-эталонов. Read-back отличается от локального CHECKSUMMED только двумя
+стабильными диапазонами исходного JK00D неизвестного назначения: `0x007000..0x00702f`
+и `0x008080..0x0080ff`. Подробности и файлы находятся в
+`rom-images/1JK08A_8MFK36N15-20260726-write-readbacks/README.md`.
+
+`JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` остаётся условным fallback, если
+поведенческая проверка покажет недостаточность core. Write/read-back и auto-correction
+core подтверждены на железе; BCM handshake, crank, запуск и отсутствие P1610-P1615
+не проверены.
 
 ### JK00D: immo-структура
 

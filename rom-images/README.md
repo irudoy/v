@@ -112,28 +112,54 @@ Ground truth – в железе; part # и тред – ориентир, фи�
 ## Патченые образы (immo always-ID-OK)
 
 Выходы `../patches/apply_immo_patch.py` (спека – `../patches/immo-always-id-ok.md`): форсируют
-ECM-side "ID OK" и снимают immo-Lock. Суффикс `_UNCHECKSUMMED` означает, что checksum
-не пересчитан и коррекция делегируется флешеру. Суффикс `_CHECKSUMMED` означает локальную
-самосогласованность по проверенным runtime selftest и SUM16 целевого exact-layout.
-Оба статуса относятся к уровню `code/offline`; готовность к записи и запуск подтверждаются
-только hardware-проверкой. Бинарники версионируются в git.
+ECM-side "ID OK" и снимают immo-Lock. Отсутствие checksum-постфикса означает, что
+checksum не пересчитан и коррекция делегируется флешеру. Для проверенной связки JK08A +
+PCMFlash 1.2.0/module 18 это штатный путь записи. Суффикс `_CHECKSUMMED` означает локальную
+самосогласованность по runtime selftest и SUM16 целевого exact-layout; этот вариант
+сохраняется как research-эталон и независимая проверка. Запись и поведение ECU
+проверяются отдельно. JK08A core прошёл write/read-back на стендовом JK00D, но запуск,
+NATS/BCM и DTC этим не подтверждены. Бинарники версионируются в git.
 
 | Файл | База | Патч |
 |------|------|------|
-| `1ND0A_immo-id-ok_UNCHECKSUMMED.bin` | `1ND0A_Stock.bin` | L1+L2 (ядро) |
-| `1ND0A_immo-id-ok_l2b_UNCHECKSUMMED.bin` | `1ND0A_Stock.bin` | L1+L2+L2b |
-| `JK03A_immo-id-ok_UNCHECKSUMMED.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2 (ядро) |
-| `JK03A_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2+L2b+esc |
+| `1ND0A_immo-id-ok.bin` | `1ND0A_Stock.bin` | L1+L2 (ядро) |
+| `1ND0A_immo-id-ok_l2b.bin` | `1ND0A_Stock.bin` | L1+L2+L2b |
+| `JK03A_immo-id-ok.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2 (ядро) |
+| `JK03A_immo-id-ok_l2b_esc.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2+L2b+esc |
+| `JK08A_immo-id-ok.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2 (контроль auto-correction PCMFlash; хранимые checksum оставлены stock) |
 | `JK08A_immo-id-ok_CHECKSUMMED.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2 (ядро; первая hardware-проверка) |
 | `JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2+L2b+esc (условный fallback) |
-| `JK78C_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` | `JK78C.bin` | L1+L2+L2b+esc |
+| `JK78C_immo-id-ok_l2b_esc.bin` | `JK78C.bin` | L1+L2+L2b+esc |
 
 ### sha256 (патченые)
 
-- `1ND0A_immo-id-ok_UNCHECKSUMMED.bin` – `f860581a64517309b1e66c0b1e96024c250d28bc777e25c32a7fba615e730d35`
-- `1ND0A_immo-id-ok_l2b_UNCHECKSUMMED.bin` – `d60828140946fd6c1cd5e5ca211252e338f952182293f296522ca5ad3bee3d13`
-- `JK03A_immo-id-ok_UNCHECKSUMMED.bin` – `432ef461acad0373176244e1123c3c2b8a0908c48887ac3f1d32a2e204b6ba06`
-- `JK03A_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` – `d39661b71def4a768280c46134cff2e378d7a55a36935d5609026bc0f55957d0`
+- `1ND0A_immo-id-ok.bin` – `f860581a64517309b1e66c0b1e96024c250d28bc777e25c32a7fba615e730d35`
+- `1ND0A_immo-id-ok_l2b.bin` – `d60828140946fd6c1cd5e5ca211252e338f952182293f296522ca5ad3bee3d13`
+- `JK03A_immo-id-ok.bin` – `432ef461acad0373176244e1123c3c2b8a0908c48887ac3f1d32a2e204b6ba06`
+- `JK03A_immo-id-ok_l2b_esc.bin` – `d39661b71def4a768280c46134cff2e378d7a55a36935d5609026bc0f55957d0`
+- `JK08A_immo-id-ok.bin` – `1882b06a6e58f7f0d3bef0e33e7b1df3566572781c6c586b4537052c2abe4879`
 - `JK08A_immo-id-ok_CHECKSUMMED.bin` – `768d8280eb6fd9d2e3261bd3710e8d6034fc1552b61c71c98cb2ce69565eb445`
 - `JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` – `27e7e26da038af6e37c45efea2454335a7f4d02007fc51418af7a950d7490396`
-- `JK78C_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` – `a7cf5b91789e934b5f4febd6579a15e8b609eb0d45b8261b13e61d5bef520cc9`
+- `JK78C_immo-id-ok_l2b_esc.bin` – `a7cf5b91789e934b5f4febd6579a15e8b609eb0d45b8261b13e61d5bef520cc9`
+
+### JK08A write/read-back на JK00D
+
+PCMFlash 1.2.0, модуль 18, с адаптером Scanmatik-SM2 USB и включённой
+`Проверка/корректировка КС` выполнил две операции:
+
+1. принял `JK08A_immo-id-ok_CHECKSUMMED.bin` как файл с корректными контрольными
+   суммами, записал его; после перезагрузки ECU получен полный read-back;
+2. сообщил `Контрольные суммы исправлены` для
+   `JK08A_immo-id-ok.bin`, записал его; второй полный read-back побайтно
+   совпал с первым.
+
+Оба read-back имеют MD5 `4a5238cf0fcfcfd8d361895778ce4976` и SHA-256
+`b9ae5e0150939d10b189ee6f85aa1410b9288f7206ae4fd94135187f02b8dd08`. Это подтверждает,
+что auto-correction PCMFlash приводит известные checksum fields и остальной записываемый
+ROM к результату локального пересчёта.
+
+Read-back отличается от локального CHECKSUMMED на 176 байт только по
+`0x007000..0x00702f` и `0x008080..0x0080ff`. Оба диапазона равны исходному JK00D и
+стабильны между двумя записями; их назначение и механизм сохранения не установлены.
+Они лежат вне локализованных checksum-доменов. Полный provenance, файлы и границы вывода:
+`1JK08A_8MFK36N15-20260726-write-readbacks/README.md`.

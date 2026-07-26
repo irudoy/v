@@ -16,8 +16,11 @@ import lock_setbit_scan  # noqa: E402
 
 JK08A_SHA256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 JK08A_MD5 = "db4eeb16e6385afcb69e70955147c483"
+JK08A_CORE_NO_CHECKSUM_SHA256 = "1882b06a6e58f7f0d3bef0e33e7b1df3566572781c6c586b4537052c2abe4879"
 JK08A_CORE_SHA256 = "768d8280eb6fd9d2e3261bd3710e8d6034fc1552b61c71c98cb2ce69565eb445"
 JK08A_FULL_SHA256 = "27e7e26da038af6e37c45efea2454335a7f4d02007fc51418af7a950d7490396"
+JK08A_READBACK_MD5 = "4a5238cf0fcfcfd8d361895778ce4976"
+JK08A_READBACK_SHA256 = "b9ae5e0150939d10b189ee6f85aa1410b9288f7206ae4fd94135187f02b8dd08"
 
 
 class JK08AStockTest(unittest.TestCase):
@@ -105,6 +108,52 @@ class JK08APatcherTest(unittest.TestCase):
         )
         return bytes(rom), values, patches
 
+    def test_core_without_checksum_golden_image(self):
+        image = bytearray(self.stock)
+        patches = patcher.selected_patches(patcher.ROMS["JK08A"])
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertTrue(patcher.apply(patches, image))
+        self.assertEqual(
+            hashlib.sha256(image).hexdigest(),
+            JK08A_CORE_NO_CHECKSUM_SHA256,
+        )
+        self.assertEqual(
+            patcher.stored_checksums(image),
+            patcher.stored_checksums(self.stock),
+        )
+        self.assertEqual(
+            patcher.checksum_mismatches(image),
+            {
+                "sum16_b": (0xEEE1, 0x96E6),
+                "self_a_xor": (0x47A28253, 0x88AF0B53),
+                "self_a_sum": (0x094AA8CF, 0x3A4F1FCF),
+            },
+        )
+        self.assertFalse(
+            patcher.changed_offsets(self.stock, image)
+            - patcher.allowed_offsets(patches)
+        )
+
+    def test_default_output_omits_checksum_suffix(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stock = Path(tmp) / patcher.ROMS["JK08A"]["stock"]
+            stock.parent.mkdir(parents=True)
+            stock.write_bytes(self.stock)
+            captured = io.StringIO()
+            with (
+                mock.patch.object(patcher, "ROMDIR", tmp),
+                contextlib.redirect_stdout(captured),
+            ):
+                self.assertEqual(patcher.main(["--rom", "JK08A"]), 0)
+            self.assertIn("Коррекция делегирована флешеру", captured.getvalue())
+            self.assertNotIn("Образ не для записи", captured.getvalue())
+            output = Path(tmp) / "JK08A_immo-id-ok.bin"
+            self.assertTrue(output.is_file())
+            self.assertEqual(
+                hashlib.sha256(output.read_bytes()).hexdigest(),
+                JK08A_CORE_NO_CHECKSUM_SHA256,
+            )
+
     def test_core_golden_image(self):
         image, values, patches = self.build()
         self.assertEqual(hashlib.sha256(image).hexdigest(), JK08A_CORE_SHA256)
@@ -191,6 +240,49 @@ class JK08APatcherTest(unittest.TestCase):
                 patcher.write_output(output, stock, image)
             self.assertFalse(output.exists())
             self.assertEqual(list(Path(tmp).glob("output.bin.*.tmp")), [])
+
+
+class JK08AWriteReadbackTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        romdir = ROOT / "rom-images"
+        readback_dir = romdir / "1JK08A_8MFK36N15-20260726-write-readbacks"
+        cls.checked = (romdir / "JK08A_immo-id-ok_CHECKSUMMED.bin").read_bytes()
+        cls.jk00d = (romdir / patcher.ROMS["JK00D"]["stock"]).read_bytes()
+        cls.first = (
+            readback_dir / "1JK08A_8MFK36N15-20260726-201814.bin"
+        ).read_bytes()
+        cls.second = (
+            readback_dir / "1JK08A_8MFK36N15-20260726-205657.bin"
+        ).read_bytes()
+
+    def test_checked_and_autocorrected_readbacks_match(self):
+        self.assertEqual(self.first, self.second)
+        self.assertEqual(hashlib.md5(self.first).hexdigest(), JK08A_READBACK_MD5)
+        self.assertEqual(hashlib.sha256(self.first).hexdigest(), JK08A_READBACK_SHA256)
+        self.assertEqual(patcher.checksum_mismatches(self.first), {})
+
+        preserved_ranges = ((0x7000, 0x7030), (0x8080, 0x8100))
+        expected_offsets = {
+            off
+            for start, end in preserved_ranges
+            for off in range(start, end)
+        }
+        self.assertEqual(
+            patcher.changed_offsets(self.checked, self.first),
+            expected_offsets,
+        )
+
+        overlaid = bytearray(self.checked)
+        for start, end in preserved_ranges:
+            self.assertEqual(self.first[start:end], self.jk00d[start:end])
+            overlaid[start:end] = self.jk00d[start:end]
+        self.assertEqual(bytes(overlaid), self.first)
+
+        for off, _original, patched, _label in patcher.selected_patches(
+            patcher.ROMS["JK08A"]
+        ):
+            self.assertEqual(self.first[off:off + len(patched)], patched)
 
 
 class JK08ASoleSetterTest(unittest.TestCase):
