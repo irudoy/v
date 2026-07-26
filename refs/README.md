@@ -101,9 +101,19 @@ html2text) с локальными картинками (`img/`). Источни
   ECM – прямой гомолог целевого HR-firmware (1ND*, VQ37VHR – та же HR-архитектура immo).
   Путь: `~/Library/Mobile Documents/com~apple~CloudDocs/Auto/Nissan/V36/scheme/2007_G35_Sedan/`
   Ключевые разделы для проекта:
-  - `SECURITY CONTROL SYSTEM.pdf` – NATS / immobilizer (IMMU), master-логика BCM, security-ID, индикатор.
-  - `ENGINE CONTROL SYSTEM.pdf` – ECM VQ35HR: вход immo, разрешение запуска, входы/выходы.
-  - `STARTING SYSTEM.pdf` – стартер / crank-permission (вероятное место enforcement блокировки запуска).
+  - `SECURITY CONTROL SYSTEM.pdf` – NATS / immobilizer (IMMU), master-логика BCM,
+    security-ID, индикатор. SEC-41/42 задаёт ID-verification BCM с ECM и запрет
+    запуска со стороны ECM при незарегистрированном ID; SEC-165 задаёт для
+    B2192/B2193 fail-safe `Inhibit engine cranking`. SEC-41 определяет
+    B2192/P1611 как `ID DISCORD, IMMU-ECM`: результат проверки ID между BCM и ECM
+    равен NG. SEC-42 определяет B2193/P1612 как `CHAIN OF ECM-IMMU`: связь ECM с
+    BCM неактивна.
+  - `ENGINE CONTROL SYSTEM.pdf` – ECM VQ35HR: вход immo, разрешение запуска,
+    входы/выходы. Таблица EC-525 называет P1610 `LOCK MODE` и направляет на SEC-37,
+    где заголовок связывает P1610 с B2190 `NATS ANTENNA AMP`; поэтому имя P1610
+    само по себе не связывается с конкретным RAM-битом Lock без проверки firmware.
+  - `STARTING SYSTEM.pdf` – стартер / crank-permission; crank без запуска переводит
+    диагностику в engine control / EC.
   - `BODY CONTROL SYSTEM.pdf` – BCM (master immo), интеграция с ключом/антенной.
   - `LAN SYSTEM.pdf` – топология CAN, gateway, распределение шин и CAN ID.
   - `POWER SUPPLY, GROUND & CIRCUIT ELEMENTS.pdf` – распиновка разъёмов, цепи питания/земли.

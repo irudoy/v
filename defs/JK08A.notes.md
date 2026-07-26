@@ -2258,7 +2258,7 @@ grounding – 0, циклических SCC – 44, незаземлённых S
 Таблица `0x12E1A` имеет presentation-имя `Interpolated State Byte - raw u8`.
 Детерминированные SHA-256 равны
 `62d567b98822d00749e57f4743a502d589104e7542748f918ecf33b5444ac924` для ledger и
-`bd9da25f7363b16919a05cc1d744afe6d793f9687c6b5e1da286a3a3a3d3b071` для XML.
+`deb361dfe9fa459fffea1c8d327bae96c23af3a469007b45535a7389c58d1071` для XML.
 
 ## RomRaider always-ID-OK
 
@@ -2272,7 +2272,8 @@ Custom `NissanImmoCoordinator` из `defs/romraider/NissanImmoCoordinator.jar`
 известные состояния обоих сайтов и отклоняет неизвестные байты. Затем нативные
 обработчики выполняются в порядке `alt` -> `alt2`, то есть selftest B -> selftest A
 и SUM16. Проверка `tools/romraider/verify_definition.py` связывает XML, JAR и точный
-stock JK08A. Hardware-поведение NATS остаётся непроверенным.
+stock JK08A. На машине core L1+L2 даёт crank без запуска и активный
+security-индикатор. Переключатель не является полным NATS-off.
 
 ## Следующий шаг
 

@@ -272,8 +272,9 @@ python3 tools/romraider/verify_definition.py
 ```
 
 `JK08A.xml` и подкаталог `romraider/` устанавливаются вместе. Отсутствующий JAR
-делает custom checksum недоступным. Уровень таблицы `userlevel=5`; поведение NATS
-остаётся hardware-гейтом.
+делает custom checksum недоступным. Уровень таблицы `userlevel=5`. Hardware-проверка
+core L1+L2 дала crank без запуска и активный security-индикатор; переключатель не
+является полным NATS-off.
 
 ### Резервное копирование Memgraph
 

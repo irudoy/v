@@ -114,11 +114,17 @@ Ground truth – в железе; part # и тред – ориентир, фи�
 Выходы `../patches/apply_immo_patch.py` (спека – `../patches/immo-always-id-ok.md`): форсируют
 ECM-side "ID OK" и снимают immo-Lock. Отсутствие checksum-постфикса означает, что
 checksum не пересчитан и коррекция делегируется флешеру. Для проверенной связки JK08A +
-PCMFlash 1.2.0/module 18 это штатный путь записи. Суффикс `_CHECKSUMMED` означает локальную
-самосогласованность по runtime selftest и SUM16 целевого exact-layout; этот вариант
-сохраняется как research-эталон и независимая проверка. Запись и поведение ECU
-проверяются отдельно. JK08A core прошёл write/read-back на стендовом JK00D, но запуск,
-NATS/BCM и DTC этим не подтверждены. Бинарники версионируются в git.
+PCMFlash 1.2.0/module 18 это единственный штатный путь записи: входной файл не имеет
+checksum-постфикса, а в PCMFlash включена `Проверка/корректировка КС`. Суффикс
+`_CHECKSUMMED` означает локальную самосогласованность по runtime selftest и SUM16
+целевого exact-layout; такой файл хранится только как research-эталон и не выбирается
+для записи через PCMFlash. JK08A core прошёл
+write/read-back на стендовом JK00D. Поведенческая проверка 2026-07-27 дала
+отрицательный результат для core L1+L2 и полного fallback
+L1+L2+L2b+L2'/L2b': security-индикатор загорелся, стартер крутил, двигатель не
+запустился. После fallback считаны ECM P1610/P1611 и BCM B2192(00)/B2193(00);
+статус current/past не зафиксирован. Оба варианта не являются подтверждённым
+NATS-off. Бинарники версионируются в git.
 
 | Файл | База | Патч |
 |------|------|------|
@@ -127,8 +133,9 @@ NATS/BCM и DTC этим не подтверждены. Бинарники ве�
 | `JK03A_immo-id-ok.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2 (ядро) |
 | `JK03A_immo-id-ok_l2b_esc.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2+L2b+esc |
 | `JK08A_immo-id-ok.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2 (контроль auto-correction PCMFlash; хранимые checksum оставлены stock) |
-| `JK08A_immo-id-ok_CHECKSUMMED.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2 (ядро; первая hardware-проверка) |
-| `JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2+L2b+esc (условный fallback) |
+| `JK08A_immo-id-ok_l2b_esc.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2+L2b+esc (проверен на машине, NATS-off не достигнут; хранимые checksum оставлены stock) |
+| `JK08A_immo-id-ok_CHECKSUMMED.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2 (offline research-эталон) |
+| `JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2+L2b+esc (offline research-эталон) |
 | `JK78C_immo-id-ok_l2b_esc.bin` | `JK78C.bin` | L1+L2+L2b+esc |
 
 ### sha256 (патченые)
@@ -138,6 +145,7 @@ NATS/BCM и DTC этим не подтверждены. Бинарники ве�
 - `JK03A_immo-id-ok.bin` – `432ef461acad0373176244e1123c3c2b8a0908c48887ac3f1d32a2e204b6ba06`
 - `JK03A_immo-id-ok_l2b_esc.bin` – `d39661b71def4a768280c46134cff2e378d7a55a36935d5609026bc0f55957d0`
 - `JK08A_immo-id-ok.bin` – `1882b06a6e58f7f0d3bef0e33e7b1df3566572781c6c586b4537052c2abe4879`
+- `JK08A_immo-id-ok_l2b_esc.bin` – `95e013671b174d24f20891b7a1230dcbec3d24e80207282e8a31adf22da6dcf2`
 - `JK08A_immo-id-ok_CHECKSUMMED.bin` – `768d8280eb6fd9d2e3261bd3710e8d6034fc1552b61c71c98cb2ce69565eb445`
 - `JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` – `27e7e26da038af6e37c45efea2454335a7f4d02007fc51418af7a950d7490396`
 - `JK78C_immo-id-ok_l2b_esc.bin` – `a7cf5b91789e934b5f4febd6579a15e8b609eb0d45b8261b13e61d5bef520cc9`
@@ -156,10 +164,29 @@ PCMFlash 1.2.0, модуль 18, с адаптером Scanmatik-SM2 USB и вк
 Оба read-back имеют MD5 `4a5238cf0fcfcfd8d361895778ce4976` и SHA-256
 `b9ae5e0150939d10b189ee6f85aa1410b9288f7206ae4fd94135187f02b8dd08`. Это подтверждает,
 что auto-correction PCMFlash приводит известные checksum fields и остальной записываемый
-ROM к результату локального пересчёта.
+ROM к результату локального пересчёта. Последующие записи JK08A выполняются только
+из файлов без checksum-постфикса.
 
 Read-back отличается от локального CHECKSUMMED на 176 байт только по
 `0x007000..0x00702f` и `0x008080..0x0080ff`. Оба диапазона равны исходному JK00D и
 стабильны между двумя записями; их назначение и механизм сохранения не установлены.
 Они лежат вне локализованных checksum-доменов. Полный provenance, файлы и границы вывода:
 `1JK08A_8MFK36N15-20260726-write-readbacks/README.md`.
+
+### JK08A immo-патчи: поведенческая проверка на машине
+
+На подменном JK00D в V36 Skyline 250GT 2026-07-27 последовательно проверены:
+
+- JK08A core L1+L2;
+- `JK08A_immo-id-ok_l2b_esc.bin` с L1+L2+L2b+L2'/L2b'.
+
+Оба варианта дали одинаковый симптом: красный security-индикатор "машина с ключом",
+прокрутку стартером и отсутствие запуска. После проверки fallback считаны ECM
+P1610/P1611 и BCM B2192(00)/B2193(00). Очистка между вариантами и статус
+current/past не зафиксированы, поэтому снимок не разделяет накопленные и текущие
+условия.
+
+По ESM P1611/B2192 означает отрицательный результат проверки ID между BCM и ECM,
+B2193 соответствует неактивной связи BCM с ECM. Следующая проверка разделяет DTC
+после `IGN ON` без crank и после одной короткой прокрутки; параллельно сохраняется
+ECM Data Monitor впрыска, питания, start signal, оборотов и fuel-pump relay.

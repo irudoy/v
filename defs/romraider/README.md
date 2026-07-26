@@ -4,6 +4,9 @@
 always-ID-OK для exact-ROM JK08A. Исходный код и проверка находятся в
 `tools/romraider/`.
 
+Переключатель изменяет только core L1+L2. Hardware-проверка дала crank без запуска
+и активный security-индикатор, поэтому он не является полным NATS-off.
+
 RomRaider загружает класс `com.romraider.maps.checksum.NissanImmoCoordinator`
 из JAR по относительному пути дефа. `JK08A.xml` и каталог `romraider/` поэтому
 переносятся в каталог пользовательских определений вместе.

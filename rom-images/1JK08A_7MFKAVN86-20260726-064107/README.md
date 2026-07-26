@@ -71,12 +71,20 @@ L1 по `0x08d7c8`. Семь индексных RMW-записей в тот ж�
 только b0/b3/b4/b5/b7 с сохранением Lock b2; опасных или непроверенных store не остаётся.
 Stock-образ самосогласован по двум SUM16 и runtime selftest XOR+SUM A/B.
 
-Подготовлены локальные checksum-корректные артефакты:
+Подготовлены артефакты:
 
-- `../JK08A_immo-id-ok_CHECKSUMMED.bin` – L1+L2, кандидат первой hardware-проверки;
+- `../JK08A_immo-id-ok_l2b_esc.bin` – L1+L2+L2b+L2'/L2b', штатный вход
+  PCMFlash с включённой `Проверка/корректировка КС`; поведенческая проверка
+  дала crank без запуска и активный security-индикатор;
+- `../JK08A_immo-id-ok_CHECKSUMMED.bin` – L1+L2; write/read-back подтверждён,
+  поведенческая проверка дала crank без запуска и активный security-индикатор,
+  сохраняется как offline research-эталон;
 - `../JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` – L1+L2+L2b+L2'/L2b', условный
-  fallback.
+  offline research-эталон.
 
-Статус переноса и checksum – `code/offline`, не `silicon`. Запись, восстановление
-stock, поведение PCMFlash/SM2PRO при коррекции checksum, BCM handshake, crank, запуск,
-DTC P1610-P1615 и EEPROM требуют отдельной hardware-проверки.
+Перенос сайтов и checksum имеют статус `code`; для core запись, read-back и
+auto-correction PCMFlash имеют статус `silicon`. Core L1+L2 и полный fallback
+L1+L2+L2b+L2'/L2b' недостаточны для NATS-off на машине. После fallback считаны
+ECM P1610/P1611 и BCM B2192(00)/B2193(00), но current/past и очистка между
+образами не зафиксированы. Точный start-inhibit, контрольный запуск, восстановление
+stock и EEPROM требуют отдельной hardware-проверки.

@@ -51,7 +51,7 @@
     <table type="Switch" name="NATS ECM Authorization"
            category="NATS / Immobilizer (experimental)" storageaddress="0x08D7C8"
            storagetype="uint8" sizex="2" endian="big" userlevel="5">
-      <description>Exact JK08A only. L2 is synchronized on save; hardware NATS behavior is unverified.</description>
+      <description>Exact JK08A only. L2 is synchronized on save. Core L1+L2 cranks but does not start; this switch is not a complete NATS-off.</description>
       <state name="Stock" data="CF 04"/>
       <state name="Always ID OK (experimental)" data="00 09"/>
     </table>
