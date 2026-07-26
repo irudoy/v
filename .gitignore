@@ -13,6 +13,19 @@ tmp/
 # Байткод-кэш интерпретатора; пересоздаётся импортом.
 __pycache__/
 
+# ── Project-scoped Claude definitions ───────────────────────────
+# Глобальный excludesfile скрывает .claude/*; эти definitions являются частью
+# воспроизводимого A/B execution contract и версионируются в проекте.
+!.claude/
+!.claude/agents/
+.claude/agents/*
+!.claude/agents/vq-ab-blind-worker.md
+!.claude/workflows/
+.claude/workflows/*
+!.claude/workflows/vq-caller-prep.js
+!.claude/workflows/vq-caller-run.js
+!.claude/workflows/vq-caller-score.js
+
 # ── Регенерируемые кэши RE-инструментов ────────────────────────
 # Крупные рабочие данные, восстанавливаются из исходников, в git не
 # версионируются: рабочие БД Ghidra (raw-образ переанализируется) и

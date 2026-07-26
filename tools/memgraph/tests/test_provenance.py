@@ -10,8 +10,11 @@ from provenance import (  # noqa: E402
     ProvenanceError,
     StructuralKey,
     analyze_claims,
+    canonical_evidence_tokens,
     compare_projection,
     dependency_path,
+    evidence_machine_anchor,
+    format_evidence_token,
     parse_evidence,
     reverse_impact,
 )
@@ -67,6 +70,32 @@ class EvidenceTest(unittest.TestCase):
     def test_duplicate_token_is_rejected_after_normalization(self):
         with self.assertRaisesRegex(ProvenanceError, "повтор"):
             parse_evidence("spec:body; spec: body", "confidence", "row")
+
+    def test_canonical_round_trip_and_machine_anchors(self):
+        text = (
+            "consumer:00000002@confidence; spec:SH7058-HW; "
+            "rom_const:000090ee=0x020c; site:00001000"
+        )
+        tokens = parse_evidence(text, "confidence", "row")
+        self.assertEqual(
+            [format_evidence_token(token) for token in tokens],
+            canonical_evidence_tokens(text, "confidence", "row"),
+        )
+        self.assertEqual(
+            [evidence_machine_anchor(token) for token in tokens],
+            ["00000002", None, "000090ee", "00001000"],
+        )
+        self.assertEqual(
+            canonical_evidence_tokens("spec: SH7058-HW", "confidence"),
+            ["spec:SH7058-HW"],
+        )
+    def test_empty_or_invalid_bound_rom_const_is_not_a_machine_anchor(self):
+        for value in (
+            "rom_const:00020000=",
+            "rom_const:00020000=not-a-literal",
+        ):
+            token = parse_evidence(value, "confidence", "row")[0]
+            self.assertIsNone(evidence_machine_anchor(token), msg=value)
 
 
 class ClaimGraphTest(unittest.TestCase):

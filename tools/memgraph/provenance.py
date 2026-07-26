@@ -42,6 +42,11 @@ VOCAB = frozenset(EDGE_ROLES) | TERMINAL | PROCESS
 
 ADDR_RE = re.compile(r"^[0-9a-f]{8}$")
 EDGE_REF_RE = re.compile(r"^([0-9a-f]{8})(?:\+(?:0x[0-9a-f]+|\d+))?$")
+ROM_CONST_SCALAR = r"(?:-?\d+|0x[0-9a-f]+|[0-9a-f]+)"
+ROM_CONST_BINDING_RE = re.compile(
+    rf"^([0-9a-f]{{8}})=(?:{ROM_CONST_SCALAR}|\d+(?:\*\d+)+|"
+    rf"\[(?:{ROM_CONST_SCALAR})(?:,(?:{ROM_CONST_SCALAR}))*\])$"
+)
 
 
 class ProvenanceError(ValueError):
@@ -259,6 +264,34 @@ def parse_evidence(text, source_prop, context="evidence"):
         seen.add(token)
         tokens.append(token)
     return tokens
+
+
+def format_evidence_token(token):
+    """Сериализовать типизированный evidence-токен в каноническую форму."""
+    if token.is_dependency:
+        return f"{token.role}:{token.value}@{token.target_prop}"
+    return f"{token.role}:{token.value}"
+
+
+def canonical_evidence_tokens(text, source_prop, context="evidence"):
+    """Разобрать evidence единым parser и вернуть канонические токены в исходном порядке."""
+    return [
+        format_evidence_token(token)
+        for token in parse_evidence(text, source_prop, context)
+    ]
+
+
+def evidence_machine_anchor(token):
+    """Вернуть машинный адрес, если он определён грамматикой токена без эвристики."""
+    if token.is_dependency:
+        return token.target_addr
+    if token.role == "site" and ADDR_RE.fullmatch(token.value):
+        return token.value
+    if token.role == "rom_const":
+        match = ROM_CONST_BINDING_RE.fullmatch(token.value)
+        if match:
+            return match.group(1)
+    return None
 
 
 def target_property_allowed(label, prop):

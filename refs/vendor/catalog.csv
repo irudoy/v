@@ -173,7 +173,7 @@ ecutek,tuning-guide,Limiters,Limiters,Speed Limit - Fuel Cut On,,,,,factory,,spe
 ecutek,tuning-guide,Limiters,Limiters,Speed Limit - Throttle Off,,,,,factory,,speed-limit,images/image2019-8-27_10-30-10.png,
 ecutek,tuning-guide,Limiters,Limiters,Speed Limit - Throttle On,,,,,factory,,speed-limit,images/image2019-8-27_10-30-10.png,
 ecutek,tuning-guide,Limiters,Limiters,Stationary Rev Limiter,,,,,factory,,,images/image2019-8-27_10-30-10.png,
-ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,BFS Multiplier (K-Factor),,,,,factory,,bfs-multiplier,images/image2019-8-27_10-31-48.png,"дефолт 26806 по тексту гайда; найден в дампах: 1ND0A/1ND3B 0x9106, JK78C 0x8F80, JK03A/JK08A 0x9284"
+ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,BFS Multiplier (K-Factor),,,,,factory,,bfs-multiplier,images/image2019-8-27_10-31-48.png,"дефолт 26806 по тексту гайда; найден в дампах: 1ND0A/1ND3B 0x9106, JK78C 0x8F80, JK03A/JK08A 0x9284, JK00D 0x931C"
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Coolant & AIT Sensor Scale,,,,,factory,,temp-sensor-scale,images/image2019-8-27_10-31-48.png,
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Eng Oil Temp Scale,,,,,factory,,temp-sensor-scale,images/image2019-8-27_10-31-48.png,
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Front O2 Sensor Scaling,,,,,factory,,,images/image2019-8-27_10-31-48.png,

@@ -8,7 +8,33 @@ LLM-агент**: детерминированные экстракторы (Jav
 (раздел "Мост GhydraMCP"), требует GUI, вне критического пути. Замысел, пайплайн карт/флагов
 и роли – `../AGENTS.md`, `map-flag-pipeline.md`, нота "RE-стек и реверс таблиц" в Obsidian.
 Массовый проход по каталогу карт – `map-sweep.md`: единица работы, порядок волн, ослепление
-пилота, схема заявки и ворота.
+пилота, схема заявки и ворота. Там же описан read-only caller-semantics harness
+`tools/sweep/caller_ab_experiment.py`, его no-tools Workflow definitions и frozen 24-map scope.
+`freeze` принимает две независимые byte-identical сборки map-артефактов с двумя blind audit,
+фиксирует exact recursive inventory Ghidra export root, embedded builder/runtime sources и private
+HMAC mapping. Blind worker policy требует единственный top-level `tools: []` в YAML
+frontmatter. Prep Workflow создаёт candidates, а `finalize-cards` требует полный ручной approval
+с exact payload digests до построения `verified`/neutral `placebo`; cards содержат только printable
+ASCII English. Controls получают byte-identical sham-card. Все три saved workflows закрепляют exact
+model `claude-opus-4-8` без alias и до первого agent-вызова проверяют exact execution schema, prompts,
+runtime-binding paths, SHA-256 format и полноту items. Доверенной границей запуска остаётся Python control plane: он связывает embedded
+`artifact_text` с `artifact_sha256`, проверяет live execution config и runtime sources.
+`archive-workflow` требует fresh-launch attestation, проверяет exact execution schema, live
+execution-config digest, canonical runtime binding и native result schema, связывает citation
+ranges/excerpts с embedded `artifact_text` и допустимыми code fences, проверяет дословную связь
+Analyze/Verify и полноту, затем сохраняет exact native output с embedded Workflow source. Если
+native progress содержит phase records, они обязаны образовывать canonical sequence; frozen agent
+records используют resolved model из allowlist
+`claude-opus-4-8`/`claude-opus-4-8[1m]` и не содержат fallback/retry/cache/error
+provenance в служебных полях или значениях. Run schema использует terminal-only canonical evidence
+и non-directed `machine_references`; dependency evidence запрещено без frozen typed-support
+registry. Arm markers запрещены во всех свободных полях run payload и в prep/run verifier rationale;
+проверка декодирует HTML, удаляет comments и Unicode format controls. Scoring проецирует reference
+evidence в тот же terminal-only домен. Все 48 blind scores сохраняются отдельно, pooling
+отсутствует, а per-control gate учитывает field deltas и verifier split. Итог содержит наблюдаемый
+парный контраст, `causal_claim=false` и никогда не изменяет canonical CSV. Manual approval и
+fresh-launch attestation являются operator trust boundary, а не криптографическим доказательством
+действий человека.
 
 В git трекается только конфигурация и обёртки. Сами инструменты и Ghidra-проекты –
 вне репозитория (крупные / машинно-локальные), их расположение указано ниже.
@@ -146,7 +172,8 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `memgraph/provenance_report.py` | read-only exact audit, weakest path и reverse impact по полной claim identity; `--strict` включает effective/grounding gates | stdout |
 | `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны и отдельные структурные ворота. Claim-specific exact audit выполняет `provenance_report.py`. Параметр `$rom` | (в git) |
 | `maps/build_tracker.py` | ledger `defs/<rom>.maps.csv` – проекция каталога из графа (worklist разбора) | (в git) |
-| `sweep/build_artifacts.py` | blind-артефакты для массового прохода: компонента `comp-<addr>.md`, frozen-карта `map-<addr>.md` или общая ось `axis-<addr>.md`; Axis-focus агрегирует все связанные карты и аксессоры. Форма, значения, оси, псевдокод, листинги, операнды переписи и каталоги видимы; текущие ответы скрыты белым списком и проверяются каждым прогоном. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
+| `sweep/build_artifacts.py` | blind-артефакты для массового прохода: компонента `comp-<addr>.md`, frozen-карта `map-<addr>.md` или общая ось `axis-<addr>.md`; Axis-focus агрегирует все связанные карты и аксессоры. Форма, значения, оси, псевдокод, листинги, операнды переписи и каталоги видимы; текущие ответы скрыты белым списком и проверяются каждым прогоном. Бюджеты обязаны быть неотрицательными; frozen caller experiment требует `8`/`24`. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
+| `sweep/caller_ab_experiment.py` | read-only control plane 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates + manual approval + finalized cards, `verified`/neutral `placebo`, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores и per-control verifier gate; canonical CSV не изменяет | JSON/Markdown вне git |
 | `mapkit/rom.py` | образ: реестр `rom-images/roms.csv` со сверкой sha256, чтение массивов, их измерение. Библиотека – её зовут `load_maps.py` и скрипты пакета | (в git) |
 | `mapkit/emit_def.py` | деф `defs/<rom>.xml` – проекция графа плюс презентационный слой `defs/<rom>.overrides.toml` (контракт – `map-flag-pipeline.md`, раздел 9) | (git, по мере коммита P5) |
 | `mapkit/show.py` | карта либо ось в физических единицах: граф даёт форму, оси и шкалу, образ – значения. Аргументы: `[<rom>] <addr>...` | stdout |

@@ -1,9 +1,14 @@
+import argparse
+import hashlib
+import io
 import itertools
+import json
 import sys
 import tempfile
 import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 neo4j = types.ModuleType("neo4j")
 neo4j.GraphDatabase = object
@@ -268,6 +273,79 @@ class AxisFocusTest(unittest.TestCase):
                         text.index("### Карта `00001010`"))
         for addr in comp["maps"] + comp["accessors"]:
             self.assertIn(f"`{addr}`", text)
+
+
+class BudgetValidationTest(unittest.TestCase):
+    def test_budgets_reject_negative_values_at_cli_boundary(self):
+        self.assertEqual(build_artifacts.nonnegative_int("0"), 0)
+        self.assertEqual(build_artifacts.nonnegative_int("24"), 24)
+        with self.assertRaises(argparse.ArgumentTypeError):
+            build_artifacts.nonnegative_int("-1")
+
+        for flag in ("--max-readers", "--max-consumer-decomp"):
+            argv = ["build_artifacts.py", "/tmp/unused", flag, "-1"]
+            with (
+                mock.patch.object(sys, "argv", argv),
+                mock.patch.object(sys, "stderr", io.StringIO()),
+                self.assertRaises(SystemExit) as raised,
+            ):
+                build_artifacts.main()
+            self.assertEqual(raised.exception.code, 2)
+
+
+class BlindAuditOutputTest(unittest.TestCase):
+    def test_main_writes_verified_focus_map_audit(self):
+        comp = {
+            "key": "00005000",
+            "maps": ["00001000"],
+            "accessors": ["00005000"],
+        }
+        session = mock.MagicMock()
+        driver = mock.MagicMock()
+        driver.session.return_value.__enter__.return_value = session
+        graph_database = types.SimpleNamespace(
+            driver=mock.Mock(return_value=driver),
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dir = Path(tmp) / "artifacts"
+            audit_path = Path(tmp) / "blind-audit.json"
+            argv = [
+                "build_artifacts.py",
+                str(out_dir),
+                "--rom", "JK03A",
+                "--focus-map", "00001000",
+                "--export-dir", str(Path(tmp) / "exports"),
+                "--audit-output", str(audit_path),
+            ]
+            with (
+                mock.patch.object(sys, "argv", argv),
+                mock.patch.object(build_artifacts, "GraphDatabase", graph_database),
+                mock.patch.object(build_artifacts.romkit, "load", return_value=ArtifactImage()),
+                mock.patch.object(build_artifacts, "components", return_value=[comp]),
+                mock.patch.object(
+                    build_artifacts,
+                    "load_catalog",
+                    return_value={"a2l": {}, "vendor": [], "consts": []},
+                ),
+                mock.patch.object(build_artifacts, "build", return_value=("blind\n", [])),
+            ):
+                build_artifacts.main()
+
+            artifact_path = out_dir / "map-00001000.md"
+            audit = json.loads(audit_path.read_text(encoding="utf-8"))
+            self.assertEqual(audit["schema"], "vq.blind-artifact-audit/v1")
+            self.assertEqual(audit["mode"], "focus-maps")
+            self.assertEqual(audit["targets"], ["00001000"])
+            self.assertEqual(len(audit["artifacts"]), 1)
+            record = audit["artifacts"][0]
+            self.assertEqual(record["path"], str(artifact_path.resolve()))
+            self.assertEqual(
+                record["sha256"],
+                hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
+            )
+            self.assertTrue(record["blind_verified"])
+            driver.close.assert_called_once_with()
 
 
 class BlindLeakageTest(unittest.TestCase):

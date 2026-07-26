@@ -35,7 +35,10 @@
            --focus-axis <addr> | --focus-axes-file <path>] [--export-dir <dir>]
 """
 import argparse
+import hashlib
+import json
 import os
+from pathlib import Path
 import re
 import sys
 from neo4j import GraphDatabase
@@ -1525,6 +1528,14 @@ def load_catalog(session):
     return {"a2l": a2l, "vendor": vendor, "consts": consts}
 
 
+def nonnegative_int(value):
+    """Целое >= 0 для бюджетов артефакта."""
+    parsed = int(value)
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("значение должно быть >= 0")
+    return parsed
+
+
 def focus_addrs(values, path=None):
     """Адреса из повторяемого флага и файла: нижний регистр, без дублей, стабильно."""
     out = [value.strip().lower() for value in values if value.strip()]
@@ -1552,14 +1563,16 @@ def main():
                    help="то же списком: по адресу оси на строку")
     p.add_argument("--min-maps", type=int, default=0)
     p.add_argument("--max-maps", type=int, default=10 ** 6)
-    p.add_argument("--max-readers", type=int, default=8,
+    p.add_argument("--max-readers", type=nonnegative_int, default=8,
                    help="потолок читателей регистра, при котором его потребитель идёт "
                         "в артефакт: мера специфичности выхода (умеренные да, горячие нет)")
-    p.add_argument("--max-consumer-decomp", type=int, default=24,
+    p.add_argument("--max-consumer-decomp", type=nonnegative_int, default=24,
                    help="бюджет на C-псевдокод потребителей: таблица печатается полной, "
                         "код - у стольких наиболее специфичных")
     p.add_argument("--export-dir", default=None,
                    help="прогон подготовки: decomp_<addr>.c и listing_<addr>.txt")
+    p.add_argument("--audit-output", default=None,
+                   help="JSON-отчёт успешного blind gate и SHA-256 артефактов")
     args = p.parse_args()
     focus_maps = focus_addrs(args.focus_map, args.focus_maps_file)
     focus_axes = focus_addrs(args.focus_axis, args.focus_axes_file)
@@ -1599,6 +1612,7 @@ def main():
         print(f"компонент в графе: {len(comps)}, артефактов к сборке: {len(jobs)}")
 
         leaked = 0
+        audit_artifacts = []
         for c, focus, focus_axis, fname in jobs:
             text, leaks = build(
                 s, image, args.rom, c, export_dir, catalog, args.max_readers,
@@ -1607,6 +1621,14 @@ def main():
             path = os.path.join(args.out_dir, fname)
             with open(path, "w") as f:
                 f.write(text)
+            with open(path, "rb") as artifact_stream:
+                artifact_sha256 = hashlib.sha256(artifact_stream.read()).hexdigest()
+            audit_artifacts.append({
+                "target_address": focus or focus_axis or c["key"],
+                "path": str(Path(path).resolve()),
+                "sha256": artifact_sha256,
+                "blind_verified": not leaks,
+            })
             if focus_axis:
                 note = (f"ось {focus_axis}, {len(c['maps'])} карт, "
                         f"{len(c['accessors'])} аксессоров")
@@ -1626,6 +1648,32 @@ def main():
     if leaked:
         sys.exit(f"артефактов с разметкой: {leaked} - прогон не годен: агент, читающий "
                  f"ответ, харнесс не проверяет")
+
+    if args.audit_output:
+        builder_path = str(Path(__file__).resolve())
+        with open(builder_path, "rb") as builder_stream:
+            builder_sha256 = hashlib.sha256(builder_stream.read()).hexdigest()
+        audit = {
+            "schema": "vq.blind-artifact-audit/v1",
+            "rom": args.rom,
+            "mode": "focus-maps" if focus_maps else "focus-axes" if focus_axes else "components",
+            "targets": focus_maps or focus_axes or [item["target_address"] for item in audit_artifacts],
+            "builder_path": builder_path,
+            "builder_sha256": builder_sha256,
+            "export_dir": str(Path(export_dir).resolve()),
+            "max_readers": args.max_readers,
+            "max_consumer_decomp": args.max_consumer_decomp,
+            "artifacts": audit_artifacts,
+        }
+        audit_path = str(Path(args.audit_output).resolve())
+        os.makedirs(os.path.dirname(audit_path), exist_ok=True)
+        data = (json.dumps(audit, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode("utf-8")
+        if os.path.exists(audit_path):
+            with open(audit_path, "rb") as existing:
+                if existing.read() != data:
+                    sys.exit(f"blind audit уже существует с другим содержимым: {audit_path}")
+        with open(audit_path, "wb") as audit_stream:
+            audit_stream.write(data)
 
 
 if __name__ == "__main__":

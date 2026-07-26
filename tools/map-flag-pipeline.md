@@ -623,20 +623,20 @@ axis to these maps is currently unknown"), а A2L называет – `State` �
   Stage 4, где ориентация уточняется по RAM-входу оси.
 - Cross-ROM: матч аксессора по окрестности call-графа (`:Func)-[:HOMOLOG]->(:Func)`), перенос
   идентичности `:Map)-[:HOMOLOG]->(:Map)`. Ускоряет незнакомый дамп от размеченного
-  (JK03A <-> 1ND0A/JK78C). Ждёт резолюции второго дампа: 1ND0A в графе есть `:Func` (1909) и
+  (JK03A <-> 1ND0A/JK78C/JK00D). Ждёт резолюции второго дампа: 1ND0A в графе есть `:Func` (1909) и
   `:Reg`, но `:Map` нет. MAGE node2vec/embeddings – опциональный сигнал соседства.
   Целевой JK08A зарегистрирован в `roms.csv`, но отдельного code/map слоя не имеет:
   исполняемый код exact-match JK03A, а отличающиеся calibration/config значения запрещают
   копировать JK03A map nodes без per-ROM экспорта и проверки.
 - Якорь-константа даёт вторую, независимую от call-графа гомологию – и она резолюции второго
   дампа не ждёт. Якорем работает **сигнатура блока, а не само число**: K-Factor `26806`
-  (`0x68B6`) опознаётся по `0000 5E24 A5F0 FFFF [68B6]`, гомологичной на всех пяти образах
-  реестра (1ND0A и 1ND3B – `0x9106`, JK78C – `0x8F80`, JK03A и JK08A – `0x9284`).
-  Значения одного мало, и это измерено: на трёх образах `0x68B6` выровнен по слову
-  единственный раз, но в exact-code паре JK03A/JK08A – дважды, и второе вхождение
-  (`0x162FA`) сигнатуры не несёт, лежит в данных, где его не покрывает ни одна из 439 карт
-  каталога и ни одна из 229 осей, а функций там нет вовсе. Это ячейка таблицы, совпавшая
-  значением, а не второй K-Factor. В том же блоке JK03A кодом уже
+  (`0x68B6`) опознаётся по `0000 5E24 A5F0 FFFF [68B6]`, гомологичной на всех шести образах
+  реестра (1ND0A и 1ND3B – `0x9106`, JK78C – `0x8F80`, JK03A и JK08A – `0x9284`,
+  JK00D – `0x931C`). Значения одного мало, и это измерено: на четырёх образах `0x68B6`
+  выровнен по слову единственный раз, но в exact-code паре JK03A/JK08A – дважды,
+  и второе вхождение (`0x162FA`) сигнатуры не несёт и лежит в данных, где его не покрывает
+  ни одна из 439 карт каталога и ни одна из 229 осей, а функций там нет вовсе. Это
+  ячейка таблицы, совпавшая значением, а не второй K-Factor. В том же блоке JK03A кодом уже
   опознан `Rev Limit - Fuel Cut Maximum` (`0x8FDC`/`0x8FDE`, `FUN_00047a56`), поэтому остальные
   документированные скаляры разумно искать там же.
 
@@ -773,6 +773,106 @@ Recovery заменяет полный frozen-узел со всеми его pr
 до EOF и проходит отдельную состязательную проверку каждого поля. Семантика карты и её шкала
 разрешаются независимо.
 
+Caller-semantics harness `tools/sweep/caller_ab_experiment.py` измеряет наблюдаемый операционный
+контраст вручную одобренного текста direct caller и neutral placebo на 24 frozen focused-map
+items JK03A. Selection commit –
+`b02d3b7157d900a0654b1c63f2c200d8154d315b`, truth commit –
+`849d76a6ea8f2fb931448bf7adb58b6739aa7a40`, SHA-256 LF-соединённого списка адресов –
+`4e9b97f9e9a46d183d96d549403e8264856e1128209f363c6dd1a85bdf3bcc94`, diversity objective –
+`(24,16,7,-4,-12)`, selection tie-break SHA-256 –
+`01889b5fbd018738bef760dd91cdd3fa8b4ef9660a4ed3923cee322d8ba77576`. Private schema v4
+требует две отдельные сборки 24 map-артефактов и два blind audit; exact inventories обязаны
+совпасть побайтово и не содержать stale files или symlink. Audit фиксирует frozen budgets
+`8`/`24` и builder SHA-256; manifest встраивает builder source для исторической проверки. Полный
+Ghidra export root получает рекурсивный inventory обычных файлов с путями, размерами и SHA-256;
+explicit calls/functions/decomp/accessor sources обязаны входить в него. HMAC-SHA256 с private
+32-byte secret скрывает condition/pair/job/card/score mapping; public worklists не содержат truth
+или mapping.
+
+Execution config фиксирует model `claude-opus-4-8`, effort `high`, одинаковый platform-default
+token budget, exact embedded prompts, Workflow scripts и project agent с единственным top-level
+`tools: []` в YAML frontmatter, а также SHA-256 всех runtime sources; model alias не используется. Saved workflows до первого agent-вызова
+проверяют exact
+execution/item schemas, counts, prompts, runtime-binding paths и SHA-256 format. Execution input
+содержит frozen schema, execution-config digest и canonical live runtime binding; Python control
+plane связывает embedded artifact text с hash, citation ranges/excerpts – с допустимыми code fences
+того же текста, и проверяет live source digests. `archive-workflow` повторяет эти проверки до
+архивации. Saved Workflow не является самостоятельной
+криптографической границей доверия.
+Blind worker получает только embedded `artifact_text`: filesystem path и parent-only opaque ids и
+hashes в prompt не входят. Prep использует только frozen Ghidra pseudocode и нейтральные `CALLS`,
+без текущих и исторических `Func.role`/`Func.semantics`. Comments и literal contents удаляются,
+все содержательные identifiers, включая автоматические `param`/`local`/`uVar` имена Ghidra,
+заменяются адресными нейтральными именами либо `ID_<n>`. 21 `Analyze -> adversarial Verify`
+формирует не готовые cards, а `caller-card-candidates/v1` с exact payload digest. `role` и
+`semantics` обязаны быть printable ASCII English. Arm markers
+запрещены. Отдельный ручной просмотр сверяет каждый свободный `role`/`semantics` с cited frozen
+artifact; `finalize-cards` требует полное `caller-card-approvals/v1`, manual-review policy,
+operator attestation и exact digests, затем повторно выводит candidates из prep archive и создаёт
+cards v4. `build-conditions` не принимает candidates напрямую. Реестр project definitions
+загружается при старте Claude Code; после изменения definitions до первого запуска обязательны
+restart и registry smoke-test.
+
+Два opaque условия имеют один исходный map artifact и различаются только caller-card block.
+Exposed map получает approved role/semantics в `verified`; `placebo` сохраняет те же card ids,
+число карточек и layout, но подставляет естественно сформулированные детерминированные нейтральные
+role/semantics. Каждая control map получает одну одинаковую neutral sham-card и byte-identical
+artifact в обоих условиях. Четыре каталога двух `integrity_copies` обязаны быть различными;
+копии проверяют файлы, а stochastic LLM replicate остаётся один и использует copy 1. Поэтому
+estimand является наблюдаемым контрастом approved caller text и neutral placebo, не причинным
+эффектом семантики при tokenizer-identical вводе.
+
+Один и тот же `vq-caller-run` выполняет 48 Map Analyze и 48 Map Verify. Run schema v4 хранит
+`machine_references`, а не directed trace: порядок 8-hex адресов не создаёт ребро, а score
+измеряет покрытие множества адресов legacy truth trace. Arm/condition markers во всех свободных
+строковых полях run payload и verifier rationale запрещены до blind scoring; проверка декодирует
+HTML, удаляет comments и Unicode format controls. `accept_code`
+требует минимум две уникальные machine references. Короткие scalar constants не являются machine
+references. Evidence разбирается canonical parser `provenance.py`; process tokens запрещены.
+Текущий artifact не имеет frozen typed-support registry, поэтому dependency tokens
+`role:addr[+offset]@target_prop` в run response запрещены. Raw location задаётся terminal
+`site:addr`; addressless terminals требуют case-sensitive literal boundary match, а `rom_const`
+требует exact `addr=value` с непустым canonical literal. Evidence anchors, target и machine
+references обязаны присутствовать в artifact и exact непустых fenced citations; unused citation
+отклоняется. Валидатор не приписывает C-коду семантическую роль по словам и не выводит directed
+edges из порядка строк. Семантическую правильность role/disposition/target/semantics проверяют blind
+verifier и закрытый scoring. Verifier возвращает полный Analyze payload дословно; exact равенство
+проверяют Workflow и pre-archive validator.
+
+Archive встраивает фактический script path, exact script source/SHA-256, args/result, полный native
+Workflow output и fresh-launch attestation. Persisted session script принимается только при exact
+source hash runtime binding. Native root и result schemas exact; result types, anchors, citation
+ranges/excerpts против embedded artifacts, Analyze/Verify linkage и completeness проверяются до
+записи completed archive. Если progress содержит
+phase records, они обязаны образовывать canonical sequence. Frozen agent records покрывают frozen
+labels, имеют ровно один `StructuredOutput` tool call на agent, ненулевые aggregate totals, один resolved model из
+allowlist `claude-opus-4-8`/`claude-opus-4-8[1m]` и полное отсутствие
+fallback/retry/cache/error provenance в служебных полях и значениях. Prep, оба run и score используют
+один resolved model. Validated run report повторно выводится из исходных archives и embedded
+sources.
+
+Blind scoring создаёт 48 opaque worklist items. Scorer получает один JSON-encoded объект с
+reference/candidate semantics, без hashes, pair/condition id и соседнего ответа; содержимое строк
+не может закрыть prompt delimiter. `factual_evidence` проецирует reference truth на тот же
+terminal-only run-домен, поэтому запрещённые dependency/process tokens не входят в denominator.
+Все 48 вызовов и raw scores сохраняются независимо. Pooling,
+усреднение byte-identical payloads, retry и fallback отсутствуют. Falsification gate проверяет
+каждый control и каждую компоненту, включая `machine_reference_coverage` и
+`verifier_accepted`, отдельно; любое verifier split делает gate invalid, максимальный абсолютный
+delta обязан быть `<= 1/7`, взаимное погашение controls не учитывается. Нарушение даёт
+`status=invalid_controls` и `observed_paired=null`. Прохождение даёт
+`status=controls_passed`; при одном replicate результат остаётся наблюдаемым парным контрастом и
+`causal_claim=false`. Полный эксперимент содержит 186 agent runs. Saved workflows принимают
+execution object или полную JSON object string, но не путь к файлу. Harness не пишет canonical
+CSV, не поднимает claims до `silicon` и всегда выдаёт `automatic_application=false`. Полный
+контракт, frozen addresses и CLI фаз приведены в `map-sweep.md`. Эксперимент этим контрактом не
+считается запущенным.
+
+Blind audit, cohort digest, runtime binding, manual card approval и Workflow archive проверяют
+локальную воспроизводимость, но не являются криптографической аттестацией доверенного runner.
+Operator attestation фиксирует заявленный fresh launch, а пользователь с правом согласованно
+изменить все локальные входы остаётся внутри trust boundary.
+
 Единица fan-out'а – связная компонента графа "аксессор -> карта", а не карта: один трейс
 потребителя обслуживает все карты своего аксессора, а одну карту читают несколько аксессоров,
 и агент на карту повторял бы один трейс N раз, заявляя разное об одном узле. Агенты читают
@@ -872,7 +972,7 @@ backtrack на сайтах с невыбранной базой, а его сл
 | Output disposition карт `code` | structured evidence различает `writes`, consumer, inline comparison, return и dead control-flow | формат действует: focused-позиции 50-395 покрыты 346/346; backfill прежнего слоя сохранил 41 Map semantics уровня `code` с disposition и понизил 11 неподтверждённых заявок | 100% у Map semantics `code` |
 | Покрытие идентичности | доля `:Map` с `:MATCHES` или `:HOMOLOG` | 0; эталоны в графе (188 `:A2LEntry`, из них 106 карт; 371 `:VendorEntry`, из них 243 заводских), ключи матча – после Stage 4 | подсказка, растёт |
 | Сведение словарей | число `concept`, на которых сходятся A2L и оба вендора | не измерялось -> **17 из 23** размеченных; `concept` несут 45 записей A2L из 188 и 170 вендорских из 371 (49 значений) | растёт разбором; 100% недостижимы – VVEL в A2L нет вовсе (0 записей), флаги размечает Stage 6 |
-| Якоря вендоров в образе | число `:VendorFact {kind:'const'}` со значением, найденным в дампе | 22 задокументировано -> **1 найден** (K-Factor `26806`: сигнатура блока на всех 5 ROM реестра) | все проверены поиском; голое совпадение значения – `pattern` (в JK03A/JK08A их два), сигнатура блока – `candidate`, трейс – `code` |
+| Якоря вендоров в образе | число `:VendorFact {kind:'const'}` со значением, найденным в дампе | 22 задокументировано -> **1 найден** (K-Factor `26806`: сигнатура блока на всех 6 ROM реестра) | все проверены поиском; голое совпадение значения – `pattern` (в JK03A/JK08A их два), сигнатура блока – `candidate`, трейс – `code` |
 | Верификация | доля `code`-карт, дошедших до `silicon` | точечно | по мере стенда |
 
 Эти числа – определение эффективности пайплайна и регрессионный контроль: прогон, снизивший

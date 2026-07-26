@@ -59,6 +59,195 @@ Map-focus сохраняет компонентный контекст одно�
 случайно выбранную карту-представителя. Два независимо собранных набора обязаны совпасть по
 именам и SHA-256, пройти blind-аудит и покрыть все 58 узлов до запуска Workflow.
 
+### Парный эксперимент семантики прямого вызывателя JK03A
+
+`tools/sweep/caller_ab_experiment.py` задаёт отдельный read-only control plane для измерения
+вклада заранее проверенной семантики прямого вызывателя в focused-анализ карты. У CLI нет
+команды применения и записи в `defs/*.csv`. Private manifest, execution inputs, артефакты,
+Workflow archives и отчёты хранятся вне git.
+
+Frozen `selection-v1` содержит ровно 24 карты:
+
+```text
+0000a29a 0000ab4a 0000b23a 0000b33a 0000b71a 0000b81a
+0000d78e 00011ede 00012262 000122b2 00012312 00012908
+00012a32 00012a62 00012e1a 00012e3a 00012fc6 000131a2
+00014114 0001462a 0001473a 0001488a 0001497a 00016f48
+```
+
+Адреса соединяются LF без завершающего LF; SHA-256 списка равен
+`4e9b97f9e9a46d183d96d549403e8264856e1128209f363c6dd1a85bdf3bcc94`. Commit выбора –
+`b02d3b7157d900a0654b1c63f2c200d8154d315b`, commit закрытого truth –
+`849d76a6ea8f2fb931448bf7adb58b6739aa7a40`. Diversity objective равна
+`(24,16,7,-4,-12)`, SHA-256 selection tie-break равен
+`01889b5fbd018738bef760dd91cdd3fa8b4ef9660a4ed3923cee322d8ba77576`. Состав выборки: 21
+уникальный direct caller, 22 exposed maps и 2 identical-input controls.
+
+Execution contract фиксирует:
+
+- model `claude-opus-4-8`, effort `high`, один stochastic replicate и одинаковый
+  platform-default token budget для одной response schema; model alias не используется;
+- SHA-256 и полный embedded source трёх Workflow scripts
+  `.claude/workflows/vq-caller-{prep,run,score}.js`, exact prompts и project agent
+  `.claude/agents/vq-ab-blind-worker.md`;
+- `tools: []` у blind worker и policy
+  `embedded_artifact_no_tools_exact_single_structured_call`;
+- fresh-only запуск с явной operator attestation, без resume, cache reuse, retry и fallback model;
+- exact native Workflow root schema; если native output содержит phase records, они образуют
+  canonical phase sequence; полный набор ожидаемых labels, ровно один `StructuredOutput` tool call
+  на agent run, ненулевые aggregate totals и один resolved model
+  из allowlist `claude-opus-4-8`/`claude-opus-4-8[1m]`;
+- archive envelope из `runId`, фактического `scriptPath`, `scriptSha256`, `scriptSource`, exact
+  `args`, `result`, полного native `workflowOutput`, `status` и `launch`. Persisted session copy
+  Workflow script допустима только при точном совпадении source SHA-256 с runtime binding.
+  Историческая проверка использует embedded source, а перед архивацией SHA-256 live
+  agent/workflow обязан совпасть с execution input. Python preflight дополнительно связывает каждый
+  embedded `artifact_text` с его `artifact_sha256`, а citation ranges/excerpts – с допустимыми code
+  fences того же текста; saved Workflow не является самостоятельной криптографической границей
+  доверия.
+
+Workflow registry и реестр project agents загружаются при старте Claude Code. После первого
+добавления или изменения definitions сессия перезапускается до smoke-test. Smoke-test проверяет
+наличие `vq-ab-blind-worker`, фактические `tools: []`, ровно один вызов `StructuredOutput`,
+отсутствие fallback/retry/cache и вызов всех трёх `vq-caller-*` через object и JSON-string args.
+Отсутствие definition или несовпадение фактической native schema является блокирующим условием,
+а не основанием для fallback на обычного агента с доступом к репозиторию.
+
+Контракт фаз:
+
+1. Focus-map builder двумя отдельными запусками собирает 24 исходных `map-<addr>.md` в
+   разные каталоги штатной командой с `--audit-output`. `freeze` требует оба каталога и оба
+   audit JSON, проверяет раздельность путей, exact inventory без stale files и byte-identical
+   SHA-256 по каждому адресу. Каждый audit фиксирует embedded source и SHA-256 builder, Ghidra
+   export directory, бюджеты ровно `8`/`24` и успешный blind gate. Отрицательные бюджеты CLI не
+   принимает. Дополнительный консервативный literal/normalized scan повторно ищет private truth
+   в обоих наборах.
+2. `freeze` повторно выводит private schema v4 из pinned git blobs и frozen exports. Полный
+   Ghidra export cohort root инвентаризируется рекурсивно: каждый обычный файл получает
+   относительный путь, размер и SHA-256, symlink запрещены. Explicit `calls.csv`, `funcs.csv`,
+   `decomp_*.c` и `accessors.*.csv` обязаны входить в этот inventory, а оба blind audit обязаны
+   ссылаться на тот же root. Manifest хранит truth, `map -> accessor -> direct caller`, две
+   artifact inventories, execution config, embedded builder и закрытое отображение условий.
+   Condition, pair, job, card и score ids выводятся через HMAC-SHA256 с private 32-byte secret.
+   Public worklists не содержат secret, truth или condition mapping.
+3. `build-prep` формирует 21 caller-only artifact только из frozen Ghidra pseudocode и
+   нейтральных `CALLS`. Comments и содержимое string/char literals удаляются с сохранением
+   переносов. Human-authored function/data symbols и остальные содержательные identifiers
+   детерминированно заменяются на адресные `FUN_`/`LAB_`/`DAT_` либо `ID_<n>`; это правило
+   распространяется и на автоматические имена Ghidra с префиксами `param`, `local`, `uVar` и
+   аналогичными. Текущие и исторические
+   `Func.role`/`Func.semantics`, связь с выбранной картой и закрытые ответы запрещены. Адреса
+   выборки и совпадения с private truth маскируются; literal/normalized leak scan работает
+   fail-closed. Prep execution input удаляет `artifact_path` и встраивает назначенный
+   `artifact_text` непосредственно в item. Opaque ids и hashes остаются у Workflow parent и
+   присоединяются к structured result после ответа blind worker; в prompt модели они не входят.
+4. Один `vq-caller-prep` выполняет 21 `Analyze` и 21 adversarial `Verify`. Workflow показывает
+   артефакт как `N|RAW_LINE`; structured citation хранит one-based диапазон и exact raw excerpt
+   без префикса номера. Verify обязан вернуть role, semantics и citations дословно; это соответствие
+   и привязка citation к embedded артефакту проверяются в Workflow и до записи completed archive.
+   Verifier rationale проходит ту же arm-neutrality проверку. `validate-prep` принимает только полное
+   покрытие, однострочные target-independent printable-ASCII-English `role`/`semantics`,
+   ranges/excerpts внутри `Machine evidence` fence и отсутствие прямых либо HTML-кодированных arm
+   markers `verified`, `placebo`, `baseline`, `treatment`, `enriched`. Результат этой команды имеет
+   schema `vq.caller-card-candidates/v1`, а не является готовыми карточками. Каждый candidate
+   содержит digest exact payload. Отдельный ручной просмотр сверяет свободный текст с cited frozen
+   caller artifact и создаёт полный `vq.caller-card-approvals/v1` с exact payload digests,
+   `manual_exact_payload_against_cited_frozen_artifact` и operator attestation. Команда
+   `finalize-cards` отклоняет missing, reject и digest drift, повторно выводит candidates из
+   immutable worklist, execution input и полного Workflow archive и только после этого создаёт
+   `vq.caller-semantics-cards/v4`.
+5. `build-conditions` принимает только finalized cards с повторно проверенными candidates и
+   approvals и вставляет одинаково размеченный caller-card block в исходные map-артефакты. В закрытом условии `verified` exposed map получает frozen cards. В условии
+   `placebo` те же card ids, число карточек и layout получают естественно сформулированные
+   детерминированные нейтральные `role`/`semantics`, выбранные по opaque card id. Каждая control
+   map получает одну и ту же neutral sham-card и полный byte-identical artifact в обоих
+   условиях. Estimand равен наблюдаемому операционному контрасту проверенного caller text и
+   neutral placebo, а не абстрактному эффекту семантики при tokenizer-identical вводе. Для
+   каждого условия создаются две byte-identical `integrity_copies`; четыре каталога и их file
+   sets обязаны быть различными. Это проверка файлов, а не дополнительные LLM-запуски.
+   Исполняется только copy 1, `stochastic_replicates=1`. `verify-artifacts` проверяет exact
+   schemas/inventory/SHA-256, отсутствие symlink, card inventory, байты вне block, точный block
+   каждого условия и идентичность controls.
+6. Один и тот же `vq-caller-run` запускается отдельно с двумя opaque execution inputs. Каждый
+   item содержит embedded artifact text без пути и sibling condition; строки показываются модели
+   как `N|RAW_LINE`. На условие требуются 24 `Analyze` и 24 adversarial `Verify`. Run schema v4
+   хранит `machine_references`, а не направленный trace: это последовательность 8-hex адресов для
+   проверки принадлежности и score coverage, текстовый порядок не создаёт ребро. Короткие scalar
+   constants в этот набор не входят. Evidence разбирается только canonical parser из
+   `tools/memgraph/provenance.py`. Поскольку текущий frozen artifact не имеет отдельного
+   typed-support registry, dependency tokens `role:addr[+offset]@target_prop` в run response
+   запрещены; raw machine location записывается как `site:addr`, а addressless terminals требуют
+   case-sensitive literal boundary match в citation. `rom_const` требует форму `addr=value` с
+   непустым canonical literal. Каждая evidence machine anchor, result target и machine reference
+   обязана присутствовать и в artifact, и в exact непустой citation из fenced code block; unused
+   citation отклоняется. Проверка не выводит directed edge из соседства строк или порядка адресов.
+   `accept_code` требует минимум две уникальные machine references и resolved disposition;
+   `accept_code + unresolved` запрещён. Семантическая правильность `role`, `disposition`, target и
+   semantics остаётся предметом blind Analyze, adversarial Verify и закрытого scoring, а не
+   эвристического разбора C по словам. Arm/condition markers во всех свободных строковых полях run
+   payload и verifier rationale отклоняются до построения score worklist; проверка декодирует HTML,
+   удаляет comments и Unicode format controls. Verifier возвращает полный Analyze object дословно; Workflow и pre-archive validator проверяют exact
+   равенство. Если два fresh archive содержат native phase records, они обязаны образовывать
+   canonical phase sequence. Frozen agent record type должен покрывать exact 48 labels, иметь ровно
+   один вызов `StructuredOutput` на agent run, `totalToolCalls == agentCount`, ненулевой
+   `totalTokens`, один resolved model из allowlist
+   `claude-opus-4-8`/`claude-opus-4-8[1m]`, полное отсутствие fallback/retry/cache/error provenance
+   в служебных полях и значениях и exact result. `archive-workflow` проверяет result schema, типы,
+   anchors и полноту до записи completed archive. Prep, оба run и score обязаны иметь один resolved
+   model. Report повторно выводится из исходных archives.
+7. `build-score` создаёт 48 opaque items. Blind scorer видит только один JSON-encoded объект с
+   `reference_semantics` и `candidate_semantics`, без hashes, pair id, condition id, mapping и
+   соседнего ответа. Строки трактуются как quoted data; JSON encoding не позволяет содержимому
+   закрыть текстовый delimiter. Workflow parent присоединяет score id и candidate SHA-256 после
+   ответа. `vq-caller-score` выполняет и сохраняет все 48 независимых вызовов. Даже byte-identical
+   payload controls сохраняют два raw scorer observations: pooling, усреднение дубликатов и
+   повторный вызов отсутствуют. Это позволяет controls наблюдать stochastic scorer drift при
+   единственном replicate.
+8. `compare` соединяет результаты только через private mapping. Reference factual evidence
+   проецируется на тот же terminal-only run-домен: запрещённые dependency и process tokens не
+   входят в denominator. Семь содержательных компонент
+   сохраняются как raw scores; при verifier `refute` итоговый gated total равен нулю.
+   Falsification gate проверяет каждый control и каждую компоненту отдельно: максимальный
+   абсолютный delta среди `decision`, `role`, `disposition`, `target`, `factual_evidence`,
+   `machine_reference_coverage`, `semantics`, `raw_total`, `verifier_accepted` и `total` обязан
+   быть `<= 1/7`; любое расхождение `verifier_accepted` дополнительно делает gate invalid.
+   Взаимное погашение control deltas не учитывается. При нарушении status равен
+   `invalid_controls`, `observed_paired` равен `null`, raw output сохраняется для диагностики.
+   При прохождении status равен `controls_passed`, а `observed_paired` содержит mean/median,
+   wins/ties/losses и field deltas для 22 exposed maps. Один stochastic replicate не поддерживает
+   причинную интерпретацию, поэтому `causal_claim=false`. Native output аттестует aggregate
+   token/tool totals запуска, но не per-item monetary costs, поэтому costs отмечаются
+   `measured=false`. `automatic_application=false` обязателен.
+
+Полный запуск содержит 186 agent runs: 21 prep Analyze, 21 prep Verify, 48 map Analyze, 48 map
+Verify и 48 blind semantics scores. Ручное approval карточек не создаёт LLM-запусков.
+Независимый code review в это число не входит.
+
+CLI предоставляет команды `freeze`, `build-prep`, `archive-workflow`, `validate-prep`,
+`finalize-cards`, `build-conditions`, `verify-artifacts`, `validate-run`, `build-score`,
+`validate-score`, `compare`, `status` и штатный `--help`; все пути задаются явно. `freeze` требует
+`--map-artifacts`/`--blind-audit` и независимую пару
+`--map-artifacts-replica`/`--blind-audit-replica`. Workflow получает содержимое
+соответствующего `*-execution.json` через `args` как JSON object; saved workflows также принимают
+полную JSON object string, но не путь к файлу. Перед первым `pipeline`/`agent` они проверяют exact
+top-level/item schemas, counts, ids, prompts, runtime-binding paths и SHA-256 format. Exact live
+source digests, execution-config digest и связь embedded artifact text с hash проверяет Python
+control plane; этот слой остаётся доверенной границей локального запуска. Blind agent source обязан
+иметь единственный top-level `tools: []` в YAML frontmatter; вложенная строка-приманка или строка в
+теле definition не считается policy. `archive-workflow` принимает сохранённый native output, fresh
+run id, фактический script path и обязательный `--fresh-launch-attested`, проверяет exact execution
+schema, live execution-config digest, canonical runtime binding, native result
+schema/types/completeness, citation ranges/excerpts против embedded artifacts, exact Analyze/Verify
+linkage и progress provenance, затем встраивает
+script source и его SHA-256. Эксперимент этим контрактом не считается запущенным.
+
+Audit JSON, aggregate cohort digest и Workflow archive являются локальными воспроизводимыми
+проверками, а не криптографической аттестацией доверенного runner. Operator attestation фиксирует
+заявленный fresh launch, но не является независимой внешней аттестацией. Локальный пользователь с
+правом изменять одновременно артефакты, audits, private manifest и native output остаётся внутри
+trust boundary. Две независимые сборки ловят недетерминизм и случайный drift, но не защищают от
+намеренной согласованной подделки всех локальных входов.
+
 **Список компонент здесь не записан.** Он выводится из графа запросом на каждом прогоне: граф
 меняется разметкой, и записанный список стал бы вторым источником правды (P5). Числа ниже –
 состояние на момент закрытия Stage 4, они якорь для сверки, а не источник.
@@ -180,10 +369,12 @@ scale-family, семантика осей) два последних сами с
 
 ```bash
 D=~/tools/ghidra-projects/export-JK03A
-H="tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr -process as7058.bin \
-     -noanalysis -scriptPath tools/ghidra"
-$H -postScript DecompileFuncs.java "$D" <аксессоры волны>
-$H -postScript DumpListing.java    "$D" <сайты волны> <ядра волны без разметки>
+H() {
+  tools/ghidra/headless-analyze.sh "$HOME/tools/ghidra-projects" vq-hr \
+    -process as7058.bin -noanalysis -scriptPath tools/ghidra "$@"
+}
+H -postScript DecompileFuncs.java "$D" <аксессоры волны>
+H -postScript DumpListing.java    "$D" <сайты волны> <ядра волны без разметки>
 uv run --no-project --with neo4j python tools/sweep/build_artifacts.py <out> --accessor <addr>
 ```
 
