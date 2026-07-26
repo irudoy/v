@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""lock_setbit_scan.py -- доказательство sole-setter immo Lock-бита для HR-ЭБУ (ядро SH-2E).
+"""lock_setbit_scan.py -- консервативная sole-setter проверка immo Lock-бита (SH-2E).
 
 Патч always-ID-OK глушит один сайт L1 (`or.b`, выставляющий Lock-бит). Корректность
 опирается на то, что Lock-бит переводит в 1 ровно эта инструкция. Lock-байт при этом --
@@ -7,18 +7,22 @@
 и в него пишут несколько функций. Поэтому проверяется не "единственный писатель байта", а
 "единственный, кто СТАВИТ Lock-бит (0->1)".
 
-Метод (SH-2, big-endian, фикс. 16 бит; capstone не нужен -- декодируются только нужные формы
+Метод (SH-2, big-endian, фикс. 16 бит; capstone не нужен -- декодируются нужные формы
 одним forward-проходом с моделью регистров и gbr, сброс на rts). Пути записи в байт RAM:
-  or.b #k,@(r0,gbr)    -- SET, если (k & mask)          <- единственный законный = L1
-  xor.b #k,@(r0,gbr)   -- SET-capable, если (k & mask)  (тоггл поднимает из 0)
-  and.b #k,@(r0,gbr)   -- CLEAR/preserve, бит не ставит
-  mov.b R0,@(disp,gbr) -- store (old & and_acc) | or_acc; из 0 поднимает только (or_acc & mask)
-  mov.b Rm,@Rn         -- абсолютный указатель (литерал == lock)
-Для mov.b-store провенанс r0 из old-байта трекается как (and_acc, or_acc) поверх @(disp,gbr).
+  or.b #k,@(r0,gbr)       -- SET, если (k & mask)          <- единственный законный = L1
+  xor.b #k,@(r0,gbr)      -- SET-capable, если (k & mask)  (тоггл поднимает из 0)
+  and.b #k,@(r0,gbr)      -- CLEAR/preserve, бит не ставит
+  mov.b R0,@(disp,gbr)    -- store (old & and_acc) | or_acc; SET только при (or_acc & mask)
+  mov.b Rm,@Rn / @-Rn     -- store через абсолютный указатель
+  mov.b Rm,@(r0,Rn)       -- индексный store через абсолютный указатель
+  mov.b R0,@(disp,Rn)     -- store через base+disp
+Для GBR-store провенанс r0 из old-байта трекается как (and_acc, or_acc).
 
-Результат (эталонные ROM проекта): по всем четырём -- ровно 1 setter Lock-бита (L1), 0 mov.b
-поднимающих из 0, 0 неразрешённых у immo-базы, 0 записей через прямой литерал. Прогон из
-корня репозитория или откуда угодно (пути -- относительно этого файла)."""
+Линейная модель не заменяет CFG/data-flow Ghidra: неизвестная кодогенерация или адрес,
+который модель не разрешила, требуют отдельной проверки. Verdict означает чистоту
+поддерживаемых форм и литералов, а не доказательство всех возможных SH-вычислений адреса.
+На эталонных ROM проекта эти формы дают один setter L1, 0 опасных mov.b, 0 неразрешённых
+GBR-записей и 0 непроверенных прямых литеральных записей. Прогон работает из любого cwd."""
 import os
 import struct
 
@@ -31,13 +35,33 @@ ROMDIR = os.path.join(SCRIPT_DIR, "..", "rom-images")
 #   `movi20s` != disp Lock-байта. Не писатели Lock-бита. У 1.0-МиБ портов таких нет.
 # benign_lit -- литерал-указатель на Lock-байт, чей единственный потребитель (registration)
 #   ставит bit0 (registered) индексной записью `mov.b Rm,@(r0,Rn)`, а не Lock-бит.
+# benign_store -- индексные mov.b в Lock-байт, для которых Ghidra listing/data-flow
+#   подтверждает RMW только иных битов с сохранением mask. Расширенный scan_reg_stores
+#   включён у exact-code пары JK03A/JK08A, где все кандидаты выверены адресно.
+JK03A_BENIGN_STORES = {
+    0x07795C,  # RMW bit7
+    0x077EDC,  # RMW bit7
+    0x087838,  # RMW bit0
+    0x0CF3E8,  # clear bit3/bit5
+    0x0CFA54,  # clear bit4
+    0x0CFDD2,  # set bit4
+    0x0D0348,  # set bit3
+}
+
 ROMS = [
     dict(name="1ND0A", path="1ND0A_Stock.bin", lock=0xFFFEB852, mask=0x02, site=0x0BF0C8,
          benign={0x04199A, 0x095072, 0x0B00BA, 0x0B24B6, 0x0B24CE, 0x0C46AA,
                  0x0C48F2, 0x0EF92A, 0x0EF92E, 0x0EF936, 0x11F2D2},
          benign_lit={0x0CD1D0}),
     dict(name="JK78C", path="JK78C.bin",        lock=0xFFFF4567, mask=0x02, site=0x0AF8A0),
-    dict(name="JK03A", path="v36-vq25hr-jk03a/as7058.bin", lock=0xFFFF4201, mask=0x04, site=0x08D7C8),
+    dict(name="JK03A", path="v36-vq25hr-jk03a/as7058.bin", lock=0xFFFF4201,
+         mask=0x04, site=0x08D7C8, scan_reg_stores=True,
+         benign_store=JK03A_BENIGN_STORES),
+    dict(name="JK08A",
+         path=("1JK08A_7MFKAVN86-20260726-064107/"
+               "1JK08A_7MFKAVN86-20260726-064107.bin"),
+         lock=0xFFFF4201, mask=0x04, site=0x08D7C8, scan_reg_stores=True,
+         benign_store=JK03A_BENIGN_STORES),
     dict(name="JK00D",
          path="1JK00D_8MFK36N15-20260726-013734/1JK00D_8MFK36N15-20260726-013734.bin",
          lock=0xFFFF43B8, mask=0x08, site=0x092488),
@@ -53,7 +77,11 @@ def s8(b):
 
 
 def scan(rom):
-    d = open(os.path.join(ROMDIR, rom["path"]), "rb").read()
+    with open(os.path.join(ROMDIR, rom["path"]), "rb") as handle:
+        return scan_data(rom, handle.read())
+
+
+def scan_data(rom, d):
     N, lock, mask = len(d), rom["lock"], rom["mask"]
 
     reg = [None] * 16       # последнее известное значение регистра
@@ -140,9 +168,26 @@ def scan(rom):
                         dangers.append((off, f"store #{reg[0] & 0xFF:#x}", "SET-const"))
                 else:
                     unresolved.append((off, "mov.b(gbr) r0=?", gbr))
-        elif hn == 0x2 and (b1 & 0xF) == 0x0:               # mov.b Rm,@Rn (абсолютный)
+        elif (rom.get("scan_reg_stores") and hn == 0x8
+              and (b1 & 0xF) == 0x0):                         # mov.b r0,@(disp,Rn)
+            n, disp = ln, b1 >> 4
+            eff = (reg[n] + disp) & 0xFFFFFFFF if reg[n] is not None else None
+            if eff == lock:
+                absptr.append((off, "mov.b r0,@(disp,Rn)", 0))
+        elif hn == 0x2 and (b1 & 0xF) == 0x0:               # mov.b Rm,@Rn
             if reg[ln] == lock:
-                absptr.append((off, b1 >> 4))
+                absptr.append((off, "mov.b Rm,@Rn", b1 >> 4))
+        elif rom.get("scan_reg_stores") and hn == 0x2 and (b1 & 0xF) == 0x4:  # mov.b Rm,@-Rn
+            eff = (reg[ln] - 1) & 0xFFFFFFFF if reg[ln] is not None else None
+            if eff == lock:
+                absptr.append((off, "mov.b Rm,@-Rn", b1 >> 4))
+            reg[ln] = eff
+            old[ln] = False
+        elif rom.get("scan_reg_stores") and hn == 0x0 and (b1 & 0xF) == 0x4:  # mov.b Rm,@(r0,Rn)
+            eff = ((reg[0] + reg[ln]) & 0xFFFFFFFF
+                   if reg[0] is not None and reg[ln] is not None else None)
+            if eff == lock:
+                absptr.append((off, "mov.b Rm,@(r0,Rn)", b1 >> 4))
         off += 2
 
     lit_hits = [o for o in range(0, N - 3, 2) if u32(d, o) == lock]
@@ -156,12 +201,14 @@ def main():
         r = scan(rom)
         benign = rom.get("benign", set())
         benign_lit = rom.get("benign_lit", set())
+        benign_store = rom.get("benign_store", set())
         unresolved = [u for u in r["unresolved"] if u[0] not in benign]
         lit_hits = [o for o in r["lit_hits"] if o not in benign_lit]
+        absptr = [item for item in r["absptr"] if item[0] not in benign_store]
         clean = (len(r["setters"]) == 1 and r["setters"][0][0] == rom["site"]
-                 and not r["dangers"] and not unresolved and not r["absptr"]
+                 and not r["dangers"] and not unresolved and not absptr
                  and not lit_hits)
-        verdict = "OK: единственный setter = L1" if clean else "ВНИМАНИЕ: проверить находки"
+        verdict = "OK: единственный setter в модели = L1" if clean else "ВНИМАНИЕ: проверить находки"
         if not clean:
             rc = 1
         print(f"\n===== {rom['name']}  lock={rom['lock']:#010x} bit(mask={rom['mask']:#x}) "
@@ -178,8 +225,12 @@ def main():
         for off, op, gbr in unresolved:
             print(f"    @{off:#08x} {op} gbr={gbr:#x}")
         nl = f" (+{len(benign_lit)} выверенный: registered, не Lock)" if benign_lit else ""
-        print(f"  absolute mov.b на lock-указатель: {len(r['absptr'])}  "
+        ns = (f" (+{len(benign_store)} выверенных Ghidra RMW иных битов)"
+              if benign_store else "")
+        print(f"  непроверенные mov.b на lock-адрес: {len(absptr)}{ns}  "
               f"(литерал==lock в пуле: {[hex(x) for x in lit_hits]}{nl})")
+        for off, form, source in absptr:
+            print(f"    @{off:#08x} {form}, source=r{source}")
     return rc
 
 

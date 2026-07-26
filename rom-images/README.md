@@ -1,17 +1,16 @@
 # ROM images – манифест дампов
 
-Ground-truth ROM-дампы проекта **VQ HR ECU**: образы с RomRaider forum и собственное
-чтение физического стендового ЭБУ.
+Ground-truth ROM-дампы проекта **VQ HR ECU**: образы с RomRaider forum и собственные
+чтения физических ЭБУ.
 Бинарники (`*.bin`, `*.zip`, `*.7z`) версионируются в git; этот файл – манифест
 идентификации. Дамп опознаётся по `sha256`.
 
 `1ND0A` / `1ND3B` (1.5 MiB, SH7059, JDM) и `JK78C` (1.0 MiB, SH7058, USDM) – **VQ37VHR**,
-один мотор в двух поколениях ЭБУ, гомолог-пара для реверса. `JK03A` (1.0 MiB, SH7058, JDM) –
-**VQ25HR** той же модели, что тестовая платформа проекта (V36 Skyline 250GT), комплект
-`ROM + внешний SPI EEPROM` (единственный комплект с EEPROM). `JK00D` (1.0 MiB, SH7058) –
-собственный ROM физического стендового ЭБУ **VQ35HR**. Целевой `23710-JK08A` машины
-дампом не снят. Документация физических блоков – в Obsidian-проекте (`../AGENTS.md`).
-Документация проекта – в Obsidian:
+один мотор в двух поколениях ЭБУ, гомолог-пара для реверса. `JK03A` и `JK08A` (1.0 MiB,
+SH7058, JDM) – **VQ25HR** V36 Skyline 250GT: JK03A является форумным комплектом
+`ROM + внешний SPI EEPROM`, JK08A – собственное чтение целевого ЭБУ машины без EEPROM.
+`JK00D` (1.0 MiB, SH7058) – собственный ROM физического стендового ЭБУ **VQ35HR**.
+Документация физических блоков и проекта находится в Obsidian:
 `🎛️ Electronics/VQ HR ECU Tuning` (см. `../AGENTS.md`).
 
 Ядро MCU – **SH-2E** (SH-2 + single-precision FPU), подтверждено даташитом Renesas
@@ -26,6 +25,7 @@ Ground-truth ROM-дампы проекта **VQ HR ECU**: образы с RomRai
 | `1ND3B_Stock.bin` | 1 572 864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND3B | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
 | `JK78C.bin`       | 1 048 576 (0x100000) | 1.0 MiB / SH7058 * | 23710-JK78C | Infiniti G37 (2008-09)     | VQ37VHR | USDM | CAN * |
 | `v36-vq25hr-jk03a/as7058.bin` | 1 048 576 (0x100000) | 1.0 MiB / SH7058 | 23710-JK03A | V36 Skyline 250GT | VQ25HR | JDM | CAN * |
+| `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | 1 048 576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK08A | V36 Skyline 250GT | VQ25HR | JDM | CAN |
 | `1JK00D_8MFK36N15-20260726-013734/1JK00D_8MFK36N15-20260726-013734.bin` | 1 048 576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00D | стендовый ЭБУ | VQ35HR | не установлен | CAN |
 
 Префикс `23710` – Nissan/Infiniti part # для ECM (по каталогу parts.nissanusa).
@@ -35,6 +35,14 @@ Ground-truth ROM-дампы проекта **VQ HR ECU**: образы с RomRai
 MCU (`SH705822N`), софт (`7MFKAVN86`) и калибровка (`1JK03A00000`) самоидентифицируются
 строками внутри образа; immo-контур разобран в `../patches/immo-always-id-ok.md` (секция JK03A).
 Провенанс форумного поста – `v36-vq25hr-jk03a/README.md`.
+
+`JK08A` – собственное чтение целевого ЭБУ V36 Skyline 250GT от 2026-07-26. PCMFlash
+1.2.0, модуль 18 через Scanmatik-SM2 USB; внутри ROM находятся `1JK08A00000`,
+`7MFKAVN86` и `SH705822N`. От JK03A отличается 121 байтовая позиция в
+`0x008200..0x0190c9`, при этом `0x000000..0x0081ff` и весь `0x020000..0x0fffff`
+совпадают побайтно. Код и пять NATS patch-sites являются exact-match; calibration/config
+данные не тождественны. Комплект не содержит EEPROM и снимка PCMFlash. Полный локальный
+провенанс – в `1JK08A_7MFKAVN86-20260726-064107/README.md`.
 
 `JK00D` – собственное чтение физического стендового ЭБУ от 2026-07-26. PCMFlash 1.2.0,
 модуль 18 через Scanmatik-SM2 USB, сообщает `23710-JK00D`, калибровку `1JK00D00000`,
@@ -75,6 +83,9 @@ MCU (`SH705822N`), софт (`7MFKAVN86`) и калибровка (`1JK03A00000`
   Skyline V36 VQ25HR 2WD 5AT, 23710-JK03A, SW `7MFKAVN86`, 7058 MCU, "ROM + SPI EEPROM".
   Part # / SW / калибровка (`1JK03A00000`) подтверждены строками внутри образа – **высокая
   уверенность**. Дамп EEPROM (`95320my_sinhro`) из того же поста.
+- `JK08A`: собственный физический целевой блок V36 Skyline 250GT. Part # и способ чтения
+  подтверждены локальным provenance; идентификатор ПО, калибровка, SH7058-класс и размер
+  flash подтверждены содержимым ROM – **высокая уверенность**. Внешний EEPROM не прочитан.
 - `JK00D`: собственный физический стендовый блок. Part #, идентификатор ПО, калибровка,
   SH7058-класс, размер flash и CAN подтверждены чтением и идентификацией PCMFlash –
   **высокая уверенность**. Модель автомобиля и рынок исходного донора не установлены;
@@ -101,8 +112,11 @@ Ground truth – в железе; part # и тред – ориентир, фи�
 ## Патченые образы (immo always-ID-OK)
 
 Выходы `../patches/apply_immo_patch.py` (спека – `../patches/immo-always-id-ok.md`): форсируют
-ECM-side "ID OK" и снимают immo-Lock. Суффикс `_UNCHECKSUMMED` – checksum не пересчитан
-(пересчёт на стороне флешера, SM2PRO). Версионируются в git.
+ECM-side "ID OK" и снимают immo-Lock. Суффикс `_UNCHECKSUMMED` означает, что checksum
+не пересчитан и коррекция делегируется флешеру. Суффикс `_CHECKSUMMED` означает локальную
+самосогласованность по проверенным runtime selftest и SUM16 целевого exact-layout.
+Оба статуса относятся к уровню `code/offline`; готовность к записи и запуск подтверждаются
+только hardware-проверкой. Бинарники версионируются в git.
 
 | Файл | База | Патч |
 |------|------|------|
@@ -110,6 +124,8 @@ ECM-side "ID OK" и снимают immo-Lock. Суффикс `_UNCHECKSUMMED` �
 | `1ND0A_immo-id-ok_l2b_UNCHECKSUMMED.bin` | `1ND0A_Stock.bin` | L1+L2+L2b |
 | `JK03A_immo-id-ok_UNCHECKSUMMED.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2 (ядро) |
 | `JK03A_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` | `v36-vq25hr-jk03a/as7058.bin` | L1+L2+L2b+esc |
+| `JK08A_immo-id-ok_CHECKSUMMED.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2 (ядро; первая hardware-проверка) |
+| `JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` | `1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin` | L1+L2+L2b+esc (условный fallback) |
 | `JK78C_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` | `JK78C.bin` | L1+L2+L2b+esc |
 
 ### sha256 (патченые)
@@ -118,4 +134,6 @@ ECM-side "ID OK" и снимают immo-Lock. Суффикс `_UNCHECKSUMMED` �
 - `1ND0A_immo-id-ok_l2b_UNCHECKSUMMED.bin` – `d60828140946fd6c1cd5e5ca211252e338f952182293f296522ca5ad3bee3d13`
 - `JK03A_immo-id-ok_UNCHECKSUMMED.bin` – `432ef461acad0373176244e1123c3c2b8a0908c48887ac3f1d32a2e204b6ba06`
 - `JK03A_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` – `d39661b71def4a768280c46134cff2e378d7a55a36935d5609026bc0f55957d0`
+- `JK08A_immo-id-ok_CHECKSUMMED.bin` – `768d8280eb6fd9d2e3261bd3710e8d6034fc1552b61c71c98cb2ce69565eb445`
+- `JK08A_immo-id-ok_l2b_esc_CHECKSUMMED.bin` – `27e7e26da038af6e37c45efea2454335a7f4d02007fc51418af7a950d7490396`
 - `JK78C_immo-id-ok_l2b_esc_UNCHECKSUMMED.bin` – `a7cf5b91789e934b5f4febd6579a15e8b609eb0d45b8261b13e61d5bef520cc9`

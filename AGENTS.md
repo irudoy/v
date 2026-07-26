@@ -6,10 +6,12 @@ MCU Renesas SH7058 / SH7059, ядро SH-2E):
 - **VQ37VHR** – VVEL + dual CVTC;
 - **VQ35HR**, **VQ25HR** – dual CVTC, без VVEL.
 
-Тестовая платформа – **V36 Skyline 250GT** (VQ25HR, в доступе), ЭБУ `23710-JK08A`; дампа с
-него нет, RE VQ25HR идёт по донорскому `JK03A` (`rom-images/README.md`). Целевое применение –
-**VQ35HR** и **VQ37VHR**. **P0-веха – отшитие NATS** (PoC). Reflash – **SM2PRO**
-(J2534, bench/boot); заводская диагностика – **CONSULT-III Plus** через **Nissan VCI WiFi**.
+Тестовая платформа – **V36 Skyline 250GT** (VQ25HR, в доступе), ЭБУ `23710-JK08A`.
+Собственный flash-ROM снят через PCMFlash; его исполняемый код побайтно совпадает с
+донорским `JK03A`, calibration/config различается (`rom-images/README.md`). Целевое
+применение – **VQ35HR** и **VQ37VHR**. **P0-веха – отшитие NATS** (PoC). Reflash –
+**SM2PRO** (J2534, bench/boot); заводская диагностика – **CONSULT-III Plus** через
+**Nissan VCI WiFi**.
 
 ## Принцип работы: два контура
 
@@ -70,9 +72,10 @@ SHA-256. Промежуточные данные пишутся сразу на 
 
 ## Карта репозитория
 
-- `rom-images/` – ROM-дампы (`*.bin` + архивы) с RomRaider forum: VQ37VHR (гомолог-пара
-  SH7058 USDM / SH7059 JDM) и донорский `JK03A` (VQ25HR, тот же мотор, что тестовая платформа),
-  плюс immo-патченные варианты. Версионируются в git; манифест
+- `rom-images/` – ROM-дампы (`*.bin` + архивы): VQ37VHR с RomRaider forum (гомолог-пара
+  SH7058 USDM / SH7059 JDM), донорский `JK03A` и собственный целевой `JK08A`
+  (VQ25HR, exact-code пара с разными calibration/config), плюс immo-патченные варианты.
+  Версионируются в git; манифест
   `rom-images/README.md` (sha256, part #, идентификация, источники). Дамп опознаётся по sha256.
 - `refs/` – внешние даташиты / мануалы (Renesas SH7059 HW manual, PCMflash module list,
   Bosch LSU 4.9, NERS, MoTeC M150, UpRev) + зеркало NissanECU RE wiki (`refs/nissanecu-wiki/`).
@@ -89,8 +92,8 @@ SHA-256. Промежуточные данные пишутся сразу на 
   (Pytrex, a33b) как референс карт (манифест и релевантность – `defs/README.md`); свои дефы
   под целевой ROM – по мере RE.
 - `patches/` – спеки и скрипты патчей immo (`immo-always-id-ok.md`; `apply_immo_patch.py`,
-  `lock_setbit_scan.py`) и спека самотеста контрольной суммы ПЗУ
-  (`rom-selftest-checksum.md`: домены, эталоны, порядок пересчёта после правки образа);
+  `lock_setbit_scan.py`) и спека контрольных сумм ПЗУ
+  (`rom-selftest-checksum.md`: SUM16, runtime selftest-домены, эталоны и порядок пересчёта);
   патченые образы – в `rom-images/`. Экспорты Ghidra и Ghidra-проект –
   вне репозитория (`~/tools/ghidra-projects/`, регенерируемы).
 
