@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Ledger карт defs/<rom>.maps.csv - проекция каталога из графа.
+"""Ledger карт канонического ROM - проекция каталога из графа.
 
 Система учёта - граф: карты, их входы интерполяции, оси и аксессоров кладёт туда
 load_maps.py из переписей резолвера (Stage 3) и ручного слоя. Ledger - читаемый срез
 этого каталога: worklist разбора, который виден в диффе и проходит ревью. Правится он
-не правкой файла: геометрия входов живёт в defs/<rom>.interp.csv, находки - в
-defs/<rom>.findings.csv, а этот скрипт только печатает то, что уже в графе.
+не правкой файла: геометрия и находки живут в каноническом источнике, который
+разрешает defs/rom-inheritance.toml, а этот скрипт только печатает граф.
 
 Открытая работа - строки с уровнем candidate и пустой semantics. Отдельной колонки
 status здесь нет: она была бы рендером уровня, роли и семантики, то есть копией
@@ -14,7 +14,8 @@ status здесь нет: она была бы рендером уровня, р
 Колонка vals - диапазон ячеек, измеренный по образу (Stage 4). Она и делит открытую
 работу: таблица 0..0 либо сплошь 0xFF стоит разбора иначе, чем поверхность значений.
 
-Запуск: uv run --no-project --with neo4j python tools/maps/build_tracker.py [<rom>]
+Запуск: uv run --no-project --with neo4j python tools/maps/build_tracker.py \
+          [<rom>] [<output.csv>]
 """
 import csv
 import os
@@ -23,6 +24,8 @@ from neo4j import GraphDatabase
 
 BOLT = "bolt://localhost:7687"
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import rom_sources  # noqa: E402
 
 FIELDS = ["table", "family", "via", "kernel", "dim", "storagetype", "vals", "scaling",
           "axis_x", "axis_y", "accessors", "sites", "confidence", "role", "semantics",
@@ -112,8 +115,21 @@ def report(out, tracker):
 
 
 def main():
-    rom = sys.argv[1] if len(sys.argv) > 1 else "JK03A"
-    tracker = os.path.join(ROOT, "defs", f"{rom}.maps.csv")
+    rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
+    try:
+        source_model = rom_sources.resolve(rom)
+        rom_sources.verify_image_binding(source_model)
+    except ValueError as error:
+        sys.exit(str(error))
+    if len(sys.argv) > 2:
+        tracker = sys.argv[2]
+    elif source_model.inherited:
+        sys.exit(
+            f"{rom} наследует аннотации из {source_model.source}; "
+            "его ledger в defs не хранится, укажите временный output.csv"
+        )
+    else:
+        tracker = os.path.join(ROOT, "defs", f"{rom}.maps.csv")
 
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:

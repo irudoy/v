@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # Слой понимания кода и провенанс заявок (tools/map-flag-pipeline.md, разделы 5 и 11).
-# Источники истины: defs/<rom>.funcs.csv, vars.csv, findings.csv и axes.csv.
+# Источники истины разрешает defs/rom-inheritance.toml. Канонический JK08A хранит
+# единственный живой набор funcs/vars/findings/axes; exact-code ROM наследуют его.
 # Узлы и :RESTS_ON в Memgraph являются проекцией и полностью пересобираются.
 #
 # Этот загрузчик обязан идти после load_graph.py, load_xrefs.py и load_maps.py:
 # каждый из них владеет своими узлами и пересоздаёт их через DETACH DELETE.
 #
 # Запуск: uv run --no-project --with neo4j python tools/memgraph/load_code.py [rom]
-# По умолчанию rom = JK03A.
+# По умолчанию rom = JK08A.
 import csv
 import os
 import sys
@@ -16,7 +17,9 @@ from collections import Counter
 from neo4j import GraphDatabase
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from load_xrefs import classify  # noqa: E402
+import rom_sources  # noqa: E402
 from provenance import (  # noqa: E402
     ADDR_RE,
     CATALOG_ROLES,
@@ -33,8 +36,6 @@ from provenance import (  # noqa: E402
 )
 
 BOLT = "bolt://localhost:7687"
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DEFS = os.path.join(ROOT, "defs")
 
 FUNC_ROLES = {
     "", "accessor", "consumer", "monitor", "driver", "init", "kernel",
@@ -271,15 +272,17 @@ def ensure_sources(tx, rom, funcs, vars_, maps, axes):
     return var_rows
 
 
-def project_properties(tx, rom, funcs, vars_, maps, axes):
+def project_properties(tx, rom, source_rom, funcs, vars_, maps, axes):
     # Удаление stale-аннотаций обязательно: строка, удалённая из CSV, не должна жить в графе.
     tx.run(
         "MATCH (n:Func {rom:$rom}) REMOVE n.role, n.semantics, n.contract, "
-        "n.contract_conf, n.contract_evidence, n.confidence, n.evidence",
+        "n.contract_conf, n.contract_evidence, n.confidence, n.evidence, "
+        "n.annotation_source",
         rom=rom,
     )
     tx.run(
-        "MATCH (n:Reg {rom:$rom}) REMOVE n.semantics, n.units, n.confidence, n.evidence",
+        "MATCH (n:Reg {rom:$rom}) REMOVE n.semantics, n.units, n.confidence, "
+        "n.evidence, n.annotation_source",
         rom=rom,
     )
     tx.run(
@@ -298,35 +301,84 @@ def project_properties(tx, rom, funcs, vars_, maps, axes):
         SET n.role = r.role, n.semantics = r.semantics,
             n.contract = r.contract, n.contract_conf = r.contract_conf,
             n.contract_evidence = r.contract_evidence,
-            n.confidence = r.confidence, n.evidence = r.evidence
+            n.confidence = r.confidence, n.evidence = r.evidence,
+            n.annotation_source = $source_rom
         """,
-        rom=rom, rows=funcs,
+        rom=rom, source_rom=source_rom, rows=funcs,
     )
     tx.run(
         """
         UNWIND $rows AS r
         MATCH (n:Reg {rom:$rom, addr:r.addr})
         SET n.semantics = r.semantics, n.units = r.units,
-            n.confidence = r.confidence, n.evidence = r.evidence
+            n.confidence = r.confidence, n.evidence = r.evidence,
+            n.annotation_source = $source_rom
         """,
-        rom=rom, rows=vars_,
+        rom=rom, source_rom=source_rom, rows=vars_,
     )
     tx.run(
         """
         UNWIND $rows AS r
         MATCH (n:Map {rom:$rom, addr:r.addr})
-        SET n.evidence = r.evidence, n.scale_evidence = r.scale_evidence
+        SET n.evidence = r.evidence, n.scale_evidence = r.scale_evidence,
+            n.annotation_source = $source_rom
         """,
-        rom=rom, rows=maps,
+        rom=rom, source_rom=source_rom, rows=maps,
     )
     tx.run(
         """
         UNWIND $rows AS r
         MATCH (n:Axis {rom:$rom, addr:r.addr})
-        SET n.scale_evidence = r.scale_evidence
+        SET n.scale_evidence = r.scale_evidence,
+            n.annotation_source = $source_rom
         """,
-        rom=rom, rows=axes,
+        rom=rom, source_rom=source_rom, rows=axes,
     )
+
+
+def project_source_model(tx, model):
+    """Зафиксировать источник аннотаций как проверяемую связь уровня ROM."""
+    tx.run(
+        """
+        MERGE (r:Rom {id:$target})
+        SET r.annotation_source = $source,
+            r.source_kind = $kind,
+            r.source_evidence = $evidence,
+            r.target_sha256 = $target_sha256,
+            r.source_sha256 = $source_sha256,
+            r.source_ranges = $source_ranges
+        WITH r
+        OPTIONAL MATCH (r)-[old:ANNOTATIONS_FROM]->(:Rom)
+        DELETE old
+        """,
+        target=model.target,
+        source=model.source,
+        kind=model.kind,
+        evidence=model.evidence,
+        target_sha256=model.target_sha256,
+        source_sha256=model.source_sha256,
+        source_ranges=list(model.ranges),
+    )
+    if model.inherited:
+        tx.run(
+            """
+            MATCH (r:Rom {id:$target})
+            MERGE (s:Rom {id:$source})
+            MERGE (r)-[e:ANNOTATIONS_FROM]->(s)
+            SET e.kind = $kind,
+                e.evidence = $evidence,
+                e.target_sha256 = $target_sha256,
+                e.source_sha256 = $source_sha256,
+                e.ranges = $source_ranges
+            """,
+            target=model.target,
+            source=model.source,
+            kind=model.kind,
+            evidence=model.evidence,
+            target_sha256=model.target_sha256,
+            source_sha256=model.source_sha256,
+            source_ranges=list(model.ranges),
+        )
 
 
 def node_inventory(tx, rom, wanted):
@@ -549,18 +601,19 @@ def report_analysis(claims, dependencies, levels, grounded, gaps):
 
 
 def main():
-    rom = sys.argv[1] if len(sys.argv) > 1 else "JK03A"
-    paths = {
-        "Func": os.path.join(DEFS, f"{rom}.funcs.csv"),
-        "Reg": os.path.join(DEFS, f"{rom}.vars.csv"),
-        "Map": os.path.join(DEFS, f"{rom}.findings.csv"),
-        "Axis": os.path.join(DEFS, f"{rom}.axes.csv"),
-    }
+    rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
     try:
+        model = rom_sources.resolve(rom)
+        rom_sources.verify_image_binding(model)
+        paths = rom_sources.definition_paths(model)
         funcs = read_rows(paths["Func"], FUNC_FIELDS)
         vars_ = read_rows(paths["Reg"], VAR_FIELDS)
         maps = read_rows(paths["Map"], MAP_FIELDS)
         axes = read_rows(paths["Axis"], AXIS_FIELDS)
+        funcs = rom_sources.materialize_rows(model, "Func", funcs)
+        vars_ = rom_sources.materialize_rows(model, "Reg", vars_)
+        maps = rom_sources.materialize_rows(model, "Map", maps)
+        axes = rom_sources.materialize_rows(model, "Axis", axes)
         check_func_contracts(funcs, paths["Func"])
         claims = source_claims(rom, [
             ("Func", funcs, paths["Func"]),
@@ -571,8 +624,11 @@ def main():
     except ProvenanceError as error:
         sys.exit(str(error))
 
-    print(f"Слой провенанса {rom}: {len(funcs)} функций, {len(vars_)} переменных, "
-          f"{len(maps)} находок карт, {len(axes)} находок осей")
+    print(
+        f"Слой провенанса {rom}: источник аннотаций={model.source}, "
+        f"режим={model.kind}; {len(funcs)} функций, {len(vars_)} переменных, "
+        f"{len(maps)} находок карт, {len(axes)} находок осей"
+    )
 
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
     try:
@@ -580,7 +636,9 @@ def main():
             tx = session.begin_transaction()
             try:
                 ensure_sources(tx, rom, funcs, vars_, maps, axes)
-                project_properties(tx, rom, funcs, vars_, maps, axes)
+                project_properties(
+                    tx, rom, model.source, funcs, vars_, maps, axes
+                )
                 for label, rows in (
                     ("Func", funcs), ("Reg", vars_),
                     ("Map", maps), ("Axis", axes),
@@ -592,6 +650,7 @@ def main():
                 require_no_gaps(gaps)
                 project_edges(tx, rom, dependencies)
                 exact_audit(tx, rom, dependencies)
+                project_source_model(tx, model)
                 report_analysis(claims, dependencies, levels, grounded, gaps)
                 tx.commit()
             except Exception:

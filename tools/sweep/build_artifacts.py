@@ -30,7 +30,7 @@
 требуется только по цели, а соседние карты и оси остаются контекстом.
 
 Запуск: uv run --no-project --with neo4j python tools/sweep/build_artifacts.py \
-          <out_dir> [--rom JK03A] [--accessor <addr>] [--min-maps N] [--max-maps N] \
+          <out_dir> [--rom JK08A] [--accessor <addr>] [--min-maps N] [--max-maps N] \
           [--focus-map <addr> | --focus-maps-file <path> | \
            --focus-axis <addr> | --focus-axes-file <path>] [--export-dir <dir>]
 """
@@ -1548,7 +1548,7 @@ def focus_addrs(values, path=None):
 def main():
     p = argparse.ArgumentParser(description="Артефакты компонент для sweep (map-sweep.md)")
     p.add_argument("out_dir")
-    p.add_argument("--rom", default="JK03A")
+    p.add_argument("--rom", default="JK08A")
     p.add_argument("--accessor", action="append", default=[],
                    help="ключ компоненты - адрес её аксессора (волна 0: 00082c8a)")
     p.add_argument("--focus-map", action="append", default=[],

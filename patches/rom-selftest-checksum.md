@@ -60,6 +60,21 @@ SUM16 B исключена из selftest A и находится за концо
 После записи patcher заново рассчитывает все шесть значений и разрешает дельту только
 в выбранных NATS patch-sites и checksum storage fields.
 
+## RomRaider
+
+Нативные обработчики RomRaider воспроизводят этот layout при следующем порядке:
+
+1. `alt` с `start=0x2040C`, `end=0x2259C`, `sumloc=0x20404`,
+   `xorloc=0x20408` записывает selftest B.
+2. `alt2` с `start=0x8200`, `end=0x100000`, `skiploc=0x20000`,
+   `sumloc=0x96DC`, `xorloc=0x96D4` записывает selftest A и обе SUM16.
+
+Поля B входят в домен A, поэтому обратный порядок некорректен. В `defs/JK08A.xml`
+перед ними расположен custom `NissanImmoCoordinator`: он синхронизирует L2 по
+видимому состоянию L1, после чего нативные менеджеры получают согласованный набор
+patch-sites. Итоговый порядок:
+`NissanImmoCoordinator` -> `alt` -> `alt2`.
+
 ## Проверенные stock-значения
 
 | ROM | SUM16 A | SUM16 B | A XOR | A SUM | B SUM | B XOR |

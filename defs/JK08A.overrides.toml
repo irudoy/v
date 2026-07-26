@@ -1,4 +1,4 @@
-# Презентационный слой дефа JK03A: имена, категории, порядок, шаги редактора и блок
+# Презентационный слой дефа JK08A: имена, категории, порядок, шаги редактора и блок
 # опознавателя ROM. Факты (адреса, форма, элемент, оси, шкала, уровень) сюда не идут -
 # их несёт граф, а расходятся источники ровно тогда, когда один факт объявлен дважды.
 #
@@ -6,10 +6,10 @@
 # (8 hex-цифр, нижний регистр).
 
 [rom]
-xmlid = "JK03A"
+xmlid = "JK08A"
 internalidaddress = "8205"
-internalidstring = "JK03A"
-ecuid = "1JK03A"
+internalidstring = "JK08A"
+ecuid = "1JK08A"
 caseid = "7MFKAVN86"
 make = "Nissan"
 model = "Skyline V36 250GT"
@@ -23,31 +23,73 @@ filesize = "1024kb"
 author = "VQ HR ECU project"
 version = "WIP"
 
-# Целевой дамп: rom-images/v36-vq25hr-jk03a/as7058.bin,
-# sha256 f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4.
-# Отличается от reference/Pytrex .../G35/JK03A.xml: тот - пустой опознаватель (romid +
-# checksum, 0 таблиц). Донор структуры - EV18A (350Z HR, тот же SH7058/1MB non-VVEL), но
-# его storageaddress на этот дамп не ложатся: layout калибровки JDM 2.5L отличается от
-# USDM 3.5L.
+# Целевой дамп:
+# rom-images/1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin,
+# sha256 ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23.
+# Кодовые факты перенесены из exact-code донора JK03A. Значения карт и осей измеряются
+# загрузчиком по собственному дампу JK08A. Донор структуры EV18A (350Z HR, тот же
+# SH7058/1MB non-VVEL) имеет другой layout калибровки.
 [rom.comment]
 text = """
-Разбор и метод - defs/JK03A.notes.md. Уровень каждой таблицы - в её комментарии.
+Разбор и метод - defs/JK08A.notes.md. Уровень каждой таблицы - в её комментарии.
 Категория с суффиксом (candidate) - карта опознана, но не трейсом; единицы с
 суффиксом [cand] - множитель взят из каталога A2L либо по форме данных и кодом
 не закреплён.
 """
 
-[checksum]
+[[checksum]]
+type = "NissanImmoCoordinator"
+path = "/romraider/NissanImmoCoordinator.jar"
+expectedsize = "0x100000"
+l1loc = "0x08D7C8"
+l1stock = "CF 04"
+l1patched = "00 09"
+l2loc = "0x0938BE"
+l2stock = "89 09"
+l2patched = "00 09"
+comment = """
+Связность двух сайтов always-ID-OK. Пользовательский switch меняет L1; при сохранении
+custom-менеджер принимает только известные пары stock/patched и синхронизирует L2.
+Этот менеджер должен выполняться до checksum B и A.
+"""
+
+[[checksum]]
 type = "alt"
 start = "0x2040C"
-end = "0x2259A"
+end = "0x2259C"
 sumloc = "0x20404"
 xorloc = "0x20408"
 comment = """
-Унаследован из reference Pytrex JK03A. Помечен upstream как EXPERIMENTAL, под этот
-дамп НЕ верифицирован: до флеша сверить алгоритм (RomRaider NissanChecksum, тип alt
-vs alt2 под HR).
+Checksum B. Нативный обработчик RomRaider alt воспроизводит stock-поля JK08A и результат
+локального patches/apply_immo_patch.py. Должен выполняться раньше checksum A.
 """
+
+[[checksum]]
+type = "alt2"
+start = "0x8200"
+end = "0x100000"
+skiploc = "0x20000"
+sumloc = "0x96DC"
+xorloc = "0x96D4"
+comment = """
+Checksum A. Нативный обработчик RomRaider alt2 с исключением 0x20000 воспроизводит
+stock-поля JK08A и результат локального patches/apply_immo_patch.py. Порядок B -> A
+обязателен, поскольку поля checksum B входят в домен A.
+"""
+
+[[switch]]
+name = "NATS ECM Authorization"
+category = "NATS / Immobilizer (experimental)"
+storageaddress = "0x08D7C8"
+storagetype = "uint8"
+sizex = "2"
+endian = "big"
+userlevel = "5"
+description = "Exact JK08A only. L2 is synchronized on save; hardware NATS behavior is unverified."
+state = [
+  { name = "Stock", data = "CF 04" },
+  { name = "Always ID OK (experimental)", data = "00 09" },
+]
 
 # Оси, показанные отдельными таблицами: своей карты с разобранной семантикой у них нет,
 # но значения читаются кодом и служат опорой при разборе соседних подсистем.
@@ -67,7 +109,7 @@ coarse = 8
 # Трио 0xB61A/0xB71A/0xB81A - базовые пороги детектора пропусков воспламенения
 # (неравномерность вращения коленвала), аксессор 0x82c8a. Структура снята кодом, но
 # физическая шкала не выведена (offset-binary, 0x80 = сентинел), поэтому по воротам §9
-# деф их не выпускает и презентации у них нет. Разбор - в defs/JK03A.notes.md.
+# деф их не выпускает и презентации у них нет. Разбор - в defs/JK08A.notes.md.
 
 [table.0000b33a]
 name = "Target AFR - Power (0xB33A)"

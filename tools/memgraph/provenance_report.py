@@ -2,11 +2,11 @@
 """Read-only аудит слабейшего звена и обратного impact в Memgraph.
 
 Запуск:
-  uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK03A
+  uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK08A
   uv run --no-project --with neo4j python tools/memgraph/provenance_report.py \
-      weakest JK03A Func 00021ce0 confidence
+      weakest JK08A Func 00021ce0 confidence
   uv run --no-project --with neo4j python tools/memgraph/provenance_report.py \
-      impact JK03A Map 0001495a structural
+      impact JK08A Map 0001495a structural
 """
 import argparse
 import os
@@ -15,9 +15,10 @@ import sys
 from neo4j import GraphDatabase
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import rom_sources  # noqa: E402
 from load_code import (  # noqa: E402
     AXIS_FIELDS,
-    DEFS,
     FUNC_FIELDS,
     MAP_FIELDS,
     SOURCE_COLUMNS,
@@ -44,16 +45,17 @@ BOLT = "bolt://localhost:7687"
 
 
 def read_source_claims(rom):
-    paths = {
-        "Func": os.path.join(DEFS, f"{rom}.funcs.csv"),
-        "Reg": os.path.join(DEFS, f"{rom}.vars.csv"),
-        "Map": os.path.join(DEFS, f"{rom}.findings.csv"),
-        "Axis": os.path.join(DEFS, f"{rom}.axes.csv"),
-    }
+    model = rom_sources.resolve(rom)
+    rom_sources.verify_image_binding(model)
+    paths = rom_sources.definition_paths(model)
     funcs = read_rows(paths["Func"], FUNC_FIELDS)
     vars_ = read_rows(paths["Reg"], VAR_FIELDS)
     maps = read_rows(paths["Map"], MAP_FIELDS)
     axes = read_rows(paths["Axis"], AXIS_FIELDS)
+    funcs = rom_sources.materialize_rows(model, "Func", funcs)
+    vars_ = rom_sources.materialize_rows(model, "Reg", vars_)
+    maps = rom_sources.materialize_rows(model, "Map", maps)
+    axes = rom_sources.materialize_rows(model, "Axis", axes)
     check_func_contracts(funcs, paths["Func"])
     sources = {
         "Func": funcs,
@@ -64,11 +66,89 @@ def read_source_claims(rom):
     claims = source_claims(rom, [
         (label, rows, paths[label]) for label, rows in sources.items()
     ])
-    return claims, sources
+    return model, claims, sources
+
+
+def check_graph_source_model(session, model):
+    row = session.run(
+        """
+        MATCH (r:Rom {id:$rom})
+        RETURN r.annotation_source AS source,
+               r.source_kind AS kind,
+               r.source_evidence AS evidence,
+               r.target_sha256 AS target_sha256,
+               r.source_sha256 AS source_sha256,
+               r.source_ranges AS source_ranges
+        """,
+        rom=model.target,
+    ).single()
+    expected = {
+        "source": model.source,
+        "kind": model.kind,
+        "evidence": model.evidence,
+        "target_sha256": model.target_sha256,
+        "source_sha256": model.source_sha256,
+        "source_ranges": list(model.ranges),
+    }
+    if row is None:
+        raise ProvenanceError(
+            f"Rom:{model.target} без модели источника; выполните полный ingest"
+        )
+    actual = {
+        key: (
+            list(row[key] or [])
+            if key == "source_ranges" else
+            (row[key] or "")
+        )
+        for key in expected
+    }
+    if actual != expected:
+        raise ProvenanceError(
+            f"Rom:{model.target} source model расходится: "
+            f"graph={actual}, registry={expected}"
+        )
+    edges = [
+        {
+            "source": item["source"],
+            "kind": item["kind"] or "",
+            "evidence": item["evidence"] or "",
+            "target_sha256": item["target_sha256"] or "",
+            "source_sha256": item["source_sha256"] or "",
+            "source_ranges": list(item["source_ranges"] or []),
+        }
+        for item in session.run(
+            """
+            MATCH (:Rom {id:$rom})-[e:ANNOTATIONS_FROM]->(s:Rom)
+            RETURN s.id AS source, e.kind AS kind, e.evidence AS evidence,
+                   e.target_sha256 AS target_sha256,
+                   e.source_sha256 AS source_sha256,
+                   e.ranges AS source_ranges
+            """,
+            rom=model.target,
+        )
+    ]
+    expected_edges = (
+        [{
+            "source": model.source,
+            "kind": model.kind,
+            "evidence": model.evidence,
+            "target_sha256": model.target_sha256,
+            "source_sha256": model.source_sha256,
+            "source_ranges": list(model.ranges),
+        }]
+        if model.inherited else
+        []
+    )
+    if edges != expected_edges:
+        raise ProvenanceError(
+            f"Rom:{model.target} ANNOTATIONS_FROM расходится: "
+            f"graph={edges}, registry={expected_edges}"
+        )
 
 
 def load_claim_graph(session, rom):
-    claims, sources = read_source_claims(rom)
+    model, claims, sources = read_source_claims(rom)
+    check_graph_source_model(session, model)
     for label, rows in sources.items():
         check_source_claim_properties(session, rom, label, rows)
     dependencies, gaps, levels, grounded = resolve_dependencies(
@@ -76,7 +156,7 @@ def load_claim_graph(session, rom):
     )
     expected = [dep.projection_key() for dep in dependencies]
     projection = compare_projection(expected, actual_projection(session, rom))
-    return levels, dependencies, grounded, gaps, projection
+    return model, levels, dependencies, grounded, gaps, projection
 
 
 def projection_count(counter):
@@ -187,7 +267,11 @@ def main():
     try:
         with driver.session() as session:
             graph = load_claim_graph(session, args.rom)
-        levels, dependencies, grounded, gaps, projection = graph
+        model, levels, dependencies, grounded, gaps, projection = graph
+        print(
+            f"источник аннотаций={model.source}, режим={model.kind}, "
+            f"образ значений={model.target}"
+        )
         if args.command == "audit":
             return audit(
                 levels, dependencies, grounded, gaps, projection, args.strict

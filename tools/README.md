@@ -164,14 +164,15 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `ghidra/symbols.csv` | реестр имён функций (addr,name,note) – источник истины по реверсу | (в git) |
 | `memgraph/load_graph.py` | `:Func` + `:CALLS`, Louvain на проекции call-графа ROM | Memgraph |
 | `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |
-| `memgraph/load_maps.py` | калибровочный слой: переписи резолвера + реестр входов `defs/<rom>.interp.csv` + ручной слой карт `defs/<rom>.findings.csv` и осей `defs/<rom>.axes.csv` + значения из образа (Stage 4) -> `:Interp`/`:Map`/`:Axis` + `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
+| `rom_sources.py` | разрешение канонического набора аннотаций через `defs/rom-inheritance.toml`; exact-code связь проверяется по SHA-256 и побайтным диапазонам, значения всегда читаются из целевого образа | (в git) |
+| `memgraph/load_maps.py` | калибровочный слой: переписи резолвера + канонические `interp.csv`/`findings.csv`/`axes.csv`, разрешённые через `rom-inheritance.toml`, + значения из целевого образа (Stage 4) -> `:Interp`/`:Map`/`:Axis` + `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
 | `memgraph/load_a2l.py` | `:A2LEntry` из `A2L.xml` – rom-независимый эталон семейства HR (карты, скаляры, switch'и), без адресов | Memgraph |
-| `memgraph/load_code.py` | claim-specific слой: `funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv` -> свойства заявок и точная проекция `:RESTS_ON`; `code`/`silicon` требует factual evidence для Func/Reg/Map/Axis; запускается последним после владельцев targets | Memgraph |
-| `memgraph/ingest.py` | полный per-ROM ingest: offline preflight, затем `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` не меняет граф, `--strict` дополнительно требует effective confidence и grounding | Memgraph |
+| `memgraph/load_code.py` | claim-specific слой из канонических `funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv`: свойства заявок, точная проекция `:RESTS_ON` и `(:Rom)-[:ANNOTATIONS_FROM]->(:Rom)`; `code`/`silicon` требует factual evidence для Func/Reg/Map/Axis; запускается последним после владельцев targets | Memgraph |
+| `memgraph/ingest.py` | полный ingest целевого ROM: offline preflight источника, export и образа, затем `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` не меняет граф, `--strict` дополнительно требует effective confidence и grounding | Memgraph |
 | `memgraph/backup.py` | завершающий шаг агентского workflow: проверка 24-часового интервала, SMB mount, `DUMP DATABASE` + native snapshot + manifest и SHA-256 непосредственно на NAS | NAS |
 | `memgraph/provenance_report.py` | read-only exact audit, weakest path и reverse impact по полной claim identity; `--strict` включает effective/grounding gates | stdout |
 | `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны и отдельные структурные ворота. Claim-specific exact audit выполняет `provenance_report.py`. Параметр `$rom` | (в git) |
-| `maps/build_tracker.py` | ledger `defs/<rom>.maps.csv` – проекция каталога из графа (worklist разбора) | (в git) |
+| `maps/build_tracker.py` | ledger канонического ROM `defs/<rom>.maps.csv` – проекция каталога из графа; для наследника допускается только явно указанный временный путь | (в git) |
 | `sweep/build_artifacts.py` | blind-артефакты для массового прохода: компонента `comp-<addr>.md`, frozen-карта `map-<addr>.md` или общая ось `axis-<addr>.md`; Axis-focus агрегирует все связанные карты и аксессоры. Форма, значения, оси, псевдокод, листинги, операнды переписи и каталоги видимы; текущие ответы скрыты белым списком и проверяются каждым прогоном. Бюджеты обязаны быть неотрицательными; frozen caller experiment требует `8`/`24`. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
 | `sweep/caller_ab_experiment.py` | read-only control plane 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates + manual approval + finalized cards, `verified`/neutral `placebo`, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores и per-control verifier gate; canonical CSV не изменяет | JSON/Markdown вне git |
 | `mapkit/rom.py` | образ: реестр `rom-images/roms.csv` со сверкой sha256, чтение массивов, их измерение. Библиотека – её зовут `load_maps.py` и скрипты пакета | (в git) |
@@ -194,19 +195,29 @@ uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py "$D" 1ND0A
 Ценз карт строится от общего движка интерполяции: слоты с его указателем дают обёртки,
 call-ссылки на вход обёртки – сайты. Так устроены оба семейства доступа, и `ResolveAccessors`
 покрывает их одним механизмом – примитив банка implicit-axis есть обёртка над своей цепочкой
-сдвигов. Входы перечисляет реестр `defs/JK03A.interp.csv` (строка = вход: семейство, движок,
+сдвигов. Входы перечисляет реестр `defs/JK08A.interp.csv` (строка = вход: семейство, движок,
 адрес входа и геометрия – элемент таблицы с кода входа у 1D и с кода finisher'а у 2D; число
 точек оси и её элемент – с клэмпа её поиска, равного `(точек-1) * размер элемента`); прогон
 идёт на каждый движок, файл на ценз.
 Операнды (`r4` – база таблицы, `r5`/`r6` – оси explicit-axis) снимает data-flow декомпилятора,
 рядом с линейным backtrack как эталоном ворот (механика – `map-flag-pipeline.md`, разделы 6-7):
 
+Начальный `export-JK08A` использует headless-артефакты exact-code донора `JK03A`: проверены
+все 2312 диапазонов функций, различий нет. Отдельный слой Memgraph не наследует значения
+карт из экспорта – `load_maps.py` читает их из зарегистрированного собственного дампа
+`JK08A`; четыре отличающиеся candidate-кривые получают собственные `values_hash`.
+Свежий экспорт из программы `JK08A` в Ghidra воспроизводится командами ниже.
+
 ```bash
-D=~/tools/ghidra-projects/export-JK03A
+tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+  -import rom-images/1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin \
+  -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
+D=~/tools/ghidra-projects/export-JK08A
 # Функцией, а не переменной: в zsh неэкранированная $H на слова не разбивается, и вызов
 # уходит в никуда молча.
 H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
-        -process as7058.bin -noanalysis -scriptPath tools/ghidra "$@"; }
+        -process 1JK08A_7MFKAVN86-20260726-064107.bin \
+        -noanalysis -scriptPath tools/ghidra "$@"; }
 # 1. Разметка кода вне функций + экспорт графа – в ОДНОМ изменяющем запуске.
 #    ExportXrefs читает сохранённую разметку отдельным read-only запуском.
 H -postScript RecoverFuncs.java -postScript ExportGraph.java "$D"
@@ -215,19 +226,54 @@ H -readOnly -postScript ExportXrefs.java "$D"
 for K in 26944 26984 26b84 26a5c 26a60 26a64 26a74 26a7c 26a80 26a84 26a88 26740 26c1c; do
   H -readOnly -postScript ResolveAccessors.java "$D" $K
 done
-# 3. Полный per-ROM ingest. Preflight проверяет заголовки, значения, внешние ключи,
+# 3. Полный ingest целевого ROM. Preflight проверяет заголовки, значения, внешние ключи,
 #    цензы, ROM/SHA, разрешимость evidence и наличие factual evidence у каждого
 #    Func/Reg/Map/Axis свойства уровня code/silicon до первого удаления узлов.
 #    Порядок: graph -> xrefs -> maps -> code -> exact audit.
-uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A --export-dir "$D"
+uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A --export-dir "$D" --strict
 # Только preflight и точные команды, без изменения графа:
-uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A --export-dir "$D" --dry-run
+uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A \
+  --export-dir "$D" --strict --dry-run
+# Exact-code JK03A использует тот же живой набор аннотаций, но собственные export,
+# образ, измерения карт и отдельный слой графа:
+uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A \
+  --export-dir ~/tools/ghidra-projects/export-JK03A --strict
 # 4. Эталон каталога HR: rom-независим, грузится раз на семейство, не на дамп.
 uv run --no-project --with neo4j python tools/memgraph/load_a2l.py
 # 5. Генерируемые проекции после успешного аудита.
-uv run --no-project --with neo4j python tools/maps/build_tracker.py JK03A
-uv run --no-project --with neo4j python tools/mapkit/emit_def.py JK03A
+uv run --no-project --with neo4j python tools/maps/build_tracker.py JK08A
+uv run --no-project --with neo4j python tools/mapkit/emit_def.py JK08A
+# Диагностический ledger JK03A хранится только временно:
+uv run --no-project --with neo4j python tools/maps/build_tracker.py \
+  JK03A /private/tmp/JK03A.maps.csv
 ```
+
+### RomRaider: один переключатель always-ID-OK
+
+`defs/JK08A.xml` содержит один `TableSwitch` с состояниями `Stock` и
+`Always ID OK (experimental)`. Переключатель меняет двухбайтовый L1 по `0x08D7C8`.
+L2 по `0x0938BE` расположен отдельно, поэтому при сохранении его согласует custom
+`ChecksumManager` из `defs/romraider/NissanImmoCoordinator.jar`.
+
+Порядок элементов `<checksum>` является частью контракта:
+
+1. `NissanImmoCoordinator` принимает только точный размер JK08A и известные состояния
+   L1/L2, затем синхронизирует L2 по L1.
+2. `alt` пересчитывает runtime selftest B.
+3. `alt2` пересчитывает runtime selftest A и обе SUM16.
+
+Исходный код совместим с официальным интерфейсом RomRaider на commit
+`dafe0c36c1a68efadbeedb2825f3855463fdbc35`. Сборка JAR включает тест на точном
+stock JK08A и проверку связности XML/JAR/ROM:
+
+```bash
+bash tools/romraider/build_immo_coordinator.sh
+python3 tools/romraider/verify_definition.py
+```
+
+`JK08A.xml` и подкаталог `romraider/` устанавливаются вместе. Отсутствующий JAR
+делает custom checksum недоступным. Уровень таблицы `userlevel=5`; поведение NATS
+остаётся hardware-гейтом.
 
 ### Резервное копирование Memgraph
 
@@ -281,19 +327,19 @@ uv run --no-project python tools/mapkit/ptrscan.py 11ebe 11ece      # кто у�
 `load_code.py` идёт последним из владельцев provenance targets: предыдущие загрузчики удаляют
 свои узлы вместе с исходящими и входящими `:RESTS_ON`. Он читает четыре канонических CSV,
 сверяет наличие узлов и claim-specific свойства, требует factual evidence у каждого свойства
-уровня `code`/`silicon`, строит 2712 claim-specific рёбер JK03A и выполняет exact
+уровня `code`/`silicon`, строит 2712 claim-specific рёбер JK08A и выполняет exact
 expected-vs-actual audit в одной транзакции. Локальные source gates проходят при нулевом долге
-Map/Axis. Глобальный `--strict` также проходит: текущий JK03A содержит 957 source claims,
+Map/Axis. Глобальный `--strict` также проходит: текущий JK08A содержит 957 source claims,
 2712 ожидаемых рёбер, 802 заявки уровня `code` и 155 уровня `candidate`;
 `effective below declared=0`, `without grounding=0`, 44 циклических SCC и 0
 незаземлённых SCC. Read-only проверка и интерактивные запросы:
 
 ```bash
-uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK03A
+uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK08A
 uv run --no-project --with neo4j python \
-  tools/memgraph/provenance_report.py weakest JK03A Func 00021ce0 confidence
+  tools/memgraph/provenance_report.py weakest JK08A Func 00021ce0 confidence
 uv run --no-project --with neo4j python \
-  tools/memgraph/provenance_report.py impact JK03A Map 0001495a structural
+  tools/memgraph/provenance_report.py impact JK08A Map 0001495a structural
 ```
 
 Значения таблиц и осей рукописным источником не объявляются - их говорит образ, и Stage 4
@@ -314,10 +360,10 @@ switch'ей). Адресов в базовом дефе нет – катало�
 scale-family и семантику осей даёт разбор, не каталог.
 
 `RecoverFuncs` под `-readOnly` считает и отчитывается, не сохраняя разметку (dry-run); без
-`-readOnly` она идёт в проект, и её видит `ExportGraph`. JK03A: 38627 инструкций в 494 участках
+`-readOnly` она идёт в проект, и её видит `ExportGraph`. JK08A: 38627 инструкций в 494 участках
 -> 353 функции (1958 -> 2312), после чего обёртки `0x26100`/`0x26230` получают вызывателей.
 
-JK03A, 13 цензов: 587 строк для 554 callsite; база в ROM снята data-flow на 551
+JK08A, 13 цензов: 587 строк для 554 callsite; база в ROM снята data-flow на 551
 callsite против 493 у backtrack. В графе – **439 карт** (248 explicit-axis, 188
 implicit-axis, 3 ручных вне моделей доступа), 229 осей, 586 уникальных доступов, 47 узлов
 интерполяции (34 обёртки + 13 движков). Один полный дубль строки ценза схлопывается ключом
@@ -364,7 +410,7 @@ backtrack, то есть база динамическая, а не пропущ
 две из 22 двухосных обёрток. Клэмп в delay slot вызова равен `(точек-1) * размер элемента`,
 и он же независимо подтверждает число точек у всех 24 обёрток. Расхождение нашло измерение
 по образу, а не чтение кода: объявленные словесными оси `0x11D0C` и `0x18716` словами не
-возрастают, а байтами дают одну и ту же лесенку нагрузки (`defs/JK03A.notes.md`, "Элемент
+возрастают, а байтами дают одну и ту же лесенку нагрузки (`defs/JK08A.notes.md`, "Элемент
 оси задаёт клэмп её поиска").
 
 ### Локализация immo по DTC-якорям

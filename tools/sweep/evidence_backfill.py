@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Воспроизводимый control plane для evidence backfill Map/Axis JK03A.
+"""Воспроизводимый control plane для evidence backfill Map/Axis JK08A.
 
 Helper фиксирует scope из immutable git-объектов, сверяет два независимых набора
 blind-артефактов, проверяет полный результат Workflow и применяет проверенные
@@ -1082,7 +1082,7 @@ def parser():
 
     freeze = sub.add_parser("freeze", help="зафиксировать immutable scope из git")
     freeze.add_argument("--repo", default=str(ROOT))
-    freeze.add_argument("--rom", default="JK03A")
+    freeze.add_argument("--rom", default="JK08A")
     freeze.add_argument("--commit", required=True)
     freeze.add_argument("--output", required=True)
     freeze.set_defaults(func=cmd_freeze)
@@ -1123,7 +1123,7 @@ def parser():
 
     status = sub.add_parser("status", help="показать локальный Map/Axis evidence debt")
     status.add_argument("--repo", default=str(ROOT))
-    status.add_argument("--rom", default="JK03A")
+    status.add_argument("--rom", default="JK08A")
     status.add_argument("--require-zero", action="store_true")
     status.set_defaults(func=cmd_status)
     return p

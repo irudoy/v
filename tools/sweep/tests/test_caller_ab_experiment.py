@@ -2703,7 +2703,7 @@ class CallerExperimentFixture(unittest.TestCase):
             score_archive,
             semantics_path,
         )
-        canonical = ROOT / "defs" / "JK03A.findings.csv"
+        canonical = ROOT / "defs" / "JK08A.findings.csv"
         before = experiment.file_sha256(canonical)
         output = self.runtime / "comparison.json"
         result = experiment.compare_results(

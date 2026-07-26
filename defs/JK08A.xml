@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- RomRaider-деф JK03A. Файл сгенерирован tools/mapkit/emit_def.py из графа Memgraph (факты)
-     и defs/JK03A.overrides.toml (презентация). Правка этого файла следующего прогона не
+<!-- RomRaider-деф JK08A. Файл сгенерирован tools/mapkit/emit_def.py из графа Memgraph (факты)
+     и defs/JK08A.overrides.toml (презентация). Правка этого файла следующего прогона не
      переживает:
      править источники - defs/<rom>.findings.csv, <rom>.axes.csv, <rom>.interp.csv,
      <rom>.overrides.toml.
 
-     Разбор и метод - defs/JK03A.notes.md. Уровень каждой таблицы - в её комментарии.
+     Разбор и метод - defs/JK08A.notes.md. Уровень каждой таблицы - в её комментарии.
      Категория с суффиксом (candidate) - карта опознана, но не трейсом; единицы с
      суффиксом [cand] - множитель взят из каталога A2L либо по форме данных и кодом
      не закреплён. -->
 <roms>
   <rom>
     <romid>
-      <xmlid>JK03A</xmlid>
+      <xmlid>JK08A</xmlid>
       <internalidaddress>8205</internalidaddress>
-      <internalidstring>JK03A</internalidstring>
-      <ecuid>1JK03A</ecuid>
+      <internalidstring>JK08A</internalidstring>
+      <ecuid>1JK08A</ecuid>
       <caseid>7MFKAVN86</caseid>
       <make>Nissan</make>
       <model>Skyline V36 250GT</model>
@@ -30,10 +30,31 @@
       <version>WIP</version>
     </romid>
 
-    <!-- Унаследован из reference Pytrex JK03A. Помечен upstream как EXPERIMENTAL, под этот
-         дамп НЕ верифицирован: до флеша сверить алгоритм (RomRaider NissanChecksum, тип alt
-         vs alt2 под HR). -->
-    <checksum type="alt" start="0x2040C" end="0x2259A" sumloc="0x20404" xorloc="0x20408"/>
+    <!-- Связность двух сайтов always-ID-OK. Пользовательский switch меняет L1; при сохранении
+         custom-менеджер принимает только известные пары stock/patched и синхронизирует L2.
+         Этот менеджер должен выполняться до checksum B и A. -->
+    <checksum type="NissanImmoCoordinator" path="/romraider/NissanImmoCoordinator.jar"
+              expectedsize="0x100000" l1loc="0x08D7C8" l1stock="CF 04" l1patched="00 09"
+              l2loc="0x0938BE" l2stock="89 09" l2patched="00 09"/>
+
+    <!-- Checksum B. Нативный обработчик RomRaider alt воспроизводит stock-поля JK08A и
+         результат
+         локального patches/apply_immo_patch.py. Должен выполняться раньше checksum A. -->
+    <checksum type="alt" start="0x2040C" end="0x2259C" sumloc="0x20404" xorloc="0x20408"/>
+
+    <!-- Checksum A. Нативный обработчик RomRaider alt2 с исключением 0x20000 воспроизводит
+         stock-поля JK08A и результат локального patches/apply_immo_patch.py. Порядок B -> A
+         обязателен, поскольку поля checksum B входят в домен A. -->
+    <checksum type="alt2" start="0x8200" end="0x100000" skiploc="0x20000" sumloc="0x96DC"
+              xorloc="0x96D4"/>
+
+    <table type="Switch" name="NATS ECM Authorization"
+           category="NATS / Immobilizer (experimental)" storageaddress="0x08D7C8"
+           storagetype="uint8" sizex="2" endian="big" userlevel="5">
+      <description>Exact JK08A only. L2 is synchronized on save; hardware NATS behavior is unverified.</description>
+      <state name="Stock" data="CF 04"/>
+      <state name="Always ID OK (experimental)" data="00 09"/>
+    </table>
 
     <!-- 0x0B33A  16x16 uint8  карта [code]; вход 0x261B8 (explicit, ядро 0x26944)
          аксессор 0xBFDC0; операнд r4: slice
@@ -59,7 +80,7 @@
          000bfe58..000bfe68 насыщение 0..255 в r6 -> обе ветви сходятся на 000bfe6c -> ffff1c5d
          -> 000bfe88 читает ffff1c5d через DAT_000c0284+DAT_000c01e6, сохраняет байтовое
          кодирование в local_60 и проверяет нейтраль local_60==0x80.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="3D" name="Target AFR - Power (0xB33A)" category="AFR / Lambda (traced)"
            storagetype="uint8" storageaddress="0x0B33A" sizex="16" sizey="16" endian="big">
       <scaling units="кодовые отсчёты относительно нейтрали 128" expression="x-128"
@@ -93,7 +114,7 @@
          и трактовку коэффициента порядка `raw/128` с промежуточным четвертным представлением.
          Единицы второго множителя `uVar3` и выбранного итогового представления не установлены,
          так что множитель карты и обратное кодирование однозначно не выводятся.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="3D" name="Lambda Target - flat (0xA29A)" category="AFR / Lambda (traced)"
            storagetype="uint8" storageaddress="0x0A29A" sizex="16" sizey="16" endian="big">
       <scaling units="AFR [cand]" expression="1881.6/x" to_byte="1881.6/x" format="0.00"
@@ -133,7 +154,7 @@
          учетом знаковых ветвей и ограничений, после чего результат записывается в ffff2d20. При
          сброшенном бите 3 выполняется только инициализация ffff2d20 из ffff106e, а при нулевом
          ffff3502 арифметическая ветвь пропускается.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="3D" name="Filter Target Additive Correction (0xAB0A)"
            category="Filters (traced)" storagetype="uint8" storageaddress="0x0AB0A" sizex="8"
            sizey="8" endian="big">
@@ -165,7 +186,7 @@
          (0x10000-u)/0x10000, а байтовое входное отклонение умножается на u*0x100; ветви знака
          складывают или вычитают эти части, восстанавливают значение относительно 0x32000000 и
          насыщают результат -> ffff2d20/ffff2d24 -> старший байт ffff359c.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="3D" name="Filter Weight - new-sample share Q16 (0xB23A)"
            category="Filters (traced)" storagetype="uint8" storageaddress="0x0B23A" sizex="8"
            sizey="8" endian="big">
@@ -191,7 +212,7 @@
          состоянием. Поэтому два сравнения могут быть режимно-зависимыми порогами, а не
          гистерезисом. Кроме того, среди показанных потребителей RAM ffff246a нет
          подтвержденного чтения именно bit7, поэтому трейс sink -> consumer не завершен.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Rev Limit - Fuel Cut Maximum (0x8FDC)"
            category="Limiters (traced) (candidate)" storagetype="uint16"
            storageaddress="0x08FDC" sizex="2" endian="big">
@@ -208,7 +229,7 @@
          РАСХОЖДЕНИЕ (§6, см. notes.md): каталожное имя 'Over Run Fuel Cut threshold' (ProECU,
          по форме) против трейса FUN_0005185c - сайт 00051882, второй множитель
          мультипликативной цепи, результат @(0x4,r15). Ни одно не на уровне code.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Over Run Fuel Cut threshold (0x121FE)"
            category="Limiters (traced) (candidate)" storagetype="uint8" storageaddress="0x121FE"
            sizex="8" endian="big">
@@ -223,7 +244,7 @@
          аксессор 0x8152A, 0x81D74; операнд r4: pool
          шкала x raw; ось 0x1238A rpm [candidate]
          вход byte[0xFFFF11AE], ось с шагом 8; питает топливо, не угол - разбор K2Y
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Fuel enrichment vs MBT-like axis (0x1236A)"
            category="Fuel (traced) (candidate)" storagetype="uint8" storageaddress="0x1236A"
            sizex="16" endian="big">
@@ -244,7 +265,7 @@
          путь через неполное ядро при r5 < 0xf000 и прямое чтение последнего элемента при r5 >=
          0xf000. Связь значения r0 на 000808da со всей заявленной интерполяцией по машинному
          свидетельству не замкнута.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Calculated Load Reference - 100% point (0x1491A)"
            category="Load (traced) (candidate)" storagetype="uint16" storageaddress="0x1491A"
            sizex="16" endian="big">
@@ -280,7 +301,7 @@
          произведения; итоговое выражение функции сдвигается вправо на 16. Поэтому вклад current
          равен raw/65536, а вклад previous равен 1-raw/65536. Диапазон raw после extu.w равен
          0..65535, то есть физический коэффициент равен 0..65535/65536.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Filter Weight - new-sample share Q16 (0x14E52)"
            category="Filters (traced) (candidate)" storagetype="uint16" storageaddress="0x14E52"
            sizex="16" endian="big">
@@ -304,7 +325,7 @@
          дополнительный условный clamp относительно ffff2733. Такое условное преобразование не
          задаёт обратимой физической шкалы карты, поэтому заявлена только raw identity. Соседняя
          карта 0000c78e и её приёмник ffff3080 в семантическое доказательство не включены.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Internal Subtractive Correction (0x13CE8)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x13CE8" sizex="8" endian="big">
@@ -327,7 +348,7 @@
          результата целевой карты на анонимный uint8 результат. Прямые RAM-привязки в 0005fea4 и
          0005ff62 ведут в ffff8bee и ffff8bec, у которых нет внешних читателей. Физический
          потребитель и единица величины не установлены.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Unsigned Branch Multiplier (0x14C9A)"
            category="Internal Calculations (candidate)" storagetype="uint16"
            storageaddress="0x14C9A" sizex="8" endian="big">
@@ -347,7 +368,7 @@
          единичный коэффициент или физическую шкалу. После интерполяции выполняются зависимые от
          другого табличного значения умножение, насыщение и ограничение без точной обратной
          пары, поэтому шкала карты оставлена сырой.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Negative Branch Multiplier (0x14CBA)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x14CBA" sizex="8" endian="big">
@@ -368,7 +389,7 @@
          результата: writes. Блокер: На site:00061de6 и site:00061dee трейс останавливается:
          конечный RAM-адрес находится в r2 и не разрешён, а внешних читателей записей аксессора
          нет. Физический потребитель и семантика величины не установлены.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Two-channel Constant Calibration (0x14E82)"
            category="Internal Calculations (candidate)" storagetype="uint16"
            storageaddress="0x14E82" sizex="8" endian="big">
@@ -391,7 +412,7 @@
          классов той же формы и не имеют совпадения документированного плоского значения. Судьба
          результата: consumer. Физическая величина не устанавливается сверх узкой операционной
          semantics.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Nonnegative Branch Multiplier (0x15306)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x15306" sizex="8" endian="big">
@@ -412,7 +433,7 @@
          Восемь нулевых ячеек не доказывают физическую семантику, пороговую роль или
          недостижимость ветви. Судьба результата: consumer. Физическая величина не
          устанавливается сверх узкой операционной semantics.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Negative Branch Multiplier (0x153A0)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x153A0" sizex="8" endian="big">
@@ -429,7 +450,7 @@
          шкала x raw
          Уровень code относится к узкой операционной semantics; физическая величина не
          установлена. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Signed Weighted Reference Term - raw u8 (0x1198E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1198E" sizex="16" endian="big">
@@ -451,7 +472,7 @@
          используются. Внешних читателей ffff1295 нет, но значение повторно читается и
          потребляется внутри 0004b9b4, поэтому ветвь не является мёртвой. Судьба результата:
          inline_comparison.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Product Multiplier A - raw u8 (0x11E46)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11E46" sizex="16" endian="big">
@@ -471,7 +492,7 @@
          Интерполяционный путь через 00026740 не замкнут, а сдвиг составного произведения на 24
          не распределяет нормировку однозначно между четырьмя множителями; semantics и шкала
          остаются candidate. Судьба результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Product Window Coefficient (0x11E5E)"
            category="Internal Calculations (candidate)" storagetype="uint8"
            storageaddress="0x11E5E" sizex="16" endian="big">
@@ -490,7 +511,7 @@
          шкала x raw
          Физическое назначение пары и входной величины не установлено. Все элементы обеих карт в
          текущем ROM равны нулю. Судьба результата: inline_comparison.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturated Difference Minuend - raw u8 (0x11E9E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11E9E" sizex="16" endian="big">
@@ -516,7 +537,7 @@
          ffff1840 не имеет внешних читателей, но та же SSA-копия в r5 потребляется на 00056898;
          это не сравнение, не return и не dead control-flow. Явной ROM-оси нет, поэтому axes
          пуст. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Intermediate Coefficient Multiplier - raw u8 (0x11F2A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11F2A" sizex="16" endian="big">
@@ -535,7 +556,7 @@
          шкала x raw
          Физическая величина обоих множителей и произведения не установлена. Судьба результата:
          writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Unsigned Product Multiplier - raw u8 (0x12042)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12042" sizex="16" endian="big">
@@ -562,7 +583,7 @@
          результат целевой карты не сравнивается, не возвращается и не участвует в другой
          операции потребления. Поэтому физическую семантику установить по коду нельзя. Судьба
          результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Constant Output 255 - raw u8 (0x120BE)"
            category="Unidentified Calibrations (candidate)" storagetype="uint8"
            storageaddress="0x120BE" sizex="16" endian="big">
@@ -588,7 +609,7 @@
          функции только как старший байт составного третьего аргумента; тело или контракт
          потребителя, устанавливающий физический смысл этого байта, в артефакте отсутствует,
          поэтому семантика и физическая шкала не определяются. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Parameter High Byte - raw u8 (0x120F6)"
            category="Internal Calculations (candidate)" storagetype="uint8"
            storageaddress="0x120F6" sizex="16" endian="big">
@@ -632,7 +653,7 @@
          результата как всегда интерполированного не доказана. Поэтому semantics и достаточность
          evidence опровергнуты по заданному консервативному правилу. Отдельная шкала не
          заявлена; identity raw не требует scale evidence. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Triple-Product Multiplier - raw u8 (0x12282)"
            category="Internal Calculations (candidate)" storagetype="uint8"
            storageaddress="0x12282" sizex="16" endian="big">
@@ -654,7 +675,7 @@
          raw x=0 центрированный результат равен 128, для x=128 он равен выходу 000122ea.
          Численный round-trip шкалы на raw-диапазоне 0..128 точен: (x/128)*128=x. Судьба
          результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Centered Blend Coefficient Q0.7 (0x122F2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x122F2" sizex="16" endian="big">
@@ -674,7 +695,7 @@
          Физическая величина множителей не установлена. Роль делителя в 000532ae не входит в
          claim из-за неподтверждённой раскладки аргументов 00021bbc. Судьба результата:
          consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Four-Factor Product Multiplier - raw u8 (0x123C2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x123C2" sizex="16" endian="big">
@@ -693,7 +714,7 @@
          шкала x*256 internal_u16 [code]
          Физическое имя пусковой топливной добавки не подтверждено. Шкала x*256 описывает
          внутреннее uint16-представление ffff2ff0. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Accumulator Base Term - internal u16 (0x123D2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x123D2" sizex="16" endian="big">
@@ -716,7 +737,7 @@
          недостижимость этой ветви не доказана. Внешних читателей ffff15ee нет, но значение
          потребляется внутри 0004bbee, поэтому это не dead control-flow. Судьба результата:
          inline_comparison.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Linear Transition Target and Upper Clamp (0x12462)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12462" sizex="16" endian="big">
@@ -738,7 +759,7 @@
          0..127. Прямой привязки результата к RAM в сводной секции нет, однако регистровый трейс
          сайта 0004f398 до записи 0004f3c8 однозначен. Каталожное имя не заявляется. Судьба
          результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Accumulator Additive Correction (0x124D2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x124D2" sizex="16" endian="big">
@@ -763,7 +784,7 @@
          читателей, после записи значение не участвует в inline comparison, а FUN_00056714
          возвращает void. Поэтому физическое назначение величины установить нельзя. Судьба
          результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Unidentified Output to ffff15f1 - raw u8 (0x124E2)"
            category="Unidentified Calibrations (candidate)" storagetype="uint8"
            storageaddress="0x124E2" sizex="16" endian="big">
@@ -782,7 +803,7 @@
          шкала x raw
          Физическая величина множителя и нормированного байта не установлена. Судьба результата:
          consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Normalized-Byte Multiplier - raw u8 (0x12704)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12704" sizex="16" endian="big">
@@ -801,7 +822,7 @@
          шкала x*12.5 RPM [candidate]
          Карта не объявляется Q7-коэффициентом: нормировка может относиться к ffff23f3. RPM-
          шкала x*12.5 остаётся candidate по каталогу. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Consumer Multiplier Curve - catalog RPM scale (0x12768)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12768" sizex="16" endian="big">
@@ -820,7 +841,7 @@
          шкала x*25 RPM [candidate]
          Физическое имя кривой не подтверждено. RPM-шкала x*25 остаётся candidate по каталогу.
          Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Paired Normalization Curve A - catalog RPM scale (0x12798)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12798" sizex="16" endian="big">
@@ -839,7 +860,7 @@
          шкала x raw
          Физическое имя кривой и назначение агрегата не установлены. Судьба результата:
          consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Paired Normalization Curve B - raw u8 (0x127D8)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x127D8" sizex="16" endian="big">
@@ -863,7 +884,7 @@
          на 6. Внешних читателей ffff1754 нет, но чтение 00046fae и mul.l 00046fb2 доказывают
          внутреннее потребление; запись не является dead control-flow. Судьба результата:
          consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Weighted Calculation Multiplier A (0x12808)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12808" sizex="16" endian="big">
@@ -882,7 +903,7 @@
          шкала x raw
          Физическое назначение множителя и итоговой производной не установлено. Code claim
          заканчивается на передаче произведения в знаковое деление. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Signed Quotient Numerator Multiplier - raw u8 (0x12930)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12930" sizex="16" endian="big">
@@ -902,7 +923,7 @@
          Физическая идентичность overrun fuel cut и RPM-шкала x*25 остаются candidate. Code
          claim описывает только ветвезависимую raw-добавку с насыщением. Судьба результата:
          consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Saturating Offset Curve - catalog RPM scale (0x1298C)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1298C" sizex="16" endian="big">
@@ -923,7 +944,7 @@
          относится к доле, которую выход этой карты вносит до насыщения общей суммы; итоговый
          множитель зависит также от 000129f2 и равен (256 - min(255, x + y))/256. Судьба
          результата: inline_comparison.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Normalized Reduction Share A Q0.8 (0x129E2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x129E2" sizex="16" endian="big">
@@ -945,7 +966,7 @@
          смешивается с выходом 000129e2. Поэтому ffff17b9 не считается приёмником именно целевой
          карты. Сравнение на 000537dc проверяет насыщение суммы, а не задаёт пороговую роль
          карты. Судьба результата: inline_comparison.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturating Reduction Addend B - raw u8 (0x129F2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x129F2" sizex="16" endian="big">
@@ -967,7 +988,7 @@
          насыщение производной разности и не делают карту пороговой. Запись в ffff22ae не
          завершает трейс: тот же результат из r6 копируется в r2 на 00062d2a. Clamp не принят за
          шкалу. Судьба результата: inline_comparison.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Signed Difference Reference Term - raw u8 (0x12A02)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12A02" sizex="16" endian="big">
@@ -993,7 +1014,7 @@
          результату, а не к шкале карты. Физический смысл RAM-величин артефакт не устанавливает,
          поэтому заявлена только доказанная кодом операционная семантика. Судьба результата:
          consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Internal Product Coefficient Q0.7 (0x12C02)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12C02" sizex="16" endian="big">
@@ -1018,7 +1039,7 @@
          записывается в RAM ffff1934, внешних читателей этого регистра нет. На 00039a02 r2
          перезаписывается входом соседней карты; inline comparison и return целевого значения
          отсутствуют. Недостижимость вычисляющей ветви не доказана. Судьба результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Init-only Constant Output 255 - raw u8 (0x12C3A)"
            category="Unidentified Calibrations (candidate)" storagetype="uint8"
            storageaddress="0x12C3A" sizex="16" endian="big">
@@ -1040,7 +1061,7 @@
          mul.l. Физическая величина итогового ffff15ce артефактом не установлена. Сдвиг вправо
          на 12 относится к произведению четырех байтов, поэтому отдельную нетривиальную шкалу
          карте 00012c56 приписать нельзя. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Product Multiplier - raw u8 (0x12C56)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12C56" sizex="16" endian="big">
@@ -1059,7 +1080,7 @@
          шкала x raw
          Физическая величина множителя и результатов ffff2414/ffff2416 не установлена. Судьба
          результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Batch Scale Multiplier A - raw u8 (0x12D22)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12D22" sizex="16" endian="big">
@@ -1078,7 +1099,7 @@
          шкала x raw
          Физическая величина множителя и результатов ffff1926/ffff2418 не установлена. Судьба
          результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Batch Scale Multiplier B - raw u8 (0x12D32)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12D32" sizex="16" endian="big">
@@ -1097,7 +1118,7 @@
          шкала x raw
          Физическая величина множителя и результатов ffff1928/ffff241a не установлена. Судьба
          результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Batch Scale Multiplier C - raw u8 (0x12D42)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12D42" sizex="16" endian="big">
@@ -1116,7 +1137,7 @@
          шкала x raw
          Физическая величина множителя и результата ffff192a не установлена; последующая копия в
          ffff241c в code claim не входит. Судьба результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Batch Scale Multiplier D - raw u8 (0x12D52)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12D52" sizex="16" endian="big">
@@ -1135,7 +1156,7 @@
          шкала x raw
          Физическая величина множителя и результата ffff192c не установлена; последующая копия в
          ffff241e в code claim не входит. Судьба результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Batch Scale Multiplier E - raw u8 (0x12D62)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12D62" sizex="16" endian="big">
@@ -1158,7 +1179,7 @@
          формировании входа соседней карты. У ffff229e нет внешних читателей, поэтому
          output_disposition остаётся writes. Насыщение промежуточного результата до 128 и входа
          соседней карты до 255 не входит в преобразование шкалы. Судьба результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Input-shaping Coefficient Q0.7 (0x12D72)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12D72" sizex="16" endian="big">
@@ -1177,7 +1198,7 @@
          шкала x raw
          Физическая величина суммы не установлена. Все ячейки карты в текущем ROM равны 76.
          Судьба результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Additive Initialization Term - raw u8 (0x12D8A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12D8A" sizex="16" endian="big">
@@ -1200,7 +1221,7 @@
          Физическая величина, которую корректирует произведение, и физический смысл входа
          ffff106f артефактом не установлены; каталожное имя не заявляется. Судьба результата:
          consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Correction Multiplier Q0.7 (0x12DD2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12DD2" sizex="16" endian="big">
@@ -1219,7 +1240,7 @@
          шкала x*0.0008 Opening Area [candidate]
          Физическая идентичность ISC и шкала Opening Area x*0.0008 остаются candidate. Code
          claim описывает raw uint16-комбинацию. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturating Pair Base Term - catalog opening-area scale (0x1465A)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x1465A" sizex="16" endian="big">
@@ -1242,7 +1263,7 @@
          насыщении до 0x7f и записи ffff1831. Функция 0004c136 читает ffff1831 и условно
          переносит байт в ffff2404. Уровень code относится только к этой операционной семантике;
          физические единицы и нетривиальная шкала не доказаны. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Minimum-selected Product Multiplier - raw u16 (0x14BFA)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x14BFA" sizex="16" endian="big">
@@ -1285,7 +1306,7 @@
          helper. Кроме того, обертка имеет отдельный endpoint-путь при входе >= 0xf000, поэтому
          слово "интерполированный" не доказано для всех ветвей. Отдельная шкала и свидетельства
          шкалы не заявлены. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Blend Reference - raw u16 (0x14CEA)"
            category="Unidentified Calibrations (candidate)" storagetype="uint16"
            storageaddress="0x14CEA" sizex="16" endian="big">
@@ -1309,7 +1330,7 @@
          ветвь формирует 0xff. Физическая величина и инженерные единицы из этого потребления не
          следуют. Потеря младших 8 бит не имеет точной обратной пары, поэтому заявлена только
          raw identity. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="High-range Quotient Divisor - raw u16 (0x15022)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x15022" sizex="16" endian="big">
@@ -1329,7 +1350,7 @@
          Физические величины входа и выхода не установлены. Выделение старшего байта
          производного результата не является шкалой raw-представления карты. Судьба результата:
          writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Low-range Piecewise Source - raw u16 (0x15042)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x15042" sizex="16" endian="big">
@@ -1370,7 +1391,7 @@
          является ли делителем raw-выход, его сдвинутая производная или другая величина. Полного
          машинного трейса для всех семи потребителей нет. Отдельная шкала и свидетельство шкалы
          не заявлены. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D"
            name="Protected Division Denominator - catalog torque-ratio scale (0x15770)"
            category="Internal Calculations (candidate)" storagetype="uint16"
@@ -1390,7 +1411,7 @@
          шкала x*0.0008 Opening Area [candidate]
          Физическая идентичность ISC и шкала Opening Area x*0.0008 остаются candidate. Code
          claim описывает raw uint16-комбинацию. Судьба результата: consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturating Pair Base Term - catalog opening-area scale (0x18C96)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x18C96" sizex="16" endian="big">
@@ -1410,7 +1431,7 @@
          Физическая идентичность коэффициента гидротрансформатора и шкала x*0.000976563 остаются
          candidate. Code claim ограничен видимой арифметикой FUN_00074478. Судьба результата:
          consumer.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Product Multiplier - catalog torque-ratio scale (0x19190)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x19190" sizex="16" endian="big">
@@ -1436,7 +1457,7 @@
          последующее использование r6 и точный сайт передачи величины в 00021ce0 отсутствуют.
          Контракт 00021ce0 доказывает только беззнаковое деление и не устанавливает физическую
          семантику; пять каталожных вариантов остаются неразличимы. Судьба результата: writes.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Initial Retard Quantity - unresolved mode (0x11F6A)"
            category="Ignition / Transient Correction (candidate)" storagetype="uint8"
            storageaddress="0x11F6A" sizex="4" endian="big">
@@ -1463,7 +1484,7 @@
          показанных потребителей читают ffff4226, который не является приёмником результата
          карты. Поэтому код не устанавливает физическую семантику и не различает пять режимных
          вариантов из каталога.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Initial Retard Quantity - unresolved mode (0x1202E)"
            category="Ignition / Transient Correction (candidate)" storagetype="uint8"
            storageaddress="0x1202E" sizex="4" endian="big">
@@ -1484,7 +1505,7 @@
          implicit 1D-4 uint8; c=min(255,2*max(u8[ffff3529+i]-104,0)), i=0..1; при c<192 ядро
          00026a7c интерполирует соседние uint8-ячейки через Q0.16-finisher 00026740, при c>=192
          обертка 00026358 возвращает ячейку 3. Судьба результата: consumer (site:0005ad5c).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Positive Difference Coefficient /100 (0x12522)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12522" sizex="4" endian="big">
@@ -1509,7 +1530,7 @@
          Q0.16-интерполяции 00026740. Отдельной Axis claim в артефакте нет. Судьба результата:
          consumer (0005ac54 site 0005ad5c и функция 00021ce0 через site 0005ad62; производный
          int16-результат записывается в ffff40a4+2*i).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Negative Difference Coefficient /100 (0x12526)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12526" sizex="4" endian="big">
@@ -1529,7 +1550,7 @@
          арифметикой и сравнением. Индекс: Неявный u8-индекс из RAM_ffff106f: при x<192
          i=floor(x/64), доля=(x-i*64)*1024 в Q0.16, интерполяция cell[i]..cell[i+1]; при x>=192
          возвращается cell[3]. Судьба результата: inline_comparison (site:00044d12).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Local Limit Base Term - raw u8 (0x1292C)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1292C" sizex="4" endian="big">
@@ -1550,7 +1571,7 @@
          1D-4 implicit: coordinate=min(abs(s16[ffff18e6]-s16[ffff18e8])*64,49152); при
          coordinate>=49152 обертка возвращает элемент 3, иначе интерполяция идет через
          00026a5c/00026740. Судьба результата: consumer (00074b68 via ffff17f8).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Blend Coefficient Step A Q0.16 (0x153B0)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x153B0" sizex="4" endian="big">
@@ -1574,7 +1595,7 @@
          min(abs((int16)RAM[ffff18e6] - (int16)RAM[ffff18e8]) * 64, 49152), с возвратом
          последней ячейки при r5 >= 49152. Судьба результата: consumer (RAM ffff17f8 -> function
          00074b68).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Blend Coefficient Step B Q0.16 (0x153B8)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x153B8" sizex="4" endian="big">
@@ -1599,7 +1620,7 @@
          до операции-потребителя. Для 0003b520 отсутствует листинг, а C-псевдокод сообщает об
          удалённых блоках 0003b5d0, 0003b60c и 0003b630. Поэтому физическая семантика MAF не
          подтверждается машинным трейсом.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Transfer Curve - unresolved channel (0x141F4)"
            category="Airflow (candidate) (candidate)" storagetype="uint16"
            storageaddress="0x141F4" sizex="64" endian="big">
@@ -1637,7 +1658,7 @@
          0003b520: не показаны site чтения ffff1054 и перенос именно этого значения в r0/r1
          перед двумя вызовами 00021bbc. Поэтому трейс нельзя продолжить до конкретной операции
          потребителя и отличить целевой канал от второго результата того же аксессора.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Transfer Curve - unresolved channel (0x14274)"
            category="Airflow (candidate) (candidate)" storagetype="uint16"
            storageaddress="0x14274" sizex="64" endian="big">
@@ -1675,7 +1696,7 @@
          u=min((uint16[ffff1024]>>7),255); при u<224 используются i=u>>5 и Q0.16-доля из младших
          5 бит для интерполяции cells[i] и cells[i+1], при u>=224 возвращается cells[7]. Судьба
          результата: consumer (0004b9b4@0004ba18).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Four-Factor Product Multiplier B Q0.8 (0x11E56)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11E56" sizex="8" endian="big">
@@ -1700,7 +1721,7 @@
          отбрасыванием остатка, доля интерполяции равна (x%32)/32; при x >= 224 выбирается
          ячейка 7. Судьба результата: consumer (FUN_0004afdc: inline arithmetic sites 0004b186,
          0004b1c8, 0004b1e4).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Branching Saturated Calculation Base (0x11F12)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11F12" sizex="8" endian="big">
@@ -1721,7 +1742,7 @@
          224; для x < 224 выполняется линейная интерполяция с Q0.16-долей между соседними uint8,
          для x >= 224 возвращается cell[7]. Судьба результата: writes (RAM ffff12db, производный
          byte store на site 0004b2d2).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Subtractive Term (0x11F1A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11F1A" sizex="8" endian="big">
@@ -1744,7 +1765,7 @@
          RAM[ffff106f]; при x < 224 i = x >> 5, доля Q0.16 = (x & 31) * 2048, интерполяция между
          table[i] и table[i+1]; при x >= 224 возвращается table[7]. Судьба результата: writes
          (ffff12db).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Additive Term (0x11F22)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11F22" sizex="8" endian="big">
@@ -1764,7 +1785,7 @@
          входами; функция 0004c136 лишь условно переносит этот байт в ffff2404. Индекс:
          x=uint8[ffff106f]; при x<224: i=x>>5, f=(x&31)/32, y=беззнаковая линейная интерполяция
          t[i] и t[i+1] с Q0.16-долей; при x>=224: y=t[7]. Судьба результата: writes (ffff1831).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite 7-bit Base / Multiplier (0x11FBE)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11FBE" sizex="8" endian="big">
@@ -1787,7 +1808,7 @@
          input=clamp(((uint16(ffff40c6)*0x2d0e)>>15)-0x20,0,255); при input<0xe0 ядро линейно
          интерполирует соседние uint8-точки неявной сетки, при input>=0xe0 возвращается
          элемент[7]. Судьба результата: consumer (ffff13dc).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturating State-Reduction Step Multiplier (0x11FE6)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x11FE6" sizex="8" endian="big">
@@ -1809,7 +1830,7 @@
          узлов при raw-входе 0, 32, 64, 96, 128, 160, 192, 224; между соседними uint8-ячейками
          применяется линейная интерполяция, а вход >=224 выбирает элемент 7. Судьба результата:
          consumer (0004ae6c).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Piecewise Clamp y=min(x,224) (0x12006)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12006" sizex="8" endian="big">
@@ -1830,7 +1851,7 @@
          элемент 7, при входе < 224 ядро 00026a80 выбирает соседние uint8-ячейки, а 00026740
          выполняет линейную интерполяцию с долей Q0.16. Судьба результата: consumer
          (site:0004c346).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Product Multiplier A - raw u8 (0x1208E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1208E" sizex="8" endian="big">
@@ -1852,7 +1873,7 @@
          из составного произведения с 0001208e и r12. Индекс: x=uint8(RAM[ffff1450]); при x>=224
          возвращается cell[7]; иначе i=x>>5, f=(x&31)<<11 в Q0.16, результат равен беззнаковой
          линейной интерполяции cell[i] и cell[i+1]. Судьба результата: consumer (site:0004c34c).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Product Multiplier B - raw u8 (0x12096)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12096" sizex="8" endian="big">
@@ -1876,7 +1897,7 @@
          байт после арифметического сдвига вправо на 7 через 000224f8; сайт 00068d3a использует
          clamp(u16[ffff2020]-144,0,255). Судьба результата: consumer (ffff2018 -> 00068d58 ->
          ffff201e).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Dual-Lookup Additive Correction (0x120CE)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x120CE" sizex="8" endian="big">
@@ -1900,7 +1921,7 @@
          00026370 при u >= 224 возвращает cell[7], иначе выполняет implicit 1D-8 интерполяцию
          соседних uint8-ячеек. Судьба результата: consumer (ffff14d8 -> 0004ac7a@0004ad60 ->
          ffff14d9@0004ad7c).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Triple-Product Multiplier A - raw u8 (0x1211E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1211E" sizex="8" endian="big">
@@ -1920,7 +1941,7 @@
          round-trip шкалы: 5 -> 0.00244140625 -> 5; 12 -> 0.005859375 -> 12. Индекс: implicit
          1D-8: r5=uint8[ffff1170]; при r5<224 интерполируются соседние uint8-ячейки, при r5>=224
          возвращается ячейка 7. Судьба результата: consumer (site:0003c556).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Local Correction Coefficient /2048 (0x12126)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12126" sizex="8" endian="big">
@@ -1943,7 +1964,7 @@
          карты нет, поэтому axes пуст. Индекс: implicit 1D-8: u=uint8(ffff106f); при u<224
          индекс i=floor(u/32), доля f=(u mod 32)/32, линейная интерполяция между ячейками i и
          i+1; при u>=224 возвращается ячейка 7. Судьба результата: consumer (0004ad60).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Triple-Product Multiplier B Q0.7 (0x1212E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1212E" sizex="8" endian="big">
@@ -1965,7 +1986,7 @@
          x=uint8(ffff11b3). При x<224 индекс i=x>>5, доля Q0.16 равна (x&31)*2048,
          интерполируются uint8[i] и uint8[i+1]. При x>=224 возвращается элемент 7. Судьба
          результата: consumer (RAM ffff14fc; consumer 0004e614; shift service 000224f8).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Shifted Subtractive Correction - raw u8 (0x1215E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1215E" sizex="8" endian="big">
@@ -1990,7 +2011,7 @@
          uint8 и передает их в Q0.16-интерполятор 00026740. Явной ROM-оси нет; подготовка точных
          index/fraction перед показанным срезом 00026a80 в артефакт не входит. Судьба
          результата: writes (ffff150a).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Negative-Branch Multiplier Source - raw u8 (0x12176)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12176" sizex="8" endian="big">
@@ -2013,7 +2034,7 @@
          224 обёртка 00026370 направляет lookup в ядро 00026a80, которое читает соседние байты и
          передаёт их в линейный finisher 00026740; при x >= 224 возвращается map+7. Источники x:
          ffff1077 на 0002cd82 и ffff106f на 00042114. Судьба результата: writes (ffff23ed).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Control Selector ffff23ed - raw u8 (0x1218E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1218E" sizex="8" endian="big">
@@ -2036,7 +2057,7 @@
          выбирается y7. При u < 224: i = u/32 с усечением вниз, q = (u-i*32)*2048 в Q0.16, затем
          беззнаковая линейная интерполяция y[i]..y[i+1]. Судьба результата: writes (RAM
          ffff1511, запись производного x-128 на site 0004b0d0).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Signed Additive Term A (x-128) (0x12196)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12196" sizex="8" endian="big">
@@ -2057,7 +2078,7 @@
          128 -> 0 -> 128; 160 -> 32 -> 160. Индекс: Неявная 8-точечная ось по uint8 ffff11b2:
          для q<224 индекс i=q>>5, нижние 5 бит задают Q0.16-долю между ячейками i и i+1; для
          q>=224 выбирается ячейка 7. Судьба результата: writes (RAM ffff1511, site 0004b0d0).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Signed Additive Term B (x-128) (0x1219E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1219E" sizex="8" endian="big">
@@ -2076,7 +2097,7 @@
          расчета ffff1513 и ffff23ee. Неявная 1D-8 сетка имеет узлы 0, 32, ..., 224 и насыщение
          на элементе 7. Round-trip на достижимом диапазоне точен: 128 -> 0 -> 128; 145 -> 17 ->
          145. Физическая подсистема и инженерная единица не установлены.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Signed Additive Term C (x-128) (0x121A6)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x121A6" sizex="8" endian="big">
@@ -2095,7 +2116,7 @@
          масштабирует результаты соседних lookup перед сдвигом вправо на 13. Все ячейки равны
          64, поэтому текущий g равен 8192. Результат потребляется в регистрах 00051700 и
          0005185c; физическая подсистема не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Centered Q13 Multiplier Shaping Curve - raw u8 (0x121AE)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x121AE" sizex="8" endian="big">
@@ -2114,7 +2135,7 @@
          вместе с ffff1531 и ffff152b в трехфакторное произведение, нормируемое >>14, насыщаемое
          до 255 и записываемое в ffff1532. Неявная 1D-8 сетка имеет шаг 32 и terminal element 7
          при индексе >=224. Физическая величина не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Three-Factor Product Multiplier A - raw u8 (0x121C6)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x121C6" sizex="8" endian="big">
@@ -2133,7 +2154,7 @@
          формирует ffff152c=min(255,(M*uint8[ffff152d])>>7). Сдвиг и насыщение принадлежат
          составному расчету, а не шкале карты. Неявная RAM-ось не создает отдельную Axis row;
          физическая величина не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Cascaded Product Multiplier A - raw u8 (0x121CE)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x121CE" sizex="8" endian="big">
@@ -2151,7 +2172,7 @@
          Lookup по uint8 ffff11b3 записывает raw M в ffff152a; тот же M формирует
          ffff1535=min(255,(M*uint8[ffff1534])>>7). Неявная 1D-8 сетка имеет шаг 32 и terminal
          element 7 при индексе >=224. Физическая величина не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Cascaded Product Multiplier B - raw u8 (0x121D6)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x121D6" sizex="8" endian="big">
@@ -2169,7 +2190,7 @@
          При uint8[ffff120c] >= ROM8[000086ad] lookup по min(uint16[ffff1024]>>7,255) обновляет
          ffff152b; иначе сохраняется прежнее значение. ffff152b входит с ffff1531 и ffff1528 в
          произведение >>14. Значение карты остается raw; физическая подсистема не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Three-Factor Product Multiplier - raw u8 (0x121DE)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x121DE" sizex="8" endian="big">
@@ -2188,7 +2209,7 @@
          результатом 000121ae формирует ffff152d, после чего 000121ce формирует ffff152c.
          Нормализации >>13 и >>7 относятся к составным выражениям. Неявная RAM-ось не создает
          отдельную Axis row; физическая величина не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Cascaded First-Stage Multiplier - raw u8 (0x121E6)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x121E6" sizex="8" endian="big">
@@ -2207,7 +2228,7 @@
          множитель, затем делится на 0x0640; дальнейшая цепочка пишет шестиканальные
          uint16-массивы ffff155c и ffff1568. Значение карты остается raw, физическая подсистема
          не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Per-Channel Product Multiplier - raw u8 (0x121EE)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x121EE" sizex="8" endian="big">
@@ -2226,7 +2247,7 @@
          max(0,8192+(lookup(000121ae)-64)*uint8[ffff10bf]), сдвигается вправо на 13, насыщается
          до 255 и записывается в ffff1534. Неявная 1D-8 индексация подтверждена; физическая
          подсистема не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Cascaded Output Multiplier - raw u8 (0x1220E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1220E" sizex="8" endian="big">
@@ -2245,7 +2266,7 @@
          используют ffff1230 как слагаемое насыщаемых сумм и накопителей, операнд равенства и
          источник байта после локального деления на 4. Все ячейки равны 170; это не
          устанавливает физическую величину. Неявная RAM-ось не эмитируется отдельно.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Shared Additive Base Term - raw u8 (0x122E2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x122E2" sizex="8" endian="big">
@@ -2263,7 +2284,7 @@
          Обычная ветвь формирует ffff192e=2*min(lookup+uint8[ffff340c],209). Все ячейки равны
          133; удвоение и насыщение выполняются после lookup и не являются шкалой карты. Читатель
          ffff192e и физическая подсистема не установлены.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Offset-Summed State Term - raw u8 (0x12302)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12302" sizex="8" endian="big">
@@ -2281,7 +2302,7 @@
          Специальная ветвь формирует ffff192e=2*min(lookup,209); значения 160..200 не достигают
          насыщения. Удвоение выполняется после lookup и не является шкалой карты. Читатель
          ffff192e и физическая подсистема не установлены.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional State Base Term - raw u8 (0x1230A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1230A" sizex="8" endian="big">
@@ -2300,7 +2321,7 @@
          складывается с результатом 0001234a; старший байт суммы пишется в ffff15b1. Прямой
          приемник ffff15b0 внешних читателей не имеет, но значение продолжает путь в регистрах.
          Физическая величина не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturating Sum Addend A - raw u8 (0x12342)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12342" sizex="8" endian="big">
@@ -2319,7 +2340,7 @@
          00012342 и через ffff15b1 используется в 000474a4 с коэффициентом 2. Несмешанный
          результат также записывается в ffff15b5. Физическая величина не установлена; неявная
          RAM-ось отдельно не эмитируется.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturating Sum Addend B - raw u8 (0x1234A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1234A" sizex="8" endian="big">
@@ -2337,7 +2358,7 @@
          Lookup по uint8 ffff10f4 записывается в ffff2fc1 и вместе с ffff2fc0 входит в
          произведения 0005444c и 000474a4 с фиксированными сдвигами и насыщением. Диапазон
          128..154 не используется для физической идентификации. Значение карты остается raw.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Paired Product Multiplier - raw u8 (0x12352)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12352" sizex="8" endian="big">
@@ -2355,7 +2376,7 @@
          При ffff15d2==0 и signed16 ffff140a<0 lookup умножает -ffff140a; raw-копия находится в
          ffff15ca, а вычисление использует ее внутренним читателем 0004d0aa. Карта заполнена
          нулями, но это не доказывает dead control flow. Физическая подсистема не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Negative-Branch Multiplier - raw u8 (0x1239A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1239A" sizex="8" endian="big">
@@ -2374,7 +2395,7 @@
          с отрицательным вкладом положительной ветви разности, но машинный листинг участка
          0004d0ba..0004d0cc отсутствует, а у ffff15c9 нет читателей. Поэтому semantics и
          confidence остаются candidate; нулевое содержимое не является доказательством.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)"
            category="Internal Calculations (candidate) (candidate)" storagetype="uint8"
            storageaddress="0x123A2" sizex="8" endian="big">
@@ -2393,7 +2414,7 @@
          записывается в ffff2ff2. 000a5284 включает этот байт в трехфакторное произведение и
          насыщаемое 16-битное смешивание. На обходном пути в ffff2ff2 записывается raw 128;
          физическая величина не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturated Blend Product Multiplier - raw u8 (0x123E2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x123E2" sizex="8" endian="big">
@@ -2412,7 +2433,7 @@
          выбранный ROM8[0000990a] и после ограничения шага и верхнего clamp обновляет ffff15da.
          Прямой приемник ffff15dd внешних читателей не имеет, но регистровая копия потребляется.
          Физическая величина не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Rate-Limited State Multiplier - raw u8 (0x12422)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12422" sizex="8" endian="big">
@@ -2431,7 +2452,7 @@
          масштабирует базу из 00009eda и 00012432 перед записью ffff15de. Операции -64/+64
          принадлежат потребителю, поэтому карта хранится как raw identity. Значение 64
          нейтрально; неявная RAM-ось отдельно не эмитируется.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Centered Composite Multiplier Shaping Curve - raw u8 (0x1242A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1242A" sizex="8" endian="big">
@@ -2450,7 +2471,7 @@
          составного расчета ffff15de. Пара x/128 и x*128 обратима на представимой сетке: 0 -> 0
          -> 0; 128 -> 1 -> 128; 255 -> 1.9921875 -> 255. Физическая подсистема не установлена;
          неявная RAM-ось отдельно не эмитируется.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite First-Stage Multiplier Q1.7 (0x12432)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12432" sizex="8" endian="big">
@@ -2469,7 +2490,7 @@
          последовательно умножается на результаты 00012572 и 00012582; нормировки >>6 и байт
          ffff10bf формируют первое слагаемое аккумулятора 00054ee0, которое условная ветвь может
          обнулить. Прямого RAM-приемника нет; физическая подсистема не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Accumulator Product Coefficient - raw u8 (0x12562)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12562" sizex="8" endian="big">
@@ -2488,7 +2509,7 @@
          умножается на ffff1659 от 000126a8 и входит в ограниченный расчет ffff1657. Прямой
          приемник ffff1658 внешних читателей не имеет, но регистровая копия потребляется.
          Нулевое содержимое не доказывает dead control flow.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Paired Product Multiplier A - raw u8 (0x126A0)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x126A0" sizex="8" endian="big">
@@ -2507,7 +2528,7 @@
          000126a0 и участвует в расчете ffff1657. 0004bb6a вычитает ffff1657>>4 из суммы
          ffff22f8+ffff22fe и пишет ограниченный байт ffff23c5. Нулевое содержимое не
          используется как семантическое свидетельство.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Paired Product Multiplier B - raw u8 (0x126A8)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x126A8" sizex="8" endian="big">
@@ -2526,7 +2547,7 @@
          одновременно умножается на uint8 ffff15be и ffff183a; произведение нормируется >>14,
          насыщается до 255 и записывается в ffff15c6. Прямой приемник ffff16ca внешних читателей
          не имеет, но регистровая копия потребляется; физическая подсистема не установлена.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Three-Factor Product Multiplier - raw u8 (0x12868)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12868" sizex="8" endian="big">
@@ -2556,7 +2577,7 @@
          00026740 -> site 0006e41a -> site 0006e426/00021bbc -> site 0006e440 -> RAM ffff1766.
          Судьба выхода: consumer; цель: RAM ffff1766 at site 0006e440; consumers 0006e490 and
          0006e442; downstream RAM ffff1300 and ffff1f86.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Shared Saturated Calculation Multiplier - raw u8 (0x1296C)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1296C" sizex="8" endian="big">
@@ -2587,7 +2608,7 @@
          site:0004ae42 -> site:0004ae44 -> site:0004ae46 -> site:0004ae48 -> site:0004ae4a ->
          site:0004ae4e -> site:0004ae52 -> ffff14dc]. Судьба выхода: consumer; цель:
          site:0004ae36.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Three-Factor Product Multiplier A - raw u8 (0x129CA)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x129CA" sizex="8" endian="big">
@@ -2612,7 +2633,7 @@
          00071706(ffff17c7) -> 00071708(r2 без знака) -> 00071710(MACL) -> 00071716(r2) ->
          00071718 -> 0007171c/0007171e -> 00071722(ffff19a4). Судьба выхода: writes; цель:
          ffff17c7.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Paired Product Multiplier A - raw u8 (0x12A22)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12A22" sizex="8" endian="big">
@@ -2637,7 +2658,7 @@
          000716c0 -> 000716c2 -> 00026370 -> 00026a80 -> 00026aac -> 00026aae -> 00026740 ->
          000716c4 -> 000716ca -> ffff17c8 -> 0007170c -> 00071710 -> 00071718 -> 00071722 ->
          ffff19a4 -> 000718d8/00071a10/00071b7e. Судьба выхода: consumer; цель: site:00071710.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Paired Product Multiplier B - raw u8 (0x12A2A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12A2A" sizex="8" endian="big">
@@ -2664,7 +2685,7 @@
          ffff1f78, а 0003a750 является корнем без вызывающих сайтов. Машинный трейс от приемника
          до физического потребителя отсутствует, поэтому назначение и физические единицы не
          устанавливаются.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)"
            category="Internal Calculations (candidate) (candidate)" storagetype="uint8"
            storageaddress="0x12A3A" sizex="8" endian="big">
@@ -2688,7 +2709,7 @@
          интерполяция, при входе >= 224 выбирается последняя ячейка. Трасса выхода: 00012a82 ->
          00052f1e -> 00052f28 -> 00026370 -> 00026a80 -> 00026740 -> 00052f30 -> ffff1601 ->
          000532ae -> ffff1600. Судьба выхода: consumer; цель: 000532ae.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Output Coefficient K - raw u8 (0x12A82)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12A82" sizex="8" endian="big">
@@ -2719,7 +2740,7 @@
          inline_comparison; цель: RAM ffff24e1 в FUN_00038d44: inline-проверка ffff24e1 == 0 под
          селектором ffff4185 & 0x40; истинный дизъюнкт участвует в установке бита 0x02 RAM
          ffff24bc. Зеркальная запись результата находится в RAM ffff1fab.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="State Gate Byte Table - raw u8 (0x12A9A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12A9A" sizex="8" endian="big">
@@ -2747,7 +2768,7 @@
          артефакт не содержит машинного сайта чтения или ребра USES этого приемника. Внутри
          0003bd74 приемник ffff1f81 не читается, внешних потребителей нет, поэтому трейс не
          достигает функционального потребления величины.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="State Transition Initial Value - raw u8 (0x12AB2)"
            category="Internal Calculations (candidate) (candidate)" storagetype="uint8"
            storageaddress="0x12AB2" sizex="8" endian="big">
@@ -2779,7 +2800,7 @@
          00081f9a -> 00081fa0 -> 00081fa6 -> 00081faa/00081fac/00081fae/00081fb0 ->
          00081fb2/00081fb8 -> 00081fbc -> ffff15c6. Судьба выхода: consumer; цель: ffff183a ->
          0008152a/0008176e; ffff183a -> 00081d74/00081fa0.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Three-Factor Product Multiplier B - raw u8 (0x12AC2)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12AC2" sizex="8" endian="big">
@@ -2804,7 +2825,7 @@
          ffff254b -> 00038ad6 -> 00038ad8; zero -> 00038ada -> 00038b7c, nonzero -> 00038adc ->
          00038ae2 -> 00038ae4 -> 00038ae6. Судьба выхода: inline_comparison; цель: RAM ffff254b;
          consumer 00038618; site:00038ad8.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="State 2 Hold Gate Table - raw u8 (0x12ADA)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12ADA" sizex="8" endian="big">
@@ -2829,7 +2850,7 @@
          00043b08 -> ffff254d; последующее чтение состояния: ffff254d -> 00043b10 -> 00043b12 ->
          00043b14 -> 00043b1a. Значение 6 не проходит на нулевую ветвь 00043b18. Судьба выхода:
          inline_comparison; цель: site:00043b12 via ffff254d.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Bit 7 Hold State Table - raw u8 (0x12AFA)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12AFA" sizex="8" endian="big">
@@ -2858,7 +2879,7 @@
          site:0004ae32 -> site:0004ae36 -> site:0004ae3e -> site:0004ae42 -> site:0004ae44 ->
          site:0004ae46 -> site:0004ae48 -> site:0004ae52 -> ffff14dc. Судьба выхода: consumer;
          цель: site:0004ae36.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Three-Factor Product Multiplier B Q1.7 (0x12DCA)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12DCA" sizex="8" endian="big">
@@ -2889,7 +2910,7 @@
          000be7a2 -> 000be7a4 -> 000be7a6,000be7aa,000be7ae,000be7ac,000be7b2 ->
          000be7b6/ffff1a9c -> 000be814(param_1=0). Судьба выхода: consumer; цель: FUN 000be814
          через RAM ffff1a9c при param_1=0; сырая копия в RAM ffff1a7b.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Channel 0 Signed Additive Term (x-128) (0x12E72)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12E72" sizex="8" endian="big">
@@ -2918,7 +2939,7 @@
          000be7fa/000be7fc/000be7fe/000be800 -> 000be804 -> ffff1aa0. Судьба выхода: writes;
          цель: RAM ffff1a7c (uint8, интерполированный байт); RAM ffff1aa0 (uint32, результат в
          диапазоне 0..0x00ffffff).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Channel 1 Composite Addend - raw u8 (0x12E7A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12E7A" sizex="8" endian="big">
@@ -2953,7 +2974,7 @@
          000bde9c, а return FUN_000bdc66 с lookup не связан. Показанное чтение ffff1a1e внутри
          FUN_000bdc66 предшествует lookup и не образует внутривызовный downstream-трейс. Внешних
          читателей ffff1a1e в артефакте нет.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Paired State Value A - raw u8 (0x12EFE)"
            category="Internal Calculations (candidate) (candidate)" storagetype="uint8"
            storageaddress="0x12EFE" sizex="8" endian="big">
@@ -2978,7 +2999,7 @@
          -> 000bde8c/000bde94 -> ffff1a1e/ffff25ee; перед очередной записью прежние значения
          ffff1a1e и ffff25ee проверяются в gate 000bdc66. Судьба выхода: consumer; цель: RAM
          ffff1a1e и ffff25ee; функция-потребитель 000bdc66.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Paired State Value B - raw u8 (0x12F06)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12F06" sizex="8" endian="big">
@@ -3007,7 +3028,7 @@
          -> [site:00052328 -> RAM ffff1ca6; site:00052338 -> site:00052346 -> function 000224fa
          -> site:0005234a -> site:0005234c]. Судьба выхода: consumer; цель: site:00052338
          (FUN_000522c4).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Signed Difference Multiplier Q0.6 (0x1300E)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x1300E" sizex="8" endian="big">
@@ -3035,7 +3056,7 @@
          00076412 -> 00076416/00076422 -> 00076434 -> ffff15c8; q>=224: 00013016+7 -> 00026370
          -> 0007640c -> 00076410 -> 00076412 -> 00076416/00076422 -> 00076434 -> ffff15c8.
          Судьба выхода: writes; цель: RAM ffff15c8, byte store site 00076434.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Conditional Signed State Value (x-128) (0x13016)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x13016" sizex="8" endian="big">
@@ -3060,7 +3081,7 @@
          00074f36 -> 000263d8 -> (00026a60 -> 00026740 при idx < 0000e000; прямой элемент 7 в
          000263d8 иначе) -> 00074f48 -> 00074f70 -> ffff17c0. Судьба выхода: writes; цель:
          ffff17c0.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="State Decrease Limit A - raw u16 (0x14304)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x14304" sizex="8" endian="big">
@@ -3088,7 +3109,7 @@
          00026740 | direct +0x0e return] -> site:00074f48 -> site:00074f6c -> site:00074f70 ->
          00074e4e -> ffff17c0 -> ffff23fc. Судьба выхода: inline_comparison; цель:
          site:00074f70.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="State Decrease Step B - raw u16 (0x14314)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x14314" sizex="8" endian="big">
@@ -3112,7 +3133,7 @@
          000525ae -> 000525b0; произведение -> 000525b6 -> 000525b8 -> 000525ba -> 000525bc ->
          000525be -> 000525c0 -> 000525c2 -> 000525c4 -> 000525cc -> ffff1652; ffff1652 ->
          000525d8, 0004e59c. Судьба выхода: consumer; цель: site:000525b0.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Composite Product Multiplicand - raw u16 (0x14ED2)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x14ED2" sizex="8" endian="big">
@@ -3147,7 +3168,7 @@
          отдельного приёмника RAM не имеет. Судьба выхода: inline_comparison; цель: 000731b8
          (непосредственный арифметический потребитель) -> ffff1734 (производный порог) ->
          000731ee (сравнение).
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Rounded UQ0.16 Threshold Coefficient (0x15082)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x15082" sizex="8" endian="big">
@@ -3175,7 +3196,7 @@
          альтернативном пути ffff32b8 -> 000661f4 -> сравнение и вычитание в 00066186 ->
          ffff32b8. Судьба выхода: writes; цель: RAM ffff32b8 на site 000661d6; RAM ffff413f
          получает старший байт ffff32b8 в FUN_00066186.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Saturating Internal State Load - raw u16 (0x15330)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x15330" sizex="8" endian="big">
@@ -3202,7 +3223,7 @@
          ffff1e44 at 0003b8d0 -> r0>>2 at 0003b8d4 -> ffff1e40 at 0003b8d8 -> mul.l with uint8
          ffff1160 at 0003b8e6 -> right shifts 0003b8ec..0003b8f4. Судьба выхода: consumer; цель:
          0003b8d4.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Internal Multiplicand - BFS candidate scale (0x15630)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x15630" sizex="8" endian="big">
@@ -3228,7 +3249,7 @@
          site:0006f926/site:0006f928/site:0006f92c условно) -> site:0006f936 -> ffff2eba ->
          0006f938 -> ffff303c; ffff2eba -> 0006fe6e -> ffff303e. Судьба выхода: writes; цель:
          RAM ffff2eba.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Dual-Channel Saturating Addend - raw u16 (0x23824)"
            category="Internal Calculations (traced)" storagetype="uint16"
            storageaddress="0x23824" sizex="8" endian="big">
@@ -3258,7 +3279,7 @@
          внутри 00082c8a -> бит 1 ffff41d2. Внешних читателей ffff42a8 нет. Судьба выхода:
          inline_comparison; цель: RAM ffff42a8; проверка на ноль в функции 00082c8a; результат
          условия участвует в обновлении бита 1 RAM ffff41d2.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Latched Zero Condition Table - raw u8 (0x12026)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12026" sizex="8" endian="big">
@@ -3286,7 +3307,7 @@
          беззнаковую линейную интерполяцию с результатом между y0 и y1. 000793f6 переносит r0 в
          r2 без арифметики; 00079400 записывает младший байт в ffff351b. В 000c5558 выражение
          *(ffff3ab5+0x40)=*(ffff28f8+0x0c23) напрямую копирует байт ffff351b в ffff3af5.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Interpolated State Byte - raw u8 (0x12E1A)"
            category="Internal Calculations (traced)" storagetype="uint8"
            storageaddress="0x12E1A" sizex="16" endian="big">
@@ -3308,7 +3329,7 @@
          каждую точку как uint8, вычисляет uint8(x)*4, сравнивает с беззнаковым uint16-входом и
          на промежуточной ветви использует (input-uint8(x)*4)*0x10000; равенство и обе граничные
          ветви не вводят иной шкалы.
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Engine Speed Axis [RPM] (ref)" category="Reference Axes"
            storagetype="uint8" storageaddress="0x11ECE" sizex="16" endian="big">
       <scaling units="отсчёты RAM ffff11bc" expression="x*4" to_byte="x/4" format="0"
@@ -3323,7 +3344,7 @@
 
     <!-- 0x11EBE  ось 16 точек uint8, raw
          ось X аксессора 0x4bbee, шаг 8; семантика (наполнение) трейсом не доказана
-         Разбор и метод - defs/JK03A.notes.md -->
+         Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="FUN_0004bbee Axis X (ref)" category="Reference Axes"
            storagetype="uint8" storageaddress="0x11EBE" sizex="16" endian="big">
       <scaling units="raw (filling)" expression="x" to_byte="x" format="0" coarseincrement="8"/>

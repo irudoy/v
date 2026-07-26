@@ -5,13 +5,15 @@
 # оси переданы аксессором в r4/r5/r6 (P2).
 #
 # Источников четыре, и каждый отвечает за своё:
-#   defs/<rom>.interp.csv   - реестр входов интерполяции: строка = вход со своей
-#                             геометрией, снятой с его кода (Stage 2);
+#   defs/<source>.interp.csv - реестр входов интерполяции: строка = вход со своей
+#                              геометрией, снятой с его кода (Stage 2);
 #   accessors.<kernel>.csv  - переписи резолвера (ResolveAccessors.java): сайты и
 #                             операнды, снятые data-flow декомпилятора (Stage 3);
-#   defs/<rom>.findings.csv - ручной слой карт: что установлено человеком и чего перепись
-#                             дать не может (семантика, единицы, уровень, роль);
-#   defs/<rom>.axes.csv     - ручной слой осей: семантика оси и её единицы.
+#   defs/<source>.findings.csv - ручной слой карт: что установлено человеком и чего
+#                                перепись дать не может (семантика, единицы, уровень, роль);
+#   defs/<source>.axes.csv  - ручной слой осей: семантика оси и её единицы.
+# Канонический <source> разрешает defs/rom-inheritance.toml. Exact-code наследник
+# сохраняет собственные export, образ и слой графа, но не копирует эти файлы.
 # Единицы - в ручном слое, а не в переписи: шкалу даёт трейс потребителя, а не операнд
 # вызова. Резолвер видит указатель на массив, но не то, во что превращает его значение
 # арифметика мотора.
@@ -62,7 +64,7 @@
 #     (текущее значение оси в RAM, индекс, маска) базой не является и осью не считается;
 #     он остаётся на ребре :ACCESSES в r4/r5/r6 как снятое значение, но узла не создаёт.
 #   - база берётся только из df. Линейный backtrack (bt) остаётся эталоном ворот раздела 6
-#     и фактов не даёт: на всех десяти базовых расхождениях каталога JK03A он неверен -
+#     и фактов не даёт: на всех десяти базовых расхождениях каталога JK08A он неверен -
 #     поднимает ось вместо базы (0x732a8: базу ставит delay slot `mov r7,r4`, а назад по
 #     коду лежит указатель оси), теряет арифметику delay slot (`add 0x8,r4` - пять сайтов
 #     банка) либо берёт произвольный элемент селекторного множества.
@@ -87,8 +89,8 @@
 #
 # Запуск: uv run --no-project --with neo4j python tools/memgraph/load_maps.py \
 #           <export_dir> <rom_label> [<registry.csv>] [<findings.csv>] [<axes.csv>]
-# По умолчанию export_dir = ~/tools/ghidra-projects/export-JK03A, rom = JK03A,
-# реестр = defs/<rom>.interp.csv, ручные слои = defs/<rom>.findings.csv и axes.csv.
+# По умолчанию export_dir = ~/tools/ghidra-projects/export-JK08A, rom = JK08A.
+# Пути структурного и ручного слоя разрешает defs/rom-inheritance.toml.
 import csv
 import glob
 import os
@@ -98,6 +100,7 @@ from neo4j import GraphDatabase
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mapkit import rom as romkit          # noqa: E402 - пакет соседний, не установленный
+import rom_sources  # noqa: E402
 
 BOLT = "bolt://localhost:7687"
 
@@ -123,9 +126,6 @@ AXIS_FIELDS = [
 # Словарь выражения шкалы: константы, x и арифметика. Шире не нужно - RomRaider читает
 # то же выражение, а всё, что не сводится к нему, шкалой карты не является.
 SCALE_CHARS = re.compile(r"^[0-9x+\-*/(). ]+$")
-
-DEFS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "defs")
-
 
 def scale_roundtrip(expr, to_byte):
     """Расхождение пары выражений либо None, если она сходится.
@@ -302,7 +302,7 @@ def geometry(e):
 def check_dims(rows, declared):
     """Размерность объявлена геометрией входа; независимый признак - ось в r6.
 
-    Признак разделяет входы explicit-axis JK03A большинством, а не начисто: у 2D ось в
+    Признак разделяет входы explicit-axis JK08A большинством, а не начисто: у 2D ось в
     r6 несут 86 сайтов из 87, у 1D - 15 из 240, и наибольшая доля у 1D-входа - 1 из 7
     (0x26550). Поэтому сверяется большинство: одиночное ROM-значение в r6 у 1D-входа
     аргументом не является.
@@ -401,7 +401,7 @@ def build(rows):
     return maps, axes, interps, kernels, accesses, dropped
 
 
-def apply_findings(path, maps, accesses):
+def apply_findings(path, maps, accesses, source_model=None):
     """Ручной слой: что установлено человеком и чего перепись дать не может.
 
     Строка с непустым family объявляет карту вне моделей доступа: её не читает ни один
@@ -426,6 +426,8 @@ def apply_findings(path, maps, accesses):
         if reader.fieldnames != FINDING_FIELDS:
             sys.exit(f"{path}: заголовок {reader.fieldnames}, ожидается {FINDING_FIELDS}")
         rows = list(reader)
+    if source_model is not None:
+        rows = rom_sources.materialize_rows(source_model, "Map", rows)
     declared = 0
     for r in rows:
         a, fam = r["addr"], r["family"]
@@ -475,7 +477,7 @@ def apply_findings(path, maps, accesses):
     return len(rows), declared
 
 
-def apply_axis_facts(path, axes):
+def apply_axis_facts(path, axes, source_model=None):
     """Ручной слой осей: семантика оси и её единицы.
 
     Ось как объект даёт перепись (указатель в r5/r6), её элемент - ядро. Чем ось является
@@ -490,6 +492,8 @@ def apply_axis_facts(path, axes):
         if reader.fieldnames != AXIS_FIELDS:
             sys.exit(f"{path}: заголовок {reader.fieldnames}, ожидается {AXIS_FIELDS}")
         rows = list(reader)
+    if source_model is not None:
+        rows = rom_sources.materialize_rows(source_model, "Axis", rows)
     seen = set()
     for r in rows:
         a = r["addr"]
@@ -630,21 +634,31 @@ def report(rows, maps, axes, interps, kernels, accesses, dropped, taken, finding
 
 
 def main():
-    default_dir = os.path.expanduser("~/tools/ghidra-projects/export-JK03A")
+    default_dir = os.path.expanduser("~/tools/ghidra-projects/export-JK08A")
     outdir = sys.argv[1] if len(sys.argv) > 1 else default_dir
-    rom = sys.argv[2] if len(sys.argv) > 2 else "JK03A"
-    registry = sys.argv[3] if len(sys.argv) > 3 else os.path.join(
-        DEFS, f"{rom}.interp.csv")
-    findings = sys.argv[4] if len(sys.argv) > 4 else os.path.join(
-        DEFS, f"{rom}.findings.csv")
-    axfile = sys.argv[5] if len(sys.argv) > 5 else os.path.join(DEFS, f"{rom}.axes.csv")
+    rom = sys.argv[2] if len(sys.argv) > 2 else "JK08A"
+    try:
+        source_model = rom_sources.resolve(rom)
+        rom_sources.verify_image_binding(source_model)
+    except ValueError as error:
+        sys.exit(str(error))
+    source_paths = rom_sources.definition_paths(source_model)
+    registry = (
+        sys.argv[3] if len(sys.argv) > 3 else str(source_paths["Interp"])
+    )
+    findings = (
+        sys.argv[4] if len(sys.argv) > 4 else str(source_paths["Map"])
+    )
+    axfile = (
+        sys.argv[5] if len(sys.argv) > 5 else str(source_paths["Axis"])
+    )
 
     reg = read_registry(registry)
     rows, taken = read_censuses(outdir, reg, registry)
     check_dims(rows, {e["wrapper"]: 2 if e["height"] else 1 for e in reg})
     maps, axes, interps, kernels, accesses, dropped = build(rows)
-    found = apply_findings(findings, maps, accesses)
-    naxes = apply_axis_facts(axfile, axes)
+    found = apply_findings(findings, maps, accesses, source_model)
+    naxes = apply_axis_facts(axfile, axes, source_model)
     try:
         img = romkit.load(rom)
     except ValueError as e:
@@ -652,6 +666,9 @@ def main():
     characterize(img, maps, axes)
     print(f"rom={rom}; реестр: {os.path.relpath(registry)} ({len(reg)} входов); "
           f"ручной слой: {os.path.relpath(findings)}, {os.path.relpath(axfile)}")
+    print(
+        f"источник аннотаций={source_model.source}, режим={source_model.kind}"
+    )
     print(f"образ: {os.path.relpath(img.path)} ({len(img)} B, sha256 сверен)")
     report(rows, maps, axes, interps, kernels, accesses, dropped, taken, found, naxes)
 
@@ -683,10 +700,12 @@ def main():
             MERGE (i:Interp {rom:$rom, addr:r.addr})
             SET i.role = r.role, i.family = r.family, i.slot = r.slot, i.dims = r.dims,
                 i.width = r.width, i.height = r.height, i.step = r.step,
-                i.limit = r.limit, i.storagetype = r.storagetype
+                i.limit = r.limit, i.storagetype = r.storagetype,
+                i.annotation_source = $source_rom
             """,
             rows=list(interps.values()),
             rom=rom,
+            source_rom=source_model.source,
         )
         s.run(
             """
@@ -700,10 +719,12 @@ def main():
                 m.semantics = r.semantics, m.note = r.note, m.units = r.units,
                 m.scale_expr = r.scale_expr, m.to_byte = r.to_byte,
                 m.scale_conf = r.scale_conf, m.vmin = r.vmin, m.vmax = r.vmax,
-                m.values_hash = r.values_hash
+                m.values_hash = r.values_hash,
+                m.annotation_source = $source_rom
             """,
             rows=list(maps.values()),
             rom=rom,
+            source_rom=source_model.source,
         )
         s.run(
             """
@@ -714,10 +735,12 @@ def main():
                 x.scale_expr = r.scale_expr, x.to_byte = r.to_byte,
                 x.scale_conf = r.scale_conf, x.scale_evidence = r.scale_evidence,
                 x.note = r.note, x.values = r.values,
-                x.monotonic = r.monotonic
+                x.monotonic = r.monotonic,
+                x.annotation_source = $source_rom
             """,
             rows=list(axes.values()),
             rom=rom,
+            source_rom=source_model.source,
         )
         s.run(
             """

@@ -38,6 +38,16 @@ LEVELS = ("pattern", "candidate", "code", "silicon")   # лестница раз
 ROMID_FIELDS = ("xmlid", "internalidaddress", "internalidstring", "ecuid", "caseid",
                 "make", "model", "submodel", "market", "transmission", "memmodel",
                 "endian", "flashmethod", "filesize", "author", "version")
+CHECKSUM_FIELDS = (
+    "type", "path", "expectedsize",
+    "l1loc", "l1stock", "l1patched",
+    "l2loc", "l2stock", "l2patched",
+    "start", "end", "skiploc", "sumloc", "xorloc",
+)
+SWITCH_FIELDS = (
+    "name", "category", "storageaddress", "storagetype", "sizex", "endian",
+    "userlevel",
+)
 # Имя оси по её семантике. Ось общая у нескольких карт, поэтому имя задаётся один раз
 # здесь, а не на карту; частный случай перекрывается [axis.<addr>] в оверрайдах.
 AXIS_NAMES = {"rpm": "Engine Speed [RPM]", "load": "Engine Load",
@@ -158,6 +168,44 @@ def static_axis_xml(values, name="Index", indent=6):
     return out
 
 
+def switch_xml(entry, index):
+    """Пользовательский TableSwitch из overrides: адрес и именованные состояния."""
+    if not isinstance(entry, dict):
+        sys.exit(f"switch #{index} должен быть таблицей TOML")
+    unknown = sorted(set(entry) - set(SWITCH_FIELDS) - {"description", "state"})
+    if unknown:
+        sys.exit(f"switch #{index} содержит неизвестные поля {', '.join(unknown)}")
+    missing = [k for k in SWITCH_FIELDS if k not in entry]
+    if missing:
+        sys.exit(f"switch #{index} без полей {', '.join(missing)}")
+    states = entry.get("state", [])
+    if not isinstance(states, list) or len(states) < 2:
+        sys.exit(f"switch #{index}: нужен массив state минимум из двух состояний")
+
+    attrs = ['type="Switch"'] + [
+        f'{k}="{att(entry[k])}"' for k in SWITCH_FIELDS
+    ]
+    out = wrap("    ", "<table", attrs, ">")
+    if entry.get("description"):
+        out.append(f"      <description>{att(entry['description'])}</description>")
+    for state_index, state in enumerate(states, 1):
+        if not isinstance(state, dict):
+            sys.exit(f"switch #{index}, state #{state_index} должен быть таблицей TOML")
+        unknown_state = sorted(set(state) - {"name", "data"})
+        if unknown_state:
+            sys.exit(f"switch #{index}, state #{state_index} содержит неизвестные поля "
+                     + ", ".join(unknown_state))
+        missing_state = [k for k in ("name", "data") if k not in state]
+        if missing_state:
+            sys.exit(f"switch #{index}, state #{state_index} без полей "
+                     + ", ".join(missing_state))
+        out += wrap("      ", "<state",
+                    [f'name="{att(state["name"])}"', f'data="{att(state["data"])}"'],
+                    "/>")
+    out.append("    </table>")
+    return out
+
+
 def evidence_lines(m, axes, rom):
     """Блок доказательств: что известно о карте и на каком уровне."""
     shape = (f'{m["width"]}x{m["height"]}' if m["dims"] == 2 else f'{m["width"]}')
@@ -249,7 +297,7 @@ def emittable(m, axes):
 
 
 def main():
-    rom = sys.argv[1] if len(sys.argv) > 1 else "JK03A"
+    rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
     out_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(DEFS, f"{rom}.xml")
     ovr_path = os.path.join(DEFS, f"{rom}.overrides.toml")
     if not os.path.exists(ovr_path):
@@ -292,7 +340,16 @@ def main():
             sys.exit(f"[axisview.{a}]: ось не размечена в {rom}.axes.csv, "
                      f"выпускать её нечем")
 
+    switches = ovr.get("switch", [])
+    if isinstance(switches, dict):
+        switches = [switches]
+    if not isinstance(switches, list):
+        sys.exit(f"{os.path.basename(ovr_path)}: switch должен быть таблицей "
+                 "или массивом таблиц")
+
     body = []
+    for index, entry in enumerate(switches, 1):
+        body += switch_xml(entry, index) + [""]
     for m in sorted(emit, key=lambda m: (ovr["table"][m["addr"]].get("order", 1 << 20),
                                          m["addr"])):
         body += table_xml(m, ovr, axes, rom) + [""]
@@ -326,13 +383,33 @@ def main():
             "<roms>", "  <rom>", "    <romid>"]
     head += [f"      <{f}>{att(romid[f])}</{f}>" for f in ROMID_FIELDS]
     head += ["    </romid>", ""]
-    if "checksum" in ovr:
-        c = ovr["checksum"]
+    checksums = ovr.get("checksum", [])
+    if isinstance(checksums, dict):
+        checksums = [checksums]
+    if not isinstance(checksums, list):
+        sys.exit(f"{os.path.basename(ovr_path)}: checksum должен быть таблицей "
+                 "или массивом таблиц")
+    for i, c in enumerate(checksums, 1):
+        unknown = sorted(set(c) - set(CHECKSUM_FIELDS) - {"comment"})
+        if unknown:
+            sys.exit(f"{os.path.basename(ovr_path)}: checksum #{i} содержит "
+                     f"неизвестные поля {', '.join(unknown)}")
+        required = (
+            ("type", "path", "expectedsize",
+             "l1loc", "l1stock", "l1patched",
+             "l2loc", "l2stock", "l2patched")
+            if "path" in c else
+            ("type", "start", "end", "sumloc", "xorloc")
+        )
+        missing = [k for k in required if k not in c]
+        if missing:
+            sys.exit(f"{os.path.basename(ovr_path)}: checksum #{i} без полей "
+                     f"{', '.join(missing)}")
         if "comment" in c:
             head.append(comment(c["comment"].split("\n")))
         head += wrap("    ", "<checksum",
-                     [f'{k}="{att(c[k])}"'
-                      for k in ("type", "start", "end", "sumloc", "xorloc")], "/>") + [""]
+                     [f'{k}="{att(c[k])}"' for k in CHECKSUM_FIELDS if k in c],
+                     "/>") + [""]
 
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n' + "\n".join(head + body).rstrip()
            + "\n  </rom>\n</roms>\n")
@@ -340,7 +417,7 @@ def main():
         f.write(xml)
 
     print(f"{os.path.relpath(out_path)}: {len(emit)} таблиц, "
-          f"{len(ovr.get('axisview', {}))} осей-опор")
+          f"{len(ovr.get('axisview', {}))} осей-опор, {len(switches)} переключателей")
     lvl = {}
     for m in emit:
         lvl[m["confidence"]] = lvl.get(m["confidence"], 0) + 1

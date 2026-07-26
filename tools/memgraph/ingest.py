@@ -5,7 +5,7 @@
   load_graph.py -> load_xrefs.py -> load_maps.py -> load_code.py -> audit
 
 Запуск:
-  uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A
+  uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A
 """
 import argparse
 import csv
@@ -16,8 +16,10 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import load_code  # noqa: E402
 import load_maps  # noqa: E402
+import rom_sources  # noqa: E402
 from provenance import ProvenanceError, analyze_claims  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -116,16 +118,17 @@ def validate_exports(exported, export_dir):
 
 
 def read_code_sources(rom):
-    paths = {
-        "Func": ROOT / "defs" / f"{rom}.funcs.csv",
-        "Reg": ROOT / "defs" / f"{rom}.vars.csv",
-        "Map": ROOT / "defs" / f"{rom}.findings.csv",
-        "Axis": ROOT / "defs" / f"{rom}.axes.csv",
-    }
+    model = rom_sources.resolve(rom)
+    rom_sources.verify_image_binding(model)
+    paths = rom_sources.definition_paths(model)
     funcs = load_code.read_rows(str(paths["Func"]), load_code.FUNC_FIELDS)
     vars_ = load_code.read_rows(str(paths["Reg"]), load_code.VAR_FIELDS)
     maps = load_code.read_rows(str(paths["Map"]), load_code.MAP_FIELDS)
     axes = load_code.read_rows(str(paths["Axis"]), load_code.AXIS_FIELDS)
+    funcs = rom_sources.materialize_rows(model, "Func", funcs)
+    vars_ = rom_sources.materialize_rows(model, "Reg", vars_)
+    maps = rom_sources.materialize_rows(model, "Map", maps)
+    axes = rom_sources.materialize_rows(model, "Axis", axes)
     load_code.check_func_contracts(funcs, str(paths["Func"]))
     claims = load_code.source_claims(rom, [
         ("Func", funcs, str(paths["Func"])),
@@ -133,19 +136,19 @@ def read_code_sources(rom):
         ("Map", maps, str(paths["Map"])),
         ("Axis", axes, str(paths["Axis"])),
     ])
-    return paths, funcs, vars_, maps, axes, claims
+    return model, paths, funcs, vars_, maps, axes, claims
 
 
-def preflight_maps(export_dir, rom, paths):
-    registry = ROOT / "defs" / f"{rom}.interp.csv"
+def preflight_maps(export_dir, rom, model, paths):
+    registry = paths["Interp"]
     reg = load_maps.read_registry(str(registry))
     rows, _ = load_maps.read_censuses(str(export_dir), reg, str(registry))
     load_maps.check_dims(
         rows, {entry["wrapper"]: 2 if entry["height"] else 1 for entry in reg}
     )
     maps, axes, _, _, accesses, _ = load_maps.build(rows)
-    load_maps.apply_findings(str(paths["Map"]), maps, accesses)
-    load_maps.apply_axis_facts(str(paths["Axis"]), axes)
+    load_maps.apply_findings(str(paths["Map"]), maps, accesses, model)
+    load_maps.apply_axis_facts(str(paths["Axis"]), axes, model)
     image = load_maps.romkit.load(rom)
     load_maps.characterize(image, maps, axes)
     return registry, maps, axes, accesses
@@ -197,8 +200,10 @@ def preflight(export_dir, rom, strict):
     }
     exported_func_addrs = validate_exports(exported, export_dir)
 
-    paths, funcs, vars_, _, _, claims = read_code_sources(rom)
-    registry, maps, axes, accesses = preflight_maps(export_dir, rom, paths)
+    model, paths, funcs, vars_, _, _, claims = read_code_sources(rom)
+    registry, maps, axes, accesses = preflight_maps(
+        export_dir, rom, model, paths
+    )
 
     orphans = sorted({
         row["accessor"] for row in accesses
@@ -237,22 +242,24 @@ def preflight(export_dir, rom, strict):
         f"claims={len(levels)}, RESTS_ON={len(dependencies)}"
     )
     print(
+        f"  источник аннотаций={model.source}, режим={model.kind}, "
+        f"образ значений={rom}"
+    )
+    print(
         f"  code/silicon ниже declared={len(below)}, "
         f"без grounding={len(ungrounded)}, cyclic_SCC={len(analysis.cyclic_components)}"
     )
-    return registry
+    return registry, model, paths
 
 
-def commands(export_dir, rom, registry, strict):
+def commands(export_dir, rom, registry, paths, strict):
     python = sys.executable
-    defs = ROOT / "defs"
     result = [
         [python, str(MEMGRAPH / "load_graph.py"), str(export_dir), rom],
         [python, str(MEMGRAPH / "load_xrefs.py"), str(export_dir), rom],
         [
             python, str(MEMGRAPH / "load_maps.py"), str(export_dir), rom,
-            str(registry), str(defs / f"{rom}.findings.csv"),
-            str(defs / f"{rom}.axes.csv"),
+            str(registry), str(paths["Map"]), str(paths["Axis"]),
         ],
         [python, str(MEMGRAPH / "load_code.py"), rom],
         [python, str(MEMGRAPH / "provenance_report.py"), "audit", rom],
@@ -269,7 +276,7 @@ def display_command(command):
 
 def parser():
     out = argparse.ArgumentParser(description=__doc__)
-    out.add_argument("rom", nargs="?", default="JK03A")
+    out.add_argument("rom", nargs="?", default="JK08A")
     out.add_argument(
         "--export-dir", type=Path,
         help="каталог экспорта Ghidra; default: ~/tools/ghidra-projects/export-<rom>",
@@ -293,11 +300,11 @@ def main():
         else Path(f"~/tools/ghidra-projects/export-{args.rom}").expanduser()
     )
     try:
-        registry = preflight(export_dir, args.rom, args.strict)
+        registry, model, paths = preflight(export_dir, args.rom, args.strict)
     except (OSError, ProvenanceError, ValueError) as error:
         sys.exit(str(error))
 
-    steps = commands(export_dir, args.rom, registry, args.strict)
+    steps = commands(export_dir, args.rom, registry, paths, args.strict)
     for number, command in enumerate(steps, 1):
         print(
             f"[{number}/{len(steps)}] {shlex.join(display_command(command))}",

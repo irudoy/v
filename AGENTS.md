@@ -104,9 +104,10 @@ SHA-256. Промежуточные данные пишутся сразу на 
 - `AGENTS.md` – этот файл.
 - `.gitignore` – правила игнора (мусор ОС, scratch, регенерируемые кэши Ghidra / Memgraph).
   Контентные артефакты (ROM, даташиты, дефы, зеркала) версионируются.
-- `defs/` – деф-файлы таблиц. `defs/reference/` – submodules открытых RomRaider Nissan-дефов
-  (Pytrex, a33b) как референс карт (манифест и релевантность – `defs/README.md`); свои дефы
-  под целевой ROM – по мере RE.
+- `defs/` – деф-файлы таблиц. `JK08A.*` является единственным живым набором аннотаций
+  exact-code пары; `rom-inheritance.toml` проецирует его на отдельный слой измерений
+  JK03A без копирования source CSV, ledger и XML. `defs/reference/` – submodules открытых
+  RomRaider Nissan-дефов (Pytrex, a33b; манифест и релевантность – `defs/README.md`).
 - `patches/` – спеки и скрипты патчей immo (`immo-always-id-ok.md`; `apply_immo_patch.py`,
   `lock_setbit_scan.py`) и спека контрольных сумм ПЗУ
   (`rom-selftest-checksum.md`: SUM16, runtime selftest-домены, эталоны и порядок пересчёта);
