@@ -41,8 +41,9 @@ and verifier splits. The result reports the observed paired contrast, sets `caus
 and never modifies canonical CSV files. Manual approval and fresh-launch attestation are operator
 trust boundaries, not cryptographic proof of human actions.
 
-Git tracks only configuration and wrappers. The tools themselves and Ghidra projects remain
-outside the repository because they are large and machine-local; their locations are listed below.
+Git tracks project configuration, wrappers, loaders, analysis scripts, and the browser-based pin
+tracer. Large third-party tools and Ghidra projects remain outside the repository because they are
+machine-local; their locations are listed below.
 
 ## Components and locations
 
@@ -55,6 +56,25 @@ outside the repository because they are large and machine-local; their locations
 | `mcp-memgraph` MCP (agent graph access) | 0.2.0 (through `uv`, Python 3.13) | `.mcp.json` at repository root | no (global gitignore) |
 | Ghidra project | - | `~/tools/ghidra-projects/vq-hr` | no |
 | Headless wrapper | - | `ghidra/headless-analyze.sh` | **yes** |
+| ECU pin tracer | schema v1 | `pin-tracer/index.html` | **yes** |
+
+## Manual board tracing
+
+`pin-tracer/index.html` is an offline workspace for tracing the three VQ HR ECM
+connectors through observed board components to Renesas SH7058 FP-256H pins.
+Its complete interface is available in English and Russian; the selected display
+language is persisted without translating operator-entered observations. It
+stores work in browser local storage and exports
+`vq-hr-ecu-pin-tracer/v1` JSON. The full source, interaction, export, and
+provenance contract is in `pin-tracer/README.md`.
+
+A reviewed export supplies the physical bridge from an ESM terminal name to an
+MCU peripheral candidate. Firmware work can then verify pin multiplexing, find
+the corresponding peripheral-register xrefs, and follow those functions into
+control paths and calibration users. Continuity alone does not establish map
+semantics or justify `silicon` confidence. No automatic Memgraph ingestion is
+implemented; pin-tracer JSON remains a reviewed operator artifact until a
+loader and canonical trace storage are added.
 
 ## Ports
 

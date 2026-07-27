@@ -719,6 +719,14 @@ dispositions. `code -> silicon` requires CONSULT3P live data or a bench test. St
 `confidence`, `contract_conf`, and `scale_conf`, and their basis in the corresponding evidence
 columns. Compute weakest-link confidence and grounding separately.
 
+A reviewed `tools/pin-tracer` export can support this stage by linking an ESM terminal label through
+the observed board topology to an MCU package pin. Use that link to verify the exact PFC
+multiplexing, select peripheral registers, and prioritize their firmware xrefs. Continuity is
+evidence for physical connectivity only: it does not establish Map/Axis semantics or runtime
+behavior and cannot by itself promote such a claim to `silicon`. The current pipeline has no
+pin-tracer JSON loader, so exports remain operator artifacts until board provenance, canonical
+storage, and ingestion are implemented.
+
 ### Stage 8 - Emit the definition (resolves P5)
 
 `tools/mapkit/emit_def.py` combines graph facts, `defs/<rom>.dtc.csv` DTC data, and

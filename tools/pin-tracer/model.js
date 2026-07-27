@@ -9,7 +9,8 @@
 
   const DEFAULT_PREFERENCES = Object.freeze({
     advancedPins: false,
-    showSavedLines: false
+    showSavedLines: false,
+    language: "en"
   });
 
   function mcuPinCategories(name) {
@@ -319,9 +320,11 @@
 
   function normalizePreferences(preferences) {
     const value = preferences && typeof preferences === "object" ? preferences : {};
+    const language = String(value.language || "").trim().toLowerCase().split(/[-_]/)[0];
     return {
       advancedPins: value.advancedPins === true,
-      showSavedLines: value.showSavedLines === true
+      showSavedLines: value.showSavedLines === true,
+      language: language === "ru" ? "ru" : "en"
     };
   }
 

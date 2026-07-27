@@ -94,6 +94,10 @@
       margin-bottom: 7px;
     }
 
+    .header-copy {
+      min-width: 0;
+    }
+
     h1,
     h2,
     h3,
@@ -125,9 +129,11 @@
 
     .subtitle {
       margin: 0;
-      max-width: 1040px;
+      overflow: hidden;
       font-size: 0.75rem;
       line-height: 1.3;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .stats {
@@ -183,6 +189,39 @@
 
     .toolbar-spacer {
       flex: 1 1 auto;
+    }
+
+    .language-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+    }
+
+    .language-button {
+      min-width: 31px;
+      min-height: 23px;
+      padding: 2px 6px;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.67rem;
+      font-weight: 700;
+    }
+
+    .language-button:hover {
+      color: var(--text);
+    }
+
+    .language-button.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--text);
     }
 
     .btn {
@@ -916,79 +955,101 @@
 <body>
   <main class="app">
     <header class="app-header">
-      <div>
+      <div class="header-copy">
         <h1>VQ HR ECU Pin Tracer</h1>
-        <p class="subtitle">
+        <p class="subtitle" data-i18n="app.subtitle" data-i18n-title="app.subtitle">
           Trace ECM connector terminals to Renesas SH7058 FP-256H pins, record measured component
           paths, and keep preloaded hypotheses separate from physical board traces.
         </p>
       </div>
-      <div class="stats" aria-label="Workspace statistics">
+      <div class="stats" aria-label="Workspace statistics" data-i18n-aria-label="stats.aria">
         <div class="stat">
-          <span class="stat-label">Traced pairs</span>
+          <span class="stat-label" data-i18n="stats.tracedPairs">Traced pairs</span>
           <span class="stat-value" id="statConnections">0</span>
         </div>
         <div class="stat">
-          <span class="stat-label">Listed terminals</span>
+          <span class="stat-label" data-i18n="stats.listedTerminals">Listed terminals</span>
           <span class="stat-value" id="statCoverage">0%</span>
         </div>
       </div>
     </header>
 
-    <section class="toolbar" aria-label="Workspace controls">
+    <section class="toolbar" aria-label="Workspace controls" data-i18n-aria-label="toolbar.aria">
       <div class="toolbar-group">
-        <button class="btn" type="button" id="exportButton">Export JSON</button>
-        <button class="btn" type="button" id="importButton">Import JSON</button>
-        <button class="btn danger" type="button" id="resetButton">Clear workspace</button>
+        <button class="btn" type="button" id="exportButton" data-i18n="action.export">Export JSON</button>
+        <button class="btn" type="button" id="importButton" data-i18n="action.import">Import JSON</button>
+        <button class="btn danger" type="button" id="resetButton"
+          data-i18n="action.clearWorkspace">Clear workspace</button>
         <input class="sr-only" type="file" id="importFile" accept="application/json,.json"
-          aria-label="Import workspace JSON">
+          aria-label="Import workspace JSON" data-i18n-aria-label="import.aria">
+        <div class="language-switch" role="group" aria-label="Interface language"
+          data-i18n-aria-label="language.aria">
+          <button class="language-button" type="button" data-language="en"
+            aria-label="English" data-i18n-aria-label="language.en">EN</button>
+          <button class="language-button" type="button" data-language="ru"
+            aria-label="Russian" data-i18n-aria-label="language.ru">RU</button>
+        </div>
       </div>
       <div class="toolbar-spacer"></div>
       <label class="switch">
         <input type="checkbox" id="showSavedLines">
-        Show saved lines
+        <span data-i18n="action.showSavedLines">Show saved lines</span>
       </label>
       <label class="switch">
         <input type="checkbox" id="advancedPins">
-        Enable MCU bus and infrastructure pins
+        <span data-i18n="action.enableAdvancedPins">Enable MCU bus and infrastructure pins</span>
       </label>
-      <div class="legend" aria-label="ECM and MCU pin category legend">
-        <span class="legend-item" style="color: var(--analog)"><span class="swatch"></span>Analog</span>
-        <span class="legend-item" style="color: var(--timer)"><span class="swatch"></span>Timer/PWM</span>
-        <span class="legend-item" style="color: var(--comm)"><span class="swatch"></span>Communication</span>
-        <span class="legend-item" style="color: var(--irq)"><span class="swatch"></span>Interrupt</span>
-        <span class="legend-item" style="color: var(--gpio)"><span class="swatch"></span>GPIO</span>
-        <span class="legend-item" style="color: var(--bus)"><span class="swatch"></span>Bus/system</span>
-        <span class="legend-item" style="color: var(--heavy-terminal)"><span class="swatch"></span>Wide terminal</span>
+      <div class="legend" aria-label="ECM and MCU pin category legend"
+        data-i18n-aria-label="legend.aria">
+        <span class="legend-item" style="color: var(--analog)"><span class="swatch"></span><span
+          data-i18n="legend.analog">Analog</span></span>
+        <span class="legend-item" style="color: var(--timer)"><span class="swatch"></span><span
+          data-i18n="legend.timer">Timer/PWM</span></span>
+        <span class="legend-item" style="color: var(--comm)"><span class="swatch"></span><span
+          data-i18n="legend.communication">Communication</span></span>
+        <span class="legend-item" style="color: var(--irq)"><span class="swatch"></span><span
+          data-i18n="legend.interrupt">Interrupt</span></span>
+        <span class="legend-item" style="color: var(--gpio)"><span class="swatch"></span><span
+          data-i18n="legend.gpio">GPIO</span></span>
+        <span class="legend-item" style="color: var(--bus)"><span class="swatch"></span><span
+          data-i18n="legend.bus">Bus/system</span></span>
+        <span class="legend-item" style="color: var(--heavy-terminal)"><span class="swatch"></span><span
+          data-i18n="legend.wide">Wide terminal</span></span>
       </div>
     </section>
 
-    <section class="diagram-scroller" id="diagramScroller" aria-label="ECM and MCU pin diagrams">
+    <section class="diagram-scroller" id="diagramScroller" aria-label="ECM and MCU pin diagrams"
+      data-i18n-aria-label="diagram.aria">
       <div class="diagram-board" id="diagramBoard">
         <section class="board-section ecu-section" aria-labelledby="ecuHeading">
           <div class="section-heading">
-            <h2 id="ecuHeading">ECM connectors</h2>
-            <span>Harness side, source orientation</span>
+            <h2 id="ecuHeading" data-i18n="ecu.heading">ECM connectors</h2>
+            <span data-i18n="ecu.orientation">Harness side, source orientation</span>
           </div>
           <div class="connector-stack" id="connectorStack"></div>
         </section>
 
-        <section class="board-section mcu-section" aria-label="Renesas SH7058 MCU">
+        <section class="board-section mcu-section" aria-label="Renesas SH7058 MCU"
+          data-i18n-aria-label="mcu.packageAria">
           <div class="mcu-package" id="mcuPackage">
-            <div class="mcu-side top" id="mcuTop" aria-label="MCU top edge pins"></div>
-            <div class="mcu-side left" id="mcuLeft" aria-label="MCU left edge pins"></div>
+            <div class="mcu-side top" id="mcuTop" aria-label="MCU top edge pins"
+              data-i18n-aria-label="mcu.topAria"></div>
+            <div class="mcu-side left" id="mcuLeft" aria-label="MCU left edge pins"
+              data-i18n-aria-label="mcu.leftAria"></div>
             <div class="mcu-core">
               <strong>SH7058</strong>
-              <span>FP-256H, top view</span>
-              <p>
+              <span data-i18n="mcu.topView">FP-256H, top view</span>
+              <p data-i18n="mcu.coreDescription">
                 Selectable pins are peripheral I/O candidates. Power, clock, debug, and external
                 bus pins are dimmed by default. Pin functions use the SH7058 Rev. 3 column in the
                 Renesas comparison appendix; actual multiplexing must be checked in firmware and
                 on the board.
               </p>
             </div>
-            <div class="mcu-side right" id="mcuRight" aria-label="MCU right edge pins"></div>
-            <div class="mcu-side bottom" id="mcuBottom" aria-label="MCU bottom edge pins"></div>
+            <div class="mcu-side right" id="mcuRight" aria-label="MCU right edge pins"
+              data-i18n-aria-label="mcu.rightAria"></div>
+            <div class="mcu-side bottom" id="mcuBottom" aria-label="MCU bottom edge pins"
+              data-i18n-aria-label="mcu.bottomAria"></div>
           </div>
         </section>
 
@@ -998,7 +1059,7 @@
 
     <section class="below-grid">
       <article class="panel" aria-labelledby="inspectorHeading">
-        <h2 id="inspectorHeading">Selection and connection editor</h2>
+        <h2 id="inspectorHeading" data-i18n="inspector.heading">Selection and connection editor</h2>
         <div class="selection-pair">
           <div class="selection-card" id="selectedEcuCard"></div>
           <div class="pair-arrow" aria-hidden="true">-&gt;</div>
@@ -1009,31 +1070,31 @@
 
       <article class="panel" aria-labelledby="connectionsHeading">
         <div class="section-heading">
-          <h2 id="connectionsHeading">Recorded connections</h2>
-          <span id="storageState">Saved locally</span>
+          <h2 id="connectionsHeading" data-i18n="connections.heading">Recorded connections</h2>
+          <span id="storageState" data-i18n="storage.saved">Saved locally</span>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>ECM terminal</th>
-                <th>MCU pin</th>
-                <th>Topology</th>
-                <th>Route / comment</th>
-                <th>Actions</th>
+                <th data-i18n="table.ecuTerminal">ECM terminal</th>
+                <th data-i18n="table.mcuPin">MCU pin</th>
+                <th data-i18n="table.topology">Topology</th>
+                <th data-i18n="table.routeComment">Route / comment</th>
+                <th data-i18n="table.actions">Actions</th>
               </tr>
             </thead>
             <tbody id="connectionsBody"></tbody>
           </table>
         </div>
-        <div class="empty-state" id="connectionsEmpty">
+        <div class="empty-state" id="connectionsEmpty" data-i18n="connections.empty">
           No connections recorded. Select one ECM terminal and one enabled MCU pin to create the
           first trace.
         </div>
       </article>
     </section>
 
-    <p class="footer-note">
+    <p class="footer-note" data-i18n="footer.note">
       ECM terminal abbreviations and wire colors are transcribed from the supplied one-page
       pinout; expanded functions follow the 2007 G35 Sedan service manual. ECM colors indicate the
       expected MCU-side function class, not voltage or current rating. Wide-terminal markers follow
@@ -1045,10 +1106,12 @@
   </main>
 
   <script src="./model.js"></script>
+  <script src="./i18n.js"></script>
   <script>
     "use strict";
 
     const STORAGE_KEY = "vq-hr-ecu-pin-tracer-v1";
+    const LANGUAGE_STORAGE_KEY = "vq-hr-ecu-pin-tracer-language";
     const SCHEMA = "vq-hr-ecu-pin-tracer/v1";
     const {
       mcuPinCategories,
@@ -1067,6 +1130,18 @@
       formatLocalDate,
       escapeHtml
     } = window.PinTracerModel;
+    const {
+      normalizeLanguage,
+      translate,
+      localizeReferenceText,
+      localizeCandidateLabel,
+      describeEcuSignal: describeLocalizedEcuSignal,
+      describeWireColor: describeLocalizedWireColor,
+      localizeValidationError
+    } = window.PinTracerI18n;
+    const initialLanguage = normalizeLanguage(
+      localStorage.getItem(LANGUAGE_STORAGE_KEY) || navigator.language
+    );
 
     const connectorDefinitions = [
       {
@@ -1236,14 +1311,6 @@
       });
     });
     serviceDirections[87] = "manualConflict";
-
-    const serviceDirectionLabels = {
-      output: "ECM output",
-      input: "ECM input",
-      bidirectional: "ECM input/output",
-      reference: "Supply, ground, or sensor reference",
-      manualConflict: "Sensor signal; service table direction column says Output"
-    };
 
     const mcuNames = Array(257).fill("Unassigned");
     function setMcu(pin, name) {
@@ -1539,6 +1606,8 @@
       spotlightCategories: [],
       advancedPins: false,
       showSavedLines: false,
+      language: initialLanguage,
+      storageStatus: "storage.saved",
       connections: []
     };
 
@@ -1561,8 +1630,73 @@
       statConnections: document.getElementById("statConnections"),
       statCoverage: document.getElementById("statCoverage"),
       storageState: document.getElementById("storageState"),
-      importFile: document.getElementById("importFile")
+      importFile: document.getElementById("importFile"),
+      languageButtons: [...document.querySelectorAll("[data-language]")]
     };
+
+    function t(key, params) {
+      return translate(state.language, key, params);
+    }
+
+    function signalDescription(signal) {
+      return describeLocalizedEcuSignal(
+        state.language,
+        signal,
+        describeEcuSignal(signal)
+      );
+    }
+
+    function wireColorDescription(code) {
+      return describeLocalizedWireColor(
+        state.language,
+        code,
+        describeWireColor(code)
+      );
+    }
+
+    function topologyText(topology, field) {
+      const key = `topology.${topology}.${field}`;
+      const fallback = topologyProfiles[topology]?.[field === "endpoint" ? "endpointNote" : field] || "";
+      const localized = t(key);
+      return localized === key ? fallback : localized;
+    }
+
+    function applyStaticTranslations() {
+      document.documentElement.lang = state.language;
+      document.title = t("app.title");
+      const description = document.querySelector('meta[name="description"]');
+      if (description) description.content = t("app.description");
+      document.querySelectorAll("[data-i18n]").forEach(element => {
+        if (element === refs.storageState) return;
+        element.textContent = t(element.dataset.i18n);
+      });
+      document.querySelectorAll("[data-i18n-aria-label]").forEach(element => {
+        element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+      });
+      document.querySelectorAll("[data-i18n-title]").forEach(element => {
+        element.title = t(element.dataset.i18nTitle);
+      });
+      refs.storageState.textContent = t(state.storageStatus);
+      refs.languageButtons.forEach(button => {
+        const active = button.dataset.language === state.language;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+    }
+
+    function setLanguage(language) {
+      const next = normalizeLanguage(language);
+      if (next === state.language) return;
+      state.language = next;
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
+      applyStaticTranslations();
+      renderConnectors();
+      renderMcuPins();
+      if (localStorage.getItem(STORAGE_KEY) || state.connections.length) {
+        persist();
+      }
+      renderAllDynamic();
+    }
 
     function connectorForPin(pin) {
       return connectorDefinitions.find(connector => pin >= connector.rangeStart && pin <= connector.rangeEnd);
@@ -1577,10 +1711,12 @@
         connectorColor: connector.color,
         sourceAlias: connector.sourceAlias,
         wireColor: signalData[0],
-        wireColorDescription: describeWireColor(signalData[0]),
+        wireColorDescription: wireColorDescription(signalData[0]),
         signal: signalData[1],
         serviceDirection: serviceDirections[pin] || "",
-        serviceDirectionLabel: serviceDirectionLabels[serviceDirections[pin]] || ""
+        serviceDirectionLabel: serviceDirections[pin]
+          ? t(`direction.${serviceDirections[pin]}`)
+          : ""
       };
     }
 
@@ -1591,8 +1727,15 @@
         section.className = "connector";
         section.innerHTML = `
           <div class="connector-title">
-            <span class="connector-name">${connector.id} / source overview ${connector.sourceAlias}</span>
-            <span class="connector-meta">${connector.color}, terminals ${connector.rangeStart}-${connector.rangeEnd}</span>
+            <span class="connector-name">${escapeHtml(t("connector.title", {
+              id: connector.id,
+              alias: connector.sourceAlias
+            }))}</span>
+            <span class="connector-meta">${escapeHtml(t("connector.meta", {
+              color: t(`connector.color.${connector.color}`),
+              start: connector.rangeStart,
+              end: connector.rangeEnd
+            }))}</span>
           </div>
         `;
         const grid = document.createElement("div");
@@ -1605,12 +1748,12 @@
           ? "var(--ecu-power-terminal-width)"
           : "var(--ecu-terminal-width)"
         ).join(" ");
-        grid.setAttribute("aria-label", `${connector.id} connector terminal grid`);
+        grid.setAttribute("aria-label", t("connector.gridAria", { id: connector.id }));
         for (let row = 0; row < 4; row += 1) {
           for (let column = connector.columns - 1; column >= 0; column -= 1) {
             const pin = connector.rangeStart + column * 4 + (3 - row);
             const ecuPin = getEcuPin(pin);
-            const signalDescription = describeEcuSignal(ecuPin.signal);
+            const localizedSignalDescription = signalDescription(ecuPin.signal);
             const category = ecuPin.signal
               ? genericSuggestionForSignal(ecuPin.signal).category
               : "system";
@@ -1632,22 +1775,33 @@
             button.dataset.terminalSize = isWideTerminal ? "wide" : "standard";
             button.setAttribute(
               "aria-label",
-              `${connector.id} terminal ${pin}${ecuPin.signal
-                ? `, ${ecuPin.signal}, ${signalDescription}`
-                : ", not listed in source"}`
+              ecuPin.signal
+                ? t("pin.ecuAria", {
+                    connector: connector.id,
+                    pin,
+                    signal: ecuPin.signal,
+                    description: localizedSignalDescription
+                  })
+                : t("pin.ecuAriaUnlisted", {
+                    connector: connector.id,
+                    pin
+                  })
             );
             button.title = [
               `${connector.id}:${pin}`,
-              ecuPin.signal || "Not listed in source",
-              ecuPin.signal ? signalDescription : "",
+              ecuPin.signal || t("common.notListedSource"),
+              ecuPin.signal ? localizedSignalDescription : "",
               ecuPin.serviceDirectionLabel,
               ecuPin.wireColor
-                ? `Wire ${ecuPin.wireColor} (${ecuPin.wireColorDescription})`
+                ? t("wire.label", {
+                    code: ecuPin.wireColor,
+                    color: ecuPin.wireColorDescription
+                  })
                 : ""
             ].filter(Boolean).join(" | ");
             button.innerHTML = `
               <span class="pin-number">${pin}</span>
-              <span class="pin-signal">${ecuPin.signal || "not listed"}</span>
+              <span class="pin-signal">${ecuPin.signal || escapeHtml(t("common.notListedLower"))}</span>
             `;
             button.addEventListener("click", () => selectEcu(pin));
             grid.appendChild(button);
@@ -1686,7 +1840,11 @@
           button.textContent = String(pin);
           button.setAttribute(
             "aria-label",
-            `MCU pin ${pin}, ${name}, ${categories.map(categoryLabel).join(", ")}`
+            t("pin.mcuAria", {
+              pin,
+              name,
+              categories: categories.map(categoryLabel).join(", ")
+            })
           );
           button.setAttribute("title", `MCU ${pin}: ${name}`);
           button.addEventListener("click", () => selectMcu(pin));
@@ -1756,21 +1914,25 @@
       if (state.selectedEcu) {
         const pin = getEcuPin(state.selectedEcu);
         refs.selectedEcuCard.innerHTML = `
-          <span class="eyebrow">ECM terminal</span>
-          <strong>${pin.connector}:${pin.pin} ${escapeHtml(pin.signal || "Not listed")}</strong>
-          <span class="selection-function">${escapeHtml(describeEcuSignal(pin.signal))}</span>
+          <span class="eyebrow">${escapeHtml(t("selection.ecuTerminal"))}</span>
+          <strong>${pin.connector}:${pin.pin} ${escapeHtml(pin.signal || t("common.notListed"))}</strong>
+          <span class="selection-function">${escapeHtml(signalDescription(pin.signal))}</span>
           <small>
-            ${escapeHtml(pin.serviceDirectionLabel || "Not listed in service table")} |
-            Wire ${escapeHtml(pin.wireColor || "unknown")}
-            (${escapeHtml(pin.wireColorDescription)}) |
-            ${escapeHtml(pin.connectorColor)} connector
+            ${escapeHtml(pin.serviceDirectionLabel || t("selection.serviceNotListed"))} |
+            ${escapeHtml(t("wire.label", {
+              code: pin.wireColor || t("common.unknown"),
+              color: pin.wireColorDescription
+            }))} |
+            ${escapeHtml(t("selection.connector", {
+              color: t(`connector.color.${pin.connectorColor}`)
+            }))}
           </small>
         `;
       } else {
         refs.selectedEcuCard.innerHTML = `
-          <span class="eyebrow">ECM terminal</span>
-          <strong>Not selected</strong>
-          <small>Select a terminal in the connector pinout.</small>
+          <span class="eyebrow">${escapeHtml(t("selection.ecuTerminal"))}</span>
+          <strong>${escapeHtml(t("common.notSelected"))}</strong>
+          <small>${escapeHtml(t("selection.selectEcu"))}</small>
         `;
       }
 
@@ -1778,15 +1940,17 @@
         const name = mcuNames[state.selectedMcu];
         const categories = mcuPinCategories(name);
         refs.selectedMcuCard.innerHTML = `
-          <span class="eyebrow">MCU pin</span>
+          <span class="eyebrow">${escapeHtml(t("selection.mcuPin"))}</span>
           <strong>${state.selectedMcu} ${escapeHtml(name)}</strong>
-          <small>Capabilities: ${escapeHtml(categoryLabelList(categories))}</small>
+          <small>${escapeHtml(t("selection.capabilities", {
+            categories: categoryLabelList(categories)
+          }))}</small>
         `;
       } else {
         refs.selectedMcuCard.innerHTML = `
-          <span class="eyebrow">MCU pin</span>
-          <strong>Not selected</strong>
-          <small>Select an enabled peripheral pin.</small>
+          <span class="eyebrow">${escapeHtml(t("selection.mcuPin"))}</span>
+          <strong>${escapeHtml(t("common.notSelected"))}</strong>
+          <small>${escapeHtml(t("selection.selectMcu"))}</small>
         `;
       }
     }
@@ -1804,8 +1968,7 @@
       if (!ecuPin && !mcuPin) {
         refs.inspectorContent.innerHTML = `
           <div class="empty-state">
-            Start from either side. Selecting an ECM terminal shows topology guidance and possible
-            MCU targets. Selecting an MCU pin shows its peripheral functions and seeded hypotheses.
+            ${escapeHtml(t("inspector.empty"))}
           </div>
         `;
         return;
@@ -1836,21 +1999,24 @@
         return `
           <div class="suggestion">
             <div>
-              <strong>${escapeHtml(suggestion.label)}</strong>
+              <strong>${escapeHtml(localizeCandidateLabel(state.language, suggestion.label))}</strong>
               <span>
                 ${suggestion.targets.map(pin => `MCU ${pin} ${escapeHtml(mcuNames[pin])}`).join("; ")}
-                | Unverified candidate. ${escapeHtml(evidence.explanation)}
+                | ${escapeHtml(t("inspector.unverifiedCandidate"))}
+                ${escapeHtml(t(`evidence.${suggestion.evidence}.explanation`))}
               </span>
             </div>
             <div>
-              <span class="badge ${evidence.className}">${escapeHtml(evidence.label)}</span>
+              <span class="badge ${evidence.className}">${escapeHtml(
+                t(`evidence.${suggestion.evidence}.label`)
+              )}</span>
               <div class="form-actions">
                 ${suggestion.targets.map(pin => `
                   <button class="btn small" type="button"
                     data-suggestion-pin="${pin}"
                     data-suggestion-topology="${suggestion.topology}"
                     data-suggestion-index="${suggestionIndex}">
-                    Select ${pin}
+                    ${escapeHtml(t("action.selectPin", { pin }))}
                   </button>
                 `).join("")}
               </div>
@@ -1860,29 +2026,36 @@
       }).join("");
 
       refs.inspectorContent.innerHTML = `
-        ${note ? `<div class="warning-box">${escapeHtml(note)}</div>` : ""}
-        <h3 style="margin-top: 12px">Possible topology template</h3>
+        ${note ? `<div class="warning-box">${escapeHtml(
+          localizeReferenceText(state.language, note)
+        )}</div>` : ""}
+        <h3 style="margin-top: 12px">${escapeHtml(t("inspector.possibleTopology"))}</h3>
         <div class="hint-box">
-          <strong>${escapeHtml(profile.label)}</strong><br>
-          ${escapeHtml(profile.route)}<br>
-          Generic engineering pattern only; inspect this board before recording a route.
-          ${profile.endpointNote ? `<br><strong>Endpoint model:</strong> ${escapeHtml(profile.endpointNote)}` : ""}
+          <strong>${escapeHtml(topologyText(topologyKey, "label"))}</strong><br>
+          ${escapeHtml(topologyText(topologyKey, "route"))}<br>
+          ${escapeHtml(t("inspector.genericPattern"))}
+          ${profile.endpointNote ? `<br><strong>${escapeHtml(
+            t("inspector.endpointModel")
+          )}</strong> ${escapeHtml(topologyText(topologyKey, "endpoint"))}` : ""}
         </div>
-        <h3 style="margin-top: 12px">Suggested MCU targets</h3>
+        <h3 style="margin-top: 12px">${escapeHtml(t("inspector.suggestedMcu"))}</h3>
         <div class="suggestion-list">
           ${exactMarkup || ""}
           <div class="suggestion">
             <div>
-              <strong>${escapeHtml(generic.label)}</strong>
+              <strong>${escapeHtml(t(`generic.${generic.topology}`))}</strong>
               <span>
-                All ${escapeHtml(categoryLabelList(generic.categories))} candidates are highlighted
-                automatically. Select the measured endpoint.
+                ${escapeHtml(t("inspector.genericCandidates", {
+                  categories: categoryLabelList(generic.categories)
+                }))}
               </span>
             </div>
           </div>
         </div>
         <div class="form-actions">
-          <button class="btn" type="button" id="clearSelectionButton">Clear selection</button>
+          <button class="btn" type="button" id="clearSelectionButton">${escapeHtml(
+            t("action.clearSelection")
+          )}</button>
         </div>
       `;
 
@@ -1903,29 +2076,33 @@
 
     function renderMcuInspector(mcuPin) {
       const hypotheses = mcuHypotheses[mcuPin.pin] || [
-        "No connector-level hypothesis is seeded for this pin. Use peripheral type, firmware PFC setup, and continuity measurements."
+        t("hypothesis.none")
       ];
       refs.inspectorContent.innerHTML = `
-        <h3>Peripheral function</h3>
+        <h3>${escapeHtml(t("inspector.peripheralFunction"))}</h3>
         <div class="hint-box">
           <strong>MCU ${mcuPin.pin}: ${escapeHtml(mcuPin.name)}</strong><br>
-          Capabilities: ${escapeHtml(categoryLabelList(mcuPin.categories))}<br>
-          Compatible populated ECM terminals are highlighted automatically.
+          ${escapeHtml(t("selection.capabilities", {
+            categories: categoryLabelList(mcuPin.categories)
+          }))}<br>
+          ${escapeHtml(t("inspector.compatibleEcu"))}
         </div>
-        <h3 style="margin-top: 12px">Preloaded hypotheses</h3>
+        <h3 style="margin-top: 12px">${escapeHtml(t("inspector.preloadedHypotheses"))}</h3>
         <div class="suggestion-list">
           ${hypotheses.map(text => `
             <div class="suggestion">
               <div>
-                <strong>Hypothesis</strong>
-                <span>${escapeHtml(text)}</span>
+                <strong>${escapeHtml(t("hypothesis.label"))}</strong>
+                <span>${escapeHtml(localizeReferenceText(state.language, text))}</span>
               </div>
-              <span class="badge low">unverified</span>
+              <span class="badge low">${escapeHtml(t("hypothesis.unverified"))}</span>
             </div>
           `).join("")}
         </div>
         <div class="form-actions">
-          <button class="btn" type="button" id="clearSelectionButton">Clear selection</button>
+          <button class="btn" type="button" id="clearSelectionButton">${escapeHtml(
+            t("action.clearSelection")
+          )}</button>
         </div>
       `;
       document.getElementById("clearSelectionButton").addEventListener("click", clearSelection);
@@ -1950,41 +2127,45 @@
       refs.inspectorContent.innerHTML = `
         ${categoryMismatch ? `
           <div class="warning-box">
-            The selected MCU capabilities (${escapeHtml(categoryLabelList(mcuPin.categories))})
-            differ from the usual ${escapeHtml(categoryLabelList(generic.categories))} endpoint
-            classes for this ECM signal. This may be valid through an intermediate ASIC, but the
-            observed route must explain it.
+            ${escapeHtml(t("form.categoryMismatch", {
+              actual: categoryLabelList(mcuPin.categories),
+              expected: categoryLabelList(generic.categories)
+            }))}
           </div>
         ` : ""}
         <form id="connectionForm" style="margin-top: 12px">
           <div class="form-grid">
             <div class="field full">
-              <label for="connectionTopology">Topology template</label>
+              <label for="connectionTopology">${escapeHtml(t("form.topology"))}</label>
               <select class="control" id="connectionTopology">
                 ${topologyOptions(connection.topology)}
               </select>
             </div>
             <div class="field full">
-              <label for="connectionRoute">Observed component path</label>
+              <label for="connectionRoute">${escapeHtml(t("form.observedPath"))}</label>
               <textarea class="control" id="connectionRoute" required
-                placeholder="Record components and nets actually followed on this board.">${escapeHtml(connection.route)}</textarea>
+                placeholder="${escapeHtml(t("form.observedPathPlaceholder"))}">${escapeHtml(connection.route)}</textarea>
               <div class="hint-box route-template-hint">
                 <span id="topologyRouteHint"></span>
                 <button class="btn small" type="button" id="useRouteTemplateButton"
-                  title="Copy this generic template into the path field, then verify and edit it.">
-                  Use template
+                  title="${escapeHtml(t("form.templateTitle"))}">
+                  ${escapeHtml(t("action.useTemplate"))}
                 </button>
               </div>
             </div>
             <div class="field full">
-              <label for="connectionComment">Connection comment</label>
+              <label for="connectionComment">${escapeHtml(t("form.comment"))}</label>
               <textarea class="control" id="connectionComment"
-                placeholder="Example: passes through Q104 MOSFET, 100 ohm gate resistor, and D52 flyback clamp">${escapeHtml(connection.comment)}</textarea>
+                placeholder="${escapeHtml(t("form.commentPlaceholder"))}">${escapeHtml(connection.comment)}</textarea>
             </div>
           </div>
           <div class="form-actions">
-            <button class="btn primary" type="submit">${existing ? "Update connection" : "Save connection"}</button>
-            <button class="btn" type="button" id="clearSelectionButton">Clear selection</button>
+            <button class="btn primary" type="submit">${escapeHtml(
+              t(existing ? "action.updateConnection" : "action.saveConnection")
+            )}</button>
+            <button class="btn" type="button" id="clearSelectionButton">${escapeHtml(
+              t("action.clearSelection")
+            )}</button>
           </div>
         </form>
       `;
@@ -1994,12 +2175,12 @@
       updateRouteTemplate(topologySelect.value);
       topologySelect.addEventListener("change", () => updateRouteTemplate(topologySelect.value));
       document.getElementById("useRouteTemplateButton").addEventListener("click", () => {
-        const template = topologyProfiles[topologySelect.value]?.route;
+        const template = topologyText(topologySelect.value, "route");
         if (!template) return;
         if (
           routeTextarea.value.trim()
           && routeTextarea.value.trim() !== template
-          && !window.confirm("Replace the current observed component path with this generic template?")
+          && !window.confirm(t("confirm.replaceTemplate"))
         ) {
           return;
         }
@@ -2025,17 +2206,19 @@
     function updateRouteTemplate(topology) {
       const hint = document.getElementById("topologyRouteHint");
       if (!hint || !topologyProfiles[topology]) return;
-      hint.textContent = `Possible template only: ${topologyProfiles[topology].route}`;
+      hint.textContent = t("template.possible", {
+        route: topologyText(topology, "route")
+      });
     }
 
     function saveConnection(connection) {
       if (!connection.route) {
-        window.alert("Record the component path observed on this board.");
+        window.alert(t("alert.missingPath"));
         return;
       }
       const duplicate = findDuplicateConnection(state.connections, connection);
       if (duplicate) {
-        const replace = window.confirm("A connection between these pins already exists. Replace it?");
+        const replace = window.confirm(t("confirm.replaceDuplicate"));
         if (!replace) return;
         state.connections = state.connections.filter(item => item.id !== duplicate.id);
       }
@@ -2061,14 +2244,20 @@
         const ecuPin = getEcuPin(connection.ecuPin);
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td><code>${ecuPin.connector}:${connection.ecuPin}</code><br>${escapeHtml(ecuPin.signal || "Not listed")}</td>
+          <td><code>${ecuPin.connector}:${connection.ecuPin}</code><br>${escapeHtml(
+            ecuPin.signal || t("common.notListed")
+          )}</td>
           <td><code>${connection.mcuPin}</code><br>${escapeHtml(mcuNames[connection.mcuPin])}</td>
-          <td>${escapeHtml(topologyProfiles[connection.topology]?.label || connection.topology)}</td>
+          <td>${escapeHtml(topologyText(connection.topology, "label") || connection.topology)}</td>
           <td>${escapeHtml(connection.route)}${connection.comment ? `<br><span class="muted">${escapeHtml(connection.comment)}</span>` : ""}</td>
           <td>
             <div class="row-actions">
-              <button class="btn small" type="button" data-edit="${escapeHtml(connection.id)}">Edit</button>
-              <button class="btn small danger" type="button" data-delete="${escapeHtml(connection.id)}">Delete</button>
+              <button class="btn small" type="button" data-edit="${escapeHtml(connection.id)}">${escapeHtml(
+                t("action.edit")
+              )}</button>
+              <button class="btn small danger" type="button" data-delete="${escapeHtml(connection.id)}">${escapeHtml(
+                t("action.delete")
+              )}</button>
             </div>
           </td>
         `;
@@ -2096,7 +2285,10 @@
     function deleteConnection(id) {
       const connection = state.connections.find(item => item.id === id);
       if (!connection) return;
-      if (!window.confirm(`Delete connection ECM ${connection.ecuPin} -> MCU ${connection.mcuPin}?`)) return;
+      if (!window.confirm(t("confirm.deleteConnection", {
+        ecuPin: connection.ecuPin,
+        mcuPin: connection.mcuPin
+      }))) return;
       state.connections = state.connections.filter(item => item.id !== id);
       if (state.editingId === id) {
         state.selectedEcu = null;
@@ -2167,12 +2359,15 @@
         },
         preferences: {
           advancedPins: state.advancedPins,
-          showSavedLines: state.showSavedLines
+          showSavedLines: state.showSavedLines,
+          language: state.language
         },
         connections: state.connections
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      refs.storageState.textContent = "Saved locally";
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, state.language);
+      state.storageStatus = "storage.saved";
+      refs.storageState.textContent = t(state.storageStatus);
     }
 
     function restore() {
@@ -2184,11 +2379,17 @@
         state.connections = workspace.connections;
         state.advancedPins = workspace.preferences.advancedPins;
         state.showSavedLines = workspace.preferences.showSavedLines;
+        state.language = normalizeLanguage(
+          localStorage.getItem(LANGUAGE_STORAGE_KEY)
+          || payload.preferences?.language
+          || initialLanguage
+        );
         refs.advancedPins.checked = state.advancedPins;
         refs.showSavedLines.checked = state.showSavedLines;
       } catch (error) {
         console.error(error);
-        refs.storageState.textContent = "Local data could not be loaded";
+        state.storageStatus = "storage.loadError";
+        refs.storageState.textContent = t(state.storageStatus);
       }
     }
 
@@ -2211,7 +2412,8 @@
         },
         preferences: {
           advancedPins: state.advancedPins,
-          showSavedLines: state.showSavedLines
+          showSavedLines: state.showSavedLines,
+          language: state.language
         },
         connections: state.connections
       };
@@ -2228,21 +2430,33 @@
 
     async function importJson(file) {
       try {
-        const payload = validatePayload(JSON.parse(await file.text()));
-        if (state.connections.length && !window.confirm("Replace the current connection workspace with the imported file?")) {
+        const rawPayload = JSON.parse(await file.text());
+        const payload = validatePayload(rawPayload);
+        if (state.connections.length && !window.confirm(t("confirm.importWorkspace"))) {
           return;
         }
         state.connections = payload.connections;
         state.advancedPins = payload.preferences.advancedPins;
         state.showSavedLines = payload.preferences.showSavedLines;
+        state.language = normalizeLanguage(
+          rawPayload.preferences?.language || state.language
+        );
+        localStorage.setItem(LANGUAGE_STORAGE_KEY, state.language);
         refs.advancedPins.checked = state.advancedPins;
         refs.showSavedLines.checked = state.showSavedLines;
+        applyStaticTranslations();
+        renderConnectors();
         renderMcuPins();
         clearSelection();
         persist();
         renderAllDynamic();
       } catch (error) {
-        window.alert(error.message || "Could not import the selected JSON file.");
+        window.alert(
+          localizeValidationError(
+            state.language,
+            error.message || t("alert.importFailed")
+          )
+        );
       } finally {
         refs.importFile.value = "";
       }
@@ -2250,29 +2464,26 @@
 
     function clearWorkspace() {
       if (!state.connections.length) return;
-      if (!window.confirm("Delete all recorded connections from this browser? Export first if they are needed.")) return;
+      if (!window.confirm(t("confirm.clearWorkspace"))) return;
       state.connections = [];
       localStorage.removeItem(STORAGE_KEY);
+      state.storageStatus = "storage.empty";
       clearSelection();
-      refs.storageState.textContent = "Empty workspace";
+      refs.storageState.textContent = t(state.storageStatus);
     }
 
     function topologyOptions(selected) {
-      return Object.entries(topologyProfiles).map(([value, profile]) =>
-        `<option value="${value}"${value === selected ? " selected" : ""}>${escapeHtml(profile.label)}</option>`
+      return Object.keys(topologyProfiles).map(value =>
+        `<option value="${value}"${value === selected ? " selected" : ""}>${escapeHtml(
+          topologyText(value, "label")
+        )}</option>`
       ).join("");
     }
 
     function categoryLabel(category) {
-      return {
-        analog: "analog/ADC",
-        timer: "timer/PWM",
-        communication: "communication",
-        interrupt: "interrupt",
-        gpio: "GPIO",
-        bus: "external bus",
-        system: "system/infrastructure"
-      }[category] || category;
+      const key = `category.${category}`;
+      const localized = t(key);
+      return localized === key ? category : localized;
     }
 
     function categoryLabelList(categories) {
@@ -2303,6 +2514,9 @@
       persist();
       requestAnimationFrame(drawConnections);
     });
+    refs.languageButtons.forEach(button => {
+      button.addEventListener("click", () => setLanguage(button.dataset.language));
+    });
     document.getElementById("exportButton").addEventListener("click", exportJson);
     document.getElementById("importButton").addEventListener("click", () => refs.importFile.click());
     document.getElementById("resetButton").addEventListener("click", clearWorkspace);
@@ -2314,6 +2528,7 @@
     refs.diagramScroller.addEventListener("scroll", () => requestAnimationFrame(drawConnections), { passive: true });
 
     restore();
+    applyStaticTranslations();
     renderConnectors();
     renderMcuPins();
     renderAllDynamic();

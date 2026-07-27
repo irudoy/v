@@ -189,22 +189,27 @@ test("matches ECM candidates when tracing from an MCU pin", () => {
 test("normalizes optional workspace preferences", () => {
   assert.deepEqual(model.normalizePreferences(), {
     advancedPins: false,
-    showSavedLines: false
+    showSavedLines: false,
+    language: "en"
   });
   assert.deepEqual(model.normalizePreferences({
     advancedPins: true,
     showSavedLines: true,
+    language: "ru-RU",
     ignored: true
   }), {
     advancedPins: true,
-    showSavedLines: true
+    showSavedLines: true,
+    language: "ru"
   });
   assert.deepEqual(model.normalizePreferences({
     advancedPins: 1,
-    showSavedLines: "yes"
+    showSavedLines: "yes",
+    language: "de"
   }), {
     advancedPins: false,
-    showSavedLines: false
+    showSavedLines: false,
+    language: "en"
   });
 });
 
@@ -216,12 +221,14 @@ test("validates and normalizes a complete workspace payload", () => {
     })
   ], {
     advancedPins: true,
-    showSavedLines: true
+    showSavedLines: true,
+    language: "ru"
   }), validationOptions);
 
   assert.deepEqual(result.preferences, {
     advancedPins: true,
-    showSavedLines: true
+    showSavedLines: true,
+    language: "ru"
   });
   assert.equal(result.connections[0].route, "ECM terminal -> Q1 -> MCU pin");
   assert.equal(result.connections[0].comment, "measured");
@@ -237,7 +244,8 @@ test("accepts the legacy browser import fixture and removes evidence statuses", 
   assert.equal(result.connections.length, 2);
   assert.deepEqual(result.preferences, {
     advancedPins: true,
-    showSavedLines: true
+    showSavedLines: true,
+    language: "en"
   });
   assert.deepEqual(
     result.connections.map(item => [item.ecuPin, item.mcuPin]),
@@ -340,6 +348,7 @@ test("the HTML data set covers every connector and MCU package position", () => 
     .map(match => match[1]);
   const script = scripts.find(value => value.includes("const connectorDefinitions"));
   assert.ok(script, "inline application script must exist");
+  assert.doesNotThrow(() => new vm.Script(script));
 
   const context = {};
   let block = script
@@ -468,22 +477,26 @@ test("the HTML data set covers every connector and MCU package position", () => 
 
   assert.match(html, /id="showSavedLines"/);
   assert.match(html, /src="\.\/model\.js"/);
+  assert.match(html, /src="\.\/i18n\.js"/);
+  assert.match(html, /data-language="en"/);
+  assert.match(html, /data-language="ru"/);
   assert.match(html, /button\.title =/);
-  assert.match(html, /const signalDescription = describeEcuSignal/);
-  assert.match(html, /describeWireColor\(signalData\[0\]\)/);
-  assert.match(html, /selection-function.*describeEcuSignal\(pin\.signal\)/);
+  assert.match(html, /const localizedSignalDescription = signalDescription/);
+  assert.match(html, /wireColorDescription\(signalData\[0\]\)/);
+  assert.match(html, /selection-function.*signalDescription\(pin\.signal\)/);
   assert.match(html, /button\.dataset\.terminalSize =/);
   assert.ok(
     html.indexOf(".ecu-pin.selected") > html.indexOf(".ecu-pin.used"),
     "ECM selected styling must override the regular used-pin styling"
   );
-  assert.match(html, /candidates are highlighted\s+automatically/);
-  assert.match(html, /Compatible populated ECM terminals are highlighted automatically/);
+  assert.match(html, /t\("inspector\.genericCandidates"/);
+  assert.match(html, /t\("inspector\.compatibleEcu"\)/);
   assert.match(html, /id="useRouteTemplateButton"/);
   assert.match(html, /routeTextarea\.value = template/);
-  assert.match(html, /Possible topology template/);
-  assert.match(html, /Observed component path/);
-  assert.match(html, /Possible template only:/);
+  assert.match(html, /t\("inspector\.possibleTopology"\)/);
+  assert.match(html, /t\("form\.observedPath"\)/);
+  assert.match(html, /t\("template\.possible"/);
+  assert.match(html, /language:\s*state\.language/);
   assert.match(html, /serviceManualSha256:\s*"f34ae5e56df11de9e069b3dcd637d4fc509321ce8ac3f7eb0dfc3293e3ac55fc"/);
   assert.match(html, /Neither connector terminal maps one-to-one to an MCU TX or RX pin/);
   assert.match(html, /Ground is a shared return network, not a one-to-one signal connection/);

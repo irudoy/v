@@ -43,6 +43,13 @@ and save the connection. Every saved pair represents a route physically followed
 by continuity measurement or visual board inspection. Directly opening
 `index.html` also works in browsers that permit local storage for `file:` pages.
 
+Use the compact `EN` / `RU` switch to select the interface language. The choice
+applies to controls, tooltips, signal descriptions, topology guidance, validation
+messages, and generated route templates. It is stored separately from tracing
+data, included in exported workspace preferences, and survives `Clear workspace`.
+Changing the interface language does not translate operator-entered component
+paths or comments, so recorded observations remain verbatim.
+
 ECM terminal colors follow the same functional category legend as MCU pins.
 Terminal groups 1-8, 49-56, and 121-128 are drawn wider because the connector
 drawing shows physically wider cavities. This presentation does not assign a
@@ -74,6 +81,42 @@ against the board. CAN, K-line, supply, and ground guidance explicitly describes
 shared or branching endpoint models instead of implying one-to-one
 connector-to-MCU wiring.
 
+## Export contract and downstream use
+
+An exported `vq-hr-ecu-pin-tracer/v1` file is an operator record of manual work
+on a physical board. Each connection contains an ECM terminal, an MCU package
+pin, a generic topology class, the mandatory component path observed on the
+board, an optional comment, and creation/update timestamps. Top-level SHA-256
+values bind the workspace to the connector pinout, Renesas manual, and Nissan
+service-manual revision used by the UI. Display preferences, including the
+interface language, are not evidence.
+
+Reviewed exports are intended to provide the hardware link between factory
+signal semantics and firmware analysis:
+
+1. Map an ESM terminal label to its observed protection, conditioning, driver,
+   transceiver, or ASIC path and then to an SH7058 package pin.
+2. Check the exact firmware pin-function-controller configuration and identify
+   the corresponding ADC, timer, serial, interrupt, or GPIO registers.
+3. Follow register xrefs into firmware functions and use the resulting
+   signal-to-code path to prioritize unresolved map, flag, and control-path
+   hypotheses.
+4. Design a targeted CONSULT3P, logging, or bench test for the remaining
+   behavioral claim.
+
+Physical continuity establishes board connectivity, not map semantics,
+direction under every operating state, or runtime use of a multiplexed MCU
+function. A trace therefore narrows and grounds firmware analysis but does not
+by itself promote a Map or Axis claim to `silicon`.
+
+The v1 schema does not identify the exact ECU, PCB revision, MCU marking,
+operator, instrument, or tracing session. Before an export is admitted as
+project evidence, keep it with a review record containing those provenance
+fields and do not merge observations from different boards. A future schema
+revision should carry this provenance directly. No Memgraph loader currently
+consumes pin-tracer JSON; reviewed exports remain operator artifacts until that
+loader and a canonical storage location are defined.
+
 ## Tests
 
 Run the model, validation, and embedded-data tests with Node.js:
@@ -84,10 +127,12 @@ npm test
 ```
 
 The test suite covers signal classification, topology suggestions, import
-validation, duplicate prevention, statistics, HTML escaping, and the integrity
-of all ECM and MCU pin data embedded in the page. Reference hashes protect the
-audited 102 populated ECM terminals and all 256 SH7058 package positions from
-unreviewed transcription changes.
+validation, duplicate prevention, statistics, HTML escaping, language-catalog
+parity, locale persistence, and translation coverage for every populated ECM
+description, source note, MCU hypothesis, topology family, and evidence label.
+It also verifies the integrity of all ECM and MCU pin data embedded in the page.
+Reference hashes protect the audited 102 populated ECM terminals and all 256
+SH7058 package positions from unreviewed transcription changes.
 
 Preloaded hypotheses remain suggestions and are never saved as traced pairs
 automatically.
