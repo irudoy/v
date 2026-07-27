@@ -73,8 +73,8 @@ state = [
   { name = "Disabled (IMMO OFF)", data = "00" },
 ]
 
-# Оси, показанные отдельными таблицами: своей карты с разобранной семантикой у них нет,
-# но значения читаются кодом и служат опорой при разборе соседних подсистем.
+# Оси карт зажигания показаны также отдельными таблицами для непосредственного просмотра
+# и редактирования breakpoint'ов.
 [axisview.00011ece]
 name = "Engine Speed Axis [RPM] (ref)"
 category = "Reference Axes"
@@ -83,45 +83,156 @@ fine = 50
 coarse = 200
 
 [axisview.00011ebe]
-name = "FUN_0004bbee Axis X (ref)"
+name = "Cylinder Filling Axis [%] (ref)"
 category = "Reference Axes"
 order = 2
-coarse = 8
+format = "0.00"
+fine = 0.78125
+coarse = 3.125
 
 # Трио 0xB61A/0xB71A/0xB81A - базовые пороги детектора пропусков воспламенения
 # (неравномерность вращения коленвала), аксессор 0x82c8a. Структура снята кодом, но
 # физическая шкала не выведена (offset-binary, 0x80 = сентинел), поэтому по воротам §9
 # деф их не выпускает и презентации у них нет. Разбор - в defs/JK08A.notes.md.
 
-[table.0000b33a]
-name = "Target AFR - Power (0xB33A)"
-category = "AFR / Lambda (traced)"
-order = 20
-format = "0.00"
-fine = 0.1
-coarse = 0.5
+[table.0000991a]
+name = "Cold Ignition Timing Map (0x991A)"
+category = "Ignition Timing / Main (traced)"
+order = 10
+mask = "7F"
+format = "0"
+fine = 1
+coarse = 4
+
+[table.00009a1a]
+name = "High Octane Ignition Timing Map (0x9A1A)"
+category = "Ignition Timing / Main (traced)"
+order = 11
+mask = "7F"
+format = "0"
+fine = 1
+coarse = 4
+
+[table.00009b1a]
+name = "High Detonation Ignition Timing Map (0x9B1A)"
+category = "Ignition Timing / Main (traced)"
+order = 12
+mask = "7F"
+format = "0"
+fine = 1
+coarse = 4
+
+[[masked_view]]
+source = "0000991a"
+name = "Cold Ignition Timing Map Knock Window (0x991A bit7)"
+category = "Ignition Timing / Knock Control / Main (traced)"
+mask = "80"
+units = "Knock Window (0: Off | 1: On)"
+expression = "x"
+to_byte = "x"
+format = "0"
+fine = 1
+coarse = 1
+
+[[masked_view]]
+source = "00009a1a"
+name = "High Octane Ignition Timing Map Knock Window (0x9A1A bit7)"
+category = "Ignition Timing / Knock Control / Main (traced)"
+mask = "80"
+units = "Knock Window (0: Off | 1: On)"
+expression = "x"
+to_byte = "x"
+format = "0"
+fine = 1
+coarse = 1
+
+[[masked_view]]
+source = "00009b1a"
+name = "High Detonation Ignition Timing Map Knock Window (0x9B1A bit7)"
+category = "Ignition Timing / Knock Control / Main (traced)"
+mask = "80"
+units = "Knock Window (0: Off | 1: On)"
+expression = "x"
+to_byte = "x"
+format = "0"
+fine = 1
+coarse = 1
 
 [table.0000a29a]
-name = "Lambda Target - flat (0xA29A)"
+name = "Fuel Compensation Map (0xA29A)"
+category = "Fuel Delivery / Main (traced)"
+order = 20
+format = "0.00"
+fine = 0.78125
+coarse = 3.125
+
+[table.0000b33a]
+name = "Target AFR - Power (0xB33A)"
 category = "AFR / Lambda (traced)"
 order = 21
 format = "0.00"
 fine = 0.1
 coarse = 0.5
 
+[table.0000abba]
+name = "Knock Sensor Circuit Monitor Surface A (0xABBA)"
+category = "Diagnostics / Knock Sensor Monitor (traced)"
+order = 30
+format = "0"
+fine = 1
+coarse = 8
+
+[table.0000abfa]
+name = "Knock Sensor Circuit Monitor Surface B (0xABFA)"
+category = "Diagnostics / Knock Sensor Monitor (traced)"
+order = 31
+format = "0"
+fine = 1
+coarse = 8
+
 [table.0000ab0a]
 name = "Filter Target Additive Correction (0xAB0A)"
 category = "Filters (traced)"
-order = 30
+order = 32
 coarse = 4
 
 [table.0000b23a]
 name = "Filter Weight - new-sample share Q16 (0xB23A)"
 category = "Filters (traced)"
-order = 31
+order = 33
 format = "0.000000"
 fine = 0.0000152587890625
 coarse = 0.00006103515625
+
+[table.0001108e]
+name = "Knock Slice Map - active bank (0x1108E)"
+category = "Ignition Timing / Knock Control / Thresholds (traced)"
+order = 40
+format = "0.000"
+fine = 0.0015259
+coarse = 0.015259
+static_axis_x_name = "Engine Speed [RPM]"
+static_axis_x = [
+  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
+  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
+]
+static_axis_y_name = "Cylinder"
+static_axis_y = [1, 2, 3, 4, 5, 6]
+
+[table.00010f8e]
+name = "Knock Slice Map - parallel bank (0x10F8E)"
+category = "Ignition Timing / Knock Control / Thresholds"
+order = 41
+format = "0.000"
+fine = 0.0015259
+coarse = 0.015259
+static_axis_x_name = "Engine Speed [RPM]"
+static_axis_x = [
+  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
+  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
+]
+static_axis_y_name = "Cylinder"
+static_axis_y = [1, 2, 3, 4, 5, 6]
 
 [table.00008fdc]
 name = "Rev Limit - Fuel Cut Maximum (0x8FDC)"

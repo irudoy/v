@@ -22,6 +22,8 @@
 # оси из r5. Значит ось r5 (граф :AXIS_X) - строки, ось r6 (:AXIS_Y) - столбцы, а
 # RomRaider называет столбцы X Axis, строки - Y Axis. Отсюда перекрёст: :AXIS_X -> Y Axis,
 # :AXIS_Y -> X Axis. У одномерной карты ось одна, и RomRaider зовёт её X Axis.
+# Ручная семья direct-row-major хранит X как внутреннее измерение и не имеет рёбер осей:
+# width -> sizex, height -> sizey, обе статические оси задаются в overrides.
 #
 # Запуск: uv run --no-project --with neo4j python tools/mapkit/emit_def.py [<rom>] [<out>]
 import html
@@ -45,6 +47,10 @@ CHECKSUM_FIELDS = (
 SWITCH_FIELDS = (
     "name", "category", "storageaddress", "storagetype", "sizex", "endian",
     "userlevel",
+)
+MASKED_VIEW_FIELDS = (
+    "source", "name", "category", "mask", "units", "expression", "to_byte",
+    "format", "fine", "coarse",
 )
 # Имя оси по её семантике. Ось общая у нескольких карт, поэтому имя задаётся один раз
 # здесь, а не на карту; частный случай перекрывается [axis.<addr>] в оверрайдах.
@@ -156,9 +162,11 @@ def axis_xml(kind, x, ovr, size_attr, indent=6):
     return out
 
 
-def static_axis_xml(values, name="Index", indent=6):
+def static_axis_xml(values, name="Index", axis_type="Static X Axis",
+                    size_attr="sizex", indent=6):
     pad = " " * indent
-    out = [f'{pad}<table type="Static X Axis" name="{att(name)}" sizex="{len(values)}">']
+    out = [f'{pad}<table type="{att(axis_type)}" name="{att(name)}" '
+           f'{size_attr}="{len(values)}">']
     for i in range(0, len(values), 4):
         out.append(pad + "  " + "".join(f"<data>{att(v)}</data>"
                                         for v in values[i:i + 4]))
@@ -231,27 +239,22 @@ def evidence_lines(m, axes, rom):
     return lines
 
 
-def table_xml(m, ovr, axes, rom):
-    o = ovr["table"][m["addr"]]
-    cat = o["category"] + ("" if m["confidence"] == "code" else " (candidate)")
-    dims = "3D" if m["dims"] == 2 else "2D"
-    # Форма RomRaider: sizex - столбцы (ось r6), sizey - строки (ось r5). У одномерной
-    # карты ось одна, её длина и есть sizex.
-    size = ([f'sizex="{m["height"]}"', f'sizey="{m["width"]}"'] if m["dims"] == 2
-            else [f'sizex="{m["width"]}"'])
-    out = [comment(evidence_lines(m, axes, rom))]
-    out += wrap("    ", "<table", [f'type="{dims}"', f'name="{att(o["name"])}"',
-                                   f'category="{att(cat)}"',
-                                   f'storagetype="{att(m["storagetype"])}"',
-                                   f'storageaddress="{hexa(m["addr"])}"']
-                + size + ['endian="big"'], ">")
-    out.append(scaling(m["units"], m["scale_expr"], m["to_byte"], m["scale_conf"],
-                       o.get("format", "0"), o.get("fine"), o.get("coarse"), 6))
-
-    # Ось у карты одна на ребро - это ворота эмиссии, и до сюда доходит только такая.
+def table_axes_xml(m, o, ovr, axes):
+    """Оси таблицы: графовые для interp-карт, статические для прямого row-major."""
+    out = []
     if m["dims"] == 2:
-        out += axis_xml("X Axis", axes[m["axis_y"][0]], ovr, "sizex")
-        out += axis_xml("Y Axis", axes[m["axis_x"][0]], ovr, "sizey")
+        if m["axis_x"] and m["axis_y"]:
+            out += axis_xml("X Axis", axes[m["axis_y"][0]], ovr, "sizex")
+            out += axis_xml("Y Axis", axes[m["axis_x"][0]], ovr, "sizey")
+        else:
+            out += static_axis_xml(
+                o["static_axis_x"], o.get("static_axis_x_name", "X Axis"),
+                "Static X Axis", "sizex",
+            )
+            out += static_axis_xml(
+                o["static_axis_y"], o.get("static_axis_y_name", "Y Axis"),
+                "Static Y Axis", "sizey",
+            )
     elif m["axis_x"]:
         out += axis_xml("X Axis", axes[m["axis_x"][0]], ovr, "sizex")
     elif m["steps"]:
@@ -262,12 +265,116 @@ def table_xml(m, ovr, axes, rom):
     else:
         # compare: lookup'а нет, ячейки выбирает ветвление; подписи ветвей - оверрайд.
         out += static_axis_xml(o["static_axis"], "Selector")
+    return out
+
+
+def table_xml(m, ovr, axes, rom):
+    o = ovr["table"][m["addr"]]
+    cat = o["category"] + ("" if m["confidence"] == "code" else " (candidate)")
+    dims = "3D" if m["dims"] == 2 else "2D"
+    # Форма RomRaider: sizex - столбцы (ось r6), sizey - строки (ось r5). У одномерной
+    # карты ось одна, её длина и есть sizex.
+    if m["dims"] == 2 and m["family"] == "direct-row-major":
+        size = [f'sizex="{m["width"]}"', f'sizey="{m["height"]}"']
+    elif m["dims"] == 2:
+        size = [f'sizex="{m["height"]}"', f'sizey="{m["width"]}"']
+    else:
+        size = [f'sizex="{m["width"]}"']
+    attrs = [f'type="{dims}"', f'name="{att(o["name"])}"',
+             f'category="{att(cat)}"',
+             f'storagetype="{att(m["storagetype"])}"',
+             f'storageaddress="{hexa(m["addr"])}"'] + size + ['endian="big"']
+    if o.get("mask"):
+        attrs.append(f'mask="{att(o["mask"])}"')
+    out = [comment(evidence_lines(m, axes, rom))]
+    out += wrap("    ", "<table", attrs, ">")
+    out.append(scaling(m["units"], m["scale_expr"], m["to_byte"], m["scale_conf"],
+                       o.get("format", "0"), o.get("fine"), o.get("coarse"), 6))
+
+    # Ось у карты одна на ребро - это ворота эмиссии, и до сюда доходит только такая.
+    out += table_axes_xml(m, o, ovr, axes)
     out.append("    </table>")
     return out
 
 
-def emittable(m, axes):
+def masked_view_xml(m, view, ovr, axes, rom):
+    """Дополнительное masked-представление тех же ячеек без дублирования Map-факта."""
+    source = ovr["table"][m["addr"]]
+    dims = "3D" if m["dims"] == 2 else "2D"
+    if m["dims"] == 2 and m["family"] == "direct-row-major":
+        size = [f'sizex="{m["width"]}"', f'sizey="{m["height"]}"']
+    elif m["dims"] == 2:
+        size = [f'sizex="{m["height"]}"', f'sizey="{m["width"]}"']
+    else:
+        size = [f'sizex="{m["width"]}"']
+    shape = (f'{m["width"]}x{m["height"]}' if m["dims"] == 2 else f'{m["width"]}')
+    lines = [
+        f'{hexa(m["addr"])}  {shape} {m["storagetype"]}  masked view '
+        f'0x{view["mask"]} [{m["confidence"]}]',
+        f'Источник семантики: {m["semantics"]}',
+        f"Разбор и метод - defs/{rom}.notes.md",
+    ]
+    attrs = [
+        f'type="{dims}"',
+        f'name="{att(view["name"])}"',
+        f'category="{att(view["category"])}"',
+        f'storagetype="{att(m["storagetype"])}"',
+        f'storageaddress="{hexa(m["addr"])}"',
+    ] + size + ['endian="big"', f'mask="{att(view["mask"])}"']
+    out = [comment(lines)]
+    out += wrap("    ", "<table", attrs, ">")
+    out.append(scaling(
+        view["units"], view["expression"], view["to_byte"], m["confidence"],
+        view.get("format", "0"), view.get("fine"), view.get("coarse"), 6,
+    ))
+    out += table_axes_xml(m, source, ovr, axes)
+    out.append("    </table>")
+    return out
+
+
+def masked_views(ovr, emitted):
+    """Проверить presentation-only masked views и сгруппировать их по исходной карте."""
+    entries = ovr.get("masked_view", [])
+    if isinstance(entries, dict):
+        entries = [entries]
+    if not isinstance(entries, list):
+        sys.exit("masked_view должен быть таблицей или массивом таблиц")
+    by_source = {}
+    for index, entry in enumerate(entries, 1):
+        if not isinstance(entry, dict):
+            sys.exit(f"masked_view #{index} должен быть таблицей TOML")
+        unknown = sorted(set(entry) - set(MASKED_VIEW_FIELDS))
+        if unknown:
+            sys.exit(f"masked_view #{index} содержит неизвестные поля "
+                     + ", ".join(unknown))
+        required = ("source", "name", "category", "mask", "units", "expression", "to_byte")
+        missing = [key for key in required if key not in entry]
+        if missing:
+            sys.exit(f"masked_view #{index} без полей " + ", ".join(missing))
+        view = dict(entry)
+        view["source"] = str(view["source"]).lower()
+        view["mask"] = str(view["mask"]).upper()
+        if view["source"] not in emitted:
+            sys.exit(f"masked_view #{index}: исходная карта {view['source']} "
+                     "не проходит ворота эмиссии")
+        try:
+            mask = int(view["mask"], 16)
+        except ValueError:
+            sys.exit(f"masked_view #{index}: mask не является hex-числом")
+        bits = {"uint8": 8, "uint16": 16, "uint32": 32}.get(emitted[view["source"]]["storagetype"])
+        if not bits or mask <= 0 or mask >= (1 << bits):
+            sys.exit(f"masked_view #{index}: mask вне "
+                     f"{emitted[view['source']]['storagetype']}")
+        primary_mask = ovr["table"][view["source"]].get("mask")
+        if primary_mask and int(str(primary_mask), 16) & mask:
+            sys.exit(f"masked_view #{index}: mask пересекается с основной таблицей")
+        by_source.setdefault(view["source"], []).append(view)
+    return entries, by_source
+
+
+def emittable(m, axes, ovr=None):
     """Ворота раздела 9 либо причина, по которой карта дефом не выпускается."""
+    ovr = ovr or {}
     if m["role"] != "table":
         return f'роль {m["role"]}'
     if not m["semantics"]:
@@ -286,7 +393,14 @@ def emittable(m, axes):
             if not axes[a]["kind"]:
                 return f'ось {hexa(a)} не размечена'
     if m["dims"] == 2 and not (m["axis_x"] and m["axis_y"]):
-        return "у 2D-карты снята не всякая ось"
+        if m["axis_x"] or m["axis_y"]:
+            return "у 2D-карты снята только одна ось"
+        if m["family"] != "direct-row-major":
+            return "у 2D-карты снята не всякая ось"
+        if len(ovr.get("static_axis_x", [])) != m["width"]:
+            return f'нужна Static X Axis из {m["width"]} точек'
+        if len(ovr.get("static_axis_y", [])) != m["height"]:
+            return f'нужна Static Y Axis из {m["height"]} точек'
     # Ось одномерной карты задана массивом (explicit), шагом входа (implicit) либо не
     # задана вовсе: у семейства compare lookup'а нет, ячейки выбирает ветвление.
     if m["dims"] == 1 and not (m["axis_x"] or m["steps"] or m["family"] == "compare"):
@@ -306,25 +420,30 @@ def main():
     maps, axes = fetch(rom)
     emit, skipped = [], []
     for a, m in sorted(maps.items()):
-        why = emittable(m, axes)
+        o = ovr.get("table", {}).get(a, {})
+        why = emittable(m, axes, o)
         if why:
             if m["semantics"] and m["role"] == "table":
                 skipped.append((a, m["semantics"], why))
             continue
-        o = ovr.get("table", {}).get(a)
-        if o is None or not o.get("name") or not o.get("category"):
+        if not o.get("name") or not o.get("category"):
             sys.exit(f"карта {hexa(a)} ({m['semantics']}) проходит ворота эмиссии, но "
                      f"имени и категории у неё нет - объявить [table.{a}] в "
                      f"{os.path.basename(ovr_path)}")
         # У карты без оси подписи ячеек взять неоткуда, кроме оверрайда: ветвление
         # именует их, а не граф.
-        if not (m["axis_x"] or m["steps"]):
+        if m["dims"] == 1 and not (m["axis_x"] or m["steps"]):
             if len(o.get("static_axis", [])) != m["width"]:
                 sys.exit(f"[table.{a}]: у карты оси нет, ячейки выбирает ветвление - "
                          f"нужен static_axis из {m['width']} подписей")
-        elif "static_axis" in o:
+        elif m["dims"] == 1 and "static_axis" in o:
             sys.exit(f"[table.{a}]: static_axis поверх оси {hexa((m['axis_x'] or ['-'])[0])} "
                      f"- ось даёт граф, оверрайду её не подменять")
+        if m["dims"] == 2 and m["axis_x"] and m["axis_y"]:
+            static_keys = {"static_axis_x", "static_axis_y"} & set(o)
+            if static_keys:
+                sys.exit(f"[table.{a}]: статическая ось поверх осей графа - "
+                         + ", ".join(sorted(static_keys)))
         emit.append(m)
     unknown = sorted(set(ovr.get("table", {})) - {m["addr"] for m in emit})
     if unknown:
@@ -338,6 +457,9 @@ def main():
             sys.exit(f"[axisview.{a}]: ось не размечена в {rom}.axes.csv, "
                      f"выпускать её нечем")
 
+    view_entries, views_by_source = masked_views(
+        ovr, {m["addr"]: m for m in emit}
+    )
     switches = ovr.get("switch", [])
     if isinstance(switches, dict):
         switches = [switches]
@@ -351,6 +473,8 @@ def main():
     for m in sorted(emit, key=lambda m: (ovr["table"][m["addr"]].get("order", 1 << 20),
                                          m["addr"])):
         body += table_xml(m, ovr, axes, rom) + [""]
+        for view in views_by_source.get(m["addr"], []):
+            body += masked_view_xml(m, view, ovr, axes, rom) + [""]
     for a in sorted(ovr.get("axisview", {}),
                     key=lambda a: (ovr["axisview"][a].get("order", 1 << 20), a)):
         o, x = ovr["axisview"][a], axes[a]
@@ -415,7 +539,8 @@ def main():
         f.write(xml)
 
     print(f"{os.path.relpath(out_path)}: {len(emit)} таблиц, "
-          f"{len(ovr.get('axisview', {}))} осей-опор, {len(switches)} переключателей")
+          f"{len(view_entries)} masked views, {len(ovr.get('axisview', {}))} осей-опор, "
+          f"{len(switches)} переключателей")
     lvl = {}
     for m in emit:
         lvl[m["confidence"]] = lvl.get(m["confidence"], 0) + 1

@@ -45,6 +45,165 @@
       <state name="Disabled (IMMO OFF)" data="00"/>
     </table>
 
+    <!-- 0x0991A  16x16 uint8  карта [code]; вход 0x26230 (explicit, ядро 0x26944)
+         аксессор 0x4E1C0; операнд r4: sp
+         шкала x-64 degrees adjustment [candidate]; Y Axis 0x11ECE rpm [candidate]; X Axis
+         0x11EBE load [candidate]
+         Таблица гомологична EV18A 0x9976 с постоянным смещением layout +0x5c для всего трио.
+         Физическая шкала и имя режима подтверждены каталогом A2L; код подтверждает выбор
+         таблицы, маску 0x7f и участие результата в расчёте угла.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="Cold Ignition Timing Map (0x991A)"
+           category="Ignition Timing / Main (traced)" storagetype="uint8"
+           storageaddress="0x0991A" sizex="16" sizey="16" endian="big" mask="7F">
+      <scaling units="degrees adjustment [cand]" expression="x-64" to_byte="x+64" format="0"
+               fineincrement="1" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
+             sizex="16" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11ECE" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0991A  16x16 uint8  masked view 0x80 [code]
+         Источник семантики: Cold Ignition Timing Map: аддитивная коррекция расчётного MBT в
+         холодном режиме; младшие 7 бит несут signed-offset величину, bit7 несёт knock-window
+         flag.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="Cold Ignition Timing Map Knock Window (0x991A bit7)"
+           category="Ignition Timing / Knock Control / Main (traced)" storagetype="uint8"
+           storageaddress="0x0991A" sizex="16" sizey="16" endian="big" mask="80">
+      <scaling units="Knock Window (0: Off | 1: On)" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="1"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
+             sizex="16" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11ECE" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x09A1A  16x16 uint8  карта [code]; вход 0x26230 (explicit, ядро 0x26944)
+         аксессор 0x493E8, 0x4E1C0; операнд r4: phi, pool, slice, sp
+         шкала x-64 degrees adjustment [candidate]; Y Axis 0x11ECE rpm [candidate]; X Axis
+         0x11EBE load [candidate]
+         Код выбирает таблицу относительно high-detonation ветви и отдельно сохраняет bit7.
+         Физическое имя и шкала соответствуют гомологу EV18A 0x9a76 при общем смещении layout
+         +0x5c.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="High Octane Ignition Timing Map (0x9A1A)"
+           category="Ignition Timing / Main (traced)" storagetype="uint8"
+           storageaddress="0x09A1A" sizex="16" sizey="16" endian="big" mask="7F">
+      <scaling units="degrees adjustment [cand]" expression="x-64" to_byte="x+64" format="0"
+               fineincrement="1" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
+             sizex="16" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11ECE" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x09A1A  16x16 uint8  masked view 0x80 [code]
+         Источник семантики: High Octane Ignition Timing Map: аддитивная коррекция расчётного
+         MBT в high-octane режиме; младшие 7 бит несут signed-offset величину, bit7 несёт knock-
+         window flag.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="High Octane Ignition Timing Map Knock Window (0x9A1A bit7)"
+           category="Ignition Timing / Knock Control / Main (traced)" storagetype="uint8"
+           storageaddress="0x09A1A" sizex="16" sizey="16" endian="big" mask="80">
+      <scaling units="Knock Window (0: Off | 1: On)" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="1"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
+             sizex="16" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11ECE" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x09B1A  16x16 uint8  карта [code]; вход 0x26230 (explicit, ядро 0x26944)
+         аксессор 0x493E8, 0x4E1C0; операнд r4: phi, pool
+         шкала x-64 degrees adjustment [candidate]; Y Axis 0x11ECE rpm [candidate]; X Axis
+         0x11EBE load [candidate]
+         Код оставляет 0x9b1a выбранной при активной high-detonation ветви и использует общий
+         вход 0x26230. Физическое имя и шкала соответствуют гомологу EV18A 0x9b76 при общем
+         смещении layout +0x5c.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="High Detonation Ignition Timing Map (0x9B1A)"
+           category="Ignition Timing / Main (traced)" storagetype="uint8"
+           storageaddress="0x09B1A" sizex="16" sizey="16" endian="big" mask="7F">
+      <scaling units="degrees adjustment [cand]" expression="x-64" to_byte="x+64" format="0"
+               fineincrement="1" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
+             sizex="16" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11ECE" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x09B1A  16x16 uint8  masked view 0x80 [code]
+         Источник семантики: High Detonation Ignition Timing Map: аддитивная коррекция
+         расчётного MBT в high-detonation режиме; младшие 7 бит несут signed-offset величину,
+         bit7 несёт knock-window flag.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="High Detonation Ignition Timing Map Knock Window (0x9B1A bit7)"
+           category="Ignition Timing / Knock Control / Main (traced)" storagetype="uint8"
+           storageaddress="0x09B1A" sizex="16" sizey="16" endian="big" mask="80">
+      <scaling units="Knock Window (0: Off | 1: On)" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="1"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
+             sizex="16" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11ECE" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0A29A  16x16 uint8  карта [code]; вход 0x261F0 (explicit, ядро 0x26944)
+         аксессор 0x2C648, 0x3BE3C; операнд r4: pool
+         шкала x*0.78125 % [candidate]; Y Axis 0x11CF0 rpm [candidate]; X Axis 0x11D4C load
+         [candidate]
+         Машинный трейс устанавливает мультипликативную роль, а A2L и гомолог EV18A 0xa2f6
+         устанавливают физическое имя и шкалу при общем смещении layout +0x5c. Это не lambda
+         target и не AFR reciprocal.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="Fuel Compensation Map (0xA29A)"
+           category="Fuel Delivery / Main (traced)" storagetype="uint8" storageaddress="0x0A29A"
+           sizex="16" sizey="16" endian="big">
+      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
+               fineincrement="0.78125" coarseincrement="3.125"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11D4C"
+             sizex="16" endian="big">
+        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
+                 to_byte="x/0.390625" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11CF0" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x0B33A  16x16 uint8  карта [code]; вход 0x261B8 (explicit, ядро 0x26944)
          аксессор 0xBFDC0; операнд r4: slice
          шкала x-128 кодовые отсчёты относительно нейтрали 128 [code]; Y Axis 0x12F2E rpm
@@ -84,36 +243,46 @@
       </table>
     </table>
 
-    <!-- 0x0A29A  16x16 uint8  карта [code]; вход 0x261F0 (explicit, ядро 0x26944)
-         аксессор 0x2C648, 0x3BE3C; операнд r4: pool
-         шкала 1881.6/x AFR [candidate]; Y Axis 0x11CF0 rpm [candidate]; X Axis 0x11D4C load
-         Беззнаковый байтовый выход таблицы используется как числитель безразмерного множителя
-         map_out/512 для 16-битного операнда: floor(map_out*uVar3/512). После вычисления код
-         проверяет верхнее насыщение до 0xffff. Физическое имя величины не установлено. Судьба
-         результата: consumer. Цель результата: 0002c648: uVar23=floor(map_out*uVar3/512), затем
-         проверка верхнего насыщения до 0xffff. Машинный трейс: 0000a29a -> site 0002cc9c ->
-         wrapper 000261f0 -> поиск долей по осям 000269c4/00026944 через 00026c78 -> выборка
-         00026770 -> беззнаковая интерполяция 00026740 -> r0 -> bVar18/r2/r6 -> ffff1160; тот же
-         bVar18 без переприсваивания участвует в (bVar18*uVar3 >> 8) >> 1 внутри 0002c648, где
-         uVar3 загружен 16-битно из 000090ee. Уровень шкалы: candidate. Блокирующее условие
-         шкалы: В `0002c648` деление на 512 относится только к промежуточному `uVar23`: после
-         записи этого представления код вычисляет `uVar23 << 2` и записывает умноженный на 4
-         результат в несколько RAM-приёмников, включая `ffff1026`. Поэтому машинный трейс
-         допускает как трактовку `raw/512` с последующим преобразованием единиц результата, так
-         и трактовку коэффициента порядка `raw/128` с промежуточным четвертным представлением.
-         Единицы второго множителя `uVar3` и выбранного итогового представления не установлены,
-         так что множитель карты и обратное кодирование однозначно не выводятся.
+    <!-- 0x0ABBA  8x8 uint8  карта [code]; вход 0x26140 (explicit, ядро 0x26944)
+         аксессор 0xA52E4; операнд r4: pool
+         шкала x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load
+         Поверхность выбирается при byte[ffff3427] <= byte[0x8796], где ROM-порог равен 95.
+         Физическая единица raw и направление влияния увеличения ячейки на итоговый DTC verdict
+         не установлены.
          Разбор и метод - defs/JK08A.notes.md -->
-    <table type="3D" name="Lambda Target - flat (0xA29A)" category="AFR / Lambda (traced)"
-           storagetype="uint8" storageaddress="0x0A29A" sizex="16" sizey="16" endian="big">
-      <scaling units="AFR [cand]" expression="1881.6/x" to_byte="1881.6/x" format="0.00"
-               fineincrement="0.1" coarseincrement="0.5"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11D4C"
-             sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+    <table type="3D" name="Knock Sensor Circuit Monitor Surface A (0xABBA)"
+           category="Diagnostics / Knock Sensor Monitor (traced)" storagetype="uint8"
+           storageaddress="0x0ABBA" sizex="8" sizey="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="8"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12BEA"
+             sizex="8" endian="big">
+        <scaling units="Internal load (raw)" expression="x" to_byte="x" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x11CF0" sizey="16" endian="big">
+             storageaddress="0x12BE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0ABFA  8x8 uint8  карта [code]; вход 0x26140 (explicit, ядро 0x26944)
+         аксессор 0xA52E4; операнд r4: pool
+         шкала x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load
+         Поверхность выбирается при byte[ffff3427] > byte[0x8796], где ROM-порог равен 95.
+         Физическая единица raw и направление влияния увеличения ячейки на итоговый DTC verdict
+         не установлены.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="Knock Sensor Circuit Monitor Surface B (0xABFA)"
+           category="Diagnostics / Knock Sensor Monitor (traced)" storagetype="uint8"
+           storageaddress="0x0ABFA" sizex="8" sizey="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="8"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12BEA"
+             sizex="8" endian="big">
+        <scaling units="Internal load (raw)" expression="x" to_byte="x" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12BE2" sizey="8" endian="big">
         <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -209,6 +378,52 @@
                fineincrement="12" coarseincrement="125"/>
       <table type="Static X Axis" name="Selector" sizex="2">
         <data>cut (bit7=0)</data><data>restore (bit7=1)</data>
+      </table>
+    </table>
+
+    <!-- 0x1108E  16x6 uint16  карта [code]
+         аксессор 0x49FFC; операнд r4: manual
+         шкала x*0.0015259 knock strength [candidate]
+         00049ffc выбирает строку цилиндра, интерполирует 16 uint16-точек по оси 0x15340 и
+         сохраняет порог для сравнения в 0004a238. Значение 0xffff является верхней границей
+         uint16 и практически исключает превышение порога.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="Knock Slice Map - active bank (0x1108E)"
+           category="Ignition Timing / Knock Control / Thresholds (traced)" storagetype="uint16"
+           storageaddress="0x1108E" sizex="16" sizey="6" endian="big">
+      <scaling units="knock strength [cand]" expression="x*0.0015259" to_byte="x/0.0015259"
+               format="0.000" fineincrement="0.0015259" coarseincrement="0.015259"/>
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="16">
+        <data>400</data><data>800</data><data>1200</data><data>1600</data>
+        <data>2000</data><data>2400</data><data>2800</data><data>3200</data>
+        <data>3600</data><data>4000</data><data>4400</data><data>4800</data>
+        <data>5200</data><data>5600</data><data>6000</data><data>6400</data>
+      </table>
+      <table type="Static Y Axis" name="Cylinder" sizey="6">
+        <data>1</data><data>2</data><data>3</data><data>4</data>
+        <data>5</data><data>6</data>
+      </table>
+    </table>
+
+    <!-- 0x10F8E  16x6 uint16  карта [candidate]
+         шкала x*0.0015259 knock strength [candidate]
+         Массив организован как 6 цилиндров по 16 точек оборотов. Прямой xref к этой базе не
+         найден, поэтому конкретный режим и активность банка остаются candidate.
+         Разбор и метод - defs/JK08A.notes.md -->
+    <table type="3D" name="Knock Slice Map - parallel bank (0x10F8E)"
+           category="Ignition Timing / Knock Control / Thresholds (candidate)"
+           storagetype="uint16" storageaddress="0x10F8E" sizex="16" sizey="6" endian="big">
+      <scaling units="knock strength [cand]" expression="x*0.0015259" to_byte="x/0.0015259"
+               format="0.000" fineincrement="0.0015259" coarseincrement="0.015259"/>
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="16">
+        <data>400</data><data>800</data><data>1200</data><data>1600</data>
+        <data>2000</data><data>2400</data><data>2800</data><data>3200</data>
+        <data>3600</data><data>4000</data><data>4400</data><data>4800</data>
+        <data>5200</data><data>5600</data><data>6000</data><data>6400</data>
+      </table>
+      <table type="Static Y Axis" name="Cylinder" sizey="6">
+        <data>1</data><data>2</data><data>3</data><data>4</data>
+        <data>5</data><data>6</data>
       </table>
     </table>
 
@@ -3310,19 +3525,15 @@
       </table>
     </table>
 
-    <!-- 0x11ECE  ось 16 точек uint8, rpm [code]
-         Уровень шкалы: code. Шкала: x*4; обратное кодирование: x/4; единицы: отсчёты RAM
-         ffff11bc. Трейс шкалы: 00011ece (16 значений uint8, 8..148) -> сайт 0004e250: адрес оси
-         передан через r5; 0004e24a читает mov.w из 0xffff11bc, 0004e252 выполняет extu.w в r7
-         -> wrapper 00026230 вызывает ядро поиска 000269c4 для этой оси -> 000269c4 читает
-         каждую точку как uint8, вычисляет uint8(x)*4, сравнивает с беззнаковым uint16-входом и
-         на промежуточной ветви использует (input-uint8(x)*4)*0x10000; равенство и обе граничные
-         ветви не вводят иной шкалы.
+    <!-- 0x11ECE  ось 16 точек uint8, rpm [candidate]
+         Общая ось строк карт зажигания 0x991A/0x9A1A/0x9B1A. Ядро сравнивает raw точки после
+         внутреннего преобразования x*4 с RAM ffff11bc; пользовательская шкала RPM x*50
+         подтверждается A2L-гомологами и точками 400..7400 rpm.
          Разбор и метод - defs/JK08A.notes.md -->
     <table type="2D" name="Engine Speed Axis [RPM] (ref)" category="Reference Axes"
            storagetype="uint8" storageaddress="0x11ECE" sizex="16" endian="big">
-      <scaling units="отсчёты RAM ffff11bc" expression="x*4" to_byte="x/4" format="0"
-               fineincrement="50" coarseincrement="200"/>
+      <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
+               coarseincrement="200"/>
       <table type="Static X Axis" name="Index" sizex="16">
         <data>0</data><data>1</data><data>2</data><data>3</data>
         <data>4</data><data>5</data><data>6</data><data>7</data>
@@ -3331,12 +3542,14 @@
       </table>
     </table>
 
-    <!-- 0x11EBE  ось 16 точек uint8, raw
-         ось X аксессора 0x4bbee, шаг 8; семантика (наполнение) трейсом не доказана
+    <!-- 0x11EBE  ось 16 точек uint8, load [candidate]
+         Общая ось столбцов карт зажигания 0x991A/0x9A1A/0x9B1A. Код подтверждает использование
+         оси обёрткой 0x26230; физическое имя и масштаб соответствуют A2L-гомологам EV18A.
          Разбор и метод - defs/JK08A.notes.md -->
-    <table type="2D" name="FUN_0004bbee Axis X (ref)" category="Reference Axes"
+    <table type="2D" name="Cylinder Filling Axis [%] (ref)" category="Reference Axes"
            storagetype="uint8" storageaddress="0x11EBE" sizex="16" endian="big">
-      <scaling units="raw (filling)" expression="x" to_byte="x" format="0" coarseincrement="8"/>
+      <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+               format="0.00" fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="Static X Axis" name="Index" sizex="16">
         <data>0</data><data>1</data><data>2</data><data>3</data>
         <data>4</data><data>5</data><data>6</data><data>7</data>

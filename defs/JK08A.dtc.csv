@@ -1,0 +1,29 @@
+index,dtc,record_addr,attribute_addr,stock_attribute,disabled_attribute,group,confidence,note
+17,P0420,0001942c,0001603a,00a0,0000,catalyst,code,Catalyst efficiency bank 1
+18,P0430,00019438,0001603c,00a0,0000,catalyst,code,Catalyst efficiency bank 2
+46,P0443,00019588,00016096,00a0,0000,evap,code,Purge control valve circuit
+47,P0448,00019594,00016040,00a0,0000,evap,code,Vent control circuit short
+48,P0455,000195a0,000160c0,00a0,0000,evap,code,Gross leak
+49,P0447,000195ac,00016042,00a0,0000,evap,code,Vent control circuit open
+167,P0139,00019b34,00016144,00a0,0000,rear_o2,code,Slow response bank 1 sensor 2
+168,P0159,00019b40,00016154,00a0,0000,rear_o2,code,Slow response bank 2 sensor 2
+169,P0138,00019b4c,0001613e,00a0,0000,rear_o2,code,High voltage path A bank 1 sensor 2
+170,P0158,00019b58,0001614e,00a0,0000,rear_o2,code,High voltage path A bank 2 sensor 2
+171,P0137,00019b64,00016146,00a0,0000,rear_o2,code,Low voltage bank 1 sensor 2
+172,P0157,00019b70,00016156,00a0,0000,rear_o2,code,Low voltage bank 2 sensor 2
+173,P0138,00019b7c,0001613c,00a0,0000,rear_o2,code,High voltage path B bank 1 sensor 2
+174,P0158,00019b88,0001614c,00a0,0000,rear_o2,code,High voltage path B bank 2 sensor 2
+175,P0038,00019b94,00016186,00a0,0000,rear_o2_heater,code,Heater control high bank 1 sensor 2
+176,P0058,00019ba0,00016188,00a0,0000,rear_o2_heater,code,Heater control high bank 2 sensor 2
+177,P0037,00019bac,0001618a,00a0,0000,rear_o2_heater,code,Heater control low bank 1 sensor 2
+178,P0057,00019bb8,0001618c,00a0,0000,rear_o2_heater,code,Heater control low bank 2 sensor 2
+195,P0451,00019c84,000160b0,00a0,0000,evap,code,Pressure sensor range or performance
+201,P0444,00019ccc,00016098,00a0,0000,evap,code,Purge control valve circuit open
+202,P0445,00019cd8,0001609a,00a0,0000,evap,code,Purge control valve circuit short
+212,P0452,00019d50,00016092,00a0,0000,evap,code,Pressure sensor low
+213,P0453,00019d5c,00016090,00a0,0000,evap,code,Pressure sensor high
+214,P0441,00019d68,000160a0,00a0,0000,evap,code,Incorrect purge flow
+215,P0447,00019d74,00016044,00a0,0000,evap,code,Vent control circuit open alternate path
+216,P0456,00019d80,000160ae,00a0,0000,evap,code,Very small leak
+218,P0442,00019d98,000160a8,00a0,0000,evap,code,Small leak
+293,P1422,0001a11c,00015faa,00a0,0000,manufacturer_specific,code,Local physical monitor name unresolved
