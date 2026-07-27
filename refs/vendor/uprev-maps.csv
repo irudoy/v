@@ -54,7 +54,7 @@ tuning-guide,Misfire,Crank Drag Crank Angle Pulse Width 2,1,RPM,,измерен�
 tuning-guide,Misfire,Crank Drag Crank Angle Pulse Width 3,1,RPM,,измерение скорости вращения коленвала,factory,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
 tuning-guide,Misfire,Crank Drag Crank Angle Pulse Width 4,1,RPM,,измерение скорости вращения коленвала,factory,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
 tuning-guide,Settings,ETC Control,,,,переключатель,factory,Settings / ETC Control,"Отключает управление моментом в электронном дросселе: заслонка начинает линейно следовать за педалью. Заодно отключает круиз-контроль."
-tuning-guide,Settings,NATS,,,,переключатель,patch,Settings / NATS,"UpRev подаёт это как настройку 'полного обхода кода NATS', доступную только pro-тюнерам. Наш реверс показал, что калибровочного master-enable нет – значит это патч кода, а не заводской флаг."
+tuning-guide,Settings,NATS,,,,переключатель,patch,Settings / NATS,"JK03A/JK08A содержит заводской флаг Developer Immobilizer по 0x8725: сброс bit0 обходит state machine и снимает motor inhibit."
 tuning-guide,VVEL,VVEL Angle,,,,угол вала VVEL против длительности распредвала,factory,VVEL / VVEL Angle,"Защита от встречи клапанов. У ProECU – 'VVEL Control Shaft Angle to Duration'."
 tuning-guide,VVEL,VVEL Angle Alt,,,,угол вала VVEL против длительности распредвала,factory,VVEL / VVEL Angle,"Контрольная копия: должна всегда совпадать с VVEL Angle."
 tuning-guide,VVEL,VVEL Decel,1,Engine RPM,,целевая длительность клапана,factory,VVEL / VVEL Decel,"Режим торможения двигателем. У ProECU – 'VVEL Valve Duration Overrun'."

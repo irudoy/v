@@ -349,7 +349,7 @@ uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 2,1,RPM,,изме
 uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 3,1,RPM,,измерение скорости вращения коленвала,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
 uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 4,1,RPM,,измерение скорости вращения коленвала,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
 uprev,tuning-guide,Settings,,ETC Control,,,,переключатель,factory,,etc-control,Settings / ETC Control,Отключает управление моментом в электронном дросселе: заслонка начинает линейно следовать за педалью. Заодно отключает круиз-контроль.
-uprev,tuning-guide,Settings,,NATS,,,,переключатель,patch,,nats,Settings / NATS,"UpRev подаёт это как настройку 'полного обхода кода NATS', доступную только pro-тюнерам. Наш реверс показал, что калибровочного master-enable нет – значит это патч кода, а не заводской флаг."
+uprev,tuning-guide,Settings,,NATS,,,,переключатель,patch,,nats,Settings / NATS,JK03A/JK08A содержит заводской флаг Developer Immobilizer по 0x8725: сброс bit0 обходит state machine и снимает motor inhibit.
 uprev,tuning-guide,VVEL,,VVEL Angle,,,,угол вала VVEL против длительности распредвала,factory,,vvel-cs-angle,VVEL / VVEL Angle,Защита от встречи клапанов. У ProECU – 'VVEL Control Shaft Angle to Duration'.
 uprev,tuning-guide,VVEL,,VVEL Angle Alt,,,,угол вала VVEL против длительности распредвала,factory,,vvel-cs-angle,VVEL / VVEL Angle,Контрольная копия: должна всегда совпадать с VVEL Angle.
 uprev,tuning-guide,VVEL,,VVEL Decel,1,Engine RPM,,целевая длительность клапана,factory,,vvel-duration,VVEL / VVEL Decel,Режим торможения двигателем. У ProECU – 'VVEL Valve Duration Overrun'.

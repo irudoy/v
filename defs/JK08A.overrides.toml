@@ -24,7 +24,7 @@ author = "VQ HR ECU project"
 version = "WIP"
 
 # Целевой дамп:
-# rom-images/1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin,
+# rom-images/23710-JK08A/1JK08A-20260726-stock.bin,
 # sha256 ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23.
 # Кодовые факты перенесены из exact-code донора JK03A. Значения карт и осей измеряются
 # загрузчиком по собственному дампу JK08A. Донор структуры EV18A (350Z HR, тот же
@@ -38,30 +38,13 @@ text = """
 """
 
 [[checksum]]
-type = "NissanImmoCoordinator"
-path = "/romraider/NissanImmoCoordinator.jar"
-expectedsize = "0x100000"
-l1loc = "0x08D7C8"
-l1stock = "CF 04"
-l1patched = "00 09"
-l2loc = "0x0938BE"
-l2stock = "89 09"
-l2patched = "00 09"
-comment = """
-Связность двух сайтов always-ID-OK. Пользовательский switch меняет L1; при сохранении
-custom-менеджер принимает только известные пары stock/patched и синхронизирует L2.
-Этот менеджер должен выполняться до checksum B и A.
-"""
-
-[[checksum]]
 type = "alt"
 start = "0x2040C"
 end = "0x2259C"
 sumloc = "0x20404"
 xorloc = "0x20408"
 comment = """
-Checksum B. Нативный обработчик RomRaider alt воспроизводит stock-поля JK08A и результат
-локального patches/apply_immo_patch.py. Должен выполняться раньше checksum A.
+Checksum B. Нативный обработчик RomRaider alt. Должен выполняться раньше checksum A.
 """
 
 [[checksum]]
@@ -72,23 +55,22 @@ skiploc = "0x20000"
 sumloc = "0x96DC"
 xorloc = "0x96D4"
 comment = """
-Checksum A. Нативный обработчик RomRaider alt2 с исключением 0x20000 воспроизводит
-stock-поля JK08A и результат локального patches/apply_immo_patch.py. Порядок B -> A
+Checksum A. Нативный обработчик RomRaider alt2 с исключением 0x20000. Порядок B -> A
 обязателен, поскольку поля checksum B входят в домен A.
 """
 
 [[switch]]
-name = "NATS ECM Authorization"
-category = "NATS / Immobilizer (experimental)"
-storageaddress = "0x08D7C8"
+name = "Developer Immobilizer"
+category = "NATS / Immobilizer"
+storageaddress = "0x08725"
 storagetype = "uint8"
-sizex = "2"
+sizex = "1"
 endian = "big"
 userlevel = "5"
-description = "Exact JK08A only. L2 is synchronized on save. Core L1+L2 cranks but does not start; this switch is not a complete NATS-off."
+description = "Exact JK08A only. Bit 0 enables ECM immobilizer enforcement. Code path verified; vehicle test pending. NATS DTC suppression is independent."
 state = [
-  { name = "Stock", data = "CF 04" },
-  { name = "Always ID OK (experimental)", data = "00 09" },
+  { name = "Enabled (Stock)", data = "01" },
+  { name = "Disabled (IMMO OFF)", data = "00" },
 ]
 
 # Оси, показанные отдельными таблицами: своей карты с разобранной семантикой у них нет,

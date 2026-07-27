@@ -8,7 +8,7 @@
 #   tools/ghidra/headless-analyze.sh <project_dir> <project_name> -import <file> [опции]
 # Пример (импорт дампа как SH-2E ядро, вариант SH-2A с FPU, big-endian):
 #   tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
-#     -import rom-images/1ND0A_Stock.bin \
+#     -import rom-images/23710-1ND0A/11ND0A-20260715-stock.bin \
 #     -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
 set -euo pipefail
 JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"

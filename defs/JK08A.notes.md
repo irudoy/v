@@ -1,7 +1,7 @@
 # JK08A – журнал разметки дефа
 
 RE-журнал рабочего дефа `JK08A.xml` под собственный дамп
-`rom-images/1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin`
+`rom-images/23710-JK08A/1JK08A-20260726-stock.bin`
 (Nissan Skyline V36 250GT, VQ25HR, 23710-JK08A, SH7058 / 1 MiB, JDM).
 SHA-256 `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`.
 
@@ -50,7 +50,8 @@ provenance и не являются путями текущего слоя `JK08
   равномерным шагом по сырому входу, банк из 10 примитивов (`0x26358..0x2642C` и
   `0x266A0`).
 - Слой измерен по образу [CONFIRMED]: значения всех 439 карт и 229 осей читаются из
-  `as7058.bin` тем же прогоном, что строит слой (Stage 4, `tools/mapkit`). Оси несут свои
+  `1JK03A-20260715-stock.bin` тем же прогоном, что строит слой (Stage 4,
+  `tools/mapkit`). Оси несут свои
   точки и монотонность, карты - диапазон и хеш содержимого. Открытых сигналов два: одна
   ось обратным линейным поиском не читается (`0x119B2`) и 18 карт сплошь `0xFF`.
 - Кодировка элемента [CONFIRMED]: у 1D-карты элемент читает сам вход, у 2D - finisher, и
@@ -2240,8 +2241,8 @@ plane запрещает изменение адреса и повторно п�
 semantics (290 `code`, 89 `candidate`), 126 Map scale (90 `code`, 36 `candidate`) и 16 Axis
 scale (9 `code`, 7 `candidate`). Долг прежнего слоя `52 + 20 + 6` равен нулю.
 
-Глобальный strict-разбор сохраняет 957 source claims и 2712 рёбер `RESTS_ON`: 802 заявки
-имеют уровень `code`, 155 – `candidate`. Candidate blockers не повышаются без доказательств;
+Глобальный strict-разбор сохраняет 976 source claims и 2759 рёбер `RESTS_ON`. Candidate
+blockers не повышаются без доказательств;
 зависимости, которым требуется только существование адреса или data-flow, используют
 `@structural`. Функция `0x6205C` понижена до `candidate`: код показывает два порога около
 7300, но не доказывает множитель, потребителя результатов и физическую семантику rev-limit.
@@ -2251,29 +2252,29 @@ instruction sites без разрыва циклов.
 Strict ingest и exact audit проходят: `missing=0`, `extra=0`, `duplicate_expected=0`,
 `duplicate_actual=0`, `unresolved=0`, effective confidence ниже declared – 0, заявок без
 grounding – 0, циклических SCC – 44, незаземлённых SCC – 0. Тестовые наборы содержат
-105 тестов sweep, 49 тестов Memgraph и 18 тестов immo patcher; все 172 проходят.
+105 тестов sweep, 54 теста Memgraph, 8 тестов immo-off и 5 тестов layout ROM;
+все 172 проходят.
 
-Двойная генерация выпускает 138 карт, две оси-опоры и один always-ID-OK TableSwitch:
+Двойная генерация выпускает 138 карт, две оси-опоры и один Developer Immobilizer
+TableSwitch:
 115 карт `code`, 23 `candidate`, у 12 карт шкала не закреплена уровнем `code`.
 Таблица `0x12E1A` имеет presentation-имя `Interpolated State Byte - raw u8`.
 Детерминированные SHA-256 равны
 `62d567b98822d00749e57f4743a502d589104e7542748f918ecf33b5444ac924` для ledger и
-`deb361dfe9fa459fffea1c8d327bae96c23af3a469007b45535a7389c58d1071` для XML.
+`267a34135c6fd8e3633b96e4d59d980e112f24d6a7bf81c93b35e2c671562a59` для XML.
 
-## RomRaider always-ID-OK
+## RomRaider Developer Immobilizer
 
-Один TableSwitch предоставляет состояния `Stock` и `Always ID OK (experimental)`.
-Это один элемент интерфейса, а не один ROM-бит. Видимая таблица меняет L1
-`0x08D7C8`: `CF 04` / `00 09`. L2 `0x0938BE` расположен отдельно:
-`89 09` / `00 09`.
+Один TableSwitch предоставляет состояния `Enabled (Stock)` и
+`Disabled (IMMO OFF)`. Он меняет byte по `0x08725`: `01` / `00`, то есть сбрасывает
+bit0 заводского флага Developer Immobilizer.
 
-Custom `NissanImmoCoordinator` из `defs/romraider/NissanImmoCoordinator.jar`
-синхронизирует L2 по L1 при сохранении. Он проверяет размер 1 MiB, принимает только
-известные состояния обоих сайтов и отклоняет неизвестные байты. Затем нативные
-обработчики выполняются в порядке `alt` -> `alt2`, то есть selftest B -> selftest A
-и SUM16. Проверка `tools/romraider/verify_definition.py` связывает XML, JAR и точный
-stock JK08A. На машине core L1+L2 даёт crank без запуска и активный
-security-индикатор. Переключатель не является полным NATS-off.
+Bit0 читают функции `0xA3F96`, `0xBBC88`, `0xBC82E` и `0xBC9E4`. При нуле
+`0xBC82E` очищает `0xFFFF55E4.bit2`, затем `0xBC9E4` очищает
+`0xFFFF4198.bit1` motor inhibit. Нативные checksum-обработчики выполняются в порядке
+`alt` -> `alt2`, то есть selftest B -> selftest A и SUM16. Производный образ
+`rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
+отличается от stock одним битом; проверка запуска на машине ожидается.
 
 ## Следующий шаг
 

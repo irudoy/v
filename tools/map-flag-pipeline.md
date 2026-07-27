@@ -62,10 +62,11 @@ ledger каталога – **проекции графа** (деф – плюс
 - **selector** – выбирает одну из карт/осей (`gbr+0x93 bit0` -> Cold/HiOct/HiDet ignition;
   `0xFFFF246D bit7` -> порог rev-лимитера);
 - **gate** – включает/выключает путь кода. Включает калибровочные гейты (decel-detect
-  `0xFFFF24D2 bit0x10`, `0xFFFF245D bit5`) **и immo-класс** (Lock Mode gate, always-ID-OK,
-  immo-condition guards – уже частично реверснуты, `patches/immo-always-id-ok.md`,
-  `symbols.csv`). Immo-флаги – тот же механизм (бит у ветвления, гейтящий путь), питаются
-  из `ScanImmoAnchors` (DTC-якоря -> guard-функции) в ту же модель `:Flag {role:'gate'}`;
+  `0xFFFF24D2 bit0x10`, `0xFFFF245D bit5`) и immo-класс. У JK03A/JK08A
+  `ROM[0x8725].bit0` гейтит state machine Developer Immobilizer и формирование
+  `0xFFFF4198.bit1` motor inhibit; полная цепочка описана в
+  `patches/immo-off-developer-flag.md`. Состояния registered и Lock являются соседним
+  статусным контуром, а не исполнительным флагом immo-off;
 - **threshold** – ROM-константа-порог сравнения (`0x87FD` дельта нагрузки, `0x8FDC/0x8FDE`
   обороты отсечки).
 
@@ -1008,10 +1009,10 @@ Offline preflight и `provenance_report.py audit` считают метрики 
 
 | Метрика | Проверка | Факт JK08A | Цель |
 |---------|----------|------------|------|
-| Source claims | строгие строки всех четырёх CSV | **957**: Func semantics 232, Func contract 32, Reg 172, Map semantics 379, Map scale 126, Axis scale 16; ручные файлы содержат 261 строку `funcs.csv`, 379 строк `findings.csv` и 22 `axes.csv` | схема разрешима целиком |
-| Проекция evidence | expected против actual по полному ключу ребра | **2712 ожидаемых рёбер `:RESTS_ON`**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | все пять счётчиков равны 0 после ingest |
+| Source claims | строгие строки всех четырёх CSV | **976**: Func semantics 242, Func contract 32, Reg 181, Map semantics 379, Map scale 126, Axis scale 16; ручные файлы содержат 271 строку `funcs.csv`, 181 строку `vars.csv`, 379 строк `findings.csv` и 22 строки `axes.csv` | схема разрешима целиком |
+| Проекция evidence | expected против actual по полному ключу ребра | **2759 ожидаемых рёбер `:RESTS_ON`**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | все пять счётчиков равны 0 после ingest |
 | Локальные ворота слоя кода | `code`/`silicon` Func/Reg/Map/Axis без factual evidence | **0**; frozen долг Map semantics 52, Map scale 20 и Axis scale 6 закрыт | 0 |
-| Слабейшее звено | `code`/`silicon`, где effective ниже declared | **0**; все 802 заявки `code` сохраняют declared level | 0 |
+| Слабейшее звено | `code`/`silicon`, где effective ниже declared | **0**; все 821 заявка `code` сохраняет declared level | 0 |
 | Транзитивный grounding | `code`/`silicon` без терминала, structural-опоры или заземлённого листа | **0** | 0 |
 | Циклы | SCC и незаземлённые SCC | **44 SCC, 0 незаземлённых** | цикл не подтверждает себя |
 | Evidence backfill Map/Axis | frozen решения по property identity | **78 из 78**: 28 `accept`, 27 `revise`, 23 `downgrade`; итог 55 `code` и 23 `candidate` | unresolved=0, локальный долг=0 |

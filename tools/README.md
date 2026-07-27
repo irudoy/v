@@ -79,7 +79,7 @@ ghidraRun    # brew-обёртка берёт JDK 21 сама
 
 # 3. Импорт дампа headless (SH-2E ядро -> вариант SH-2A с FPU, big-endian)
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
-  -import rom-images/1ND0A_Stock.bin \
+  -import rom-images/23710-1ND0A/11ND0A-20260715-stock.bin \
   -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
 ```
 
@@ -159,8 +159,6 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `ghidra/PoolUsers.java` | функция-владелец адреса (pool-слот/тело) + её декомпиляция + инструкции, ссылающиеся на адрес. Аргументы: `<outdir> <addr...>` | `decomp_<addr>.c` |
 | `ghidra/RecoverFuncs.java` | разметка функциями кода вне функций (участки без прямых вызовов – их вызовы в граф не попадают, декомпилятор в них не работает) | Ghidra-проект |
 | `ghidra/RenameFuncs.java` | применить курируемые имена (`symbols.csv`) к функциям проекта | Ghidra-проект |
-| `ghidra/ImmoConfirm.java` | подтверждение immo-контура: декомпиляция registration/lock_setter, их callers, listing патч-сайтов; форсирует дизасм GBR-кода. Аргументы: `<reg_entry> <lock_entry> <site...>` | stdout |
-| `ghidra/NatsGate.java` | поиск калибровочного master-enable над immo: подъём от immo-точек вверх по дереву вызовов, чтения делятся на RAM/CODE/`CALIB?`. Аргументы: `<entry...>` | stdout |
 | `ghidra/symbols.csv` | реестр имён функций (addr,name,note) – источник истины по реверсу | (в git) |
 | `memgraph/load_graph.py` | `:Func` + `:CALLS`, Louvain на проекции call-графа ROM | Memgraph |
 | `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |
@@ -182,13 +180,21 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 
 ```bash
 D=~/tools/ghidra-projects/export-1ND0A
-tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr -process 1ND0A_Stock.bin \
+tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+  -process 1ND0A_Stock.bin \
   -noanalysis -scriptPath tools/ghidra -postScript ExportGraph.java "$D"
-tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr -process 1ND0A_Stock.bin \
+tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+  -process 1ND0A_Stock.bin \
   -noanalysis -scriptPath tools/ghidra -postScript ExportXrefs.java "$D"
 uv run --no-project --with neo4j python tools/memgraph/load_graph.py "$D" 1ND0A
 uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py "$D" 1ND0A
 ```
+
+`-process` принимает имя программы внутри Ghidra-проекта, а не путь к файлу в
+`rom-images`. Текущий проект `vq-hr` хранит программы под именами
+`1ND0A_Stock.bin`, `as7058.bin` (JK03A) и
+`1JK00D_8MFK36N15-20260726-013734.bin`. Команда импорта JK08A ниже создаёт
+программу `1JK08A-20260726-stock.bin`.
 
 ### Карты: разметка, резолюция операндов, граф
 
@@ -210,13 +216,13 @@ call-ссылки на вход обёртки – сайты. Так устро
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
-  -import rom-images/1JK08A_7MFKAVN86-20260726-064107/1JK08A_7MFKAVN86-20260726-064107.bin \
+  -import rom-images/23710-JK08A/1JK08A-20260726-stock.bin \
   -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
 D=~/tools/ghidra-projects/export-JK08A
 # Функцией, а не переменной: в zsh неэкранированная $H на слова не разбивается, и вызов
 # уходит в никуда молча.
 H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
-        -process 1JK08A_7MFKAVN86-20260726-064107.bin \
+        -process 1JK08A-20260726-stock.bin \
         -noanalysis -scriptPath tools/ghidra "$@"; }
 # 1. Разметка кода вне функций + экспорт графа – в ОДНОМ изменяющем запуске.
 #    ExportXrefs читает сохранённую разметку отдельным read-only запуском.
@@ -248,33 +254,27 @@ uv run --no-project --with neo4j python tools/maps/build_tracker.py \
   JK03A /private/tmp/JK03A.maps.csv
 ```
 
-### RomRaider: один переключатель always-ID-OK
+### RomRaider: переключатель Developer Immobilizer
 
-`defs/JK08A.xml` содержит один `TableSwitch` с состояниями `Stock` и
-`Always ID OK (experimental)`. Переключатель меняет двухбайтовый L1 по `0x08D7C8`.
-L2 по `0x0938BE` расположен отдельно, поэтому при сохранении его согласует custom
-`ChecksumManager` из `defs/romraider/NissanImmoCoordinator.jar`.
+`defs/JK08A.xml` содержит один `TableSwitch` по `0x08725` с состояниями
+`Enabled (Stock) = 01` и `Disabled (IMMO OFF) = 00`. Переключатель напрямую
+сбрасывает bit0 заводского флага Developer Immobilizer.
 
-Порядок элементов `<checksum>` является частью контракта:
+Нативные checksum-обработчики находятся в порядке:
 
-1. `NissanImmoCoordinator` принимает только точный размер JK08A и известные состояния
-   L1/L2, затем синхронизирует L2 по L1.
-2. `alt` пересчитывает runtime selftest B.
-3. `alt2` пересчитывает runtime selftest A и обе SUM16.
+1. `alt` пересчитывает runtime selftest B.
+2. `alt2` пересчитывает runtime selftest A и обе SUM16.
 
-Исходный код совместим с официальным интерфейсом RomRaider на commit
-`dafe0c36c1a68efadbeedb2825f3855463fdbc35`. Сборка JAR включает тест на точном
-stock JK08A и проверку связности XML/JAR/ROM:
+Тот же результат выпускает патчер, проверяющий точный stock ROM:
 
 ```bash
-bash tools/romraider/build_immo_coordinator.sh
-python3 tools/romraider/verify_definition.py
+python3 patches/apply_immo_off.py --rom JK08A
 ```
 
-`JK08A.xml` и подкаталог `romraider/` устанавливаются вместе. Отсутствующий JAR
-делает custom checksum недоступным. Уровень таблицы `userlevel=5`. Hardware-проверка
-core L1+L2 дала crank без запуска и активный security-индикатор; переключатель не
-является полным NATS-off.
+Результат
+`rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
+отличается от stock одним битом.
+Исполнительная цепочка подтверждена кодом; проверка запуска на машине ожидается.
 
 ### Резервное копирование Memgraph
 
@@ -328,10 +328,10 @@ uv run --no-project python tools/mapkit/ptrscan.py 11ebe 11ece      # кто у�
 `load_code.py` идёт последним из владельцев provenance targets: предыдущие загрузчики удаляют
 свои узлы вместе с исходящими и входящими `:RESTS_ON`. Он читает четыре канонических CSV,
 сверяет наличие узлов и claim-specific свойства, требует factual evidence у каждого свойства
-уровня `code`/`silicon`, строит 2712 claim-specific рёбер JK08A и выполняет exact
+уровня `code`/`silicon`, строит 2759 claim-specific рёбер JK08A и выполняет exact
 expected-vs-actual audit в одной транзакции. Локальные source gates проходят при нулевом долге
-Map/Axis. Глобальный `--strict` также проходит: текущий JK08A содержит 957 source claims,
-2712 ожидаемых рёбер, 802 заявки уровня `code` и 155 уровня `candidate`;
+Map/Axis. Глобальный `--strict` также проходит: текущий JK08A содержит 976 source claims,
+2759 ожидаемых рёбер, 821 заявку уровня `code` и 155 уровня `candidate`;
 `effective below declared=0`, `without grounding=0`, 44 циклических SCC и 0
 незаземлённых SCC. Read-only проверка и интерактивные запросы:
 

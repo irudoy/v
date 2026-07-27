@@ -396,7 +396,7 @@ RETURN labels(source) AS source_label, source.addr AS source,
        labels(target) AS target_label, target.addr AS target,
        properties(e) AS edge;
 
-// Состав проекции по типам заявок. Сумма для JK03A после ingest: 2712.
+// Состав проекции по типам заявок. Сумма для JK03A после ingest: 2759.
 MATCH (source)-[e:RESTS_ON]->(target)
 WHERE source.rom = $rom AND target.rom = $rom
 RETURN labels(source) AS source_label, e.source_prop AS source_prop,

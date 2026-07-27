@@ -88,11 +88,14 @@ SHA-256. Промежуточные данные пишутся сразу на 
 
 ## Карта репозитория
 
-- `rom-images/` – ROM-дампы (`*.bin` + архивы): VQ37VHR с RomRaider forum (гомолог-пара
+- `rom-images/` – ROM-дампы (`*.bin`): VQ37VHR с RomRaider forum (гомолог-пара
   SH7058 USDM / SH7059 JDM), донорский `JK03A` и собственный целевой `JK08A`
   (VQ25HR, exact-code пара с разными calibration/config), собственный дамп стендового
-  `JK00D` (VQ35HR, SH7058), плюс immo-патченные варианты. Версионируются в git; манифест
-  `rom-images/README.md` (sha256, part #, идентификация, источники). Дамп опознаётся по sha256.
+  `JK00D` (VQ35HR, SH7058) и производный `1JK08A-20260727-immo-off.bin`.
+  Каждый part # находится в отдельном каталоге `23710-XXXXX`; моды находятся в
+  `mods/<short-desc>/`. Версионируются в git;
+  манифест `rom-images/README.md` (sha256, part #, идентификация, источники). Дамп
+  опознаётся по sha256.
 - `refs/` – внешние даташиты / мануалы (Renesas SH7059 HW manual, PCMflash module list,
   Bosch LSU 4.9, NERS, MoTeC M150, UpRev) + зеркало NissanECU RE wiki (`refs/nissanecu-wiki/`).
   PDF-оригиналы, markitdown-конверсии `*.md` и манифест `refs/README.md` – всё в git.
@@ -108,11 +111,13 @@ SHA-256. Промежуточные данные пишутся сразу на 
   exact-code пары; `rom-inheritance.toml` проецирует его на отдельный слой измерений
   JK03A без копирования source CSV, ledger и XML. `defs/reference/` – submodules открытых
   RomRaider Nissan-дефов (Pytrex, a33b; манифест и релевантность – `defs/README.md`).
-- `patches/` – спеки и скрипты патчей immo (`immo-always-id-ok.md`; `apply_immo_patch.py`,
-  `lock_setbit_scan.py`) и спека контрольных сумм ПЗУ
-  (`rom-selftest-checksum.md`: SUM16, runtime selftest-домены, эталоны и порядок пересчёта);
-  патченые образы – в `rom-images/`. Экспорты Ghidra и Ghidra-проект –
-  вне репозитория (`~/tools/ghidra-projects/`, регенерируемы).
+- `patches/` – спецификация и патчер immo-off (`immo-off-developer-flag.md`,
+  `apply_immo_off.py`, `tests/test_immo_off.py`), проверка структуры ROM-библиотеки
+  (`tests/test_rom_images_layout.py`) и спецификация контрольных сумм ROM
+  (`rom-selftest-checksum.md`: SUM16, runtime selftest-домены и порядок пересчёта).
+  Производный образ находится в `rom-images/23710-JK08A/mods/immo-off/`. Экспорты
+  Ghidra и Ghidra-проект находятся вне репозитория (`~/tools/ghidra-projects/`,
+  регенерируемы).
 
 ## Конвенции
 

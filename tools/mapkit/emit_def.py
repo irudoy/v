@@ -40,8 +40,6 @@ ROMID_FIELDS = ("xmlid", "internalidaddress", "internalidstring", "ecuid", "case
                 "endian", "flashmethod", "filesize", "author", "version")
 CHECKSUM_FIELDS = (
     "type", "path", "expectedsize",
-    "l1loc", "l1stock", "l1patched",
-    "l2loc", "l2stock", "l2patched",
     "start", "end", "skiploc", "sumloc", "xorloc",
 )
 SWITCH_FIELDS = (
