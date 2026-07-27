@@ -1,6 +1,7 @@
 index,dtc,record_addr,attribute_addr,stock_attribute,disabled_attribute,group,confidence,note
 17,P0420,0001942c,0001603a,00a0,0000,catalyst,code,Catalyst efficiency bank 1
 18,P0430,00019438,0001603c,00a0,0000,catalyst,code,Catalyst efficiency bank 2
+40,P1610,00019540,000160fe,0000,0000,nats,code,NATS LOCK MODE; descriptor suppression only because attribute is already zero
 46,P0443,00019588,00016096,00a0,0000,evap,code,Purge control valve circuit
 47,P0448,00019594,00016040,00a0,0000,evap,code,Vent control circuit short
 48,P0455,000195a0,000160c0,00a0,0000,evap,code,Gross leak

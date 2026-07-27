@@ -904,16 +904,24 @@ dtc_code(index)      = BE16[record(index) + 6]
 attribute_ptr(index) = BE32[0x1A14C + index*4]
 ```
 
-Реестр `JK08A.dtc.csv` содержит изученные пары descriptor/attribute для catalyst,
-rear O2, rear O2 heater, EVAP и manufacturer-specific P1422. Штатный атрибут `0x00A0`
-содержит биты `0x80` и `0x20`: `0x80` участвует в OBD/emissions представлении,
-`0x20` используется при инициализации runtime diagnostic status.
+Реестр `JK08A.dtc.csv` содержит 29 изученных пар descriptor/attribute для catalyst,
+rear O2, rear O2 heater, EVAP, manufacturer-specific P1422 и NATS P1610. У 28
+emissions-записей штатный атрибут `0x00A0` содержит биты `0x80` и `0x20`: `0x80`
+участвует в OBD/emissions представлении, `0x20` используется при инициализации
+runtime diagnostic status.
 
 Подавление DTC является атомарной операцией: descriptor и связанный attribute изменяются
 совместно. Обнуление только одного объекта оставляет несогласованное диагностическое
 состояние. Операция подавляет публикацию DTC, но сама по себе не доказывает остановку
 физического monitor или sensor controller. Передние A/F sensors в перечисленную группу
 rear O2/catalyst не входят.
+
+P1610 находится по index 40: descriptor `0x19540` содержит
+`0D 05 00 00 00 00 16 10 00 00 00 00`, связанный attribute расположен по `0x160FE`.
+Его stock и disabled значения совпадают и равны `0000`, поэтому атомарное отключение
+P1610 сводится к обнулению одного непрерывного 12-байтного descriptor. Генератор
+`emit_def.py` представляет этот частный случай отдельным `TableSwitch`; обычные записи
+с `00A0 -> 0000` через одиночный переключатель не выпускаются.
 
 ## Зоны-кандидаты [CANDIDATE] – требуют подтверждения кодом
 
@@ -2317,20 +2325,19 @@ instruction sites без разрыва циклов.
 Strict ingest и exact audit проходят: `missing=0`, `extra=0`, `duplicate_expected=0`,
 `duplicate_actual=0`, `unresolved=0`, effective confidence ниже declared – 0, заявок без
 grounding – 0, циклических SCC – 44, незаземлённых SCC – 0. Тестовые наборы содержат
-105 тестов sweep, 54 теста Memgraph, 8 тестов immo-off и 5 тестов layout ROM;
-все 172 проходят.
+105 тестов sweep, 54 теста Memgraph, 10 тестов mapkit/DTC, 8 тестов immo-off
+и 5 тестов layout ROM; все 182 проходят.
 
-Двойная генерация выпускает 138 карт, две оси-опоры и один Developer Immobilizer
-TableSwitch:
-115 карт `code`, 23 `candidate`, у 12 карт шкала не закреплена уровнем `code`.
+Двойная генерация выпускает 145 карт, две оси-опоры и два NATS `TableSwitch`:
+121 карту `code`, 24 `candidate`, у 17 карт шкала не закреплена уровнем `code`.
 Таблица `0x12E1A` имеет presentation-имя `Interpolated State Byte - raw u8`.
 Детерминированные SHA-256 равны
-`62d567b98822d00749e57f4743a502d589104e7542748f918ecf33b5444ac924` для ledger и
-`267a34135c6fd8e3633b96e4d59d980e112f24d6a7bf81c93b35e2c671562a59` для XML.
+`38dd792023f6aa406ce7f0b26e011714e67cdf650cd8bc603c4edccff01023e2` для ledger и
+`af3985ae553b8baacf723b2c421565c00dc193a5e044546d4b96e33d1c3fc42f` для XML.
 
-## RomRaider Developer Immobilizer
+## RomRaider NATS
 
-Один TableSwitch предоставляет состояния `Enabled (Stock)` и
+Первый `TableSwitch` предоставляет состояния `Enabled (Stock)` и
 `Disabled (IMMO OFF)`. Он меняет byte по `0x08725`: `01` / `00`, то есть сбрасывает
 bit0 заводского флага Developer Immobilizer.
 
@@ -2339,7 +2346,15 @@ Bit0 читают функции `0xA3F96`, `0xBBC88`, `0xBC82E` и `0xBC9E4`. �
 `0xFFFF4198.bit1` motor inhibit. Нативные checksum-обработчики выполняются в порядке
 `alt` -> `alt2`, то есть selftest B -> selftest A и SUM16. Производный образ
 `rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
-отличается от stock одним битом; проверка запуска на машине ожидается.
+отличается от stock одним битом. Проверка на машине подтверждает запуск и исправную
+работу двигателя; P1610 сохраняется после сброса и на работу двигателя не влияет.
+
+Второй `TableSwitch` генерируется из записи P1610 в `JK08A.dtc.csv`. Состояние
+`Enabled (Stock)` сохраняет descriptor
+`0D 05 00 00 00 00 16 10 00 00 00 00`, состояние `Disabled` записывает 12 нулевых
+байтов по `0x19540`. Attribute по `0x160FE` в обоих состояниях остаётся `0000`.
+Переключатель предназначен для подавления публикации P1610; аппаратная проверка этого
+отдельного изменения не выполнена.
 
 ## Следующий шаг
 

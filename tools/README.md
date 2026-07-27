@@ -174,7 +174,7 @@ CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --j
 | `sweep/build_artifacts.py` | blind-артефакты для массового прохода: компонента `comp-<addr>.md`, frozen-карта `map-<addr>.md` или общая ось `axis-<addr>.md`; Axis-focus агрегирует все связанные карты и аксессоры. Форма, значения, оси, псевдокод, листинги, операнды переписи и каталоги видимы; текущие ответы скрыты белым списком и проверяются каждым прогоном. Бюджеты обязаны быть неотрицательными; frozen caller experiment требует `8`/`24`. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
 | `sweep/caller_ab_experiment.py` | read-only control plane 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates + manual approval + finalized cards, `verified`/neutral `placebo`, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores и per-control verifier gate; canonical CSV не изменяет | JSON/Markdown вне git |
 | `mapkit/rom.py` | образ: реестр `rom-images/roms.csv` со сверкой sha256, чтение массивов, их измерение. Библиотека – её зовут `load_maps.py` и скрипты пакета | (в git) |
-| `mapkit/emit_def.py` | деф `defs/<rom>.xml` – проекция графа плюс презентационный слой `defs/<rom>.overrides.toml` (контракт – `map-flag-pipeline.md`, раздел 9) | (git, по мере коммита P5) |
+| `mapkit/emit_def.py` | деф `defs/<rom>.xml` – проекция графа, DTC-реестра `defs/<rom>.dtc.csv` и презентационного слоя `defs/<rom>.overrides.toml` (контракт – `map-flag-pipeline.md`, раздел 9) | (git, по мере коммита P5) |
 | `mapkit/show.py` | карта либо ось в физических единицах: граф даёт форму, оси и шкалу, образ – значения. Аргументы: `[<rom>] <addr>...` | stdout |
 | `mapkit/ptrscan.py` | кто указывает на адрес: скан образа по обеим формам константы (`mov.l` и `mov.w`), без Ghidra и проекта. Аргументы: `[<rom>] <addr> [<addr_hi>]` | stdout |
 
@@ -254,11 +254,17 @@ uv run --no-project --with neo4j python tools/maps/build_tracker.py \
   JK03A /private/tmp/JK03A.maps.csv
 ```
 
-### RomRaider: переключатель Developer Immobilizer
+### RomRaider: переключатели NATS
 
-`defs/JK08A.xml` содержит один `TableSwitch` по `0x08725` с состояниями
+`defs/JK08A.xml` содержит `TableSwitch` по `0x08725` с состояниями
 `Enabled (Stock) = 01` и `Disabled (IMMO OFF) = 00`. Переключатель напрямую
 сбрасывает bit0 заводского флага Developer Immobilizer.
+
+Второй `TableSwitch` по `0x19540` управляет 12-байтным descriptor P1610:
+stock `0D 05 00 00 00 00 16 10 00 00 00 00`, disabled – 12 нулевых байтов.
+Он генерируется из `defs/JK08A.dtc.csv`, поскольку связанный attribute по `0x160FE`
+уже равен disabled-значению `0000`. DTC с изменением attribute одним переключателем
+не выпускаются.
 
 Нативные checksum-обработчики находятся в порядке:
 
@@ -273,8 +279,9 @@ python3 patches/apply_immo_off.py --rom JK08A
 
 Результат
 `rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
-отличается от stock одним битом.
-Исполнительная цепочка подтверждена кодом; проверка запуска на машине ожидается.
+отличается от stock одним битом. Запуск и работа двигателя подтверждены на машине.
+Патчер сохраняет однобитный контракт immo-off; P1610 управляется только через деф и
+требует отдельной аппаратной проверки.
 
 ### Резервное копирование Memgraph
 
@@ -283,7 +290,7 @@ python3 patches/apply_immo_off.py --rom JK08A
 не входит в git:
 
 ```toml
-smb_url = "smb://Junkyard/Backup"
+smb_url = "smb://server/Backup"
 mount_point = "/Volumes/Backup"
 backup_subdir = "vq-memgraph"
 minimum_interval_hours = 24

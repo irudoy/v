@@ -67,7 +67,7 @@ storagetype = "uint8"
 sizex = "1"
 endian = "big"
 userlevel = "5"
-description = "Exact JK08A only. Bit 0 enables ECM immobilizer enforcement. Code path verified; vehicle test pending. NATS DTC suppression is independent."
+description = "Exact JK08A only. Bit 0 enables ECM immobilizer enforcement. Vehicle start and operation verified. NATS DTC suppression is independent."
 state = [
   { name = "Enabled (Stock)", data = "01" },
   { name = "Disabled (IMMO OFF)", data = "00" },

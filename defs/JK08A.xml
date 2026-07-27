@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- RomRaider-деф JK08A. Файл сгенерирован tools/mapkit/emit_def.py из графа Memgraph (факты)
-     и defs/JK08A.overrides.toml (презентация). Правка этого файла следующего прогона не
-     переживает:
+<!-- RomRaider-деф JK08A. Файл сгенерирован tools/mapkit/emit_def.py из графа Memgraph (факты),
+     defs/JK08A.dtc.csv (DTC), defs/JK08A.overrides.toml (презентация).
+     Правка этого файла следующего прогона не переживает:
      править источники - defs/<rom>.findings.csv, <rom>.axes.csv, <rom>.interp.csv,
-     <rom>.overrides.toml.
+     <rom>.dtc.csv, <rom>.overrides.toml.
 
      Разбор и метод - defs/JK08A.notes.md. Уровень каждой таблицы - в её комментарии.
      Категория с суффиксом (candidate) - карта опознана, но не трейсом; единицы с
@@ -40,9 +40,16 @@
 
     <table type="Switch" name="Developer Immobilizer" category="NATS / Immobilizer"
            storageaddress="0x08725" storagetype="uint8" sizex="1" endian="big" userlevel="5">
-      <description>Exact JK08A only. Bit 0 enables ECM immobilizer enforcement. Code path verified; vehicle test pending. NATS DTC suppression is independent.</description>
+      <description>Exact JK08A only. Bit 0 enables ECM immobilizer enforcement. Vehicle start and operation verified. NATS DTC suppression is independent.</description>
       <state name="Enabled (Stock)" data="01"/>
       <state name="Disabled (IMMO OFF)" data="00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1610 (NATS LOCK MODE)" category="NATS / Immobilizer"
+           storageaddress="0x19540" storagetype="uint8" sizey="12" endian="big" userlevel="5">
+      <description>Exact JK08A only. The linked attribute at 0x160FE is already 0000 in stock, so this switch changes only the 12-byte descriptor. Suppressing DTC publication does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="0D 05 00 00 00 00 16 10 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
     </table>
 
     <!-- 0x0991A  16x16 uint8  карта [code]; вход 0x26230 (explicit, ядро 0x26944)

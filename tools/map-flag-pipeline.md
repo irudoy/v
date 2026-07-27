@@ -701,10 +701,10 @@ disposition. `code -> silicon`: CONSULT3P live-data / стенд. Локальн
 
 ### Stage 8 – Эмиссия дефа (решает P5)
 
-Генератор `tools/mapkit/emit_def.py`: граф (факты) + `defs/<rom>.overrides.toml`
-(презентация) -> `defs/<rom>.xml`. Контракт – раздел 9. Проекция хранится только для ROM
-с собственным живым презентационным слоем; JK03A остаётся измерительным слоем графа без
-отдельных `maps.csv`, `overrides.toml` и XML.
+Генератор `tools/mapkit/emit_def.py`: граф (факты) + `defs/<rom>.dtc.csv` (DTC) +
+`defs/<rom>.overrides.toml` (презентация) -> `defs/<rom>.xml`. Контракт – раздел 9.
+Проекция хранится только для ROM с собственным живым презентационным слоем; JK03A
+остаётся измерительным слоем графа без отдельных `maps.csv`, `overrides.toml` и XML.
 
 Ledger `defs/<rom>.maps.csv` – проекция того же каталога (`tools/maps/build_tracker.py`):
 срез графа, который виден в диффе и проходит ревью, он же worklist разбора (открытая работа –
@@ -897,11 +897,12 @@ Operator attestation фиксирует заявленный fresh launch, а п
 доступом к графу нельзя, а состав артефакта задаёт шаг подготовки. Контракт прогона – единица,
 порядок волн, ослепление пилота, схема заявки, ворота – `map-sweep.md`.
 
-## 9. Контракт генератора дефа (граф + оверрайды -> RomRaider XML)
+## 9. Контракт генератора дефа (граф + DTC + оверрайды -> RomRaider XML)
 
-`emit_def.py <rom>` читает граф и `defs/<rom>.overrides.toml`, пишет `defs/<rom>.xml`.
-Команда предназначена для канонического ROM с собственным презентационным слоем; для
-exact-code JK03A актуальным пользовательским дефом является JK08A:
+`emit_def.py <rom>` читает граф, `defs/<rom>.dtc.csv` и
+`defs/<rom>.overrides.toml`, пишет `defs/<rom>.xml`. Команда предназначена для
+канонического ROM с собственным презентационным слоем; для exact-code JK03A актуальным
+пользовательским дефом является JK08A:
 
 - **Факты из графа**: адреса, dims, storagetype, оси (`:Axis` -> дочерние `<table>`), scaling
   (`units`/`scale_expr`/`to_byte`), локальные уровни карты и шкалы (`confidence`,
@@ -909,6 +910,13 @@ exact-code JK03A актуальным пользовательским дефо�
   (`cell = table + idxY + idxX*width` => X Axis=нагрузка/столбцы, Y Axis=обороты/строки, как на
   5 картах JK08A), комментарий с входом, ядром, аксессором и `resolver_kinds`. Claim evidence
   остаётся в источнике и графе, в XML не дублируется.
+- **DTC из реестра** (`defs/<rom>.dtc.csv`, git): index, код, адрес 12-байтного
+  descriptor, адрес связанного uint16 attribute и его stock/disabled значения.
+  Генератор сверяет запись с точным stock ROM из `rom-images/roms.csv`. Один
+  descriptor `TableSwitch` выпускается только для строки уровня `code`, у которой
+  `stock_attribute == disabled_attribute`; для JK08A этому условию отвечает P1610.
+  Записи с изменяемым attribute требуют двух несмежных правок и через одиночный
+  `TableSwitch` не выпускаются.
 - **Презентация из оверрайдов** (`defs/<rom>.overrides.toml`, git): человекочитаемые имена,
   `category`, порядок таблиц, шаги редактора (`format`/`fine`/`coarse`), блок `romid`,
   параметры `<checksum>`, `mask` для независимого редактирования битовых полей элемента,

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Генератор дефа RomRaider (Stage 8, раздел 9 tools/map-flag-pipeline.md): граф Memgraph
-# (факты) + defs/<rom>.overrides.toml (презентация) -> defs/<rom>.xml.
+# (факты) + defs/<rom>.dtc.csv (DTC) + defs/<rom>.overrides.toml (презентация)
+# -> defs/<rom>.xml.
 #
 # Разделение источников - причина существования этого шага (P5). Факт объявлен один раз:
 # адрес, форма, элемент, оси, шкала и уровень живут в графе, куда их кладут перепись
@@ -26,6 +27,7 @@
 # width -> sizex, height -> sizey, обе статические оси задаются в overrides.
 #
 # Запуск: uv run --no-project --with neo4j python tools/mapkit/emit_def.py [<rom>] [<out>]
+import csv
 import html
 import os
 import sys
@@ -34,7 +36,14 @@ import tomllib
 from neo4j import GraphDatabase
 
 BOLT = "bolt://localhost:7687"
-DEFS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "defs")
+HERE = os.path.dirname(os.path.abspath(__file__))
+DEFS = os.path.join(HERE, "..", "..", "defs")
+if __package__:
+    from . import rom as romkit
+else:
+    sys.path.insert(0, os.path.dirname(HERE))
+    from mapkit import rom as romkit
+
 LEVELS = ("pattern", "candidate", "code", "silicon")   # лестница раздела 5
 
 ROMID_FIELDS = ("xmlid", "internalidaddress", "internalidstring", "ecuid", "caseid",
@@ -45,9 +54,20 @@ CHECKSUM_FIELDS = (
     "start", "end", "skiploc", "sumloc", "xorloc",
 )
 SWITCH_FIELDS = (
-    "name", "category", "storageaddress", "storagetype", "sizex", "endian",
-    "userlevel",
+    "name", "category", "storageaddress", "storagetype", "sizex", "sizey",
+    "endian", "userlevel",
 )
+SWITCH_REQUIRED_FIELDS = (
+    "name", "category", "storageaddress", "storagetype", "endian", "userlevel",
+)
+SWITCH_SIZE_FIELDS = ("sizex", "sizey")
+SWITCH_STORAGE_BYTES = {"uint8": 1, "uint16": 2, "uint32": 4}
+DTC_FIELDS = (
+    "index", "dtc", "record_addr", "attribute_addr", "stock_attribute",
+    "disabled_attribute", "group", "confidence", "note",
+)
+DTC_RECORD_SIZE = 12
+DTC_CATEGORIES = {"nats": "NATS / Immobilizer"}
 MASKED_VIEW_FIELDS = (
     "source", "name", "category", "mask", "units", "expression", "to_byte",
     "format", "fine", "coarse",
@@ -174,22 +194,123 @@ def static_axis_xml(values, name="Index", axis_type="Static X Axis",
     return out
 
 
+def switch_data(data):
+    """Байты состояния TableSwitch в принятой RomRaider форме."""
+    return " ".join(f"{byte:02X}" for byte in data)
+
+
+def dtc_switches(rom, image=None, manifest_path=None):
+    """DTC с неизменяемым attribute представить переключателем descriptor.
+
+    Обычная запись реестра требует двух несмежных изменений: 12-байтный descriptor
+    и связанный uint16 attribute. Один TableSwitch этого не выражает. Если stock
+    attribute уже равен disabled_attribute, атомарное изменение сводится к одному
+    descriptor и представляется непрерывным 12-байтным переключателем.
+    """
+    manifest_path = manifest_path or os.path.join(DEFS, f"{rom}.dtc.csv")
+    if not os.path.exists(manifest_path):
+        return []
+    image = image or romkit.load(rom)
+    with open(manifest_path, newline="", encoding="utf-8") as source:
+        reader = csv.DictReader(source)
+        missing = [field for field in DTC_FIELDS
+                   if field not in (reader.fieldnames or [])]
+        if missing:
+            sys.exit(f"{os.path.basename(manifest_path)}: нет полей "
+                     + ", ".join(missing))
+        rows = list(reader)
+
+    entries = []
+    for row_index, row in enumerate(rows, 2):
+        if (row["stock_attribute"].lower()
+                != row["disabled_attribute"].lower()):
+            continue
+        if row["confidence"] != "code":
+            continue
+        try:
+            record_addr = int(row["record_addr"], 16)
+            attribute_addr = int(row["attribute_addr"], 16)
+            dtc_code = int(row["dtc"][1:], 16)
+            stock_attribute = bytes.fromhex(row["stock_attribute"])
+        except (TypeError, ValueError):
+            sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
+                     "некорректный DTC, адрес или attribute")
+        if len(stock_attribute) != 2:
+            sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
+                     "attribute должен занимать два байта")
+        record = image.data[record_addr:record_addr + DTC_RECORD_SIZE]
+        if len(record) != DTC_RECORD_SIZE:
+            sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
+                     "descriptor выходит за границы ROM")
+        if int.from_bytes(record[6:8], "big") != dtc_code:
+            sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
+                     f"descriptor по {record_addr:#x} не содержит {row['dtc']}")
+        actual_attribute = image.data[
+            attribute_addr:attribute_addr + len(stock_attribute)
+        ]
+        if actual_attribute != stock_attribute:
+            sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
+                     f"attribute по {attribute_addr:#x} не равен stock")
+
+        category = DTC_CATEGORIES.get(
+            row["group"], f"Diagnostics / DTC / {row['group']}"
+        )
+        note = row["note"].split(";", 1)[0].rstrip(".")
+        entries.append({
+            "name": f"DTC {row['dtc']} ({note})",
+            "category": category,
+            "storageaddress": hexa(row["record_addr"]),
+            "storagetype": "uint8",
+            "sizey": str(DTC_RECORD_SIZE),
+            "endian": "big",
+            "userlevel": "5",
+            "description": (
+                f"Exact {rom} only. The linked attribute at "
+                f"{hexa(row['attribute_addr'])} is already "
+                f"{row['disabled_attribute'].upper()} in stock, so this switch "
+                f"changes only the {DTC_RECORD_SIZE}-byte descriptor. "
+                "Suppressing DTC publication does not disable the physical monitor."
+            ),
+            "state": [
+                {"name": "Enabled (Stock)", "data": switch_data(record)},
+                {
+                    "name": "Disabled",
+                    "data": switch_data(bytes(DTC_RECORD_SIZE)),
+                },
+            ],
+        })
+    return entries
+
+
 def switch_xml(entry, index):
-    """Пользовательский TableSwitch из overrides: адрес и именованные состояния."""
+    """TableSwitch из overrides либо DTC-реестра: адрес и именованные состояния."""
     if not isinstance(entry, dict):
         sys.exit(f"switch #{index} должен быть таблицей TOML")
     unknown = sorted(set(entry) - set(SWITCH_FIELDS) - {"description", "state"})
     if unknown:
         sys.exit(f"switch #{index} содержит неизвестные поля {', '.join(unknown)}")
-    missing = [k for k in SWITCH_FIELDS if k not in entry]
+    missing = [k for k in SWITCH_REQUIRED_FIELDS if k not in entry]
     if missing:
         sys.exit(f"switch #{index} без полей {', '.join(missing)}")
+    size_fields = [key for key in SWITCH_SIZE_FIELDS if key in entry]
+    if len(size_fields) != 1:
+        sys.exit(f"switch #{index}: требуется ровно одно из полей "
+                 + ", ".join(SWITCH_SIZE_FIELDS))
+    size_field = size_fields[0]
+    try:
+        element_count = int(entry[size_field])
+    except (TypeError, ValueError):
+        sys.exit(f"switch #{index}: {size_field} должно быть целым числом")
+    element_size = SWITCH_STORAGE_BYTES.get(entry["storagetype"])
+    if element_count <= 0 or element_size is None:
+        sys.exit(f"switch #{index}: недопустимые размер или storagetype")
+    expected_bytes = element_count * element_size
     states = entry.get("state", [])
     if not isinstance(states, list) or len(states) < 2:
         sys.exit(f"switch #{index}: нужен массив state минимум из двух состояний")
 
     attrs = ['type="Switch"'] + [
-        f'{k}="{att(entry[k])}"' for k in SWITCH_FIELDS
+        f'{k}="{att(entry[k])}"' for k in SWITCH_FIELDS if k in entry
     ]
     out = wrap("    ", "<table", attrs, ">")
     if entry.get("description"):
@@ -205,6 +326,15 @@ def switch_xml(entry, index):
         if missing_state:
             sys.exit(f"switch #{index}, state #{state_index} без полей "
                      + ", ".join(missing_state))
+        tokens = str(state["data"]).split()
+        try:
+            raw = (bytes.fromhex(" ".join(tokens))
+                   if all(len(token) == 2 for token in tokens) else b"")
+        except ValueError:
+            raw = b""
+        if len(tokens) != expected_bytes or len(raw) != expected_bytes:
+            sys.exit(f"switch #{index}, state #{state_index}: data должно содержать "
+                     f"{expected_bytes} hex-байт")
         out += wrap("      ", "<state",
                     [f'name="{att(state["name"])}"', f'data="{att(state["data"])}"'],
                     "/>")
@@ -466,6 +596,9 @@ def main():
     if not isinstance(switches, list):
         sys.exit(f"{os.path.basename(ovr_path)}: switch должен быть таблицей "
                  "или массивом таблиц")
+    switches = list(switches)
+    dtc_entries = dtc_switches(rom)
+    switches += dtc_entries
 
     body = []
     for index, entry in enumerate(switches, 1):
@@ -496,11 +629,15 @@ def main():
     missing = [f for f in ROMID_FIELDS if f not in romid]
     if missing:
         sys.exit(f"{os.path.basename(ovr_path)}: [rom] без полей {', '.join(missing)}")
+    sources = [f"графа Memgraph (факты)"]
+    if dtc_entries:
+        sources.append(f"defs/{rom}.dtc.csv (DTC)")
+    sources.append(f"defs/{rom}.overrides.toml (презентация)")
     head = [comment([f"RomRaider-деф {rom}. Файл сгенерирован tools/mapkit/emit_def.py из "
-                     f"графа Memgraph (факты)", f"и defs/{rom}.overrides.toml "
-                     f"(презентация). Правка этого файла следующего прогона не переживает:",
+                     + ", ".join(sources) + ".",
+                     "Правка этого файла следующего прогона не переживает:",
                      "править источники - defs/<rom>.findings.csv, <rom>.axes.csv, "
-                     "<rom>.interp.csv, <rom>.overrides.toml.", ""]
+                     "<rom>.interp.csv, <rom>.dtc.csv, <rom>.overrides.toml.", ""]
                     + romid.get("comment", {}).get("text", "").split("\n"), indent=0),
             "<roms>", "  <rom>", "    <romid>"]
     head += [f"      <{f}>{att(romid[f])}</{f}>" for f in ROMID_FIELDS]

@@ -1,6 +1,11 @@
 import unittest
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from tools.mapkit import emit_def
+
+
+ROOT = Path(__file__).resolve().parents[3]
 
 
 class EmitDefStaticAxesTest(unittest.TestCase):
@@ -90,6 +95,69 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         self.assertIn('expression="x"', xml)
         self.assertIn('type="Static X Axis"', xml)
         self.assertIn('type="Static Y Axis"', xml)
+
+
+class EmitDefSwitchTest(unittest.TestCase):
+    def test_dtc_manifest_emits_only_contiguous_p1610_switch(self):
+        switches = emit_def.dtc_switches("JK08A")
+        self.assertEqual(len(switches), 1)
+        switch = switches[0]
+        self.assertEqual(switch["name"], "DTC P1610 (NATS LOCK MODE)")
+        self.assertEqual(switch["storageaddress"], "0x19540")
+        self.assertEqual(switch["sizey"], "12")
+        self.assertNotIn("sizex", switch)
+        self.assertEqual(
+            switch["state"][0]["data"],
+            "0D 05 00 00 00 00 16 10 00 00 00 00",
+        )
+        self.assertEqual(
+            switch["state"][1]["data"],
+            "00 00 00 00 00 00 00 00 00 00 00 00",
+        )
+
+    def test_multibyte_switch_uses_sizey_and_preserves_state_bytes(self):
+        switch = emit_def.dtc_switches("JK08A")[0]
+        xml = "\n".join(emit_def.switch_xml(switch, 2))
+        self.assertIn('type="Switch"', xml)
+        self.assertIn('storageaddress="0x19540"', xml)
+        self.assertIn('sizey="12"', xml)
+        self.assertNotIn('sizex=', xml)
+        self.assertIn(
+            'data="0D 05 00 00 00 00 16 10 00 00 00 00"',
+            xml,
+        )
+
+    def test_switch_rejects_state_with_wrong_byte_count(self):
+        switch = emit_def.dtc_switches("JK08A")[0]
+        switch["state"][1]["data"] = "00"
+        with self.assertRaisesRegex(SystemExit, "12 hex-байт"):
+            emit_def.switch_xml(switch, 2)
+
+    def test_tracked_xml_contains_exact_generated_p1610_switch(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        switches = {
+            table.get("name"): table
+            for table in rom.findall("./table")
+            if table.get("type") == "Switch"
+        }
+        self.assertEqual(
+            set(switches),
+            {"Developer Immobilizer", "DTC P1610 (NATS LOCK MODE)"},
+        )
+        p1610 = switches["DTC P1610 (NATS LOCK MODE)"]
+        self.assertEqual(p1610.get("storageaddress"), "0x19540")
+        self.assertEqual(p1610.get("sizey"), "12")
+        states = {
+            state.get("name"): state.get("data")
+            for state in p1610.findall("./state")
+        }
+        self.assertEqual(
+            states,
+            {
+                "Enabled (Stock)": "0D 05 00 00 00 00 16 10 00 00 00 00",
+                "Disabled": "00 00 00 00 00 00 00 00 00 00 00 00",
+            },
+        )
 
 
 if __name__ == "__main__":

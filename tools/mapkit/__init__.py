@@ -7,7 +7,7 @@
 #   rom.py       - образ: реестр, чтение массивов, их измерение (Stage 4);
 #   show.py      - карта либо ось в физических единицах (граф + образ);
 #   ptrscan.py   - кто указывает на адрес: скан образа, без Ghidra;
-#   emit_def.py  - деф RomRaider: проекция графа плюс оверрайды (Stage 8, раздел 9).
+#   emit_def.py  - деф RomRaider: проекция графа, DTC и оверрайдов (Stage 8, раздел 9).
 #
 # Запуск - файлом (`python tools/mapkit/show.py ...`); импорт - `from mapkit import rom`
 # с каталогом tools/ в sys.path, как это делают load_maps.py и скрипты пакета.
