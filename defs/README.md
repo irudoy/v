@@ -33,19 +33,26 @@ https://github.com/RomRaider/RomRaider.
 The canonical annotation layer for the owned target ROM `JK08A` lives directly
 under `defs/`, separately from `reference/`:
 
-- `JK08A.xml` is the RomRaider definition, projected from the graph and
-  presentation layer by `mapkit/emit_def.py`.
+- `JK08A.xml` is the RomRaider definition, projected from the graph, DTC
+  registry, and presentation layer by `mapkit/emit_def.py`.
+- `JK08A.xdf` is the TunerPro XDF 1.70 definition projected by the same
+  generator from the same model. It contains the same emitted calibration
+  tables, masked views, reference axes, and two-state feature patches. It does
+  not declare editor-side checksum processing.
 - `JK08A.maps.csv` is the catalog ledger projected from the graph by
   `maps/build_tracker.py`.
 - `JK08A.dtc.csv` is an address registry for 29 analyzed DTC
   descriptor/attribute pairs. A descriptor is 12 bytes; the address of its
   associated `uint16` attribute comes from a pointer table. The generator
-  validates both regions against the exact stock ROM. Each mutable range is
-  emitted as a native `TableSwitch`: `1/2 Descriptor` selects the stock
+  validates both regions against the exact stock ROM. RomRaider receives one
+  native `TableSwitch` per mutable range: `1/2 Descriptor` selects the stock
   12-byte descriptor or 12 zero bytes, and `2/2 Attribute` selects the stock
   two-byte attribute or its disabled value. Both controls must use the same
   state before saving. P1610 has a stock-zero attribute and therefore requires
-  only its descriptor switch.
+  only its descriptor switch. TunerPro receives one atomic `XDFPATCH` per DTC
+  and one atomic `XDFPATCH` per value of the `group` column. The six group
+  patches contain the same 57 mutable ranges as the 29 individual patches.
+  There is no catch-all DTC patch.
 - `JK08A.notes.md` is a handwritten reverse-engineering journal containing
   rationale, listings, and traces. It is not loaded into the graph.
 - The handwritten calibration-layer sources are `JK08A.interp.csv` for
@@ -117,15 +124,30 @@ differs at 121 byte positions. In the graph, only the measured values of four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
 `0x190b0`. All 229 axes and the other 437 maps match.
 
-The working `JK08A.xml` contains calibration tables, 57 DTC switches, two
-reference-axis views, and two verified native RomRaider checksum handlers. One
-additional `TableSwitch` at `0x8725` controls bit 0 of the factory Developer
-Immobilizer flag: `01` applies the immobilizer normally and `00` enables
-immo-off; engine starting and operation were verified in the vehicle. All DTC
-controls share the `Diagnostics / DTC` category. Each ordinary DTC has adjacent
-descriptor and attribute controls; P1610 has only its descriptor control.
-Checksum handlers run in `alt` -> `alt2` order. The owned VQ35HR bench ROM
-`JK00D` independently confirms the **SH705822N / SH7058 / 1 MiB** class.
+The generated JK08A definitions contain 145 calibration tables, three masked
+views, and two reference-axis views. `JK08A.xml` additionally contains 57 DTC
+switches and two verified native RomRaider checksum handlers. Each ordinary DTC
+has adjacent descriptor and attribute controls; P1610 has only its descriptor
+control. The checksum handlers run in `alt` -> `alt2` order.
+
+`JK08A.xdf` contains 29 individual DTC patches and six group patches:
+`catalyst`, `evap`, `manufacturer_specific`, `nats`, `rear_o2`, and
+`rear_o2_heater`. Individual and group patches overlap by design. Applying a
+group makes all of its individual patches read as patched; changing only part
+of a group makes the group state indeterminate. The patch payload remains
+usable in that state, so scope selection must be deliberate. Each patch carries
+stock `basedata` for every range.
+
+Both definitions expose the Developer Immobilizer control at `0x8725`: `01`
+applies the immobilizer normally and `00` enables immo-off. Engine starting and
+operation were verified in the vehicle. TunerPro represents it as a reversible
+one-entry patch. Its XDF intentionally has no checksum object because checksum
+correction belongs to the flashing workflow. The three split-field ignition
+maps use per-cell XDF conversion variables so editing the low seven bits
+preserves bit 7, while editing the bit-7 view preserves the low seven bits.
+
+The owned VQ35HR bench ROM `JK00D` independently confirms the
+**SH705822N / SH7058 / 1 MiB** class.
 
 The `flashmethod` attribute in HR definitions is unreliable metadata. SH7058
 `EV18A`/`CF92A` and SH7059 `1NX4A` name `Nisprog`, but open-source

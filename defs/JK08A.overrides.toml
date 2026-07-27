@@ -3,8 +3,8 @@
 # scaling, and confidence do not belong here. The graph carries them, and sources
 # diverge precisely when one fact is declared twice.
 #
-# Read by tools/mapkit/emit_def.py. The merge key is the graph map or axis
-# address: eight lowercase hexadecimal digits.
+# Read by tools/mapkit/emit_def.py for both RomRaider XML and TunerPro XDF. The
+# merge key is the graph map or axis address: eight lowercase hexadecimal digits.
 
 [rom]
 xmlid = "JK08A"

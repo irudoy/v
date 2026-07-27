@@ -205,7 +205,8 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `sweep/build_artifacts.py` | Build blind sweep artifacts: component `comp-<addr>.md`, frozen map `map-<addr>.md`, or shared axis `axis-<addr>.md`. Axis focus aggregates all related maps and accessors. Shape, values, axes, pseudocode, listings, census operands, and catalogs remain visible; current answers are hidden through an allowlist verified on every run. Budgets must be nonnegative; the frozen caller experiment requires `8`/`24`. Arguments: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
 | `sweep/caller_ab_experiment.py` | Read-only control plane for the 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates, manual approval, finalized `verified` and neutral `placebo` cards, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores, and a per-control verifier gate; canonical CSV remains unchanged | JSON/Markdown outside git |
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
-| `mapkit/emit_def.py` | Project the graph, `defs/<rom>.dtc.csv` DTC registry, and `defs/<rom>.overrides.toml` presentation layer into `defs/<rom>.xml`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
+| `mapkit/emit_def.py` | Project the graph, `defs/<rom>.dtc.csv` DTC registry, and `defs/<rom>.overrides.toml` presentation layer into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
+| `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 29 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
 | `mapkit/show.py` | Display a map or axis in physical units: the graph supplies shape, axes, and scale, while the image supplies values. Arguments: `[<rom>] <addr>...` | stdout |
 | `mapkit/ptrscan.py` | Find pointers to an address by scanning both constant forms, `mov.l` and `mov.w`, without Ghidra or a project. Arguments: `[<rom>] <addr> [<addr_hi>]` | stdout |
 
@@ -288,7 +289,7 @@ uv run --no-project --with neo4j python tools/maps/build_tracker.py \
   JK03A /private/tmp/JK03A.maps.csv
 ```
 
-### RomRaider: NATS and DTC switches
+### RomRaider and TunerPro: NATS and DTC controls
 
 `defs/JK08A.xml` contains a `TableSwitch` at `0x08725` with states
 `Enabled (Stock) = 01` and `Disabled (IMMO OFF) = 00`. The switch directly clears bit0 of the
@@ -318,6 +319,32 @@ differs from stock by one bit. Engine start and operation were confirmed on the 
 The patcher preserves the one-bit immo-off contract. P1610 and the other DTC
 record changes are controlled only through the definition and require separate
 hardware tests.
+
+The same generator writes `defs/JK08A.xdf` for TunerPro. Each of the 29 DTC
+records is one atomic `XDFPATCH`: 28 patches contain a descriptor entry and an
+attribute entry, while P1610 contains only its descriptor entry. Six additional
+patches group records by the manifest `group` field:
+
+| Group | DTC records | Patch entries |
+|-------|------------:|--------------:|
+| `catalyst` | 2 | 4 |
+| `evap` | 13 | 26 |
+| `manufacturer_specific` | 1 | 2 |
+| `nats` | 1 | 1 |
+| `rear_o2` | 8 | 16 |
+| `rear_o2_heater` | 4 | 8 |
+
+The group patches cover 57 mutable ranges in total. There is no all-DTC patch.
+Individual and group patches intentionally overlap; each patch is internally
+atomic, while partial use across scopes makes the corresponding group state
+indeterminate. Every entry contains exact stock `basedata`.
+
+The TunerPro XDF also represents Developer Immobilizer as a one-entry
+reversible patch. It contains no `XDFCHECKSUM`: editor-side checksum processing
+is outside the definition contract, and the flashing workflow corrects
+checksums. The split low-7-bit and bit-7 ignition-map views use per-cell address
+variables in invertible conversion equations so an edit preserves the
+complementary field.
 
 ### Memgraph backup
 

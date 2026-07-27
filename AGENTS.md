@@ -117,12 +117,12 @@ and responses without local changes do not trigger a backup.
   extractors, `headless-analyze.sh`, and `symbols.csv`; `memgraph/` contains the
   Memgraph MAGE `docker-compose.yml` and `load_*.py` loaders;
   `maps/build_tracker.py` builds the ledger; `mapkit/emit_def.py` generates the
-  definition; `pin-tracer/` records manually observed ECM-terminal-to-MCU
-  routes. Reviewed pin-tracer JSON connects ESM signal semantics to
-  peripheral-register and firmware xref analysis, but physical continuity
-  alone does not prove map semantics. `map-flag-pipeline.md` specifies the map
-  pipeline, and `README.md` records versions, ports, and commands. Ghidra,
-  GhydraMCP, and Ghidra projects remain outside Git.
+  RomRaider XML and TunerPro XDF definitions; `pin-tracer/` records manually
+  observed ECM-terminal-to-MCU routes. Reviewed pin-tracer JSON connects ESM
+  signal semantics to peripheral-register and firmware xref analysis, but
+  physical continuity alone does not prove map semantics. `map-flag-pipeline.md`
+  specifies the map pipeline, and `README.md` records versions, ports, and
+  commands. Ghidra, GhydraMCP, and Ghidra projects remain outside Git.
 - `AGENTS.md` - this file.
 - `.gitignore` - ignores operating-system debris, scratch data, and regenerable
   Ghidra/Memgraph caches. Content artifacts such as ROMs, datasheets,

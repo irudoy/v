@@ -50,5 +50,6 @@ The delta includes the ROM ID, checksum, four known 1D-16 `uint16` curves at
 `0x15360`, `0x15380`, `0x19090`, and `0x190b0`, diagnostic descriptors, and
 other configuration/calibration data. The separate JK08A Memgraph layer reuses
 the common structure of the exact-code pair but measures values from this image.
-The working `defs/JK08A.xml` does not expose the four differing unnamed candidate
-curves; every other exposed table and axis is byte-identical to the donor.
+The working `defs/JK08A.xml` and `defs/JK08A.xdf` do not expose the four
+differing unnamed candidate curves; every other exposed table and axis is
+byte-identical to the donor.

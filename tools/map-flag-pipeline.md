@@ -17,10 +17,10 @@ deterministic flow, one data model, and measurable effectiveness.
 
 The Memgraph graph is the project's **system of record**, not a side-effect dump. Ghidra is the
 **extractor**, using headless scripts over decompiler data flow rather than manual listing review.
-The RomRaider definition and catalog ledger are **graph projections**, with presentation overrides
-added to the definition, not handwritten fact sources. Annotation confidence is **gated data**
-(`pattern -> candidate -> code -> silicon`), not a prose label. Effectiveness is defined by
-**measured metrics** in section 11 rather than subjective assessment.
+The RomRaider and TunerPro definitions and the catalog ledger are **graph projections**, with
+presentation overrides added to the definitions, not handwritten fact sources. Annotation
+confidence is **gated data** (`pattern -> candidate -> code -> silicon`), not a prose label.
+Effectiveness is defined by **measured metrics** in section 11 rather than subjective assessment.
 
 Every element addresses a named process problem in section 3.
 
@@ -730,16 +730,17 @@ storage, and ingestion are implemented.
 ### Stage 8 - Emit the definition (resolves P5)
 
 `tools/mapkit/emit_def.py` combines graph facts, `defs/<rom>.dtc.csv` DTC data, and
-`defs/<rom>.overrides.toml` presentation into `defs/<rom>.xml`. Section 9 defines the contract.
-Store a projection only for a ROM with its own live presentation layer. JK03A remains a graph
-measurement layer without separate `maps.csv`, `overrides.toml`, or XML.
+`defs/<rom>.overrides.toml` presentation into RomRaider `defs/<rom>.xml` and TunerPro
+`defs/<rom>.xdf`. Section 9 defines the contract. Store projections only for a ROM with its own
+live presentation layer. JK03A remains a graph measurement layer without separate `maps.csv`,
+`overrides.toml`, XML, or XDF.
 
 The `defs/<rom>.maps.csv` ledger is a projection of the same catalog through
 `tools/maps/build_tracker.py`: a reviewable graph snapshot visible in diffs and the analysis
 worklist. Open work is a `candidate` with empty `semantics`. There is no separate status column
 because it would render confidence, role, and semantics and duplicate neighboring facts, creating
-the type of divergence this design prevents. Ledger and XML are regenerated; edit the entry
-registry, manual layer, and overrides rather than generated files.
+the type of divergence this design prevents. Ledger, XML, and XDF are regenerated; edit the
+entry registry, manual layer, and overrides rather than generated files.
 
 ## 8. Explicitly unused tool capabilities
 
@@ -927,29 +928,34 @@ rather than the graph because annotation and shape coexist there, making graph-a
 impossible. Preparation defines artifact content. `map-sweep.md` defines the work unit, wave order,
 pilot blinding, claim schema, and gates.
 
-## 9. Definition generator contract (graph + DTC + overrides -> RomRaider XML)
+## 9. Definition generator contract (graph + DTC + overrides -> XML + XDF)
 
 `emit_def.py <rom>` reads the graph, `defs/<rom>.dtc.csv`, and
-`defs/<rom>.overrides.toml`, then writes `defs/<rom>.xml`. The command targets a
-canonical ROM with its own presentation layer. JK08A is the current user-facing
-definition for the exact-code JK03A ROM:
+`defs/<rom>.overrides.toml`, then writes `defs/<rom>.xml` for RomRaider and
+`defs/<rom>.xdf` for TunerPro. Optional second and third arguments select the two output
+paths. The command targets a canonical ROM with its own presentation layer. JK08A is
+the current user-facing definition for the exact-code JK03A ROM:
 
-- **Facts from the graph**: addresses, dimensions, storage type, axes (`:Axis` -> child
-  `<table>` elements), scaling (`units`/`scale_expr`/`to_byte`), local map and scale
-  confidence (`confidence`, `scale_conf`), RomRaider orientation derived from finisher
-  geometry (`cell = table + idxY + idxX*width` => X Axis = load/columns, Y Axis =
-  RPM/rows, as seen on five JK08A maps), and a comment containing the entry, core,
-  accessor, and `resolver_kinds`. Claim evidence remains in the source and graph and is
-  not duplicated in XML.
+- **Facts from the graph**: addresses, dimensions, storage type, axes, scaling
+  (`units`/`scale_expr`/`to_byte`), and local map and scale confidence
+  (`confidence`, `scale_conf`). Editor orientation is derived from finisher geometry:
+  `cell = table + idxY + idxX*width` gives columns from the graph Y axis and rows from
+  the graph X axis. RomRaider receives child `<table>` axes and evidence comments.
+  TunerPro receives `XDFAXIS` objects and evidence descriptions. Claim evidence remains
+  in the source and graph rather than becoming a second fact source in either artifact.
 - **DTC registry** (`defs/<rom>.dtc.csv`, tracked in git): index, code, address of the
   12-byte descriptor, address of the associated uint16 attribute, and its stock and
   disabled values. The generator verifies each record against the exact stock ROM from
-  `rom-images/roms.csv`. Every `code`-level row receives a native descriptor
-  `TableSwitch`. A second attribute `TableSwitch` is emitted when the stock and
-  disabled attribute values differ. The controls are numbered `1/2 Descriptor` and
-  `2/2 Attribute`, remain adjacent in one `Diagnostics / DTC` category, and must use
-  the same state before the ROM is saved. P1610 has a stock-zero attribute and
-  therefore receives only its descriptor switch.
+  `rom-images/roms.csv`. In RomRaider, every `code`-level row receives a native
+  descriptor `TableSwitch`; a second attribute `TableSwitch` is emitted when the stock
+  and disabled attribute values differ. The controls are numbered `1/2 Descriptor`
+  and `2/2 Attribute`, remain adjacent in one `Diagnostics / DTC` category, and must
+  use the same state before the ROM is saved. In TunerPro, every row receives one
+  atomic `XDFPATCH` containing one or two entries. The generator also emits one atomic
+  patch for each manifest `group`. The 29 individual patches and six group patches
+  each cover the same 57 mutable ranges at their respective scope; no all-DTC patch is
+  emitted. P1610 has a stock-zero attribute and therefore receives only a descriptor
+  switch or patch entry.
 - **Presentation overrides** (`defs/<rom>.overrides.toml`, tracked in git):
   human-readable names, `category`, table ordering, editor increments
   (`format`/`fine`/`coarse`), the `romid` block, `<checksum>` parameters, a `mask` for
@@ -960,10 +966,12 @@ definition for the exact-code JK03A ROM:
   `[[masked_view]]` array creates an additional view of the same cells: `source`
   references an emitted map, its separate `mask` does not overlap the primary table
   mask, and shape and axes are reused from the Map fact. This exposes a value field and
-  bit flag independently without a second map node. Records merge on `{rom, addr}`.
-  An override that replaces a fact is an error (`static_axis` with a live `:Axis` stops
-  the run), as are an unnamed map that passes the gate and an override for a map outside
-  the gate.
+  bit flag independently without a second map node. RomRaider applies its native table
+  mask. XDF has no table-mask attribute, so TunerPro receives an invertible per-cell
+  conversion with a same-address raw variable: editing one field preserves the
+  complementary bits. Records merge on `{rom, addr}`. An override that replaces a fact
+  is an error (`static_axis` with a live `:Axis` stops the run), as are an unnamed map
+  that passes the gate and an override for a map outside the gate.
 - **Emission gate**: emit content that can be interpreted: role `table`, nonempty
   semantics, and nonempty scaling at `confidence >= candidate`; levels below
   `candidate` are not emitted. A map without semantics is only an address and shape; a
@@ -978,12 +986,14 @@ definition for the exact-code JK03A ROM:
   suffix `[cand]`. The multiplier is a claim about values, not identification of the
   table, so these levels can differ. At `0xB61A`, for example, code establishes the
   address while the `x-64` multiplier comes from the A2L catalog. Overrides may specify
-  an ordered `<checksum>` array. For JK08A, the native RomRaider handlers `alt` and
-  `alt2` reproduce the stock fields and run in B -> A order.
+  an ordered `<checksum>` array for RomRaider. For JK08A, the native handlers `alt` and
+  `alt2` reproduce the stock fields and run in B -> A order. The XDF contains no
+  `XDFCHECKSUM`; checksum correction belongs to the flashing workflow rather than the
+  TunerPro definition contract.
 
 The generator template follows the `AGENTS.md` rules for declarative prose, en dashes,
 ASCII arrows, quotes, and comparison operators. Table and axis names are English
-because they are RomRaider interface strings and the definition is used outside this
+because they are editor interface strings and the definitions are used outside this
 project.
 
 ## 10. Build backlog

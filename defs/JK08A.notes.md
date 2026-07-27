@@ -1,7 +1,7 @@
 
 # JK08A - definition annotation log
 
-RE log for working definition `JK08A.xml` for the project's own dump
+RE log for working definitions `JK08A.xml` and `JK08A.xdf` for the project's own dump
 `rom-images/23710-JK08A/1JK08A-20260726-stock.bin`
 (Nissan Skyline V36 250GT, VQ25HR, 23710-JK08A, SH7058 / 1 MiB, JDM).
 SHA-256 `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`.
@@ -77,13 +77,13 @@ provenance and are not paths in the current `JK08A` layer.
   `JK08A.findings.csv`, axis findings in `JK08A.axes.csv`, and `load_maps.py` loads
   them into the graph. Open work consists of rows at `candidate` confidence with empty
   semantics; the script prints the counters, so this log does not duplicate them.
-- Definition `JK08A.xml` is also a graph projection (`tools/mapkit/emit_def.py` plus
-  presentation layer `JK08A.overrides.toml`: names, categories, ordering, and editor
-  steps). It emits what can be interpreted: `table` role, semantics, and scale. Two
-  supporting axes are emitted separately. A map below `code` confidence goes into a
-  `(candidate)` category, while a scale below `code` confidence receives suffix
-  `[cand]` in its units; address and multiplier are separate claims. Manual XML edits
-  do not survive regeneration.
+- Definitions `JK08A.xml` and `JK08A.xdf` are graph projections from
+  `tools/mapkit/emit_def.py` plus presentation layer `JK08A.overrides.toml`: names,
+  categories, ordering, and editor steps. They emit what can be interpreted: `table`
+  role, semantics, and scale. Two supporting axes are emitted separately. A map below
+  `code` confidence goes into a `(candidate)` category, while a scale below `code`
+  confidence receives suffix `[cand]` in its units; address and multiplier are
+  separate claims. Manual XML or XDF edits do not survive regeneration.
 - Annotated at `code` confidence: `0xA29A` is a Fuel Compensation Map. Its unsigned
   byte is used in fuel calculation as a multiplicative correction; A2L defines scale
   `x*0.78125%` with neutral raw 128 = 100%. `0xB33A` is a control offset table with
@@ -1039,11 +1039,21 @@ Both controls must use the same state before saving. The operation suppresses DT
 publication but does not by itself prove that the physical monitor or sensor controller
 stops. Front A/F sensors are not part of the listed rear-O2/catalyst group.
 
+The TunerPro definition represents the logical record as one reversible `XDFPATCH`.
+Each ordinary record patch has a 12-byte descriptor entry and a two-byte attribute
+entry, so the editor applies both ranges as one operation. P1610 has only its
+descriptor entry. Six additional patches are generated from the registry `group`
+column: `catalyst`, `evap`, `manufacturer_specific`, `nats`, `rear_o2`, and
+`rear_o2_heater`. These patches contain 4, 26, 2, 1, 16, and 8 entries respectively,
+covering the same 57 mutable ranges as the 29 individual patches. No patch combines
+all DTC groups. Individual and group patches overlap by design and every entry carries
+the exact stock bytes as `basedata`.
+
 P1610 is at index 40: descriptor `0x19540` contains
 `0D 05 00 00 00 00 16 10 00 00 00 00`, and its associated attribute is at
 `0x160FE`. Its stock and disabled values are both `0000`, so P1610 suppression changes
 only the 12-byte descriptor. Generator `emit_def.py` emits only the P1610 descriptor
-switch.
+switch in RomRaider and only the descriptor entry in both TunerPro patch scopes.
 
 
 ## Candidate areas [CANDIDATE] - require confirmation from code

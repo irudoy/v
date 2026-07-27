@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# RomRaider definition generator (Stage 8, section 9 of tools/map-flag-pipeline.md):
+# Definition generator (Stage 8, section 9 of tools/map-flag-pipeline.md):
 # Memgraph (facts) + defs/<rom>.dtc.csv (DTC) + defs/<rom>.overrides.toml (presentation)
-# -> defs/<rom>.xml.
+# -> defs/<rom>.xml (RomRaider) + defs/<rom>.xdf (TunerPro).
 #
 # Source separation is the reason this step exists (P5). Declare each fact once: address,
 # shape, element, axes, scaling, and confidence live in the graph, populated by the resolver
@@ -29,7 +29,9 @@
 # and has no axis edges: width -> sizex, height -> sizey, and overrides define both static
 # axes.
 #
-# Invocation: uv run --no-project --with neo4j python tools/mapkit/emit_def.py [<rom>] [<out>]
+# Invocation:
+# uv run --no-project --with neo4j python tools/mapkit/emit_def.py \
+#   [<rom>] [<romraider-out>] [<tunerpro-out>]
 import csv
 import html
 import os
@@ -42,10 +44,10 @@ BOLT = "bolt://localhost:7687"
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFS = os.path.join(HERE, "..", "..", "defs")
 if __package__:
-    from . import rom as romkit
+    from . import rom as romkit, tunerpro
 else:
     sys.path.insert(0, os.path.dirname(HERE))
-    from mapkit import rom as romkit
+    from mapkit import rom as romkit, tunerpro
 
 LEVELS = ("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
 
@@ -88,7 +90,8 @@ def att(v):
 
 def hexa(a):
     """Convert a graph address (eight hexadecimal digits) to RomRaider form."""
-    return "0x" + a.upper().lstrip("0").rjust(5, "0")
+    text = f"{a:X}" if isinstance(a, int) else str(a).upper()
+    return "0x" + text.lstrip("0").rjust(5, "0")
 
 
 def comment(lines, indent=4):
@@ -203,13 +206,8 @@ def hex_bytes(data):
     return " ".join(f"{byte:02X}" for byte in data)
 
 
-def dtc_switches(rom, image=None, manifest_path=None):
-    """Build explicit descriptor and attribute switches for each DTC record.
-
-    The descriptor and attribute occupy independent ROM ranges, so each mutable range
-    is represented by its own native TableSwitch. The paired names keep both controls
-    adjacent in the common DTC category without exposing raw table cells.
-    """
+def dtc_records(rom, image=None, manifest_path=None):
+    """Load and validate code-level DTC records against the exact stock ROM."""
     manifest_path = manifest_path or os.path.join(DEFS, f"{rom}.dtc.csv")
     if not os.path.exists(manifest_path):
         return []
@@ -223,7 +221,7 @@ def dtc_switches(rom, image=None, manifest_path=None):
                      + ", ".join(missing))
         rows = list(reader)
 
-    entries = []
+    records = []
     for row_index, row in enumerate(rows, 2):
         if row["confidence"] != "code":
             continue
@@ -261,10 +259,40 @@ def dtc_switches(rom, image=None, manifest_path=None):
                      f"attribute at {attribute_addr:#x} does not match stock")
 
         note = row["note"].split(";", 1)[0].rstrip(".")
-        base_name = f"DTC {row['dtc']} [index {record_index}]"
+        records.append({
+            "index": record_index,
+            "dtc": row["dtc"],
+            "record_addr": record_addr,
+            "attribute_addr": attribute_addr,
+            "record": record,
+            "stock_attribute": stock_attribute,
+            "disabled_attribute": disabled_attribute,
+            "group": row["group"],
+            "note": note,
+        })
+    return records
+
+
+def dtc_switches(rom, image=None, manifest_path=None, records=None):
+    """Build explicit descriptor and attribute switches for each DTC record.
+
+    The descriptor and attribute occupy independent ROM ranges, so each mutable range
+    is represented by its own native TableSwitch. The paired names keep both controls
+    adjacent in the common DTC category without exposing raw table cells.
+    """
+    records = records if records is not None else dtc_records(
+        rom, image=image, manifest_path=manifest_path
+    )
+    entries = []
+    for record_info in records:
+        record_index = record_info["index"]
+        record = record_info["record"]
+        stock_attribute = record_info["stock_attribute"]
+        disabled_attribute = record_info["disabled_attribute"]
+        base_name = f"DTC {record_info['dtc']} [index {record_index}]"
         common_description = (
             f"Exact {rom} only. Internal DTC record {record_index} "
-            f"({row['group']}): {note}. "
+            f"({record_info['group']}): {record_info['note']}. "
         )
         paired_description = (
             "Set both the Descriptor and Attribute controls to the same state "
@@ -278,7 +306,7 @@ def dtc_switches(rom, image=None, manifest_path=None):
                 else f"{base_name} - Descriptor"
             ),
             "category": DTC_CATEGORY,
-            "storageaddress": hexa(row["record_addr"]),
+            "storageaddress": hexa(record_info["record_addr"]),
             "storagetype": "uint8",
             "sizey": str(DTC_RECORD_SIZE),
             "endian": "big",
@@ -288,7 +316,8 @@ def dtc_switches(rom, image=None, manifest_path=None):
                 + (paired_description
                    if has_attribute_switch
                    else
-                   f"The associated attribute at {hexa(row['attribute_addr'])} "
+                   f"The associated attribute at "
+                   f"{hexa(record_info['attribute_addr'])} "
                    "is already disabled in stock. ")
                 + "DTC suppression does not disable the physical monitor."
             ),
@@ -304,7 +333,7 @@ def dtc_switches(rom, image=None, manifest_path=None):
             entries.append({
                 "name": f"{base_name} - 2/2 Attribute",
                 "category": DTC_CATEGORY,
-                "storageaddress": hexa(row["attribute_addr"]),
+                "storageaddress": hexa(record_info["attribute_addr"]),
                 "storagetype": "uint8",
                 "sizey": str(DTC_ATTRIBUTE_SIZE),
                 "endian": "big",
@@ -586,7 +615,13 @@ def emittable(m, axes, ovr=None):
 
 def main():
     rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
-    out_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(DEFS, f"{rom}.xml")
+    romraider_path = (
+        sys.argv[2] if len(sys.argv) > 2 else os.path.join(DEFS, f"{rom}.xml")
+    )
+    tunerpro_path = (
+        sys.argv[3] if len(sys.argv) > 3
+        else os.path.splitext(romraider_path)[0] + ".xdf"
+    )
     ovr_path = os.path.join(DEFS, f"{rom}.overrides.toml")
     if not os.path.exists(ovr_path):
         sys.exit(f"presentation layer not found: {ovr_path}")
@@ -636,14 +671,17 @@ def main():
     view_entries, views_by_source = masked_views(
         ovr, {m["addr"]: m for m in emit}
     )
-    switches = ovr.get("switch", [])
-    if isinstance(switches, dict):
-        switches = [switches]
-    if not isinstance(switches, list):
+    native_switches = ovr.get("switch", [])
+    if isinstance(native_switches, dict):
+        native_switches = [native_switches]
+    if not isinstance(native_switches, list):
         sys.exit(f"{os.path.basename(ovr_path)}: switch must be a table "
                  "or an array of tables")
-    switches = list(switches)
-    dtc_entries = dtc_switches(rom)
+    native_switches = list(native_switches)
+    image = romkit.load(rom)
+    records = dtc_records(rom, image=image)
+    dtc_entries = dtc_switches(rom, records=records)
+    switches = list(native_switches)
     switches += dtc_entries
 
     body = []
@@ -718,13 +756,36 @@ def main():
 
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n' + "\n".join(head + body).rstrip()
            + "\n  </rom>\n</roms>\n")
-    with open(out_path, "w") as f:
+    with open(romraider_path, "w") as f:
         f.write(xml)
 
-    print(f"{os.path.relpath(out_path)}: {len(emit)} calibration tables, "
+    xdf, xdf_stats = tunerpro.render(
+        rom,
+        image,
+        emit,
+        axes,
+        ovr,
+        views_by_source,
+        records,
+        native_switches,
+    )
+    with open(tunerpro_path, "w") as f:
+        f.write(xdf)
+
+    print(f"{os.path.relpath(romraider_path)}: {len(emit)} calibration tables, "
           f"{len(dtc_entries)} DTC switches, "
           f"{len(view_entries)} masked views, {len(ovr.get('axisview', {}))} reference axes, "
           f"{len(switches)} switches")
+    print(
+        f"{os.path.relpath(tunerpro_path)}: "
+        f"{xdf_stats['calibration_tables']} calibration tables, "
+        f"{xdf_stats['masked_views']} masked views, "
+        f"{xdf_stats['axis_views']} reference axes, "
+        f"{xdf_stats['individual_dtc_patches']} individual DTC patches, "
+        f"{xdf_stats['group_dtc_patches']} group DTC patches "
+        f"({xdf_stats['group_dtc_ranges']} group ranges), "
+        f"{xdf_stats['other_patches']} other patches"
+    )
     lvl = {}
     for m in emit:
         lvl[m["confidence"]] = lvl.get(m["confidence"], 0) + 1

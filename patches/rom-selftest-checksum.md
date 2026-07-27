@@ -66,6 +66,13 @@ The native RomRaider handlers reproduce the layout in this order:
 The B fields are part of domain A, so the reverse order is incorrect.
 `defs/JK08A.xml` contains the handlers in `alt` -> `alt2` order.
 
+## TunerPro
+
+`defs/JK08A.xdf` intentionally contains no `XDFCHECKSUM`. The TunerPro artifact
+defines calibration tables and reversible patches only. Checksum correction is
+performed by the flashing workflow, so editor-side recalculation is not part of
+the XDF contract.
+
 ## Verified stock values
 
 | ROM | SUM16 A | SUM16 B | A XOR | A SUM | B SUM | B XOR |
