@@ -1,0 +1,32 @@
+{
+  "schema": "vq-hr-ecu-pin-tracer/v1",
+  "exportedAt": "2026-07-28T00:00:00.000Z",
+  "preferences": {
+    "advancedPins": true,
+    "showSavedLines": true
+  },
+  "connections": [
+    {
+      "id": "fixture-ignition",
+      "ecuPin": 20,
+      "mcuPin": 1,
+      "status": "confirmed",
+      "topology": "ignition",
+      "route": "ECM terminal 20 -> gate driver -> ignition transistor -> MCU pin 1",
+      "comment": "Fixture ignition route",
+      "createdAt": "2026-07-28T00:00:00.000Z",
+      "updatedAt": "2026-07-28T00:00:00.000Z"
+    },
+    {
+      "id": "fixture-injector",
+      "ecuPin": 89,
+      "mcuPin": 195,
+      "status": "traced",
+      "topology": "injector",
+      "route": "ECM terminal 89 -> injector driver -> MCU pin 195",
+      "comment": "Fixture injector route",
+      "createdAt": "2026-07-28T00:00:00.000Z",
+      "updatedAt": "2026-07-28T00:00:00.000Z"
+    }
+  ]
+}

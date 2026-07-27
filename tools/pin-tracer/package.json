@@ -1,0 +1,7 @@
+{
+  "name": "vq-hr-ecu-pin-tracer",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.cjs"
+  }
+}
