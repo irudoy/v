@@ -46,13 +46,13 @@ class ExportValidationTest(unittest.TestCase):
     def test_dangling_call_is_rejected(self):
         exported = self.valid_exports()
         exported["calls.csv"][0]["dst"] = "00000030"
-        with self.assertRaisesRegex(ingest.IngestError, "отсутствует в funcs.csv"):
+        with self.assertRaisesRegex(ingest.IngestError, "absent from funcs.csv"):
             ingest.validate_exports(exported, Path("/export"))
 
     def test_dangling_xref_is_rejected(self):
         exported = self.valid_exports()
         exported["xrefs.csv"][0]["func_addr"] = "00000030"
-        with self.assertRaisesRegex(ingest.IngestError, "отсутствует в funcs.csv"):
+        with self.assertRaisesRegex(ingest.IngestError, "absent from funcs.csv"):
             ingest.validate_exports(exported, Path("/export"))
 
     def test_dry_run_command_uses_stable_uv_prefix(self):
@@ -71,14 +71,14 @@ class FakeTransaction:
 
 class SourceProjectionTest(unittest.TestCase):
     def test_catalog_gap_is_rejected_before_projection(self):
-        with self.assertRaisesRegex(load_code.LoadError, "пробелы каталога"):
+        with self.assertRaisesRegex(load_code.LoadError, "catalog gaps"):
             load_code.require_no_gaps(["Func:00000010.confidence from_map:00001000"])
 
     def test_missing_source_node_is_rejected(self):
         rows = [{
             "addr": "00000010", "scale_conf": "candidate", "scale_evidence": "",
         }]
-        with self.assertRaisesRegex(load_code.LoadError, "нет узлов"):
+        with self.assertRaisesRegex(load_code.LoadError, "missing nodes"):
             load_code.check_source_claim_properties(
                 FakeTransaction([]), "TEST", "Axis", rows
             )
@@ -136,7 +136,7 @@ class SourceEvidenceGateTest(unittest.TestCase):
             self.claims("Axis", self.axis_row(scale_conf="code"))
 
     def test_process_metadata_is_not_factual_evidence(self):
-        with self.assertRaisesRegex(load_code.LoadError, "без свидетельства"):
+        with self.assertRaisesRegex(load_code.LoadError, "without evidence"):
             self.claims(
                 "Map",
                 self.map_row(

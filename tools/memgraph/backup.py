@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Ежесуточное резервное копирование Memgraph на SMB NAS.
+"""Daily Memgraph backup to an SMB NAS.
 
-Скрипт не использует локальный промежуточный архив:
+The script does not use a local intermediate archive:
 
-1. проверяет 24-часовой интервал по локальному состоянию;
-2. монтирует SMB share через macOS Keychain, если она не подключена;
-3. создаёт native snapshot;
-4. передаёт DUMP DATABASE через gzip сразу на NAS;
-5. проверяет dump, считает узлы/рёбра/индексы и пишет manifest;
-6. публикует комплект атомарным rename внутри SMB share.
+1. checks the 24-hour interval against local state;
+2. mounts the SMB share through macOS Keychain if it is not connected;
+3. creates a native snapshot;
+4. streams DUMP DATABASE through gzip directly to the NAS;
+5. validates the dump, counts nodes/relationships/indexes, and writes a manifest;
+6. publishes the set with an atomic rename within the SMB share.
 
-Запуск:
+Invocation:
   python3 tools/memgraph/backup.py --status
   python3 tools/memgraph/backup.py --if-due
 """
@@ -100,17 +100,17 @@ def iso_utc(value: datetime) -> str:
 
 def parse_utc(value: str) -> datetime:
     if not isinstance(value, str):
-        raise ValueError("timestamp не является строкой")
+        raise ValueError("timestamp is not a string")
     parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     if parsed.tzinfo is None:
-        raise ValueError("timestamp не содержит timezone")
+        raise ValueError("timestamp does not contain a timezone")
     return parsed.astimezone(timezone.utc)
 
 
 def require_int(data, key, default=None):
     value = data.get(key, default)
     if isinstance(value, bool) or not isinstance(value, int):
-        raise BackupError(f"{key} должен быть целым числом")
+        raise BackupError(f"{key} must be an integer")
     return value
 
 
@@ -120,10 +120,10 @@ def load_config(path: Path) -> Config:
             data = tomllib.load(fh)
     except FileNotFoundError:
         raise BackupError(
-            f"нет локального конфига {path}; скопируйте backup.example.toml"
+            f"local configuration {path} not found; copy backup.example.toml"
         ) from None
     except tomllib.TOMLDecodeError as error:
-        raise BackupError(f"{path}: некорректный TOML: {error}") from error
+        raise BackupError(f"{path}: invalid TOML: {error}") from error
 
     allowed = {
         "smb_url",
@@ -136,25 +136,25 @@ def load_config(path: Path) -> Config:
     }
     unknown = sorted(set(data) - allowed)
     if unknown:
-        raise BackupError(f"{path}: неизвестные параметры: {', '.join(unknown)}")
+        raise BackupError(f"{path}: unknown parameters: {', '.join(unknown)}")
 
     required = ("smb_url", "mount_point", "backup_subdir")
     missing = [key for key in required if not isinstance(data.get(key), str)]
     if missing:
-        raise BackupError(f"{path}: нет строковых параметров: {', '.join(missing)}")
+        raise BackupError(f"{path}: missing string parameters: {', '.join(missing)}")
 
     smb_url = data["smb_url"]
     parsed_url = urlparse(smb_url)
     if parsed_url.scheme.lower() != "smb" or not parsed_url.hostname:
-        raise BackupError(f"{path}: smb_url должен иметь вид smb://server/share")
+        raise BackupError(f"{path}: smb_url must have the form smb://server/share")
     if not parsed_url.path.strip("/"):
-        raise BackupError(f"{path}: smb_url должен называть конкретную share")
+        raise BackupError(f"{path}: smb_url must identify a specific share")
     if any(char in smb_url for char in ('"', "\n", "\r")):
-        raise BackupError(f"{path}: smb_url содержит недопустимые символы")
+        raise BackupError(f"{path}: smb_url contains invalid characters")
 
     mount_point = Path(data["mount_point"])
     if not mount_point.is_absolute():
-        raise BackupError(f"{path}: mount_point должен быть абсолютным")
+        raise BackupError(f"{path}: mount_point must be absolute")
 
     backup_subdir = PurePosixPath(data["backup_subdir"])
     if (
@@ -164,7 +164,7 @@ def load_config(path: Path) -> Config:
         or ".." in backup_subdir.parts
     ):
         raise BackupError(
-            f"{path}: backup_subdir должен быть безопасным относительным путём"
+            f"{path}: backup_subdir must be a safe relative path"
         )
 
     minimum_interval_hours = require_int(
@@ -172,18 +172,18 @@ def load_config(path: Path) -> Config:
     )
     if minimum_interval_hours < MINIMUM_ALLOWED_INTERVAL_HOURS:
         raise BackupError(
-            "minimum_interval_hours не может быть меньше "
+            "minimum_interval_hours cannot be less than "
             f"{MINIMUM_ALLOWED_INTERVAL_HOURS}"
         )
 
     mount_timeout_seconds = require_int(data, "mount_timeout_seconds", 30)
     command_timeout_seconds = require_int(data, "command_timeout_seconds", 900)
     if mount_timeout_seconds <= 0 or command_timeout_seconds <= 0:
-        raise BackupError("timeout должен быть положительным")
+        raise BackupError("timeout must be positive")
 
     container_name = data.get("container_name", "vq-memgraph-mage")
     if not isinstance(container_name, str) or not container_name.strip():
-        raise BackupError("container_name должен быть непустой строкой")
+        raise BackupError("container_name must be a nonempty string")
 
     return Config(
         smb_url=smb_url,
@@ -202,7 +202,7 @@ def read_state(path: Path) -> BackupState | None:
     except FileNotFoundError:
         return None
     except (OSError, json.JSONDecodeError) as error:
-        raise BackupError(f"{path}: не читается локальное состояние: {error}") from error
+        raise BackupError(f"{path}: cannot read local state: {error}") from error
     try:
         return BackupState(
             created_at=parse_utc(data["created_at_utc"]),
@@ -210,7 +210,7 @@ def read_state(path: Path) -> BackupState | None:
             bundle=str(data["bundle"]),
         )
     except (KeyError, TypeError, ValueError) as error:
-        raise BackupError(f"{path}: некорректное локальное состояние: {error}") from error
+        raise BackupError(f"{path}: invalid local state: {error}") from error
 
 
 def write_json_atomic(path: Path, data) -> None:
@@ -237,13 +237,13 @@ def due_status(
     now: datetime,
 ):
     if state is None:
-        return True, "нет локального состояния", None
+        return True, "no local state", None
     if state.destination != str(destination):
-        return True, "назначение backup изменилось", None
+        return True, "backup destination changed", None
     next_due = state.created_at + timedelta(hours=minimum_interval_hours)
     if now >= next_due:
-        return True, "интервал истёк", next_due
-    return False, "интервал не истёк", next_due
+        return True, "interval elapsed", next_due
+    return False, "interval has not elapsed", next_due
 
 
 @contextmanager
@@ -252,7 +252,7 @@ def exclusive_lock(path: Path):
         try:
             fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            raise BackupError("другой процесс backup уже выполняется") from None
+            raise BackupError("another backup process is already running") from None
         yield
 
 
@@ -269,11 +269,11 @@ def run_capture(args, *, input_text=None, timeout=30, cwd=None):
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as error:
-        raise BackupError(f"команда не выполнена: {args[0]}: {error}") from error
+        raise BackupError(f"command failed to run: {args[0]}: {error}") from error
     if result.returncode:
-        detail = result.stderr.strip() or result.stdout.strip() or "нет диагностики"
+        detail = result.stderr.strip() or result.stdout.strip() or "no diagnostics"
         raise BackupError(
-            f"команда завершилась с кодом {result.returncode}: "
+            f"command exited with code {result.returncode}: "
             f"{' '.join(args)}: {detail}"
         )
     return result.stdout
@@ -307,7 +307,7 @@ def matching_mount_record(config: Config) -> str | None:
         or actual_share.casefold() != expected_share.casefold()
     ):
         raise BackupError(
-            f"{config.mount_point} занят другой SMB share: {record}"
+            f"{config.mount_point} is occupied by another SMB share: {record}"
         )
     return record
 
@@ -326,7 +326,7 @@ def ensure_smb_mount(config: Config) -> bool:
             return True
         time.sleep(0.5)
     raise BackupError(
-        f"SMB share {config.smb_url} не появилась в {config.mount_point}"
+        f"SMB share {config.smb_url} did not appear at {config.mount_point}"
     )
 
 
@@ -334,7 +334,7 @@ def require_smb_mount(config: Config) -> str:
     record = matching_mount_record(config)
     if not record:
         raise BackupError(
-            f"{config.mount_point} не является SMB mount; запись остановлена"
+            f"{config.mount_point} is not an SMB mount; write stopped"
         )
     return record
 
@@ -356,7 +356,7 @@ def container_image(config: Config) -> str:
         timeout=30,
     ).strip()
     if running != "true":
-        raise BackupError(f"контейнер {config.container_name} не запущен")
+        raise BackupError(f"container {config.container_name} is not running")
     return run_capture(
         ["docker", "inspect", "--format={{.Config.Image}}", config.container_name],
         timeout=30,
@@ -383,26 +383,26 @@ def parse_snapshot_output(
         reader = csv.DictReader(io.StringIO(output))
         required = {"path", "timestamp", "creation_time"}
         if reader.fieldnames is None or not required.issubset(reader.fieldnames):
-            raise ValueError(f"заголовок {reader.fieldnames}, ожидается {sorted(required)}")
+            raise ValueError(f"header {reader.fieldnames}; expected {sorted(required)}")
         rows = list(reader)
         row = max(rows, key=lambda item: int(item["timestamp"]))
         container_path = row["path"].strip('"')
         timestamp = int(row["timestamp"])
         creation_time = row["creation_time"].strip('"')
     except (KeyError, TypeError, ValueError) as error:
-        raise BackupError(f"SHOW SNAPSHOTS вернул неожиданный ответ: {error}") from error
+        raise BackupError(f"SHOW SNAPSHOTS returned an unexpected response: {error}") from error
     if not container_path:
-        raise BackupError("SHOW SNAPSHOTS вернул пустой путь")
+        raise BackupError("SHOW SNAPSHOTS returned an empty path")
     host_path = snapshot_dir / Path(container_path).name
     if not host_path.is_file():
-        raise BackupError(f"snapshot отсутствует в bind-mount: {host_path}")
+        raise BackupError(f"snapshot is absent from the bind mount: {host_path}")
     return Snapshot(host_path, container_path, timestamp, creation_time)
 
 
 def stream_dump(config: Config, destination: Path) -> None:
     gzip_bin = shutil.which("gzip")
     if not gzip_bin:
-        raise BackupError("gzip отсутствует в PATH")
+        raise BackupError("gzip is absent from PATH")
     command = [
         "docker", "exec", "-i", config.container_name,
         "mgconsole", "--output_format=cypherl", "--no_history",
@@ -436,18 +436,18 @@ def stream_dump(config: Config, destination: Path) -> None:
                 compressor.kill()
                 database.wait()
                 compressor.wait()
-                raise BackupError("DUMP DATABASE превысил timeout") from error
+                raise BackupError("DUMP DATABASE exceeded the timeout") from error
     except OSError as error:
-        raise BackupError(f"не удалось записать {destination}: {error}") from error
+        raise BackupError(f"failed to write {destination}: {error}") from error
 
     if database.returncode:
         detail = database_error.decode("utf-8", errors="replace").strip()
         raise BackupError(
-            f"DUMP DATABASE завершился с кодом {database.returncode}: {detail}"
+            f"DUMP DATABASE exited with code {database.returncode}: {detail}"
         )
     if compressor.returncode:
         detail = gzip_error.decode("utf-8", errors="replace").strip()
-        raise BackupError(f"gzip завершился с кодом {compressor.returncode}: {detail}")
+        raise BackupError(f"gzip exited with code {compressor.returncode}: {detail}")
 
 
 def inspect_dump(path: Path) -> DumpStats:
@@ -474,13 +474,13 @@ def inspect_dump(path: Path) -> DumpStats:
                 elif line.startswith(b"MATCH (u) REMOVE u:__mg_vertex__"):
                     cleanup = True
     except (OSError, EOFError, gzip.BadGzipFile) as error:
-        raise BackupError(f"{path}: повреждён gzip: {error}") from error
+        raise BackupError(f"{path}: corrupt gzip: {error}") from error
     if nodes <= 0:
-        raise BackupError(f"{path}: dump не содержит узлов")
+        raise BackupError(f"{path}: dump contains no nodes")
     if relationships <= 0:
-        raise BackupError(f"{path}: dump не содержит рёбер")
+        raise BackupError(f"{path}: dump contains no relationships")
     if not cleanup or not drop_temporary_index:
-        raise BackupError(f"{path}: dump не содержит финальную очистку служебных данных")
+        raise BackupError(f"{path}: dump lacks final cleanup of temporary data")
     return DumpStats(lines, nodes, relationships, indexes, uncompressed_bytes)
 
 
@@ -515,7 +515,7 @@ def latest_remote_state(destination: Path) -> BackupState | None:
     try:
         children = list(destination.iterdir())
     except OSError as error:
-        raise BackupError(f"не читается {destination}: {error}") from error
+        raise BackupError(f"cannot read {destination}: {error}") from error
     for child in children:
         if not child.is_dir() or child.name.startswith("."):
             continue
@@ -559,9 +559,9 @@ def create_bundle(config: Config, created_at: datetime) -> BackupState:
     final = destination / name
     partial = destination / f".{name}.partial-{os.getpid()}"
     if final.exists():
-        raise BackupError(f"комплект уже существует: {final}")
+        raise BackupError(f"backup set already exists: {final}")
     if partial.exists():
-        raise BackupError(f"временный комплект уже существует: {partial}")
+        raise BackupError(f"temporary backup set already exists: {partial}")
 
     partial.mkdir()
     try:
@@ -582,7 +582,7 @@ def create_bundle(config: Config, created_at: datetime) -> BackupState:
         copied_snapshot_hash = sha256(snapshot_path)
         if source_snapshot_hash != copied_snapshot_hash:
             raise BackupError(
-                f"SHA-256 snapshot не совпал после копирования: {snapshot_path}"
+                f"snapshot SHA-256 does not match after copying: {snapshot_path}"
             )
 
         files = {
@@ -701,12 +701,12 @@ def parser():
     mode.add_argument(
         "--status",
         action="store_true",
-        help="проверить локальный 24-часовой интервал без подключения NAS",
+        help="check the local 24-hour interval without connecting the NAS",
     )
     mode.add_argument(
         "--if-due",
         action="store_true",
-        help="создать backup, только если интервал истёк",
+        help="create a backup only when the interval has elapsed",
     )
     out.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     out.add_argument("--state-file", type=Path, default=DEFAULT_STATE)

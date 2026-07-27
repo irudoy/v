@@ -1,21 +1,21 @@
-# ── macOS / редакторы ──────────────────────────────────────────
+# macOS / editors
 .DS_Store
 *.swp
 *~
 
-# ── Временное / scratch ────────────────────────────────────────
+# Temporary / scratch
 scratch/
 tmp/
 *.tmp
 *.log
 
 # ── Python ─────────────────────────────────────────────────────
-# Байткод-кэш интерпретатора; пересоздаётся импортом.
+# Interpreter bytecode cache; recreated on import.
 __pycache__/
 
 # ── Project-scoped Claude definitions ───────────────────────────
-# Глобальный excludesfile скрывает .claude/*; эти definitions являются частью
-# воспроизводимого A/B execution contract и версионируются в проекте.
+# The global excludesfile hides .claude/*; these definitions are part of the
+# reproducible A/B execution contract and are versioned in the project.
 !.claude/
 !.claude/agents/
 .claude/agents/*
@@ -26,19 +26,19 @@ __pycache__/
 !.claude/workflows/vq-caller-run.js
 !.claude/workflows/vq-caller-score.js
 
-# ── Регенерируемые кэши RE-инструментов ────────────────────────
-# Крупные рабочие данные, восстанавливаются из исходников, в git не
-# версионируются: рабочие БД Ghidra (raw-образ переанализируется) и
-# персистентные данные графа Memgraph (перезаливаются из CSV-экспортов Ghidra).
+# Regenerable reverse-engineering tool caches
+# Large working data can be recreated from source and is not versioned:
+# Ghidra project databases (the raw image is reanalyzed) and persistent Memgraph
+# data (reloaded from Ghidra CSV exports).
 *.rep/
 *.gpr.lock
 ghidra_projects/
 tools/memgraph/data/
 
-# Локальное назначение и состояние резервного копирования Memgraph.
+# Local Memgraph backup destination and state.
 tools/memgraph/backup.local.toml
 tools/memgraph/backup.state.json
 tools/memgraph/backup.lock
 
-# Контентные артефакты (ROM-дампы, даташиты/PDF, дефы, зеркала wiki,
-# дизасм-экспорты) версионируются в git – правил игнора для них нет.
+# Content artifacts (ROM dumps, datasheets/PDFs, definitions, wiki mirrors, and
+# disassembly exports) are versioned and therefore have no ignore rules.

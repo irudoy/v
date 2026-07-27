@@ -1,52 +1,57 @@
 #!/usr/bin/env python3
-# Загрузка каталога A2L (Stage 5, разделы 5 и 7 tools/map-flag-pipeline.md) в Memgraph:
-# узлы :A2LEntry - rom-независимый эталон семейства HR (P7).
+# Load the A2L catalog (Stage 5, sections 5 and 7 of tools/map-flag-pipeline.md) into
+# Memgraph. :A2LEntry nodes are the ROM-independent reference for the HR family (P7).
 #
-# Источник - defs/reference/Pytrex-NissanDefinitions/Nissan Definitions/A2L.xml, базовый деф
-# RomRaider: имена, категории, геометрия, scaling, описания. Адресов в нём нет вовсе - их
-# дают ROM-дефы, наследующие этот base. Требование "адреса не переносятся" (layout JDM 2.5L
-# != USDM 3.5L) поэтому структурное: переносить нечего, каталог задаёт классы, не размещение.
+# Source: defs/reference/Pytrex-NissanDefinitions/Nissan Definitions/A2L.xml, the base
+# RomRaider definition containing names, categories, geometry, scaling, and descriptions.
+# It has no addresses; ROM definitions inheriting this base provide them. The rule that
+# addresses do not transfer (JDM 2.5L layout != USDM 3.5L layout) is therefore structural:
+# nothing can be transferred because the catalog defines classes rather than placement.
 #
-# Ловушка нотации RomRaider: type="2D" - таблица с ОДНОЙ осью, "3D" - с двумя, "1D" - скаляр
-# без осей. В графе dims - число осей (:Map, load_maps.py), поэтому нотация нормализуется:
-# 2D -> dims=1, 3D -> dims=2, 1D -> dims=0. Без нормализации join по dims сошёлся бы на
-# "2D"=2 и молча смэтчил каждую запись не с тем классом карт.
+# RomRaider notation trap: type="2D" means a table with ONE axis, "3D" means two axes,
+# and "1D" means a scalar without axes. In the graph, dims is the number of axes
+# (:Map, load_maps.py), so normalize the notation: 2D -> dims=1, 3D -> dims=2,
+# 1D -> dims=0. Without normalization, a join on dims would treat "2D" as two and silently
+# match every entry to the wrong map class.
 #
-# shape пишется словарём журнала разметки (defs/JK08A.maps.csv, колонка dim): 3D 16x16 ->
-# "16x16", 2D sizex=8 -> "1D-8". Обёртка задаёт геометрию карты однозначно (у всех 36
-# обёрток журнала dim однороден), поэтому общий словарь делает будущий матч прямым join'ом
-# строк, а не сверкой двух нотаций.
+# shape uses the annotation-ledger vocabulary (defs/JK08A.maps.csv, dim column):
+# 3D 16x16 -> "16x16", 2D sizex=8 -> "1D-8". A wrapper determines map geometry
+# unambiguously (all 36 ledger wrappers have uniform dimensions), so the shared vocabulary
+# makes future matching a direct string join rather than a comparison of two notations.
 #
-# Рёбра :MATCHES здесь не строятся. Ключи матча по разделу 7 - (dims, scale-family, axis
-# semantics); на стороне :Map из них есть только dims, а scale_expr и семантика осей
-# появляются в Stage 4 (геометрия и чтение осей). Матч по одному dims свёл бы 37 записей "3D"
-# с каждой картой dims=2 - это шум, а не подсказка, и ровно тот отказ, против которого стоит
-# P6 ("pattern != семантика"). Загрузчик ставит эталон в граф; ребро строит Stage 5 после
-# Stage 4.
+# This loader does not create :MATCHES relationships. Section 7 match keys are
+# (dims, scale family, axis semantics). On the :Map side only dims exists at this point;
+# scale_expr and axis semantics appear in Stage 4 (geometry and axis interpretation).
+# Matching only on dims would connect all 37 "3D" entries to every dims=2 map, producing
+# noise rather than a clue and exactly the failure P6 prevents ("pattern != semantics").
+# The loader places the reference in the graph; Stage 5 creates relationships after Stage 4.
 #
-# Биты switch'ей лежат списком на узле записи: единица идентичности каталога - переключатель
-# (байт/dword по одному адресу), бит - поле внутри него. Гранулярность :Flag {addr,bit} - за
-# Stage 6; расщеплять каталог по битам до его модели матча преждевременно.
+# Switch bits remain a list on the entry node. The catalog's unit of identity is a switch
+# (one byte/dword at one address), while a bit is a field within it. Stage 6 owns
+# :Flag {addr,bit} granularity; splitting catalog entries by bit before its matching model
+# exists would be premature.
 #
-# Колонка concept - курируемая разметка идентичности, ключ джойна с вендорским каталогом
-# (:VendorEntry, refs/vendor/catalog.csv): записи с одним значением описывают одну сущность.
-# Все три словаря зовут её по-разному (`K-Value` против `BFS Multiplier (K-Factor)` против
-# `K - Fuel Multiplier`), поэтому джойн по имени не сошёлся бы вовсе, а джойн по похожести имён
-# сводил бы разное. Пустой concept означает "связка не установлена", а не "связки нет".
+# The concept column is a curated identity annotation and a join key to the vendor catalog
+# (:VendorEntry, refs/vendor/catalog.csv). Entries sharing a value describe one entity.
+# All three vocabularies name it differently (`K-Value` versus `BFS Multiplier (K-Factor)`
+# versus `K - Fuel Multiplier`), so an exact name join would fail entirely while fuzzy name
+# matching would merge different entities. An empty concept means "link not established",
+# not "no link exists".
 #
-# Основание связки - description и геометрия записи против прозы вендоров, не близость имён.
-# Прецедент отказа: A2L 'MAF Voltage Lower Limit' по имени садится на 'MAF Voltage Min Allowed'
-# EcuTek, но описания противоречат (у A2L порог поднимает P0102, EcuTek пишет "DTC не
-# выставляется"), поэтому связка не проставлена - разбор в refs/vendor/facts.csv.
+# A link is based on entry description and geometry compared with vendor prose, not name
+# similarity. Rejection precedent: by name, A2L 'MAF Voltage Lower Limit' matches EcuTek
+# 'MAF Voltage Min Allowed', but their descriptions conflict. A2L says the threshold raises
+# P0102, while EcuTek says no DTC is set. Therefore no link is assigned; see the analysis in
+# refs/vendor/facts.csv.
 #
-# Словарь concept'ов задаёт вендорский каталог. Значение, которого там нет, джойнится в пустоту,
-# и разметка молча осталась бы мёртвой - поэтому и словарь, и имена проверяются до загрузки.
+# The vendor catalog defines the concept vocabulary. A value absent there joins to nothing
+# and silently leaves dead annotation, so validate both vocabulary and names before loading.
 #
-# Разметка ставится только на карты и скаляры. Флаги (Options//Flags, DTC, Supmask) размечает
-# Stage 6 по своей модели: у вендоров они не карты, а биты внутри переключателя.
+# Annotate only maps and scalars. Stage 6 handles flags (Options//Flags, DTC, Supmask) under
+# its own model: vendors represent them as bits within a switch rather than maps.
 #
-# Запуск: uv run --no-project --with neo4j python tools/memgraph/load_a2l.py [a2l_xml] [family]
-# По умолчанию xml = defs/reference/.../A2L.xml, family = HR.
+# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_a2l.py [a2l_xml] [family]
+# Defaults: xml = defs/reference/.../A2L.xml, family = HR.
 import csv
 import os
 import re
@@ -70,7 +75,7 @@ DEFAULT_XML = os.path.join(
 
 CATALOG = os.path.join(ROOT, "refs", "vendor", "catalog.csv")
 
-# type RomRaider -> (kind, dims). dims - число осей, не имя нотации.
+# RomRaider type -> (kind, dims). dims is the axis count, not the notation label.
 KIND = {
     "3D": ("map", 2),
     "2D": ("map", 1),
@@ -81,93 +86,98 @@ KIND = {
 # "Axis RPM (x*50)" -> ("RPM", "x*50"); "- (x)" -> ("-", "x").
 SCALE_RE = re.compile(r"^\s*(.*?)\s*\(([^)]*)\)\s*$")
 
-# --- concept: точное имя A2L -> сущность вендорского каталога ---
-# Гранулярность concept'а задана каталогом: это семейство калибровки, а не одна таблица. У
-# `vvel-duration` семь записей ProECU (Cold, Main, Overrun, WOT...), у `idle-ignition` девять,
-# поэтому варианты одной функции (Cold/High Detonation/High Octane, Trustful) делят concept.
+# --- concept: exact A2L name -> vendor-catalog entity ---
+# Catalog granularity defines a concept as a calibration family rather than one table.
+# `vvel-duration` has seven ProECU entries (Cold, Main, Overrun, WOT...), while
+# `idle-ignition` has nine. Variants of one function (Cold/High Detonation/High Octane,
+# Trustful) therefore share a concept.
 A2L_CONCEPT = {
-    # Тракт MAF -> BFS -> нагрузка. Описания A2L называют связку прямо: 'MAF Factor' - "what
-    # Nissan uses to scale MAF from factory", 'Load Base Fuel Schedule Table' - "The 100% BFS
-    # value... used to calculate Calculated Load", 'Cylinder Filling Up Efficiency Scaler' -
+    # MAF -> BFS -> load path. A2L descriptions state the relationship directly:
+    # 'MAF Factor' is "what Nissan uses to scale MAF from factory",
+    # 'Load Base Fuel Schedule Table' is "The 100% BFS value... used to calculate
+    # Calculated Load", and 'Cylinder Filling Up Efficiency Scaler' is
     # "BFS at which maximum airflow occurs".
     'MAF Table': 'maf-curve',
     'MAF Factor': 'maf-gps-scalar',
     'K-Value': 'bfs-multiplier',
     'Load Base Fuel Schedule Table': 'load-100pct',
     'Cylinder Filling Up Efficiency Scaler': 'load-point-scaler',
-    # Цель AFR. EcuTek держит заводскую карту 8x8, и обе геометрии A2L лежат рядом.
+    # AFR target. EcuTek retains the stock 8x8 map, and both A2L geometries belong together.
     'Target AFR Map (16x16)': 'fuel-target',
     'Target AFR Map (8x8)': 'fuel-target',
     'Target AFR Table (High Detonation)': 'fuel-target',
-    # Топливные поправки. У 'Fuel Compensation Map' оси QH0 Flow Quantity x Engine Speed - те же,
-    # что UpRev называет Volumetric Flow Ratio x RPM у 'Fuel Compensation Main'; обе правят BFS.
-    # Пара KHOT - высокотемпературное обогащение, оно же 'Fuel Enrichment - Hot' у EcuTek.
+    # Fuel corrections. 'Fuel Compensation Map' axes QH0 Flow Quantity x Engine Speed match
+    # what UpRev calls Volumetric Flow Ratio x RPM for 'Fuel Compensation Main'; both adjust
+    # BFS. The KHOT pair is high-temperature enrichment, also called
+    # 'Fuel Enrichment - Hot' by EcuTek.
     'Fuel Compensation Map (16x16)': 'fuel-comp',
     'High Coolant Temperature Increase Compensation Table': 'fuel-comp',
     'High Temperature Fuel Compensation Map': 'fuel-comp',
     'Individual Cylinder Fuel Trims': 'cylinder-trim',
-    # Форсунки. Пара latency - это прямая UpRev y = m * X + B: 'at 14V' даёт B, 'Adder' - наклон.
+    # Injectors. The latency pair directly implements UpRev y = m * X + B:
+    # 'at 14V' supplies B and 'Adder' supplies the slope.
     'Fuel Injector Latency at 14V': 'injector-latency',
     'Fuel Injector Latency Adder': 'injector-latency',
     'Minimum Injector Pulse Width': 'injector-minimum',
-    # Пуск: ось - температура охлаждающей жидкости, значение - ширина импульса (BFS в мс), как у
-    # 'Cranking Enrichment Initial Value' UpRev.
+    # Cranking: the axis is coolant temperature and the value is pulse width (BFS in ms),
+    # matching UpRev 'Cranking Enrichment Initial Value'.
     'Cranking Base Fuel Schedule Table': 'cranking-initial',
-    # Отсечка на сбросе, а не ограничитель оборотов: "fuel cut will occur (on decel) until the
-    # RPM's hit the recover speed". Комплекта два по линейкам ЭБУ (Bosch, JECS/Hitachi), и это
-    # ровно четыре карты EcuTek: Overrun Fuel Cut #1, #1 Restore, #2, #2 Restore.
+    # Deceleration cut rather than a rev limiter: "fuel cut will occur (on decel) until the
+    # RPM's hit the recover speed". Two sets exist for ECU lines (Bosch and JECS/Hitachi),
+    # matching exactly four EcuTek maps: Overrun Fuel Cut #1, #1 Restore, #2, and #2 Restore.
     'Bosch Fuel Cut Table': 'overrun-fuel-cut',
     'Bosch Fuel Restore Table': 'overrun-fuel-cut',
     'JECS Fuel Cut Table': 'overrun-fuel-cut',
     'JECS Fuel Restore Table': 'overrun-fuel-cut',
-    # Ограничители оборотов и скорости. Одна карта 2x2 A2L несёт и отсечку, и восстановление
-    # (ось Fuel = Cut/Restore), тогда как EcuTek показывает их двумя картами; concept ставится по
-    # имени записи, разбор осей - в facts.csv.
+    # Rev and speed limiters. One A2L 2x2 map contains both cut and restore
+    # (Fuel axis = Cut/Restore), while EcuTek displays them as two maps. Assign the concept
+    # from the entry name; facts.csv contains the axis analysis.
     'Rev Limit (Fuel Cut - 3D)': 'rev-limit-fuel',
     'Throttle Rev Limiter': 'rev-limit-throttle',
     'Speed Limiter': 'speed-limit',
     'Speed Limiter (Fuel Cut)': 'speed-limit',
     'Speed Limiter (Fuel Restore)': 'speed-limit',
-    # Зажигание: три карты поправки к расчётному MBT ("this trimming map value is added/
-    # subtracted from that value") - ровно три таблицы UpRev (Main, High Det, Cold). Базовой
-    # таблицы угла в ЭБУ нет: MBT считается формулой.
+    # Ignition: three correction maps for calculated MBT ("this trimming map value is added/
+    # subtracted from that value") match the three UpRev tables (Main, High Det, Cold).
+    # The ECU has no base timing table because a formula calculates MBT.
     'Cold Ignition Timing Map (16x16)': 'ignition-trim',
     'High Detonation Ignition Timing Map (16x16)': 'ignition-trim',
     'High Octane Ignition Timing Map (16x16)': 'ignition-trim',
-    # Окна детонации парны картам поправки один к одному - так же, как у EcuTek 'Knock Control
-    # Enable A1' пять карт по числу вариантов 'Mode A1 Adj'.
+    # Knock windows pair one-to-one with correction maps, as EcuTek has five
+    # 'Knock Control Enable A1' maps matching the five 'Mode A1 Adj' variants.
     'Cold Ignition Timing Map Knock Window': 'knock-enable',
     'High Detonation Ignition Timing Map Knock Window': 'knock-enable',
     'High Octane Ignition Timing Map Knock Window': 'knock-enable',
-    # Пороги детонации: 16x6, ось Y - номер цилиндра. EcuTek описывает ту же карту, отмечая
-    # завышенные пороги средних цилиндров 3 и 4.
+    # Knock thresholds: 16x6 with cylinder number on the Y axis. EcuTek describes the same
+    # map and notes elevated thresholds for middle cylinders 3 and 4.
     'Knock Slice Map': 'knock-threshold',
-    # Холостой ход: угол на холостом и сбросе мимо расчётного MBT (GOV-таблицы).
+    # Idle: timing at idle and overrun outside calculated MBT (GOV tables).
     'Idle Ignition Timing Table': 'idle-ignition',
     'Cold Idle Ignition Timing Table': 'idle-ignition',
     'Lean Burn Idle Ignition Timing Table': 'idle-ignition',
-    # VTC - угол впускного распредвала. Карта High Detonation ("only used when knock is
-    # detected") независимо подтверждает разбор суффикса ETD в дереве ProECU. Exhaust Cam Timing
-    # не размечен: у вендоров ответной сущности нет.
+    # VTC is intake camshaft angle. The High Detonation map ("only used when knock is
+    # detected") independently confirms the ETD suffix interpretation in the ProECU tree.
+    # Exhaust Cam Timing is not annotated because the vendor catalog has no counterpart.
     'Intake Cam Timing Map (16x16)': 'vtc-advance',
     'Cold Intake Cam Timing Map (8x8)': 'vtc-advance',
     'High Detonation Intake Cam Timing Map (4x4)': 'vtc-advance',
-    # Педаль -> запрос расхода -> запрошенный момент -> открытие дросселя. Пара Lo/Hi плюс пара
-    # контрольных копий - те же четыре записи, что 'Accel to Throttle Hi/Lo' (+Trustful) EcuTek.
+    # Pedal -> requested flow -> requested torque -> throttle opening. The Lo/Hi pair plus
+    # the pair of verification copies match the four EcuTek
+    # 'Accel to Throttle Hi/Lo' (+Trustful) entries.
     'Throttle Flow Potential Table': 'accel-throttle',
     'Throttle Flow Potential Table (High Flow-Quantity)': 'accel-throttle',
     'Throttle Flow Potential Table Trustful': 'accel-throttle',
     'Throttle Flow Potential Table (High Flow-Quantity) Trustful': 'accel-throttle',
     'QH0/ Torque Conversion Map': 'torque-demand',
     'QH0/ Torque Conversion Map Trustful': 'torque-demand',
-    # Момент для TCM (давление в линии), он же 'Estimated Torque Delivered' UpRev: та же шкала
-    # момента, что у карты запроса, ось нагрузки - наполнение цилиндра вместо BFS.
+    # Torque for TCM line pressure, also UpRev 'Estimated Torque Delivered': the same torque
+    # scale as the request map, with cylinder filling rather than BFS as the load axis.
     'Engine Torque Map': 'torque-actual',
 }
 
 
 def parse_scaling(el):
-    """Единица (scale-family матча) и точное выражение из scaling base."""
+    """Return the unit (match scale family) and exact expression from the scaling base."""
     if el is None:
         return "", ""
     sc = el.find("scaling")
@@ -179,12 +189,12 @@ def parse_scaling(el):
         return base, ""
     unit, expr = m.group(1).strip(), m.group(2).strip()
     if unit.startswith("Axis "):
-        unit = unit[5:]           # "Axis RPM" и "RPM" - одна семья: ось и значение
+        unit = unit[5:]           # "Axis RPM" and "RPM" are one family: axis and value
     return unit, expr
 
 
 def shape_of(kind, dims, sx, sy):
-    """Геометрия словарём журнала разметки: 16x16, 8x8, 1D-8, 1D-16."""
+    """Express geometry in the annotation-ledger vocabulary: 16x16, 8x8, 1D-8, 1D-16."""
     if kind != "map":
         return ""
     if dims == 2:
@@ -193,7 +203,7 @@ def shape_of(kind, dims, sx, sy):
 
 
 def axis_of(t, want):
-    """Ось таблицы: 'X Axis' и 'Static X Axis' - одна роль, статика лишь держит точки в дефе."""
+    """Read a table axis; 'X Axis' and 'Static X Axis' share one role."""
     for a in t.findall("table"):
         typ = (a.get("type") or "").replace("Static ", "")
         if typ == want:
@@ -246,19 +256,19 @@ def build(path, family):
 
 
 def vocabulary():
-    """Словарь concept'ов задаёт вендорский каталог: A2L джойнится только к нему."""
+    """Return the concept vocabulary defined by the vendor catalog."""
     with open(CATALOG, newline="", encoding="utf-8") as f:
         return {r["concept"] for r in csv.DictReader(f) if r["concept"]}
 
 
 def check(entries):
-    """Мёртвая разметка в графе неотличима от непроставленной, поэтому ловится до загрузки."""
+    """Reject dead annotations before loading because the graph cannot distinguish them from omissions."""
     stale = sorted(set(A2L_CONCEPT) - {e["name"] for e in entries})
     if stale:
-        sys.exit(f"concept ссылается на имена, которых нет в A2L: {stale}")
+        sys.exit(f"concept references names absent from A2L: {stale}")
     unknown = sorted(set(A2L_CONCEPT.values()) - vocabulary())
     if unknown:
-        sys.exit(f"concept'ов нет в вендорском каталоге, джойн уйдёт в пустоту: {unknown}")
+        sys.exit(f"concepts are absent from the vendor catalog and would join to nothing: {unknown}")
 
 
 def main():
@@ -270,21 +280,21 @@ def main():
     kinds = {}
     for e in entries:
         kinds[e["kind"]] = kinds.get(e["kind"], 0) + 1
-    print(f"A2L: {len(entries)} записей из {os.path.basename(path)}; family={family}")
+    print(f"A2L: {len(entries)} entries from {os.path.basename(path)}; family={family}")
     print(
-        f"Каталог: {kinds.get('map', 0)} карт ("
-        f"{sum(1 for e in entries if e['dims'] == 2)} с двумя осями, "
-        f"{sum(1 for e in entries if e['dims'] == 1)} с одной), "
-        f"{kinds.get('scalar', 0)} скаляров, {kinds.get('switch', 0)} switch'ей"
+        f"Catalog: {kinds.get('map', 0)} maps ("
+        f"{sum(1 for e in entries if e['dims'] == 2)} with two axes, "
+        f"{sum(1 for e in entries if e['dims'] == 1)} with one), "
+        f"{kinds.get('scalar', 0)} scalars, {kinds.get('switch', 0)} switches"
     )
     if skipped:
-        print(f"  не разобрано типов: {sorted(set(skipped))}")
+        print(f"  unparsed types: {sorted(set(skipped))}")
 
-    # Имя - ключ узла: коллизия молча слила бы две записи каталога в одну.
+    # Name is the node key; a collision would silently merge two catalog entries.
     names = [e["name"] for e in entries]
     dup = sorted({n for n in names if names.count(n) > 1})
     if dup:
-        print(f"ВНИМАНИЕ: неуникальные имена ({len(dup)}): {dup[:5]}")
+        print(f"WARNING: nonunique names ({len(dup)}): {dup[:5]}")
 
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
@@ -317,7 +327,7 @@ def main():
         ).single()["n"]
         print(f"Memgraph: {n} :A2LEntry")
 
-        print("Геометрия карт каталога (словарь журнала разметки):")
+        print("Catalog map geometry (annotation-ledger vocabulary):")
         for r in s.run(
             """
             MATCH (e:A2LEntry {family:$f, kind:'map'})
@@ -327,7 +337,7 @@ def main():
         ):
             print(f"  {r['shape']:<8} {r['n']:>3}")
 
-        print("Флаги каталога (вход Stage 6):")
+        print("Catalog flags (Stage 6 input):")
         for r in s.run(
             """
             MATCH (e:A2LEntry {family:$f, kind:'switch'})
@@ -336,10 +346,11 @@ def main():
             """,
             f=family,
         ):
-            print(f"  {r['grp']:<10} записей {r['n']:>3}, битов {r['bits']:>4}")
+            print(f"  {r['grp']:<10} entries {r['n']:>3}, bits {r['bits']:>4}")
 
-        # Джойн трёх словарей: A2L даёт форму и место в тракте, вендоры - смысл и дефолты.
-        print("Схождение трёх словарей (concept: A2L + ProECU + UpRev):")
+        # Three-vocabulary join: A2L supplies shape and path location; vendors supply meaning
+        # and defaults.
+        print("Three-vocabulary convergence (concept: A2L + ProECU + UpRev):")
         rows = list(
             s.run(
                 """
@@ -353,12 +364,12 @@ def main():
             )
         )
         for r in rows:
-            print(f"  {r['c']:<20} A2L {r['a2l']:>2} <-> вендоры {r['vend']:>2} "
+            print(f"  {r['c']:<20} A2L {r['a2l']:>2} <-> vendors {r['vend']:>2} "
                   f"({', '.join(sorted(r['vs']))})")
         both = sum(1 for r in rows if len(r["vs"]) > 1)
         marked = sum(1 for e in entries if e["concept"])
-        print(f"  всего concept'ов: {len(rows)}, из них покрыты обоими словарями: {both}")
-        print(f"  размечено записей A2L: {marked} из {len(entries)}")
+        print(f"  total concepts: {len(rows)}; covered by both vendor vocabularies: {both}")
+        print(f"  annotated A2L entries: {marked} of {len(entries)}")
 
     driver.close()
 

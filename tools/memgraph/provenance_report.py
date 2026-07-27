@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Read-only аудит слабейшего звена и обратного impact в Memgraph.
+"""Read-only audit of weakest links and reverse impact in Memgraph.
 
-Запуск:
+Invocation:
   uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK08A
   uv run --no-project --with neo4j python tools/memgraph/provenance_report.py \
       weakest JK08A Func 00021ce0 confidence
@@ -92,7 +92,7 @@ def check_graph_source_model(session, model):
     }
     if row is None:
         raise ProvenanceError(
-            f"Rom:{model.target} без модели источника; выполните полный ingest"
+            f"Rom:{model.target} has no source model; run a complete ingest"
         )
     actual = {
         key: (
@@ -104,7 +104,7 @@ def check_graph_source_model(session, model):
     }
     if actual != expected:
         raise ProvenanceError(
-            f"Rom:{model.target} source model расходится: "
+            f"Rom:{model.target} source model differs: "
             f"graph={actual}, registry={expected}"
         )
     edges = [
@@ -141,7 +141,7 @@ def check_graph_source_model(session, model):
     )
     if edges != expected_edges:
         raise ProvenanceError(
-            f"Rom:{model.target} ANNOTATIONS_FROM расходится: "
+            f"Rom:{model.target} ANNOTATIONS_FROM differs: "
             f"graph={edges}, registry={expected_edges}"
         )
 
@@ -165,7 +165,7 @@ def projection_count(counter):
 
 def print_projection(projection, gaps):
     print(
-        "проекция RESTS_ON: "
+        "RESTS_ON projection: "
         f"missing={projection_count(projection.missing)}, "
         f"extra={projection_count(projection.extra)}, "
         f"duplicate_expected={projection_count(projection.duplicate_expected)}, "
@@ -199,14 +199,14 @@ def audit(levels, dependencies, grounded, gaps, projection, strict=False):
     print_projection(projection, gaps)
     print(f"claims={len(levels)}, RESTS_ON expected={len(dependencies)}, "
           f"cyclic_SCC={len(analysis.cyclic_components)}")
-    print(f"code/silicon ниже declared={len(below)}, без grounding={len(ungrounded)}, "
+    print(f"code/silicon below declared={len(below)}, without grounding={len(ungrounded)}, "
           f"ungrounded cycles={len(analysis.ungrounded_cycles)}")
     for claim in sorted(below)[:20]:
         weak = analysis.weakest[claim]
         print(f"  {claim.short()}: {levels[claim]} -> {below[claim]} "
-              f"через {weak.short()}")
+              f"through {weak.short()}")
     for claim in ungrounded[:20]:
-        print(f"  без grounding: {claim.short()} [{levels[claim]}]")
+        print(f"  without grounding: {claim.short()} [{levels[claim]}]")
     projection_bad = not projection.clean or bool(gaps)
     confidence_bad = bool(below or ungrounded)
     return 1 if projection_bad or (strict and confidence_bad) else 0
@@ -216,14 +216,14 @@ def require_current_projection(projection, gaps):
     if projection.clean and not gaps:
         return
     raise ProvenanceError(
-        "проекция RESTS_ON не совпадает с CSV; сначала выполните полный ingest"
+        "RESTS_ON projection does not match CSV; run a complete ingest first"
     )
 
 
 def weakest(levels, dependencies, grounded, rom, label, addr, prop):
     claim = ClaimKey(rom, label, addr, prop)
     if claim not in levels:
-        raise ProvenanceError(f"заявка {claim.short()} не найдена")
+        raise ProvenanceError(f"claim {claim.short()} not found")
     analysis = analyze_claims(levels, dependencies, grounded)
     weak = analysis.weakest[claim]
     path = dependency_path(claim, weak, dependencies)
@@ -238,7 +238,7 @@ def impact(dependencies, rom, label, addr, prop):
     changed = (StructuralKey(rom, label, addr) if prop == STRUCTURAL
                else ClaimKey(rom, label, addr, prop))
     affected = reverse_impact(changed, dependencies)
-    print(f"изменение {changed.short()}: зависимых заявок {len(affected) - 1}")
+    print(f"change to {changed.short()}: {len(affected) - 1} dependent claims")
     for claim, depth in sorted(affected.items(), key=lambda item: (item[1], item[0])):
         if claim == changed:
             continue
@@ -269,8 +269,8 @@ def main():
             graph = load_claim_graph(session, args.rom)
         model, levels, dependencies, grounded, gaps, projection = graph
         print(
-            f"источник аннотаций={model.source}, режим={model.kind}, "
-            f"образ значений={model.target}"
+            f"annotation source={model.source}, mode={model.kind}, "
+            f"value image={model.target}"
         )
         if args.command == "audit":
             return audit(

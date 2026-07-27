@@ -1,6 +1,6 @@
 # Rom an cf43d
 
-> Зеркало страницы NissanECU RE wiki. Источник: https://nissanecu.miraheze.org/wiki/Rom_an_cf43d
+> Local mirror of a NissanECU RE wiki page. Source: https://nissanecu.miraheze.org/wiki/Rom_an_cf43d
 > Retrieved: 2026-07-15. License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) ()
 
 ---

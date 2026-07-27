@@ -1,76 +1,78 @@
-# EcuTek 370Z ProECU – документация (Markdown)
+# EcuTek 370Z ProECU documentation in Markdown
 
-Две страницы базы знаний EcuTek Support (Confluence, пространство `SUPPORT`,
-раздел `EcuTek Knowledge Base / Vehicle Specific Guides / Nissan / 370Z`),
-сконвертированные в самодостаточный Markdown с локальными изображениями.
-Пригодно для чтения человеком и для машинной обработки агентом.
+Two pages from the EcuTek Support knowledge base in the Confluence `SUPPORT`
+space under `EcuTek Knowledge Base / Vehicle Specific Guides / Nissan / 370Z`,
+converted into self-contained Markdown with local images. The result supports
+both human reading and machine processing.
 
-Двигатель 370Z – VQ37VHR (VVEL), поэтому обе страницы напрямую релевантны
-проекту VQ HR ECU.
+The 370Z uses the VQ37VHR with VVEL, so both pages are directly relevant to the
+VQ HR ECU project.
 
-## Содержимое
+## Contents
 
-| Документ | Файл | Page ID | Версия | Заголовков | Изображений | Размер MD |
-|---|---|---|---|---|---|---|
+| Document | File | Page ID | Version | Headings | Images | MD size |
+|----------|------|---------|---------|---------:|-------:|--------:|
 | 370Z ProECU Tuning Guide | [tuning-guide/](tuning-guide/370Z-ProECU-Tuning-Guide.md) | 7143430 | 22 | 72 | 67 | 56 KB |
 | 370Z ProECU RaceROM Supplement | [racerom-supplement/](racerom-supplement/370Z-ProECU-RaceROM-Supplement.md) | 6881638 | 25 | 110 | 106 | 76 KB |
 
-Источники:
+Sources:
+
 - Tuning Guide: https://ecutek.atlassian.net/wiki/spaces/SUPPORT/pages/7143430
 - RaceROM Supplement: https://ecutek.atlassian.net/wiki/spaces/SUPPORT/pages/6881638
 
-## Структура
+## Layout
 
-```
+```text
 markdown/
   README.md
   tuning-guide/
     370Z-ProECU-Tuning-Guide.md
-    images/            # 67 файлов, ссылки относительные (images/...)
+    images/            # 67 files, relative links (images/...)
   racerom-supplement/
     370Z-ProECU-RaceROM-Supplement.md
-    images/            # 106 файлов
+    images/            # 106 files
 ```
 
-Каждый документ самодостаточен: изображения лежат в собственной папке `images/`
-рядом с `.md`, поэтому папку документа можно перемещать целиком. Имена файлов
-изображений совпадают с именами вложений Confluence (в них закодированы даты).
+Each document is self-contained: images are in an adjacent `images/` directory,
+so the complete document directory can be moved as one unit. Image filenames
+match their Confluence attachment names and encode dates.
 
-## Как получено
+## Acquisition
 
-Исходные сохранённые HTML (`*.html` + `*_files/`) в родительской папке – это
-SPA-сейвы Confluence Cloud: медиа грузится лениво через blob-URL и в сохранённой
-копии не сопоставлено с позициями в тексте (у RaceROM в сейве отсутствовали 12 из
-13 изображений). Поэтому обе страницы перезабраны напрямую из публичного
-Confluence REST API в формате `body.export_view` (чистый рендер-HTML с корректными
-`<img>` в правильных позициях), после чего сконвертированы в Markdown, а все
-вложения скачаны штатными download-ссылками. Пространство `SUPPORT` открыто
-анонимно, аутентификация не требуется.
+The saved source HTML (`*.html` plus `*_files/`) in the parent directory consists
+of Confluence Cloud SPA captures. Media is loaded lazily through blob URLs and
+the saved copy does not associate it with text positions; the RaceROM capture
+lacked 12 of 13 images. Both pages were therefore rebuilt directly from the
+public Confluence REST API in `body.export_view` format, which supplies clean
+rendered HTML with `<img>` elements in the correct positions. The HTML was then
+converted to Markdown and every attachment was downloaded through its standard
+download link. The `SUPPORT` space allows anonymous access.
 
-## Решения при конвертации
+## Conversion decisions
 
-- Заголовки получают якоря по алгоритму GitHub; внутренние ссылки страницы
-  переписаны на эти якоря (сверено – битых нет). В начале каждого файла –
-  сворачиваемое оглавление (`<details>`).
-- Info/Note/Warning-макросы Confluence -> GitHub-admonitions с сохранением цвета:
-  Warning(красный)->`[!CAUTION]`, Note(жёлтый)->`[!WARNING]`,
-  Information(синий)->`[!NOTE]`, Tip(зелёный)->`[!TIP]`.
-- Многоколоночные layout-макросы разворачиваются в последовательный текст;
-  таблицы -> Markdown-таблицы.
-- Косметическая юникод-пунктуация приведена к ASCII (парные кавычки, стрелка,
-  мусорный символ буллета из шрифта Symbol). En-dash `–`, знак градуса `°` и
-  `·` в единице `lbs·ft` сохранены. Опечатки исходного текста не исправлялись.
-- YAML-заголовок каждого файла содержит source-URL, page_id, версию и дату
-  получения.
+- Headings use the GitHub anchor algorithm, and internal page links point to
+  those anchors. No broken internal links remain. Each file begins with a
+  collapsible table of contents using `<details>`.
+- Confluence Info/Note/Warning macros become GitHub admonitions while preserving
+  color semantics: Warning (red) -> `[!CAUTION]`, Note (yellow) ->
+  `[!WARNING]`, Information (blue) -> `[!NOTE]`, and Tip (green) -> `[!TIP]`.
+- Multi-column layout macros become sequential text; tables become Markdown
+  tables.
+- Decorative Unicode punctuation is normalized to ASCII, including paired
+  quotes, arrows, and a stray Symbol-font bullet. En dashes, degree signs, and
+  the middle dot in `lbs·ft` are preserved. Source typos are not corrected.
+- Each file's YAML header records the source URL, page ID, version, and retrieval
+  date.
 
-## Недоступные изображения
+## Unavailable images
 
-Два изображения в Tuning Guide не восстанавливаются анонимно и заменены
-inline-плейсхолдерами `*[image unavailable: ...]*` с сохранением позиции и
-исходного URL в HTML-комментарии:
+Two Tuning Guide images cannot be retrieved anonymously. Inline
+`*[image unavailable: ...]*` placeholders preserve their positions, with the
+original URLs in HTML comments:
 
-- `Nissan 370z` (`www.ecutek.com/.../image1.jpg.aspx`) – маркетинговое фото, отдаёт 404;
-- `CPC Enable.jpg` (`api.media.atlassian.com/...`) – инлайновая вставка с истёкшим
-  токеном, среди вложений страницы отсутствует.
+- `Nissan 370z` (`www.ecutek.com/.../image1.jpg.aspx`) is a marketing image that
+  returns 404;
+- `CPC Enable.jpg` (`api.media.atlassian.com/...`) was embedded with an expired
+  token and is not among the page attachments.
 
-Остальные 173 изображения (67 + 106) скачаны локально.
+The remaining 173 images, 67 plus 106, are stored locally.

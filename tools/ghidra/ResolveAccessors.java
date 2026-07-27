@@ -1,61 +1,64 @@
-// ResolveAccessors.java - differential-резолв операндов аксессоров карт
-// (раздел 6 tools/map-flag-pipeline.md).
+// ResolveAccessors.java - differential operand resolution for map accessors
+// (section 6 of tools/map-flag-pipeline.md).
 //
-// Множество сайтов совпадает с цензом MapInventory (слоты со значением kernel ->
-// обёртки, ссылающиеся на слот -> call-ссылки на вход обёртки), поэтому механизмы
-// сравниваются сайт-в-сайт. На каждом сайте эмитятся обе тройки:
-//   bt_r4/r5/r6 - MapInventory.backtrack: 14 инструкций назад, ближайший pc-literal
-//                 (эталон, из которого собран текущий ценз);
-//   df_r4..r7   - data-flow: входные varnode'ы CALL/CALLIND из HighFunction (условие А).
-//                 Ram-varnode = слот пула, значение - его содержимое; register/unique
-//                 сворачиваются backward-slice по p-code.
-// Резерв - SymbolicPropogator по инструкциям: varnode'ы, не свернувшиеся в slice.
+// The site set matches the MapInventory census (slots containing a kernel value ->
+// wrappers that reference a slot -> call references to a wrapper entry), so the mechanisms
+// are compared site by site. Every site emits both triples:
+//   bt_r4/r5/r6 - MapInventory.backtrack: 14 instructions backward to the nearest PC literal
+//                 (the baseline used to build the current census);
+//   df_r4..r7   - data flow: CALL/CALLIND input varnodes from HighFunction (condition A).
+//                 A RAM varnode is a pool slot whose value is the slot contents;
+//                 register/unique varnodes are reduced with a backward p-code slice.
+// Fallback: SymbolicPropogator over instructions for varnodes not reduced by the slice.
 //
-// GBR (условие Б) резолвится локально: значение ставится самой функцией (`ldc rN,gbr`)
-// и своё в каждой - в JK03A и RAM-база (FUN_0003b75c: gbr=0xffff1dec), и ROM-база
-// (gbr=0x11ebe у аксессоров 0x4e2xx). Поэтому и декомпилятор, и SymbolicPropogator от
-// входа функции сворачивают gbr сами; глобальный register-context для gbr неверен.
-// Функции, получающие gbr от вызывателя, дают gbr-relative операнд (kind gbrrel).
+// GBR (condition B) is resolved locally: each function sets its own value (`ldc rN,gbr`).
+// JK03A has both a RAM base (FUN_0003b75c: gbr=0xffff1dec) and a ROM base
+// (gbr=0x11ebe in 0x4e2xx accessors). Both the decompiler and SymbolicPropogator can
+// therefore reduce gbr from the function entry; a global register context for gbr is
+// incorrect. Functions that receive gbr from their caller produce a gbr-relative operand
+// (kind gbrrel).
 //
-// Сайты вне функций: участок, куда нет прямых вызовов, Ghidra функциями не размечает,
-// и декомпилятор туда не дотягивается (а backtrack работает - отсюда bt_only). Такие
-// участки восстанавливаются: начало участка - пролог за rts предыдущей функции, тело
-// Ghidra строит по flow. Прогон под -readOnly держит восстановленное в памяти; тот же
-// дефект разметки скрывает эти вызовы и от ExportGraph (обёртки без вызывателей в графе).
+// Sites outside functions: Ghidra does not define a function for a region without direct
+// calls, and the decompiler cannot reach it (while backtrack works, producing bt_only).
+// Such regions are recovered: the region begins with the prologue after the previous
+// function's rts, and Ghidra builds its body from control flow. Under -readOnly, recovered
+// definitions remain in memory. The same definition gap hides these calls from ExportGraph
+// and leaves their wrappers without callers in the graph.
 //
-// verdict сайта - по тройке r4/r5/r6, приоритет selector > conflict > bt_only > df_only > agree:
-//   agree     - обе тройки дали одно и то же;
-//   df_only   - data-flow снял то, чего backtrack не дал;
-//   bt_only   - backtrack снял то, чего data-flow не дал (регрессия на разбор);
-//   conflict  - базы расходятся (латентная ошибка nearestLoad-эвристики в цензе).
-//   selector  - операнд задан ветвлением: на сайте не одно значение, а множество.
-// Инвариант принятия - data-flow покрывает backtrack, то есть bt_only = 0. На сайтах
-// selector инвариант не применяется: backtrack по построению даёт один литерал и полным
-// на множестве быть не может.
+// A site's verdict is based on the r4/r5/r6 triple, with precedence
+// selector > conflict > bt_only > df_only > agree:
+//   agree     - both triples produced the same values;
+//   df_only   - data flow recovered a value that backtrack did not;
+//   bt_only   - backtrack recovered a value that data flow did not (analysis regression);
+//   conflict  - bases differ (a latent nearestLoad heuristic error in the census);
+//   selector  - branching defines the operand, so the site has a set of values.
+// The acceptance invariant is that data flow covers backtrack, meaning bt_only = 0. The
+// invariant does not apply to selector sites: by construction, backtrack yields one literal
+// and cannot fully represent a set.
 //
-// Ветвление операнда (MULTIEQUAL). База или ось, заданные условием, приходят в вызов
-// phi-узлом: `if (cfg) t = A; else t = B;` даёт на входе CALL не значение, а слияние по
-// числу входящих рёбер блока. Свёртка в одно значение здесь неверна по существу - обе
-// таблицы существуют, и какая из них исполняется, решает калибровка, а не разбор. Такой
-// сайт эмитится строкой на ветвь, номер - в колонке branch.
+// Operand branching (MULTIEQUAL). A conditionally selected base or axis reaches a call as
+// a phi node: `if (cfg) t = A; else t = B;` gives CALL a merge with one input per incoming
+// block edge instead of a single value. Reducing it to one value is fundamentally wrong:
+// both tables exist, and calibration rather than analysis selects the executed one. Such a
+// site emits one row per branch, with its number in the branch column.
 //
-// Тройка собирается по индексу, а не перемножением множеств: i-й вход каждого phi одного
-// блока приходит по i-му ребру, поэтому (r4,r5,r6) i-й ветви - согласованная тройка, а
-// перекрёстные пары (база одной ветви с осью другой) в коде не встречаются. Условие
-// применимости - все phi операндов лежат в одном блоке и равной длины; иначе выравнивание
-// не обосновано, и сайт остаётся односрочным на резерве, как прежде.
+// Build each triple by index rather than by taking a Cartesian product: input i of every phi
+// in one block arrives through edge i, so (r4,r5,r6) for branch i is a consistent triple.
+// Cross-pairs such as a base from one branch and an axis from another do not occur in code.
+// This applies only when every operand phi belongs to the same block and has equal length.
+// Otherwise, alignment is unsupported and the fallback leaves the site as one row.
 //
-// Запуск (headless): -postScript ResolveAccessors.java <out_dir> <kernel_hex>
-// Выход: accessors.<kernel>.csv - файл на ценз. Ядер доступа к таблицам несколько
-// (JK03A: 0x26944 по байтовой оси, 0x26984 и 0x26b84 по словной), прогон идёт на каждое,
-// и загрузчик собирает калибровочный слой из всех цензов сразу - поэтому имя несёт ядро,
-// а строка - колонку kernel.
+// Headless invocation: -postScript ResolveAccessors.java <out_dir> <kernel_hex>
+// Output: accessors.<kernel>.csv, one file per census. Several table-access cores exist
+// (JK03A: 0x26944 for byte axes, 0x26984 and 0x26b84 for word axes). Run the script for
+// each core; the loader builds the calibration layer from all censuses together. Therefore,
+// the filename identifies the core and every row carries a kernel column.
 //   kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,df_r7,
 //   k4,k5,k6,k7,verdict
-// func: orig (функция была размечена) | recovered (восстановлена) | none.
-// Источник каждого df-операнда - колонки k4..k7: pool (разыменован слот пула), const,
-// slice (свёрнут по p-code), sp (резерв SymbolicPropogator), gbrrel (значение
-// gbr-relative, gbr приходит от вызывателя), dyn (не сворачивается), none (входа нет).
+// func: orig (function was already defined) | recovered (created here) | none.
+// Source of each data-flow operand in columns k4..k7: pool (dereferenced pool slot), const,
+// slice (reduced through p-code), sp (SymbolicPropogator fallback), gbrrel (gbr-relative
+// value with gbr supplied by the caller), dyn (not reducible), or none (no input).
 //@category VQ
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileResults;
@@ -93,8 +96,8 @@ import java.util.TreeMap;
 public class ResolveAccessors extends GhidraScript {
 
     static final long ROM_HI = 0x180000L;
-    static final int SLICE_DEPTH = 12;      // глубина свёртки p-code
-    static final int REGION_SCAN = 4096;    // потолок обхода участка вне функций
+    static final int SLICE_DEPTH = 12;      // p-code reduction depth
+    static final int REGION_SCAN = 4096;    // scan limit for a region outside functions
 
     Listing listing;
     Memory mem;
@@ -102,7 +105,7 @@ public class ResolveAccessors extends GhidraScript {
     ReferenceManager rm;
     Register rGbr;
     Register[] argRegs = new Register[4];   // r4, r5, r6, r7
-    boolean lastGbrRel;                     // SP дал gbr-relative, gbr не свёрнут
+    boolean lastGbrRel;                     // SP returned a gbr-relative value; gbr was not reduced
 
     DecompInterface ifc;
     Map<Address, HighFunction> hfCache = new HashMap<>();
@@ -116,7 +119,7 @@ public class ResolveAccessors extends GhidraScript {
         long[] bt = {-1, -1, -1};
         long[] df = {-1, -1, -1, -1};
         String[] kind = {"none", "none", "none", "none"};
-        List<long[]> alts = new ArrayList<>();   // ветви селектора помимо первой
+        List<long[]> alts = new ArrayList<>();   // selector branches after the first
     }
 
     public void run() throws Exception {
@@ -134,18 +137,18 @@ public class ResolveAccessors extends GhidraScript {
         List<Address> slots = findSlots(kernel);
         Map<Function, Address> wrappers = findWrappers(slots);
         List<Site> sites = collectSites(wrappers);
-        println("VQ_RES вход: slots=" + slots.size() + " wrappers=" + wrappers.size()
+        println("VQ_RES input: slots=" + slots.size() + " wrappers=" + wrappers.size()
                 + " call_sites=" + sites.size());
 
         int recovered = recoverFuncs(sites);
-        println("VQ_RES восстановлено функций: " + recovered);
+        println("VQ_RES recovered functions: " + recovered);
 
         ifc = new DecompInterface();
         try {
             ifc.openProgram(currentProgram);
             int done = 0;
             for (Site s : sites) {
-                try { s.bt = backtrack(s.at); } catch (Exception e) { /* эталон best-effort */ }
+                try { s.bt = backtrack(s.at); } catch (Exception e) { /* best-effort baseline */ }
                 dataflow(s);
                 if (++done % 25 == 0) println("  ... " + done + "/" + sites.size());
             }
@@ -157,10 +160,10 @@ public class ResolveAccessors extends GhidraScript {
         summary(sites, wrappers);
     }
 
-    // Восстановление функций под сайтами, оставшимися вне разметки: тело строится по flow
-    // от начала участка (пролог за rts предыдущей функции). Участок может содержать
-    // несколько неразмеченных функций подряд, поэтому проходы повторяются, пока растёт
-    // покрытие: каждая созданная функция сдвигает начало участка к следующей.
+    // Recover functions for sites outside existing definitions. Build each body from control
+    // flow beginning at the region start (the prologue after the previous function's rts).
+    // A region can contain several consecutive undefined functions, so repeat passes while
+    // coverage grows: every created function advances the region start to the next one.
     int recoverFuncs(List<Site> sites) {
         int made = 0;
         for (int pass = 0; pass < 16; pass++) {
@@ -174,7 +177,7 @@ public class ResolveAccessors extends GhidraScript {
                 try {
                     ok = createFunction(st, null) != null;
                 } catch (Exception e) {
-                    println("  восстановление " + st + " не удалось: " + e);
+                    println("  failed to recover " + st + ": " + e);
                 } finally {
                     currentProgram.endTransaction(tx, ok);
                 }
@@ -196,7 +199,7 @@ public class ResolveAccessors extends GhidraScript {
         return made;
     }
 
-    // 1. слоты: локации, содержащие значение kernel (BE u32)
+    // 1. Slots: locations containing the kernel value (BE u32).
     List<Address> findSlots(long kernel) throws Exception {
         byte[] pat = {(byte) ((kernel >> 24) & 0xff), (byte) ((kernel >> 16) & 0xff),
                       (byte) ((kernel >> 8) & 0xff), (byte) (kernel & 0xff)};
@@ -212,7 +215,7 @@ public class ResolveAccessors extends GhidraScript {
         return out;
     }
 
-    // 2. обёртки: функции, ссылающиеся на слот
+    // 2. Wrappers: functions that reference a slot.
     Map<Function, Address> findWrappers(List<Address> slots) {
         Map<Function, Address> out = new LinkedHashMap<>();
         for (Address slot : slots) {
@@ -225,7 +228,7 @@ public class ResolveAccessors extends GhidraScript {
         return out;
     }
 
-    // 3. сайты: call-ссылки на вход обёртки
+    // 3. Sites: call references to a wrapper entry.
     List<Site> collectSites(Map<Function, Address> wrappers) {
         List<Site> out = new ArrayList<>();
         for (Map.Entry<Function, Address> e : wrappers.entrySet()) {
@@ -247,8 +250,8 @@ public class ResolveAccessors extends GhidraScript {
         return out;
     }
 
-    // Условие А: аргументы CALLIND, поднятые декомпилятором как упорядоченные входы
-    // вызова (in[1]=r4, in[2]=r5, in[3]=r6, in[4]=r7).
+    // Condition A: CALLIND arguments recovered by the decompiler as ordered call inputs
+    // (in[1]=r4, in[2]=r5, in[3]=r6, in[4]=r7).
     void dataflow(Site s) {
         if (s.func != null) {
             HighFunction hf = highFunc(s.func);
@@ -263,7 +266,7 @@ public class ResolveAccessors extends GhidraScript {
                 selectorBranches(s, in);
             }
         }
-        // Резерв: varnode'ы, не свернувшиеся в slice.
+        // Fallback for varnodes not reduced by the slice.
         for (int k = 0; k < 4; k++) {
             if (s.df[k] != -1) continue;
             lastGbrRel = false;
@@ -271,14 +274,15 @@ public class ResolveAccessors extends GhidraScript {
             if (v != null) { s.df[k] = v; s.kind[k] = "sp"; }
             else if (lastGbrRel) s.kind[k] = "gbrrel";
         }
-        // Операнд, общий у всех ветвей, резерв снимает после разворота - раздать в ветви.
+        // The fallback recovers an operand shared by all branches after expansion; copy it
+        // into each branch.
         for (long[] t : s.alts)
             for (int k = 0; k < 4; k++) if (t[k] == -1) t[k] = s.df[k];
     }
 
-    // Phi под операндом: сквозь пересылки (COPY/CAST/расширения), которыми декомпилятор
-    // разделяет слияние и вызов. Дальше пересылок не идёт - арифметика над слиянием уже
-    // не выбор таблицы, а вычисление над её адресом.
+    // Find a phi beneath an operand through transfers (COPY/CAST/extensions) inserted by the
+    // decompiler between the merge and the call. Stop beyond transfers because arithmetic
+    // over a merge computes an address instead of selecting a table.
     PcodeOp phiOf(Varnode vn, int depth) {
         if (vn == null || depth > SLICE_DEPTH) return null;
         PcodeOp d = vn.getDef();
@@ -297,10 +301,10 @@ public class ResolveAccessors extends GhidraScript {
         }
     }
 
-    // Разворот ветвления операнда в строку на ветвь. Первая ветвь занимает df/kind сайта,
-    // остальные ложатся в alts. Условия применимости проверяются до записи: phi операндов
-    // должны лежать в одном блоке и иметь равное число входов, иначе выравнивание по
-    // индексу не обосновано и сайт остаётся односрочным.
+    // Expand operand branching into one row per branch. The first branch occupies the site's
+    // df/kind fields and the rest go into alts. Validate applicability before writing:
+    // operand phi nodes must be in one block and have equal input counts. Otherwise, index
+    // alignment is unsupported and the site remains one row.
     void selectorBranches(Site s, Varnode[] in) {
         PcodeOp[] phi = new PcodeOp[3];
         PcodeBlockBasic blk = null;
@@ -310,18 +314,18 @@ public class ResolveAccessors extends GhidraScript {
             if (!(d instanceof PcodeOpAST)) continue;
             PcodeBlockBasic b = ((PcodeOpAST) d).getParent();
             if (b == null) continue;
-            // Выравнивание по индексу обосновано только внутри одного блока и при равной
-            // длине слияний. Операнд, слитый иначе, из разворота выпадает; порядок обхода
-            // ставит первой базу, поэтому длину задаёт она, а не побочный аргумент.
+            // Index alignment is valid only within one block and for equally sized merges.
+            // Exclude an operand merged differently. Traversal visits the base first, so it
+            // determines the length instead of an auxiliary argument.
             if (n == 0) { n = d.getNumInputs(); blk = b; }
             else if (d.getNumInputs() != n || blk != b) continue;
             phi[k] = d;
         }
         if (n < 2) return;
 
-        // Операнд, чьи ветви не сворачиваются в значения, из разворота выпадает и остаётся
-        // на прежнем разборе: у аксессора по ветвям расходятся не только указатели ПЗУ, но
-        // и runtime-вход из RAM, а он к выбору таблицы отношения не имеет.
+        // Exclude an operand whose branches cannot be reduced to values and keep its prior
+        // analysis. Accessor branches can differ in both ROM pointers and a runtime RAM input,
+        // but the latter is unrelated to table selection.
         long[][] val = new long[3][];
         for (int k = 0; k < 3; k++) {
             if (phi[k] == null) continue;
@@ -342,7 +346,7 @@ public class ResolveAccessors extends GhidraScript {
             for (int k = 0; k < 3; k++) if (val[k] != null) t[k] = val[k][i];
             branches.add(t);
         }
-        // Ветви, совпавшие значениями, - одно чтение по разным путям, а не разные таблицы.
+        // Branches with identical values are one read through different paths, not different tables.
         List<long[]> uniq = new ArrayList<>();
         for (long[] t : branches) {
             boolean dup = false;
@@ -359,8 +363,8 @@ public class ResolveAccessors extends GhidraScript {
         for (int i = 1; i < uniq.size(); i++) s.alts.add(uniq.get(i));
     }
 
-    // Значение аргумента вызова: ram-varnode - ячейка (слот пула), значение = содержимое;
-    // константа - значение напрямую; register/unique - свёртка backward-slice.
+    // Call argument value: a RAM varnode is a cell (pool slot) whose value is its contents;
+    // a constant is used directly; register/unique varnodes use backward-slice reduction.
     Long argValue(Varnode vn) {
         if (vn == null) return null;
         if (vn.isConstant()) return vn.getOffset() & 0xFFFFFFFFL;
@@ -375,8 +379,9 @@ public class ResolveAccessors extends GhidraScript {
         return "slice";
     }
 
-    // Свёртка backward-slice: register/unique - по define-use до константы. gbr отдельного
-    // случая не требует: функция ставит его сама (ldc), и def сворачивается общим путём.
+    // Backward-slice reduction follows define-use chains from register/unique varnodes to a
+    // constant. gbr needs no special case because the function sets it with ldc and its
+    // definition reduces through the common path.
     Long eval(Varnode vn, int depth) {
         if (vn == null || depth > SLICE_DEPTH) return null;
         if (vn.isConstant()) return vn.getOffset();
@@ -395,7 +400,7 @@ public class ResolveAccessors extends GhidraScript {
             case PcodeOp.SUBPIECE:
                 return eval(op.getInput(0), depth);
             case PcodeOp.INT_ADD:
-            case PcodeOp.PTRSUB:                 // &global: адрес, не содержимое
+            case PcodeOp.PTRSUB:                 // &global: address, not contents
                 a = eval(op.getInput(0), depth); b = eval(op.getInput(1), depth);
                 return (a == null || b == null) ? null : a + b;
             case PcodeOp.INT_SUB:
@@ -416,13 +421,14 @@ public class ResolveAccessors extends GhidraScript {
                 if (a == null) return null;
                 return readWord(toAddr(a & 0xFFFFFFFFL), op.getOutput().getSize());
             default:
-                return null;                     // MULTIEQUAL/INDIRECT и прочее: не одно значение
+                return null;                     // MULTIEQUAL/INDIRECT and others: not one value
         }
     }
 
-    // Резерв: значение регистра на адресе сайта по symbolic propagation. Register-relative
-    // результат означает, что база приходит от вызывателя (для gbr - условие Б за пределами
-    // функции): значения нет, сайт помечается gbrrel, а не теряется.
+    // Fallback: register value at the site address from symbolic propagation. A
+    // register-relative result means the caller supplies the base (for gbr, condition B
+    // beyond the function). No concrete value exists, so mark the site gbrrel instead of
+    // dropping it.
     Long propagated(Site s, Register reg) {
         if (reg == null) return null;
         SymbolicPropogator sp = propagator(s);
@@ -445,19 +451,20 @@ public class ResolveAccessors extends GhidraScript {
         try {
             AddressSetView body = s.func != null ? s.func.getBody()
                     : new AddressSet(regionOf(s.at)[0], regionOf(s.at)[1]);
-            // recordStartEndState=true: getRegisterValue даёт значение на адресе, а не итоговое
+            // recordStartEndState=true makes getRegisterValue return the value at the address,
+            // not the final value.
             sp = new SymbolicPropogator(currentProgram, true);
             sp.flowConstants(key, body, new ContextEvaluatorAdapter(), false, monitor);
         } catch (Exception e) {
-            println("  SP не прошёл на " + key + ": " + e);
+            println("  SP failed at " + key + ": " + e);
             sp = null;
         }
         spCache.put(key, sp);
         return sp;
     }
 
-    // Границы участка кода вне функций: назад/вперёд по инструкциям, пока они не
-    // принадлежат ни одной функции.
+    // Bounds of a code region outside functions: walk backward and forward through
+    // instructions while none belongs to a function.
     Address[] regionOf(Address at) {
         Instruction ins = listing.getInstructionContaining(at);
         if (ins == null) return new Address[]{at, at};
@@ -488,7 +495,7 @@ public class ResolveAccessors extends GhidraScript {
         try {
             DecompileResults r = ifc.decompileFunction(f, 90, monitor);
             hf = r.getHighFunction();
-        } catch (Exception e) { /* ниже уйдёт в резерв */ }
+        } catch (Exception e) { /* the fallback below will handle it */ }
         hfCache.put(k, hf);
         return hf;
     }
@@ -502,7 +509,8 @@ public class ResolveAccessors extends GhidraScript {
         return null;
     }
 
-    // Эталон: MapInventory.backtrack - 14 инструкций назад, ближайший pc-relative load.
+    // Baseline: MapInventory.backtrack, 14 instructions backward to the nearest
+    // PC-relative load.
     long[] backtrack(Address site) {
         long[] out = {-1, -1, -1};
         Instruction ins = listing.getInstructionContaining(site);
@@ -561,9 +569,9 @@ public class ResolveAccessors extends GhidraScript {
         }
     }
 
-    // Приоритет: selector (операнд - множество) > conflict (базы расходятся) >
-    // bt_only (регрессия) > df_only > agree. Сравнивать одно значение backtrack с
-    // множеством нечем, поэтому ветвление вытесняет остальные вердикты, а не смешивается.
+    // Precedence: selector (operand is a set) > conflict (bases differ) >
+    // bt_only (regression) > df_only > agree. A single backtrack value cannot be compared
+    // with a set, so branching supersedes other verdicts instead of combining with them.
     String verdict(Site s) {
         if (!s.alts.isEmpty()) return "selector";
         boolean conflict = false, btOnly = false, dfOnly = false, any = false;
@@ -619,17 +627,17 @@ public class ResolveAccessors extends GhidraScript {
         int selSites = 0, selRows = 0;
         for (Site s : sites) if (!s.alts.isEmpty()) { selSites++; selRows += s.alts.size() + 1; }
         println("VQ_RES sites=" + n + " bt_r4=" + btR4 + " df_r4=" + dfR4
-                + " резолюция bt=" + pct(btR4, n) + "% df=" + pct(dfR4, n) + "%");
-        println("VQ_RES ветвление операнда: " + selSites + " сайтов -> " + selRows + " строк");
-        println("VQ_RES операндов r4/r5/r6: bt=" + btAll + " df=" + dfAll + " из " + (n * 3));
+                + " resolution bt=" + pct(btR4, n) + "% df=" + pct(dfR4, n) + "%");
+        println("VQ_RES operand branching: " + selSites + " sites -> " + selRows + " rows");
+        println("VQ_RES r4/r5/r6 operands: bt=" + btAll + " df=" + dfAll + " of " + (n * 3));
         println("VQ_RES verdict: " + vd);
-        println("VQ_RES источник df_r4: " + kd);
-        println("VQ_RES функция сайта: " + fs);
-        // Обёртки, у которых call-ссылок на вход нет вовсе.
+        println("VQ_RES df_r4 source: " + kd);
+        println("VQ_RES site function: " + fs);
+        // Wrappers with no call references to their entries.
         for (Map.Entry<Function, Address> e : wrappers.entrySet()) {
             boolean any = false;
             for (Site s : sites) if (s.wrapper.equals(e.getKey().getEntryPoint())) { any = true; break; }
-            if (!any) println("VQ_RES обёртка без call-сайтов: " + e.getKey().getEntryPoint());
+            if (!any) println("VQ_RES wrapper without call sites: " + e.getKey().getEntryPoint());
         }
     }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Единый источник аннотаций для exact-code ROM без копирования defs/<rom>.*."""
+"""Single annotation source for exact-code ROMs without copying defs/<rom>.*."""
 
 from dataclasses import dataclass
 import csv
@@ -51,15 +51,15 @@ def _read_registry(path):
         with path.open("rb") as fh:
             document = tomllib.load(fh)
     except OSError as error:
-        raise SourceModelError(f"нет реестра наследования ROM {path}") from error
+        raise SourceModelError(f"ROM inheritance registry not found: {path}") from error
     unknown_top = sorted(set(document) - {"inherit"})
     if unknown_top:
         raise SourceModelError(
-            f"{path}: неизвестные верхнеуровневые секции {unknown_top}"
+            f"{path}: unknown top-level sections {unknown_top}"
         )
     entries = document.get("inherit", {})
     if not isinstance(entries, dict):
-        raise SourceModelError(f"{path}: inherit должен быть TOML-таблицей")
+        raise SourceModelError(f"{path}: inherit must be a TOML table")
     return path, entries
 
 
@@ -68,40 +68,40 @@ def read_registry(path=DEFAULT_REGISTRY):
     entries = {}
     for target, row in raw.items():
         if not ROM_RE.fullmatch(target) or not isinstance(row, dict):
-            raise SourceModelError(f"{path}: некорректная запись inherit.{target}")
+            raise SourceModelError(f"{path}: invalid inherit.{target} entry")
         unknown = sorted(set(row) - FIELDS)
         if unknown:
             raise SourceModelError(
-                f"{path}: inherit.{target} содержит неизвестные поля {unknown}"
+                f"{path}: inherit.{target} contains unknown fields {unknown}"
             )
         missing = sorted(FIELDS - set(row))
         if missing:
             raise SourceModelError(
-                f"{path}: inherit.{target} без полей {missing}"
+                f"{path}: inherit.{target} is missing fields {missing}"
             )
         source = row["source"]
         kind = row["kind"]
         if not isinstance(source, str) or not ROM_RE.fullmatch(source):
             raise SourceModelError(
-                f"{path}: inherit.{target}.source не является меткой ROM"
+                f"{path}: inherit.{target}.source is not a ROM label"
             )
         if source == target:
             raise SourceModelError(
-                f"{path}: inherit.{target} ссылается сам на себя"
+                f"{path}: inherit.{target} references itself"
             )
         if kind not in KINDS:
             raise SourceModelError(
-                f"{path}: inherit.{target}.kind={kind!r} вне {sorted(KINDS)}"
+                f"{path}: inherit.{target}.kind={kind!r} is not in {sorted(KINDS)}"
             )
         for field in ("target_sha256", "source_sha256"):
             if not isinstance(row[field], str) or not SHA256_RE.fullmatch(row[field]):
                 raise SourceModelError(
-                    f"{path}: inherit.{target}.{field} не является SHA-256"
+                    f"{path}: inherit.{target}.{field} is not a SHA-256"
                 )
         ranges = row["ranges"]
         if not isinstance(ranges, list) or not ranges:
             raise SourceModelError(
-                f"{path}: inherit.{target}.ranges должен быть непустым массивом"
+                f"{path}: inherit.{target}.ranges must be a nonempty array"
             )
         parsed_ranges = []
         for value in ranges:
@@ -109,13 +109,13 @@ def read_registry(path=DEFAULT_REGISTRY):
                 r"0x[0-9a-fA-F]+:0x[0-9a-fA-F]+", value
             ):
                 raise SourceModelError(
-                    f"{path}: inherit.{target}.ranges содержит {value!r}"
+                    f"{path}: inherit.{target}.ranges contains invalid value {value!r}"
                 )
             start_text, end_text = value.split(":", 1)
             start, end = int(start_text, 16), int(end_text, 16)
             if start >= end:
                 raise SourceModelError(
-                    f"{path}: inherit.{target}.ranges содержит пустой диапазон {value}"
+                    f"{path}: inherit.{target}.ranges contains empty range {value}"
                 )
             parsed_ranges.append((start, end, value))
         ordered = sorted(parsed_ranges)
@@ -123,11 +123,11 @@ def read_registry(path=DEFAULT_REGISTRY):
             left[1] > right[0] for left, right in zip(ordered, ordered[1:])
         ):
             raise SourceModelError(
-                f"{path}: inherit.{target}.ranges не упорядочены или пересекаются"
+                f"{path}: inherit.{target}.ranges are unordered or overlap"
             )
         if not isinstance(row["evidence"], str) or not row["evidence"].strip():
             raise SourceModelError(
-                f"{path}: inherit.{target}.evidence пуст"
+                f"{path}: inherit.{target}.evidence is empty"
             )
         entries[target] = SourceModel(
             target=target,
@@ -144,14 +144,14 @@ def read_registry(path=DEFAULT_REGISTRY):
     )
     if chained:
         raise SourceModelError(
-            f"{path}: цепочки наследования запрещены, цели {chained}"
+            f"{path}: inheritance chains are forbidden; targets: {chained}"
         )
     return entries
 
 
 def resolve(rom, path=DEFAULT_REGISTRY):
     if not isinstance(rom, str) or not ROM_RE.fullmatch(rom):
-        raise SourceModelError(f"некорректная метка ROM {rom!r}")
+        raise SourceModelError(f"invalid ROM label {rom!r}")
     return read_registry(path).get(
         rom,
         SourceModel(target=rom, source=rom, kind="canonical"),
@@ -170,7 +170,7 @@ def definition_paths(model):
 
 
 def materialize_rows(model, label, rows):
-    """Подставить целевую метку только в человекочитаемые поля общего источника."""
+    """Substitute the target label only in human-readable shared-source fields."""
     if not model.inherited:
         return rows
     fields = PROSE_FIELDS.get(label, ())
@@ -188,7 +188,7 @@ def materialize_rows(model, label, rows):
 
 
 def verify_image_binding(model, path=IMAGE_REGISTRY):
-    """Привязать exact-code связь к конкретным образам, а не только к меткам."""
+    """Bind an exact-code relationship to specific images, not only labels."""
     if not model.inherited:
         return
     path = Path(path)
@@ -196,14 +196,14 @@ def verify_image_binding(model, path=IMAGE_REGISTRY):
         with path.open(newline="", encoding="utf-8") as fh:
             rows = list(csv.DictReader(fh))
     except OSError as error:
-        raise SourceModelError(f"нет реестра образов {path}") from error
+        raise SourceModelError(f"image registry not found: {path}") from error
     by_rom = {}
     for row in rows:
         rom = row.get("rom", "")
         if not rom:
             continue
         if rom in by_rom:
-            raise SourceModelError(f"{path}: ROM {rom} объявлен несколько раз")
+            raise SourceModelError(f"{path}: ROM {rom} is declared more than once")
         by_rom[rom] = row
     expected = {
         model.target: model.target_sha256,
@@ -217,7 +217,7 @@ def verify_image_binding(model, path=IMAGE_REGISTRY):
     ]
     if bad:
         raise SourceModelError(
-            "exact-code наследование не совпадает с реестром образов: "
+            "exact-code inheritance does not match the image registry: "
             + "; ".join(bad)
         )
     images = {}
@@ -226,11 +226,11 @@ def verify_image_binding(model, path=IMAGE_REGISTRY):
         try:
             data = image_path.read_bytes()
         except OSError as error:
-            raise SourceModelError(f"нет образа exact-code ROM {image_path}") from error
+            raise SourceModelError(f"exact-code ROM image not found: {image_path}") from error
         actual = hashlib.sha256(data).hexdigest()
         if actual != digest:
             raise SourceModelError(
-                f"{image_path}: SHA-256 {actual}, ожидался {digest}"
+                f"{image_path}: SHA-256 is {actual}, expected {digest}"
             )
         images[rom] = data
     target_data = images[model.target]
@@ -240,10 +240,10 @@ def verify_image_binding(model, path=IMAGE_REGISTRY):
         start, end = int(start_text, 16), int(end_text, 16)
         if end > len(target_data) or end > len(source_data):
             raise SourceModelError(
-                f"exact-code диапазон {value} выходит за один из образов"
+                f"exact-code range {value} exceeds one of the images"
             )
         if target_data[start:end] != source_data[start:end]:
             raise SourceModelError(
-                f"exact-code диапазон {value} различается у "
+                f"exact-code range {value} differs between "
                 f"{model.target}/{model.source}"
             )

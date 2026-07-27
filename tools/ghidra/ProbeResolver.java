@@ -1,11 +1,11 @@
-// ProbeResolver.java - headless-спайк условия А резолвера операндов.
-// Меряет, снимает ли декомпилятор константные аргументы (r4=table, r5/r6=оси)
-// на косвенном вызове интерполятора внутри ignition-аксессора FUN_00082c8a
-// (JK03A / as7058): сайт 0x832a0, jsr @r2 при r2=0x26320.
-//   baseline      - как программа проанализирована сейчас;
-//   intervention  - после форсирования сигнатуры 0x26320 (custom storage r4..r7)
-//                   и (если нужно) добавления computed-call ссылки на сайте.
-// Прогон под -readOnly: мутации живут в памяти, в проект не пишутся.
+// ProbeResolver.java - headless spike for operand-resolver condition A.
+// Measures whether the decompiler recovers constant arguments (r4=table, r5/r6=axes)
+// at an indirect interpolation call inside ignition accessor FUN_00082c8a
+// (JK03A / as7058): site 0x832a0, jsr @r2 with r2=0x26320.
+//   baseline      - the program as currently analyzed;
+//   intervention  - after forcing the 0x26320 signature (custom storage r4..r7)
+//                   and, if needed, adding a computed-call reference at the site.
+// Under -readOnly, mutations remain in memory and are not written to the project.
 //@category VQ
 import ghidra.app.script.GhidraScript;
 import ghidra.app.decompiler.DecompInterface;
@@ -35,10 +35,10 @@ import java.util.List;
 
 public class ProbeResolver extends GhidraScript {
 
-    static final long SITE    = 0x832a0L;  // блок загрузки операндов (mov.l ...,r4)
-    static final long MEASURE = 0x832b6L;  // jsr @r2 карты 0xB81A (замер операндов)
-    static final long INTERP  = 0x26320L;  // интерполятор 16x16
-    // ожидаемые операнды сайта: r4=table, r5=axisX, r6=axisY
+    static final long SITE    = 0x832a0L;  // operand-load block (mov.l ...,r4)
+    static final long MEASURE = 0x832b6L;  // jsr @r2 for map 0xB81A (operand measurement)
+    static final long INTERP  = 0x26320L;  // 16x16 interpolator
+    // Expected site operands: r4=table, r5=axisX, r6=axisY.
     static final long[] EXPECT = { 0xb81aL, 0x11b6bL, 0x11b8bL };
     static final String[] EXPECT_NAME = { "r4=table 0xb81a", "r5=axisX 0x11b6b", "r6=axisY 0x11b8b" };
 
@@ -46,51 +46,54 @@ public class ProbeResolver extends GhidraScript {
     public void run() throws Exception {
         Function accessor = getFunctionContaining(toAddr(SITE));
         Function interp   = getFunctionAt(toAddr(INTERP));
-        println("=== ProbeResolver: условие А (снятие аргументов на CALLIND) ===");
+        println("=== ProbeResolver: condition A (recover arguments at CALLIND) ===");
         println("program : " + currentProgram.getName());
         println("accessor: " + (accessor == null ? "NULL" : accessor.getName() + " @" + accessor.getEntryPoint()));
         println("interp  : " + (interp == null ? "NULL" : interp.getName() + " @" + interp.getEntryPoint()));
-        if (accessor == null) { println("!! нет функции на сайте, стоп"); return; }
+        if (accessor == null) { println("!! no function at the site; stopping"); return; }
 
         reportCallSites(accessor);
-        reportSig("interp сигнатура BEFORE", interp);
+        reportSig("interp signature BEFORE", interp);
 
-        println("\n--- BASELINE: call-опкоды функции (сигнатура interp не форсирована) ---");
+        println("\n--- BASELINE: function call opcodes (interp signature not forced) ---");
         int baseHits = probeCalls(accessor);
-        println("BASELINE итог: снято " + baseHits + "/" + EXPECT.length + " операндов на вызове interp");
+        println("BASELINE result: recovered " + baseHits + "/" + EXPECT.length
+                + " operands at the interp call");
 
-        println("\n--- INTERVENTION: форс custom storage r4=table*,r5=axisX*,r6=axisY*,r7=curX ---");
+        println("\n--- INTERVENTION: force custom storage r4=table*,r5=axisX*,r6=axisY*,r7=curX ---");
         int tx = currentProgram.startTransaction("probe-force-sig");
         boolean ok = false;
         try {
             forceSig(interp);
             ok = true;
         } catch (Exception e) {
-            println("!! мутация не удалась (readOnly блокирует запись?): " + e);
+            println("!! mutation failed (does readOnly block the write?): " + e);
         } finally {
             currentProgram.endTransaction(tx, ok);
         }
-        reportSig("interp сигнатура AFTER", interp);
+        reportSig("interp signature AFTER", interp);
 
-        println("\n--- AFTER: call-опкоды функции ---");
+        println("\n--- AFTER: function call opcodes ---");
         int afterHits = probeCalls(accessor);
-        println("AFTER итог: снято " + afterHits + "/" + EXPECT.length + " операндов на вызове interp");
+        println("AFTER result: recovered " + afterHits + "/" + EXPECT.length
+                + " operands at the interp call");
 
-        println("\n=== ВЕРДИКТ ===");
+        println("\n=== VERDICT ===");
         println("baseline  : " + baseHits + "/" + EXPECT.length);
-        println("после сигн: " + afterHits + "/" + EXPECT.length);
+        println("after signature: " + afterHits + "/" + EXPECT.length);
         if (afterHits == EXPECT.length) {
-            println("=> условие А выполнимо: декомпилятор снимает r4/r5/r6 при заданной сигнатуре CALLIND");
+            println("=> condition A is feasible: the decompiler recovers r4/r5/r6 with the specified CALLIND signature");
         } else if (afterHits > baseHits) {
-            println("=> частично: сигнатура помогает, но снято не всё - смотреть представление операндов выше");
+            println("=> partial: the signature helps, but not every operand is recovered; inspect the representation above");
         } else {
-            println("=> условие А НЕ подтверждено на этом пути - резолвер операндов нужно строить иначе");
+            println("=> condition A is NOT confirmed on this path; the operand resolver needs a different design");
         }
     }
 
-    // Скан тела функции: все инструкции с call-flow, их адрес, мнемоника и цель-ссылка.
+    // Scan the function body for all call-flow instructions, their addresses, mnemonics,
+    // and target references.
     void reportCallSites(Function f) {
-        println("\ncall-сайты в " + f.getName() + ":");
+        println("\ncall sites in " + f.getName() + ":");
         Iterator<Instruction> ii = currentProgram.getListing().getInstructions(f.getBody(), true).iterator();
         while (ii.hasNext()) {
             Instruction ins = ii.next();
@@ -101,7 +104,7 @@ public class ProbeResolver extends GhidraScript {
                         .append("(").append(r.getReferenceType()).append(")");
             }
             println("  @" + ins.getAddress() + ": " + ins.toString()
-                    + " [" + ins.getFlowType() + "]" + (tgt.length() == 0 ? " -> <цель не разрешена>" : tgt));
+                    + " [" + ins.getFlowType() + "]" + (tgt.length() == 0 ? " -> <unresolved target>" : tgt));
         }
     }
 
@@ -121,7 +124,7 @@ public class ProbeResolver extends GhidraScript {
             ifc.openProgram(currentProgram);
             DecompileResults r = ifc.decompileFunction(f, 60, monitor);
             HighFunction hf = r.getHighFunction();
-            if (hf == null) { println("  декомпиляция не удалась: " + r.getErrorMessage()); return 0; }
+            if (hf == null) { println("  decompilation failed: " + r.getErrorMessage()); return 0; }
             Iterator<PcodeOpAST> it = hf.getPcodeOps();
             boolean sawInterp = false;
             while (it.hasNext()) {
@@ -132,8 +135,8 @@ public class ProbeResolver extends GhidraScript {
                 boolean isInterp = targetIsInterp(op);
                 if (!isInterp) continue;
                 sawInterp = true;
-                println("  опкод: " + (oc == PcodeOp.CALL ? "CALL" : "CALLIND") + " @" + op.getSeqnum().getTarget()
-                        + "  inputs=" + in.length + " (in[0]=цель)  <== interp 0x26320");
+                println("  opcode: " + (oc == PcodeOp.CALL ? "CALL" : "CALLIND") + " @" + op.getSeqnum().getTarget()
+                        + "  inputs=" + in.length + " (in[0]=target)  <== interp 0x26320");
                 for (int i = 0; i < in.length; i++) {
                     println("    in[" + i + "] = " + describe(in[i]));
                 }
@@ -142,13 +145,14 @@ public class ProbeResolver extends GhidraScript {
                     boolean hit = false;
                     for (int i = 1; i < in.length; i++) if (isVal(in[i], EXPECT[k])) hit = true;
                     if (hit) hits++;
-                    println("    [" + EXPECT_NAME[k] + "]: " + (hit ? "СНЯТ (разыменованием пула)" : "нет"));
+                    println("    [" + EXPECT_NAME[k] + "]: "
+                            + (hit ? "RECOVERED (by dereferencing the pool)" : "no"));
                 }
             }
-            if (!sawInterp) println("  !! вызов interp 0x26320 среди call-опкодов не найден");
+            if (!sawInterp) println("  !! interp 0x26320 call not found among call opcodes");
             String c = r.getDecompiledFunction() != null ? r.getDecompiledFunction().getC() : null;
             if (c != null) {
-                println("  -- C (строки вокруг вызова interp) --");
+                println("  -- C (lines around the interp call) --");
                 for (String line : c.split("\n")) {
                     if (line.contains("83368") || line.contains("8336c") || line.contains("83370")
                             || line.contains("83378") || line.contains("8337c")
@@ -163,7 +167,8 @@ public class ProbeResolver extends GhidraScript {
         return hits;
     }
 
-    // Целит ли call-опкод в интерполятор: по константе в in[0] либо по call-ссылке на его адресе.
+    // Determine whether a call opcode targets the interpolator from the constant in in[0]
+    // or from a call reference at its address.
     boolean targetIsInterp(PcodeOpAST op) {
         Varnode t = op.getInput(0);
         if (t != null && t.getOffset() == INTERP && (t.isConstant() || t.isAddress())) return true;
@@ -191,13 +196,13 @@ public class ProbeResolver extends GhidraScript {
         return base;
     }
 
-    // Резолвер: аргумент-указатель = адрес слота пула; база таблицы/оси - его содержимое.
+    // Resolver: a pointer argument is a pool-slot address; the table or axis base is its value.
     boolean isVal(Varnode vn, long v) {
         if (vn == null) return false;
-        if (vn.isConstant() && vn.getOffset() == v) return true;         // прямая константа
+        if (vn.isConstant() && vn.getOffset() == v) return true;         // direct constant
         if (vn.isRegister() || vn.isUnique()) return false;
-        if (vn.getOffset() == v) return true;                            // адрес совпал напрямую
-        if (isRam(vn)) {                                                 // разыменование pool-слота
+        if (vn.getOffset() == v) return true;                            // direct address match
+        if (isRam(vn)) {                                                 // dereference a pool slot
             Long d = derefRomWord(vn.getAddress());
             if (d != null && d.longValue() == v) return true;
         }
@@ -220,7 +225,7 @@ public class ProbeResolver extends GhidraScript {
     }
 
     void forceSig(Function f) throws Exception {
-        if (f == null) { println("  interp NULL, форс невозможен"); return; }
+        if (f == null) { println("  interp NULL; cannot force signature"); return; }
         f.setCustomVariableStorage(true);
         Register r4 = currentProgram.getRegister("r4");
         Register r5 = currentProgram.getRegister("r5");
@@ -234,7 +239,7 @@ public class ProbeResolver extends GhidraScript {
         params.add(new ParameterImpl("curX", new Undefined2DataType(), r7, currentProgram));
         f.updateFunction(null, null, params,
                 Function.FunctionUpdateType.CUSTOM_STORAGE, true, SourceType.USER_DEFINED);
-        println("  сигнатура interp форсирована: 4 параметра в r4..r7");
+        println("  interp signature forced: four parameters in r4..r7");
     }
 
 }

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-# Загрузка call-графа Ghidra (funcs.csv + calls.csv из ExportGraph.java) в Memgraph
-# и кластеризация подсистем (Louvain на проекции call-графа этого rom). Узлы
-# :Func {rom,addr,name,size,is_thunk,is_external}, рёбра (:Func)-[:CALLS]->(:Func).
-# Повторный прогон для того же rom идемпотентен (узлы этого rom пересоздаются).
+# Load a Ghidra call graph (funcs.csv + calls.csv from ExportGraph.java) into Memgraph and
+# cluster subsystems with Louvain on this ROM's call-graph projection. Nodes are
+# :Func {rom,addr,name,size,is_thunk,is_external}; relationships are
+# (:Func)-[:CALLS]->(:Func). Repeated runs for the same ROM are idempotent because its
+# nodes are recreated.
 #
-# Запуск: uv run --no-project --with neo4j python tools/memgraph/load_graph.py \
+# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_graph.py \
 #           <export_dir> <rom_label>
-# По умолчанию export_dir = ~/tools/ghidra-projects/export-1ND0A, rom = 1ND0A.
+# Defaults: export_dir = ~/tools/ghidra-projects/export-1ND0A, rom = 1ND0A.
 import csv
 import os
 import sys
@@ -68,10 +69,10 @@ def main():
         ).single()["n"]
         print(f"Memgraph: {nn} nodes, {ne} CALLS edges")
 
-        # Louvain на проекции call-графа этого rom: алгоритму видны только :Func и
-        # CALLS. По всему storage кластеризация непригодна - :Reg связывает любые две
-        # функции, обращающиеся к общему адресу, и граф схлопывается в один мегакластер.
-        # Функции без вызовов в проекцию не входят и остаются без community.
+        # Louvain on this ROM's call-graph projection sees only :Func and CALLS.
+        # Clustering the whole storage is invalid because :Reg connects any functions that
+        # access the same address and collapses the graph into one megacluster. Functions
+        # without calls are absent from the projection and remain without a community.
         s.run("MATCH (f:Func {rom:$rom}) REMOVE f.community", rom=rom)
         s.run(
             """
@@ -91,7 +92,7 @@ def main():
             "MATCH (f:Func {rom:$rom}) WHERE f.community IS NULL RETURN count(f) AS n",
             rom=rom,
         ).single()["n"]
-        print(f"Louvain: {nc} communities, {iso} функций без вызовов (вне проекции)")
+        print(f"Louvain: {nc} communities, {iso} functions without calls (outside projection)")
         print("Top communities (size, sample funcs):")
         rows = s.run(
             """

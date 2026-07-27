@@ -1,214 +1,220 @@
-# refs/vendor – вендорские каталоги и якорные факты
+# refs/vendor - vendor catalogs and anchor facts
 
-Словари и факты производителей тюнинг-софта по архитектуре **HR**, сведённые в машинный вид
-как опора для пайплайна карт (`tools/map-flag-pipeline.md`). Над одним и тем же железом
-существует три независимых словаря, и они не дублируют, а триангулируют друг друга:
+Machine-readable dictionaries and facts from tuning-software vendors for the **HR**
+architecture, used as evidence by the map pipeline (`tools/map-flag-pipeline.md`). Three
+independent dictionaries describe the same hardware. They triangulate one another rather
+than duplicate the same information:
 
-| Словарь | Источник | Что даёт | Где живёт |
+| Dictionary | Source | Contribution | Storage |
 |---|---|---|---|
-| **ProECU** (EcuTek) | `refs/ecutek/` | дерево имён заводских карт, документированные дефолты, механика VQ37VHR | здесь |
-| **UpRev** | `refs/uprev/` | оси в терминах ROM (BFS), цепочка расчёта, коды DTC | здесь |
-| **A2L** (RomRaider / Pytrex) | `defs/` | геометрия, тип элемента, scaling, семантика осей, описания | граф, `tools/memgraph/load_a2l.py` |
+| **ProECU** (EcuTek) | `refs/ecutek/` | factory map-name tree, documented defaults, VQ37VHR mechanics | this directory |
+| **UpRev** | `refs/uprev/` | axes in ROM terms (BFS), calculation chain, DTC codes | this directory |
+| **A2L** (RomRaider / Pytrex) | `defs/` | geometry, element type, scaling, axis semantics, descriptions | graph, `tools/memgraph/load_a2l.py` |
 
-Ни один из трёх не полон. A2L даёт геометрию, шкалу и семантику осей и потому решает пробелы,
-которые вендоры объявляют своими (ось карт отсечки, шкала порога детонации). Вендорские доки
-несут механику – цепочку расчёта, условия выбора карт – и **документированные дефолты**, то
-есть числа, которые ищутся прямо в дампе. Совпадение трёх независимых источников на одном
-предмете и есть тот уровень доверия, которого не даёт ни один по отдельности.
+None of the three is complete. A2L provides geometry, scale, and axis semantics, resolving
+gaps explicitly acknowledged by vendors, such as the rev-limiter map axis and knock-threshold
+scale. Vendor documents provide mechanics, map-selection conditions, and **documented
+defaults**, which are numeric values that can be searched directly in a dump. Agreement among
+three independent sources about one subject provides stronger confidence than any source alone.
 
-## Состав
+## Contents
 
-| Файл | Что | Записей |
+| File | Contents | Entries |
 |---|---|---|
-| `proecu-maps.csv` | Каталог имён ProECU, транскрипция дерева карт вербатим | 295 |
-| `uprev-maps.csv` | Каталог UpRev: имена, оси, выход, извлечены из прозы | 76 |
-| `catalog.csv` | Сводный каталог обоих словарей, `origin` применён, `concept` проставлен | 371 |
-| `facts.csv` | Якорные факты: константы, единицы, оси, механика, пробелы вендоров | 121 |
+| `proecu-maps.csv` | ProECU name catalog, transcribed verbatim from map-tree screenshots | 295 |
+| `uprev-maps.csv` | UpRev catalog: names, axes, and outputs extracted from prose | 76 |
+| `catalog.csv` | Combined catalog with derived `origin` and `concept` columns | 371 |
+| `facts.csv` | Anchor facts: constants, units, axes, mechanics, and vendor gaps | 121 |
 
-`catalog.csv` собирается из двух первых файлов; правятся источники, а не он.
+`catalog.csv` is generated from the first two files. Edit the source transcriptions rather
+than the generated catalog.
 
-## Метод
+## Method
 
-**ProECU.** Секции "Map List" обоих документов EcuTek – это **скриншоты** дерева карт, то есть
-каталог имён недоступен ни grep, ни агенту по тексту. Записи транскрибированы с изображений
-вручную, вербатим: регистр, пунктуация и опечатки источника сохранены, включая собственные
-маркеры неопределённости ProECU (`Idle Target #1a - ??`, `Possible Idle rel #1`,
-`Sensor Multiplier Unk`, `Torque Filtering Unknown Hi`) и его же пометки `(unused)`.
-Скриншоты показывают только имена: осей, геометрии и scaling в них нет.
+**ProECU.** The "Map List" sections in both EcuTek documents are screenshots of a map tree,
+so neither grep nor a text-reading agent can access the catalog. Entries were transcribed
+manually and verbatim. Source capitalization, punctuation, and typos are preserved, including
+ProECU's uncertainty markers (`Idle Target #1a - ??`, `Possible Idle rel #1`,
+`Sensor Multiplier Unk`, `Torque Filtering Unknown Hi`) and `(unused)` labels. The screenshots
+show names only; they contain no axes, geometry, or scaling.
 
-**UpRev.** Документ – сплошная проза без дерева карт, зато каждый раздел называет оси и смысл
-выхода. Имена, оси и выход извлечены из текста и приведены к той же форме записи, что у ProECU.
+**UpRev.** The document is continuous prose without a map tree, but each section names axes
+and output meaning. Names, axes, and outputs were extracted from the text and represented in
+the same record form as ProECU.
 
-**Сведение.** `catalog.csv` – объединение двух каталогов с нормализованными `origin` и `concept`.
-Ни одна запись не выбрасывается и не переписывается: имена остаются вербатим, вся аналитика
-уходит в отдельные колонки.
+**Combination.** `catalog.csv` is the union of both catalogs with normalized `origin` and
+`concept` fields. No entry is discarded or renamed. Names remain verbatim, and all analysis
+resides in separate columns.
 
-## Колонка origin
+## The origin column
 
-Классификация `factory` / `patch` / `unknown` – что заводское, а что вписано патчем вендора.
-Для разметки стокового ROM годятся только записи `origin=factory` (**243 из 371**); `patch`
-описывает чужой код и держится для полноты и для разбора патченых ROM.
+The `factory` / `patch` / `unknown` classification distinguishes factory content from
+vendor-injected patches. Only `origin=factory` entries (**243 of 371**) can annotate a stock
+ROM. A `patch` entry describes foreign code and is retained for completeness and analysis of
+patched ROMs.
 
-| Условие | origin |
+| Condition | origin |
 |---|---|
-| ProECU, документ `racerom-supplement` | `patch` |
-| ProECU, ветка дерева `EcuTek RaceROM Maps//...` | `patch` |
-| ProECU, остальное | `factory` |
-| UpRev, разделы ARC и Simplified Timing, NATS, Single Bank O2 Hack | `patch` |
-| UpRev, остальное | `factory` |
-| UpRev, переключатели Cruise Enabled и MT Swap | `unknown` |
+| ProECU document `racerom-supplement` | `patch` |
+| ProECU tree branch `EcuTek RaceROM Maps//...` | `patch` |
+| Remaining ProECU entries | `factory` |
+| UpRev ARC and Simplified Timing sections, NATS, Single Bank O2 Hack | `patch` |
+| Remaining UpRev entries | `factory` |
+| UpRev Cruise Enabled and MT Swap switches | `unknown` |
 
-Чей это патч, говорит колонка `vendor`: `ecutek` – RaceROM, `uprev` – ARC.
+The `vendor` column identifies the patch owner: `ecutek` means RaceROM and `uprev` means ARC.
 
-**Метка группы ненадёжна и в правило не входит.** `Rev Limit Per Gear Mode1-4` – карты RaceROM,
-но лежат под группой `Limiters` рядом с заводскими `Rev Limit - Fuel Cut`; разрешается по
-документу-источнику, а не по ветке дерева. Надёжные признаки – документ, явный корень дерева и
-колонка происхождения в UI ProECU (значение `RaceROM`, покрывает 37 записей).
+**Group labels are unreliable and are not part of the rule.** `Rev Limit Per Gear Mode1-4`
+are RaceROM maps placed under `Limiters` beside factory `Rev Limit - Fuel Cut` maps. Origin is
+determined by the source document, explicit tree root, and the ProECU UI origin column
+(`RaceROM`, covering 37 entries), not by the group label.
 
-## Колонка concept
+## The concept column
 
-Ключ соединения словарей: записи с одним `concept` описывают одну сущность. Проставлен только
-там, где связка обоснована – **170 записей из 371**, из них **27 concept'ов покрыты обоими
-словарями**. Пустой `concept` означает "связка не установлена", а не "связки нет".
+`concept` is the dictionary join key: records sharing one value describe the same entity. It
+is assigned only where the relationship is justified: **170 of 371 entries**, with **27
+concepts covered by both dictionaries**. An empty value means "link not established", not
+"no link exists".
 
-Тот же ключ несёт каталог A2L (`:A2LEntry.concept`, **45 записей из 188**; разметка –
-`tools/memgraph/load_a2l.py`), а словарь значений задаёт этот файл: `concept`, которого нет в
-`catalog.csv`, джойнится в пустоту, поэтому загрузчик A2L сверяет свою разметку с ним и падает
-на незнакомом значении. Все три словаря сходятся на **23 значениях**, 17 из них – с обоими
-вендорами.
+The A2L catalog uses the same key (`:A2LEntry.concept`, **45 of 188 entries**; annotation is
+implemented in `tools/memgraph/load_a2l.py`). This file defines the vocabulary: an A2L concept
+absent from `catalog.csv` joins to nothing, so the A2L loader rejects unknown values. All three
+dictionaries converge on **23 concepts**, 17 of them covered by both vendors.
 
-Гранулярность – семейство калибровки, а не одна таблица: `vvel-duration` покрывает семь записей
-ProECU (Cold, Main, Overrun, WOT и прочие), `idle-ignition` – девять. Варианты одной функции
-(Cold/High Detonation/High Octane, контрольные копии Trustful) значение делят.
+Concept granularity is a calibration family rather than one table. `vvel-duration` covers
+seven ProECU records (Cold, Main, Overrun, WOT, and others), while `idle-ignition` covers
+nine. Variants of one function (Cold/High Detonation/High Octane and Trustful check copies)
+share the same value.
 
-Пример схождения, ради которого вся конструкция: `bfs-multiplier` – это ProECU
-`BFS Multiplier (K-Factor)`, UpRev `K - Fuel Multiplier` и A2L `K-Value` (единица `ms/kg`,
-"Air volume pulse width conversion constant"). Единица подтверждает связку: формула UpRev
-`MAF * K = BFS` требует ровно ms/kg – масса на множитель даёт ширину импульса.
+The motivating example is `bfs-multiplier`: ProECU calls it
+`BFS Multiplier (K-Factor)`, UpRev calls it `K - Fuel Multiplier`, and A2L calls it `K-Value`
+with unit `ms/kg` and description "Air volume pulse width conversion constant". The unit
+confirms the link: UpRev's `MAF * K = BFS` formula turns mass multiplied by ms/kg into pulse
+width in milliseconds.
 
-A2L `MAF Factor` (`kg/hr`) – **другая** величина, соответствующая ProECU
-`MAF Sensor Scale (% to g/s) for Load` (concept `maf-gps-scalar`). A2L различает их прямо:
-"can be used instead of adjusting K factor. This is what Nissan uses to scale MAF from
-factory" – то же разделение, что советует EcuTek (K не трогать, корпуса MAF править вторым).
+A2L `MAF Factor` (`kg/hr`) is a **different** quantity corresponding to ProECU
+`MAF Sensor Scale (% to g/s) for Load` (`maf-gps-scalar`). A2L distinguishes the two directly:
+it states that the factor can be used instead of adjusting K and is Nissan's factory method
+for MAF scaling. This matches EcuTek's advice to leave K unchanged and adjust the second value
+for larger MAF housings.
 
-Имя связку не решает, и на том же MAF видно, как оно уводит: A2L `MAF Voltage Lower Limit` по
-имени садится на `MAF Voltage Min Allowed`, но A2L зовёт свой порог "AFM power supply NG
-judgement" и поднимает им P0102, тогда как EcuTek пишет о переводе ECM в safe/limp **без DTC**.
-Величины разные, и связка не проставлена ни одной. Решают описание и геометрия, а не близость
-строк.
+Names alone cannot establish a link. A2L `MAF Voltage Lower Limit` appears to match
+`MAF Voltage Min Allowed`, but A2L describes its threshold as AFM power-supply fault judgment
+that raises P0102. EcuTek's value places the ECM in safe/limp mode **without a DTC**. They are
+different quantities, so neither link is assigned. Descriptions and geometry decide, not
+string similarity.
 
-## Что даёт сведение
+## What the combined catalog provides
 
-Каждый словарь закрывает пробелы другого:
+Each dictionary fills gaps in another:
 
-- **Оси.** UpRev называет ось нагрузки её ROM-именем – `Base Fuel Schedule`. ProECU ту же ось
-  зовёт `Engine Load (%)`, то есть уже после деления. Для матча к найденной в дампе таблице
-  значима исходная величина: на оси лежит BFS.
-- **Цепочка расчёта.** ProECU: "K умножает Mass Airflow в Engine Load". UpRev разбирает это на
-  два шага: `MAF * K = BFS`, затем `Load = BFS / Calculated Load[RPM]`. Заводское значение
-  ProECU `100% Engine Load = 39.8 BFS` – это значение таблицы UpRev `Calculated Load`.
-- **Оси, которых нет у ProECU.** ProECU не указывает ось `Idle Target`; UpRev говорит –
-  температура охлаждающей жидкости, ось статическая.
-- **Ось, которой не знает вендор.** Ось карт `Rev Limit` ProECU объявляет неизвестной прямо:
-  "The Input axis to these maps is currently unknown". A2L её называет – `State` с точками
-  `Normal` и `Reverse`, а вторая ось, `Fuel`, несёт `Cut` и `Restore`: одна карта 2x2 вместо
-  двух карт ProECU. Отсюда и совет "set all values the same" – равенство переднего хода и
-  задней передачи. Закрепляется трейсом аксессора.
-- **Дубли комплектов.** ProECU показывает по два комплекта карт отсечки на сбросе (`#1`, `#2`) и
-  разницы не объясняет, отмечая лишь "Only the #2 maps are used during our testing". A2L
-  называет причину: комплекты принадлежат разным линейкам ЭБУ – Bosch и JECS/Hitachi, – и живёт
-  тот, к которому принадлежит сам ЭБУ.
-- **Мёртвые калибровки.** ProECU сам помечает карты `(unused)`; UpRev пишет, что таблицы
-  вентилятора прошлого поколения остаются в ЭБУ неиспользуемыми. Роль `dead` в пайплайне –
-  ожидаемое состояние заводского ROM, а не ошибка каталога.
-- **Контрольные копии.** ProECU зовёт их `Trustful`, UpRev – суффиксом `(Alt)`; вместе они
-  покрывают педаль, TPS, момент, дроссель и VVEL. UpRev добавляет код неисправности: **P0605**.
-  Две побайтно одинаковые таблицы в ROM – заводская форма, а не дубль каталога.
+- **Axes.** UpRev names the load axis by its ROM quantity, `Base Fuel Schedule`. ProECU calls
+  the same axis `Engine Load (%)`, after division. The original quantity matters when matching
+  a table found in a dump: the stored axis is BFS.
+- **Calculation chain.** ProECU states that K multiplies Mass Airflow into Engine Load. UpRev
+  separates the chain into `MAF * K = BFS`, then `Load = BFS / Calculated Load[RPM]`.
+  ProECU's factory `100% Engine Load = 39.8 BFS` is the value in UpRev's `Calculated Load`
+  table.
+- **Axes absent from ProECU.** ProECU does not identify the `Idle Target` axis. UpRev states
+  that it is coolant temperature and is static.
+- **An axis unknown to a vendor.** ProECU explicitly says that the `Rev Limit` map input axis
+  is unknown. A2L identifies it as `State` with `Normal` and `Reverse` points; the other axis,
+  `Fuel`, contains `Cut` and `Restore`. One 2x2 map replaces two ProECU maps. This explains the
+  recommendation to set all values equal: make forward and reverse identical. An accessor
+  trace must still confirm the structure.
+- **Duplicate sets.** ProECU shows two overrun fuel-cut map sets (`#1`, `#2`) without explaining
+  the difference, noting only that testing used set #2. A2L explains that the sets belong to
+  different ECU families, Bosch and JECS/Hitachi; the active set is the one matching the ECU.
+- **Dead calibrations.** ProECU labels maps `(unused)`, while UpRev states that fan-control
+  tables from the previous generation remain in some ECUs but are unused. A `dead` role is an
+  expected stock-ROM state rather than a catalog error.
+- **Check copies.** ProECU calls them `Trustful`, and UpRev uses the `(Alt)` suffix. Together
+  they cover accelerator pedal, TPS, torque, throttle, and VVEL. UpRev adds the failure code:
+  **P0605**. Two byte-identical ROM tables are a factory pattern, not a duplicate catalog entry.
 
-## Расхождения словарей
+## Dictionary disagreements
 
-Зафиксированы как есть, без выбора победителя:
+The catalog records disagreements without selecting a winner:
 
-| Предмет | ProECU | UpRev | Состояние |
+| Subject | ProECU | UpRev | State |
 |---|---|---|---|
-| Открытый контур | в него уводит цель AFR **меньше** 14.7 | в него уводит **любая** цель, кроме 14.7 | не разрешено |
-| Оси карт обогащения | RPM x Engine Load, смысл – поправка к цели AFR | Volumetric Flow Ratio x RPM, смысл – доля воздуха пленума | A2L даёт обе: `Fuel Compensation Map` (QH0 Flow Quantity x Engine Speed, "directly trim Base Fuel Schedule") отвечает UpRev, а пара KHOT по температуре – обогащению ProECU. Похоже, словари описывают **разные** карты; `concept` `fuel-comp` их пока объединяет |
-| Подъём клапана VVEL | 25 °Cam -> 0.75 мм, 70 °Cam -> 11.50 мм | точных измерений нет, связь считает линейной | ProECU информативнее |
-| Заводских карт зажигания | девять: пять `Mode A1 Adj`, четыре `Mode B1` | три: Main, High Det, Cold | A2L даёт три (Cold, High Detonation, High Octane), то есть UpRev `Main` = A2L `High Octane`; чему отвечают девять ProECU – не установлено |
+| Open loop | target AFR **below** 14.7 enters it | **any** target other than 14.7 enters it | unresolved |
+| Enrichment-map axes | RPM x Engine Load; output adjusts target AFR | Volumetric Flow Ratio x RPM; output is a plenum-air fraction | A2L has both: `Fuel Compensation Map` (QH0 Flow Quantity x Engine Speed, "directly trim Base Fuel Schedule") matches UpRev, while the KHOT temperature pair matches ProECU enrichment. The dictionaries probably describe **different** maps, though `fuel-comp` currently groups them |
+| VVEL valve lift | 25 degCam -> 0.75 mm, 70 degCam -> 11.50 mm | no exact measurements; assumes a linear relationship | ProECU is more informative |
+| Number of factory ignition maps | nine: five `Mode A1 Adj`, four `Mode B1` | three: Main, High Det, Cold | A2L also has three (Cold, High Detonation, High Octane), so UpRev `Main` = A2L `High Octane`; the nine ProECU entries remain unidentified |
 
-Заводское зажигание при этом описывают одинаково все три источника: это **поправка**, а не
-абсолютный угол. ProECU – `Ignition MBT Adjustment`, UpRev – "timing trim of the internally
-calculated Ignition timing value", A2L – `Degrees Adjustment (x-64)` и прямо: "The ECU
-calculates a MBT ignition advance, then this trimming map value is added/subtracted from that
-value". UpRev добавляет причину – MBT считается формулой, а не таблицей, поэтому базовой
-таблицы угла в ЭБУ Nissan нет вовсе, – а A2L называет входы этой формулы целым разделом
-`Ignition Timing//MBT Calculation`: скорость распространения пламени, плотность несгоревшей
-смеси, задержка воспламенения, разбавление, EGR.
+All three sources agree that factory ignition maps are **adjustments**, not absolute timing.
+ProECU uses `Ignition MBT Adjustment`, UpRev describes a timing trim added to internally
+calculated timing, and A2L uses `Degrees Adjustment (x-64)` and explicitly says that the map
+value is added to or subtracted from calculated MBT advance. UpRev explains that MBT is
+computed by a formula rather than stored in a base timing table. A2L names the inputs under
+`Ignition Timing//MBT Calculation`: flame speed, unburned-gas density, ignition delay,
+dilution, EGR, and related coefficients.
 
-## Что закрыл A2L
+## Gaps resolved by A2L
 
-Пробелы, которые вендоры объявили своими, а описания A2L разрешают:
-
-| Пробел | Кто объявил | Что говорит A2L |
+| Gap | Source acknowledging it | A2L information |
 |---|---|---|
-| Ось карт отсечки топлива | ProECU: "The Input axis to these maps is currently unknown" | ось – **температура охлаждающей жидкости**, значение – обороты (`x*25`), карта 1D-16 |
-| Почему комплектов отсечки два | ProECU: "Only the #2 maps are used during our testing" | комплекты принадлежат разным линейкам ЭБУ – `Bosch` и `JECS`: "used for Bosch ECU's only" |
-| Шкала порога детонации | ProECU и UpRev: перевода в кГц не знают | `Knock Slice Map`, 16x6, оси RPM x **Cylinder**, шкала `x*0.0015259` |
-| Ось поцилиндровой коррекции | ProECU: "может оказаться порядком работы" | `Individual Cylinder Fuel Trims`, 1D-6, ось **Cylinder** (порядка не доказывает) |
-| Предел FTST: 75..125% или 120% | расхождение внутри документа EcuTek | не константа, а калибруемая пара: `Short Term Fuel Trim Limits`, 1D-2 |
-| Ограничитель оборотов по температуре | UpRev называет, ProECU нет | `KT Low Oil Temperature Fuel Cut/Restore`, единица RPM |
+| Fuel-cut map axis | ProECU: "The Input axis to these maps is currently unknown" | axis is **coolant temperature**, value is engine speed (`x*25`), map is 1D-16 |
+| Why two fuel-cut sets exist | ProECU: "Only the #2 maps are used during our testing" | sets belong to different ECU families, `Bosch` and `JECS`; one description says "used for Bosch ECU's only" |
+| Knock-threshold scale | ProECU and UpRev do not know the kHz conversion | `Knock Slice Map`, 16x6, axes RPM x **Cylinder**, scale `x*0.0015259` |
+| Per-cylinder correction axis | ProECU says it may represent firing order | `Individual Cylinder Fuel Trims`, 1D-6, axis **Cylinder**; this does not prove order |
+| FTST limit: 75..125% or 120% | disagreement within the EcuTek document | a calibratable pair, `Short Term Fuel Trim Limits`, 1D-2, rather than a constant |
+| Oil-temperature rev limiter | named by UpRev but absent from ProECU | `KT Low Oil Temperature Fuel Cut/Restore`, unit RPM |
 
-## Границы применимости
+## Applicability boundaries
 
-- EcuTek документирует **VQ37VHR** (370Z). UpRev пишет обобщённо по платформам Nissan и потому
-  переносится шире; в `facts.csv` это отражено колонкой `applies_to`.
-- Донорский `JK03A` – **VQ25HR без VVEL**. Группа `Cam Timing//VVEL Valve Duration` к нему
-  неприменима, `VTC Valve Advance` применима. Связка "зажигание усложнено поправками от VVEL"
-  на VQ25HR не действует, что даёт основание ожидать более простое заводское зажигание.
-- Каталог – **нижняя граница** списка карт. Скриншоты ProECU – срез UI: раздел `100% Engine Load`
-  описан прозой и имеет заводское значение, но в Map List отсутствует; у раздела Misc
-  (вентилятор, ESP, передаточные числа) Map List нет вовсе; дерево Accel Pedal показывает только
-  Normal и Snow, тогда как проза называет четыре режима. Отсутствие имени в каталоге ничего не
-  говорит об отсутствии карты в ROM.
+- EcuTek documents **VQ37VHR** (370Z). UpRev describes Nissan platforms more generally, so
+  its facts transfer more broadly. `facts.csv` records this in `applies_to`.
+- Donor `JK03A` is **VQ25HR without VVEL**. `Cam Timing//VVEL Valve Duration` does not apply,
+  while `VTC Valve Advance` does. The VQ37VHR claim that VVEL adjustments complicate ignition
+  does not apply to VQ25HR, supporting an expectation of simpler factory ignition logic.
+- The catalog is a **lower bound** on the map set. ProECU screenshots are a UI snapshot:
+  `100% Engine Load` has prose and a factory value but no Map List entry; the Misc section
+  (fan, ESP, gear ratios) has no Map List; and the Accel Pedal tree shows only Normal and Snow
+  although prose names four modes. A missing catalog name says nothing about whether a map
+  exists in the ROM.
 
-## Открытые вопросы
+## Open questions
 
-- **Custom Maps ProECU не извлечён.** В разделе Custom Maps документа `racerom-supplement`
-  приложен не тот скриншот: `images/image2019-8-27_13-22-24.png` показывает дерево RaceROM
-  Controller. Дефект источника, а не выгрузки – файл отличается от
-  `images/image2019-8-27_13-20-43.png` побайтно (sha256 и размер разные), но содержимое то же:
-  снимок пересняли через две минуты и приложили к соседнему разделу.
-- `Fuelling`: пара строк читается как `AFR Conversion Table Bank 1` дважды – вторая, вероятно,
-  `Bank 2`. `Torque`: пара `Torque Reduction Ramp after Shift` дважды. Обе помечены `[DUP]`.
-- Расшифровки суффикса `ETD` не даёт ни один вендор. Гипотеза сведения – вариант карты для
-  режима высокой детонации, см. `facts.csv`, `kind=hypothesis`.
+- **ProECU Custom Maps were not extracted.** The Custom Maps section in
+  `racerom-supplement` contains the wrong screenshot:
+  `images/image2019-8-27_13-22-24.png` shows the RaceROM Controller tree. This is a source
+  defect rather than an extraction error. The file differs byte-for-byte from
+  `images/image2019-8-27_13-20-43.png` (different SHA-256 and size), but the visible content
+  is the same: the screenshot was retaken two minutes later and attached to the adjacent
+  section.
+- Two `Fuelling` rows both read `AFR Conversion Table Bank 1`; the second is probably
+  `Bank 2`. Two `Torque Reduction Ramp after Shift` rows also appear. Both pairs carry `[DUP]`.
+- Neither vendor expands the `ETD` suffix. The combined-catalog hypothesis is a
+  high-detonation-mode variant; see `facts.csv`, `kind=hypothesis`.
 
-## Найденное по дампам
+## Findings from ROM dumps
 
-`BFS Multiplier (K-Factor)` – документированный дефолт **26806** (`0x68B6`), значение одинаково
-на 2.5L, 3.5L и 3.7L (константа архитектуры HR, что сходится с советом обоих вендоров его не трогать).
-Опознаёт его не значение, а **сигнатура блока скалярных констант** `0000 5E24 A5F0 FFFF [68B6]`,
-гомологичная на всех шести образах реестра:
+`BFS Multiplier (K-Factor)` has documented default **26806** (`0x68B6`), identical on 2.5 L,
+3.5 L, and 3.7 L engines. This supports an HR-architecture constant and matches both vendors'
+advice not to change it. The value is identified by a homologous scalar-block signature,
+`0000 5E24 A5F0 FFFF [68B6]`, across all six registry images:
 
-| ROM | мотор | адрес |
+| ROM | Engine | Address |
 |---|---|---|
 | 1ND0A | VQ37VHR | `0x9106` |
 | 1ND3B | VQ37VHR | `0x9106` |
-| JK78C | – | `0x8F80` |
+| JK78C | - | `0x8F80` |
 | JK03A | VQ25HR | `0x9284` |
 | JK08A | VQ25HR | `0x9284` |
 | JK00D | VQ35HR | `0x931C` |
 
-Одного значения для опознания мало. На четырёх образах `0x68B6` выровнен по слову
-единственный раз, но в exact-code паре JK03A/JK08A – **дважды**: второе вхождение
-`0x162FA` сигнатуры не несёт, лежит в области данных, где его не покрывает ни одна
-из 439 карт каталога и ни одна из 229 осей, а функций там нет вовсе. Это ячейка
-таблицы, совпавшая значением, а не второй K-Factor. Поэтому якорем работает сигнатура
-блока, а не число само по себе.
+The value alone is insufficient. `0x68B6` is the only word-aligned occurrence in four images,
+but appears **twice** in the exact-code JK03A/JK08A pair. The second occurrence at `0x162FA`
+lacks the signature and lies in a data region covered by none of the 439 catalog maps or 229
+axes, with no functions present. It is a table cell that happens to share the value, not a
+second K-Factor. The block signature, rather than the scalar alone, is the anchor.
 
-Уровень – `candidate`: совпадение сигнатуры, не трейс кода. Подъём до `code` (трейс до умножения
-MAF в нагрузку) – в роадмапе, Фаза 3. Нижняя граница диапазона по UpRev – 10 000, дефолт лежит
-выше неё примерно в 2.7 раза.
+Confidence is `candidate`: a signature match rather than a code trace. Promotion to `code`
+requires tracing the MAF-to-load multiplication and remains in Phase 3 of the roadmap. UpRev
+sets a lower range bound of 10,000; the default is about 2.7 times higher.
 
-В том же блоке кодом уже опознан `Rev Limit - Fuel Cut Maximum` (JK03A `0x8FDC` / `0x8FDE`,
-`FUN_00047a56`), поэтому остальные документированные скаляры разумно искать там же.
+The same block already contains a code-identified `Rev Limit - Fuel Cut Maximum`
+(JK03A `0x8FDC` / `0x8FDE`, `FUN_00047a56`), so the remaining documented scalars are
+reasonable targets in that region.

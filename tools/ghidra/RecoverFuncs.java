@@ -1,26 +1,26 @@
-// RecoverFuncs.java - разметка функциями кода, оставшегося вне функций (Stage 0,
-// раздел 7 tools/map-flag-pipeline.md).
+// RecoverFuncs.java - define functions for code left outside function bodies (Stage 0,
+// section 7 of tools/map-flag-pipeline.md).
 //
-// Автоанализ делает функцию из участка, на который есть прямая ссылка вызова. Код,
-// достижимый только косвенно (jsr @rN через слот пула) или через диспетчер по указателю,
-// функцией не становится: инструкции дизассемблированы, но ни в одну функцию не входят.
-// Следствия измеримы на цензе карт JK03A: 17 из 124 call-сайтов ядра 0x26944 лежат вне
-// разметки, поэтому ExportGraph их вызовы не перечисляет (обёртки 0x26100 и 0x26230 в
-// графе остаются без вызывателей), а декомпилятор в такой участок не дотягивается, и
-// data-flow операндов там недоступен.
+// Auto-analysis creates a function for a region that has a direct call reference. Code
+// reachable only indirectly (jsr @rN through a pool slot) or through a pointer dispatcher
+// does not become a function: its instructions are disassembled but belong to no function.
+// The consequences are measurable in the JK03A map census: 17 of 124 call sites for core
+// 0x26944 are outside function bodies, so ExportGraph does not list their calls (wrappers
+// 0x26100 and 0x26230 remain without callers in the graph), and the decompiler cannot reach
+// such a region, leaving operand data flow unavailable.
 //
-// Проход ищет непрерывные участки инструкций вне функций и создаёт функцию с начала
-// каждого; тело Ghidra строит по flow. Участок может содержать несколько функций подряд,
-// поэтому проходы повторяются, пока покрытие растёт: созданная функция отсекает свой
-// пролог, и начало остатка сдвигается к следующей.
+// A pass finds contiguous regions of instructions outside functions and creates a function
+// at the start of each region; Ghidra builds the body from control flow. A region may contain
+// several consecutive functions, so passes repeat while coverage grows: each created
+// function consumes its prologue and moves the start of the remainder to the next function.
 //
-// Разметка не создаёт код: она группирует в функции только те инструкции, которые
-// дизассемблер уже произвёл. Участок, начинающийся не с пролога (вход только по jump) или
-// с delay slot, даёт отказ createFunction - он считается в отчёте и участок остаётся.
+// Function definition does not create code: it groups only instructions already produced by
+// the disassembler. A region that does not start at a prologue (jump-only entry) or starts
+// with a delay slot makes createFunction fail; the report counts it and leaves the region.
 //
-// Запуск (headless): -postScript RecoverFuncs.java
-// Под -readOnly прогон считает и отчитывается, но разметку в проект не сохраняет (dry-run);
-// без -readOnly headless сохраняет её в проект, и её видит следующий ExportGraph.
+// Headless invocation: -postScript RecoverFuncs.java
+// With -readOnly the pass calculates and reports results but does not save definitions to the
+// project (dry run). Without -readOnly, headless analysis saves them for the next ExportGraph.
 //@category VQ
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class RecoverFuncs extends GhidraScript {
 
-    static final int MAX_PASS = 32;   // потолок проходов; выход по исчерпанию роста
+    static final int MAX_PASS = 32;   // pass limit; stop when coverage no longer grows
 
     Listing listing;
     FunctionManager fm;
@@ -46,8 +46,8 @@ public class RecoverFuncs extends GhidraScript {
         int insBefore = countOutside();
         int regBefore = regionStarts().size();
         int funcBefore = fm.getFunctionCount();
-        println("VQ_RF вход: функций " + funcBefore + ", инструкций вне функций " + insBefore
-                + " в " + regBefore + " участках");
+        println("VQ_RF input: " + funcBefore + " functions, " + insBefore
+                + " instructions outside functions in " + regBefore + " regions");
 
         int made = 0, failed = 0;
         for (int pass = 1; pass <= MAX_PASS; pass++) {
@@ -57,7 +57,7 @@ public class RecoverFuncs extends GhidraScript {
             int mp = 0, fp = 0;
             for (Address st : starts) {
                 if (monitor.isCancelled()) break;
-                if (fm.getFunctionContaining(st) != null) continue;   // покрыт телом соседней
+                if (fm.getFunctionContaining(st) != null) continue;   // covered by adjacent body
                 int tx = currentProgram.startTransaction("recover-func");
                 boolean ok = false;
                 try {
@@ -70,27 +70,28 @@ public class RecoverFuncs extends GhidraScript {
                 if (ok) mp++; else fp++;
             }
             made += mp;
-            failed = fp;                                              // отказы последнего прохода
-            println("  проход " + pass + ": участков " + starts.size() + ", создано " + mp
-                    + ", отказ " + fp);
-            if (mp == 0) break;                                       // рост исчерпан
+            failed = fp;                                              // failures in the last pass
+            println("  pass " + pass + ": " + starts.size() + " regions, " + mp
+                    + " created, " + fp + " failed");
+            if (mp == 0) break;                                       // no further growth
         }
 
         int insAfter = countOutside();
         List<Address> left = regionStarts();
-        println("VQ_RF создано функций: " + made + ", функций всего " + fm.getFunctionCount());
-        println("VQ_RF инструкций вне функций: " + insBefore + " -> " + insAfter
-                + " (участков " + regBefore + " -> " + left.size() + ", отказ " + failed + ")");
+        println("VQ_RF functions created: " + made + ", total functions: "
+                + fm.getFunctionCount());
+        println("VQ_RF instructions outside functions: " + insBefore + " -> " + insAfter
+                + " (regions " + regBefore + " -> " + left.size() + ", failures " + failed + ")");
         for (int i = 0; i < left.size() && i < 20; i++) {
             Instruction ins = listing.getInstructionAt(left.get(i));
-            println("  остаётся вне функций: " + left.get(i)
+            println("  remains outside functions: " + left.get(i)
                     + (ins == null ? "" : "  " + ins.toString()));
         }
-        if (left.size() > 20) println("  ... ещё " + (left.size() - 20) + " участков");
+        if (left.size() > 20) println("  ... " + (left.size() - 20) + " more regions");
     }
 
-    // Начала непрерывных участков инструкций вне функций: инструкция вне функции, перед
-    // которой либо функция, либо разрыв дизассемблера (пул литералов, данные).
+    // Starts of contiguous instruction regions outside functions: an instruction outside a
+    // function preceded by either a function or a disassembly gap (literal pool or data).
     List<Address> regionStarts() {
         List<Address> out = new ArrayList<>();
         Address prevMax = null;

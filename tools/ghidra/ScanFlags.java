@@ -1,44 +1,51 @@
-// ScanFlags.java – детект флагов от размеченной карты и guard-функции (Stage 6, раздел 7
-// tools/map-flag-pipeline.md). Заменяет ручной трейс флагов.
+// ScanFlags.java – detect flags from an identified map or guard function (Stage 6,
+// section 7 of tools/map-flag-pipeline.md). Replaces manual flag tracing.
 //
-// МЕХАНИКА. Калибровочные флаги HR живут по gbr. Тройка "загрузка - проверка бита -
-// ветвление":
-//   mov.b @(0x93,gbr),r0   ; -> ffff4217     загрузка байта флагов
-//   tst   0x1,r0                             проверка бита (маска - непосредственная)
-//   bt/bf <target>                           ветвление
-// Пишется флаг тем же способом: or.b 0x20,@(r0,gbr) ставит бит, and.b 0xdf,@(r0,gbr) снимает.
+// MECHANICS. HR calibration flags use gbr addressing. The sequence is "load - test bit -
+// branch":
+//   mov.b @(0x93,gbr),r0   ; -> ffff4217     load flag byte
+//   tst   0x1,r0                             test bit (immediate mask)
+//   bt/bf <target>                           branch
+// Flags are written similarly: or.b 0x20,@(r0,gbr) sets a bit, while
+// and.b 0xdf,@(r0,gbr) clears it.
 //
-// Адрес флага берётся из ссылки Ghidra, а не считается сложением базы со смещением, и это
-// не удобство: БАЗА GBR НЕ ГЛОБАЛЬНА. Прошивка её переустанавливает - 0x68cb8 несёт
-// ldc r0,gbr и ldc.l @r15+,gbr, то есть gbr там адресует другую структуру, и одно и то же
-// @(disp,gbr) разрешается в разные адреса в разных функциях. Своё сложение дало бы
-// правдоподобные адреса не тех ячеек - брак, который от факта не отличить.
+// Obtain the flag address from a Ghidra reference instead of adding a base and displacement.
+// This is essential because THE GBR BASE IS NOT GLOBAL. The firmware resets it: 0x68cb8
+// contains ldc r0,gbr and ldc.l @r15+,gbr, so gbr addresses another structure there and the
+// same @(disp,gbr) resolves to different addresses in different functions. Computing the
+// address locally would yield plausible addresses for the wrong cells, an error
+// indistinguishable from fact.
 //
-// ЛОКАЛЬНО, А НЕ СПЛОШЬ. Скрипт идёт по заданным функциям - аксессорам размеченных карт и
-// guard-функциям (их даёт ScanImmoAnchors по DTC-якорям), - а не по всей прошивке:
-// bit-тестов в ROM тысячи, и сплошной скан даёт невод, а не находки. Первичный путь - от
-// карты: флаг опознаётся тем, ЧТО он разветвляет, а не тем, что он бит.
+// LOCAL, NOT EXHAUSTIVE. The script scans specified functions, namely accessors for
+// identified maps and guard functions found by ScanImmoAnchors from DTC anchors, rather
+// than the entire firmware. ROM contains thousands of bit tests, so a global scan produces
+// noise instead of findings. The primary path starts from a map: identify a flag by WHAT it
+// branches, not merely because it is a bit.
 //
-// РОЛЬ ставится по тому, что лежит на ветвях, и только когда это видно из одной функции:
-//   selector  - ветви грузят в r4 разные базы перед одним и тем же вызовом (:SELECTS обе);
-//   gate      - вызов есть на одной ветви и отсутствует на другой (условный skip, :GATES);
-//   threshold - на пути cmp с константой пула, указывающей в ПЗУ.
-// Ветвление, чьи ветви скриптом не различены, выходит с role=unknown: это заявка на трейс,
-// а не отсутствие флага. Роль здесь - предложение; узлом :Flag его делает трейс.
+// Assign a role from branch contents only when one function makes them visible:
+//   selector  - branches load different bases into r4 before the same call
+//               (both receive :SELECTS);
+//   gate      - one branch contains a call and the other does not (conditional skip, :GATES);
+//   threshold - a path contains cmp with a pool constant pointing into ROM.
+// A branch whose alternatives the script cannot distinguish receives role=unknown. This
+// requests a trace rather than asserting that no flag exists. The role is a proposal; a trace
+// establishes a :Flag node.
 //
-// ГРАНИЦА: детект gbr-флагов, а не всяких. Измерено на JK03A:
-//   - аксессор 0x82c8a (14 карт): 62 находки, среди них selector gbr+0x93 bit0, ветвящий
-//     r4 между 0xb61a и 0xb71a. Это разметка, снятая раньше трейсом, - скрипт её
-//     воспроизводит независимо, и на ней он и проверяется;
-//   - 25 аксессоров с невыбранной базой (kind=sp, 42 сайта): находок НОЛЬ, притом что
-//     gbr-обращения и tst там есть. База там выбирается не битом: 0x68cb8 ветвит по cmp
-//     после mov.w @(0x2c,gbr), а перепись резолвера называет такие сайты массивом таблиц
-//     по регистру (0x64344 - шесть таблиц по r5, 0xbe39a - две по r13). Флаг их не
-//     объясняет, и Stage 6 закрывает их перечислением ветвей, а не этим скриптом.
-// Флаг, живущий не по gbr (указатель из пула на абсолютный адрес RAM), сюда не попадает.
+// BOUNDARY: this detects gbr flags, not every kind of flag. Measured on JK03A:
+//   - accessor 0x82c8a (14 maps): 62 findings, including selector gbr+0x93 bit0, which
+//     branches r4 between 0xb61a and 0xb71a. A prior trace established this annotation;
+//     the script reproduces it independently and is validated against it;
+//   - 25 accessors with an unresolved base (kind=sp, 42 sites): ZERO findings despite
+//     containing gbr accesses and tst instructions. Their base is not selected by a bit:
+//     0x68cb8 branches on cmp after mov.w @(0x2c,gbr), while the resolver census identifies
+//     such sites as register-indexed table arrays (0x64344 has six tables selected by r5;
+//     0xbe39a has two selected by r13). A flag does not explain them. Stage 6 resolves these
+//     cases by enumerating branches rather than by this script.
+// A flag addressed without gbr, such as through a pool pointer to an absolute RAM address,
+// is outside this scan.
 //
-// Запуск (headless): -postScript ScanFlags.java <out_dir> <func_addr> [<func_addr>...]
-// Выход: flags.csv (func,test_at,flag_addr,gbr_disp,mask,bit,branch,taken,role,evidence)
+// Headless invocation: -postScript ScanFlags.java <out_dir> <func_addr> [<func_addr>...]
+// Output: flags.csv (func,test_at,flag_addr,gbr_disp,mask,bit,branch,taken,role,evidence)
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.block.BasicBlockModel;
@@ -61,7 +68,7 @@ public class ScanFlags extends GhidraScript {
 
     static final long ROM_HI = 0x180000L;
     BasicBlockModel bbm;
-    static final int WINDOW = 8;        // инструкций от загрузки флага до ветвления
+    static final int WINDOW = 8;        // instructions from flag load to branch
 
     public void run() throws Exception {
         String[] a = getScriptArgs();
@@ -94,9 +101,9 @@ public class ScanFlags extends GhidraScript {
         List<Instruction> body = new ArrayList<>();
         while (it.hasNext()) body.add(it.next());
 
-        // Идти НАДО от проверки назад, а не от загрузки вперёд: тест кормит ближайшая
-        // предшествующая запись в его регистр. Поиск вперёд от каждой загрузки спаривает с
-        // одним тестом обе загрузки, если их две подряд, и вторая находка - выдумка.
+        // Walk backward from the test, not forward from the load: the nearest preceding write
+        // to the test register supplies its value. Searching forward from every load pairs
+        // both loads with one test when two loads are consecutive, inventing the second hit.
         for (int ti = 0; ti < body.size(); ti++) {
             Instruction tst = body.get(ti);
             String m = tst.getMnemonicString().toLowerCase();
@@ -111,13 +118,13 @@ public class ScanFlags extends GhidraScript {
             for (int k = ti - 1; k >= Math.max(0, ti - WINDOW); k--) {
                 if (!writesReg(body.get(k), reg)) continue;
                 if (isGbrLoad(body.get(k))) ld = body.get(k);
-                break;                       // ближайшая запись в регистр - она и кормит
+                break;                       // the nearest register write supplies the value
             }
             if (ld == null) continue;
             Address flag = gbrTarget(ld);
             long disp = scalarOf(ld, 0);
 
-            // ветвление после проверки
+            // Branch after the test.
             Instruction br = null;
             for (int k = ti + 1; k < Math.min(ti + 4, body.size()); k++) {
                 String bm = body.get(k).getMnemonicString().toLowerCase();
@@ -134,23 +141,23 @@ public class ScanFlags extends GhidraScript {
         return out;
     }
 
-    // Роль ставится по тому, что лежит на ветвях, и ветви берутся из CFG Ghidra, а не
-    // угадываются окном инструкций: у условного перехода два блока-наследника, и окно по
-    // индексам их не различает - за ветвлением может лежать не альтернативная ветвь, а
-    // точка схождения. Различаются только случаи, видимые из одной функции; прочее выходит
-    // unknown и уходит в трейс, а не размечается наугад.
+    // Assign a role from branch contents and obtain branches from Ghidra's CFG rather than
+    // guessing from an instruction window. A conditional branch has two successor blocks,
+    // which an index-based window cannot distinguish; the code after a branch may be a merge
+    // point rather than the alternative branch. Classify only cases visible within one
+    // function. Everything else remains unknown for tracing instead of receiving a guess.
     String[] classify(Instruction br) throws Exception {
-        // Ветви берутся у самой инструкции: getFlows() - взятая, getFallThrough() -
-        // непрошедшая (и она же учитывает delay slot у bt/s и bf/s). Перечислять выходы
-        // блока, содержащего ветвление, нельзя: у него их бывает больше двух, и какой из
-        // них чья ветвь, оттуда не видно.
+        // Obtain branches from the instruction itself: getFlows() is the taken branch and
+        // getFallThrough() is the untaken branch, including the bt/s or bf/s delay slot.
+        // Do not enumerate exits from the containing block: it can have more than two, and
+        // they do not identify which alternative belongs to the branch.
         Address taken = brTarget(br), fall = br.getFallThrough();
         if (taken == null || fall == null) {
-            return new String[]{"unknown", "ветвь не разрешена"};
+            return new String[]{"unknown", "unresolved branch"};
         }
         CodeBlock bt = bbm.getFirstCodeBlockContaining(taken, monitor);
         CodeBlock bf = bbm.getFirstCodeBlockContaining(fall, monitor);
-        if (bt == null || bf == null) return new String[]{"unknown", "блок ветви не найден"};
+        if (bt == null || bf == null) return new String[]{"unknown", "branch block not found"};
 
         List<String> b0 = basesIn(bf), b1 = basesIn(bt);
         if (!b0.isEmpty() && !b1.isEmpty() && !b0.equals(b1)) {
@@ -158,20 +165,20 @@ public class ScanFlags extends GhidraScript {
         }
         boolean c0 = hasCallIn(bf), c1 = hasCallIn(bt);
         if (c0 != c1) {
-            return new String[]{"gate", "вызов только в блоке "
+            return new String[]{"gate", "call only in block "
                     + (c0 ? bf : bt).getFirstStartAddress()};
         }
         String cmp = cmpConstIn(bf);
         if (cmp == null) cmp = cmpConstIn(bt);
-        if (cmp != null) return new String[]{"threshold", "cmp с " + cmp};
-        return new String[]{"unknown", "ветви не различены"};
+        if (cmp != null) return new String[]{"threshold", "cmp with " + cmp};
+        return new String[]{"unknown", "branches not distinguished"};
     }
 
-    // Базы, загружаемые в r4 внутри блока. У mov.l @(disp,pc),r4 ссылок ДВЕ - на слот пула
-    // и на разрешённое значение, - и базой является вторая. Различает их расстояние: слот
-    // читается pc-относительно и лежит ближе 0x800, база калибровки - нет. Взять обе
-    // значило бы сравнивать адреса пулов, которые на разных ветвях различны всегда, и
-    // всякое ветвление выходило бы selector'ом.
+    // Bases loaded into r4 within a block. mov.l @(disp,pc),r4 has TWO references: one to the
+    // pool slot and one to the resolved value. The latter is the base. Distance distinguishes
+    // them: the slot is read PC-relative and lies within 0x800, while a calibration base does
+    // not. Taking both would compare pool addresses, which always differ between branches,
+    // and would classify every branch as a selector.
     List<String> basesIn(CodeBlock b) {
         List<String> out = new ArrayList<>();
         InstructionIterator it = currentProgram.getListing().getInstructions(b, true);
@@ -201,7 +208,8 @@ public class ScanFlags extends GhidraScript {
         return false;
     }
 
-    // Порог: cmp с константой, указывающей в ПЗУ калибровки (0x8FDC - образец раздела 7).
+    // Threshold: cmp with a constant that points into calibration ROM
+    // (0x8FDC is the section 7 example).
     String cmpConstIn(CodeBlock b) {
         InstructionIterator it = currentProgram.getListing().getInstructions(b, true);
         while (it.hasNext()) {
@@ -216,14 +224,15 @@ public class ScanFlags extends GhidraScript {
         return null;
     }
 
-    // mov.b @(disp,gbr),r0 - загрузка байта флагов.
+    // mov.b @(disp,gbr),r0 loads a flag byte.
     //
-    // Ghidra раскладывает gbr-адресацию на ТРИ операнда, а не на один "@(0x93,gbr)":
-    //   загрузка  mov.b @(0x93,gbr),r0  ->  op0=0x93  op1=gbr  op2=r0
-    //   запись    mov.b r0,@(0x45,gbr)  ->  op0=r0    op1=0x45 op2=gbr
-    // Отсюда признак загрузки: gbr есть среди операндов и НЕ последний - последним стоит
-    // приёмник, и у записи это память. Искать "gbr" в нулевом операнде бесполезно: там
-    // лежит смещение.
+    // Ghidra represents gbr addressing with THREE operands rather than one
+    // "@(0x93,gbr)" operand:
+    //   load   mov.b @(0x93,gbr),r0  ->  op0=0x93  op1=gbr  op2=r0
+    //   store  mov.b r0,@(0x45,gbr)  ->  op0=r0    op1=0x45 op2=gbr
+    // A load therefore has gbr among its operands but NOT last. The final operand is the
+    // destination, which is memory for a store. Searching operand zero for gbr is useless
+    // because it contains the displacement.
     int gbrOperand(Instruction ins) {
         for (int k = 0; k < ins.getNumOperands(); k++) {
             String r = ins.getDefaultOperandRepresentation(k);
@@ -232,8 +241,8 @@ public class ScanFlags extends GhidraScript {
         return -1;
     }
 
-    // Элемент флага - не только байт: 0x68cb8 читает mov.w @(0x2c,gbr),r0. Бит проверяется
-    // так же, чем бы флаг ни хранился, поэтому ширина здесь не фильтр.
+    // A flag element is not necessarily a byte: 0x68cb8 reads mov.w @(0x2c,gbr),r0.
+    // The bit test is identical for any storage width, so width is not a filter here.
     boolean isGbrLoad(Instruction ins) {
         String m = ins.getMnemonicString().toLowerCase();
         if (!m.startsWith("mov.b") && !m.startsWith("mov.w") && !m.startsWith("mov.l")) {
@@ -243,8 +252,8 @@ public class ScanFlags extends GhidraScript {
         return g > 0 && g < ins.getNumOperands() - 1;
     }
 
-    // Абсолютный адрес флага - из ссылки Ghidra: базу gbr знает она, и считать её здесь
-    // значило бы завести второй источник одного факта.
+    // Obtain the absolute flag address from a Ghidra reference, which knows the gbr base.
+    // Computing it here would create a second source for the same fact.
     Address gbrTarget(Instruction ins) {
         for (Reference r : ins.getReferencesFrom()) {
             Address to = r.getToAddress();
@@ -254,7 +263,7 @@ public class ScanFlags extends GhidraScript {
         return null;
     }
 
-    // Пишет ли инструкция в регистр: результат-объект есть сам регистр.
+    // An instruction writes a register when the register itself is a result object.
     boolean writesReg(Instruction ins, String reg) {
         for (Object o : ins.getResultObjects()) {
             if (o instanceof Register && ((Register) o).getName().equalsIgnoreCase(reg)) {
@@ -280,7 +289,7 @@ public class ScanFlags extends GhidraScript {
         return -1;
     }
 
-    // Маска из одного бита даёт номер бита; маска из нескольких битом не является.
+    // A one-bit mask yields a bit number; a multi-bit mask does not represent one bit.
     String bitOf(long mask) {
         if (mask <= 0 || (mask & (mask - 1)) != 0) return "";
         return String.valueOf(Long.numberOfTrailingZeros(mask));

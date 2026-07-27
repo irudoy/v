@@ -43,7 +43,7 @@ class AxisContextSession:
 
     def run(self, query, **parameters):
         if query != build_artifacts.AXIS_CONTEXTS:
-            raise AssertionError(f"неожиданный запрос: {query}")
+            raise AssertionError(f"unexpected query: {query}")
         self.parameters = parameters
         return FakeResult(self.rows)
 
@@ -144,7 +144,7 @@ class AxisBuildSession:
         if query == build_artifacts.CONSUMERS_OF:
             return FakeResult([])
         if query not in self.rows:
-            raise AssertionError(f"неожиданный запрос: {query}")
+            raise AssertionError(f"unexpected query: {query}")
         return FakeResult(self.rows[query])
 
     def parameters_for(self, query):
@@ -267,10 +267,10 @@ class AxisFocusTest(unittest.TestCase):
 
         self.assertEqual(outputs[0], outputs[1])
         text = outputs[0]
-        self.assertIn("# Ось `00002000` (JK03A)", text)
-        self.assertIn("`00002000` – ЦЕЛЕВАЯ", text)
-        self.assertLess(text.index("### Карта `00001000`"),
-                        text.index("### Карта `00001010`"))
+        self.assertIn("# Axis `00002000` (JK03A)", text)
+        self.assertIn("`00002000` - TARGET", text)
+        self.assertLess(text.index("### Map `00001000`"),
+                        text.index("### Map `00001010`"))
         for addr in comp["maps"] + comp["accessors"]:
             self.assertIn(f"`{addr}`", text)
 
@@ -385,8 +385,8 @@ class SiteListingTest(unittest.TestCase):
         )
 
         text = "\n".join(lines)
-        self.assertIn("Сайт вызова отсутствует", text)
-        self.assertNotIn("Нет файла", text)
+        self.assertIn("No call site exists", text)
+        self.assertNotIn("is missing", text)
         self.assertNotIn("listing_.txt", text)
 
 

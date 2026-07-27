@@ -1,10 +1,11 @@
-// FindTableRefs.java — найти функции, адресующие заданный диапазон ROM [lo,hi]
-// (например DTC-таблицу): и прямой ref, и через literal pool (mov.l @(disp,PC) грузит
-// 32-битную константу, попадающую в диапазон). Выводит загрузчиков базы/записей —
-// отправная точка к DTC-раннеру и immo-сеттеру.
+// FindTableRefs.java - find functions addressing a selected ROM range [lo,hi],
+// such as a DTC table. Include direct references and literal-pool references
+// where mov.l @(disp,PC) loads a 32-bit constant within the range. The result
+// identifies base/record loaders as starting points for the DTC runner and
+// immobilizer setter.
 //
-// Запуск (headless): -postScript FindTableRefs.java <out_dir> <lo_hex> <hi_hex>
-// Выход: table_refs.csv (func,ins_addr,value,kind[direct|literal]).
+// Usage (headless): -postScript FindTableRefs.java <out_dir> <lo_hex> <hi_hex>
+// Output: table_refs.csv (func,ins_addr,value,kind[direct|literal]).
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -20,7 +21,7 @@ import java.io.PrintWriter;
 
 public class FindTableRefs extends GhidraScript {
 
-    static final long ROM_HI = 0x180000L; // 1.5 MiB образ
+    static final long ROM_HI = 0x180000L; // 1.5 MiB image
 
     public void run() throws Exception {
         String[] a = getScriptArgs();
@@ -56,7 +57,7 @@ public class FindTableRefs extends GhidraScript {
                                 n++;
                             }
                         } catch (MemoryAccessException e) {
-                            // literal вне initialized — пропуск
+                            // Skip literals outside initialized memory.
                         }
                     }
                 }

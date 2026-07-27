@@ -1,22 +1,24 @@
 #!/usr/bin/env python3
-# Печать карты либо оси в физических единицах: граф (адрес, форма, элемент, оси, шкала)
-# плюс образ (значения). Инструмент разбора, не генератор: в git ничего не пишет.
+# Print a map or axis in physical units using graph metadata (address, shape,
+# element, axes, and scaling) plus image values. This is an analysis tool rather
+# than a generator and writes nothing to Git.
 #
-# Один адрес бывает и картой, и осью - в JK08A таких 18, и семь пар читаются в обе
-# стороны (defs/JK08A.notes.md, "Обратный поиск"). Роль задаёт сайт, а не сам массив,
-# поэтому печатается всё, чем адрес в графе является.
+# One address can be both a map and an axis. JK08A has 18 such addresses, with
+# seven pairs read in both directions (defs/JK08A.notes.md, "Reverse lookup").
+# The use site defines the role, not the array, so every graph role is printed.
 #
-# Шкала показана рядом с сырым значением, а не вместо него: множитель половины карт стоит
-# на уровне candidate, и подменять им байт значит выдавать догадку за показание.
+# Scaled values appear beside rather than instead of raw values. Half of the map
+# multipliers have candidate confidence, and replacing bytes with them would
+# present an inference as a measurement.
 #
-# Запуск: uv run --no-project --with neo4j python tools/mapkit/show.py [<rom>] <addr>...
+# Usage: uv run --no-project --with neo4j python tools/mapkit/show.py [<rom>] <addr>...
 import os
 import sys
 
 from neo4j import GraphDatabase
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from mapkit import rom as romkit          # noqa: E402 - пакет соседний, не установленный
+from mapkit import rom as romkit          # noqa: E402 - adjacent, uninstalled package
 
 BOLT = "bolt://localhost:7687"
 
@@ -26,7 +28,7 @@ def hexa(a):
 
 
 def phys(v, expr):
-    """Значение по шкале графа. Словарь выражения проверен загрузчиком."""
+    """Apply graph scaling; the loader validates the expression vocabulary."""
     if not expr or expr.strip() == "x":
         return None
     return eval(expr, {"__builtins__": {}}, {"x": v})
@@ -42,7 +44,7 @@ def cell(raw, expr):
 
 
 def labels(ax, n):
-    """Подписи точек оси либо их номера, если оси нет."""
+    """Return axis-point labels, or ordinal numbers when no axis exists."""
     if not ax:
         return [str(i) for i in range(n)]
     vals, expr = ax
@@ -51,16 +53,16 @@ def labels(ax, n):
 
 def scale_note(units, expr, conf):
     if not expr or expr.strip() == "x":
-        return "шкалы нет, значения сырые"
-    return f"шкала {expr} -> {units}" + (f" [{conf}]" if conf else "")
+        return "no scaling; raw values"
+    return f"scaling {expr} -> {units}" + (f" [{conf}]" if conf else "")
 
 
-def show_axis(x, img, head="ось"):
+def show_axis(x, img, head="axis"):
     vals = img.values(x["addr"], x["len"], x["storagetype"])
-    print(f"  {head} {hexa(x['addr'])}: {x['len']} точек {x['storagetype']}"
-          f", {x['kind'] or 'семантика не снята'} [{x['confidence']}]"
+    print(f"  {head} {hexa(x['addr'])}: {x['len']} points {x['storagetype']}"
+          f", {x['kind'] or 'semantics unresolved'} [{x['confidence']}]"
           f", {scale_note(x['units'], x['scale_expr'], x['scale_conf'])}")
-    print("    сырые:", " ".join(num(v) for v in vals))
+    print("    raw:", " ".join(num(v) for v in vals))
     if phys(vals[0], x["scale_expr"]) is not None:
         print(f"    {x['units']}:", " ".join(num(phys(v, x["scale_expr"])) for v in vals))
     if x["note"]:
@@ -69,7 +71,7 @@ def show_axis(x, img, head="ось"):
 
 
 def grid(cells, expr, head, lbl):
-    """Сетка значений с подписями. У 2D строка - точка оси r5, столбец - точка оси r6."""
+    """Print a labeled grid. In 2D, rows use r5 and columns use r6."""
     body = [[cell(v, expr) for v in r] for r in cells]
     w = max(len(s) for s in head + [c for r in body for c in r])
     pad = max((len(s) for s in lbl), default=0)
@@ -82,9 +84,9 @@ def grid(cells, expr, head, lbl):
 
 def show_map(m, axes, img):
     shape = f"{m['width']}x{m['height']}" if m["dims"] == 2 else f"1D-{m['width']}"
-    print(f"{hexa(m['addr'])}  {m['semantics'] or '(семантика не снята)'}  "
+    print(f"{hexa(m['addr'])}  {m['semantics'] or '(semantics unresolved)'}  "
           f"[{m['confidence']}]")
-    print(f"  {shape} {m['storagetype']}, {m['family']}, значения {m['vmin']}..{m['vmax']}"
+    print(f"  {shape} {m['storagetype']}, {m['family']}, values {m['vmin']}..{m['vmax']}"
           f"; {scale_note(m['units'], m['scale_expr'], m['scale_conf'])}")
     if m["note"]:
         print(f"  {m['note']}")
@@ -92,23 +94,23 @@ def show_map(m, axes, img):
     for edge, key in (("AXIS_X", "axis_x"), ("AXIS_Y", "axis_y")):
         for a in m[key]:
             x = axes[a]
-            head = ("ось r5 (строки, Y Axis дефа)" if edge == "AXIS_X"
-                    else "ось r6 (столбцы, X Axis дефа)") if m["dims"] == 2 else "ось"
+            head = ("r5 axis (rows, definition Y Axis)" if edge == "AXIS_X"
+                    else "r6 axis (columns, definition X Axis)") if m["dims"] == 2 else "axis"
             vals = show_axis(x, img, head)
             if edge == "AXIS_X" and rows_ax is None:
                 rows_ax = (vals, x["scale_expr"])
             elif edge == "AXIS_Y" and cols_ax is None:
                 cols_ax = (vals, x["scale_expr"])
     if len(m["axis_x"]) > 1 or len(m["axis_y"]) > 1:
-        print("  ВНИМАНИЕ: осей на ребре больше одной - ось выбирает ветвление (Stage 6);"
-              " сетка взята по первой")
+        print("  WARNING: an edge has multiple axes selected by branching (Stage 6);"
+              " the grid uses the first")
     if m["dims"] == 1 and not m["axis_x"] and m["steps"]:
-        print(f"  ось неявная: точки 0..{m['width'] - 1} с шагом {m['steps'][0]}")
+        print(f"  implicit axis: points 0..{m['width'] - 1} with step {m['steps'][0]}")
         cols_ax = ([i * m["steps"][0] for i in range(m["width"])], "x")
-    # height у одномерной карты нет вовсе: Memgraph null-свойств не хранит.
+    # A one-dimensional map has no height property; Memgraph omits nulls.
     cells = img.table(m["addr"], m["width"], m.get("height"), m["storagetype"])
-    # У одномерной карты строка одна, и её ось подписывает столбцы; у двумерной ось r5
-    # идёт по строкам, а r6 - по столбцам (геометрия finisher'а, см. rom.py).
+    # A one-dimensional map has one row and its axis labels columns. In 2D, r5
+    # labels rows and r6 labels columns, as defined by finisher geometry in rom.py.
     if m["dims"] == 1:
         grid(cells, m["scale_expr"], labels(cols_ax or rows_ax, m["width"]), [])
     else:
@@ -135,11 +137,11 @@ def main():
         known = {r["rom"] for r in romkit.registry() if r["rom"]}
     except ValueError as e:
         sys.exit(str(e))
-    # Метка ROM отличается от адреса реестром, а не формой: 0xB33A и JK08A обе -
-    # шестнадцатеричные слова, и разбор по виду перепутал бы их молча.
+    # The registry, not syntax, distinguishes a ROM label from an address:
+    # 0xB33A and JK08A both look hexadecimal, so shape-based parsing is ambiguous.
     rom = args.pop(0) if args and args[0] in known else "JK08A"
     if not args:
-        sys.exit(f"нужен адрес: show.py [<rom>] <addr>...; метки ROM: "
+        sys.exit(f"address required: show.py [<rom>] <addr>...; ROM labels: "
                  f"{', '.join(sorted(known))}")
     try:
         img = romkit.load(rom)
@@ -151,7 +153,7 @@ def main():
             addr = "%08x" % int(a, 16)
             m, x = fetch(s, rom, addr)
             if not m and not x:
-                print(f"{hexa(addr)}: в графе {rom} такого адреса нет")
+                print(f"{hexa(addr)}: address not found in the {rom} graph")
                 continue
             if m:
                 d = dict(m["m"], axis_x=m["axis_x"], axis_y=m["axis_y"], steps=m["steps"])
@@ -160,9 +162,9 @@ def main():
                         for a2 in d["axis_x"] + d["axis_y"]}
                 show_map(d, axes, img)
             if x:
-                # Тот же адрес бывает осью другой карты - роль задаёт сайт, а не массив.
+                # The same address can be another map's axis; use sites define roles.
                 if m:
-                    print(f"  он же ось других карт:")
+                    print("  also an axis for other maps:")
                 show_axis(dict(x["x"]), img)
             print()
     driver.close()

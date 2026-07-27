@@ -1,13 +1,14 @@
-// Экспорт обращений функций к периферии SH7058/59 (якоря для поиска immo/NATS).
-// Помимо прямых data-references на регистры (0xFFFF0000+), разрешает literal-pool:
-// PC-relative загрузка 32-битной константы, чьё значение указывает в периферию,
-// засчитывается как обращение функции к регистру (типовой путь SH-2 к memory-mapped
-// I/O: mov.l @(disp,PC),Rn затем mov @Rn). Классификация региона – в загрузчике.
+// Export function accesses to SH7058/59 peripheral space as anchors for
+// immobilizer/NATS analysis. In addition to direct data references to registers
+// at 0xFFFF0000+, resolve literal pools: a PC-relative load of a 32-bit constant
+// pointing into peripheral space counts as a function access. This is the usual
+// SH-2 path to memory-mapped I/O: mov.l @(disp,PC),Rn followed by mov @Rn.
+// Region classification is performed by the loader.
 //
-// Запуск: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
+// Usage: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
 //           -scriptPath tools/ghidra -postScript ExportXrefs.java <outdir>
-// Пишет <outdir>/xrefs.csv (func_addr,periph_addr,kind): kind = R/W/D прямой,
-// L – через literal-pool.
+// Writes <outdir>/xrefs.csv (func_addr,periph_addr,kind): R/W/D are direct and
+// L uses a literal pool.
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -22,8 +23,9 @@ import java.io.File;
 import java.io.PrintWriter;
 
 public class ExportXrefs extends GhidraScript {
-    // Нижняя граница = on-chip RAM base SH7059 (0xFFFE8000, 48 KB); включает RAM
-    // (переменные, CAN message-table) и регистры периферии до 0xFFFFFFFF.
+    // Lower bound is the SH7059 on-chip RAM base at 0xFFFE8000 (48 KB). This
+    // includes RAM variables and CAN message tables through peripheral
+    // registers at 0xFFFFFFFF.
     static final long PERIPH_LO = 0xFFFE8000L;
     static final long PERIPH_HI = 0xFFFFFFFFL;
     static final long ROM_HI = 0x180000L;
@@ -54,18 +56,18 @@ public class ExportXrefs extends GhidraScript {
                     long periph = -1;
                     String kind = "?";
                     if (isPeriph(toOff)) {
-                        periph = toOff;                      // прямой ref на регистр
+                        periph = toOff;                      // direct register reference
                         RefType rt = ref.getReferenceType();
                         kind = rt.isWrite() ? "W" : (rt.isRead() ? "R" : "D");
                     } else if (toOff < ROM_HI) {
                         try {
-                            long v = mem.getInt(to) & 0xFFFFFFFFL;  // BE (программа big-endian)
+                            long v = mem.getInt(to) & 0xFFFFFFFFL;  // BE program
                             if (isPeriph(v)) {
-                                periph = v;                  // адрес регистра через literal-pool
+                                periph = v;                  // register address through literal pool
                                 kind = "L";
                             }
                         } catch (MemoryAccessException e) {
-                            // неинициализированная память – пропустить
+                            // Skip uninitialized memory.
                         }
                     }
                     if (periph < 0) {

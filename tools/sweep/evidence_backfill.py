@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Воспроизводимый control plane для evidence backfill Map/Axis JK08A.
+"""Reproducible control plane for JK08A Map/Axis evidence backfill.
 
-Helper фиксирует scope из immutable git-объектов, сверяет два независимых набора
-blind-артефактов, проверяет полный результат Workflow и применяет проверенные
-решения к canonical CSV с защитой от drift.
+The helper freezes scope from immutable git objects, compares two independent sets of
+blind artifacts, validates the complete Workflow result, and applies verified decisions
+to canonical CSV while guarding against drift.
 """
 from __future__ import annotations
 
@@ -62,11 +62,11 @@ DISPOSITIONS = frozenset(
     {"writes", "consumer", "inline_comparison", "return", "dead_control_flow", "unresolved"}
 )
 MAP_ROLES = frozenset({"table", "threshold", "dead"})
-FORBIDDEN_ARTIFACT_TEXT = ("Нет файла", "ЧТЕНИЕ НЕ УДАЛОСЬ")
+FORBIDDEN_ARTIFACT_TEXT = ("is missing: the preparation pass", "READ FAILED")
 
 
 class BackfillError(ValueError):
-    """Нарушение frozen scope, схемы результата либо условий применения."""
+    """Frozen-scope, result-schema, or application-condition violation."""
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -96,18 +96,18 @@ def read_json(path: Path):
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        raise BackfillError(f"не удалось прочитать JSON {path}: {exc}") from exc
+        raise BackfillError(f"failed to read JSON {path}: {exc}") from exc
 
 
 def parse_csv(data: bytes, path: str):
     try:
         text = data.decode("utf-8")
     except UnicodeDecodeError as exc:
-        raise BackfillError(f"{path}: CSV не является UTF-8") from exc
+        raise BackfillError(f"{path}: CSV is not UTF-8") from exc
     reader = csv.DictReader(io.StringIO(text, newline=""))
     fields = list(reader.fieldnames or ())
     if not fields:
-        raise BackfillError(f"{path}: нет заголовка CSV")
+        raise BackfillError(f"{path}: CSV has no header")
     rows = [dict(row) for row in reader]
     return fields, rows
 
@@ -169,7 +169,7 @@ def _source_entry(label, path, oid, fields, data):
 
 
 def build_manifest(rom: str, base_commit: str, sources) -> dict:
-    """Построить manifest из уже прочитанных immutable CSV.
+    """Build a manifest from immutable CSV data already read.
 
     sources: label -> {path, git_oid, data}.
     """
@@ -184,7 +184,7 @@ def build_manifest(rom: str, base_commit: str, sources) -> dict:
         missing = required - set(fields)
         if missing:
             raise BackfillError(
-                f"{source['path']}: нет колонок {', '.join(sorted(missing))}"
+                f"{source['path']}: missing columns {', '.join(sorted(missing))}"
             )
         source_entries.append(
             _source_entry(
@@ -195,9 +195,9 @@ def build_manifest(rom: str, base_commit: str, sources) -> dict:
         for row in rows:
             addr = (row.get("addr") or "").strip().lower()
             if len(addr) != 8 or any(ch not in "0123456789abcdef" for ch in addr):
-                raise BackfillError(f"{source['path']}: неверный addr {addr!r}")
+                raise BackfillError(f"{source['path']}: invalid addr {addr!r}")
             if addr in seen:
-                raise BackfillError(f"{source['path']}: повтор addr {addr}")
+                raise BackfillError(f"{source['path']}: duplicate addr {addr}")
             seen.add(addr)
             properties = ("confidence", "scale_conf") if label == "Map" else ("scale_conf",)
             for prop in properties:
@@ -289,17 +289,17 @@ def freeze_manifest(repo: Path, rom: str, commit: str) -> dict:
 
 def validate_manifest(manifest: dict) -> None:
     if manifest.get("schema") != MANIFEST_SCHEMA:
-        raise BackfillError(f"неизвестная схема manifest: {manifest.get('schema')!r}")
+        raise BackfillError(f"unknown manifest schema: {manifest.get('schema')!r}")
     claims = manifest.get("claims")
     nodes = manifest.get("nodes")
     if not isinstance(claims, list) or not isinstance(nodes, list):
-        raise BackfillError("manifest: claims/nodes обязаны быть массивами")
+        raise BackfillError("manifest: claims/nodes must be arrays")
     identities = [item.get("identity") for item in claims]
     if len(identities) != len(set(identities)):
-        raise BackfillError("manifest: повтор identity заявки")
+        raise BackfillError("manifest: duplicate claim identity")
     node_ids = [item.get("identity") for item in nodes]
     if len(node_ids) != len(set(node_ids)):
-        raise BackfillError("manifest: повтор identity узла")
+        raise BackfillError("manifest: duplicate node identity")
     counts = Counter((item.get("label"), item.get("property")) for item in claims)
     if counts != Counter(EXPECTED):
         raise BackfillError(
@@ -308,11 +308,11 @@ def validate_manifest(manifest: dict) -> None:
     if len(claims) != EXPECTED_CLAIMS or len(nodes) != EXPECTED_NODES:
         raise BackfillError(
             f"frozen scope: claims={len(claims)}, nodes={len(nodes)}; "
-            f"ожидалось {EXPECTED_CLAIMS}/{EXPECTED_NODES}"
+            f"expected {EXPECTED_CLAIMS}/{EXPECTED_NODES}"
         )
     expected_nodes = {item["node"] for item in claims}
     if set(node_ids) != expected_nodes:
-        raise BackfillError("manifest: nodes не совпадают с узлами claims")
+        raise BackfillError("manifest: nodes do not match claim nodes")
     claims_by_node = defaultdict(list)
     for claim in claims:
         identity = claim_identity(
@@ -322,19 +322,19 @@ def validate_manifest(manifest: dict) -> None:
             claim.get("property", ""),
         )
         if claim.get("identity") != identity:
-            raise BackfillError(f"manifest: несогласованный identity {claim.get('identity')}")
+            raise BackfillError(f"manifest: inconsistent identity {claim.get('identity')}")
         if claim.get("node") != node_identity(
             claim["rom"], claim["label"], claim["addr"]
         ):
-            raise BackfillError(f"manifest: несогласованный node {claim['identity']}")
+            raise BackfillError(f"manifest: inconsistent node {claim['identity']}")
         if claim.get("artifact") != artifact_name(claim["label"], claim["addr"]):
-            raise BackfillError(f"manifest: неверный artifact {claim['identity']}")
+            raise BackfillError(f"manifest: invalid artifact {claim['identity']}")
         if (claim["label"], claim["property"]) not in EXPECTED:
-            raise BackfillError(f"manifest: недопустимая заявка {claim['identity']}")
+            raise BackfillError(f"manifest: unsupported claim {claim['identity']}")
         claims_by_node[claim["node"]].append(claim["property"])
     for node in nodes:
         if node.get("properties") != claims_by_node[node["identity"]]:
-            raise BackfillError(f"manifest: properties расходятся у {node['identity']}")
+            raise BackfillError(f"manifest: properties differ for {node['identity']}")
 
 
 def manifest_sha256(path: Path, manifest=None) -> str:
@@ -345,7 +345,7 @@ def manifest_sha256(path: Path, manifest=None) -> str:
 
 def _artifact_inventory(directory: Path, expected_names) -> dict:
     if not directory.is_dir():
-        raise BackfillError(f"нет каталога артефактов {directory}")
+        raise BackfillError(f"artifact directory is missing: {directory}")
     actual = {path.name for path in directory.glob("*.md") if path.is_file()}
     expected = set(expected_names)
     missing = sorted(expected - actual)
@@ -361,10 +361,10 @@ def _artifact_inventory(directory: Path, expected_names) -> dict:
         try:
             text = data.decode("utf-8")
         except UnicodeDecodeError as exc:
-            raise BackfillError(f"{path}: артефакт не является UTF-8") from exc
+            raise BackfillError(f"{path}: artifact is not UTF-8") from exc
         found = [marker for marker in FORBIDDEN_ARTIFACT_TEXT if marker in text]
         if found:
-            raise BackfillError(f"{path}: запрещённые маркеры {found}")
+            raise BackfillError(f"{path}: prohibited markers {found}")
         inventory[name] = sha256_bytes(data)
     return inventory
 
@@ -381,7 +381,7 @@ def verify_artifacts(manifest_path: Path, left: Path, right: Path) -> dict:
             for name in set(left_inventory) | set(right_inventory)
             if left_inventory.get(name) != right_inventory.get(name)
         )
-        raise BackfillError(f"наборы артефактов недетерминированы: {changed}")
+        raise BackfillError(f"artifact sets are nondeterministic: {changed}")
     files = [
         {"name": name, "sha256": left_inventory[name]} for name in sorted(left_inventory)
     ]
@@ -398,28 +398,28 @@ def verify_artifacts(manifest_path: Path, left: Path, right: Path) -> dict:
 
 def validate_artifact_report(report: dict, manifest_path: Path, manifest: dict) -> dict:
     if report.get("schema") != ARTIFACT_SCHEMA:
-        raise BackfillError("неизвестная схема отчёта артефактов")
+        raise BackfillError("unknown artifact-report schema")
     if report.get("manifest_sha256") != file_sha256(manifest_path):
-        raise BackfillError("отчёт артефактов относится к другому manifest")
+        raise BackfillError("artifact report belongs to another manifest")
     files = report.get("files")
     if not isinstance(files, list):
-        raise BackfillError("отчёт артефактов: files обязан быть массивом")
+        raise BackfillError("artifact report: files must be an array")
     inventory = {item.get("name"): item.get("sha256") for item in files}
     if len(inventory) != len(files):
-        raise BackfillError("отчёт артефактов: повтор имени файла")
+        raise BackfillError("artifact report: duplicate filename")
     expected = {node["artifact"] for node in manifest["nodes"]}
     if set(inventory) != expected:
-        raise BackfillError("отчёт артефактов не покрывает frozen nodes")
+        raise BackfillError("artifact report does not cover frozen nodes")
     canonical = [
         {"name": name, "sha256": inventory[name]} for name in sorted(inventory)
     ]
     if report.get("artifact_set_sha256") != sha256_bytes(
         stable_json_bytes(canonical, pretty=False)
     ):
-        raise BackfillError("неверный artifact_set_sha256")
+        raise BackfillError("invalid artifact_set_sha256")
     artifact_dir = report.get("artifact_dir")
     if not isinstance(artifact_dir, str) or not Path(artifact_dir).is_absolute():
-        raise BackfillError("отчёт артефактов не содержит абсолютный artifact_dir")
+        raise BackfillError("artifact report does not contain an absolute artifact_dir")
     return inventory
 
 
@@ -446,28 +446,28 @@ def normalize_workflow_run(
     artifact_report: dict,
     inventory: dict,
 ) -> tuple[dict, dict]:
-    """Проверить Claude Code archive и вернуть его result payload."""
+    """Validate a Claude Code archive and return its result payload."""
     if archive.get("status") != "completed":
-        raise BackfillError(f"Workflow status={archive.get('status')!r}, нужен completed")
+        raise BackfillError(f"Workflow status={archive.get('status')!r}; completed required")
     for field in ("runId", "scriptPath"):
         if not isinstance(archive.get(field), str) or not archive[field].strip():
-            raise BackfillError(f"Workflow archive не содержит {field}")
+            raise BackfillError(f"Workflow archive does not contain {field}")
     args = archive.get("args")
     if not isinstance(args, dict):
-        raise BackfillError("Workflow archive не содержит args")
+        raise BackfillError("Workflow archive does not contain args")
     expected_anchors = {
         "manifest_sha256": file_sha256(manifest_path),
         "artifact_set_sha256": artifact_report["artifact_set_sha256"],
     }
     for field, expected in expected_anchors.items():
         if args.get(field) != expected:
-            raise BackfillError(f"Workflow args: неверный {field}")
+            raise BackfillError(f"Workflow args: invalid {field}")
     expected_items = workflow_worklist(manifest, artifact_report, inventory)
     if args.get("items") != expected_items:
-        raise BackfillError("Workflow args.items не совпадает с frozen worklist")
+        raise BackfillError("Workflow args.items does not match the frozen worklist")
     result = archive.get("result")
     if not isinstance(result, dict):
-        raise BackfillError("Workflow archive не содержит object result")
+        raise BackfillError("Workflow archive does not contain an object result")
     return archive, result
 
 
@@ -478,27 +478,27 @@ def factual_evidence(text: str, prop: str, context: str):
         raise BackfillError(str(exc)) from exc
     factual = [token for token in tokens if token.role not in PROCESS]
     if not factual:
-        raise BackfillError(f"{context}: нет factual evidence")
+        raise BackfillError(f"{context}: no factual evidence")
     return tokens
 
 
 def normalized_verified_evidence(text, rewrites, prop, context):
-    """Применить только проверяемые синтаксические правки evidence.
+    """Apply only verifiable syntactic evidence rewrites.
 
-    Неразрешимую ссылку на ROM-адрес можно представить терминалом site с тем же
-    адресом. Ссылку на RAM без ranked claim можно удалить. Любое иное изменение
-    verified evidence запрещено.
+    An unresolved reference to a ROM address may be represented by a site terminal with
+    the same address. A RAM reference without a ranked claim may be removed. Every other
+    change to verified evidence is prohibited.
     """
     raw_tokens = [raw.strip() for raw in text.split(";") if raw.strip()]
     tokens = factual_evidence(text, prop, context)
     if rewrites is None:
         return text
     if not isinstance(rewrites, dict) or not rewrites:
-        raise BackfillError(f"{context}: evidence_rewrites обязан быть объектом")
+        raise BackfillError(f"{context}: evidence_rewrites must be an object")
     unknown = set(rewrites) - set(raw_tokens)
     if unknown:
         raise BackfillError(
-            f"{context}: evidence_rewrites ссылается на отсутствующие токены "
+            f"{context}: evidence_rewrites refers to missing tokens "
             f"{sorted(unknown)}"
         )
 
@@ -508,18 +508,18 @@ def normalized_verified_evidence(text, rewrites, prop, context):
         if raw in rewrites:
             if not token.is_dependency:
                 raise BackfillError(
-                    f"{context}: переписывать можно только адресную зависимость {raw!r}"
+                    f"{context}: only an address dependency may be rewritten: {raw!r}"
                 )
             if replacement is None:
                 if not token.target_addr.startswith("ffff"):
                     raise BackfillError(
-                        f"{context}: удалить можно только RAM-зависимость {raw!r}"
+                        f"{context}: only a RAM dependency may be removed: {raw!r}"
                     )
                 continue
             expected = f"site:{token.target_addr}"
             if replacement != expected or int(token.target_addr, 16) >= 0x01000000:
                 raise BackfillError(
-                    f"{context}: {raw!r} можно переписать только в ROM-site {expected!r}"
+                    f"{context}: {raw!r} may only be rewritten as ROM site {expected!r}"
                 )
         if replacement not in result:
             result.append(replacement)
@@ -531,17 +531,17 @@ def normalized_verified_evidence(text, rewrites, prop, context):
 def _validate_result_item(item, claim, artifact_hash):
     identity = claim["identity"]
     if item.get("artifact_sha256") != artifact_hash:
-        raise BackfillError(f"{identity}: результат относится к другому артефакту")
+        raise BackfillError(f"{identity}: result belongs to another artifact")
     decision = item.get("decision")
     if decision not in ("accept_code", "downgrade"):
-        raise BackfillError(f"{identity}: неизвестное решение {decision!r}")
+        raise BackfillError(f"{identity}: unknown decision {decision!r}")
     if not isinstance(item.get("verifier_rationale"), str) or not item[
         "verifier_rationale"
     ].strip():
-        raise BackfillError(f"{identity}: нет verifier_rationale")
+        raise BackfillError(f"{identity}: verifier_rationale is missing")
     if decision == "downgrade":
         if not isinstance(item.get("blocker"), str) or not item["blocker"].strip():
-            raise BackfillError(f"{identity}: downgrade без blocker")
+            raise BackfillError(f"{identity}: downgrade without blocker")
         return
     evidence = item.get("evidence", "")
     factual_evidence(evidence, claim["property"], identity)
@@ -550,24 +550,24 @@ def _validate_result_item(item, claim, artifact_hash):
         claim["property"]
     }
     if not isinstance(values, dict) or not required <= set(values):
-        raise BackfillError(f"{identity}: proposal не содержит {sorted(required)}")
+        raise BackfillError(f"{identity}: proposal does not contain {sorted(required)}")
     if claim["property"] == "scale_conf":
         for field in ("units", "scale_expr", "to_byte"):
             if not isinstance(values.get(field), str) or not values[field].strip():
-                raise BackfillError(f"{identity}: code scale без {field}")
+                raise BackfillError(f"{identity}: code scale without {field}")
     if claim["label"] == "Map" and claim["property"] == "confidence":
         disposition = item.get("output_disposition")
         target = item.get("target")
         if values.get("role") not in MAP_ROLES:
-            raise BackfillError(f"{identity}: неверная role {values.get('role')!r}")
+            raise BackfillError(f"{identity}: invalid role {values.get('role')!r}")
         if disposition not in DISPOSITIONS - {"unresolved"}:
-            raise BackfillError(f"{identity}: неверная судьба выхода {disposition!r}")
+            raise BackfillError(f"{identity}: invalid output disposition {disposition!r}")
         if not isinstance(target, str) or not target.strip():
-            raise BackfillError(f"{identity}: не указан точный target")
+            raise BackfillError(f"{identity}: exact target is not specified")
         if values.get("role") == "dead" and disposition != "dead_control_flow":
-            raise BackfillError(f"{identity}: role=dead без dead_control_flow")
+            raise BackfillError(f"{identity}: role=dead without dead_control_flow")
     if not isinstance(item.get("trace"), str) or not item["trace"].strip():
-        raise BackfillError(f"{identity}: нет полного trace")
+        raise BackfillError(f"{identity}: complete trace is missing")
 
 
 def validate_results(
@@ -582,21 +582,21 @@ def validate_results(
         archive, manifest_path, manifest, artifact_report, inventory
     )
     if results.get("schema") != RESULT_SCHEMA:
-        raise BackfillError(f"неизвестная схема результатов: {results.get('schema')!r}")
+        raise BackfillError(f"unknown result schema: {results.get('schema')!r}")
     if results.get("manifest_sha256") != file_sha256(manifest_path):
-        raise BackfillError("Workflow использовал другой manifest")
+        raise BackfillError("Workflow used another manifest")
     if results.get("artifact_set_sha256") != artifact_report.get(
         "artifact_set_sha256"
     ):
-        raise BackfillError("Workflow использовал другой набор артефактов")
+        raise BackfillError("Workflow used another artifact set")
 
     analyses = results.get("analyses")
     verdicts = results.get("verdicts")
     if not isinstance(analyses, list) or not isinstance(verdicts, list):
-        raise BackfillError("results: analyses/verdicts обязаны быть массивами")
+        raise BackfillError("results: analyses/verdicts must be arrays")
     analyses_by_node = {item.get("node"): item for item in analyses}
     if len(analyses_by_node) != len(analyses):
-        raise BackfillError("results: повтор node analysis")
+        raise BackfillError("results: duplicate node analysis")
     expected_nodes = {node["identity"]: node for node in manifest["nodes"]}
     if set(analyses_by_node) != set(expected_nodes):
         missing = sorted(set(expected_nodes) - set(analyses_by_node))
@@ -605,15 +605,15 @@ def validate_results(
     for node_id, node in expected_nodes.items():
         item = analyses_by_node[node_id]
         if item.get("artifact_sha256") != inventory[node["artifact"]]:
-            raise BackfillError(f"{node_id}: analysis относится к другому артефакту")
+            raise BackfillError(f"{node_id}: analysis belongs to another artifact")
         if item.get("properties") != node["properties"]:
-            raise BackfillError(f"{node_id}: analysis properties расходятся с manifest")
+            raise BackfillError(f"{node_id}: analysis properties differ from manifest")
         if not isinstance(item.get("summary"), str) or not item["summary"].strip():
-            raise BackfillError(f"{node_id}: пустой summary")
+            raise BackfillError(f"{node_id}: empty summary")
 
     verdict_by_id = {item.get("identity"): item for item in verdicts}
     if len(verdict_by_id) != len(verdicts):
-        raise BackfillError("results: повтор verdict identity")
+        raise BackfillError("results: duplicate verdict identity")
     expected_claims = {claim["identity"]: claim for claim in manifest["claims"]}
     if set(verdict_by_id) != set(expected_claims):
         missing = sorted(set(expected_claims) - set(verdict_by_id))
@@ -632,7 +632,7 @@ def compose_workflow_runs(
     primary_path: Path,
     recovery_paths: list[Path],
 ) -> dict:
-    """Собрать primary archive и точечные recovery archives без свободного merge."""
+    """Compose a primary archive and targeted recovery archives without a free-form merge."""
     manifest, artifact_report, primary_result = validate_results(
         manifest_path, artifact_path, primary_path
     )
@@ -668,24 +668,24 @@ def compose_workflow_runs(
             )
         for field in ("runId", "scriptPath"):
             if not isinstance(recovery.get(field), str) or not recovery[field].strip():
-                raise BackfillError(f"recovery {recovery_path}: нет {field}")
+                raise BackfillError(f"recovery {recovery_path}: missing {field}")
         args = recovery.get("args")
         if not isinstance(args, dict):
-            raise BackfillError(f"recovery {recovery_path}: нет args")
+            raise BackfillError(f"recovery {recovery_path}: missing args")
         if args.get("manifest_sha256") != file_sha256(manifest_path):
-            raise BackfillError(f"recovery {recovery_path}: неверный manifest_sha256")
+            raise BackfillError(f"recovery {recovery_path}: invalid manifest_sha256")
         if args.get("artifact_set_sha256") != artifact_report["artifact_set_sha256"]:
-            raise BackfillError(f"recovery {recovery_path}: неверный artifact_set_sha256")
+            raise BackfillError(f"recovery {recovery_path}: invalid artifact_set_sha256")
         items = args.get("items")
         if not isinstance(items, list) or not items:
-            raise BackfillError(f"recovery {recovery_path}: пустой items")
+            raise BackfillError(f"recovery {recovery_path}: empty items")
         node_ids = [item.get("identity") for item in items]
         if len(node_ids) != len(set(node_ids)):
-            raise BackfillError(f"recovery {recovery_path}: повтор node identity")
+            raise BackfillError(f"recovery {recovery_path}: duplicate node identity")
         for item in items:
             if expected_items.get(item.get("identity")) != item:
                 raise BackfillError(
-                    f"recovery {recovery_path}: item вне frozen worklist"
+                    f"recovery {recovery_path}: item is outside the frozen worklist"
                 )
         expected_identities = [
             identity for node in node_ids for identity in claims_by_node[node]
@@ -693,33 +693,37 @@ def compose_workflow_runs(
         recovery_identities = args.get("recovery_identities")
         if recovery_identities != expected_identities:
             raise BackfillError(
-                f"recovery {recovery_path}: recovery_identities не покрывает полные узлы"
+                f"recovery {recovery_path}: recovery_identities does not cover complete nodes"
             )
         overlap = recovered & set(recovery_identities)
         if overlap:
-            raise BackfillError(f"recovery identity повторён: {sorted(overlap)}")
+            raise BackfillError(f"duplicate recovery identity: {sorted(overlap)}")
         recovered.update(recovery_identities)
 
         result = recovery.get("result")
         if not isinstance(result, dict) or result.get("schema") != RESULT_SCHEMA:
-            raise BackfillError(f"recovery {recovery_path}: неверный result schema")
+            raise BackfillError(f"recovery {recovery_path}: invalid result schema")
         if result.get("manifest_sha256") != file_sha256(manifest_path):
-            raise BackfillError(f"recovery {recovery_path}: result другого manifest")
+            raise BackfillError(f"recovery {recovery_path}: result belongs to another manifest")
         if result.get("artifact_set_sha256") != artifact_report["artifact_set_sha256"]:
-            raise BackfillError(f"recovery {recovery_path}: result другого artifact set")
+            raise BackfillError(
+                f"recovery {recovery_path}: result belongs to another artifact set"
+            )
         recovery_analyses = result.get("analyses")
         recovery_verdicts = result.get("verdicts")
         if not isinstance(recovery_analyses, list) or not isinstance(
             recovery_verdicts, list
         ):
-            raise BackfillError(f"recovery {recovery_path}: нет analyses/verdicts")
+            raise BackfillError(f"recovery {recovery_path}: missing analyses/verdicts")
         if {item.get("node") for item in recovery_analyses} != set(node_ids):
-            raise BackfillError(f"recovery {recovery_path}: analyses не совпадают с items")
+            raise BackfillError(
+                f"recovery {recovery_path}: analyses do not match items"
+            )
         if {item.get("identity") for item in recovery_verdicts} != set(
             recovery_identities
         ):
             raise BackfillError(
-                f"recovery {recovery_path}: verdicts не совпадают с identities"
+                f"recovery {recovery_path}: verdicts do not match identities"
             )
         recovery_analyses_by_node = {
             item["node"]: item for item in recovery_analyses
@@ -728,13 +732,13 @@ def compose_workflow_runs(
             expected = next(item for item in manifest["nodes"] if item["identity"] == node)
             analysis = recovery_analyses_by_node[node]
             if analysis.get("artifact_sha256") != inventory[expected["artifact"]]:
-                raise BackfillError(f"recovery {node}: другой artifact")
+                raise BackfillError(f"recovery {node}: different artifact")
             if analysis.get("properties") != expected["properties"]:
-                raise BackfillError(f"recovery {node}: properties расходятся")
+                raise BackfillError(f"recovery {node}: properties differ")
             if not isinstance(analysis.get("summary"), str) or not analysis[
                 "summary"
             ].strip():
-                raise BackfillError(f"recovery {node}: пустой summary")
+                raise BackfillError(f"recovery {node}: empty summary")
             analyses[node] = analysis
         for verdict in recovery_verdicts:
             claim = claims[verdict["identity"]]
@@ -770,7 +774,7 @@ def compose_workflow_runs(
 
 def validate_decisions(manifest, results, decisions, manifest_path, artifact_report, results_path):
     if decisions.get("schema") != DECISION_SCHEMA:
-        raise BackfillError("неизвестная схема decisions")
+        raise BackfillError("unknown decisions schema")
     anchors = {
         "manifest_sha256": file_sha256(manifest_path),
         "artifact_set_sha256": artifact_report["artifact_set_sha256"],
@@ -778,13 +782,13 @@ def validate_decisions(manifest, results, decisions, manifest_path, artifact_rep
     }
     for key, expected in anchors.items():
         if decisions.get(key) != expected:
-            raise BackfillError(f"decisions: неверный {key}")
+            raise BackfillError(f"decisions: invalid {key}")
     items = decisions.get("decisions")
     if not isinstance(items, list):
-        raise BackfillError("decisions: поле decisions обязано быть массивом")
+        raise BackfillError("decisions: decisions field must be an array")
     by_id = {item.get("identity"): item for item in items}
     if len(by_id) != len(items):
-        raise BackfillError("decisions: повтор identity")
+        raise BackfillError("decisions: duplicate identity")
     claims = {claim["identity"]: claim for claim in manifest["claims"]}
     verdicts = {item["identity"]: item for item in results["verdicts"]}
     if set(by_id) != set(claims):
@@ -796,26 +800,26 @@ def validate_decisions(manifest, results, decisions, manifest_path, artifact_rep
         verdict = verdicts[identity]
         action = item.get("action")
         if action not in ("accept", "revise", "downgrade"):
-            raise BackfillError(f"{identity}: неизвестный action {action!r}")
+            raise BackfillError(f"{identity}: unknown action {action!r}")
         if verdict["decision"] == "downgrade" and action != "downgrade":
-            raise BackfillError(f"{identity}: опровергнутый verdict нельзя принять как code")
+            raise BackfillError(f"{identity}: a refuted verdict cannot be accepted as code")
         if (
             claim["property"] == "scale_conf"
             and verdict["decision"] == "accept_code"
             and verdict.get("values", {}).get("scale_expr", "").strip() == "x"
             and action != "downgrade"
         ):
-            raise BackfillError(f"{identity}: raw identity x не является scale claim")
+            raise BackfillError(f"{identity}: raw identity x is not a scale claim")
         note = item.get("note")
         if not isinstance(note, str) or not note.strip():
-            raise BackfillError(f"{identity}: нет итогового note")
+            raise BackfillError(f"{identity}: final note is missing")
         if action == "downgrade":
             blocker = item.get("blocker", verdict.get("blocker", ""))
             if not isinstance(blocker, str) or not blocker.strip():
-                raise BackfillError(f"{identity}: downgrade без blocker")
+                raise BackfillError(f"{identity}: downgrade without blocker")
             continue
         if verdict["decision"] != "accept_code":
-            raise BackfillError(f"{identity}: code без подтверждающего verdict")
+            raise BackfillError(f"{identity}: code without a confirming verdict")
         expected_evidence = normalized_verified_evidence(
             verdict.get("evidence", ""),
             item.get("evidence_rewrites"),
@@ -824,34 +828,37 @@ def validate_decisions(manifest, results, decisions, manifest_path, artifact_rep
         )
         if item.get("evidence") != expected_evidence:
             raise BackfillError(
-                f"{identity}: evidence не является проверяемой нормализацией verdict"
+                f"{identity}: evidence is not a verifiable normalization of the verdict"
             )
         factual_evidence(item["evidence"], claim["property"], identity)
         if claim["label"] == "Map" and claim["property"] == "confidence":
             for key in ("output_disposition", "target"):
                 if item.get(key) != verdict.get(key):
-                    raise BackfillError(f"{identity}: {key} отличается от verdict")
-            if f"Судьба результата: {item['output_disposition']}" not in note:
-                raise BackfillError(f"{identity}: note не содержит output disposition")
+                    raise BackfillError(f"{identity}: {key} differs from the verdict")
+            if f"Result disposition: {item['output_disposition']}" not in note:
+                raise BackfillError(f"{identity}: note does not contain output disposition")
             if item["target"] not in note:
-                raise BackfillError(f"{identity}: note не содержит target")
+                raise BackfillError(f"{identity}: note does not contain target")
         if action == "accept" and item.get("values"):
-            raise BackfillError(f"{identity}: accept не изменяет values")
+            raise BackfillError(f"{identity}: accept does not change values")
         if action == "revise":
             values = item.get("values")
             allowed = REVISION_FIELDS[(claim["label"], claim["property"])]
             if not isinstance(values, dict) or not values:
-                raise BackfillError(f"{identity}: revise без values")
+                raise BackfillError(f"{identity}: revise without values")
             if not set(values) <= allowed:
                 raise BackfillError(
-                    f"{identity}: revise меняет запрещённые поля {sorted(set(values)-allowed)}"
+                    f"{identity}: revise changes prohibited fields "
+                    f"{sorted(set(values)-allowed)}"
                 )
     notes_by_node = defaultdict(set)
     for identity, item in by_id.items():
         notes_by_node[claims[identity]["node"]].add(item["note"])
     inconsistent = sorted(node for node, notes in notes_by_node.items() if len(notes) != 1)
     if inconsistent:
-        raise BackfillError(f"decisions: разные итоговые note для одного узла {inconsistent}")
+        raise BackfillError(
+            f"decisions: different final notes for the same node {inconsistent}"
+        )
     return by_id
 
 
@@ -860,7 +867,7 @@ def _rows_by_addr(rows, path):
     for row in rows:
         addr = row.get("addr", "").strip().lower()
         if addr in result:
-            raise BackfillError(f"{path}: повтор addr {addr}")
+            raise BackfillError(f"{path}: duplicate addr {addr}")
         result[addr] = row
     return result
 
@@ -889,7 +896,7 @@ def _apply_to_frozen_row(row, row_decisions):
                 and decision.get("output_disposition") != "dead_control_flow"
             ):
                 raise BackfillError(
-                    f"{claim['identity']}: итоговый role=dead без dead_control_flow"
+                    f"{claim['identity']}: final role=dead without dead_control_flow"
                 )
     return expected
 
@@ -907,21 +914,21 @@ def prepare_application(repo, manifest, decisions_by_id):
         frozen_data = git_source(repo, manifest["base_commit"], source["path"])
         oid = run_git(repo, "rev-parse", f"{manifest['base_commit']}:{source['path']}")
         if oid != source["git_oid"]:
-            raise BackfillError(f"{source['path']}: git object отличается от manifest")
+            raise BackfillError(f"{source['path']}: git object differs from manifest")
         if sha256_bytes(frozen_data) != source.get("sha256"):
-            raise BackfillError(f"{source['path']}: SHA-256 git blob отличается от manifest")
+            raise BackfillError(f"{source['path']}: git-blob SHA-256 differs from manifest")
         frozen_fields, frozen_rows = parse_csv(frozen_data, source["path"])
         if frozen_fields != source["fields"]:
-            raise BackfillError(f"{source['path']}: frozen header отличается от manifest")
+            raise BackfillError(f"{source['path']}: frozen header differs from manifest")
         current_path = repo / source["path"]
         current_data = current_path.read_bytes()
         current_fields, current_rows = parse_csv(current_data, source["path"])
         if current_fields != frozen_fields:
-            raise BackfillError(f"{source['path']}: текущий header отличается от frozen")
+            raise BackfillError(f"{source['path']}: current header differs from frozen")
         frozen_by_addr = _rows_by_addr(frozen_rows, source["path"])
         current_by_addr = _rows_by_addr(current_rows, source["path"])
         if set(frozen_by_addr) != set(current_by_addr):
-            raise BackfillError(f"{source['path']}: состав строк drifted")
+            raise BackfillError(f"{source['path']}: row inventory drifted")
 
         expected_by_addr = {}
         for (row_label, addr), row_decisions in grouped.items():
@@ -929,21 +936,21 @@ def prepare_application(repo, manifest, decisions_by_id):
                 continue
             frozen = frozen_by_addr.get(addr)
             if frozen is None:
-                raise BackfillError(f"{source['path']}: нет frozen строки {addr}")
+                raise BackfillError(f"{source['path']}: frozen row {addr} is missing")
             claim_digest = {claim["row_digest"] for claim, _ in row_decisions}
             if claim_digest != {row_digest(frozen_fields, frozen)}:
-                raise BackfillError(f"{source['path']}:{addr}: row digest не совпал")
+                raise BackfillError(f"{source['path']}:{addr}: row digest does not match")
             expected_by_addr[addr] = _apply_to_frozen_row(frozen, row_decisions)
 
         for addr, current in current_by_addr.items():
             frozen = frozen_by_addr[addr]
             if addr not in expected_by_addr and current != frozen:
-                raise BackfillError(f"{source['path']}:{addr}: обнаружен source drift")
+                raise BackfillError(f"{source['path']}:{addr}: source drift detected")
         for addr, expected in expected_by_addr.items():
             current = current_by_addr[addr]
             frozen = frozen_by_addr[addr]
             if current != frozen and current != expected:
-                raise BackfillError(f"{source['path']}:{addr}: обнаружен source drift")
+                raise BackfillError(f"{source['path']}:{addr}: source drift detected")
             current_by_addr[addr] = expected
         output_rows = [current_by_addr[row["addr"].strip().lower()] for row in current_rows]
         expected_data = render_csv(current_fields, output_rows)
@@ -1073,14 +1080,14 @@ def cmd_status(args):
     status = debt_status(Path(args.repo).resolve(), args.rom)
     print(json.dumps(status, ensure_ascii=False, sort_keys=True))
     if args.require_zero and status["total"]:
-        raise BackfillError(f"локальный evidence debt={status['total']}")
+        raise BackfillError(f"local evidence debt={status['total']}")
 
 
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest="command", required=True)
 
-    freeze = sub.add_parser("freeze", help="зафиксировать immutable scope из git")
+    freeze = sub.add_parser("freeze", help="freeze immutable scope from git")
     freeze.add_argument("--repo", default=str(ROOT))
     freeze.add_argument("--rom", default="JK08A")
     freeze.add_argument("--commit", required=True)
@@ -1088,7 +1095,7 @@ def parser():
     freeze.set_defaults(func=cmd_freeze)
 
     artifacts = sub.add_parser(
-        "verify-artifacts", help="сверить два независимых набора blind-артефактов"
+        "verify-artifacts", help="compare two independent sets of blind artifacts"
     )
     artifacts.add_argument("--manifest", required=True)
     artifacts.add_argument("--left", required=True)
@@ -1097,7 +1104,7 @@ def parser():
     artifacts.set_defaults(func=cmd_verify_artifacts)
 
     compose = sub.add_parser(
-        "compose-results", help="собрать primary и точечные recovery Workflow archives"
+        "compose-results", help="compose primary and targeted recovery Workflow archives"
     )
     compose.add_argument("--manifest", required=True)
     compose.add_argument("--artifacts", required=True)
@@ -1106,13 +1113,13 @@ def parser():
     compose.add_argument("--output", required=True)
     compose.set_defaults(func=cmd_compose_results)
 
-    results = sub.add_parser("validate-results", help="проверить полный результат Workflow")
+    results = sub.add_parser("validate-results", help="validate the complete Workflow result")
     results.add_argument("--manifest", required=True)
     results.add_argument("--artifacts", required=True)
     results.add_argument("--results", required=True)
     results.set_defaults(func=cmd_validate_results)
 
-    apply = sub.add_parser("apply", help="применить проверенные решения к source CSV")
+    apply = sub.add_parser("apply", help="apply verified decisions to source CSV")
     apply.add_argument("--repo", default=str(ROOT))
     apply.add_argument("--manifest", required=True)
     apply.add_argument("--artifacts", required=True)
@@ -1121,7 +1128,7 @@ def parser():
     apply.add_argument("--dry-run", action="store_true")
     apply.set_defaults(func=cmd_apply)
 
-    status = sub.add_parser("status", help="показать локальный Map/Axis evidence debt")
+    status = sub.add_parser("status", help="show local Map/Axis evidence debt")
     status.add_argument("--repo", default=str(ROOT))
     status.add_argument("--rom", default="JK08A")
     status.add_argument("--require-zero", action="store_true")

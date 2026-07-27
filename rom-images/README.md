@@ -1,14 +1,16 @@
-# ROM images – манифест дампов
+# ROM images - dump manifest
 
-Ground-truth ROM-дампы проекта **VQ HR ECU**: образы с RomRaider forum и собственные
-чтения физических ЭБУ.
-Исходные бинарники (`*.bin`) версионируются в git; дублирующие архивы не хранятся.
-Этот файл – манифест идентификации. Дамп опознаётся по `sha256`.
+Ground-truth ROM dumps for the **VQ HR ECU** project: images from the RomRaider
+forum and owned reads from physical ECUs.
 
-## Структура и имена
+Original binaries (`*.bin`) are versioned in Git; duplicate archives are not
+stored. This file is the identification manifest. Dumps are identified by
+`sha256`.
 
-На верхнем уровне находятся только каталоги ECM part # в формате `23710-XXXXX`,
-общий манифест и машинный реестр:
+## Layout and naming
+
+The top level contains only ECM part-number directories in `23710-XXXXX` format,
+the shared manifest, and the machine-readable registry:
 
 ```text
 rom-images/
@@ -16,7 +18,7 @@ rom-images/
     README.md
     <rom-id>-<YYYYMMDD>-stock.bin
     <rom-id>-<YYYYMMDD>-stock.bin.md5
-    <прочие артефакты>
+    <other artifacts>
     mods/
       <short-desc>/
         README.md
@@ -26,138 +28,157 @@ rom-images/
   roms.csv
 ```
 
-`rom-id` берётся из калибровочного идентификатора внутри ROM, например `1JK08A`
-или `11ND0A`. Дата означает:
+`rom-id` comes from the calibration identifier inside the ROM, for example
+`1JK08A` or `11ND0A`. The date is:
 
-- дату чтения для собственного дампа;
-- дату импорта в репозиторий для внешнего stock-образа;
-- дату выпуска для модификации.
+- the read date for an owned dump;
+- the repository import date for an external stock image;
+- the release date for a modification.
 
-`short-desc` записывается строчными ASCII-словами через дефис. MD5 sidecar имеет
-имя `<binary>.md5` и GNU-формат `<md5> *<filename>`. SHA-256 является основным
-идентификатором и хранится в `roms.csv`, README каталога и README модификации.
-Пустой `mods/` не хранится.
+`short-desc` uses lowercase ASCII words separated by hyphens. An MD5 sidecar is
+named `<binary>.md5` and uses GNU format: `<md5> *<filename>`. SHA-256 is the
+primary identifier and is recorded in `roms.csv`, the directory README, and the
+modification README. Empty `mods/` directories are not stored.
 
-Структура, имена, `roms.csv` и MD5 sidecar-файлы проверяются командой:
+The layout, names, `roms.csv`, and MD5 sidecars are checked with:
 
 ```bash
 python3 -m unittest patches.tests.test_rom_images_layout -v
 ```
 
-`1ND0A` / `1ND3B` (1.5 MiB, SH7059, JDM) и `JK78C` (1.0 MiB, SH7058, USDM) – **VQ37VHR**,
-один мотор в двух поколениях ЭБУ, гомолог-пара для реверса. `JK03A` и `JK08A` (1.0 MiB,
-SH7058, JDM) – **VQ25HR** V36 Skyline 250GT: JK03A является форумным комплектом
-`ROM + внешний SPI EEPROM`, JK08A – собственное чтение целевого ЭБУ машины без EEPROM.
-`JK00D` (1.0 MiB, SH7058) – собственный ROM физического стендового ЭБУ **VQ35HR**.
-Документация физических блоков и проекта находится в Obsidian:
-`🎛️ Electronics/VQ HR ECU Tuning` (см. `../AGENTS.md`).
+`1ND0A` / `1ND3B` (1.5 MiB, SH7059, JDM) and `JK78C` (1.0 MiB, SH7058,
+USDM) are **VQ37VHR** images of the same engine across two ECU generations. They
+form a homolog pair for reverse engineering. `JK03A` and `JK08A` (1.0 MiB,
+SH7058, JDM) are for the **VQ25HR** V36 Skyline 250GT. JK03A is a forum package
+containing `ROM + external SPI EEPROM`; JK08A is an owned read from the target
+vehicle ECU without an EEPROM read. `JK00D` (1.0 MiB, SH7058) is an owned ROM
+from a physical **VQ35HR** bench ECU. Documentation for the physical ECUs and the
+project is in the Russian-language Obsidian project
+`🎛️ Electronics/VQ HR ECU Tuning`; see `../AGENTS.md`.
 
-Ядро MCU – **SH-2E** (SH-2 + single-precision FPU), подтверждено даташитом Renesas
-(`../refs/renesas-sh7059-sh7058s-hardware-manual.pdf`). В Ghidra грузить вариантом
-`SuperH:BE:32:SH-2A` (единственный штатный с FPU).
+The MCU core is **SH-2E** (SH-2 plus a single-precision FPU), as confirmed by the
+Renesas datasheet
+(`../refs/renesas-sh7059-sh7058s-hardware-manual.pdf`). In Ghidra, load it as
+`SuperH:BE:32:SH-2A`, the only built-in variant with an FPU.
 
-## Дампы
+## Dumps
 
-| Файл | Размер (байт) | Флеш / MCU | ECM part # | Авто | Мотор | Рынок | Шина |
-|------|--------------:|-----------|-----------|------|-------|-------|------|
-| `23710-1ND0A/11ND0A-20260715-stock.bin` | 1 572 864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND0A | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
-| `23710-1ND3B/11ND3B-20260715-stock.bin` | 1 572 864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND3B | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
-| `23710-JK00D/1JK00D-20260726-stock.bin` | 1 048 576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00D | стендовый ЭБУ | VQ35HR | не установлен | CAN |
-| `23710-JK03A/1JK03A-20260715-stock.bin` | 1 048 576 (0x100000) | 1.0 MiB / SH7058 | 23710-JK03A | V36 Skyline 250GT | VQ25HR | JDM | CAN * |
-| `23710-JK08A/1JK08A-20260726-stock.bin` | 1 048 576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK08A | V36 Skyline 250GT | VQ25HR | JDM | CAN |
-| `23710-JK78C/1JK78C-20260715-stock.bin` | 1 048 576 (0x100000) | 1.0 MiB / SH7058 * | 23710-JK78C | Infiniti G37 (2008-09) | VQ37VHR | USDM | CAN * |
+| File | Size (bytes) | Flash / MCU | ECM part # | Vehicle | Engine | Market | Bus |
+|------|-------------:|-------------|------------|---------|--------|--------|-----|
+| `23710-1ND0A/11ND0A-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND0A | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
+| `23710-1ND3B/11ND3B-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND3B | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
+| `23710-JK00D/1JK00D-20260726-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00D | bench ECU | VQ35HR | unknown | CAN |
+| `23710-JK03A/1JK03A-20260715-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 | 23710-JK03A | V36 Skyline 250GT | VQ25HR | JDM | CAN * |
+| `23710-JK08A/1JK08A-20260726-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK08A | V36 Skyline 250GT | VQ25HR | JDM | CAN |
+| `23710-JK78C/1JK78C-20260715-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 * | 23710-JK78C | Infiniti G37 (2008-09) | VQ37VHR | USDM | CAN * |
 
-Префикс `23710` – Nissan/Infiniti part # для ECM (по каталогу parts.nissanusa).
+The `23710` prefix is the Nissan/Infiniti part-number prefix for an ECM, according
+to the parts.nissanusa catalog.
 
-`JK03A` – комплект в `23710-JK03A/`: главный flash
-`1JK03A-20260715-stock.bin` и внешний **SPI EEPROM ST95320**
-`ST95320-20260715-nats-sync.bin` (4096 B, NATS synchronization/adaptation).
-MCU (`SH705822N`), софт (`7MFKAVN86`) и калибровка (`1JK03A00000`) самоидентифицируются
-строками внутри образа; immo-контур разобран в
-`../patches/immo-off-developer-flag.md`.
-Подробный состав и хеши находятся в `23710-JK03A/README.md`.
+`JK03A` is the package under `23710-JK03A/`: the main flash image
+`1JK03A-20260715-stock.bin` and the external **ST95320 SPI EEPROM**
+`ST95320-20260715-nats-sync.bin` (4,096 bytes, NATS
+synchronization/adaptation). The MCU (`SH705822N`), software (`7MFKAVN86`), and
+calibration (`1JK03A00000`) identify themselves through strings in the image.
+The immobilizer path is analyzed in
+`../patches/immo-off-developer-flag.md`. The directory README contains the full
+package inventory and hashes.
 
-`JK08A` – собственное чтение целевого ЭБУ V36 Skyline 250GT от 2026-07-26. PCMFlash
-1.2.0, модуль 18 через Scanmatik-SM2 USB; внутри ROM находятся `1JK08A00000`,
-`7MFKAVN86` и `SH705822N`. От JK03A отличается 121 байтовая позиция в
-`0x008200..0x0190c9`, при этом `0x000000..0x0081ff` и весь `0x020000..0x0fffff`
-совпадают побайтно. Код и флаг Developer Immobilizer по `0x8725` являются exact-match;
-calibration/config данные не тождественны. Комплект не содержит EEPROM и снимка PCMFlash.
-Полная локальная идентификация находится в `23710-JK08A/README.md`.
+`JK08A` is an owned read from the target V36 Skyline 250GT ECU dated 2026-07-26.
+It was read with PCMFlash 1.2.0, module 18, through Scanmatik-SM2 USB. The ROM
+contains `1JK08A00000`, `7MFKAVN86`, and `SH705822N`. It differs from JK03A at
+121 byte positions within `0x008200..0x0190c9`, while
+`0x000000..0x0081ff` and the entire `0x020000..0x0fffff` range are
+byte-identical. The executable code and Developer Immobilizer flag at `0x8725`
+are an exact match; calibration/configuration data is not identical. The package
+does not contain an EEPROM read or PCMFlash screenshot. The directory README
+contains the complete local identification.
 
-`JK00D` – собственное чтение физического стендового ЭБУ от 2026-07-26. PCMFlash 1.2.0,
-модуль 18 через Scanmatik-SM2 USB, сообщает `23710-JK00D`, калибровку `1JK00D00000`,
-основной номер `8MFK36N15`, тип `SH705822N` и протокол Hitachi CAN. Те же калибровка,
-основной номер и тип присутствуют строками в ROM по `0x8204`, `0x7009` и `0x50C6`.
-Комплект не содержит чтения внешнего EEPROM; его наличие этим не опровергается.
-Полная локальная идентификация находится в `23710-JK00D/README.md`.
+`JK00D` is an owned read from a physical bench ECU dated 2026-07-26. PCMFlash
+1.2.0 module 18 over Scanmatik-SM2 USB reports `23710-JK00D`, calibration
+`1JK00D00000`, main number `8MFK36N15`, type `SH705822N`, and the Hitachi CAN
+protocol. The same calibration, main number, and type occur as ROM strings at
+`0x8204`, `0x7009`, and `0x50C6`. The package does not contain an external
+EEPROM read; this does not establish that the hardware lacks one. The directory
+README contains the complete local identification.
 
-`*` Размеры флеша (1.0 / 1.5 MiB) и ядро **SH-2E** подтверждены даташитом Renesas;
-конкретная модель чипа на плате (SH7058 vs SH7059) и шина CAN выведены из размера флеша
-и семейства ЭБУ (Hitachi HR CAN) – финальная сверка дизассемблированием / маркировкой.
-Перекрёстно: PCMflash Module 18 покрывает `EFI SH705927N (Hitachi SH7059/1.5MB)` –
-класс `1ND`-дампов; USDM-серия в списке – `EFI SH70582xN (Hitachi SH7058/1MB)`
-(класс `JK78C`). => `../refs/pcmflash-module-list.md`.
+`*` Flash sizes (1.0 / 1.5 MiB) and the **SH-2E** core are confirmed by the
+Renesas datasheet. The specific on-board chip model (SH7058 vs SH7059) and CAN
+bus are inferred from flash size and the Hitachi HR CAN ECU family; final
+verification requires disassembly or chip markings. As a cross-check, PCMflash
+Module 18 covers `EFI SH705927N (Hitachi SH7059/1.5MB)`, which matches the `1ND`
+dump class. Its USDM listing includes
+`EFI SH70582xN (Hitachi SH7058/1MB)`, which matches the `JK78C` class. See
+`../refs/pcmflash-module-list.md`.
 
-### sha256 (идентификация)
+### SHA-256 identification
 
-Реестр `roms.csv` (строка = файл дампа: путь, метка ROM в графе, sha256). Он машинный:
-пайплайн карт берёт образ по метке и сверяет хеш перед чтением значений
-(`../tools/mapkit/rom.py`, Stage 4), поэтому опознание дампа – условие прогона, а не
-справка для человека. Метка пуста у образа, которого граф не несёт (EEPROM).
-Производные образы в реестр stock-источников не входят; их хеши находятся в README
-конкретного мода.
+`roms.csv` is the registry, with one row per dump file: path, ROM graph label,
+and SHA-256. It is machine-readable. Stage 4 of the map pipeline resolves the
+image by label and verifies its hash before reading values
+(`../tools/mapkit/rom.py`), so dump identification is a run precondition rather
+than human-only reference data. The label is empty for an image that is not
+represented in the graph, such as an EEPROM. Derived images are excluded from
+the stock-source registry; their hashes are recorded in the relevant
+modification README.
 
-### Происхождение и уверенность
+### Provenance and confidence
 
-- `1ND0A`: RomRaider тред t=22253 (CKV36, FID `8FZ35NEE6`). Мотор и авто – высокая
-  уверенность; привязка part # -> CKV36 и FID – **forum-grade** (сверить чтением дампа).
-- `1ND3B`: RomRaider тред t=22328 ("Does anyone have the CKV36 file? (237101ND3B)").
-  Высокая; **forum-grade**.
-- `JK78C`: RomRaider-треда не найдено; идентификация по каталогам part # (серия
-  23710-JK7xC = 2008 Infiniti G37 3.7L). **Catalog-grade** (mintt / fs1inc; оригинал
-  23710-JK78B в перечне замен указывает JK78C).
-- `JK03A`: RomRaider тред t=11098 "Nissan stock ROM list" (Break_Neck, пост p=150228):
-  Skyline V36 VQ25HR 2WD 5AT, 23710-JK03A, SW `7MFKAVN86`, 7058 MCU, "ROM + SPI EEPROM".
-  Part # / SW / калибровка (`1JK03A00000`) подтверждены строками внутри образа – **высокая
-  уверенность**. Дамп EEPROM `ST95320-20260715-nats-sync.bin` из того же поста.
-- `JK08A`: собственный физический целевой блок V36 Skyline 250GT. Part # и способ чтения
-  подтверждены локальным provenance; идентификатор ПО, калибровка, SH7058-класс и размер
-  flash подтверждены содержимым ROM – **высокая уверенность**. Внешний EEPROM не прочитан.
-- `JK00D`: собственный физический стендовый блок. Part #, идентификатор ПО, калибровка,
-  SH7058-класс, размер flash и CAN подтверждены чтением и идентификацией PCMFlash –
-  **высокая уверенность**. Модель автомобиля и рынок исходного донора не установлены;
-  внешний EEPROM не прочитан.
-- Дельта `1ND0A` vs `1ND3B` (год / комплектация / ревизия) и точные модельные годы –
-  не установлены.
+- `1ND0A`: RomRaider thread t=22253 (CKV36, FID `8FZ35NEE6`). Engine and vehicle
+  confidence is high; the part-number-to-CKV36 and FID association is
+  **forum-grade** and should be verified from a dump read.
+- `1ND3B`: RomRaider thread t=22328, "Does anyone have the CKV36 file?
+  (237101ND3B)". High confidence; **forum-grade**.
+- `JK78C`: no RomRaider thread was found. Identification comes from part-number
+  catalogs, where the 23710-JK7xC series denotes a 2008 Infiniti G37 3.7L.
+  **Catalog-grade** (mintt / fs1inc); the replacement list for original
+  23710-JK78B names JK78C.
+- `JK03A`: RomRaider thread t=11098, "Nissan stock ROM list", Break_Neck post
+  p=150228: Skyline V36 VQ25HR 2WD 5AT, 23710-JK03A, software
+  `7MFKAVN86`, 7058 MCU, and "ROM + SPI EEPROM". The part number, software, and
+  calibration (`1JK03A00000`) are confirmed by strings inside the image, giving
+  **high confidence**. The `ST95320-20260715-nats-sync.bin` EEPROM dump is from
+  the same post.
+- `JK08A`: an owned physical target ECU from a V36 Skyline 250GT. Local
+  provenance confirms the part number and read method. ROM content confirms the
+  software identifier, calibration, SH7058 class, and flash size, giving
+  **high confidence**. The external EEPROM was not read.
+- `JK00D`: an owned physical bench ECU. PCMFlash reading and identification
+  confirm the part number, software identifier, calibration, SH7058 class,
+  flash size, and CAN protocol, giving **high confidence**. The donor vehicle
+  model and market are unknown; the external EEPROM was not read.
+- The `1ND0A` vs `1ND3B` delta, including model year, trim, and revision, and
+  their exact model years remain unknown.
 
-### Источники
+### Sources
 
 - 1ND0A: https://www.romraider.com/forum/viewtopic.php?f=65&t=22253
 - 1ND3B: https://www.romraider.com/forum/viewtopic.php?f=65&t=22328
-- V36 Coupe specs (11ND2A / VQ37VHR / JDM / 2008): https://www.romraider.com/forum/viewtopic.php?f=64&t=22280
-- Эволюция флеша 1 MB -> 1.5 MB: https://www.romraider.com/forum/viewtopic.php?f=65&t=21905
+- V36 Coupe specifications (11ND2A / VQ37VHR / JDM / 2008): https://www.romraider.com/forum/viewtopic.php?f=64&t=22280
+- Flash evolution from 1 MB to 1.5 MB: https://www.romraider.com/forum/viewtopic.php?f=65&t=21905
 - Nissan stock ROM list (Z34 VQ37VHR loader 705927): https://www.romraider.com/forum/viewtopic.php?f=65&t=11098
 - JK03A (V36 VQ25HR 2WD 5AT, ROM + SPI EEPROM, Break_Neck): https://www.romraider.com/forum/viewtopic.php?p=150228#p150228
 - JK7x = 2008 Infiniti G37 3.7L: https://www.fs1inc.com/23710-jk78a-2008-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play.html
-- 23710 = Nissan ECM part #: https://parts.nissanusa.com/parts/nissan-engine-control-module-ecm-23710zv24a
-- Renesas SH7059 / SH7058S (ядро SH-2E, 1.5 / 1.0 MiB flash): https://www.renesas.com/en/document/mah/sh-2e-sh7059-f-ztattm-sh7058s-f-ztattm-hardware-manual
+- 23710 = Nissan ECM part-number prefix: https://parts.nissanusa.com/parts/nissan-engine-control-module-ecm-23710zv24a
+- Renesas SH7059 / SH7058S (SH-2E core, 1.5 / 1.0 MiB flash): https://www.renesas.com/en/document/mah/sh-2e-sh7059-f-ztattm-sh7058s-f-ztattm-hardware-manual
 - PCMflash module list (Module 18 SH705927N / SH7059): https://scanmatik.ru/downloads/PCM_module_list.pdf
 - VQ engine / VVEL: https://en.wikipedia.org/wiki/Nissan_VQ_engine
 
-Ground truth – в железе; part # и тред – ориентир, финальная сверка дизассемблированием.
+Ground truth is in the hardware. A part number and forum thread are orientation
+points; disassembly provides the final cross-check.
 
-## Производный образ immo-off
+## Derived immo-off image
 
-`23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin` выпускается
-`../patches/apply_immo_off.py` из точного stock JK08A. Изменяется только
-`ROM[0x8725].bit0`: байт `01` -> `00`. Это заводской флаг Developer Immobilizer,
-исполнительная цепочка которого описана в `../patches/immo-off-developer-flag.md`.
+`23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin` is produced from the
+exact stock JK08A image by `../patches/apply_immo_off.py`. It changes only
+`ROM[0x8725].bit0`, from byte `01` to `00`. This is the factory Developer
+Immobilizer flag whose execution path is described in
+`../patches/immo-off-developer-flag.md`.
 
-| Файл | Размер | Изменение | SHA-256 | Статус |
-|---|---:|---|---|---|
-| `23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin` | 1 048 576 | `0x8725: 01 -> 00` | `de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c` | аппаратно подтверждён |
+| File | Size | Change | SHA-256 | Status |
+|------|-----:|--------|---------|--------|
+| `23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin` | 1,048,576 | `0x8725: 01 -> 00` | `de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c` | hardware-verified |
 
-Хранимые checksum-поля совпадают со stock; штатную коррекцию выполняет флешер при
-записи. Тест патчера побайтно проверяет, что производный файл отличается от stock
-ровно одним битом.
+Stored checksum fields match stock; the flasher performs the required correction
+when writing. The patcher test verifies byte-for-byte that the derived file
+differs from stock by exactly one bit.

@@ -1,8 +1,9 @@
-// RefsTo.java – кто ссылается на адрес: инструкция, её функция, тип ссылки.
-// Для pool-слота getFunctionContaining бесполезен (слот - данные в литеральном
-// пуле между функциями), поэтому владельца определяет ссылающаяся инструкция.
+// RefsTo.java - report instructions that reference an address, their functions,
+// and reference types. getFunctionContaining is not useful for a pool slot
+// because the slot is literal-pool data between functions; the referencing
+// instruction determines ownership.
 //
-// Запуск (headless): -postScript RefsTo.java <addr_hex> [<addr_hex> ...]
+// Usage (headless): -postScript RefsTo.java <addr_hex> [<addr_hex> ...]
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -26,7 +27,7 @@ public class RefsTo extends GhidraScript {
                         + " type=" + r.getReferenceType().getName());
                 any = true;
             }
-            if (!any) println("VQ_REFSTO " + a + " <- нет ссылок");
+            if (!any) println("VQ_REFSTO " + a + " <- no references");
         }
     }
 }

@@ -1,96 +1,99 @@
 #!/usr/bin/env python3
-# Загрузка калибровочного слоя (Stage 3, разделы 5 и 7 tools/map-flag-pipeline.md) в
-# Memgraph: узлы :Interp/:Map/:Axis и рёбра :ACCESSES/:VIA/:KERNEL/:AXIS_X/:AXIS_Y.
-# Переносит в граф то, чего :CALLS не несёт, - операнды вызова: какая таблица и какие
-# оси переданы аксессором в r4/r5/r6 (P2).
+# Load the calibration layer (Stage 3, sections 5 and 7 of tools/map-flag-pipeline.md)
+# into Memgraph: :Interp/:Map/:Axis nodes and
+# :ACCESSES/:VIA/:KERNEL/:AXIS_X/:AXIS_Y relationships. Adds what :CALLS does not
+# contain: call operands identifying which table and axes an accessor passes in r4/r5/r6
+# (P2).
 #
-# Источников четыре, и каждый отвечает за своё:
-#   defs/<source>.interp.csv - реестр входов интерполяции: строка = вход со своей
-#                              геометрией, снятой с его кода (Stage 2);
-#   accessors.<kernel>.csv  - переписи резолвера (ResolveAccessors.java): сайты и
-#                             операнды, снятые data-flow декомпилятора (Stage 3);
-#   defs/<source>.findings.csv - ручной слой карт: что установлено человеком и чего
-#                                перепись дать не может (семантика, единицы, уровень, роль);
-#   defs/<source>.axes.csv  - ручной слой осей: семантика оси и её единицы.
-# Канонический <source> разрешает defs/rom-inheritance.toml. Exact-code наследник
-# сохраняет собственные export, образ и слой графа, но не копирует эти файлы.
-# Единицы - в ручном слое, а не в переписи: шкалу даёт трейс потребителя, а не операнд
-# вызова. Резолвер видит указатель на массив, но не то, во что превращает его значение
-# арифметика мотора.
+# Four sources each own a distinct part:
+#   defs/<source>.interp.csv - interpolation-entry registry: each row is an entry with
+#                              geometry recovered from its code (Stage 2);
+#   accessors.<kernel>.csv   - resolver censuses (ResolveAccessors.java): sites and operands
+#                              recovered by decompiler data flow (Stage 3);
+#   defs/<source>.findings.csv - manual map layer: facts established by a person that the
+#                                census cannot provide (semantics, units, confidence, role);
+#   defs/<source>.axes.csv   - manual axis layer: axis semantics and units.
+# defs/rom-inheritance.toml resolves canonical <source>. An exact-code inheritor retains its
+# own export, image, and graph layer without copying these files. Units belong to the manual
+# layer rather than the census because a consumer trace establishes scaling, not a call
+# operand. The resolver sees an array pointer but not how engine arithmetic transforms its
+# value.
 #
-# Пятый источник - сам образ ROM (реестр rom-images/roms.csv -> файл дампа, сверка по
-# sha256). Перепись говорит, по какому адресу и какой формой читать; что там лежит,
-# говорит образ, и это Stage 4: диапазон, содержимое, монотонность оси.
+# The fifth source is the ROM image itself (rom-images/roms.csv registry -> dump file,
+# verified by SHA-256). The census says which address and shape to read; the image supplies
+# its contents. This is Stage 4: range, contents, and axis monotonicity.
 #
-# Слой грузится целиком, всеми цензами сразу: узлы слоя пересоздаются на каждом прогоне,
-# поэтому ценз на прогон означал бы, что загрузка второго ядра сносит карты первого. По
-# той же причине ручной слой грузится здесь, а не отдельным прогоном: находка живёт на
-# том же узле, что и факт переписи, и пересоздание узла унесло бы её с собой.
+# Load the complete layer from all censuses in one run. Layer nodes are recreated on every
+# run, so loading one census at a time would make the second core delete maps from the first.
+# The same reason keeps the manual layer here rather than in a separate pass: a finding lives
+# on the same node as its census fact and would disappear when that node is recreated.
 #
-# Реестр (строка = вход):
-#   family      - explicit-axis (ось - массив breakpoint'ов в ПЗУ, указатель в r5/r6)
-#                 либо implicit-axis (массива нет: точки 0..N-1 с равномерным шагом по
-#                 сырому входу);
-#   kernel      - общий движок входа, он же имя файла переписи;
-#   wrapper     - адрес самого входа;
-#   width/height- число точек оси; height пуст - вход одномерный;
-#   step        - шаг неявной оси (только implicit-axis);
-#   storagetype - элемент. У 1D-входа его читает сам вход, у 2D - его finisher (вход
-#                 держит указатель на него в своём пуле и уходит туда хвостовым
-#                 переходом). У implicit-axis элемент задаёт лимит, и объявлять его там -
-#                 значит заводить второй источник одного факта;
-#   axistype_x/_y - элемент массива оси r5 и оси r6 (только explicit-axis). Своё у каждой
-#                 оси: вход зовёт поиск по каждой отдельно и может звать разные - 0x262E0
-#                 берёт байтовый 0x26A0C для r5 и словесный 0x26984 для r6, 0x26660 то же
-#                 парой 0x26BC4/0x26B84. Элемент снят с клэмпа в delay slot вызова: он
-#                 равен (точек - 1) * размер элемента, поэтому у 16 точек байтовая ось
-#                 даёт 15, словесная - 30. Тот же клэмп подтверждает и число точек.
-# Перепись, которой в реестре нет, - ценз с неизвестной моделью оси; вход с таблицами,
-# которого в реестре нет, - обёртка с неизвестной геометрией. И то и другое
-# останавливает загрузку, а не размечается наугад.
+# Registry (one entry per row):
+#   family       - explicit axis (breakpoint array in ROM, pointer in r5/r6) or implicit
+#                  axis (no array; points 0..N-1 at uniform raw-input steps);
+#   kernel       - shared entry engine and census filename;
+#   wrapper      - address of the entry itself;
+#   width/height - axis point count; empty height means a one-dimensional entry;
+#   step         - implicit-axis step (implicit only);
+#   storagetype  - element type. A 1D entry reads it itself; a 2D entry delegates to its
+#                  finisher, whose pointer it holds in a pool before a tail branch.
+#                  For an implicit axis the element type follows from the limit, so declaring
+#                  it here would create a second source for one fact;
+#   axistype_x/_y - r5 and r6 axis-array element types (explicit only). Each axis can differ:
+#                  an entry searches them independently. 0x262E0 uses byte core 0x26A0C
+#                  for r5 and word core 0x26984 for r6; 0x26660 does the same with
+#                  0x26BC4/0x26B84. The call delay-slot clamp establishes the element:
+#                  (points - 1) * element size. A 16-point byte axis therefore clamps at 15,
+#                  while a word axis clamps at 30. The same clamp confirms point count.
+# A census absent from the registry has an unknown axis model. An entry with tables absent
+# from the registry is a wrapper with unknown geometry. Either condition stops loading
+# instead of receiving a guessed annotation.
 #
-# Обе модели доступа устроены одинаково - слот с указателем на общий движок,
-# специализированный вход, jsr от аксессора, - поэтому ценз у них общий, и примитив
-# банка проходит по графу обёрткой. Отличается трактовка операндов: у explicit-axis
-# r5/r6 суть указатели осей, у implicit-axis ось задана арифметикой и узла :Axis нет.
+# Both access models have the same structure: a slot pointing to a shared engine, a
+# specialized entry, and jsr from an accessor. They therefore share a census and a bank
+# primitive appears as a wrapper in the graph. Operand interpretation differs: r5/r6 are
+# axis pointers for explicit axes, while arithmetic defines an implicit axis and no :Axis
+# node exists.
 #
-# Идёт после load_graph.py: :Func этого rom - его слой, а тот при перезагрузке узлы rom
-# пересоздаёт, снося вместе с ними рёбра :ACCESSES. Аксессор, которого нет в :Func,
-# создаётся здесь (счётчик в отчёте) - ненулевой счётчик означает, что граф собран до
-# разметки RecoverFuncs.java (Stage 0) и его надо переэкспортировать.
+# Run after load_graph.py. :Func nodes belong to that ROM layer; reloading it recreates ROM
+# nodes and removes their :ACCESSES relationships. This loader creates an accessor absent
+# from :Func and reports the count. A nonzero count means the graph was built before
+# RecoverFuncs.java definitions (Stage 0) and must be re-exported.
 #
-# Что переносится как факт, а что нет:
-#   - база карты (r4) и оси (r5/r6) - только значения, указывающие в ROM. Runtime-вход
-#     (текущее значение оси в RAM, индекс, маска) базой не является и осью не считается;
-#     он остаётся на ребре :ACCESSES в r4/r5/r6 как снятое значение, но узла не создаёт.
-#   - база берётся только из df. Линейный backtrack (bt) остаётся эталоном ворот раздела 6
-#     и фактов не даёт: на всех десяти базовых расхождениях каталога JK08A он неверен -
-#     поднимает ось вместо базы (0x732a8: базу ставит delay slot `mov r7,r4`, а назад по
-#     коду лежит указатель оси), теряет арифметику delay slot (`add 0x8,r4` - пять сайтов
-#     банка) либо берёт произвольный элемент селекторного множества.
-#   - геометрия карты - геометрия её входа: вход специализирован по форме таблицы, а не
-#     параметризован ею. Соглашение осей: r5 -> :AXIS_X, r6 -> :AXIS_Y; регистр-источник
-#     сохраняется на ребре (reg), поэтому ориентация уточняется в Stage 4 без потери
-#     факта. Ось читается из r6 только у 2D-входов: у 1D-входов ROM-значение в r6 тоже
-#     встречается (15 сайтов из 240), но аргументом r6 там не является - это значение
-#     регистра, снятое резервом на адресе сайта. Отброшенные значения считаются в отчёте.
-#   - kind операнда (pool | slice | const | sp | gbrrel | dyn) идёт на ребро :ACCESSES и в
-#     resolver_kinds карты. kind=sp означает, что декомпилятор не свернул базу в одно значение и
-#     её снял резерв: r4 там задан ветвлением, и снятая база - один элемент множества
-#     (0x64344: шесть таблиц по r5; 0xbe39a: две по r13). Полный набор таких сайтов -
-#     вход Stage 6, где ветвление становится :Flag {role:'selector'}.
-#   - ось, которую называет только резерв (k5/k6=sp на всех её сайтах), стоит на уровне
-#     pattern, а не candidate: резерв - линейная эвристика, и на осях она ошибается так же,
-#     как на базах. Доказательство прямое: сайт 0x735ac объявляет осью 0x8000, где лежит
-#     стёртая флешь (сплошь 0xFFFF). Свёрнутый сайт (любой kind, кроме sp) поднимает ось до
-#     candidate. Полный набор осей-ветвлений разбирает Stage 6 вместе с базами.
-# Уровень слоя переписи - candidate (раздел 5): резолвер дал операнды, семантика не
-# прослежена. Выше его поднимает только трейс, и приходит он ручным слоем.
+# What becomes a fact and what does not:
+#   - map bases (r4) and axes (r5/r6) become nodes only when their values point into ROM.
+#     A runtime input (current RAM axis value, index, mask) is neither a base nor an axis.
+#     Its recovered value remains on the :ACCESSES relationship in r4/r5/r6 without
+#     creating a node.
+#   - only df supplies the base. Linear backtrack (bt) remains the section 6 gate baseline
+#     but contributes no facts. It is wrong in all ten base conflicts in the JK08A catalog:
+#     it recovers an axis instead of a base (at 0x732a8 the delay slot `mov r7,r4` sets the
+#     base while earlier code holds an axis pointer), loses delay-slot arithmetic
+#     (`add 0x8,r4` at five bank sites), or chooses an arbitrary member of a selector set.
+#   - map geometry is entry geometry because an entry specializes in table shape rather than
+#     taking it as a parameter. Axis convention: r5 -> :AXIS_X and r6 -> :AXIS_Y. The
+#     source register remains on the relationship (reg), allowing Stage 4 to refine
+#     orientation without losing the fact. Only 2D entries read an axis from r6. A ROM
+#     value also appears in r6 at 15 of 240 1D sites, but r6 is not an argument there; the
+#     fallback recovered a register value at the site address. The report counts discarded
+#     values.
+#   - operand kind (pool | slice | const | sp | gbrrel | dyn) is stored on :ACCESSES and in
+#     map resolver_kinds. kind=sp means the decompiler did not reduce the base to one value
+#     and the fallback recovered it. Branching defines r4 there, so the recovered base is
+#     one member of a set (0x64344 selects six tables by r5; 0xbe39a selects two by r13).
+#     All such sites feed Stage 6, where branching becomes :Flag {role:'selector'}.
+#   - an axis named only by fallback evidence (k5/k6=sp at every site) has pattern rather
+#     than candidate confidence. Fallback is a linear heuristic and fails on axes just as on
+#     bases. Direct proof: site 0x735ac identifies 0x8000 as an axis, but it contains erased
+#     flash (all 0xFFFF). A reduced site (any kind except sp) promotes the axis to candidate.
+#     Stage 6 processes the full set of branching axes together with bases.
+# The census layer has candidate confidence (section 5): the resolver supplied operands but
+# did not trace semantics. Only a trace can promote it, through the manual layer.
 #
-# Запуск: uv run --no-project --with neo4j python tools/memgraph/load_maps.py \
+# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_maps.py \
 #           <export_dir> <rom_label> [<registry.csv>] [<findings.csv>] [<axes.csv>]
-# По умолчанию export_dir = ~/tools/ghidra-projects/export-JK08A, rom = JK08A.
-# Пути структурного и ручного слоя разрешает defs/rom-inheritance.toml.
+# Defaults: export_dir = ~/tools/ghidra-projects/export-JK08A, rom = JK08A.
+# defs/rom-inheritance.toml resolves structural and manual-layer paths.
 import csv
 import glob
 import os
@@ -99,20 +102,20 @@ import sys
 from neo4j import GraphDatabase
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from mapkit import rom as romkit          # noqa: E402 - пакет соседний, не установленный
+from mapkit import rom as romkit          # noqa: E402 - adjacent package is not installed
 import rom_sources  # noqa: E402
 
 BOLT = "bolt://localhost:7687"
 
-# Границы ROM: ниже ROM_LO лежат векторы прерываний, а снятые из r6/r7 малые значения -
-# runtime-скаляры (индекс, маска), не базы. ROM_HI - размер образа.
+# ROM bounds: interrupt vectors lie below ROM_LO, while small values recovered from r6/r7
+# are runtime scalars (index or mask), not bases. ROM_HI is the image size.
 ROM_LO = 0x1000
 ROM_HI = 0x180000
 
-FAMILIES = ("explicit", "implicit")           # модели доступа, разобранные цензом
-ROLES = ("table", "threshold", "dead")        # роль базы в калибровке
-LEVELS = ("pattern", "candidate", "code", "silicon")   # лестница уверенности раздела 5
-AXIS_KINDS = ("rpm", "load", "temp", "raw")   # семантика оси, она же ключ матча Stage 5
+FAMILIES = ("explicit", "implicit")           # access models understood by the census
+ROLES = ("table", "threshold", "dead")        # base role in calibration
+LEVELS = ("pattern", "candidate", "code", "silicon")   # section 5 confidence ladder
+AXIS_KINDS = ("rpm", "load", "temp", "raw")   # axis semantics and Stage 5 match key
 FINDING_FIELDS = [
     "addr", "family", "width", "height", "storagetype", "accessor",
     "confidence", "evidence", "role", "semantics", "units", "scale_expr",
@@ -123,17 +126,18 @@ AXIS_FIELDS = [
     "scale_evidence", "note",
 ]
 
-# Словарь выражения шкалы: константы, x и арифметика. Шире не нужно - RomRaider читает
-# то же выражение, а всё, что не сводится к нему, шкалой карты не является.
+# Scaling-expression vocabulary: constants, x, and arithmetic. Nothing broader is needed
+# because RomRaider evaluates the same expression; anything not reducible to it is not map
+# scaling.
 SCALE_CHARS = re.compile(r"^[0-9x+\-*/(). ]+$")
 
 def scale_roundtrip(expr, to_byte):
-    """Расхождение пары выражений либо None, если она сходится.
+    """Return an expression-pair mismatch, or None when the pair round-trips.
 
-    Обратное выражение объявлено, а не выведено: символьной алгебры в загрузчике нет, а
-    угадывать обратное к 1881.6/x он не должен. Зато пара проверяется численно -
-    подстановка x -> scale_expr -> to_byte обязана вернуть x, и это ловит расхождение
-    ровно там, где оно возникает: при правке одного выражения без второго.
+    The inverse expression is declared rather than derived: the loader has no symbolic
+    algebra and must not guess the inverse of 1881.6/x. It does validate the pair
+    numerically. Substitution x -> scale_expr -> to_byte must return x, catching a mismatch
+    exactly when one expression is edited without the other.
     """
     for v in (1, 7, 64, 100, 255):
         try:
@@ -142,90 +146,91 @@ def scale_roundtrip(expr, to_byte):
         except ZeroDivisionError:
             continue
         if abs(back - v) > 1e-6 * max(1.0, abs(v)):
-            return f"x={v}: {expr} = {y}, обратно {to_byte} = {back}"
+            return f"x={v}: {expr} = {y}, inverse {to_byte} = {back}"
     return None
 
 
 def check_scale(path, who, r, conf_col):
-    """Ценз шкалы: единицы, прямое и обратное выражение, уровень утверждения.
+    """Validate scaling units, forward and inverse expressions, and claim confidence.
 
-    Тождество (x) единиц не утверждает - это отказ от утверждения, а не факт уровня
-    candidate, поэтому уровня у него нет. Непустая шкала без уровня, наоборот, выдала бы
-    множитель за данность.
+    Identity (x) asserts no units. It is an intentional absence of a claim rather than a
+    candidate-level fact and therefore has no confidence. Conversely, nonempty scaling
+    without confidence would present a multiplier as given.
     """
     units, expr, tb, conf = r["units"], r["scale_expr"], r["to_byte"], r[conf_col]
     if not expr:
         extra = [c for c in ("units", "to_byte", conf_col) if r[c]]
         if extra:
-            sys.exit(f"{path}: {who} - {', '.join(extra)} без scale_expr")
+            sys.exit(f"{path}: {who} - {', '.join(extra)} without scale_expr")
         return
     if not (units and tb):
-        sys.exit(f"{path}: {who} - шкала без единиц либо без обратного выражения")
+        sys.exit(f"{path}: {who} - scaling lacks units or an inverse expression")
     for e in (expr, tb):
         if not SCALE_CHARS.match(e):
-            sys.exit(f"{path}: {who} - выражение {e!r} вне словаря шкалы")
+            sys.exit(f"{path}: {who} - expression {e!r} is outside the scaling vocabulary")
     bad = scale_roundtrip(expr, tb)
     if bad:
-        sys.exit(f"{path}: {who} - to_byte не обратно scale_expr ({bad})")
+        sys.exit(f"{path}: {who} - to_byte is not the inverse of scale_expr ({bad})")
     if expr.strip() == "x":
         if conf:
-            sys.exit(f"{path}: {who} - тождество x единиц не утверждает, уровню места нет")
+            sys.exit(f"{path}: {who} - identity x asserts no units and cannot have confidence")
     elif conf not in LEVELS:
-        sys.exit(f"{path}: {who} - уровень шкалы {conf!r} вне лестницы раздела 5")
+        sys.exit(f"{path}: {who} - scaling confidence {conf!r} is outside the section 5 ladder")
 
 
 def read_registry(path):
-    """Реестр входов интерполяции: строка = вход со своей геометрией."""
+    """Read the interpolation-entry registry, one entry with its geometry per row."""
     if not os.path.exists(path):
-        sys.exit(f"нет реестра входов интерполяции {path}")
+        sys.exit(f"interpolation-entry registry not found: {path}")
     with open(path, newline="") as f:
         reg = list(csv.DictReader(f))
     seen = set()
     for e in reg:
         w = e["wrapper"] or "?"
         if e["family"] not in FAMILIES:
-            sys.exit(f"{path}: вход {w} объявлен семейством {e['family']!r}")
+            sys.exit(f"{path}: entry {w} declares family {e['family']!r}")
         if not (e["kernel"] and e["wrapper"] and e["width"]):
-            sys.exit(f"{path}: вход {w} без ядра, адреса или числа точек")
+            sys.exit(f"{path}: entry {w} lacks a core, address, or point count")
         if e["wrapper"] in seen:
-            sys.exit(f"{path}: вход {w} объявлен дважды")
+            sys.exit(f"{path}: entry {w} is declared twice")
         seen.add(e["wrapper"])
         if e["family"] == "implicit":
             if not e["step"]:
-                sys.exit(f"{path}: implicit-вход {w} без шага оси")
+                sys.exit(f"{path}: implicit entry {w} lacks an axis step")
             if e["height"]:
-                sys.exit(f"{path}: implicit-вход {w}: у примитива банка вход один")
+                sys.exit(f"{path}: implicit entry {w}: a bank primitive has one dimension")
             if e["storagetype"]:
-                sys.exit(f"{path}: implicit-вход {w}: элемент там задаёт лимит")
+                sys.exit(f"{path}: implicit entry {w}: its limit determines element type")
             if e["axistype_x"] or e["axistype_y"]:
-                sys.exit(f"{path}: implicit-вход {w}: массива оси нет, элемента у неё нет")
+                sys.exit(f"{path}: implicit entry {w}: no axis array or axis element exists")
         else:
             if e["step"]:
-                sys.exit(f"{path}: explicit-вход {w}: ось - массив, шага у неё нет")
+                sys.exit(f"{path}: explicit entry {w}: an array axis has no step")
             if not e["storagetype"]:
-                sys.exit(f"{path}: explicit-вход {w} без элемента: у 1D его читает сам "
-                         f"вход, у 2D - его finisher")
+                sys.exit(f"{path}: explicit entry {w} lacks an element type: a 1D entry "
+                         f"reads it directly and a 2D entry uses its finisher")
             if not e["axistype_x"]:
-                sys.exit(f"{path}: explicit-вход {w} без элемента оси r5")
-            # Ось r6 есть ровно у 2D-входа: у 1D второго поиска в коде нет.
+                sys.exit(f"{path}: explicit entry {w} lacks an r5 axis element type")
+            # Exactly 2D entries have an r6 axis; 1D code has no second search.
             if bool(e["axistype_y"]) != bool(e["height"]):
-                sys.exit(f"{path}: explicit-вход {w}: элемент оси r6 объявлен "
-                         f"{'без' if e['axistype_y'] else 'не'} второй оси")
+                state = ("declared without a second axis" if e["axistype_y"]
+                         else "not declared for the second axis")
+                sys.exit(f"{path}: explicit entry {w}: r6 axis element is {state}")
     return reg
 
 
 def census_path(outdir, kernel):
-    """Имя файла переписи: резолвер пишет ядро без ведущих нулей."""
+    """Return a census filename; the resolver writes the core without leading zeroes."""
     return os.path.join(outdir, "accessors.%x.csv" % int(kernel, 16))
 
 
 def read_censuses(outdir, reg, registry):
-    """Переписи объявленных ядер; строка несёт геометрию своего входа.
+    """Read declared-core censuses; each row carries its entry geometry.
 
-    Вход лежит в переписи каждого ядра, чей слот он держит: 0x26474 держит и kernel
-    0x26944, и finisher 0x26740, поэтому одни и те же 47 его сайтов есть в обеих
-    переписях. Строка берётся по паре (ядро, вход) из реестра - счёт по одному лишь
-    адресу входа дал бы их дважды.
+    An entry appears in the census of every core whose slot it holds. 0x26474 holds both
+    kernel 0x26944 and finisher 0x26740, so the same 47 sites appear in both censuses.
+    Look up each row by (core, entry) in the registry; counting only by entry address would
+    count them twice.
     """
     declared = {(e["kernel"], e["wrapper"]): e for e in reg}
     known = {e["wrapper"] for e in reg}
@@ -233,16 +238,16 @@ def read_censuses(outdir, reg, registry):
     for kernel in dict.fromkeys(e["kernel"] for e in reg):
         p = census_path(outdir, kernel)
         if not os.path.exists(p):
-            sys.exit(f"ядро {kernel} объявлено, переписи {os.path.basename(p)} нет")
+            sys.exit(f"core {kernel} is declared but census {os.path.basename(p)} is absent")
         taken.add(os.path.realpath(p))
         with open(p, newline="") as f:
             for r in csv.DictReader(f):
                 e = declared.get((kernel, r["wrapper"]))
                 if e is None:
-                    # Вход, не читающий таблиц, - внутренний узел интерполяции, а не
-                    # обёртка: у ядра 0x26740 таких пять (2D-finisher 0x26770 и четыре
-                    # внутренних входа). Вход с базой в ПЗУ - обёртка, и её геометрия
-                    # обязана быть объявлена.
+                    # An entry that reads no tables is an internal interpolation node rather
+                    # than a wrapper. Core 0x26740 has five: 2D finisher 0x26770 and four
+                    # internal entries. An entry with a ROM base is a wrapper and its geometry
+                    # must be declared.
                     if r["wrapper"] not in known and rom_addr(r["df_r4"]):
                         unknown.setdefault(r["wrapper"], kernel)
                     continue
@@ -252,41 +257,41 @@ def read_censuses(outdir, reg, registry):
                 rows.append(r)
                 seen.add((kernel, r["wrapper"]))
     if unknown:
-        sys.exit("перепись нашла таблицы через необъявленный вход: "
-                 + ", ".join(f"{w} (ядро {k})" for w, k in sorted(unknown.items()))
-                 + f" - геометрия неизвестна, объявить в {os.path.basename(registry)}")
+        sys.exit("census found tables through an undeclared entry: "
+                 + ", ".join(f"{w} (core {k})" for w, k in sorted(unknown.items()))
+                 + f" - geometry is unknown; declare it in {os.path.basename(registry)}")
     idle = sorted(set(declared) - seen)
     if idle:
-        sys.exit("вход объявлен, а сайтов у него нет: "
-                 + ", ".join(f"{w} (ядро {k})" for k, w in idle))
+        sys.exit("entry is declared but has no sites: "
+                 + ", ".join(f"{w} (core {k})" for k, w in idle))
     extra = sorted(os.path.basename(p)
                    for p in glob.glob(os.path.join(outdir, "accessors.*.csv"))
                    if os.path.realpath(p) not in taken)
     if extra:
-        sys.exit(f"переписи вне реестра: {', '.join(extra)} - модель оси неизвестна, "
-                 f"объявить входы в {os.path.basename(registry)}")
+        sys.exit(f"censuses outside the registry: {', '.join(extra)} - axis model is unknown; "
+                 f"declare entries in {os.path.basename(registry)}")
     return rows, taken
 
 
 def rom_addr(v):
-    """Адрес в ROM (база карты или оси) либо None, если значение базой быть не может."""
+    """Return a ROM address for a map base or axis, or None when the value cannot be a base."""
     if not v:
         return None
     return v if ROM_LO <= int(v, 16) < ROM_HI else None
 
 
 def geometry(e):
-    """Геометрия входа из реестра.
+    """Return entry geometry from the registry.
 
-    implicit-axis: ось арифметическая - точки 0..(width-1) с шагом step, лимит есть
-    последняя точка. Элемент задаёт сам лимит: в точке слияния цепочки (0x26a94) стоит
-    SHLR8 R0; TST R0,R0 по лимиту, и лимит >= 256 выбирает word-ветвь; обе ветви
-    заканчиваются EXTU, то есть значения беззнаковые. Отдельного флага ширины в коде нет.
+    Implicit axis: the axis is arithmetic, with points 0..(width-1) at step increments and
+    the final point as its limit. The limit determines element type: chain merge 0x26a94
+    applies SHLR8 R0; TST R0,R0 to the limit, and limit >= 256 selects the word branch.
+    Both branches end with EXTU, making values unsigned. The code has no separate width flag.
 
-    explicit-axis: ось - массив breakpoint'ов, шага у неё нет; число точек снято с кода
-    входа (клэмп в delay slot). Элемент у 1D-входа читает сам вход (MOV.B/MOV.W перед
-    хвостовым переходом), у 2D - finisher из пула входа, и все пять 2D-finisher'ов читают
-    его беззнаковым (EXTU.B либо EXTU.W на обоих операндах интерполяции).
+    Explicit axis: the axis is a breakpoint array with no step. Entry code supplies point
+    count through the delay-slot clamp. A 1D entry reads its element itself (MOV.B/MOV.W
+    before the tail branch); a 2D entry uses a finisher from its pool. All five 2D finishers
+    read both interpolation operands as unsigned (EXTU.B or EXTU.W).
     """
     w = int(e["width"])
     h = int(e["height"]) if e["height"] else None
@@ -300,12 +305,12 @@ def geometry(e):
 
 
 def check_dims(rows, declared):
-    """Размерность объявлена геометрией входа; независимый признак - ось в r6.
+    """Cross-check registry dimensions against the independent r6-axis signal.
 
-    Признак разделяет входы explicit-axis JK08A большинством, а не начисто: у 2D ось в
-    r6 несут 86 сайтов из 87, у 1D - 15 из 240, и наибольшая доля у 1D-входа - 1 из 7
-    (0x26550). Поэтому сверяется большинство: одиночное ROM-значение в r6 у 1D-входа
-    аргументом не является.
+    The signal separates JK08A explicit-axis entries by majority rather than perfectly:
+    86 of 87 2D sites carry an axis in r6, while 15 of 240 1D sites do. The largest 1D
+    share is one of seven sites at 0x26550. Therefore compare majorities: an isolated ROM
+    value in r6 for a 1D entry is not an argument.
     """
     total, with_y = {}, {}
     for r in rows:
@@ -315,19 +320,19 @@ def check_dims(rows, declared):
         total[w] = total.get(w, 0) + 1
         if rom_addr(r["df_r6"]):
             with_y[w] = with_y.get(w, 0) + 1
-    bad = [f"{w}: реестр {declared[w]}D, сайты {2 if with_y.get(w, 0) * 2 > n else 1}D "
-           f"({with_y.get(w, 0)} из {n} с осью в r6)"
+    bad = [f"{w}: registry {declared[w]}D, sites {2 if with_y.get(w, 0) * 2 > n else 1}D "
+           f"({with_y.get(w, 0)} of {n} with an axis in r6)"
            for w, n in sorted(total.items())
            if (2 if with_y.get(w, 0) * 2 > n else 1) != declared[w]]
     if bad:
-        sys.exit("размерность входа расходится с его сайтами: " + "; ".join(bad))
+        sys.exit("entry dimensions differ from its sites: " + "; ".join(bad))
 
 
 def build(rows):
-    """Переписи резолвера -> узлы и рёбра калибровочного слоя."""
+    """Convert resolver censuses into calibration-layer nodes and relationships."""
     maps, axes, interps, accesses = {}, {}, {}, []
-    kernels = {}                                  # вход -> его ядро (ребро :KERNEL)
-    dropped = 0                                   # r6-значения у 1D-входов: не оси
+    kernels = {}                                  # entry -> core (:KERNEL relationship)
+    dropped = 0                                   # r6 values at 1D entries are not axes
 
     for r in rows:
         kern, w, family = r["kernel"], r["wrapper"], r["family"]
@@ -341,8 +346,9 @@ def build(rows):
                                    slot=r["slot"]))
         kernels[w] = kern
 
-        # Ось - объект только у explicit-axis; у банка она арифметическая, и снятые там
-        # r5/r6 суть остаточные значения регистров, а не аргументы вызова.
+        # An axis is an object only in the explicit-axis model. A bank axis is arithmetic,
+        # and recovered r5/r6 values there are residual register values rather than call
+        # arguments.
         explicit = family == "explicit"
         ax = rom_addr(r["df_r5"]) if explicit else None
         ay = rom_addr(r["df_r6"]) if explicit and g["dims"] == 2 else None
@@ -352,12 +358,12 @@ def build(rows):
         base = rom_addr(r["df_r4"])
         if not base:
             continue
-        # Ось заводится только у карты: на сайте без базы (kind=dyn) снятый указатель -
-        # ось неизвестно чего, и узел без ребра был бы осью ни одной таблицы. Значение
-        # при этом не теряется - оно остаётся в переписи и вернётся с базой на Stage 6.
-        # Длина и элемент оси - не её собственные факты: число точек задаёт клэмп входа,
-        # элемент - код ядра. Расхождение между читателями одной оси останавливает
-        # загрузку здесь, вместе с прочими расхождениями геометрии.
+        # Create an axis only for a map. At a site without a base (kind=dyn), a recovered
+        # pointer is an axis of an unknown object; a node without a relationship would be
+        # the axis of no table. The value is retained in the census and returns with its base
+        # in Stage 6. Axis length and element are not intrinsic facts: the entry clamp gives
+        # point count and core code gives element type. Conflicting readers of one axis stop
+        # loading here, like other geometry conflicts.
         for a, n, k, el in ((ax, g["width"], r["k5"], r["axistype_x"]),
                             (ay, g["height"], r["k6"], r["axistype_y"])):
             if a:
@@ -366,10 +372,10 @@ def build(rows):
                                         "scale_conf": "", "scale_evidence": "", "note": "",
                                         "len": n, "storagetype": el})
                 if x["storagetype"] != el:
-                    sys.exit(f"ось {a} читается входами с разным элементом: "
-                             f"{x['storagetype']} и {el}")
+                    sys.exit(f"axis {a} is read by entries with different elements: "
+                             f"{x['storagetype']} and {el}")
                 if x["len"] != n:
-                    sys.exit(f"ось {a} читается входами разной длины: {x['len']} и {n}")
+                    sys.exit(f"axis {a} is read by entries with different lengths: {x['len']} and {n}")
                 if k != "sp":
                     x["confidence"] = "candidate"
         m = maps.setdefault(base, dict(g, addr=base, family=family,
@@ -378,15 +384,15 @@ def build(rows):
                                        role="table", semantics="", note="",
                                        units="", scale_expr="", to_byte="",
                                        scale_conf=""))
-        # Таблица, читаемая обеими моделями оси либо входами разной формы, - находка, а
-        # не разновидность нормы: геометрия у неё тогда задана двумя способами сразу.
+        # A table read by both axis models or by entries of different shapes is a finding,
+        # not normal variation: two incompatible mechanisms define its geometry.
         if m["family"] != family:
-            sys.exit(f"таблица {base} адресуется семействами {m['family']} и {family}")
+            sys.exit(f"table {base} is addressed by families {m['family']} and {family}")
         if (m["width"], m["height"], m["storagetype"], m["step"]) != (
                 g["width"], g["height"], g["storagetype"], g["step"]):
-            sys.exit(f"таблица {base} читается входами разной геометрии: "
-                     f"{m['width']}x{m['height']}/{m['storagetype']}/шаг {m['step']} и "
-                     f"{g['width']}x{g['height']}/{g['storagetype']}/шаг {g['step']}")
+            sys.exit(f"table {base} is read by entries with different geometry: "
+                     f"{m['width']}x{m['height']}/{m['storagetype']}/step {m['step']} and "
+                     f"{g['width']}x{g['height']}/{g['storagetype']}/step {g['step']}")
         if r["k4"] not in m["resolver_kinds"]:
             m["resolver_kinds"].append(r["k4"])
         accesses.append({"accessor": r["accessor"], "callsite": r["callsite"],
@@ -402,34 +408,34 @@ def build(rows):
 
 
 def apply_findings(path, maps, accesses, source_model=None):
-    """Ручной слой: что установлено человеком и чего перепись дать не может.
+    """Apply the manual layer: facts established by a person that the census cannot supply.
 
-    Строка с непустым family объявляет карту вне моделей доступа: её не читает ни один
-    объявленный вход, поэтому резолвер её и не находит (0x8fdc - прямой word-компаратор
-    без lookup'а; 0x9eda и 0xa8ea - 2D через 0x26040, где неявны обе оси). Пустой
-    family - находка о карте, которую нашёл резолвер.
+    A row with a nonempty family declares a map outside the access models. No declared
+    entry reads it, so the resolver does not find it (0x8fdc is a direct word comparator
+    without a lookup; 0x9eda and 0xa8ea are 2D through 0x26040 with both axes implicit).
+    An empty family is a finding about a map found by the resolver.
 
-    Семейство direct-row-major используется для прямого доступа к прямоугольной карте,
-    у которой X является внутренним измерением массива: width соответствует sizex,
-    height соответствует sizey. Статические подписи обеих осей задаёт презентационный
-    слой дефа, поскольку рёбер :AXIS_X/:AXIS_Y у такого доступа нет.
+    The direct-row-major family represents direct access to a rectangular map whose X
+    dimension is inner in the array: width corresponds to sizex and height to sizey. The
+    definition's presentation layer supplies static labels for both axes because this access
+    has no :AXIS_X/:AXIS_Y relationships.
 
-    В файл идёт только то, чего граф сказать не может. Обёртка, геометрия, оси и
-    аксессор карты из переписи - факты графа, и повторить их находкой значит завести
-    второй источник одного факта. Уровень поднимает сюда трейс: перепись даёт весь свой
-    слой candidate, и выше его двигает только разбор.
+    The file contains only what the graph cannot state. A census-derived map's wrapper,
+    geometry, axes, and accessor are graph facts; repeating them in a finding would create
+    a second source for one fact. A trace raises confidence here: the census supplies the
+    whole candidate layer and only analysis can promote it.
 
-    Шкала (units/scale_expr/to_byte) идёт сюда по той же причине: операнд вызова говорит,
-    где лежит таблица, но не во что мотор превращает её байт. У шкалы свой уровень: адрес
-    и форма 0xB61A сняты кодом, а множитель x-64 взят из каталога A2L, и уровень карты за
-    него не отвечает.
+    Scaling (units/scale_expr/to_byte) belongs here for the same reason: a call operand says
+    where a table is, not how engine arithmetic transforms its byte. Scaling has independent
+    confidence. Code establishes the address and shape of 0xB61A, while the x-64 multiplier
+    comes from the A2L catalog; map confidence does not cover it.
     """
     if not os.path.exists(path):
-        sys.exit(f"нет ручного слоя {path}")
+        sys.exit(f"manual layer not found: {path}")
     with open(path, newline="") as f:
         reader = csv.DictReader(f)
         if reader.fieldnames != FINDING_FIELDS:
-            sys.exit(f"{path}: заголовок {reader.fieldnames}, ожидается {FINDING_FIELDS}")
+            sys.exit(f"{path}: header {reader.fieldnames}; expected {FINDING_FIELDS}")
         rows = list(reader)
     if source_model is not None:
         rows = rom_sources.materialize_rows(source_model, "Map", rows)
@@ -437,20 +443,20 @@ def apply_findings(path, maps, accesses, source_model=None):
     for r in rows:
         a, fam = r["addr"], r["family"]
         if r["confidence"] not in LEVELS:
-            sys.exit(f"{path}: {a} - уровень {r['confidence']!r} вне лестницы раздела 5")
+            sys.exit(f"{path}: {a} - confidence {r['confidence']!r} is outside the section 5 ladder")
         if r["role"] not in ROLES:
-            sys.exit(f"{path}: {a} - роль {r['role']!r} вне словаря {ROLES}")
+            sys.exit(f"{path}: {a} - role {r['role']!r} is outside vocabulary {ROLES}")
         check_scale(path, a, r, "scale_conf")
         if fam:
             if fam in FAMILIES:
-                sys.exit(f"{path}: {a} объявлена семейством {fam!r} - это модель "
-                         f"доступа, её карты даёт перепись, а не находка")
+                sys.exit(f"{path}: {a} declares family {fam!r}, which is an access model; "
+                         f"its maps come from the census rather than findings")
             if a in maps:
-                sys.exit(f"{path}: {a} объявлена вручную, но её нашёл резолвер через "
-                         f"{maps[a]['family']} - объявление устарело, строку убрать")
+                sys.exit(f"{path}: {a} is declared manually but the resolver found it through "
+                         f"{maps[a]['family']}; remove the stale declaration row")
             if not (r["width"] and r["storagetype"]):
-                sys.exit(f"{path}: {a} объявлена без числа точек либо элемента - по её "
-                         f"строке карту в образе не прочитать")
+                sys.exit(f"{path}: {a} is declared without a point count or element type; "
+                         f"its row cannot read the map from the image")
             declared += 1
             maps[a] = {"addr": a, "family": fam, "resolver_kinds": ["manual"],
                        "dims": 2 if r["height"] else 1,
@@ -467,13 +473,13 @@ def apply_findings(path, maps, accesses, source_model=None):
                                  "verdict": "", "r4": "", "r5": "", "r6": "",
                                  "axis_x": "", "axis_y": ""})
         elif a not in maps:
-            sys.exit(f"{path}: находка о карте {a}, которой в графе нет - либо адрес "
-                     f"неверен, либо строка пережила свою карту")
+            sys.exit(f"{path}: finding refers to map {a}, which is absent from the graph; "
+                     f"either the address is wrong or the row outlived its map")
         else:
             dup = [c for c in ("width", "height", "storagetype", "accessor") if r[c]]
             if dup:
-                sys.exit(f"{path}: {a} - {', '.join(dup)} даёт перепись, находке это "
-                         f"поле не переопределять")
+                sys.exit(f"{path}: {a} - the census supplies {', '.join(dup)}; "
+                         f"a finding must not override this field")
         maps[a].update(confidence=r["confidence"], evidence=r["evidence"],
                        role=r["role"], semantics=r["semantics"], note=r["note"],
                        units=r["units"], scale_expr=r["scale_expr"],
@@ -483,19 +489,20 @@ def apply_findings(path, maps, accesses, source_model=None):
 
 
 def apply_axis_facts(path, axes, source_model=None):
-    """Ручной слой осей: семантика оси и её единицы.
+    """Apply the manual axis layer: axis semantics and units.
 
-    Ось как объект даёт перепись (указатель в r5/r6), её элемент - ядро. Чем ось является
-    и в чём измеряется, не говорит ни то ни другое: это трейс её потребителя. Отсюда
-    отдельный файл, а не колонки в слое карт: ось общая у нескольких карт (0x11B6B несут
-    все три карты зажигания), и объявление на карту размножило бы один факт по строкам.
+    The census supplies the axis object through an r5/r6 pointer, and the core supplies its
+    element type. Neither says what the axis represents or how it is measured; a consumer
+    trace does. This requires a separate file rather than map-layer columns because several
+    maps share an axis (all three ignition maps use 0x11B6B). Declaring it per map would
+    duplicate one fact across rows.
     """
     if not os.path.exists(path):
-        sys.exit(f"нет осевого слоя {path}")
+        sys.exit(f"axis layer not found: {path}")
     with open(path, newline="") as f:
         reader = csv.DictReader(f)
         if reader.fieldnames != AXIS_FIELDS:
-            sys.exit(f"{path}: заголовок {reader.fieldnames}, ожидается {AXIS_FIELDS}")
+            sys.exit(f"{path}: header {reader.fieldnames}; expected {AXIS_FIELDS}")
         rows = list(reader)
     if source_model is not None:
         rows = rom_sources.materialize_rows(source_model, "Axis", rows)
@@ -503,14 +510,14 @@ def apply_axis_facts(path, axes, source_model=None):
     for r in rows:
         a = r["addr"]
         if a in seen:
-            sys.exit(f"{path}: ось {a} объявлена дважды")
+            sys.exit(f"{path}: axis {a} is declared twice")
         seen.add(a)
         if a not in axes:
-            sys.exit(f"{path}: находка об оси {a}, которой в графе нет - либо адрес "
-                     f"неверен, либо строка пережила свою ось")
+            sys.exit(f"{path}: finding refers to axis {a}, which is absent from the graph; "
+                     f"either the address is wrong or the row outlived its axis")
         if r["kind"] not in AXIS_KINDS:
-            sys.exit(f"{path}: ось {a} - kind {r['kind']!r} вне словаря {AXIS_KINDS}")
-        check_scale(path, f"ось {a}", r, "scale_conf")
+            sys.exit(f"{path}: axis {a} - kind {r['kind']!r} is outside vocabulary {AXIS_KINDS}")
+        check_scale(path, f"axis {a}", r, "scale_conf")
         axes[a].update(kind=r["kind"], units=r["units"], scale_expr=r["scale_expr"],
                        to_byte=r["to_byte"], scale_conf=r["scale_conf"],
                        scale_evidence=r["scale_evidence"], note=r["note"])
@@ -518,34 +525,33 @@ def apply_axis_facts(path, axes, source_model=None):
 
 
 def characterize(img, maps, axes):
-    """Stage 4: измерить то, что образ говорит о слое сам.
+    """Stage 4: measure what the image itself says about the layer.
 
-    Идёт тем же прогоном, что создаёт узлы, по той же причине, что и ручной слой:
-    измерение живёт на том же узле, что и факт переписи, и пересоздание узла унесло бы
-    его с собой. Второго источника факта здесь нет - источник и есть образ, а перепись
-    говорит лишь, по какому адресу и какой формой его читать.
+    Run this in the same pass that creates nodes for the same reason as the manual layer:
+    a measurement lives on the same node as its census fact and would disappear when the
+    node is recreated. No second source exists here because the image is the source; the
+    census only says which address and shape to read.
 
-    Ось несёт свои точки целиком: она коротка, и она ими и является - общие оси сходятся
-    сравнением списков, а лесенка оборотов видна в графе без обращения к образу. Карта
-    несёт диапазон и хеш: 256 ячеек в узле - это содержимое образа, переписанное в граф,
-    а одинаковые карты находит хеш.
+    An axis stores all its points because it is short and those points define it. Shared axes
+    converge by list comparison, and an RPM progression is visible in the graph without
+    reading the image. A map stores its range and hash: putting 256 cells on a node would
+    duplicate image contents in the graph, while a hash identifies identical maps.
 
-    Промах чтения останавливает загрузку: карта, которой в образе нет, - не карта, а
-    неверный адрес либо неверная форма, и измерять там нечего. Ценз переписи держит базы
-    в 0x1000..0x180000 - границе самого крупного дампа семейства, а не этого; настоящую
-    границу знает только образ.
+    A read miss stops loading. A map absent from the image is not a map but a wrong address
+    or shape, leaving nothing to measure. The census bounds bases to 0x1000..0x180000,
+    the largest family dump rather than this image; only the image knows its actual bound.
     """
     for a, m in sorted(maps.items()):
         try:
             rows = img.table(a, m["width"], m["height"], m["storagetype"])
         except ValueError as e:
-            sys.exit(f"карта {a} ({m['width']}x{m['height']} {m['storagetype']}): {e}")
+            sys.exit(f"map {a} ({m['width']}x{m['height']} {m['storagetype']}): {e}")
         m.update(romkit.measure([v for r in rows for v in r]))
     for a, x in sorted(axes.items()):
         try:
             vals = img.values(a, x["len"], x["storagetype"])
         except ValueError as e:
-            sys.exit(f"ось {a} ({x['len']} x {x['storagetype']}): {e}")
+            sys.exit(f"axis {a} ({x['len']} x {x['storagetype']}): {e}")
         x.update(values=vals, monotonic=romkit.monotone(vals))
 
 
@@ -557,17 +563,17 @@ def report(rows, maps, axes, interps, kernels, accesses, dropped, taken, finding
         (row["accessor"], row["callsite"], row["base"])
         for row in accesses
     }
-    print(f"переписи: {', '.join(sorted(os.path.basename(p) for p in taken))}")
-    print(f"CSV: {len(rows)} строк для {len(callsites)} callsite, "
-          f"{len(set(kernels.values()))} ядер, {len(kernels)} входов")
-    print(f"Слой: {len(maps)} карт, {len(axes)} осей, {len(interps)} узлов интерполяции "
-          f"({d2} входов 2D), {len(accesses)} строк доступов / "
-          f"{len(projected)} уникальных")
+    print(f"censuses: {', '.join(sorted(os.path.basename(p) for p in taken))}")
+    print(f"CSV: {len(rows)} rows for {len(callsites)} call sites, "
+          f"{len(set(kernels.values()))} cores, {len(kernels)} entries")
+    print(f"Layer: {len(maps)} maps, {len(axes)} axes, {len(interps)} interpolation nodes "
+          f"({d2} 2D entries), {len(accesses)} access rows / "
+          f"{len(projected)} unique")
     if dropped:
-        print(f"  r6 у 1D-входов осью не считан: {dropped} значений (не аргумент вызова)")
+        print(f"  r6 at 1D entries not treated as an axis: {dropped} values (not a call argument)")
 
-    # Непересечение цензов: общая таблица у двух семейств доступа - находка, а не
-    # разновидность нормы. Счёт карт на вход даёт таблица в конце отчёта.
+    # Census disjointness: a table shared by two access families is a finding rather than
+    # normal variation. The table at the end of the report gives map counts per entry.
     per_table, per_family = {}, {}
     for a in accesses:
         if a["kernel"]:
@@ -575,67 +581,68 @@ def report(rows, maps, axes, interps, kernels, accesses, dropped, taken, finding
     for m in maps.values():
         per_family.setdefault(m["family"], set()).add(m["addr"])
     for f in sorted(per_family):
-        print(f"  семейство {f}: {len(per_family[f])} карт")
+        print(f"  family {f}: {len(per_family[f])} maps")
     shared = {b: ks for b, ks in per_table.items() if len(ks) > 1}
     for b, ks in sorted(shared.items()):
-        print(f"  ВНИМАНИЕ: таблица {b} адресуется цензами {sorted(ks)}")
+        print(f"  WARNING: table {b} is addressed by censuses {sorted(ks)}")
     if not shared:
-        print(f"  цензы по таблицам не пересекаются ({len(per_table)} баз)")
+        print(f"  table censuses are disjoint ({len(per_table)} bases)")
 
-    print(f"  ручной слой: {nfind} находок, из них {nmanual} объявляют карту вне "
-          f"моделей доступа; {naxes} осей размечено")
+    print(f"  manual layer: {nfind} findings, of which {nmanual} declare a map outside "
+          f"access models; {naxes} axes annotated")
     scaled = sum(1 for m in maps.values() if m["scale_expr"])
     named = sum(1 for m in maps.values() if m["semantics"])
     both = sum(1 for m in maps.values() if m["semantics"] and m["scale_expr"])
-    print(f"  читаемо (семантика + шкала): {both} карт; семантика у {named}, "
-          f"шкала у {scaled}")
+    print(f"  interpretable (semantics + scaling): {both} maps; semantics on {named}, "
+          f"scaling on {scaled}")
     lvl = {}
     for m in maps.values():
         lvl[m["confidence"]] = lvl.get(m["confidence"], 0) + 1
-    print("  уровни: " + ", ".join(f"{k}={lvl[k]}" for k in LEVELS if k in lvl))
+    print("  confidence levels: " + ", ".join(f"{k}={lvl[k]}" for k in LEVELS if k in lvl))
     role = {}
     for m in maps.values():
         role[m["role"]] = role.get(m["role"], 0) + 1
-    print("  роли: " + ", ".join(f"{k}={role[k]}" for k in ROLES if k in role))
+    print("  roles: " + ", ".join(f"{k}={role[k]}" for k in ROLES if k in role))
 
-    # Сайты, где операнд не свёрнут в одно значение: снят резервом по одному пути либо
-    # не снят вовсе. Вход Stage 6 - там операнд выбирает ветвление.
+    # Sites where an operand did not reduce to one value: fallback recovered one path or no
+    # value. These feed Stage 6 because branching selects the operand.
     sel = [a for a in accesses if a["kind"] == "sp"]
     sel_projected = {
         (a["accessor"], a["callsite"], a["base"])
         for a in sel
     }
-    print(f"  база не свёрнута декомпилятором (kind=sp): {len(sel)} строк / "
-          f"{len(sel_projected)} уникальных доступов - вход Stage 6")
+    print(f"  base not reduced by the decompiler (kind=sp): {len(sel)} rows / "
+          f"{len(sel_projected)} unique accesses - Stage 6 input")
     axsel = [a for a in accesses if "sp" in (a["kind5"], a["kind6"])]
     axsel_sites = {a["callsite"] for a in axsel}
     weak = [x for x in axes.values() if x["confidence"] == "pattern"]
-    print(f"  ось не свёрнута декомпилятором (kind5/kind6=sp): "
-          f"{len(axsel)} доступов на {len(axsel_sites)} callsite; "
-          f"{len(weak)} осей стоят только на резерве (уровень pattern) - туда же")
+    print(f"  axis not reduced by the decompiler (kind5/kind6=sp): "
+          f"{len(axsel)} accesses at {len(axsel_sites)} call sites; "
+          f"{len(weak)} axes rely only on fallback evidence (pattern confidence) - same input")
 
-    # Stage 4 - что образ говорит о слое сам. Дедуп идёт по содержимому вместе с формой:
-    # одинаковые байты разной формы - разные таблицы, а не одна.
-    print(f"  измерено по образу: {len(maps)} карт, {len(axes)} осей")
+    # Stage 4 captures what the image itself says about the layer. Deduplication includes
+    # both contents and shape: identical bytes with different shapes are different tables.
+    print(f"  measured from the image: {len(maps)} maps, {len(axes)} axes")
     seen_ax = {tuple(x["values"]) for x in axes.values()}
     seen_m = {(m["values_hash"], m["width"], m["height"], m["storagetype"])
               for m in maps.values()}
-    print(f"    различимы содержимым: {len(seen_ax)} осей из {len(axes)} "
-          f"(общая ось у нескольких карт - норма), {len(seen_m)} карт из {len(maps)}")
+    print(f"    distinct by contents: {len(seen_ax)} axes of {len(axes)} "
+          f"(several maps sharing an axis is normal), {len(seen_m)} maps of {len(maps)}")
 
-    # Возрастание оси - не догадка о смысле, а условие ядра: обратный линейный проход
-    # от старшей точки читает только возрастающий массив, и невозрастающая ось осью не работает.
+    # Increasing order is a core requirement rather than a semantic guess. A reverse linear
+    # scan from the highest point reads only an increasing array; a nonincreasing array
+    # cannot work as an axis.
     bad = sorted(x["addr"] for x in axes.values() if not x["monotonic"])
     if bad:
-        print(f"    ВНИМАНИЕ: массив не возрастает, обратным линейным поиском ядра не читается: "
+        print(f"    WARNING: array is not increasing and the core cannot read it with reverse linear search: "
               f"{', '.join(bad)}")
     blank_ax = [x["addr"] for x in axes.values()
                 if romkit.erased(x["values"], x["storagetype"])]
     blank_m = [m["addr"] for m in maps.values()
                if m["vmin"] == m["vmax"] == romkit.ERASED[m["storagetype"]]]
     if blank_ax or blank_m:
-        print(f"    сплошь 0xFF (незапрограммированная флешь либо насыщенный предел, "
-              f"различает трейс): осей {len(blank_ax)}, карт {len(blank_m)}")
+        print(f"    all 0xFF (unprogrammed flash or saturated limit; a trace distinguishes them): "
+              f"{len(blank_ax)} axes, {len(blank_m)} maps")
 
 
 def main():
@@ -669,12 +676,12 @@ def main():
     except ValueError as e:
         sys.exit(str(e))
     characterize(img, maps, axes)
-    print(f"rom={rom}; реестр: {os.path.relpath(registry)} ({len(reg)} входов); "
-          f"ручной слой: {os.path.relpath(findings)}, {os.path.relpath(axfile)}")
+    print(f"rom={rom}; registry: {os.path.relpath(registry)} ({len(reg)} entries); "
+          f"manual layer: {os.path.relpath(findings)}, {os.path.relpath(axfile)}")
     print(
-        f"источник аннотаций={source_model.source}, режим={source_model.kind}"
+        f"annotation source={source_model.source}, mode={source_model.kind}"
     )
-    print(f"образ: {os.path.relpath(img.path)} ({len(img)} B, sha256 сверен)")
+    print(f"image: {os.path.relpath(img.path)} ({len(img)} B, SHA-256 verified)")
     report(rows, maps, axes, interps, kernels, accesses, dropped, taken, found, naxes)
 
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
@@ -687,7 +694,7 @@ def main():
                 except Exception:
                     pass
 
-        # Аксессор без узла :Func - признак графа, собранного до разметки Stage 0.
+        # An accessor without a :Func node indicates a graph built before Stage 0 definitions.
         orphan = s.run(
             """
             UNWIND $addrs AS a
@@ -804,10 +811,10 @@ def main():
         print(f"Memgraph: {counts['maps']} :Map, {counts['axes']} :Axis, "
               f"{counts['acc']} :ACCESSES, {counts['via']} :VIA")
         if orphan:
-            print(f"ВНИМАНИЕ: {orphan} аксессоров нет в :Func - граф собран до разметки "
-                  f"Stage 0; переэкспортировать (RecoverFuncs.java + ExportGraph.java)")
+            print(f"WARNING: {orphan} accessors are absent from :Func - the graph predates "
+                  f"Stage 0 definitions; re-export with RecoverFuncs.java + ExportGraph.java")
 
-        print("Карты по входам интерполяции (каталог Stage 2):")
+        print("Maps by interpolation entry (Stage 2 catalog):")
         rows_out = s.run(
             """
             MATCH (m:Map {rom:$rom})-[:VIA]->(w:Interp {rom:$rom})
@@ -819,8 +826,8 @@ def main():
         )
         for r in rows_out:
             shape = f"{r['width']}x{r['height']}" if r["height"] else f"1D-{r['width']}"
-            print(f"  {r['family']:<8} вход {r['wrapper']}  {shape:<7}  "
-                  f"карт {r['maps']:>3}")
+            print(f"  {r['family']:<8} entry {r['wrapper']}  {shape:<7}  "
+                  f"maps {r['maps']:>3}")
 
     driver.close()
 

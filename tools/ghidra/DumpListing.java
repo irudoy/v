@@ -1,10 +1,10 @@
-// DumpListing.java — дизассемблинг окрестностей заданных адресов с разрешёнными
-// ссылками (ref -> target [= прочитанное значение]). Для точечного чтения места, где
-// код обращается к конкретной константе/таблице (напр. immo-DTC записи), когда
-// декомпилятор свернул адрес в литерал.
+// DumpListing.java - disassemble neighborhoods around selected addresses with
+// resolved references (ref -> target [= value read]). Supports focused reading
+// where code accesses a specific constant or table, such as an immobilizer DTC
+// entry, after the decompiler has folded the address into a literal.
 //
-// Запуск (headless): -postScript DumpListing.java <out_dir> <addr> [<addr>...]
-// Выход: listing_<addr>.txt на каждый адрес (окно +-24 инструкции).
+// Usage (headless): -postScript DumpListing.java <out_dir> <addr> [<addr>...]
+// Output: one listing_<addr>.txt per address with a +-24-instruction window.
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Instruction;
@@ -31,16 +31,16 @@ public class DumpListing extends GhidraScript {
             } catch (Exception e) { println("VQ_LST bad addr " + a[i]); continue; }
             Instruction ins = listing.getInstructionContaining(target);
             if (ins == null) { println("VQ_LST no instr @ " + a[i]); continue; }
-            // отойти назад 24 инструкции
+            // Walk back 24 instructions.
             Instruction cur = ins;
             for (int k = 0; k < 24 && cur != null; k++) {
                 Instruction prev = listing.getInstructionBefore(cur.getAddress());
                 if (prev == null) break;
                 cur = prev;
             }
-            // Имя файла - по разобранному адресу, а не по строке аргумента: потребитель
-            // (build_artifacts.py) берёт адрес из графа, где он всегда восьмизначный, и
-            // "26a80" от "00026a80" отличало бы только форму записи вызова.
+            // Name the file from the parsed address rather than argument text.
+            // build_artifacts.py obtains an eight-digit graph address, so
+            // "26a80" and "00026a80" differ only in invocation spelling.
             String name = String.format("listing_%08x.txt", target.getOffset() & 0xFFFFFFFFL);
             PrintWriter w = new PrintWriter(new FileWriter(new File(outDir, name)));
             for (int k = 0; k < 56 && cur != null; k++) {

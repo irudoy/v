@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Однобитный ECM immo-off для поддерживаемых Nissan HR ROM.
+"""One-bit ECM immo-off for supported Nissan HR ROMs.
 
-Скрипт читает только точный stock ROM из rom-images/roms.csv, проверяет SHA-256
-и сбрасывает bit0 заводского флага developer immobilizer. Контрольные суммы
-оставляются флешеру.
+The script reads only an exact stock ROM from rom-images/roms.csv, verifies its
+SHA-256, and clears bit 0 of the factory Developer Immobilizer flag. Checksum
+correction is left to the flasher.
 """
 
 import argparse
@@ -67,24 +67,24 @@ def load_registry(path=REGISTRY):
         if not rom:
             continue
         if rom in result:
-            raise PatchError(f"повтор ROM {rom} в {path}")
+            raise PatchError(f"duplicate ROM {rom} in {path}")
         result[rom] = row
     return result
 
 
 def load_stock(rom, registry=None):
     if rom not in PATCHES:
-        raise PatchError(f"ROM {rom} не поддерживается")
+        raise PatchError(f"ROM {rom} is not supported")
     rows = registry or load_registry()
     row = rows.get(rom)
     if row is None:
-        raise PatchError(f"ROM {rom} отсутствует в {REGISTRY}")
+        raise PatchError(f"ROM {rom} is missing from {REGISTRY}")
     path = ROMDIR / row["path"]
     data = path.read_bytes()
     actual = sha256(data)
     if actual != row["sha256"]:
         raise PatchError(
-            f"{rom}: SHA-256 stock ROM {actual}, ожидалось {row['sha256']}"
+            f"{rom}: stock ROM SHA-256 is {actual}, expected {row['sha256']}"
         )
     return path, data
 
@@ -93,12 +93,12 @@ def patch_image(rom, source):
     cfg = PATCHES[rom]
     offset = cfg["offset"]
     if offset >= len(source):
-        raise PatchError(f"{rom}: offset {offset:#x} вне ROM")
+        raise PatchError(f"{rom}: offset {offset:#x} is outside the ROM")
     actual = source[offset]
     if actual != cfg["stock"]:
         raise PatchError(
-            f"{rom}: по {offset:#x} найдено {actual:#04x}, "
-            f"ожидалось {cfg['stock']:#04x}"
+            f"{rom}: found {actual:#04x} at {offset:#x}, "
+            f"expected {cfg['stock']:#04x}"
         )
     result = bytearray(source)
     result[offset] = cfg["patched"]
@@ -110,7 +110,7 @@ def write_output(path, image):
         current = path.read_bytes()
         if current == image:
             return False
-        raise PatchError(f"существующий output отличается: {path}")
+        raise PatchError(f"existing output differs: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("xb") as fh:
         fh.write(image)
@@ -124,7 +124,7 @@ def write_md5_sidecar(path, image):
         current = sidecar.read_text(encoding="ascii")
         if current == content:
             return False
-        raise PatchError(f"существующий MD5 sidecar отличается: {sidecar}")
+        raise PatchError(f"existing MD5 sidecar differs: {sidecar}")
     sidecar.write_text(content, encoding="ascii")
     return True
 
@@ -140,28 +140,28 @@ def write_mod_readme(path, rom, source_path, image):
     )
     content = f"""# {IMAGE_IDS[rom]} immo-off
 
-Однобитовый мод для `23710-{rom}`, выпущенный {release_date} из точного
+One-bit modification for `23710-{rom}`, released on {release_date} from the exact
 `../../{source_path.name}`.
 
-## Состав
+## Contents
 
-- `{path.name}` – производный flash-ROM, {len(image)} байт;
-- `{path.name}.md5` – MD5 sidecar.
+- `{path.name}` - derived flash ROM, {len(image)} bytes;
+- `{path.name}.md5` - MD5 sidecar.
 
-Хеши ROM:
+ROM hashes:
 
 - SHA-256: `{sha256(image)}`;
 - MD5: `{md5(image)}`.
 
-## Изменение
+## Change
 
 ```text
 ROM[{cfg["offset"]:#010x}]: {cfg["stock"]:#04x} -> {cfg["patched"]:#04x}
 ```
 
-Изменяется только bit0 заводского флага Developer Immobilizer. Производный образ
-отличается от stock ровно одним битом. Хранимые checksum-поля совпадают со stock;
-контрольные суммы корректирует флешер при записи.
+Only bit 0 of the factory Developer Immobilizer flag changes. The derived image
+differs from stock by exactly one bit. Stored checksum fields match stock; the
+flasher corrects the checksums while writing.
 """
     readme.write_text(content, encoding="utf-8")
     return True
@@ -169,7 +169,7 @@ ROM[{cfg["offset"]:#010x}]: {cfg["stock"]:#04x} -> {cfg["patched"]:#04x}
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Сброс флага developer immobilizer в точном stock HR ROM"
+        description="Clear the Developer Immobilizer flag in an exact stock HR ROM"
     )
     parser.add_argument("--rom", choices=sorted(PATCHES), default="JK08A")
     parser.add_argument("--out", type=Path)

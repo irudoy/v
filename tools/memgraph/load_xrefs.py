@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-# Догрузка слоя обращений к периферии (xrefs.csv из ExportXrefs.java) поверх
-# call-графа в Memgraph. Создаёт узлы :Reg {addr,region,name} и рёбра
-# (:Func)-[:USES {kind}]->(:Reg); проставляет агрегаты на :Func (n_can, n_sci,
-# n_rxpr, n_ram). Регионы/имена регистров SH7058/59 – по даташиту Renesas.
-# В конце печатает immo-кандидатов (CAN/SCI comm-функции, приёмники RXPR).
+# Add a peripheral-access layer (xrefs.csv from ExportXrefs.java) over the Memgraph call
+# graph. Creates :Reg {addr,region,name} nodes and (:Func)-[:USES {kind}]->(:Reg)
+# relationships; sets aggregates on :Func (n_can, n_sci, n_rxpr, n_ram). SH7058/59 register
+# regions and names come from the Renesas datasheet. Finally, prints immo candidates
+# (CAN/SCI communication functions and RXPR readers).
 #
-# Запуск: uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py \
+# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py \
 #           <export_dir> <rom_label>
 import csv
 import os
@@ -86,7 +86,7 @@ def main():
             edges=edges,
             rom=rom,
         )
-        # агрегаты на функциях
+        # Aggregates on functions.
         for prop, cond in (
             ("n_can", "r.region='CAN'"),
             ("n_sci", "r.region='SCI'"),
@@ -106,7 +106,7 @@ def main():
         ).single()["n"]
         print(f"Memgraph: {nr} :Reg nodes, {nu} :USES edges")
 
-        print("\n=== CAN comm-функции (кандидаты immo, приём RXPR помечен) ===")
+        print("\n=== CAN communication functions (immo candidates; RXPR readers marked) ===")
         rows = s.run(
             """
             MATCH (f:Func {rom:$rom})-[:USES]->(r:Reg {rom:$rom, region:'CAN'})
@@ -123,7 +123,7 @@ def main():
             print(f"  {r['addr']}  can={r['can_regs']:>2} rxpr={r['rxpr']}{flag}  "
                   f"{', '.join(r['regs'])}")
 
-        print("\n=== функции у И CAN, И SCI (мосты протоколов) ===")
+        print("\n=== functions using BOTH CAN and SCI (protocol bridges) ===")
         rows = s.run(
             """
             MATCH (f:Func {rom:$rom})-[:USES]->(c:Reg {rom:$rom, region:'CAN'})

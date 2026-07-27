@@ -1,9 +1,9 @@
 export const meta = {
   name: 'vq-caller-run',
-  description: 'Разобрать один набор машинных артефактов JK03A',
+  description: 'Analyze one set of JK03A machine artifacts',
   phases: [
-    { title: 'Analyze', detail: 'Разобрать frozen map artifact по единому prompt', model: 'claude-opus-4-8' },
-    { title: 'Verify', detail: 'Состязательно проверить полный Analyze payload', model: 'claude-opus-4-8' },
+    { title: 'Analyze', detail: 'Analyze a frozen map artifact with the common prompt', model: 'claude-opus-4-8' },
+    { title: 'Verify', detail: 'Adversarially verify the complete Analyze payload', model: 'claude-opus-4-8' },
   ],
 }
 

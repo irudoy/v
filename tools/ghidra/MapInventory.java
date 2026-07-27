@@ -1,11 +1,12 @@
-// MapInventory.java — инвентаризация карт через общий interp-kernel.
-// Уровни: (1) слоты со значением kernel (BE u32) -> (2) обёртки-интерполяторы
-// (функции, ссылающиеся на слот) -> (3) все ссылки на вход обёртки = места
-// вызова (аксессоры карт), с best-effort снятием r4/r5/r6 (table + оси) из
-// register-setup перед вызовом.
+// MapInventory.java - inventory maps through a shared interpolation kernel.
+// Levels: (1) slots containing the kernel address as BE u32 -> (2)
+// interpolation wrappers whose functions reference the slot -> (3) all
+// references to each wrapper entry as call sites and map accessors. Recover
+// r4/r5/r6 table and axis operands from pre-call register setup on a best-effort
+// basis.
 //
-// Запуск (headless): -postScript MapInventory.java <out_dir> <kernel_hex>
-// Выход: map_inventory.csv (wrapper,slot,from,from_func,reftype,is_call,r4,r5,r6).
+// Usage (headless): -postScript MapInventory.java <out_dir> <kernel_hex>
+// Output: map_inventory.csv (wrapper,slot,from,from_func,reftype,is_call,r4,r5,r6).
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.lang.Register;
@@ -40,7 +41,7 @@ public class MapInventory extends GhidraScript {
         FunctionManager fm = currentProgram.getFunctionManager();
         ReferenceManager rm = currentProgram.getReferenceManager();
 
-        // 1. слоты: локации, содержащие значение kernel (BE u32)
+        // 1. Slots containing the kernel value as BE u32.
         byte[] pat = new byte[]{
             (byte) ((kernel >> 24) & 0xff), (byte) ((kernel >> 16) & 0xff),
             (byte) ((kernel >> 8) & 0xff),  (byte) (kernel & 0xff)};
@@ -54,7 +55,7 @@ public class MapInventory extends GhidraScript {
             start = found.add(1);
         }
 
-        // 2. обёртки: функции, ссылающиеся на слот
+        // 2. Wrappers whose functions reference a slot.
         Map<Function, Address> wrappers = new LinkedHashMap<>();
         for (Address slot : slots) {
             ReferenceIterator ri = rm.getReferencesTo(slot);
@@ -65,7 +66,7 @@ public class MapInventory extends GhidraScript {
             }
         }
 
-        // 3. места вызова каждой обёртки + best-effort r4/r5/r6
+        // 3. Call sites for each wrapper plus best-effort r4/r5/r6.
         PrintWriter w = new PrintWriter(new FileWriter(new File(outDir, "map_inventory.csv")));
         w.println("wrapper,slot,from,from_func,reftype,is_call,r4,r5,r6");
         int rows = 0;
@@ -96,7 +97,8 @@ public class MapInventory extends GhidraScript {
 
     String hx(long v) { return v == -1 ? "" : String.format("%08x", v); }
 
-    // отойти назад до 14 инструкций, снять ближайший pc-relative load в r4/r5/r6
+    // Walk back up to 14 instructions and recover the nearest PC-relative load
+    // into r4/r5/r6.
     long[] backtrack(Listing listing, Memory mem, Address site) {
         long[] out = {-1, -1, -1};
         Register r4 = currentProgram.getRegister("r4");
@@ -112,7 +114,7 @@ public class MapInventory extends GhidraScript {
                 int idx = rg.equals(r4) ? 0 : rg.equals(r5) ? 1 : rg.equals(r6) ? 2 : -1;
                 if (idx >= 0 && out[idx] == -1) {
                     long v = nearestLoad(cur, mem);
-                    out[idx] = (v == -1) ? -2 : v; // -2: записан не простым load
+                    out[idx] = (v == -1) ? -2 : v; // -2: written by a non-simple load
                 }
             }
             if (out[0] != -1 && out[1] != -1 && out[2] != -1) break;
@@ -122,7 +124,7 @@ public class MapInventory extends GhidraScript {
         return out;
     }
 
-    // значение, загруженное pc-relative (ближайшая ref = literal pool, disp < 0x800)
+    // Value loaded PC-relative; nearest reference is a literal pool with disp < 0x800.
     long nearestLoad(Instruction cur, Memory mem) {
         long ia = cur.getAddress().getOffset() & 0xFFFFFFFFL;
         Address best = null;

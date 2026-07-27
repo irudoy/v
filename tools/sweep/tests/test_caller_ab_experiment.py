@@ -140,7 +140,7 @@ class CallerExperimentFixture(unittest.TestCase):
         for directory in (self.originals, self.originals_replica):
             for addr in experiment.ADDRESSES:
                 (directory / f"map-{addr}.md").write_text(
-                    f"# Карта `{addr}` (JK03A)\n\n"
+                    f"# Map `{addr}` (JK03A)\n\n"
                     "## Fixture machine data\n\n"
                     "```text\n"
                     f"site 00020000 reads map {addr}\n"
@@ -636,7 +636,7 @@ class CallerExperimentFixture(unittest.TestCase):
     def test_private_manifest_is_rederived_from_frozen_sources(self):
         stale_schema = copy.deepcopy(self.manifest)
         stale_schema["schema"] = "vq.caller-semantics-private/v3"
-        with self.assertRaisesRegex(experiment.ExperimentError, "private manifest"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "private-manifest"):
             experiment.validate_private_manifest(stale_schema)
 
         stale_config = copy.deepcopy(self.manifest)
@@ -755,7 +755,7 @@ class CallerExperimentFixture(unittest.TestCase):
         )
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "blind agent не подтверждён",
+            "embedded source does not verify blind agent",
         ):
             experiment.validate_execution_config(config)
 
@@ -842,7 +842,7 @@ class CallerExperimentFixture(unittest.TestCase):
         _prep, _path, _execution, worklist = self._build_prep()
         null_id = copy.deepcopy(worklist)
         null_id["jobs"][0]["condition_id"] = None
-        with self.assertRaisesRegex(experiment.ExperimentError, "строкой"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "must be a string"):
             experiment.validate_public_projection(null_id)
         descriptive = copy.deepcopy(worklist)
         descriptive["jobs"][0]["pair_id"] = "truth-table-private-answer"
@@ -850,7 +850,7 @@ class CallerExperimentFixture(unittest.TestCase):
             experiment.validate_public_projection(descriptive)
         null_path = copy.deepcopy(worklist)
         null_path["jobs"][0]["artifact_path"] = None
-        with self.assertRaisesRegex(experiment.ExperimentError, "строкой"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "must be a string"):
             experiment.validate_public_projection(null_path)
 
     def test_public_projection_allows_incidental_a_or_b_path_segments(self):
@@ -864,7 +864,7 @@ class CallerExperimentFixture(unittest.TestCase):
         descriptive["jobs"][0]["artifact_path"] = str(
             Path("/tmp/enriched") / original_name
         )
-        with self.assertRaisesRegex(experiment.ExperimentError, "раскрывает имя условия"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "exposes a condition name"):
             experiment.validate_public_projection(descriptive)
 
     def test_sample_addresses_are_masked_in_common_forms(self):
@@ -1046,7 +1046,7 @@ class CallerExperimentFixture(unittest.TestCase):
     def test_freeze_rejects_ghidra_source_outside_export_cohort(self):
         outside_calls = self.runtime / "outside-calls.csv"
         outside_calls.write_bytes(self.calls.read_bytes())
-        with self.assertRaisesRegex(experiment.ExperimentError, "вне единого cohort root"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "outside the shared cohort root"):
             experiment.build_private_manifest(
                 ROOT,
                 self.accessors,
@@ -1062,7 +1062,7 @@ class CallerExperimentFixture(unittest.TestCase):
     def test_freeze_rejects_symlink_in_recursive_export_inventory(self):
         link = self.exports / "linked-funcs.csv"
         link.symlink_to(self.exports / "funcs.csv")
-        with self.assertRaisesRegex(experiment.ExperimentError, "cohort содержит symlink"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "cohort contains a symlink"):
             experiment.build_private_manifest(
                 ROOT,
                 self.accessors,
@@ -1083,7 +1083,7 @@ class CallerExperimentFixture(unittest.TestCase):
         )
         replica_audit = self.runtime / "drifted-replica-audit.json"
         self._write_blind_audit(self.originals_replica, replica_audit)
-        with self.assertRaisesRegex(experiment.ExperimentError, "не byte-identical"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "not byte-identical"):
             experiment.build_private_manifest(
                 ROOT,
                 self.accessors,
@@ -1160,7 +1160,7 @@ class CallerExperimentFixture(unittest.TestCase):
         self.assertTrue(persisted_archive.is_file())
 
         invalid_output = self.runtime / "invalid-run-id-archive.json"
-        with self.assertRaisesRegex(experiment.ExperimentError, "неверный fresh runId"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "invalid fresh runId"):
             experiment.build_workflow_archive(
                 "wf-invalid",
                 Path(fixture["scriptPath"]),
@@ -1227,7 +1227,7 @@ class CallerExperimentFixture(unittest.TestCase):
 
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "неизвестный progress record",
+            "unknown progress record",
         ):
             experiment.build_workflow_archive(
                 "wf_workflow-error",
@@ -1357,7 +1357,7 @@ class CallerExperimentFixture(unittest.TestCase):
         experiment.write_json(native_path, native)
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "точный Analyze payload",
+            "exact Analyze payload",
         ):
             experiment.build_workflow_archive(
                 "wf_prep-verify-mismatch",
@@ -1406,7 +1406,7 @@ class CallerExperimentFixture(unittest.TestCase):
         experiment.write_json(native_path, native)
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "citation вне machine evidence",
+            "citation is outside machine evidence",
         ):
             experiment.build_workflow_archive(
                 "wf_unbound-prep-citation",
@@ -1460,7 +1460,7 @@ class CallerExperimentFixture(unittest.TestCase):
         experiment.write_json(native_path, native)
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "citation вне machine evidence",
+            "citation is outside machine evidence",
         ):
             experiment.build_workflow_archive(
                 "wf_unbound-run-citation",
@@ -1485,7 +1485,7 @@ class CallerExperimentFixture(unittest.TestCase):
         experiment.write_json(native_path, native)
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "точным Analyze payload",
+            "exact Analyze payload",
         ):
             experiment.build_workflow_archive(
                 "wf_run-verify-mismatch",
@@ -1509,7 +1509,7 @@ class CallerExperimentFixture(unittest.TestCase):
         experiment.write_json(native_path, native)
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "payload раскрывает имя условия",
+            "payload exposes a condition name",
         ):
             experiment.build_workflow_archive(
                 "wf_prep-rationale-arm",
@@ -1534,7 +1534,7 @@ class CallerExperimentFixture(unittest.TestCase):
         experiment.write_json(native_path, native)
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "payload раскрывает имя условия",
+            "payload exposes a condition name",
         ):
             experiment.build_workflow_archive(
                 "wf_run-rationale-arm",
@@ -1662,7 +1662,7 @@ class CallerExperimentFixture(unittest.TestCase):
 
         extra_tool = copy.deepcopy(base)
         extra_tool["workflowOutput"]["workflowProgress"][0]["toolCalls"] = 2
-        cases.append(("extra-tool", extra_tool, "ровно один tool"))
+        cases.append(("extra-tool", extra_tool, "exactly one tool"))
 
         zero_tokens = copy.deepcopy(base)
         zero_tokens["workflowOutput"]["totalTokens"] = 0
@@ -1685,7 +1685,7 @@ class CallerExperimentFixture(unittest.TestCase):
             root_extra = copy.deepcopy(base)
             root_extra["workflowOutput"][key] = value
             cases.append(
-                (label, root_extra, "exact native output schema")
+                (label, root_extra, "exact native-output schema")
             )
 
         nonfresh = copy.deepcopy(base)
@@ -1723,7 +1723,7 @@ class CallerExperimentFixture(unittest.TestCase):
         self.assertEqual(len(document), 5)
         self.assertEqual(
             [item.get("error") for item in document[:3]],
-            ["JSON root не является объектом"] * 3,
+            ["JSON root is not an object"] * 3,
         )
         self.assertEqual(document[3]["schema"], "fixture/v1")
         self.assertFalse(document[4]["exists"])
@@ -1798,7 +1798,7 @@ class CallerExperimentFixture(unittest.TestCase):
         ]["analyses"][0]["semantics"]
         multiline_path = self.runtime / "multiline.json"
         experiment.write_json(multiline_path, multiline)
-        with self.assertRaisesRegex(experiment.ExperimentError, "однострочными"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "single-line"):
             experiment.validate_prep_results(
                 self.private_path,
                 worklist_path,
@@ -1810,7 +1810,7 @@ class CallerExperimentFixture(unittest.TestCase):
     def test_validate_prep_rejects_non_ascii_caller_cards(self):
         _prep, worklist_path, execution_path, worklist = self._build_prep()
         archive = self._prep_archive(worklist_path, execution_path, worklist)
-        semantics = "Возвращает локальное значение."
+        semantics = "Returns a naïve local value."
         archive["result"]["analyses"][0]["semantics"] = semantics
         archive["result"]["verdicts"][0]["semantics"] = semantics
         path = self.runtime / "non-ascii-card.json"
@@ -1838,7 +1838,7 @@ class CallerExperimentFixture(unittest.TestCase):
             path = self.runtime / f"arm-marker-{index}.json"
             experiment.write_json(path, archive)
             with self.assertRaisesRegex(
-                experiment.ExperimentError, "раскрывает имя условия"
+                experiment.ExperimentError, "exposes a condition name"
             ):
                 experiment.validate_prep_results(
                     self.private_path,
@@ -1858,7 +1858,7 @@ class CallerExperimentFixture(unittest.TestCase):
         experiment.write_json(path, archive)
         with self.assertRaisesRegex(
             experiment.ExperimentError,
-            "раскрывает имя условия",
+            "exposes a condition name",
         ):
             experiment.validate_prep_results(
                 self.private_path,
@@ -1902,7 +1902,7 @@ class CallerExperimentFixture(unittest.TestCase):
 
         stale_cards = copy.deepcopy(cards)
         stale_cards["schema"] = "vq.caller-semantics-cards/v3"
-        with self.assertRaisesRegex(experiment.ExperimentError, "неизвестная схема"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "unknown .*schema"):
             experiment.validate_cards(stale_cards, self.private_path, self.manifest)
 
         unattested = approvals()
@@ -1923,7 +1923,7 @@ class CallerExperimentFixture(unittest.TestCase):
         rejected["cards"][0]["decision"] = "reject"
         rejected_path = self.runtime / "rejected.json"
         experiment.write_json(rejected_path, rejected)
-        with self.assertRaisesRegex(experiment.ExperimentError, "не одобрена"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "not approved"):
             experiment.finalize_cards(
                 self.private_path,
                 candidates_path,
@@ -1935,7 +1935,7 @@ class CallerExperimentFixture(unittest.TestCase):
         missing["cards"].pop()
         missing_path = self.runtime / "missing-approval.json"
         experiment.write_json(missing_path, missing)
-        with self.assertRaisesRegex(experiment.ExperimentError, "не покрывают"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "do not cover"):
             experiment.finalize_cards(
                 self.private_path,
                 candidates_path,
@@ -2115,7 +2115,7 @@ class CallerExperimentFixture(unittest.TestCase):
             first["files"]
         )
         with self.assertRaisesRegex(
-            experiment.ExperimentError, "directory повторён|path повторён"
+            experiment.ExperimentError, "directory is duplicated|path is duplicated"
         ):
             experiment.verify_condition_document(
                 aliased, self.private_path, cards_path
@@ -2148,7 +2148,7 @@ class CallerExperimentFixture(unittest.TestCase):
             experiment.score_documents(self.private_path, forged_report_path)
         empty_run_id = self._run_archive(conditions["conditions"][0])
         empty_run_id["runId"] = ""
-        with self.assertRaisesRegex(experiment.ExperimentError, "неверный fresh runId"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "invalid fresh runId"):
             experiment.validate_run_archive(
                 empty_run_id, conditions["conditions"][0], self.private_path
             )
@@ -2157,7 +2157,7 @@ class CallerExperimentFixture(unittest.TestCase):
         wrong_script["scriptSha256"] = hashlib.sha256(
             wrong_script["scriptSource"].encode("utf-8")
         ).hexdigest()
-        with self.assertRaisesRegex(experiment.ExperimentError, "другим script"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "another script"):
             experiment.validate_run_archive(
                 wrong_script, conditions["conditions"][0], self.private_path
             )
@@ -2170,7 +2170,7 @@ class CallerExperimentFixture(unittest.TestCase):
         mixed_model["workflowOutput"]["workflowProgress"][0]["model"] = (
             "claude-other-fixture"
         )
-        with self.assertRaisesRegex(experiment.ExperimentError, "смешивает resolved models"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "mixes resolved models"):
             experiment.validate_run_archive(
                 mixed_model, conditions["conditions"][0], self.private_path
             )
@@ -2206,7 +2206,7 @@ class CallerExperimentFixture(unittest.TestCase):
             experiment.validate_run_archive(extra_result, conditions["conditions"][0], self.private_path)
         stale_result = self._run_archive(conditions["conditions"][0])
         stale_result["result"]["schema"] = "vq.caller-semantics-run-results/v3"
-        with self.assertRaisesRegex(experiment.ExperimentError, "схема run result"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "run-result schema"):
             experiment.validate_run_archive(
                 stale_result, conditions["conditions"][0], self.private_path
             )
@@ -2216,23 +2216,23 @@ class CallerExperimentFixture(unittest.TestCase):
         legacy_trace["result"]["verdicts"][0]["analysis"] = copy.deepcopy(
             legacy_analysis
         )
-        with self.assertRaisesRegex(experiment.ExperimentError, "completed analysis"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "completed-analysis"):
             experiment.validate_run_archive(
                 legacy_trace, conditions["conditions"][0], self.private_path
             )
         extra_analysis = self._run_archive(conditions["conditions"][0])
         extra_analysis["result"]["analyses"][0]["extra"] = "not frozen"
-        with self.assertRaisesRegex(experiment.ExperimentError, "completed analysis"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "completed-analysis"):
             experiment.validate_run_archive(extra_analysis, conditions["conditions"][0], self.private_path)
         extra_verdict = self._run_archive(conditions["conditions"][0])
         extra_verdict["result"]["verdicts"][0]["extra"] = "not frozen"
-        with self.assertRaisesRegex(experiment.ExperimentError, "run verdict"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "run-verdict"):
             experiment.validate_run_archive(extra_verdict, conditions["conditions"][0], self.private_path)
         changed_after_verify = self._run_archive(conditions["conditions"][0])
         changed_after_verify["result"]["analyses"][0]["semantics"] = (
             "A different but schema-valid semantics string."
         )
-        with self.assertRaisesRegex(experiment.ExperimentError, "точным Analyze payload"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "exact Analyze payload"):
             experiment.validate_run_archive(
                 changed_after_verify, conditions["conditions"][0], self.private_path
             )
@@ -2241,7 +2241,7 @@ class CallerExperimentFixture(unittest.TestCase):
         multiline["result"]["verdicts"][0]["analysis"] = copy.deepcopy(
             multiline["result"]["analyses"][0]
         )
-        with self.assertRaisesRegex(experiment.ExperimentError, "однострочной"):
+        with self.assertRaisesRegex(experiment.ExperimentError, "one line"):
             experiment.validate_run_archive(
                 multiline, conditions["conditions"][0], self.private_path
             )
@@ -2261,7 +2261,7 @@ class CallerExperimentFixture(unittest.TestCase):
             )
             with self.assertRaisesRegex(
                 experiment.ExperimentError,
-                "payload раскрывает имя условия",
+                "payload exposes a condition name",
                 msg=f"marker={marker}",
             ):
                 experiment.validate_run_archive(
@@ -2287,7 +2287,7 @@ class CallerExperimentFixture(unittest.TestCase):
             )
             with self.assertRaisesRegex(
                 experiment.ExperimentError,
-                "payload раскрывает имя условия",
+                "payload exposes a condition name",
                 msg=field,
             ):
                 experiment.validate_run_archive(
@@ -2314,7 +2314,7 @@ class CallerExperimentFixture(unittest.TestCase):
             )
             with self.assertRaisesRegex(
                 experiment.ExperimentError,
-                "payload раскрывает имя условия",
+                "payload exposes a condition name",
                 msg=f"case={index}",
             ):
                 experiment.validate_run_archive(
@@ -2333,21 +2333,27 @@ class CallerExperimentFixture(unittest.TestCase):
             {"line_start": 1, "line_end": 1, "excerpt": "not machine evidence"}
         ]
         outside_fence["result"]["verdicts"][0]["analysis"] = copy.deepcopy(analysis)
-        with self.assertRaisesRegex(experiment.ExperimentError, "citation вне machine evidence"):
+        with self.assertRaisesRegex(
+            experiment.ExperimentError, "citation is outside machine evidence"
+        ):
             experiment.validate_run_archive(outside_fence, condition, self.private_path)
 
         forged_excerpt = self._run_archive(condition)
         analysis = forged_excerpt["result"]["analyses"][0]
         analysis["citations"][0]["excerpt"] = "forged machine line"
         forged_excerpt["result"]["verdicts"][0]["analysis"] = copy.deepcopy(analysis)
-        with self.assertRaisesRegex(experiment.ExperimentError, "excerpt не совпадает"):
+        with self.assertRaisesRegex(
+            experiment.ExperimentError, "excerpt does not match"
+        ):
             experiment.validate_run_archive(forged_excerpt, condition, self.private_path)
 
         outside_evidence = self._run_archive(condition)
         analysis = outside_evidence["result"]["analyses"][0]
         analysis["evidence"] = "site:deadbeef"
         outside_evidence["result"]["verdicts"][0]["analysis"] = copy.deepcopy(analysis)
-        with self.assertRaisesRegex(experiment.ExperimentError, "evidence token ссылается вне"):
+        with self.assertRaisesRegex(
+            experiment.ExperimentError, "evidence token refers outside"
+        ):
             experiment.validate_run_archive(outside_evidence, condition, self.private_path)
 
         outside_trace = self._run_archive(condition)
@@ -2355,7 +2361,7 @@ class CallerExperimentFixture(unittest.TestCase):
         analysis["machine_references"] = "00020000 -> deadbeef"
         outside_trace["result"]["verdicts"][0]["analysis"] = copy.deepcopy(analysis)
         with self.assertRaisesRegex(
-            experiment.ExperimentError, "machine_references ссылается вне"
+            experiment.ExperimentError, "machine_references refers outside"
         ):
             experiment.validate_run_archive(outside_trace, condition, self.private_path)
 
@@ -2394,7 +2400,7 @@ class CallerExperimentFixture(unittest.TestCase):
             analysis
         )
         with self.assertRaisesRegex(
-            experiment.ExperimentError, "result target не содержит machine address"
+            experiment.ExperimentError, "result target contains no machine address"
         ):
             experiment.validate_run_archive(
                 target_without_address, condition, self.private_path
@@ -2407,7 +2413,7 @@ class CallerExperimentFixture(unittest.TestCase):
         analysis["citations"] = analysis["citations"][:1]
         uncited_target["result"]["verdicts"][0]["analysis"] = copy.deepcopy(analysis)
         with self.assertRaisesRegex(
-            experiment.ExperimentError, "citations не покрывают target address"
+            experiment.ExperimentError, "citations do not cover target address"
         ):
             experiment.validate_run_archive(
                 uncited_target, condition, self.private_path
@@ -2420,7 +2426,7 @@ class CallerExperimentFixture(unittest.TestCase):
             analysis
         )
         with self.assertRaisesRegex(
-            experiment.ExperimentError, "accept_code несовместим с unresolved"
+            experiment.ExperimentError, "accept_code is incompatible with unresolved"
         ):
             experiment.validate_run_archive(
                 unresolved_accept, condition, self.private_path
@@ -2450,7 +2456,7 @@ class CallerExperimentFixture(unittest.TestCase):
             "evidence": "selector:00020000@confidence",
         }
         with self.assertRaisesRegex(
-            experiment.ExperimentError, "без frozen typed-support registry"
+            experiment.ExperimentError, "without a frozen typed-support registry"
         ):
             experiment.validate_run_evidence_binding(
                 unsupported_dependency,
@@ -2492,7 +2498,7 @@ class CallerExperimentFixture(unittest.TestCase):
             "target": "00020000",
         }
         with self.assertRaisesRegex(
-            experiment.ExperimentError, "две уникальные machine refs"
+            experiment.ExperimentError, "at least two unique machine references"
         ):
             experiment.validate_run_evidence_binding(
                 item,

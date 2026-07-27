@@ -1,126 +1,149 @@
-# VQ HR ECU Tuning – AGENTS.md
+# VQ HR ECU Tuning - AGENTS.md
 
-Реверс-инжиниринг и тюнинг CAN-ЭБУ моторов Nissan/Infiniti серии **HR** (ЭБУ Hitachi,
-MCU Renesas SH7058 / SH7059, ядро SH-2E):
+Reverse engineering and tuning of CAN ECUs for Nissan/Infiniti HR-series engines
+(Hitachi ECU, Renesas SH7058 / SH7059 MCU, SH-2E core):
 
-- **VQ37VHR** – VVEL + dual CVTC;
-- **VQ35HR**, **VQ25HR** – dual CVTC, без VVEL.
+- **VQ37VHR** - VVEL + dual CVTC;
+- **VQ35HR**, **VQ25HR** - dual CVTC, without VVEL.
 
-Тестовая платформа – **V36 Skyline 250GT** (VQ25HR, в доступе), ЭБУ `23710-JK08A`.
-Собственный flash-ROM снят через PCMFlash; его исполняемый код побайтно совпадает с
-донорским `JK03A`, calibration/config различается (`rom-images/README.md`). Reflash – **SM2PRO**
-(J2534, bench/boot); заводская диагностика – **CONSULT-III Plus** через
-**Nissan VCI WiFi**.
+The test platform is an available **V36 Skyline 250GT** with a VQ25HR engine and a
+`23710-JK08A` ECU. Its flash ROM was read with PCMFlash. The executable code is
+byte-identical to the donor `JK03A`, while calibration and configuration differ
+(`rom-images/README.md`). Reflashing uses **SM2PRO** over J2534 in bench/boot mode.
+Factory diagnostics use **CONSULT-III Plus** through **Nissan VCI WiFi**.
 
-## Принцип работы: два контура
+## Two-workspace model
 
-1. **Git-репозиторий** (этот каталог) – технические артефакты,
-   машинно-ориентированное и бинарное: ROM-дампы, дизасм-экспорты, деф-файлы
-   (XDF / RomRaider), скрипты чексумм (nissutils) и Ghidra/Memgraph, даталоги.
-2. **Obsidian vault** – человеко-ориентированные документы: план, роадмап,
-   прогресс, база знаний, решения, открытые вопросы. **Источник правды по
-   планированию и знаниям.** Синхронизируется через iCloud, доступен с телефона.
-   - Путь: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/🎛️ Electronics/VQ HR ECU Tuning`
-   - Точка входа (MOC): нота **`VQ HR ECU Tuning`**.
+1. **Git repository** (this directory) - technical, machine-oriented, and binary
+   artifacts: ROM dumps, disassembly exports, definition files (XDF / RomRaider),
+   checksum scripts (nissutils), Ghidra/Memgraph tooling, and data logs. All
+   repository documentation, annotations, comments, messages, and generated
+   human-readable text are written in English.
+2. **Obsidian vault** - human-oriented documents: plan, roadmap, progress,
+   knowledge base, decisions, and open questions. It is the **source of truth for
+   planning and project knowledge** and continues to be maintained in Russian. It
+   is synchronized through iCloud and available from a phone.
+   - Path: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/🎛️ Electronics/VQ HR ECU Tuning`
+   - Entry point (MOC): **`VQ HR ECU Tuning`**.
 
-Планирование и знание пишутся в vault; работа с дампами и скриптами – в репозитории.
-После каждой задачи агент проверяет, появились ли данные, которые меняют план, прогресс,
-решения, открытые вопросы или базу знаний проекта. Если такие данные есть, соответствующие
-заметки vault актуализируются как завершающий шаг задачи.
+Planning and knowledge belong in the vault; dumps and scripts belong in the
+repository. After every task, the agent checks whether the result changes the
+project plan, progress, decisions, open questions, or knowledge base. If it does,
+the corresponding vault notes are updated in Russian as the final task step.
 
-## Разрешённые действия без подтверждения
+## Actions allowed without confirmation
 
-В пределах проекта **VQ HR ECU Tuning** следующие действия разрешены без предварительного
-показа параметров и без отдельного подтверждения пользователя:
+Within the **VQ HR ECU Tuning** project, the following actions are allowed without
+showing parameters in advance or obtaining separate user confirmation:
 
-- любые изменения базы Memgraph проекта, включая создание, изменение и удаление данных,
-  индексов, ограничений и других объектов базы;
-- любые изменения каталога проекта в Obsidian vault по указанному выше пути, включая
-  создание, изменение, перемещение и удаление заметок, каталогов и вложений;
-- создание и обновление резервных копий данных проекта во внешних системах хранения,
-  включая SMB/NAS, а также необходимые для этого подключение хранилища, передачу данных
-  и запуск штатных скриптов резервного копирования.
+- any changes to the project Memgraph database, including creating, changing, or
+  deleting data, indexes, constraints, and other database objects;
+- any changes within the project directory in the Obsidian vault at the path
+  above, including creating, changing, moving, or deleting notes, directories,
+  and attachments;
+- creating and updating project-data backups in external storage systems,
+  including SMB/NAS, as well as connecting the storage, transferring the data,
+  and running the standard backup scripts required for that purpose.
 
-Разрешение относится только к данным этого проекта и их резервным копиям. Оно не
-распространяется на `git push`, публикацию материалов, отправку сообщений и другие
-изменения внешних систем, не являющиеся резервным копированием данных проекта.
+This permission applies only to this project's data and its backups. It does not
+cover `git push`, publication, sending messages, or other external-system changes
+that are not project-data backups.
 
-## RE-стек
+## Reverse-engineering stack
 
-Канонический путь – headless: **Ghidra** (декомп + экспорт call / xref / data-flow, Java
-GhidraScript) -> **Memgraph** (граф структуры, гомология, персистентная память проекта) ->
-**LLM-агент** (поверх графа и headless-артефактов). Пайплайн от GUI не зависит, идёт в
-автономном/пакетном режиме.
+The canonical path is headless:
 
-Развёрнуто локально (arm64): Ghidra 12.1.2 (JDK 21, нативы) + Memgraph MAGE (Louvain /
-Leiden). Граф агент читает через MCP-сервер `mcp-memgraph` (stdio, scope project, read-only) –
-он headless-native и потому часть канонического пути; запись в граф остаётся за загрузчиками.
-GhydraMCP (плагин + мост `ghydra`, stdio MCP в Claude Code) – опциональный интерактивный
-ускоритель live-сессий реверса, требует открытый GUI, вне критического пути.
-Версии, порты, команды поднятия и роли – `tools/README.md`, `tools/map-flag-pipeline.md`.
+```text
+Ghidra (decompilation + call/xref/data-flow export, Java GhidraScript)
+  -> Memgraph (structure graph, homology, persistent project memory)
+  -> LLM agent (operating on the graph and headless artifacts)
+```
 
-Дисциплина верификации: **ground truth – в кремнии.** Структура графа != семантика.
-Любое техническое утверждение до заливки проверяется на железе (CONSULT3P live-data,
-стенд) – результат заливается в мотор.
+The pipeline does not depend on a GUI and runs autonomously or in batch mode.
 
-## Резервное копирование Memgraph
+The local arm64 deployment uses Ghidra 12.1.2 with JDK 21 and native components,
+plus Memgraph MAGE with Louvain/Leiden. The agent reads the graph through the
+project-scoped, read-only `mcp-memgraph` stdio MCP server. This server is
+headless-native and therefore part of the canonical path; loaders remain
+responsible for graph writes. GhydraMCP, consisting of the plugin and the
+`ghydra` stdio bridge in Claude Code, is an optional interactive accelerator for
+live reverse-engineering sessions. It requires an open Ghidra GUI and is outside
+the critical path. Versions, ports, startup commands, and roles are documented in
+`tools/README.md` and `tools/map-flag-pipeline.md`.
 
-Резервное копирование Memgraph является отдельным завершающим шагом агентского workflow.
-Планировщик ОС не используется. После задачи, изменившей файлы проекта или граф, агент
-проверяет срок:
+Verification discipline: **ground truth is in the silicon.** Graph structure is
+not semantics. Every technical claim must be verified on hardware with
+CONSULT3P live data or a bench before flashing; the final result is validated in
+the engine.
+
+## Memgraph backup
+
+Memgraph backup is a separate final step in the agent workflow. No operating
+system scheduler is used. After a task that changes project files or the graph,
+the agent checks whether a backup is due:
 
 ```bash
 python3 tools/memgraph/backup.py --status
 ```
 
-Если `due=true`, агент без отдельного подтверждения выполняет один запуск:
+If `due=true`, the agent performs one run without separate confirmation:
 
 ```bash
 python3 tools/memgraph/backup.py --if-due
 ```
 
-Скрипт сам монтирует SMB share из gitignored-конфига `tools/memgraph/backup.local.toml`,
-проверяет, что назначение является SMB mount, и не создаёт резервную копию чаще одного раза
-за 24 часа. Комплект содержит gzip-сжатый `DUMP DATABASE`, native snapshot, manifest и
-SHA-256. Промежуточные данные пишутся сразу на NAS. Обычная операция чтения и ответ без
-локальных изменений резервное копирование не запускают.
+The script mounts the SMB share from the gitignored
+`tools/memgraph/backup.local.toml`, verifies that the destination is an SMB
+mount, and does not create a backup more often than once every 24 hours. A backup
+contains a gzip-compressed `DUMP DATABASE`, a native snapshot, a manifest, and
+SHA-256 hashes. Intermediate data is written directly to the NAS. Read-only work
+and responses without local changes do not trigger a backup.
 
-## Карта репозитория
+## Repository map
 
-- `rom-images/` – ROM-дампы (`*.bin`): VQ37VHR с RomRaider forum (гомолог-пара
-  SH7058 USDM / SH7059 JDM), донорский `JK03A` и собственный целевой `JK08A`
-  (VQ25HR, exact-code пара с разными calibration/config), собственный дамп стендового
-  `JK00D` (VQ35HR, SH7058) и производный `1JK08A-20260727-immo-off.bin`.
-  Каждый part # находится в отдельном каталоге `23710-XXXXX`; моды находятся в
-  `mods/<short-desc>/`. Версионируются в git;
-  манифест `rom-images/README.md` (sha256, part #, идентификация, источники). Дамп
-  опознаётся по sha256.
-- `refs/` – внешние даташиты / мануалы (Renesas SH7059 HW manual, PCMflash module list,
-  Bosch LSU 4.9, NERS, MoTeC M150, UpRev) + зеркало NissanECU RE wiki (`refs/nissanecu-wiki/`).
-  PDF-оригиналы, markitdown-конверсии `*.md` и манифест `refs/README.md` – всё в git.
-- `tools/` – инфраструктура RE-стека: `ghidra/` (Java-экстракторы, `headless-analyze.sh`,
-  `symbols.csv`), `memgraph/` (`docker-compose.yml` Memgraph MAGE + Lab, загрузчики `load_*.py`),
-  `maps/build_tracker.py` (ledger) и `mapkit/emit_def.py` (генератор дефа), спека пайплайна
-  карт `map-flag-pipeline.md`, `README.md` (версии, порты, команды). Сами инструменты
-  (Ghidra, GhydraMCP) и Ghidra-проекты – вне git.
-- `AGENTS.md` – этот файл.
-- `.gitignore` – правила игнора (мусор ОС, scratch, регенерируемые кэши Ghidra / Memgraph).
-  Контентные артефакты (ROM, даташиты, дефы, зеркала) версионируются.
-- `defs/` – деф-файлы таблиц. `JK08A.*` является единственным живым набором аннотаций
-  exact-code пары; `rom-inheritance.toml` проецирует его на отдельный слой измерений
-  JK03A без копирования source CSV, ledger и XML. `defs/reference/` – submodules открытых
-  RomRaider Nissan-дефов (Pytrex, a33b; манифест и релевантность – `defs/README.md`).
-- `patches/` – спецификация и патчер immo-off (`immo-off-developer-flag.md`,
-  `apply_immo_off.py`, `tests/test_immo_off.py`), проверка структуры ROM-библиотеки
-  (`tests/test_rom_images_layout.py`) и спецификация контрольных сумм ROM
-  (`rom-selftest-checksum.md`: SUM16, runtime selftest-домены и порядок пересчёта).
-  Производный образ находится в `rom-images/23710-JK08A/mods/immo-off/`. Экспорты
-  Ghidra и Ghidra-проект находятся вне репозитория (`~/tools/ghidra-projects/`,
-  регенерируемы).
+- `rom-images/` - ROM dumps (`*.bin`): a VQ37VHR homolog pair from the RomRaider
+  forum (SH7058 USDM / SH7059 JDM), donor `JK03A`, the owned target `JK08A`
+  (VQ25HR exact-code pair with different calibration/config), the owned
+  bench-ECU dump `JK00D` (VQ35HR, SH7058), and derived image
+  `1JK08A-20260727-immo-off.bin`. Each part number has its own
+  `23710-XXXXX` directory; modifications live under `mods/<short-desc>/`. These
+  files are versioned. The `rom-images/README.md` manifest records SHA-256,
+  part number, identification, and provenance. A dump is identified by SHA-256.
+- `refs/` - external datasheets and manuals (Renesas SH7059 hardware manual,
+  PCMflash module list, Bosch LSU 4.9, NERS, MoTeC M150, UpRev), plus the
+  NissanECU RE wiki mirror under `refs/nissanecu-wiki/`. Original PDFs,
+  MarkItDown conversions (`*.md`), and `refs/README.md` are versioned.
+- `tools/` - reverse-engineering infrastructure: `ghidra/` contains Java
+  extractors, `headless-analyze.sh`, and `symbols.csv`; `memgraph/` contains the
+  Memgraph MAGE `docker-compose.yml` and `load_*.py` loaders;
+  `maps/build_tracker.py` builds the ledger; `mapkit/emit_def.py` generates the
+  definition. `map-flag-pipeline.md` specifies the map pipeline, and `README.md`
+  records versions, ports, and commands. Ghidra, GhydraMCP, and Ghidra projects
+  remain outside Git.
+- `AGENTS.md` - this file.
+- `.gitignore` - ignores operating-system debris, scratch data, and regenerable
+  Ghidra/Memgraph caches. Content artifacts such as ROMs, datasheets,
+  definitions, and mirrors are versioned.
+- `defs/` - table definitions. `JK08A.*` is the only live annotation set for the
+  exact-code pair. `rom-inheritance.toml` projects it onto a separate JK03A
+  measurement layer without copying source CSV, ledger, or XML files.
+  `defs/reference/` contains submodules with public RomRaider Nissan definitions
+  (Pytrex and a33b); their manifest and relevance are in `defs/README.md`.
+- `patches/` - the immo-off specification and patcher
+  (`immo-off-developer-flag.md`, `apply_immo_off.py`,
+  `tests/test_immo_off.py`), the ROM-library layout test
+  (`tests/test_rom_images_layout.py`), and the ROM checksum specification
+  (`rom-selftest-checksum.md`, covering SUM16, runtime self-test domains, and
+  recalculation order). The derived image is under
+  `rom-images/23710-JK08A/mods/immo-off/`. Ghidra exports and the Ghidra project
+  are regenerable and remain outside the repository under
+  `~/tools/ghidra-projects/`.
 
-## Конвенции
+## Conventions
 
-- Язык: русский, техническая точность, без изобретения фактов. Плохо переводимые
-  термины – латиницей (например `firmware`, `checksum`, `part #`).
-- Тексты декларативны: описывают состояние, а не ход работы над ним.
-- Не пушить без явной просьбы.
+- Repository language: English, with technical precision and no invented facts.
+  Terms that are more precise in their original form remain untranslated.
+- Obsidian vault language: Russian.
+- Text describes the current state declaratively rather than narrating the work
+  that produced it.
+- Do not push without an explicit user request.

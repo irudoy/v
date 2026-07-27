@@ -1,8 +1,8 @@
 export const meta = {
   name: 'vq-caller-score',
-  description: 'Оценить соответствие двух назначенных semantics JK03A',
+  description: 'Score equivalence between two assigned JK03A semantics',
   phases: [
-    { title: 'Score', detail: 'Оценить один opaque candidate относительно reference semantics', model: 'claude-opus-4-8' },
+    { title: 'Score', detail: 'Score one opaque candidate against reference semantics', model: 'claude-opus-4-8' },
   ],
 }
 

@@ -1,82 +1,84 @@
-// Запросы к графу: каталог, единица массового прохода, центральность, ворота.
+// Graph queries: catalog, batch-pass unit, centrality, and gates.
 //
-// Файл - каталог, а не скрипт: запросы берутся отсюда поштучно. Он существует затем,
-// чтобы числа раздела 11 спеки (tools/map-flag-pipeline.md) считались воспроизводимо, а
-// не собирались в scratchpad заново на каждый прогон: они - ворота регрессии, и прогон,
-// снизивший метрику, есть провал ворот, а не новая норма. Метрика, посчитанная разово и
-// невоспроизводимо, воротами не работает.
+// This file is a catalog rather than a script; run queries individually. It makes the
+// section 11 specification metrics (tools/map-flag-pipeline.md) reproducible instead of
+// rebuilding them in a scratchpad for every run. They are regression gates: a run that
+// lowers a metric fails the gate rather than establishing a new baseline. A one-off,
+// irreproducible metric cannot serve as a gate.
 //
-// Якорь при метрике - её значение на JK03A на момент закрытия Stage 4. Он для сверки, а
-// не источник: источник - граф, и расхождение запроса с якорем означает, что изменился
-// граф (тогда правится якорь в разделе 11) либо запрос (тогда правится он).
+// A metric anchor is its JK03A value when Stage 4 closed. It is a cross-check rather than
+// a source: the graph is the source. A query differing from its anchor means either the
+// graph changed, requiring an anchor update in section 11, or the query changed and needs
+// correction.
 //
-// Параметр $rom - метка образа в графе (реестр rom-images/roms.csv). В графе два ROM
-// (JK03A размечен, 1ND0A - только :Func и :Reg), и запрос без фильтра по rom считает по
-// обоим.
+// Parameter $rom is the image label in the graph (rom-images/roms.csv registry). The graph
+// contains two ROMs (JK03A is annotated; 1ND0A has only :Func and :Reg). A query without a
+// ROM filter counts both.
 //
 // mgconsole:  :param rom "JK03A";
-// драйвер:    session.run(q, rom="JK03A")
-// mcp-memgraph run_query параметров не принимает - подставить метку в текст.
+// driver:     session.run(q, rom="JK03A")
+// mcp-memgraph run_query accepts no parameters; substitute the label into query text.
 //
-// ПРОЕКЦИЯ ОБЯЗАТЕЛЬНА для алгоритмов MAGE (раздел 8.2). Алгоритм без аргумента считает
-// по всему storage, где :USES (78k рёбер) доминирует над :CALLS (6k), а :Reg связывает
-// любые две функции, тронувшие общий адрес: сырой pagerank.get() выводит в топ
-// RAM-регистры вместо кода, community_detection.get() схлопывает граф в мегакластер.
-// Аналитические инструменты MCP (get_page_rank, get_betweenness_centrality) считают по
-// всему storage - для этих запросов брать run_query с project().
+// A PROJECTION IS MANDATORY for MAGE algorithms (section 8.2). An algorithm without an
+// argument uses all storage, where :USES (78k relationships) dominates :CALLS (6k) and
+// :Reg connects any two functions touching a shared address. Raw pagerank.get() ranks RAM
+// registers above code, while community_detection.get() collapses the graph into one
+// megacluster. MCP analytical tools (get_page_rank, get_betweenness_centrality) operate on
+// all storage; use run_query with project() for these queries.
 
 
 // ════════════════════════════════════════════════════════════════════════════════════
-// Раздел 7. Каталог
+// Section 7. Catalog
 // ════════════════════════════════════════════════════════════════════════════════════
 
-// Stage 2: каталог аксессоров одного ядра. Каталог - запрос к графу, а не обход CSV.
-// $kernel: 00026944 | 00026984 | 00026b84 | ... (13 движков, см. :Interp {role:'kernel'})
+// Stage 2: accessor catalog for one core. The catalog is a graph query, not CSV traversal.
+// $kernel: 00026944 | 00026984 | 00026b84 | ... (13 engines; see :Interp {role:'kernel'})
 MATCH (a:Func {rom:$rom})-[x:ACCESSES]->(m:Map {rom:$rom})-[:VIA]->(w:Interp {role:'wrapper'})
 MATCH (w)-[:KERNEL]->(:Interp {role:'kernel', addr:$kernel})
 RETURN a.addr AS accessor, w.width AS width, w.height AS height,
        m.addr AS table, x.callsite AS site
 ORDER BY w.width DESC, table;
 
-// Открытая работа разбора: candidate с пустой семантикой. Это и есть worklist sweep'а.
-// Якорь: 377 из 439.
+// Open analysis work: candidate maps with empty semantics. This is the sweep worklist.
+// Anchor: 377 of 439.
 MATCH (m:Map {rom:$rom})
 WHERE m.confidence = 'candidate' AND m.semantics = ''
 RETURN m.addr AS table, m.family AS family, m.width AS width, m.height AS height,
        m.storagetype AS storagetype, m.vmin AS vmin, m.vmax AS vmax
 ORDER BY m.width DESC, table;
 
-// Плоские карты: одно значение на всю таблицу. Разбора стоят иначе, чем поверхность, и
-// чаще кончаются ролью dead либо порогом. Сплошь 0xFF по форме не заключается: признак
-// один и тот же у незапрограммированной флеши и у насыщенного предела - различает трейс.
-// Якорь: 162 плоских, из них 18 сплошь 0xFF/0xFFFF.
+// Flat maps: one value across the entire table. They require different analysis from a
+// surface and more often end with a dead or threshold role. Do not infer all-0xFF meaning
+// from shape because unprogrammed flash and a saturated limit look identical; a trace
+// distinguishes them. Anchor: 162 flat maps, 18 entirely 0xFF/0xFFFF.
 MATCH (m:Map {rom:$rom})
 WHERE m.vmin = m.vmax
 RETURN m.addr AS table, m.width AS width, m.height AS height, m.storagetype AS storagetype,
        m.vmin AS value, m.confidence AS confidence, m.semantics AS semantics
 ORDER BY value DESC, table;
 
-// Сайты с невыбранной базой (kind=sp): декомпилятор операнд не свернул, значение снял
-// линейный резерв, и снятое - один элемент множества, а не факт. База там задана
-// ветвлением. Полный набор - вход Stage 6, где ветвление становится :Flag{role:'selector'}.
-// Якорь: 15 проецированных доступов по базе; в переписи 16 строк из-за полного дубля.
+// Sites with an unresolved base (kind=sp): the decompiler did not reduce the operand and
+// linear fallback recovered one set member rather than a fact. Branching defines the base.
+// The complete set feeds Stage 6, where branching becomes :Flag{role:'selector'}.
+// Anchor: 15 projected base accesses; 16 census rows due to one full duplicate.
 MATCH (a:Func {rom:$rom})-[x:ACCESSES]->(m:Map {rom:$rom})
 WHERE x.kind = 'sp'
 RETURN a.addr AS accessor, x.callsite AS site, m.addr AS table, x.r4 AS r4,
        x.kind5 AS kind5, x.kind6 AS kind6
 ORDER BY accessor, site;
 
-// Оси на резерве (уровень pattern): называет их только backtrack, и на осях он ошибается
-// так же, как на базах. Ворота дефа их не пропускают. Якорь: 14 из 229, среди них 0x8000 -
-// стёртая флешь, то есть ось, которой нет.
+// Fallback-only axes (pattern confidence): only backtrack names them and it fails on axes
+// as on bases. The definition gate rejects them. Anchor: 14 of 229, including 0x8000,
+// which is erased flash rather than an axis.
 MATCH (m:Map {rom:$rom})-[e:AXIS_X|AXIS_Y]->(a:Axis {rom:$rom})
 WHERE a.confidence = 'pattern'
 RETURN a.addr AS axis, a.len AS len, a.storagetype AS storagetype,
        a.monotonic AS monotonic, collect(DISTINCT m.addr) AS tables
 ORDER BY axis;
 
-// Общие оси: одна ось на нескольких картах. Ключ - содержимое, а не адрес: точки лежат в
-// узле целиком, и одинаковые оси сходятся сравнением списков без обращения к образу.
+// Shared axes: one axis used by several maps. Contents rather than address form the key.
+// Nodes contain every point, so identical axes converge by list comparison without reading
+// the image.
 MATCH (m:Map {rom:$rom})-[:AXIS_X|AXIS_Y]->(a:Axis {rom:$rom})
 WITH a.values AS values, collect(DISTINCT a.addr) AS axes,
      collect(DISTINCT a.storagetype) AS storagetypes,
@@ -86,8 +88,8 @@ RETURN axes, size(axes) AS n_axes, storagetypes,
        size(tables) AS n_tables, tables, values
 ORDER BY n_tables DESC, axes;
 
-// Одинаковое содержимое у разных карт: сходятся хешем (значений карт в графе нет - 256
-// ячеек в узле были бы содержимым образа, переписанным туда).
+// Identical contents across maps converge by hash. Map values are absent from the graph
+// because placing 256 cells on a node would duplicate image contents.
 MATCH (m:Map {rom:$rom})
 WITH m.values_hash AS h, m.width AS width, m.height AS height,
      m.storagetype AS storagetype, collect(m.addr) AS tables
@@ -97,15 +99,15 @@ ORDER BY n DESC, values_hash, width, height, storagetype;
 
 
 // ════════════════════════════════════════════════════════════════════════════════════
-// Раздел 8.4. Единица массового прохода - компонента, а не карта
+// Section 8.4. The batch-pass unit is a component, not a map
 // ════════════════════════════════════════════════════════════════════════════════════
 
-// Связные компоненты двудольного графа "аксессор -> карта" (контракт - tools/map-sweep.md,
-// раздел 1). Компоненты независимы по построению: две не делят ни карту, ни аксессор,
-// поэтому агенты не конкурируют за узел и не спорят об одном факте.
+// Connected components of the bipartite "accessor -> map" graph
+// (contract: section 1 of tools/map-sweep.md). Components are independent by construction:
+// no two share a map or accessor, so workers do not compete for a node or one fact.
 //
-// Список компонент нигде не записан: граф меняется разметкой, и записанный список стал бы
-// вторым источником правды (P5). Якорь: 171 компонента, 439 карт, 230 аксессоров.
+// No component list is stored because annotation changes the graph and a recorded list
+// would become a second source of truth (P5). Anchor: 171 components, 439 maps, 230 accessors.
 MATCH p=(:Func {rom:$rom})-[:ACCESSES]->(:Map {rom:$rom})
 WITH project(p) AS g
 CALL weakly_connected_components.get(g) YIELD node, component_id
@@ -114,9 +116,10 @@ RETURN component_id,
        [n IN nodes WHERE 'Map'  IN labels(n) | n.addr] AS maps,
        [n IN nodes WHERE 'Func' IN labels(n) | n.addr] AS accessors;
 
-// Распределение компонент по размеру: порядок волн (раздел 7 контракта). Крупные первыми -
-// у них лучшее отношение имён к одному трейсу, и слабости харнесса проявятся там, а не на
-// хвосте. Якорь: 13-21 карта: 3 компоненты; 8-12: 5; 4-7: 23; 2-3: 66; 1: 74.
+// Component size distribution defines wave order (contract section 7). Process large
+// components first: they provide the best ratio of names to one trace, and harness
+// weaknesses appear there rather than at the tail. Anchor: 13-21 maps: 3 components;
+// 8-12: 5; 4-7: 23; 2-3: 66; 1: 74.
 MATCH p=(:Func {rom:$rom})-[:ACCESSES]->(:Map {rom:$rom})
 WITH project(p) AS g
 CALL weakly_connected_components.get(g) YIELD node, component_id
@@ -146,41 +149,42 @@ ORDER BY bucket_order;
 
 
 // ════════════════════════════════════════════════════════════════════════════════════
-// Раздел 8.2. Центральность на проекции call-графа
+// Section 8.2. Centrality on the call-graph projection
 // ════════════════════════════════════════════════════════════════════════════════════
 
-// Stage 1, независимая сверка ядра интерполяции: PageRank выводит библиотеку доступа в
-// топ. Доступна до Stage 3 - косвенные вызовы с константной целью уже дают рёбра :CALLS.
-// Сигнал независим от data-скана FindInterpCore.java, то есть сверка, а не тот же довод.
-// Якорь JK03A: 0x26740, 0x26c78, 0x26370, 0x26944, 0x26388 в топе.
+// Stage 1 independent interpolation-core cross-check: PageRank ranks the access library
+// near the top. It is available before Stage 3 because indirect calls with a constant target
+// already create :CALLS relationships. The signal is independent of the FindInterpCore.java
+// data scan and therefore cross-checks it rather than repeating the same evidence.
+// JK03A anchor: 0x26740, 0x26c78, 0x26370, 0x26944, 0x26388 near the top.
 MATCH p=(:Func {rom:$rom})-[:CALLS]->(:Func {rom:$rom})
 WITH project(p) AS g
 CALL pagerank.get(g) YIELD node, rank
 RETURN node.addr AS addr, node.name AS name, rank
 ORDER BY rank DESC LIMIT 15;
 
-// Betweenness на той же проекции: второй признак hub-слоя.
+// Betweenness on the same projection is a second hub-layer signal.
 MATCH p=(:Func {rom:$rom})-[:CALLS]->(:Func {rom:$rom})
 WITH project(p) AS g
 CALL betweenness_centrality.get(g) YIELD node, betweenness_centrality
 RETURN node.addr AS addr, node.name AS name, betweenness_centrality AS bc
 ORDER BY bc DESC LIMIT 15;
 
-// Дерево вызывателей аксессора (Stage 2): чем выше по дереву, тем ближе подсистема.
+// Accessor caller tree (Stage 2): higher levels are closer to the subsystem.
 MATCH path = (c:Func {rom:$rom})-[:CALLS*1..3]->(a:Func {rom:$rom, addr:$accessor})
 RETURN [n IN nodes(path) | n.addr] AS chain, length(path) AS depth
 ORDER BY depth, chain;
 
 
 // ════════════════════════════════════════════════════════════════════════════════════
-// Раздел 7, Stage 5. Каталоги-эталоны
+// Section 7, Stage 5. Reference catalogs
 // ════════════════════════════════════════════════════════════════════════════════════
 
-// Кандидаты каталога по геометрии. Ключ слаб намеренно: из трёх ключей матча (dims,
-// scale-family, семантика осей) на стороне карты до Stage 4 есть только dims, и матч по
-// одному dims свёл бы 37 двухосных записей с каждой картой dims=2 - это шум, а не
-// подсказка (P6). Геометрия сужает: форму 16x16 несут 16 записей каталога. Реальный
-// различитель - трейс входных RAM-сенсоров осей.
+// Catalog candidates by geometry. The key is intentionally weak: of three match keys
+// (dims, scale family, axis semantics), only dims exists on the map side before Stage 4.
+// Matching on dims alone would connect 37 two-axis entries to every dims=2 map, producing
+// noise rather than a clue (P6). Geometry narrows the set: 16 catalog entries have a 16x16
+// shape. A trace of axis input RAM sensors is the actual discriminator.
 MATCH (m:Map {rom:$rom}), (e:A2LEntry {family:'HR'})
 WHERE e.dims = m.dims
   AND e.shape = CASE WHEN m.height IS NULL THEN '1D-' + toString(m.width)
@@ -189,9 +193,10 @@ RETURN m.addr AS table, m.vmin AS vmin, m.vmax AS vmax, e.shape AS shape,
        collect(e.name) AS candidates
 ORDER BY table;
 
-// Схождение словарей: concept'ы, покрытые обоими вендорами. Соединяет словари свойство
-// concept, а не имя: имена вербатим, и два словаря называют одно разными словами
-// ("BFS Multiplier (K-Factor)" против "K - Fuel Multiplier"). Якорь: 27 из 49.
+// Vocabulary convergence: concepts covered by both vendors. The concept property links
+// vocabularies rather than name because names remain verbatim and the two vocabularies use
+// different terms for one entity ("BFS Multiplier (K-Factor)" versus
+// "K - Fuel Multiplier"). Anchor: 27 of 49.
 MATCH (e:VendorEntry {family:'HR'}) WHERE e.concept <> ''
 WITH e.concept AS concept, collect(DISTINCT e.vendor) AS vendors,
      collect(DISTINCT e.name) AS names
@@ -199,193 +204,194 @@ WHERE size(vendors) > 1
 RETURN concept, vendors, names
 ORDER BY concept;
 
-// Заводские записи вендорских словарей. origin=factory обязателен для разметки стокового
-// ROM: 128 записей из 371 заводскими не являются - 126 описывают патчи самих вендоров
-// (RaceROM у EcuTek, ARC у UpRev), то есть чужой код, которого в стоке нет. Матч стоковой
-// карты к patch-записи был бы не слабой подсказкой, а неверной. Метка группы для фильтра
-// непригодна: Rev Limit Per Gear Mode1-4 лежит под Limiters рядом с заводскими.
+// Factory entries in vendor vocabularies. origin=factory is mandatory for stock ROM
+// annotation. Of 371 entries, 128 are not factory; 126 describe vendor patches
+// (EcuTek RaceROM or UpRev ARC), which are external code absent from stock. Matching a
+// stock map to a patch entry would be wrong rather than merely weak evidence. Group labels
+// cannot filter them: Rev Limit Per Gear Mode1-4 sits under Limiters beside factory entries.
 MATCH (e:VendorEntry {family:'HR', origin:'factory'})
 RETURN e.vendor AS vendor, e.name AS name, e.group AS grp, e.dims AS dims,
        e.axis_x AS axis_x, e.axis_y AS axis_y, e.concept AS concept
 ORDER BY vendor, name;
 
-// Документированные дефолты - единственный ключ каталога, работающий до Stage 3: ни
-// резолвнутых операндов, ни семантики осей он не требует, ищется прямо в образе.
-// Само совпадение значения даёт pattern, а не candidate: чем короче число, тем чаще оно
-// встретится случайно. До candidate поднимает гомологичная сигнатура блока либо трейс.
-// Поиск значения в дампе - вне Cypher: образа в графе нет (tools/mapkit/rom.py, scan()).
-// Якорь: 22 факта kind=const, найден в образе сигнатурой блока 1 (K-Factor 26806).
+// Documented defaults are the only catalog key usable before Stage 3. They require neither
+// resolved operands nor axis semantics and can be searched directly in the image. A value
+// match alone gives pattern rather than candidate confidence: shorter numbers collide more
+// often by chance. A homologous block signature or trace promotes it to candidate. Dump
+// value search lies outside Cypher because the image is absent from the graph
+// (tools/mapkit/rom.py, scan()). Anchor: 22 kind=const facts; one found in the image through
+// a block signature (K-Factor 26806).
 MATCH (f:VendorFact {family:'HR', kind:'const'})
 RETURN f.vendor AS vendor, f.subject AS subject, f.value AS value, f.units AS units,
        f.applies_to AS applies_to, f.anchor AS anchor, f.statement AS statement
 ORDER BY subject;
 
-// Границы применимости словарей. По умолчанию они уже: EcuTek документирует VQ37VHR
-// (370Z, VVEL), донорский JK03A - VQ25HR без VVEL. Группа VVEL Valve Duration к JK03A
-// неприменима вовсе, VTC Valve Advance применима.
-// Якорь: vq37vhr=78, nissan=41, hr=18, racerom=1.
+// Vocabulary applicability boundaries are narrower by default. EcuTek documents VQ37VHR
+// (370Z, VVEL), while donor JK03A is VQ25HR without VVEL. VVEL Valve Duration does not
+// apply to JK03A at all; VTC Valve Advance does.
+// Anchor: vq37vhr=78, nissan=41, hr=18, racerom=1.
 MATCH (f:VendorFact {family:'HR'})
 RETURN f.applies_to AS applies_to, f.kind AS kind, count(*) AS facts
 ORDER BY applies_to, kind;
 
 
 // ════════════════════════════════════════════════════════════════════════════════════
-// Раздел 11. Структурные ворота графа
+// Section 11. Structural graph gates
 // ════════════════════════════════════════════════════════════════════════════════════
 
-// Метрики, считаемые только из текущего графа. Exact expected-vs-actual для :RESTS_ON,
-// effective confidence, grounding и SCC выполняет provenance_report.py: Cypher не читает
-// канонические CSV и потому не может доказать полноту их проекции.
+// Metrics computed only from the current graph. provenance_report.py performs exact
+// expected-versus-actual checks for :RESTS_ON, effective confidence, grounding, and SCCs.
+// Cypher does not read canonical CSV files and therefore cannot prove projection completeness.
 //
-// Здесь не все метрики раздела 11: якоря вендоров ищутся в образе, которого в графе нет
-// (tools/mapkit/rom.py, scan()), и в этот запрос не входят.
+// This query does not contain every section 11 metric. Vendor anchors are searched in an
+// image absent from the graph (tools/mapkit/rom.py, scan()) and are omitted here.
 //
-// Считать НАДО через count(CASE WHEN ... THEN 1 END), а не через WHERE + count(*):
-// WHERE отсеивает строки до агрегата, и метрика, равная нулю, возвращает не "0", а ноль
-// строк - то есть исчезает из таблицы ровно тогда, когда ворота пройдены. Читалось бы это
-// как "не измерено", и отличить пройденную метрику от сломанного запроса стало бы нельзя.
-// Форма ниже всегда даёт строку на метрику.
+// Count with count(CASE WHEN ... THEN 1 END), not WHERE + count(*). WHERE removes rows
+// before aggregation, so a zero-valued metric returns zero rows rather than "0" and
+// disappears exactly when the gate passes. That would look like "not measured" and make a
+// passing metric indistinguishable from a broken query. The form below always returns one
+// row per metric.
 MATCH (:Func {rom:$rom})-[r:ACCESSES]->()
 WITH count(CASE WHEN r.r4 <> '' THEN 1 END) AS resolved, count(*) AS sites
-RETURN 'Резолюция операндов' AS metric,
+RETURN 'Operand resolution' AS metric,
        toString(resolved) + '/' + toString(sites) AS fact,
-       '583/586 (99.5%)' AS anchor, '>= 95%, 0 молча потерянных' AS gate
+       '583/586 (99.5%)' AS anchor, '>= 95%, zero silently lost' AS gate
 UNION ALL
 MATCH (:Func {rom:$rom})-[r:ACCESSES]->()
 WITH count(CASE WHEN r.verdict = 'conflict' THEN 1 END) AS n
-RETURN 'Латентный брак каталога (bt != df)' AS metric,
+RETURN 'Latent catalog defects (bt != df)' AS metric,
        toString(n) AS fact,
-       '14, все разобраны' AS anchor,
-       'все разобраны' AS gate
+       '14, all analyzed' AS anchor,
+       'all analyzed' AS gate
 UNION ALL
 MATCH (:Func {rom:$rom})-[r:ACCESSES]->()
 WITH count(CASE WHEN r.verdict = 'bt_only' THEN 1 END) AS n
-RETURN 'Неухудшение vs backtrack' AS metric,
+RETURN 'No regression versus backtrack' AS metric,
        toString(n) AS fact,
-       '1, разобран (0x56cd8)' AS anchor,
-       'все разобраны' AS gate
+       '1, analyzed (0x56cd8)' AS anchor,
+       'all analyzed' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
-RETURN 'Полнота каталога (:Map в графе)' AS metric,
+RETURN 'Catalog completeness (:Map in graph)' AS metric,
        toString(count(*)) AS fact,
-       '439 из 441' AS anchor,
-       'все :Map в графе, вне - 2, за Stage 6' AS gate
+       '439 of 441' AS anchor,
+       'all :Map nodes in graph; two outside belong to Stage 6' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 WITH count(CASE WHEN m.role = 'table' AND m.semantics <> '' AND m.scale_expr <> ''
                  AND m.confidence IN ['candidate', 'code', 'silicon'] THEN 1 END) AS n
-RETURN 'Ворота дефа: выпускается таблиц' AS metric,
+RETURN 'Definition gate: emitted tables' AS metric,
        toString(n) AS fact,
        '20' AS anchor,
-       'растёт с разбором' AS gate
+       'grows with analysis' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 WITH count(CASE WHEN m.role = 'table' AND m.semantics <> '' AND m.scale_expr <> ''
                  AND m.confidence = 'code' THEN 1 END) AS n
-RETURN 'Ворота дефа: из них активных (code)' AS metric,
+RETURN 'Definition gate: active subset (code)' AS metric,
        toString(n) AS fact,
        '18' AS anchor,
-       'активной эмитится только code' AS gate
+       'only code is emitted as active' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 WITH count(CASE WHEN m.role = 'table' AND m.semantics <> '' AND m.scale_expr <> ''
                  AND m.confidence = 'candidate' THEN 1 END) AS n
-RETURN 'Ворота дефа: помечено (candidate)' AS metric,
+RETURN 'Definition gate: marked (candidate)' AS metric,
        toString(n) AS fact,
        '2' AS anchor,
-       'суффикс (candidate) в категории' AS gate
+       '(candidate) category suffix' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 WITH count(CASE WHEN m.storagetype IS NULL OR m.storagetype = '' THEN 1 END) AS n
-RETURN 'Геометрия каталога: :Map без storagetype' AS metric,
+RETURN 'Catalog geometry: :Map without storagetype' AS metric,
        toString(n) AS fact,
        '0' AS anchor,
-       '0 - эмиссия без него невозможна' AS gate
+       '0 - emission is impossible without it' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 WITH count(CASE WHEN m.role = 'table' AND m.semantics <> '' AND m.scale_expr = ''
                 THEN 1 END) AS n
-RETURN 'Читаемость: семантика без шкалы' AS metric,
+RETURN 'Interpretability: semantics without scaling' AS metric,
        toString(n) AS fact,
-       '9, в деф не входят' AS anchor,
-       '0 без шкалы' AS gate
+       '9, excluded from definition' AS anchor,
+       '0 without scaling' AS gate
 UNION ALL
 MATCH (a:Axis {rom:$rom})
 WITH count(CASE WHEN a.confidence = 'pattern' THEN 1 END) AS n, count(*) AS t
-RETURN 'Оси на резерве (уровень pattern)' AS metric,
+RETURN 'Fallback-only axes (pattern confidence)' AS metric,
        toString(n) + '/' + toString(t) AS fact,
-       '14 из 229' AS anchor,
-       '0, разбирает Stage 6' AS gate
+       '14 of 229' AS anchor,
+       '0, handled by Stage 6' AS gate
 UNION ALL
 MATCH (a:Axis {rom:$rom})
 WITH count(CASE WHEN a.monotonic = false THEN 1 END) AS n, count(*) AS t
-RETURN 'Ось против кода ядра (monotonic=false)' AS metric,
+RETURN 'Axis conflicts with core code (monotonic=false)' AS metric,
        toString(n) + '/' + toString(t) AS fact,
-       '1 из 229 (0x119b2)' AS anchor,
+       '1 of 229 (0x119b2)' AS anchor,
        '0' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 WITH count(CASE WHEN m.values_hash IS NULL OR m.values_hash = '' THEN 1 END) AS n,
      count(*) AS t
-RETURN 'Слой измерен: :Map без значений' AS metric,
+RETURN 'Layer measurement: :Map without values' AS metric,
        toString(n) + '/' + toString(t) AS fact,
-       '0 из 439' AS anchor,
-       '0, промах чтения останавливает загрузку' AS gate
+       '0 of 439' AS anchor,
+       '0, a read miss stops loading' AS gate
 UNION ALL
 MATCH (a:Axis {rom:$rom})
 WITH count(CASE WHEN a.values IS NULL OR size(a.values) = 0 THEN 1 END) AS n,
      count(*) AS t
-RETURN 'Слой измерен: :Axis без значений' AS metric,
+RETURN 'Layer measurement: :Axis without values' AS metric,
        toString(n) + '/' + toString(t) AS fact,
-       '0 из 229' AS anchor,
-       '0, промах чтения останавливает загрузку' AS gate
+       '0 of 229' AS anchor,
+       '0, a read miss stops loading' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom}) WHERE m.confidence IN ['code', 'silicon']
 WITH count(CASE WHEN coalesce(m.evidence, '') = '' THEN 1 END) AS debt,
      count(*) AS total
-RETURN 'Провенанс Map.confidence code/silicon' AS metric,
+RETURN 'Provenance of Map.confidence code/silicon' AS metric,
        toString(debt) + '/' + toString(total) AS fact,
-       '0 после backfill; frozen долг 52/52' AS anchor,
-       '0 без evidence' AS gate
+       '0 after backfill; frozen debt 52/52' AS anchor,
+       '0 without evidence' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom}) WHERE m.scale_conf IN ['code', 'silicon']
 WITH count(CASE WHEN coalesce(m.scale_evidence, '') = '' THEN 1 END) AS debt,
      count(*) AS total
-RETURN 'Провенанс Map.scale_conf code/silicon' AS metric,
+RETURN 'Provenance of Map.scale_conf code/silicon' AS metric,
        toString(debt) + '/' + toString(total) AS fact,
-       '0 после backfill; frozen долг 20/20' AS anchor,
-       '0 без scale_evidence' AS gate
+       '0 after backfill; frozen debt 20/20' AS anchor,
+       '0 without scale_evidence' AS gate
 UNION ALL
 MATCH (a:Axis {rom:$rom}) WHERE a.scale_conf IN ['code', 'silicon']
 WITH count(CASE WHEN coalesce(a.scale_evidence, '') = '' THEN 1 END) AS debt,
      count(*) AS total
-RETURN 'Провенанс Axis.scale_conf code/silicon' AS metric,
+RETURN 'Provenance of Axis.scale_conf code/silicon' AS metric,
        toString(debt) + '/' + toString(total) AS fact,
-       '0 после backfill; frozen долг 6/6' AS anchor,
-       '0 без scale_evidence' AS gate
+       '0 after backfill; frozen debt 6/6' AS anchor,
+       '0 without scale_evidence' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 OPTIONAL MATCH (m)-[x:MATCHES]->(:A2LEntry)
 OPTIONAL MATCH (m)-[h:HOMOLOG]->(:Map)
 WITH m, count(x) + count(h) AS links
 WITH count(CASE WHEN links > 0 THEN 1 END) AS linked, count(*) AS total
-RETURN 'Покрытие идентичности (:MATCHES/:HOMOLOG)' AS metric,
+RETURN 'Identity coverage (:MATCHES/:HOMOLOG)' AS metric,
        toString(linked) + '/' + toString(total) AS fact,
        '0' AS anchor,
-       'подсказка, растёт' AS gate
+       'advisory, grows' AS gate
 UNION ALL
 MATCH (m:Map {rom:$rom})
 WITH count(CASE WHEN m.confidence = 'silicon' THEN 1 END) AS n,
      count(CASE WHEN m.confidence = 'code' THEN 1 END) AS c
-RETURN 'Верификация: silicon из code' AS metric,
+RETURN 'Verification: silicon from code' AS metric,
        toString(n) + '/' + toString(c) AS fact,
-       'точечно' AS anchor,
-       'по мере стенда' AS gate;
+       'selective' AS anchor,
+       'as bench testing progresses' AS gate;
 
 
-// ── Claim-specific провенанс ────────────────────────────────────────────────────────
+// ── Claim-specific provenance ───────────────────────────────────────────────────────
 
-// Legacy либо неполное ребро. Якорь после ingest: 0.
+// Legacy or incomplete relationship. Anchor after ingestion: 0.
 MATCH (source)-[e:RESTS_ON]->(target)
 WHERE source.rom = $rom AND target.rom = $rom
   AND (e.source_prop IS NULL OR e.source_prop = ''
@@ -396,7 +402,7 @@ RETURN labels(source) AS source_label, source.addr AS source,
        labels(target) AS target_label, target.addr AS target,
        properties(e) AS edge;
 
-// Состав проекции по типам заявок. Сумма для JK03A после ingest: 2759.
+// Projection composition by claim type. JK03A total after ingestion: 2759.
 MATCH (source)-[e:RESTS_ON]->(target)
 WHERE source.rom = $rom AND target.rom = $rom
 RETURN labels(source) AS source_label, e.source_prop AS source_prop,
@@ -404,9 +410,9 @@ RETURN labels(source) AS source_label, e.source_prop AS source_prop,
        e.target_prop AS target_prop, count(*) AS edges
 ORDER BY source_label, source_prop, role, target_label, target_prop;
 
-// Прямой reverse impact одной claim identity. Транзитивный обход должен согласовывать
-// target_prop каждого следующего ребра с source_prop предыдущего; cycle-safe реализация
-// находится в provenance.py.
+// Direct reverse impact of one claim identity. A transitive traversal must match
+// target_prop of each following relationship to source_prop of the previous one.
+// provenance.py contains the cycle-safe implementation.
 MATCH (dependent)-[e:RESTS_ON]->(changed)
 WHERE changed.rom = $rom AND changed.addr = $claim_addr
   AND $claim_label IN labels(changed) AND e.target_prop = $claim_prop
@@ -414,43 +420,45 @@ RETURN labels(dependent) AS dependent_label, dependent.addr AS dependent,
        e.source_prop AS dependent_prop, e.role AS role, e.ref AS ref
 ORDER BY dependent_label, dependent, dependent_prop;
 
-// Exact projection, weakest path, транзитивный reverse impact и SCC запускаются так:
+// Run exact projection, weakest path, transitive reverse impact, and SCC analysis with:
 //   provenance_report.py audit <rom>
 //   provenance_report.py weakest <rom> <label> <addr> <prop>
 //   provenance_report.py impact <rom> <label> <addr> <prop>
-// Python-модель сворачивает SCC в DAG и не позволяет циклу подтвердить себя. Cypher видит
-// только узлы сущностей, поэтому без отдельного claim-node смешал бы свойства одного адреса.
+// The Python model condenses SCCs into a DAG and prevents a cycle from substantiating
+// itself. Cypher sees only entity nodes and would mix properties at one address without
+// separate claim nodes.
 
 
-// ── Разбор провала ворот: метрики поштучно ──────────────────────────────────────────
+// ── Gate-failure analysis: individual metrics ───────────────────────────────────────
 
-// Сайты, где перепись резолвера разошлась с эталоном. Якорь: 14, все разобраны -
-// 6 базовых (эталон неверен), 3 недостижимая ветка и остаточные регистры,
-// 5 константа mov.w, прочитанная эталоном как 32-битная. Ещё четыре прежних расхождения
-// исчезают как класс после разворота операнда-множества: это разные ветви одного селектора.
+// Sites where the resolver census differs from its baseline. Anchor: 14, all analyzed:
+// six base conflicts where the baseline is wrong, three unreachable-branch and residual
+// register cases, and five mov.w constants read as 32-bit by the baseline. Four earlier
+// conflicts disappear as a class after expanding set-valued operands because they are
+// different branches of one selector.
 MATCH (a:Func {rom:$rom})-[x:ACCESSES]->(m:Map {rom:$rom})
 WHERE x.verdict = 'conflict'
 RETURN a.addr AS accessor, x.callsite AS site, m.addr AS table, x.r4 AS r4,
        x.base AS base, x.kind AS kind
 ORDER BY site;
 
-// Карта, читаемая входами разной формы: форма, заданная двумя несовместимыми способами.
-// Геометрия входа делает геометрию карты однозначной, и загрузчик держит это фактом.
-// Якорь: 0 - ни одна карта не читается двумя входами.
+// A map read by entries with different shapes has its shape defined in two incompatible
+// ways. Entry geometry makes map geometry unambiguous, and the loader enforces this fact.
+// Anchor: 0; no map is read through two entry shapes.
 MATCH (m:Map {rom:$rom})-[:VIA]->(w:Interp {rom:$rom})
 WITH m, collect(DISTINCT w.addr) AS wrappers,
      collect(DISTINCT toString(w.width) + 'x' + coalesce(toString(w.height), '-')) AS shapes
 WHERE size(shapes) > 1
 RETURN m.addr AS table, wrappers, shapes;
 
-// Непересечение цензов по таблицам: общая таблица у двух семейств доступа есть находка, а
-// не разновидность нормы. Якорь: 0 - семейства не пересекаются ни одной таблицей.
+// Table-census disjointness: a table shared by two access families is a finding rather
+// than normal variation. Anchor: 0; the families share no table.
 MATCH (m:Map {rom:$rom})
 WITH m.family AS family, collect(m.addr) AS tables
 RETURN family, size(tables) AS n
 ORDER BY family;
 
-// Осиротевшие узлы: карта без входа и аксессора. Якорь: 0.
+// Orphan nodes: a map without an entry or accessor. Anchor: 0.
 MATCH (m:Map {rom:$rom})
 WHERE NOT (m)-[:VIA]->(:Interp) AND NOT (:Func)-[:ACCESSES]->(m)
 RETURN m.addr AS table, m.family AS family, m.confidence AS confidence;

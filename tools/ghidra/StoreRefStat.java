@@ -1,12 +1,13 @@
-// StoreRefStat.java – асимметрия резолва обращений к памяти: сколько инструкций-чтений и
-// инструкций-записей получили ссылку на конкретный адрес, а сколько остались без неё.
+// StoreRefStat.java - memory-access resolution asymmetry: count read and write
+// instructions that received a reference to a concrete address and those that
+// did not.
 //
-// Ребро USES строится из ссылки, а ссылку создаёт распространение константы в базовый
-// регистр. Инструкция без ссылки в графе не видна вовсе, поэтому ячейка может иметь
-// десятки читателей и ни одного писателя не потому, что её не пишут, а потому, что
-// адрес записи не свернулся.
+// A USES edge comes from a reference, which comes from constant propagation into
+// a base register. An instruction without a reference is invisible in the graph.
+// A cell may therefore have dozens of readers and no writer because the write
+// address was not resolved, not because no write exists.
 //
-// Запуск (headless): -postScript StoreRefStat.java
+// Usage (headless): -postScript StoreRefStat.java
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Instruction;

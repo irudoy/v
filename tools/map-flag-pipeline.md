@@ -1,451 +1,464 @@
-# Пайплайн поиска карт и флагов VQ HR
+# VQ HR map and flag discovery pipeline
 
-Спецификация воспроизводимого пайплайна инвентаризации калибровочных таблиц (карт) и
-управляющих флагов в прошивках Nissan/Infiniti HR (Hitachi ECM, Renesas SH7058/59,
-ядро SH-2E). Область – RE-контур репозитория (`~/src/docs/vq`); человеко-ориентированный
-план и база знаний – в Obsidian-vault (см. `AGENTS.md`, "два контура").
+This specification defines a reproducible pipeline for inventorying calibration tables (maps) and
+control flags in Nissan/Infiniti HR firmware for Hitachi ECMs using Renesas SH7058/59 SH-2E
+cores. Its scope is the repository's reverse-engineering track at `~/src/docs/vq`; the
+human-oriented plan and knowledge base remain in the Obsidian vault, as described by the
+two-track model in `AGENTS.md`.
 
-Пайплайн опирается на развёрнутый стек `tools/README.md`: Ghidra 12.1.2 **headless**,
-Memgraph MAGE, драйвер `neo4j` (загрузчики) и MCP-сервер `mcp-memgraph` (чтение графа агентом,
-раздел 8.2). GhydraMCP – опциональный интерактив для live-сессий, требует GUI, вне
-критического пути (раздел 8.4). Спека фиксирует **что стек производит, в каком порядке и по
-каким числовым воротам**, чтобы заменить разовый ручной проход детерминированным потоком с
-единой моделью данных и измеримой эффективностью.
+The pipeline uses the deployed stack documented in `tools/README.md`: headless Ghidra 12.1.2,
+Memgraph MAGE, the `neo4j` driver for loaders, and the `mcp-memgraph` MCP server for agent graph
+access in section 8.2. GhydraMCP is an optional interactive tool for live sessions. It requires a
+GUI and is outside the critical path; see section 8.4. This specification fixes **what the stack
+produces, in what order, and under which numeric gates**, replacing one-off manual passes with a
+deterministic flow, one data model, and measurable effectiveness.
 
-## 1. Тезис
+## 1. Thesis
 
-Граф Memgraph – **система записи** проекта, а не побочный дамп. Ghidra – **экстрактор**
-(headless-скрипты поверх data-flow декомпилятора, не ручной обход листинга). RomRaider-деф и
-ledger каталога – **проекции графа** (деф – плюс слой презентационных оверрайдов), а не
-рукописные источники фактов. Уверенность разметки – **данные с воротами продвижения**
-(`pattern -> candidate -> code -> silicon`), а не пометки в прозе. "Эффективность" –
-**измеримые метрики** (раздел 11), а не оценка на глаз.
+The Memgraph graph is the project's **system of record**, not a side-effect dump. Ghidra is the
+**extractor**, using headless scripts over decompiler data flow rather than manual listing review.
+The RomRaider definition and catalog ledger are **graph projections**, with presentation overrides
+added to the definition, not handwritten fact sources. Annotation confidence is **gated data**
+(`pattern -> candidate -> code -> silicon`), not a prose label. Effectiveness is defined by
+**measured metrics** in section 11 rather than subjective assessment.
 
-Каждый элемент решает названную проблему текущего процесса (раздел 3).
+Every element addresses a named process problem in section 3.
 
-## 2. Определения (по вскрытой механике HR)
+## 2. Definitions from recovered HR mechanics
 
-**Карта (map/table).** Калибровочный массив в ROM, читаемый через стереотипный доступ:
+**Map/table.** A calibration array in ROM read through a stereotyped access path:
 
-- общий **interp-kernel** – лист-функция обратного линейного поиска по оси (`0x26944` в JK03A),
-  достижимый **косвенно** через literal-pool указатель (`mov.l PTR,rN; jsr @rN`);
-- **обёртка** по размерности (16x16, 8x8, 4x4, 1D-16) = поиск на каждую ось + специфичный
-  **finisher** (всё через PTR-слоты). Константа в delay slot вызова поиска – **клэмп**,
-  равный `(точек - 1) * размер элемента оси`: он задаёт и длину оси, и её элемент, и оба
-  снимаются с него. Поиск у осей свой: обёртка держит слот на ось, и слоты бывают разные –
-  `0x262E0` зовёт байтовый `0x26A0C` для `r5` (клэмп 15) и словесный `0x26984` для `r6`
-  (клэмп 30), `0x26660` – ту же пару `0x26BC4`/`0x26B84`. Элемент оси поэтому свойство
-  пары (обёртка, ось), а не ядра: у 2 из 22 двухосных обёрток JK03A он по осям разный;
-- **аксессор** – функция, зовущая обёртку **тоже косвенно** (`mov.l WRAP,r2; jsr @r2`) с
-  `r4`=база таблицы, `r5`/`r6`=указатели осей, `r7`/стек=текущие значения; finisher
-  адресует ячейку `table + idxY + idxX*width`.
+- a shared **interpolation kernel**, a leaf function performing reverse linear axis search
+  (`0x26944` in JK03A), reached **indirectly** through a literal-pool pointer
+  (`mov.l PTR,rN; jsr @rN`);
+- a dimension-specific **wrapper** for shapes such as 16x16, 8x8, 4x4, and 1D-16, consisting of
+  one search per axis plus a specific **finisher**, all reached through pointer slots. The
+  search-call delay-slot constant is a **clamp** equal to
+  `(points - 1) * axis_element_size`. It determines both axis length and element type, and the
+  extractor derives both from it. Each axis has its own search slot, and wrapper slots may differ.
+  `0x262E0` calls byte search `0x26A0C` for `r5`, clamp 15, and word search `0x26984` for `r6`,
+  clamp 30. `0x26660` uses the same pairing through `0x26BC4`/`0x26B84`. Axis element type is
+  therefore a property of the `(wrapper, axis)` pair rather than the kernel. It differs between
+  axes in 2 of the 22 two-axis JK03A wrappers;
+- an **accessor**, a function that also calls the wrapper **indirectly**
+  (`mov.l WRAP,r2; jsr @r2`) with `r4` as table base, `r5`/`r6` as axis pointers, and `r7`/stack
+  as current values. The finisher addresses `table + idxY + idxX*width`.
 
-Косвенность обоих переходов (аксессор -> обёртка, обёртка -> kernel/finisher) – центральный
-факт для резолвера: он обязан работать на `jsr @rN` (CALLIND), а не на прямом вызове
-(раздел 6). Косвенную цель с константой в пуле Ghidra разрешает в ссылку `COMPUTED_CALL`, и
-`getCalledFunctions()` даёт по ней ребро `:CALLS` (JK03A: `0x82c8a -> 0x26320`; у ядра
-`0x26944` – 11 вызывателей-обёрток). Весь ценз ядра `0x26944` – `COMPUTED_CALL` на всех 124
-сайтах: истинно динамических целей в нём нет. Ребро пропадает не от динамики цели, а от
-**разметки вызывателя**: код, куда нет прямых вызовов, Ghidra функциями не размечает, а
-`ExportGraph` перечисляет вызовы по функциям – отсюда обёртки `0x26100` и `0x26230` живые
-(сами зовут ядро), но в графе без вызывателей. Масштаб пробела в JK03A – 38627 инструкций в
-494 участках, включая 17 из 124 сайтов ценза; разметка участков по flow от пролога закрывает
-его целиком (Stage 0, `RecoverFuncs.java`: 353 функции, 1958 -> 2312), и вызыватели у обёрток
-появляются. Тогда в графе отсутствуют не рёбра вызова, а **операнды**: какая таблица и оси
-переданы в `r4/r5/r6` (P2).
+Both transitions are indirect, accessor -> wrapper and wrapper -> kernel/finisher. This is central
+to the resolver, which must handle `jsr @rN` (CALLIND) rather than only direct calls; see section 6.
+Ghidra resolves an indirect target backed by a pool constant into a `COMPUTED_CALL` reference, and
+`getCalledFunctions()` exposes it as a `:CALLS` edge. In JK03A this includes
+`0x82c8a -> 0x26320`, while kernel `0x26944` has 11 wrapper callers. Every one of the 124 sites in
+the `0x26944` kernel census is a `COMPUTED_CALL`; none has a genuinely dynamic target.
 
-Полное описание карты: `{база, ось_X, ось_Y, width, height, storagetype, scaling,
-аксессор, обёртка, kernel, RAM-входы осей, RAM-выход, A2L-идентичность, уверенность}`.
+Edges disappear because of **caller marking**, not target dynamism. Ghidra does not mark code with
+no direct incoming calls as functions, while `ExportGraph` enumerates calls by function. Wrappers
+`0x26100` and `0x26230` are active and call the kernel but initially have no graph callers. In
+JK03A the gap comprises 38,627 instructions in 494 regions, including 17 of 124 census sites.
+Marking regions by flow from a prologue closes the gap completely. Stage 0
+`RecoverFuncs.java` creates 353 functions, increasing the total from 1958 to 2312, and wrapper
+callers appear. What remains missing from the graph is then not call edges but **operands**: which
+table and axes were passed in `r4/r5/r6` (P2).
 
-**Флаг (flag).** Бит или малый скаляр, проверяемый у ветвления и управляющий выбором. Роли:
+A complete map description is `{base, axis_X, axis_Y, width, height, storagetype, scaling,
+accessor, wrapper, kernel, axis_RAM_inputs, RAM_output, A2L_identity, confidence}`.
 
-- **selector** – выбирает одну из карт/осей (`gbr+0x93 bit0` -> Cold/HiOct/HiDet ignition;
-  `0xFFFF246D bit7` -> порог rev-лимитера);
-- **gate** – включает/выключает путь кода. Включает калибровочные гейты (decel-detect
-  `0xFFFF24D2 bit0x10`, `0xFFFF245D bit5`) и immo-класс. У JK03A/JK08A
-  `ROM[0x8725].bit0` гейтит state machine Developer Immobilizer и формирование
-  `0xFFFF4198.bit1` motor inhibit; полная цепочка описана в
-  `patches/immo-off-developer-flag.md`. Состояния registered и Lock являются соседним
-  статусным контуром, а не исполнительным флагом immo-off;
-- **threshold** – ROM-константа-порог сравнения (`0x87FD` дельта нагрузки, `0x8FDC/0x8FDE`
-  обороты отсечки).
+**Flag.** A bit or small scalar tested at a branch to control selection. Roles:
 
-Адресация флага – прямая RAM (`0xFFFFxxxx`), gbr-relative (глобальная структура калибровки)
-или ROM-immediate. gbr-relative флаги и оси резолвятся тем же data-flow, что и операнды
-аксессора (раздел 6).
+- **selector** selects one of several maps or axes, such as `gbr+0x93 bit0` selecting
+  Cold/HiOct/HiDet ignition and `0xFFFF246D bit7` selecting a rev-limiter threshold;
+- **gate** enables or disables a code path. This includes calibration gates such as decel detect
+  at `0xFFFF24D2 bit0x10` and `0xFFFF245D bit5`, plus the immo class. In JK03A/JK08A,
+  `ROM[0x8725].bit0` gates the Developer Immobilizer state machine and generation of
+  `0xFFFF4198.bit1` motor inhibit; `patches/immo-off-developer-flag.md` documents the complete
+  chain. Registered and Lock states belong to an adjacent status path rather than the active
+  immo-off flag;
+- **threshold** is a ROM comparison constant, such as load delta `0x87FD` or fuel-cut speed
+  `0x8FDC/0x8FDE`.
 
-## 3. Проблемы текущего процесса (адресно)
+A flag can use direct RAM addressing (`0xFFFFxxxx`), GBR-relative addressing in the global
+calibration structure, or a ROM immediate. The same data flow that resolves accessor operands also
+resolves GBR-relative flags and axes; see section 6.
 
-| # | Проблема | Корень | Решает |
-|---|----------|--------|--------|
-| P1 | Оси/операнды теряются (18/124 сайта без `r4`, пустые оси) | `MapInventory` снимает только pc-literal линейным обходом 14 инструкций: не отличает достижимую ветку от тупиковой, не сворачивает вычисляемые (`add`) и стековые операнды, не видит сайты вне разметки функций | Раздел 6 (data-flow резолвер) |
-| P2 | Каталог считается вне графа (CSV + scratchpad Python) | граф несёт вызовы, но не операнды: какая таблица/оси переданы в `r4/r5/r6`, рёбрами не выражено (`:Map`/`:Axis` отсутствуют). Косвенные вызовы с константной целью в `:CALLS` есть; выпадают вызыватели вне разметки функций (17/124) | Раздел 5 (рёбра `:ACCESSES`/`:VIA`), Stage 2 |
-| P3 | MAGE-алгоритмы подсистему доступа не локализуют | Louvain – не тот инструмент: библиотека доступа к таблицам есть hub-слой сервисных функций, а не плотная группа (JK03A: её 60 функций размазаны по 4 сообществам, 37 – внутри крупнейшего, где составляют 10%). Ответ даёт центральность на проекции call-графа | Раздел 8.2, Stage 1 (центральность вместо сообществ) |
-| P4 | Инструменты разметки эфемерны | `find_maps`/`ptrscan`/`viz`/`a2l_geom` живут в session-scratchpad, вне git | Раздел 10 (`tools/mapkit/`) |
-| P5 | Два источника правды (notes проза + XML руками), дрейфуют | Находки/уверенность – прозой; деф пишется вручную по прозе | Раздел 5 (граф) + раздел 9 (генератор + оверрайды) |
-| P6 | "pattern != семантика" – урок, а не механизм | Уверенность на глаз; pattern-scan-гипотезы дважды мимо | Раздел 5 (уровни) + раздел 8.4 (ворота) |
-| P7 | Гомология между ROM не используется | Граф мульти-ROM (label `rom`), но homology-джойн не строится | Stage 5, раздел 8.3 |
+## 3. Current process problems
 
-## 4. Архитектура: один граф, два экстрактора, генерируемые выходы
+| # | Problem | Root cause | Resolution |
+|---|---------|------------|------------|
+| P1 | Axes and operands are lost: 18 of 124 sites lack `r4`, and axes are empty | `MapInventory` recovers only PC literals through a linear 14-instruction scan. It cannot distinguish a reachable branch from a dead end, fold computed (`add`) or stack operands, or see sites outside marked functions | Section 6 data-flow resolver |
+| P2 | The catalog is computed outside the graph in CSV and scratchpad Python | The graph contains calls but not operands: edges do not express which table and axes were passed in `r4/r5/r6`, and `:Map`/`:Axis` are absent. Constant-target indirect calls already exist in `:CALLS`, while callers outside marked functions, 17 of 124, are missing | Section 5 `:ACCESSES`/`:VIA` edges and Stage 2 |
+| P3 | MAGE algorithms do not localize the table-access subsystem | Louvain is the wrong tool: the access library is a hub layer of service functions rather than a dense cluster. In JK03A its 60 functions span 4 communities; 37 lie in the largest, where they are only 10%. Centrality on a call-graph projection provides the answer | Section 8.2 and Stage 1 centrality instead of communities |
+| P4 | Annotation tools are ephemeral | `find_maps`, `ptrscan`, `viz`, and `a2l_geom` live in session scratchpads outside git | Section 10 `tools/mapkit/` |
+| P5 | Two drifting truth sources: prose notes and manually edited XML | Findings and confidence live in prose, and prose is manually copied into the definition | Section 5 graph plus section 9 generator and overrides |
+| P6 | "Pattern != semantics" is a lesson rather than a mechanism | Confidence is subjective, and pattern-scan hypotheses have failed twice | Section 5 confidence levels plus section 8.4 gates |
+| P7 | Cross-ROM homology is unused | The graph is multi-ROM through the `rom` label, but no homology join is built | Stage 5 and section 8.3 |
+
+## 4. Architecture: one graph, two extractors, generated outputs
 
 ```
-ROM (.bin) ──import──> Ghidra project (vq-hr)
-    │                     │
-    │     headless extractors (tools/ghidra/*.java)
-    │                     │  funcs/calls/xrefs/accessors/flags CSV
-    │                     ▼
-    │  рукописные ──> Memgraph ◄── каталоги HR (rom-независимы, адресов нет):
-    │  источники     (система записи,     A2L.xml ──> :A2LEntry (форма)
-    │  (git):         мульти-ROM)         refs/vendor/ ──> :VendorEntry,
-    │  interp.csv,      │                       │      :VendorFact (смысл, дефолты)
-    └──значения──>  Cypher + MAGE           генераторы
-  (Stage 4: mapkit   (discovery)               │
-   по roms.csv)         │                      ├─ defs/<source>.maps.csv (ledger)
-                 кандидаты/homology            └─ defs/<source>.xml
-                                                  (+ overrides.toml: презентация)
+ROM (.bin) --import--> Ghidra project (vq-hr)
+    |                       |
+    |       headless extractors (tools/ghidra/*.java)
+    |                       |  funcs/calls/xrefs/accessors/flags CSV
+    |                       v
+    |  handwritten ----> Memgraph <---- HR catalogs (ROM-independent, no addresses):
+    |  sources in git   (system of record,    A2L.xml ----> :A2LEntry (shape)
+    |  interp.csv,       multi-ROM)           refs/vendor/ -> :VendorEntry,
+    |  findings.csv,        |                                  :VendorFact
+    |  axes.csv             |                                  (meaning/defaults)
+    |                       v
+    +-- image values --> Cypher + MAGE ----> generators
+       (Stage 4 mapkit     (discovery)          |
+        through roms.csv)      |                +-> defs/<source>.maps.csv (ledger)
+                          candidates/homology   +-> defs/<source>.xml
+                                                   (+ overrides.toml presentation)
 
-defs/<source>.notes.md – рукописный журнал канонического источника: обоснования фактов
-(листинги, трейсы, доказательства), а не их проекция. В граф не грузится, из графа не
-выпускается. Связь target с source задаёт defs/rom-inheritance.toml.
+defs/<source>.notes.md is the handwritten journal for the canonical source. It contains the
+basis for facts, including listings, traces, and evidence, rather than a projection of the facts.
+It is neither loaded into nor emitted from the graph. defs/rom-inheritance.toml defines the
+target-to-source relation.
 ```
 
-Инварианты:
+Invariants:
 
-- **Факты правятся в канонических источниках, презентация – в
-  `defs/<source>.overrides.toml`.** Источники в git: `defs/<source>.interp.csv`
-  (геометрия входов интерполяции), `defs/<source>.findings.csv` (семантика карты, её
-  единицы, уровень, роль, карты вне моделей доступа), `defs/<source>.axes.csv`
-  (семантика оси и её единицы), `symbols.csv` (имена функций) и
-  `defs/rom-inheritance.toml` (target -> source). Граф – система записи: адреса,
-  геометрия, оси, scaling, RAM-привязки и уровень уверенности сходятся там, но правится
-  он не напрямую – узлы калибровочного слоя загрузчик пересоздаёт, и правка, введённая
-  в граф, не пережила бы прогона. Оверрайды – имена-синонимы, категории, порядок,
-  косметика и ручные добавки вне графа. Ledger и XML генерируются только для ROM с
-  собственным презентационным слоем; прямая правка сгенерированного не персистентна –
-  её перекрывает следующий прогон.
-- **Значения таблиц и осей рукописным источником не объявляются.** Их говорит сам образ, и
-  Stage 4 читает их оттуда каждым прогоном по адресу и форме, которые дала перепись.
-  Выписанное человеком число разошлось бы с образом молча – ошибка, неотличимая в графе от
-  факта, поэтому диапазон, содержимое и монотонность только измеряются.
-- **Журнал `defs/<source>.notes.md` – рукописный и не генерируется.** Он несёт обоснования:
-  листинги, трейсы декомпилятора, доказательства и уроки метода – то, из чего факт выведен.
-  Граф несёт сам факт, поэтому выпуск журнала из графа подменил бы обоснование рендером того,
-  что им обосновано. Читаемая проекция каталога – ledger.
-- **Каждая карта/флаг несёт уровень уверенности и список доказательств** (раздел 5).
-- **Ничего не эмитится активной таблицей ниже уровня `code`**; `candidate` – помеченным.
+- **Edit facts in canonical sources and presentation in
+  `defs/<source>.overrides.toml`.** Git sources are `defs/<source>.interp.csv` for
+  interpolation-entry geometry; `defs/<source>.findings.csv` for map semantics, units,
+  confidence, role, and maps outside access models; `defs/<source>.axes.csv` for axis semantics
+  and units; `symbols.csv` for function names; and `defs/rom-inheritance.toml` for
+  target -> source relationships. The graph is the system of record where addresses, geometry,
+  axes, scaling, RAM bindings, and confidence converge, but it is not edited directly. The loader
+  recreates calibration-layer nodes, so direct changes would not survive a run. Overrides contain
+  aliases, categories, ordering, cosmetic changes, and manual additions outside the graph. Ledger
+  and XML are generated only for a ROM with its own presentation layer. Direct edits to generated
+  output are not persistent and are overwritten by the next run.
+- **Handwritten sources do not declare table or axis values.** The image does. Stage 4 reads values
+  on every run using census addresses and shapes. A handwritten number could silently diverge from
+  the image and appear indistinguishable from fact in the graph, so range, content, and
+  monotonicity are measured only.
+- **`defs/<source>.notes.md` is handwritten and never generated.** It contains the basis for
+  facts: listings, decompiler traces, evidence, and methodological lessons. The graph stores the
+  facts themselves, so generating the journal from the graph would replace evidence with a render
+  of the claims it is meant to support. The ledger is the readable catalog projection.
+- **Every map and flag carries a confidence level and evidence list**; see section 5.
+- **No active table below `code` is emitted**; `candidate` output is explicitly marked.
 
-## 5. Модель данных (схема графа)
+## 5. Data model (graph schema)
 
-Ключ узла – `{rom, addr}` (addr – hex-строка без `0x`, как в текущих загрузчиках).
-Существующее (`load_graph.py`/`load_xrefs.py`) сохраняется; добавляется калибровочный слой.
+The node key is `{rom, addr}`, where `addr` is a hex string without `0x`, matching current
+loaders. Existing `load_graph.py` and `load_xrefs.py` structures remain, and the calibration layer
+is added.
 
-Каталожный слой (`:A2LEntry`, `:VendorEntry`, `:VendorFact`) адресов не несёт вовсе: словари
-задают классы, а не размещение. Ключ там – `family` плюс имя, у вендорского – плюс `vendor`:
-имена вербатим, и два словаря называют одно разными словами (`BFS Multiplier (K-Factor)`
-против `K - Fuel Multiplier`), поэтому глобальный ключ по имени слил бы разные записи и
-разорвал бы одинаковые.
+The catalog layer, `:A2LEntry`, `:VendorEntry`, and `:VendorFact`, has no addresses because the
+dictionaries define classes rather than locations. Its key is `family` plus name, and vendor
+entries also include `vendor`. Names remain verbatim, and two dictionaries use different names for
+the same entity, such as `BFS Multiplier (K-Factor)` and `K - Fuel Multiplier`. A global name key
+would merge distinct entries while failing to connect equivalent ones.
 
-### Узлы
+### Nodes
 
-| Метка | Ключевые свойства | Смысл | Статус |
-|-------|-------------------|-------|--------|
-| `:Rom` | id, annotation_source, source_kind, source_evidence, target_sha256, source_sha256, source_ranges | метаданные канонического источника аннотаций и проверенной exact-code привязки | есть |
-| `:Func` | rom, addr, name, size, is_thunk, community, role, semantics, confidence, evidence, contract, contract_conf, contract_evidence | функция; семантика и контракт являются отдельными заявками, проекция `defs/<source>.funcs.csv` | есть |
-| `:Reg` | rom, addr, region, name, semantics, units, confidence, evidence | периферия/RAM (сенсоры, выходы); слой понимания кода, проекция `defs/<source>.vars.csv` | есть |
-| `:Interp` | rom, addr, role(`kernel`\|`wrapper`\|`finisher`), family, slot, dims, width, height, storagetype, step, limit | примитивы интерполяции; геометрия (`width`/`height`/`storagetype`, у implicit-axis плюс `step`/`limit`) снята с кода входа и его finisher'а, объявлена в `defs/<source>.interp.csv` | новый |
-| `:Map` | rom, addr, family, dims, width, height, storagetype, resolver_kinds, units, scale_expr, to_byte, scale_conf, scale_evidence, vmin, vmax, values_hash, semantics, role(`table`\|`threshold`\|`dead`), note, category, confidence, evidence, a2l_id | таблица; `resolver_kinds` хранит механическое происхождение базы, `evidence` и `scale_evidence` принадлежат разным заявкам; геометрия – геометрия её входа | новый |
-| `:Axis` | rom, addr, len, storagetype, values, monotonic, kind(`rpm`\|`load`\|`temp`\|`raw`), units, scale_expr, to_byte, scale_conf, scale_evidence, confidence | ось таблицы; `len` и `storagetype` задаёт клэмп её поиска во входе, шкала имеет отдельное evidence | новый |
-| `:Flag` | rom, addr, bit, role(`selector`\|`gate`\|`threshold`), semantics, confidence | управляющий бит/скаляр | новый |
-| `:A2LEntry` | family(`HR`), name, kind(`map`\|`scalar`\|`switch`), dims, shape, width, height, storagetype, unit, scale_expr, axis_x_sem, axis_y_sem, axis_x_scale, axis_y_scale, category, userlevel, bits, concept | эталон каталога (rom-независим) | новый |
-| `:VendorEntry` | family(`HR`), vendor(`ecutek`\|`uprev`), name, doc, section, group, dims, axis_x, axis_y, output, origin(`factory`\|`patch`\|`unknown`), concept, level, source, note | запись вендорского словаря: имя калибровки вербатим, у UpRev – плюс оси и смысл выхода | новый |
-| `:VendorFact` | family(`HR`), vendor(`ecutek`\|`uprev`\|`a2l`\|`derived`), subject, doc, kind(`const`\|`unit`\|`axis`\|`geometry`\|`mechanics`\|`hardware`\|`gap`\|`hypothesis`), concept, statement, value, units, applies_to, anchor, note | якорный факт вендорской документации: документированный дефолт, единица, механика, объявленный вендором пробел | новый |
+| Label | Key properties | Meaning | Status |
+|-------|----------------|---------|--------|
+| `:Rom` | id, annotation_source, source_kind, source_evidence, target_sha256, source_sha256, source_ranges | Canonical annotation-source metadata and verified exact-code binding | existing |
+| `:Func` | rom, addr, name, size, is_thunk, community, role, semantics, confidence, evidence, contract, contract_conf, contract_evidence | Function; semantics and contract are separate claims projected from `defs/<source>.funcs.csv` | existing |
+| `:Reg` | rom, addr, region, name, semantics, units, confidence, evidence | Peripheral/RAM sensor or output; code-understanding layer projected from `defs/<source>.vars.csv` | existing |
+| `:Interp` | rom, addr, role(`kernel`\|`wrapper`\|`finisher`), family, slot, dims, width, height, storagetype, step, limit | Interpolation primitives. Geometry (`width`/`height`/`storagetype`, plus `step`/`limit` for implicit-axis) is recovered from entry and finisher code and declared in `defs/<source>.interp.csv` | new |
+| `:Map` | rom, addr, family, dims, width, height, storagetype, resolver_kinds, units, scale_expr, to_byte, scale_conf, scale_evidence, vmin, vmax, values_hash, semantics, role(`table`\|`threshold`\|`dead`), note, category, confidence, evidence, a2l_id | Table. `resolver_kinds` records mechanical base provenance; `evidence` and `scale_evidence` belong to separate claims; geometry comes from the entry | new |
+| `:Axis` | rom, addr, len, storagetype, values, monotonic, kind(`rpm`\|`load`\|`temp`\|`raw`), units, scale_expr, to_byte, scale_conf, scale_evidence, confidence | Table axis. Search clamp in the entry defines `len` and `storagetype`; scale has separate evidence | new |
+| `:Flag` | rom, addr, bit, role(`selector`\|`gate`\|`threshold`), semantics, confidence | Control bit or scalar | new |
+| `:A2LEntry` | family(`HR`), name, kind(`map`\|`scalar`\|`switch`), dims, shape, width, height, storagetype, unit, scale_expr, axis_x_sem, axis_y_sem, axis_x_scale, axis_y_scale, category, userlevel, bits, concept | ROM-independent reference catalog | new |
+| `:VendorEntry` | family(`HR`), vendor(`ecutek`\|`uprev`), name, doc, section, group, dims, axis_x, axis_y, output, origin(`factory`\|`patch`\|`unknown`), concept, level, source, note | Vendor-dictionary entry with verbatim calibration name; UpRev also supplies axes and output meaning | new |
+| `:VendorFact` | family(`HR`), vendor(`ecutek`\|`uprev`\|`a2l`\|`derived`), subject, doc, kind(`const`\|`unit`\|`axis`\|`geometry`\|`mechanics`\|`hardware`\|`gap`\|`hypothesis`), concept, statement, value, units, applies_to, anchor, note | Vendor-documentation anchor: documented default, unit, mechanics, or declared gap | new |
 
-### Рёбра
+### Edges
 
-| Ребро | Смысл |
-|-------|-------|
-| `(:Rom)-[:ANNOTATIONS_FROM]->(:Rom)` | target использует канонические аннотации source; связь exact-code содержит SHA-256, диапазоны и основание |
-| `(:Func)-[:CALLS]->(:Func)` | прямой вызов (есть) |
-| `(:Func)-[:USES {kind}]->(:Reg)` | обращение к периферии/RAM (есть) |
-| `(:Func)-[:ACCESSES {callsite,r4,r5,r6}]->(:Map)` | аксессор -> карта: операнды вызова, которых `:CALLS` не несёт |
-| `(:Map)-[:VIA]->(:Interp)` | карта интерполируется этой обёрткой |
-| `(:Interp)-[:KERNEL]->(:Interp)` | обёртка -> общий kernel |
-| `(:Map)-[:AXIS_X]->(:Axis)`, `(:Map)-[:AXIS_Y]->(:Axis)` | оси карты |
-| `(:Axis)-[:INDEXED_BY]->(:Reg)` | RAM-источник текущего значения оси (сенсор) |
-| `(:Map)-[:WRITES]->(:Reg)` | downstream RAM-выход интерполяции |
-| `(:Flag)-[:SELECTS]->(:Map)` | флаг выбирает эту карту |
-| `(:Flag)-[:GATES]->(:Func)` | флаг гейтит этот путь (в т.ч. immo) |
-| `(:Map)-[:MATCHES {score}]->(:A2LEntry)` | кандидат-идентичность по каталогу |
-| `(:Map)-[:HOMOLOG {score}]->(:Map)` | та же карта в другом ROM (cross-rom) |
-| `(:Func)-[:HOMOLOG {score}]->(:Func)` | гомолог функции в другом ROM |
-| `(:Func\|:Reg\|:Map\|:Axis)-[:RESTS_ON {source_prop,role,target_prop,ref}]->(:Func\|:Reg\|:Map\|:Axis)` | claim-specific зависимость; полный ключ различает семантику, контракт, шкалу и structural-опору. Проекция колонок `evidence`/`contract_evidence`/`scale_evidence` |
+| Edge | Meaning |
+|------|---------|
+| `(:Rom)-[:ANNOTATIONS_FROM]->(:Rom)` | Target uses canonical source annotations; exact-code binding contains SHA-256, ranges, and basis |
+| `(:Func)-[:CALLS]->(:Func)` | Resolved call, existing |
+| `(:Func)-[:USES {kind}]->(:Reg)` | Peripheral/RAM access, existing |
+| `(:Func)-[:ACCESSES {callsite,r4,r5,r6}]->(:Map)` | Accessor -> map with call operands absent from `:CALLS` |
+| `(:Map)-[:VIA]->(:Interp)` | Map is interpolated by this wrapper |
+| `(:Interp)-[:KERNEL]->(:Interp)` | Wrapper -> shared kernel |
+| `(:Map)-[:AXIS_X]->(:Axis)`, `(:Map)-[:AXIS_Y]->(:Axis)` | Map axes |
+| `(:Axis)-[:INDEXED_BY]->(:Reg)` | RAM source of the current axis value, typically a sensor |
+| `(:Map)-[:WRITES]->(:Reg)` | Downstream RAM output of interpolation |
+| `(:Flag)-[:SELECTS]->(:Map)` | Flag selects this map |
+| `(:Flag)-[:GATES]->(:Func)` | Flag gates this path, including immo |
+| `(:Map)-[:MATCHES {score}]->(:A2LEntry)` | Candidate catalog identity |
+| `(:Map)-[:HOMOLOG {score}]->(:Map)` | Same map in another ROM |
+| `(:Func)-[:HOMOLOG {score}]->(:Func)` | Function homolog in another ROM |
+| `(:Func\|:Reg\|:Map\|:Axis)-[:RESTS_ON {source_prop,role,target_prop,ref}]->(:Func\|:Reg\|:Map\|:Axis)` | Claim-specific dependency. The complete key distinguishes semantics, contract, scale, and structural support. Projection of `evidence`, `contract_evidence`, and `scale_evidence` columns |
 
-Адресный токен evidence имеет форму `role:addr@target_prop` или
-`role:addr+offset@target_prop`. Адресные роли: `consumer`, `writes`, `indexed_by`, `selector`,
-`threshold`, `from_map`, `trace`, `homolog`, `base`, `match`; свойства цели: `confidence`,
-`contract_conf`, `scale_conf`, `structural`. `from_map` всегда адресует `@structural`.
-Терминалы `rom_const`, `spec`, `registry`, `site` заземляют заявку без узла; `wave` и `arg`
-являются метаданными процесса, а не свидетельством.
+An address evidence token has form `role:addr@target_prop` or
+`role:addr+offset@target_prop`. Address roles are `consumer`, `writes`, `indexed_by`, `selector`,
+`threshold`, `from_map`, `trace`, `homolog`, `base`, and `match`; target properties are
+`confidence`, `contract_conf`, `scale_conf`, and `structural`. `from_map` always targets
+`@structural`. Terminals `rom_const`, `spec`, `registry`, and `site` ground a claim without a
+node. `wave` and `arg` are process metadata rather than evidence.
 
-Строгий parser `tools/memgraph/provenance.py` запрещает legacy-адрес без свойства цели,
-неизвестную роль, пустое значение, дубликат нормализованного токена и нерезолвимую ссылку.
-Полный ключ ребра состоит из source label/address/property, role, target label/address/property
-и исходного `ref` со смещением.
+The strict parser in `tools/memgraph/provenance.py` rejects legacy addresses without target
+properties, unknown roles, empty values, duplicate normalized tokens, and unresolvable
+references. The complete edge key consists of source label/address/property, role, target
+label/address/property, and original offset-bearing `ref`.
 
-Внутри каталожного слоя рёбер нет: `:A2LEntry` и `:VendorEntry` соединяет свойство `concept`
-(записи с одним значением описывают одну сущность), а материализованное ребро было бы копией
-свойства – вторым источником правды ровно того сорта, против которого стоит P5. Join по
-свойству – одна строка Cypher. Рёбра `:MATCHES` от карты на каталог строит Stage 5 после
-Stage 4, когда ключи матча существуют; загрузчики каталогов их не строят.
+The catalog layer has no internal edges. The `concept` property joins `:A2LEntry` and
+`:VendorEntry`, because entries sharing a value describe one entity. A materialized edge would
+duplicate that property and create precisely the second source of truth prohibited by P5. A
+property join is one Cypher line. Stage 5 creates `:MATCHES` edges from maps to catalog entries
+after Stage 4 supplies matching keys; catalog loaders do not create them.
 
-Гранулярность `concept` – семейство калибровки, а не одна таблица: у `vvel-duration` семь
-записей ProECU (Cold, Main, Overrun, WOT и прочие), у `idle-ignition` девять, и варианты одной
-функции (Cold/High Detonation/High Octane, Trustful) значение делят. Словарь значений задаёт
-вендорский каталог – `concept`, которого там нет, джойнится в пустоту.
+`concept` granularity is a calibration family rather than one table. `vvel-duration` has seven
+ProECU entries including Cold, Main, Overrun, and WOT; `idle-ignition` has nine. Variants of one
+function, such as Cold/High Detonation/High Octane and Trustful, share a concept. The vendor
+catalog defines this vocabulary; a missing concept joins to nothing.
 
-На `:VendorFact` свойство `concept` – тематическая метка прозы, не ключ идентичности: факт
-бывает о семействе целиком (`rev-limit` покрывает и отсечку, и восстановление, и максимум) или
-о предмете, за которым таблицы нет вовсе (`rom-size`, `can-bus`, `applications`). Со словарём
-каталогов он пересекается частично, поэтому джойн `:A2LEntry` на факты по `concept` достаёт
-документированные дефолты не все, а лишь там, где метка совпала с сущностью.
+For `:VendorFact`, `concept` is a prose topic rather than an identity key. A fact can cover an
+entire family, such as `rev-limit` covering cut, restore, and maximum, or a subject with no table
+at all, such as `rom-size`, `can-bus`, or `applications`. Its vocabulary only partially overlaps
+the map catalog, so joining `:A2LEntry` to facts by `concept` retrieves documented defaults only
+where the topic matches an entity.
 
-### Уровни уверенности (claim-specific свойства)
+### Confidence levels for claim-specific properties
 
-Лестница одинакова для `confidence`, `contract_conf` и `scale_conf`, но каждое свойство
-ранжирует отдельную заявку. Локальный уровень хранится в источнике. Эффективный уровень
-вычисляется как минимум локального уровня и ranked-зависимостей `:RESTS_ON`; `@structural`
-участвует в grounding и обратном impact, но минимум не ограничивает.
+The ladder is identical for `confidence`, `contract_conf`, and `scale_conf`, but each property
+ranks a separate claim. Sources store local confidence. Effective confidence is the minimum of
+local confidence and ranked `:RESTS_ON` dependencies. `@structural` participates in grounding and
+reverse impact but does not constrain the minimum.
 
-| Уровень | Критерий продвижения | Доверие |
-|---------|----------------------|---------|
-| `pattern` | найдено структурным/data-сканом (монотонная пара осей, 16x16-блок, pointer-хит). Семантики нет | не эмитить |
-| `candidate` | есть аксессор + резолвнутые `r4/r5/r6` из data-flow; геометрия консистентна; есть A2L/homology-матч | эмитить помеченным candidate |
-| `code` | конкретная заявка прослежена в коде и имеет claim-specific свидетельство | эмитить по воротам её типа |
-| `silicon` | проверено на стенде/CONSULT3P live-data (правило `AGENTS.md`: ground truth в кремнии) | заливать в мотор |
+| Level | Promotion criterion | Trust |
+|-------|---------------------|-------|
+| `pattern` | Found by structural/data scan, such as a monotonic axis pair, 16x16 block, or pointer hit; no semantics | do not emit |
+| `candidate` | Accessor exists, `r4/r5/r6` resolve through data flow, geometry is consistent, and an A2L/homology match exists | emit marked as candidate |
+| `code` | The specific claim is traced in code and has claim-specific evidence | emit under its claim-type gates |
+| `silicon` | Verified on a bench or through CONSULT3P live data under the `AGENTS.md` ground-truth-in-silicon rule | flash to the engine |
 
-`pattern -> candidate` бывает машинным. `candidate -> code` требует трейса и evidence.
-`code -> silicon` является ручной верификацией на железе. Effective confidence не сохраняется
-в узле вторым источником истины; его считают `provenance.py` и `provenance_report.py`.
+`pattern -> candidate` can be machine-driven. `candidate -> code` requires a trace and evidence.
+`code -> silicon` is manual hardware verification. Effective confidence is not stored on the node
+as a second source of truth; `provenance.py` and `provenance_report.py` compute it.
 
-## 6. Резолвер операндов (линчпин, решает P1)
+## 6. Operand resolver (linchpin, resolves P1)
 
-Замена ручного backtrack (`MapInventory.backtrack`) на data-flow декомпилятора. Целевой
-callsite – косвенный вызов обёртки `jsr @r2` (CALLIND), где `r4/r5/r6` установлены выше.
-Это накладывает три обязательных условия, которые ручной обход и наивный "взять параметры
-вызова" пропускают: аргументы вызова надо поднять и разыменовать (А), gbr-relative операнды
-резолвить по месту (Б), а сайт – иметь функцию, в которой он лежит (В).
+This replaces manual backtracking in `MapInventory.backtrack` with decompiler data flow. The
+target call site is an indirect wrapper call, `jsr @r2` (CALLIND), with `r4/r5/r6` assigned above
+it. Three requirements are mandatory and are missed by manual scanning or a naive "read call
+parameters" approach: lift and dereference call arguments (A), resolve GBR-relative operands
+locally (B), and ensure the site belongs to a function (C).
 
-**Условие А – аргументы CALLIND уже подняты, операнд – указатель пула.** Типовой сайт
-доступа – `mov.l #PTR,rN; jsr @rN`, где `PTR` – слот литерал-пула. Ghidra разрешает такую
-косвенную цель в ссылку `COMPUTED_CALL`, и декомпилятор штатно, без заданной сигнатуры,
-поднимает `r4/r5/r6/r7` как упорядоченные входы вызова (порядок = calling convention, поэтому
-`in[1]=r4`, `in[2]=r5`, `in[3]=r6` несут семантику table/axisX/axisY). Проверено на JK03A:
-аксессор `0x82c8a`, три вызова `0x26320` дают `r4/r5/r6` = слоты `0x83368/6c/70` с базами
-`0xb81a/0xb61a/0xb71a` и осями `0x11b6b/0x11b8b`.
+**Condition A: CALLIND arguments are lifted and the operand is a pool pointer.** A typical access
+site is `mov.l #PTR,rN; jsr @rN`, where `PTR` is a literal-pool slot. Ghidra resolves this indirect
+target as a `COMPUTED_CALL` reference. Without a custom signature, the decompiler still lifts
+`r4/r5/r6/r7` as ordered call inputs. Order follows the calling convention, so `in[1]=r4`,
+`in[2]=r5`, and `in[3]=r6` represent table, axisX, and axisY. This is verified in JK03A: accessor
+`0x82c8a` has three calls to `0x26320`, with `r4/r5/r6` pool slots `0x83368/6c/70`, table bases
+`0xb81a/0xb61a/0xb71a`, and axes `0x11b6b/0x11b8b`.
 
-Аргумент-указатель представлен varnode'ом слота пула (`ram:0x83368`), а не константой; база
-таблицы/оси – содержимое слота (ROM-слово). Ядро резолвера: из `HighFunction` взять входные
-varnodes вызова и разыменовать ram-слоты (прочитать ROM-слово по адресу слота = база).
-Runtime-входы (текущие значения осей в register/unique/stack) базами не являются и отсеиваются
-тем, что не указывают в ROM. Это устойчивее ручного `MapInventory.backtrack`: data-flow видит
-истинный define-use, не зависит от расстояния и порядка (в т.ч. `r5` в delay slot, на котором
-"только назад"-обход промахивается) и не пересекает границу ветвления. Из 18 потерянных цензом
-сайтов 12 закрывает сам data-flow, оставшиеся 6 лежат вне разметки функций и закрываются
-восстановлением (условие В).
+An argument pointer is represented by the pool-slot varnode, such as `ram:0x83368`, rather than a
+constant. The table or axis base is the ROM word stored in the slot. The resolver core reads call
+input varnodes from `HighFunction`, dereferences RAM slots, and treats the ROM word at the slot
+address as the base. Runtime inputs, such as current axis values in register/unique/stack space,
+are not bases and are rejected because they do not point into ROM. This is more robust than
+`MapInventory.backtrack`: data flow follows true define-use relationships, is independent of
+distance and instruction order, handles `r5` in a delay slot that a backward-only scan misses, and
+does not cross branch boundaries. Data flow alone recovers 12 of the 18 census-missed sites; the
+remaining 6 are outside marked functions and are recovered under condition C.
 
-**Сигнатура-override – уточнение, не разблокировка.** Типизировать `:Interp` (custom storage
-`r4..r7`) полезно, чтобы запиннить число и порядок аргументов и убрать пере-аппроксимацию
-дефолтного прототипа (лишние `r0`/stack-входы). Но сигнатура callee в косвенный вызов не
-прорастает (проверено: форс custom storage на `0x26320` не меняет входы на его CALLIND) – для
-чистки входов нужен call-site prototype override (`HighFunctionDBUtil.writeOverride`) на адресе
-`jsr`, а не сигнатура цели. Для снятия баз это не требуется.
+**Signature override is refinement, not an unblocker.** Typing `:Interp` with custom `r4..r7`
+storage pins argument count and order and removes over-approximation from the default prototype,
+such as extra `r0` or stack inputs. A callee signature does not propagate into an indirect call:
+forcing custom storage on `0x26320` does not change inputs at its CALLIND sites. Cleaning those
+inputs would require a call-site prototype override through `HighFunctionDBUtil.writeOverride` at
+the `jsr` address, not a target signature. Base recovery does not require it.
 
-**Свёртка и резерв.** Аргумент-varnode в register/unique сворачивается backward-slice по
-p-code: от последнего определения вниз по define-use до константы (`COPY`/`CAST`/`INT_ADD`/
-`PTRSUB`/`LOAD` и подобные). `MULTIEQUAL` свёртку останавливает – значений несколько, и это не
-сбой, а признак ветвления. Не свернувшийся операнд уходит в резерв `SymbolicPropogator` по
-инструкциям (`recordStartEndState` даёт значение регистра на адресе сайта, а
-register-relative результат – признак базы от вызывателя) и помечается `sp`. Отсюда и
-трактовка `sp` у базы: значение снято по одному пути из нескольких, то есть это признак
-селектора (раздел 6), а не просто менее точный механизм. Источники баз на JK03A
-(13 цензов, 553 сайта вне ценза `0x26740`): 406 – разыменование слота пула, 102 –
-backward-slice, 27 – разворот слияния (`phi`, раздел 6), 15 – резерв, 3 не сворачиваются
-(`dyn`).
+**Folding and fallback.** A register/unique argument varnode is folded through a p-code backward
+slice from its last definition down define-use chains to a constant, including operations such as
+`COPY`, `CAST`, `INT_ADD`, `PTRSUB`, and `LOAD`. `MULTIEQUAL` stops scalar folding because it
+represents multiple values. This is a branch signal, not a failure. An unresolved operand falls
+back to instruction-level `SymbolicPropogator`: `recordStartEndState` gives the register value at
+the site, while a register-relative result indicates a caller-provided base. Fallback output is
+marked `sp`. An `sp` base therefore means one of several paths was recovered and signals a
+selector, not merely a less precise mechanism. Across 13 JK03A censuses and 553 sites excluding
+the `0x26740` census, base sources are 406 pool-slot dereferences, 102 backward slices, 27
+expanded merges (`phi`, section 6), 15 fallbacks, and 3 unresolved dynamic cases (`dyn`).
 
-**Условие Б – GBR локален.** gbr-relative оси/базы (`stc gbr,rN; add #off`) сворачиваются
-внутри функции: значение ставит сама функция (`ldc rN,gbr` в прологе), и оно своё в каждой –
-в JK03A это и RAM-база (`FUN_0003b75c`: gbr=`0xffff1dec`), и ROM-база (аксессоры `0x4e2xx`:
-gbr=`0x11ebe`). Поэтому и декомпилятор, и `SymbolicPropogator` от входа функции сворачивают
-gbr сами, а глобальный register-context на gbr (`ProgramContext.setValue`) был бы ошибкой:
-он навязал бы одно значение всей программе. Register-context на gbr в JK03A пуст, и это
-не пробел – ссылки на gbr-relative операнды Ghidra проставляет пропагацией от `ldc`. Остаток –
-функции, получающие gbr от вызывателя: операнд остаётся register-relative (`gbrrel`), база
-требует межпроцедурного контекста.
+**Condition B: GBR is local.** GBR-relative axes and bases (`stc gbr,rN; add #off`) fold within
+the function because the function assigns GBR itself through `ldc rN,gbr` in its prologue, and the
+value differs by function. JK03A uses both a RAM base in `FUN_0003b75c`, where
+gbr=`0xffff1dec`, and a ROM base in `0x4e2xx` accessors, where gbr=`0x11ebe`. Both the decompiler
+and `SymbolicPropogator` therefore fold GBR from function entry. Setting a global GBR register
+context through `ProgramContext.setValue` would be incorrect because it would impose one value on
+the entire program. JK03A has no global GBR register context by design, not as a gap; Ghidra
+creates GBR-relative references by propagating from `ldc`. Functions that receive GBR from their
+caller remain register-relative (`gbrrel`) and require interprocedural context.
 
-**Условие В – сайт должен лежать в функции.** Декомпилятор работает только по функциям, а
-участки без прямых вызовов Ghidra функциями не размечает (раздел 2). На них data-flow
-недоступен, а линейный backtrack работает – это источник `bt_only`. Участок восстанавливается
-по flow от своего начала (пролог за `rts` предыдущей функции); участок содержит несколько
-неразмеченных функций подряд, поэтому проходы повторяются, пока растёт покрытие. Резолвер
-делает это у своих сайтов сам (JK03A: 9 функций, все 17 сайтов) и потому от порядка стадий не
-зависит; постоянная разметка всего кода – Stage 0 (`RecoverFuncs.java`), после неё резолверу
-восстанавливать нечего и все 124 сайта лежат в размеченных функциях.
+**Condition C: the site must belong to a function.** The decompiler operates on functions only,
+while Ghidra does not mark regions without direct calls as functions; see section 2. Data flow is
+unavailable there even though linear backtracking still works, producing `bt_only`. Recover a
+region by flow from its beginning, the prologue after the preceding function's `rts`. A region can
+contain several consecutive unmarked functions, so repeat passes while coverage grows. The
+resolver does this for its own sites, recovering 9 JK03A functions and all 17 sites, so it does not
+depend on stage order. Stage 0 `RecoverFuncs.java` permanently marks all code; afterward every one
+of the 124 sites belongs to a function and the resolver has nothing to recover.
 
-**Алгоритм.** Для каждого callsite: (0) если сайт вне разметки – восстановить функцию
-(условие В); (1) из `HighFunction` взять входные varnodes вызова (условие А);
-(2) классифицировать каждый: ram-слот пула -> разыменовать (ROM-слово = база);
-immediate-константа -> база напрямую; register/unique -> свернуть backward-slice по p-code
-(здесь же сворачивается gbr, условие Б); не свернувшийся -> резерв `SymbolicPropogator`;
-runtime-значение оси базой не является; (3) если база вычисляется истинно динамически и не
-сворачивается – пометить `dyn`/`gbrrel`, оставить callsite `candidate` без базы, **не терять**.
-Выход: `accessor, callsite, wrapper, bt_r4/5/6, df_r4/5/6/7, источник каждого операнда,
-verdict` -> `:Map`/`:Axis`/`:ACCESSES`. Метрика резолюции – раздел 11.
+**Algorithm.** For each call site: (0) recover a function if the site is unmarked, satisfying C;
+(1) read call input varnodes from `HighFunction`, satisfying A; (2) classify each operand:
+dereference a RAM pool slot to obtain its ROM-word base; use an immediate constant directly; fold
+register/unique through a p-code backward slice, including local GBR under B; fall back to
+`SymbolicPropogator` if folding fails; reject runtime axis values as bases; (3) if a genuinely
+dynamic base does not fold, mark it `dyn`/`gbrrel`, retain the call site as a base-less `candidate`,
+and **do not drop it**. Output is
+`accessor, callsite, wrapper, bt_r4/5/6, df_r4/5/6/7, operand source, verdict`, projected into
+`:Map`, `:Axis`, and `:ACCESSES`. Section 11 defines the resolution metric.
 
-Скрипт `ResolveAccessors.java`. Замечание из JK03A (обёртка `0x261b8`): оси бывают
-gbr-relative computed, разные на карту – резолвер обязан снимать `gbr+offset` (условие Б),
-а не ближайший pc-literal.
+The implementation is `ResolveAccessors.java`. A JK03A note from wrapper `0x261b8`: axes can be
+computed GBR-relative values that differ by map, so the resolver must recover `gbr+offset` under
+condition B rather than the nearest PC literal.
 
-**Внедрение – differential, не слепая замена.** Резолвер гонится рядом с
-`MapInventory.backtrack`, не вместо: на каждый сайт эмитятся обе тройки (`bt_r4/5/6` и
-`df_r4/5/6`) плюс флаг `agree|df_only|bt_only|conflict`. Инвариант принятия – `df ⊇ bt`
-(data-flow снимает всё, что снимал линейный backtrack, и закрывает недостающее). `bt_only` –
-регрессия на разбор; `conflict` (базы `bt != df`) – латентная ошибка `nearestLoad`-эвристики в
-уже собранном цензе, то есть находка, а не шум. Так замена механизма становится аддитивной по
-результату с доказанным неухудшением.
+**Differential deployment, not blind replacement.** Run the resolver alongside
+`MapInventory.backtrack`, not instead of it. Emit both triples, `bt_r4/5/6` and `df_r4/5/6`, plus
+`agree|df_only|bt_only|conflict` for every site. The acceptance invariant is `df >= bt`: data flow
+must recover everything linear backtracking recovered and close additional gaps. `bt_only` is a
+parsing regression. A `conflict`, where base `bt != df`, is a latent error in the existing census
+`nearestLoad` heuristic and therefore a finding rather than noise. This makes the replacement
+additive with demonstrated non-regression.
 
-**Операнд-множество.** База или ось, заданные ветвлением, приходят в вызов phi-узлом
-(`MULTIEQUAL`), и свёртка в одно значение здесь неверна по существу: обе таблицы существуют,
-а какая исполняется, решает калибровка. Такой сайт эмитится строкой на ветвь – колонка
-`branch`, вердикт `selector`, источник операнда `phi`. Тройка собирается по индексу входа
-слияния, а не перемножением множеств: i-й вход каждого phi одного блока приходит по i-му
-ребру, поэтому i-я ветвь – согласованная тройка. Операнд, чьи ветви в значения не
-сворачиваются (runtime-вход из RAM рядом с указателями ПЗУ), из разворота выпадает и остаётся
-на прежнем разборе.
+**Operand sets.** A branch-selected base or axis reaches a call through a phi node
+(`MULTIEQUAL`). Folding it to one value is semantically wrong: both tables exist and calibration
+selects the active one. Emit one row per branch with a `branch` column, `selector` verdict, and
+`phi` operand source. Assemble the triple by merge-input index rather than a Cartesian product.
+The i-th input of each phi in one block arrives through the i-th edge, so branch i forms a
+consistent triple. If an operand's branches do not fold to values, such as a runtime RAM input
+beside ROM pointers, exclude it from expansion and retain its prior resolution.
 
-Ошибка свёртки была не в том, что элемент неверен, а в том, что элемент выдавался за
-множество, и никакой вердикт этого не показывал: у пары `0x12e3a`/`0x12e32` в каталог попадала
-ветвь, отключённая конфиг-байтом `0x8616`, а исполняемая – нет, причём обе переписи выбирали
-одну и ту же ветвь и сходились в `agree`. На JK03A ветвление несут 40 сайтов (28 вне ценза
-`0x26740`): 37 о двух ветвях, один о трёх, два о шести – последние совпадают с
-селекторным множеством `0x64344`, известным по разбору.
+The folding defect was not that the selected element was invalid, but that one element was
+presented as the complete set with no verdict exposing the loss. For the `0x12e3a`/`0x12e32` pair,
+the catalog contained the branch disabled by config byte `0x8616` and omitted the executing branch.
+Both censuses selected the same disabled branch and reported `agree`. JK03A has 40 branching sites,
+28 outside the `0x26740` census: 37 have two branches, one has three, and two have six. The
+six-branch cases match the known `0x64344` selector set.
 
-Результат на JK03A (`accessors.<kernel>.csv`, 13 цензов по каноническому реестру
-`defs/JK08A.interp.csv`):
-587 строк для 554 callsite, база в ROM снята data-flow на 551 против 493 у backtrack; вне
-ценза `0x26740` – 586 строк для 553 callsite, 550 против 492. Счёт резолюции идёт по callsite,
-а не по строкам: сайт с операндом-множеством даёт строку на ветвь. Неснятые базы помечены
-`dyn`; у `0x4a02c` backtrack пуст тоже – она динамическая, а не пропущенная. Доминирование
-доказано **по базам**: нет ни одного сайта, где backtrack дал бы значение в диапазоне ROM, а
-data-flow нет. Обе переписи-эталона (`MapInventory` на ядро, `DirectLookupInventory` на банк)
-резолвер воспроизводит сайт-в-сайт – 327 и 227 – двумя разными механизмами поиска: обходом
-call-ссылок Ghidra против форвард-скана от слота. Источником каталога становится data-flow.
+JK03A results across 13 `accessors.<kernel>.csv` censuses from canonical registry
+`defs/JK08A.interp.csv`: 587 rows for 554 call sites, with data-flow ROM bases at 551 sites versus
+493 for backtracking. Excluding the `0x26740` census gives 586 rows for 553 call sites and
+550 versus 492. Resolution counts call sites rather than rows because an operand-set site emits
+one row per branch. Unresolved bases are marked `dyn`. Site `0x4a02c` also has an empty backtrack
+result, so it is dynamic rather than missed. Dominance is proven **over bases**: there is no site
+where backtracking recovers an in-ROM value and data flow does not. The resolver reproduces both
+reference censuses site-for-site, 327 for kernel `MapInventory` and 227 for bank
+`DirectLookupInventory`, despite their independent discovery methods: Ghidra call-reference
+enumeration versus forward scanning from a slot. Data flow becomes the catalog source.
 
-Гейт считается по базам, а не по любым снятым значениям: сырой `bt_only` на `0x26984` равен 1
-(сайт `0x62708`), но снятое там backtrack'ом `r6` = `0x9a24963d` в ROM не указывает и базой не
-является – это мусор третьего класса, ниже. Такой сайт – не регрессия резолвера.
+The gate evaluates bases rather than every recovered value. Raw `bt_only` for `0x26984` is 1 at
+site `0x62708`, but backtracked `r6 = 0x9a24963d` does not point into ROM and is not a base. It is
+third-class noise described below, not a resolver regression.
 
-Все 18 `conflict` разобраны. **Из десяти расхождений по базе backtrack неверен во всех
-десяти** – ни разу расхождение не означало вторую валидную базу, поэтому фактов эталон не
-даёт вовсе и остаётся только точкой сравнения:
+All 18 `conflict` cases were analyzed. **Backtracking is wrong in every one of the ten base
+conflicts.** No conflict represents a second valid base, so the baseline contributes no facts and
+remains only a comparison point:
 
-- **база выбирается ветвлением** (4 сайта, все `k4=sp`). `0x64344`: пять `mov.l @(pc),r4` по
-  ветвям `cmp/eq` на `r5`, delay slot `mov.l r4,@r15` несёт ссылки на **шесть** таблиц;
-  `0xbe39a`: `tst r13,r13; bt` перепрыгивает загрузку, база – `0xa05a` либо `0xa09a`. Ни `bt`,
-  ни `df` здесь не авторитетны: декомпилятор базу в одно значение не свернул (оттого `sp`), и
-  каждый механизм называет произвольный элемент множества. Признак селектора – именно `sp`,
-  а не `conflict`: полный набор даёт перечисление ветвей (Stage 6, `:Flag {role:'selector'}`);
-- **ось прочитана базой** (`0x732a8`): базу ставит delay slot (`mov r7,r4` -> `0x15500`), а
-  назад по коду лежит указатель оси `0x15690`, который backtrack и поднимает. Пары карт здесь
-  нет – есть одна база и одна ось;
-- **арифметика delay slot** (5 сайтов банка): `mov.l @(pc),r4; jsr @r7; _add 0x8,r4` – база
-  считается уже после `jsr`, но до тела вызываемого. Разница везде ровно шаг таблицы
-  (`0x12a22` -> `0x12a2a`, 8 байт = 8 точек u8). Data-flow это моделирует, backtrack – нет;
-- **значение из недостижимой ветки** (`0x56cd8`): `bt` снял `r6` = `0x8729` из ветки, которая
-  до сайта не доходит (`bra 0x56e46`);
-- **остаточные регистры в `r6`** (2 сайта банка): у примитива `r6` аргументом не является, и
-  снятое там – значение регистра, а не операнд;
-- **константа пула читается шире своей ширины** (5 сайтов, все на `0x26984`).
-  `nearestLoad` эталона читает слот пула всегда как 32-бит (`mem.getInt`), тогда как операнд
-  загружен `mov.w` – 16 бит со знаковым расширением. Backtrack выдаёт константу, склеенную со
-  следующими двумя байтами пула, а data-flow – её саму: `0x9135` -> `bt` = `0x91358de6` против
-  `df` = `0xffff9135`; `0x0b5c` -> `bt` = `0x0b5c04ac` против `df` = `0x00000b5c`. Знак
-  подтверждает разбор: `df` даёт `ffff` там, где у s16 взведён старший бит, и `0000` там, где
-  нет. На ядре `0x26944` дефект невидим – его операнды `mov.l`; он вскрывается ровно на
-  словных ядрах, ради которых ценз и расширен.
+- **Branch-selected base** at 4 sites, all with `k4=sp`. At `0x64344`, five
+  `mov.l @(pc),r4` instructions lie on `cmp/eq` branches over `r5`, and delay slot
+  `mov.l r4,@r15` carries references to **six** tables. At `0xbe39a`,
+  `tst r13,r13; bt` skips a load, so the base is either `0xa05a` or `0xa09a`. Neither `bt` nor
+  scalar `df` is authoritative because the decompiler did not fold the base to one value, hence
+  `sp`, and each mechanism names an arbitrary set element. `sp`, not `conflict`, signals a
+  selector. Branch enumeration provides the complete set in Stage 6 through
+  `:Flag {role:'selector'}`.
+- **Axis mistaken for base** at `0x732a8`. The delay slot sets the base
+  (`mov r7,r4` -> `0x15500`), while axis pointer `0x15690` appears earlier and is selected by
+  backtracking. This is one base and one axis, not a map pair.
+- **Delay-slot arithmetic** at 5 bank sites:
+  `mov.l @(pc),r4; jsr @r7; _add 0x8,r4`. The base changes after `jsr` but before callee
+  execution. The difference always equals the table stride, such as
+  `0x12a22` -> `0x12a2a`, where 8 bytes hold 8 u8 points. Data flow models this and backtracking
+  does not.
+- **Value from an unreachable branch** at `0x56cd8`. Backtracking reports `r6 = 0x8729` from a
+  branch that cannot reach the site because of `bra 0x56e46`.
+- **Residual `r6` registers** at 2 bank sites. The primitive does not take `r6` as an argument, so
+  the recovered register value is not an operand.
+- **Pool constant read wider than its instruction width** at 5 sites, all on `0x26984`.
+  Baseline `nearestLoad` always reads pool slots as 32-bit through `mem.getInt`, while the operand
+  uses sign-extending 16-bit `mov.w`. Backtracking joins the constant with the next two pool bytes,
+  while data flow yields the constant itself: for `0x9135`, `bt = 0x91358de6` versus
+  `df = 0xffff9135`; for `0x0b5c`, `bt = 0x0b5c04ac` versus `df = 0x00000b5c`. Sign confirms
+  the interpretation: `df` yields `ffff` when the s16 high bit is set and `0000` otherwise. The
+  defect is invisible on kernel `0x26944`, whose operands use `mov.l`, and appears precisely on the
+  word kernels that motivated the expanded census.
 
-## 7. Стадии пайплайна
+## 7. Pipeline stages
 
-Обозначение прогонов – как в `tools/README.md`
+Run notation follows `tools/README.md`
 (`headless-analyze.sh ... -postScript <Script>.java <args>`).
 
-### Stage 0 – Ingest (per ROM)
+### Stage 0 - Ingest per ROM
 
-Импорт (`SuperH:BE:32:SH-2A`, BinaryLoader, baseAddr 0x0), автоанализ, применение
-`symbols.csv` (`RenameFuncs`) и подготовка экспорта выполняются headless-скриптами. Полный
-набор для ingest содержит `funcs.csv`, `calls.csv`, `xrefs.csv` и по одному
-`accessors.<kernel>.csv` на каждый kernel реестра.
+Headless scripts perform import with `SuperH:BE:32:SH-2A`, BinaryLoader, and baseAddr 0x0;
+autoanalysis; application of `symbols.csv` through `RenameFuncs`; and export preparation. A
+complete ingest set contains `funcs.csv`, `calls.csv`, `xrefs.csv`, and one
+`accessors.<kernel>.csv` per registered kernel.
 
-- `RenameFuncs` + `RecoverFuncs` + `ExportGraph` идут в одном изменяющем проект запуске;
-  `ExportXrefs` и `ResolveAccessors` формируют остальные CSV.
-- `tools/memgraph/ingest.py <rom>` выполняет offline preflight и фиксированный порядок
+- Run `RenameFuncs` + `RecoverFuncs` + `ExportGraph` in one project-mutating invocation.
+  `ExportXrefs` and `ResolveAccessors` produce the remaining CSV files.
+- `tools/memgraph/ingest.py <rom>` performs offline preflight and the fixed order
   `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`.
-- Выход: `:Func`, `:CALLS`, `:Reg`, `:USES`, калибровочный слой, claim-specific
-  свойства и `:RESTS_ON`, Louvain-`community`, точный аудит узлов, свойств и рёбер.
+- Output includes `:Func`, `:CALLS`, `:Reg`, `:USES`, the calibration layer, claim-specific
+  properties and `:RESTS_ON`, Louvain `community`, and exact node/property/edge audit.
 
-`--dry-run` проверяет заголовки, форматы значений и внешние ключи CSV, полный набор цензов,
-ROM/SHA, разрешимость evidence и factual evidence у каждого свойства Func/Reg/Map/Axis уровня
-`code`/`silicon`, затем печатает воспроизводимые команды без изменения Memgraph. Exact source
-gate выполняется до первого удаления узлов. Глобальный `--strict` является отдельной
-диагностикой effective confidence и grounding всего графа.
+`--dry-run` validates CSV headers, value formats, foreign keys, the complete census set, ROM/SHA,
+evidence resolution, and factual evidence for every `code`/`silicon` Func/Reg/Map/Axis property,
+then prints reproducible commands without changing Memgraph. The exact source gate runs before the
+first node deletion. Global `--strict` is a separate diagnostic for effective confidence and
+whole-graph grounding.
 
-Автоанализ размечает функциями не весь код: участок, куда нет прямых вызовов, функцией не
-становится, и его вызовы в граф не попадают (раздел 2). `RecoverFuncs.java` размечает такие
-участки, создавая функцию с начала каждого (тело Ghidra строит по flow) и повторяя проходы,
-пока растёт покрытие: участок содержит несколько функций подряд, и созданная отсекает свой
-пролог. На JK03A это 38627 инструкций в 494 участках -> 353 функции (1958 -> 2312), инструкций
-вне функций не остаётся, обёртки `0x26100`/`0x26230` получают вызывателей, а резолюция операндов
-(Stage 3) воспроизводится без изменений. Проход группирует в функции уже дизассемблированные
-инструкции и кода не создаёт; под `-readOnly` он считает и отчитывается, не сохраняя (dry-run).
+Autoanalysis does not mark all code as functions. A region with no direct incoming calls does not
+become a function, and its calls do not enter the graph; see section 2. `RecoverFuncs.java` marks
+such regions by creating a function at each beginning, with Ghidra deriving the body from flow, and
+repeats while coverage grows. A region can contain multiple consecutive functions, and each
+created function separates its own prologue. In JK03A this converts 38,627 instructions across 494
+regions into 353 functions, increasing 1958 to 2312. No instructions remain outside functions,
+wrappers `0x26100`/`0x26230` gain callers, and Stage 3 operand resolution reproduces unchanged.
+The pass groups already disassembled instructions and creates no code. Under `-readOnly` it only
+counts and reports as a dry run.
 
-### Stage 1 – Локализация ядра интерполяции (решает P3)
+### Stage 1 - Locate interpolation kernels (resolves P3)
 
-**Первичный сигнал – data-scan.** Ядро находится сканом (`FindInterpCore.java`): слоты –
-4-выровненные слова ПЗУ, чьё значение указывает на код, – и входы, которые слот читают и
-уходят по нему `jsr @rN` либо `jmp @rN`. Прямому вызову слот не нужен, и он отделяет
-библиотеку доступа от прочего кода. **Код-подтверждение**: декомпиляция 2-3 известных
-аксессоров подтверждает общий first-stage вызов + PTR-слот finisher. Выход: `:Interp`
-(kernel/wrappers/finishers), рёбра `:KERNEL`. Заменяет ручной поиск "найти `0x26944`".
+**Primary signal: data scan.** `FindInterpCore.java` scans for 4-byte-aligned ROM slots whose
+values point to code and for entries that read a slot and branch through it with `jsr @rN` or
+`jmp @rN`. A direct call needs no slot, so this distinguishes the access library from other code.
+**Code confirmation:** decompile 2-3 known accessors to confirm a shared first-stage call and
+finisher pointer slot. Output is `:Interp` kernel/wrapper/finisher nodes and `:KERNEL` edges. This
+replaces manual "find `0x26944`" work.
 
-Слоя мало: аксессор зовёт вход тем же механизмом, поэтому одна сигнатура слота ловит весь
-слой косвенных вызовов, и входы стоят в нём выше ядер – их зовут чаще (`0x26370`: 62
-вызывателя против 11 у `0x26944`). Ядро отделяет второй уровень косвенности: его вызыватели
-сами суть цели слотов, аксессоры – нет. Три признака, которыми ядро НЕ отличается:
+The layer is small. An accessor calls an entry through the same mechanism, so one slot signature
+captures the whole indirect-call layer. Entries rank above kernels because they have more callers:
+`0x26370` has 62 versus 11 for `0x26944`. A second indirection level distinguishes kernels:
+kernel callers are themselves slot targets, while accessors are not. Three properties do **not**
+identify a kernel:
 
-- **листовость**: пять ядер из тринадцати зовут общие хелперы (`0x26944` и `0x26984` – оба
-  `0x26c78`, `0x26a60` – ядро `0x26740`), и фильтр "слот указывает на лист" отбросил бы
-  главное ядро;
-- **счёт вызывателей**: из >= 2 мест зовутся 253 функции JK03A, ядер среди них 4;
-- **то, что оно функция**: банк implicit-axis – входы в одну цепочку сдвигов, и
-  `0x26a80`/`0x26a84`/`0x26a88` функциями Ghidra не размечены вовсе (тело `0x26a5c` – 4
-  байта). Слот проверяется на код, а не на вход функции: разметка функций – дело Ghidra.
+- **leaf status**: 5 of 13 kernels call shared helpers. Both `0x26944` and `0x26984` call
+  `0x26c78`, and `0x26a60` calls kernel `0x26740`; requiring a slot target to be a leaf would
+  discard the primary kernel;
+- **caller count**: 253 JK03A functions have at least 2 callers, but only 4 are kernels;
+- **function marking**: implicit-axis bank entries form one shift chain, and Ghidra does not mark
+  `0x26a80`/`0x26a84`/`0x26a88` as functions at all; the `0x26a5c` body is only 4 bytes. Validate
+  a slot target as code rather than a function entry because function marking is Ghidra metadata.
 
-Скан локализует библиотеку, а не уровень ядра в ней: сигнатура одна и та же у ядра и у
-хелпера, который ядро зовёт (`0x26c78` стоит в выдаче рангом 11, ядром не являясь). Что
-внутри слоя ядро, объявляет реестр `defs/<source>.interp.csv` по клэмпу. JK03A: найдены все 13
-ядер, hub-ядра рангами 2, 3, 6, 8 из 799 кандидатов, банк – 53-63 (по одному входу у
-каждого, числом входов не выделен).
+The scan localizes the library, not the kernel level within it. A kernel and its helper can share
+the same signature; `0x26c78` ranks 11th in output but is not a kernel. The
+`defs/<source>.interp.csv` registry identifies kernels within the layer by clamp. JK03A results:
+all 13 kernels found; hub kernels rank 2, 3, 6, and 8 among 799 candidates; bank kernels rank
+53-63 because each has one entry and cannot be distinguished by entry count.
 
-**Независимая сверка центральностью – доступна сразу, до Stage 3.** Косвенные вызовы с
-константной целью уже дают рёбра `:CALLS`, поэтому PageRank на проекции call-графа ROM выводит
-библиотеку доступа в топ (JK03A: `0x26740`, `0x26c78`, `0x26370`, `0x26944`, `0x26388`).
-Проекция обязательна – по всему storage `:Reg` склеивает граф (раздел 8.2). Louvain для этой
-задачи непригоден: hub-слой притягивается к вызывателям, а не к себе (P3), поэтому сообщества
-сверкой не служат. Скрипт `FindInterpCore.java` – детект по сигнатуре слот+обёртки;
-центральность – второй независимый сигнал на том же ядре.
+**Independent centrality check, available before Stage 3.** Constant-target indirect calls already
+produce `:CALLS` edges, so PageRank over a ROM call-graph projection ranks the access library
+highest. JK03A examples are `0x26740`, `0x26c78`, `0x26370`, `0x26944`, and `0x26388`. The
+projection is mandatory because `:Reg` nodes connect the full storage graph; see section 8.2.
+Louvain is unsuitable because the hub layer clusters with callers rather than itself (P3), so
+communities are not a validation signal. `FindInterpCore.java` detects the slot-plus-wrapper
+signature, while centrality is a second independent signal for the same kernel.
 
-### Stage 2 – Перечисление аксессоров = каталог (решает P2)
+### Stage 2 - Enumerate accessors to build the catalog (resolves P2)
 
-После построения `:ACCESSES` (Stage 3) каталог – **запрос к графу**, не CSV-обход:
+After Stage 3 builds `:ACCESSES`, the catalog is a **graph query**, not a CSV scan:
 
 ```cypher
 MATCH (a:Func {rom:$rom})-[x:ACCESSES]->(m:Map {rom:$rom})-[:VIA]->(w:Interp {role:'wrapper'})
@@ -455,283 +468,291 @@ RETURN a.addr AS accessor, w.width AS width, w.height AS height,
 ORDER BY w.width DESC, table
 ```
 
-До `:ACCESSES` каталог кандидатов даёт `MapInventory` (слоты kernel-значения -> обёртки ->
-refs) – bootstrap, но конечный каталог живёт в графе (метрика полноты – раздел 11).
+Before `:ACCESSES` exists, `MapInventory` bootstraps a candidate catalog through
+kernel-value slots -> wrappers -> references. The final catalog lives in the graph; section 11
+defines its completeness metric.
 
-### Stage 3 – Резолюция операндов
+### Stage 3 - Resolve operands
 
-Для каждого callsite – резолвер раздела 6 (`ResolveAccessors.java`), прогон на ядро, выход –
-`accessors.<kernel>.csv`. В граф его переносит `load_maps.py`: `:Interp`, `:Map` (база = `r4`),
-`:Axis` (`r5` -> `:AXIS_X`, `r6` -> `:AXIS_Y`, регистр-источник – на ребре, поэтому ориентация
-уточняется в Stage 4 без потери факта), рёбра `:ACCESSES`/`:VIA`/`:KERNEL`. Уровень –
-`candidate`. Загрузчик идёт после `load_graph.py`: тот владеет `:Func` и при перезагрузке ROM
-сносит их вместе с рёбрами `:ACCESSES`.
+Run the section 6 resolver, `ResolveAccessors.java`, for every call site and once per kernel,
+producing `accessors.<kernel>.csv`. `load_maps.py` projects it into `:Interp`, `:Map` with
+`r4` as base, and `:Axis` with `r5 -> :AXIS_X` and `r6 -> :AXIS_Y`. The source register remains
+on the edge, allowing Stage 4 to refine orientation without losing the fact. It also creates
+`:ACCESSES`, `:VIA`, and `:KERNEL` edges. Initial confidence is `candidate`. The loader runs after
+`load_graph.py`, which owns `:Func` and deletes functions and their `:ACCESSES` edges when a ROM is
+reloaded.
 
-Источников у слоя четыре, и каждый отвечает за своё: реестр входов
-`defs/<source>.interp.csv` (строка = вход со своей геометрией, снятой с его кода),
-переписи резолвера целевого ROM (сайты и операнды) и ручной слой –
-`defs/<source>.findings.csv` (карты) и `defs/<source>.axes.csv` (оси): что установлено
-человеком и чего перепись дать не может: семантика, уровень, роль карты, единицы и
-семантика осей, плюс карты вне моделей доступа. `<source>` разрешает
-`defs/rom-inheritance.toml`. Для обычного ROM он совпадает с `<rom>`, а exact-code
-наследник использует канонические аннотации при собственных export и образе. Ручной
-слой грузится тем же прогоном, а не отдельным: находка живёт на том же узле, что и факт
-переписи, и пересоздание узла унесло бы её с собой.
+The layer has four sources with distinct responsibilities: entry registry
+`defs/<source>.interp.csv`, one row per entry with geometry recovered from its code; resolver
+censuses for the target ROM, containing sites and operands; and the manual layer,
+`defs/<source>.findings.csv` for maps and `defs/<source>.axes.csv` for axes. The manual layer
+contains conclusions a census cannot supply: semantics, confidence, map role, units, axis
+semantics, and maps outside access models. `defs/rom-inheritance.toml` resolves `<source>`. For a
+normal ROM it equals `<rom>`; an exact-code inheritor uses canonical annotations with its own
+export and image. Load the manual layer in the same run because findings share nodes with census
+facts and would be deleted if loaded separately.
 
-Слой грузится целиком, всеми цензами разом: узлы слоя загрузчик пересоздаёт, поэтому ценз на
-прогон означал бы, что загрузка второго ядра сносит карты первого. Строка переписи берётся по
-паре (ядро, вход) из реестра: вход лежит в переписи каждого ядра, чей слот он держит, и одни
-и те же 47 сайтов `0x26474` есть и в переписи `0x26944`, и в переписи finisher'а `0x26740` –
-счёт по одному лишь адресу входа дал бы их дважды. Непересечение цензов по таблицам загрузчик
-проверяет сам: общая таблица у двух семейств доступа есть находка, а не разновидность нормы.
+Load the complete layer across every census at once because the loader recreates its nodes. One
+census per run would make a second kernel delete the first kernel's maps. Select census rows by
+the `(kernel, entry)` registry pair. An entry appears in every census for a kernel whose slot it
+holds: the same 47 `0x26474` sites occur in both the `0x26944` census and the `0x26740` finisher
+census, so counting by entry address alone would duplicate them. The loader verifies that access
+families share no table. A shared table would be a finding rather than normal variation.
 
-JK03A: 587 строк для 554 callsite -> 439 карт (248 explicit-axis, 188 implicit-axis, 3 вне
-моделей доступа), 229 осей, 586 уникальных доступов, 47 узлов интерполяции (34 входа + 13
-движков). Один полный дубль строки ценза схлопывается ключом ребра `ACCESSES`. Семейства не
-пересекаются ни одной таблицей.
+JK03A has 587 rows for 554 call sites, producing 439 maps (248 explicit-axis, 188 implicit-axis,
+and 3 outside access models), 229 axes, 586 unique accesses, and 47 interpolation nodes
+(34 entries plus 13 engines). One exact duplicate census row collapses under the `ACCESSES` edge
+key. No table is shared between families.
 
-Оба семейства грузятся одним проходом: ценз у них общий, потому что примитив банка есть
-обёртка над своей цепочкой сдвигов – слот с указателем на движок, специализированный вход,
-`jsr` от аксессора. Различается трактовка операндов. У explicit-axis `r5`/`r6` суть указатели
-осей; у implicit-axis ось задана арифметикой, узла `:Axis` нет, `points`/`step`/`limit`/`width`
-– свойства примитива, а снятые в `r5`/`r6` ROM-адреса (22 и 49 значений) осями не читаются:
-`r6` примитиву не аргумент вовсе, а `r5` там ставится в delay slot, и резерв, читающий регистр
-на адресе сайта, видит значение до него.
+Both families load in one pass because their census mechanism is shared. The bank primitive is a
+wrapper around its shift chain: engine-pointer slot, specialized entry, and accessor `jsr`.
+Operand interpretation differs. In the explicit-axis family, `r5`/`r6` are axis pointers. In the
+implicit-axis family, arithmetic defines the axis, no `:Axis` node exists, and
+`points`/`step`/`limit`/`width` belong to the primitive. Recovered ROM addresses in `r5`/`r6`,
+22 and 49 values respectively, are not interpreted as axes. The primitive does not take `r6` at
+all, while `r5` is assigned in a delay slot, so fallback reading the register at the call address
+sees its prior value.
 
-Базой считается только значение, указывающее в ROM: runtime-вход (текущее значение оси, индекс,
-маска) остаётся на ребре снятым значением, но узла не создаёт. Геометрия – свойство **входа**
-(он специализирован по форме таблицы, а не параметризован ею), и приходит она из реестра, где
-снята с кода входа: клэмп в delay slot задаёт число точек, у implicit-axis лимит задаёт и то и
-другое. Отсюда же размерность. `storagetype` снят там, где элемент читается: у 1D-входа – им
-самим, у 2D – его finisher'ом, куда вход уходит хвостовым переходом. Все пять 2D-finisher'ов
-читают элемент беззнаковым (`EXTU` на обоих операндах интерполяции), поэтому `storagetype`
-известен у всех карт каталога. Независимый её признак –
-ось в `r6`: у 2D-входов её несут 86 сайтов из 87, у 1D – 15 из 240 (наибольшая доля –
-`0x26550`, 1 из 7), где `r6` аргументом не является, а есть значение регистра, снятое на
-адресе сайта резервом. Загрузчик сверяет объявленную размерность с этим большинством и на
-расхождении останавливается; на JK03A сходятся все 24 входа explicit-axis. Осью `r6` читается
-только у 2D-входов, отброшенные значения печатаются (JK03A: 15 – молча каталог не сужается).
+Only a value pointing into ROM is a base. Runtime inputs such as current axis value, index, or mask
+remain as recovered edge values without creating nodes. Geometry is an **entry** property because
+the entry specializes by table shape rather than receiving shape as a parameter. The registry
+supplies geometry recovered from entry code: a delay-slot clamp defines point count, while an
+implicit-axis limit defines both count and range. Dimension follows from the same code.
+`storagetype` is recovered where the element is read: directly in a 1D entry, or in the finisher
+reached by a 2D entry's tail jump. All five 2D finishers read unsigned elements with `EXTU` on both
+interpolation operands, so every catalog map has a known `storagetype`.
 
-Геометрия входа делает геометрию карты однозначной, и загрузчик держит это фактом: карта,
-читаемая входами разной формы, означала бы форму, заданную двумя несовместимыми способами.
-На JK03A таких нет – ни одна карта не читается двумя входами.
+An independent dimension signal is the `r6` axis. It appears at 86 of 87 2D-entry sites but only
+15 of 240 1D-entry sites; the highest 1D rate is one of seven at `0x26550`. At those 1D sites `r6`
+is not an argument, only a fallback-recovered register value. The loader compares declared
+dimension against the majority and stops on disagreement. All 24 JK03A explicit-axis entries
+agree. Only 2D entries interpret `r6` as an axis; rejected values are printed, 15 in JK03A, so the
+catalog is not silently narrowed.
 
-Базу в граф даёт только data-flow; `bt` карт не создаёт (раздел 6: на всех десяти базовых
-расхождениях он неверен). Сайт, где операнд выбирает ветвление, виден по `kind`/`kind5`/
-`kind6` = `sp` на ребре `:ACCESSES`: декомпилятор его не свернул, значение снял резерв, и
-снятое – один элемент множества. JK03A: 15 проецированных доступов по базе (`sp` хранится в
-`Map.resolver_kinds`, не в claim evidence) и 256 доступов на 247 callsite по оси – вход Stage
-6. Четыре карты остаются за ними: их называет только backtrack, а его слово фактом не
-является.
+Entry geometry makes map geometry unambiguous. The loader enforces this as fact: a map read through
+entries of different shapes would have two incompatible shape definitions. JK03A has no such map.
 
-Резерв ошибается на осях так же, как на базах, поэтому ось, которую называет только он,
-стоит на уровне `pattern`, а не `candidate`: любой свёрнутый сайт поднимает её до
-`candidate`, и без такого сайта её слово – эвристика. JK03A: 14 осей из 229, и `0x8000`
-среди них – стёртая флешь (сплошь `0xFFFF`), то есть ось, которой нет. Ворота дефа их не
-пропускают.
+Only data flow creates graph bases; `bt` creates no maps because section 6 shows it is wrong in all
+ten base conflicts. A branch-selected operand is visible as `kind`/`kind5`/`kind6 = sp` on the
+`:ACCESSES` edge: the decompiler did not fold it, fallback recovered one set element, and the value
+is incomplete. JK03A has 15 projected base accesses with `sp`, stored in
+`Map.resolver_kinds` rather than claim evidence, plus 256 axis accesses at 247 call sites. These
+are Stage 6 inputs. Four maps remain behind them, named only by backtracking, whose output is not a
+fact.
 
-### Stage 4 – Характеризация
+Fallback is as unreliable for axes as for bases. An axis named only by fallback is `pattern`, not
+`candidate`. Any folded site promotes it to `candidate`; without one, the value is heuristic.
+JK03A has 14 such axes among 229, including `0x8000`, which is erased flash containing only
+`0xFFFF` and therefore not an axis. Definition gates exclude them.
 
-Стадия **мерит, но не заключает**. Диапазон, содержимое и монотонность – свойства байтов
-целевого образа, и читаются они одинаково у карты любой семантики. Чем ось является и в
-чём измеряется – вывод о коде: его даёт трейс потребителя и объявляет канонический
-`defs/<source>.axes.csv`, а вывод из формы массива есть ровно то, чем pattern-scan уже
-дважды ошибся (P6).
+### Stage 4 - Characterize
 
-- **Ось**: прочитать массив в `values`, проверить `monotonic`, найти RAM-источник текущего
-  значения (`:INDEXED_BY`, через xref-слой). Точки лежат в узле целиком: ось коротка и
-  она ими и является – общие оси сходятся сравнением списков, а лесенка оборотов видна в
-  графе без обращения к образу. Единицу задаёт RAM-вход: `0xFFFF11AE` – доказанный индекс
-  оборотов, и любая ось, которую он индексирует, хранит `rpm/50`.
-- **Карта**: прочитать блок, снять `vmin`/`vmax`/`values_hash`. Значения в узел не идут:
-  256 ячеек в графе – содержимое образа, переписанное туда, а одинаковые карты находит
-  хеш. `storagetype` ставит Stage 3 из кода входа (1D) либо его finisher'а (2D). RAM-выход
-  интерполяции (`:WRITES`) – из decomp аксессора.
+This stage **measures but does not infer**. Range, content, and monotonicity are properties of
+target-image bytes and are read identically for every map regardless of semantics. Axis identity
+and units are code conclusions supplied by consumer traces and canonical
+`defs/<source>.axes.csv`. Inferring them from array shape is the same failure mode that caused the
+pattern scan to fail twice (P6).
 
-Монотонность под правило "не заключать" не подпадает: возрастающий массив – требование
-самого ядра (обратный линейный проход от старшей точки до первой `<=` текущего значения), а не
-догадка о смысле. Массив, который правилу не отвечает, осью не работает, чем бы его ни
-назвал резолвер. JK03A: 1 такая ось из 229 (`0x119B2`), и её карта `0x9C5A` – 4x4 сплошь
-`0xFF`, то есть незапрограммированная флешь; константы `0x119B2` в образе нет ни одной
-(`k6=slice`: указатель вычислен, а не взят из пула). Сплошной `0xFF` сам по себе довода не
-даёт – так же выглядит насыщенный предел, – и различает их трейс.
+- **Axis:** read the array into `values`, check `monotonic`, and locate the RAM source of the
+  current value through `:INDEXED_BY` and the xref layer. The node stores all points because an
+  axis is short and defined by them. Shared axes can be compared as lists, and an RPM staircase is
+  visible in the graph without reopening the image. The RAM input defines units:
+  `0xFFFF11AE` is a proven RPM index, so every axis it indexes stores `rpm/50`.
+- **Map:** read the block and compute `vmin`, `vmax`, and `values_hash`. Do not copy cell values
+  into the node; 256 cells in the graph would merely duplicate image content, while hashes identify
+  equal maps. Stage 3 supplies `storagetype` from 1D entry code or a 2D finisher. Accessor
+  decompilation supplies the interpolation RAM output through `:WRITES`.
 
-Стадия – условие Stage 5: из трёх ключей матча (`dims`, scale-family, семантика осей) два
-последних приходят отсюда и из ручного слоя, не из каталога.
+Monotonicity is exempt from the "do not infer" rule because ascending order is an interpolation
+kernel requirement, not a semantic guess: the kernel scans backward from the highest point to the
+first point `<=` current value. An array that violates this order cannot function as an axis,
+regardless of the resolver's label. JK03A has one such axis among 229, `0x119B2`, whose map
+`0x9C5A` is a 4x4 block of `0xFF`, indicating unprogrammed flash. The image contains no literal
+`0x119B2` (`k6=slice`; the pointer is computed rather than pooled). An all-`0xFF` block alone is
+not evidence because a saturated limit looks the same; the trace distinguishes them.
 
-Инструменты чтения – `tools/mapkit/` (раздел 10), не scratchpad. Образ грузится по метке
-`rom` из реестра `rom-images/roms.csv` со сверкой sha256: подмена дампа дала бы не отказ, а
-229 осей правдоподобных чисел не из того образа – брак, который в графе ничем не отличается
-от факта.
+This stage is a Stage 5 prerequisite. Of three match keys, `dims`, scale family, and axis
+semantics, the final two come from this stage and the manual layer rather than the catalog.
 
-### Stage 5 – Матч к каталогам + гомология между ROM (решает P7)
+Reading tools live in `tools/mapkit/`, not a scratchpad; see section 10. The image is selected by
+`rom` from `rom-images/roms.csv` and verified by SHA-256. A substituted dump could otherwise
+produce 229 axes of plausible values from the wrong image, an error indistinguishable from fact in
+the graph.
 
-Каталогов два, и они не дублируют друг друга. A2L даёт **форму** (геометрия, элемент, scaling,
-семантика осей); вендорские словари ProECU и UpRev – **смысл** калибровки, цепочку расчёта и
-**документированные дефолты**, то есть числа, которые ищутся прямо в образе. Ни один не полон,
-и пробелы у них разные: ось карт отсечки по оборотам ProECU объявляет неизвестной ("The Input
-axis to these maps is currently unknown"), а A2L называет – `State` с точками `Normal` и
-`Reverse`; шкалу порога детонации не знает ни один вендор, а A2L даёт `Knock Slice Map` 16x6,
-`x*0.0015259`. Обратно, форма без смысла не даёт ни матча, ни якоря по значению.
+### Stage 5 - Match catalogs and build cross-ROM homology (resolves P7)
 
-- `load_a2l.py` грузит `:A2LEntry` из **`defs/reference/.../Nissan Definitions/A2L.xml`** –
-  rom-независимый каталог HR (`family=HR`); EV18A/CF92A – его экземпляры, дающие пример
-  имён/scaling. Каталог: 188 записей = 106 карт (37 с двумя осями, 69 с одной), 36 скаляров,
-  46 switch'ей (19 `Options//Flags`, 18 DTC-списков, 9 OBD-supmask; 152 бита во `Flags`).
-  **Адреса не переносятся** (layout JDM 2.5L != USDM 3.5L): в базовом дефе их нет вовсе, он
-  задаёт классы, а не размещение – требование структурное, а не соблюдаемое загрузчиком.
-- Нотация RomRaider нормализуется по числу осей (`2D` -> `dims=1`, `3D` -> `dims=2`,
-  `1D` -> `dims=0`): в графе `dims` – число осей, и без нормализации join сошёлся бы на
-  `"2D"`=2, смэтчив каждую запись не с тем классом. `shape` пишется словарём журнала
-  разметки (`16x16`, `8x8`, `1D-8`), общим с геометрией обёрток: все восемь форм обёрток
-  JK03A есть в каталоге, что подтверждает A2L эталоном этого семейства.
-- `load_vendor.py` грузит `:VendorEntry` (371) и `:VendorFact` (138) из `refs/vendor/` –
-  сведённые словари ProECU и UpRev (`family=HR`, метод и разметка – `refs/vendor/README.md`).
-  Адресов в них нет, как и в A2L. Источник каталога – `refs/vendor/catalog.csv`, сборка
-  `tools/vendor/build_catalog.py` из двух рукописных транскрипций; правятся они, а не он.
-- **Фильтр `origin=factory` обязателен** для разметки стокового ROM: 128 записей из 371
-  заводскими не являются – 126 описывают патчи самих вендоров (RaceROM у EcuTek, ARC у UpRev),
-  то есть чужой код, которого в стоке нет, а 2 не разрешены. Матч стоковой карты к
-  patch-записи был бы не слабой подсказкой, а неверной. Метка группы для фильтра непригодна:
-  `Rev Limit Per Gear Mode1-4` – карты RaceROM, но лежат под `Limiters` рядом с заводскими;
-  решает документ-источник.
-- Матч `:Map -> :A2LEntry` по `(dims, scale-family, axis semantics)` -> `:MATCHES {score}`
-  строится после Stage 4: на стороне `:Map` из трёх ключей есть только `dims`, а `scale_expr`
-  и семантика осей приходят из чтения осей и трейса RAM-входов. Матч по одному `dims` свёл бы
-  37 двухосных записей с каждой картой `dims=2` – это шум, а не подсказка (P6). Матч по
-  геометрии+диапазону значений **слаб** (много одинаковых 16x16/8x8) – подсказка `candidate`,
-  не идентификация; реальный различитель – трейс входных RAM-сенсоров осей (Stage 4/7), а не
-  форма значений.
-- Вендорский каталог матчится не сам по себе, а **через A2L по `concept`**: у ProECU нет ни
-  одного из трёх ключей – скриншоты дерева несут только имена, – а у UpRev семантика осей
-  прозаическая (`Base Fuel Schedule`, `coolant temp`, 63 записи из 76 с осями). Матч по имени
-  вслепую – ровно тот отказ, против которого стоит P6. Поэтому `concept` несут оба каталога: 45
-  записей A2L из 188 и 170 вендорских из 371 (49 значений, 27 покрыты обоими словарями). Все три
-  словаря сходятся на 23 значениях, из них 17 – с обоими вендорами, и путь `:Map -> :A2LEntry`
-  -> `concept` -> `:VendorEntry` идёт одним запросом: форма от A2L, смысл и дефолты от вендоров.
-  Пустой `concept` означает "связка не установлена", а не "связки нет".
-- Разметку `concept` держат описания и геометрия, а не близость имён, и имя уводит: A2L
-  `MAF Voltage Lower Limit` по имени садится на `MAF Voltage Min Allowed` EcuTek, но пороги
-  разные – A2L поднимает своим P0102, EcuTek пишет "DTC не выставляется", – и связка не
-  проставлена. Форма же разрешает и обратное, спор имён: `Throttle A` UpRev и `Torque Demand`
-  EcuTek – одна карта (`QH0/ Torque Conversion Map`), это видно по совпадению осей, шкалы выхода
-  и наличию контрольной копии, хотя читают её вендоры по-разному. Разметка проверяется до
-  загрузки: значение вне словаря вендорского каталога джойнится в пустоту, а мёртвая разметка в
-  графе неотличима от непроставленной.
-- **Документированный дефолт – якорь по содержимому образа**, и это единственный ключ каталога,
-  работающий до Stage 3: ни резолвнутых операндов, ни семантики осей он не требует.
-  `:VendorFact {kind:'const'}` несёт 22 таких числа (K-Factor 26806, `100% Engine Load` = 39.8
-  BFS, порог cold/warm 70 degC, VTC reference 118 degCrank), и ищутся они прямо в образе. Само
-  совпадение значения даёт `pattern`, а не `candidate`: чем короче число, тем чаще оно
-  встретится случайно, и на JK03A это уже измерено (ниже). До `candidate` находку поднимает
-  подтверждение – гомологичная сигнатура блока либо трейс потребителя.
-- **Границы применимости словарей – свойство `applies_to`**, и по умолчанию они уже: EcuTek
-  документирует VQ37VHR (370Z, VVEL), целевой JK08A – VQ25HR **без VVEL**. Из 138 фактов 78
-  стоят `vq37vhr` (как документировано), 41 – `nissan` (обобщение UpRev), и только 18 – `hr`
-  (доказано архитектурно, как K-Factor: значение одинаково на 2.5L и 3.7L). Группа
-  `VVEL Valve Duration` к JK08A неприменима вовсе, `VTC Valve Advance` применима.
-- Ориентация осей: у 29 из 37 двухосных записей каталога ось Y – `Engine Speed`, ось X –
-  наполнение цилиндра. Конвенция проверяет `r5 -> :AXIS_X` / `r6 -> :AXIS_Y` (раздел 5) в
-  Stage 4, где ориентация уточняется по RAM-входу оси.
-- Cross-ROM: матч аксессора по окрестности call-графа (`:Func)-[:HOMOLOG]->(:Func)`), перенос
-  идентичности `:Map)-[:HOMOLOG]->(:Map)`. Ускоряет незнакомый дамп от размеченного
-  (JK08A <-> 1ND0A/JK78C/JK00D). Ждёт резолюции второго дампа: 1ND0A в графе есть `:Func` (1909) и
-  `:Reg`, но `:Map` нет. MAGE node2vec/embeddings – опциональный сигнал соседства.
-  Целевой JK08A и донорский JK03A представлены отдельными code/map слоями.
-  `defs/rom-inheritance.toml` связывает JK03A с единственным живым набором аннотаций JK08A
-  и закрепляет связь по SHA-256 и exact-code диапазонам. Проверка переноса не находит
-  различий внутри 2312 функций и 16 `rom_const`; Stage 4 измеряет по каждому образу
-  собственные значения. Из 439 карт отличаются четыре безымянные candidate-кривые, все
-  229 осей совпадают.
-- Якорь-константа даёт вторую, независимую от call-графа гомологию – и она резолюции второго
-  дампа не ждёт. Якорем работает **сигнатура блока, а не само число**: K-Factor `26806`
-  (`0x68B6`) опознаётся по `0000 5E24 A5F0 FFFF [68B6]`, гомологичной на всех шести образах
-  реестра (1ND0A и 1ND3B – `0x9106`, JK78C – `0x8F80`, JK03A и JK08A – `0x9284`,
-  JK00D – `0x931C`). Значения одного мало, и это измерено: на четырёх образах `0x68B6`
-  выровнен по слову единственный раз, но в exact-code паре JK03A/JK08A – дважды,
-  и второе вхождение (`0x162FA`) сигнатуры не несёт и лежит в данных, где его не покрывает
-  ни одна из 439 карт каталога и ни одна из 229 осей, а функций там нет вовсе. Это
-  ячейка таблицы, совпавшая значением, а не второй K-Factor. В том же блоке JK03A кодом уже
-  опознан `Rev Limit - Fuel Cut Maximum` (`0x8FDC`/`0x8FDE`, `FUN_00047a56`), поэтому остальные
-  документированные скаляры разумно искать там же.
+Two catalogs provide complementary evidence. A2L supplies **shape**, including geometry, element
+type, scaling, and axis semantics. ProECU and UpRev vendor dictionaries supply calibration
+**meaning**, calculation chains, and **documented defaults**, which are numeric anchors searched
+directly in the image. None is complete and their gaps differ. ProECU states that the rev-limit
+map input axis is unknown, while A2L identifies `State` with `Normal` and `Reverse` points.
+Neither vendor knows the knock-threshold scale, while A2L supplies a 16x6 `Knock Slice Map` with
+`x*0.0015259`. Conversely, shape without meaning supplies neither identity nor a useful value
+anchor.
 
-Матчи дают `candidate`-идентичность, не финальную семантику (кодирует P6).
+- `load_a2l.py` loads `:A2LEntry` from
+  **`defs/reference/.../Nissan Definitions/A2L.xml`**, a ROM-independent HR catalog with
+  `family=HR`. EV18A/CF92A are instances that provide sample names and scaling. The catalog has
+  188 entries: 106 maps (37 two-axis and 69 one-axis), 36 scalars, and 46 switches
+  (19 `Options//Flags`, 18 DTC lists, and 9 OBD support masks; 152 bits under `Flags`).
+  **Addresses do not transfer** because JDM 2.5L and USDM 3.5L layouts differ. The base definition
+  has no addresses and describes classes rather than locations; this is a structural property,
+  not merely a loader convention.
+- RomRaider notation is normalized by axis count: `2D -> dims=1`, `3D -> dims=2`, and
+  `1D -> dims=0`. In the graph `dims` means number of axes; without normalization a join would
+  interpret `"2D"` as 2 and match every entry to the wrong class. `shape` uses the annotation
+  journal vocabulary shared with wrapper geometry, such as `16x16`, `8x8`, and `1D-8`. All eight
+  JK03A wrapper shapes exist in the catalog, confirming A2L as an HR-family reference.
+- `load_vendor.py` loads 371 `:VendorEntry` and 138 `:VendorFact` nodes from `refs/vendor/`,
+  reconciling ProECU and UpRev dictionaries under `family=HR`; see `refs/vendor/README.md` for
+  method and annotation. Like A2L, they contain no addresses. `refs/vendor/catalog.csv` is
+  generated by `tools/vendor/build_catalog.py` from two handwritten transcriptions. Edit the
+  transcriptions rather than the generated catalog.
+- **`origin=factory` filtering is mandatory** for stock-ROM annotation. Of 371 entries, 128 are
+  not factory: 126 describe vendor patches, EcuTek RaceROM or UpRev ARC, which are third-party code
+  absent from stock, and 2 remain unresolved. Matching a stock map to a patch entry is incorrect,
+  not a weak hint. Group labels cannot filter these entries: `Rev Limit Per Gear Mode1-4` RaceROM
+  maps live under `Limiters` beside factory maps. The source document determines origin.
+- Build `:Map -> :A2LEntry` matches on `(dims, scale-family, axis semantics)` after Stage 4 and
+  store `:MATCHES {score}`. Before Stage 4 a `:Map` has only `dims`; `scale_expr` and axis
+  semantics come from axis reading and RAM-input traces. Matching only `dims` would join all
+  37 two-axis entries to every `dims=2` map, producing noise rather than a hint (P6). Even
+  geometry plus value range is **weak**, because many maps share 16x16 or 8x8 shape. It supports
+  `candidate`, not identity. The discriminating evidence is the trace of axis RAM sensors in
+  Stages 4 and 7, not value shape.
+- The vendor catalog does not match directly. It joins **through A2L by `concept`**. ProECU has
+  none of the three structural keys because tree screenshots contain names only. UpRev describes
+  axes in prose, such as `Base Fuel Schedule` and `coolant temp`, with axes present in 63 of 76
+  entries. Blind name matching is exactly the P6 failure mode. Both catalogs therefore carry
+  `concept`: 45 of 188 A2L entries and 170 of 371 vendor entries, representing 49 concepts of
+  which both dictionaries cover 27. All three dictionaries converge on 23 concepts, 17 with both
+  vendors. One query follows `:Map -> :A2LEntry -> concept -> :VendorEntry`, taking shape from A2L
+  and meaning/defaults from vendors. An empty `concept` means "relation not established", not
+  "no relation exists".
+- Descriptions and geometry support `concept`, not name similarity. Names can mislead: A2L
+  `MAF Voltage Lower Limit` resembles EcuTek `MAF Voltage Min Allowed`, but the thresholds differ.
+  A2L ties its threshold to P0102, while EcuTek states no DTC is set, so they are not linked.
+  Conversely, shape resolves a naming dispute: UpRev `Throttle A` and EcuTek `Torque Demand`
+  describe one `QH0/ Torque Conversion Map`, shown by matching axes, output scale, and validation
+  copy, although the vendors interpret it differently. Validate concept annotation before loading.
+  A value absent from the vendor concept vocabulary joins to nothing, and dead annotation in the
+  graph is indistinguishable from missing annotation.
+- **A documented default is an image-content anchor** and the only catalog key usable before
+  Stage 3 because it requires neither resolved operands nor axis semantics.
+  `:VendorFact {kind:'const'}` carries 22 such values, including K-Factor 26806,
+  `100% Engine Load = 39.8 BFS`, cold/warm threshold 70 degC, and VTC reference 118 degCrank.
+  Search them directly in the image. A value match alone gives `pattern`, not `candidate`; shorter
+  values occur more often by chance, as measured in JK03A below. A homologous block signature or
+  consumer trace promotes the finding to `candidate`.
+- **`applies_to` defines dictionary applicability**, which is narrow by default. EcuTek documents
+  VQ37VHR in the 370Z with VVEL, while target JK08A is VQ25HR **without VVEL**. Of 138 facts,
+  78 are `vq37vhr` as documented, 41 are `nissan` generalizations from UpRev, and only 18 are `hr`
+  facts proven architecturally. K-Factor is one example, with the same value in 2.5L and 3.7L
+  images. `VVEL Valve Duration` does not apply to JK08A, while `VTC Valve Advance` does.
+- Axis orientation: 29 of 37 two-axis catalog entries use `Engine Speed` on Y and cylinder filling
+  on X. Stage 4 validates the `r5 -> :AXIS_X` / `r6 -> :AXIS_Y` convention from section 5 and
+  refines orientation using the axis RAM input.
+- Cross-ROM matching uses call-graph neighborhoods for accessor homologs,
+  `(:Func)-[:HOMOLOG]->(:Func)`, then transfers map identity through
+  `(:Map)-[:HOMOLOG]->(:Map)`. This accelerates an unfamiliar dump from an annotated one, such as
+  JK08A <-> 1ND0A/JK78C/JK00D. It requires resolution of the second dump: 1ND0A currently has 1909
+  `:Func` nodes and `:Reg` but no `:Map`. MAGE node2vec/embeddings are an optional neighborhood
+  signal. Target JK08A and donor JK03A have separate code/map layers.
+  `defs/rom-inheritance.toml` binds JK03A to the single live JK08A annotation set and verifies the
+  relationship through SHA-256 and exact-code ranges. Transfer validation finds no differences
+  across 2312 functions and 16 `rom_const` values; Stage 4 measures each image independently.
+  Four unnamed candidate curves differ among 439 maps, while all 229 axes match.
+- A constant anchor supplies a second homology signal independent of the call graph and does not
+  wait for second-dump resolution. The anchor is a **block signature, not the number alone**.
+  K-Factor `26806` (`0x68B6`) is identified by `0000 5E24 A5F0 FFFF [68B6]`, homologous across
+  all six registered images: 1ND0A and 1ND3B at `0x9106`, JK78C at `0x8F80`, JK03A and JK08A
+  at `0x9284`, and JK00D at `0x931C`. The value alone is insufficient. It occurs once at word
+  alignment in four images but twice in exact-code pair JK03A/JK08A. The second occurrence at
+  `0x162FA` lacks the signature, lies in data not covered by any of 439 catalog maps or 229 axes,
+  and has no functions. It is a table cell whose value happens to match, not a second K-Factor.
+  Code already identifies `Rev Limit - Fuel Cut Maximum` in the same JK03A block at
+  `0x8FDC`/`0x8FDE` through `FUN_00047a56`, so other documented scalars are reasonable targets
+  in that block.
 
-### Stage 6 – Флаги (детект от карты, не глобальным сканом)
+Matches provide `candidate` identity, not final semantics, encoding P6.
 
-**Первичный путь – от размеченной карты/пути**, а не сплошной скан (bit-тестов тысячи):
+### Stage 6 - Flags: detect from a map, not through a global scan
 
-- **selector**: у аксессора/обёртки – что разветвляет загрузку `r4` (или указателя оси).
-  Резолвер раздела 6 по обеим веткам callsite даёт две базы ->
-  `:Flag)-[:SELECTS]->(:Map)` (обе).
-- **gate**: bit-тест, доминирующий над вызовом аксессора (условный skip) ->
-  `:Flag)-[:GATES]->(:Func)`. Immo-гейты – тем же детектом от guard-функций, найденных
-  `ScanImmoAnchors` (DTC-якоря).
-- **threshold**: ROM-константа в `cmp` на пути (`0x8FDC`). Скаляр; в деф – редактируемым при
-  опознанной семантике сравниваемого.
+The **primary path starts from an annotated map or code path**, not a full scan among thousands of
+bit tests:
 
-Механика флага – тройка "загрузка по `gbr` – проверка бита – ветвление":
-`mov.b @(0x93,gbr),r0` (Ghidra разрешает в `0xFFFF4217`), `tst 0x1,r0`, `bt`/`bf`. Ставится
-бит через `or.b 0x20,@(r0,gbr)`, снимается через `and.b 0xdf,@(r0,gbr)`. **База `gbr` не
-глобальна**: прошивка её переустанавливает (`0x68cb8` несёт `ldc r0,gbr` и `ldc.l @r15+,gbr`,
-адресуя ею другую структуру), поэтому адрес флага берётся из ссылки Ghidra, а не складывается
-из базы и смещения – своё сложение дало бы правдоподобные адреса не тех ячеек.
+- **selector:** at an accessor or wrapper, identify what branches the `r4` load or axis pointer.
+  The section 6 resolver follows both call-site branches to two bases and creates
+  `(:Flag)-[:SELECTS]->(:Map)` for both.
+- **gate:** identify a bit test that dominates the accessor call through a conditional skip and
+  create `(:Flag)-[:GATES]->(:Func)`. Apply the same detection to immo guard functions found by
+  `ScanImmoAnchors` from DTC anchors.
+- **threshold:** identify a ROM constant in a path `cmp`, such as `0x8FDC`. It is a scalar and
+  becomes editable in the definition after comparison semantics are identified.
 
-`ScanFlags.java` работает **локально у аксессоров/доминаторов и guard-функций**, не по всей
-прошивке. Глобальный скан bit-тестов – опциональный шумный невод только для незакрытых зон,
-не основной механизм. Роль ставится по тому, что лежит на ветвях, и ветви берутся из CFG
-(`getFlows()` и `getFallThrough()` самой инструкции): выходы блока, содержащего ветвление,
-для этого непригодны – их бывает больше двух, и какой из них чья ветвь, оттуда не видно.
-Ветвление, чьи ветви не различены, выходит `unknown` – это заявка на трейс, а не отсутствие
-флага. JK03A, аксессор `0x82c8a`: 62 находки, среди них `selector` `gbr+0x93 bit0`, ветвящий
-`r4` между `0xb61a` и `0xb71a`, – та самая разметка, снятая раньше трейсом, и на ней детект
-проверяется.
+Flag mechanics use the "GBR load - bit test - branch" triple:
+`mov.b @(0x93,gbr),r0`, which Ghidra resolves to `0xFFFF4217`; `tst 0x1,r0`; and `bt`/`bf`.
+A bit is set with `or.b 0x20,@(r0,gbr)` and cleared with `and.b 0xdf,@(r0,gbr)`.
+**GBR has no global base.** Firmware reassigns it: `0x68cb8` contains both `ldc r0,gbr` and
+`ldc.l @r15+,gbr` to address a different structure. Use Ghidra's resolved reference for the flag
+address rather than adding base and offset manually; manual addition would produce plausible
+addresses for the wrong cells.
 
-Детект покрывает флаги по `gbr`; флаг за указателем из пула на абсолютный адрес RAM в него не
-попадает.
+`ScanFlags.java` runs **locally around accessors/dominators and guard functions**, not across the
+whole firmware. A global bit-test scan is an optional noisy net for unresolved areas, not the
+primary mechanism. Branch contents determine role, and branches come from the instruction CFG
+through `getFlows()` and `getFallThrough()`. The containing block's exits are unsuitable because
+there can be more than two with no indication of branch ownership. A branch whose sides cannot be
+distinguished is emitted as `unknown`, a trace request rather than absence of a flag. At JK03A
+accessor `0x82c8a`, 62 findings include selector `gbr+0x93 bit0`, which branches `r4` between
+`0xb61a` and `0xb71a`. This previously traced annotation validates the detector.
 
-### Stage 7 – Продвижение и верификация
+Detection covers GBR-addressed flags. It does not cover a flag reached through a pool pointer to
+an absolute RAM address.
 
-Ворота раздела 5. `candidate -> code`: конкретная семантика, контракт либо шкала прослежены
-в коде и имеют evidence своей заявки. Универсальная пара RAM-вход/выход не обязательна:
-inline comparison, return без RAM-write и доказанная dead-ветвь требуют своего output
-disposition. `code -> silicon`: CONSULT3P live-data / стенд. Локальные уровни пишутся в
-`confidence`, `contract_conf`, `scale_conf`, их доводы – в соответствующие evidence-колонки.
-Слабейшее звено и grounding вычисляются отдельно.
+### Stage 7 - Promote and verify
 
-### Stage 8 – Эмиссия дефа (решает P5)
+Apply section 5 gates. For `candidate -> code`, trace the specific semantics, contract, or scale in
+code and provide evidence for that claim. A universal RAM-input/output pair is not mandatory:
+inline comparison, return without a RAM write, and a proven dead branch require their own output
+dispositions. `code -> silicon` requires CONSULT3P live data or a bench test. Store local levels in
+`confidence`, `contract_conf`, and `scale_conf`, and their basis in the corresponding evidence
+columns. Compute weakest-link confidence and grounding separately.
 
-Генератор `tools/mapkit/emit_def.py`: граф (факты) + `defs/<rom>.dtc.csv` (DTC) +
-`defs/<rom>.overrides.toml` (презентация) -> `defs/<rom>.xml`. Контракт – раздел 9.
-Проекция хранится только для ROM с собственным живым презентационным слоем; JK03A
-остаётся измерительным слоем графа без отдельных `maps.csv`, `overrides.toml` и XML.
+### Stage 8 - Emit the definition (resolves P5)
 
-Ledger `defs/<rom>.maps.csv` – проекция того же каталога (`tools/maps/build_tracker.py`):
-срез графа, который виден в диффе и проходит ревью, он же worklist разбора (открытая работа –
-уровень `candidate` с пустой `semantics`). Отдельной колонки статуса в нём нет: она была бы
-рендером уровня, роли и семантики, то есть копией соседних колонок, а копия факта и есть то,
-из-за чего источники расходятся. Ledger и XML регенерируемы; правятся не они, а источники –
-реестр входов, ручной слой и оверрайды.
+`tools/mapkit/emit_def.py` combines graph facts, `defs/<rom>.dtc.csv` DTC data, and
+`defs/<rom>.overrides.toml` presentation into `defs/<rom>.xml`. Section 9 defines the contract.
+Store a projection only for a ROM with its own live presentation layer. JK03A remains a graph
+measurement layer without separate `maps.csv`, `overrides.toml`, or XML.
 
-## 8. Неиспользуемые рычаги инструментов (явно)
+The `defs/<rom>.maps.csv` ledger is a projection of the same catalog through
+`tools/maps/build_tracker.py`: a reviewable graph snapshot visible in diffs and the analysis
+worklist. Open work is a `candidate` with empty `semantics`. There is no separate status column
+because it would render confidence, role, and semantics and duplicate neighboring facts, creating
+the type of divergence this design prevents. Ledger and XML are regenerated; edit the entry
+registry, manual layer, and overrides rather than generated files.
 
-### 8.1 Ghidra – data-flow декомпилятора
+## 8. Explicitly unused tool capabilities
 
-`ResolveAccessors` (раздел 6) поднимает `HighFunction`/`PcodeOpAST`/varnode define-use:
-разыменование pool-указателей аргументов (условие А), свёртка backward-slice, резерв
-`SymbolicPropogator`, восстановление функций под сайтами вне разметки (условие В). Снимает P1.
-Остальной `DecompInterface` – только текстовый C (`DecompileFuncs`, `PoolUsers`). Не
-используется: call-site prototype override (`HighFunctionDBUtil.writeOverride`) для чистки
-входов CALLIND, восстановление структуры калибровки на gbr-базе (типизировать `gbr` ->
-именованные поля-флаги вместо `gbr+0x93`), детект флагов от карты (Stage 6).
+### 8.1 Ghidra decompiler data flow
 
-### 8.2 Memgraph/MAGE – алгоритмы
+Section 6 `ResolveAccessors` uses `HighFunction`, `PcodeOpAST`, and varnode define-use to
+dereference argument pool pointers under condition A, fold backward slices, fall back to
+`SymbolicPropogator`, and recover functions for unmarked sites under condition C. This resolves
+P1. Other uses of `DecompInterface` currently produce text C only through `DecompileFuncs` and
+`PoolUsers`. Unused capabilities include call-site prototype overrides through
+`HighFunctionDBUtil.writeOverride` to clean CALLIND inputs, reconstruction of the GBR-based
+calibration structure by typing `gbr` into named flag fields instead of `gbr+0x93`, and map-local
+flag detection from Stage 6.
 
-**Проекция обязательна.** Алгоритм, вызванный без аргумента, считает по всему storage, где
-`:USES` (78k рёбер) доминирует над `:CALLS` (6k), а `:Reg` связывает любые две функции,
-трогающие общий адрес. Последствия измеримы: сырой `pagerank.get()` выводит в топ RAM-регистры
-вместо кода, а `community_detection.get()` схлопывает граф в мегакластер (60% функций ROM).
-Рабочая форма – проекция call-графа одного ROM:
+### 8.2 Memgraph/MAGE algorithms
+
+**Projection is mandatory.** An algorithm called without a graph argument operates on all storage,
+where 78k `:USES` edges dominate 6k `:CALLS` edges and `:Reg` connects any functions touching a
+shared address. The effects are measured: raw `pagerank.get()` ranks RAM registers rather than
+code, and `community_detection.get()` collapses 60% of ROM functions into one megacluster. Use a
+single-ROM call-graph projection:
 
 ```cypher
 MATCH p=(:Func {rom:$rom})-[:CALLS]->(:Func {rom:$rom})
@@ -740,333 +761,350 @@ CALL pagerank.get(g) YIELD node, rank
 RETURN node.addr, rank ORDER BY rank DESC LIMIT 15
 ```
 
-Применения: PageRank/betweenness – сверка hub-интерполятора (Stage 1, доступна до Stage 3);
-BFS/path – caller-tree (Stage 2); node2vec/embeddings – cross-ROM homology (Stage 5). Louvain
-на проекции даёт сбалансированную карту подсистем, но библиотеку доступа не выделяет (P3).
-Индексы `:Map(addr)`/`:Axis(addr)`/`:Flag(addr)` – к существующим.
+Uses: PageRank/betweenness validates interpolation hubs in Stage 1 before Stage 3; BFS/path builds
+caller trees in Stage 2; node2vec/embeddings can support cross-ROM homology in Stage 5. Louvain on
+the projection gives a balanced subsystem map but does not isolate the access library (P3). Add
+`:Map(addr)`, `:Axis(addr)`, and `:Flag(addr)` indexes to existing indexes.
 
-**Доступ агента – MCP-сервер `mcp-memgraph`** (`.mcp.json`, scope project; `run_query`,
+**Agent access uses the `mcp-memgraph` MCP server** through project-scope `.mcp.json`, with
+`run_query`,
 `get_schema`, `get_page_rank`, `get_betweenness_centrality`, `get_node_neighborhood`).
-Headless-native и read-only: write-Cypher блокируется на стороне сервера, поэтому чтение графа
-идёт им, а мутации остаются за загрузчиками. Аналитические инструменты MCP считают по всему
-storage – для наших запросов брать `run_query` с `project()`.
+It is headless-native and read-only: server-side policy blocks write Cypher, so the agent reads
+through MCP while loaders retain all mutations. MCP analytical tools operate on complete storage;
+use `run_query` with `project()` for project queries.
 
-### 8.3 Мульти-ROM граф как homology-джойн
+### 8.3 Multi-ROM graph as a homology join
 
-Homology (Stage 5) превращает разметку одного дампа в стартовую гипотезу для остальных –
-главный ускоритель для VQ37VHR (1ND0A/1ND3B/JK78C) от размеченного VQ25HR JK08A и наоборот.
+Stage 5 homology turns annotation from one dump into an initial hypothesis for others. This is the
+primary accelerator between VQ37VHR images 1ND0A/1ND3B/JK78C and annotated VQ25HR JK08A in both
+directions.
 
-### 8.4 Workflow для массового прохода (на headless-артефактах)
+### 8.4 Catalog-wide workflow over headless artifacts
 
-Каталог – 439 карт обоих семейств, 230 аксессоров (141 работает с explicit-axis, 114 с банком,
-25 – с обоими) – детерминирован Stage 2, поэтому проход по нему является fan-out'ом, а не
-поиском. Оркестрация (замена ручного sweep) идёт **на headless-произведённых артефактах, без
-живого GUI**: резолвер (Stage 3) и пакетная декомпиляция каталога аксессоров (`DecompileFuncs`
-по списку Stage 2) прогоняются headless заранее -> артефакты (граф, резолвнутые операнды,
-C-псевдокод, листинги). Затем: **fan-out** -> **adversarial verify** (отдельный агент проверяет
-каждую `code`-заявку: трейс ведёт к заявленной семантике? RAM сходится? – гейт против P6) ->
-**synthesize** (генератор перевыпускает деф). GhydraMCP в автономном прогоне не участвует
-(требует GUI; узкое место на 16 параллельных агентов через один HTTP-плагин) – он опция только
-для live-сессии с уже поднятым GUI. Прецедент проекта – immo-реверс тем же способом.
+Stage 2 deterministically identifies a catalog of 439 maps across both families and 230 accessors:
+141 use explicit axes, 114 use the bank, and 25 use both. A catalog pass is therefore fan-out,
+not discovery. Orchestration replaces a manual sweep and runs **over headless-produced artifacts
+without a live GUI**. Stage 3 resolution and batch accessor decompilation through `DecompileFuncs`
+over the Stage 2 list run headlessly first, producing graph facts, resolved operands, C pseudocode,
+and listings. The flow is then **fan-out -> adversarial verify -> synthesize**. A separate verifier
+checks every `code` claim: does the trace support the asserted semantics and does RAM attribution
+agree? This is the P6 gate. The generator then re-emits the definition. GhydraMCP does not
+participate in autonomous runs because it requires a GUI and one HTTP plugin would bottleneck
+16 parallel agents. It remains optional for a live session with an open GUI. The project's immo
+reverse engineering followed this same pattern.
 
-Runtime-оркестратор этого раздела – механизм Claude Code **Dynamic Workflows**; имя
-инструмента в tool API – `Workflow`. Основной пакет запускается одним Dynamic Workflow со
-стадиями `Analyze` и `Verify`, связанными примитивом `pipeline()`: заявка компоненты переходит
-к проверке сразу после анализа, без общего барьера. Параллельный набор обычных вызовов `Agent`
-не является выполнением Dynamic Workflow, даже если сохраняет те же артефакты, промпты и
-ослепление; его результаты не допускаются к синтезу.
+Claude Code **Dynamic Workflows** are the runtime orchestrator; the tool API name is `Workflow`.
+One Dynamic Workflow runs the primary package with `Analyze` and `Verify` stages connected by
+`pipeline()`. A component claim enters verification immediately after analysis without a global
+barrier. A parallel set of ordinary `Agent` calls is not a Dynamic Workflow, even if it preserves
+the same artifacts, prompts, and blinding, and its results cannot enter synthesis.
 
-Frozen worklist передаётся инструменту `Workflow` через `args` как фактический массив
-элементов, а не строка и не выборка из текущего ledger. Результат запуска сохраняет `runId`,
-`scriptPath`, число анализов и число проверенных заявок `code`. Точечный повтор или
-adjudication запускается отдельным Dynamic Workflow с одним элементом либо как продолжение
-исходного запуска, но не прямым вызовом `Agent`. Если инструмент `Workflow` недоступен или
-завершается ошибкой, стадия блокируется: замена на обычных субагентов требует отдельного
-явного решения, а молчаливый fallback запрещён.
+Pass the frozen worklist through `Workflow` `args` as the actual item array, not a string or a
+selection from the current ledger. Store `runId`, `scriptPath`, analysis count, and verified
+`code`-claim count with the result. A targeted rerun or adjudication uses a separate one-item
+Dynamic Workflow or continues the original run, never a direct `Agent` call. If `Workflow` is
+unavailable or fails, the stage is blocked. Replacing it with ordinary subagents requires a
+separate explicit decision; silent fallback is prohibited.
 
-Evidence backfill использует property identity `(rom,label,addr,property)`, а не строку целиком.
-JK03A manifest содержит 78 заявок на 58 узлах: 52 Map semantics, 20 Map scale и 6 Axis scale.
-Recovery заменяет полный frozen-узел со всеми его properties, читает назначенный blind-артефакт
-до EOF и проходит отдельную состязательную проверку каждого поля. Семантика карты и её шкала
-разрешаются независимо.
+Evidence backfill uses property identity `(rom,label,addr,property)` rather than complete rows.
+The JK03A manifest contains 78 claims on 58 nodes: 52 map-semantics claims, 20 map-scale claims,
+and 6 axis-scale claims. Recovery replaces a complete frozen node with all properties, reads its
+assigned blind artifact through EOF, and performs separate adversarial verification for every
+field. Map semantics and scale resolve independently.
 
-Caller-semantics harness `tools/sweep/caller_ab_experiment.py` измеряет наблюдаемый операционный
-контраст вручную одобренного текста direct caller и neutral placebo на 24 frozen focused-map
-items JK03A. Selection commit –
+Caller-semantics harness `tools/sweep/caller_ab_experiment.py` measures the observed operational
+contrast between manually approved direct-caller text and neutral placebo over 24 frozen focused
+JK03A map items. The selection commit is
 `b02d3b7157d900a0654b1c63f2c200d8154d315b`, truth commit –
-`849d76a6ea8f2fb931448bf7adb58b6739aa7a40`, SHA-256 LF-соединённого списка адресов –
-`4e9b97f9e9a46d183d96d549403e8264856e1128209f363c6dd1a85bdf3bcc94`, diversity objective –
-`(24,16,7,-4,-12)`, selection tie-break SHA-256 –
+`849d76a6ea8f2fb931448bf7adb58b6739aa7a40`, SHA-256 of the LF-joined address list –
+`4e9b97f9e9a46d183d96d549403e8264856e1128209f363c6dd1a85bdf3bcc94`, diversity objective
+`(24,16,7,-4,-12)`, and selection tie-break SHA-256
 `01889b5fbd018738bef760dd91cdd3fa8b4ef9660a4ed3923cee322d8ba77576`. Private schema v4
-требует две отдельные сборки 24 map-артефактов и два blind audit; exact inventories обязаны
-совпасть побайтово и не содержать stale files или symlink. Audit фиксирует frozen budgets
-`8`/`24` и builder SHA-256; manifest встраивает builder source для исторической проверки. Полный
-Ghidra export root получает рекурсивный inventory обычных файлов с путями, размерами и SHA-256;
-explicit calls/functions/decomp/accessor sources обязаны входить в него. HMAC-SHA256 с private
-32-byte secret скрывает condition/pair/job/card/score mapping; public worklists не содержат truth
-или mapping.
+requires two separate builds of the 24 map artifacts and two blind audits. Exact inventories must
+match byte-for-byte and contain no stale files or symbolic links. Each audit records frozen
+budgets `8`/`24` and builder SHA-256, while the manifest embeds builder source for historical
+validation. The complete Ghidra export root receives a recursive inventory of regular files with
+paths, sizes, and SHA-256. Explicit call, function, decompilation, and accessor sources must be
+included. HMAC-SHA256 with a private 32-byte secret hides condition/pair/job/card/score mappings;
+public worklists contain neither truth nor mappings.
 
-Execution config фиксирует model `claude-opus-4-8`, effort `high`, одинаковый platform-default
-token budget, exact embedded prompts, Workflow scripts и project agent с единственным top-level
-`tools: []` в YAML frontmatter, а также SHA-256 всех runtime sources; model alias не используется. Saved workflows до первого agent-вызова
-проверяют exact
-execution/item schemas, counts, prompts, runtime-binding paths и SHA-256 format. Execution input
-содержит frozen schema, execution-config digest и canonical live runtime binding; Python control
-plane связывает embedded artifact text с hash, citation ranges/excerpts – с допустимыми code fences
-того же текста, и проверяет live source digests. `archive-workflow` повторяет эти проверки до
-архивации. Saved Workflow не является самостоятельной
-криптографической границей доверия.
-Blind worker получает только embedded `artifact_text`: filesystem path и parent-only opaque ids и
-hashes в prompt не входят. Prep использует только frozen Ghidra pseudocode и нейтральные `CALLS`,
-без текущих и исторических `Func.role`/`Func.semantics`. Comments и literal contents удаляются,
-все содержательные identifiers, включая автоматические `param`/`local`/`uVar` имена Ghidra,
-заменяются адресными нейтральными именами либо `ID_<n>`. 21 `Analyze -> adversarial Verify`
-формирует не готовые cards, а `caller-card-candidates/v1` с exact payload digest. `role` и
-`semantics` обязаны быть printable ASCII English. Arm markers
-запрещены. Отдельный ручной просмотр сверяет каждый свободный `role`/`semantics` с cited frozen
-artifact; `finalize-cards` требует полное `caller-card-approvals/v1`, manual-review policy,
-operator attestation и exact digests, затем повторно выводит candidates из prep archive и создаёт
-cards v4. `build-conditions` не принимает candidates напрямую. Реестр project definitions
-загружается при старте Claude Code; после изменения definitions до первого запуска обязательны
-restart и registry smoke-test.
+Execution configuration pins model `claude-opus-4-8`, effort `high`, the same platform-default
+token budget, exact embedded prompts, Workflow scripts, and a project agent with exactly one
+top-level `tools: []` field in YAML frontmatter, plus SHA-256 for every runtime source. No model
+alias is used. Before the first agent call, saved workflows validate exact execution/item schemas,
+counts, prompts, runtime-binding paths, and SHA-256 format. Execution input contains the frozen
+schema, execution-config digest, and canonical live runtime binding. The Python control plane
+binds embedded artifact text to its hash, binds citation ranges/excerpts to permitted code fences
+in the same text, and verifies live source digests. `archive-workflow` repeats these checks before
+archiving. A saved Workflow is not an independent cryptographic trust boundary.
 
-Два opaque условия имеют один исходный map artifact и различаются только caller-card block.
-Exposed map получает approved role/semantics в `verified`; `placebo` сохраняет те же card ids,
-число карточек и layout, но подставляет естественно сформулированные детерминированные нейтральные
-role/semantics. Каждая control map получает одну одинаковую neutral sham-card и byte-identical
-artifact в обоих условиях. Четыре каталога двух `integrity_copies` обязаны быть различными;
-копии проверяют файлы, а stochastic LLM replicate остаётся один и использует copy 1. Поэтому
-estimand является наблюдаемым контрастом approved caller text и neutral placebo, не причинным
-эффектом семантики при tokenizer-identical вводе.
+The blind worker receives only embedded `artifact_text`; filesystem paths, parent-only opaque IDs,
+and hashes are absent from its prompt. Prep uses only frozen Ghidra pseudocode and neutral `CALLS`,
+without current or historical `Func.role`/`Func.semantics`. Comments and literal contents are
+removed. Every semantic identifier, including automatic Ghidra `param`/`local`/`uVar` names, is
+replaced with an address-derived neutral name or `ID_<n>`. Twenty-one
+`Analyze -> adversarial Verify` pairs produce `caller-card-candidates/v1` with exact payload
+digests rather than final cards. `role` and `semantics` must be printable ASCII English, and arm
+markers are prohibited. Separate manual review compares every free-form `role`/`semantics` with
+the cited frozen artifact. `finalize-cards` requires complete `caller-card-approvals/v1`, the
+manual-review policy, operator attestation, and exact digests, then re-derives candidates from the
+prep archive and creates cards v4. `build-conditions` does not accept candidates directly. Claude
+Code loads the project-definition registry at startup; after definitions change, restart and run
+the registry smoke test before first execution.
 
-Один и тот же `vq-caller-run` выполняет 48 Map Analyze и 48 Map Verify. Run schema v4 хранит
-`machine_references`, а не directed trace: порядок 8-hex адресов не создаёт ребро, а score
-измеряет покрытие множества адресов legacy truth trace. Arm/condition markers во всех свободных
-строковых полях run payload и verifier rationale запрещены до blind scoring; проверка декодирует
-HTML, удаляет comments и Unicode format controls. `accept_code`
-требует минимум две уникальные machine references. Короткие scalar constants не являются machine
-references. Evidence разбирается canonical parser `provenance.py`; process tokens запрещены.
-Текущий artifact не имеет frozen typed-support registry, поэтому dependency tokens
-`role:addr[+offset]@target_prop` в run response запрещены. Raw location задаётся terminal
-`site:addr`; addressless terminals требуют case-sensitive literal boundary match, а `rom_const`
-требует exact `addr=value` с непустым canonical literal. Evidence anchors, target и machine
-references обязаны присутствовать в artifact и exact непустых fenced citations; unused citation
-отклоняется. Валидатор не приписывает C-коду семантическую роль по словам и не выводит directed
-edges из порядка строк. Семантическую правильность role/disposition/target/semantics проверяют blind
-verifier и закрытый scoring. Verifier возвращает полный Analyze payload дословно; exact равенство
-проверяют Workflow и pre-archive validator.
+The two opaque conditions share one source map artifact and differ only in the caller-card block.
+An exposed map receives approved role/semantics under `verified`; `placebo` keeps the same card
+IDs, card count, and layout but inserts naturally worded deterministic neutral role/semantics.
+Every control map receives one identical neutral sham card and a byte-identical artifact in both
+conditions. The four directories for two `integrity_copies` must be distinct. The copies validate
+files, while there is one stochastic LLM replicate using copy 1. The estimand is therefore the
+observed contrast between approved caller text and neutral placebo, not a causal semantic effect
+under tokenizer-identical input.
 
-Archive встраивает фактический script path, exact script source/SHA-256, args/result, полный native
-Workflow output и fresh-launch attestation. Persisted session script принимается только при exact
-source hash runtime binding. Native root и result schemas exact; result types, anchors, citation
-ranges/excerpts против embedded artifacts, Analyze/Verify linkage и completeness проверяются до
-записи completed archive. Если progress содержит
-phase records, они обязаны образовывать canonical sequence. Frozen agent records покрывают frozen
-labels, имеют ровно один `StructuredOutput` tool call на agent, ненулевые aggregate totals, один resolved model из
-allowlist `claude-opus-4-8`/`claude-opus-4-8[1m]` и полное отсутствие
-fallback/retry/cache/error provenance в служебных полях и значениях. Prep, оба run и score используют
-один resolved model. Validated run report повторно выводится из исходных archives и embedded
-sources.
+The same `vq-caller-run` performs 48 Map Analyze and 48 Map Verify calls. Run schema v4 stores
+`machine_references`, not a directed trace. The order of 8-hex addresses creates no edge; scoring
+measures coverage of the legacy truth-trace address set. Arm/condition markers are prohibited in
+all free-form run-payload fields and verifier rationale before blind scoring. Validation decodes
+HTML and removes comments and Unicode format controls. `accept_code` requires at least two unique
+machine references. Short scalar constants are not machine references. The canonical
+`provenance.py` parser handles evidence, and process tokens are prohibited. The current artifact
+has no frozen typed-support registry, so run responses cannot contain dependency tokens
+`role:addr[+offset]@target_prop`. Raw locations use terminal `site:addr`; addressless terminals
+require a case-sensitive literal boundary match, and `rom_const` requires exact `addr=value` with
+a nonempty canonical literal. Evidence anchors, targets, and machine references must appear in
+both the artifact and exact nonempty fenced citations; unused citations are rejected. The
+validator neither assigns semantic roles to C code by keywords nor derives directed edges from
+line order. Blind verification and private scoring judge the semantic correctness of
+role/disposition/target/semantics. Verifier returns the complete Analyze payload verbatim, and
+Workflow plus pre-archive validation require exact equality.
 
-Blind scoring создаёт 48 opaque worklist items. Scorer получает один JSON-encoded объект с
-reference/candidate semantics, без hashes, pair/condition id и соседнего ответа; содержимое строк
-не может закрыть prompt delimiter. `factual_evidence` проецирует reference truth на тот же
-terminal-only run-домен, поэтому запрещённые dependency/process tokens не входят в denominator.
-Все 48 вызовов и raw scores сохраняются независимо. Pooling,
-усреднение byte-identical payloads, retry и fallback отсутствуют. Falsification gate проверяет
-каждый control и каждую компоненту, включая `machine_reference_coverage` и
-`verifier_accepted`, отдельно; любое verifier split делает gate invalid, максимальный абсолютный
-delta обязан быть `<= 1/7`, взаимное погашение controls не учитывается. Нарушение даёт
-`status=invalid_controls` и `observed_paired=null`. Прохождение даёт
-`status=controls_passed`; при одном replicate результат остаётся наблюдаемым парным контрастом и
-`causal_claim=false`. Полный эксперимент содержит 186 agent runs. Saved workflows принимают
-execution object или полную JSON object string, но не путь к файлу. Harness не пишет canonical
-CSV, не поднимает claims до `silicon` и всегда выдаёт `automatic_application=false`. Полный
-контракт, frozen addresses и CLI фаз приведены в `map-sweep.md`. Эксперимент этим контрактом не
-считается запущенным.
+The archive embeds actual script path, exact script source and SHA-256, args/result, complete
+native Workflow output, and fresh-launch attestation. A persisted session script is accepted only
+when its source hash exactly matches the runtime binding. Native root and result schemas are exact.
+Result types, anchors, citation ranges/excerpts against embedded artifacts, Analyze/Verify
+linkage, and completeness are validated before a completed archive is written. If progress
+contains phase records, they must form the canonical sequence. Frozen agent records cover frozen
+labels, contain exactly one `StructuredOutput` tool call per agent, report nonzero aggregate
+totals, use one resolved model from the `claude-opus-4-8`/`claude-opus-4-8[1m]` allowlist, and
+contain no fallback/retry/cache/error provenance in metadata fields or values. Prep, both runs,
+and scoring use one resolved model. The validated run report is re-derived from source archives
+and embedded sources.
 
-Blind audit, cohort digest, runtime binding, manual card approval и Workflow archive проверяют
-локальную воспроизводимость, но не являются криптографической аттестацией доверенного runner.
-Operator attestation фиксирует заявленный fresh launch, а пользователь с правом согласованно
-изменить все локальные входы остаётся внутри trust boundary.
+Blind scoring creates 48 opaque worklist items. The scorer receives one JSON-encoded object with
+reference/candidate semantics and no hashes, pair/condition ID, or sibling response; string
+content cannot close the prompt delimiter. `factual_evidence` projects reference truth into the
+same terminal-only run domain, excluding prohibited dependency/process tokens from the
+denominator. All 48 calls and raw scores are stored independently, with no pooling, averaging of
+byte-identical payloads, retry, or fallback. The falsification gate checks every control and every
+component, including `machine_reference_coverage` and `verifier_accepted`, separately. Any
+verifier split invalidates the gate; maximum absolute delta must be `<= 1/7`; opposing control
+deltas do not cancel. Failure yields `status=invalid_controls` and `observed_paired=null`.
+Success yields `status=controls_passed`. With one replicate, the result remains an observed paired
+contrast and `causal_claim=false`. The complete experiment contains 186 agent runs. Saved
+workflows accept an execution object or complete JSON object string, not a file path. The harness
+does not write canonical CSV, does not promote claims to `silicon`, and always emits
+`automatic_application=false`. `map-sweep.md` defines the complete contract, frozen addresses,
+and phase CLI. The experiment is not considered launched under this contract before all required
+checks complete.
 
-Единица fan-out'а – связная компонента графа "аксессор -> карта", а не карта: один трейс
-потребителя обслуживает все карты своего аксессора, а одну карту читают несколько аксессоров,
-и агент на карту повторял бы один трейс N раз, заявляя разное об одном узле. Агенты читают
-артефакты, а не граф: слой разметки лежит там же, где форма, поэтому ослепить агента с
-доступом к графу нельзя, а состав артефакта задаёт шаг подготовки. Контракт прогона – единица,
-порядок волн, ослепление пилота, схема заявки, ворота – `map-sweep.md`.
+Blind audit, cohort digest, runtime binding, manual card approval, and Workflow archive validate
+local reproducibility but do not cryptographically attest a trusted runner. Operator attestation
+records the asserted fresh launch. A user able to modify all local inputs consistently remains
+inside the trust boundary.
 
-## 9. Контракт генератора дефа (граф + DTC + оверрайды -> RomRaider XML)
+The fan-out unit is a connected accessor -> map component, not a map. One consumer trace covers
+all maps read by an accessor, while multiple accessors can read one map. One agent per map would
+repeat the same trace N times and assert different facts about one node. Agents read artifacts
+rather than the graph because annotation and shape coexist there, making graph-access blinding
+impossible. Preparation defines artifact content. `map-sweep.md` defines the work unit, wave order,
+pilot blinding, claim schema, and gates.
 
-`emit_def.py <rom>` читает граф, `defs/<rom>.dtc.csv` и
-`defs/<rom>.overrides.toml`, пишет `defs/<rom>.xml`. Команда предназначена для
-канонического ROM с собственным презентационным слоем; для exact-code JK03A актуальным
-пользовательским дефом является JK08A:
+## 9. Definition generator contract (graph + DTC + overrides -> RomRaider XML)
 
-- **Факты из графа**: адреса, dims, storagetype, оси (`:Axis` -> дочерние `<table>`), scaling
-  (`units`/`scale_expr`/`to_byte`), локальные уровни карты и шкалы (`confidence`,
-  `scale_conf`), ориентация RomRaider из finisher-геометрии
-  (`cell = table + idxY + idxX*width` => X Axis=нагрузка/столбцы, Y Axis=обороты/строки, как на
-  5 картах JK08A), комментарий с входом, ядром, аксессором и `resolver_kinds`. Claim evidence
-  остаётся в источнике и графе, в XML не дублируется.
-- **DTC из реестра** (`defs/<rom>.dtc.csv`, git): index, код, адрес 12-байтного
-  descriptor, адрес связанного uint16 attribute и его stock/disabled значения.
-  Генератор сверяет запись с точным stock ROM из `rom-images/roms.csv`. Один
-  descriptor `TableSwitch` выпускается только для строки уровня `code`, у которой
-  `stock_attribute == disabled_attribute`; для JK08A этому условию отвечает P1610.
-  Записи с изменяемым attribute требуют двух несмежных правок и через одиночный
-  `TableSwitch` не выпускаются.
-- **Презентация из оверрайдов** (`defs/<rom>.overrides.toml`, git): человекочитаемые имена,
-  `category`, порядок таблиц, шаги редактора (`format`/`fine`/`coarse`), блок `romid`,
-  параметры `<checksum>`, `mask` для независимого редактирования битовых полей элемента,
-  косметические комментарии, подписи ячеек у карты без оси. Ручная семья
-  `direct-row-major` задаёт в этом слое обе статические оси: `static_axis_x` длиной
-  `width` и `static_axis_y` длиной `height`; геометрия и элемент остаются фактами
-  `findings.csv`. Массив `[[masked_view]]` создаёт дополнительное представление тех же
-  ячеек: `source` ссылается на выпускаемую карту, отдельный `mask` не пересекается с
-  маской основной таблицы, а форма и оси повторно берутся из Map-факта. Это позволяет
-  независимо показывать value field и bit flag без второго узла карты. Слияние по
-  ключу `{rom, addr}`; оверрайд поверх факта – ошибка (`static_axis` при живой `:Axis`
-  останавливает прогон), как и карта в воротах без имени и оверрайд на карту вне ворот.
-- **Ворота эмиссии**: выпускается то, что можно прочитать, – роль `table`, непустая семантика
-  и непустая шкала при `confidence >= candidate`; ниже `candidate` не эмитится. Карта без
-  семантики – адрес и форма, без шкалы – сетка сырых байтов: и то и другое уже несёт ledger.
-  Отброшенное генератор перечисляет: молчаливый пропуск читался бы как отсутствие карты.
-  Неоднозначная геометрия (ось выбирает ветвление – осей на ребре больше одной) ворота
-  закрывает и уходит в Stage 6. Прямая прямоугольная карта без рёбер осей проходит ворота
-  только как `direct-row-major` и только при полном наборе двух статических осей.
-- **Разметка уровня** идёт туда, где живёт утверждение: карта ниже `code` -> категория с
-  суффиксом `(candidate)`; шкала ниже `code` -> единицы с суффиксом `[cand]`, потому что
-  множитель – утверждение о значениях, а не об опознании таблицы, и уровни у них расходятся
-  (адрес `0xB61A` снят кодом, множитель `x-64` взят из каталога A2L). Оверрайды допускают
-  упорядоченный массив `<checksum>`: для JK08A нативные обработчики RomRaider `alt` и `alt2`
-  воспроизводят stock-поля и выполняются в порядке B -> A.
+`emit_def.py <rom>` reads the graph, `defs/<rom>.dtc.csv`, and
+`defs/<rom>.overrides.toml`, then writes `defs/<rom>.xml`. The command targets a
+canonical ROM with its own presentation layer. JK08A is the current user-facing
+definition for the exact-code JK03A ROM:
 
-Правила `AGENTS.md` (декларативность, en-dash, ASCII-стрелки/кавычки/сравнения) – в шаблоне
-генератора. Имена таблиц и осей – английские: это строки интерфейса RomRaider, и деф читают
-вне проекта.
+- **Facts from the graph**: addresses, dimensions, storage type, axes (`:Axis` -> child
+  `<table>` elements), scaling (`units`/`scale_expr`/`to_byte`), local map and scale
+  confidence (`confidence`, `scale_conf`), RomRaider orientation derived from finisher
+  geometry (`cell = table + idxY + idxX*width` => X Axis = load/columns, Y Axis =
+  RPM/rows, as seen on five JK08A maps), and a comment containing the entry, core,
+  accessor, and `resolver_kinds`. Claim evidence remains in the source and graph and is
+  not duplicated in XML.
+- **DTC registry** (`defs/<rom>.dtc.csv`, tracked in git): index, code, address of the
+  12-byte descriptor, address of the associated uint16 attribute, and its stock and
+  disabled values. The generator verifies each record against the exact stock ROM from
+  `rom-images/roms.csv`. It emits a single descriptor `TableSwitch` only for a
+  `code`-level row where `stock_attribute == disabled_attribute`; P1610 meets this
+  condition on JK08A. Records with a mutable attribute require two noncontiguous changes
+  and cannot be emitted as one `TableSwitch`.
+- **Presentation overrides** (`defs/<rom>.overrides.toml`, tracked in git):
+  human-readable names, `category`, table ordering, editor increments
+  (`format`/`fine`/`coarse`), the `romid` block, `<checksum>` parameters, a `mask` for
+  independent editing of element bit fields, cosmetic comments, and cell labels for a
+  map without an axis. The manual `direct-row-major` family defines both static axes in
+  this layer: `static_axis_x` has `width` elements and `static_axis_y` has `height`
+  elements; geometry and element type remain facts in `findings.csv`. A
+  `[[masked_view]]` array creates an additional view of the same cells: `source`
+  references an emitted map, its separate `mask` does not overlap the primary table
+  mask, and shape and axes are reused from the Map fact. This exposes a value field and
+  bit flag independently without a second map node. Records merge on `{rom, addr}`.
+  An override that replaces a fact is an error (`static_axis` with a live `:Axis` stops
+  the run), as are an unnamed map that passes the gate and an override for a map outside
+  the gate.
+- **Emission gate**: emit content that can be interpreted: role `table`, nonempty
+  semantics, and nonempty scaling at `confidence >= candidate`; levels below
+  `candidate` are not emitted. A map without semantics is only an address and shape; a
+  map without scaling is only a grid of raw bytes. Both are already represented in the
+  ledger. The generator lists rejected records because silent omission would be read as
+  absence of the map. Ambiguous geometry, such as a branch-selected axis represented by
+  more than one axis on an edge, closes the gate and moves to Stage 6. A direct
+  rectangular map without axis edges passes only as `direct-row-major` and only with a
+  complete pair of static axes.
+- **Confidence labeling** is attached to the claim it qualifies: a map below `code`
+  receives a category suffix `(candidate)`, while a scale below `code` receives a unit
+  suffix `[cand]`. The multiplier is a claim about values, not identification of the
+  table, so these levels can differ. At `0xB61A`, for example, code establishes the
+  address while the `x-64` multiplier comes from the A2L catalog. Overrides may specify
+  an ordered `<checksum>` array. For JK08A, the native RomRaider handlers `alt` and
+  `alt2` reproduce the stock fields and run in B -> A order.
 
-## 10. Что построить (backlog, репозиторий)
+The generator template follows the `AGENTS.md` rules for declarative prose, en dashes,
+ASCII arrows, quotes, and comparison operators. Table and axis names are English
+because they are RomRaider interface strings and the definition is used outside this
+project.
 
-Существующее (`ExportGraph`/`ExportXrefs`/`FindTableRefs`/`DumpListing`/`DecompileFuncs`/
+## 10. Build backlog
+
+The existing toolset remains in use:
+`ExportGraph`/`ExportXrefs`/`FindTableRefs`/`DumpListing`/`DecompileFuncs`/
 `RenameFuncs`/`RecoverFuncs`/`MapInventory`/`DirectLookupInventory`/`ResolveAccessors`/
 `ScanImmoAnchors`/`FindInterpCore`/`ScanFlags`/`load_graph`/`load_xrefs`/`load_maps`/
 `load_code`/`ingest`/`provenance_report`/`load_a2l`/`load_vendor`/`build_catalog`/
-`build_tracker`/`build_artifacts`/`mapkit`/`queries.cypher`) сохраняется.
+`build_tracker`/`build_artifacts`/`mapkit`/`queries.cypher`.
 
-Инструменты структурного пайплайна и claim-specific backfill Map/Axis построены. Открытая
-работа состоит в follow-up разборе карт `candidate` без семантики, флагах, homology и стендовой
-верификации.
+The structural pipeline and claim-specific Map/Axis evidence backfill are implemented.
+Open work consists of follow-up analysis of `candidate` maps without semantics, flags,
+homology, and bench verification.
 
-Порядок сборки графа исполняет `tools/memgraph/ingest.py`: `load_graph -> load_xrefs ->
-load_maps -> load_code -> audit`. Эталоны каталога (`load_a2l.py` + `load_vendor.py`) являются
-семейными, а ledger и XML строятся после успешного аудита. Каталог покрывает оба семейства
-доступа плюс ручной слой – 439 карт из известных 441. Вне графа две: их называет только
-backtrack на сайтах с невыбранной базой, а его слово фактом не является.
+`tools/memgraph/ingest.py` enforces the graph build sequence:
+`load_graph -> load_xrefs -> load_maps -> load_code -> audit`. Catalog references
+(`load_a2l.py` + `load_vendor.py`) are family-wide; the ledger and XML are built only
+after a successful audit. The catalog covers both access families plus the manual
+layer: 439 of 441 known maps. The two maps outside the graph are reported only by
+backtracking at sites with an unresolved base, which is not sufficient evidence.
 
-Отсюда порядок: sweep каталога (8.4, контракт – `map-sweep.md`; единица – 171 компонента графа
-"аксессор -> карта", первая волна – пилот на компоненте `0x82C8A`, где 6 карт из 14 уже сняты
-трейсом и служат ключом ответов) -> флаги (Stage 6, `ScanFlags.java`, вход – аксессоры карт,
-размеченных sweep'ом, и 14 осей уровня `pattern`).
+The work sequence is therefore catalog sweep (section 8.4; contract in `map-sweep.md`;
+unit of work is one of 171 connected accessor -> map graph components; the first wave
+is a pilot on component `0x82C8A`, where traces have established 6 of 14 maps and
+provide an answer key) -> flags (Stage 6, `ScanFlags.java`; inputs are accessors for
+maps labeled by the sweep and 14 `pattern`-level axes).
 
-Флаги идут после каталога, а не до: Stage 6 детектит их от размеченной карты, поэтому его
-улов растёт с покрытием. Вход ему даёт sweep, а не 15 проецированных доступов с невыбранной
-базой: `ScanFlags` на 25 их аксессорах не находит ни одного флага, притом что gbr-обращения и
-`tst` там есть. База на sp-сайтах выбирается не битом, а индексом – перепись резолвера и называет их массивом
-таблиц по регистру (`0x64344` – шесть таблиц по `r5`, `0xbe39a` – две по `r13`), а `0x68cb8`
-ветвит по `cmp`. Последние четыре карты и sp-сайты закрывает перечисление ветвей резолвером,
-а не детект флагов. Туда же уходит вторая
-половина той же механики – ось, выбранная ветвлением: `0x14114` несёт две оси на одном ребре
-(`0xE98E` и `0x8000`, где лежит стёртая флешь), и обе названы резервом.
+Flags follow the catalog because Stage 6 detects them relative to a labeled map, so its
+yield grows with coverage. The sweep, rather than the 15 projected accesses with an
+unresolved base, supplies its input. `ScanFlags` finds no flags across the 25 accessors
+for those sites, although GBR accesses and `tst` are present. On SP-based sites, the
+base is selected by an index rather than a bit. Operand-set expansion identifies
+register-indexed table arrays (`0x64344`: six tables through `r5`; `0xbe39a`: two
+through `r13`), while `0x68cb8` branches on `cmp`. Resolver branch enumeration, not
+flag detection, closes the final four maps and SP-based sites. The same treatment
+applies to the other half of this mechanism: a branch-selected axis. `0x14114` carries
+two axes on one edge (`0xE98E` and `0x8000`, where the flash is erased), and
+backtracking alone reports both.
 
-Деф выпускает 138 карт из 439 карт каталога и две отдельные оси-опоры. В каталоге
-290 карт уровня `code` и 149 уровня `candidate`. Семантика задана у 379 карт,
-`scale_expr` – у 345; остальные ворота закрывают роль либо неразмеченная ось.
-Открытая работа ledger'а – 60 карт `candidate` без семантики. Делит её колонка
-`vals`: 17 открытых карт несут одно значение на всю таблицу.
-`mapkit` замыкает и `:MATCHES` Stage 5: ключи матча (scale-family, семантика осей) даёт
-чтение осей, а не каталог. Cross-ROM homology (вторая половина P7) ждёт резолюции 1ND0A.
+The definition emits 138 of the 439 catalog maps and two standalone reference axes.
+The catalog contains 290 `code` maps and 149 `candidate` maps. Semantics are present
+for 379 maps and `scale_expr` for 345; the rest are rejected by role or an unlabeled
+axis. The ledger has 60 open `candidate` maps without semantics. The `vals` column
+divides this work: 17 open maps contain one value across the entire table. `mapkit`
+also closes Stage 5 `:MATCHES`: reading the axes, rather than the catalog, provides
+match keys such as scale family and axis semantics. Cross-ROM homology, the second
+half of P7, awaits resolution of 1ND0A.
 
-## 11. Метрики и ворота эффективности
+## 11. Metrics and effectiveness gates
 
-"Эффективный" – измеримо из графа одним запросом. Исторический baseline снят с exact-code
-донора JK03A, текущий факт пересобран для JK08A: 553 сайта, 61 без `r4` =>
-**492/553 = 89%** резолюции. Целевые ворота:
+"Effective" is measurable from the graph with one query. The historical baseline was
+measured on the exact-code JK03A donor. The current JK08A fact was rebuilt from 553
+sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 
-| Метрика | Запрос | Baseline -> факт (JK08A) | Цель |
-|---------|--------|--------------------------|------|
-| Резолюция операндов | доля callsite с `resolved` r4, иначе явный `dynamic` | 89% -> **99.5%** (583/586) | >= 95%; 0 молча потерянных |
-| Неухудшение vs backtrack | сайты, где backtrack дал значение в диапазоне ROM, а data-flow нет | – -> **1, разобран** (`0x56cd8`: значение из недостижимой ветки, базой не является) | все разобраны |
-| Латентный брак каталога | число `conflict` (`bt != df` на сайте) | не измерялось -> **14, все разобраны** (6 базовых – эталон неверен на всех; 3 – недостижимая ветка и остаточные регистры; 5 – константа `mov.w`, прочитанная эталоном как 32-битная). Ещё четыре базовых расхождения вышли из класса с разворотом операнда-множества (раздел 6): расходились не механизмы, а выбранные ими ветви одного селектора | все разобраны |
-| Полнота каталога | число `:Map` vs известный инвентарь; 0 карт вне графа | 223 базы в ledger'е, 0 в графе -> **439 в графе из 441** (+29 сверх ledger'а, +3 ручным слоем, +20 разворотом операнда-множества) | все `:Map` в графе; вне – 2, их называет только backtrack: за Stage 6 |
-| Ворота дефа | число выпускаемых карт `< code` без явной категории `(candidate)` | нет учёта -> **0**: деф выпускает 138 карт, 115 уровня `code` и 23 явно помеченных `(candidate)`; отдельно выпускаются две оси-опоры | 0 немаркированных |
-| Геометрия каталога | число `:Map` без `storagetype` (эмиссия без него невозможна) | 66 из 439 (все 2D) -> **0**: элемент 2D снят с finisher'а | 0 |
-| Читаемость дефа | число карт с семантикой, но без шкалы | нет учёта -> **34, в деф не входят**; деф выпускает 138 карт и две оси-опоры, у 12 карт `code` шкала не закреплена кодом | 0 без шкалы; `[cand]` снимается трейсом |
-| Оси на резерве | число `:Axis` уровня `pattern` (называет только backtrack, `k5`/`k6=sp`) | не измерялось -> **14 из 229**, из них `0x8000` – стёртая флешь; эмиссию не проходят | 0; разбирает Stage 6 |
-| Ось против кода ядра | число `:Axis` с `monotonic=false`: обратный линейный поиск такой массив не читает | не измерялось -> **1 из 229** (`0x119B2`; её карта `0x9C5A` – сплошь `0xFF`). Поймало элемент оси, объявленный по ядру вместо пары (обёртка, ось): 2 обёртки из 22, 2 оси читались словами вместо байтов | 0 |
-| Слой измерен | число `:Map`/`:Axis` без значений из образа (форма без содержимого) | нет учёта -> **0 из 439 и 229**: образ читается тем же прогоном, что строит слой | 0; промах чтения останавливает загрузку |
-| Output disposition карт `code` | structured evidence различает `writes`, consumer, inline comparison, return и dead control-flow | формат действует: focused-позиции 50-395 покрыты 346/346; backfill прежнего слоя сохранил 41 Map semantics уровня `code` с disposition и понизил 11 неподтверждённых заявок | 100% у Map semantics `code` |
-| Покрытие идентичности | доля `:Map` с `:MATCHES` или `:HOMOLOG` | 0; эталоны в графе (188 `:A2LEntry`, из них 106 карт; 371 `:VendorEntry`, из них 243 заводских), ключи матча – после Stage 4 | подсказка, растёт |
-| Сведение словарей | число `concept`, на которых сходятся A2L и оба вендора | не измерялось -> **17 из 23** размеченных; `concept` несут 45 записей A2L из 188 и 170 вендорских из 371 (49 значений) | растёт разбором; 100% недостижимы – VVEL в A2L нет вовсе (0 записей), флаги размечает Stage 6 |
-| Якоря вендоров в образе | число `:VendorFact {kind:'const'}` со значением, найденным в дампе | 22 задокументировано -> **1 найден** (K-Factor `26806`: сигнатура блока на всех 6 ROM реестра) | все проверены поиском; голое совпадение значения – `pattern` (в JK03A/JK08A их два), сигнатура блока – `candidate`, трейс – `code` |
-| Верификация | доля `code`-карт, дошедших до `silicon` | точечно | по мере стенда |
+| Metric | Query | Baseline -> JK08A fact | Target |
+|--------|-------|------------------------|--------|
+| Operand resolution | share of call sites with resolved `r4`, otherwise explicit `dynamic` | 89% -> **99.5%** (583/586) | >= 95%; 0 silently lost |
+| No regression against backtracking | sites where backtracking returned an in-ROM value but data flow did not | n/a -> **1, reviewed** (`0x56cd8`: value from an unreachable branch, not a base) | all reviewed |
+| Latent catalog defects | number of `conflict` results (`bt != df` at a site) | not measured -> **14, all reviewed** (6 base conflicts: reference wrong in every case; 3: unreachable branch and stale registers; 5: `mov.w` constant read as 32-bit by the reference). Four more base differences moved out of this class after operand-set expansion (section 6): the mechanisms selected different branches of one selector | all reviewed |
+| Catalog completeness | number of `:Map` nodes against known inventory; 0 maps outside graph | 223 bases in ledger, 0 in graph -> **439 of 441 in graph** (+29 beyond ledger, +3 manual, +20 from operand-set expansion) | every `:Map` in graph; 2 remain outside and are named only by backtracking: defer to Stage 6 |
+| Definition gate | number of emitted maps below `code` without explicit `(candidate)` category | not tracked -> **0**: definition emits 138 maps, 115 at `code` and 23 explicitly marked `(candidate)`; it also emits two standalone reference axes | 0 unmarked |
+| Catalog geometry | number of `:Map` nodes without `storagetype`, which prevents emission | 66 of 439, all 2D -> **0**: 2D element type comes from the finisher | 0 |
+| Definition readability | number of maps with semantics but no scale | not tracked -> **34, not emitted**; definition emits 138 maps and two reference axes, and 12 `code` maps have no code-established scale | 0 without scale; traces remove `[cand]` |
+| Deferred axes | number of `pattern`-level `:Axis` nodes reported only by backtracking with `k5`/`k6=sp` | not measured -> **14 of 229**; `0x8000` is erased flash; none pass emission | 0; Stage 6 resolves them |
+| Axis against core code | number of `:Axis` nodes with `monotonic=false`; reverse linear search cannot read such an array | not measured -> **1 of 229** (`0x119B2`; its map `0x9C5A` is entirely `0xFF`). This caught an axis element declared from the core rather than the wrapper/axis pair: 2 of 22 wrappers and 2 axes had been read as words instead of bytes | 0 |
+| Measured layer | number of `:Map`/`:Axis` nodes without values from the image, meaning shape without contents | not tracked -> **0 of 439 and 229**: the same run that builds the layer reads the image | 0; a read miss stops loading |
+| Output disposition of `code` maps | structured evidence distinguishes writes, consumer, inline comparison, return, and dead control flow | format active: focused positions 50-395 covered 346/346; backfill retained 41 prior `code` Map semantics claims with a disposition and downgraded 11 unsupported claims | 100% of `code` Map semantics |
+| Identity coverage | share of `:Map` nodes with `:MATCHES` or `:HOMOLOG` | 0; references are in the graph (188 `:A2LEntry`, including 106 maps; 371 `:VendorEntry`, including 243 factory entries); match keys follow Stage 4 | advisory, increasing |
+| Dictionary convergence | number of `concept` values shared by A2L and both vendors | not measured -> **17 of 23** labeled; `concept` is present on 45 of 188 A2L records and 170 of 371 vendor records, representing 49 values | increases with analysis; 100% is impossible because A2L has no VVEL entries (0); Stage 6 labels flags |
+| Vendor anchors in image | number of `:VendorFact {kind:'const'}` values found in the dump | 22 documented -> **1 found** (K-Factor `26806`: block signature in all 6 registered ROMs) | search all; a bare value match is `pattern` (two in JK03A/JK08A), block signature is `candidate`, trace is `code` |
+| Verification | share of `code` maps promoted to `silicon` | isolated cases | grows with bench work |
 
-Эти числа – определение эффективности пайплайна и регрессионный контроль: прогон, снизивший
-резолюцию или впустивший карту `< code` в активный деф, – провал ворот.
+These values define pipeline effectiveness and regression control. A run that lowers
+resolution or admits a map below `code` into the active definition fails the gate.
 
-### Claim-specific провенанс
+### Claim-specific provenance
 
-Offline preflight и `provenance_report.py audit` считают метрики по полной идентичности
-`(rom,label,addr,property)`. Наличие source nodes, factual evidence у каждого свойства уровня
-`code`/`silicon` и exact-проекция рёбер являются обязательными локальными воротами. Глобальный
-`--strict` дополнительно требует отсутствия effective downgrade и незаземлённых заявок во всём
-графе; это отдельная диагностика, а не условие локального backfill.
+Offline preflight and `provenance_report.py audit` calculate metrics using the complete
+identity `(rom,label,addr,property)`. Source nodes, factual evidence for every
+`code`/`silicon` property, and exact edge projection are mandatory local gates. Global
+`--strict` additionally requires no effective downgrade and no ungrounded claims
+anywhere in the graph. It is a separate diagnostic, not a condition of local backfill.
 
-| Метрика | Проверка | Факт JK08A | Цель |
-|---------|----------|------------|------|
-| Source claims | строгие строки всех четырёх CSV | **976**: Func semantics 242, Func contract 32, Reg 181, Map semantics 379, Map scale 126, Axis scale 16; ручные файлы содержат 271 строку `funcs.csv`, 181 строку `vars.csv`, 379 строк `findings.csv` и 22 строки `axes.csv` | схема разрешима целиком |
-| Проекция evidence | expected против actual по полному ключу ребра | **2759 ожидаемых рёбер `:RESTS_ON`**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | все пять счётчиков равны 0 после ingest |
-| Локальные ворота слоя кода | `code`/`silicon` Func/Reg/Map/Axis без factual evidence | **0**; frozen долг Map semantics 52, Map scale 20 и Axis scale 6 закрыт | 0 |
-| Слабейшее звено | `code`/`silicon`, где effective ниже declared | **0**; все 821 заявка `code` сохраняет declared level | 0 |
-| Транзитивный grounding | `code`/`silicon` без терминала, structural-опоры или заземлённого листа | **0** | 0 |
-| Циклы | SCC и незаземлённые SCC | **44 SCC, 0 незаземлённых** | цикл не подтверждает себя |
-| Evidence backfill Map/Axis | frozen решения по property identity | **78 из 78**: 28 `accept`, 27 `revise`, 23 `downgrade`; итог 55 `code` и 23 `candidate` | unresolved=0, локальный долг=0 |
-| Код ядра в артефакте | ядра без `:Func`, чей листинг несёт артефакт | **6 из 6** | 100% |
+| Metric | Check | JK08A fact | Target |
+|--------|-------|------------|--------|
+| Source claims | strict rows across all four CSV files | **976**: Func semantics 242, Func contract 32, Reg 181, Map semantics 379, Map scale 126, Axis scale 16; manual files contain 271 rows in `funcs.csv`, 181 in `vars.csv`, 379 in `findings.csv`, and 22 in `axes.csv` | entire schema resolves |
+| Evidence projection | expected against actual by complete edge key | **2759 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
+| Local code-layer gate | `code`/`silicon` Func/Reg/Map/Axis without factual evidence | **0**; frozen debt of Map semantics 52, Map scale 20, and Axis scale 6 is closed | 0 |
+| Weakest link | `code`/`silicon` where effective level is below declared | **0**; all 821 `code` claims retain their declared level | 0 |
+| Transitive grounding | `code`/`silicon` without a terminal, structural support, or grounded leaf | **0** | 0 |
+| Cycles | SCCs and ungrounded SCCs | **44 SCCs, 0 ungrounded** | a cycle cannot support itself |
+| Map/Axis evidence backfill | frozen decisions by property identity | **78 of 78**: 28 `accept`, 27 `revise`, 23 `downgrade`; result is 55 `code` and 23 `candidate` | unresolved=0, local debt=0 |
+| Core code in artifact | cores without a `:Func` whose listing is present in an artifact | **6 of 6** | 100% |
 
-`from_map@structural` отделяет зависимость от существования и геометрии карты от зависимости
-на её семантический уровень. Поэтому 149 карт уровня `candidate` из 439 не понижают
-автоматически доказанный код чтения таблицы.
+`from_map@structural` separates a dependency on map existence and geometry from a
+dependency on its semantic confidence. Consequently, 149 `candidate` maps out of 439
+do not automatically downgrade proven table-reading code.
 
-## 12. Воспроизводимость и инварианты
+## 12. Reproducibility and invariants
 
-- Источники репозитория (git): экстракторы и загрузчики, запросы, `mapkit`, `symbols.csv`,
-  A2L-донор (submodule `defs/reference`), вендорские словари `refs/vendor/`, реестр образов
-  `rom-images/roms.csv`.
-  Калибровочный слой P5 – `defs/<source>.interp.csv`, `defs/<source>.findings.csv`,
-  `defs/<source>.axes.csv`, `defs/<source>.overrides.toml`; слой кода и провенанса –
-  `defs/<source>.funcs.csv` и `defs/<source>.vars.csv`. Канонический `<source>` задаёт
-  `defs/rom-inheritance.toml`, который входит в git и закрепляет exact-code связь по
-  SHA-256 и диапазонам кода.
-  Ghidra-проект и данные Memgraph – регенерируемы (вне git), восстановление выполняет
-  `tools/memgraph/ingest.py <rom>` после подготовки headless-экспорта.
-- Рукописные источники: `symbols.csv` (имена функций), `defs/<source>.interp.csv`
-  (геометрия входов интерполяции и элемент их осей), `defs/<source>.findings.csv`
-  (находки о картах, единицы, уверенность), `defs/<source>.axes.csv` (семантика и
-  единицы осей), `defs/<source>.overrides.toml` (презентация),
-  `defs/<source>.notes.md` (журнал обоснований), `defs/rom-inheritance.toml`
-  (target -> canonical source),
-  `rom-images/roms.csv` (метка ROM -> файл дампа и его sha256),
-  `refs/vendor/proecu-maps.csv` и `refs/vendor/uprev-maps.csv` (транскрипция вендорских
-  словарей: имена вербатим), `refs/vendor/facts.csv` (якорные факты документации).
-  Значения таблиц и осей в
-  источники не идут: их говорит сам образ, и Stage 4 читает их оттуда каждым прогоном.
-  `refs/vendor/catalog.csv` – регенерируем (`tools/vendor/build_catalog.py`): он сводит две
-  транскрипции и держит выведенные колонки (`origin`, `concept`), а правка в нём разошлась бы
-  со словарём молча.
-  Граф, ledger и XML – регенерируемы, и правка идёт в источник, а не в граф: узлы слоя
-  загрузчик пересоздаёт, и правка, введённая в граф, не пережила бы прогона.
-- Ворота: активный деф не содержит карт ниже `code`; заливка в мотор – только `silicon`
-  (правило `AGENTS.md`: ground truth в кремнии, структура графа != семантика).
-- Направление: правка CSV-источников и оверрайдов -> Ghidra + Memgraph + деф. Обратно
-  (rename в GUI/Lab, правка графа или сгенерированного XML) в git не возвращается.
+- Repository sources tracked in git: extractors and loaders, queries, `mapkit`,
+  `symbols.csv`, the A2L donor (submodule `defs/reference`), vendor dictionaries in
+  `refs/vendor/`, and the image registry `rom-images/roms.csv`.
+  The P5 calibration layer consists of `defs/<source>.interp.csv`,
+  `defs/<source>.findings.csv`, `defs/<source>.axes.csv`, and
+  `defs/<source>.overrides.toml`; the code and provenance layer consists of
+  `defs/<source>.funcs.csv` and `defs/<source>.vars.csv`. The canonical `<source>` is
+  selected by `defs/rom-inheritance.toml`, which is tracked in git and fixes the
+  exact-code relationship using SHA-256 and code ranges. The Ghidra project and
+  Memgraph data are reproducible and untracked. After preparing the headless export,
+  `tools/memgraph/ingest.py <rom>` reconstructs them.
+- Handwritten sources: `symbols.csv` for function names,
+  `defs/<source>.interp.csv` for interpolation input geometry and axis element type,
+  `defs/<source>.findings.csv` for map findings, units, and confidence,
+  `defs/<source>.axes.csv` for axis semantics and units,
+  `defs/<source>.overrides.toml` for presentation, `defs/<source>.notes.md` for the
+  evidence journal, `defs/rom-inheritance.toml` for target -> canonical source,
+  `rom-images/roms.csv` for ROM label -> dump path and SHA-256,
+  `refs/vendor/proecu-maps.csv` and `refs/vendor/uprev-maps.csv` for verbatim vendor
+  dictionary transcription, and `refs/vendor/facts.csv` for documentary anchor facts.
+  Table and axis values do not enter source files: the image itself supplies them, and
+  Stage 4 reads them on every run. `refs/vendor/catalog.csv` is generated by
+  `tools/vendor/build_catalog.py`; it combines both transcriptions and carries derived
+  columns (`origin`, `concept`). Editing it directly could silently diverge from the
+  dictionaries. The graph, ledger, and XML are generated. Changes belong in their
+  sources because the loader recreates layer nodes and direct graph edits would not
+  survive ingestion.
+- Gate: the active definition contains no maps below `code`; only `silicon` claims may
+  be flashed to an engine. Per `AGENTS.md`, ground truth is in the silicon and graph
+  structure is not semantics.
+- Direction: edit CSV sources and overrides -> Ghidra + Memgraph + definition. Changes
+  in the opposite direction, such as renaming in the GUI/Lab or editing the graph or
+  generated XML, do not return to git.

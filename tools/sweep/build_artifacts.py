@@ -1,35 +1,36 @@
 #!/usr/bin/env python3
-"""Артефакт компоненты графа "аксессор -> карта": шаг подготовки массового прохода.
+"""Build an "accessor -> map" graph-component artifact for a batch pass.
 
-Контракт прогона - tools/map-sweep.md, здесь его раздел 2. Единица работы - связная
-компонента двудольного графа "аксессор -> карта": компоненты независимы по построению
-(две не делят ни карту, ни аксессор), и все свидетельства о карте лежат внутри одной.
+The pass contract is tools/map-sweep.md, specifically section 2 here. The work unit is a
+connected component of the bipartite "accessor -> map" graph. Components are independent
+by construction (no two share a map or accessor), and all evidence about a map lies within
+one component.
 
-Артефакт - единственный вход агента прогона: доступа к Memgraph у агента нет. Отсюда
-ослепление структурно, а не обещанием: что агент видит, задаёт этот скрипт. Ослепить
-агента, который сам ходит в граф, нельзя - разметочный слой лежит там же, где форма, и
-один запрос вернёт ответ вместе с вопросом.
+The artifact is the pass worker's only input; the worker has no Memgraph access. Blinding is
+therefore structural rather than a promise: this script defines what the worker sees. A
+worker querying the graph cannot be blinded because annotations and shape live together and
+one query would return the answer with the question.
 
-Ослепление сделано БЕЛЫМ списком (MAP_FACTS/AXIS_FACTS - это RETURN запросов), а не
-чёрным. Разметка и измерение лежат на одном узле, и свойство, добавленное в него позже,
-по умолчанию обязано быть невидимым, а не видимым: чёрный список пропустил бы его молча.
-Заявка агента - semantics/role/units/scale_expr/confidence, и вывести их он обязан сам.
-Проверка ослепления идёт на каждом прогоне (verify_blind): текст артефакта сверяется с
-теми самыми строками разметки, которые он не должен нести.
+Blinding uses an ALLOWLIST (the RETURN clauses in MAP_FACTS/AXIS_FACTS), not a denylist.
+Annotations and measurements share a node, and a property added later must be invisible by
+default; a denylist would silently expose it. The worker must independently derive its claim:
+semantics/role/units/scale_expr/confidence. Every run verifies blinding (verify_blind) by
+comparing artifact text with the exact annotation strings it must not contain.
 
-Значения карт берёт образ, а не граф: в узле лежит только vmin/vmax/values_hash - 256
-ячеек в графе были бы содержимым образа, переписанным туда (Stage 4).
+Map values come from the image rather than the graph. A node stores only
+vmin/vmax/values_hash; placing 256 cells in the graph would duplicate image contents
+(Stage 4).
 
-Список компонент не хранится: он выводится запросом на каждом прогоне (P5). Ключ
-компоненты - младший адрес её аксессора; component_id от MAGE между прогонами не
-стабилен и именем файла служить не может.
+No component list is stored; a query derives it on every run (P5). A component key is its
+lowest accessor address. MAGE component_id is unstable between runs and cannot serve as a
+filename.
 
-Артефакт строится на компоненту (заявка на каждую её карту), карту (`--focus-map`) или
-ось (`--focus-axis`). Фокус карты сужает свидетельство до аксессоров целевой карты; фокус
-оси агрегирует все карты с этой осью и все аксессоры этих карт. В обоих случаях заявка
-требуется только по цели, а соседние карты и оси остаются контекстом.
+Build an artifact for a component (a claim for each map), a map (`--focus-map`), or an axis
+(`--focus-axis`). Map focus narrows evidence to accessors of the target map. Axis focus
+aggregates all maps using that axis and all their accessors. In both cases, only the target
+requires a claim; neighboring maps and axes remain context.
 
-Запуск: uv run --no-project --with neo4j python tools/sweep/build_artifacts.py \
+Invocation: uv run --no-project --with neo4j python tools/sweep/build_artifacts.py \
           <out_dir> [--rom JK08A] [--accessor <addr>] [--min-maps N] [--max-maps N] \
           [--focus-map <addr> | --focus-maps-file <path> | \
            --focus-axis <addr> | --focus-axes-file <path>] [--export-dir <dir>]
@@ -44,16 +45,17 @@ import sys
 from neo4j import GraphDatabase
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from mapkit import rom as romkit          # noqa: E402 - пакет соседний, не установленный
+from mapkit import rom as romkit          # noqa: E402 - adjacent package is not installed
 
 BOLT = "bolt://localhost:7687"
 EXPORT = os.path.expanduser("~/tools/ghidra-projects/export-{rom}")
 
-# --- Граница ослепления -------------------------------------------------------------
-# Ниже - RETURN запросов о картах и осях компоненты. Он и есть белый список: разметка не
-# покидает базу, а не отфильтровывается после выборки. Свойства, которых здесь нет
-# (semantics, role, units, scale_expr, to_byte, scale_conf, confidence, evidence, note у
-# :Map; kind, units, scale_expr, to_byte, confidence, note у :Axis), - заявка агента.
+# --- Blinding boundary ---------------------------------------------------------------
+# The queries below return component map and axis data. Their RETURN clauses form the
+# allowlist: annotation remains in the database instead of being filtered after retrieval.
+# Properties absent here (semantics, role, units, scale_expr, to_byte, scale_conf,
+# confidence, evidence, and note on :Map; kind, units, scale_expr, to_byte, confidence, and
+# note on :Axis) are the worker's claim.
 MAP_FACTS = """
 MATCH (m:Map {rom:$rom}) WHERE m.addr IN $addrs
 OPTIONAL MATCH (m)-[:VIA]->(w:Interp {rom:$rom})
@@ -75,8 +77,8 @@ RETURN a.addr AS addr, a.len AS len, a.storagetype AS storagetype,
 ORDER BY addr
 """
 
-# Разметка компоненты - её же ответ. Достаётся отдельным запросом и в артефакт не идёт:
-# ею verify_blind проверяет, что артефакт её не несёт.
+# Component annotations are its answers. A separate query retrieves them without placing
+# them in the artifact; verify_blind uses them to ensure the artifact does not contain them.
 MAP_ANSWERS = """
 MATCH (m:Map {rom:$rom}) WHERE m.addr IN $addrs
 RETURN m.addr AS addr, m.semantics AS semantics, m.note AS note, m.role AS role,
@@ -92,11 +94,11 @@ RETURN a.addr AS addr, a.kind AS kind, a.units AS units, a.scale_expr AS scale_e
        a.scale_evidence AS scale_evidence
 """
 
-# Разметка функций - тоже ответ: в semantics слоя кода копится знание проекта со ссылками
-# на конкретные карты ("домножение такой-то карты на такую-то константу"). В артефакт из
-# слоя идёт только contract, от карт не зависящий; проверяется это здесь, а не доверием к
-# RETURN запроса CONTRACTS. Берётся весь ПЗУ, а не показанные функции: утечь может и
-# разметка соседа, попавшая в текст через чужое поле.
+# Function annotations are also answers. Code-layer semantics accumulates project knowledge
+# with references to specific maps ("multiply map X by constant Y"). Only a map-independent
+# contract enters the artifact from this layer. This query verifies the boundary instead of
+# trusting CONTRACTS' RETURN clause. It reads the whole ROM rather than only displayed
+# functions because a neighboring annotation can leak through another field.
 FUNC_ANSWERS = """
 MATCH (f:Func {rom:$rom})
 WHERE f.semantics <> '' OR f.note <> '' OR f.evidence <> '' OR f.contract_evidence <> ''
@@ -104,7 +106,7 @@ RETURN f.addr AS addr, f.semantics AS semantics, f.note AS note,
        f.evidence AS evidence, f.contract_evidence AS contract_evidence
 """
 
-# --- Перечисление компонент ---------------------------------------------------------
+# --- Component enumeration ----------------------------------------------------------
 COMPONENTS = """
 MATCH p=(:Func {rom:$rom})-[:ACCESSES]->(:Map {rom:$rom})
 WITH project(p) AS g
@@ -115,10 +117,10 @@ RETURN component_id,
        [n IN nodes WHERE 'Func' IN labels(n) | n.addr] AS accessors
 """
 
-# Фокус оси не выбирает одну произвольную карту-представителя: общая ось может связывать
-# несколько карт и компонент. Контекстом служат ВСЕ карты с прямым ребром к оси и ВСЕ
-# аксессоры этих карт.
-# OPTIONAL MATCH сохраняет ось и карту без аксессора, чтобы неполнота графа не скрывала цель.
+# Axis focus does not pick one arbitrary representative map. A shared axis can connect
+# several maps and components. Context includes EVERY map directly connected to the axis
+# and EVERY accessor of those maps. OPTIONAL MATCH preserves an axis and a map without an
+# accessor so graph incompleteness cannot hide the target.
 AXIS_CONTEXTS = """
 MATCH (a:Axis {rom:$rom}) WHERE a.addr IN $addrs
 OPTIONAL MATCH (m:Map {rom:$rom})-[:AXIS_X|AXIS_Y]->(a)
@@ -127,12 +129,12 @@ RETURN a.addr AS axis, m.addr AS map, f.addr AS accessor
 ORDER BY axis, map, accessor
 """
 
-# Фокус: аксессоры, читающие одну заданную карту. Компонента задаёт СОСТАВ карт, но
-# свидетельство о карте лежит в её собственной окрестности - аксессорах, которые её читают,
-# и в том, что делают с их выходом. Аксессор компоненты, целевой карты не касающийся,
-# отстоит от неё на два и более шага и в трейс не входит; в артефакт он вносит объём.
-# Цена объёма не линейна: списание идёт как "ходов x контекст", а большой артефакт растит
-# оба множителя сразу (он читается кусками, и контекст пухнет от хода к ходу).
+# Focus: accessors that read one specified map. A component defines map MEMBERSHIP, but
+# evidence about a map lies in its own neighborhood: accessors that read it and consumers of
+# their output. A component accessor unrelated to the target map is at least two hops away,
+# does not belong in its trace, and only adds artifact volume. Volume cost is nonlinear:
+# usage grows as "turns x context", and a large artifact increases both factors because it is
+# read in chunks and context grows each turn.
 FOCUS_ACC = """
 MATCH (f:Func {rom:$rom})-[:ACCESSES]->(m:Map {rom:$rom, addr:$map})
 RETURN collect(DISTINCT f.addr) AS accessors
@@ -162,11 +164,12 @@ RETURN f.addr AS accessor, r.addr AS reg, r.region AS region, r.name AS name,
 ORDER BY accessor, region, reg
 """
 
-# Машинерия интерполяции: карта идёт VIA на обёртку, обёртка KERNEL на ядро. Обёртка
-# уходит в ядро через jmp, а не jsr, поэтому ребра CALLS туда нет и size ядра пуст -
-# Ghidra его функцией не размечает (лечит RecoverFuncs.java, раздел 7
-# map-flag-pipeline.md). Пустой size - факт артефакта: трейс через это ядро не ведётся.
-# Здесь же лежит finisher: он вызывается ядром и держит насыщение и элемент карты.
+# Interpolation machinery: a map uses VIA to reach a wrapper, and the wrapper uses KERNEL
+# to reach a core. The wrapper enters the core through jmp rather than jsr, so no CALLS
+# relationship exists and core size is empty because Ghidra does not define it as a function
+# (RecoverFuncs.java addresses this; section 7 of map-flag-pipeline.md). Empty size is an
+# artifact fact: no trace through that core is available. The query also includes finishers
+# called by the core that implement saturation and map element access.
 KERNELS = """
 MATCH (m:Map {rom:$rom})-[:VIA]->(w:Interp {rom:$rom})
 WHERE m.addr IN $maps
@@ -181,11 +184,11 @@ RETURN x.a AS addr, x.r AS role, f.size AS size,
 ORDER BY addr
 """
 
-# Контракты вызываемых функций из слоя понимания кода. RETURN здесь тоже белый список, и
-# `semantics` в него не входит намеренно: в semantics копится знание проекта со ссылками на
-# конкретные карты ("домножение 0x145ca на константу 0x1495a = 50000"), то есть готовый
-# ответ. Контракт - операция, соглашение о регистрах, побочные эффекты - от карт не зависит
-# и остаётся свидетельством, а не подсказкой.
+# Contracts for called functions from the code-understanding layer. RETURN is again an
+# allowlist and intentionally excludes `semantics`, which accumulates project knowledge
+# referencing specific maps ("multiply 0x145ca by constant 0x1495a = 50000") and therefore
+# contains an answer. A contract describes an operation, register convention, and side
+# effects independent of maps; it remains evidence rather than a hint.
 CONTRACTS = """
 MATCH (f:Func {rom:$rom}) WHERE f.addr IN $addrs AND f.contract <> ''
 RETURN f.addr AS addr, f.role AS role, f.size AS size, f.contract AS contract,
@@ -193,34 +196,35 @@ RETURN f.addr AS addr, f.role AS role, f.size AS size, f.contract AS contract,
 ORDER BY addr
 """
 
-# Кого показанный код вызывает. Считать по тексту псевдокода нельзя: библиотека
-# вызывается через регистр, загруженный из литерального пула, и Ghidra печатает такой вызов
-# как `(*pcVar26)()` - адреса в тексте нет вовсе. Ребро CALLS его знает, потому что цель
-# разрешена на этапе анализа, а не при печати.
+# Functions called by displayed code. Pseudocode text cannot identify them because the
+# library is called through a register loaded from a literal pool and Ghidra prints
+# `(*pcVar26)()` without an address. CALLS knows the target because analysis resolves it
+# before rendering.
 CALLED = """
 MATCH (f:Func {rom:$rom})-[:CALLS]->(g:Func {rom:$rom})
 WHERE f.addr IN $addrs AND g.contract <> ''
 RETURN DISTINCT g.addr AS addr
 """
 
-# Потребители выхода: функции, читающие RAM, которую пишет аксессор компоненты. Смысл
-# карты задаёт то, что происходит с её выходом дальше, а выход - это запись в RAM.
-# Отсечка по числу читателей - мера специфичности: регистр с единицами читателей частный
-# для компоненты, а читаемый многими - разделяемая шина, потребитель которой о карте не
-# говорит. Порог 8 держит умеренно-разделяемые выходы (2-8 потребителей - основная масса
-# случаев, где трейс доходит до смысла) и отсекает горячие стоки/шины (9+ читателей): их
-# полный набор потребителей дорог и даёт агенту стог, а не иглу. Цена в ТЕКСТЕ, не в
-# машинном коде: декомпилят потребителя в ~5-7 раз длиннее его size. У самого широкого
-# аксессора ROM'а (000b29b8, 65 write-регистров) артефакт при 8 уже ~800 КБ, при 32 - многие
-# мегабайты; выше порог растит цену прогона, не разметку.
+# Output consumers are functions that read RAM written by a component accessor. Map meaning
+# comes from what happens to its output, and that output is a RAM write. Reader-count
+# filtering measures specificity: a register with few readers is private to the component,
+# while one read by many is a shared bus whose consumers reveal nothing about the map. A
+# threshold of 8 retains moderately shared outputs (2-8 consumers cover most cases where a
+# trace reaches meaning) and removes hot sinks/buses with 9+ readers. Their full consumer
+# sets are expensive and give the worker a haystack. Cost lies in TEXT, not machine code:
+# consumer decompilation is approximately 5-7 times longer than its size. For the widest ROM
+# accessor (000b29b8, 65 written registers), an artifact at 8 is already approximately
+# 800 KB; at 32 it reaches several megabytes. Raising the threshold increases pass cost,
+# not annotation quality.
 #
-# Отсечка по разделяемости - не единственный источник объёма и не главный. Широкий аксессор
-# держит сотню приватных регистров (по одному читателю на каждый), и они проходят любой
-# порог: у карты 0001218e из 305 потребителей 56 приходят через 119 регистров с ровно одним
-# читателем. Поэтому декомпиляция потребителей идёт под своим бюджетом (--max-consumer-decomp),
-# а таблица потребителей печатается ПОЛНОЙ: состав выхода агент видит весь, код получает
-# наиболее специфичная часть. Порядок отбора - min(readers) по связывающим регистрам, затем
-# размер: приватный регистр ближе к выходу карты, чем умеренно-разделяемый.
+# Sharedness filtering is neither the only nor the main source of volume. A wide accessor
+# can hold a hundred private registers with one reader each, and all pass any threshold.
+# For map 0001218e, 56 of 305 consumers arrive through 119 registers with exactly one reader.
+# Consumer decompilation therefore has a separate budget (--max-consumer-decomp), while the
+# FULL consumer table remains visible. Code is included for the most specific subset.
+# Selection order is min(readers) across connecting registers, then size: a private register
+# is closer to map output than a moderately shared one.
 CONSUMERS = """
 MATCH (a:Func {rom:$rom})-[:USES {kind:'W'}]->(g:Reg {rom:$rom})
 WHERE a.addr IN $addrs
@@ -233,11 +237,11 @@ RETURN c2.addr AS consumer, c2.size AS size, collect(DISTINCT g.addr) AS regs,
 ORDER BY spec, size, consumer
 """
 
-# Потребители привязанного выхода. Отличие от CONSUMERS - в источнике набора регистров:
-# там он выводится из всех записей аксессора и потому несёт чужие величины, здесь задан
-# привязкой и несёт только величину целевой карты. Отсечка по разделяемости тут не нужна:
-# набор уже специфичен, а разделяемость привязанного регистра - факт о карте, и скрывать
-# его отсечкой значит терять свидетельство.
+# Consumers of an attributed output. This differs from CONSUMERS in the source register set:
+# CONSUMERS derives it from every accessor write and therefore mixes unrelated values;
+# attribution supplies only the target map's value. No sharedness filter is needed because
+# the set is already specific. Sharedness of an attributed register is itself a map fact,
+# and filtering it would discard evidence.
 CONSUMERS_OF = """
 UNWIND $regs AS reg
 MATCH (c:Func {rom:$rom})-[:USES {kind:'R'}]->(g:Reg {rom:$rom, addr:reg})
@@ -246,11 +250,11 @@ RETURN c.addr AS consumer, c.size AS size, collect(DISTINCT g.addr) AS regs, 1 A
 ORDER BY size, consumer
 """
 
-# Разбор пустого раздела потребителей. Пусто выходит по трём разным причинам, и они
-# значат для агента разное: аксессор вообще ничего не пишет в RAM (трейс кончается в
-# аксессоре), написанное никто снаружи не читает (выход мёртв либо читается тем же
-# аксессором), написанное читают все подряд (регистр - разделяемая шина, и отсечка по
-# специфичности его сняла). Молча опущенный раздел все три случая делает неразличимыми.
+# Diagnose an empty consumer section. Three causes have different meanings: the accessor
+# writes no RAM at all (trace ends in the accessor), no external function reads written
+# values (output is dead or read by the same accessor), or many functions read them
+# (register is a shared bus removed by specificity filtering). Silently omitting the
+# section would make these cases indistinguishable.
 WRITE_REGS = """
 MATCH (a:Func {rom:$rom})-[:USES {kind:'W'}]->(g:Reg {rom:$rom})
 WHERE a.addr IN $addrs
@@ -259,28 +263,30 @@ RETURN g.addr AS reg, g.name AS name, count(DISTINCT c) AS readers
 ORDER BY readers DESC, reg
 """
 
-# Регистры декомпилированных функций - сверщик резолва пула. Декомпилятор печатает литерал
-# именем `DAT_<адрес>`, и обращение `*(byte *)(DAT_0008625c + DAT_0008608e)` адреса не
-# называет, хотя граф его знает. Резолв по образу даёт адрес-кандидат, а этот запрос -
-# множество, на котором кандидат проверяется: совпадение и есть подтверждение трактовки.
+# Registers of decompiled functions validate pool resolution. The decompiler prints a
+# literal as `DAT_<address>`, and an access such as
+# `*(byte *)(DAT_0008625c + DAT_0008608e)` does not name its address even though the graph
+# knows it. Image-based resolution supplies a candidate address; this query supplies the
+# validation set. A match confirms the interpretation.
 FUNC_REGS = """
 MATCH (f:Func {rom:$rom})-[u:USES]->(g:Reg {rom:$rom})
 WHERE f.addr IN $addrs
 RETURN f.addr AS func, collect(DISTINCT {addr:g.addr, kind:u.kind}) AS regs
 """
 
-# Все известные адреса RAM и периферии ROM'а - второй, более слабый сверщик резолва.
-# Обращение по адресу, сложенному в регистре, Ghidra не резолвит, и ребра USES у него нет,
-# хотя адрес существует и узел о нём есть. Отсюда три состояния привязки, а не два.
+# Every known RAM and peripheral address in the ROM provides a second, weaker resolution
+# check. Ghidra does not resolve an access whose address is assembled in a register and
+# creates no USES relationship, even when an address node exists. This yields three binding
+# states rather than two.
 ALL_REGS = """
 MATCH (g:Reg {rom:$rom}) RETURN collect(g.addr) AS addrs
 """
 
-# Каталог-эталон. Ключ - геометрия: из трёх ключей матча (dims, scale-family, семантика
-# осей) на ослеплённой стороне есть только он. Семантика осей пришла бы из разметки,
-# которой в артефакте нет; scale-family - оттуда же. Матч слаб, и артефакт говорит это
-# прямо: 16 записей каталога имеют форму 16x16 (раздел 5 спеки - подсказка candidate, не
-# идентификация).
+# Reference catalog. Geometry is the key because it is the only one of three match keys
+# (dims, scale family, axis semantics) present on the blinded side. Axis semantics and scale
+# family would come from annotations absent from the artifact. The match is weak and the
+# artifact says so directly: 16 catalog entries have a 16x16 shape (section 5 calls this a
+# candidate hint, not identification).
 A2L_BY_SHAPE = """
 MATCH (e:A2LEntry {family:'HR'}) WHERE e.dims = $dims AND e.shape = $shape
 RETURN e.name AS name, e.kind AS kind, e.unit AS unit, e.scale_expr AS scale_expr,
@@ -289,14 +295,14 @@ RETURN e.name AS name, e.kind AS kind, e.unit AS unit, e.scale_expr AS scale_exp
 ORDER BY name
 """
 
-# Вендорский словарь матчится не сам по себе, а через A2L по concept: у ProECU нет ни одного
-# из трёх ключей матча - скриншоты дерева несут только имена, - а матч по имени вслепую есть
-# ровно тот отказ, против которого стоит P6. Отсюда цепочка: геометрия карты -> запись A2L ->
-# её concept -> записи вендоров с тем же concept.
+# Match vendor vocabulary through A2L concept rather than directly. ProECU has none of the
+# three match keys because tree screenshots contain only names, and blind name matching is
+# exactly the failure P6 prevents. The chain is map geometry -> A2L entry -> its concept ->
+# vendor entries with the same concept.
 #
-# origin=factory обязателен: 128 записей из 371 заводскими не являются (патчи RaceROM и ARC -
-# чужой код, которого в стоке нет). Матч стоковой карты к patch-записи был бы не слабой
-# подсказкой, а неверной.
+# origin=factory is mandatory. Of 371 entries, 128 are not factory (RaceROM and ARC patches
+# are external code absent from stock). Matching a stock map to a patch entry would be wrong
+# rather than merely weak evidence.
 VENDOR_BY_CONCEPT = """
 MATCH (e:VendorEntry {family:'HR', origin:'factory'}) WHERE e.concept IN $concepts
 RETURN e.vendor AS vendor, e.name AS name, e.group AS grp, e.axis_x AS axis_x,
@@ -304,9 +310,9 @@ RETURN e.vendor AS vendor, e.name AS name, e.group AS grp, e.axis_x AS axis_x,
 ORDER BY concept, vendor, name
 """
 
-# Якорь по содержимому: документированный дефолт ищется прямо в значениях компоненты.
-# applies_to печатается: EcuTek документирует VQ37VHR, а JK03A - VQ25HR без VVEL, и
-# граница применимости - предмет решения агента, а не фильтра здесь.
+# Content anchor: search documented defaults directly in component values. Print applies_to
+# because EcuTek documents VQ37VHR while JK03A is VQ25HR without VVEL. Applicability is a
+# worker decision rather than a filter here.
 VENDOR_CONSTS = """
 MATCH (f:VendorFact {family:'HR', kind:'const'})
 RETURN f.vendor AS vendor, f.subject AS subject, f.value AS value, f.units AS units,
@@ -316,7 +322,7 @@ ORDER BY subject
 
 
 def shape(width, height):
-    """Форма таблицы словарём журнала разметки, общим с каталогом A2L."""
+    """Express table shape in the annotation-ledger vocabulary shared with the A2L catalog."""
     if width is None:
         return ""
     return f"{width}x{height}" if height else f"1D-{width}"
@@ -330,10 +336,10 @@ def group(rows, key):
 
 
 def components(session, rom):
-    """Компоненты графа, ключ - младший адрес аксессора.
+    """Return graph components keyed by their lowest accessor address.
 
-    Список нигде не хранится: граф меняется разметкой, и записанный список стал бы
-    вторым источником правды (P5, раздел 1 контракта).
+    The list is not stored because annotation changes the graph and a recorded list would
+    become a second source of truth (P5, contract section 1).
     """
     out = []
     for r in session.run(COMPONENTS, rom=rom):
@@ -347,15 +353,15 @@ def components(session, rom):
 
 
 def read_values(image, m):
-    """Значения карты - из образа: в графе их нет, там vmin/vmax/values_hash."""
+    """Read map values from the image; the graph stores only vmin/vmax/values_hash."""
     try:
         return image.table(m["addr"], m["width"], m["height"], m["storagetype"])
     except ValueError as e:
-        return [[f"ЧТЕНИЕ НЕ УДАЛОСЬ: {e}"]]
+        return [[f"READ FAILED: {e}"]]
 
 
 def grid(rows):
-    """Карта построчно: строка - точка оси r5 (:AXIS_X), столбец - точка оси r6."""
+    """Render a map by rows: r5 (:AXIS_X) points are rows and r6 points are columns."""
     if not rows or isinstance(rows[0][0], str):
         return "    " + str(rows[0][0] if rows else "")
     w = max(len(str(v)) for row in rows for v in row)
@@ -363,10 +369,11 @@ def grid(rows):
 
 
 def dumped(export_dir, addr, kind):
-    """Выход прогона подготовки. Отсутствие файла - факт артефакта, а не пропуск.
+    """Read preparation-pass output; a missing file is an artifact fact, not an omission.
 
-    Листинг берётся на адрес сайта, а не функции: операнды резолвятся там, и окно
-    DumpListing (+-24 инструкции) вокруг входа функции до сайта не достаёт.
+    A listing begins at the site address rather than the function because operands resolve
+    there and a DumpListing window of +-24 instructions around the function entry does not
+    reach the site.
     """
     path = os.path.join(export_dir, f"{kind}_{addr}.{'c' if kind == 'decomp' else 'txt'}")
     if not os.path.exists(path):
@@ -376,18 +383,18 @@ def dumped(export_dir, addr, kind):
 
 
 def render_site_listing(A, export_dir, site):
-    """Листинг есть только у карты, пришедшей из переписи с callsite."""
+    """Render a listing only for a map with a census call site."""
     callsite = site["callsite"]
-    A(f"##### Сайт `{callsite}` -> карта `{site['tbl']}`")
+    A(f"##### Site `{callsite}` -> map `{site['tbl']}`")
     A("")
     if not callsite:
-        A("Сайт вызова отсутствует: карта добавлена ручным слоем вне переписи "
-          "резолвера, поэтому листинга сайта для неё не существует.")
+        A("No call site exists: the manual layer added this map outside the resolver "
+          "census, so it has no site listing.")
     else:
         text, path = dumped(export_dir, callsite, "listing")
         if text is None:
-            A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки этот сайт не "
-              f"покрыл.")
+            A(f"File `{os.path.basename(path)}` is missing: the preparation pass did not "
+              f"cover this site.")
         else:
             A("```")
             A(text)
@@ -395,9 +402,9 @@ def render_site_listing(A, export_dir, site):
     A("")
 
 
-# Вызов, у которого адрес виден прямо в тексте: `FUN_00021bbc` псевдокода и `jsr`-цель
-# листинга (`-> 00021bbc`). Основной канал - ребро :CALLS (запрос CALLED), потому что вызов
-# через регистр адреса в тексте не оставляет; здесь добирается то, чего нет в графе.
+# Calls whose addresses are directly visible in text: pseudocode `FUN_00021bbc` and listing
+# `jsr` target (`-> 00021bbc`). :CALLS (query CALLED) is the primary channel because a call
+# through a register leaves no address in text. This pattern supplements what the graph lacks.
 CALLED_ADDR = re.compile(r"(?:\bFUN_|-> )(00[0-9a-f]{6})\b")
 POOL_SYM = re.compile(r"\b((?:PTR_)?(?:DAT|FUN)_00([0-9a-f]{6}))\b")
 POOL_ALIAS = re.compile(
@@ -409,11 +416,11 @@ NUMERIC = re.compile(r"0x[0-9a-fA-F]+[uUlL]*|\d+[uUlL]*")
 
 
 def literal(image, addr):
-    """Трактовки литерала пула по адресу.
+    """Return interpretations of a pool literal at an address.
 
-    Ширина из псевдокода не видна: `mov.l @(disp,pc)` кладёт 32 бита с выравниванием 4,
-    `mov.w @(disp,pc)` - 16 со знаковым расширением. Обе и возвращаются: выбор между ними
-    - предмет проверки, а не догадки сборщика.
+    Width is not visible in pseudocode: `mov.l @(disp,pc)` loads 32 bits with alignment 4,
+    while `mov.w @(disp,pc)` loads 16 bits with sign extension. Return both because choosing
+    between them requires validation rather than a builder guess.
     """
     d, out = image.data, {}
     if addr % 4 == 0 and addr + 4 <= len(d):
@@ -425,12 +432,12 @@ def literal(image, addr):
 
 
 def stable_addrs(values):
-    """Канонический порядок множества адресов."""
+    """Return a canonical ordering of an address set."""
     return sorted(set(values))
 
 
 def stable_map_facts(rows):
-    """Канонический порядок карт и их множественных связей."""
+    """Return maps and their multivalued relationships in canonical order."""
     out = []
     for row in rows:
         fact = dict(row)
@@ -441,11 +448,11 @@ def stable_map_facts(rows):
 
 
 def axis_contexts(session, rom, addrs):
-    """Полный детерминированный контекст каждой целевой оси.
+    """Return complete deterministic context for every target axis.
 
-    Карты выбираются прямыми рёбрами AXIS_X/AXIS_Y, аксессоры - прямыми ACCESSES к
-    выбранным картам. Множества агрегируются по оси, поэтому общая ось не сводится к
-    контексту одной произвольно выбранной карты.
+    Select maps through direct AXIS_X/AXIS_Y relationships and accessors through direct
+    ACCESSES relationships to those maps. Aggregate sets by axis so a shared axis is not
+    reduced to the context of one arbitrary map.
     """
     wanted = stable_addrs(addrs)
     grouped = {}
@@ -467,20 +474,20 @@ def axis_contexts(session, rom, addrs):
 
 
 def axis_focus_jobs(session, rom, addrs):
-    """Задания axis-<addr>.md с полным контекстом либо точная ошибка состава."""
+    """Return axis-<addr>.md jobs with full context or a precise membership error."""
     wanted = stable_addrs(addrs)
     contexts = axis_contexts(session, rom, wanted)
     missing = sorted(set(wanted) - set(contexts))
     if missing:
-        raise SystemExit(f"осей нет в графе: {', '.join(missing)}")
+        raise SystemExit(f"axes are absent from the graph: {', '.join(missing)}")
     unlinked = [axis for axis in wanted if not contexts[axis]["maps"]]
     if unlinked:
-        raise SystemExit(f"оси не связаны с картами: {', '.join(unlinked)}")
+        raise SystemExit(f"axes are not connected to maps: {', '.join(unlinked)}")
     return [(contexts[axis], None, axis, f"axis-{axis}.md") for axis in wanted]
 
 
 def kinds_by_addr(rows):
-    """Свести все виды обращений к адресу без зависимости от порядка рёбер."""
+    """Combine all access kinds per address independently of relationship order."""
     kinds = {}
     for row in rows:
         kinds.setdefault(int(row["addr"], 16), set()).add(row["kind"])
@@ -488,22 +495,21 @@ def kinds_by_addr(rows):
 
 
 def stable_sites(rows):
-    """Канонический порядок обращений при совпадающих accessor и callsite."""
+    """Return accesses in canonical order when accessor and call site match."""
     return sorted(rows, key=lambda row: (row["accessor"], row["callsite"], row["tbl"]))
 
 
 def stable_callees(rows):
-    """Канонический порядок множества вызываемых функций."""
+    """Return called functions in canonical order."""
     return sorted(rows, key=lambda row: (row.get("addr") or "", row.get("size") or -1))
 
 
 def alias_snapshots(stmts, syms):
-    """Значение локального alias перед каждым оператором псевдокода.
+    """Track local alias values before each pseudocode statement.
 
-    Ghidra повторно использует одно локальное имя для разных баз RAM. Глобальный словарь
-    alias в таком случае приписывает ранней записи последнее значение имени и связывает
-    результат карты с чужим регистром. Здесь действует ближайшее предшествующее
-    присваивание; любое присваивание не из пула снимает прежний alias.
+    Ghidra reuses one local name for different RAM bases. A global alias dictionary would
+    assign the final value to an earlier write and bind map output to the wrong register.
+    Use the nearest preceding assignment; any non-pool assignment removes the previous alias.
     """
     aliases, snapshots = {}, []
     for stmt in stmts:
@@ -521,19 +527,19 @@ def alias_snapshots(stmts, syms):
 
 
 def pool(image, text, regs):
-    """Литералы пула псевдокода и позиционные привязки выражений к регистрам.
+    """Resolve pseudocode pool literals and position-specific expression bindings to registers.
 
-    Декомпилятор печатает литерал именем `DAT_<адрес>`, значения не подставляя: в
-    обращении `*(byte *)(DAT_0008625c + DAT_0008608e)` символы и база, и смещение, так что
-    регистр из псевдокода не читается - хотя таблица USES того же артефакта его знает.
-    Без этого трейс потребителя обрывается на имени функции, не доходя до того, что она с
-    величиной делает, и заявка о карте не может подняться выше `candidate`.
+    The decompiler prints a literal as `DAT_<address>` without substituting its value. In
+    `*(byte *)(DAT_0008625c + DAT_0008608e)`, both base and displacement are symbols, so
+    pseudocode does not reveal the register even though the artifact's USES table knows it.
+    Without resolution, a consumer trace ends at the function name before showing what it
+    does with the value, preventing a map claim from rising above `candidate`.
 
-    Трактовку ширины выбирает не сборщик, а арифметика под проверкой графа: адрес
-    `база + смещение` сверяется сперва с регистрами этой функции, затем со всеми
-    известными адресами ROM'а. Состояния разные по силе и не сводятся к "верно/неверно":
-    обращение по адресу, сложенному в регистре, Ghidra не резолвит, ребра USES у него нет,
-    и подтвердить его первым сверщиком нельзя, хотя адрес настоящий.
+    The builder does not choose literal width. Arithmetic checked against the graph does:
+    compare `base + displacement` first with this function's registers and then with every
+    known ROM address. These states differ in strength and are not simply true/false.
+    Ghidra does not resolve an access whose address is assembled in a register and creates no
+    USES relationship, so the first check cannot confirm a real address in that case.
     """
     syms = {}
     for full, hexa in POOL_SYM.findall(text):
@@ -550,9 +556,9 @@ def pool(image, text, regs):
 
     def disp(term, current=None):
         if NUMERIC.fullmatch(term):
-            # декомпилятор эмитит C-суффиксы (0x1c00U, ...L) и печатает малые смещения
-            # десятичными (`iVar3 + 100`); одиночный странный литерал не должен ронять
-            # сборку - вызывающий пропускает None
+            # The decompiler emits C suffixes (0x1c00U, ...L) and prints small displacements
+            # in decimal (`iVar3 + 100`). One unusual literal must not abort the build; the
+            # caller skips None.
             try:
                 return int(term.rstrip("uUlL"), 0), term
             except ValueError:
@@ -571,8 +577,8 @@ def pool(image, text, regs):
                 continue
             target = (b + o) & 0xFFFFFFFF
             binds[(bsym, osym)] = (target, known.get(target))
-            # Один и тот же текст выражения может означать разные адреса после
-            # переприсваивания локальной базы, поэтому индекс оператора входит в ключ.
+            # The same expression text can mean different addresses after local-base
+            # reassignment, so the statement index is part of the key.
             key = re.sub(r"\s+", " ", match.group(0))
             raw[(index, key)] = target
     return syms, binds, raw, base, aliases, stmts
@@ -580,36 +586,36 @@ def pool(image, text, regs):
 
 CALL = re.compile(r"(?:\(\*\(code \*\)\s*(?:\w+)\s*\)|\bFUN_[0-9a-f]{8})\s*\(")
 VAR = re.compile(r"\b([a-zA-Z_]\w*)\b")
-# `*(тип *)(A + B) = rhs` либо `*(тип *)A = rhs`; звёздочка обязательна - без неё
-# присваивание идёт в локальную переменную, а не в память
+# `*(type *)(A + B) = rhs` or `*(type *)A = rhs`; the asterisk is required because without
+# it the assignment targets a local variable rather than memory.
 STORE = re.compile(r"\*\s*\(\s*(\w+)\s*\*\s*\)\s*(\([^;]*?\)|\w+)\s*=\s*([^;=][^;]*)$")
-# ширина записи задаёт, по каким адресам величину читают: 16-битная запись занимает два
-# байта, и читатель старшей половины обращается к A, младшей - к A+1
+# Store width determines which addresses can read the value. A 16-bit store occupies two
+# bytes; a reader of the high half accesses A and a reader of the low half accesses A+1.
 STORE_WIDTH = {"char": 1, "uchar": 1, "byte": 1, "undefined1": 1,
                "short": 2, "ushort": 2, "undefined2": 2,
                "int": 4, "uint": 4, "undefined4": 4, "float": 4}
-# Граница ставится по числу переприсваиваний, а не по расстоянию в тексте: между вызовом
-# и записью стоят несвязанные операторы, и величина к моменту записи - та же переменная,
-# нетронутая. Расползается пометка с глубиной, не с расстоянием.
+# Limit by reassignment count rather than textual distance. Unrelated statements can appear
+# between a call and store while the variable remains unchanged. Taint spreads with depth,
+# not distance.
 #
-# На JK03A граница не работает: 2, 3, 4 и 6 дают один и тот же результат - 254 привязки на
-# 586 рёбер. Величина этого ПЗУ либо доходит до памяти за пару присваиваний, либо не
-# доходит вовсе, и 135 обрывов трейса - свойство кода, а не следствие отсечки. Параметр
-# остаётся защитой от кода другой формы, а не настройкой под ответ.
+# On JK03A, limits 2, 3, 4, and 6 produce the same result: 254 bindings across 586
+# relationships. In this ROM a value either reaches memory within a few assignments or never
+# does. The 135 trace breaks are a code property rather than a limit effect. The parameter
+# remains protection against differently shaped code, not tuning toward an answer.
 TAINT_DEPTH = 2
 
 
 def attribute(image, text, regs, bases):
-    """Регистры RAM, принимающие величину карты, по сайтам вызова обёртки.
+    """Find RAM registers receiving a map value from wrapper call sites.
 
-    Аксессор широкий: у самого широкого в ПЗУ 274 записываемых регистра, и раздел
-    потребителей, собранный по всем сразу, величину карты растворяет. Граф связи не даёт -
-    ребро ACCESSES знает сайт и базу, ребро USES знает записанные регистры, общего между
-    ними нет. Псевдокод даёт: обёртка вызывается с базой карты первым аргументом, её
-    результат связывается именем, и запись этого имени в память видна текстом.
+    Accessors are wide: the widest ROM accessor writes 274 registers, and a consumer section
+    built from all of them obscures the map value. The graph does not link them: ACCESSES
+    knows site and base, while USES knows written registers. Pseudocode provides the link:
+    the wrapper receives the map base as its first argument, its result gets a local name,
+    and a store of that name is visible in text.
 
-    Обрыв трейса - факт, а не пробел: величина, которая до памяти не доходит, либо
-    возвращается вызывающему, либо потребляется на месте, и регистра выхода у карты нет.
+    A trace break is a fact rather than a gap. A value that does not reach memory is returned
+    to the caller or consumed locally, and the map has no output register.
     """
     _syms, _binds, raw, resolve, aliases, stmts = pool(image, text, regs)
     known = {int(r["addr"], 16) for r in regs}
@@ -628,8 +634,8 @@ def attribute(image, text, regs, bases):
                "stmt": st}
         name = re.fullmatch(r"\w+", st[:m.start()].strip().rstrip("=").strip())
         if not name:
-            # результат не связывается именем: либо возвращается наружу, либо тут же
-            # потребляется выражением, в которое вложен вызов
+            # The result has no local name: it is returned or immediately consumed by the
+            # expression containing the call.
             rec["kind"] = "return" if st.startswith("return") else "inline"
             out.append(rec)
             continue
@@ -639,10 +645,10 @@ def attribute(image, text, regs, bases):
 
 
 def trace_sink(stmts, call, name, raw, resolve, aliases, known):
-    """Первая запись в память, достижимая от результата вызова.
+    """Find the first memory store reachable from a call result.
 
-    Величина от вызова до записи проходит через промежуточные имена, поэтому трейс идёт
-    вперёд по присваиваниям, а не по одному оператору.
+    The value passes through intermediate names before a store, so trace forward through
+    assignments rather than inspecting one statement.
     """
     live = {name: 0}
     for j in range(call + 1, len(stmts)):
@@ -655,7 +661,7 @@ def trace_sink(stmts, call, name, raw, resolve, aliases, known):
             key = re.sub(r"\s+", " ", sm.group(2))
             addr = raw.get((j, key))
             if addr is None and re.fullmatch(r"\w+", key):
-                # запись без смещения: база сама и есть адрес регистра
+                # Store without a displacement: the base is the register address.
                 v, _sym = resolve(key, aliases[j])
                 addr = v if v is not None and 0xFFFF0000 <= v <= 0xFFFFFFFF else None
             if addr is None:
@@ -671,14 +677,14 @@ def trace_sink(stmts, call, name, raw, resolve, aliases, known):
                 if d <= TAINT_DEPTH:
                     live[asg.group(1)] = min(live.get(asg.group(1), d), d)
             elif asg.group(1) in live:
-                # имя переприсвоено чужой величиной - пометку с него снять, иначе она
-                # переезжает на постороннее значение и запись найдётся не та
+                # The name was reassigned an unrelated value. Remove taint so it does not
+                # move to that value and select the wrong store.
                 del live[asg.group(1)]
     return {"sink": None, "kind": "lost", "width": 0}
 
 
 def split_stmts(text):
-    """Тело функции, разбитое на операторы. Длинные Ghidra переносит - склеиваются."""
+    """Split a function body into statements, joining long lines wrapped by Ghidra."""
     body = text[text.index("{", text.index(")")) + 1:]
     out, cur = [], []
     for ch in body:
@@ -692,7 +698,7 @@ def split_stmts(text):
 
 
 def call_args(text, open_paren):
-    """Аргументы вызова: срез до парной скобки, разрезанный по запятым верхнего уровня."""
+    """Extract call arguments up to the matching parenthesis, split on top-level commas."""
     depth, start, out = 0, open_paren + 1, []
     for i in range(open_paren, len(text)):
         c = text[i]
@@ -710,39 +716,40 @@ def call_args(text, open_paren):
 
 
 ATTRIB_MISS = {
-    "return": "результат вызова не связывается именем - возвращается наружу. Регистра "
-              "выхода у карты в этом аксессоре нет, величину получает вызывающий.",
-    "inline": "результат вызова не связывается именем - потребляется выражением, в "
-              "которое вложен вызов. Что с ним происходит, читается по самому оператору.",
-    "unresolved": "запись найдена, но её адрес сложен в регистре, и арифметика литералов "
-                  "пула его не берёт. Адрес настоящий, привязка не выведена.",
-    "lost": "записи в память в пределах прослеживания не встретилось. Величина остаётся "
-            "в регистрах процессора: её либо сравнивают на месте, либо передают дальше "
-            "вызовом.",
+    "return": "the call result has no local name and is returned. This accessor has no "
+              "map output register; the caller receives the value.",
+    "inline": "the call result has no local name and is consumed by its containing "
+              "expression. The statement itself shows what happens to it.",
+    "unresolved": "a store was found but its address is assembled in a register and pool-"
+                  "literal arithmetic cannot recover it. The address is real but no binding "
+                  "was derived.",
+    "lost": "no memory store was found within the trace. The value remains in processor "
+            "registers and is either compared locally or passed through another call.",
 }
 
 
 def render_library(A, data, export_dir):
-    """Контракты вызываемых функций плюс их листинг целиком.
+    """Render called-function contracts and complete listings.
 
-    Листинг, а не псевдокод: у этих функций тело - развёрнутый цикл, и декомпилятор даёт
-    31 КБ на 282 байта кода. Ассемблер тех же 282 байт читается прямо и стоит 4 КБ.
+    Use listings rather than pseudocode: these functions contain an unrolled loop, and the
+    decompiler produces 31 KB for 282 bytes of code. Assembly for the same 282 bytes is
+    directly readable and occupies 4 KB.
     """
     if not data["library"]:
         return
-    A("## Вызываемые функции с разобранным контрактом")
+    A("## Called functions with analyzed contracts")
     A("")
-    A("Функции, вызываемые из показанного выше кода и разобранные отдельно. Аргументы они "
-      "принимают РЕГИСТРАМИ, а не по ABI, поэтому Ghidra соглашения не восстанавливает: в "
-      "псевдокоде их вызовы стоят без аргументов, а входы видны как необъявленные `in_r0`, "
-      "`in_r1`. Величина карты уходит в такую функцию именно так, и без контракта трейс на "
-      "ней обрывается.")
+    A("Functions called from the code shown above and analyzed separately. They receive "
+      "arguments in REGISTERS rather than through the ABI, so Ghidra does not recover the "
+      "convention: pseudocode shows calls without arguments and inputs as undeclared "
+      "`in_r0`, `in_r1`. A map value enters such a function this way, and without a contract "
+      "the trace would end there.")
     A("")
-    A("Контракт - операция, регистры аргументов и результата, побочные эффекты - о карте "
-      "не говорит ничего: это свойство функции, общей для всего ПЗУ. Что через неё "
-      "проходит величина ИМЕННО этой карты, остаётся предметом трейса.")
+    A("A contract describes operation, argument and result registers, and side effects. It "
+      "says nothing about a map because it belongs to a function shared across the ROM. The "
+      "trace must still establish that THIS map's value passes through it.")
     A("")
-    A("| Адрес | Роль | Размер | Уровень | Контракт |")
+    A("| Address | Role | Size | Confidence | Contract |")
     A("|---|---|---|---|---|")
     for f in data["library"]:
         size = f["size"] if f["size"] is not None else "-"
@@ -751,11 +758,11 @@ def render_library(A, data, export_dir):
     A("")
     for f in data["library"]:
         text, path = dumped(export_dir, f["addr"], "funclisting")
-        A(f"### Листинг `{f['addr']}`")
+        A(f"### Listing `{f['addr']}`")
         A("")
         if text is None:
-            A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на эту функцию "
-              f"не сделан.")
+            A(f"File `{os.path.basename(path)}` is missing: the preparation pass did not "
+              f"process this function.")
         else:
             A("```")
             A(text)
@@ -764,36 +771,37 @@ def render_library(A, data, export_dir):
 
 
 def render_attrib(A, data):
-    """Раздел привязки выхода целевой карты."""
-    A("## Привязка выхода")
+    """Render target-map output attribution."""
+    A("## Output attribution")
     A("")
-    A("Регистр RAM, в который уходит величина именно этой карты. Аксессор пишет много "
-      "регистров сразу, и потребители всего набора о карте не говорят: там её величина "
-      "растворена среди чужих. Привязка снимается с псевдокода - обёртка вызывается с "
-      "базой карты первым аргументом, а её результат виден по имени до записи в память.")
+    A("The RAM register receiving this map's value. An accessor writes many registers at "
+      "once, so consumers of the complete set reveal nothing about the map because its value "
+      "is mixed with unrelated ones. Pseudocode provides attribution: the wrapper receives "
+      "the map base as its first argument and its named result remains visible until a "
+      "memory store.")
     A("")
     if not data["attrib"]:
-        A("Сайтов вызова обёртки с базой этой карты в псевдокоде аксессоров не нашлось. "
-          "Обычная причина - база выбирается ветвлением либо считается, и первым "
-          "аргументом стоит не литерал. Набор потребителей ниже выведен из всех записей "
-          "аксессора и специфичным для карты не является.")
+        A("No wrapper call site with this map base was found in accessor pseudocode. The "
+          "usual cause is a base selected by branching or arithmetic, so the first argument "
+          "is not a literal. The consumer set below is derived from every accessor write and "
+          "is not map-specific.")
         A("")
         return
-    A("| Аксессор | Приёмник | Ширина | Состояние |")
+    A("| Accessor | Sink | Width | State |")
     A("|---|---|---|---|")
     for r in data["attrib"]:
         if r["kind"] in ("reg", "ram"):
-            state = ("подтверждён ребром графа" if r["kind"] == "reg"
-                     else "адрес разобран, ребра USES под ним нет")
+            state = ("confirmed by a graph relationship" if r["kind"] == "reg"
+                     else "address recovered but no USES relationship exists")
             A(f"| `{r['acc']}` | `{r['sink']}` | {r['width']} | {state} |")
         else:
-            A(f"| `{r['acc']}` | нет | – | {ATTRIB_MISS[r['kind']]} |")
+            A(f"| `{r['acc']}` | none | - | {ATTRIB_MISS[r['kind']]} |")
     A("")
-    # Оператор вызова - самое короткое свидетельство из возможных: там стоит и база карты,
-    # и то, во что её величина уходит. Без приёмника он единственное, что о выходе есть.
+    # A call statement is the shortest possible evidence because it contains both the map
+    # base and the destination of its value. Without a sink, it is the only output evidence.
     miss = [r for r in data["attrib"] if r["kind"] not in ("reg", "ram")]
     if miss:
-        A("Оператор вызова у сайтов без приёмника:")
+        A("Call statement for sites without a sink:")
         A("")
         A("```c")
         for r in miss:
@@ -801,37 +809,38 @@ def render_attrib(A, data):
             A(r["stmt"][:400] + ";")
         A("```")
         A("")
-    A(f"Величина прослеживается через {TAINT_DEPTH} переприсваивания, расстояние в тексте "
-      "не ограничено: между вызовом и записью стоят несвязанные операторы, а расползается "
-      "пометка с глубиной, не с расстоянием. Отсутствие приёмника - факт о карте, а не "
-      "пробел артефакта: величина, которая до памяти не доходит, потребляется на месте.")
+    A(f"The value is traced through {TAINT_DEPTH} reassignments without a textual distance "
+      "limit. Unrelated statements may separate a call and store; taint expands with depth "
+      "rather than distance. An absent sink is a map fact rather than an artifact gap: a "
+      "value that does not reach memory is consumed locally.")
     A("")
 
 
 def bind_state(target, kind, all_regs):
-    """Сила привязки: ребро графа, узел графа, ничего."""
+    """Describe binding strength: graph relationship, graph node, or neither."""
     if kind:
-        return f"обращение известно ({kind})"
+        return f"access known ({kind})"
     if f"{target:08x}" in all_regs:
-        return "адрес известен, обращение - нет"
-    return "адрес не известен"
+        return "address known, access unknown"
+    return "address unknown"
 
 
 def render_pool(A, image, text, regs, addr, all_regs):
-    """Раздел резолва под псевдокодом функции."""
+    """Render pool resolution below function pseudocode."""
     syms, binds, _raw, _res, _aliases, _stmts = pool(image, text, regs)
     if not syms:
         return
-    A(f"#### Символы пула `{addr}`")
+    A(f"#### Pool symbols `{addr}`")
     A("")
-    A("Значение литерала декомпилятор не подставляет - печатает имя `DAT_<адрес>`. Ширина "
-      "литерала из псевдокода не видна (`mov.l` - 32 бита, `mov.w` - 16 со знаковым "
-      "расширением), поэтому даны обе трактовки. Выбирает между ними арифметика: у "
-      "выражения `база + смещение` верна та пара, чей адрес граф подтверждает регистром "
-      "этой функции. Регистр, названный через пул, - тот же регистр: адрес из этой "
-      "таблицы равноправен адресу из листинга.")
+    A("The decompiler does not substitute literal values and prints `DAT_<address>`. "
+      "Pseudocode does not expose literal width (`mov.l` is 32 bits; `mov.w` is 16 bits "
+      "with sign extension), so both interpretations are shown. Arithmetic chooses between "
+      "them: for `base + displacement`, the valid pair is the one whose address the graph "
+      "confirms as a register used by this function. A register named through the pool is "
+      "the same register, so an address from this table has equal status to one from a "
+      "listing.")
     A("")
-    A("| Символ | `mov.l` (32) | `mov.w` (16, знак) |")
+    A("| Symbol | `mov.l` (32) | `mov.w` (16, signed) |")
     A("|---|---|---|")
     for sym, (a, lit) in sorted(syms.items(), key=lambda kv: kv[1][0]):
         l32 = f"`{lit['mov.l']:08x}`" if "mov.l" in lit else "-"
@@ -839,100 +848,102 @@ def render_pool(A, image, text, regs, addr, all_regs):
         A(f"| `{sym}` | {l32} | {l16} |")
     A("")
     if binds:
-        A("| Выражение | Адрес | Граф |")
+        A("| Expression | Address | Graph |")
         A("|---|---|---|")
         for (b, o), (t, kind) in sorted(binds.items(), key=lambda kv: kv[1][0]):
             A(f"| `{b} + {o}` | `{t:08x}` | {bind_state(t, kind, all_regs)} |")
         A("")
-        A("Адрес в этой таблице сложен сборщиком из значений образа. Столбец `Граф` "
-          "говорит только о том, есть ли у сборщика независимый свидетель, и различает "
-          "три состояния. Подтверждение усиливает; отсутствие подтверждения не "
-          "опровергает - ни одно состояние не означает \"неверно\":")
+        A("The builder assembles each address in this table from image values. The `Graph` "
+          "column only reports whether an independent witness exists and distinguishes three "
+          "states. Confirmation strengthens a claim; lack of confirmation does not refute "
+          "it. No state means \"wrong\":")
         A("")
-        A("- `обращение известно (R/W/L/D)` - граф знает это обращение именно у этой "
-          "функции. Образ и граф сошлись на одном адресе независимо.")
-        A("- `адрес известен, обращение - нет` - адрес встречается резолвнутой ссылкой "
-          "где-то в ROM'е, но ребра к этой функции нет.")
-        A("- `адрес не известен` - адрес не встречается резолвнутой ссылкой нигде. Так "
-          "выглядит и неверная трактовка ширины литерала, и поле структуры, к которому "
-          "обращаются только смещением от базы в регистре: такое обращение Ghidra не "
-          "резолвит, ссылки не пишет, и узла об адресе не заводит. В JK03A под второе "
-          "подпадает вся структура `ffff119c` целиком, включая RAM-вход оси `ffff11ae`.")
+        A("- `access known (R/W/L/D)` - the graph knows this access for this exact function. "
+          "The image and graph independently converge on one address.")
+        A("- `address known, access unknown` - a resolved reference uses the address "
+          "somewhere in the ROM, but no relationship connects it to this function.")
+        A("- `address unknown` - no resolved reference uses the address. This can mean an "
+          "incorrect literal-width interpretation or a structure field accessed only by "
+          "offset from a base held in a register. Ghidra does not resolve such an access, "
+          "writes no reference, and creates no address node. In JK03A, the latter case "
+          "includes the entire `ffff119c` structure and RAM axis input `ffff11ae`.")
         A("")
-        A("Различает эти два случая код, а не таблица: у верной пары база - это база, "
-          "которую функция откуда-то получила, а смещения соседних полей идут подряд.")
+        A("Code rather than the table distinguishes these cases: in a valid pair, the base "
+          "is a base obtained by the function and neighboring field offsets are contiguous.")
         A("")
 
 
 def render(comp, rom, data, export_dir):
-    """Артефакт компоненты либо целевого фокуса - единственный вход агента прогона."""
+    """Render the component or focused target artifact used as the run agent's only input."""
     L = []
     A = L.append
     focus = data.get("focus")
     focus_axis = data.get("focus_axis")
     if focus_axis:
-        A(f"# Ось `{focus_axis}` ({rom})")
+        A(f"# Axis `{focus_axis}` ({rom})")
     elif focus:
-        A(f"# Карта `{focus}` компоненты `{comp['key']}` ({rom})")
+        A(f"# Map `{focus}` in component `{comp['key']}` ({rom})")
     else:
-        A(f"# Компонента `{comp['key']}` ({rom})")
+        A(f"# Component `{comp['key']}` ({rom})")
     A("")
     if focus_axis:
-        A(f"Карт, непосредственно связанных с осью: {len(comp['maps'])}. "
-          f"Аксессоров этих карт: {len(comp['accessors'])}.")
+        A(f"Maps directly connected to the axis: {len(comp['maps'])}. "
+          f"Accessors for these maps: {len(comp['accessors'])}.")
         A("")
-        A(f"Контекст целевой оси `{focus_axis}` агрегирован по прямым рёбрам "
-          f"`AXIS_X`/`AXIS_Y`: включены ВСЕ связанные карты "
-          f"({', '.join(f'`{m}`' for m in comp['maps'])}) и ВСЕ их аксессоры "
-          f"({', '.join(f'`{a}`' for a in comp['accessors']) or 'нет'}). Общая ось может "
-          f"обслуживать карты разных компонент, поэтому одна карта-представитель границу "
-          f"контекста не задаёт.")
+        A(f"The target-axis context for `{focus_axis}` is aggregated over direct "
+          f"`AXIS_X`/`AXIS_Y` relationships. It includes ALL connected maps "
+          f"({', '.join(f'`{m}`' for m in comp['maps'])}) and ALL their accessors "
+          f"({', '.join(f'`{a}`' for a in comp['accessors']) or 'none'}). A shared axis "
+          f"can serve maps from different components, so one representative map does not "
+          f"define the context boundary.")
         A("")
-        A("Карты и аксессоры служат контекстом трейса входа оси. Машинерия интерполяции "
-          "показывает, как точки оси индексируют ячейку, а RAM и код аксессоров - откуда "
-          "приходит текущее значение и в каких единицах оно представлено.")
+        A("Maps and accessors provide context for tracing the axis input. The interpolation "
+          "machinery shows how axis points index a cell, while RAM and accessor code show "
+          "where the current value comes from and which units represent it.")
     else:
-        A(f"Карт в компоненте: {len(comp['maps'])}. Аксессоров: {len(comp['accessors'])}.")
+        A(f"Maps in the component: {len(comp['maps'])}. "
+          f"Accessors: {len(comp['accessors'])}.")
         A("")
-        A("Компонента связного графа \"аксессор -> карта\": ни одна её карта не читается "
-          "аксессором извне, и этим задан состав карт. Границей компоненты ограничен состав, "
-          "а не свидетельство: физическую величину карты задают машинерия интерполяции "
-          "(обёртка, ядро, finisher) и то, что делает с выходом потребитель RAM. Оба лежат "
-          "за компонентой и оба в артефакте есть - разделы \"Машинерия интерполяции\" и "
-          "\"Потребители выхода\". Трейс, остановленный на записи в RAM, до семантики не "
-          "дошёл: `code` требует довести его до потребителя.")
+        A("This is a connected component of the \"accessor -> map\" graph: none of its maps "
+          "is read by an accessor outside the component, which defines its map membership. "
+          "The component boundary limits membership, not evidence. A map's physical "
+          "quantity is established by the interpolation machinery (wrapper, kernel, and "
+          "finisher) and by what a RAM consumer does with the output. Both lie beyond the "
+          "component and both appear in this artifact under \"Interpolation machinery\" and "
+          "\"Output consumers\". A trace that stops at a RAM write has not reached semantics: "
+          "`code` confidence requires tracing the value to a consumer.")
     A("")
     if focus:
-        A(f"Целевая карта - `{focus}`, и свидетельство сужено до её окрестности: разделы "
-          f"\"Аксессоры\", \"Машинерия интерполяции\" и \"Потребители выхода\" построены "
-          f"по {len(data['acc'])} аксессорам, читающим именно её "
-          f"({', '.join(f'`{a}`' for a in data['acc'])}), а не по всем "
-          f"{len(comp['accessors'])} аксессорам компоненты. Свидетельства о целевой карте "
-          f"это не убавляет: аксессор, её не читающий, о ней и не говорит. Убавляет оно "
-          f"свидетельство о СОСЕДНИХ картах - они остаются в разделе \"Карты\" значениями "
-          f"и геометрией, без своего кода.")
+        A(f"The target map is `{focus}`, and evidence is limited to its neighborhood. The "
+          f"\"Accessors\", \"Interpolation machinery\", and \"Output consumers\" sections "
+          f"are built from the {len(data['acc'])} accessors that read this map "
+          f"({', '.join(f'`{a}`' for a in data['acc'])}), rather than all "
+          f"{len(comp['accessors'])} accessors in the component. This omits no evidence "
+          f"about the target map: an accessor that does not read it says nothing about it. "
+          f"It does reduce evidence about NEIGHBORING maps, which remain in the \"Maps\" "
+          f"section as values and geometry without their code.")
         A("")
-        A("Задача - раздел 6 контракта `tools/map-sweep.md`: вернуть заявку "
-          f"(`semantics`, `role`, `units`, `scale_expr`, `confidence`) РОВНО по карте "
-          f"`{focus}` и по её осям. Соседние карты - контекст: они показывают, что ещё "
-          f"читает общий аксессор, и требуют различать, чей трейс перед тобой.")
+        A("Task: follow section 6 of the `tools/map-sweep.md` contract and return a claim "
+          f"(`semantics`, `role`, `units`, `scale_expr`, `confidence`) for EXACTLY map "
+          f"`{focus}` and its axes. Neighboring maps are context: they show what else a "
+          f"shared accessor reads and require distinguishing which map a trace belongs to.")
     elif focus_axis:
-        A("Задача - раздел 6 контракта `tools/map-sweep.md`: вернуть заявку "
+        A("Task: follow section 6 of the `tools/map-sweep.md` contract and return a claim "
           f"(`kind`, `units`, `scale_expr`, `to_byte`, `scale_conf`, `scale_evidence`, "
-          f"`note`) РОВНО по оси `{focus_axis}`. Связанные карты, их прочие оси и "
-          f"аксессоры - контекст, а не дополнительные цели заявки.")
+          f"`note`) for EXACTLY axis `{focus_axis}`. Connected maps, their other axes, and "
+          f"their accessors are context rather than additional claim targets.")
     else:
-        A("Задача - раздел 6 контракта `tools/map-sweep.md`: вернуть заявку на каждую карту "
-          "(`semantics`, `role`, `units`, `scale_expr`, `confidence`) и на каждую ось.")
+        A("Task: follow section 6 of the `tools/map-sweep.md` contract and return a claim for "
+          "each map (`semantics`, `role`, `units`, `scale_expr`, `confidence`) and each axis.")
     A("")
-    A("Разметки в артефакте нет намеренно: она и есть то, что требуется вывести. "
-      "Заявка без трейса - `candidate`, а не `code`, каким бы убедительным ни было "
-      "совпадение; сплошь `0xFF` по форме не заключается.")
+    A("Annotations are intentionally absent from the artifact because they are the required "
+      "output. A claim without a trace is `candidate`, not `code`, however convincing a "
+      "match appears. An all-`0xFF` map is not classified by shape.")
     A("")
 
-    A("## Карты")
+    A("## Maps")
     A("")
-    A("| Карта | Форма | Элемент | Семейство | Вход | Ядро | Ось X | Ось Y | Значения |")
+    A("| Map | Shape | Element | Family | Entry | Kernel | X axis | Y axis | Values |")
     A("|---|---|---|---|---|---|---|---|---|")
     for m in data["maps"]:
         A(f"| `{m['addr']}` | {shape(m['width'], m['height'])} | {m['storagetype']} "
@@ -940,16 +951,17 @@ def render(comp, rom, data, export_dir):
           f"| {';'.join(m['axis_x']) or '-'} | {';'.join(m['axis_y']) or '-'} "
           f"| {m['vmin']}..{m['vmax']} |")
     A("")
-    A("Геометрия - свойство входа интерполяции, а не карты: вход специализирован по форме "
-      "таблицы. Элемент 2D-карты снят с её finisher'а, все читают беззнаковым.")
+    A("Geometry is a property of the interpolation entry rather than the map: an entry is "
+      "specialized for the table shape. The element type of a 2D map comes from its "
+      "finisher, and every map is read as unsigned.")
     A("")
 
     for m in data["maps"]:
-        tag = " – ЦЕЛЕВАЯ" if m["addr"] == focus else ""
-        A(f"### Карта `{m['addr']}` – {shape(m['width'], m['height'])} "
+        tag = " - TARGET" if m["addr"] == focus else ""
+        A(f"### Map `{m['addr']}` - {shape(m['width'], m['height'])} "
           f"{m['storagetype']}{tag}")
         A("")
-        A(f"Диапазон {m['vmin']}..{m['vmax']}, хеш содержимого `{m['values_hash']}`.")
+        A(f"Range {m['vmin']}..{m['vmax']}, content hash `{m['values_hash']}`.")
         A("")
         A("```")
         A(grid(m["values"]))
@@ -957,83 +969,87 @@ def render(comp, rom, data, export_dir):
         A("")
 
     if data["axes"]:
-        A("## Оси")
+        A("## Axes")
         A("")
-        A("| Ось | Точек | Элемент | Возрастает | Значения |")
+        A("| Axis | Points | Element | Increasing | Values |")
         A("|---|---|---|---|---|")
         for a in data["axes"]:
-            tag = " – ЦЕЛЕВАЯ" if a["addr"] == focus_axis else ""
+            tag = " - TARGET" if a["addr"] == focus_axis else ""
             A(f"| `{a['addr']}`{tag} | {a['len']} | {a['storagetype']} "
-              f"| {'да' if a['monotonic'] else 'НЕТ'} "
+              f"| {'yes' if a['monotonic'] else 'NO'} "
               f"| {', '.join(str(v) for v in a['values'])} |")
         A("")
-        A("Возрастание - требование ядра (обратный линейный проход от старшей точки вниз "
-          "до первой `<=` текущего значения), а не догадка о смысле: массив, который правилу не "
-          "отвечает, осью не работает. Чем ось является и в чём измеряется - вывод о "
-          "коде, и даёт его трейс RAM-входа.")
+        A("Increasing order is a kernel requirement (a reverse linear scan from the highest "
+          "point down to the first value `<=` the current input), not a semantic guess. An "
+          "array that violates this rule cannot function as an axis. What the axis represents "
+          "and how it is measured are code-derived conclusions established by tracing its "
+          "RAM input.")
         A("")
 
-    A("## Аксессоры")
+    A("## Accessors")
     A("")
     if focus:
-        A(f"Аксессоры целевой карты `{focus}`. Сайты вызова у каждого показаны все, "
-          f"включая ведущие в соседние карты: по ним и различается, чей трейс.")
+        A(f"Accessors for target map `{focus}`. Every call site is shown, including sites for "
+          f"neighboring maps, because they distinguish which map a trace belongs to.")
         A("")
     elif focus_axis:
-        A(f"Все аксессоры карт, непосредственно связанных с целевой осью `{focus_axis}`. "
-          f"Сайты каждого аксессора показаны полностью: в колонках `r5`/`r6` видно, "
-          f"какой вызов использует целевую ось, а какой относится к соседнему контексту.")
+        A(f"All accessors for maps directly connected to target axis `{focus_axis}`. Every "
+          f"accessor's call sites are shown in full: the `r5`/`r6` columns identify which "
+          f"call uses the target axis and which belongs to neighboring context.")
         A("")
     for f_addr in data["acc"]:
         sites = [s for s in data["sites"] if s["accessor"] == f_addr]
         name = sites[0]["name"] if sites else f_addr
         A(f"### `{f_addr}` ({name})")
         A("")
-        A("Сайты вызова и операнды переписи резолвера:")
+        A("Call sites and resolver rewrite operands:")
         A("")
-        A("| Сайт | Карта | r4 | kind | r5 | kind5 | r6 | kind6 | verdict |")
+        A("| Site | Map | r4 | kind | r5 | kind5 | r6 | kind6 | verdict |")
         A("|---|---|---|---|---|---|---|---|---|")
         for s in sites:
             A(f"| `{s['callsite']}` | `{s['tbl']}` | `{s['r4']}` | {s['kind']} "
               f"| `{s['r5']}` | {s['kind5']} | `{s['r6']}` | {s['kind6']} "
               f"| {s['verdict']} |")
         A("")
-        A("`kind=sp` означает, что декомпилятор операнд не свернул и значение снял линейный "
-          "резерв: операнд задан ветвлением, и снятое - один элемент множества, а не факт. "
-          "`pool` - указатель из пула, `slice` - вычислен, `const` - непосредственный.")
+        A("`kind=sp` means the decompiler did not fold the operand and a linear fallback "
+          "recovered the value. The operand is branch-dependent, so the recovered value is "
+          "one member of a set rather than a fact. `pool` is a pool pointer, `slice` is "
+          "computed, and `const` is immediate.")
         A("")
 
         callers = [c for c in data["callers"] if c["accessor"] == f_addr]
-        A(f"Вызыватели ({len(callers)}): "
-          + (", ".join(f"`{c['caller']}`" for c in callers) or "нет – корень"))
+        A(f"Callers ({len(callers)}): "
+          + (", ".join(f"`{c['caller']}`" for c in callers) or "none - root"))
         A("")
         if callers:
-            A("Вызыватель – производитель входа аксессора: аргумент, пришедший регистром или "
-              "стеком, внутри аксессора писателя не имеет, и его величину задаёт код "
-              "вызывателя. Единица оси, взятой из аргумента, устанавливается там.")
+            A("A caller produces the accessor input. An argument received through a register "
+              "or the stack has no writer inside the accessor, so caller code establishes "
+              "its physical quantity. The units of an axis obtained from an argument are "
+              "established there.")
             A("")
 
         uses = [u for u in data["uses"] if u["accessor"] == f_addr]
         if uses:
-            A(f"Обращения к RAM и периферии ({len(uses)}):")
+            A(f"RAM and peripheral accesses ({len(uses)}):")
             A("")
-            A("| Адрес | Область | Имя | Доступ |")
+            A("| Address | Region | Name | Access |")
             A("|---|---|---|---|")
             for u in uses:
                 A(f"| `{u['reg']}` | {u['region']} | {u['name'] or '-'} "
                   f"| {''.join(sorted(u['kinds']))} |")
             A("")
-            A("Доступ: `R` - чтение, `W` - запись, `L` - загрузка адреса, `D` - данные. "
-              "RAM-вход оси даёт её единицу, RAM-выход интерполяции - смысл карты.")
+            A("Access: `R` is read, `W` is write, `L` is address load, and `D` is data. "
+              "A RAM axis input establishes its units; a RAM interpolation output establishes "
+              "the map's meaning.")
             A("")
 
         text, path = dumped(export_dir, f_addr, "decomp")
-        A(f"#### C-псевдокод `{f_addr}`")
+        A(f"#### C pseudocode `{f_addr}`")
         A("")
         if text is None:
-            A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на эту функцию не "
-              f"сделан. Это пропуск шага подготовки, а не свойство компоненты, и трейс "
-              f"без него не ведётся.")
+            A(f"File `{os.path.basename(path)}` is missing: the preparation pass did not "
+              f"process this function. This is a missing preparation step rather than a "
+              f"component property, and the trace cannot proceed without it.")
         else:
             A("```c")
             A(text)
@@ -1045,11 +1061,12 @@ def render(comp, rom, data, export_dir):
 
         for c in callers:
             text, path = dumped(export_dir, c["caller"], "decomp")
-            A(f"#### C-псевдокод вызывателя `{c['caller']}`")
+            A(f"#### Caller C pseudocode `{c['caller']}`")
             A("")
             if text is None:
-                A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на эту функцию "
-                  f"не сделан. Это пропуск шага подготовки, а не свойство компоненты.")
+                A(f"File `{os.path.basename(path)}` is missing: the preparation pass did not "
+                  f"process this function. This is a missing preparation step rather than a "
+                  f"component property.")
             else:
                 A("```c")
                 A(text)
@@ -1060,39 +1077,40 @@ def render(comp, rom, data, export_dir):
                             data["all_regs"])
             A("")
 
-        A(f"#### Листинги сайтов `{f_addr}`")
+        A(f"#### Site listings `{f_addr}`")
         A("")
         for s in sites:
             render_site_listing(A, export_dir, s)
 
-    A("## Машинерия интерполяции")
+    A("## Interpolation machinery")
     A("")
-    A("Ячейку карты читает не аксессор, а обёртка, специализированная по форме таблицы, "
-      "и её ядро; finisher вызывается ядром и держит насыщение и элемент. Это код между "
-      "картой и записью выхода в RAM: чем ячейка становится к моменту записи, видно "
-      "здесь, а не на сайте вызова.")
+    A("The accessor does not read a map cell. A wrapper specialized for the table shape and "
+      "its kernel read it; the kernel calls a finisher that defines saturation and element "
+      "type. This is the code between the map and the RAM output write, so this section, "
+      "rather than the call site, shows what the cell becomes before it is written.")
     A("")
-    A("| Адрес | Роль | Размер | Вызывает |")
+    A("| Address | Role | Size | Calls |")
     A("|---|---|---|---|")
     for k in data["kernels"]:
-        cs = ", ".join(f"`{c['addr']}` ({c['size']} б)"
+        cs = ", ".join(f"`{c['addr']}` ({c['size']} B)"
                        for c in stable_callees(k["callees"]) if c.get("addr"))
         A(f"| `{k['addr']}` | {k['role']} | "
-          f"{k['size'] if k['size'] is not None else 'НЕ РАЗМЕЧЕН'} | {cs or '-'} |")
+          f"{k['size'] if k['size'] is not None else 'UNDEFINED'} | {cs or '-'} |")
     A("")
     if data["kernel_listings"]:
-        A("`НЕ РАЗМЕЧЕН`: обёртка уходит в это ядро через `jmp`, а не `jsr`, и в функцию "
-          "участок не выделен. C-псевдокода у такого ядра нет; листинг есть и идёт ниже - "
-          "разметка функции нужна декомпилятору, а не дизассемблеру. Трейс через такое ядро "
-          "ведётся по листингу, и уровень заявки оно само по себе не ограничивает.")
+        A("`UNDEFINED`: the wrapper reaches this kernel through `jmp` rather than `jsr`, and "
+          "the region has not been defined as a function. Such a kernel has no C pseudocode, "
+          "but its listing appears below. Function definition is required by the decompiler, "
+          "not the disassembler. Trace through this kernel using the listing; its undefined "
+          "function boundary alone does not limit claim confidence.")
         A("")
     for f_addr in data["kernel_funcs"]:
         text, path = dumped(export_dir, f_addr, "decomp")
-        A(f"### C-псевдокод `{f_addr}`")
+        A(f"### C pseudocode `{f_addr}`")
         A("")
         if text is None:
-            A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на эту функцию "
-              f"не сделан.")
+            A(f"File `{os.path.basename(path)}` is missing: the preparation pass did not "
+              f"process this function.")
         else:
             A("```c")
             A(text)
@@ -1104,11 +1122,11 @@ def render(comp, rom, data, export_dir):
 
     for k_addr in data["kernel_listings"]:
         text, path = dumped(export_dir, k_addr, "listing")
-        A(f"### Листинг `{k_addr}` – ядро без разметки функции")
+        A(f"### Listing `{k_addr}` - kernel without a function definition")
         A("")
         if text is None:
-            A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на этот адрес не "
-              f"сделан.")
+            A(f"File `{os.path.basename(path)}` is missing: the preparation pass did not "
+              f"process this address.")
         else:
             A("```")
             A(text)
@@ -1120,94 +1138,95 @@ def render(comp, rom, data, export_dir):
     if data["focus"]:
         render_attrib(A, data)
 
-    A("## Потребители выхода")
+    A("## Output consumers")
     A("")
     if not data["consumers"]:
         regs = data["write_regs"]
-        A("Потребителей нет: раздел пуст не по недосмотру сборки, а по состоянию графа, и "
-          "это факт о данном наборе аксессоров, а не пробел артефакта.")
+        A("There are no consumers. The section is empty because of graph state rather than "
+          "a builder omission, which is a fact about this accessor set rather than an "
+          "artifact gap.")
         A("")
         if data["sinks"]:
             named = ", ".join("`%s`" % s for s in data["sinks"])
-            A(f"Набор задан привязкой: читателей у выхода {named} снаружи аксессора нет. "
-              "Величина карты либо потребляется внутри аксессора, либо не потребляется "
-              "вовсе - и то и другое читается по коду аксессора, а не по коду соседей. "
-              "Прочие регистры аксессора несут чужие величины, и разбирать их состав "
-              "здесь незачем: о целевой карте они не говорят.")
+            A(f"Output attribution defines the set: output {named} has no readers outside "
+              "the accessor. The map value is either consumed inside the accessor or not "
+              "consumed at all. Both cases are established from accessor code rather than "
+              "neighbor code. Other accessor registers carry unrelated quantities and say "
+              "nothing about the target map.")
         elif not regs:
-            A("Аксессор компоненты не пишет ни одного регистра RAM. Трейс кончается внутри "
-              "аксессора: выход карты дальше него не уходит - либо возвращается вызывателю "
-              "значением, либо сравнивается на месте. Смысл, если он устанавливается, "
-              "устанавливается по коду аксессора и его сайтов вызова.")
+            A("The component accessor writes no RAM register. The trace ends inside the "
+              "accessor: the map output either returns to the caller as a value or is "
+              "compared locally. Its meaning, if established, comes from accessor and call "
+              "site code.")
         else:
             hot = [r for r in regs if r["readers"] > data["maxr"]]
             cold = [r for r in regs if r["readers"] == 0]
-            A(f"Аксессор пишет {len(regs)} регистров RAM, но ни один не прошёл отбор: "
-              f"{len(cold)} без единого читателя снаружи компоненты, {len(hot)} с числом "
-              f"читателей выше отсечки {data['maxr']}.")
+            A(f"The accessor writes {len(regs)} RAM registers, but none passed selection: "
+              f"{len(cold)} have no reader outside the component and {len(hot)} exceed the "
+              f"reader cutoff of {data['maxr']}.")
             A("")
-            A("| Регистр | Читателей снаружи |")
+            A("| Register | External readers |")
             A("|---|---|")
             for r in regs[:24]:
                 A(f"| `{r['reg']}` | {r['readers']} |")
             if len(regs) > 24:
-                A(f"| ... ещё {len(regs) - 24} | |")
+                A(f"| ... {len(regs) - 24} more | |")
             A("")
-            A("Регистр без внешних читателей - выход, который никто не потребляет: либо "
-              "ветвь мертва, либо читает его сам аксессор. Регистр выше отсечки - "
-              "разделяемая шина, и её потребитель о карте не говорит ничего. Ни то ни "
-              "другое семантику карты не закрывает: заявка идёт `candidate`.")
+            A("A register without external readers is an unconsumed output: either its branch "
+              "is dead or the accessor itself reads it. A register above the cutoff is a "
+              "shared bus whose consumers reveal nothing about the map. Neither case "
+              "establishes map semantics, so the claim remains `candidate`.")
         A("")
     else:
-        A("Функции, читающие RAM, которую пишет аксессор. Смысл карты задаёт то, что "
-          "происходит с её выходом дальше: запись в RAM - середина трейса, а не его конец.")
+        A("Functions that read RAM written by the accessor. What happens to the output next "
+          "establishes map meaning: a RAM write is the middle of a trace, not its end.")
         A("")
         if data["sinks"]:
             named = ", ".join("`%s`" % s for s in data["sinks"])
-            A(f"Набор задан привязкой: это читатели выхода {named}, и только его. Прочие "
-              "регистры аксессора несут чужие величины и в отбор не входят - отсечка по "
-              "разделяемости тут не нужна, набор специфичен по построению. Разделяемость "
-              "самого привязанного регистра при этом не скрыта: если его читают десятки "
-              "функций, они здесь все, и это факт о карте.")
+            A(f"Output attribution defines the set: these are readers of output {named} and "
+              "nothing else. Other accessor registers carry unrelated quantities and are "
+              "excluded, so no sharing cutoff is needed because the set is map-specific by "
+              "construction. Sharing of the attributed register itself remains visible: if "
+              "dozens of functions read it, every one appears here, which is a fact about "
+              "the map.")
         else:
-            A("Привязки выхода нет, поэтому набор выведен из всех записей аксессора и "
-              "несёт чужие величины вперемешку с величиной карты. Отобраны потребители "
-              f"регистров, у которых читателей не больше {data['maxr']}: регистр с одним "
-              "читателем частный для этого аксессора, регистр с тремя десятками - "
-              "разделяемая глобаль, и её потребитель о карте не говорит ничего. Связь "
-              "потребителя именно с этой картой отсюда не следует - она предмет проверки "
-              "по коду, а не вывод из состава таблицы.")
+            A("No output attribution exists, so the set is derived from every accessor write "
+              "and mixes unrelated quantities with the map value. It includes consumers of "
+              f"registers with no more than {data['maxr']} readers: a register with one "
+              "reader is private to this accessor, while a register with dozens of readers "
+              "is a shared global whose consumers reveal nothing about the map. This table "
+              "does not establish that a consumer belongs to this specific map; code must "
+              "verify that relationship.")
         A("")
-        A("Таблица полна: в ней все отобранные потребители. C-псевдокод идёт не у всех - "
-          "он под отдельным бюджетом, и колонка \"Код\" говорит, у кого он ниже есть. "
-          "Порядок - по специфичности связи (наименьшее число читателей у связывающего "
-          "регистра), затем по размеру: приватный регистр ближе к выходу карты, чем "
-          "умеренно-разделяемый.")
+        A("The table is complete and contains every selected consumer. C pseudocode has a "
+          "separate budget, and the \"Code\" column identifies which consumers have it below. "
+          "Consumers are ordered first by relationship specificity (the fewest readers of "
+          "the connecting register), then by size. A private register is closer to the map "
+          "output than a moderately shared one.")
         A("")
-        A("| Потребитель | Размер | Читателей у регистра | Читает регистров | Код "
-          "| Регистры |")
+        A("| Consumer | Size | Register readers | Registers read | Code | Registers |")
         A("|---|---|---|---|---|---|")
         shown = {c["consumer"] for c in data["consumers_decomp"]}
         for c in data["consumers"]:
             A(f"| `{c['consumer']}` | {c['size']} | {c['spec']} | {len(c['regs'])} "
-              f"| {'да' if c['consumer'] in shown else 'нет'} "
+              f"| {'yes' if c['consumer'] in shown else 'no'} "
               f"| {', '.join('`%s`' % r for r in sorted(c['regs']))} |")
         A("")
         if data["consumers_cut"]:
-            A(f"Псевдокода нет у {data['consumers_cut']} потребителей из "
-              f"{len(data['consumers'])}: бюджет на декомпиляцию - "
-              f"{len(data['consumers_decomp'])} наиболее специфичных. Это граница "
-              f"артефакта, а не факт о карте: если трейс упирается в потребителя без "
-              f"кода, заявка идёт `candidate` с указанием его адреса в `note`, а не "
-              f"домысливается по имени регистра.")
+            A(f"Pseudocode is absent for {data['consumers_cut']} of "
+              f"{len(data['consumers'])} consumers. The decompilation budget covers the "
+              f"{len(data['consumers_decomp'])} most specific consumers. This is an artifact "
+              f"boundary rather than a map fact. If a trace reaches a consumer without code, "
+              f"submit a `candidate` claim with its address in `note`; do not infer meaning "
+              f"from the register name.")
             A("")
         for c in data["consumers_decomp"]:
             text, path = dumped(export_dir, c["consumer"], "decomp")
-            A(f"### C-псевдокод `{c['consumer']}`")
+            A(f"### C pseudocode `{c['consumer']}`")
             A("")
             if text is None:
-                A(f"Нет файла `{os.path.basename(path)}`: прогон подготовки на эту "
-                  f"функцию не сделан.")
+                A(f"File `{os.path.basename(path)}` is missing: the preparation pass did not "
+                  f"process this function.")
             else:
                 A("```c")
                 A(text)
@@ -1218,11 +1237,12 @@ def render(comp, rom, data, export_dir):
                             data["all_regs"])
             A("")
 
-    A("## Каталоги-эталоны")
+    A("## Reference catalogs")
     A("")
-    A("Каталоги адресов не несут: они задают классы, а не размещение. Имя из каталога даёт "
-      "`candidate`-идентичность, не семантику. Единицы и множитель шкалы - тоже разметка "
-      "каталога: взятые из совпадения формы, они дают `candidate`, а не `code` (P6).")
+    A("Catalogs contain no addresses: they define classes rather than placement. A catalog "
+      "name provides `candidate` identity, not semantics. Units and a scale multiplier are "
+      "also catalog annotations; when obtained from a shape match, they support `candidate`, "
+      "not `code` (P6).")
     A("")
     by_shape = {}
     for m in data["maps"]:
@@ -1230,105 +1250,106 @@ def render(comp, rom, data, export_dir):
                             []).append(m["addr"])
     for (dims, sh), addrs in sorted(by_shape.items(), key=lambda kv: kv[0]):
         cands = data["a2l"].get((dims, sh), [])
-        A(f"### Форма {sh}: карты {', '.join('`%s`' % a for a in addrs)}")
+        A(f"### Shape {sh}: maps {', '.join('`%s`' % a for a in addrs)}")
         A("")
         if not cands:
-            A("Каталог этой формы не знает.")
+            A("The catalog has no entry with this shape.")
             A("")
             continue
-        A(f"Записей каталога с такой формой: {len(cands)}.")
+        A(f"Catalog entries with this shape: {len(cands)}.")
         A("")
-        A("| Имя | Единица | Шкала | Элемент | Ось X | Ось Y | Категория |")
+        A("| Name | Unit | Scale | Element | X axis | Y axis | Category |")
         A("|---|---|---|---|---|---|---|")
         for c in cands:
             A(f"| {c['name']} | {c['unit'] or '-'} | {c['scale_expr'] or '-'} "
               f"| {c['storagetype'] or '-'} | {c['axis_x_sem'] or '-'} "
               f"| {c['axis_y_sem'] or '-'} | {c['category'] or '-'} |")
         A("")
-    A("Ключ здесь - одна геометрия: из трёх ключей матча (`dims`, scale-family, семантика "
-      "осей) два последних сами суть разметка, которой в артефакте нет. Форму 16x16 несут "
-      "16 записей каталога – это подсказка, а не идентификация, и различает их трейс "
-      "RAM-входов осей.")
+    A("Geometry is the only available key. Of the three match keys (`dims`, scale family, "
+      "and axis semantics), the latter two are themselves annotations intentionally absent "
+      "from the artifact. Sixteen catalog entries have a 16x16 shape, so shape is a clue, "
+      "not identification; tracing the RAM axis inputs distinguishes them.")
     A("")
 
-    A("### Вендорские словари через A2L по `concept` (только `origin=factory`)")
+    A("### Vendor dictionaries linked through A2L `concept` (`origin=factory` only)")
     A("")
     if not data["concepts"]:
-        A("Записи каталога, совпавшие формой, `concept` не несут: связка с вендорским "
-          "словарём не установлена. Матч по имени вслепую запрещён (P6).")
+        A("Shape-matched catalog entries have no `concept`, so no vendor-dictionary link is "
+          "established. Blind name matching is prohibited (P6).")
         A("")
     elif not data["vendor"]:
-        A(f"Концепты записей A2L этой формы ({', '.join('`%s`' % c for c in data['concepts'])}) "
-          f"заводских вендорских записей не имеют.")
+        A(f"The A2L concepts for entries with this shape "
+          f"({', '.join('`%s`' % c for c in data['concepts'])}) have no factory vendor "
+          f"entries.")
         A("")
     else:
-        A(f"Цепочка: геометрия карты -> запись A2L -> её `concept` -> записи вендоров. "
-          f"Концепты: {', '.join('`%s`' % c for c in data['concepts'])}.")
+        A(f"Chain: map geometry -> A2L entry -> its `concept` -> vendor entries. "
+          f"Concepts: {', '.join('`%s`' % c for c in data['concepts'])}.")
         A("")
-        A("| Вендор | Имя | Группа | Ось X | Ось Y | Выход | concept |")
+        A("| Vendor | Name | Group | X axis | Y axis | Output | concept |")
         A("|---|---|---|---|---|---|---|")
         for v in data["vendor"]:
             A(f"| {v['vendor']} | {v['name']} | {v['grp'] or '-'} | {v['axis_x'] or '-'} "
               f"| {v['axis_y'] or '-'} | {v['output'] or '-'} | {v['concept'] or '-'} |")
         A("")
-        A("Гранулярность `concept` - семейство калибровки, а не одна таблица: варианты одной "
-          "функции значение делят, поэтому записей на концепт бывает несколько.")
+        A("A `concept` represents a calibration family rather than one table. Variants of "
+          "one function share it, so one concept can have multiple entries.")
         A("")
 
-    A("### Якоря по содержимому: документированные дефолты против плоских карт")
+    A("### Content anchors: documented defaults against flat maps")
     A("")
     if not data["anchors"]:
-        A("Совпадений нет: ни одна константа плоской карты компоненты не равна "
-          "документированному дефолту словарей.")
+        A("No matches: no flat-map constant in the component equals a documented dictionary "
+          "default.")
         A("")
     else:
-        A("| Значение | Вендор | Предмет | Единица | Применимость | Карты |")
+        A("| Value | Vendor | Subject | Unit | Applies to | Maps |")
         A("|---|---|---|---|---|---|")
         for a in data["anchors"]:
             A(f"| {a['value']} | {a['vendor']} | {a['subject']} | {a['units'] or '-'} "
               f"| {a['applies_to']} | {', '.join('`%s`' % x for x in a['in_maps'])} |")
         A("")
-        A("Совпадение значения само по себе даёт `pattern`, а не `candidate`: чем короче "
-          "число, тем чаще оно встретится случайно. До `candidate` находку поднимает "
-          "подтверждение – гомологичная сигнатура блока либо трейс потребителя. "
-          "Применимость проверяется: EcuTek документирует VQ37VHR с VVEL, а JK03A – "
-          "VQ25HR без него.")
+        A("A value match alone supports `pattern`, not `candidate`: shorter numbers occur "
+          "by chance more often. A homologous block signature or consumer trace raises the "
+          "finding to `candidate`. Applicability must be checked: EcuTek documents VQ37VHR "
+          "with VVEL, while JK03A is VQ25HR without VVEL.")
         A("")
-    A("Дефолт сверяется только с плоскими картами (`vmin == vmax`): в поверхности из 256 "
-      "ячеек встречается почти любой байт, и совпадение там не значило бы ничего.")
+    A("Defaults are compared only with flat maps (`vmin == vmax`). Almost any byte occurs in "
+      "a 256-cell surface, so a match there would have no significance.")
     A("")
 
     return "\n".join(L) + "\n"
 
 
-# Поля разметки, чьё значение - свободный текст: совпадение такого значения в артефакте
-# есть утечка. role, confidence, units и kind оси из сверки исключены намеренно: их
-# словарь замкнут и короток ('table', 'code', 'deg', 'rpm'), подстрока совпала бы
-# случайно, и сверка давала бы шум в обе стороны. Их не пускает белый список RETURN, а не
-# эта проверка - у двух механизмов разные роли.
+# Annotation fields whose values are free text. A matching value in the artifact is a leak.
+# Map role, confidence, units, and axis kind are intentionally excluded: their vocabularies
+# are closed and short ('table', 'code', 'deg', 'rpm'), so substring matches would occur by
+# chance and create noise in both directions. The RETURN allowlist, rather than this check,
+# excludes them; the two mechanisms serve different purposes.
 ANSWER_TEXT = ("semantics", "note", "scale_expr", "to_byte", "evidence",
                "contract_evidence", "scale_evidence")
 
 
 def answer_occurs(text, value, field):
-    """Совпадение ответа в тексте без ложных подстрок у короткого to_byte."""
+    """Match an answer in text without false substrings for short to_byte expressions."""
     if field == "to_byte" and len(value.strip()) < 4:
-        # `x`, `x/2`, `x/4` - реальные обратные шкалы. Обычный поиск подстроки нашёл бы
-        # `x` в `scale_expr` и `x/2` в `x/20`; границы выражения сохраняют аудит и убирают
-        # эти заведомые ложные совпадения.
+        # `x`, `x/2`, and `x/4` are valid inverse scales. A plain substring search would
+        # match `x` inside `scale_expr` and `x/2` inside `x/20`; expression boundaries keep
+        # the audit effective while removing these known false matches.
         pattern = rf"(?<![\w.+*/%-]){re.escape(value)}(?![\w.+*/%-])"
         return re.search(pattern, text) is not None
     return value in text
 
 
 def catalog_strings(data):
-    """Строки, которые артефакт несёт из каталога законно.
+    """Return strings that may legitimately enter the artifact from a catalog.
 
-    Каталог в артефакте нужен по контракту (раздел 2), и разметка часто взята из него же:
-    шкалу 'x-64' у карт зажигания 16x16 A2L объявляет сам, а в графе она стоит с пометкой
-    [cand] - множитель из каталога, кодом не закреплённый. Совпав с каталогом дословно,
-    разметка из сверки выпадает: её появление в артефакте объяснено независимым
-    источником, и агент читает каталог, а не ответ.
+    The contract requires a catalog in the artifact (section 2), and annotations often
+    originate from that same catalog. A2L itself declares the 'x-64' scale for 16x16
+    ignition maps, while the graph marks it [cand] because the catalog multiplier is not
+    confirmed by code. An annotation that matches a catalog string exactly is excluded
+    from leak detection: an independent source explains its presence, and the agent sees
+    the catalog rather than the answer.
     """
     out = set()
     for rows in list(data["a2l"].values()) + [data["vendor"], data["anchors"]]:
@@ -1338,14 +1359,14 @@ def catalog_strings(data):
 
 
 def verify_blind(text, answers, allowed):
-    """Ослепление - проверяемое свойство прогона, а не намерение автора запросов.
+    """Treat blinding as a verifiable run property rather than query-author intent.
 
-    Сверяет текст артефакта с той самой разметкой, которую он нести не должен. Ловит и
-    ошибку в RETURN, и разметку, просочившуюся через чужое поле: имя функции из
-    symbols.csv, C-псевдокод с осмысленным именем, строку переписи. Утечка - разметка, у
-    которой в артефакте нет независимого источника (allowed); находка - остановка
-    прогона: артефакт с ответом превращает калибровку в репетицию и обесценивает
-    единственный прогон, где харнесс можно проверить.
+    Compare artifact text against the annotations it must not contain. This catches both
+    mistakes in RETURN clauses and annotations that leak through another field: a function
+    name from symbols.csv, semantically named C pseudocode, or a rewrite string. A leak is
+    an annotation without an independent source in `allowed`. A finding aborts the run:
+    an artifact containing the answer turns calibration into a rehearsal and invalidates
+    the only run that can test the harness.
     """
     leaks = []
     for row in answers:
@@ -1357,11 +1378,11 @@ def verify_blind(text, answers, allowed):
                 continue
             if not answer_occurs(text, value, field):
                 continue
-            # Оправдание засчитывается тем же видом совпадения, что и сама утечка: шкала
-            # `x-128` стоит в каталожной строке `Degrees (x-128)*0.5`, и её появление
-            # объяснено тем же независимым источником, что и совпадение дословное. Сверять
-            # утечку подстрокой, а источник - полным равенством значит останавливать прогон
-            # на коротких общих значениях, которых у offset-binary шкал большинство.
+            # Validate the independent source with the same match used for the leak. The
+            # `x-128` scale occurs inside the catalog string `Degrees (x-128)*0.5`, and that
+            # independent source explains its presence just as an exact match would. Using a
+            # substring for the leak but exact equality for the source would abort runs on
+            # short common values, which dominate offset-binary scales.
             if any(answer_occurs(a, value, field) for a in allowed):
                 continue
             leaks.append(f"{row['addr']}.{field} = {value!r}")
@@ -1370,15 +1391,16 @@ def verify_blind(text, answers, allowed):
 
 def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
           maxdec=24, focus_axis=None):
-    # Состав карт задаёт компонента либо полный контекст оси, состав свидетельства - фокус:
-    # без фокуса окрестностью служит вся компонента, с фокусом карты - её аксессоры. У оси
-    # comp уже содержит точное объединение всех непосредственно связанных карт и аксессоров.
+    # The component or complete axis context defines map membership, while focus defines
+    # evidence membership. Without focus the whole component is the neighborhood; with a
+    # map focus, its accessors are the neighborhood. For an axis, comp already contains the
+    # exact union of all directly connected maps and accessors.
     if focus and focus_axis:
-        raise ValueError("фокус карты и оси взаимоисключающие")
+        raise ValueError("map and axis focus are mutually exclusive")
     if focus:
         acc = stable_addrs(session.run(FOCUS_ACC, rom=rom, map=focus).single()["accessors"])
         if not acc:
-            raise SystemExit(f"карту {focus} не читает ни один аксессор")
+            raise SystemExit(f"no accessor reads map {focus}")
     else:
         acc = stable_addrs(comp["accessors"])
     maps = stable_map_facts(
@@ -1388,7 +1410,7 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
         m["values"] = read_values(image, m)
     axes = sorted({a for m in maps for a in m["axis_x"] + m["axis_y"]})
     if focus_axis and focus_axis not in axes:
-        raise SystemExit(f"ось {focus_axis} не связана с картами контекста")
+        raise SystemExit(f"axis {focus_axis} is not connected to the context maps")
     kernels = sorted(
         (r.data() for r in session.run(KERNELS, rom=rom,
                                        maps=[focus] if focus else stable_addrs(comp["maps"]))),
@@ -1414,8 +1436,9 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
         "concepts": [],
         "anchors": [],
     }
-    # Привязка выхода идёт до потребителей и задаёт их набор. Без фокуса привязывать не к
-    # чему: компонента несёт много карт, и их выходы в один набор не сводятся.
+    # Output attribution precedes consumer discovery and defines the consumer set. Without
+    # focus there is no single output to attribute: a component contains multiple maps
+    # whose outputs cannot be combined into one set.
     data["all_regs"] = set(session.run(ALL_REGS, rom=rom).single()["addrs"])
     acc_regs = {r["func"]: r["regs"] for r in session.run(FUNC_REGS, rom=rom, addrs=acc)}
     data["attrib"] = []
@@ -1429,8 +1452,8 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
                 if rec["base"] == focus:
                     data["attrib"].append({"acc": a, **rec})
     sinks = sorted({r["sink"] for r in data["attrib"] if r["kind"] in ("reg", "ram")})
-    # Величина шире байта занимает несколько адресов, и читатель берёт любой из них:
-    # окно задаётся шириной записи, а не догадкой о соседстве.
+    # A value wider than one byte occupies multiple addresses, and a reader may access any
+    # of them. The write width defines the window rather than an assumption about adjacency.
     span = sorted({f"{int(r['sink'], 16) + k:08x}"
                    for r in data["attrib"] if r["kind"] in ("reg", "ram")
                    for k in range(max(r["width"], 1))})
@@ -1441,33 +1464,35 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
     else:
         data["consumers"] = [r.data() for r in
                              session.run(CONSUMERS, rom=rom, addrs=acc, maxr=maxr)]
-    # Таблица потребителей идёт полной, код - под бюджетом: запрос отдал их уже в порядке
-    # специфичности, так что голова списка и есть наиболее близкое к выходу карты.
+    # The consumer table is complete, while code has a budget. The query already orders
+    # consumers by specificity, so the head of the list is closest to the map output.
     data["consumers_decomp"] = data["consumers"][:maxdec]
     data["consumers_cut"] = len(data["consumers"]) - len(data["consumers_decomp"])
-    # Декомпилируется то, что размечено функцией: у ядра за jmp размера нет и файла тоже.
+    # Only defined functions can be decompiled. A kernel reached by jmp has no size or file.
     data["kernel_funcs"] = sorted(
         {k["addr"] for k in kernels if k["size"] is not None}
         | {c["addr"] for k in kernels for c in k["callees"] if c.get("addr")}
     )
-    # Ядро за jmp идёт листингом: разметка функции нужна декомпилятору, а дизассемблеру
-    # нет, и код ядра читается там же. Без этого агент видел адрес ядра и не видел ядра.
+    # A kernel reached by jmp is provided as a listing: the decompiler needs a function
+    # definition, but the disassembler does not. Without this listing the agent would see
+    # the kernel address without seeing the kernel itself.
     data["kernel_listings"] = sorted({k["addr"] for k in kernels if k["size"] is None})
-    # Резолв пула: образ даёт значение литерала, граф - множество для его проверки.
+    # Pool resolution: the image supplies a literal value and the graph supplies a set
+    # against which to verify it.
     data["image"] = image
     decompiled = sorted(set(acc) | set(data["kernel_funcs"])
                         | {c["consumer"] for c in data["consumers_decomp"]}
                         | {c["caller"] for c in data["callers"]})
     data["func_regs"] = {r["func"]: r["regs"] for r in
                          session.run(FUNC_REGS, rom=rom, addrs=decompiled)}
-    # Функции, вызываемые из показанного кода и разобранные слоем кода. Библиотека
-    # арифметики (0x21000..0x23000) передаёт аргументы регистрами, Ghidra соглашения не
-    # восстанавливает, и в псевдокоде её вызовы стоят без аргументов - величина карты
-    # входит в такую функцию, и трейс на ней обрывается. Контракт обрыв снимает.
+    # Functions called by displayed code and analyzed by the code layer. The arithmetic
+    # library (0x21000..0x23000) passes arguments in registers. Ghidra does not recover the
+    # convention and renders these calls without arguments, so a map value can enter such
+    # a function and end the trace. A contract bridges that gap.
     shown = sorted(set(decompiled) | set(data["kernel_listings"]))
     called = {r["addr"] for r in session.run(CALLED, rom=rom, addrs=shown)}
-    # Листинги показывают цель jsr прямо (`-> 00021bbc`), и там, где Ghidra ребро не
-    # построила, текст остаётся единственным источником. Два канала складываются.
+    # Listings show a jsr target directly (`-> 00021bbc`). Where Ghidra did not build a
+    # relationship, text remains the only source. Combine both channels.
     for a in shown:
         text, _p = dumped(export_dir, a, "decomp")
         if text is None:
@@ -1486,10 +1511,10 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
     data["concepts"] = concepts
     data["vendor"] = [v for v in catalog["vendor"] if v["concept"] in set(concepts)]
 
-    # Якорь ищется только в плоских картах (vmin == vmax). В поверхности из 256 ячеек
-    # встречается почти любой байт, и совпадение с документированным дефолтом там не
-    # значит ничего - это вывод из формы данных, которым pattern-scan уже дважды ошибся
-    # (P6). У плоской карты константа и есть карта, и совпадение с дефолтом - сигнал.
+    # Search for anchors only in flat maps (vmin == vmax). Almost any byte occurs in a
+    # 256-cell surface, so a documented-default match there has no significance. Pattern
+    # scanning has already made this data-shape error twice (P6). In a flat map the constant
+    # is the map itself, so a default match is a useful signal.
     flat = {m["addr"]: m["vmin"] for m in maps if m["vmin"] == m["vmax"]}
     for c in catalog["consts"]:
         hits = sorted(a for a, v in flat.items() if v == c["number"])
@@ -1504,7 +1529,7 @@ def build(session, image, rom, comp, export_dir, catalog, maxr, focus=None,
 
 
 def load_catalog(session):
-    """Каталоги грузятся раз на прогон: они rom-независимы и от компоненты не зависят."""
+    """Load ROM-independent catalogs once per run rather than once per component."""
     pairs = [(r["dims"], r["shape"]) for r in
              session.run("MATCH (e:A2LEntry {family:'HR'}) RETURN DISTINCT "
                          "e.dims AS dims, e.shape AS shape")]
@@ -1523,21 +1548,21 @@ def load_catalog(session):
             continue
         v = float(c["value"])
         if v != int(v) or not 0 <= v <= 0xFFFF:
-            continue          # ячейка карты - целое в диапазоне элемента
+            continue          # A map cell is an integer within the element range.
         consts.append(dict(c, number=int(v)))
     return {"a2l": a2l, "vendor": vendor, "consts": consts}
 
 
 def nonnegative_int(value):
-    """Целое >= 0 для бюджетов артефакта."""
+    """Parse an integer >= 0 for artifact budgets."""
     parsed = int(value)
     if parsed < 0:
-        raise argparse.ArgumentTypeError("значение должно быть >= 0")
+        raise argparse.ArgumentTypeError("value must be >= 0")
     return parsed
 
 
 def focus_addrs(values, path=None):
-    """Адреса из повторяемого флага и файла: нижний регистр, без дублей, стабильно."""
+    """Collect stable, deduplicated lowercase addresses from repeated flags and a file."""
     out = [value.strip().lower() for value in values if value.strip()]
     if path:
         with open(path, encoding="utf-8") as source:
@@ -1546,38 +1571,39 @@ def focus_addrs(values, path=None):
 
 
 def main():
-    p = argparse.ArgumentParser(description="Артефакты компонент для sweep (map-sweep.md)")
+    p = argparse.ArgumentParser(description="Component artifacts for sweep (map-sweep.md)")
     p.add_argument("out_dir")
     p.add_argument("--rom", default="JK08A")
     p.add_argument("--accessor", action="append", default=[],
-                   help="ключ компоненты - адрес её аксессора (волна 0: 00082c8a)")
+                   help="component key: one of its accessor addresses (wave 0: 00082c8a)")
     p.add_argument("--focus-map", action="append", default=[],
-                   help="артефакт на карту, а не на компоненту: свидетельство сужается до "
-                        "аксессоров этой карты, файл идёт как map-<addr>.md")
+                   help="build an artifact for one map rather than a component: evidence is "
+                        "limited to the map's accessors and the file is map-<addr>.md")
     p.add_argument("--focus-maps-file", default=None,
-                   help="то же списком: по адресу карты на строку")
+                   help="same operation from a file containing one map address per line")
     p.add_argument("--focus-axis", action="append", default=[],
-                   help="артефакт на ось: полный контекст всех связанных карт и их "
-                        "аксессоров, файл идёт как axis-<addr>.md")
+                   help="build an axis artifact with the complete context of every connected "
+                        "map and accessor; the file is axis-<addr>.md")
     p.add_argument("--focus-axes-file", default=None,
-                   help="то же списком: по адресу оси на строку")
+                   help="same operation from a file containing one axis address per line")
     p.add_argument("--min-maps", type=int, default=0)
     p.add_argument("--max-maps", type=int, default=10 ** 6)
     p.add_argument("--max-readers", type=nonnegative_int, default=8,
-                   help="потолок читателей регистра, при котором его потребитель идёт "
-                        "в артефакт: мера специфичности выхода (умеренные да, горячие нет)")
+                   help="maximum register reader count for including a consumer in the "
+                        "artifact: a measure of output specificity")
     p.add_argument("--max-consumer-decomp", type=nonnegative_int, default=24,
-                   help="бюджет на C-псевдокод потребителей: таблица печатается полной, "
-                        "код - у стольких наиболее специфичных")
+                   help="consumer C-pseudocode budget; the table remains complete and code "
+                        "is shown for this many most-specific consumers")
     p.add_argument("--export-dir", default=None,
-                   help="прогон подготовки: decomp_<addr>.c и listing_<addr>.txt")
+                   help="preparation-pass directory containing decomp_<addr>.c and "
+                        "listing_<addr>.txt")
     p.add_argument("--audit-output", default=None,
-                   help="JSON-отчёт успешного blind gate и SHA-256 артефактов")
+                   help="JSON report for a successful blind gate and artifact SHA-256 values")
     args = p.parse_args()
     focus_maps = focus_addrs(args.focus_map, args.focus_maps_file)
     focus_axes = focus_addrs(args.focus_axis, args.focus_axes_file)
     if focus_maps and focus_axes:
-        p.error("фокус карты и фокус оси взаимоисключающие")
+        p.error("map focus and axis focus are mutually exclusive")
 
     export_dir = args.export_dir or EXPORT.format(rom=args.rom)
     image = romkit.load(args.rom)
@@ -1587,7 +1613,7 @@ def main():
     with driver.session() as s:
         comps = components(s, args.rom)
         if not comps:
-            sys.exit(f"в графе нет компонент rom={args.rom} - слой строит "
+            sys.exit(f"the graph has no components for rom={args.rom}; build the layer with "
                      f"tools/memgraph/load_maps.py")
         if focus_axes:
             jobs = axis_focus_jobs(s, args.rom, focus_axes)
@@ -1595,7 +1621,7 @@ def main():
             by_map = {m: c for c in comps for m in c["maps"]}
             missed = [m for m in focus_maps if m not in by_map]
             if missed:
-                sys.exit(f"карт нет в графе: {', '.join(sorted(missed))}")
+                sys.exit(f"maps are absent from the graph: {', '.join(sorted(missed))}")
             jobs = [(by_map[m], m, None, f"map-{m}.md") for m in focus_maps]
         else:
             if args.accessor:
@@ -1603,13 +1629,14 @@ def main():
                 picked = [c for c in comps if want & set(c["accessors"])]
                 missed = want - {a for c in picked for a in c["accessors"]}
                 if missed:
-                    sys.exit(f"аксессоров нет в графе: {', '.join(sorted(missed))}")
+                    sys.exit(f"accessors are absent from the graph: "
+                             f"{', '.join(sorted(missed))}")
             else:
                 picked = [c for c in comps
                           if args.min_maps <= len(c["maps"]) <= args.max_maps]
             jobs = [(c, None, None, f"comp-{c['key']}.md") for c in picked]
         catalog = load_catalog(s)
-        print(f"компонент в графе: {len(comps)}, артефактов к сборке: {len(jobs)}")
+        print(f"components in graph: {len(comps)}, artifacts to build: {len(jobs)}")
 
         leaked = 0
         audit_artifacts = []
@@ -1630,24 +1657,24 @@ def main():
                 "blind_verified": not leaks,
             })
             if focus_axis:
-                note = (f"ось {focus_axis}, {len(c['maps'])} карт, "
-                        f"{len(c['accessors'])} аксессоров")
+                note = (f"axis {focus_axis}, {len(c['maps'])} maps, "
+                        f"{len(c['accessors'])} accessors")
             elif focus:
-                note = f"компонента {c['key']}, {len(c['maps'])} карт"
+                note = f"component {c['key']}, {len(c['maps'])} maps"
             else:
-                note = f"{len(c['maps'])} карт, {len(c['accessors'])} аксессоров"
+                note = f"{len(c['maps'])} maps, {len(c['accessors'])} accessors"
             if leaks:
                 leaked += 1
-                print(f"  {os.path.basename(path)}: {note} - ОСЛЕПЛЕНИЕ НАРУШЕНО")
+                print(f"  {os.path.basename(path)}: {note} - BLINDING VIOLATION")
                 for x in leaks:
-                    print(f"      просочилось: {x}")
+                    print(f"      leaked: {x}")
             else:
                 print(f"  {os.path.basename(path)}: {note}")
     driver.close()
 
     if leaked:
-        sys.exit(f"артефактов с разметкой: {leaked} - прогон не годен: агент, читающий "
-                 f"ответ, харнесс не проверяет")
+        sys.exit(f"artifacts containing annotations: {leaked}; the run is invalid because "
+                 f"an agent that can read the answer does not test the harness")
 
     if args.audit_output:
         builder_path = str(Path(__file__).resolve())
@@ -1671,7 +1698,7 @@ def main():
         if os.path.exists(audit_path):
             with open(audit_path, "rb") as existing:
                 if existing.read() != data:
-                    sys.exit(f"blind audit уже существует с другим содержимым: {audit_path}")
+                    sys.exit(f"blind audit already exists with different content: {audit_path}")
         with open(audit_path, "wb") as audit_stream:
             audit_stream.write(data)
 

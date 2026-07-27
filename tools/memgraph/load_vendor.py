@@ -1,42 +1,43 @@
 #!/usr/bin/env python3
-# Загрузка вендорских словарей (Stage 5, разделы 5 и 7 tools/map-flag-pipeline.md) в Memgraph:
-# узлы :VendorEntry (каталог имён) и :VendorFact (якорные факты) - rom-независимый слой
-# семейства HR рядом с :A2LEntry (P7).
+# Load vendor vocabularies (Stage 5, sections 5 and 7 of tools/map-flag-pipeline.md) into
+# Memgraph. :VendorEntry (name catalog) and :VendorFact (anchor facts) nodes form a
+# ROM-independent HR-family layer alongside :A2LEntry (P7).
 #
-# Источник - refs/vendor/catalog.csv и refs/vendor/facts.csv, сведённые словари ProECU
-# (EcuTek) и UpRev; метод и правила разметки - refs/vendor/README.md. Адресов в них нет, как
-# и в A2L: словари задают классы, а не размещение.
+# Sources are refs/vendor/catalog.csv and refs/vendor/facts.csv, consolidated ProECU
+# (EcuTek) and UpRev vocabularies. refs/vendor/README.md defines the method and annotation
+# rules. Like A2L, they contain no addresses: the vocabularies define classes rather than
+# placement.
 #
-# Зачем второй каталог рядом с A2L. A2L знает форму таблицы (геометрия, storagetype, scaling),
-# но не смысл: имена там есть, а механики за ними нет. Вендорские доки несут ровно
-# недостающее - смысл калибровки, оси в терминах ROM и документированные дефолты. Прецедент
-# ценности - K-Factor: его дефолт 26806 назван прозой, найден в дампе поиском значения и дал
-# гомолог-джойн на шесть ROM раньше любого трейса.
+# Why a second catalog exists alongside A2L. A2L knows table form (geometry, storagetype,
+# scaling) but not meaning: it provides names without their mechanics. Vendor documentation
+# supplies exactly what is missing: calibration meaning, axes in ROM terms, and documented
+# defaults. K-Factor demonstrates the value: prose names its default as 26806, a value search
+# locates it in a dump, and a homolog join finds it across six ROMs before any trace.
 #
-# Ключ узла каталога - (vendor, family, name). Имя одно на вендора: имена вербатим, и два
-# словаря называют одно разными словами (`BFS Multiplier (K-Factor)` против
-# `K - Fuel Multiplier`), поэтому глобальный ключ по имени слил бы разные записи и разорвал бы
-# одинаковые.
+# Catalog node key: (vendor, family, name). A name is unique per vendor. Names remain
+# verbatim, and the two vocabularies use different terms for the same entity
+# (`BFS Multiplier (K-Factor)` versus `K - Fuel Multiplier`). A global name key would
+# therefore merge different entries and separate equivalent ones.
 #
-# Соединяет словари колонка concept, а не имя. Она проставлена только там, где связка
-# обоснована (170 записей из 371, 27 concept'ов покрыты обоими словарями); пустая означает
-# "связка не установлена". Рёбер concept загрузчик не строит: join по свойству - одна строка
-# Cypher, а материализованное ребро было бы копией свойства, то есть вторым источником правды
-# ровно того сорта, против которого стоит P5.
+# The concept column links vocabularies instead of name. It is set only where evidence
+# supports a link (170 of 371 entries; 27 concepts covered by both vocabularies); empty means
+# "link not established". The loader does not materialize concept relationships because a
+# property join takes one Cypher line, while a relationship would duplicate the property and
+# create the kind of second source of truth that P5 prevents.
 #
-# Рёбра :MATCHES здесь не строятся - как и в load_a2l.py. Ключи матча по разделу 7 -
-# (dims, scale-family, axis semantics). У ProECU нет ни одного из трёх: скриншоты дерева несут
-# только имена. У UpRev есть семантика осей, но она прозаическая (`Base Fuel Schedule`,
-# `coolant temp`), и сведение её с семантикой :Axis - работа Stage 5 после Stage 4, а не
-# загрузчика. Матч по имени вслепую - ровно тот отказ, против которого стоит P6.
+# As in load_a2l.py, this loader creates no :MATCHES relationships. Section 7 match keys are
+# (dims, scale family, axis semantics). ProECU has none of the three because tree screenshots
+# contain only names. UpRev has prose axis semantics (`Base Fuel Schedule`, `coolant temp`);
+# reconciling them with :Axis semantics belongs to Stage 5 after Stage 4, not to the loader.
+# Blind name matching is exactly the failure P6 prevents.
 #
-# Фильтр origin=factory обязателен для разметки стокового ROM: 128 записей из 371 заводскими не
-# являются - 126 описывают патчи самих вендоров (RaceROM у EcuTek, ARC у UpRev), то есть чужой
-# код, которого в стоке нет, а 2 не разрешены. Матч стоковой карты к patch-записи был бы не
-# слабой подсказкой, а неверной.
+# The origin=factory filter is mandatory when annotating stock ROM. Of 371 entries, 128 are
+# not factory: 126 describe vendor patches (EcuTek RaceROM or UpRev ARC), which are external
+# code absent from stock, and two remain unresolved. Matching a stock map to a patch entry
+# would be wrong rather than merely weak evidence.
 #
-# Запуск: uv run --no-project --with neo4j python tools/memgraph/load_vendor.py [family]
-# По умолчанию family = HR.
+# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_vendor.py [family]
+# Default family: HR.
 import csv
 import os
 import sys
@@ -59,7 +60,7 @@ def read(path):
 
 
 def num(s):
-    """dims - число осей, как у :A2LEntry и :Map. Пустое - не объявлено словарём."""
+    """Parse dims as an axis count, matching :A2LEntry and :Map; empty means unspecified."""
     return int(s) if s and s.isdigit() else None
 
 
@@ -111,22 +112,22 @@ def build_facts(family):
 
 
 def check(entries, facts):
-    """Отказы, которые в графе неотличимы от факта, ловятся до загрузки."""
+    """Reject failures before loading when the graph could not distinguish them from facts."""
     bad = sorted({e["origin"] for e in entries} - ORIGINS)
     if bad:
-        sys.exit(f"catalog.csv: неизвестный origin: {bad}")
+        sys.exit(f"catalog.csv: unknown origin: {bad}")
     bad = sorted({f["kind"] for f in facts} - KINDS)
     if bad:
-        sys.exit(f"facts.csv: неизвестный kind: {bad}")
+        sys.exit(f"facts.csv: unknown kind: {bad}")
 
-    # Ключ узла - (vendor, name): коллизия молча слила бы две записи каталога в одну.
+    # Node key is (vendor, name); a collision would silently merge two catalog entries.
     seen = {}
     for e in entries:
         seen.setdefault((e["vendor"], e["name"]), 0)
         seen[(e["vendor"], e["name"])] += 1
     dup = sorted(k for k, n in seen.items() if n > 1)
     if dup:
-        sys.exit(f"catalog.csv: неуникальные (vendor, name), {len(dup)}: {dup[:5]}")
+        sys.exit(f"catalog.csv: nonunique (vendor, name), {len(dup)}: {dup[:5]}")
 
     seen = {}
     for f in facts:
@@ -134,7 +135,7 @@ def check(entries, facts):
         seen[(f["vendor"], f["subject"])] += 1
     dup = sorted(k for k, n in seen.items() if n > 1)
     if dup:
-        sys.exit(f"facts.csv: неуникальные (vendor, subject), {len(dup)}: {dup[:5]}")
+        sys.exit(f"facts.csv: nonunique (vendor, subject), {len(dup)}: {dup[:5]}")
 
 
 def main():
@@ -144,10 +145,10 @@ def main():
 
     vendors = sorted({e["vendor"] for e in entries})
     factory = sum(1 for e in entries if e["origin"] == "factory")
-    print(f"Вендорские словари: {len(entries)} записей каталога, {len(facts)} фактов; "
+    print(f"Vendor vocabularies: {len(entries)} catalog entries, {len(facts)} facts; "
           f"family={family}")
-    print(f"Словари: {', '.join(vendors)}")
-    print(f"origin=factory (пригодны для стокового ROM): {factory} из {len(entries)}")
+    print(f"Vocabularies: {', '.join(vendors)}")
+    print(f"origin=factory (usable for stock ROM): {factory} of {len(entries)}")
 
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
@@ -192,7 +193,7 @@ def main():
         ).single()["n"]
         print(f"Memgraph: {n} :VendorEntry, {m} :VendorFact")
 
-        print("Заводские имена по словарям (вход матча Stage 5):")
+        print("Factory names by vocabulary (Stage 5 matching input):")
         for r in s.run(
             """
             MATCH (e:VendorEntry {family:$f, origin:'factory'})
@@ -202,7 +203,7 @@ def main():
         ):
             print(f"  {r['vendor']:<8} {r['n']:>3}")
 
-        print("Схождение словарей (concept, покрытые обоими):")
+        print("Vocabulary convergence (concepts covered by both):")
         rows = list(
             s.run(
                 """
@@ -215,10 +216,10 @@ def main():
             )
         )
         for r in rows:
-            print(f"  {r['c']:<24} записей {r['n']:>2}")
-        print(f"  всего: {len(rows)}")
+            print(f"  {r['c']:<24} entries {r['n']:>2}")
+        print(f"  total: {len(rows)}")
 
-        print("Документированные дефолты (искомые в дампе якоря):")
+        print("Documented defaults (anchors to search for in the dump):")
         for r in s.run(
             """
             MATCH (f:VendorFact {family:$f, kind:'const'}) WHERE f.value <> ''
@@ -229,7 +230,7 @@ def main():
         ):
             print(f"  {r['value']:>10} {r['units']:<22} {r['scope']:<9} {r['subject']}")
 
-        print("Открытая работа (пробелы вендоров и гипотезы сведения):")
+        print("Open work (vendor gaps and reconciliation hypotheses):")
         for r in s.run(
             """
             MATCH (f:VendorFact {family:$f}) WHERE f.kind IN ['gap','hypothesis']

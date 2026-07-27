@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-# Слой понимания кода и провенанс заявок (tools/map-flag-pipeline.md, разделы 5 и 11).
-# Источники истины разрешает defs/rom-inheritance.toml. Канонический JK08A хранит
-# единственный живой набор funcs/vars/findings/axes; exact-code ROM наследуют его.
-# Узлы и :RESTS_ON в Memgraph являются проекцией и полностью пересобираются.
+# Code-understanding layer and claim provenance (sections 5 and 11 of
+# tools/map-flag-pipeline.md). defs/rom-inheritance.toml resolves sources of truth.
+# Canonical JK08A holds the only live funcs/vars/findings/axes set; exact-code ROMs inherit
+# it. Memgraph nodes and :RESTS_ON relationships are projections and are rebuilt completely.
 #
-# Этот загрузчик обязан идти после load_graph.py, load_xrefs.py и load_maps.py:
-# каждый из них владеет своими узлами и пересоздаёт их через DETACH DELETE.
+# This loader must run after load_graph.py, load_xrefs.py, and load_maps.py. Each owns its
+# nodes and recreates them with DETACH DELETE.
 #
-# Запуск: uv run --no-project --with neo4j python tools/memgraph/load_code.py [rom]
-# По умолчанию rom = JK08A.
+# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_code.py [rom]
+# Default ROM: JK08A.
 import csv
 import os
 import sys
@@ -57,7 +57,7 @@ AXIS_FIELDS = [
     "scale_evidence", "note",
 ]
 
-# Каждая колонка evidence принадлежит ровно одной ранжируемой заявке.
+# Every evidence column belongs to exactly one ranked claim.
 SOURCE_COLUMNS = {
     "Func": (("confidence", "evidence", True),
              ("contract_conf", "contract_evidence", True)),
@@ -74,12 +74,12 @@ class LoadError(ProvenanceError):
 
 def read_rows(path, expected):
     if not os.path.exists(path):
-        raise LoadError(f"нет git-источника {path}")
+        raise LoadError(f"git source not found: {path}")
     with open(path, newline="", encoding="utf-8") as fh:
         reader = csv.DictReader(fh)
         if reader.fieldnames != expected:
             raise LoadError(
-                f"{path}: заголовок {reader.fieldnames}, ожидается {expected}"
+                f"{path}: header {reader.fieldnames}; expected {expected}"
             )
         return list(reader)
 
@@ -88,33 +88,33 @@ def check_unique(rows, path):
     counts = Counter(r["addr"] for r in rows)
     bad_addr = sorted(a for a in counts if not ADDR_RE.match(a))
     if bad_addr:
-        raise LoadError(f"{path}: addr не 8 hex-цифр нижнего регистра: {bad_addr[:5]}")
+        raise LoadError(f"{path}: addr is not eight lowercase hexadecimal digits: {bad_addr[:5]}")
     dup = sorted(a for a, n in counts.items() if n > 1)
     if dup:
-        raise LoadError(f"{path}: неуникальные addr, {len(dup)}: {dup[:5]}")
+        raise LoadError(f"{path}: nonunique addr values, {len(dup)}: {dup[:5]}")
 
 
 def source_claims(rom, sources):
-    """Заявки, evidence-токены и локальные ворота до обращения к графу."""
+    """Build claims and evidence tokens and apply local gates before accessing the graph."""
     claims = []
     for label, rows, path in sources:
         check_unique(rows, path)
         for row in rows:
             if label == "Func" and row["role"] not in FUNC_ROLES:
                 raise LoadError(
-                    f"{path}:{row['addr']}: role {row['role']!r} вне {sorted(FUNC_ROLES)}"
+                    f"{path}:{row['addr']}: role {row['role']!r} is outside {sorted(FUNC_ROLES)}"
                 )
             for prop, evidence_col, strict in SOURCE_COLUMNS[label]:
                 level = row[prop]
                 evidence = row[evidence_col]
                 if level and level not in LEVELS:
                     raise LoadError(
-                        f"{path}:{row['addr']}.{prop}: уровень {level!r} "
-                        f"вне {list(LEVELS)}"
+                        f"{path}:{row['addr']}.{prop}: confidence {level!r} "
+                        f"is outside {list(LEVELS)}"
                     )
                 if evidence and not level:
                     raise LoadError(
-                        f"{path}:{row['addr']}: {evidence_col} без {prop}"
+                        f"{path}:{row['addr']}: {evidence_col} exists without {prop}"
                     )
                 if not level:
                     continue
@@ -126,7 +126,7 @@ def source_claims(rom, sources):
                     factual = [t for t in tokens if not t.is_process]
                     if not factual:
                         raise LoadError(
-                            f"ворота уровня: {claim.short()} {level} без свидетельства"
+                            f"confidence gate: {claim.short()} {level} without evidence"
                         )
                 claims.append({
                     "claim": claim,
@@ -145,16 +145,16 @@ def check_func_contracts(funcs, path):
         evidence = bool(row["contract_evidence"])
         if contract != level:
             raise LoadError(
-                f"{path}:{row['addr']}: contract и contract_conf идут парой"
+                f"{path}:{row['addr']}: contract and contract_conf must appear together"
             )
         if evidence and not contract:
             raise LoadError(
-                f"{path}:{row['addr']}: contract_evidence без contract"
+                f"{path}:{row['addr']}: contract_evidence exists without contract"
             )
 
 
 def check_catalog_claim_levels(tx, rom, label, rows):
-    """Убедиться, что владелец Map/Axis уже спроецировал уровни из CSV."""
+    """Verify that the Map/Axis owner already projected confidence levels from CSV."""
     props = [prop for prop, _, _ in SOURCE_COLUMNS[label]]
     returns = ", ".join(f"n.{prop} AS {prop}" for prop in props)
     graph = {
@@ -179,16 +179,16 @@ def check_catalog_claim_levels(tx, rom, label, rows):
     if missing or mismatches:
         details = []
         if missing:
-            details.append(f"нет узлов {missing[:10]}")
+            details.append(f"missing nodes {missing[:10]}")
         details.extend(mismatches[:10])
         raise LoadError(
-            "уровни Map/Axis не спроецированы load_maps.py: "
+            "Map/Axis confidence levels were not projected by load_maps.py: "
             + "; ".join(details)
         )
 
 
 def check_source_claim_properties(tx, rom, label, rows):
-    """Сравнить claim-specific свойства узлов с каноническими CSV."""
+    """Compare claim-specific node properties with canonical CSV files."""
     columns = [
         column
         for prop, evidence, _ in SOURCE_COLUMNS[label]
@@ -219,10 +219,10 @@ def check_source_claim_properties(tx, rom, label, rows):
     if missing or mismatches:
         details = []
         if missing:
-            details.append(f"нет узлов {missing[:10]}")
+            details.append(f"missing nodes {missing[:10]}")
         details.extend(mismatches[:10])
         raise LoadError(
-            "claim-specific свойства не совпадают с CSV: " + "; ".join(details)
+            "claim-specific properties do not match CSV: " + "; ".join(details)
         )
 
 
@@ -237,10 +237,11 @@ def ensure_sources(tx, rom, funcs, vars_, maps, axes):
     }
     missing = sorted(set(func_addrs) - present)
     if missing:
-        raise LoadError(f"funcs.csv: {len(missing)} адресов не резолвятся в :Func: {missing}")
+        raise LoadError(f"funcs.csv: {len(missing)} addresses do not resolve to :Func: {missing}")
 
-    # Часть ручных Reg адресуется как base+offset и не имеет прямого xref. Источник vars.csv
-    # легитимно вводит такой Reg; произвольная evidence-цель без строки vars всё равно упадёт.
+    # Some manual Reg nodes use base+offset addressing and have no direct xref. vars.csv may
+    # legitimately introduce such a Reg; an arbitrary evidence target without a vars row
+    # still fails.
     var_rows = []
     for row in vars_:
         region, name = classify(int(row["addr"], 16))
@@ -266,14 +267,14 @@ def ensure_sources(tx, rom, funcs, vars_, maps, axes):
         missing = sorted(set(addrs) - present)
         if missing:
             raise LoadError(
-                f"{label}: {len(missing)} адресов ручного слоя не резолвятся: {missing}"
+                f"{label}: {len(missing)} manual-layer addresses do not resolve: {missing}"
             )
         check_catalog_claim_levels(tx, rom, label, rows)
     return var_rows
 
 
 def project_properties(tx, rom, source_rom, funcs, vars_, maps, axes):
-    # Удаление stale-аннотаций обязательно: строка, удалённая из CSV, не должна жить в графе.
+    # Removing stale annotations is mandatory: a row deleted from CSV must not survive in the graph.
     tx.run(
         "MATCH (n:Func {rom:$rom}) REMOVE n.role, n.semantics, n.contract, "
         "n.contract_conf, n.contract_evidence, n.confidence, n.evidence, "
@@ -337,7 +338,7 @@ def project_properties(tx, rom, source_rom, funcs, vars_, maps, axes):
 
 
 def project_source_model(tx, model):
-    """Зафиксировать источник аннотаций как проверяемую связь уровня ROM."""
+    """Record the annotation source as a verifiable ROM-level relationship."""
     tx.run(
         """
         MERGE (r:Rom {id:$target})
@@ -405,7 +406,7 @@ def node_inventory(tx, rom, wanted):
 
 
 def resolve_claim_dependencies(rom, claims, inventory):
-    """Разрешить evidence-токены по готовой переписи узлов и уровней."""
+    """Resolve evidence tokens against the completed node and confidence inventory."""
     dependencies = []
     gaps = []
     levels = {item["claim"]: item["level"] for item in claims}
@@ -429,23 +430,23 @@ def resolve_claim_dependencies(rom, claims, inventory):
                 if token.role in CATALOG_ROLES:
                     gaps.append(miss)
                     continue
-                raise LoadError(f"свидетельство не резолвимо: {miss}")
+                raise LoadError(f"unresolvable evidence: {miss}")
             if not target_property_allowed(label, token.target_prop):
                 raise LoadError(
-                    f"{source.short()}: {label}.{token.target_prop} не существует"
+                    f"{source.short()}: {label}.{token.target_prop} does not exist"
                 )
             if token.target_prop != STRUCTURAL:
                 level = inventory[label][token.target_addr].get(token.target_prop, "")
                 if level not in LEVELS:
                     raise LoadError(
-                        f"{source.short()}: цель {label}:{token.target_addr}."
-                        f"{token.target_prop} не имеет уровня"
+                        f"{source.short()}: target {label}:{token.target_addr}."
+                        f"{token.target_prop} has no confidence level"
                     )
                 target = ClaimKey(rom, label, token.target_addr, token.target_prop)
                 previous = levels.setdefault(target, level)
                 if previous != level:
                     raise LoadError(
-                        f"{target.short()}: уровень источника {previous}, в графе {level}"
+                        f"{target.short()}: source confidence {previous}; graph confidence {level}"
                     )
             dependencies.append(Dependency(
                 source=source,
@@ -471,7 +472,7 @@ def resolve_dependencies(tx, rom, claims):
 
 def require_no_gaps(gaps):
     if gaps:
-        raise LoadError(f"пробелы каталога в evidence: {len(gaps)}: {gaps[:10]}")
+        raise LoadError(f"catalog gaps in evidence: {len(gaps)}: {gaps[:10]}")
 
 
 def project_edges(tx, rom, dependencies):
@@ -546,7 +547,7 @@ def exact_audit(tx, rom, dependencies):
         def sample(counter):
             return list(counter.items())[:10]
         raise LoadError(
-            "проекция RESTS_ON расходится с источником: "
+            "RESTS_ON projection differs from its source: "
             f"missing={sample(diff.missing)}, extra={sample(diff.extra)}, "
             f"duplicate_expected={sample(diff.duplicate_expected)}, "
             f"duplicate_actual={sample(diff.duplicate_actual)}"
@@ -580,23 +581,23 @@ def report_analysis(claims, dependencies, levels, grounded, gaps):
     roles = Counter(dep.role for dep in dependencies)
     targets = Counter(dep.target_label for dep in dependencies)
     print(f"  :RESTS_ON: {len(dependencies)} "
-          f"(цели: {', '.join(f'{k}={n}' for k, n in targets.most_common())})")
-    print("  по роли: " + ", ".join(f"{k}={n}" for k, n in roles.most_common()))
+          f"(targets: {', '.join(f'{k}={n}' for k, n in targets.most_common())})")
+    print("  by role: " + ", ".join(f"{k}={n}" for k, n in roles.most_common()))
     print(f"  ranked claims: {len(levels)}; source claims: {len(source_keys)}; "
-          f"циклических SCC: {len(analysis.cyclic_components)}")
-    print(f"  effective ниже declared у code/silicon: {len(below)}; "
-          f"без grounding: {len(ungrounded)}")
-    print(f"  report-only долг Map/Axis code без grounding: {len(debt)}")
+          f"cyclic SCCs: {len(analysis.cyclic_components)}")
+    print(f"  effective below declared for code/silicon: {len(below)}; "
+          f"without grounding: {len(ungrounded)}")
+    print(f"  report-only debt for Map/Axis code without grounding: {len(debt)}")
     if gaps:
-        print(f"  пробелы каталога: {len(gaps)}")
+        print(f"  catalog gaps: {len(gaps)}")
     if below:
-        print("  слабейшее звено (первые 10):")
+        print("  weakest links (first 10):")
         for claim in sorted(below)[:10]:
             weak = analysis.weakest[claim]
             print(f"    {claim.short()} {levels[claim]} -> {below[claim]} "
-                  f"через {weak.short()}")
+                  f"through {weak.short()}")
     if analysis.ungrounded_cycles:
-        print(f"  незаземлённые циклы: {len(analysis.ungrounded_cycles)}")
+        print(f"  ungrounded cycles: {len(analysis.ungrounded_cycles)}")
     return analysis
 
 
@@ -625,9 +626,9 @@ def main():
         sys.exit(str(error))
 
     print(
-        f"Слой провенанса {rom}: источник аннотаций={model.source}, "
-        f"режим={model.kind}; {len(funcs)} функций, {len(vars_)} переменных, "
-        f"{len(maps)} находок карт, {len(axes)} находок осей"
+        f"Provenance layer {rom}: annotation source={model.source}, "
+        f"mode={model.kind}; {len(funcs)} functions, {len(vars_)} variables, "
+        f"{len(maps)} map findings, {len(axes)} axis findings"
     )
 
     driver = GraphDatabase.driver(BOLT, auth=("", ""))

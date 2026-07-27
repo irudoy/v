@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-# Сводит две транскрипции вендорских словарей - refs/vendor/proecu-maps.csv (ProECU/EcuTek) и
-# refs/vendor/uprev-maps.csv (UpRev) - в refs/vendor/catalog.csv, вход load_vendor.py (Stage 5
-# tools/map-flag-pipeline.md). Метод транскрипции и разметка - refs/vendor/README.md.
+# Combines two vendor-dictionary transcriptions, refs/vendor/proecu-maps.csv (ProECU/EcuTek)
+# and refs/vendor/uprev-maps.csv (UpRev), into refs/vendor/catalog.csv, the input to
+# load_vendor.py (Stage 5 in tools/map-flag-pipeline.md). See refs/vendor/README.md for the
+# transcription and annotation method.
 #
-# Каталог генерируем, транскрипции рукописны, и правятся они, а не он: catalog.csv несёт
-# выведенные колонки (origin, concept), а правка в нём разошлась бы со словарём молча - ошибка
-# ровно того сорта, против которого стоит P5.
+# The catalog is generated and the transcriptions are handwritten. Edit the transcriptions,
+# not the catalog: catalog.csv contains derived columns (origin, concept), and editing it
+# would silently diverge from the dictionaries, exactly the failure class prevented by P5.
 #
-# Имена не нормализуются и не переписываются, регистр и опечатки источника сохраняются, включая
-# собственные маркеры неопределённости ProECU (`Idle Target #1a - ??`, `Sensor Multiplier Unk`).
-# Имя - единственное, что скриншот дерева ProECU вообще даёт, поэтому оно и есть цитата;
-# вся аналитика уходит в отдельные колонки, ни одна запись не выбрасывается.
+# Names are neither normalized nor rewritten. Source capitalization and typos are preserved,
+# including ProECU's own uncertainty markers (`Idle Target #1a - ??`, `Sensor Multiplier Unk`).
+# A name is the only information available from a ProECU tree screenshot, so it is a quotation.
+# All analysis goes into separate columns and no entry is discarded.
 #
-# Запуск: python3 tools/vendor/build_catalog.py
+# Run: python3 tools/vendor/build_catalog.py
 import csv
 import os
 
@@ -20,15 +21,15 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 VENDOR = os.path.join(ROOT, "refs", "vendor")
 
 # --- origin: ProECU ---
-# Весь racerom-supplement документирует функции RaceROM. В tuning-guide RaceROM
-# только явная ветка дерева; остальное – заводское.
-# origin нормализован: factory | patch | unknown. Чей это патч, говорит колонка
-# vendor (ecutek -> RaceROM, uprev -> ARC).
+# The entire racerom-supplement documents RaceROM features. In tuning-guide, only the explicit
+# RaceROM tree branch is patched; the remainder is factory content.
+# origin is normalized as factory | patch | unknown. The vendor column identifies the patch
+# owner (ecutek -> RaceROM, uprev -> ARC).
 #
-# Колонка обязательна для Stage 5: patch-запись описывает чужой код, которого в стоке нет, и
-# матч стоковой карты к ней был бы не слабой подсказкой, а неверной. Метка группы в правило не
-# входит - она ненадёжна: `Rev Limit Per Gear Mode1-4` есть карты RaceROM, но лежат под группой
-# `Limiters` рядом с заводскими. Решает документ-источник и явный корень дерева.
+# This column is required for Stage 5: a patch entry describes vendor code absent from stock,
+# so matching a stock map to it would be wrong rather than merely weak. Group labels are not
+# part of the rule because they are unreliable: `Rev Limit Per Gear Mode1-4` are RaceROM maps
+# placed under `Limiters` beside factory maps. The source document and explicit tree root decide.
 def proecu_origin(r):
     if r['doc'] == 'racerom-supplement':
         return 'patch'
@@ -36,13 +37,14 @@ def proecu_origin(r):
         return 'patch'
     return 'factory'
 
-# --- concept: курируемая разметка, только там, где связка обоснована ---
-# Ключ соединения словарей: записи с одним concept описывают одну сущность. Имена вербатим, и
-# два словаря называют одно разными словами (`BFS Multiplier (K-Factor)` против
-# `K - Fuel Multiplier`), поэтому джойн по имени не сошёлся бы вовсе, а джойн по похожести имён
-# сводил бы разное. Отсюда ручной словарь: связка - утверждение, а не строковая операция.
-# Пустой concept означает "связка не установлена", а не "связки нет".
-# exact: точное имя -> concept; prefix: имя начинается с -> concept
+# --- concept: curated annotation only where the link is justified ---
+# Dictionary join key: entries sharing a concept describe the same entity. Names remain
+# verbatim, and the two dictionaries use different terms for the same item
+# (`BFS Multiplier (K-Factor)` versus `K - Fuel Multiplier`). An exact-name join would fail,
+# while a similarity join would merge different items. The manual dictionary is therefore
+# intentional: a link is a claim, not a string operation.
+# An empty concept means "link not established", not "no link exists".
+# exact: exact name -> concept; prefix: name starts with -> concept
 PROECU_EXACT = {
     'BFS Multiplier (K-Factor)': 'bfs-multiplier',
     'MAF Sensor Scale (% to g/s) for Load': 'maf-gps-scalar',
@@ -122,9 +124,10 @@ UPREV_EXACT = {
     'Speed Limit': 'speed-limit',
     'Throttle A': 'throttle-torque',
     'Estimated Torque Delivered': 'torque-actual',
-    # Та же карта, что 'Torque Demand' EcuTek и 'QH0/ Torque Conversion Map' A2L: совпадают оси,
-    # шкала выхода, раздел и наличие контрольной копии. Трактовки вендоров расходятся (запрос
-    # момента против оценки выданного), сведена структура - разбор в facts.csv.
+    # The same map as EcuTek 'Torque Demand' and A2L 'QH0/ Torque Conversion Map': axes,
+    # output scale, section, and presence of a check copy match. Vendor interpretations differ
+    # (torque request versus delivered-torque estimate); the structural link is recorded and
+    # analyzed in facts.csv.
     'Throttle A': 'torque-demand',
     'Radiator Fan Speed by Temp': 'rad-fan-duty',
     'Idle Target': 'idle-target-neutral',
@@ -178,27 +181,27 @@ for r in read('uprev-maps.csv'):
         concept=concept(r['name'], UPREV_EXACT, UPREV_PREFIX),
         source=r['anchor'], note=r['note']))
 
-# Разметка, не попавшая ни в одно имя, - опечатка словаря, а не пустая работа: она молча
-# оставила бы связку непроставленной, и джойн Stage 5 недосчитался бы записей без отказа.
+# An annotation that matches no name is a dictionary typo rather than harmless unused work:
+# it would silently omit the link and make the Stage 5 join undercount entries without failing.
 named = {r['name'] for r in out}
 stale = sorted((set(PROECU_EXACT) | set(UPREV_EXACT)) - named)
 if stale:
-    raise SystemExit(f"concept ссылается на имена, которых нет в словарях: {stale}")
+    raise SystemExit(f"concept refers to names absent from the dictionaries: {stale}")
 
 cols = ['vendor','doc','section','group','name','dims','axis_x','axis_y','output',
         'origin','level','concept','source','note']
 with open(os.path.join(VENDOR, 'catalog.csv'), 'w', newline='', encoding='utf-8') as f:
-    w = csv.DictWriter(f, fieldnames=cols, quoting=csv.QUOTE_MINIMAL)
+    w = csv.DictWriter(f, fieldnames=cols, quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
     w.writeheader(); w.writerows(out)
 
 origins = {o: sum(1 for r in out if r['origin'] == o) for o in ('factory', 'patch', 'unknown')}
 concepts = {r['concept'] for r in out if r['concept']}
 both = sum(1 for c in concepts
            if len({r['vendor'] for r in out if r['concept'] == c}) > 1)
-print(f"catalog.csv: {len(out)} записей "
+print(f"catalog.csv: {len(out)} entries "
       f"({sum(1 for r in out if r['vendor'] == 'ecutek')} ecutek, "
       f"{sum(1 for r in out if r['vendor'] == 'uprev')} uprev)")
 print(f"origin: factory {origins['factory']}, patch {origins['patch']}, "
-      f"unknown {origins['unknown']} (Stage 5 матчит только factory)")
-print(f"concept: {sum(1 for r in out if r['concept'])} записей, {len(concepts)} значений, "
-      f"{both} покрыты обоими словарями")
+      f"unknown {origins['unknown']} (Stage 5 matches only factory)")
+print(f"concept: {sum(1 for r in out if r['concept'])} entries, {len(concepts)} values, "
+      f"{both} covered by both dictionaries")

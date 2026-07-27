@@ -40,7 +40,7 @@ class ConfigTest(unittest.TestCase):
             body = self.valid().replace(
                 "smb://Junkyard/Backup", "smb://Junkyard"
             )
-            with self.assertRaisesRegex(backup.BackupError, "конкретную share"):
+            with self.assertRaisesRegex(backup.BackupError, "specific share"):
                 backup.load_config(self.write(directory, body))
 
     def test_interval_below_one_day_is_rejected(self):
@@ -49,7 +49,7 @@ class ConfigTest(unittest.TestCase):
                 "minimum_interval_hours = 24",
                 "minimum_interval_hours = 23",
             )
-            with self.assertRaisesRegex(backup.BackupError, "меньше 24"):
+            with self.assertRaisesRegex(backup.BackupError, "less than 24"):
                 backup.load_config(self.write(directory, body))
 
     def test_parent_traversal_is_rejected(self):
@@ -58,7 +58,7 @@ class ConfigTest(unittest.TestCase):
                 'backup_subdir = "vq-memgraph"',
                 'backup_subdir = "../vq-memgraph"',
             )
-            with self.assertRaisesRegex(backup.BackupError, "безопасным"):
+            with self.assertRaisesRegex(backup.BackupError, "safe relative"):
                 backup.load_config(self.write(directory, body))
 
 
@@ -137,7 +137,7 @@ class DumpTest(unittest.TestCase):
             path = Path(directory) / "database.cypherl.gz"
             with gzip.open(path, "wt", encoding="utf-8") as fh:
                 fh.write("CREATE (:__mg_vertex__:`Func` {__mg_id__: 1});\n")
-            with self.assertRaisesRegex(backup.BackupError, "рёбер"):
+            with self.assertRaisesRegex(backup.BackupError, "relationships"):
                 backup.inspect_dump(path)
 
 

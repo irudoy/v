@@ -1,9 +1,11 @@
-// Декомпиляция заданных функций нативным декомпилятором Ghidra (headless) в C-псевдокод.
-// Для прицельного чтения кандидатов (напр. CAN-приёмников RXPR) без GUI.
+// Decompile selected functions to C pseudocode with the native Ghidra decompiler
+// in headless mode. Supports focused inspection of candidates such as RXPR CAN
+// receivers without a GUI.
 //
-// Запуск: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
+// Usage: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
 //           -scriptPath tools/ghidra -postScript DecompileFuncs.java <outdir> <addr> [<addr>...]
-// Адреса – hex без 0x (как в funcs.csv). Пишет <outdir>/decomp_<addr>.c на каждую функцию.
+// Addresses are hexadecimal without 0x, as in funcs.csv. Writes one
+// <outdir>/decomp_<addr>.c per function.
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileOptions;
 import ghidra.app.decompiler.DecompileResults;
@@ -24,8 +26,8 @@ public class DecompileFuncs extends GhidraScript {
         String outdir = a[0];
         new File(outdir).mkdirs();
         DecompInterface di = new DecompInterface();
-        // Крупные функции (~17 КБ) упираются в лимит буфера ответа декомпилятора
-        // ("Response buffer size exceeded"), а не в таймаут; payload по умолчанию мал.
+        // Large functions around 17 KB hit the decompiler response-buffer limit,
+        // "Response buffer size exceeded", rather than the timeout.
         DecompileOptions opts = new DecompileOptions();
         opts.setMaxPayloadMBytes(256);
         di.setOptions(opts);
@@ -45,7 +47,7 @@ public class DecompileFuncs extends GhidraScript {
                 println("VQ_DECOMP no function at " + a[i]);
                 continue;
             }
-            // 240 с - запас по времени для крупных функций (штатно хватает <10 с)
+            // 240 seconds leaves margin for large functions; normal runs need <10 seconds.
             DecompileResults res = di.decompileFunction(f, 240, monitor);
             String c = res.decompileCompleted() ? res.getDecompiledFunction().getC()
                                                 : "// decompile failed: " + res.getErrorMessage();

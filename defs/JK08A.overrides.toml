@@ -1,9 +1,10 @@
-# Презентационный слой дефа JK08A: имена, категории, порядок, шаги редактора и блок
-# опознавателя ROM. Факты (адреса, форма, элемент, оси, шкала, уровень) сюда не идут -
-# их несёт граф, а расходятся источники ровно тогда, когда один факт объявлен дважды.
+# JK08A definition presentation layer: names, categories, ordering, editor steps,
+# and the ROM identification block. Facts such as address, shape, element, axes,
+# scaling, and confidence do not belong here. The graph carries them, and sources
+# diverge precisely when one fact is declared twice.
 #
-# Читает tools/mapkit/emit_def.py; ключ слияния - адрес карты либо оси, как в графе
-# (8 hex-цифр, нижний регистр).
+# Read by tools/mapkit/emit_def.py. The merge key is the graph map or axis
+# address: eight lowercase hexadecimal digits.
 
 [rom]
 xmlid = "JK08A"
@@ -23,18 +24,18 @@ filesize = "1024kb"
 author = "VQ HR ECU project"
 version = "WIP"
 
-# Целевой дамп:
+# Target dump:
 # rom-images/23710-JK08A/1JK08A-20260726-stock.bin,
 # sha256 ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23.
-# Кодовые факты перенесены из exact-code донора JK03A. Значения карт и осей измеряются
-# загрузчиком по собственному дампу JK08A. Донор структуры EV18A (350Z HR, тот же
-# SH7058/1MB non-VVEL) имеет другой layout калибровки.
+# Code facts are inherited from exact-code donor JK03A. The loader measures map
+# and axis values from the owned JK08A dump. Structural donor EV18A (350Z HR,
+# the same SH7058/1MB non-VVEL class) has a different calibration layout.
 [rom.comment]
 text = """
-Разбор и метод - defs/JK08A.notes.md. Уровень каждой таблицы - в её комментарии.
-Категория с суффиксом (candidate) - карта опознана, но не трейсом; единицы с
-суффиксом [cand] - множитель взят из каталога A2L либо по форме данных и кодом
-не закреплён.
+Analysis and method: defs/JK08A.notes.md. Each table's confidence is recorded in
+its comment. A category ending in (candidate) denotes a map identified without a
+trace. Units ending in [cand] use a multiplier from the A2L catalog or data shape
+that has not been confirmed by code.
 """
 
 [[checksum]]
@@ -44,7 +45,7 @@ end = "0x2259C"
 sumloc = "0x20404"
 xorloc = "0x20408"
 comment = """
-Checksum B. Нативный обработчик RomRaider alt. Должен выполняться раньше checksum A.
+Checksum B. Native RomRaider alt handler. Must run before checksum A.
 """
 
 [[checksum]]
@@ -55,8 +56,8 @@ skiploc = "0x20000"
 sumloc = "0x96DC"
 xorloc = "0x96D4"
 comment = """
-Checksum A. Нативный обработчик RomRaider alt2 с исключением 0x20000. Порядок B -> A
-обязателен, поскольку поля checksum B входят в домен A.
+Checksum A. Native RomRaider alt2 handler excluding 0x20000. B -> A ordering is
+mandatory because the checksum B fields are inside domain A.
 """
 
 [[switch]]
@@ -73,8 +74,8 @@ state = [
   { name = "Disabled (IMMO OFF)", data = "00" },
 ]
 
-# Оси карт зажигания показаны также отдельными таблицами для непосредственного просмотра
-# и редактирования breakpoint'ов.
+# Ignition-map axes are also exposed as separate tables for direct breakpoint
+# inspection and editing.
 [axisview.00011ece]
 name = "Engine Speed Axis [RPM] (ref)"
 category = "Reference Axes"
@@ -90,10 +91,11 @@ format = "0.00"
 fine = 0.78125
 coarse = 3.125
 
-# Трио 0xB61A/0xB71A/0xB81A - базовые пороги детектора пропусков воспламенения
-# (неравномерность вращения коленвала), аксессор 0x82c8a. Структура снята кодом, но
-# физическая шкала не выведена (offset-binary, 0x80 = сентинел), поэтому по воротам §9
-# деф их не выпускает и презентации у них нет. Разбор - в defs/JK08A.notes.md.
+# The 0xB61A/0xB71A/0xB81A trio contains base thresholds for the misfire
+# detector based on crankshaft rotational irregularity, accessor 0x82c8a.
+# Structure is confirmed by code, but the physical scaling is unresolved
+# (offset-binary, 0x80 sentinel). Section 9 gates therefore keep them out of the
+# definition and they have no presentation entries. See defs/JK08A.notes.md.
 
 [table.0000991a]
 name = "Cold Ignition Timing Map (0x991A)"
@@ -240,7 +242,8 @@ category = "Limiters (traced)"
 order = 40
 fine = 12
 coarse = 125
-# Ось - не массив в ПЗУ, а выбор ветвлением: пара порогов читается прямым компаратором.
+# The axis is not a ROM array but a branch selection: a direct comparator reads
+# the threshold pair.
 static_axis = ["cut (bit7=0)", "restore (bit7=1)"]
 
 [table.000121fe]
@@ -343,8 +346,8 @@ format = "0.0000"
 fine = 0.00390625
 coarse = 0.0625
 
-# Операционные имена калибровок прохода 0x11E9E..0x12808 описывают только
-# подтверждённую роль значения в коде. Физические имена для них не установлены.
+# Operational names for calibrations in sweep range 0x11E9E..0x12808 describe
+# only the value role confirmed by code. Their physical names are unresolved.
 [table.00011e9e]
 name = "Saturated Difference Minuend - raw u8 (0x11E9E)"
 category = "Internal Calculations (traced)"
@@ -481,9 +484,9 @@ format = "0"
 fine = 2
 coarse = 16
 
-# Операционные имена калибровок прохода 0x11F6A..0x19190 описывают доказанное
-# арифметическое потребление либо явно отмеченную каталоговую гипотезу. Физические
-# сигналы внутренних расчётов не установлены.
+# Operational names for calibrations in sweep range 0x11F6A..0x19190 describe
+# proven arithmetic use or an explicitly marked catalog hypothesis. Physical
+# signals for the internal calculations are unresolved.
 [table.00012930]
 name = "Signed Quotient Numerator Multiplier - raw u8 (0x12930)"
 category = "Internal Calculations (traced)"
@@ -684,9 +687,9 @@ format = "0"
 fine = 1
 coarse = 4
 
-# Операционные имена калибровок прохода 0x11C6D..0x153B8 описывают доказанное
-# арифметическое потребление либо явно отмеченную каталоговую гипотезу. Физические
-# сигналы внутренних расчётов не установлены.
+# Operational names for calibrations in sweep range 0x11C6D..0x153B8 describe
+# proven arithmetic use or an explicitly marked catalog hypothesis. Physical
+# signals for the internal calculations are unresolved.
 [table.0001202e]
 name = "Initial Retard Quantity - unresolved mode (0x1202E)"
 category = "Ignition / Transient Correction"

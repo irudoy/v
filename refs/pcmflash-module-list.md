@@ -705,8 +705,8 @@ Aston Martin M177 (MED17.7.5) [WR/CK]
 70. Jeep EDC17
 
 2.8L CRDI (EDC17CP27)[RD/WR/CK]
-3.0L CRDI (EDC17C49/C79) [RD/WR/CK] дLя чтения может требоваться прямое
-подкLючение к ЭБУ
+3.0L CRDI (EDC17C49/C79) [RD/WR/CK] direct connection to the ECU may be required for
+reading
 
 71. Bosch MEDC17 Bootloader
 
@@ -790,13 +790,13 @@ Melco CVT CAN-bus (1N83M/1552KB MH8111/1536KB MH5006/1024KB MH8104/512KB)
 
 79. Mitsubishi CAN-bus Bootloader
 
-дLя работы требуется прямое подкLючение к разъёму ЭБУ!
+A direct connection to the ECU connector is required!
 CAN-bus Bootloader FLASH (MH8114F/MH8115F/MH8501F) [RD/WR/CK]
 CAN-bus Bootloader FLASH (MH8601F/MH8610F/MH8611F/1N83M) [RD/WR/CK]
 
 80. Denso SH725xx/1N83M Bootloader
 
-дLя работы требуется прямое подкLючение к разъёму ЭБУ!
+A direct connection to the ECU connector is required!
 SH725xx FLASH [RD/WR/CK]
 SH725xx EEPROM [RD/WR]
 1N83M FLASH [RD/WR/CK]
@@ -893,7 +893,7 @@ Trucks (DCM6.24) [Test] [RD/WR/CK]
 Mercedes-Benz CRD3/CRD3P FLASH [RD/WR/CK]
 Mercedes-Benz CRD3/CRD3P EEPROM [RD/WR]
 
-92. Bosch MD1/MG1 Bootloader - 18000р
+92. Bosch MD1/MG1 Bootloader - RUB 18,000
 
 Requires direct connection to ECU and Scanmatik 2 PRO adapter
 MD1/MG1 FLASH
@@ -918,5 +918,4 @@ Tata 1.5L TD (DCM7.1AP) [RD/WR/CK]
 
 Aisin SH705x TCU (FLASH) [RD/WR/CK]
 Aisin SH705x TCU (EEPROM) [RD/WR]
-
 

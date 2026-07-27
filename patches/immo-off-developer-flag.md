@@ -1,107 +1,109 @@
-# ECM immo-off через флаг developer immobilizer
+# ECM immo-off through the Developer Immobilizer flag
 
-## Назначение
+## Purpose
 
-ECM immo-off реализуется сбросом bit0 заводского конфигурационного флага developer
-immobilizer. Патч не подменяет результат проверки ID и не изменяет данные синхронизации
-во внешнем EEPROM.
+ECM immo-off is implemented by clearing bit 0 of the factory Developer
+Immobilizer configuration flag. The patch does not replace an ID-check result or
+change synchronization data in the external EEPROM.
 
-Для exact-code пары JK03A / JK08A:
+For the JK03A / JK08A exact-code pair:
 
 ```text
 ROM[0x00008725]: 0x01 -> 0x00
 ```
 
-Изменяется один бит. Контрольные суммы корректирует флешер при записи.
+One bit changes. The flasher corrects checksums while writing.
 
-## Поддерживаемые ROM
+## Supported ROMs
 
-| ROM | Offset | Stock | Immo-off | Основание |
-|---|---:|---:|---:|---|
-| JK03A | `0x8725` | `0x01` | `0x00` | четыре потребителя в коде |
-| JK08A | `0x8725` | `0x01` | `0x00` | exact-code пара JK03A |
-| JK00D | `0x8740` | `0x01` | `0x00` | четыре гомологичных потребителя |
-| JK78C | `0x861C` | `0x01` | `0x00` | гомологичный конфигурационный блок |
-| 1ND0A / 1ND3B | `0x8668` | `0x01` | `0x00` | гомологичный конфигурационный блок и state machine |
+| ROM | Offset | Stock | Immo-off | Basis |
+|-----|-------:|------:|---------:|-------|
+| JK03A | `0x8725` | `0x01` | `0x00` | four code consumers |
+| JK08A | `0x8725` | `0x01` | `0x00` | JK03A exact-code pair |
+| JK00D | `0x8740` | `0x01` | `0x00` | four homologous consumers |
+| JK78C | `0x861C` | `0x01` | `0x00` | homologous configuration block |
+| 1ND0A / 1ND3B | `0x8668` | `0x01` | `0x00` | homologous configuration block and state machine |
 
-Патчер проверяет SHA-256 точного stock ROM из `rom-images/roms.csv` и исходное
-значение байта. Смещение между независимыми компиляциями не переносится напрямую.
+The patcher verifies the SHA-256 of the exact stock ROM from
+`rom-images/roms.csv` and the original byte value. An offset is not transferred
+directly between independent builds.
 
-## Исполнительная цепочка JK03A / JK08A
+## JK03A / JK08A execution path
 
-Bit0 по `0x8725` читают четыре функции:
+Four functions read bit 0 at `0x8725`:
 
-| Функция | Чтение | Роль |
-|---|---:|---|
-| `FUN_000A3F96` | `0x000A3FA6` | монитор состояния |
-| `FUN_000BBC88` | `0x000BBD42` | основная state machine |
-| `FUN_000BC82E` | `0x000BC83C` | нормализация переходов и состояния запрета |
-| `FUN_000BC9E4` | `0x000BC9F0` | формирование моторного inhibit |
+| Function | Read site | Role |
+|----------|----------:|------|
+| `FUN_000A3F96` | `0x000A3FA6` | state monitor |
+| `FUN_000BBC88` | `0x000BBD42` | main state machine |
+| `FUN_000BC82E` | `0x000BC83C` | transition and inhibit-state normalization |
+| `FUN_000BC9E4` | `0x000BC9F0` | engine inhibit formation |
 
-Обертка `FUN_000BCB60` вызывает контур в фиксированном порядке:
+Wrapper `FUN_000BCB60` invokes the path in a fixed order:
 
 ```text
 BBC88 -> BC00E -> BC220 -> BC388 -> BC82E -> BC9E4
 ```
 
-При `ROM[0x8725].bit0 = 0` функция `FUN_000BC82E` обходит переходы developer
-immobilizer и очищает `0xFFFF55E4.bit2`. Следующая `FUN_000BC9E4` очищает
-`0xFFFF4198.bit1`.
+When `ROM[0x8725].bit0 = 0`, `FUN_000BC82E` bypasses the Developer
+Immobilizer transitions and clears `0xFFFF55E4.bit2`. The following
+`FUN_000BC9E4` clears `0xFFFF4198.bit1`.
 
-`0xFFFF4198.bit1` является моторным inhibit:
+`0xFFFF4198.bit1` is the engine inhibit:
 
-- `FUN_00029588` при установленном бите обнуляет поцилиндровую маску
+- when the bit is set, `FUN_00029588` clears the per-cylinder mask at
   `0xFFFF13D1`;
-- `FUN_0002AF38` при установленном бите пропускает настройку моторных событий
-  ATU-II и также обнуляет `0xFFFF13D1`;
-- при очищенном бите однобитная маска текущего цилиндра поступает в старший байт
-  `POPCR` по `0xFFFFF700`.
+- when the bit is set, `FUN_0002AF38` skips configuration of ATU-II engine
+  events and also clears `0xFFFF13D1`;
+- when the bit is clear, the one-bit mask for the current cylinder is written to
+  the high byte of `POPCR` at `0xFFFFF700`.
 
-`POPCR[15:8]` содержит `PULS7ROE..PULS0ROE`, разрешающие сброс соответствующих
-импульсных выходов APC по compare-match `GR11B/TCNT11`. Поэтому флаг управляет
-исполнительным запретом моторных импульсов, а не только диагностическим статусом.
+`POPCR[15:8]` contains `PULS7ROE..PULS0ROE`, which permit clearing the
+corresponding APC pulse outputs on a `GR11B/TCNT11` compare match. The flag
+therefore controls the actuator-level inhibit for engine pulses, not merely a
+diagnostic status.
 
-## Соседние состояния NATS
+## Adjacent NATS states
 
-Следующие состояния относятся к регистрации, Lock и диагностике, но не образуют
-исполнительную цепочку immo-off:
+The following states belong to registration, Lock, and diagnostics, but are not
+part of the immo-off execution path:
 
-| Состояние JK03A / JK08A | Адрес | Функция |
-|---|---:|---|
+| JK03A / JK08A state | Address | Function |
+|---------------------|---------|----------|
 | registered channel 0 | `0xFFFF41C1.bit0` | `FUN_000937DC` |
 | registered channel 1 | `0xFFFF41C2.bit6` | `FUN_000937DC` |
 | Lock | `0xFFFF4201.bit2` | `FUN_0008D724` |
-| DTC NATS | `P1610-P1615` | общий диагностический контур |
+| NATS DTC | `P1610-P1615` | shared diagnostic path |
 
-Отключение developer immobilizer и подавление DTC являются независимыми задачами.
-Immo-off может оставить NATS DTC и индикацию безопасности.
+Disabling Developer Immobilizer and suppressing DTCs are independent tasks.
+Immo-off may leave NATS DTCs and the security indicator active.
 
-## Аппаратная проверка JK08A
+## JK08A hardware test
 
-Однобитовый образ
+The one-bit image
 `rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
-проверен 2026-07-27 на подменном ЭБУ JK00D в V36 Skyline 250GT с VQ25HR.
-Двигатель запускается и работает исправно.
+was tested on 2026-07-27 in a replacement JK00D ECU installed in a V36 Skyline
+250GT with a VQ25HR engine. The engine starts and runs normally.
 
-DTC P1610 остаётся в ECM и появляется снова после очистки. Ошибка не блокирует
-запуск и работу двигателя. Результат аппаратно подтверждает разделение
-исполнительного флага Developer Immobilizer и соседнего диагностического контура.
-Полный цикл P0 `read -> patch -> write` завершён.
+DTC P1610 remains in the ECM and returns after clearing. It does not block engine
+starting or operation. This hardware result confirms the separation between the
+Developer Immobilizer actuator flag and the adjacent diagnostic path. The full
+P0 `read -> patch -> write` cycle is complete.
 
-## Применение
+## Usage
 
 ```bash
 python3 patches/apply_immo_off.py --rom JK08A
 ```
 
-Результат:
+Output:
 `rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`.
-Рядом создаётся MD5 sidecar
-`1JK08A-20260727-immo-off.bin.md5`. Патчер не перезаписывает отличающийся BIN или
-sidecar. При первом выпуске канонического мода он также создаёт README каталога;
-существующий README не изменяется.
+The adjacent MD5 sidecar is
+`1JK08A-20260727-immo-off.bin.md5`. The patcher never overwrites a differing BIN
+or sidecar. On the first canonical-mod release it also creates the directory
+README; an existing README is left unchanged.
 
-Проверка без создания файла:
+Verify without creating a file:
 
 ```bash
 python3 patches/apply_immo_off.py --rom JK08A --verify-only

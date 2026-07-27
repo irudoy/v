@@ -1,46 +1,52 @@
-// FindInterpCore.java – детект ядер интерполяции и их обёрток data-сканом (Stage 1,
-// раздел 7 tools/map-flag-pipeline.md). Заменяет ручной поиск "найти 0x26944".
+// FindInterpCore.java – detect interpolation cores and their wrappers by scanning data
+// (Stage 1, section 7 of tools/map-flag-pipeline.md). Replaces a manual "find 0x26944".
 //
-// СИГНАТУРА – слот плюс ДВА уровня косвенности. Адрес ядра лежит в ПЗУ 4-байтовым словом
-// (константа литерального пула); вход грузит его mov.l @(disp,pc),rN и уходит туда jsr @rN
-// либо jmp @rN (хвостовой переход). Прямому вызову слот не нужен - он и отделяет
-// библиотеку доступа от прочего кода.
+// SIGNATURE: a slot plus TWO levels of indirection. The core address is stored in ROM as a
+// 4-byte word (a literal-pool constant); an entry loads it with mov.l @(disp,pc),rN and
+// transfers control through jsr @rN or jmp @rN (tail branch). A direct call does not need a
+// slot, which distinguishes the access library from other code.
 //
-// Одного слота мало: аксессор зовёт ВХОД тем же механизмом, поэтому слот с jsr ловит весь
-// слой косвенных вызовов разом, и входы стоят в нём выше ядер - их зовут чаще (0x26370:
-// 62 вызывателя против 11 у ядра 0x26944). Ядро отличает второй уровень: его вызыватели
-// сами суть цели слотов, тогда как аксессоры, зовущие вход, целями слотов не являются.
-// Колонка indirect_callers это и меряет, и по ней ранжирование, а не по числу вызывателей.
+// A slot alone is insufficient: an accessor calls an ENTRY by the same mechanism, so a slot
+// with jsr captures the whole indirect-call layer at once. Entries rank above cores by caller
+// count (0x26370 has 62 callers versus 11 for core 0x26944). The second indirection level
+// distinguishes a core: its callers are themselves slot targets, while accessors that call an
+// entry are not. The indirect_callers column measures this property and drives the ranking
+// instead of caller count.
 //
-// Чем ядро НЕ отличается:
-//   - счётом вызывателей: из >= 2 мест в JK03A зовутся 253 функции, ядер среди них 4;
-//   - листовостью: пять ядер из тринадцати зовут общие хелперы (0x26944 и 0x26984 - оба
-//     0x26c78, 0x26a60 - ядро 0x26740), и фильтр "слот указывает на лист" отбросил бы
-//     главное ядро. Лист не отбирают, а печатают колонкой outs;
-//   - тем, что оно функция: банк implicit-axis - входы в одну цепочку сдвигов, и
-//     0x26a80/0x26a84/0x26a88 функциями в Ghidra не размечены вовсе (у 0x26a5c тело - 4
-//     байта). Поэтому слот проверяется на код (getInstructionAt), а не на вход функции:
-//     разметка функций - дело Ghidra, а не прошивки.
+// Properties that do NOT distinguish a core:
+//   - caller count: 253 JK03A functions have calls from >= 2 locations, but only four are
+//     cores;
+//   - being a leaf: five of thirteen cores call shared helpers (0x26944 and 0x26984 both
+//     call 0x26c78; 0x26a60 calls core 0x26740), so a "slot points to a leaf" filter would
+//     discard the main core. Leaf status is reported in the outs column, not used as a
+//     filter;
+//   - being defined as a function: implicit-axis bank entries share one shift chain, and
+//     Ghidra does not define 0x26a80/0x26a84/0x26a88 as functions at all (the body at
+//     0x26a5c is four bytes). Therefore, a slot target is checked for code
+//     (getInstructionAt), not for a function entry. Function definition belongs to Ghidra,
+//     not to the firmware.
 //
-// ЧТО СКАН ЛОКАЛИЗУЕТ - библиотеку доступа, а не уровень ядра в ней. Сигнатура одна и та
-// же у ядра и у хелпера, который ядро зовёт: 0x26c78 (общий хелпер 0x26944 и 0x26984)
-// стоит в выдаче рангом 11, ядром не являясь. Что внутри слоя ядро, объявляет рукописный
-// реестр defs/<rom>.interp.csv по клэмпу в delay slot (он же задаёт геометрию входа), а
-// скрипт предлагает кандидатов со свидетельством при каждом.
+// WHAT THE SCAN LOCATES: the access library, not the core level within it. A core and a
+// helper called by that core have the same signature: 0x26c78, the shared helper for 0x26944
+// and 0x26984, ranks 11th despite not being a core. The handwritten defs/<rom>.interp.csv
+// registry identifies cores within this layer by the clamp in the delay slot, which also
+// defines entry geometry. The script supplies candidates with evidence for each.
 //
-// Измерено на JK03A (13 ядер реестра, 34 входа): найдены все 13. Четыре hub-ядра
-// (0x26740, 0x26944, 0x26984, 0x26b84) стоят рангами 2, 3, 6, 8 из 799 кандидатов; банк
-// implicit-axis (0x26a5c..0x26a88, по одному входу у каждого) - рангами 53-63, то есть
-// найден, но числом входов не выделен: у 200 с лишним кандидатов вход тоже один. Банк
-// виден иначе - восьмёркой соседних адресов через 4 байта, и его читает глаз, а не порог.
+// Measured on JK03A (13 registry cores, 34 entries): all 13 are found. Four hub cores
+// (0x26740, 0x26944, 0x26984, 0x26b84) rank 2nd, 3rd, 6th, and 8th among 799 candidates.
+// The implicit-axis bank (0x26a5c..0x26a88, one entry each) ranks 53rd through 63rd. It is
+// found but does not stand out by entry count because more than 200 candidates also have one
+// entry. The bank is visible instead as eight adjacent addresses spaced four bytes apart and
+// requires human inspection rather than a threshold.
 //
-// Независимая сверка - центральность на проекции call-графа (tools/memgraph/queries.cypher,
-// раздел 8.2): PageRank выводит библиотеку доступа в топ и до Stage 3. Сигнал независим от
-// этого скана, то есть сверка, а не повтор того же довода.
+// Independent cross-check: centrality in the call-graph projection
+// (tools/memgraph/queries.cypher, section 8.2). PageRank places the access library near the
+// top even before Stage 3. This signal is independent of the scan and therefore validates it
+// instead of repeating the same evidence.
 //
-// Запуск (headless): -postScript FindInterpCore.java <out_dir> [<min_wrappers>]
-// Выход: interp_core.csv (kernel,name,size,outs,slots,callers,indirect_callers,depth,
-//        is_leaf,slot_list,caller_list), ранжированный по depth и числу входов.
+// Headless invocation: -postScript FindInterpCore.java <out_dir> [<min_wrappers>]
+// Output: interp_core.csv (kernel,name,size,outs,slots,callers,indirect_callers,depth,
+//        is_leaf,slot_list,caller_list), ranked by depth and entry count.
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -66,14 +72,14 @@ import java.util.TreeMap;
 
 public class FindInterpCore extends GhidraScript {
 
-    // Кандидат ядра: функция, чей адрес лежит в пуле, и функции, делающие через него jsr.
+    // Core candidate: an address stored in a pool and functions that call through its slot.
     static class Cand {
         Address entry;
         Set<Address> slots = new LinkedHashSet<>();
         Set<Address> wrappers = new LinkedHashSet<>();
-        int indirect;                       // из них сами суть цели слотов
+        int indirect;                       // callers that are themselves slot targets
 
-        // Доля вызывателей, лежащих в пулах: у ядра ~1.0, у входа ~0.
+        // Fraction of callers represented in pools: approximately 1.0 for a core, 0 for an entry.
         double depth() { return wrappers.isEmpty() ? 0 : (double) indirect / wrappers.size(); }
     }
 
@@ -91,10 +97,10 @@ public class FindInterpCore extends GhidraScript {
         FunctionManager fm = currentProgram.getFunctionManager();
         ReferenceManager rm = currentProgram.getReferenceManager();
 
-        // 1. Слоты: 4-выровненные слова ПЗУ, чьё значение указывает на код. Выравнивание -
-        //    не догадка: mov.l читает длинное слово только по 4-байтовой границе, и
-        //    константа пула, читаемая иначе, вызовом не становится. Цель проверяется на
-        //    инструкцию, а не на вход функции: банк implicit-axis функциями не размечен.
+        // 1. Slots: 4-byte-aligned ROM words whose values point to code. Alignment is not
+        //    heuristic: mov.l reads a long word only at a 4-byte boundary, and a pool constant
+        //    read differently cannot become a call. Check the target for an instruction rather
+        //    than a function entry because the implicit-axis bank is not defined as functions.
         Map<Long, Cand> cands = new TreeMap<>();
         int words = 0;
         for (MemoryBlock b : mem.getBlocks()) {
@@ -106,7 +112,7 @@ public class FindInterpCore extends GhidraScript {
                 long v;
                 try { v = mem.getInt(at) & 0xFFFFFFFFL; } catch (Exception e) { continue; }
                 words++;
-                if (v == 0 || (v & 1) != 0) continue;          // инструкция SH-2 чётна
+                if (v == 0 || (v & 1) != 0) continue;          // SH-2 instructions are even-aligned
                 Address target;
                 try { target = lo.getNewAddress(v); } catch (Exception e) { continue; }
                 if (listing.getInstructionAt(target) == null) continue;
@@ -115,9 +121,9 @@ public class FindInterpCore extends GhidraScript {
                 c.entry = target;
             }
         }
-        // 2. Входы: функции, ссылающиеся на слот И уходящие косвенно - jsr @rN (вызов) либо
-        //    jmp @rN (хвостовой переход, которым вход уходит в finisher). Ссылка без
-        //    косвенного перехода означает, что адрес взят не для передачи управления.
+        // 2. Entries: functions that reference a slot AND branch indirectly through jsr @rN
+        //    (call) or jmp @rN (tail branch into a finisher). A reference without an indirect
+        //    branch means the address was not loaded for control transfer.
         for (Cand c : cands.values()) {
             for (Address slot : c.slots) {
                 ReferenceIterator ri = rm.getReferencesTo(slot);
@@ -130,19 +136,20 @@ public class FindInterpCore extends GhidraScript {
             }
         }
 
-        // 3. Настоящие цели слотов - только те, чей слот кто-то читает. Слово, указавшее на
-        //    код случайно, целью не является, и мерить по всем словам нельзя: их 2181 при
-        //    2312 функциях ROM, то есть "вызыватель есть цель слота" было бы верно почти
-        //    всегда, и признак не различал бы ничего.
+        // 3. Real slot targets are only those whose slots are read. A word that happens to
+        //    point to code is not a target. Measuring all words is invalid: 2,181 such words
+        //    exist for 2,312 ROM functions, so "the caller is a slot target" would be true
+        //    almost always and would not discriminate anything.
         Set<Long> called = new LinkedHashSet<>();
         for (Map.Entry<Long, Cand> e : cands.entrySet()) {
             if (!e.getValue().wrappers.isEmpty()) called.add(e.getKey());
         }
 
-        // 4. Второй уровень косвенности: сколько вызывателей кандидата сами вызываются через
-        //    слот. У ядра таковы все - его зовут входы, а входы зовут аксессоры через слот;
-        //    у входа почти никто - его зовут аксессоры, которых в пулах нет. Это и делит
-        //    слои, тогда как счёт вызывателей ставит вход выше ядра.
+        // 4. Second indirection level: count candidate callers that are themselves called
+        //    through a slot. All callers of a core have this property because entries call
+        //    cores and accessors call entries through slots. Almost no callers of an entry do,
+        //    because accessors are absent from pools. This separates the layers, while caller
+        //    count incorrectly ranks an entry above a core.
         List<Cand> hits = new ArrayList<>();
         for (Cand c : cands.values()) {
             if (c.wrappers.isEmpty()) continue;
@@ -189,8 +196,8 @@ public class FindInterpCore extends GhidraScript {
         return sb.toString();
     }
 
-    // jsr @rN - косвенный вызов, jmp @rN - хвостовой переход: вход уходит в ядро и так и
-    // так, и проверка только на jsr теряет входы, отдающие управление без возврата.
+    // jsr @rN is an indirect call and jmp @rN is a tail branch. Both transfer an entry into
+    // the core; checking only jsr loses entries that transfer control without returning.
     boolean hasIndirectBranch(Listing listing, Function f) {
         InstructionIterator it = listing.getInstructions(f.getBody(), true);
         while (it.hasNext()) {

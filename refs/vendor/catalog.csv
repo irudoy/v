@@ -14,8 +14,8 @@ ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Accel Map Snow Slow Tru
 ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Accel to Throttle Hi,,,,,factory,,accel-throttle,images/image2019-8-27_10-19-22.png,
 ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Accel to Throttle Hi Trustful,,,,,factory,,accel-throttle,images/image2019-8-27_10-19-22.png,
 ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Accel to Throttle Lo,,,,,factory,,accel-throttle,images/image2019-8-27_10-19-22.png,
-ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Accel To Throttle Lo Trustful,,,,,factory,,accel-throttle,images/image2019-8-27_10-19-22.png,"регистр ""To"" вербатим"
-ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Accel To Throttle Lo/Hi Switch,,,,,factory,,accel-throttle-switch,images/image2019-8-27_10-19-22.png,"регистр ""To"" вербатим"
+ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Accel To Throttle Lo Trustful,,,,,factory,,accel-throttle,images/image2019-8-27_10-19-22.png,To capitalization preserved verbatim
+ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Accel To Throttle Lo/Hi Switch,,,,,factory,,accel-throttle-switch,images/image2019-8-27_10-19-22.png,To capitalization preserved verbatim
 ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Throttle Target Max,,,,,factory,,,images/image2019-8-27_10-19-22.png,
 ecutek,tuning-guide,Accelerator and Throttle,Accel Pedal,Throttle Target Max Trustful,,,,,factory,,,images/image2019-8-27_10-19-22.png,
 ecutek,tuning-guide,Boost Control,EcuTek RaceROM Maps//Boost Control,Boost Control Enable,,,,,patch,,,images/image2022-3-28_15-14-14.png,
@@ -46,7 +46,7 @@ ecutek,tuning-guide,Boost Control,EcuTek RaceROM Maps//Boost Control,Wastegate I
 ecutek,tuning-guide,Boost Control,EcuTek RaceROM Maps//Boost Control,Wastegate Integral Min/Max,,,,,patch,,,images/image2022-3-28_15-14-14.png,
 ecutek,tuning-guide,Boost Control,EcuTek RaceROM Maps//Boost Control,Wastegate Integral Step,,,,,patch,,,images/image2022-3-28_15-14-14.png,
 ecutek,tuning-guide,Boost Control,EcuTek RaceROM Maps//Boost Control,Wastegate Integral Throttle Activation,,,,,patch,,,images/image2022-3-28_15-14-14.png,
-ecutek,tuning-guide,Boost Control,EcuTek RaceROM Maps//Boost Control,Wastegate Proportional,,,,,patch,,,images/image2022-3-28_15-14-14.png,последняя видимая строка; скриншот обрезан снизу
+ecutek,tuning-guide,Boost Control,EcuTek RaceROM Maps//Boost Control,Wastegate Proportional,,,,,patch,,,images/image2022-3-28_15-14-14.png,last visible row; screenshot is cropped at the bottom
 ecutek,tuning-guide,Camshaft Timing,Cam Timing//DoNotAdjust,DoNotAdjust: VTC Max Advance by VVEL CS Angle,,,,,factory,,vvel-interference-vtc,images/image2019-8-27_10-22-27.png,
 ecutek,tuning-guide,Camshaft Timing,Cam Timing//DoNotAdjust,DoNotAdjust: VVEL Control Shaft Max by VTC Angle,,,,,factory,,vvel-interference-cs,images/image2019-8-27_10-22-27.png,
 ecutek,tuning-guide,Camshaft Timing,Cam Timing//VTC Valve Advance,VTC Valve Advance Cold,,,,,factory,,vtc-advance,images/image2019-8-27_10-22-27.png,
@@ -109,29 +109,29 @@ ecutek,tuning-guide,Fuelling,Fuelling//Transient,Transient Comp Temperature Fact
 ecutek,tuning-guide,Fuelling,Fuelling,AF Learning Range Load,,,,,factory,,,images/image2019-8-27_10-25-5.png,
 ecutek,tuning-guide,Fuelling,Fuelling,AF Learning Range RPM,,,,,factory,,,images/image2019-8-27_10-25-5.png,
 ecutek,tuning-guide,Fuelling,Fuelling,AF Sensor Fuel Trim Limits,,,,,factory,,,images/image2019-8-27_10-25-5.png,
-ecutek,tuning-guide,Fuelling,Fuelling,AFR Conversion Table Bank 1,,,,,factory,,,images/image2019-8-27_10-25-5.png,"пара строк с одинаковым текстом ""Bank 1""; вероятно Bank 2 во второй – требует перепроверки"
-ecutek,tuning-guide,Fuelling,Fuelling,AFR Conversion Table Bank 1 [DUP],,,,,factory,,,images/image2019-8-27_10-25-5.png,"вторая строка пары; текст на скриншоте читается как ""Bank 1"" – см. предыдущую"
+ecutek,tuning-guide,Fuelling,Fuelling,AFR Conversion Table Bank 1,,,,,factory,,,images/image2019-8-27_10-25-5.png,"two rows have identical ""Bank 1"" text; the second is probably Bank 2 and requires verification"
+ecutek,tuning-guide,Fuelling,Fuelling,AFR Conversion Table Bank 1 [DUP],,,,,factory,,,images/image2019-8-27_10-25-5.png,"second row of the pair; screenshot text reads ""Bank 1""; see the preceding row"
 ecutek,tuning-guide,Fuelling,Fuelling,Fuel Consumption Meter Calibration,,,,,factory,,,images/image2019-8-27_10-25-5.png,
 ecutek,tuning-guide,Fuelling,Fuelling,Fuel Enrichment - Cold,,,,,factory,,fuel-comp,images/image2019-8-27_10-25-5.png,
 ecutek,tuning-guide,Fuelling,Fuelling,Fuel Enrichment - Hot,,,,,factory,,fuel-comp,images/image2019-8-27_10-25-5.png,
-ecutek,tuning-guide,Fuelling,Fuelling,Fuel Map,,,,,factory,,fuel-target,images/image2019-8-27_10-25-5.png,заводская 8x8 по тексту гайда
+ecutek,tuning-guide,Fuelling,Fuelling,Fuel Map,,,,,factory,,fuel-target,images/image2019-8-27_10-25-5.png,factory 8x8 according to the guide text
 ecutek,tuning-guide,Fuelling,Fuelling,Fuel Trim Per Cyl,,,,,factory,,cylinder-trim,images/image2019-8-27_10-25-5.png,
 ecutek,tuning-guide,Idle,Idle Control,Idle - target airflow rate #1 - Drive,,,,,factory,,idle-airflow,images/image2019-8-27_10-26-0.png,
 ecutek,tuning-guide,Idle,Idle Control,Idle - target airflow rate #1 - Neutral,,,,,factory,,idle-airflow,images/image2019-8-27_10-26-0.png,
 ecutek,tuning-guide,Idle,Idle Control,Idle - target airflow rate #2 - Drive,,,,,factory,,idle-airflow,images/image2019-8-27_10-26-0.png,
 ecutek,tuning-guide,Idle,Idle Control,Idle - target airflow rate #2 - Neutral,,,,,factory,,idle-airflow,images/image2019-8-27_10-26-0.png,
 ecutek,tuning-guide,Idle,Idle Control,Idle Target #1 - Drive,,,,,factory,,idle-target-drive,images/image2019-8-27_10-26-0.png,
-ecutek,tuning-guide,Idle,Idle Control,Idle Target #1a - ??,,,,,factory,,idle-target-load,images/image2019-8-27_10-26-0.png,"вербатим: ""??"" – неопределённость самого ProECU"
+ecutek,tuning-guide,Idle,Idle Control,Idle Target #1a - ??,,,,,factory,,idle-target-load,images/image2019-8-27_10-26-0.png,"verbatim: ""??"" is ProECU's own uncertainty marker"
 ecutek,tuning-guide,Idle,Idle Control,Idle Target #2 - Neutral,,,,,factory,,idle-target-neutral,images/image2019-8-27_10-26-0.png,
-ecutek,tuning-guide,Idle,Idle Control,Possible Idle rel #1,,,,,factory,,,images/image2019-8-27_10-26-0.png,"вербатим: ""Possible"" – неопределённость самого ProECU"
-ecutek,tuning-guide,Idle,Idle Control,Possible Idle rel #2,,,,,factory,,,images/image2019-8-27_10-26-0.png,"вербатим: ""Possible"" – неопределённость самого ProECU"
-ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing #1,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,дублирует группу Idle из image2019-8-27_10-29-3.png (сверено)
+ecutek,tuning-guide,Idle,Idle Control,Possible Idle rel #1,,,,,factory,,,images/image2019-8-27_10-26-0.png,"verbatim: ""Possible"" is ProECU's own uncertainty marker"
+ecutek,tuning-guide,Idle,Idle Control,Possible Idle rel #2,,,,,factory,,,images/image2019-8-27_10-26-0.png,"verbatim: ""Possible"" is ProECU's own uncertainty marker"
+ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing #1,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,duplicates the Idle group in image2019-8-27_10-29-3.png (verified)
 ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing #2,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,
 ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing #3,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,
 ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing #4,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,
 ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing Drive,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,
 ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing Lean,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,
-ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing Minimum Warm (Neutral),,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,полное имя; в image2019-8-27_10-29-3.png обрезано
+ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing Minimum Warm (Neutral),,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,complete name; cropped in image2019-8-27_10-29-3.png
 ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing Neutral,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,
 ecutek,tuning-guide,Idle,Idle,Idle Ignition Timing Stoich,,,,,factory,,idle-ignition,images/image2022-3-28_14-51-11.png,
 ecutek,tuning-guide,Ignition,Ignition Timing//Factory - Not Recommended,Ignition Timing Mode A1 Adj Cold,,,,,factory,,ignition-trim,images/image2019-8-27_10-29-3.png,
@@ -150,7 +150,7 @@ ecutek,tuning-guide,Ignition,Ignition Timing//Factory - Not Recommended,Knock Co
 ecutek,tuning-guide,Ignition,Ignition Timing//Factory - Not Recommended,Knock Control Enable A1 Warm,,,,,factory,,knock-enable,images/image2019-8-27_10-29-3.png,
 ecutek,tuning-guide,Ignition,Ignition Timing//Knock Control,Knock Retard Multiplier 1,,,,,factory,,knock-multiplier,images/image2019-8-27_10-29-3.png,
 ecutek,tuning-guide,Ignition,Ignition Timing//Knock Control,Knock Retard Multiplier 2,,,,,factory,,knock-multiplier,images/image2019-8-27_10-29-3.png,
-ecutek,tuning-guide,Ignition,Ignition Timing//Knock Control,Knock Sensitivity,,,,,factory,,knock-threshold,images/image2019-8-27_10-29-3.png,строка = цилиндр; значения = порог
+ecutek,tuning-guide,Ignition,Ignition Timing//Knock Control,Knock Sensitivity,,,,,factory,,knock-threshold,images/image2019-8-27_10-29-3.png,row = cylinder; values = threshold
 ecutek,tuning-guide,Ignition,Ignition Timing//Transient,Transient Ign Retard #1,,,,,factory,,,images/image2019-8-27_10-29-3.png,
 ecutek,tuning-guide,Ignition,Ignition Timing//Transient,Transient Ign Retard #2a,,,,,factory,,,images/image2019-8-27_10-29-3.png,
 ecutek,tuning-guide,Ignition,Ignition Timing//Transient,Transient Ign Retard #2b,,,,,factory,,,images/image2019-8-27_10-29-3.png,
@@ -165,7 +165,7 @@ ecutek,tuning-guide,Ignition,Ignition Timing,Ignition Timing-Min Allowed #1,,,,,
 ecutek,tuning-guide,Ignition,Ignition Timing,Ignition Timing-Min Allowed #2,,,,,factory,,,images/image2019-8-27_10-29-3.png,
 ecutek,tuning-guide,Limiters,Limiters//Factory - Not Recommended,Rev Limit - Fuel Cut,,,,,factory,,rev-limit-fuel,images/image2019-8-27_10-30-10.png,
 ecutek,tuning-guide,Limiters,Limiters//Factory - Not Recommended,Rev Limit - Fuel Cut Restore,,,,,factory,,rev-limit-restore,images/image2019-8-27_10-30-10.png,
-ecutek,tuning-guide,Limiters,Limiters,Rev Limit - Fuel Cut Maximum,,,,,factory,,rev-limit-max,images/image2019-8-27_10-30-10.png,"опознано кодом в JK03A: 0x8FDC/0x8FDE, FUN_00047a56"
+ecutek,tuning-guide,Limiters,Limiters,Rev Limit - Fuel Cut Maximum,,,,,factory,,rev-limit-max,images/image2019-8-27_10-30-10.png,"identified from code in JK03A: 0x8FDC/0x8FDE, FUN_00047a56"
 ecutek,tuning-guide,Limiters,Limiters,Rev Limit - Throttle Cut,,,,,factory,,rev-limit-throttle,images/image2019-8-27_10-30-10.png,
 ecutek,tuning-guide,Limiters,Limiters,Speed Limit - Fuel Cut Minimum RPM,,,,,factory,,speed-limit,images/image2019-8-27_10-30-10.png,
 ecutek,tuning-guide,Limiters,Limiters,Speed Limit - Fuel Cut Off,,,,,factory,,speed-limit,images/image2019-8-27_10-30-10.png,
@@ -173,7 +173,7 @@ ecutek,tuning-guide,Limiters,Limiters,Speed Limit - Fuel Cut On,,,,,factory,,spe
 ecutek,tuning-guide,Limiters,Limiters,Speed Limit - Throttle Off,,,,,factory,,speed-limit,images/image2019-8-27_10-30-10.png,
 ecutek,tuning-guide,Limiters,Limiters,Speed Limit - Throttle On,,,,,factory,,speed-limit,images/image2019-8-27_10-30-10.png,
 ecutek,tuning-guide,Limiters,Limiters,Stationary Rev Limiter,,,,,factory,,,images/image2019-8-27_10-30-10.png,
-ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,BFS Multiplier (K-Factor),,,,,factory,,bfs-multiplier,images/image2019-8-27_10-31-48.png,"дефолт 26806 по тексту гайда; найден в дампах: 1ND0A/1ND3B 0x9106, JK78C 0x8F80, JK03A/JK08A 0x9284, JK00D 0x931C"
+ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,BFS Multiplier (K-Factor),,,,,factory,,bfs-multiplier,images/image2019-8-27_10-31-48.png,"default 26806 according to the guide; found in dumps: 1ND0A/1ND3B 0x9106, JK78C 0x8F80, JK03A/JK08A 0x9284, JK00D 0x931C"
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Coolant & AIT Sensor Scale,,,,,factory,,temp-sensor-scale,images/image2019-8-27_10-31-48.png,
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Eng Oil Temp Scale,,,,,factory,,temp-sensor-scale,images/image2019-8-27_10-31-48.png,
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Front O2 Sensor Scaling,,,,,factory,,,images/image2019-8-27_10-31-48.png,
@@ -182,11 +182,11 @@ ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAF Sensor Scale (% to g/s) fo
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAF Sensor Scale Bank #1 (V to %),,,,,factory,,maf-curve,images/image2019-8-27_10-31-48.png,
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAF Sensor Scale Bank #2 (V to %),,,,,factory,,maf-curve,images/image2019-8-27_10-31-48.png,
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAF Sensor upper voltage limit,,,,,factory,,,images/image2019-8-27_10-31-48.png,
-ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAF Voltage Min Allowed,,,,,factory,,maf-volts-min,images/image2019-8-27_10-31-48.png,текст советует 0.1v на FI; ниже порога – safe/limp без DTC
-ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAP Sensor Multiplier,,,,,factory,,map-sensor-scaling,images/image2019-8-27_10-31-48.png,сток 370Z: 0.22 бар/вольт
-ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAP Sensor Offset,,,,,factory,,map-sensor-scaling,images/image2019-8-27_10-31-48.png,сток 370Z: 0.02 бар; отрицательные значения не принимаются
-ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Sensor Multiplier Unk,,,,,factory,,map-sensor-scaling,images/image2019-8-27_10-31-48.png,"вербатим ""Unk"" – неопознано самим ProECU"
-ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Sensor Offset Unk,,,,,factory,,map-sensor-scaling,images/image2019-8-27_10-31-48.png,"вербатим ""Unk"" – неопознано самим ProECU"
+ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAF Voltage Min Allowed,,,,,factory,,maf-volts-min,images/image2019-8-27_10-31-48.png,text recommends 0.1 V for forced induction; below the threshold the ECM enters safe/limp mode without a DTC
+ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAP Sensor Multiplier,,,,,factory,,map-sensor-scaling,images/image2019-8-27_10-31-48.png,stock 370Z: 0.22 bar/volt
+ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,MAP Sensor Offset,,,,,factory,,map-sensor-scaling,images/image2019-8-27_10-31-48.png,stock 370Z: 0.02 bar; negative values are rejected
+ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Sensor Multiplier Unk,,,,,factory,,map-sensor-scaling,images/image2019-8-27_10-31-48.png,"verbatim ""Unk""; unidentified by ProECU itself"
+ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,Sensor Offset Unk,,,,,factory,,map-sensor-scaling,images/image2019-8-27_10-31-48.png,"verbatim ""Unk""; unidentified by ProECU itself"
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,TPS - High Precision Table,,,,,factory,,,images/image2019-8-27_10-31-48.png,
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,TPS - High Precision Table Trusted,,,,,factory,,,images/image2019-8-27_10-31-48.png,
 ecutek,tuning-guide,Sensor Scaling,Sensor Scaling,TPS Scale,,,,,factory,,,images/image2019-8-27_10-31-48.png,
@@ -200,12 +200,12 @@ ecutek,tuning-guide,Torque,Torque,Torque Filtering Unknown Hi,,,,,factory,,,imag
 ecutek,tuning-guide,Torque,Torque,Torque Filtering Unknown Hi Trustful,,,,,factory,,,images/image2019-8-27_10-34-31.png,
 ecutek,tuning-guide,Torque,Torque,Torque Filtering Unknown Lo,,,,,factory,,,images/image2019-8-27_10-34-31.png,
 ecutek,tuning-guide,Torque,Torque,Torque Filtering Unknown Lo Trustful,,,,,factory,,,images/image2019-8-27_10-34-31.png,
-ecutek,tuning-guide,Torque,Torque,Torque Filtering WOT Hi,,,,,factory,,torque-filtering-wot,images/image2019-8-27_10-34-31.png,держит дроссель закрытым на низких оборотах
+ecutek,tuning-guide,Torque,Torque,Torque Filtering WOT Hi,,,,,factory,,torque-filtering-wot,images/image2019-8-27_10-34-31.png,keeps the throttle closed at low engine speed
 ecutek,tuning-guide,Torque,Torque,Torque Filtering WOT Hi Trustful,,,,,factory,,torque-filtering-wot,images/image2019-8-27_10-34-31.png,
 ecutek,tuning-guide,Torque,Torque,Torque Filtering WOT Lo,,,,,factory,,torque-filtering-wot,images/image2019-8-27_10-34-31.png,
 ecutek,tuning-guide,Torque,Torque,Torque Filtering WOT Lo Trustful,,,,,factory,,torque-filtering-wot,images/image2019-8-27_10-34-31.png,
-ecutek,tuning-guide,Torque,Torque,Torque Reduction Ramp after Shift,,,,,factory,,,images/image2019-8-27_10-34-31.png,пара строк с одинаковым текстом – требует перепроверки
-ecutek,tuning-guide,Torque,Torque,Torque Reduction Ramp after Shift [DUP],,,,,factory,,,images/image2019-8-27_10-34-31.png,вторая строка пары
+ecutek,tuning-guide,Torque,Torque,Torque Reduction Ramp after Shift,,,,,factory,,,images/image2019-8-27_10-34-31.png,two rows have identical text and require verification
+ecutek,tuning-guide,Torque,Torque,Torque Reduction Ramp after Shift [DUP],,,,,factory,,,images/image2019-8-27_10-34-31.png,second row of the pair
 ecutek,racerom-supplement,Map Switching,RaceROM Map Switching,Map Switch Mode 1 description (App),,,,,patch,,,images/image2019-8-27_13-14-41.png,
 ecutek,racerom-supplement,Map Switching,RaceROM Map Switching,Map Switch Mode 2 description (App),,,,,patch,,,images/image2019-8-27_13-14-41.png,
 ecutek,racerom-supplement,Map Switching,RaceROM Map Switching,Map Switch Mode 3 description (App),,,,,patch,,,images/image2019-8-27_13-14-41.png,
@@ -220,7 +220,7 @@ ecutek,racerom-supplement,Launch Control,RaceROM Launch Control (only SyncroRev 
 ecutek,racerom-supplement,Launch Control,RaceROM Launch Control (only SyncroRev models),Launch Control Ignition Timing Adjustment when stationary,,,,,patch,,,images/image2019-8-27_13-15-42.png,
 ecutek,racerom-supplement,Launch Control,RaceROM Launch Control (only SyncroRev models),Launch Control Max Engage Speed,,,,,patch,,,images/image2019-8-27_13-15-42.png,
 ecutek,racerom-supplement,Launch Control,RaceROM Launch Control (only SyncroRev models),Launch Control Rev Limit Base,,,,,patch,,,images/image2019-8-27_13-15-42.png,
-ecutek,racerom-supplement,Launch Control,RaceROM Launch Control (only SyncroRev models),Launch Control Rev Limit Delta,,,,,patch,,,images/image2019-8-27_13-15-42.png,2D по времени; несколько колонок = многоступенчатый пуск
+ecutek,racerom-supplement,Launch Control,RaceROM Launch Control (only SyncroRev models),Launch Control Rev Limit Delta,,,,,patch,,,images/image2019-8-27_13-15-42.png,2D over time; multiple columns indicate multistage launch
 ecutek,racerom-supplement,Launch Control,RaceROM Launch Control (only SyncroRev models),Launch Control Rev Limit Hysteresis,,,,,patch,,,images/image2019-8-27_13-15-42.png,
 ecutek,racerom-supplement,Launch Control,RaceROM Launch Control (only SyncroRev models),Launch Control Target AFR when stationary,,,,,patch,,,images/image2019-8-27_13-15-42.png,
 ecutek,racerom-supplement,Flat Foot Shifting,RaceROM Flat Foot Shifting (only SyncroRev models),Enable Flat Foot Shifting (only SyncroRev models),,,,,patch,,,images/image2019-8-27_13-17-10.png,
@@ -231,7 +231,7 @@ ecutek,racerom-supplement,Flat Foot Shifting,RaceROM Flat Foot Shifting (only Sy
 ecutek,racerom-supplement,Flat Foot Shifting,RaceROM Flat Foot Shifting (only SyncroRev models),Flat Foot Shift Rearm Delay,,,,,patch,,,images/image2019-8-27_13-17-10.png,
 ecutek,racerom-supplement,Flat Foot Shifting,RaceROM Flat Foot Shifting (only SyncroRev models),Flat Foot Shift Rev Limit Delta,,,,,patch,,,images/image2019-8-27_13-17-10.png,
 ecutek,racerom-supplement,Flat Foot Shifting,RaceROM Flat Foot Shifting (only SyncroRev models),Flat Foot Shift Target AFR,,,,,patch,,,images/image2019-8-27_13-17-10.png,
-ecutek,racerom-supplement,Per Gear Rev Limits,Limiters,Rev Limit Per Gear Mode1,,,,,patch,,,images/image2019-8-27_13-18-19.png,"группа ""Limiters"" – RaceROM-карта под общей с заводскими группой"
+ecutek,racerom-supplement,Per Gear Rev Limits,Limiters,Rev Limit Per Gear Mode1,,,,,patch,,,images/image2019-8-27_13-18-19.png,Limiters group; a RaceROM map under a group shared with factory maps
 ecutek,racerom-supplement,Per Gear Rev Limits,Limiters,Rev Limit Per Gear Mode2,,,,,patch,,,images/image2019-8-27_13-18-19.png,
 ecutek,racerom-supplement,Per Gear Rev Limits,Limiters,Rev Limit Per Gear Mode3,,,,,patch,,,images/image2019-8-27_13-18-19.png,
 ecutek,racerom-supplement,Per Gear Rev Limits,Limiters,Rev Limit Per Gear Mode4,,,,,patch,,,images/image2019-8-27_13-18-19.png,
@@ -246,43 +246,43 @@ ecutek,racerom-supplement,RaceROM Flex Fuel,FlexFuel,FF Ignition Timing Addition
 ecutek,racerom-supplement,RaceROM Flex Fuel,FlexFuel,FF Ignition Timing Max Addition,,,,,patch,Beginner,,images/image2020-5-15_16-0-28.png,
 ecutek,racerom-supplement,RaceROM Flex Fuel,FlexFuel,FF Knock Threshold Addition Blend,,,,,patch,Advanced,,images/image2020-5-15_16-0-28.png,
 ecutek,racerom-supplement,RaceROM Flex Fuel,FlexFuel,FF Knock Threshold Addition Max,,,,,patch,Advanced,,images/image2020-5-15_16-0-28.png,
-ecutek,racerom-supplement,RaceROM Flex Fuel,FlexFuel,FF Quantity Multiplier,,,,,patch,Advanced,,images/image2020-5-15_16-0-28.png,типично +40% топлива на 100% E85 при том же лямбда
+ecutek,racerom-supplement,RaceROM Flex Fuel,FlexFuel,FF Quantity Multiplier,,,,,patch,Advanced,,images/image2020-5-15_16-0-28.png,typically +40% fuel at 100% E85 for the same lambda
 ecutek,racerom-supplement,RaceROM Flex Fuel,FlexFuel,FF Target AFR Addition Blend,,,,,patch,Advanced,,images/image2020-5-15_16-0-28.png,
 ecutek,racerom-supplement,RaceROM Flex Fuel,FlexFuel,FF Target AFR Addition Max,,,,,patch,Beginner,,images/image2020-5-15_16-0-28.png,
 ecutek,racerom-supplement,Speed Density,Speed Density,CAT Acquisition Method,,,,,patch,,,images/image2019-8-27_13-19-29.png,
-ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Activation MAF,,,,,patch,,,images/image2019-8-27_13-19-29.png,гистерезис: 1-е значение вкл
+ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Activation MAF,,,,,patch,,,images/image2019-8-27_13-19-29.png,hysteresis: first value enables and second disables
 ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Activation MAP,,,,,patch,,,images/image2019-8-27_13-19-29.png,
 ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Activation RPM,,,,,patch,,,images/image2019-8-27_13-19-29.png,
 ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density AIT Compensation,,,,,patch,,,images/image2019-8-27_13-19-29.png,
-ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Calibration Temperature,,,,,patch,,,images/image2019-8-27_13-19-29.png,дефолт – фиксированные 20degC заряда
+ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Calibration Temperature,,,,,patch,,,images/image2019-8-27_13-19-29.png,default is a fixed 20 degC charge temperature
 ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Enable,,,,,patch,,,images/image2019-8-27_13-19-29.png,
 ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Engine Displacement,,,,,patch,,,images/image2019-8-27_13-19-29.png,
-ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Volumetric Efficiency,,,,,patch,,,images/image2019-8-27_13-19-29.png,3D по RPM x MAP
-ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density VVEL compensation,,,,,patch,,,images/image2019-8-27_13-19-29.png,3D; решает несовместимость VVEL и SD
+ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density Volumetric Efficiency,,,,,patch,,,images/image2019-8-27_13-19-29.png,3D over RPM x MAP
+ecutek,racerom-supplement,Speed Density,Speed Density,Speed Density VVEL compensation,,,,,patch,,,images/image2019-8-27_13-19-29.png,3D; resolves VVEL and speed-density incompatibility
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,AFR Correction Max,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,AFR Correction Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,AFR Lean Max,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,AFR Lean Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Coolant Pressure Max,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
-ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Coolant Pressure Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,дефолт 0 сек
+ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Coolant Pressure Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,default 0 seconds
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Enable (Mode1),,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Enable (Mode2),,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Enable (Mode3),,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Enable (Mode4),,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
-ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Max LatG,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,дефолт 1; требует TCM RaceROM для данных LatG
+ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Max LatG,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,default 1; requires RaceROM TCM for LatG data
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Min Load,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Min RPM,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Reset Timer,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Failsafe Torque Limit,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Fuel Pressure Relative Min,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
-ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Fuel Pressure Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,дефолт 1 сек
-ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Knock Maximum,,,,,patch,Intermediate,,images/image2020-5-15_16-13-11.png,значение = ретард; 5 срабатывает при -5 град
+ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Fuel Pressure Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,default 1 second
+ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Knock Maximum,,,,,patch,Intermediate,,images/image2020-5-15_16-13-11.png,value is retard; 5 triggers at -5 degrees
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Knock Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
-ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Oil Pressure Minimum,,,,,patch,Intermediate,,images/image2020-5-15_16-13-11.png,на 370Z штатного датчика давления масла нет
+ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Oil Pressure Minimum,,,,,patch,Intermediate,,images/image2020-5-15_16-13-11.png,the 370Z has no factory oil-pressure sensor
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Oil Pressure Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Oil Temp Max,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
 ecutek,racerom-supplement,RaceROM Failsafe,Failsafe,Oil Temperature Timeout,,,,,patch,Beginner,,images/image2020-5-15_16-13-11.png,
-ecutek,racerom-supplement,RaceROM Controller (RRC),RaceROM Controller,Controller Default,,,,,patch,,,images/image2019-8-27_13-20-43.png,дефолт 110 (показывается на OTG)
+ecutek,racerom-supplement,RaceROM Controller (RRC),RaceROM Controller,Controller Default,,,,,patch,,,images/image2019-8-27_13-20-43.png,default 110 (shown on OTG)
 ecutek,racerom-supplement,RaceROM Controller (RRC),RaceROM Controller,Controller Increment,,,,,patch,,,images/image2019-8-27_13-20-43.png,
 ecutek,racerom-supplement,RaceROM Controller (RRC),RaceROM Controller,Controller Maximum,,,,,patch,,,images/image2019-8-27_13-20-43.png,
 ecutek,racerom-supplement,RaceROM Controller (RRC),RaceROM Controller,Controller Minimum,,,,,patch,,,images/image2019-8-27_13-20-43.png,
@@ -292,81 +292,81 @@ ecutek,racerom-supplement,RaceROM Oil Temp Gauge,RaceROM Oil Temp Gauge,Oil Temp
 ecutek,racerom-supplement,RaceROM Oil Temp Gauge,RaceROM Oil Temp Gauge,OTG Custom Result Multiplier,,,,,patch,,,images/image2019-8-27_13-23-36.png,
 ecutek,racerom-supplement,RaceROM Oil Temp Gauge,RaceROM Oil Temp Gauge,OTG Custom Result Offset,,,,,patch,,,images/image2019-8-27_13-23-36.png,
 ecutek,racerom-supplement,RaceROM Valet Mode,RaceROM Valet Mode,Valet Mode Enable,,,,,patch,,,images/image2019-8-27_13-24-23.png,
-ecutek,racerom-supplement,RaceROM Valet Mode,RaceROM Valet Mode,Valet Mode Speed Limiter,,,,,patch,,,images/image2019-8-27_13-24-23.png,ось пробега до ~1150 км
-ecutek,racerom-supplement,RaceROM Valet Mode,RaceROM Valet Mode,Valet Mode Torque Limiter,,,,,patch,,,images/image2019-8-27_13-24-23.png,ось пробега до ~1150 км
-uprev,tuning-guide,Fuel Parameters,,Fuel Targets,2,BFS,Engine RPM,AFR target,factory,,fuel-target,Fuel Parameters / Fuel Targets,X – теоретическая ширина импульса форсунки. ProECU называет ту же ось Engine Load (%).
-uprev,tuning-guide,Fuel Parameters,,Fuel Compensation Main,2,Volumetric Flow Ratio,RPM,% воздуха пленума в цилиндре,factory,,fuel-comp,Fuel Parameters / Fuel Compensation,"100 – весь измеренный воздух пленума; выше 100 добавляет ширину импульса, ниже – убирает."
-uprev,tuning-guide,Fuel Parameters,,Fuel Compensation Cold,2,Volumetric Flow Ratio,RPM,% воздуха пленума в цилиндре,factory,,fuel-comp,Fuel Parameters / Fuel Compensation,Работает на прогреве; при 70 °C охлаждающей жидкости ECU переходит на Main.
-uprev,tuning-guide,Fuel Parameters,,K - Fuel Multiplier,0,,,множитель MAF -> BFS,factory,,bfs-multiplier,Fuel Parameters / K - Fuel Multiplier,"Тот же скаляр, что ProECU зовёт 'BFS Multiplier (K-Factor)', а A2L – 'MAF Factor'."
-uprev,tuning-guide,Fuel Parameters,,Mass Air Flow Sensor,1,sensor voltage,,% (пропорционален расходу),factory,,maf-curve,Fuel Parameters / Mass Air Flow Sensor,"Ось статическая, не редактируется. Соответствует 'MAF Sensor Scaling Bank #1/#2 (V to %)' у ProECU."
-uprev,tuning-guide,Fuel Parameters,,Cranking Enrichment Initial Value,1,coolant temp,,сырая ширина импульса форсунки,factory,,cranking-initial,Fuel Parameters / Cranking Enrichment Initial Value,Первое событие впрыска при прокрутке. Ось статическая. Ошибка калибровки даёт P0300.
-uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse Mode 1,1,coolant temp,,скорость спада импульса %,factory,,cranking-decay,Fuel Parameters / Injector Priming Pulse Mode 1 - 4,"100% – самый медленный спад (дольше богатая смесь), 0% – самый быстрый переход на измеренный воздух."
-uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse Mode 2,1,coolant temp,,скорость спада импульса %,factory,,cranking-decay,Fuel Parameters / Injector Priming Pulse Mode 1 - 4,
-uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse Mode 3,1,coolant temp,,скорость спада импульса %,factory,,cranking-decay,Fuel Parameters / Injector Priming Pulse Mode 1 - 4,
-uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse Mode 4,1,coolant temp,,скорость спада импульса %,factory,,cranking-decay,Fuel Parameters / Injector Priming Pulse Mode 1 - 4,
-uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse by RPM 1,1,RPM,,множитель % к Cranking Enrichment Initial Value,factory,,cranking-rpm-comp,Fuel Parameters / Injector Priming Pulse by RPM 1 - 4,Ось статическая. 100% берёт всю ширину импульса из Initial Value.
-uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse by RPM 2,1,RPM,,множитель %,factory,,cranking-rpm-comp,Fuel Parameters / Injector Priming Pulse by RPM 1 - 4,
-uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse by RPM 3,1,RPM,,множитель %,factory,,cranking-rpm-comp,Fuel Parameters / Injector Priming Pulse by RPM 1 - 4,
-uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse by RPM 4,1,RPM,,множитель %,factory,,cranking-rpm-comp,Fuel Parameters / Injector Priming Pulse by RPM 1 - 4,
-uprev,tuning-guide,Fuel Parameters,,Cylinder Trim,1,cylinder,,множитель конечной ширины импульса,factory,,cylinder-trim,Fuel Parameters / Cylinder Trim,"100 – без изменений, 80 – импульс * 0.8, 120 – импульс * 1.2. У ProECU – 'Fuel Trim Per Cylinder'; оба вендора не уверены, номер цилиндра это или порядок работы."
-uprev,tuning-guide,Fuel Parameters,,Injector Minimum,,,,минимальная ширина импульса,factory,,injector-minimum,Fuel Parameters / Injector Minimum,"Минимум, который ECU выдаст в нормальных режимах. У ProECU – 'Injector Minimum Open Time'."
-uprev,tuning-guide,Fuel Parameters,,Fuel Target Lookup Delay,0,,,константа задержки,factory,,,Fuel Parameters / Fuel Target Lookup Delay,"На большинстве ROM равна 0; ненулевая на части V8. Задержка действует, когда цель AFR отличается от 14.7."
-uprev,tuning-guide,Fuel Parameters,,Calculated Load,1,Engine RPM,,"BFS, дающий 100% нагрузки",factory,,load-100pct,Fuel Parameters / Calculated Load,Ось статическая. Нагрузка = текущий BFS / значение таблицы для этих оборотов. У ProECU этому соответствует '100% Engine Load' с заводским значением 39.8 BFS.
-uprev,tuning-guide,Fuel Parameters,,Load Point Scaler,0,,,ожидаемый BFS на полном дросселе,factory,,load-point-scaler,Fuel Parameters / Load Point Scaler,"Главный параметр при смене форсунок; двигает все таблицы, у которых нагрузка выражена через BFS. UpRev настаивает менять его, а не числа на оси нагрузки."
-uprev,tuning-guide,Ignition Advance Parameters,,Ignition Timing Trim Main,2,Base Fuel Schedule,Engine RPM,поправка к расчётному MBT,factory,,ignition-trim,Ignition Advance Parameters / Ignition Timing Trim / Burn Rate,Основная таблица нормального режима. UpRev: перевода в градусы BTDC нет; A2L даёт шкалу 'Degrees Adjustment (x-64)'.
-uprev,tuning-guide,Ignition Advance Parameters,,Ignition Timing Trim High Det,2,Base Fuel Schedule,Engine RPM,поправка к расчётному MBT,factory,,ignition-trim,Ignition Advance Parameters / Ignition Timing Trim / Burn Rate,"Включается, когда ECU ловит слишком много активности датчика детонации; переключение видно в логируемом параметре High Det Flag (0 -> 1)."
-uprev,tuning-guide,Ignition Advance Parameters,,Ignition Timing Trim Cold,2,Base Fuel Schedule,Engine RPM,поправка к расчётному MBT,factory,,ignition-trim,Ignition Advance Parameters / Ignition Timing Trim / Burn Rate,"Есть только на поздних ЭБУ Nissan; работает до 70 °C охлаждающей жидкости, затем ECU переходит на Main."
-uprev,tuning-guide,Ignition Advance Parameters,,Ignition Timing Knock Windows,2,Base Fuel Schedule,Engine RPM,"1 – knock control включён, 0 – выключен",factory,,knock-enable,Ignition Advance Parameters / Ignition Timing Knock Windows,Оси общие с таблицами зажигания. Доступ только pro-тюнерам. У ProECU – 'Knock Control Enable'.
-uprev,tuning-guide,Ignition Advance Parameters,,Knock Listening Threshold,2,Engine RPM,Cylinder Number,порог 0..100%,factory,,knock-threshold,Ignition Advance Parameters / Knock Listening Threshold,"Точного перевода в шкалу кГц нет ни у UpRev, ни у ProECU. Выше значение – больше шума отфильтровано. У ProECU – 'Knock Sensitivity'."
-uprev,tuning-guide,Cam Phasing,,Cam Phasing,2,Base Fuel Schedule,Engine RPM,целевой advance/retard распредвала,factory,,vtc-advance,Cam Phasing,У ProECU – 'VTC Valve Advance' в °Crank.
-uprev,tuning-guide,Rev & Speed Limits,,Rev Limit,,,,точные обороты отсечки,factory,,rev-limit-fuel,Rev & Speed Limits,Значение – прямо обороты. У ProECU – 'Rev Limit - Fuel Cut'; ось ProECU не знает.
-uprev,tuning-guide,Rev & Speed Limits,,Throttle Cut Rev Limit,,,,точные обороты закрытия дросселя,factory,,rev-limit-throttle,Rev & Speed Limits,"UpRev советует ставить минимум на 100 об/мин раньше топливной отсечки: закрытие дросселя безопаснее, чем удары об отсечку."
-uprev,tuning-guide,Rev & Speed Limits,,Speed Limit,,,,точная скорость ограничения,factory,,speed-limit,Rev & Speed Limits,
-uprev,tuning-guide,Electronic Throttle,,Throttle A,2,Flow Potential,Engine RPM,оценка момента на маховике Nm,factory,,torque-demand,Electronic Throttle / Throttle A,По этому моменту ECU снижает дроссель и угол опережения на переключениях. Расхождение отношения с Estimated Torque Delivered даёт P0605.
-uprev,tuning-guide,Electronic Throttle,,Acc. Throttle Request Low Speed,1,Accel Deg,,целевой угол дросселя,factory,,accel-throttle,Electronic Throttle / Acc. Throttle Request,"Набор таблиц зависит от ROM: от двух (Low/High Speed) до многих (Low, High, Cold, Warm, Idle, Snow, Sport, Eco)."
-uprev,tuning-guide,Electronic Throttle,,Acc. Throttle Request Low Speed (Alt),1,Accel Deg,,целевой угол дросселя,factory,,accel-throttle,Electronic Throttle / Acc. Throttle Request,"Контрольная копия: должна совпадать с основной, иначе P0605. У ProECU тот же механизм назван 'Trustful'."
-uprev,tuning-guide,Electronic Throttle,,Acc. Throttle Request High Speed,1,Accel Deg,,целевой угол дросселя,factory,,accel-throttle,Electronic Throttle / Acc. Throttle Request,"Если Low Speed выдаёт больший угол, чем High Speed, выставляется P0605; обратное соотношение допустимо."
-uprev,tuning-guide,Electronic Throttle,,Acc. Throttle Request High Speed (Alt),1,Accel Deg,,целевой угол дросселя,factory,,accel-throttle,Electronic Throttle / Acc. Throttle Request,Контрольная копия.
-uprev,tuning-guide,Electronic Throttle,,Throttle Opening Area of Duct Area Calculation,1,Throttle Opening (Degrees),,площадь сечения для потока,factory,,,Electronic Throttle / Throttle Opening Area of Duct Area Calculation,Калибруется при установке дросселей большего диаметра.
-uprev,tuning-guide,Electronic Throttle,,Throttle Valve Opening Target 1,1,Throttle Opening (degrees),,цель открытия заслонки,factory,,,Electronic Throttle / Throttle Valve Opening Target,Работает в паре с Throttle Opening Area of Duct Area Calculation; UpRev советует сохранять отношение между ними.
-uprev,tuning-guide,Electronic Throttle,,Throttle Valve Opening Target 2,1,Throttle Opening (degrees),,цель открытия заслонки,factory,,,Electronic Throttle / Throttle Valve Opening Target,Должна точно совпадать с Throttle Valve Opening Target 1.
-uprev,tuning-guide,Electronic Throttle,,Throttle Flow Potential for Fuel Comp X Trace Low,1,Throttle Duct Opening Area,,положение трассировщика Fuel Compensation,factory,,,Electronic Throttle / Throttle Flow Potential for Fuel Comp X Trace (Low & High),Задаёт ось Volumetric Flow Ratio карты Fuel Compensation.
-uprev,tuning-guide,Electronic Throttle,,Throttle Flow Potential for Fuel Comp X Trace High,1,Throttle Duct Opening Area,,положение трассировщика Fuel Compensation,factory,,,Electronic Throttle / Throttle Flow Potential for Fuel Comp X Trace (Low & High),
-uprev,tuning-guide,Torque Management,,Estimated Torque Delivered,2,Base Fuel Schedule,Engine RPM,момент двигателя Nm,factory,,torque-actual,Torque Management / Estimated Torque Delivered,"Есть во всех ROM, но используется только на автоматах: значение уходит в TCM для расчёта давления в линии. У ProECU – 'Torque Actual'."
-uprev,tuning-guide,Torque Management,,Target Drive Force,,,,,factory,,,Torque Management / Target Drive Force,"Влияет на выбор передачи по положению педали. Момент на колёсах = Throttle A Torque * расчётное передаточное. Alt-таблицы должны совпадать на 100%, иначе P0605. Sub Operation Mode работает в режиме буксировки."
-uprev,tuning-guide,Cooling,,Radiator Fan Speed by Temp,2,Vehicle Speed,Coolant Temperature,скважность вентилятора,factory,,rad-fan-duty,Cooling,Трёхмерную таблицу Nissan ввёл в 2009 для части применений. У ProECU – 'Radiator Fan Duty'.
-uprev,tuning-guide,Cooling,,Radiator Fan Speed by A/C Pressure (Upper),1,A/C Pressure,,скорость вентилятора,factory,,,Cooling,У ProECU этому соответствуют 'Radiator Fan A/C ON' и 'Radiator Fan A/C Related'.
-uprev,tuning-guide,Cooling,,Radiator Fan Speed by A/C Pressure (Lower),1,A/C Pressure,,скорость вентилятора,factory,,,Cooling,
-uprev,tuning-guide,Cooling,,Coolant Temp Fan Switch Point,,,,точки включения вентилятора,factory,,,Cooling,"Старый стиль: три окна точек переключения с константами Low и High. Остаются в ЭБУ, но на части моделей уже не используются – прямой источник таблиц с ролью dead."
-uprev,tuning-guide,Idle,,Idle Target,1,Engine coolant temperature,,целевые обороты холостого,factory,,idle-target-neutral,Idle / Idle Target (Map 1-5),"Ось статическая. У ProECU – 'Idle Target #1/#2' для Neutral и Drive, но ось ProECU не называет."
-uprev,tuning-guide,Idle,,Idle Target Gear,1,Engine Coolant Temperature,,целевые обороты холостого,factory,,idle-target-drive,Idle / Idle Target Gear,Ось статическая. Цель при включённой передаче (не Neutral и не Park); только автоматы.
-uprev,tuning-guide,Idle,,Idle Target Low,1,Engine Coolant Temperature,,целевые обороты холостого,factory,,idle-target-load,Idle / Idle Target Low,"Ось статическая. Цель при дополнительной нагрузке от климата, электрики и насоса гидроусилителя. У ProECU не названа."
-uprev,tuning-guide,Misfire,,Crank Drag A,2,Base Fuel Schedule,Engine RPM,сопротивление вращению коленвала,factory,,,"Misfire / Crank Drag A, B and C",Рост значений затрудняет постановку кодов пропусков зажигания. Меняется при установке нагнетателя.
-uprev,tuning-guide,Misfire,,Crank Drag B,2,Base Fuel Schedule,Engine RPM,сопротивление вращению коленвала,factory,,,"Misfire / Crank Drag A, B and C",
-uprev,tuning-guide,Misfire,,Crank Drag C,2,Base Fuel Schedule,Engine RPM,сопротивление вращению коленвала,factory,,,"Misfire / Crank Drag A, B and C",
-uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 1,1,RPM,,измерение скорости вращения коленвала,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,Заниженные значения дают гиперчувствительные P0300-P0308.
-uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 2,1,RPM,,измерение скорости вращения коленвала,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
-uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 3,1,RPM,,измерение скорости вращения коленвала,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
-uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 4,1,RPM,,измерение скорости вращения коленвала,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
-uprev,tuning-guide,Settings,,ETC Control,,,,переключатель,factory,,etc-control,Settings / ETC Control,Отключает управление моментом в электронном дросселе: заслонка начинает линейно следовать за педалью. Заодно отключает круиз-контроль.
-uprev,tuning-guide,Settings,,NATS,,,,переключатель,patch,,nats,Settings / NATS,JK03A/JK08A содержит заводской флаг Developer Immobilizer по 0x8725: сброс bit0 обходит state machine и снимает motor inhibit.
-uprev,tuning-guide,VVEL,,VVEL Angle,,,,угол вала VVEL против длительности распредвала,factory,,vvel-cs-angle,VVEL / VVEL Angle,Защита от встречи клапанов. У ProECU – 'VVEL Control Shaft Angle to Duration'.
-uprev,tuning-guide,VVEL,,VVEL Angle Alt,,,,угол вала VVEL против длительности распредвала,factory,,vvel-cs-angle,VVEL / VVEL Angle,Контрольная копия: должна всегда совпадать с VVEL Angle.
-uprev,tuning-guide,VVEL,,VVEL Decel,1,Engine RPM,,целевая длительность клапана,factory,,vvel-duration,VVEL / VVEL Decel,Режим торможения двигателем. У ProECU – 'VVEL Valve Duration Overrun'.
-uprev,tuning-guide,VVEL,,VVEL Intake Phasing,1,VVEL Duration,,максимальный advance впускного распредвала,factory,,vvel-interference-vtc,VVEL / VVEL Intake Phasing,Запрашиваемый в Cam Advance WOT угол должен быть не больше значения этой таблицы. У ProECU – 'VTC Max Advance by VVEL CS Angle'.
-uprev,tuning-guide,VVEL,,VVEL Limit,1,Cam Timing (Intake Phasing),,максимальная длительность VVEL,factory,,vvel-interference-cs,VVEL / VVEL Limit,Обратная сторона той же защиты. У ProECU – 'VVEL Control Shaft Max by VTC Angle'.
-uprev,tuning-guide,VVEL,,VVEL Main Drivability,2,BFS,Engine RPM,длительность VVEL,factory,,vvel-duration,VVEL / VVEL Main Drivability,Основная таблица нормального режима. У ProECU – 3D-карта 'VVEL Valve Duration Main'.
-uprev,tuning-guide,VVEL,,VVEL Main Drivability High Detonation,2,BFS,Engine RPM,длительность VVEL,factory,,vvel-duration,VVEL / VVEL Main Drivability,Вариант для режима высокой детонации; ProECU такую карту не называет.
-uprev,tuning-guide,VVEL,,VVEL Max,1,Engine RPM,,максимальная длительность VVEL,factory,,vvel-cs-limit,VVEL / VVEL Max & VVEL Min,У ProECU – карта предела угла управляющего вала по оборотам.
-uprev,tuning-guide,VVEL,,VVEL Min,1,Engine RPM,,минимальная длительность VVEL,factory,,vvel-cs-limit,VVEL / VVEL Max & VVEL Min,
-uprev,tuning-guide,VVEL,,VVEL Duration WOT,1,Engine RPM,,целевая длительность VVEL,factory,,vvel-duration,VVEL / VVEL Duration WOT,Полный дроссель. У ProECU – 'VVEL Valve Duration WOT'.
-uprev,tuning-guide,Toggles,,Cruise Enabled,,,,переключатель,unknown,,,Toggles / Cruise Enabled,"Найден на машинах 2003-2008 без интеллектуального круиза; включает map switching при правильно подключённом железе, но не сам круиз-контроль."
-uprev,tuning-guide,Toggles,,Enable Manual Transmission Swap,,,,переключатель,unknown,,,Toggles / Enable Manual Transmission Swap,Для ROM VQ35 2003-2008 и VQ37VHR 2009+: ECU игнорирует таблицы автомата.
-uprev,tuning-guide,Toggles,,Single Bank Fuel Trim O2 Hack,,,,переключатель,patch,,,Toggles / Single Bank Fuel Trim O2 Hack,Отключает обратную связь по датчику кислорода банка 2. Разработан под QR25.
-uprev,tuning-guide,Simplified Timing (ARC),,Simplified Timing Map 1,2,независимая ось нагрузки,независимая ось оборотов,градусы BTDC,patch,,,Simplified Timing (ARC) / Simplified Timing (Map 1 – 5),"Патч ARC. Оси полностью независимы от заводской таблицы зажигания, что позволяет поднять разрешение."
-uprev,tuning-guide,Simplified Timing (ARC),,Knock Correction,2,Engine RPM,Knock Strength,снимаемый угол,patch,,,Simplified Timing (ARC) / Knock Correction,Патч ARC.
-uprev,tuning-guide,Simplified Timing (ARC),,Oil temperature Correction,1,Oil Temperature,,поправка угла,patch,,,Simplified Timing (ARC) / Oil temperature Correction,Патч ARC. Работает только на машинах с заводским датчиком температуры масла; иначе берётся температура охлаждающей жидкости.
-uprev,tuning-guide,Simplified Timing (ARC),,Coolant Temperature Correction,1,Coolant Temperature,,поправка угла,patch,,,Simplified Timing (ARC) / Coolant Temperature Correction,Патч ARC.
-uprev,tuning-guide,Simplified Timing (ARC),,Intake Air Temperature Correction,1,Intake Air Temperature,,поправка угла,patch,,,Simplified Timing (ARC) / Intake Air Temperature Correction,Патч ARC.
-uprev,tuning-guide,Simplified Timing (ARC),,Simplified Timing Load Activation,0,,,порог BFS,patch,,,Simplified Timing (ARC) / Settings -> Switchable Settings,Патч ARC. При BFS не ниже порога включается упрощённое зажигание независимо от оборотов.
-uprev,tuning-guide,Simplified Timing (ARC),,Simplified Timing RPM Activation,0,,,порог оборотов,patch,,,Simplified Timing (ARC) / Settings -> Switchable Settings,Патч ARC.
+ecutek,racerom-supplement,RaceROM Valet Mode,RaceROM Valet Mode,Valet Mode Speed Limiter,,,,,patch,,,images/image2019-8-27_13-24-23.png,distance axis up to about 1150 km
+ecutek,racerom-supplement,RaceROM Valet Mode,RaceROM Valet Mode,Valet Mode Torque Limiter,,,,,patch,,,images/image2019-8-27_13-24-23.png,distance axis up to about 1150 km
+uprev,tuning-guide,Fuel Parameters,,Fuel Targets,2,BFS,Engine RPM,AFR target,factory,,fuel-target,Fuel Parameters / Fuel Targets,X is theoretical injector pulse width. ProECU calls the same axis Engine Load (%).
+uprev,tuning-guide,Fuel Parameters,,Fuel Compensation Main,2,Volumetric Flow Ratio,RPM,% of plenum air entering the cylinder,factory,,fuel-comp,Fuel Parameters / Fuel Compensation,100 means all measured plenum air; values above 100 add pulse width and values below 100 subtract it.
+uprev,tuning-guide,Fuel Parameters,,Fuel Compensation Cold,2,Volumetric Flow Ratio,RPM,% of plenum air entering the cylinder,factory,,fuel-comp,Fuel Parameters / Fuel Compensation,Used during warm-up; the ECU switches to Main at 70 °C coolant temperature.
+uprev,tuning-guide,Fuel Parameters,,K - Fuel Multiplier,0,,,MAF -> BFS multiplier,factory,,bfs-multiplier,Fuel Parameters / K - Fuel Multiplier,The same scalar that ProECU calls 'BFS Multiplier (K-Factor)' and A2L calls 'MAF Factor'.
+uprev,tuning-guide,Fuel Parameters,,Mass Air Flow Sensor,1,sensor voltage,,% proportional to airflow,factory,,maf-curve,Fuel Parameters / Mass Air Flow Sensor,The axis is static and cannot be edited. Corresponds to ProECU 'MAF Sensor Scaling Bank #1/#2 (V to %)'.
+uprev,tuning-guide,Fuel Parameters,,Cranking Enrichment Initial Value,1,coolant temp,,raw injector pulse width,factory,,cranking-initial,Fuel Parameters / Cranking Enrichment Initial Value,The first injection event during cranking. The axis is static. Incorrect calibration causes P0300.
+uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse Mode 1,1,coolant temp,,pulse decay rate %,factory,,cranking-decay,Fuel Parameters / Injector Priming Pulse Mode 1 - 4,100% is the slowest decay and keeps the mixture rich longer; 0% is the fastest transition to measured airflow.
+uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse Mode 2,1,coolant temp,,pulse decay rate %,factory,,cranking-decay,Fuel Parameters / Injector Priming Pulse Mode 1 - 4,
+uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse Mode 3,1,coolant temp,,pulse decay rate %,factory,,cranking-decay,Fuel Parameters / Injector Priming Pulse Mode 1 - 4,
+uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse Mode 4,1,coolant temp,,pulse decay rate %,factory,,cranking-decay,Fuel Parameters / Injector Priming Pulse Mode 1 - 4,
+uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse by RPM 1,1,RPM,,% multiplier for Cranking Enrichment Initial Value,factory,,cranking-rpm-comp,Fuel Parameters / Injector Priming Pulse by RPM 1 - 4,The axis is static. 100% uses the entire pulse width from Initial Value.
+uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse by RPM 2,1,RPM,,% multiplier,factory,,cranking-rpm-comp,Fuel Parameters / Injector Priming Pulse by RPM 1 - 4,
+uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse by RPM 3,1,RPM,,% multiplier,factory,,cranking-rpm-comp,Fuel Parameters / Injector Priming Pulse by RPM 1 - 4,
+uprev,tuning-guide,Fuel Parameters,,Injector Priming Pulse by RPM 4,1,RPM,,% multiplier,factory,,cranking-rpm-comp,Fuel Parameters / Injector Priming Pulse by RPM 1 - 4,
+uprev,tuning-guide,Fuel Parameters,,Cylinder Trim,1,cylinder,,final pulse-width multiplier,factory,,cylinder-trim,Fuel Parameters / Cylinder Trim,"100 leaves the value unchanged, 80 multiplies the pulse by 0.8, and 120 multiplies it by 1.2. ProECU calls this 'Fuel Trim Per Cylinder'; neither vendor is certain whether the index is cylinder number or firing order."
+uprev,tuning-guide,Fuel Parameters,,Injector Minimum,,,,minimum pulse width,factory,,injector-minimum,Fuel Parameters / Injector Minimum,The minimum pulse width that the ECU issues in normal modes. ProECU calls this 'Injector Minimum Open Time'.
+uprev,tuning-guide,Fuel Parameters,,Fuel Target Lookup Delay,0,,,delay constant,factory,,,Fuel Parameters / Fuel Target Lookup Delay,Zero in most ROMs and nonzero in some V8 ROMs. The delay applies when the AFR target differs from 14.7.
+uprev,tuning-guide,Fuel Parameters,,Calculated Load,1,Engine RPM,,BFS corresponding to 100% load,factory,,load-100pct,Fuel Parameters / Calculated Load,The axis is static. Load = current BFS / table value for the current speed. ProECU calls this '100% Engine Load' and gives a factory value of 39.8 BFS.
+uprev,tuning-guide,Fuel Parameters,,Load Point Scaler,0,,,expected BFS at full throttle,factory,,load-point-scaler,Fuel Parameters / Load Point Scaler,The primary parameter for injector changes; it shifts every table whose load is expressed through BFS. UpRev recommends changing this scalar instead of the load-axis values.
+uprev,tuning-guide,Ignition Advance Parameters,,Ignition Timing Trim Main,2,Base Fuel Schedule,Engine RPM,correction to calculated MBT,factory,,ignition-trim,Ignition Advance Parameters / Ignition Timing Trim / Burn Rate,The main normal-operation table. UpRev provides no conversion to degrees BTDC; A2L provides the 'Degrees Adjustment (x-64)' scale.
+uprev,tuning-guide,Ignition Advance Parameters,,Ignition Timing Trim High Det,2,Base Fuel Schedule,Engine RPM,correction to calculated MBT,factory,,ignition-trim,Ignition Advance Parameters / Ignition Timing Trim / Burn Rate,Used when the ECU detects excessive knock-sensor activity; the transition is visible in the logged High Det Flag parameter (0 -> 1).
+uprev,tuning-guide,Ignition Advance Parameters,,Ignition Timing Trim Cold,2,Base Fuel Schedule,Engine RPM,correction to calculated MBT,factory,,ignition-trim,Ignition Advance Parameters / Ignition Timing Trim / Burn Rate,"Present only in later Nissan ECUs; used below 70 °C coolant temperature, after which the ECU switches to Main."
+uprev,tuning-guide,Ignition Advance Parameters,,Ignition Timing Knock Windows,2,Base Fuel Schedule,Engine RPM,"1 enables knock control, 0 disables it",factory,,knock-enable,Ignition Advance Parameters / Ignition Timing Knock Windows,Shares axes with the ignition tables. Available only to professional tuners. ProECU calls this 'Knock Control Enable'.
+uprev,tuning-guide,Ignition Advance Parameters,,Knock Listening Threshold,2,Engine RPM,Cylinder Number,0..100% threshold,factory,,knock-threshold,Ignition Advance Parameters / Knock Listening Threshold,Neither UpRev nor ProECU provides an exact conversion to a kHz scale. Higher values filter more noise. ProECU calls this 'Knock Sensitivity'.
+uprev,tuning-guide,Cam Phasing,,Cam Phasing,2,Base Fuel Schedule,Engine RPM,target cam advance/retard,factory,,vtc-advance,Cam Phasing,ProECU calls this 'VTC Valve Advance' in °Crank.
+uprev,tuning-guide,Rev & Speed Limits,,Rev Limit,,,,exact fuel-cut speed,factory,,rev-limit-fuel,Rev & Speed Limits,The value is engine speed directly. ProECU calls this 'Rev Limit - Fuel Cut' but does not identify its axis.
+uprev,tuning-guide,Rev & Speed Limits,,Throttle Cut Rev Limit,,,,exact throttle-closing speed,factory,,rev-limit-throttle,Rev & Speed Limits,UpRev recommends setting it at least 100 RPM below fuel cut because throttle closure is safer than repeated fuel-cut impacts.
+uprev,tuning-guide,Rev & Speed Limits,,Speed Limit,,,,exact limiting speed,factory,,speed-limit,Rev & Speed Limits,
+uprev,tuning-guide,Electronic Throttle,,Throttle A,2,Flow Potential,Engine RPM,flywheel torque estimate in Nm,factory,,torque-demand,Electronic Throttle / Throttle A,The ECU uses this torque to reduce throttle opening and ignition advance during shifts. A ratio mismatch against Estimated Torque Delivered causes P0605.
+uprev,tuning-guide,Electronic Throttle,,Acc. Throttle Request Low Speed,1,Accel Deg,,target throttle angle,factory,,accel-throttle,Electronic Throttle / Acc. Throttle Request,"The table set depends on the ROM, ranging from two tables (Low/High Speed) to many tables (Low, High, Cold, Warm, Idle, Snow, Sport, Eco)."
+uprev,tuning-guide,Electronic Throttle,,Acc. Throttle Request Low Speed (Alt),1,Accel Deg,,target throttle angle,factory,,accel-throttle,Electronic Throttle / Acc. Throttle Request,Validation copy: it must match the main table or P0605 is set. ProECU calls the same mechanism 'Trustful'.
+uprev,tuning-guide,Electronic Throttle,,Acc. Throttle Request High Speed,1,Accel Deg,,target throttle angle,factory,,accel-throttle,Electronic Throttle / Acc. Throttle Request,P0605 is set if Low Speed requests a larger angle than High Speed; the reverse relation is permitted.
+uprev,tuning-guide,Electronic Throttle,,Acc. Throttle Request High Speed (Alt),1,Accel Deg,,target throttle angle,factory,,accel-throttle,Electronic Throttle / Acc. Throttle Request,Validation copy.
+uprev,tuning-guide,Electronic Throttle,,Throttle Opening Area of Duct Area Calculation,1,Throttle Opening (Degrees),,flow cross-sectional area,factory,,,Electronic Throttle / Throttle Opening Area of Duct Area Calculation,Calibrated when larger-diameter throttle bodies are installed.
+uprev,tuning-guide,Electronic Throttle,,Throttle Valve Opening Target 1,1,Throttle Opening (degrees),,target throttle opening,factory,,,Electronic Throttle / Throttle Valve Opening Target,Works with Throttle Opening Area of Duct Area Calculation; UpRev recommends preserving the ratio between them.
+uprev,tuning-guide,Electronic Throttle,,Throttle Valve Opening Target 2,1,Throttle Opening (degrees),,target throttle opening,factory,,,Electronic Throttle / Throttle Valve Opening Target,Must exactly match Throttle Valve Opening Target 1.
+uprev,tuning-guide,Electronic Throttle,,Throttle Flow Potential for Fuel Comp X Trace Low,1,Throttle Duct Opening Area,,Fuel Compensation trace position,factory,,,Electronic Throttle / Throttle Flow Potential for Fuel Comp X Trace (Low & High),Defines the Volumetric Flow Ratio axis of the Fuel Compensation map.
+uprev,tuning-guide,Electronic Throttle,,Throttle Flow Potential for Fuel Comp X Trace High,1,Throttle Duct Opening Area,,Fuel Compensation trace position,factory,,,Electronic Throttle / Throttle Flow Potential for Fuel Comp X Trace (Low & High),
+uprev,tuning-guide,Torque Management,,Estimated Torque Delivered,2,Base Fuel Schedule,Engine RPM,engine torque in Nm,factory,,torque-actual,Torque Management / Estimated Torque Delivered,Present in every ROM but used only with automatic transmissions: the value is sent to the TCM for line-pressure calculation. ProECU calls this 'Torque Actual'.
+uprev,tuning-guide,Torque Management,,Target Drive Force,,,,,factory,,,Torque Management / Target Drive Force,Influences gear selection by pedal position. Wheel torque = Throttle A Torque * calculated gear ratio. Alt tables must match exactly or P0605 is set. Sub Operation Mode is used for towing.
+uprev,tuning-guide,Cooling,,Radiator Fan Speed by Temp,2,Vehicle Speed,Coolant Temperature,fan duty cycle,factory,,rad-fan-duty,Cooling,Nissan introduced this three-dimensional table in 2009 for some applications. ProECU calls it 'Radiator Fan Duty'.
+uprev,tuning-guide,Cooling,,Radiator Fan Speed by A/C Pressure (Upper),1,A/C Pressure,,fan speed,factory,,,Cooling,Corresponds to ProECU 'Radiator Fan A/C ON' and 'Radiator Fan A/C Related'.
+uprev,tuning-guide,Cooling,,Radiator Fan Speed by A/C Pressure (Lower),1,A/C Pressure,,fan speed,factory,,,Cooling,
+uprev,tuning-guide,Cooling,,Coolant Temp Fan Switch Point,,,,fan activation points,factory,,,Cooling,"Legacy layout: three switch-point windows with Low and High constants. They remain in the ECU but are unused on some models, providing a direct source of tables with the dead role."
+uprev,tuning-guide,Idle,,Idle Target,1,Engine coolant temperature,,target idle speed,factory,,idle-target-neutral,Idle / Idle Target (Map 1-5),The axis is static. ProECU calls the Neutral and Drive variants 'Idle Target #1/#2' but does not name the axis.
+uprev,tuning-guide,Idle,,Idle Target Gear,1,Engine Coolant Temperature,,target idle speed,factory,,idle-target-drive,Idle / Idle Target Gear,"The axis is static. Target with a gear engaged, excluding Neutral and Park; automatic transmissions only."
+uprev,tuning-guide,Idle,,Idle Target Low,1,Engine Coolant Temperature,,target idle speed,factory,,idle-target-load,Idle / Idle Target Low,"The axis is static. Target under additional HVAC, electrical, and power-steering-pump load. ProECU does not name it."
+uprev,tuning-guide,Misfire,,Crank Drag A,2,Base Fuel Schedule,Engine RPM,crankshaft rotational resistance,factory,,,"Misfire / Crank Drag A, B and C",Higher values make misfire codes harder to trigger. Requires adjustment when a supercharger is installed.
+uprev,tuning-guide,Misfire,,Crank Drag B,2,Base Fuel Schedule,Engine RPM,crankshaft rotational resistance,factory,,,"Misfire / Crank Drag A, B and C",
+uprev,tuning-guide,Misfire,,Crank Drag C,2,Base Fuel Schedule,Engine RPM,crankshaft rotational resistance,factory,,,"Misfire / Crank Drag A, B and C",
+uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 1,1,RPM,,crankshaft-speed measurement,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,Values set too low cause oversensitive P0300-P0308 detection.
+uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 2,1,RPM,,crankshaft-speed measurement,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
+uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 3,1,RPM,,crankshaft-speed measurement,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
+uprev,tuning-guide,Misfire,,Crank Drag Crank Angle Pulse Width 4,1,RPM,,crankshaft-speed measurement,factory,,,Misfire / Crank Drag Crank Angle Pulse Width 1-4,
+uprev,tuning-guide,Settings,,ETC Control,,,,toggle,factory,,etc-control,Settings / ETC Control,Disables electronic-throttle torque control so the throttle follows the pedal linearly. Also disables cruise control.
+uprev,tuning-guide,Settings,,NATS,,,,toggle,patch,,nats,Settings / NATS,JK03A/JK08A contains a factory Developer Immobilizer flag at 0x8725: clearing bit0 bypasses the state machine and releases motor inhibit.
+uprev,tuning-guide,VVEL,,VVEL Angle,,,,VVEL shaft angle versus cam duration,factory,,vvel-cs-angle,VVEL / VVEL Angle,Prevents valve contact. ProECU calls this 'VVEL Control Shaft Angle to Duration'.
+uprev,tuning-guide,VVEL,,VVEL Angle Alt,,,,VVEL shaft angle versus cam duration,factory,,vvel-cs-angle,VVEL / VVEL Angle,Validation copy that must always match VVEL Angle.
+uprev,tuning-guide,VVEL,,VVEL Decel,1,Engine RPM,,target valve duration,factory,,vvel-duration,VVEL / VVEL Decel,Engine-braking mode. ProECU calls this 'VVEL Valve Duration Overrun'.
+uprev,tuning-guide,VVEL,,VVEL Intake Phasing,1,VVEL Duration,,maximum intake-cam advance,factory,,vvel-interference-vtc,VVEL / VVEL Intake Phasing,The angle requested by Cam Advance WOT must not exceed this table value. ProECU calls this 'VTC Max Advance by VVEL CS Angle'.
+uprev,tuning-guide,VVEL,,VVEL Limit,1,Cam Timing (Intake Phasing),,maximum VVEL duration,factory,,vvel-interference-cs,VVEL / VVEL Limit,The inverse side of the same protection. ProECU calls this 'VVEL Control Shaft Max by VTC Angle'.
+uprev,tuning-guide,VVEL,,VVEL Main Drivability,2,BFS,Engine RPM,VVEL duration,factory,,vvel-duration,VVEL / VVEL Main Drivability,The primary normal-operation table. ProECU calls it the 3D map 'VVEL Valve Duration Main'.
+uprev,tuning-guide,VVEL,,VVEL Main Drivability High Detonation,2,BFS,Engine RPM,VVEL duration,factory,,vvel-duration,VVEL / VVEL Main Drivability,High-detonation-mode variant that ProECU does not name.
+uprev,tuning-guide,VVEL,,VVEL Max,1,Engine RPM,,maximum VVEL duration,factory,,vvel-cs-limit,VVEL / VVEL Max & VVEL Min,ProECU presents this as a control-shaft-angle limit by engine speed.
+uprev,tuning-guide,VVEL,,VVEL Min,1,Engine RPM,,minimum VVEL duration,factory,,vvel-cs-limit,VVEL / VVEL Max & VVEL Min,
+uprev,tuning-guide,VVEL,,VVEL Duration WOT,1,Engine RPM,,target VVEL duration,factory,,vvel-duration,VVEL / VVEL Duration WOT,Full-throttle mode. ProECU calls this 'VVEL Valve Duration WOT'.
+uprev,tuning-guide,Toggles,,Cruise Enabled,,,,toggle,unknown,,,Toggles / Cruise Enabled,"Found on 2003-2008 vehicles without intelligent cruise; enables map switching when the required hardware is connected, but does not enable cruise control itself."
+uprev,tuning-guide,Toggles,,Enable Manual Transmission Swap,,,,toggle,unknown,,,Toggles / Enable Manual Transmission Swap,For 2003-2008 VQ35 and 2009+ VQ37VHR ROMs: the ECU ignores automatic-transmission tables.
+uprev,tuning-guide,Toggles,,Single Bank Fuel Trim O2 Hack,,,,toggle,patch,,,Toggles / Single Bank Fuel Trim O2 Hack,Disables closed-loop feedback from the bank 2 oxygen sensor. Developed for QR25.
+uprev,tuning-guide,Simplified Timing (ARC),,Simplified Timing Map 1,2,independent load axis,independent engine-speed axis,degrees BTDC,patch,,,Simplified Timing (ARC) / Simplified Timing (Map 1 - 5),"ARC patch. The axes are fully independent from the factory ignition table, allowing higher resolution."
+uprev,tuning-guide,Simplified Timing (ARC),,Knock Correction,2,Engine RPM,Knock Strength,retard amount,patch,,,Simplified Timing (ARC) / Knock Correction,ARC patch.
+uprev,tuning-guide,Simplified Timing (ARC),,Oil temperature Correction,1,Oil Temperature,,timing correction,patch,,,Simplified Timing (ARC) / Oil temperature Correction,ARC patch. Works only on vehicles with a factory oil-temperature sensor; otherwise coolant temperature is used.
+uprev,tuning-guide,Simplified Timing (ARC),,Coolant Temperature Correction,1,Coolant Temperature,,timing correction,patch,,,Simplified Timing (ARC) / Coolant Temperature Correction,ARC patch.
+uprev,tuning-guide,Simplified Timing (ARC),,Intake Air Temperature Correction,1,Intake Air Temperature,,timing correction,patch,,,Simplified Timing (ARC) / Intake Air Temperature Correction,ARC patch.
+uprev,tuning-guide,Simplified Timing (ARC),,Simplified Timing Load Activation,0,,,BFS threshold,patch,,,Simplified Timing (ARC) / Settings -> Switchable Settings,"ARC patch. Simplified timing activates when BFS is at or above the threshold, regardless of engine speed."
+uprev,tuning-guide,Simplified Timing (ARC),,Simplified Timing RPM Activation,0,,,engine-speed threshold,patch,,,Simplified Timing (ARC) / Settings -> Switchable Settings,ARC patch.

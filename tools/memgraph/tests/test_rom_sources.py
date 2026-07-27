@@ -55,7 +55,7 @@ class RomSourcesTest(unittest.TestCase):
             + '[inherit.B]\nsource = "C"\n' + row
         )
         with self.assertRaisesRegex(
-            rom_sources.SourceModelError, "цепочки наследования"
+            rom_sources.SourceModelError, "inheritance chains"
         ):
             rom_sources.read_registry(path)
 

@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-# Образ ROM: реестр дампов, чтение калибровочных массивов и их измерение (Stage 4,
-# раздел 7 tools/map-flag-pipeline.md). Библиотека, не скрипт: её зовут load_maps.py
-# (характеризация слоя тем же прогоном, что создаёт узлы) и show.py/ptrscan.py.
+# ROM image support: dump registry, calibration-array reads, and measurement
+# (Stage 4, section 7 of tools/map-flag-pipeline.md). This is a library rather
+# than a script. load_maps.py uses it to characterize the layer in the same run
+# that creates nodes, and show.py/ptrscan.py use it for inspection.
 #
-# Граница инструмента: он МЕРИТ, но не ЗАКЛЮЧАЕТ. Диапазон, монотонность и содержимое -
-# свойства байтов образа, и читаются они одинаково у карты любой семантики. Чем ось
-# является, в чём измеряется и что означает карта - выводы о коде, и приходят они трейсом
-# через ручной слой (defs/<rom>.findings.csv, <rom>.axes.csv). Вывод смысла из формы
-# данных - ровно то, чем pattern-scan уже дважды ошибся (P6), и здесь его нет намеренно.
+# Tool boundary: it MEASURES but does not INFER. Range, monotonicity, and contents
+# are properties of image bytes and are read identically for maps of any
+# semantics. Axis meaning, units, and map semantics are code conclusions supplied
+# by traces through the handwritten layer (defs/<rom>.findings.csv and
+# <rom>.axes.csv). Inferring meaning from data shape caused two earlier
+# pattern-scan errors (P6) and is intentionally absent here.
 #
-# Монотонность под это правило не подпадает: возрастающий массив - требование самого ядра
-# (обратный линейный проход от старшей точки вниз до первой <= текущего значения), а не
-# догадка о смысле. Массив, который ему не отвечает, осью не работает, чем бы он ни был назван.
+# Monotonicity is different: an ascending array is a kernel requirement, not a
+# semantic guess. The kernel scans backward from the highest point to the first
+# value <= the current input. An array that violates this rule cannot act as its
+# axis regardless of its assigned name.
 import csv
 import hashlib
 import os
@@ -20,23 +23,24 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 IMAGES = os.path.join(HERE, "..", "..", "rom-images")
 REGISTRY = os.path.join(IMAGES, "roms.csv")
 
-# Элемент калибровки: размер в байтах. Беззнаковы оба - все пять 2D-finisher'ов читают
-# EXTU.B либо EXTU.W на обоих операндах интерполяции, инструкции EXTS в области
-# 0x26740..0x26BC4 нет ни одной (defs/JK08A.notes.md, "Кодировка элемента 2D-карт").
-# Знаковый элемент объявляется здесь вместе с кодом, который так читает.
+# Calibration element size in bytes. Both types are unsigned: all five 2D
+# finishers read EXTU.B or EXTU.W for both interpolation operands, and there is
+# no EXTS instruction in 0x26740..0x26BC4 (defs/JK08A.notes.md, "2D map element
+# encoding"). A signed element must be declared here together with code that
+# reads it as signed.
 ELEM = {"uint8": 1, "uint16": 2}
 
-# Стёртая флешь: незапрограммированная ячейка читается как все единицы.
+# Erased flash: an unprogrammed cell reads as all one bits.
 ERASED = {"uint8": 0xFF, "uint16": 0xFFFF}
 
 
 def addr_int(a):
-    """Адрес графа (hex-строка без 0x) либо число."""
+    """Graph address as a hexadecimal string without 0x, or an integer."""
     return a if isinstance(a, int) else int(str(a), 16)
 
 
 class Image:
-    """Байты одного дампа. Файл-офсет равен адресу: образ грузится с базой 0x0."""
+    """Bytes of one dump. File offsets equal addresses because the base is 0x0."""
 
     def __init__(self, rom, path, data):
         self.rom, self.path, self.data = rom, path, data
@@ -45,26 +49,27 @@ class Image:
         return len(self.data)
 
     def values(self, addr, n, storagetype):
-        """n элементов подряд, big-endian, беззнаковые."""
+        """Read n contiguous unsigned big-endian elements."""
         if storagetype not in ELEM:
-            raise ValueError(f"элемент {storagetype!r} не объявлен: {tuple(ELEM)}")
+            raise ValueError(f"undeclared element {storagetype!r}; expected one of {tuple(ELEM)}")
         size, addr = ELEM[storagetype], addr_int(addr)
         end = addr + n * size
         if addr < 0 or end > len(self.data):
-            raise ValueError(f"{self.rom}: {addr:#x} + {n} x {size} B выходит за образ "
-                             f"({len(self.data):#x} B)")
+            raise ValueError(f"{self.rom}: {addr:#x} + {n} x {size} B exceeds image "
+                             f"size {len(self.data):#x} B")
         return [int.from_bytes(self.data[i:i + size], "big")
                 for i in range(addr, end, size)]
 
     def table(self, addr, width, height, storagetype):
-        """Карта построчно: строка - точка оси r5 (:AXIS_X), столбец - точка оси r6.
+        """Read a map by rows: r5 axis (:AXIS_X) rows and r6 axis columns.
 
-        Геометрия - finisher'а: cell = table + idxY + width*idxX, где idxX - индекс по
-        оси r5, а шаг строки передаёт ему сам вход (журнал: 0x10 у 16x16 uint8, 8 у 8x8
-        через 0x26040). Шаг строки есть её длина, то есть число столбцов - длина оси r6.
-        У всех 2D-входов JK08A оси равной длины (4x4, 8x8, 16x16), поэтому там это число
-        совпадает и с числом строк; неквадратный вход прочтётся по формуле, а не по
-        совпадению.
+        Finisher geometry is cell = table + idxY + width*idxX. idxX indexes the
+        r5 axis, and the wrapper supplies the row stride: 0x10 for 16x16 uint8
+        and 8 for 8x8 through 0x26040. The row stride is the row length, so the
+        number of columns equals the r6-axis length. Every JK08A 2D wrapper has
+        equal axis lengths (4x4, 8x8, or 16x16), where this value also equals the
+        row count. A nonsquare wrapper is still read from the formula rather than
+        from that coincidence.
         """
         if not height:
             return [self.values(addr, width, storagetype)]
@@ -72,16 +77,17 @@ class Image:
         return [flat[i * height:(i + 1) * height] for i in range(width)]
 
     def scan(self, lo, hi):
-        """Слова образа, попадающие значением в [lo, hi]: кто указывает на диапазон.
+        """Find image words whose values fall in [lo, hi].
 
-        Ищет обе формы константы. mov.l читает 32-битное слово по 4-байтовой границе -
-        это указатель пула. mov.w читает 16-битное по 2-байтовой, и адрес калибровки в
-        него влезает (0xB33A, 0x8FDC): такую константу линейный backtrack эталона читал
-        32-битной и ошибался на пяти сайтах каталога, поэтому форма здесь отдельная.
+        Both constant forms are searched. mov.l reads a 32-bit word on a
+        four-byte boundary, which is a pool pointer. mov.w reads a 16-bit word
+        on a two-byte boundary and can hold calibration addresses such as 0xB33A
+        and 0x8FDC. The reference linear backtrack read such constants as 32-bit
+        and failed at five catalog sites, so this form is handled separately.
 
-        Младшая половина найденного 32-битного слова несёт то же значение, когда оно
-        влезает в 16 бит, и отдельным попаданием не считается: это одна константа, а не
-        две.
+        When a matching 32-bit word also fits in 16 bits, its low half carries
+        the same value and is not counted as a separate hit. It is one constant,
+        not two.
         """
         out, halves = [], set()
         for off in range(0, len(self.data) - 3, 4):
@@ -99,12 +105,12 @@ class Image:
 
 
 def measure(values):
-    """Диапазон и содержимое массива - то, что образ говорит о нём сам.
+    """Measure the range and contents directly represented by an image array.
 
-    Хеш нужен там, где самих значений в графе нет: карта до 256 ячеек, её содержимое
-    остаётся в образе, и одинаковые карты ищутся по хешу. У оси значения лежат в узле
-    целиком, и одинаковые оси сходятся сравнением списков - хеш там был бы вторым видом
-    одного факта.
+    A hash is required where values are absent from the graph. A map can contain
+    up to 256 cells; contents remain in the image and identical maps are found by
+    hash. Axis values are stored in full on the node and identical axes are
+    matched by list comparison, where a hash would duplicate the same fact.
     """
     return {
         "vmin": min(values),
@@ -114,63 +120,65 @@ def measure(values):
 
 
 def erased(values, storagetype):
-    """Массив из одних единичных битов: стёртая флешь, а не данные.
+    """Return whether every array bit is one, indicating erased flash.
 
-    Свойство носителя, а не вывод о смысле: стирание NOR-флеши идёт в единицы, и
-    сплошной 0xFF в объявленном массиве означает, что массива там нет.
+    This is a storage-medium property rather than a semantic inference. NOR flash
+    erases to one bits, so an all-0xFF declared array is absent.
     """
     return all(v == ERASED[storagetype] for v in values)
 
 
 def monotone(values):
-    """Возрастает ли массив (нестрого).
+    """Return whether an array is non-strictly ascending.
 
-    Ядро проходит линейно от старшей точки вниз до первого break-point <= текущего
-    значения - это работает на возрастающем массиве и ни на каком другом. Массив, который
-    правилу не отвечает, осью не работает, чем бы его ни назвал резолвер.
+    The kernel scans linearly from the highest point down to the first breakpoint
+    <= the current value. This works only for an ascending array. An array that
+    violates the rule cannot be the axis regardless of the resolver label.
     """
     return all(a <= b for a, b in zip(values, values[1:]))
 
 
 def registry(path=REGISTRY):
-    """Реестр образов: строка = файл дампа, rom - его метка в графе (пусто - метки нет).
+    """Read the image registry: one dump per row and its optional graph ROM label.
 
-    Реестр машинный, идентификация дампа прозой - в rom-images/README.md (происхождение,
-    part #, уверенность). Sha256 объявлен здесь: опознание дампа - условие прогона, а не
-    справка для человека.
+    The registry is machine-readable. Human identification, provenance, part
+    number, and confidence are in rom-images/README.md. SHA-256 is declared here
+    because dump identification is a run precondition rather than human-only
+    reference data.
     """
     if not os.path.exists(path):
-        raise ValueError(f"нет реестра образов {path}")
+        raise ValueError(f"image registry not found: {path}")
     with open(path, newline="") as f:
         rows = list(csv.DictReader(f))
     seen = {}
     for r in rows:
         r["path"] = os.path.join(IMAGES, r["path"])
         if not r["sha256"]:
-            raise ValueError(f"{path}: {r['path']} без sha256 - дамп опознаётся по нему")
+            raise ValueError(f"{path}: {r['path']} has no sha256; dumps are identified by it")
         if r["rom"]:
             if r["rom"] in seen:
-                raise ValueError(f"{path}: метка {r['rom']} на двух образах")
+                raise ValueError(f"{path}: label {r['rom']} is assigned to two images")
             seen[r["rom"]] = r
     return rows
 
 
 def load(rom, path=REGISTRY):
-    """Образ по метке графа, сверенный по sha256.
+    """Load an image by graph label and verify it by SHA-256.
 
-    Сверка не формальность: перепись снята с проекта Ghidra по одному файлу, а измерения
-    идут вторым обращением к диску. Подмена дала бы не отказ, а 227 осей правдоподобных
-    чисел не из того дампа - брак, который в графе ничем не отличается от факта.
+    Verification is substantive: the census comes from a Ghidra project built
+    from one file, while measurement performs a separate disk read. Substitution
+    would otherwise yield 227 axes of plausible numbers from the wrong dump,
+    indistinguishable from facts in the graph.
     """
     row = next((r for r in registry(path) if r["rom"] == rom), None)
     if row is None:
-        raise ValueError(f"{path}: образа с меткой {rom} в реестре нет")
+        raise ValueError(f"{path}: no image with label {rom} in registry")
     if not os.path.exists(row["path"]):
-        raise ValueError(f"{row['path']}: файла нет (реестр объявляет его образом {rom})")
+        raise ValueError(f"{row['path']}: file not found although registry declares image {rom}")
     with open(row["path"], "rb") as f:
         data = f.read()
     got = hashlib.sha256(data).hexdigest()
     if got != row["sha256"]:
-        raise ValueError(f"{row['path']}: sha256 {got}, реестр объявляет "
-                         f"{row['sha256']} - это другой дамп")
+        raise ValueError(f"{row['path']}: sha256 is {got}, registry declares "
+                         f"{row['sha256']}; this is a different dump")
     return Image(rom, row["path"], data)

@@ -1,11 +1,13 @@
-// ScanImmoAnchors.java — поиск числовых якорей immo в дампе ECM: immo-DTC константы
-// (P1610/P1611/P1612 = 0x1610/0x1611/0x1612; B2193 = 0xA193 в OBD-II 2-byte кодировке)
-// как immediate-операнды в коде и как 16/32-битные данные (literal pool, DTC-таблица),
-// с обратными ссылками на функции. Кластер из нескольких DTC в узком окне помечается
-// как кандидат в DTC-таблицу — от неё xref ведёт к immo-хендлеру / гейту Lock Mode.
+// ScanImmoAnchors.java - find numeric immobilizer anchors in an ECM dump.
+// Search P1610/P1611/P1612 as 0x1610/0x1611/0x1612 and B2193 as 0xA193 in
+// two-byte OBD-II encoding, both as immediate code operands and as 16/32-bit data
+// in literal pools or DTC tables, with function back-references. A cluster of
+// several DTCs in a narrow window is a DTC-table candidate whose xref leads to
+// an immobilizer handler or Lock Mode gate.
 //
-// Запуск (headless): -postScript ScanImmoAnchors.java <out_dir>
-// Выход: immo_anchors.csv (dtc,hit_addr,kind,ctx), immo_tables.csv (окна-кандидаты).
+// Usage (headless): -postScript ScanImmoAnchors.java <out_dir>
+// Output: immo_anchors.csv (dtc,hit_addr,kind,ctx) and
+// immo_tables.csv (candidate windows).
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -29,8 +31,9 @@ import java.util.Set;
 
 public class ScanImmoAnchors extends GhidraScript {
 
-    // immo-DTC в OBD-II 2-байтовой кодировке (big-endian): P1610/11/12 -> 0x1610/11/12,
-    // B2193 -> 0xA193. Nissan P16xx — manufacturer-диапазон, эти три — NATS.
+    // Immobilizer DTCs in big-endian two-byte OBD-II encoding:
+    // P1610/11/12 -> 0x1610/11/12 and B2193 -> 0xA193. Nissan P16xx is the
+    // manufacturer range; these three codes belong to NATS.
     static final int[] DTC = {0x1610, 0x1611, 0x1612, 0xA193};
 
     public void run() throws Exception {
@@ -52,7 +55,7 @@ public class ScanImmoAnchors extends GhidraScript {
         int nImm = 0, nData = 0;
         int[] perDtc = new int[DTC.length];
 
-        // ---- 1. данные: 16-бит по чётным адресам + 32-бит по адресам /4 ----
+        // 1. Data: 16-bit at even addresses and 32-bit at /4 addresses.
         List<long[]> dataHits = new ArrayList<>(); // {value, addrOffset}
         for (MemoryBlock b : mem.getBlocks()) {
             if (!b.isInitialized()) continue;
@@ -62,7 +65,7 @@ public class ScanImmoAnchors extends GhidraScript {
                 int v;
                 try { v = mem.getShort(at) & 0xFFFF; } catch (MemoryAccessException ex) { continue; }
                 if (!want.contains(v)) continue;
-                // отсечь совпадения внутри инструкции (их ловит проход по коду)
+                // Exclude matches inside instructions; the code pass finds them.
                 if (listing.getInstructionContaining(at) != null) continue;
                 dataHits.add(new long[]{v, off});
                 StringBuilder ctx = new StringBuilder();
@@ -83,7 +86,7 @@ public class ScanImmoAnchors extends GhidraScript {
             }
         }
 
-        // ---- 2. код: immediate-операнды ----
+        // 2. Code: immediate operands.
         for (Function f : fm.getFunctions(true)) {
             for (Instruction ins : listing.getInstructions(f.getBody(), true)) {
                 for (int i = 0; i < ins.getNumOperands(); i++) {
@@ -101,7 +104,7 @@ public class ScanImmoAnchors extends GhidraScript {
         }
         w.close();
 
-        // ---- 3. кластеры близких DTC (окно 0x40) = кандидат в DTC-таблицу ----
+        // 3. Clusters of nearby DTCs in a 0x40 window are DTC-table candidates.
         dataHits.sort((x, y) -> Long.compare(x[1], y[1]));
         PrintWriter tw = new PrintWriter(new FileWriter(new File(outDir, "immo_tables.csv")));
         tw.println("window_start,window_end,n_hits,distinct_dtc");

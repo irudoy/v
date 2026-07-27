@@ -1,9 +1,9 @@
 export const meta = {
   name: 'vq-caller-prep',
-  description: 'Ослеплённо вывести и проверить карточки прямых вызывателей JK03A',
+  description: 'Blindly derive and verify JK03A direct-caller cards',
   phases: [
-    { title: 'Analyze', detail: 'Вывести target-independent role и semantics по caller-only artifact', model: 'claude-opus-4-8' },
-    { title: 'Verify', detail: 'Состязательно проверить точную заявку и цитаты', model: 'claude-opus-4-8' },
+    { title: 'Analyze', detail: 'Derive target-independent role and semantics from a caller-only artifact', model: 'claude-opus-4-8' },
+    { title: 'Verify', detail: 'Adversarially verify the exact claim and citations', model: 'claude-opus-4-8' },
   ],
 }
 

@@ -1,13 +1,17 @@
-# mapkit - инструменты разметки калибровки (P4, раздел 10 tools/map-flag-pipeline.md).
+# mapkit - calibration-annotation tools (P4, section 10 of
+# tools/map-flag-pipeline.md).
 #
-# До этого пакета чтение образа жило в session-scratchpad: каждая сессия писала свой
-# хекс-дамп и свою распаковку элемента заново, и проверить чужой результат было нечем.
-# Здесь то же самое - код в git, с одним объявлением элемента и одной геометрией карты.
+# Before this package, image reads lived in session scratchpads. Every session
+# recreated its own hexadecimal dump and element unpacking, leaving no common
+# way to verify results. This package places the same operations in Git with one
+# element declaration and one map geometry.
 #
-#   rom.py       - образ: реестр, чтение массивов, их измерение (Stage 4);
-#   show.py      - карта либо ось в физических единицах (граф + образ);
-#   ptrscan.py   - кто указывает на адрес: скан образа, без Ghidra;
-#   emit_def.py  - деф RomRaider: проекция графа, DTC и оверрайдов (Stage 8, раздел 9).
+#   rom.py       - image registry, array reads, and measurement (Stage 4);
+#   show.py      - map or axis in physical units from graph plus image;
+#   ptrscan.py   - address candidate scan without Ghidra;
+#   emit_def.py  - RomRaider definition projection from graph, DTC, and overrides
+#                  (Stage 8, section 9).
 #
-# Запуск - файлом (`python tools/mapkit/show.py ...`); импорт - `from mapkit import rom`
-# с каталогом tools/ в sys.path, как это делают load_maps.py и скрипты пакета.
+# Run modules as files (`python tools/mapkit/show.py ...`). Import with
+# `from mapkit import rom` while `tools/` is on sys.path, as load_maps.py and the
+# package scripts do.

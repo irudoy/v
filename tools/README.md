@@ -1,95 +1,103 @@
-# tools – RE-стек VQ HR ECU
+# tools - VQ HR ECU RE stack
 
-Инфраструктура реверс-стека. Канонический путь – **headless Ghidra -> Memgraph (MAGE) ->
-LLM-агент**: детерминированные экстракторы (Java GhidraScript) пишут CSV, загрузчики строят
-граф как систему записи; пайплайн от GUI не зависит и идёт в автономном/пакетном режиме.
-Граф агент читает MCP-сервером `mcp-memgraph` (раздел "Memgraph MCP") – headless-native, в
-каноническом пути. GhydraMCP – опциональный интерактивный ускоритель live-сессий реверса
-(раздел "Мост GhydraMCP"), требует GUI, вне критического пути. Замысел, пайплайн карт/флагов
-и роли – `../AGENTS.md`, `map-flag-pipeline.md`, нота "RE-стек и реверс таблиц" в Obsidian.
-Массовый проход по каталогу карт – `map-sweep.md`: единица работы, порядок волн, ослепление
-пилота, схема заявки и ворота. Там же описан read-only caller-semantics harness
-`tools/sweep/caller_ab_experiment.py`, его no-tools Workflow definitions и frozen 24-map scope.
-`freeze` принимает две независимые byte-identical сборки map-артефактов с двумя blind audit,
-фиксирует exact recursive inventory Ghidra export root, embedded builder/runtime sources и private
-HMAC mapping. Blind worker policy требует единственный top-level `tools: []` в YAML
-frontmatter. Prep Workflow создаёт candidates, а `finalize-cards` требует полный ручной approval
-с exact payload digests до построения `verified`/neutral `placebo`; cards содержат только printable
-ASCII English. Controls получают byte-identical sham-card. Все три saved workflows закрепляют exact
-model `claude-opus-4-8` без alias и до первого agent-вызова проверяют exact execution schema, prompts,
-runtime-binding paths, SHA-256 format и полноту items. Доверенной границей запуска остаётся Python control plane: он связывает embedded
-`artifact_text` с `artifact_sha256`, проверяет live execution config и runtime sources.
-`archive-workflow` требует fresh-launch attestation, проверяет exact execution schema, live
-execution-config digest, canonical runtime binding и native result schema, связывает citation
-ranges/excerpts с embedded `artifact_text` и допустимыми code fences, проверяет дословную связь
-Analyze/Verify и полноту, затем сохраняет exact native output с embedded Workflow source. Если
-native progress содержит phase records, они обязаны образовывать canonical sequence; frozen agent
-records используют resolved model из allowlist
-`claude-opus-4-8`/`claude-opus-4-8[1m]` и не содержат fallback/retry/cache/error
-provenance в служебных полях или значениях. Run schema использует terminal-only canonical evidence
-и non-directed `machine_references`; dependency evidence запрещено без frozen typed-support
-registry. Arm markers запрещены во всех свободных полях run payload и в prep/run verifier rationale;
-проверка декодирует HTML, удаляет comments и Unicode format controls. Scoring проецирует reference
-evidence в тот же terminal-only домен. Все 48 blind scores сохраняются отдельно, pooling
-отсутствует, а per-control gate учитывает field deltas и verifier split. Итог содержит наблюдаемый
-парный контраст, `causal_claim=false` и никогда не изменяет canonical CSV. Manual approval и
-fresh-launch attestation являются operator trust boundary, а не криптографическим доказательством
-действий человека.
+Reverse-engineering stack infrastructure. The canonical path is **headless Ghidra -> Memgraph
+(MAGE) -> LLM agent**: deterministic Java GhidraScript extractors write CSV files, loaders build
+the graph as the system of record, and the pipeline runs autonomously or in batches without a GUI.
+The agent reads the graph through the `mcp-memgraph` MCP server described in "Memgraph MCP"; it is
+headless-native and part of the canonical path. GhydraMCP is an optional interactive accelerator
+for live reverse-engineering sessions, described in "GhydraMCP bridge", which requires a GUI and
+is outside the critical path. Design, map/flag pipeline, and component roles are documented in
+`../AGENTS.md`, `map-flag-pipeline.md`, and the corresponding RE-stack note in Obsidian.
 
-В git трекается только конфигурация и обёртки. Сами инструменты и Ghidra-проекты –
-вне репозитория (крупные / машинно-локальные), их расположение указано ниже.
+The catalog-wide map sweep is specified in `map-sweep.md`: work unit, wave order, pilot blinding,
+submission schema, and gates. The same document defines the read-only caller-semantics harness
+`tools/sweep/caller_ab_experiment.py`, its no-tools Workflow definitions, and the frozen 24-map
+scope. `freeze` accepts two independent byte-identical builds of map artifacts with two blind
+audits and records the exact recursive inventory of the Ghidra export root, embedded builder and
+runtime sources, and a private HMAC mapping. The blind-worker policy requires exactly one top-level
+`tools: []` field in YAML frontmatter. The prep Workflow creates candidates, while
+`finalize-cards` requires complete manual approval with exact payload digests before constructing
+`verified` and neutral `placebo` cards; cards contain only printable ASCII English. Controls receive
+a byte-identical sham card. All three saved workflows pin the exact `claude-opus-4-8` model without
+an alias and, before the first agent call, validate the exact execution schema, prompts,
+runtime-binding paths, SHA-256 format, and item completeness.
 
-## Компоненты и расположение
+The Python control plane remains the trusted launch boundary: it binds embedded `artifact_text` to
+`artifact_sha256` and verifies the live execution configuration and runtime sources.
+`archive-workflow` requires fresh-launch attestation, verifies the exact execution schema, live
+execution-config digest, canonical runtime binding, and native result schema, binds citation
+ranges and excerpts to embedded `artifact_text` and permitted code fences, verifies verbatim
+Analyze/Verify linkage and completeness, and then stores the exact native output with the embedded
+Workflow source. If native progress contains phase records, they must form the canonical sequence.
+Frozen agent records use a resolved model from the
+`claude-opus-4-8`/`claude-opus-4-8[1m]` allowlist and contain no fallback, retry, cache, or error
+provenance in metadata fields or values. The run schema uses terminal-only canonical evidence and
+non-directed `machine_references`; dependency evidence is prohibited without a frozen
+typed-support registry. Arm markers are prohibited in all free-form run-payload fields and in
+prep/run verifier rationale. Validation decodes HTML and removes comments and Unicode format
+controls. Scoring projects reference evidence into the same terminal-only domain. All 48 blind
+scores are stored separately, with no pooling, and the per-control gate accounts for field deltas
+and verifier splits. The result reports the observed paired contrast, sets `causal_claim=false`,
+and never modifies canonical CSV files. Manual approval and fresh-launch attestation are operator
+trust boundaries, not cryptographic proof of human actions.
 
-| Компонент | Версия | Где | В git |
-|-----------|--------|-----|-------|
-| Ghidra | 12.1.2 (JDK 21, ARM-нативы) | `brew`; `GHIDRA_INSTALL_DIR=$(brew --prefix ghidra)/libexec` | нет |
-| Плагин GhydraMCP (опц., интерактив) | v3.0.0-rc.1 под ghidra12.1.2 | `.../libexec/Ghidra/Extensions/Ghydra` | нет |
-| Мост / CLI GhydraMCP (опц., интерактив) | v3.0.0-rc.1 | клон `~/tools/GhydraMCP` (venv `.venv`, Python 3.11) | нет |
-| Memgraph MAGE + Lab | mage 3.11.0 | Docker (`memgraph/docker-compose.yml`) | **да** (compose) |
-| MCP `mcp-memgraph` (чтение графа агентом) | 0.2.0 (через `uv`, Python 3.13) | `.mcp.json` в корне репозитория | нет (глобальный gitignore) |
-| Ghidra-проект | – | `~/tools/ghidra-projects/vq-hr` | нет |
-| headless-обёртка | – | `ghidra/headless-analyze.sh` | **да** |
+Git tracks only configuration and wrappers. The tools themselves and Ghidra projects remain
+outside the repository because they are large and machine-local; their locations are listed below.
 
-## Порты
+## Components and locations
 
-- `8192`+ – HTTP плагина GhydraMCP (первый CodeBrowser 8192, второй 8193, ...); авто-дискавери мостом.
-- `7687` – Memgraph Bolt (драйвер `neo4j`, Lab); `7444` – стрим логов в Lab.
-- `3000` – Memgraph Lab UI (http://localhost:3000).
-- Memgraph-порты забиндены на `127.0.0.1` явно (IPv4-loopback), стек живёт в контексте
-  Docker Desktop. Комплект в другом контексте (Lima/colima) занял бы `127.0.0.1`, вытеснив
-  Docker Desktop на IPv6 (`::1`) – тогда `localhost` (IPv4-first) и Lab расходятся по данным.
+| Component | Version | Location | In git |
+|-----------|---------|----------|--------|
+| Ghidra | 12.1.2 (JDK 21, ARM native libraries) | `brew`; `GHIDRA_INSTALL_DIR=$(brew --prefix ghidra)/libexec` | no |
+| GhydraMCP plugin (optional, interactive) | v3.0.0-rc.1 for ghidra12.1.2 | `.../libexec/Ghidra/Extensions/Ghydra` | no |
+| GhydraMCP bridge / CLI (optional, interactive) | v3.0.0-rc.1 | clone at `~/tools/GhydraMCP` (`.venv`, Python 3.11) | no |
+| Memgraph MAGE + Lab | mage 3.11.0 | Docker (`memgraph/docker-compose.yml`) | **yes** (compose) |
+| `mcp-memgraph` MCP (agent graph access) | 0.2.0 (through `uv`, Python 3.13) | `.mcp.json` at repository root | no (global gitignore) |
+| Ghidra project | - | `~/tools/ghidra-projects/vq-hr` | no |
+| Headless wrapper | - | `ghidra/headless-analyze.sh` | **yes** |
 
-## Поднять стек
+## Ports
+
+- `8192`+ - GhydraMCP plugin HTTP ports: the first CodeBrowser uses 8192, the second 8193, and so
+  on; the bridge discovers them automatically.
+- `7687` - Memgraph Bolt for the `neo4j` driver and Lab; `7444` - log streaming to Lab.
+- `3000` - Memgraph Lab UI at http://localhost:3000.
+- Memgraph ports are explicitly bound to `127.0.0.1`, the IPv4 loopback, and the stack runs in the
+  Docker Desktop context. A second stack in another context such as Lima or colima could occupy
+  `127.0.0.1` and push Docker Desktop to IPv6 (`::1`), causing IPv4-first `localhost` and Lab to
+  access different data.
+
+## Start the stack
 
 ```bash
-# 1. Memgraph (MAGE: Louvain, Leiden) – ТОЛЬКО в контексте Docker Desktop
-docker context use desktop-linux            # иначе второй комплект расщепит localhost
+# 1. Memgraph (MAGE: Louvain, Leiden) - Docker Desktop context ONLY
+docker context use desktop-linux            # otherwise a second stack splits localhost
 docker compose -f tools/memgraph/docker-compose.yml up -d
-#    данные персистентны в bind-mount tools/memgraph/data/ (snapshots+WAL, git-ignored),
-#    восстановление графа при старте автоматическое (--data-recovery-on-startup).
-#    проверка Louvain:
+#    Data persists in the tools/memgraph/data/ bind mount (snapshots+WAL, gitignored).
+#    Graph recovery at startup is automatic (--data-recovery-on-startup).
+#    Verify Louvain:
 #    docker exec -i vq-memgraph-mage mgconsole <<< "CALL mg.procedures() YIELD name WHERE name CONTAINS 'community_detection' RETURN name;"
 
-# 2. (опц.) Ghidra GUI – только для интерактивного MCP (раздел "Мост GhydraMCP");
-#    headless-пайплайн (шаг 3 и далее) от GUI не зависит. Поднимает HTTP-плагин на 8192.
-ghidraRun    # brew-обёртка берёт JDK 21 сама
-#    затем: открыть/создать проект, открыть программу в CodeBrowser,
-#    File > Configure > Developer -> включить GhydraMCPPlugin (однократно).
+# 2. (Optional) Ghidra GUI - only for interactive MCP; see "GhydraMCP bridge".
+#    The headless pipeline in step 3 and later is GUI-independent. Starts the HTTP plugin on 8192.
+ghidraRun    # the brew wrapper selects JDK 21
+#    Then open or create the project, open the program in CodeBrowser, and enable
+#    File > Configure > Developer -> GhydraMCPPlugin once.
 
-# 3. Импорт дампа headless (SH-2E ядро -> вариант SH-2A с FPU, big-endian)
+# 3. Import a dump headlessly (SH-2E core -> SH-2A variant with FPU, big-endian)
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -import rom-images/23710-1ND0A/11ND0A-20260715-stock.bin \
   -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
 ```
 
-## Memgraph MCP (чтение графа агентом)
+## Memgraph MCP (agent graph access)
 
-Агент ходит в граф MCP-сервером `mcp-memgraph`: stdio, scope project (`.mcp.json` в корне
-репозитория; сам файл исключён глобальным gitignore, поэтому на новой машине создаётся
-командой ниже). Сервер **headless-native** – Memgraph это сервер, GUI не нужен, поэтому MCP
-годится и в автономных прогонах. Режим **read-only**: `CREATE/MERGE/DELETE/SET/DROP/REMOVE`
-блокируются на его стороне, запись в граф идёт только загрузчиками `memgraph/load_*.py`.
+The agent accesses the graph through the `mcp-memgraph` MCP server over stdio at project scope.
+The `.mcp.json` file is at the repository root but excluded by the global gitignore, so create it
+on a new machine with the command below. The server is **headless-native**: Memgraph is a server
+and requires no GUI, so this MCP works in autonomous runs. It operates in **read-only** mode:
+`CREATE/MERGE/DELETE/SET/DROP/REMOVE` are blocked server-side, and only
+`memgraph/load_*.py` loaders write to the graph.
 
 ```bash
 claude mcp add memgraph --scope project \
@@ -98,29 +106,30 @@ claude mcp add memgraph --scope project \
 claude mcp list        # memgraph: ✔ Connected
 ```
 
-Project-scope сервер требует одобрения при первом запуске (`claude` -> approve), иначе
-`claude mcp list` показывает `⏸ Pending approval`. Инструменты: `run_query`, `get_schema`,
+The project-scope server requires approval on first launch (`claude` -> approve); otherwise
+`claude mcp list` shows `Pending approval`. Tools include `run_query`, `get_schema`,
 `get_configuration`, `get_index` / `get_constraint` / `get_storage` / `get_procedures`,
 `get_page_rank`, `get_betweenness_centrality`, `get_node_neighborhood`, `search_node_vectors`.
 
-Аналитические инструменты MCP считают по всему storage, где `:Reg`/`:USES` доминируют над
-call-графом (сырой PageRank выводит в топ RAM-регистры) – осмысленный результат даёт
-`run_query` с проекцией call-графа, см. `map-flag-pipeline.md`, раздел 8.2.
+MCP analytical tools operate on all stored nodes, where `:Reg`/`:USES` dominate the call graph.
+Raw PageRank therefore ranks RAM registers highest. Use `run_query` with a call-graph projection
+for meaningful results; see section 8.2 of `map-flag-pipeline.md`.
 
-## Мост GhydraMCP в Claude Code (опциональный интерактив)
+## GhydraMCP bridge in Claude Code (optional interactive path)
 
-**Роль и границы.** GhydraMCP – ускоритель live-сессий реверса (человек+агент вскрывают
-подсистему): интерактивная декомпиляция/xref/callgraph по живому проекту, секунды на запрос.
-Плагин – HTTP-сервер внутри GUI CodeBrowser, поэтому **требует открытый проект с программой**
-(иначе инструменты возвращают пусто); CLI-режим `ghydra` (ниже) – тот же клиент к тому же
-плагину, та же зависимость от GUI. Отсюда MCP **не участвует в автономных/пакетных прогонах**
-(workflow, cron, регрессия метрик) – там канонический headless. Полный low-level API
-(`HighFunction`, сигнатуры CALLIND, register-context GBR – основа резолвера операндов
-`map-flag-pipeline.md`) в наборе инструментов моста отсутствует, он headless-only. Частые
-интерактивные вопросы без GUI закрывают параметризованные headless-скрипты
-(`DecompileFuncs`/`PoolUsers`/`DumpListing`/`FindTableRefs` по адресу).
+**Role and boundaries.** GhydraMCP accelerates live reverse-engineering sessions in which a person
+and an agent inspect a subsystem. It provides interactive decompilation, xrefs, and call graphs
+against a live project within seconds. The plugin is an HTTP server inside the CodeBrowser GUI and
+therefore **requires an open project and program**; otherwise tools return empty results. The
+`ghydra` CLI mode below is a client for the same plugin and has the same GUI dependency. This MCP
+therefore **does not participate in autonomous or batch runs** such as workflows, cron jobs, and
+metric regressions; those use the canonical headless path. The bridge does not expose the complete
+low-level API required by the operand resolver, including `HighFunction`, CALLIND signatures, and
+GBR register context, so that functionality is headless-only. Parameterized headless scripts
+answer common interactive questions without a GUI: `DecompileFuncs`, `PoolUsers`, `DumpListing`,
+and `FindTableRefs` by address.
 
-Зарегистрирован как stdio MCP-сервер `ghydra` (scope local, проект vq):
+Register it as the `ghydra` stdio MCP server at local scope for the vq project:
 
 ```bash
 claude mcp add ghydra --env GHIDRA_HYDRA_HOST=localhost -- \
@@ -128,55 +137,57 @@ claude mcp add ghydra --env GHIDRA_HYDRA_HOST=localhost -- \
 claude mcp list        # ghydra: ✔ Connected
 ```
 
-Инструменты (namespace `ghydra`): `instances_list` (сначала), `functions_list/decompile`,
-`xrefs_list`, `analysis_get_callgraph`, `data_list_strings`, rename/аннотации и др.
-Плагину нужен открытый CodeBrowser с программой – иначе инструменты вернут пусто.
+Tools in the `ghydra` namespace include `instances_list` (call first),
+`functions_list/decompile`, `xrefs_list`, `analysis_get_callgraph`, `data_list_strings`,
+renaming, annotations, and others. The plugin requires an open CodeBrowser with a program;
+otherwise tools return empty results.
 
-CLI-альтернатива без MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --json functions list`.
+CLI alternative without MCP: `~/tools/GhydraMCP/.venv/bin/ghydra --json functions list`.
 
-## Экспорт графа (headless)
+## Graph export (headless)
 
-Пайплайн Ghidra -> Memgraph без GUI: скрипты в `ghidra/` (Java GhidraScript, PyGhidra не
-нужен) и `memgraph/` (загрузчики на драйвере `neo4j` Bolt). Прогон – через `headless-analyze.sh`.
+The GUI-free Ghidra -> Memgraph pipeline uses Java GhidraScript scripts in `ghidra/`, with no
+PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Run it through
+`headless-analyze.sh`.
 
-| Скрипт | Назначение | Выход |
-|--------|-----------|-------|
-| `ghidra/ExportGraph.java` | call-граф (функции + CALLS) | `funcs.csv`, `calls.csv` |
-| `ghidra/ExportXrefs.java` | обращения к периферии/RAM (`0xFFFE8000`+), literal-pool | `xrefs.csv` |
-| `ghidra/DecompileFuncs.java` | C-псевдокод заданных функций | `decomp_<addr>.c` |
-| `ghidra/ScanImmoAnchors.java` | скан immo-DTC констант (P1610-P1615, B2193), кластеры DTC-таблиц | `immo_anchors.csv`, `immo_tables.csv` |
-| `ghidra/FindTableRefs.java` | кто адресует диапазон ROM (база таблицы): direct + literal-pool | `table_refs.csv` |
-| `ghidra/MapInventory.java` | ценз карт от interp-kernel: слоты-значения -> обёртки -> call-сайты, `r4/r5/r6` линейным backtrack | `map_inventory.csv` |
-| `ghidra/FindInterpCore.java` | детект ядер интерполяции и их входов data-сканом (Stage 1): слот с адресом кода + два уровня косвенности. Аргументы: `<outdir> [<min_wrappers>]` | `interp_core.csv` |
-| `ghidra/ScanFlags.java` | детект gbr-флагов локально у аксессоров и guard-функций (Stage 6): тройка "загрузка – проверка бита – ветвление", роль по ветвям из CFG. Аргументы: `<outdir> <func_addr>...` | `flags.csv` |
-| `ghidra/ResolveAccessors.java` | операнды аксессоров: data-flow декомпилятора против backtrack, восстановление функций под сайтами вне разметки, разворот операнда-множества (`MULTIEQUAL`) в строку на ветвь; прогон на ядро | `accessors.<kernel>.csv` |
-| `ghidra/ProbeResolver.java` | headless-спайк условия А резолвера: снимает ли декомпилятор константные `r4/r5/r6` на CALLIND интерполятора (baseline vs форс сигнатуры `0x26320`); `-readOnly`-диагностика | stdout |
-| `ghidra/DirectLookupInventory.java` | ценз банка implicit-axis форвард-сканом от слота, геометрия примитива по его коду; операнды – линейным backtrack | `direct_lookup_inventory.csv` |
-| `ghidra/DumpListing.java` | дизассемблинг окрестностей адреса с разрешёнными ссылками | `listing_<addr>.txt` |
-| `ghidra/DumpFuncListing.java` | дизассемблинг функции целиком, границу задаёт её тело. Для коротких функций, где предмет разбора – всё тело: библиотека арифметики передаёт аргументы регистрами, и соглашение читается только целиком. Аргументы: `<outdir> <addr...>` | `funclisting_<addr>.txt` |
-| `ghidra/FuncAt.java` | функция, содержащая адрес (вход, размер, границы) – относит pool-слоты к функциям по границам Ghidra. Аргументы: `<addr...>` | stdout |
-| `ghidra/RefsTo.java` | кто ссылается на адрес (инструкция, её функция, тип ссылки); владельца pool-слота даёт ссылающаяся инструкция. Аргументы: `<addr...>` | stdout |
-| `ghidra/PoolUsers.java` | функция-владелец адреса (pool-слот/тело) + её декомпиляция + инструкции, ссылающиеся на адрес. Аргументы: `<outdir> <addr...>` | `decomp_<addr>.c` |
-| `ghidra/RecoverFuncs.java` | разметка функциями кода вне функций (участки без прямых вызовов – их вызовы в граф не попадают, декомпилятор в них не работает) | Ghidra-проект |
-| `ghidra/RenameFuncs.java` | применить курируемые имена (`symbols.csv`) к функциям проекта | Ghidra-проект |
-| `ghidra/symbols.csv` | реестр имён функций (addr,name,note) – источник истины по реверсу | (в git) |
-| `memgraph/load_graph.py` | `:Func` + `:CALLS`, Louvain на проекции call-графа ROM | Memgraph |
-| `memgraph/load_xrefs.py` | `:Reg` + `:USES`, immo-аналитика (CAN/SCI/RXPR) | Memgraph |
-| `rom_sources.py` | разрешение канонического набора аннотаций через `defs/rom-inheritance.toml`; exact-code связь проверяется по SHA-256 и побайтным диапазонам, значения всегда читаются из целевого образа | (в git) |
-| `memgraph/load_maps.py` | калибровочный слой: переписи резолвера + канонические `interp.csv`/`findings.csv`/`axes.csv`, разрешённые через `rom-inheritance.toml`, + значения из целевого образа (Stage 4) -> `:Interp`/`:Map`/`:Axis` + `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
-| `memgraph/load_a2l.py` | `:A2LEntry` из `A2L.xml` – rom-независимый эталон семейства HR (карты, скаляры, switch'и), без адресов | Memgraph |
-| `memgraph/load_code.py` | claim-specific слой из канонических `funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv`: свойства заявок, точная проекция `:RESTS_ON` и `(:Rom)-[:ANNOTATIONS_FROM]->(:Rom)`; `code`/`silicon` требует factual evidence для Func/Reg/Map/Axis; запускается последним после владельцев targets | Memgraph |
-| `memgraph/ingest.py` | полный ingest целевого ROM: offline preflight источника, export и образа, затем `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` не меняет граф, `--strict` дополнительно требует effective confidence и grounding | Memgraph |
-| `memgraph/backup.py` | завершающий шаг агентского workflow: проверка 24-часового интервала, SMB mount, `DUMP DATABASE` + native snapshot + manifest и SHA-256 непосредственно на NAS | NAS |
-| `memgraph/provenance_report.py` | read-only exact audit, weakest path и reverse impact по полной claim identity; `--strict` включает effective/grounding gates | stdout |
-| `memgraph/queries.cypher` | каталог запросов: карты, компоненты sweep'а, центральность на проекции, каталоги-эталоны и отдельные структурные ворота. Claim-specific exact audit выполняет `provenance_report.py`. Параметр `$rom` | (в git) |
-| `maps/build_tracker.py` | ledger канонического ROM `defs/<rom>.maps.csv` – проекция каталога из графа; для наследника допускается только явно указанный временный путь | (в git) |
-| `sweep/build_artifacts.py` | blind-артефакты для массового прохода: компонента `comp-<addr>.md`, frozen-карта `map-<addr>.md` или общая ось `axis-<addr>.md`; Axis-focus агрегирует все связанные карты и аксессоры. Форма, значения, оси, псевдокод, листинги, операнды переписи и каталоги видимы; текущие ответы скрыты белым списком и проверяются каждым прогоном. Бюджеты обязаны быть неотрицательными; frozen caller experiment требует `8`/`24`. Аргументы: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
-| `sweep/caller_ab_experiment.py` | read-only control plane 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates + manual approval + finalized cards, `verified`/neutral `placebo`, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores и per-control verifier gate; canonical CSV не изменяет | JSON/Markdown вне git |
-| `mapkit/rom.py` | образ: реестр `rom-images/roms.csv` со сверкой sha256, чтение массивов, их измерение. Библиотека – её зовут `load_maps.py` и скрипты пакета | (в git) |
-| `mapkit/emit_def.py` | деф `defs/<rom>.xml` – проекция графа, DTC-реестра `defs/<rom>.dtc.csv` и презентационного слоя `defs/<rom>.overrides.toml` (контракт – `map-flag-pipeline.md`, раздел 9) | (git, по мере коммита P5) |
-| `mapkit/show.py` | карта либо ось в физических единицах: граф даёт форму, оси и шкалу, образ – значения. Аргументы: `[<rom>] <addr>...` | stdout |
-| `mapkit/ptrscan.py` | кто указывает на адрес: скан образа по обеим формам константы (`mov.l` и `mov.w`), без Ghidra и проекта. Аргументы: `[<rom>] <addr> [<addr_hi>]` | stdout |
+| Script | Purpose | Output |
+|--------|---------|--------|
+| `ghidra/ExportGraph.java` | Call graph: functions and CALLS | `funcs.csv`, `calls.csv` |
+| `ghidra/ExportXrefs.java` | Peripheral/RAM accesses at `0xFFFE8000` and above, plus literal pools | `xrefs.csv` |
+| `ghidra/DecompileFuncs.java` | C pseudocode for specified functions | `decomp_<addr>.c` |
+| `ghidra/ScanImmoAnchors.java` | Scan immo DTC constants P1610-P1615 and B2193, plus DTC-table clusters | `immo_anchors.csv`, `immo_tables.csv` |
+| `ghidra/FindTableRefs.java` | Identify users of a ROM address range or table base through direct and literal-pool references | `table_refs.csv` |
+| `ghidra/MapInventory.java` | Census maps from an interpolation kernel: value slots -> wrappers -> call sites, with linear `r4/r5/r6` backtracking | `map_inventory.csv` |
+| `ghidra/FindInterpCore.java` | Detect interpolation kernels and entries through a data scan in Stage 1: code-address slot plus two indirection levels. Arguments: `<outdir> [<min_wrappers>]` | `interp_core.csv` |
+| `ghidra/ScanFlags.java` | Detect GBR flags locally around accessors and guard functions in Stage 6 using the "load - bit test - branch" triple and derive role from CFG branches. Arguments: `<outdir> <func_addr>...` | `flags.csv` |
+| `ghidra/ResolveAccessors.java` | Resolve accessor operands using decompiler data flow against backtracking, recover functions for unmarked sites, and expand operand sets (`MULTIEQUAL`) into one row per branch; run once per kernel | `accessors.<kernel>.csv` |
+| `ghidra/ProbeResolver.java` | Headless probe for resolver condition A: determine whether the decompiler recovers constant `r4/r5/r6` at interpolation CALLIND sites, baseline versus forced `0x26320` signature; `-readOnly` diagnostic | stdout |
+| `ghidra/DirectLookupInventory.java` | Census the implicit-axis bank with a forward scan from its slot, derive primitive geometry from code, and recover operands with linear backtracking | `direct_lookup_inventory.csv` |
+| `ghidra/DumpListing.java` | Disassemble an address neighborhood with resolved references | `listing_<addr>.txt` |
+| `ghidra/DumpFuncListing.java` | Disassemble an entire function using its body as the boundary. Intended for short arithmetic-library functions whose register-passed argument convention is visible only from the full body. Arguments: `<outdir> <addr...>` | `funclisting_<addr>.txt` |
+| `ghidra/FuncAt.java` | Report the function containing an address, including entry, size, and bounds, to assign pool slots through Ghidra function boundaries. Arguments: `<addr...>` | stdout |
+| `ghidra/RefsTo.java` | Report instructions referencing an address, their functions, and reference types; the referencing instruction identifies a pool-slot owner. Arguments: `<addr...>` | stdout |
+| `ghidra/PoolUsers.java` | Report the function owning an address, pool slot or body, along with its decompilation and referencing instructions. Arguments: `<outdir> <addr...>` | `decomp_<addr>.c` |
+| `ghidra/RecoverFuncs.java` | Mark code outside functions as functions; without direct calls these regions are absent from the call graph and cannot be decompiled | Ghidra project |
+| `ghidra/RenameFuncs.java` | Apply curated names from `symbols.csv` to project functions | Ghidra project |
+| `ghidra/symbols.csv` | Function-name registry `(addr,name,note)`, the reverse-engineering source of truth | tracked |
+| `memgraph/load_graph.py` | Load `:Func` and `:CALLS`, then Louvain over the ROM call-graph projection | Memgraph |
+| `memgraph/load_xrefs.py` | Load `:Reg` and `:USES`, including immo analytics for CAN/SCI/RXPR | Memgraph |
+| `rom_sources.py` | Resolve the canonical annotation set through `defs/rom-inheritance.toml`; verify exact-code relationships by SHA-256 and byte ranges while always reading values from the target image | tracked |
+| `memgraph/load_maps.py` | Calibration layer: resolver censuses plus canonical `interp.csv`, `findings.csv`, and `axes.csv` resolved through `rom-inheritance.toml`, with values read from the target image in Stage 4 -> `:Interp`/`:Map`/`:Axis` and `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
+| `memgraph/load_a2l.py` | Load `:A2LEntry` from `A2L.xml` as an address-free, ROM-independent HR-family reference for maps, scalars, and switches | Memgraph |
+| `memgraph/load_code.py` | Load the claim-specific layer from canonical `funcs.csv`, `vars.csv`, `findings.csv`, and `axes.csv`: claim properties, exact `:RESTS_ON` projection, and `(:Rom)-[:ANNOTATIONS_FROM]->(:Rom)`; `code`/`silicon` requires factual evidence for every Func/Reg/Map/Axis property; run last after target owners | Memgraph |
+| `memgraph/ingest.py` | Complete target-ROM ingest: offline source, export, and image preflight followed by `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` leaves the graph unchanged and `--strict` also requires effective confidence and grounding | Memgraph |
+| `memgraph/backup.py` | Final agent-workflow step: check the 24-hour interval and SMB mount, then write `DUMP DATABASE`, native snapshot, manifest, and SHA-256 directly to NAS | NAS |
+| `memgraph/provenance_report.py` | Read-only exact audit, weakest path, and reverse impact over complete claim identity; `--strict` enables effective-confidence and grounding gates | stdout |
+| `memgraph/queries.cypher` | Query catalog for maps, sweep components, projection centrality, reference catalogs, and individual structural gates. `provenance_report.py` performs claim-specific exact audits. Parameter: `$rom` | tracked |
+| `maps/build_tracker.py` | Project the graph catalog into the canonical-ROM ledger `defs/<rom>.maps.csv`; an inheriting ROM permits only an explicitly specified temporary output path | tracked |
+| `sweep/build_artifacts.py` | Build blind sweep artifacts: component `comp-<addr>.md`, frozen map `map-<addr>.md`, or shared axis `axis-<addr>.md`. Axis focus aggregates all related maps and accessors. Shape, values, axes, pseudocode, listings, census operands, and catalogs remain visible; current answers are hidden through an allowlist verified on every run. Budgets must be nonnegative; the frozen caller experiment requires `8`/`24`. Arguments: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
+| `sweep/caller_ab_experiment.py` | Read-only control plane for the 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates, manual approval, finalized `verified` and neutral `placebo` cards, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores, and a per-control verifier gate; canonical CSV remains unchanged | JSON/Markdown outside git |
+| `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
+| `mapkit/emit_def.py` | Project the graph, `defs/<rom>.dtc.csv` DTC registry, and `defs/<rom>.overrides.toml` presentation layer into `defs/<rom>.xml`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
+| `mapkit/show.py` | Display a map or axis in physical units: the graph supplies shape, axes, and scale, while the image supplies values. Arguments: `[<rom>] <addr>...` | stdout |
+| `mapkit/ptrscan.py` | Find pointers to an address by scanning both constant forms, `mov.l` and `mov.w`, without Ghidra or a project. Arguments: `[<rom>] <addr> [<addr_hi>]` | stdout |
 
 ```bash
 D=~/tools/ghidra-projects/export-1ND0A
@@ -190,104 +201,105 @@ uv run --no-project --with neo4j python tools/memgraph/load_graph.py "$D" 1ND0A
 uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py "$D" 1ND0A
 ```
 
-`-process` принимает имя программы внутри Ghidra-проекта, а не путь к файлу в
-`rom-images`. Текущий проект `vq-hr` хранит программы под именами
-`1ND0A_Stock.bin`, `as7058.bin` (JK03A) и
-`1JK00D_8MFK36N15-20260726-013734.bin`. Команда импорта JK08A ниже создаёт
-программу `1JK08A-20260726-stock.bin`.
+`-process` accepts a program name inside the Ghidra project, not a path under
+`rom-images`. The current `vq-hr` project stores programs under the names
+`1ND0A_Stock.bin`, `as7058.bin` (JK03A), and
+`1JK00D_8MFK36N15-20260726-013734.bin`. The JK08A import command below creates
+the `1JK08A-20260726-stock.bin` program.
 
-### Карты: разметка, резолюция операндов, граф
+### Maps: function marking, operand resolution, and graph loading
 
-Ценз карт строится от общего движка интерполяции: слоты с его указателем дают обёртки,
-call-ссылки на вход обёртки – сайты. Так устроены оба семейства доступа, и `ResolveAccessors`
-покрывает их одним механизмом – примитив банка implicit-axis есть обёртка над своей цепочкой
-сдвигов. Входы перечисляет реестр `defs/JK08A.interp.csv` (строка = вход: семейство, движок,
-адрес входа и геометрия – элемент таблицы с кода входа у 1D и с кода finisher'а у 2D; число
-точек оси и её элемент – с клэмпа её поиска, равного `(точек-1) * размер элемента`); прогон
-идёт на каждый движок, файл на ценз.
-Операнды (`r4` – база таблицы, `r5`/`r6` – оси explicit-axis) снимает data-flow декомпилятора,
-рядом с линейным backtrack как эталоном ворот (механика – `map-flag-pipeline.md`, разделы 6-7):
+The map census starts from a shared interpolation engine. Slots containing its pointer identify
+wrappers, and call references to wrapper entries identify sites. Both access families use this
+structure, so `ResolveAccessors` handles them through one mechanism: the implicit-axis bank
+primitive is a wrapper around its own shift chain. The `defs/JK08A.interp.csv` registry lists
+entries, one row per family/engine/entry address/geometry. For 1D entries the table element comes
+from entry code; for 2D entries it comes from finisher code. Axis point count and element type come
+from the search clamp, equal to `(points-1) * element_size`. Run once per engine, producing one
+census file each.
 
-Начальный `export-JK08A` использует headless-артефакты exact-code донора `JK03A`: проверены
-все 2312 диапазонов функций, различий нет. Отдельный слой Memgraph не наследует значения
-карт из экспорта – `load_maps.py` читает их из зарегистрированного собственного дампа
-`JK08A`; четыре отличающиеся candidate-кривые получают собственные `values_hash`.
-Свежий экспорт из программы `JK08A` в Ghidra воспроизводится командами ниже.
+Decompiler data flow recovers operands: `r4` is the table base and `r5`/`r6` are explicit-axis
+addresses. Linear backtracking remains the gate baseline. Sections 6 and 7 of
+`map-flag-pipeline.md` describe the mechanism.
+
+The initial `export-JK08A` uses headless artifacts from exact-code donor `JK03A`: all 2312 function
+ranges were compared with no differences. The separate Memgraph layer does not inherit map values
+from that export. `load_maps.py` reads values from the registered `JK08A` dump, and the four
+different candidate curves receive their own `values_hash`. The commands below reproduce a fresh
+export from the `JK08A` Ghidra program.
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -import rom-images/23710-JK08A/1JK08A-20260726-stock.bin \
   -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
 D=~/tools/ghidra-projects/export-JK08A
-# Функцией, а не переменной: в zsh неэкранированная $H на слова не разбивается, и вызов
-# уходит в никуда молча.
+# Use a function rather than a variable: zsh does not word-split an unquoted $H, so a variable
+# invocation would silently do nothing.
 H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
         -process 1JK08A-20260726-stock.bin \
         -noanalysis -scriptPath tools/ghidra "$@"; }
-# 1. Разметка кода вне функций + экспорт графа – в ОДНОМ изменяющем запуске.
-#    ExportXrefs читает сохранённую разметку отдельным read-only запуском.
+# 1. Mark code outside functions and export the graph in ONE mutating run.
+#    ExportXrefs reads the persisted marking in a separate read-only run.
 H -postScript RecoverFuncs.java -postScript ExportGraph.java "$D"
 H -readOnly -postScript ExportXrefs.java "$D"
-# 2. Операнды: резолвер на каждый движок из реестра. ~100 сек на ценз.
+# 2. Operands: run the resolver for every registered engine. Approximately 100 seconds per census.
 for K in 26944 26984 26b84 26a5c 26a60 26a64 26a74 26a7c 26a80 26a84 26a88 26740 26c1c; do
   H -readOnly -postScript ResolveAccessors.java "$D" $K
 done
-# 3. Полный ingest целевого ROM. Preflight проверяет заголовки, значения, внешние ключи,
-#    цензы, ROM/SHA, разрешимость evidence и наличие factual evidence у каждого
-#    Func/Reg/Map/Axis свойства уровня code/silicon до первого удаления узлов.
-#    Порядок: graph -> xrefs -> maps -> code -> exact audit.
+# 3. Complete target-ROM ingest. Before deleting any nodes, preflight validates headers, values,
+#    foreign keys, censuses, ROM/SHA, evidence resolution, and factual evidence for every
+#    code/silicon Func/Reg/Map/Axis property.
+#    Order: graph -> xrefs -> maps -> code -> exact audit.
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A --export-dir "$D" --strict
-# Только preflight и точные команды, без изменения графа:
+# Preflight and exact commands only, without modifying the graph:
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A \
   --export-dir "$D" --strict --dry-run
-# Exact-code JK03A использует тот же живой набор аннотаций, но собственные export,
-# образ, измерения карт и отдельный слой графа:
+# Exact-code JK03A uses the same live annotation set but its own export, image, map measurements,
+# and graph layer:
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A \
   --export-dir ~/tools/ghidra-projects/export-JK03A --strict
-# 4. Эталон каталога HR: rom-независим, грузится раз на семейство, не на дамп.
+# 4. HR reference catalog: ROM-independent and loaded once per family rather than per dump.
 uv run --no-project --with neo4j python tools/memgraph/load_a2l.py
-# 5. Генерируемые проекции после успешного аудита.
+# 5. Generated projections after a successful audit.
 uv run --no-project --with neo4j python tools/maps/build_tracker.py JK08A
 uv run --no-project --with neo4j python tools/mapkit/emit_def.py JK08A
-# Диагностический ledger JK03A хранится только временно:
+# The diagnostic JK03A ledger is temporary:
 uv run --no-project --with neo4j python tools/maps/build_tracker.py \
   JK03A /private/tmp/JK03A.maps.csv
 ```
 
-### RomRaider: переключатели NATS
+### RomRaider: NATS switches
 
-`defs/JK08A.xml` содержит `TableSwitch` по `0x08725` с состояниями
-`Enabled (Stock) = 01` и `Disabled (IMMO OFF) = 00`. Переключатель напрямую
-сбрасывает bit0 заводского флага Developer Immobilizer.
+`defs/JK08A.xml` contains a `TableSwitch` at `0x08725` with states
+`Enabled (Stock) = 01` and `Disabled (IMMO OFF) = 00`. The switch directly clears bit0 of the
+factory Developer Immobilizer flag.
 
-Второй `TableSwitch` по `0x19540` управляет 12-байтным descriptor P1610:
-stock `0D 05 00 00 00 00 16 10 00 00 00 00`, disabled – 12 нулевых байтов.
-Он генерируется из `defs/JK08A.dtc.csv`, поскольку связанный attribute по `0x160FE`
-уже равен disabled-значению `0000`. DTC с изменением attribute одним переключателем
-не выпускаются.
+The second `TableSwitch` at `0x19540` controls the 12-byte P1610 descriptor:
+stock `0D 05 00 00 00 00 16 10 00 00 00 00`; disabled is 12 zero bytes. It is generated from
+`defs/JK08A.dtc.csv` because the associated attribute at `0x160FE` already equals its disabled
+value `0000`. A DTC that also requires an attribute change is not emitted as one switch.
 
-Нативные checksum-обработчики находятся в порядке:
+Native checksum handlers run in this order:
 
-1. `alt` пересчитывает runtime selftest B.
-2. `alt2` пересчитывает runtime selftest A и обе SUM16.
+1. `alt` recalculates runtime self-test B.
+2. `alt2` recalculates runtime self-test A and both SUM16 checksums.
 
-Тот же результат выпускает патчер, проверяющий точный stock ROM:
+The patcher produces the same result after validating the exact stock ROM:
 
 ```bash
 python3 patches/apply_immo_off.py --rom JK08A
 ```
 
-Результат
+The resulting
 `rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
-отличается от stock одним битом. Запуск и работа двигателя подтверждены на машине.
-Патчер сохраняет однобитный контракт immo-off; P1610 управляется только через деф и
-требует отдельной аппаратной проверки.
+differs from stock by one bit. Engine start and operation were confirmed on the vehicle.
+The patcher preserves the one-bit immo-off contract. P1610 is controlled only through the
+definition and requires a separate hardware test.
 
-### Резервное копирование Memgraph
+### Memgraph backup
 
-Резервное копирование запускается только как завершающий шаг агентского workflow. Cron и
-`launchd` не используются. Локальный конфиг создаётся из `memgraph/backup.example.toml` и
-не входит в git:
+Backup runs only as the final step of the agent workflow. Cron and `launchd` are not used.
+Create the local configuration from `memgraph/backup.example.toml`; it is not tracked:
 
 ```toml
 smb_url = "smb://server/Backup"
@@ -299,48 +311,48 @@ mount_timeout_seconds = 30
 command_timeout_seconds = 900
 ```
 
-Проверка срока не подключает NAS:
+Checking whether a backup is due does not connect to the NAS:
 
 ```bash
 python3 tools/memgraph/backup.py --status
 ```
 
-Запуск при истёкшем интервале монтирует share через macOS Keychain и пишет комплект сразу в
-`/Volumes/Backup/vq-memgraph/.<timestamp>.partial-*`. Готовый каталог публикуется rename
-только после проверки gzip и SHA-256:
+When the interval has elapsed, the command mounts the share through macOS Keychain and writes the
+backup set directly to `/Volumes/Backup/vq-memgraph/.<timestamp>.partial-*`. It publishes the
+completed directory by rename only after gzip and SHA-256 validation:
 
 ```bash
 python3 tools/memgraph/backup.py --if-due
 ```
 
-`minimum_interval_hours` не может быть меньше 24. Локальное
-`memgraph/backup.state.json` содержит только время и путь последней успешной резервной копии.
-Native snapshot привязан к версии Memgraph; `manifest.json` фиксирует image контейнера,
-timestamp snapshot, числа узлов/рёбер/индексов, git commit и состояние worktree.
+`minimum_interval_hours` cannot be less than 24. Local `memgraph/backup.state.json` contains only
+the time and path of the last successful backup. A native snapshot is tied to the Memgraph
+version. `manifest.json` records the container image, snapshot timestamp, node/edge/index counts,
+git commit, and worktree state.
 
-Разбор карты руками идёт теми же фактами, без Ghidra:
+Manual map inspection uses the same facts without Ghidra:
 
 ```bash
-uv run --no-project --with neo4j python tools/mapkit/show.py b33a   # сетка в единицах + оси
-uv run --no-project python tools/mapkit/ptrscan.py 11ebe 11ece      # кто указывает на массив
+uv run --no-project --with neo4j python tools/mapkit/show.py b33a   # grid in physical units + axes
+uv run --no-project python tools/mapkit/ptrscan.py 11ebe 11ece      # identify pointers to the array
 ```
 
-Загрузчик берёт все переписи каталога сразу, а не ядро на прогон: узлы слоя он пересоздаёт,
-поэтому ценз на прогон означал бы, что загрузка второго ядра сносит карты первого. По той же
-причине тем же прогоном идут ручной слой и Stage 4: и находка, и измерение живут на том же
-узле, что и факт переписи. Перепись, которой в реестре нет, останавливает загрузку - модель
-её оси неизвестна; так же останавливает и вход, через который перепись нашла таблицы, а
-геометрия его не объявлена.
+The loader consumes every catalog census in one run rather than one kernel per run because it
+recreates layer nodes. Loading a second kernel separately would delete the first kernel's maps.
+For the same reason, the manual layer and Stage 4 run together: the finding and measurement live
+on the same node as the census fact. A census absent from the registry stops loading because its
+axis model is unknown. Loading also stops if a census found tables through an entry whose geometry
+is undeclared.
 
-`load_code.py` идёт последним из владельцев provenance targets: предыдущие загрузчики удаляют
-свои узлы вместе с исходящими и входящими `:RESTS_ON`. Он читает четыре канонических CSV,
-сверяет наличие узлов и claim-specific свойства, требует factual evidence у каждого свойства
-уровня `code`/`silicon`, строит 2759 claim-specific рёбер JK08A и выполняет exact
-expected-vs-actual audit в одной транзакции. Локальные source gates проходят при нулевом долге
-Map/Axis. Глобальный `--strict` также проходит: текущий JK08A содержит 976 source claims,
-2759 ожидаемых рёбер, 821 заявку уровня `code` и 155 уровня `candidate`;
-`effective below declared=0`, `without grounding=0`, 44 циклических SCC и 0
-незаземлённых SCC. Read-only проверка и интерактивные запросы:
+`load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
+and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
+and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
+builds 2759 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
+current JK08A has 976 source claims, 2759 expected edges, 821 claims at `code`, and 155 at
+`candidate`;
+`effective below declared=0`, `without grounding=0`, 44 cyclic SCCs, and 0
+ungrounded SCCs. Read-only verification and interactive queries:
 
 ```bash
 uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK08A
@@ -350,128 +362,135 @@ uv run --no-project --with neo4j python \
   tools/memgraph/provenance_report.py impact JK08A Map 0001495a structural
 ```
 
-Значения таблиц и осей рукописным источником не объявляются - их говорит образ, и Stage 4
-читает их оттуда каждым прогоном по адресу и форме из переписи. Образ берётся по метке ROM
-из реестра `rom-images/roms.csv` со сверкой sha256: подмена дампа дала бы не отказ, а 229
-осей правдоподобных чисел не из того образа. Ось несёт свои точки и монотонность, карта -
-диапазон и хеш содержимого.
+Handwritten sources do not declare table or axis values; the image does. On every run, Stage 4
+reads values from the image using addresses and shapes from the census. The image is selected by
+ROM label from `rom-images/roms.csv` and verified by SHA-256. Without that check, a substituted
+dump would not necessarily fail but could produce 229 axes of plausible values from the wrong
+image. Each axis stores its points and monotonicity; each map stores its range and content hash.
 
-Эталонные цензы (`MapInventory.java` на ядро, `DirectLookupInventory.java` на банк) резолвер
-воспроизводит сайт-в-сайт и строго покрывает по базам; они остаются точкой сравнения для
-ворот раздела 7, а каталог строится по резолверу.
+The reference censuses, `MapInventory.java` per kernel and `DirectLookupInventory.java` for the
+bank, are reproduced site-for-site by the resolver and strictly covered by base addresses. They
+remain the comparison baseline for section 7 gates, while the resolver builds the catalog.
 
-`load_a2l` кладёт в граф каталог `A2L.xml` (188 `:A2LEntry`: 106 карт, 36 скаляров, 46
-switch'ей). Адресов в базовом дефе нет – каталог задаёт классы, а не размещение, и между
-дампами переносится идентичность, а не смещения. Нотация RomRaider нормализуется по числу
-осей (`2D` -> `dims=1`, `3D` -> `dims=2`), `shape` пишется словарём обёрток (`16x16`, `1D-8`).
-Рёбра `:MATCHES` строятся после Stage 4: у `:Map` из ключей матча есть только `dims`, а
-scale-family и семантику осей даёт разбор, не каталог.
+`load_a2l` loads the `A2L.xml` catalog into the graph as 188 `:A2LEntry` nodes: 106 maps,
+36 scalars, and 46 switches. The base definition has no addresses because the catalog identifies
+classes rather than locations; identity, not offsets, transfers between dumps. RomRaider notation
+is normalized by axis count (`2D` -> `dims=1`, `3D` -> `dims=2`), while `shape` uses the wrapper
+vocabulary (`16x16`, `1D-8`). `:MATCHES` edges are built after Stage 4. Of the matching keys a
+`:Map` initially has only `dims`; analysis, not the catalog, supplies scale family and axis
+semantics.
 
-`RecoverFuncs` под `-readOnly` считает и отчитывается, не сохраняя разметку (dry-run); без
-`-readOnly` она идёт в проект, и её видит `ExportGraph`. JK08A: 38627 инструкций в 494 участках
--> 353 функции (1958 -> 2312), после чего обёртки `0x26100`/`0x26230` получают вызывателей.
+With `-readOnly`, `RecoverFuncs` counts and reports without persisting function marking, acting as
+a dry run. Without `-readOnly`, it writes the marking to the project for `ExportGraph` to consume.
+For JK08A, 38,627 instructions in 494 regions produce 353 functions, increasing the total from
+1958 to 2312, after which wrappers `0x26100` and `0x26230` acquire callers.
 
-JK08A, 13 цензов: 587 строк для 554 callsite; база в ROM снята data-flow на 551
-callsite против 493 у backtrack. В графе – **439 карт** (248 explicit-axis, 188
-implicit-axis, 3 ручных вне моделей доступа), 229 осей, 586 уникальных доступов, 47 узлов
-интерполяции (34 обёртки + 13 движков). Один полный дубль строки ценза схлопывается ключом
-ребра `ACCESSES`.
+Across 13 JK08A censuses there are 587 rows for 554 call sites. Data flow recovers a ROM base at
+551 call sites, compared with 493 for backtracking. The graph contains **439 maps**: 248
+explicit-axis, 188 implicit-axis, and 3 manually declared outside either access model. It also has
+229 axes, 586 unique accesses, and 47 interpolation nodes, consisting of 34 wrappers and 13
+engines. One fully duplicate census row collapses under the `ACCESSES` edge key.
 
-| семейство | движков | сайтов | `bt_r4` | `df_r4` | обёрток | карт |
-|-----------|---------|--------|---------|---------|---------|------|
+| Family | Engines | Sites | `bt_r4` | `df_r4` | Wrappers | Maps |
+|--------|---------|-------|---------|---------|----------|------|
 | explicit-axis | 3 | 327 | 288 | 326 | 24 | 232 |
 | implicit-axis | 10 | 227 | 205 | 225 | 10 | 184 |
 
-Источник базы по 554 callsite: 407 – слот пула, 102 – backward-slice, 27 – phi-узел
-(59 строк по ветвям), 15 – резерв `SymbolicPropogator` (16 строк ценза), 3 не
-сворачиваются (`dyn`). Семейства не пересекаются ни одной таблицей – загрузчик проверяет это
-из своих строк. Плюс к 436 картам переписи ручной слой объявляет три вне обеих моделей
-доступа: итог каталога – 439.
+Base-source distribution across 554 call sites is 407 pool slots, 102 backward slices, 27 phi
+nodes producing 59 branch rows, 15 `SymbolicPropogator` fallbacks producing 16 census rows, and 3
+unresolved dynamic cases (`dyn`). The loader verifies from its rows that the two families share no
+tables. The manual layer adds three maps outside both access models to the 436 census maps, for a
+catalog total of 439.
 
-Обе переписи-эталона резолвер воспроизводит сайт-в-сайт (327 и 227) и покрывает по базам:
-ни одна база эталона не потеряна, сверх них снято +13 таблиц на explicit-axis и +16 на банке.
-Проверка новых данными: 12 из 16 монотонны, остальные четыре – полки и окна вида
-`[0,0,0,0,0,0,255,255,255,255,0,0,0,0,0,0]`, то есть структура калибровки, а не шум.
+The resolver reproduces both reference censuses site-for-site, 327 and 227 sites, and covers every
+reference base. It also recovers 13 additional explicit-axis tables and 16 additional bank tables.
+Data validates the new bank tables: 12 of 16 are monotonic, while the remaining four are plateaus
+or windows such as `[0,0,0,0,0,0,255,255,255,255,0,0,0,0,0,0]`, indicating calibration
+structure rather than noise.
 
-Неснятые базы (3 сайта, `dyn`) молча не теряются – они помечены. У сайта `0x4a02c` пуст и
-backtrack, то есть база динамическая, а не пропущенная. Указатель оси там снят (`0x15340`),
-но узла не даёт: ось без карты – ось неизвестно чего, и в переписи значение сохранено, а
-вернётся оно с базой на Stage 6.
+The three unresolved `dyn` bases are marked rather than silently lost. Site `0x4a02c` also has an
+empty backtrack result, so its base is dynamic rather than missed. Its axis pointer `0x15340` is
+recovered but does not create a node: without a map, the axis purpose is unknown. The census keeps
+the value and Stage 6 will restore it when the base is resolved.
 
-Базу в граф даёт только data-flow. Линейный backtrack остаётся эталоном ворот и фактов не
-даёт: на всех десяти базовых расхождениях каталога он неверен – поднимает ось вместо базы,
-теряет арифметику delay slot либо берёт произвольный элемент селекторного множества. База не
-свёрнута на 15 проецированных доступах с `kind=sp` (16 строк ценза до схлопывания полного
-дубля), и снятая – один элемент множества, выбираемого ветвлением; полный набор снимает Stage
-6.
+Only data flow supplies graph bases. Linear backtracking remains a gate baseline and contributes
+no facts. It is wrong on all ten baseline catalog discrepancies: it recovers an axis instead of a
+base, loses delay-slot arithmetic, or chooses an arbitrary element of a selector set. Fifteen
+projected accesses have an unresolved base with `kind=sp`, represented by 16 census rows before a
+full duplicate collapses. The recovered value is one element of a branch-selected set; Stage 6
+recovers the complete set.
 
-На осях резерв ошибается так же: 256 проецированных доступов на 247 callsite несут
-несвёрнутую ось (`kind5`/`kind6=sp`), и 14 осей из 229 стоят на нём одном – они помечены
-уровнем `pattern` (`candidate` даёт любой свёрнутый сайт). Довод прямой: сайт `0x735ac`
-объявляет осью `0x8000`, где лежит стёртая флешь. Тот же механизм даёт и неоднозначную
-геометрию – у `0x14114` две оси на одном ребре (`0xE98E` и `0x8000`); ворота дефа такую карту
-не пропускают, разбирает её Stage 6.
+Fallback behavior is similarly unreliable for axes. There are 256 projected accesses at 247 call
+sites with an unresolved axis (`kind5`/`kind6=sp`), and 14 of 229 axes depend solely on this
+fallback. Those axes are marked `pattern`; any resolved site raises them to `candidate`. A direct
+counterexample is site `0x735ac`, which reports `0x8000` as an axis even though that address
+contains erased flash. The same mechanism produces ambiguous geometry: `0x14114` has axes
+`0xE98E` and `0x8000` on one edge. Definition gates reject this map until Stage 6 resolves it.
 
-Элемент оси – свойство пары (обёртка, ось), а не движка: обёртка зовёт поиск на каждую ось
-отдельно и может звать разные. `0x262E0` берёт байтовый `0x26A0C` для `r5` (клэмп 15) и
-словесный `0x26984` для `r6` (клэмп 30), `0x26660` – ту же пару `0x26BC4`/`0x26B84`; таких
-две из 22 двухосных обёрток. Клэмп в delay slot вызова равен `(точек-1) * размер элемента`,
-и он же независимо подтверждает число точек у всех 24 обёрток. Расхождение нашло измерение
-по образу, а не чтение кода: объявленные словесными оси `0x11D0C` и `0x18716` словами не
-возрастают, а байтами дают одну и ту же лесенку нагрузки (`defs/JK08A.notes.md`, "Элемент
-оси задаёт клэмп её поиска").
+Axis element type belongs to the `(wrapper, axis)` pair rather than the engine. A wrapper calls a
+separate search for each axis and can use different searches. `0x262E0` uses byte search
+`0x26A0C` for `r5`, clamp 15, and word search `0x26984` for `r6`, clamp 30. `0x26660` uses the
+same mixed pair through `0x26BC4`/`0x26B84`. Two of the 22 two-axis wrappers behave this way. The
+call delay-slot clamp equals `(points-1) * element_size` and independently confirms the point
+count for all 24 wrappers. Image measurement, not code reading, exposed the mismatch: axes
+`0x11D0C` and `0x18716`, originally declared as words, are not monotonic as words but produce the
+same stepped load curve as bytes. See the axis-element section in `defs/JK08A.notes.md`.
 
-### Локализация immo по DTC-якорям
+### Locating immo through DTC anchors
 
-immo-статус ECM представлен как DTC (P1610-P1615, group `0x0d`). Путь от immo-DTC констант
-к DTC-таблице и коду-адресатору (immo CAN ID публично не раскрыт – якоря числовые):
+The ECM represents immo status as DTCs P1610-P1615 in group `0x0d`. Follow this path from
+numeric immo DTC constants to the DTC table and its addressing code. The immo CAN ID is not
+publicly documented, so the anchors are numeric:
 
 ```bash
 D=~/tools/ghidra-projects/export-1ND0A
 H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
         -process 1ND0A_Stock.bin -noanalysis -scriptPath tools/ghidra "$@"; }
-H -postScript ScanImmoAnchors.java "$D"              # immo-DTC + кластер DTC-таблицы
-H -postScript FindTableRefs.java  "$D" 1b000 1c400   # кто адресует таблицу
-H -postScript DumpListing.java    "$D" <addr>...     # точки использования (ref -> value)
+H -postScript ScanImmoAnchors.java "$D"              # immo DTCs + DTC-table cluster
+H -postScript FindTableRefs.java  "$D" 1b000 1c400   # identify table users
+H -postScript DumpListing.java    "$D" <addr>...     # use sites (reference -> value)
 ```
 
-Результат на 1ND0A: DTC-таблица `0x1bdfc` (запись 12 байт, DTC@`+0x0a`), immo-блок idx
-42-47, движок статуса `immo_dtc_status_engine` (`000b741e`) -> RAM DTC-статус `0xFFFED700+`.
-Детали и остаток (гейт впрыска) – в ноте "Immo, NATS, клон ЭБУ" (Obsidian).
+For 1ND0A the result is DTC table `0x1bdfc`, with 12-byte records and DTC at `+0x0a`; immo block
+indices 42-47; and status engine `immo_dtc_status_engine` at `000b741e` -> RAM DTC status at
+`0xFFFED700` and above. The corresponding Obsidian project note contains details and the remaining
+injection-gate work.
 
-### Актуализация имён функций (реверс -> граф)
+### Updating function names (reverse engineering -> graph)
 
-Имена подтверждённых функций (вместо `FUN_xxxxxxxx`) ведутся в git как единый источник
-истины `tools/ghidra/symbols.csv` (`addr,name,note`). Ghidra и Memgraph – потребители:
-скрипт применяет имена к проекту (нужны в декомпиляции), экспорт переносит их в граф.
+Confirmed function names, replacing `FUN_xxxxxxxx`, are maintained in git as the single source of
+truth in `tools/ghidra/symbols.csv` with `(addr,name,note)` columns. Ghidra and Memgraph are
+consumers: the script applies names to the project for decompilation, and export carries them into
+the graph.
 
 ```bash
 D=~/tools/ghidra-projects/export-1ND0A
 SYM=$(pwd)/tools/ghidra/symbols.csv
 H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
         -process 1ND0A_Stock.bin -noanalysis -scriptPath tools/ghidra "$@"; }
-# 1-2. RenameFuncs + ExportGraph – в ОДНОМ headless-запуске: раздельные прогоны подряд
-#       ловят гонку за lock проекта Ghidra (второй открывает read-only, имена не выгружаются).
-H -postScript RenameFuncs.java "$SYM" -postScript ExportGraph.java "$D"   # имена -> проект -> funcs.csv
-uv run --no-project --with neo4j python tools/memgraph/load_graph.py "$D" 1ND0A   # 3. -> граф
-uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py "$D" 1ND0A   #    (USES восстановить)
+# 1-2. Run RenameFuncs + ExportGraph in ONE headless invocation. Consecutive separate runs can
+#      race for the Ghidra project lock; the second opens read-only and does not export names.
+H -postScript RenameFuncs.java "$SYM" -postScript ExportGraph.java "$D"   # names -> project -> funcs.csv
+uv run --no-project --with neo4j python tools/memgraph/load_graph.py "$D" 1ND0A   # 3. -> graph
+uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py "$D" 1ND0A   #    restore USES
 ```
 
-Направление одностороннее: правка `symbols.csv` -> Ghidra + Memgraph. Обратно (rename в
-Lab или в GUI Ghidra) в git не возвращается и теряется при перезаливе – новые находки
-дописывать в `symbols.csv`. `load_graph` пересоздаёт `:Func` (DETACH DELETE), поэтому
-`load_xrefs` запускать следом, иначе рёбра `:USES` к периферии пропадут.
+The direction is one-way: edit `symbols.csv` -> Ghidra + Memgraph. Renames performed in Lab or the
+Ghidra GUI do not flow back into git and are lost on reload, so add new findings to `symbols.csv`.
+`load_graph` recreates `:Func` with DETACH DELETE, so run `load_xrefs` immediately afterward or
+peripheral `:USES` edges will be lost.
 
-## Восстановление на новой машине
+## Restore on a new machine
 
-1. `brew install ghidra` (тянет openjdk@21 + собирает ARM-нативы).
+1. `brew install ghidra` installs openjdk@21 and builds ARM native libraries.
 2. `docker compose -f tools/memgraph/docker-compose.yml up -d`.
-3. Memgraph MCP: `claude mcp add` (см. раздел "Memgraph MCP"), нужен `uv` в PATH; при первом
-   запуске одобрить project-scope сервер.
-4. (опц., интерактив) Скачать `Ghydra-*-ghidra12.1.2.zip` из релизов
-   starsong-consulting/GhydraMCP, распаковать в `$(brew --prefix ghidra)/libexec/Ghidra/Extensions/`.
-5. (опц., интерактив) Клон GhydraMCP + `uv venv .venv && uv pip install -e .`;
-   `claude mcp add` (см. выше).
+3. Add Memgraph MCP with `claude mcp add` as described under "Memgraph MCP". `uv` must be in
+   `PATH`; approve the project-scope server on first launch.
+4. Optional interactive path: download `Ghydra-*-ghidra12.1.2.zip` from
+   starsong-consulting/GhydraMCP releases and extract it under
+   `$(brew --prefix ghidra)/libexec/Ghidra/Extensions/`.
+5. Optional interactive path: clone GhydraMCP, run
+   `uv venv .venv && uv pip install -e .`, and add it with `claude mcp add` as shown above.
 
-`ghidraVersion` в `extension.properties` плагина обязан совпадать с версией Ghidra;
-после `brew upgrade ghidra` переустановить плагин под новую версию.
+The plugin's `ghidraVersion` in `extension.properties` must match the installed Ghidra version.
+After `brew upgrade ghidra`, reinstall the plugin build for the new version.

@@ -1,32 +1,35 @@
 #!/usr/bin/env python3
-# Генератор дефа RomRaider (Stage 8, раздел 9 tools/map-flag-pipeline.md): граф Memgraph
-# (факты) + defs/<rom>.dtc.csv (DTC) + defs/<rom>.overrides.toml (презентация)
+# RomRaider definition generator (Stage 8, section 9 of tools/map-flag-pipeline.md):
+# Memgraph (facts) + defs/<rom>.dtc.csv (DTC) + defs/<rom>.overrides.toml (presentation)
 # -> defs/<rom>.xml.
 #
-# Разделение источников - причина существования этого шага (P5). Факт объявлен один раз:
-# адрес, форма, элемент, оси, шкала и уровень живут в графе, куда их кладут перепись
-# резолвера и ручной слой; имя, категория, порядок и шаги редактора - в оверрайдах. Деф
-# не источник ни того ни другого, и правка деф-файла не переживает следующего прогона.
+# Source separation is the reason this step exists (P5). Declare each fact once: address,
+# shape, element, axes, scaling, and confidence live in the graph, populated by the resolver
+# census and the manual layer; name, category, order, and editor increments live in overrides.
+# The definition file is not a source for either set, and edits to it do not survive the next
+# run.
 #
-# Ворота эмиссии (раздел 9): таблица выпускается, если её можно прочитать, то есть у неё
-# есть роль table, семантика и шкала. Без семантики карта - адрес и форма, без шкалы -
-# сетка сырых байтов; и то и другое уже есть в ledger'е, который для того и существует.
-# Отброшенное перечисляется в отчёте: молчаливый пропуск читался бы как отсутствие карты.
+# Emission gate (section 9): emit a table when it can be interpreted, meaning it has the
+# table role, semantics, and scaling. Without semantics a map is only an address and shape;
+# without scaling it is a grid of raw bytes. Both already belong in the ledger. The report
+# lists rejected maps because silent omission could be read as absence.
 #
-# Разметка уровня идёт туда, где живёт само утверждение:
-#   карта ниже code  -> категория с суффиксом " (candidate)": опознана, но не трейсом;
-#   шкала ниже code  -> единицы с суффиксом " [cand]": множитель не закреплён кодом.
-# Уровни обоих утверждений плюс доказательства выписываются в комментарий над таблицей.
+# Put confidence labels where each assertion appears:
+#   map below code    -> category suffix " (candidate)": identified but not traced;
+#   scaling below code -> unit suffix " [cand]": the multiplier is not established by code.
+# A comment above the table records both confidence levels and supporting evidence.
 #
-# Перевод осей обёртки в оси RomRaider (снят с finisher'ов, см. defs/<rom>.notes.md):
-# finisher адресует ячейку как cell = table + idxY + width*idxX, где idxX - позиция по
-# оси из r5. Значит ось r5 (граф :AXIS_X) - строки, ось r6 (:AXIS_Y) - столбцы, а
-# RomRaider называет столбцы X Axis, строки - Y Axis. Отсюда перекрёст: :AXIS_X -> Y Axis,
-# :AXIS_Y -> X Axis. У одномерной карты ось одна, и RomRaider зовёт её X Axis.
-# Ручная семья direct-row-major хранит X как внутреннее измерение и не имеет рёбер осей:
-# width -> sizex, height -> sizey, обе статические оси задаются в overrides.
+# Translate wrapper axes to RomRaider axes as established from finishers; see
+# defs/<rom>.notes.md. A finisher addresses a cell as
+# cell = table + idxY + width*idxX, where idxX is the position on the r5 axis. Therefore,
+# the r5 axis (graph :AXIS_X) defines rows and the r6 axis (:AXIS_Y) defines columns, while
+# RomRaider calls columns X Axis and rows Y Axis. The mapping crosses:
+# :AXIS_X -> Y Axis and :AXIS_Y -> X Axis. A one-dimensional map has one axis, which
+# RomRaider calls X Axis. The manual direct-row-major family stores X as the inner dimension
+# and has no axis edges: width -> sizex, height -> sizey, and overrides define both static
+# axes.
 #
-# Запуск: uv run --no-project --with neo4j python tools/mapkit/emit_def.py [<rom>] [<out>]
+# Invocation: uv run --no-project --with neo4j python tools/mapkit/emit_def.py [<rom>] [<out>]
 import csv
 import html
 import os
@@ -44,7 +47,7 @@ else:
     sys.path.insert(0, os.path.dirname(HERE))
     from mapkit import rom as romkit
 
-LEVELS = ("pattern", "candidate", "code", "silicon")   # лестница раздела 5
+LEVELS = ("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
 
 ROMID_FIELDS = ("xmlid", "internalidaddress", "internalidstring", "ecuid", "caseid",
                 "make", "model", "submodel", "market", "transmission", "memmodel",
@@ -72,8 +75,8 @@ MASKED_VIEW_FIELDS = (
     "source", "name", "category", "mask", "units", "expression", "to_byte",
     "format", "fine", "coarse",
 )
-# Имя оси по её семантике. Ось общая у нескольких карт, поэтому имя задаётся один раз
-# здесь, а не на карту; частный случай перекрывается [axis.<addr>] в оверрайдах.
+# Axis name derived from its semantics. Several maps can share an axis, so define its name
+# once here rather than per map; [axis.<addr>] in overrides handles a special case.
 AXIS_NAMES = {"rpm": "Engine Speed [RPM]", "load": "Engine Load",
               "temp": "Temperature", "raw": "Axis (raw)"}
 
@@ -83,12 +86,12 @@ def att(v):
 
 
 def hexa(a):
-    """Адрес графа (8 hex-цифр) -> форма RomRaider."""
+    """Convert a graph address (eight hexadecimal digits) to RomRaider form."""
     return "0x" + a.upper().lstrip("0").rjust(5, "0")
 
 
 def comment(lines, indent=4):
-    """Комментарий XML: '--' внутри него недопустимо, поэтому сводится к '-'."""
+    """Build an XML comment, replacing forbidden internal '--' sequences with '-'."""
     pad = " " * indent
     body = []
     for l in lines:
@@ -102,7 +105,7 @@ def comment(lines, indent=4):
 
 
 def wrap(pad, head, attrs, tail):
-    """Тег с переносом атрибутов по ширине строки; продолжение под первым атрибутом."""
+    """Wrap tag attributes to line width with continuations aligned under the first attribute."""
     lines, cur = [], pad + head
     for a in attrs:
         if len(cur) + 1 + len(a) > 96:
@@ -114,7 +117,7 @@ def wrap(pad, head, attrs, tail):
 
 
 def scaling(units, expr, to_byte, conf, fmt, fine, coarse, indent):
-    """Блок <scaling>. Единицы несут суффикс, когда множитель кодом не закреплён."""
+    """Build a <scaling> block, suffixing units when code does not establish the multiplier."""
     if conf and conf != "code":
         units += " [cand]"
     a = [f'units="{att(units)}"', f'expression="{att(expr)}"',
@@ -127,7 +130,7 @@ def scaling(units, expr, to_byte, conf, fmt, fine, coarse, indent):
 
 
 def fetch(rom):
-    """Факты калибровочного слоя: карты-кандидаты на эмиссию, их оси и окружение."""
+    """Fetch calibration-layer facts: candidate maps, their axes, and context."""
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
         maps = {r["a"]: dict(r["m"]) for r in s.run(
@@ -150,9 +153,9 @@ def fetch(rom):
             maps[r["a"]]["accessors"] = r["accessors"]
         axes = {r["a"]: dict(r["x"]) for r in s.run(
             "MATCH (x:Axis {rom:$rom}) RETURN x.addr AS a, x AS x", rom=rom)}
-        # Осей на ребре может быть больше одной: ось выбирает ветвление, и резолвер видит
-        # на каждом сайте свою. Это не ошибка загрузки, а неоднозначность геометрии, и
-        # разбирает её Stage 6; здесь она просто закрывает карте ворота эмиссии.
+        # An edge may have more than one axis when branching selects the axis and the resolver
+        # sees a different one at each site. This is geometry ambiguity rather than a loader
+        # error. Stage 6 resolves it; here it simply prevents map emission.
         for edge in ("AXIS_X", "AXIS_Y"):
             for r in s.run(
                     f"""
@@ -168,7 +171,7 @@ def fetch(rom):
 
 
 def axis_xml(kind, x, ovr, size_attr, indent=6):
-    """Ось-массив в ПЗУ: адрес, элемент и длина - факты графа, имя - презентация."""
+    """Build a ROM-array axis: address, element, and length are facts; name is presentation."""
     o = ovr.get("axis", {}).get(x["addr"], {})
     name = o.get("name") or AXIS_NAMES[x["kind"]]
     pad = " " * indent
@@ -195,17 +198,17 @@ def static_axis_xml(values, name="Index", axis_type="Static X Axis",
 
 
 def switch_data(data):
-    """Байты состояния TableSwitch в принятой RomRaider форме."""
+    """Format TableSwitch state bytes in the RomRaider representation."""
     return " ".join(f"{byte:02X}" for byte in data)
 
 
 def dtc_switches(rom, image=None, manifest_path=None):
-    """DTC с неизменяемым attribute представить переключателем descriptor.
+    """Represent a DTC with an immutable attribute as a descriptor switch.
 
-    Обычная запись реестра требует двух несмежных изменений: 12-байтный descriptor
-    и связанный uint16 attribute. Один TableSwitch этого не выражает. Если stock
-    attribute уже равен disabled_attribute, атомарное изменение сводится к одному
-    descriptor и представляется непрерывным 12-байтным переключателем.
+    A normal registry entry requires two noncontiguous changes: a 12-byte descriptor and
+    its associated uint16 attribute. One TableSwitch cannot express both. If the stock
+    attribute already equals disabled_attribute, the atomic change affects only the
+    descriptor and can be represented as one contiguous 12-byte switch.
     """
     manifest_path = manifest_path or os.path.join(DEFS, f"{rom}.dtc.csv")
     if not os.path.exists(manifest_path):
@@ -216,7 +219,7 @@ def dtc_switches(rom, image=None, manifest_path=None):
         missing = [field for field in DTC_FIELDS
                    if field not in (reader.fieldnames or [])]
         if missing:
-            sys.exit(f"{os.path.basename(manifest_path)}: нет полей "
+            sys.exit(f"{os.path.basename(manifest_path)}: missing fields "
                      + ", ".join(missing))
         rows = list(reader)
 
@@ -234,23 +237,23 @@ def dtc_switches(rom, image=None, manifest_path=None):
             stock_attribute = bytes.fromhex(row["stock_attribute"])
         except (TypeError, ValueError):
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
-                     "некорректный DTC, адрес или attribute")
+                     "invalid DTC, address, or attribute")
         if len(stock_attribute) != 2:
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
-                     "attribute должен занимать два байта")
+                     "attribute must occupy two bytes")
         record = image.data[record_addr:record_addr + DTC_RECORD_SIZE]
         if len(record) != DTC_RECORD_SIZE:
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
-                     "descriptor выходит за границы ROM")
+                     "descriptor extends beyond ROM")
         if int.from_bytes(record[6:8], "big") != dtc_code:
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
-                     f"descriptor по {record_addr:#x} не содержит {row['dtc']}")
+                     f"descriptor at {record_addr:#x} does not contain {row['dtc']}")
         actual_attribute = image.data[
             attribute_addr:attribute_addr + len(stock_attribute)
         ]
         if actual_attribute != stock_attribute:
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
-                     f"attribute по {attribute_addr:#x} не равен stock")
+                     f"attribute at {attribute_addr:#x} does not match stock")
 
         category = DTC_CATEGORIES.get(
             row["group"], f"Diagnostics / DTC / {row['group']}"
@@ -283,31 +286,31 @@ def dtc_switches(rom, image=None, manifest_path=None):
 
 
 def switch_xml(entry, index):
-    """TableSwitch из overrides либо DTC-реестра: адрес и именованные состояния."""
+    """Build a TableSwitch from overrides or the DTC registry with named states."""
     if not isinstance(entry, dict):
-        sys.exit(f"switch #{index} должен быть таблицей TOML")
+        sys.exit(f"switch #{index} must be a TOML table")
     unknown = sorted(set(entry) - set(SWITCH_FIELDS) - {"description", "state"})
     if unknown:
-        sys.exit(f"switch #{index} содержит неизвестные поля {', '.join(unknown)}")
+        sys.exit(f"switch #{index} contains unknown fields {', '.join(unknown)}")
     missing = [k for k in SWITCH_REQUIRED_FIELDS if k not in entry]
     if missing:
-        sys.exit(f"switch #{index} без полей {', '.join(missing)}")
+        sys.exit(f"switch #{index} is missing fields {', '.join(missing)}")
     size_fields = [key for key in SWITCH_SIZE_FIELDS if key in entry]
     if len(size_fields) != 1:
-        sys.exit(f"switch #{index}: требуется ровно одно из полей "
+        sys.exit(f"switch #{index}: exactly one of these fields is required: "
                  + ", ".join(SWITCH_SIZE_FIELDS))
     size_field = size_fields[0]
     try:
         element_count = int(entry[size_field])
     except (TypeError, ValueError):
-        sys.exit(f"switch #{index}: {size_field} должно быть целым числом")
+        sys.exit(f"switch #{index}: {size_field} must be an integer")
     element_size = SWITCH_STORAGE_BYTES.get(entry["storagetype"])
     if element_count <= 0 or element_size is None:
-        sys.exit(f"switch #{index}: недопустимые размер или storagetype")
+        sys.exit(f"switch #{index}: invalid size or storagetype")
     expected_bytes = element_count * element_size
     states = entry.get("state", [])
     if not isinstance(states, list) or len(states) < 2:
-        sys.exit(f"switch #{index}: нужен массив state минимум из двух состояний")
+        sys.exit(f"switch #{index}: state must be an array with at least two states")
 
     attrs = ['type="Switch"'] + [
         f'{k}="{att(entry[k])}"' for k in SWITCH_FIELDS if k in entry
@@ -317,14 +320,14 @@ def switch_xml(entry, index):
         out.append(f"      <description>{att(entry['description'])}</description>")
     for state_index, state in enumerate(states, 1):
         if not isinstance(state, dict):
-            sys.exit(f"switch #{index}, state #{state_index} должен быть таблицей TOML")
+            sys.exit(f"switch #{index}, state #{state_index} must be a TOML table")
         unknown_state = sorted(set(state) - {"name", "data"})
         if unknown_state:
-            sys.exit(f"switch #{index}, state #{state_index} содержит неизвестные поля "
+            sys.exit(f"switch #{index}, state #{state_index} contains unknown fields "
                      + ", ".join(unknown_state))
         missing_state = [k for k in ("name", "data") if k not in state]
         if missing_state:
-            sys.exit(f"switch #{index}, state #{state_index} без полей "
+            sys.exit(f"switch #{index}, state #{state_index} is missing fields "
                      + ", ".join(missing_state))
         tokens = str(state["data"]).split()
         try:
@@ -333,8 +336,8 @@ def switch_xml(entry, index):
         except ValueError:
             raw = b""
         if len(tokens) != expected_bytes or len(raw) != expected_bytes:
-            sys.exit(f"switch #{index}, state #{state_index}: data должно содержать "
-                     f"{expected_bytes} hex-байт")
+            sys.exit(f"switch #{index}, state #{state_index}: data must contain "
+                     f"{expected_bytes} hexadecimal bytes")
         out += wrap("      ", "<state",
                     [f'name="{att(state["name"])}"', f'data="{att(state["data"])}"'],
                     "/>")
@@ -343,34 +346,34 @@ def switch_xml(entry, index):
 
 
 def evidence_lines(m, axes, rom):
-    """Блок доказательств: что известно о карте и на каком уровне."""
+    """Describe what is known about a map and at which confidence level."""
     shape = (f'{m["width"]}x{m["height"]}' if m["dims"] == 2 else f'{m["width"]}')
     via = ""
     if m["wrappers"]:
-        via = (f'; вход {", ".join(hexa(w) for w in sorted(m["wrappers"]))} '
-               f'({m["family"]}, ядро {", ".join(hexa(k) for k in sorted(m["kernels"]))})')
+        via = (f'; entry {", ".join(hexa(w) for w in sorted(m["wrappers"]))} '
+               f'({m["family"]}, core {", ".join(hexa(k) for k in sorted(m["kernels"]))})')
     lines = [f'{hexa(m["addr"])}  {shape} {m["storagetype"]}  '
-             f'карта [{m["confidence"]}]{via}']
+             f'map [{m["confidence"]}]{via}']
     if m["accessors"]:
-        lines.append("аксессор " + ", ".join(hexa(a) for a in sorted(m["accessors"]))
-                     + "; операнд r4: " + ", ".join(sorted(m["resolver_kinds"])))
-    scale = f'шкала {m["scale_expr"]} {m["units"]}'
+        lines.append("accessor " + ", ".join(hexa(a) for a in sorted(m["accessors"]))
+                     + "; r4 operand: " + ", ".join(sorted(m["resolver_kinds"])))
+    scale = f'scaling {m["scale_expr"]} {m["units"]}'
     if m["scale_conf"]:
         scale += f' [{m["scale_conf"]}]'
     for role, key in (("Y", "axis_x"), ("X", "axis_y")):
         for x in (axes[a] for a in m[key]):
-            lbl = "ось" if m["dims"] == 1 else f"{role} Axis"
+            lbl = "axis" if m["dims"] == 1 else f"{role} Axis"
             scale += (f'; {lbl} {hexa(x["addr"])} {x["kind"]}'
                       + (f' [{x["scale_conf"]}]' if x["scale_conf"] else ""))
     lines.append(scale)
     if m["note"]:
         lines.append(m["note"])
-    lines.append(f"Разбор и метод - defs/{rom}.notes.md")
+    lines.append(f"Analysis and method - defs/{rom}.notes.md")
     return lines
 
 
 def table_axes_xml(m, o, ovr, axes):
-    """Оси таблицы: графовые для interp-карт, статические для прямого row-major."""
+    """Build table axes: graph axes for interpolated maps and static axes for direct row-major."""
     out = []
     if m["dims"] == 2:
         if m["axis_x"] and m["axis_y"]:
@@ -388,12 +391,12 @@ def table_axes_xml(m, o, ovr, axes):
     elif m["axis_x"]:
         out += axis_xml("X Axis", axes[m["axis_x"][0]], ovr, "sizex")
     elif m["steps"]:
-        # implicit-axis: массива нет, ось - точки 0..(n-1) с шагом входа.
+        # Implicit axis: no array exists; points are 0..(n-1) at the input step.
         step = m["steps"][0]
         out += static_axis_xml([i * step for i in range(m["width"])],
                                f"Raw input (step {step})")
     else:
-        # compare: lookup'а нет, ячейки выбирает ветвление; подписи ветвей - оверрайд.
+        # Compare family: no lookup exists; branching selects cells and overrides label branches.
         out += static_axis_xml(o["static_axis"], "Selector")
     return out
 
@@ -402,8 +405,8 @@ def table_xml(m, ovr, axes, rom):
     o = ovr["table"][m["addr"]]
     cat = o["category"] + ("" if m["confidence"] == "code" else " (candidate)")
     dims = "3D" if m["dims"] == 2 else "2D"
-    # Форма RomRaider: sizex - столбцы (ось r6), sizey - строки (ось r5). У одномерной
-    # карты ось одна, её длина и есть sizex.
+    # RomRaider shape: sizex is columns (r6 axis), while sizey is rows (r5 axis).
+    # A one-dimensional map has one axis whose length is sizex.
     if m["dims"] == 2 and m["family"] == "direct-row-major":
         size = [f'sizex="{m["width"]}"', f'sizey="{m["height"]}"']
     elif m["dims"] == 2:
@@ -421,14 +424,14 @@ def table_xml(m, ovr, axes, rom):
     out.append(scaling(m["units"], m["scale_expr"], m["to_byte"], m["scale_conf"],
                        o.get("format", "0"), o.get("fine"), o.get("coarse"), 6))
 
-    # Ось у карты одна на ребро - это ворота эмиссии, и до сюда доходит только такая.
+    # The emission gate permits exactly one axis per map edge, so only such maps reach here.
     out += table_axes_xml(m, o, ovr, axes)
     out.append("    </table>")
     return out
 
 
 def masked_view_xml(m, view, ovr, axes, rom):
-    """Дополнительное masked-представление тех же ячеек без дублирования Map-факта."""
+    """Build an additional masked view of the same cells without duplicating the Map fact."""
     source = ovr["table"][m["addr"]]
     dims = "3D" if m["dims"] == 2 else "2D"
     if m["dims"] == 2 and m["family"] == "direct-row-major":
@@ -441,8 +444,8 @@ def masked_view_xml(m, view, ovr, axes, rom):
     lines = [
         f'{hexa(m["addr"])}  {shape} {m["storagetype"]}  masked view '
         f'0x{view["mask"]} [{m["confidence"]}]',
-        f'Источник семантики: {m["semantics"]}',
-        f"Разбор и метод - defs/{rom}.notes.md",
+        f'Semantics source: {m["semantics"]}',
+        f"Analysis and method - defs/{rom}.notes.md",
     ]
     attrs = [
         f'type="{dims}"',
@@ -463,78 +466,78 @@ def masked_view_xml(m, view, ovr, axes, rom):
 
 
 def masked_views(ovr, emitted):
-    """Проверить presentation-only masked views и сгруппировать их по исходной карте."""
+    """Validate presentation-only masked views and group them by source map."""
     entries = ovr.get("masked_view", [])
     if isinstance(entries, dict):
         entries = [entries]
     if not isinstance(entries, list):
-        sys.exit("masked_view должен быть таблицей или массивом таблиц")
+        sys.exit("masked_view must be a table or an array of tables")
     by_source = {}
     for index, entry in enumerate(entries, 1):
         if not isinstance(entry, dict):
-            sys.exit(f"masked_view #{index} должен быть таблицей TOML")
+            sys.exit(f"masked_view #{index} must be a TOML table")
         unknown = sorted(set(entry) - set(MASKED_VIEW_FIELDS))
         if unknown:
-            sys.exit(f"masked_view #{index} содержит неизвестные поля "
+            sys.exit(f"masked_view #{index} contains unknown fields "
                      + ", ".join(unknown))
         required = ("source", "name", "category", "mask", "units", "expression", "to_byte")
         missing = [key for key in required if key not in entry]
         if missing:
-            sys.exit(f"masked_view #{index} без полей " + ", ".join(missing))
+            sys.exit(f"masked_view #{index} is missing fields " + ", ".join(missing))
         view = dict(entry)
         view["source"] = str(view["source"]).lower()
         view["mask"] = str(view["mask"]).upper()
         if view["source"] not in emitted:
-            sys.exit(f"masked_view #{index}: исходная карта {view['source']} "
-                     "не проходит ворота эмиссии")
+            sys.exit(f"masked_view #{index}: source map {view['source']} "
+                     "does not pass the emission gate")
         try:
             mask = int(view["mask"], 16)
         except ValueError:
-            sys.exit(f"masked_view #{index}: mask не является hex-числом")
+            sys.exit(f"masked_view #{index}: mask is not a hexadecimal number")
         bits = {"uint8": 8, "uint16": 16, "uint32": 32}.get(emitted[view["source"]]["storagetype"])
         if not bits or mask <= 0 or mask >= (1 << bits):
-            sys.exit(f"masked_view #{index}: mask вне "
+            sys.exit(f"masked_view #{index}: mask is outside "
                      f"{emitted[view['source']]['storagetype']}")
         primary_mask = ovr["table"][view["source"]].get("mask")
         if primary_mask and int(str(primary_mask), 16) & mask:
-            sys.exit(f"masked_view #{index}: mask пересекается с основной таблицей")
+            sys.exit(f"masked_view #{index}: mask overlaps the primary table")
         by_source.setdefault(view["source"], []).append(view)
     return entries, by_source
 
 
 def emittable(m, axes, ovr=None):
-    """Ворота раздела 9 либо причина, по которой карта дефом не выпускается."""
+    """Return the section 9 emission-gate failure reason, or None when a map can be emitted."""
     ovr = ovr or {}
     if m["role"] != "table":
-        return f'роль {m["role"]}'
+        return f'role {m["role"]}'
     if not m["semantics"]:
-        return "семантики нет"
+        return "missing semantics"
     if not m["scale_expr"]:
-        return "шкалы нет"
+        return "missing scaling"
     if LEVELS.index(m["confidence"]) < LEVELS.index("candidate"):
-        return f'уровень {m["confidence"]}'
+        return f'confidence {m["confidence"]}'
     for key in ("axis_x", "axis_y"):
         if len(m[key]) > 1:
-            return (f'ось выбирает ветвление: {", ".join(hexa(a) for a in m[key])} '
-                    f'- вход Stage 6')
+            return (f'branching selects the axis: {", ".join(hexa(a) for a in m[key])} '
+                    f'- Stage 6 input')
         for a in m[key]:
             if LEVELS.index(axes[a]["confidence"]) < LEVELS.index("candidate"):
-                return f'ось {hexa(a)} стоит только на резерве'
+                return f'axis {hexa(a)} exists only as fallback evidence'
             if not axes[a]["kind"]:
-                return f'ось {hexa(a)} не размечена'
+                return f'axis {hexa(a)} is not annotated'
     if m["dims"] == 2 and not (m["axis_x"] and m["axis_y"]):
         if m["axis_x"] or m["axis_y"]:
-            return "у 2D-карты снята только одна ось"
+            return "only one axis was recovered for a 2D map"
         if m["family"] != "direct-row-major":
-            return "у 2D-карты снята не всякая ось"
+            return "not every axis was recovered for a 2D map"
         if len(ovr.get("static_axis_x", [])) != m["width"]:
-            return f'нужна Static X Axis из {m["width"]} точек'
+            return f'a Static X Axis with {m["width"]} points is required'
         if len(ovr.get("static_axis_y", [])) != m["height"]:
-            return f'нужна Static Y Axis из {m["height"]} точек'
-    # Ось одномерной карты задана массивом (explicit), шагом входа (implicit) либо не
-    # задана вовсе: у семейства compare lookup'а нет, ячейки выбирает ветвление.
+            return f'a Static Y Axis with {m["height"]} points is required'
+    # A one-dimensional map axis is defined by an array (explicit), an input step (implicit),
+    # or not at all for the compare family, where branching selects cells without a lookup.
     if m["dims"] == 1 and not (m["axis_x"] or m["steps"] or m["family"] == "compare"):
-        return "ось не задана ни массивом, ни шагом"
+        return "axis is defined by neither an array nor a step"
     return None
 
 
@@ -543,7 +546,7 @@ def main():
     out_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(DEFS, f"{rom}.xml")
     ovr_path = os.path.join(DEFS, f"{rom}.overrides.toml")
     if not os.path.exists(ovr_path):
-        sys.exit(f"нет презентационного слоя {ovr_path}")
+        sys.exit(f"presentation layer not found: {ovr_path}")
     with open(ovr_path, "rb") as f:
         ovr = tomllib.load(f)
 
@@ -557,35 +560,35 @@ def main():
                 skipped.append((a, m["semantics"], why))
             continue
         if not o.get("name") or not o.get("category"):
-            sys.exit(f"карта {hexa(a)} ({m['semantics']}) проходит ворота эмиссии, но "
-                     f"имени и категории у неё нет - объявить [table.{a}] в "
+            sys.exit(f"map {hexa(a)} ({m['semantics']}) passes the emission gate but has "
+                     f"no name or category; declare [table.{a}] in "
                      f"{os.path.basename(ovr_path)}")
-        # У карты без оси подписи ячеек взять неоткуда, кроме оверрайда: ветвление
-        # именует их, а не граф.
+        # For a map without an axis, only an override can provide cell labels: branching
+        # names them rather than the graph.
         if m["dims"] == 1 and not (m["axis_x"] or m["steps"]):
             if len(o.get("static_axis", [])) != m["width"]:
-                sys.exit(f"[table.{a}]: у карты оси нет, ячейки выбирает ветвление - "
-                         f"нужен static_axis из {m['width']} подписей")
+                sys.exit(f"[table.{a}]: the map has no axis and branching selects cells; "
+                         f"static_axis with {m['width']} labels is required")
         elif m["dims"] == 1 and "static_axis" in o:
-            sys.exit(f"[table.{a}]: static_axis поверх оси {hexa((m['axis_x'] or ['-'])[0])} "
-                     f"- ось даёт граф, оверрайду её не подменять")
+            sys.exit(f"[table.{a}]: static_axis overlaps graph axis "
+                     f"{hexa((m['axis_x'] or ['-'])[0])}; overrides must not replace it")
         if m["dims"] == 2 and m["axis_x"] and m["axis_y"]:
             static_keys = {"static_axis_x", "static_axis_y"} & set(o)
             if static_keys:
-                sys.exit(f"[table.{a}]: статическая ось поверх осей графа - "
+                sys.exit(f"[table.{a}]: static axis overlaps graph axes: "
                          + ", ".join(sorted(static_keys)))
         emit.append(m)
     unknown = sorted(set(ovr.get("table", {})) - {m["addr"] for m in emit})
     if unknown:
-        sys.exit("оверрайд на карту, которая дефом не выпускается: "
+        sys.exit("override exists for a map not emitted into the definition: "
                  + ", ".join(f"[table.{a}]" for a in unknown)
-                 + " - либо адрес неверен, либо карта не проходит ворота")
+                 + " - either the address is wrong or the map does not pass the gate")
     for a in sorted(ovr.get("axisview", {})):
         if a not in axes:
-            sys.exit(f"оверрайд [axisview.{a}] на ось, которой в графе нет")
+            sys.exit(f"[axisview.{a}] overrides an axis absent from the graph")
         if not axes[a]["kind"]:
-            sys.exit(f"[axisview.{a}]: ось не размечена в {rom}.axes.csv, "
-                     f"выпускать её нечем")
+            sys.exit(f"[axisview.{a}]: the axis is not annotated in {rom}.axes.csv "
+                     f"and cannot be emitted")
 
     view_entries, views_by_source = masked_views(
         ovr, {m["addr"]: m for m in emit}
@@ -594,8 +597,8 @@ def main():
     if isinstance(switches, dict):
         switches = [switches]
     if not isinstance(switches, list):
-        sys.exit(f"{os.path.basename(ovr_path)}: switch должен быть таблицей "
-                 "или массивом таблиц")
+        sys.exit(f"{os.path.basename(ovr_path)}: switch must be a table "
+                 "or an array of tables")
     switches = list(switches)
     dtc_entries = dtc_switches(rom)
     switches += dtc_entries
@@ -611,10 +614,10 @@ def main():
     for a in sorted(ovr.get("axisview", {}),
                     key=lambda a: (ovr["axisview"][a].get("order", 1 << 20), a)):
         o, x = ovr["axisview"][a], axes[a]
-        body += [comment([f'{hexa(a)}  ось {x["len"]} точек {x["storagetype"]}, '
+        body += [comment([f'{hexa(a)}  axis with {x["len"]} points {x["storagetype"]}, '
                           f'{x["kind"]}' + (f' [{x["scale_conf"]}]'
                                             if x["scale_conf"] else ""),
-                          x["note"] or "", f"Разбор и метод - defs/{rom}.notes.md"])]
+                          x["note"] or "", f"Analysis and method - defs/{rom}.notes.md"])]
         body += wrap("    ", "<table", ['type="2D"', f'name="{att(o["name"])}"',
                                         f'category="{att(o["category"])}"',
                                         f'storagetype="{att(x["storagetype"])}"',
@@ -628,15 +631,15 @@ def main():
     romid = ovr["rom"]
     missing = [f for f in ROMID_FIELDS if f not in romid]
     if missing:
-        sys.exit(f"{os.path.basename(ovr_path)}: [rom] без полей {', '.join(missing)}")
-    sources = [f"графа Memgraph (факты)"]
+        sys.exit(f"{os.path.basename(ovr_path)}: [rom] is missing fields {', '.join(missing)}")
+    sources = ["Memgraph (facts)"]
     if dtc_entries:
         sources.append(f"defs/{rom}.dtc.csv (DTC)")
-    sources.append(f"defs/{rom}.overrides.toml (презентация)")
-    head = [comment([f"RomRaider-деф {rom}. Файл сгенерирован tools/mapkit/emit_def.py из "
+    sources.append(f"defs/{rom}.overrides.toml (presentation)")
+    head = [comment([f"RomRaider definition for {rom}. Generated by tools/mapkit/emit_def.py from "
                      + ", ".join(sources) + ".",
-                     "Правка этого файла следующего прогона не переживает:",
-                     "править источники - defs/<rom>.findings.csv, <rom>.axes.csv, "
+                     "Edits to this file do not survive the next run.",
+                     "Edit the sources: defs/<rom>.findings.csv, <rom>.axes.csv, "
                      "<rom>.interp.csv, <rom>.dtc.csv, <rom>.overrides.toml.", ""]
                     + romid.get("comment", {}).get("text", "").split("\n"), indent=0),
             "<roms>", "  <rom>", "    <romid>"]
@@ -646,13 +649,13 @@ def main():
     if isinstance(checksums, dict):
         checksums = [checksums]
     if not isinstance(checksums, list):
-        sys.exit(f"{os.path.basename(ovr_path)}: checksum должен быть таблицей "
-                 "или массивом таблиц")
+        sys.exit(f"{os.path.basename(ovr_path)}: checksum must be a table "
+                 "or an array of tables")
     for i, c in enumerate(checksums, 1):
         unknown = sorted(set(c) - set(CHECKSUM_FIELDS) - {"comment"})
         if unknown:
-            sys.exit(f"{os.path.basename(ovr_path)}: checksum #{i} содержит "
-                     f"неизвестные поля {', '.join(unknown)}")
+            sys.exit(f"{os.path.basename(ovr_path)}: checksum #{i} contains "
+                     f"unknown fields {', '.join(unknown)}")
         required = (
             ("type", "path", "expectedsize",
              "l1loc", "l1stock", "l1patched",
@@ -662,7 +665,7 @@ def main():
         )
         missing = [k for k in required if k not in c]
         if missing:
-            sys.exit(f"{os.path.basename(ovr_path)}: checksum #{i} без полей "
+            sys.exit(f"{os.path.basename(ovr_path)}: checksum #{i} is missing fields "
                      f"{', '.join(missing)}")
         if "comment" in c:
             head.append(comment(c["comment"].split("\n")))
@@ -675,21 +678,21 @@ def main():
     with open(out_path, "w") as f:
         f.write(xml)
 
-    print(f"{os.path.relpath(out_path)}: {len(emit)} таблиц, "
-          f"{len(view_entries)} masked views, {len(ovr.get('axisview', {}))} осей-опор, "
-          f"{len(switches)} переключателей")
+    print(f"{os.path.relpath(out_path)}: {len(emit)} tables, "
+          f"{len(view_entries)} masked views, {len(ovr.get('axisview', {}))} reference axes, "
+          f"{len(switches)} switches")
     lvl = {}
     for m in emit:
         lvl[m["confidence"]] = lvl.get(m["confidence"], 0) + 1
-    print("  уровни: " + ", ".join(f"{k}={lvl[k]}" for k in LEVELS if k in lvl))
+    print("  confidence levels: " + ", ".join(f"{k}={lvl[k]}" for k in LEVELS if k in lvl))
     cand = [m for m in emit if m["scale_conf"] and m["scale_conf"] != "code"]
-    print(f"  шкала кодом не закреплена: {len(cand)} "
+    print(f"  scaling not established by code: {len(cand)} "
           f"({', '.join(hexa(m['addr']) for m in cand)})")
-    print(f"  каталог: {len(maps)} карт; не выпускается {len(maps) - len(emit)}")
+    print(f"  catalog: {len(maps)} maps; not emitted: {len(maps) - len(emit)}")
     for a, sem, why in skipped:
         print(f"    {hexa(a)} {sem}: {why}")
     nosem = sum(1 for m in maps.values() if not m["semantics"] and m["role"] == "table")
-    print(f"    ещё {nosem} карт роли table без семантики - открытая работа ledger'а")
+    print(f"    {nosem} additional table-role maps lack semantics and remain open ledger work")
 
 
 if __name__ == "__main__":

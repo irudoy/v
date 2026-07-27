@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Control plane парного эксперимента с семантикой прямых вызывателей JK03A.
+"""Control plane for the paired experiment on JK03A direct-caller semantics.
 
-Runtime-файлы создаются вне репозитория. Инструмент фиксирует закрытый manifest,
-строит ослеплённые пакеты вызывателей, валидирует карточки, собирает два непрозрачно
-названных условия и сравнивает полные архивы Dynamic Workflow. Записи в canonical
-CSV у этого CLI нет.
+Runtime files are created outside the repository. The tool freezes a private manifest,
+builds blinded caller packets, validates cards, assembles two opaquely named conditions,
+and compares complete Dynamic Workflow archives. This CLI never writes canonical CSV.
 """
 from __future__ import annotations
 
@@ -168,7 +167,6 @@ ADDRESS = re.compile(r"^[0-9a-f]{8}$")
 RECOVERY_METADATA = re.compile(r"(?i)(?:recover(?:y|ed|ing)?|resume(?:d|s|ing)?)")
 AMBIGUOUS = re.compile(
     r"(?i)\b(?:unknown|uncertain|ambiguous|candidate|possibly|probably|maybe|target[- ]specific|sample)\b"
-    r"|неизвест|неопредел|неоднознач|возможно|вероятно|предполож|целевая\s+карта"
 )
 HEX8 = re.compile(r"(?i)(?<![0-9a-f])([0-9a-f]{8})(?![0-9a-f])")
 HEX_PREFIXED = re.compile(r"(?i)(?<![0-9a-f])0x([0-9a-f]{1,8})(?![0-9a-f])")
@@ -212,7 +210,7 @@ SCORE_PROMPT = """Score only the semantic equivalence of CANDIDATE SEMANTICS to 
 
 
 class ExperimentError(ValueError):
-    """Нарушение frozen scope, ослепления или схемы эксперимента."""
+    """Frozen-scope, blinding, or experiment-schema violation."""
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -223,11 +221,11 @@ def file_sha256(path: Path) -> str:
     try:
         return sha256_bytes(path.read_bytes())
     except OSError as exc:
-        raise ExperimentError(f"не удалось прочитать {path}: {exc}") from exc
+        raise ExperimentError(f"failed to read {path}: {exc}") from exc
 
 
 def blind_agent_has_no_tools(agent_text: str) -> bool:
-    """Проверить единственный top-level tools: [] в YAML frontmatter agent definition."""
+    """Check for exactly one top-level tools: [] in agent-definition YAML frontmatter."""
     lines = agent_text.splitlines()
     if not lines or lines[0].strip() != "---":
         return False
@@ -252,16 +250,16 @@ def execution_config(repo: Path = ROOT) -> dict:
     try:
         agent_text = agent_path.read_text(encoding="utf-8")
     except OSError as exc:
-        raise ExperimentError(f"не удалось прочитать blind agent {agent_path}: {exc}") from exc
+        raise ExperimentError(f"failed to read blind agent {agent_path}: {exc}") from exc
     if not blind_agent_has_no_tools(agent_text):
-        raise ExperimentError("blind agent должен иметь единственный frontmatter tools: []")
+        raise ExperimentError("blind agent must have exactly one frontmatter tools: []")
     workflows = {}
     for name, relative in sorted(WORKFLOW_FILES.items()):
         path = repo / relative
         try:
             content = path.read_text(encoding="utf-8")
         except OSError as exc:
-            raise ExperimentError(f"не удалось прочитать Workflow {path}: {exc}") from exc
+            raise ExperimentError(f"failed to read Workflow {path}: {exc}") from exc
         workflows[name] = {
             "path": relative,
             "sha256": sha256_bytes(content.encode("utf-8")),
@@ -321,7 +319,7 @@ def validate_execution_config(config: dict) -> None:
         "prompts",
     }
     if not isinstance(config, dict) or set(config) != required:
-        raise ExperimentError("execution config содержит поле вне frozen schema")
+        raise ExperimentError("execution config contains a field outside the frozen schema")
     if (
         config.get("schema") != EXECUTION_CONFIG_SCHEMA
         or config.get("model") != MODEL_ID
@@ -334,10 +332,10 @@ def validate_execution_config(config: dict) -> None:
         != "embedded_artifact_no_tools_exact_single_structured_call"
         or config.get("launch_policy") != "fresh_only_operator_attested"
     ):
-        raise ExperimentError("execution config нарушает frozen runtime contract")
+        raise ExperimentError("execution config violates the frozen runtime contract")
     agent = config.get("blind_agent")
     if not isinstance(agent, dict) or set(agent) != {"path", "sha256", "content"}:
-        raise ExperimentError("execution config: неверная схема blind agent")
+        raise ExperimentError("execution config: invalid blind-agent schema")
     if (
         agent.get("path") != BLIND_AGENT_FILE
         or not isinstance(agent.get("content"), str)
@@ -345,10 +343,10 @@ def validate_execution_config(config: dict) -> None:
         != sha256_bytes(agent.get("content", "").encode("utf-8"))
         or not blind_agent_has_no_tools(agent.get("content", ""))
     ):
-        raise ExperimentError("execution config: blind agent не подтверждён embedded source")
+        raise ExperimentError("execution config: embedded source does not verify blind agent")
     workflows = config.get("workflows")
     if not isinstance(workflows, dict) or set(workflows) != set(WORKFLOW_FILES):
-        raise ExperimentError("execution config: неверный Workflow inventory")
+        raise ExperimentError("execution config: invalid Workflow inventory")
     for name, expected_path in WORKFLOW_FILES.items():
         item = workflows.get(name)
         if (
@@ -359,7 +357,9 @@ def validate_execution_config(config: dict) -> None:
             or item.get("sha256")
             != sha256_bytes(item.get("content", "").encode("utf-8"))
         ):
-            raise ExperimentError(f"execution config: Workflow {name} не подтверждён embedded source")
+            raise ExperimentError(
+                f"execution config: embedded source does not verify Workflow {name}"
+            )
     prompts = config.get("prompts")
     expected_prompt_texts = {
         "prep_analyze": PREP_ANALYZE_PROMPT,
@@ -369,7 +369,7 @@ def validate_execution_config(config: dict) -> None:
         "score": SCORE_PROMPT,
     }
     if not isinstance(prompts, dict) or set(prompts) != set(expected_prompt_texts):
-        raise ExperimentError("execution config: неверный prompt inventory")
+        raise ExperimentError("execution config: invalid prompt inventory")
     for name, item in prompts.items():
         if (
             not isinstance(item, dict)
@@ -377,7 +377,9 @@ def validate_execution_config(config: dict) -> None:
             or item.get("text") != expected_prompt_texts[name]
             or item.get("sha256") != sha256_bytes(expected_prompt_texts[name].encode("utf-8"))
         ):
-            raise ExperimentError(f"execution config: prompt {name} не совпадает с exact contract")
+            raise ExperimentError(
+                f"execution config: prompt {name} does not match the exact contract"
+            )
 
 
 def frozen_prompt(manifest: dict, name: str) -> str:
@@ -405,7 +407,7 @@ def validate_live_runtime_binding(binding: dict, repo: Path = ROOT) -> None:
         "workflow_sha256",
     }
     if not isinstance(binding, dict) or set(binding) != required:
-        raise ExperimentError("runtime binding содержит поле вне frozen schema")
+        raise ExperimentError("runtime binding contains a field outside the frozen schema")
     for path_key, digest_key in (
         ("blind_agent_path", "blind_agent_sha256"),
         ("workflow_path", "workflow_sha256"),
@@ -417,7 +419,7 @@ def validate_live_runtime_binding(binding: dict, repo: Path = ROOT) -> None:
             or Path(relative).is_absolute()
             or not SHA256.fullmatch(digest or "")
         ):
-            raise ExperimentError("runtime binding содержит неверный path или SHA-256")
+            raise ExperimentError("runtime binding contains an invalid path or SHA-256")
         path = repo / relative
         if file_sha256(path) != digest:
             raise ExperimentError(f"live runtime source drift: {path}")
@@ -492,19 +494,19 @@ def validate_archive_execution_input(
     }
     spec = specs.get(workflow_kind)
     if spec is None:
-        raise ExperimentError(f"archive-workflow: неизвестный workflow kind {workflow_kind}")
+        raise ExperimentError(f"archive-workflow: unknown workflow kind {workflow_kind}")
     if not isinstance(execution, dict) or set(execution) != spec["keys"]:
         raise ExperimentError(
-            "archive-workflow: execution input содержит поле вне frozen schema"
+            "archive-workflow: execution input contains a field outside the frozen schema"
         )
     if (
         execution.get("schema") != spec["schema"]
         or execution.get("result_schema") != spec["result_schema"]
     ):
-        raise ExperimentError("archive-workflow: неверная execution/result schema")
+        raise ExperimentError("archive-workflow: invalid execution/result schema")
     for field in spec["hashes"]:
         if not SHA256.fullmatch(execution.get(field, "")):
-            raise ExperimentError(f"archive-workflow: неверный {field}")
+            raise ExperimentError(f"archive-workflow: invalid {field}")
 
     live_config = execution_config(repo)
     validate_execution_config(live_config)
@@ -512,7 +514,7 @@ def validate_archive_execution_input(
         live_config
     ):
         raise ExperimentError(
-            "archive-workflow: execution config не совпадает с live frozen contract"
+            "archive-workflow: execution config does not match the live frozen contract"
         )
     workflow = live_config["workflows"][workflow_kind]
     expected_binding = {
@@ -524,41 +526,41 @@ def validate_archive_execution_input(
     binding = execution.get("runtime_binding")
     if binding != expected_binding:
         raise ExperimentError(
-            "archive-workflow: runtime binding не совпадает с live frozen contract"
+            "archive-workflow: runtime binding does not match the live frozen contract"
         )
     validate_live_runtime_binding(binding, repo)
 
     if workflow_kind in {"prep", "run"}:
         if execution.get("prompts") != spec["prompts"]:
             raise ExperimentError(
-                "archive-workflow: prompts не совпадают с exact contract"
+                "archive-workflow: prompts do not match the exact contract"
             )
         if workflow_kind == "run" and not OPAQUE_ID.fullmatch(
             execution.get("condition_id", "")
         ):
-            raise ExperimentError("archive-workflow: неверный condition_id")
+            raise ExperimentError("archive-workflow: invalid condition_id")
     elif execution.get("prompt") != spec["prompt"]:
-        raise ExperimentError("archive-workflow: prompt не совпадает с exact contract")
+        raise ExperimentError("archive-workflow: prompt does not match the exact contract")
 
     items = execution.get("items")
     if not isinstance(items, list) or len(items) != spec["count"]:
         raise ExperimentError(
-            f"archive-workflow: workflow {workflow_kind} требует {spec['count']} items"
+            f"archive-workflow: workflow {workflow_kind} requires {spec['count']} items"
         )
     if workflow_kind in {"prep", "run"}:
         for item in items:
             if not isinstance(item, dict) or set(item) != EXECUTION_ITEM_KEYS:
                 raise ExperimentError(
-                    "archive-workflow: execution item расходится с frozen schema"
+                    "archive-workflow: execution item differs from the frozen schema"
                 )
             if any(not isinstance(value, str) or not value for value in item.values()):
                 raise ExperimentError(
-                    "archive-workflow: execution item содержит пустое или нестроковое поле"
+                    "archive-workflow: execution item contains an empty or non-string field"
                 )
             for field in ("experiment_id", "condition_id", "pair_id", "job_id"):
                 if not OPAQUE_ID.fullmatch(item[field]):
                     raise ExperimentError(
-                        f"archive-workflow: execution item.{field} не является opaque id"
+                        f"archive-workflow: execution item.{field} is not an opaque id"
                     )
             if (
                 not ADDRESS.fullmatch(item["target_address"])
@@ -568,7 +570,7 @@ def validate_archive_execution_input(
                 or item["response_schema"] != spec["response_schema"]
             ):
                 raise ExperimentError(
-                    "archive-workflow: execution item нарушает frozen payload schema"
+                    "archive-workflow: execution item violates the frozen payload schema"
                 )
             for field in (
                 "experiment_id",
@@ -579,25 +581,25 @@ def validate_archive_execution_input(
             ):
                 if item[field] in item["artifact_text"]:
                     raise ExperimentError(
-                        "archive-workflow: artifact_text раскрывает routing metadata"
+                        "archive-workflow: artifact_text exposes routing metadata"
                     )
         for field in ("job_id", "pair_id", "target_address"):
             values = [item[field] for item in items]
             if len(set(values)) != len(values):
                 raise ExperimentError(
-                    f"archive-workflow: execution items содержат повтор {field}"
+                    f"archive-workflow: execution items contain duplicate {field}"
                 )
         if len({item["experiment_id"] for item in items}) != 1 or len(
             {item["condition_id"] for item in items}
         ) != 1:
             raise ExperimentError(
-                "archive-workflow: execution items смешивают experiment/condition ids"
+                "archive-workflow: execution items mix experiment/condition ids"
             )
         if workflow_kind == "run" and {
             item["condition_id"] for item in items
         } != {execution["condition_id"]}:
             raise ExperimentError(
-                "archive-workflow: execution items относятся к другому condition"
+                "archive-workflow: execution items belong to another condition"
             )
         return
 
@@ -613,7 +615,7 @@ def validate_archive_execution_input(
     for item in items:
         if not isinstance(item, dict) or set(item) != score_keys:
             raise ExperimentError(
-                "archive-workflow: score item расходится с frozen schema"
+                "archive-workflow: score item differs from the frozen schema"
             )
         if (
             not SCORE_ID.fullmatch(item.get("score_id", ""))
@@ -638,12 +640,12 @@ def validate_archive_execution_input(
             )
         ):
             raise ExperimentError(
-                "archive-workflow: score item нарушает frozen payload schema"
+                "archive-workflow: score item violates the frozen payload schema"
             )
     score_ids = [item["score_id"] for item in items]
     if len(set(score_ids)) != len(score_ids) or score_ids != sorted(score_ids):
         raise ExperimentError(
-            "archive-workflow: score items имеют повтор или нестабильный порядок"
+            "archive-workflow: score items contain duplicates or have unstable ordering"
         )
 
 
@@ -659,12 +661,12 @@ def read_json(path: Path):
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        raise ExperimentError(f"не удалось прочитать JSON {path}: {exc}") from exc
+        raise ExperimentError(f"failed to read JSON {path}: {exc}") from exc
 
 
 def validate_workflow_run_id(run_id) -> None:
     if not isinstance(run_id, str) or not WORKFLOW_RUN_ID.fullmatch(run_id):
-        raise ExperimentError("Workflow archive: неверный fresh runId")
+        raise ExperimentError("Workflow archive: invalid fresh runId")
 
 
 def ensure_runtime_path(path: Path) -> None:
@@ -673,7 +675,7 @@ def ensure_runtime_path(path: Path) -> None:
         resolved.relative_to(ROOT.resolve())
     except ValueError:
         return
-    raise ExperimentError(f"runtime-файл должен находиться вне git-репозитория: {resolved}")
+    raise ExperimentError(f"runtime file must be outside the git repository: {resolved}")
 
 
 def write_json(path: Path, value) -> None:
@@ -681,7 +683,7 @@ def write_json(path: Path, value) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = stable_json_bytes(value)
     if path.exists() and path.read_bytes() != data:
-        raise ExperimentError(f"immutable файл уже существует с другим содержимым: {path}")
+        raise ExperimentError(f"immutable file already exists with different content: {path}")
     path.write_bytes(data)
 
 
@@ -689,11 +691,11 @@ def parse_csv_bytes(data: bytes, label: str) -> tuple[list[str], list[dict]]:
     try:
         text = data.decode("utf-8")
     except UnicodeDecodeError as exc:
-        raise ExperimentError(f"{label}: CSV не является UTF-8") from exc
+        raise ExperimentError(f"{label}: CSV is not UTF-8") from exc
     reader = csv.DictReader(io.StringIO(text, newline=""))
     fields = list(reader.fieldnames or ())
     if not fields:
-        raise ExperimentError(f"{label}: CSV без заголовка")
+        raise ExperimentError(f"{label}: CSV has no header")
     return fields, [dict(row) for row in reader]
 
 
@@ -701,7 +703,7 @@ def read_csv(path: Path) -> tuple[list[str], list[dict]]:
     try:
         return parse_csv_bytes(path.read_bytes(), str(path))
     except OSError as exc:
-        raise ExperimentError(f"не удалось прочитать {path}: {exc}") from exc
+        raise ExperimentError(f"failed to read {path}: {exc}") from exc
 
 
 def run_git(repo: Path, *args, binary=False):
@@ -730,13 +732,13 @@ def opaque_id(namespace: str, *parts: str) -> str:
 
 
 def private_opaque_id(secret: str, namespace: str, *parts: str) -> str:
-    """Непрозрачный идентификатор, чьё назначение не выводится из public manifest."""
+    """Return an opaque identifier whose purpose cannot be derived from the public manifest."""
     try:
         key = bytes.fromhex(secret)
     except ValueError as exc:
-        raise ExperimentError("private id secret не является hex") from exc
+        raise ExperimentError("private id secret is not hexadecimal") from exc
     if len(key) != 32:
-        raise ExperimentError("private id secret должен содержать 32 байта")
+        raise ExperimentError("private id secret must contain 32 bytes")
     message = (namespace + "\0" + "\0".join(parts)).encode("utf-8")
     return hmac.new(key, message, hashlib.sha256).hexdigest()[:24]
 
@@ -755,31 +757,31 @@ def expected_ids(manifest: dict) -> dict:
 
 def validate_address_scope() -> None:
     if len(ADDRESSES) != 24 or len(set(ADDRESSES)) != 24:
-        raise ExperimentError("selection-v1 не содержит ровно 24 уникальных адреса")
+        raise ExperimentError("selection-v1 does not contain exactly 24 unique addresses")
     digest = sha256_bytes("\n".join(ADDRESSES).encode())
     if digest != ADDRESS_LIST_SHA256:
-        raise ExperimentError(f"address-list SHA-256 изменился: {digest}")
+        raise ExperimentError(f"address-list SHA-256 changed: {digest}")
 
 
 def source_entry(path: Path, kind: str) -> dict:
     if not path.is_file():
-        raise ExperimentError(f"нет обязательного export-файла {path}")
+        raise ExperimentError(f"required export file is missing: {path}")
     return {"kind": kind, "path": str(path.resolve()), "sha256": file_sha256(path)}
 
 
 def recursive_file_inventory(root: Path) -> list[dict]:
-    """Точный рекурсивный inventory обычных файлов без symlink."""
+    """Build an exact recursive inventory of regular files without symlinks."""
     root = root.resolve()
     if not root.is_dir():
-        raise ExperimentError(f"нет export cohort root {root}")
+        raise ExperimentError(f"export cohort root is missing: {root}")
     inventory = []
     for path in sorted(root.rglob("*"), key=lambda item: item.as_posix()):
         if path.is_symlink():
-            raise ExperimentError(f"export cohort содержит symlink: {path}")
+            raise ExperimentError(f"export cohort contains a symlink: {path}")
         if path.is_dir():
             continue
         if not path.is_file():
-            raise ExperimentError(f"export cohort содержит не обычный файл: {path}")
+            raise ExperimentError(f"export cohort contains a non-regular file: {path}")
         relative = path.relative_to(root).as_posix()
         inventory.append(
             {
@@ -789,7 +791,7 @@ def recursive_file_inventory(root: Path) -> list[dict]:
             }
         )
     if not inventory:
-        raise ExperimentError("export cohort не содержит файлов")
+        raise ExperimentError("export cohort contains no files")
     return inventory
 
 
@@ -810,12 +812,14 @@ def export_cohort_record(
             relative = path.relative_to(root)
         except ValueError as exc:
             raise ExperimentError(
-                f"Ghidra export source находится вне единого cohort root: {path}"
+                f"Ghidra export source is outside the shared cohort root: {path}"
             ) from exc
         relative_value = relative.as_posix()
         inventory_record = files_by_path.get(relative_value)
         if inventory_record is None or inventory_record["sha256"] != source["sha256"]:
-            raise ExperimentError(f"Ghidra source не совпадает с exact cohort inventory: {path}")
+            raise ExperimentError(
+                f"Ghidra source does not match the exact cohort inventory: {path}"
+            )
         entries.append(
             {
                 "kind": source["kind"],
@@ -824,11 +828,11 @@ def export_cohort_record(
             }
         )
     if not entries or len({item["path"] for item in entries}) != len(entries):
-        raise ExperimentError("Ghidra export cohort пуст или содержит повтор path")
+        raise ExperimentError("Ghidra export cohort is empty or contains a duplicate path")
     audit_entries = []
     for source, audit in audits:
         if Path(audit["export_dir"]).resolve() != root:
-            raise ExperimentError("blind audit относится к другому export cohort root")
+            raise ExperimentError("blind audit refers to another export cohort root")
         audit_entries.append(
             {
                 "kind": source["kind"],
@@ -864,17 +868,33 @@ def git_entry(repo: Path, commit: str, path: str) -> tuple[dict, bytes]:
 
 
 def extract_truth(row: dict) -> dict:
+    # The frozen truth commit predates repository localization. Keep its field labels as
+    # escaped compatibility constants so current project text remains English.
+    disposition_label = "\u0421\u0443\u0434\u044c\u0431\u0430 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430"
+    target_label = "\u0426\u0435\u043b\u044c \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430"
+    trace_label = "\u041c\u0430\u0448\u0438\u043d\u043d\u044b\u0439 \u0442\u0440\u0435\u0439\u0441"
+    level_label = "\u0423\u0440\u043e\u0432\u0435\u043d\u044c"
+    blocker_label = "\u0411\u043b\u043e\u043a\u0438\u0440\u0443\u044e\u0449\u0435\u0435"
     note = row.get("note", "")
     disposition = ""
     target = ""
     trace = ""
-    match = re.search(r"Судьба результата:\s*([a-z_]+)\.", note)
+    match = re.search(rf"{re.escape(disposition_label)}:\s*([a-z_]+)\.", note)
     if match:
         disposition = match.group(1)
-    match = re.search(r"Цель результата:\s*(.*?)\.\s*Машинный трейс:", note, re.DOTALL)
+    match = re.search(
+        rf"{re.escape(target_label)}:\s*(.*?)\.\s*{re.escape(trace_label)}:",
+        note,
+        re.DOTALL,
+    )
     if match:
         target = re.sub(r"\s+", " ", match.group(1)).strip()
-    match = re.search(r"Машинный трейс:\s*(.*?)(?:\.\s*(?:Уровень|Блокирующее|$))", note, re.DOTALL)
+    match = re.search(
+        rf"{re.escape(trace_label)}:\s*(.*?)(?:\.\s*"
+        rf"(?:{re.escape(level_label)}|{re.escape(blocker_label)}|$))",
+        note,
+        re.DOTALL,
+    )
     if match:
         trace = re.sub(r"\s+", " ", match.group(1)).strip()
     return {
@@ -892,14 +912,14 @@ def extract_truth(row: dict) -> dict:
 def resolver_rows(accessors_dir: Path) -> tuple[list[dict], list[dict]]:
     files = sorted(accessors_dir.glob("accessors.*.csv"))
     if not files:
-        raise ExperimentError(f"в {accessors_dir} нет accessors.*.csv")
+        raise ExperimentError(f"{accessors_dir} contains no accessors.*.csv")
     rows = []
     sources = []
     required = {"accessor", "df_r4", "callsite", "verdict"}
     for path in files:
         fields, current = read_csv(path)
         if not required <= set(fields):
-            raise ExperimentError(f"{path}: нет колонок {sorted(required - set(fields))}")
+            raise ExperimentError(f"{path}: missing columns {sorted(required - set(fields))}")
         rows.extend(current)
         sources.append(source_entry(path, "ghidra_accessor_export"))
     return rows, sources
@@ -915,7 +935,7 @@ def validate_embedded_source(record: dict, context: str) -> None:
         or not SHA256.fullmatch(record.get("sha256", ""))
         or sha256_bytes(record["source"].encode("utf-8")) != record["sha256"]
     ):
-        raise ExperimentError(f"{context}: неверный embedded source")
+        raise ExperimentError(f"{context}: invalid embedded source")
 
 
 def validate_blind_audit(
@@ -938,19 +958,19 @@ def validate_blind_audit(
         "artifacts",
     }
     if not isinstance(audit, dict) or set(audit) != expected_keys:
-        raise ExperimentError("blind audit содержит поле вне frozen schema")
+        raise ExperimentError("blind audit contains a field outside the frozen schema")
     if audit.get("schema") != BLIND_AUDIT_SCHEMA or audit.get("rom") != ROM:
-        raise ExperimentError("blind audit: неверная schema или ROM")
+        raise ExperimentError("blind audit: invalid schema or ROM")
     if audit.get("mode") != "focus-maps" or audit.get("targets") != list(ADDRESSES):
-        raise ExperimentError("blind audit не покрывает frozen 24 focus maps")
+        raise ExperimentError("blind audit does not cover the 24 frozen focus maps")
     if frozen_builder is None:
         builder_path = (ROOT / "tools/sweep/build_artifacts.py").resolve()
         if audit.get("builder_path") != str(builder_path) or not builder_path.is_file():
-            raise ExperimentError("blind audit создан другим build_artifacts.py")
+            raise ExperimentError("blind audit was created by another build_artifacts.py")
         try:
             builder_source = builder_path.read_text(encoding="utf-8")
         except OSError as exc:
-            raise ExperimentError(f"blind audit: builder недоступен: {exc}") from exc
+            raise ExperimentError(f"blind audit: builder is unavailable: {exc}") from exc
         builder = {
             "path": str(builder_path),
             "sha256": sha256_bytes(builder_source.encode("utf-8")),
@@ -963,29 +983,29 @@ def validate_blind_audit(
         audit.get("builder_path") != builder["path"]
         or audit.get("builder_sha256") != builder["sha256"]
     ):
-        raise ExperimentError("blind audit создан другим build_artifacts.py")
+        raise ExperimentError("blind audit was created by another build_artifacts.py")
     if not isinstance(audit.get("export_dir"), str) or not Path(audit["export_dir"]).is_absolute():
-        raise ExperimentError("blind audit: неверный export_dir")
+        raise ExperimentError("blind audit: invalid export_dir")
     if audit.get("max_readers") != 8 or audit.get("max_consumer_decomp") != 24:
-        raise ExperimentError("blind audit: frozen бюджеты сборщика должны быть 8 и 24")
+        raise ExperimentError("blind audit: frozen builder budgets must be 8 and 24")
     records = audit.get("artifacts")
     if not isinstance(records, list) or len(records) != 24:
-        raise ExperimentError("blind audit должен содержать 24 artifact records")
+        raise ExperimentError("blind audit must contain 24 artifact records")
     by_target = {}
     for record in records:
         if not isinstance(record, dict) or set(record) != {
             "target_address", "path", "sha256", "blind_verified"
         }:
-            raise ExperimentError("blind audit: неверная схема artifact record")
+            raise ExperimentError("blind audit: invalid artifact-record schema")
         target = record.get("target_address")
         if target in by_target:
-            raise ExperimentError("blind audit: повтор target_address")
+            raise ExperimentError("blind audit: duplicate target_address")
         by_target[target] = record
     if set(by_target) != set(ADDRESSES):
-        raise ExperimentError("blind audit: inventory не совпадает с frozen addresses")
+        raise ExperimentError("blind audit: inventory does not match frozen addresses")
     directory = directory.resolve()
     if not directory.is_dir():
-        raise ExperimentError(f"нет каталога map-артефактов {directory}")
+        raise ExperimentError(f"map-artifact directory is missing: {directory}")
     expected_names = {f"map-{addr}.md" for addr in ADDRESSES}
     actual_names = {item.name for item in directory.iterdir()}
     if actual_names != expected_names:
@@ -997,19 +1017,19 @@ def validate_blind_audit(
     for addr in ADDRESSES:
         path = directory / f"map-{addr}.md"
         if path.is_symlink() or not path.is_file():
-            raise ExperimentError(f"нет обычного исходного map-артефакта {path}")
+            raise ExperimentError(f"regular source map artifact is missing: {path}")
         path = path.resolve()
         record = by_target[addr]
         if record.get("path") != str(path) or record.get("blind_verified") is not True:
-            raise ExperimentError(f"blind audit: {addr} не прошёл точный blind gate")
+            raise ExperimentError(f"blind audit: {addr} did not pass the exact blind gate")
         data = path.read_bytes()
         try:
             data.decode("utf-8")
         except UnicodeDecodeError as exc:
-            raise ExperimentError(f"{path}: артефакт не является UTF-8") from exc
+            raise ExperimentError(f"{path}: artifact is not UTF-8") from exc
         digest = sha256_bytes(data)
         if record.get("sha256") != digest:
-            raise ExperimentError(f"blind audit: SHA-256 drift у {path}")
+            raise ExperimentError(f"blind audit: SHA-256 drift in {path}")
         inventory[addr] = {"path": str(path), "sha256": digest}
     return {"audit": audit, "inventory": inventory, "builder": builder}
 
@@ -1033,7 +1053,7 @@ def build_private_manifest(
     selection_commit = run_git(repo, "rev-parse", f"{selection_commit}^{{commit}}")
     truth_commit = run_git(repo, "rev-parse", f"{truth_commit}^{{commit}}")
     if selection_commit != SELECTION_COMMIT or truth_commit != TRUTH_COMMIT:
-        raise ExperimentError("selection-v1 принимает только зафиксированные selection/truth commits")
+        raise ExperimentError("selection-v1 accepts only the frozen selection/truth commits")
 
     selection_source, selection_data = git_entry(
         repo, selection_commit, "defs/JK03A.findings.csv"
@@ -1045,12 +1065,12 @@ def build_private_manifest(
     truth = {row.get("addr", "").lower(): row for row in truth_rows}
     missing = [addr for addr in ADDRESSES if addr not in selected or addr not in truth]
     if missing:
-        raise ExperimentError(f"адреса отсутствуют во frozen CSV: {missing}")
+        raise ExperimentError(f"addresses are absent from the frozen CSV: {missing}")
 
     resolver, resolver_sources = resolver_rows(accessors_dir)
     fields, call_rows = read_csv(calls_path)
     if not {"src", "dst"} <= set(fields):
-        raise ExperimentError(f"{calls_path}: нужны колонки src,dst")
+        raise ExperimentError(f"{calls_path}: columns src,dst are required")
     incoming = defaultdict(set)
     for row in call_rows:
         incoming[row["dst"].lower()].add(row["src"].lower())
@@ -1061,12 +1081,12 @@ def build_private_manifest(
             map_accessors[base].add(row["accessor"].lower())
     no_accessors = [addr for addr in ADDRESSES if not map_accessors[addr]]
     if no_accessors:
-        raise ExperimentError(f"резолвер не связал карты с аксессорами: {no_accessors}")
+        raise ExperimentError(f"resolver did not connect maps to accessors: {no_accessors}")
 
     experiment_id = "exp-" + opaque_id("experiment", ADDRESS_LIST_SHA256, selection_commit)
     secret = id_secret or secrets.token_hex(32)
     if not re.fullmatch(r"[0-9a-f]{64}", secret):
-        raise ExperimentError("private id secret должен быть lowercase hex длиной 64")
+        raise ExperimentError("private id secret must be 64 lowercase hexadecimal characters")
     identities = expected_ids({"id_secret": secret, "experiment_id": experiment_id})
     condition_map = identities["condition_mapping"]
     prep_condition_id = identities["prep_condition_id"]
@@ -1138,12 +1158,12 @@ def build_private_manifest(
     ):
         if Path(audit_result["audit"]["export_dir"]).resolve() != export_dir.resolve():
             raise ExperimentError(
-                f"blind audit {label} создан по другому Ghidra export directory"
+                f"blind audit {label} was created from another Ghidra export directory"
             )
     artifact_inventory = primary_audit["inventory"]
     replica_inventory = replica_audit["inventory"]
     if artifacts_dir.resolve() == artifacts_replica_dir.resolve():
-        raise ExperimentError("две независимые artifact-сборки используют один directory")
+        raise ExperimentError("two independent artifact builds use the same directory")
     primary_hashes = {
         addr: record["sha256"] for addr, record in artifact_inventory.items()
     }
@@ -1151,7 +1171,7 @@ def build_private_manifest(
         addr: record["sha256"] for addr, record in replica_inventory.items()
     }
     if primary_hashes != replica_hashes:
-        raise ExperimentError("две независимые artifact-сборки не byte-identical")
+        raise ExperimentError("two independent artifact builds are not byte-identical")
     for item in maps:
         item["artifact"] = artifact_inventory[item["addr"]]
 
@@ -1216,34 +1236,34 @@ def build_private_manifest(
 
 def _validate_private_manifest_shape(manifest: dict) -> None:
     if manifest.get("schema") != PRIVATE_SCHEMA:
-        raise ExperimentError("неизвестная схема private manifest")
+        raise ExperimentError("unknown private-manifest schema")
     if manifest.get("selection_schema") != SELECTION_SCHEMA:
-        raise ExperimentError("неизвестная схема selection")
+        raise ExperimentError("unknown selection schema")
     if manifest.get("selection_commit") != SELECTION_COMMIT:
-        raise ExperimentError("private manifest: другой selection commit")
+        raise ExperimentError("private manifest: different selection commit")
     if manifest.get("truth_commit") != TRUTH_COMMIT:
-        raise ExperimentError("private manifest: другой truth commit")
+        raise ExperimentError("private manifest: different truth commit")
     if manifest.get("address_list_sha256") != ADDRESS_LIST_SHA256:
-        raise ExperimentError("private manifest: другой address-list SHA-256")
+        raise ExperimentError("private manifest: different address-list SHA-256")
     if manifest.get("selection_diversity_objective") != list(
         SELECTION_DIVERSITY_OBJECTIVE
     ):
-        raise ExperimentError("private manifest: другая selection diversity objective")
+        raise ExperimentError("private manifest: different selection diversity objective")
     if manifest.get("selection_tie_break_sha256") != SELECTION_TIE_BREAK_SHA256:
-        raise ExperimentError("private manifest: другой selection tie-break SHA-256")
+        raise ExperimentError("private manifest: different selection tie-break SHA-256")
     secret = manifest.get("id_secret")
     if not isinstance(secret, str) or not re.fullmatch(r"[0-9a-f]{64}", secret):
-        raise ExperimentError("private manifest: неверный private id secret")
+        raise ExperimentError("private manifest: invalid private id secret")
     expected_experiment = "exp-" + opaque_id(
         "experiment", ADDRESS_LIST_SHA256, SELECTION_COMMIT
     )
     if manifest.get("experiment_id") != expected_experiment:
-        raise ExperimentError("private manifest: неверный experiment id")
+        raise ExperimentError("private manifest: invalid experiment id")
     identities = expected_ids(manifest)
     if manifest.get("prep_condition_id") != identities["prep_condition_id"]:
-        raise ExperimentError("private manifest: неверный prep condition id")
+        raise ExperimentError("private manifest: invalid prep condition id")
     if manifest.get("condition_mapping") != identities["condition_mapping"]:
-        raise ExperimentError("private manifest: condition mapping не подтверждён private secret")
+        raise ExperimentError("private manifest: private secret does not verify condition mapping")
     builder = manifest.get("builder")
     validate_embedded_source(builder, "private manifest builder")
     cohort = manifest.get("export_cohort")
@@ -1255,11 +1275,11 @@ def _validate_private_manifest_shape(manifest: dict) -> None:
         "blind_audits",
         "sha256",
     }:
-        raise ExperimentError("private manifest: неверная схема export cohort")
+        raise ExperimentError("private manifest: invalid export-cohort schema")
     if cohort.get("schema") != EXPORT_COHORT_SCHEMA or not Path(
         cohort.get("root", "")
     ).is_absolute():
-        raise ExperimentError("private manifest: неверный export cohort root")
+        raise ExperimentError("private manifest: invalid export cohort root")
     files = cohort.get("files")
     entries = cohort.get("entries")
     audits = cohort.get("blind_audits")
@@ -1302,50 +1322,52 @@ def _validate_private_manifest_shape(manifest: dict) -> None:
             for item in audits
         )
     ):
-        raise ExperimentError("private manifest: неверный export cohort inventory")
+        raise ExperimentError("private manifest: invalid export cohort inventory")
     files_by_path = {item["path"]: item for item in files}
     for entry in entries:
         file_record = files_by_path.get(entry["path"])
         if file_record is None or file_record["sha256"] != entry["sha256"]:
-            raise ExperimentError("private manifest: source отсутствует в exact export inventory")
+            raise ExperimentError(
+                "private manifest: source is absent from the exact export inventory"
+            )
     if any(item.get("builder_sha256") != builder["sha256"] for item in audits):
-        raise ExperimentError("private manifest: blind audits используют другой builder")
+        raise ExperimentError("private manifest: blind audits use another builder")
     cohort_payload = {key: value for key, value in cohort.items() if key != "sha256"}
     if cohort.get("sha256") != sha256_bytes(
         stable_json_bytes(cohort_payload, pretty=False)
     ):
-        raise ExperimentError("private manifest: неверный export cohort SHA-256")
+        raise ExperimentError("private manifest: invalid export cohort SHA-256")
     config = manifest.get("execution_config")
     if not isinstance(config, dict):
-        raise ExperimentError("private manifest: нет execution config")
+        raise ExperimentError("private manifest: execution config is missing")
     validate_execution_config(config)
     if manifest.get("execution_config_sha256") != execution_config_digest(config):
-        raise ExperimentError("private manifest: неверный execution config SHA-256")
+        raise ExperimentError("private manifest: invalid execution config SHA-256")
     maps = manifest.get("maps")
     callers = manifest.get("callers")
     if not isinstance(maps, list) or not isinstance(callers, list):
-        raise ExperimentError("private manifest: maps/callers обязаны быть массивами")
+        raise ExperimentError("private manifest: maps/callers must be arrays")
     if len(callers) != 21:
-        raise ExperimentError("private manifest: frozen design требует 21 direct caller")
+        raise ExperimentError("private manifest: frozen design requires 21 direct callers")
     if [item.get("addr") for item in maps] != list(ADDRESSES):
-        raise ExperimentError("private manifest не совпадает с 24 frozen addresses")
+        raise ExperimentError("private manifest does not match the 24 frozen addresses")
     for key in ("pair_id",):
         values = [item.get(key) for item in maps]
         if None in values or len(values) != len(set(values)):
-            raise ExperimentError(f"private manifest: повтор или пропуск {key}")
+            raise ExperimentError(f"private manifest: duplicate or missing {key}")
     for key in ("addr", "job_id", "card_id"):
         values = [item.get(key) for item in callers]
         if None in values or len(values) != len(set(values)):
-            raise ExperimentError(f"private manifest: повтор или пропуск caller.{key}")
+            raise ExperimentError(f"private manifest: duplicate or missing caller.{key}")
     artifact_sets = manifest.get("artifacts")
     if not isinstance(artifact_sets, dict) or set(artifact_sets) != {
         "original_maps",
         "independent_maps",
     }:
-        raise ExperimentError("private manifest: нужны две independent artifact inventories")
+        raise ExperimentError("private manifest: two independent artifact inventories required")
     for label, inventory in artifact_sets.items():
         if not isinstance(inventory, dict) or set(inventory) != set(ADDRESSES):
-            raise ExperimentError(f"private manifest: неполный artifact inventory {label}")
+            raise ExperimentError(f"private manifest: incomplete artifact inventory {label}")
         for addr, record in inventory.items():
             if (
                 not isinstance(record, dict)
@@ -1353,7 +1375,7 @@ def _validate_private_manifest_shape(manifest: dict) -> None:
                 or not Path(record.get("path", "")).is_absolute()
                 or not SHA256.fullmatch(record.get("sha256", ""))
             ):
-                raise ExperimentError(f"private manifest: неверный artifact {label}:{addr}")
+                raise ExperimentError(f"private manifest: invalid artifact {label}:{addr}")
     primary_inventory = artifact_sets["original_maps"]
     replica_inventory = artifact_sets["independent_maps"]
     if {
@@ -1361,13 +1383,13 @@ def _validate_private_manifest_shape(manifest: dict) -> None:
     } != {
         addr: item["sha256"] for addr, item in replica_inventory.items()
     }:
-        raise ExperimentError("private manifest: independent artifact digests расходятся")
+        raise ExperimentError("private manifest: independent artifact digests differ")
     if {
         str(Path(item["path"]).parent.resolve()) for item in primary_inventory.values()
     } & {
         str(Path(item["path"]).parent.resolve()) for item in replica_inventory.values()
     }:
-        raise ExperimentError("private manifest: independent artifact directories пересекаются")
+        raise ExperimentError("private manifest: independent artifact directories overlap")
     known_callers = {item["addr"] for item in callers}
     for item in callers:
         addr = item["addr"]
@@ -1378,21 +1400,25 @@ def _validate_private_manifest_shape(manifest: dict) -> None:
             secret, "card", expected_experiment, addr
         )
         if item.get("job_id") != expected_job or item.get("card_id") != expected_card:
-            raise ExperimentError(f"private manifest: неверные caller ids у {addr}")
+            raise ExperimentError(f"private manifest: invalid caller ids for {addr}")
     for item in maps:
         expected_pair = "pair-" + private_opaque_id(
             secret, "pair", expected_experiment, item["addr"]
         )
         if item.get("pair_id") != expected_pair:
-            raise ExperimentError(f"private manifest: неверный pair id у {item['addr']}")
+            raise ExperimentError(f"private manifest: invalid pair id for {item['addr']}")
         truth = item.get("truth")
         if not isinstance(truth, dict) or truth.get("confidence") != "code":
-            raise ExperimentError(f"private manifest: frozen truth не code у {item['addr']}")
+            raise ExperimentError(f"private manifest: frozen truth is not code for {item['addr']}")
         if truth.get("role") not in ROLES or truth.get("disposition") not in DISPOSITIONS - {"unresolved"}:
-            raise ExperimentError(f"private manifest: неверный role/disposition у {item['addr']}")
+            raise ExperimentError(
+                f"private manifest: invalid role/disposition for {item['addr']}"
+            )
         for field in ("semantics", "evidence", "target", "trace"):
             if not isinstance(truth.get(field), str) or not truth[field].strip():
-                raise ExperimentError(f"private manifest: пустой truth.{field} у {item['addr']}")
+                raise ExperimentError(
+                    f"private manifest: empty truth.{field} for {item['addr']}"
+                )
         canonical_run_evidence(
             truth["evidence"],
             f"private manifest truth evidence {item['addr']}",
@@ -1400,32 +1426,33 @@ def _validate_private_manifest_shape(manifest: dict) -> None:
         )
         if any(char in truth["semantics"] for char in ("\r", "\n")):
             raise ExperimentError(
-                f"private manifest: truth.semantics должна быть однострочной у {item['addr']}"
+                f"private manifest: truth.semantics must be one line for {item['addr']}"
             )
         if not set(item.get("direct_callers", ())) <= known_callers:
-            raise ExperimentError(f"private manifest: неизвестный caller у {item['addr']}")
+            raise ExperimentError(f"private manifest: unknown caller for {item['addr']}")
         artifact = item.get("artifact", {})
         if not Path(artifact.get("path", "")).is_absolute() or len(artifact.get("sha256", "")) != 64:
-            raise ExperimentError(f"private manifest: неверный artifact у {item['addr']}")
+            raise ExperimentError(f"private manifest: invalid artifact for {item['addr']}")
         if artifact != primary_inventory[item["addr"]]:
             raise ExperimentError(
-                f"private manifest: map artifact не совпадает с primary inventory у {item['addr']}"
+                f"private manifest: map artifact does not match primary inventory for "
+                f"{item['addr']}"
             )
         for field in ("selection_row_sha256", "truth_row_sha256"):
             if len(item.get(field, "")) != 64:
-                raise ExperimentError(f"private manifest: неверный {field} у {item['addr']}")
+                raise ExperimentError(f"private manifest: invalid {field} for {item['addr']}")
     exposure = Counter(bool(item.get("direct_callers")) for item in maps)
     if exposure != Counter({True: 22, False: 2}):
-        raise ExperimentError("private manifest: нужны 22 exposed maps и 2 controls")
+        raise ExperimentError("private manifest: 22 exposed maps and 2 controls required")
     kinds = Counter(manifest.get("condition_mapping", {}).values())
     if kinds != Counter({"verified": 1, "placebo": 1}):
-        raise ExperimentError("private manifest: нужны ровно два frozen condition id")
+        raise ExperimentError("private manifest: exactly two frozen condition ids required")
 
 
 def _one_source(manifest: dict, kind: str) -> dict:
     matches = [item for item in manifest.get("sources", ()) if item.get("kind") == kind]
     if len(matches) != 1:
-        raise ExperimentError(f"private manifest: нужен ровно один source kind={kind}")
+        raise ExperimentError(f"private manifest: exactly one source kind={kind} required")
     return matches[0]
 
 
@@ -1449,7 +1476,7 @@ def validate_private_manifest(manifest: dict) -> None:
         or len(primary_parents) != 1
         or len(replica_parents) != 1
     ):
-        raise ExperimentError("private manifest: source directories неоднозначны")
+        raise ExperimentError("private manifest: source directories are ambiguous")
     calls_path = Path(_one_source(manifest, "ghidra_calls_export")["path"])
     funcs_path = Path(_one_source(manifest, "ghidra_functions_export")["path"])
     audit_path = Path(_one_source(manifest, "blind_artifact_audit_primary")["path"])
@@ -1472,7 +1499,9 @@ def validate_private_manifest(manifest: dict) -> None:
         frozen_builder=manifest["builder"],
     )
     if manifest != expected:
-        raise ExperimentError("private manifest не выводится из frozen git blobs и exports")
+        raise ExperimentError(
+            "private manifest cannot be derived from frozen git blobs and exports"
+        )
 
 
 def verify_frozen_files(manifest: dict) -> None:
@@ -1486,7 +1515,7 @@ def verify_frozen_files(manifest: dict) -> None:
         for record in inventory.values():
             path = Path(record["path"])
             if file_sha256(path) != record["sha256"]:
-                raise ExperimentError(f"{label} map-артефакт drifted: {path}")
+                raise ExperimentError(f"{label} map artifact drifted: {path}")
 
 
 def mask_sample_addresses(text: str, addresses=ADDRESSES) -> str:
@@ -1511,11 +1540,11 @@ def private_answer_values(manifest: dict) -> list[tuple[str, str]]:
 
 
 def independent_private_truth_leaks(text: str, manifest: dict) -> list[str]:
-    """Консервативно найти дословную или нормализованную утечку закрытого ответа.
+    """Conservatively detect a literal or normalized private-answer leak.
 
-    Короткие машинные атомы намеренно не считаются ответом: адреса и имена узлов обязаны
-    присутствовать в blind artifact как первичное свидетельство. Полный builder gate остаётся
-    сильнее этой независимой повторной проверки, поскольку учитывает разрешённый каталог.
+    Short machine atoms intentionally do not count as answers: addresses and node names
+    must appear in the blind artifact as primary evidence. The complete builder gate remains
+    stronger than this independent repeat check because it accounts for the allowed catalog.
     """
     folded = text.casefold()
     normalized_text = normalized(text)
@@ -1534,7 +1563,7 @@ def independent_private_truth_leaks(text: str, manifest: dict) -> list[str]:
 
 
 def mask_private_answers(text: str, manifest: dict) -> str:
-    """Скрыть совпавшие закрытые ответы, включая адреса из нейтрального CALLS-среза."""
+    """Mask matching private answers, including addresses from the neutral CALLS slice."""
     result = text
     values = sorted(
         {value for _label, value in private_answer_values(manifest) if len(value) >= 4},
@@ -1576,16 +1605,16 @@ def leak_scan(text: str, manifest: dict, context: str) -> list[str]:
 def validate_public_projection(document: dict) -> None:
     if not isinstance(document, dict) or set(document) != PUBLIC_ROOT_KEYS:
         keys = sorted(document) if isinstance(document, dict) else []
-        raise ExperimentError(f"public manifest: недопустимые root keys {keys}")
+        raise ExperimentError(f"public manifest: unsupported root keys {keys}")
     schema = document.get("schema")
     if schema not in (PREP_WORKLIST_SCHEMA, RUN_WORKLIST_SCHEMA):
-        raise ExperimentError("public manifest: неизвестная схема")
+        raise ExperimentError("public manifest: unknown schema")
     jobs = document.get("jobs")
     if not isinstance(jobs, list):
-        raise ExperimentError("public manifest: jobs обязан быть массивом")
+        raise ExperimentError("public manifest: jobs must be an array")
     raw = stable_json_bytes(document).decode("utf-8")
     if PUBLIC_WORD_DENY.search(raw):
-        raise ExperimentError("public manifest содержит имя условия")
+        raise ExperimentError("public manifest contains a condition name")
     expected_response = (
         PREP_RESPONSE_SCHEMA if schema == PREP_WORKLIST_SCHEMA else RUN_RESPONSE_SCHEMA
     )
@@ -1597,36 +1626,38 @@ def validate_public_projection(document: dict) -> None:
     conditions = set()
     for job in jobs:
         if not isinstance(job, dict) or set(job) != PUBLIC_JOB_KEYS:
-            raise ExperimentError("public job содержит поле вне разрешённой проекции")
+            raise ExperimentError("public job contains a field outside the allowed projection")
         for key, value in job.items():
             if PRIVATE_KEY_DENY.search(key) and key != "response_schema":
-                raise ExperimentError(f"public job содержит private key {key}")
+                raise ExperimentError(f"public job contains private key {key}")
             if not isinstance(value, str):
-                raise ExperimentError(f"public job.{key} обязан быть строкой")
+                raise ExperimentError(f"public job.{key} must be a string")
         for key in ("experiment_id", "condition_id", "pair_id", "job_id"):
             if not OPAQUE_ID.fullmatch(job[key]):
-                raise ExperimentError(f"public job.{key} не является opaque id")
+                raise ExperimentError(f"public job.{key} is not an opaque id")
             if PUBLIC_VALUE_DENY.search(job[key]):
-                raise ExperimentError(f"public job.{key} содержит private marker")
+                raise ExperimentError(f"public job.{key} contains a private marker")
         if not ADDRESS.fullmatch(job["target_address"]):
-            raise ExperimentError("public target_address имеет неверный формат")
+            raise ExperimentError("public target_address has an invalid format")
         if not SHA256.fullmatch(job["artifact_sha256"]):
-            raise ExperimentError("public artifact_sha256 имеет неверный формат")
+            raise ExperimentError("public artifact_sha256 has an invalid format")
         if job["response_schema"] != expected_response:
-            raise ExperimentError("public response_schema не соответствует worklist")
+            raise ExperimentError("public response_schema does not match the worklist")
         artifact_path = Path(job["artifact_path"])
         if not artifact_path.is_absolute():
-            raise ExperimentError("public artifact_path должен быть абсолютным")
+            raise ExperimentError("public artifact_path must be absolute")
         if PUBLIC_VALUE_DENY.search(job["artifact_path"]):
-            raise ExperimentError("public artifact_path раскрывает имя условия или private marker")
+            raise ExperimentError(
+                "public artifact_path exposes a condition name or private marker"
+            )
         if job["job_id"] in seen_jobs:
-            raise ExperimentError("public manifest содержит повтор job_id")
+            raise ExperimentError("public manifest contains duplicate job_id")
         if job["pair_id"] in seen_pairs:
-            raise ExperimentError("public manifest содержит повтор pair_id")
+            raise ExperimentError("public manifest contains duplicate pair_id")
         if job["target_address"] in seen_targets:
-            raise ExperimentError("public manifest содержит повтор target_address")
+            raise ExperimentError("public manifest contains duplicate target_address")
         if job["artifact_path"] in seen_paths:
-            raise ExperimentError("public manifest содержит повтор artifact_path")
+            raise ExperimentError("public manifest contains duplicate artifact_path")
         seen_jobs.add(job["job_id"])
         seen_pairs.add(job["pair_id"])
         seen_targets.add(job["target_address"])
@@ -1634,7 +1665,7 @@ def validate_public_projection(document: dict) -> None:
         experiments.add(job["experiment_id"])
         conditions.add(job["condition_id"])
     if len(experiments) > 1 or len(conditions) > 1:
-        raise ExperimentError("public manifest смешивает experiment или condition ids")
+        raise ExperimentError("public manifest mixes experiment or condition ids")
 
 
 def read_calls(path: Path) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
@@ -1663,7 +1694,7 @@ ADDRESS_SUFFIX_IDENTIFIER = re.compile(r"(?i)([0-9a-f]{8})$")
 
 
 def scrub_comments_and_literals(text: str) -> str:
-    """Удалить содержимое C comments/literals, сохранив переносы и позиции."""
+    """Remove C comment/literal content while preserving line breaks and positions."""
     out = []
     index = 0
     state = "code"
@@ -1722,11 +1753,11 @@ def scrub_comments_and_literals(text: str) -> str:
 
 
 def neutralize_function_names(text: str, manifest: dict) -> str:
-    """Нейтрализовать все содержательные identifiers и comments Ghidra pseudocode."""
+    """Neutralize every meaningful identifier and comment in Ghidra pseudocode."""
     funcs_path = Path(_one_source(manifest, "ghidra_functions_export")["path"])
     fields, rows = read_csv(funcs_path)
     if not {"addr", "name"} <= set(fields):
-        raise ExperimentError(f"{funcs_path}: нужны колонки addr,name")
+        raise ExperimentError(f"{funcs_path}: columns addr,name are required")
     by_name = defaultdict(set)
     for row in rows:
         addr = row.get("addr", "").lower()
@@ -1735,7 +1766,7 @@ def neutralize_function_names(text: str, manifest: dict) -> str:
             by_name[name].add(addr)
     ambiguous = sorted(name for name, addrs in by_name.items() if len(addrs) != 1)
     if ambiguous:
-        raise ExperimentError(f"{funcs_path}: неоднозначные function names {ambiguous}")
+        raise ExperimentError(f"{funcs_path}: ambiguous function names {ambiguous}")
     result = scrub_comments_and_literals(text)
     for name in sorted(by_name, key=lambda value: (-len(value), value)):
         addr = next(iter(by_name[name]))
@@ -1803,7 +1834,7 @@ def frozen_prep_text(
     try:
         decomp = source.read_text(encoding="utf-8")
     except OSError as exc:
-        raise ExperimentError(f"не удалось прочитать {source}: {exc}") from exc
+        raise ExperimentError(f"failed to read {source}: {exc}") from exc
     decomp = neutralize_function_names(decomp, manifest)
     text = render_prep_artifact(
         decomp, outgoing.get(caller["addr"], []), incoming.get(caller["addr"], [])
@@ -1841,19 +1872,19 @@ def execution_item(job: dict) -> dict:
         data = path.read_bytes()
         text = data.decode("utf-8")
     except (OSError, UnicodeDecodeError) as exc:
-        raise ExperimentError(f"execution artifact недоступен: {path}: {exc}") from exc
+        raise ExperimentError(f"execution artifact is unavailable: {path}: {exc}") from exc
     if sha256_bytes(data) != job["artifact_sha256"]:
         raise ExperimentError(f"execution artifact SHA-256 drift: {path}")
     for key in ("experiment_id", "condition_id", "pair_id", "job_id", "artifact_sha256"):
         value = job.get(key)
         if isinstance(value, str) and value and value in text:
             raise ExperimentError(
-                f"execution artifact раскрывает parent-only routing metadata {key}"
+                f"execution artifact exposes parent-only routing metadata {key}"
             )
     item = {key: value for key, value in job.items() if key != "artifact_path"}
     item["artifact_text"] = text
     if set(item) != EXECUTION_ITEM_KEYS:
-        raise ExperimentError("execution item расходится с public job schema")
+        raise ExperimentError("execution item differs from the public job schema")
     return item
 
 
@@ -1863,7 +1894,7 @@ def prep_execution_document(manifest_path: Path, worklist_path: Path) -> dict:
     worklist = read_json(worklist_path)
     validate_public_projection(worklist)
     if worklist.get("schema") != PREP_WORKLIST_SCHEMA:
-        raise ExperimentError("prep execution получил не prep worklist")
+        raise ExperimentError("prep execution received a non-prep worklist")
     return {
         "schema": PREP_EXECUTION_SCHEMA,
         "result_schema": PREP_RESULT_SCHEMA,
@@ -1892,7 +1923,7 @@ def expected_workflow_labels(workflow_kind: str) -> set[str]:
         }
     if workflow_kind == "score":
         return {f"score:{index}" for index in range(1, 49)}
-    raise ExperimentError(f"неизвестный workflow kind {workflow_kind}")
+    raise ExperimentError(f"unknown workflow kind {workflow_kind}")
 
 
 def result_items_by_id(
@@ -1906,15 +1937,15 @@ def result_items_by_id(
         or len(items) != len(expected_ids)
         or any(not isinstance(item, dict) for item in items)
     ):
-        raise ExperimentError(f"archive-workflow: {context} имеет неверную полноту")
+        raise ExperimentError(f"archive-workflow: {context} has invalid completeness")
     by_id = {item.get(id_field): item for item in items}
     if len(by_id) != len(items) or set(by_id) != expected_ids:
-        raise ExperimentError(f"archive-workflow: {context} не покрывает frozen ids")
+        raise ExperimentError(f"archive-workflow: {context} does not cover frozen ids")
     return by_id
 
 
 def native_citations_are_valid(value) -> bool:
-    """Проверить transport-level citation schema до привязки к артефакту."""
+    """Validate the transport-level citation schema before binding it to an artifact."""
     if not isinstance(value, list) or not value:
         return False
     for citation in value:
@@ -1950,9 +1981,9 @@ def validate_native_result_for_execution(
     execution: dict,
     workflow_kind: str,
 ) -> None:
-    """Проверить exact result schema и полноту до записи completed archive."""
+    """Validate exact result schema and completeness before writing a completed archive."""
     if not isinstance(result, dict):
-        raise ExperimentError("archive-workflow: native result обязан быть объектом")
+        raise ExperimentError("archive-workflow: native result must be an object")
     if workflow_kind == "prep":
         required = {
             "schema",
@@ -1964,17 +1995,17 @@ def validate_native_result_for_execution(
         }
         if set(result) != required:
             raise ExperimentError(
-                "archive-workflow: prep result содержит поле вне frozen schema"
+                "archive-workflow: prep result contains a field outside the frozen schema"
             )
         if result.get("schema") != PREP_RESULT_SCHEMA:
-            raise ExperimentError("archive-workflow: неверная схема prep result")
+            raise ExperimentError("archive-workflow: invalid prep-result schema")
         for field in (
             "execution_config_sha256",
             "private_manifest_sha256",
             "worklist_sha256",
         ):
             if result.get(field) != execution[field]:
-                raise ExperimentError(f"archive-workflow: prep result.{field} не совпадает")
+                raise ExperimentError(f"archive-workflow: prep result.{field} does not match")
         jobs = {item["job_id"]: item for item in execution["items"]}
         analyses = result_items_by_id(
             result.get("analyses"), set(jobs), "job_id", "prep analyses"
@@ -2015,7 +2046,7 @@ def validate_native_result_for_execution(
                 or not nonempty_string(verdict.get("rationale"))
             ):
                 raise ExperimentError(
-                    f"archive-workflow: {job_id} имеет неверный prep payload"
+                    f"archive-workflow: {job_id} has an invalid prep payload"
                 )
             validate_citations(
                 analysis,
@@ -2032,25 +2063,25 @@ def validate_native_result_for_execution(
                 or verdict.get("citations") != analysis.get("citations")
             ):
                 raise ExperimentError(
-                    f"archive-workflow: {job_id} Verify не подтверждает "
-                    "точный Analyze payload"
+                    f"archive-workflow: {job_id} Verify does not confirm the exact "
+                    "Analyze payload"
                 )
         return
 
     if workflow_kind == "run":
         if set(result) != RUN_RESULT_KEYS:
             raise ExperimentError(
-                "archive-workflow: run result содержит поле вне frozen schema"
+                "archive-workflow: run result contains a field outside the frozen schema"
             )
         if result.get("schema") != RUN_RESULT_SCHEMA:
-            raise ExperimentError("archive-workflow: неверная схема run result")
+            raise ExperimentError("archive-workflow: invalid run-result schema")
         for field in (
             "execution_config_sha256",
             "condition_id",
             "worklist_sha256",
         ):
             if result.get(field) != execution[field]:
-                raise ExperimentError(f"archive-workflow: run result.{field} не совпадает")
+                raise ExperimentError(f"archive-workflow: run result.{field} does not match")
         jobs = {item["job_id"]: item for item in execution["items"]}
         analyses = result_items_by_id(
             result.get("analyses"), set(jobs), "job_id", "run completeness: analyses"
@@ -2063,11 +2094,11 @@ def validate_native_result_for_execution(
             verdict = verdicts[job_id]
             if set(analysis) != RUN_COMPLETED_KEYS:
                 raise ExperimentError(
-                    f"archive-workflow: {job_id} неверная схема completed analysis"
+                    f"archive-workflow: {job_id} has an invalid completed-analysis schema"
                 )
             if set(verdict) != RUN_VERDICT_KEYS:
                 raise ExperimentError(
-                    f"archive-workflow: {job_id} неверная схема run verdict"
+                    f"archive-workflow: {job_id} has an invalid run-verdict schema"
                 )
             for field in (
                 "job_id",
@@ -2078,12 +2109,12 @@ def validate_native_result_for_execution(
             ):
                 if analysis.get(field) != job[field]:
                     raise ExperimentError(
-                        f"archive-workflow: run analysis.{field} не совпадает"
+                        f"archive-workflow: run analysis.{field} does not match"
                     )
             for field in ("job_id", "condition_id", "artifact_sha256"):
                 if verdict.get(field) != job[field]:
                     raise ExperimentError(
-                        f"archive-workflow: run verdict.{field} не совпадает"
+                        f"archive-workflow: run verdict.{field} does not match"
                     )
             if (
                 analysis.get("status") != "completed"
@@ -2105,7 +2136,7 @@ def validate_native_result_for_execution(
                 or not nonempty_string(verdict.get("rationale"))
             ):
                 raise ExperimentError(
-                    f"archive-workflow: {job_id} имеет неверный adversarial verdict"
+                    f"archive-workflow: {job_id} has an invalid adversarial verdict"
                 )
             validate_citations(
                 analysis,
@@ -2119,8 +2150,8 @@ def validate_native_result_for_execution(
             )
             if verdict.get("analysis") != analysis:
                 raise ExperimentError(
-                    f"archive-workflow: {job_id} verdict не связан с "
-                    "точным Analyze payload"
+                    f"archive-workflow: {job_id} verdict is not bound to the exact "
+                    "Analyze payload"
                 )
         return
 
@@ -2133,14 +2164,14 @@ def validate_native_result_for_execution(
             "scores",
         }
         if set(result) != required or result.get("schema") != SCORE_RESULT_SCHEMA:
-            raise ExperimentError("archive-workflow: неверная схема score result")
+            raise ExperimentError("archive-workflow: invalid score-result schema")
         for field in (
             "execution_config_sha256",
             "run_report_sha256",
             "worklist_sha256",
         ):
             if result.get(field) != execution[field]:
-                raise ExperimentError(f"archive-workflow: score result.{field} не совпадает")
+                raise ExperimentError(f"archive-workflow: score result.{field} does not match")
         score_items = {item["score_id"]: item for item in execution["items"]}
         scores = result_items_by_id(
             result.get("scores"), set(score_items), "score_id", "score results"
@@ -2158,10 +2189,10 @@ def validate_native_result_for_execution(
                 or not item["rationale"].strip()
             ):
                 raise ExperimentError(
-                    f"archive-workflow: {score_id} имеет неверный score payload"
+                    f"archive-workflow: {score_id} has an invalid score payload"
                 )
         return
-    raise ExperimentError(f"archive-workflow: неизвестный workflow kind {workflow_kind}")
+    raise ExperimentError(f"archive-workflow: unknown workflow kind {workflow_kind}")
 
 
 def validate_native_workflow_output(archive: dict, workflow_kind: str) -> str:
@@ -2176,31 +2207,31 @@ def validate_native_workflow_output(archive: dict, workflow_kind: str) -> str:
         "totalToolCalls",
     }
     if not isinstance(native, dict) or set(native) != required:
-        raise ExperimentError("Workflow archive не содержит exact native output schema")
+        raise ExperimentError("Workflow archive lacks the exact native-output schema")
     if not isinstance(native.get("summary"), str) or not native["summary"].strip():
-        raise ExperimentError("Workflow native output: пустой summary")
+        raise ExperimentError("Workflow native output: empty summary")
     if native.get("logs") != []:
-        raise ExperimentError("Workflow native output содержит warnings/errors")
+        raise ExperimentError("Workflow native output contains warnings/errors")
     if native.get("result") != archive.get("result"):
-        raise ExperimentError("Workflow native output не подтверждает exact result")
+        raise ExperimentError("Workflow native output does not confirm the exact result")
     labels = expected_workflow_labels(workflow_kind)
     if native.get("agentCount") != len(labels):
-        raise ExperimentError("Workflow native output: неверное число agent runs")
+        raise ExperimentError("Workflow native output: invalid number of agent runs")
     progress = native.get("workflowProgress")
     if not isinstance(progress, list):
-        raise ExperimentError("Workflow native output: workflowProgress не является массивом")
+        raise ExperimentError("Workflow native output: workflowProgress is not an array")
     if any(not isinstance(item, dict) for item in progress):
-        raise ExperimentError("Workflow native output: progress record обязан быть объектом")
+        raise ExperimentError("Workflow native output: progress record must be an object")
     allowed_types = {"workflow_agent", "workflow_phase"}
     unknown_types = [item.get("type") for item in progress if item.get("type") not in allowed_types]
     if unknown_types:
         raise ExperimentError(
-            f"Workflow native output содержит неизвестный progress record: {unknown_types}"
+            f"Workflow native output contains an unknown progress record: {unknown_types}"
         )
     provenance_paths = runtime_provenance_paths(progress)
     if provenance_paths:
         raise ExperimentError(
-            "Workflow native output содержит fallback/retry/cache provenance или error record: "
+            "Workflow native output contains fallback/retry/cache provenance or an error record: "
             + ", ".join(provenance_paths)
         )
     phases = [item for item in progress if item["type"] == "workflow_phase"]
@@ -2212,28 +2243,28 @@ def validate_native_workflow_output(archive: dict, workflow_kind: str) -> str:
             or item["index"] <= 0
             or item.get("title") not in WORKFLOW_PHASES[workflow_kind]
         ):
-            raise ExperimentError("Workflow native output: неверная phase record")
+            raise ExperimentError("Workflow native output: invalid phase record")
     phase_sequence = [(item["index"], item["title"]) for item in phases]
     expected_phase_sequence = list(
         enumerate(WORKFLOW_PHASES[workflow_kind], start=1)
     )
     if phases and phase_sequence != expected_phase_sequence:
-        raise ExperimentError("Workflow native output не покрывает frozen phase sequence")
+        raise ExperimentError("Workflow native output does not cover the frozen phase sequence")
     agents = [item for item in progress if item["type"] == "workflow_agent"]
     by_label = {item.get("label"): item for item in agents}
     if len(by_label) != len(agents) or set(by_label) != labels:
-        raise ExperimentError("Workflow native output не покрывает frozen agent labels")
+        raise ExperimentError("Workflow native output does not cover frozen agent labels")
     models = set()
     for label, item in by_label.items():
         if item.get("state") != "done":
-            raise ExperimentError(f"Workflow native output: agent {label} не завершён")
+            raise ExperimentError(f"Workflow native output: agent {label} did not complete")
         model = item.get("model")
         if not isinstance(model, str) or not model.strip():
-            raise ExperimentError(f"Workflow native output: agent {label} без resolved model")
+            raise ExperimentError(f"Workflow native output: agent {label} has no resolved model")
         models.add(model)
         if item.get("lastToolName") != "StructuredOutput":
             raise ExperimentError(
-                f"Workflow native output: agent {label} завершён не StructuredOutput"
+                f"Workflow native output: agent {label} did not finish with StructuredOutput"
             )
         tool_calls = item.get("toolCalls")
         if (
@@ -2242,19 +2273,19 @@ def validate_native_workflow_output(archive: dict, workflow_kind: str) -> str:
             or tool_calls != 1
         ):
             raise ExperimentError(
-                f"Workflow native output: agent {label} вызвал не ровно один tool"
+                f"Workflow native output: agent {label} did not call exactly one tool"
             )
     if len(models) != 1:
-        raise ExperimentError("Workflow native output смешивает resolved models")
+        raise ExperimentError("Workflow native output mixes resolved models")
     resolved_model = next(iter(models))
     if resolved_model not in OFFICIAL_RESOLVED_OPUS_MODELS:
-        raise ExperimentError("Workflow native output выполнен не official Claude Opus model")
+        raise ExperimentError("Workflow native output was not produced by an official Claude Opus model")
     for field in ("totalTokens", "totalToolCalls"):
         value = native.get(field)
         if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-            raise ExperimentError(f"Workflow native output: неверный {field}")
+            raise ExperimentError(f"Workflow native output: invalid {field}")
     if native["totalToolCalls"] != len(labels):
-        raise ExperimentError("Workflow native output: totalToolCalls не равен agentCount")
+        raise ExperimentError("Workflow native output: totalToolCalls does not equal agentCount")
     return resolved_model
 
 
@@ -2266,9 +2297,9 @@ def validate_archive_envelope(
     expected_resolved_model: str | None = None,
 ) -> str:
     if not isinstance(archive, dict):
-        raise ExperimentError("Workflow archive обязан быть объектом")
+        raise ExperimentError("Workflow archive must be an object")
     if set(archive) != ARCHIVE_KEYS:
-        raise ExperimentError("Workflow archive содержит поле вне frozen envelope")
+        raise ExperimentError("Workflow archive contains a field outside the frozen envelope")
     launch = archive.get("launch")
     if launch != {
         "mode": "fresh",
@@ -2276,7 +2307,7 @@ def validate_archive_envelope(
         "cacheReuse": False,
         "operatorAttested": True,
     }:
-        raise ExperimentError("Workflow archive не содержит fresh-launch attestation")
+        raise ExperimentError("Workflow archive lacks a fresh-launch attestation")
     metadata = {
         key: value for key, value in archive.items() if key not in {"result", "launch"}
     }
@@ -2311,15 +2342,15 @@ def validate_archive_envelope(
         )
     if "runs" in archive or recovery_paths:
         raise ExperimentError(
-            f"recovery/resume archive запрещён: {', '.join(recovery_paths) or 'runs'}"
+            f"recovery/resume archive is prohibited: {', '.join(recovery_paths) or 'runs'}"
         )
     if archive.get("status") != "completed":
-        raise ExperimentError("Workflow archive должен иметь status=completed")
+        raise ExperimentError("Workflow archive must have status=completed")
     validate_workflow_run_id(archive.get("runId"))
     if not isinstance(archive.get("scriptPath"), str) or not archive["scriptPath"].strip():
-        raise ExperimentError("Workflow archive: пустой scriptPath")
+        raise ExperimentError("Workflow archive: empty scriptPath")
     if archive.get("args") != execution:
-        raise ExperimentError("Workflow archive args не совпадают с frozen execution input")
+        raise ExperimentError("Workflow archive args do not match the frozen execution input")
     expected_script = manifest["execution_config"]["workflows"][workflow_kind]
     script_source = archive.get("scriptSource")
     if (
@@ -2329,11 +2360,11 @@ def validate_archive_envelope(
         or archive.get("scriptSha256") != expected_script["sha256"]
         or script_source != expected_script["content"]
     ):
-        raise ExperimentError("Workflow archive создан другим script")
+        raise ExperimentError("Workflow archive was created by another script")
     resolved_model = validate_native_workflow_output(archive, workflow_kind)
     validate_native_result_for_execution(archive["result"], execution, workflow_kind)
     if expected_resolved_model is not None and resolved_model != expected_resolved_model:
-        raise ExperimentError("Workflow archive выполнен другой resolved model")
+        raise ExperimentError("Workflow archive was produced by another resolved model")
     return resolved_model
 
 
@@ -2361,7 +2392,7 @@ def build_prep(
         path = output_dir / name
         data = text.encode("utf-8")
         if path.exists() and path.read_bytes() != data:
-            raise ExperimentError(f"prep artifact уже существует с другим содержимым: {path}")
+            raise ExperimentError(f"prep artifact already exists with different content: {path}")
         path.write_bytes(data)
         jobs.append(expected_prep_job(manifest, caller, path, data))
     actual = {path.name for path in output_dir.glob("*.md")}
@@ -2382,7 +2413,7 @@ def citation_digest(citations: list[dict]) -> str:
 
 
 def rendered_condition_text(value: str) -> str:
-    """Нормализовать HTML и Unicode format controls в видимом marker text."""
+    """Normalize HTML and Unicode format controls in visible marker text."""
     rendered = re.sub(r"<!--.*?-->", "", value, flags=re.DOTALL)
     for _ in range(4):
         decoded = html.unescape(rendered)
@@ -2396,18 +2427,18 @@ def rendered_condition_text(value: str) -> str:
 
 
 def validate_arm_neutrality(value: str, context: str) -> None:
-    """Не допустить прямой или HTML-кодированный marker condition arm."""
+    """Reject a direct or HTML-encoded condition-arm marker."""
     rendered = rendered_condition_text(value)
     if PUBLIC_VALUE_DENY.search(rendered) or PUBLIC_WORD_DENY.search(rendered):
-        raise ExperimentError(f"{context}: payload раскрывает имя условия")
+        raise ExperimentError(f"{context}: payload exposes a condition name")
 
 
 def validate_card_arm_neutrality(role: str, semantics: str, context: str) -> None:
-    """Не допустить marker condition arm в frozen caller card."""
+    """Reject a condition-arm marker in a frozen caller card."""
     try:
         validate_arm_neutrality(role + "\n" + semantics, context)
     except ExperimentError as exc:
-        raise ExperimentError(f"{context}: caller card раскрывает имя условия") from exc
+        raise ExperimentError(f"{context}: caller card exposes a condition name") from exc
 
 
 def is_printable_ascii_line(value: str) -> bool:
@@ -2415,7 +2446,7 @@ def is_printable_ascii_line(value: str) -> bool:
 
 
 def runtime_provenance_paths(value, path="workflowProgress") -> list[str]:
-    """Найти fallback/retry/cache/resume/failure в полях и служебных values."""
+    """Find fallback/retry/cache/resume/failure in fields and service values."""
     found = []
     if isinstance(value, dict):
         for key, item in value.items():
@@ -2433,7 +2464,7 @@ def runtime_provenance_paths(value, path="workflowProgress") -> list[str]:
 
 
 def recovery_metadata_paths(value, path="args", scan_values=True) -> list[str]:
-    """Рекурсивно найти признаки recovery/resume в metadata keys и, при запросе, values."""
+    """Recursively find recovery/resume markers in metadata keys and optional values."""
     found = []
     if isinstance(value, dict):
         for key, item in value.items():
@@ -2459,10 +2490,10 @@ def validate_citations(
 ) -> list[dict]:
     citations = item.get("citations")
     if not isinstance(citations, list) or not citations:
-        raise ExperimentError(f"{context}: нет machine-evidence citations")
+        raise ExperimentError(f"{context}: machine-evidence citations are missing")
     if artifact_text is None:
         if artifact_path is None:
-            raise ExperimentError(f"{context}: нет текста артефакта")
+            raise ExperimentError(f"{context}: artifact text is missing")
         text = artifact_path.read_text(encoding="utf-8")
     else:
         text = artifact_text
@@ -2479,7 +2510,7 @@ def validate_citations(
                 fenced_ranges.append((fence_start, index - 1))
             fence_start = None
     if fence_start is not None or not fenced_ranges:
-        raise ExperimentError(f"{context}: machine-evidence code block повреждён")
+        raise ExperimentError(f"{context}: machine-evidence code block is malformed")
     if allow_all_fences:
         eligible_ranges = fenced_ranges
     else:
@@ -2488,18 +2519,18 @@ def validate_citations(
             None,
         )
         if evidence_index is None:
-            raise ExperimentError(f"{context}: в артефакте нет machine-evidence section")
+            raise ExperimentError(f"{context}: artifact lacks a machine-evidence section")
         eligible_ranges = next(
             ([current] for current in fenced_ranges if current[0] > evidence_index),
             [],
         )
         if not eligible_ranges:
-            raise ExperimentError(f"{context}: machine-evidence code block повреждён")
+            raise ExperimentError(f"{context}: machine-evidence code block is malformed")
     normalized_citations = []
     seen_ranges = set()
     for citation in citations:
         if not isinstance(citation, dict) or set(citation) != {"line_start", "line_end", "excerpt"}:
-            raise ExperimentError(f"{context}: неверная схема citation")
+            raise ExperimentError(f"{context}: invalid citation schema")
         start, end = citation["line_start"], citation["line_end"]
         if (
             not isinstance(start, int)
@@ -2511,16 +2542,16 @@ def validate_citations(
                 for lower, upper in eligible_ranges
             )
         ):
-            raise ExperimentError(f"{context}: citation вне machine evidence")
+            raise ExperimentError(f"{context}: citation is outside machine evidence")
         if (start, end) in seen_ranges:
-            raise ExperimentError(f"{context}: повтор citation range")
+            raise ExperimentError(f"{context}: duplicate citation range")
         seen_ranges.add((start, end))
         provided_excerpt = citation["excerpt"]
         if not isinstance(provided_excerpt, str) or not provided_excerpt.strip():
-            raise ExperimentError(f"{context}: citation excerpt пуст")
+            raise ExperimentError(f"{context}: citation excerpt is empty")
         excerpt = "\n".join(lines[start - 1 : end])
         if not excerpt.strip() or provided_excerpt != excerpt:
-            raise ExperimentError(f"{context}: citation excerpt не совпадает с артефактом")
+            raise ExperimentError(f"{context}: citation excerpt does not match the artifact")
         normalized_citations.append(
             {
                 "line_start": start,
@@ -2544,16 +2575,16 @@ def validate_prep_results(
     worklist = read_json(worklist_path)
     validate_public_projection(worklist)
     if worklist["schema"] != PREP_WORKLIST_SCHEMA:
-        raise ExperimentError("validate-prep получил не prep worklist")
+        raise ExperimentError("validate-prep received a non-prep worklist")
     execution = read_json(execution_path)
     expected_execution = prep_execution_document(manifest_path, worklist_path)
     if execution != expected_execution:
-        raise ExperimentError("prep execution input не выводится из frozen worklist")
+        raise ExperimentError("prep execution input cannot be derived from the frozen worklist")
     archive = read_json(archive_path)
     resolved_model = validate_archive_envelope(archive, manifest, "prep", execution)
     result = archive.get("result")
     if not isinstance(result, dict) or result.get("schema") != PREP_RESULT_SCHEMA:
-        raise ExperimentError("неверная схема prep results")
+        raise ExperimentError("invalid prep-results schema")
     expected_result_keys = {
         "schema",
         "execution_config_sha256",
@@ -2563,7 +2594,7 @@ def validate_prep_results(
         "verdicts",
     }
     if set(result) != expected_result_keys:
-        raise ExperimentError("prep results содержат поле вне frozen schema")
+        raise ExperimentError("prep results contain a field outside the frozen schema")
     anchors = {
         "execution_config_sha256": manifest["execution_config_sha256"],
         "private_manifest_sha256": file_sha256(manifest_path),
@@ -2571,11 +2602,11 @@ def validate_prep_results(
     }
     for key, expected in anchors.items():
         if result.get(key) != expected:
-            raise ExperimentError(f"prep results: неверный {key}")
+            raise ExperimentError(f"prep results: invalid {key}")
     jobs = {item["job_id"]: item for item in worklist["jobs"]}
     expected_callers = {item["job_id"]: item for item in manifest["callers"]}
     if set(jobs) != set(expected_callers):
-        raise ExperimentError("prep worklist не покрывает frozen direct callers")
+        raise ExperimentError("prep worklist does not cover the frozen direct callers")
     calls_source = next(
         item for item in manifest["sources"] if item["kind"] == "ghidra_calls_export"
     )
@@ -2584,7 +2615,7 @@ def validate_prep_results(
         caller = expected_callers[job_id]
         artifact_path = Path(job["artifact_path"])
         if artifact_path.name != f"prep-{caller['job_id']}.md":
-            raise ExperimentError(f"{job_id}: prep artifact имеет неверное имя")
+            raise ExperimentError(f"{job_id}: prep artifact has an invalid name")
         path_leaks = leak_scan(str(artifact_path), manifest, f"{job_id}.artifact_path")
         if path_leaks:
             raise ExperimentError(f"{job_id}: prep artifact path leakage: {path_leaks}")
@@ -2592,24 +2623,24 @@ def validate_prep_results(
         try:
             actual_data = artifact_path.read_bytes()
         except OSError as exc:
-            raise ExperimentError(f"{job_id}: prep artifact недоступен: {exc}") from exc
+            raise ExperimentError(f"{job_id}: prep artifact is unavailable: {exc}") from exc
         if actual_data != expected_data:
-            raise ExperimentError(f"{job_id}: prep artifact не совпадает с frozen source")
+            raise ExperimentError(f"{job_id}: prep artifact does not match the frozen source")
         expected = expected_prep_job(manifest, caller, artifact_path, expected_data)
         if job != expected:
-            raise ExperimentError(f"{job_id}: prep worklist расходится с frozen mapping")
+            raise ExperimentError(f"{job_id}: prep worklist differs from the frozen mapping")
     analyses = result.get("analyses")
     verdicts = result.get("verdicts")
     if not isinstance(analyses, list) or not isinstance(verdicts, list):
-        raise ExperimentError("prep results: analyses/verdicts обязаны быть массивами")
+        raise ExperimentError("prep results: analyses/verdicts must be arrays")
     if any(not isinstance(item, dict) for item in analyses + verdicts):
-        raise ExperimentError("prep results: analysis/verdict обязан быть объектом")
+        raise ExperimentError("prep results: each analysis/verdict must be an object")
     analysis_by_id = {item.get("job_id"): item for item in analyses}
     verdict_by_id = {item.get("job_id"): item for item in verdicts}
     if len(analysis_by_id) != len(analyses) or len(verdict_by_id) != len(verdicts):
-        raise ExperimentError("prep results: повтор job_id")
+        raise ExperimentError("prep results: duplicate job_id")
     if set(analysis_by_id) != set(jobs) or set(verdict_by_id) != set(jobs):
-        raise ExperimentError("prep results: нужен один Analyze и один Verify на каждый job")
+        raise ExperimentError("prep results: each job requires one Analyze and one Verify")
     caller_by_job = {item["job_id"]: item for item in manifest["callers"]}
     cards = []
     for job_id in [item["job_id"] for item in worklist["jobs"]]:
@@ -2619,19 +2650,19 @@ def validate_prep_results(
             "job_id", "artifact_sha256", "role", "semantics", "citations"
         }
         if not isinstance(analysis, dict) or set(analysis) != expected_analysis_keys:
-            raise ExperimentError(f"{job_id}: неверная схема prep analysis")
+            raise ExperimentError(f"{job_id}: invalid prep-analysis schema")
         if analysis.get("artifact_sha256") != job["artifact_sha256"]:
-            raise ExperimentError(f"{job_id}: analysis относится к другому артефакту")
+            raise ExperimentError(f"{job_id}: analysis belongs to another artifact")
         role = analysis.get("role")
         semantics = analysis.get("semantics")
         if not isinstance(role, str) or not role.strip() or not isinstance(semantics, str) or not semantics.strip():
-            raise ExperimentError(f"{job_id}: role/semantics обязательны")
+            raise ExperimentError(f"{job_id}: role/semantics are required")
         if any(char in role + semantics for char in ("\r", "\n")):
-            raise ExperimentError(f"{job_id}: role/semantics должны быть однострочными")
+            raise ExperimentError(f"{job_id}: role/semantics must be single-line")
         if not is_printable_ascii_line(role) or not is_printable_ascii_line(semantics):
-            raise ExperimentError(f"{job_id}: role/semantics должны быть printable ASCII English")
+            raise ExperimentError(f"{job_id}: role/semantics must be printable ASCII English")
         if CARD_START in role + semantics or CARD_END in role + semantics:
-            raise ExperimentError(f"{job_id}: role/semantics содержат служебный marker")
+            raise ExperimentError(f"{job_id}: role/semantics contain a service marker")
         combined = role + "\n" + semantics
         validate_card_arm_neutrality(role, semantics, job_id)
         if AMBIGUOUS.search(combined):
@@ -2649,21 +2680,21 @@ def validate_prep_results(
             "citations", "rationale",
         }
         if not isinstance(verdict, dict) or set(verdict) != expected_verdict_keys:
-            raise ExperimentError(f"{job_id}: неверная схема prep verdict")
+            raise ExperimentError(f"{job_id}: invalid prep-verdict schema")
         if verdict.get("artifact_sha256") != job["artifact_sha256"]:
-            raise ExperimentError(f"{job_id}: verifier относится к другому артефакту")
+            raise ExperimentError(f"{job_id}: verifier belongs to another artifact")
         if verdict.get("verdict") != "accept" or verdict.get("mode") != "adversarial":
-            raise ExperimentError(f"{job_id}: карточка не пережила adversarial Verify")
+            raise ExperimentError(f"{job_id}: card did not survive adversarial Verify")
         if verdict.get("role") != role or verdict.get("semantics") != semantics:
-            raise ExperimentError(f"{job_id}: Verify не подтверждает точную заявку")
+            raise ExperimentError(f"{job_id}: Verify does not confirm the exact claim")
         verifier_citations = validate_citations(
             verdict, Path(job["artifact_path"]), f"{job_id}.verdict"
         )
         if verdict.get("citations") != analysis.get("citations") or verifier_citations != citations:
-            raise ExperimentError(f"{job_id}: Verify не подтверждает точные citations")
+            raise ExperimentError(f"{job_id}: Verify does not confirm exact citations")
         rationale = verdict.get("rationale")
         if not isinstance(rationale, str) or not rationale.strip():
-            raise ExperimentError(f"{job_id}: пустой verifier rationale")
+            raise ExperimentError(f"{job_id}: empty verifier rationale")
         validate_arm_neutrality(rationale, f"{job_id}.verdict.rationale")
         caller = caller_by_job[job_id]
         candidate = {
@@ -2717,15 +2748,17 @@ def validate_card_candidates(
         "cards",
     }
     if not isinstance(candidates, dict) or set(candidates) != required:
-        raise ExperimentError("caller card candidates содержат поле вне frozen schema")
+        raise ExperimentError(
+            "caller card candidates contain a field outside the frozen schema"
+        )
     if candidates.get("schema") != CARD_CANDIDATES_SCHEMA:
-        raise ExperimentError("неизвестная схема caller card candidates")
+        raise ExperimentError("unknown caller-card-candidates schema")
     if candidates.get("private_manifest_sha256") != file_sha256(manifest_path):
-        raise ExperimentError("caller card candidates относятся к другому private manifest")
+        raise ExperimentError("caller card candidates belong to another private manifest")
     for field in ("prep_worklist_path", "prep_execution_path", "prep_archive_path"):
         value = candidates.get(field)
         if not isinstance(value, str) or not Path(value).is_absolute():
-            raise ExperimentError(f"caller card candidates: неверный {field}")
+            raise ExperimentError(f"caller card candidates: invalid {field}")
     worklist_path = Path(candidates["prep_worklist_path"])
     execution_path = Path(candidates["prep_execution_path"])
     archive_path = Path(candidates["prep_archive_path"])
@@ -2740,21 +2773,23 @@ def validate_card_candidates(
     )
     if candidates != expected_document:
         raise ExperimentError(
-            "caller card candidates не выводятся из frozen prep Analyze+Verify"
+            "caller card candidates cannot be derived from frozen prep Analyze+Verify"
         )
     items = candidates["cards"]
     by_id = {item.get("card_id"): item for item in items}
     if len(by_id) != len(items):
-        raise ExperimentError("caller card candidates: повтор card_id")
+        raise ExperimentError("caller card candidates: duplicate card_id")
     expected = {item["card_id"] for item in manifest["callers"]}
     if set(by_id) != expected:
-        raise ExperimentError("caller card candidates не покрывают frozen callers")
+        raise ExperimentError("caller card candidates do not cover frozen callers")
     for card_id, item in by_id.items():
         payload = {key: value for key, value in item.items() if key != "payload_sha256"}
         if item.get("payload_sha256") != sha256_bytes(
             stable_json_bytes(payload, pretty=False)
         ):
-            raise ExperimentError(f"caller card candidate {card_id}: неверный payload SHA-256")
+            raise ExperimentError(
+                f"caller card candidate {card_id}: invalid payload SHA-256"
+            )
     return by_id
 
 
@@ -2770,32 +2805,32 @@ def validate_card_approvals(
         "operator_attested",
         "cards",
     }:
-        raise ExperimentError("caller card approvals содержат поле вне frozen schema")
+        raise ExperimentError("caller card approvals contain a field outside the frozen schema")
     if approvals.get("schema") != CARD_APPROVALS_SCHEMA:
-        raise ExperimentError("неизвестная схема caller card approvals")
+        raise ExperimentError("unknown caller-card-approvals schema")
     if (
         approvals.get("review_policy") != CARD_APPROVAL_POLICY
         or approvals.get("operator_attested") is not True
     ):
-        raise ExperimentError("caller card approvals не содержат manual-review attestation")
+        raise ExperimentError("caller card approvals lack a manual-review attestation")
     if approvals.get("candidates_sha256") != file_sha256(candidates_path):
-        raise ExperimentError("caller card approvals относятся к другим candidates")
+        raise ExperimentError("caller card approvals belong to other candidates")
     records = approvals.get("cards")
     if not isinstance(records, list) or any(not isinstance(item, dict) for item in records):
-        raise ExperimentError("caller card approvals.cards должен быть массивом объектов")
+        raise ExperimentError("caller card approvals.cards must be an array of objects")
     by_id = {item.get("card_id"): item for item in records}
     candidates_by_id = {item["card_id"]: item for item in candidates["cards"]}
     if len(by_id) != len(records) or set(by_id) != set(candidates_by_id):
-        raise ExperimentError("caller card approvals не покрывают frozen candidates")
+        raise ExperimentError("caller card approvals do not cover frozen candidates")
     for card_id, record in by_id.items():
         if set(record) != {"card_id", "payload_sha256", "decision", "rationale"}:
-            raise ExperimentError(f"caller card approval {card_id}: неверная schema")
+            raise ExperimentError(f"caller card approval {card_id}: invalid schema")
         if record.get("payload_sha256") != candidates_by_id[card_id]["payload_sha256"]:
             raise ExperimentError(f"caller card approval {card_id}: payload drift")
         if record.get("decision") != "approve":
-            raise ExperimentError(f"caller card approval {card_id}: карточка не одобрена")
+            raise ExperimentError(f"caller card approval {card_id}: card is not approved")
         if not isinstance(record.get("rationale"), str) or not record["rationale"].strip():
-            raise ExperimentError(f"caller card approval {card_id}: пустой rationale")
+            raise ExperimentError(f"caller card approval {card_id}: empty rationale")
 
 
 def finalize_cards(
@@ -2837,15 +2872,15 @@ def validate_cards(cards: dict, manifest_path: Path, manifest: dict) -> dict[str
         "cards",
     }
     if not isinstance(cards, dict) or set(cards) != required:
-        raise ExperimentError("caller cards содержат поле вне frozen schema")
+        raise ExperimentError("caller cards contain a field outside the frozen schema")
     if cards.get("schema") != CARDS_SCHEMA:
-        raise ExperimentError("неизвестная схема caller cards")
+        raise ExperimentError("unknown caller-cards schema")
     if cards.get("private_manifest_sha256") != file_sha256(manifest_path):
-        raise ExperimentError("caller cards относятся к другому private manifest")
+        raise ExperimentError("caller cards belong to another private manifest")
     for field in ("candidates_path", "approvals_path"):
         value = cards.get(field)
         if not isinstance(value, str) or not Path(value).is_absolute():
-            raise ExperimentError(f"caller cards: неверный {field}")
+            raise ExperimentError(f"caller cards: invalid {field}")
     candidates_path = Path(cards["candidates_path"])
     approvals_path = Path(cards["approvals_path"])
     if cards.get("candidates_sha256") != file_sha256(candidates_path):
@@ -2858,7 +2893,7 @@ def validate_cards(cards: dict, manifest_path: Path, manifest: dict) -> dict[str
     validate_card_approvals(approvals, candidates_path, candidates)
     expected = finalize_cards(manifest_path, candidates_path, approvals_path, None)
     if cards != expected:
-        raise ExperimentError("caller cards не выводятся из approved frozen candidates")
+        raise ExperimentError("caller cards cannot be derived from approved frozen candidates")
     return by_id
 
 
@@ -2917,15 +2952,15 @@ def render_card_block(card_ids: list[str], cards: dict[str, dict], verified: boo
 
 def inject_card_block(original: bytes, block: str) -> bytes:
     if CARD_START.encode() in original or CARD_END.encode() in original:
-        raise ExperimentError("исходный артефакт уже содержит caller-card markers")
+        raise ExperimentError("source artifact already contains caller-card markers")
     split = original.find(b"\n")
     if split < 0:
-        raise ExperimentError("исходный артефакт не содержит строку заголовка")
+        raise ExperimentError("source artifact has no heading line")
     header = original[:split].decode("utf-8")
     if not header.startswith("# "):
-        raise ExperimentError("исходный артефакт не начинается с Markdown-заголовка")
+        raise ExperimentError("source artifact does not begin with a Markdown heading")
     if HEADER_WORD_DENY.search(header):
-        raise ExperimentError(f"заголовок раскрывает имя условия: {header}")
+        raise ExperimentError(f"heading exposes a condition name: {header}")
     return original[: split + 1] + block.encode("utf-8") + original[split + 1 :]
 
 
@@ -2933,12 +2968,12 @@ def split_card_block(data: bytes) -> tuple[bytes, bytes, bytes]:
     start = data.find(CARD_START.encode())
     end = data.find(CARD_END.encode())
     if start < 0 or end < start:
-        raise ExperimentError("артефакт не содержит точный caller-card block")
+        raise ExperimentError("artifact does not contain the exact caller-card block")
     end += len(CARD_END.encode())
     if data[end : end + 1] == b"\n":
         end += 1
     if data.find(CARD_START.encode(), start + 1) >= 0 or data.find(CARD_END.encode(), end) >= 0:
-        raise ExperimentError("артефакт содержит повтор caller-card markers")
+        raise ExperimentError("artifact contains duplicate caller-card markers")
     return data[:start], data[start:end], data[end:]
 
 
@@ -2951,10 +2986,10 @@ def run_execution_document(
     worklist = read_json(worklist_path)
     validate_public_projection(worklist)
     if worklist.get("schema") != RUN_WORKLIST_SCHEMA:
-        raise ExperimentError("run execution получил не run worklist")
+        raise ExperimentError("run execution received a non-run worklist")
     conditions = {item["condition_id"] for item in worklist["jobs"]}
     if len(conditions) != 1:
-        raise ExperimentError("run execution смешивает condition ids")
+        raise ExperimentError("run execution mixes condition ids")
     return {
         "schema": RUN_EXECUTION_SCHEMA,
         "result_schema": RUN_RESULT_SCHEMA,
@@ -3009,7 +3044,9 @@ def build_conditions(
                 expected_names.add(name)
                 path = copy_dir / name
                 if path.exists() and path.read_bytes() != data:
-                    raise ExperimentError(f"condition artifact уже существует с другим содержимым: {path}")
+                    raise ExperimentError(
+                        f"condition artifact already exists with different content: {path}"
+                    )
                 path.write_bytes(data)
                 files.append(
                     {
@@ -3099,23 +3136,23 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
         "conditions",
     }
     if not isinstance(document, dict) or set(document) != required_document_keys:
-        raise ExperimentError("conditions manifest содержит поле вне frozen schema")
+        raise ExperimentError("conditions manifest contains a field outside the frozen schema")
     if document.get("schema") != CONDITIONS_SCHEMA:
-        raise ExperimentError("неизвестная схема conditions manifest")
+        raise ExperimentError("unknown conditions-manifest schema")
     if document.get("private_manifest_sha256") != file_sha256(manifest_path):
-        raise ExperimentError("conditions manifest относится к другому private manifest")
+        raise ExperimentError("conditions manifest belongs to another private manifest")
     if document.get("execution_config_sha256") != manifest["execution_config_sha256"]:
-        raise ExperimentError("conditions manifest относится к другому execution config")
+        raise ExperimentError("conditions manifest belongs to another execution config")
     if document.get("cards_sha256") != file_sha256(cards_path):
-        raise ExperimentError("conditions manifest относится к другим caller cards")
+        raise ExperimentError("conditions manifest belongs to other caller cards")
     if document.get("placebo_contract") != PLACEBO_CONTRACT:
-        raise ExperimentError("conditions manifest: неверный placebo contract")
+        raise ExperimentError("conditions manifest: invalid placebo contract")
     conditions = document.get("conditions")
     if not isinstance(conditions, list) or len(conditions) != 2:
-        raise ExperimentError("conditions manifest должен содержать два условия")
+        raise ExperimentError("conditions manifest must contain two conditions")
     by_kind = {item.get("kind"): item for item in conditions}
     if set(by_kind) != {"verified", "placebo"}:
-        raise ExperimentError("conditions manifest: неверное закрытое отображение условий")
+        raise ExperimentError("conditions manifest: invalid private condition mapping")
     caller_card = {item["addr"]: item["card_id"] for item in manifest["callers"]}
     inventory_by_kind = {}
     all_copy_directories = set()
@@ -3132,11 +3169,13 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
             "execution_input_sha256",
         }
         if not isinstance(condition, dict) or set(condition) != expected_condition_keys:
-            raise ExperimentError(f"{kind}: condition содержит поле вне frozen schema")
+            raise ExperimentError(f"{kind}: condition contains a field outside the frozen schema")
         if condition.get("stochastic_replicates") != STOCHASTIC_REPLICATES:
-            raise ExperimentError(f"{kind}: неверное число stochastic replicates")
+            raise ExperimentError(f"{kind}: invalid number of stochastic replicates")
         if manifest["condition_mapping"].get(condition.get("condition_id")) != kind:
-            raise ExperimentError("conditions manifest: condition id не совпадает с private mapping")
+            raise ExperimentError(
+                "conditions manifest: condition id does not match the private mapping"
+            )
         worklist_path = Path(condition["public_worklist"])
         if file_sha256(worklist_path) != condition["public_worklist_sha256"]:
             raise ExperimentError(f"{kind}: public worklist drift")
@@ -3147,38 +3186,46 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
             if path_leaks:
                 raise ExperimentError(f"{kind}: public artifact path leakage: {path_leaks}")
         if len(public["jobs"]) != 24:
-            raise ExperimentError(f"{kind}: public worklist должен содержать 24 job")
+            raise ExperimentError(f"{kind}: public worklist must contain 24 jobs")
         execution_path = Path(condition["execution_input"])
         if file_sha256(execution_path) != condition["execution_input_sha256"]:
             raise ExperimentError(f"{kind}: execution input drift")
         execution = read_json(execution_path)
         if execution != run_execution_document(manifest_path, worklist_path):
-            raise ExperimentError(f"{kind}: execution input не выводится из frozen worklist")
+            raise ExperimentError(
+                f"{kind}: execution input cannot be derived from the frozen worklist"
+            )
         integrity_copies = condition.get("integrity_copies")
         if not isinstance(integrity_copies, list) or [item.get("copy") for item in integrity_copies] != [1, 2]:
-            raise ExperimentError(f"{kind}: нужны две integrity copies")
+            raise ExperimentError(f"{kind}: two integrity copies are required")
         hashes = []
         for copy_record in integrity_copies:
             if not isinstance(copy_record, dict) or set(copy_record) != {
                 "copy", "directory", "files"
             }:
-                raise ExperimentError(f"{kind}: integrity copy содержит поле вне frozen schema")
+                raise ExperimentError(
+                    f"{kind}: integrity copy contains a field outside the frozen schema"
+                )
             directory_value = copy_record.get("directory")
             if not isinstance(directory_value, str) or not Path(directory_value).is_absolute():
-                raise ExperimentError(f"{kind}: неверный каталог integrity copy")
+                raise ExperimentError(f"{kind}: invalid integrity-copy directory")
             copy_directory = Path(directory_value).resolve()
             if str(copy_directory) != directory_value or copy_directory in all_copy_directories:
-                raise ExperimentError(f"{kind}: integrity copy directory повторён или не canonical")
+                raise ExperimentError(
+                    f"{kind}: integrity-copy directory is duplicated or not canonical"
+                )
             all_copy_directories.add(copy_directory)
             files = copy_record.get("files")
             if not isinstance(files, list) or len(files) != 24:
-                raise ExperimentError(f"{kind}: integrity copy должна содержать 24 файла")
+                raise ExperimentError(f"{kind}: integrity copy must contain 24 files")
             by_pair = {item.get("pair_id"): item for item in files if isinstance(item, dict)}
             if len(by_pair) != 24:
-                raise ExperimentError(f"{kind}: повтор pair_id в integrity copy")
+                raise ExperimentError(f"{kind}: duplicate pair_id in integrity copy")
             expected_names = {f"job-{item['pair_id']}.md" for item in manifest["maps"]}
             if not copy_directory.is_dir() or {item.name for item in copy_directory.iterdir()} != expected_names:
-                raise ExperimentError(f"{kind}: integrity copy directory не имеет exact inventory")
+                raise ExperimentError(
+                    f"{kind}: integrity-copy directory lacks the exact inventory"
+                )
             current = {}
             for map_item in manifest["maps"]:
                 record = by_pair.get(map_item["pair_id"])
@@ -3191,12 +3238,18 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
                     "original_sha256",
                     "card_ids",
                 }:
-                    raise ExperimentError(f"{kind}: artifact record содержит поле вне frozen schema")
+                    raise ExperimentError(
+                        f"{kind}: artifact record contains a field outside the frozen schema"
+                    )
                 if record.get("target_address") != map_item["addr"]:
-                    raise ExperimentError(f"{kind}: неверный target address у {map_item['pair_id']}")
+                    raise ExperimentError(
+                        f"{kind}: invalid target address for {map_item['pair_id']}"
+                    )
                 expected_name = f"job-{map_item['pair_id']}.md"
                 if record.get("name") != expected_name:
-                    raise ExperimentError(f"{kind}: неверное имя artifact у {map_item['pair_id']}")
+                    raise ExperimentError(
+                        f"{kind}: invalid artifact name for {map_item['pair_id']}"
+                    )
                 raw_path = Path(record["path"])
                 path = raw_path.resolve()
                 if (
@@ -3205,29 +3258,33 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
                     or raw_path.is_symlink()
                     or path in all_copy_paths
                 ):
-                    raise ExperimentError(f"{kind}: artifact path повторён или не совпадает с inventory")
+                    raise ExperimentError(
+                        f"{kind}: artifact path is duplicated or does not match the inventory"
+                    )
                 all_copy_paths.add(path)
                 data = path.read_bytes()
                 if sha256_bytes(data) != record["sha256"]:
                     raise ExperimentError(f"{path}: SHA-256 drift")
                 if record.get("original_sha256") != map_item["artifact"]["sha256"]:
-                    raise ExperimentError(f"{path}: неверный original SHA-256")
+                    raise ExperimentError(f"{path}: invalid original SHA-256")
                 before, block, after = split_card_block(data)
                 original = Path(map_item["artifact"]["path"]).read_bytes()
                 restored = before + after
                 expected_restored = original
                 if restored != expected_restored:
-                    raise ExperimentError(f"{path}: байты вне caller-card block изменены")
+                    raise ExperimentError(f"{path}: bytes outside caller-card block changed")
                 card_ids = card_ids_for_map(manifest, map_item, caller_card)
                 if record.get("card_ids") != card_ids:
-                    raise ExperimentError(f"{path}: неверный card inventory")
+                    raise ExperimentError(f"{path}: invalid card inventory")
                 expected_block = render_card_block(
                     card_ids,
                     cards,
                     kind == "verified",
                 ).encode("utf-8")
                 if block != expected_block:
-                    raise ExperimentError(f"{path}: caller-card block не совпадает с frozen cards")
+                    raise ExperimentError(
+                        f"{path}: caller-card block does not match frozen cards"
+                    )
                 current[map_item["pair_id"]] = record["sha256"]
             hashes.append(current)
         if hashes[0] != hashes[1]:
@@ -3235,7 +3292,7 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
         first_by_pair = {item["pair_id"]: item for item in integrity_copies[0]["files"]}
         public_by_pair = {item["pair_id"]: item for item in public["jobs"]}
         if set(public_by_pair) != {item["pair_id"] for item in manifest["maps"]}:
-            raise ExperimentError(f"{kind}: public worklist не покрывает frozen pairs")
+            raise ExperimentError(f"{kind}: public worklist does not cover frozen pairs")
         for map_item in manifest["maps"]:
             pair_id = map_item["pair_id"]
             public_job = public_by_pair[pair_id]
@@ -3253,7 +3310,9 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
                 "response_schema": RUN_RESPONSE_SCHEMA,
             }
             if public_job != expected:
-                raise ExperimentError(f"{kind}:{pair_id}: public job расходится с integrity copy 1")
+                raise ExperimentError(
+                    f"{kind}:{pair_id}: public job differs from integrity copy 1"
+                )
         inventory_by_kind[kind] = integrity_copies[0]["files"]
     verified_inventory = {
         item["pair_id"]: item for item in inventory_by_kind["verified"]
@@ -3267,11 +3326,13 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
         lb, _lblock, la = split_card_block(left)
         rb, _rblock, ra = split_card_block(right)
         if lb != rb or la != ra:
-            raise ExperimentError(f"{map_item['pair_id']}: condition diff вышел за caller-card block")
+            raise ExperimentError(
+                f"{map_item['pair_id']}: condition diff extends beyond the caller-card block"
+            )
         if map_item["direct_callers"] and left == right:
-            raise ExperimentError(f"{map_item['pair_id']}: exposed pair не различается")
+            raise ExperimentError(f"{map_item['pair_id']}: exposed pair does not differ")
         if not map_item["direct_callers"] and left != right:
-            raise ExperimentError(f"{map_item['pair_id']}: control pair различается")
+            raise ExperimentError(f"{map_item['pair_id']}: control pair differs")
     return by_kind
 
 
@@ -3281,27 +3342,28 @@ def canonical_run_evidence(
     *,
     allow_dependencies: bool = False,
 ) -> tuple[str, list]:
-    """Разобрать evidence canonical parser и применить строгий run-поднабор."""
+    """Parse evidence with the canonical parser and apply the strict run subset."""
     try:
         parsed = parse_evidence(value, "confidence", context)
         canonical = canonical_evidence_tokens(value, "confidence", context)
     except ProvenanceError as exc:
         raise ExperimentError(str(exc)) from exc
     if not parsed:
-        raise ExperimentError(f"{context}: нет factual evidence tokens")
+        raise ExperimentError(f"{context}: no factual evidence tokens")
     if any(token.role in PROVENANCE_PROCESS_ROLES for token in parsed):
-        raise ExperimentError(f"{context}: process-only evidence запрещён")
+        raise ExperimentError(f"{context}: process-only evidence is prohibited")
     if not allow_dependencies and any(token.is_dependency for token in parsed):
         raise ExperimentError(
-            f"{context}: dependency evidence запрещено без frozen typed-support registry"
+            f"{context}: dependency evidence is prohibited without a frozen "
+            "typed-support registry"
         )
     for token in parsed:
         anchor = evidence_machine_anchor(token)
         if token.role == "site" and anchor is None:
-            raise ExperimentError(f"{context}: site evidence требует адрес из 8 hex-цифр")
+            raise ExperimentError(f"{context}: site evidence requires an 8-digit hex address")
         if token.role == "rom_const" and anchor is None:
             raise ExperimentError(
-                f"{context}: rom_const evidence требует форму addr=value"
+                f"{context}: rom_const evidence requires the addr=value form"
             )
     return ";".join(canonical), parsed
 
@@ -3312,12 +3374,12 @@ def validate_run_evidence_binding(
     citations: list[dict],
     context: str,
 ) -> str:
-    """Проверить canonical grammar и точное citation coverage без разбора семантики C."""
+    """Validate canonical grammar and exact citation coverage without interpreting C."""
     artifact_path = Path(job["artifact_path"])
     try:
         artifact_text = artifact_path.read_text(encoding="utf-8")
     except OSError as exc:
-        raise ExperimentError(f"{context}: artifact недоступен: {exc}") from exc
+        raise ExperimentError(f"{context}: artifact is unavailable: {exc}") from exc
     artifact_addresses = trace_addresses(artifact_text)
     citation_texts = [citation["excerpt"] for citation in citations]
     used_citations = set()
@@ -3340,13 +3402,13 @@ def validate_run_evidence_binding(
         if anchor is not None:
             if anchor not in artifact_addresses:
                 raise ExperimentError(
-                    f"{context}: evidence token ссылается вне artifact: {anchor}"
+                    f"{context}: evidence token refers outside the artifact: {anchor}"
                 )
             if token.role == "rom_const":
                 matches = cited_literal_indices(token_text)
                 if not matches:
                     raise ExperimentError(
-                        f"{context}: rom_const evidence не связано с exact machine line: "
+                        f"{context}: rom_const evidence is not bound to an exact machine line: "
                         f"{token_text}"
                     )
             else:
@@ -3357,29 +3419,30 @@ def validate_run_evidence_binding(
                 }
                 if not matches:
                     raise ExperimentError(
-                        f"{context}: citations не покрывают evidence anchor {anchor}"
+                        f"{context}: citations do not cover evidence anchor {anchor}"
                     )
             used_citations.update(matches)
         else:
             matches = cited_literal_indices(token.value)
             if not matches:
                 raise ExperimentError(
-                    f"{context}: citation не содержит terminal evidence {token.role}:{token.value}"
+                    f"{context}: citation does not contain terminal evidence "
+                    f"{token.role}:{token.value}"
                 )
             used_citations.update(matches)
 
     reference_sequence = ordered_trace_addresses(item["machine_references"])
     if not reference_sequence:
-        raise ExperimentError(f"{context}: machine_references не содержит адресов")
+        raise ExperimentError(f"{context}: machine_references contains no addresses")
     reference_addresses = set(reference_sequence)
     if item["decision"] == "accept_code" and len(reference_addresses) < 2:
         raise ExperimentError(
-            f"{context}: accept_code требует минимум две уникальные machine refs"
+            f"{context}: accept_code requires at least two unique machine references"
         )
     missing_references = reference_addresses - artifact_addresses
     if missing_references:
         raise ExperimentError(
-            f"{context}: machine_references ссылается вне artifact: "
+            f"{context}: machine_references refers outside the artifact: "
             f"{sorted(missing_references)}"
         )
     for address in reference_addresses:
@@ -3390,17 +3453,17 @@ def validate_run_evidence_binding(
         }
         if not matches:
             raise ExperimentError(
-                f"{context}: citations не покрывают machine reference {address}"
+                f"{context}: citations do not cover machine reference {address}"
             )
         used_citations.update(matches)
 
     target_addresses = trace_addresses(item["target"])
     if not target_addresses:
-        raise ExperimentError(f"{context}: result target не содержит machine address")
+        raise ExperimentError(f"{context}: result target contains no machine address")
     missing_target = target_addresses - artifact_addresses
     if missing_target:
         raise ExperimentError(
-            f"{context}: result target ссылается вне artifact: {sorted(missing_target)}"
+            f"{context}: result target refers outside the artifact: {sorted(missing_target)}"
         )
     for address in target_addresses:
         matches = {
@@ -3410,26 +3473,26 @@ def validate_run_evidence_binding(
         }
         if not matches:
             raise ExperimentError(
-                f"{context}: citations не покрывают target address {address}"
+                f"{context}: citations do not cover target address {address}"
             )
         used_citations.update(matches)
 
     unused = sorted(set(range(len(citations))) - used_citations)
     if unused:
-        raise ExperimentError(f"{context}: citations не связаны с payload: {unused}")
+        raise ExperimentError(f"{context}: citations are not bound to the payload: {unused}")
     return canonical_evidence
 
 
 def validate_run_item(item: dict, job: dict) -> dict:
     context = job["job_id"]
     if not isinstance(item, dict):
-        raise ExperimentError(f"{context}: analysis обязан быть объектом")
+        raise ExperimentError(f"{context}: analysis must be an object")
     for key in ("job_id", "condition_id", "pair_id", "target_address", "artifact_sha256"):
         if item.get(key) != job[key]:
-            raise ExperimentError(f"{context}: analysis.{key} не совпадает с worklist")
+            raise ExperimentError(f"{context}: analysis.{key} does not match the worklist")
     status = item.get("status")
     if status != "completed" or set(item) != RUN_COMPLETED_KEYS:
-        raise ExperimentError(f"{context}: неверная схема completed analysis")
+        raise ExperimentError(f"{context}: invalid completed-analysis schema")
     normalized_item = dict(item)
     normalized_item["cost"] = {
         "input_tokens": 0,
@@ -3438,20 +3501,20 @@ def validate_run_item(item: dict, job: dict) -> dict:
         "duration_ms": 0,
     }
     if item.get("decision") not in ("accept_code", "downgrade"):
-        raise ExperimentError(f"{context}: неизвестный decision")
+        raise ExperimentError(f"{context}: unknown decision")
     if item.get("role") not in ROLES:
-        raise ExperimentError(f"{context}: неверный role")
+        raise ExperimentError(f"{context}: invalid role")
     if item.get("disposition") not in DISPOSITIONS:
-        raise ExperimentError(f"{context}: неверный disposition")
+        raise ExperimentError(f"{context}: invalid disposition")
     if item["decision"] == "accept_code" and item["disposition"] == "unresolved":
-        raise ExperimentError(f"{context}: accept_code несовместим с unresolved")
+        raise ExperimentError(f"{context}: accept_code is incompatible with unresolved")
     if item["disposition"] == "unresolved" and item["decision"] != "downgrade":
-        raise ExperimentError(f"{context}: unresolved требует downgrade")
+        raise ExperimentError(f"{context}: unresolved requires downgrade")
     for key in ("target", "evidence", "machine_references", "semantics"):
         if not isinstance(item.get(key), str) or not item[key].strip():
-            raise ExperimentError(f"{context}: пустое поле {key}")
+            raise ExperimentError(f"{context}: empty field {key}")
     if any(char in item["semantics"] for char in ("\r", "\n")):
-        raise ExperimentError(f"{context}: semantics должна быть однострочной")
+        raise ExperimentError(f"{context}: semantics must be one line")
     validate_arm_neutrality(
         "\n".join(
             item[field]
@@ -3460,9 +3523,9 @@ def validate_run_item(item: dict, job: dict) -> dict:
         context,
     )
     if item["role"] == "dead" and item["disposition"] != "dead_control_flow":
-        raise ExperimentError(f"{context}: role=dead требует dead_control_flow")
+        raise ExperimentError(f"{context}: role=dead requires dead_control_flow")
     if item["disposition"] == "dead_control_flow" and item["role"] != "dead":
-        raise ExperimentError(f"{context}: dead_control_flow требует role=dead")
+        raise ExperimentError(f"{context}: dead_control_flow requires role=dead")
     citations = validate_citations(
         item,
         Path(job["artifact_path"]),
@@ -3490,7 +3553,7 @@ def validate_run_archive(
     execution = read_json(execution_path)
     expected_execution = run_execution_document(manifest_path, worklist_path)
     if execution != expected_execution:
-        raise ExperimentError("run execution input не выводится из frozen worklist")
+        raise ExperimentError("run execution input cannot be derived from the frozen worklist")
     resolved_model = validate_archive_envelope(
         archive,
         manifest,
@@ -3500,21 +3563,21 @@ def validate_run_archive(
     )
     result = archive.get("result")
     if not isinstance(result, dict) or result.get("schema") != RUN_RESULT_SCHEMA:
-        raise ExperimentError("неверная схема run result")
+        raise ExperimentError("invalid run-result schema")
     if set(result) != RUN_RESULT_KEYS:
-        raise ExperimentError("run result содержит поле вне frozen schema")
+        raise ExperimentError("run result contains a field outside the frozen schema")
     if result.get("execution_config_sha256") != manifest["execution_config_sha256"]:
-        raise ExperimentError("run result относится к другому execution config")
+        raise ExperimentError("run result belongs to another execution config")
     if result.get("condition_id") != condition["condition_id"]:
-        raise ExperimentError("run result относится к другому condition id")
+        raise ExperimentError("run result belongs to another condition id")
     if result.get("worklist_sha256") != file_sha256(worklist_path):
-        raise ExperimentError("run result относится к другому worklist")
+        raise ExperimentError("run result belongs to another worklist")
     analyses = result.get("analyses")
     verdicts = result.get("verdicts")
     if not isinstance(analyses, list) or not isinstance(verdicts, list):
-        raise ExperimentError("run result: analyses/verdicts обязаны быть массивами")
+        raise ExperimentError("run result: analyses/verdicts must be arrays")
     if any(not isinstance(item, dict) for item in analyses + verdicts):
-        raise ExperimentError("run result: analysis/verdict обязан быть объектом")
+        raise ExperimentError("run result: each analysis/verdict must be an object")
     jobs = {item["job_id"]: item for item in worklist["jobs"]}
     analysis_by_id = {item.get("job_id"): item for item in analyses}
     verdict_by_id = {item.get("job_id"): item for item in verdicts}
@@ -3536,17 +3599,19 @@ def validate_run_archive(
         normalized_analyses.append(validate_run_item(analysis, job))
         verdict = verdict_by_id[job["job_id"]]
         if not isinstance(verdict, dict) or set(verdict) != RUN_VERDICT_KEYS:
-            raise ExperimentError(f"{job['job_id']}: неверная схема run verdict")
+            raise ExperimentError(f"{job['job_id']}: invalid run-verdict schema")
         for key in ("job_id", "condition_id", "artifact_sha256"):
             if verdict.get(key) != job[key]:
-                raise ExperimentError(f"{job['job_id']}: verdict.{key} не совпадает")
+                raise ExperimentError(f"{job['job_id']}: verdict.{key} does not match")
         if verdict.get("mode") != "adversarial" or verdict.get("verdict") not in ("accept", "refute"):
-            raise ExperimentError(f"{job['job_id']}: нужен adversarial verdict")
+            raise ExperimentError(f"{job['job_id']}: adversarial verdict required")
         if verdict.get("analysis") != analysis:
-            raise ExperimentError(f"{job['job_id']}: verdict не связан с точным Analyze payload")
+            raise ExperimentError(
+                f"{job['job_id']}: verdict is not bound to the exact Analyze payload"
+            )
         rationale = verdict.get("rationale")
         if not isinstance(rationale, str) or not rationale.strip():
-            raise ExperimentError(f"{job['job_id']}: пустой verifier rationale")
+            raise ExperimentError(f"{job['job_id']}: empty verifier rationale")
         validate_arm_neutrality(rationale, f"{job['job_id']}.verdict.rationale")
         normalized_verdicts.append(dict(verdict))
     return {
@@ -3573,7 +3638,7 @@ def validate_runs(
     validate_private_manifest(manifest)
     by_id = {item["condition_id"]: item for item in by_kind.values()}
     if len(archive_paths) != 2:
-        raise ExperimentError("validate-run требует ровно два archive")
+        raise ExperimentError("validate-run requires exactly two archives")
     archives = []
     seen_conditions = set()
     seen_runs = set()
@@ -3581,11 +3646,11 @@ def validate_runs(
         archive = read_json(path)
         condition_id = archive.get("result", {}).get("condition_id")
         if condition_id not in by_id:
-            raise ExperimentError(f"{path}: неизвестный condition id")
+            raise ExperimentError(f"{path}: unknown condition id")
         if condition_id in seen_conditions:
-            raise ExperimentError(f"повтор archive для condition {condition_id}")
+            raise ExperimentError(f"duplicate archive for condition {condition_id}")
         if archive.get("runId") in seen_runs:
-            raise ExperimentError("один runId использован в двух условиях")
+            raise ExperimentError("one runId is used in two conditions")
         seen_conditions.add(condition_id)
         seen_runs.add(archive.get("runId"))
         validated = validate_run_archive(
@@ -3603,7 +3668,7 @@ def validate_runs(
         )
         archives.append(validated)
     if seen_conditions != set(by_id):
-        raise ExperimentError("run archives не покрывают оба frozen condition id")
+        raise ExperimentError("run archives do not cover both frozen condition ids")
     document = {
         "schema": RUN_REPORT_SCHEMA,
         "private_manifest_sha256": file_sha256(manifest_path),
@@ -3638,26 +3703,28 @@ def validate_run_report_document(
         "runs",
     }
     if not isinstance(report, dict) or set(report) != expected_keys:
-        raise ExperimentError("validated run report содержит поле вне frozen schema")
+        raise ExperimentError(
+            "validated run report contains a field outside the frozen schema"
+        )
     if report.get("schema") != RUN_REPORT_SCHEMA:
-        raise ExperimentError("неизвестная схема validated run report")
+        raise ExperimentError("unknown validated-run-report schema")
     if report.get("private_manifest_sha256") != file_sha256(manifest_path):
-        raise ExperimentError("run report относится к другому private manifest")
+        raise ExperimentError("run report belongs to another private manifest")
     if report.get("execution_config_sha256") != manifest["execution_config_sha256"]:
-        raise ExperimentError("run report относится к другому execution config")
+        raise ExperimentError("run report belongs to another execution config")
     if report.get("stochastic_replicates") != STOCHASTIC_REPLICATES:
-        raise ExperimentError("run report: неверное число stochastic replicates")
+        raise ExperimentError("run report: invalid number of stochastic replicates")
     for field in ("cards_path", "conditions_path"):
         value = report.get(field)
         if not isinstance(value, str) or not Path(value).is_absolute():
-            raise ExperimentError(f"run report: неверный {field}")
+            raise ExperimentError(f"run report: invalid {field}")
     cards_path = Path(report["cards_path"])
     conditions_path = Path(report["conditions_path"])
     if report.get("cards_sha256") != file_sha256(cards_path):
         raise ExperimentError("run report: caller cards drift")
     cards_document = read_json(cards_path)
     if report.get("resolved_model") != cards_document.get("resolved_model"):
-        raise ExperimentError("run report: resolved model не совпадает с prep")
+        raise ExperimentError("run report: resolved model does not match prep")
     if report.get("conditions_sha256") != file_sha256(conditions_path):
         raise ExperimentError("run report: conditions manifest drift")
     conditions_document = read_json(conditions_path)
@@ -3665,7 +3732,7 @@ def validate_run_report_document(
     by_condition = {item["condition_id"]: item for item in by_kind.values()}
     runs = report.get("runs")
     if not isinstance(runs, list) or len(runs) != 2:
-        raise ExperimentError("run report должен содержать два arms")
+        raise ExperimentError("run report must contain two arms")
     run_keys = {
         "run_id",
         "script_path",
@@ -3680,13 +3747,15 @@ def validate_run_report_document(
     seen_run_ids = set()
     for run in runs:
         if not isinstance(run, dict) or set(run) != run_keys:
-            raise ExperimentError("run report entry содержит поле вне frozen schema")
+            raise ExperimentError(
+                "run report entry contains a field outside the frozen schema"
+            )
         condition_id = run.get("condition_id")
         if condition_id not in by_condition or condition_id in seen_conditions:
-            raise ExperimentError("run report не покрывает два frozen condition id")
+            raise ExperimentError("run report does not cover two frozen condition ids")
         archive_value = run.get("archive")
         if not isinstance(archive_value, str) or not Path(archive_value).is_absolute():
-            raise ExperimentError("run report: неверный archive path")
+            raise ExperimentError("run report: invalid archive path")
         archive_path = Path(archive_value)
         if run.get("archive_sha256") != file_sha256(archive_path):
             raise ExperimentError("run report: Workflow archive drift")
@@ -3705,13 +3774,13 @@ def validate_run_report_document(
             }
         )
         if run != expected:
-            raise ExperimentError("run report не выводится из frozen Workflow archive")
+            raise ExperimentError("run report cannot be derived from the frozen Workflow archive")
         if run["run_id"] in seen_run_ids:
-            raise ExperimentError("run report повторяет runId")
+            raise ExperimentError("run report repeats a runId")
         seen_conditions.add(condition_id)
         seen_run_ids.add(run["run_id"])
     if seen_conditions != set(by_condition):
-        raise ExperimentError("run report не покрывает два frozen condition id")
+        raise ExperimentError("run report does not cover two frozen condition ids")
 
 
 def score_id(manifest: dict, pair_id: str, condition_id: str) -> str:
@@ -3730,7 +3799,7 @@ def score_documents(manifest_path: Path, run_report_path: Path) -> tuple[dict, d
     report = read_json(run_report_path)
     validate_run_report_document(report, manifest, manifest_path)
     if report.get("private_manifest_sha256") != file_sha256(manifest_path):
-        raise ExperimentError("run report относится к другому private manifest")
+        raise ExperimentError("run report belongs to another private manifest")
     runs = {item["condition_id"]: item for item in report["runs"]}
     truth_by_pair = {item["pair_id"]: item["truth"]["semantics"] for item in manifest["maps"]}
     public_items = []
@@ -3738,13 +3807,13 @@ def score_documents(manifest_path: Path, run_report_path: Path) -> tuple[dict, d
     for condition_id, run in runs.items():
         analyses = {item["pair_id"]: item for item in run["analyses"]}
         if set(analyses) != set(truth_by_pair):
-            raise ExperimentError("run report analyses не покрывают frozen pairs")
+            raise ExperimentError("run report analyses do not cover frozen pairs")
         for pair_id, reference in truth_by_pair.items():
             analysis = analyses[pair_id]
             candidate = analysis.get("semantics", "") if analysis.get("status") == "completed" else ""
             current_score_id = score_id(manifest, pair_id, condition_id)
             if current_score_id in private_mapping:
-                raise ExperimentError("повтор score id")
+                raise ExperimentError("duplicate score id")
             payload_sha256 = sha256_bytes(
                 stable_json_bytes(
                     {
@@ -3799,7 +3868,7 @@ def build_score_inputs(
     public, execution, _mapping = score_documents(manifest_path, run_report_path)
     write_json(worklist_path, public)
     if execution["worklist_sha256"] != file_sha256(worklist_path):
-        raise ExperimentError("score worklist SHA-256 не совпадает с execution input")
+        raise ExperimentError("score worklist SHA-256 does not match the execution input")
     write_json(execution_path, execution)
     return public
 
@@ -3820,7 +3889,9 @@ def validate_score_archive(
     worklist = read_json(worklist_path)
     execution = read_json(execution_path)
     if worklist != expected_worklist or execution != expected_execution:
-        raise ExperimentError("score worklist/execution не выводятся из validated run report")
+        raise ExperimentError(
+            "score worklist/execution cannot be derived from the validated run report"
+        )
     archive = read_json(archive_path)
     run_report = read_json(run_report_path)
     resolved_model = validate_archive_envelope(
@@ -3843,7 +3914,7 @@ def validate_score_archive(
         or set(result) != expected_result_keys
         or result.get("schema") != SCORE_RESULT_SCHEMA
     ):
-        raise ExperimentError("неверная схема score results")
+        raise ExperimentError("invalid score-results schema")
     anchors = {
         "execution_config_sha256": manifest["execution_config_sha256"],
         "run_report_sha256": file_sha256(run_report_path),
@@ -3851,26 +3922,26 @@ def validate_score_archive(
     }
     for key, expected in anchors.items():
         if result.get(key) != expected:
-            raise ExperimentError(f"score results: неверный {key}")
+            raise ExperimentError(f"score results: invalid {key}")
     scores = result.get("scores")
     if not isinstance(scores, list) or any(not isinstance(item, dict) for item in scores):
-        raise ExperimentError("score results: scores обязан быть массивом объектов")
+        raise ExperimentError("score results: scores must be an array of objects")
     by_id = {item.get("score_id"): item for item in scores}
     if len(by_id) != len(scores) or set(by_id) != set(mapping):
-        raise ExperimentError("score results не покрывают 48 frozen responses")
+        raise ExperimentError("score results do not cover 48 frozen responses")
     normalized_scores = []
     for current_score_id in sorted(mapping):
         item = by_id[current_score_id]
         if set(item) != {"score_id", "candidate_sha256", "score", "rationale"}:
-            raise ExperimentError("score result содержит поле вне blind schema")
+            raise ExperimentError("score result contains a field outside the blind schema")
         expected = mapping[current_score_id]
         if item.get("candidate_sha256") != expected["candidate_sha256"]:
-            raise ExperimentError("score относится к другому candidate semantics")
+            raise ExperimentError("score belongs to other candidate semantics")
         value = item.get("score")
         if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0 <= value <= 1:
-            raise ExperimentError("semantics score должен быть в диапазоне 0..1")
+            raise ExperimentError("semantics score must be in the range 0..1")
         if not isinstance(item.get("rationale"), str) or not item["rationale"].strip():
-            raise ExperimentError("semantics score имеет пустой rationale")
+            raise ExperimentError("semantics score has an empty rationale")
         normalized_scores.append(
             {
                 "score_id": current_score_id,
@@ -3947,11 +4018,11 @@ def validate_semantics_scores(
     run_report_path: Path,
 ) -> dict[tuple[str, str], float]:
     if not isinstance(document, dict) or document.get("schema") != SEMANTICS_SCORE_SCHEMA:
-        raise ExperimentError("неизвестная схема arm-blind semantics scores")
+        raise ExperimentError("unknown arm-blind-semantics-scores schema")
     for field in ("score_worklist_path", "score_execution_path", "score_archive_path"):
         value = document.get(field)
         if not isinstance(value, str) or not Path(value).is_absolute():
-            raise ExperimentError(f"semantics scores: неверный {field}")
+            raise ExperimentError(f"semantics scores: invalid {field}")
     expected = validate_score_archive(
         manifest_path,
         run_report_path,
@@ -3961,12 +4032,12 @@ def validate_semantics_scores(
         None,
     )
     if document != expected:
-        raise ExperimentError("semantics scores не выводятся из blind scoring archive")
+        raise ExperimentError("semantics scores cannot be derived from the blind scoring archive")
     result = {}
     for item in document["scores"]:
         key = (item["pair_id"], item["condition_id"])
         if key in result:
-            raise ExperimentError("повтор semantics score")
+            raise ExperimentError("duplicate semantics score")
         result[key] = float(item["score"])
     return result
 
@@ -4021,9 +4092,9 @@ def aggregate_cost(items: list[dict]) -> dict:
 
 
 def summarize_control_gate(controls: list[dict]) -> dict:
-    """Проверить каждый control и каждую метрику без взаимного погашения."""
+    """Check every control and metric without allowing mutual cancellation."""
     if not controls:
-        raise ExperimentError("control gate не получил control pairs")
+        raise ExperimentError("control gate received no control pairs")
     records = []
     for item in controls:
         deltas = {
@@ -4069,13 +4140,13 @@ def compare_results(
     validate_private_manifest(manifest)
     conditions = read_json(conditions_path)
     if conditions.get("private_manifest_sha256") != file_sha256(manifest_path):
-        raise ExperimentError("conditions относятся к другому private manifest")
+        raise ExperimentError("conditions belong to another private manifest")
     report = read_json(run_report_path)
     validate_run_report_document(report, manifest, manifest_path)
     if report.get("private_manifest_sha256") != file_sha256(manifest_path):
-        raise ExperimentError("run report относится к другому private manifest")
+        raise ExperimentError("run report belongs to another private manifest")
     if report.get("conditions_sha256") != file_sha256(conditions_path):
-        raise ExperimentError("run report относится к другому conditions manifest")
+        raise ExperimentError("run report belongs to another conditions manifest")
     semantics_document = read_json(semantics_path)
     semantics = validate_semantics_scores(
         semantics_document, manifest_path, run_report_path
@@ -4116,7 +4187,7 @@ def compare_results(
     exposed = [item for item in pairs if item["exposed"]]
     controls = [item for item in pairs if not item["exposed"]]
     if len(exposed) != 22 or len(controls) != 2:
-        raise ExperimentError("frozen design требует 22 exposed pairs и 2 controls")
+        raise ExperimentError("frozen design requires 22 exposed pairs and 2 controls")
     control_summary = summarize_control_gate(controls)
     controls_valid = control_summary["valid"]
     status = "controls_passed" if controls_valid else "invalid_controls"
@@ -4191,26 +4262,26 @@ def build_workflow_archive(
     }
     workflow_kind = kind_by_schema.get(execution.get("schema")) if isinstance(execution, dict) else None
     if workflow_kind is None:
-        raise ExperimentError("archive-workflow получил неизвестную execution schema")
+        raise ExperimentError("archive-workflow received an unknown execution schema")
     if fresh_launch_attested is not True:
-        raise ExperimentError("archive-workflow требует явную fresh-launch attestation")
+        raise ExperimentError("archive-workflow requires an explicit fresh-launch attestation")
     validate_workflow_run_id(run_id)
     validate_archive_execution_input(execution, workflow_kind)
     binding = execution["runtime_binding"]
     script_path = script_path.resolve()
     if not script_path.is_file():
-        raise ExperimentError(f"archive-workflow: нет scriptPath {script_path}")
+        raise ExperimentError(f"archive-workflow: scriptPath is missing: {script_path}")
     try:
         script_source = script_path.read_text(encoding="utf-8")
     except OSError as exc:
-        raise ExperimentError(f"archive-workflow: scriptPath недоступен: {exc}") from exc
+        raise ExperimentError(f"archive-workflow: scriptPath is unavailable: {exc}") from exc
     if sha256_bytes(script_source.encode("utf-8")) != binding["workflow_sha256"]:
         raise ExperimentError(
-            "archive-workflow: persisted script source не совпадает с runtime binding"
+            "archive-workflow: persisted script source does not match the runtime binding"
         )
     native = read_json(workflow_output_path)
     if not isinstance(native, dict) or "result" not in native:
-        raise ExperimentError("archive-workflow: native output не содержит result")
+        raise ExperimentError("archive-workflow: native output contains no result")
     validate_native_result_for_execution(native["result"], execution, workflow_kind)
     archive = {
         "runId": run_id,
@@ -4229,7 +4300,7 @@ def build_workflow_archive(
         },
     }
     if set(archive) != ARCHIVE_KEYS:
-        raise ExperimentError("archive-workflow: внутренняя ошибка envelope")
+        raise ExperimentError("archive-workflow: internal envelope error")
     validate_native_workflow_output(archive, workflow_kind)
     write_json(output_path, archive)
     return archive
@@ -4392,7 +4463,7 @@ def cmd_status(args):
                 try:
                     document = read_json(path)
                     if not isinstance(document, dict):
-                        item["error"] = "JSON root не является объектом"
+                        item["error"] = "JSON root is not an object"
                     else:
                         item["schema"] = document.get("schema")
                 except ExperimentError as exc:
@@ -4407,7 +4478,7 @@ def parser() -> argparse.ArgumentParser:
 
     archive = sub.add_parser(
         "archive-workflow",
-        help="собрать exact archive из native Workflow output",
+        help="build an exact archive from native Workflow output",
     )
     archive.add_argument("--run-id", required=True)
     archive.add_argument("--script-path", required=True)
@@ -4417,7 +4488,7 @@ def parser() -> argparse.ArgumentParser:
     archive.add_argument("--output", required=True)
     archive.set_defaults(func=cmd_archive_workflow)
 
-    freeze = sub.add_parser("freeze", help="зафиксировать private v4 manifest")
+    freeze = sub.add_parser("freeze", help="freeze a private v4 manifest")
     freeze.add_argument("--repo", default=str(ROOT))
     freeze.add_argument("--selection-commit", default=SELECTION_COMMIT)
     freeze.add_argument("--truth-commit", default=TRUTH_COMMIT)
@@ -4431,12 +4502,14 @@ def parser() -> argparse.ArgumentParser:
     freeze.add_argument(
         "--id-secret",
         default=None,
-        help="private lowercase hex secret; по умолчанию генерируется один раз через secrets",
+        help="private lowercase hexadecimal secret; generated once with secrets by default",
     )
     freeze.add_argument("--output", required=True)
     freeze.set_defaults(func=cmd_freeze)
 
-    prep = sub.add_parser("build-prep", help="собрать caller-only пакеты и public worklist")
+    prep = sub.add_parser(
+        "build-prep", help="build caller-only packets and a public worklist"
+    )
     prep.add_argument("--manifest", required=True)
     prep.add_argument("--output-dir", required=True)
     prep.add_argument("--public-output", required=True)
@@ -4445,7 +4518,7 @@ def parser() -> argparse.ArgumentParser:
 
     validate_prep = sub.add_parser(
         "validate-prep",
-        help="проверить Analyze+Verify и заморозить card candidates",
+        help="validate Analyze+Verify and freeze card candidates",
     )
     validate_prep.add_argument("--manifest", required=True)
     validate_prep.add_argument("--worklist", required=True)
@@ -4456,7 +4529,7 @@ def parser() -> argparse.ArgumentParser:
 
     finalize = sub.add_parser(
         "finalize-cards",
-        help="заморозить только вручную одобренные card candidates",
+        help="freeze only manually approved card candidates",
     )
     finalize.add_argument("--manifest", required=True)
     finalize.add_argument("--candidates", required=True)
@@ -4465,7 +4538,7 @@ def parser() -> argparse.ArgumentParser:
     finalize.set_defaults(func=cmd_finalize_cards)
 
     build = sub.add_parser(
-        "build-conditions", help="собрать два непрозрачных условия по две integrity copies"
+        "build-conditions", help="build two opaque conditions with two integrity copies each"
     )
     build.add_argument("--manifest", required=True)
     build.add_argument("--cards", required=True)
@@ -4476,14 +4549,14 @@ def parser() -> argparse.ArgumentParser:
     build.set_defaults(func=cmd_build_conditions)
 
     verify = sub.add_parser(
-        "verify-artifacts", help="проверить integrity copies, blind gate и точный diff"
+        "verify-artifacts", help="validate integrity copies, blind gate, and exact diff"
     )
     verify.add_argument("--manifest", required=True)
     verify.add_argument("--cards", required=True)
     verify.add_argument("--conditions", required=True)
     verify.set_defaults(func=cmd_verify_artifacts)
 
-    run = sub.add_parser("validate-run", help="проверить два полных Workflow archive")
+    run = sub.add_parser("validate-run", help="validate two complete Workflow archives")
     run.add_argument("--manifest", required=True)
     run.add_argument("--cards", required=True)
     run.add_argument("--conditions", required=True)
@@ -4491,7 +4564,9 @@ def parser() -> argparse.ArgumentParser:
     run.add_argument("--output", required=True)
     run.set_defaults(func=cmd_validate_run)
 
-    score = sub.add_parser("build-score", help="собрать blind semantics scoring worklist")
+    score = sub.add_parser(
+        "build-score", help="build a blind semantics-scoring worklist"
+    )
     score.add_argument("--manifest", required=True)
     score.add_argument("--runs", required=True)
     score.add_argument("--worklist-output", required=True)
@@ -4499,7 +4574,7 @@ def parser() -> argparse.ArgumentParser:
     score.set_defaults(func=cmd_build_score)
 
     validate_score = sub.add_parser(
-        "validate-score", help="проверить blind scoring Workflow archive"
+        "validate-score", help="validate a blind-scoring Workflow archive"
     )
     validate_score.add_argument("--manifest", required=True)
     validate_score.add_argument("--runs", required=True)
@@ -4509,7 +4584,7 @@ def parser() -> argparse.ArgumentParser:
     validate_score.add_argument("--output", required=True)
     validate_score.set_defaults(func=cmd_validate_score)
 
-    compare = sub.add_parser("compare", help="сопоставить пары через private mapping")
+    compare = sub.add_parser("compare", help="compare pairs through the private mapping")
     compare.add_argument("--manifest", required=True)
     compare.add_argument("--conditions", required=True)
     compare.add_argument("--runs", required=True)
@@ -4517,7 +4592,9 @@ def parser() -> argparse.ArgumentParser:
     compare.add_argument("--output", required=True)
     compare.set_defaults(func=cmd_compare)
 
-    status = sub.add_parser("status", help="показать наличие, SHA-256 и схемы runtime-файлов")
+    status = sub.add_parser(
+        "status", help="show existence, SHA-256, and schemas of runtime files"
+    )
     status.add_argument("--path", action="append", required=True)
     status.set_defaults(func=cmd_status)
     return p

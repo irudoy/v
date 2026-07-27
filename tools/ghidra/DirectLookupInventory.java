@@ -1,29 +1,30 @@
-// DirectLookupInventory.java – инвентаризация карт через банк примитивов с неявной осью.
+// DirectLookupInventory.java – inventory maps through the implicit-axis primitive bank.
 //
-// Модель отличается от MapInventory (explicit-axis): обёрток нет, аксессор зовёт
-// примитив напрямую через pool-слот, указателя оси нет. Ось неявная и равномерная:
-// точки 0..(N-1) с шагом step по сырому входу, последняя точка = лимит. Слот != вызов:
-// один загруженный в callee-saved регистр указатель обслуживает несколько jsr подряд.
+// This model differs from MapInventory (explicit-axis): there are no wrappers, an accessor
+// calls a primitive directly through a pool slot, and no axis pointer exists. The axis is
+// implicit and uniform: points 0..(N-1) use step-sized raw-input increments, and the final
+// point is the limit. A slot is not a call: one pointer loaded into a callee-saved register
+// serves several consecutive jsr instructions.
 //
-// Уровни: (1) слоты со значением примитива (BE u32) -> (2) инструкция-загрузка
-// mov.l @(disp,pc),rN внутри аксессора -> (3) forward-скан по функции: каждый
-// jsr/jmp @rN, пока rN не переопределён, = место вызова -> (4) снятие r4 (таблица,
-// pc-relative pool load) и r5 (вход) с учётом delay slot.
+// Levels: (1) slots containing the primitive value (BE u32) -> (2) the
+// mov.l @(disp,pc),rN load inside an accessor -> (3) a forward scan through the function:
+// every jsr/jmp @rN until rN is redefined is a call site -> (4) recover r4 (table,
+// PC-relative pool load) and r5 (input), including the delay slot.
 //
-// Геометрия каждого примитива задаётся аргументом и снята с его кода: примитив
-// сравнивает вход с лимитом (CMP/HS) и на выходе за диапазон читает крайнюю точку
-// (MOV.B @(N-1,R4) / MOV.W @(2*(N-1),R4)), а шаг задаётся точкой входа в общую
-// цепочку SHLR/ROTCR: вход на K пар выше слияния даёт index = raw >> K, step = 2^K.
-// Оба вывода независимы и сходятся на всех входах банка (см. JK08A.notes.md,
-// раздел "Банк примитивов с неявной осью").
+// Each primitive's geometry is supplied as an argument and recovered from its code: the
+// primitive compares input against a limit (CMP/HS) and reads the edge point for
+// out-of-range input (MOV.B @(N-1,R4) / MOV.W @(2*(N-1),R4)). The entry point into a shared
+// SHLR/ROTCR chain determines the step: entering K pairs above the merge gives
+// index = raw >> K and step = 2^K. The two deductions are independent and agree for every
+// bank entry (see the "Implicit-axis primitive bank" section in JK08A.notes.md).
 //
-// Ширина элемента здесь выводится тем же правилом, что и в ПЗУ: цепочка делает
-// SHLR8 R0; TST R0,R0 над лимитом, то есть лимит >= 256 означает word-таблицу.
-// Отдельного флага ширины в коде нет. Оба пути читают элемент беззнаково (EXTU.B/EXTU.W).
+// Element width is inferred by the same rule used in ROM: the chain applies
+// SHLR8 R0; TST R0,R0 to the limit, so limit >= 256 means a word table. The code has no
+// separate width flag. Both paths read elements as unsigned values (EXTU.B/EXTU.W).
 //
-// Запуск (headless):
+// Headless invocation:
 //   -postScript DirectLookupInventory.java <out_dir> <prim_hex:points:step> [...]
-// Выход: direct_lookup_inventory.csv
+// Output: direct_lookup_inventory.csv
 //   prim,points,step,width,slot,aligned,load_at,reg,from,from_func,mnem,table,vals,r5_src
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
@@ -46,8 +47,8 @@ import java.util.List;
 public class DirectLookupInventory extends GhidraScript {
 
     static final long ROM_HI = 0x180000L;
-    static final int FWD_LIMIT = 400;   // потолок forward-скана, инструкций
-    static final int BACK_LIMIT = 14;   // окно backtrack, инструкций
+    static final int FWD_LIMIT = 400;   // forward-scan limit, in instructions
+    static final int BACK_LIMIT = 14;   // backtrack window, in instructions
 
     Listing listing;
     Memory mem;
@@ -101,7 +102,7 @@ public class DirectLookupInventory extends GhidraScript {
         Res res = new Res();
         ReferenceManager rm = currentProgram.getReferenceManager();
 
-        // 1. слоты: локации со значением примитива (BE u32)
+        // 1. Slots: locations containing the primitive value (BE u32).
         byte[] pat = new byte[]{
             (byte) ((prim >> 24) & 0xff), (byte) ((prim >> 16) & 0xff),
             (byte) ((prim >> 8) & 0xff),  (byte) (prim & 0xff)};
@@ -116,7 +117,7 @@ public class DirectLookupInventory extends GhidraScript {
         }
         res.slots = slots.size();
 
-        // 2. загрузки слота в регистр
+        // 2. Loads of a slot into a register.
         for (Address slot : slots) {
             boolean aligned = (slot.getOffset() & 3) == 0;
             ReferenceIterator ri = rm.getReferencesTo(slot);
@@ -132,7 +133,7 @@ public class DirectLookupInventory extends GhidraScript {
                 res.loads++;
                 Function host = fm.getFunctionContaining(at);
 
-                // 3. forward-скан: вызовы через этот регистр
+                // 3. Forward scan: calls through this register.
                 for (Address site : forwardCalls(ins, reg, host)) {
                     Instruction ci = listing.getInstructionContaining(site);
                     long t = poolValueOf(lastSetter(site, "r4"));
@@ -159,7 +160,7 @@ public class DirectLookupInventory extends GhidraScript {
         return res;
     }
 
-    // Единственный регистр-результат инструкции (mov.l @(disp,pc),rN).
+    // The instruction's sole result register (mov.l @(disp,pc),rN).
     Register soleResultReg(Instruction ins) {
         Register only = null;
         for (Object o : ins.getResultObjects()) {
@@ -170,8 +171,8 @@ public class DirectLookupInventory extends GhidraScript {
         return only;
     }
 
-    // Вызовы jsr/jmp @reg от загрузки до переопределения reg. Регистры r0..r7 -
-    // caller-saved (SH ABI), поэтому за чужим вызовом их значение не переживает.
+    // Calls through jsr/jmp @reg from the load until reg is redefined. Registers r0..r7 are
+    // caller-saved under the SH ABI, so their values do not survive another call.
     List<Address> forwardCalls(Instruction load, Register reg, Function host) {
         List<Address> out = new ArrayList<>();
         Address lo = host == null ? null : host.getBody().getMinAddress();
@@ -186,9 +187,9 @@ public class DirectLookupInventory extends GhidraScript {
             if (indirect) {
                 out.add(at);
             } else if (scratch && (m.startsWith("jsr") || m.startsWith("bsr"))) {
-                break;  // чужой вызов затирает caller-saved регистр
+                break;  // another call clobbers the caller-saved register
             } else if (definesReg(cur, reg)) {
-                break;  // переопределение: дальше живёт другое значение
+                break;  // redefinition: a different value is live beyond this point
             }
             cur = listing.getInstructionAfter(at);
         }
@@ -212,8 +213,8 @@ public class DirectLookupInventory extends GhidraScript {
         return false;
     }
 
-    // Инструкция, последней записавшая reg до фактического вызова. Delay slot
-    // (site+1) исполняется ПЕРЕД телом callee, поэтому проверяется первым.
+    // The instruction that last wrote reg before the actual call. The delay slot (site+1)
+    // runs before the callee body, so inspect it first.
     Instruction lastSetter(Address site, String regName) {
         Register reg = currentProgram.getRegister(regName);
         Instruction ins = listing.getInstructionContaining(site);
@@ -228,7 +229,7 @@ public class DirectLookupInventory extends GhidraScript {
         return null;
     }
 
-    // Значение, загруженное pc-relative (ближайшая ref = literal pool, disp < 0x800)
+    // Value loaded PC-relative (nearest reference = literal pool, displacement < 0x800).
     long poolValueOf(Instruction cur) {
         if (cur == null) return -1;
         long ia = cur.getAddress().getOffset() & 0xFFFFFFFFL;
@@ -247,7 +248,7 @@ public class DirectLookupInventory extends GhidraScript {
         return -1;
     }
 
-    // Точки таблицы, беззнаково (обе ветви цепочки заканчиваются EXTU.B/EXTU.W).
+    // Unsigned table points (both chain branches end with EXTU.B/EXTU.W).
     String readVals(long addr, int points, int width) {
         StringBuilder sb = new StringBuilder();
         try {

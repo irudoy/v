@@ -63,7 +63,7 @@ class ImmoOffPatcherTest(unittest.TestCase):
         _path, stock = patcher.load_stock("JK08A", self.registry)
         modified = bytearray(stock)
         modified[0x8725] = 0x00
-        with self.assertRaisesRegex(patcher.PatchError, "ожидалось 0x01"):
+        with self.assertRaisesRegex(patcher.PatchError, "expected 0x01"):
             patcher.patch_image("JK08A", modified)
 
     def test_output_is_idempotent_and_never_overwritten(self):
@@ -88,7 +88,7 @@ class ImmoOffPatcherTest(unittest.TestCase):
                 (output.parent / "README.md").read_text(encoding="utf-8"),
             )
             output.write_bytes(b"different")
-            with self.assertRaisesRegex(patcher.PatchError, "output отличается"):
+            with self.assertRaisesRegex(patcher.PatchError, "output differs"):
                 patcher.write_output(output, image)
 
     def test_md5_sidecar_is_idempotent_and_never_overwritten(self):
@@ -102,7 +102,7 @@ class ImmoOffPatcherTest(unittest.TestCase):
             self.assertFalse(patcher.write_md5_sidecar(output, image))
             sidecar.write_text("different\n", encoding="ascii")
             with self.assertRaisesRegex(
-                patcher.PatchError, "MD5 sidecar отличается"
+                patcher.PatchError, "MD5 sidecar differs"
             ):
                 patcher.write_md5_sidecar(output, image)
 

@@ -1,36 +1,36 @@
-# Memgraph (MAGE) + Lab для RE-стека VQ HR ECU.
-# Граф структуры прошивки (функции, call/xref-рёбра), community detection (Louvain)
-# и граф-дифф для гомологии родственных прошивок. См. ../../AGENTS.md, ноту "RE-стек".
+# Memgraph (MAGE) + Lab for the VQ HR ECU reverse-engineering stack.
+# Firmware structure graph (functions and call/xref relationships), community detection
+# (Louvain), and graph diff for homologous firmware. See "RE stack" in ../../AGENTS.md.
 #
-# Контекст: поднимать ТОЛЬКО в Docker Desktop (docker context use desktop-linux).
-#   Параллельный запуск в другом контексте (Lima/colima) поднимает второй комплект,
-#   который перехватывает localhost по IPv4/IPv6 и расщепляет данные. Проверка:
+# Context: run ONLY in Docker Desktop (docker context use desktop-linux).
+#   Running concurrently in another context (Lima/colima) starts a second stack that
+#   captures localhost over IPv4/IPv6 and splits the data. Verify with:
 #   docker context show  ->  desktop-linux
 #
-# Поднять:   docker compose -f tools/memgraph/docker-compose.yml up -d
-# Остановить: docker compose -f tools/memgraph/docker-compose.yml down
-# Lab UI:    http://localhost:3000   Bolt: bolt://localhost:7687 (auth пустой)
+# Start:  docker compose -f tools/memgraph/docker-compose.yml up -d
+# Stop:   docker compose -f tools/memgraph/docker-compose.yml down
+# Lab UI: http://localhost:3000   Bolt: bolt://localhost:7687 (empty authentication)
 #
-# Персистентность: данные (snapshots + WAL) в bind-mount ./data (= tools/memgraph/data,
-#   git-ignored). Переживают пересоздание контейнера и не зависят от VM контекста –
-#   в отличие от именованного volume, который живёт внутри VM и теряется при смене
-#   контекста. Восстановление на старте: --data-recovery-on-startup=true.
+# Persistence: data (snapshots + WAL) lives in bind mount ./data
+#   (= tools/memgraph/data, ignored by git). It survives container recreation and does not
+#   depend on the VM context, unlike a named volume that lives inside the VM and is lost
+#   when contexts change. Startup recovery: --data-recovery-on-startup=true.
 services:
   memgraph:
-    image: memgraph/memgraph-mage:3.11.0   # multi-arch, нативный arm64
+    image: memgraph/memgraph-mage:3.11.0   # multi-architecture with native arm64
     container_name: vq-memgraph-mage
     ports:
-      - "127.0.0.1:7687:7687"   # Bolt: драйверы (neo4j) и Lab; IPv4-loopback явно
-      - "127.0.0.1:7444:7444"   # стрим логов -> Lab
+      - "127.0.0.1:7687:7687"   # Bolt: drivers (neo4j) and Lab; explicit IPv4 loopback
+      - "127.0.0.1:7444:7444"   # log stream -> Lab
     command:
-      - "--storage-snapshot-interval-sec=300"   # периодический snapshot (5 мин)
-      - "--storage-snapshot-on-exit=true"       # snapshot при остановке
+      - "--storage-snapshot-interval-sec=300"   # periodic snapshot (5 minutes)
+      - "--storage-snapshot-on-exit=true"       # snapshot on shutdown
       - "--storage-snapshot-retention-count=3"
-      - "--storage-wal-enabled=true"            # WAL между snapshot'ами
-      - "--data-recovery-on-startup=true"       # восстановление графа при старте
+      - "--storage-wal-enabled=true"            # WAL between snapshots
+      - "--data-recovery-on-startup=true"       # graph recovery on startup
       - "--log-level=WARNING"
     volumes:
-      - ./data/lib:/var/lib/memgraph   # snapshots + WAL (персистентность графа)
+      - ./data/lib:/var/lib/memgraph   # snapshots + WAL (graph persistence)
       - ./data/log:/var/log/memgraph
     restart: unless-stopped
 
@@ -38,10 +38,10 @@ services:
     image: memgraph/lab:latest
     container_name: vq-memgraph-lab
     ports:
-      - "127.0.0.1:3000:3000"   # веб-UI: http://localhost:3000
+      - "127.0.0.1:3000:3000"   # web UI: http://localhost:3000
     depends_on:
       - memgraph
     environment:
-      - QUICK_CONNECT_MG_HOST=memgraph   # имя сервиса в docker-сети
+      - QUICK_CONNECT_MG_HOST=memgraph   # service name in the Docker network
       - QUICK_CONNECT_MG_PORT=7687
     restart: unless-stopped

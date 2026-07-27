@@ -1,67 +1,82 @@
-# nissanecu-wiki – локальное зеркало NissanECU RE wiki
+# nissanecu-wiki - local NissanECU RE wiki mirror
 
-Полное зеркало community-вики реверс-инжиниринга ЭБУ Nissan/Infiniti (автор – fenugrec):
-`https://nissanecu.miraheze.org`. **30 страниц** (namespace Main + `Nissan ECU RE:About`) +
-**34 изображения** (`img/`). Первоисточник по firmware-механике, immo/seed-key, checksums,
-протоколам и HW SH705x.
+Complete mirror of fenugrec's community Nissan/Infiniti ECU reverse-engineering
+wiki at `https://nissanecu.miraheze.org`: **30 pages** in the Main namespace plus
+`Nissan ECU RE:About`, and **34 images** under `img/`. It is a primary source for
+firmware mechanics, immobilizer and seed-key handling, checksums, protocols, and
+SH705x hardware.
 
-- Формат: markdown-конверсия рендер-HTML (`?action=render` -> `html2text`), ссылки на
-  изображения переписаны на локальные (`img/`). Каждая страница несёт заголовок с исходным URL.
-- Лицензия: **CC BY-SA 4.0** (атрибуция – NissanECU RE wiki / участники).
+- Format: rendered HTML (`?action=render`) converted to Markdown with
+  `html2text`; image links point to local files under `img/`. Every page has a
+  header with its source URL.
+- License: **CC BY-SA 4.0**, attributed to the NissanECU RE wiki and its
+  contributors.
 - Retrieved: **2026-07-15**.
 
-Разметка проекта: [[Открытые дефы и тулинг]], [[Чексуммы]], [[Immo, NATS, клон ЭБУ]],
-[[RE-стек и реверс таблиц]] (ноты в Obsidian).
+The related project annotations are maintained in Russian Obsidian notes.
 
-## Ключевое под P0 (immo / seed-key / NV)
+## P0 material: immobilizer, seed-key, and nonvolatile data
 
-- `Firmware_re.md` (46 КБ) – структура прошивки: IVT / power-on reset, сигнатура `NHU\xF8`,
-  **LOADER / FID-метаданные**, SID-tree разбора ISO14230, **seed-key (SID27) и ключи SID36**,
-  ссылки на checksums. Центральный документ.
-- `Checksums.md` – транспортная + content checksum, sum+XOR / RIPEMD-160, области.
-- `Eeprom_code.md`, `Eeprom_dumps.md` – работа с внешним EEPROM (immo / marriage / NV вне flash).
-- `SID22.md` – ReadDataByIdentifier.
-- `Bootmode.md` – boot-режим SH705x (реколвери-прошивка через testpoints на PCB).
-- `Wdt.md` – watchdog.
+- `Firmware_re.md` (46 KB) - firmware structure: IVT and power-on reset,
+  `NHU\xF8` signature, **LOADER / FID metadata**, ISO14230 SID parsing tree,
+  **SID27 seed-key and SID36 keys**, and checksum references. This is the central
+  page.
+- `Checksums.md` - transport and content checksums, sum+XOR / RIPEMD-160, and
+  covered regions.
+- `Eeprom_code.md`, `Eeprom_dumps.md` - external EEPROM use for immobilizer,
+  marriage, and nonvolatile data outside flash.
+- `SID22.md` - ReadDataByIdentifier.
+- `Bootmode.md` - SH705x boot mode and recovery flashing through PCB test points.
+- `Wdt.md` - watchdog.
 
-## Протоколы и связь
+## Protocols and communication
 
-- `Communication_Protocols.md` (14.5 КБ) – обзор K-line / CAN, стек диагностики.
-- `C2_14230.md` – Consult-II поверх ISO14230.
-- `Std_14230.md` – стандарт ISO14230 (KWP2000), SID-и.
-- `Connect.md`, `Tools.md` – подключение и инструментарий (nisprog, freediag, кабели).
+- `Communication_Protocols.md` (14.5 KB) - K-line / CAN overview and diagnostic
+  stack.
+- `C2_14230.md` - Consult-II over ISO14230.
+- `Std_14230.md` - ISO14230 (KWP2000) and its SIDs.
+- `Connect.md`, `Tools.md` - connections and tooling such as nisprog, freediag,
+  and cables.
 
-## Железо / MCU
+## Hardware and MCU
 
-- `Ecu_hw.md` (9.4 КБ) – аппаратная часть ЭБУ: transceiver-чипы (CAN + K), раскладка,
-  hardware-версии PCB.
-- `Sh_dev.md`, `Sh_docs.md` – SH705x devices и документация (даташиты, ядро SH-2E).
+- `Ecu_hw.md` (9.4 KB) - ECU hardware, CAN and K-line transceivers, layout, and
+  PCB hardware versions.
+- `Sh_dev.md`, `Sh_docs.md` - SH705x devices and documentation, including
+  datasheets and the SH-2E core.
 
-## Размеченные референс-ROM (образцы для гомологии)
+## Annotated reference ROMs for homology
 
-- `Rom_an.md` – методика аннотирования ROM.
-- `Rom_an_cf43d.md`, `Rom_an_cf48d.md` – разобранные VQ35DE-ROM (опорные для кросс-референса).
-- `Rom_an_al500.md` – разбор ещё одного ROM.
-- `Rom_db.md` – база известных ROM (ECUID / FID / loader).
+- `Rom_an.md` - ROM annotation method.
+- `Rom_an_cf43d.md`, `Rom_an_cf48d.md` - analyzed VQ35DE ROMs for
+  cross-reference.
+- `Rom_an_al500.md` - analysis of another ROM.
+- `Rom_db.md` - database of known ROMs with ECUID, FID, and loader.
 
-## Тюнинг / карты
+## Tuning and maps
 
-- `Nissan_Map_Functionality.md`, `Tuning.md`, `Nissan_Tuning.md`, `Nissan.md` (часть –
-  редиректы/заглушки).
+- `Nissan_Map_Functionality.md`, `Tuning.md`, `Nissan_Tuning.md`, and
+  `Nissan.md`; some are redirects or stubs.
 
-## AUD (диагностический протокол Nissan)
+## Nissan AUD diagnostic protocol
 
-- `AUD.md`, `AUD_debug_tool.md` (`AUD_AUD_debug_tool.md` – та же страница как subpage-алиас).
+- `AUD.md`, `AUD_debug_tool.md`; `AUD_AUD_debug_tool.md` is the same page under a
+  subpage alias.
 
-## Служебное
+## Administrative pages
 
-- `Main_Page.md`, `Nissan_ECU_RE_About.md`, `RE5R05A_TCM_Analysis.md` (АКПП, вне скоупа мотора).
+- `Main_Page.md`, `Nissan_ECU_RE_About.md`, and
+  `RE5R05A_TCM_Analysis.md`; the last covers the transmission and is outside the
+  engine scope.
 
-## Обновление зеркала
+## Mirror refresh procedure
 
-1. Перечислить страницы: API `…/w/api.php?action=query&list=allpages&apnamespace=0&aplimit=500`
-   (+ `apnamespace=4`).
-2. Каждую страницу забрать как `…/wiki/<Title>?action=render`, прогнать через `html2text`
-   (`body_width=0`), добавить заголовок с URL.
-3. Изображения из markdown скачать в `img/`, переписать ссылки на локальные.
-4. Лицензию сверить: API `meta=siteinfo&siprop=rightsinfo`.
+1. List pages through
+   `.../w/api.php?action=query&list=allpages&apnamespace=0&aplimit=500`, plus
+   `apnamespace=4`.
+2. Fetch each page as `.../wiki/<Title>?action=render`, process it with
+   `html2text` using `body_width=0`, and add a source-URL header.
+3. Download Markdown-linked images into `img/` and rewrite the links to local
+   paths.
+4. Verify licensing through the API using
+   `meta=siteinfo&siprop=rightsinfo`.

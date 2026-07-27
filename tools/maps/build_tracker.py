@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
-"""Ledger карт канонического ROM - проекция каталога из графа.
+"""Canonical-ROM map ledger projected from the graph catalog.
 
-Система учёта - граф: карты, их входы интерполяции, оси и аксессоров кладёт туда
-load_maps.py из переписей резолвера (Stage 3) и ручного слоя. Ledger - читаемый срез
-этого каталога: worklist разбора, который виден в диффе и проходит ревью. Правится он
-не правкой файла: геометрия и находки живут в каноническом источнике, который
-разрешает defs/rom-inheritance.toml, а этот скрипт только печатает граф.
+The graph is the system of record. load_maps.py stores maps, interpolation
+wrappers, axes, and accessors from Stage 3 resolver censuses and the handwritten
+layer. The ledger is a readable projection of this catalog: a reviewable
+reverse-engineering worklist visible in diffs. Do not edit it directly. Geometry
+and findings live in the canonical source resolved by
+defs/rom-inheritance.toml; this script only renders the graph.
 
-Открытая работа - строки с уровнем candidate и пустой semantics. Отдельной колонки
-status здесь нет: она была бы рендером уровня, роли и семантики, то есть копией
-соседних колонок, а копия факта и есть то, из-за чего источники расходятся.
+Open work consists of candidate rows with empty semantics. There is no separate
+status column because it would merely render confidence, role, and semantics,
+duplicating adjacent facts and creating another source of divergence.
 
-Колонка vals - диапазон ячеек, измеренный по образу (Stage 4). Она и делит открытую
-работу: таблица 0..0 либо сплошь 0xFF стоит разбора иначе, чем поверхность значений.
+The vals column is the cell range measured from the image in Stage 4. It
+partitions open work: an all-zero or all-0xFF table requires different analysis
+from a populated surface.
 
-Запуск: uv run --no-project --with neo4j python tools/maps/build_tracker.py \
+Usage: uv run --no-project --with neo4j python tools/maps/build_tracker.py \
           [<rom>] [<output.csv>]
 """
 import csv
@@ -31,8 +33,9 @@ FIELDS = ["table", "family", "via", "kernel", "dim", "storagetype", "vals", "sca
           "axis_x", "axis_y", "accessors", "sites", "confidence", "role", "semantics",
           "note"]
 
-# Сверху - разобранное, снизу - открытое: сначала таблицы по уровню и наличию семантики,
-# затем базы, тюнингу не подлежащие (порог компаратора, отключённая калибровкой ветка).
+# Resolved work appears first and open work last. Sort tables by confidence and
+# semantic presence, then non-tunable bases such as comparator thresholds and
+# calibration-disabled branches.
 LEVEL_ORDER = {"silicon": 0, "code": 1, "candidate": 2, "pattern": 3}
 ROLE_ORDER = {"table": 0, "threshold": 1, "dead": 2}
 
@@ -54,14 +57,14 @@ RETURN m.addr AS table, m.family AS family, m.width AS width, m.height AS height
 
 
 def shape(width, height):
-    """Форма таблицы: у 2D - сетка, у 1D - число точек оси."""
+    """Format a 2D grid or a 1D axis-point count."""
     if width is None:
         return ""
     return f"{width}x{height}" if height else f"1D-{width}"
 
 
 def scaling(r):
-    """Шкала одной строкой; уровень при ней - её собственный, не уровень карты."""
+    """Format scaling on one line using its own confidence, not map confidence."""
     if not r["scale_expr"] or r["scale_expr"].strip() == "x":
         return ""
     return (f"{r['scale_expr']} {r['units']}"
@@ -101,17 +104,17 @@ def report(out, tracker):
     for r in out:
         fam[r["family"]] = fam.get(r["family"], 0) + 1
         role[r["role"]] = role.get(r["role"], 0) + 1
-    print(f"{os.path.relpath(tracker)}: {len(out)} карт")
-    print("  уровни: " + ", ".join(f"{k}={tally[k]}" for k in LEVEL_ORDER if k in tally))
-    print("  роли: " + ", ".join(f"{k}={role[k]}" for k in ROLE_ORDER if k in role))
-    print("  семейства: " + ", ".join(f"{k}={fam[k]}" for k in sorted(fam)))
+    print(f"{os.path.relpath(tracker)}: {len(out)} maps")
+    print("  confidence: " + ", ".join(f"{k}={tally[k]}" for k in LEVEL_ORDER if k in tally))
+    print("  roles: " + ", ".join(f"{k}={role[k]}" for k in ROLE_ORDER if k in role))
+    print("  families: " + ", ".join(f"{k}={fam[k]}" for k in sorted(fam)))
     named = sum(1 for r in out if r["semantics"])
     empty = sum(1 for r in out if not r["via"] and not r["accessors"])
-    print(f"  с семантикой: {named}/{len(out)}")
-    print(f"  открыто (candidate без семантики): "
+    print(f"  with semantics: {named}/{len(out)}")
+    print(f"  open (candidate without semantics): "
           f"{sum(1 for r in out if r['confidence'] == 'candidate' and not r['semantics'])}")
     if empty:
-        print(f"ВНИМАНИЕ: {empty} карт без входа и аксессора - осиротевшие узлы графа")
+        print(f"WARNING: {empty} maps have no wrapper or accessor and are orphan graph nodes")
 
 
 def main():
@@ -125,8 +128,8 @@ def main():
         tracker = sys.argv[2]
     elif source_model.inherited:
         sys.exit(
-            f"{rom} наследует аннотации из {source_model.source}; "
-            "его ledger в defs не хранится, укажите временный output.csv"
+            f"{rom} inherits annotations from {source_model.source}; "
+            "its ledger is not stored in defs, so specify a temporary output.csv"
         )
     else:
         tracker = os.path.join(ROOT, "defs", f"{rom}.maps.csv")
@@ -136,7 +139,7 @@ def main():
         rows = [r.data() for r in s.run(QUERY, rom=rom)]
     driver.close()
     if not rows:
-        sys.exit(f"в графе нет карт rom={rom} - слой строит tools/memgraph/load_maps.py")
+        sys.exit(f"no maps for rom={rom} in graph; tools/memgraph/load_maps.py builds the layer")
 
     out = project(rows)
     with open(tracker, "w", newline="") as fh:

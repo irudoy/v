@@ -1,9 +1,10 @@
-// CoverageStat.java – покрытие образа разметкой: инструкции, данные, неразмеченные байты,
-// и доля инструкций вне тела функции. Мера того, какая часть кода вообще видна анализу:
-// ссылка существует только у дизассемблированной инструкции, а экспорт xref идёт по телам
-// функций, поэтому неразмеченный код не даёт ни ссылок, ни рёбер графа.
+// CoverageStat.java - image coverage by defined instructions, data, undefined
+// bytes, and the share of instructions outside function bodies. This measures
+// how much code analysis can see: only disassembled instructions have
+// references, and xref export walks function bodies, so undefined code produces
+// neither references nor graph edges.
 //
-// Запуск (headless): -postScript CoverageStat.java
+// Usage (headless): -postScript CoverageStat.java
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;

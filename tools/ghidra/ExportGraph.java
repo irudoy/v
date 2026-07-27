@@ -1,10 +1,11 @@
-// Экспорт call-графа текущей программы в CSV (узлы функций + рёбра CALLS)
-// для загрузки в Memgraph. Java GhidraScript (headless, PyGhidra не требуется).
+// Export the current program call graph to CSV as function nodes and CALLS edges
+// for Memgraph loading. Java GhidraScript; headless and no PyGhidra required.
 //
-// Запуск: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
+// Usage: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
 //           -scriptPath tools/ghidra -postScript ExportGraph.java <outdir>
-// Пишет <outdir>/funcs.csv (addr,name,size,is_thunk,is_external) и
-//       <outdir>/calls.csv (src,dst). Адреса – hex-строка без 0x (ключ узла).
+// Writes <outdir>/funcs.csv (addr,name,size,is_thunk,is_external) and
+// <outdir>/calls.csv (src,dst). Addresses are hexadecimal strings without 0x
+// and serve as node keys.
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.FunctionManager;

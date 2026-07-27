@@ -1,6 +1,6 @@
 # Tools
 
-> Зеркало страницы NissanECU RE wiki. Источник: https://nissanecu.miraheze.org/wiki/Tools
+> Local mirror of a NissanECU RE wiki page. Source: https://nissanecu.miraheze.org/wiki/Tools
 > Retrieved: 2026-07-15. License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) ()
 
 ---
@@ -54,7 +54,7 @@ A free disassembler that can do just about anything non-hardcore enthusiasts cou
 
 Extremely useful tool for viewing xml files. The color coding helps you identify the attributes and make proper changes. 
 
-Hint: Go to Plugins Tab -> Plugins Admin and download “XML Tools” and “Npp Xml Treeview” 
+Hint: Go to Plugins Tab -> Plugins Admin and download "XML Tools" and "Npp Xml Treeview"
 
 **Download Link;**   
 **Notepad++ - > ** <https://notepad-plus-plus.org/downloads/>

@@ -1,6 +1,6 @@
-# Exact-code наследование аннотаций. Отсутствующий ROM является собственным
-# каноническим источником. Наследник сохраняет отдельный binary/export/слой Memgraph,
-# но использует один живой набор структурных и семантических CSV.
+# Exact-code annotation inheritance. A ROM absent from this file is its own
+# canonical source. An inheritor retains a separate binary, export, and Memgraph
+# layer while using one live set of structural and semantic CSV files.
 
 [inherit.JK03A]
 source = "JK08A"
@@ -8,4 +8,4 @@ kind = "exact-code"
 target_sha256 = "f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 ranges = ["0x000000:0x008200", "0x020000:0x100000"]
-evidence = "Исполняемые диапазоны 0x000000..0x0081ff и 0x020000..0x0fffff совпадают побайтно; сверены 2312 диапазонов функций и 16 rom_const."
+evidence = "Executable ranges 0x000000..0x0081ff and 0x020000..0x0fffff are byte-identical; 2,312 function ranges and 16 rom_const values were verified."

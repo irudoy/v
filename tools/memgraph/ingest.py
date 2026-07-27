@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Полный воспроизводимый ingest одного ROM в Memgraph.
+"""Complete reproducible ingestion of one ROM into Memgraph.
 
-Порядок владельцев узлов фиксирован:
+Node-owner order is fixed:
   load_graph.py -> load_xrefs.py -> load_maps.py -> load_code.py -> audit
 
-Запуск:
+Invocation:
   uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A
 """
 import argparse
@@ -41,12 +41,12 @@ class IngestError(ProvenanceError):
 
 def read_export(path, expected):
     if not path.exists():
-        raise IngestError(f"нет входа экспорта {path}")
+        raise IngestError(f"export input not found: {path}")
     with path.open(newline="", encoding="utf-8") as fh:
         reader = csv.DictReader(fh)
         if reader.fieldnames != expected:
             raise IngestError(
-                f"{path}: заголовок {reader.fieldnames}, ожидается {expected}"
+                f"{path}: header {reader.fieldnames}; expected {expected}"
             )
         return list(reader)
 
@@ -59,60 +59,60 @@ def check_export_addr(path, row_number, column, value):
     if not isinstance(value, str) or not load_code.ADDR_RE.match(value):
         export_error(
             path, row_number,
-            f"{column} не 8 hex-цифр нижнего регистра: {value!r}",
+            f"{column} is not eight lowercase hexadecimal digits: {value!r}",
         )
 
 
 def validate_exports(exported, export_dir):
-    """Проверить значения и внешние ключи экспортов до первого loader'а."""
+    """Validate export values and foreign keys before the first loader runs."""
     funcs_path = export_dir / "funcs.csv"
     func_addrs = set()
     for row_number, row in enumerate(exported["funcs.csv"], 2):
         if None in row or any(value is None for value in row.values()):
-            export_error(funcs_path, row_number, "число полей не совпадает с заголовком")
+            export_error(funcs_path, row_number, "field count does not match the header")
         check_export_addr(funcs_path, row_number, "addr", row["addr"])
         if row["addr"] in func_addrs:
-            export_error(funcs_path, row_number, f"повтор addr {row['addr']}")
+            export_error(funcs_path, row_number, f"duplicate addr {row['addr']}")
         func_addrs.add(row["addr"])
         if not row["size"].isdecimal() or int(row["size"]) <= 0:
             export_error(
                 funcs_path, row_number,
-                f"size не положительное десятичное число: {row['size']!r}",
+                f"size is not a positive decimal number: {row['size']!r}",
             )
         for column in ("is_thunk", "is_external"):
             if row[column] not in BOOL_VALUES:
                 export_error(
                     funcs_path, row_number,
-                    f"{column} вне {sorted(BOOL_VALUES)}: {row[column]!r}",
+                    f"{column} is outside {sorted(BOOL_VALUES)}: {row[column]!r}",
                 )
 
     calls_path = export_dir / "calls.csv"
     for row_number, row in enumerate(exported["calls.csv"], 2):
         if None in row or any(value is None for value in row.values()):
-            export_error(calls_path, row_number, "число полей не совпадает с заголовком")
+            export_error(calls_path, row_number, "field count does not match the header")
         for column in ("src", "dst"):
             check_export_addr(calls_path, row_number, column, row[column])
             if row[column] not in func_addrs:
                 export_error(
                     calls_path, row_number,
-                    f"{column}={row[column]} отсутствует в funcs.csv",
+                    f"{column}={row[column]} is absent from funcs.csv",
                 )
 
     xrefs_path = export_dir / "xrefs.csv"
     for row_number, row in enumerate(exported["xrefs.csv"], 2):
         if None in row or any(value is None for value in row.values()):
-            export_error(xrefs_path, row_number, "число полей не совпадает с заголовком")
+            export_error(xrefs_path, row_number, "field count does not match the header")
         check_export_addr(xrefs_path, row_number, "func_addr", row["func_addr"])
         check_export_addr(xrefs_path, row_number, "periph_addr", row["periph_addr"])
         if row["func_addr"] not in func_addrs:
             export_error(
                 xrefs_path, row_number,
-                f"func_addr={row['func_addr']} отсутствует в funcs.csv",
+                f"func_addr={row['func_addr']} is absent from funcs.csv",
             )
         if row["kind"] not in XREF_KINDS:
             export_error(
                 xrefs_path, row_number,
-                f"kind вне {sorted(XREF_KINDS)}: {row['kind']!r}",
+                f"kind is outside {sorted(XREF_KINDS)}: {row['kind']!r}",
             )
     return func_addrs
 
@@ -181,7 +181,7 @@ def claim_inventory(export_funcs, xrefs, funcs, vars_, maps, axes):
     for row in funcs:
         if row["addr"] not in inventory["Func"]:
             raise IngestError(
-                f"defs-функция {row['addr']} отсутствует в export funcs.csv"
+                f"defs function {row['addr']} is absent from exported funcs.csv"
             )
         inventory["Func"][row["addr"]].update(
             confidence=row["confidence"],
@@ -211,7 +211,7 @@ def preflight(export_dir, rom, strict):
     })
     if orphans:
         raise IngestError(
-            f"экспорт сделан до RecoverFuncs: {len(orphans)} аксессоров без Func: "
+            f"export predates RecoverFuncs: {len(orphans)} accessors without Func nodes: "
             f"{orphans[:10]}"
         )
 
@@ -233,8 +233,8 @@ def preflight(export_dir, rom, strict):
     ungrounded = [claim for claim in code if not analysis.grounded[claim]]
     if strict and (below or ungrounded):
         raise IngestError(
-            f"strict provenance: ниже declared={len(below)}, "
-            f"без grounding={len(ungrounded)}"
+            f"strict provenance: below declared={len(below)}, "
+            f"without grounding={len(ungrounded)}"
         )
     print(
         f"Preflight {rom}: funcs={len(exported['funcs.csv'])}, "
@@ -242,12 +242,12 @@ def preflight(export_dir, rom, strict):
         f"claims={len(levels)}, RESTS_ON={len(dependencies)}"
     )
     print(
-        f"  источник аннотаций={model.source}, режим={model.kind}, "
-        f"образ значений={rom}"
+        f"  annotation source={model.source}, mode={model.kind}, "
+        f"value image={rom}"
     )
     print(
-        f"  code/silicon ниже declared={len(below)}, "
-        f"без grounding={len(ungrounded)}, cyclic_SCC={len(analysis.cyclic_components)}"
+        f"  code/silicon below declared={len(below)}, "
+        f"without grounding={len(ungrounded)}, cyclic_SCC={len(analysis.cyclic_components)}"
     )
     return registry, model, paths
 
@@ -270,7 +270,7 @@ def commands(export_dir, rom, registry, paths, strict):
 
 
 def display_command(command):
-    """Стабильная команда, пригодная после удаления временной uv-среды."""
+    """Return a stable command that remains valid after the temporary uv environment is removed."""
     return [*STABLE_PYTHON, *command[1:]]
 
 
@@ -279,15 +279,15 @@ def parser():
     out.add_argument("rom", nargs="?", default="JK08A")
     out.add_argument(
         "--export-dir", type=Path,
-        help="каталог экспорта Ghidra; default: ~/tools/ghidra-projects/export-<rom>",
+        help="Ghidra export directory; default: ~/tools/ghidra-projects/export-<rom>",
     )
     out.add_argument(
         "--strict", action="store_true",
-        help="считать effective downgrade и отсутствие grounding ошибкой",
+        help="treat an effective downgrade or missing grounding as an error",
     )
     out.add_argument(
         "--dry-run", action="store_true",
-        help="выполнить preflight и показать команды без изменения графа",
+        help="run preflight and display commands without changing the graph",
     )
     return out
 

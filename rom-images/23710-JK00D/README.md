@@ -1,34 +1,34 @@
-# 23710-JK00D – исходный ROM
+# 23710-JK00D - stock ROM
 
-Собственный дамп физического стендового ЭБУ `23710-JK00D`, снятый 2026-07-26
-через PCMFlash 1.2.0, модуль 18 `Nissan: EFI SH705822N, SH705828N
-(Hitachi SH7058/1MB)`, адаптер Scanmatik-SM2 USB.
+Owned dump from the physical `23710-JK00D` bench ECU, read on 2026-07-26 with
+PCMFlash 1.2.0, module 18
+`Nissan: EFI SH705822N, SH705828N (Hitachi SH7058/1MB)`, through a
+Scanmatik-SM2 USB adapter.
 
-## Состав
+## Contents
 
-- `1JK00D-20260726-stock.bin` – flash-ROM, 1 048 576 байт
-  (`0x100000`);
-- `1JK00D-20260726-stock.bin.md5` – MD5 sidecar;
-- `1JK00D-20260726-pcmflash-identification.png` – снимок успешной идентификации
-  PCMFlash.
+- `1JK00D-20260726-stock.bin` - flash ROM, 1,048,576 bytes (`0x100000`);
+- `1JK00D-20260726-stock.bin.md5` - MD5 sidecar;
+- `1JK00D-20260726-pcmflash-identification.png` - screenshot of successful
+  PCMFlash identification.
 
-Хеши ROM:
+ROM hashes:
 
 - SHA-256: `e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3`;
 - MD5: `e22136ffcb90319c4e1ab678d0ee5fbe`.
 
-## Идентификация
+## Identification
 
-PCMFlash и строки внутри образа согласуются:
+PCMFlash identification agrees with strings inside the image:
 
-| Поле | Значение | Смещение в ROM |
-|---|---|---:|
-| ECM part # | `23710-JK00D` | идентификация PCMFlash |
-| Калибровка | `1JK00D00000` | `0x8204` |
-| Основной номер / идентификатор ПО | `8MFK36N15` | `0x7009` |
-| Класс EFI / MCU | `SH705822N` | `0x50C6` |
-| Протокол | Hitachi CAN | идентификация PCMFlash |
+| Field | Value | ROM offset |
+|-------|-------|-----------:|
+| ECM part # | `23710-JK00D` | PCMFlash identification |
+| Calibration | `1JK00D00000` | `0x8204` |
+| Main number / software ID | `8MFK36N15` | `0x7009` |
+| EFI / MCU class | `SH705822N` | `0x50C6` |
+| Protocol | Hitachi CAN | PCMFlash identification |
 
-Комплект содержит только главный flash-ROM. Отсутствие файла EEPROM не доказывает
-отсутствие внешнего EEPROM на плате; его наличие и содержимое остаются отдельной
-задачей.
+The package contains only the main flash ROM. The absence of an EEPROM file does
+not establish that the board has no external EEPROM; its presence and contents
+remain a separate task.

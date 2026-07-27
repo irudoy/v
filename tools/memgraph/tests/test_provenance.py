@@ -64,11 +64,11 @@ class EvidenceTest(unittest.TestCase):
             parse_evidence("consumer:00000002", "confidence", "row")
 
     def test_empty_terminal_is_not_evidence(self):
-        with self.assertRaisesRegex(ProvenanceError, "пустое значение"):
+        with self.assertRaisesRegex(ProvenanceError, "empty value"):
             parse_evidence("spec:", "contract_conf", "row")
 
     def test_duplicate_token_is_rejected_after_normalization(self):
-        with self.assertRaisesRegex(ProvenanceError, "повтор"):
+        with self.assertRaisesRegex(ProvenanceError, "duplicate"):
             parse_evidence("spec:body; spec: body", "confidence", "row")
 
     def test_canonical_round_trip_and_machine_anchors(self):
@@ -101,7 +101,7 @@ class EvidenceTest(unittest.TestCase):
 class ClaimGraphTest(unittest.TestCase):
     def test_dependency_ref_must_address_target(self):
         source = claim("00000001")
-        with self.assertRaisesRegex(ProvenanceError, "не адресует"):
+        with self.assertRaisesRegex(ProvenanceError, "does not address"):
             Dependency(
                 source, "consumer", "Func", "00000002",
                 "confidence", "00000003",
@@ -177,7 +177,7 @@ class ClaimGraphTest(unittest.TestCase):
         self.assertNotIn(sem_user, contract_impact)
 
     def test_structural_identity_validates_address(self):
-        with self.assertRaisesRegex(ProvenanceError, "8 hex"):
+        with self.assertRaisesRegex(ProvenanceError, "eight hexadecimal digits"):
             StructuralKey(ROM, "Map", "1000")
 
     def test_structural_impact_has_own_identity(self):

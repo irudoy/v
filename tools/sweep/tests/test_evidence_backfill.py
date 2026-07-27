@@ -106,7 +106,7 @@ class BackfillControlPlaneTest(unittest.TestCase):
                     "node": node["identity"],
                     "artifact_sha256": self.inventory[node["artifact"]],
                     "properties": node["properties"],
-                    "summary": "Независимый blind-анализ fixture.",
+                    "summary": "Independent blind fixture analysis.",
                 }
             )
         verdicts = []
@@ -119,8 +119,8 @@ class BackfillControlPlaneTest(unittest.TestCase):
                 "decision": "accept_code",
                 "evidence": "site:test-fixture",
                 "values": values,
-                "trace": "Fixture непрерывного машинного трейса.",
-                "verifier_rationale": "Терминальный site подтверждает fixture-заявку.",
+                "trace": "Fixture complete machine trace.",
+                "verifier_rationale": "The terminal site confirms the fixture claim.",
             }
             if claim["label"] == "Map" and claim["property"] == "confidence":
                 dead = values["role"] == "dead"
@@ -166,11 +166,11 @@ class BackfillControlPlaneTest(unittest.TestCase):
             if semantic:
                 verdict = verdicts[semantic["identity"]]
                 notes[node["identity"]] = (
-                    f"Fixture. Судьба результата: {verdict['output_disposition']}. "
-                    f"Цель результата: {verdict['target']}. Трейс шкалы: fixture."
+                    f"Fixture. Result disposition: {verdict['output_disposition']}. "
+                    f"Result target: {verdict['target']}. Scale trace: fixture."
                 )
             else:
-                notes[node["identity"]] = "Fixture. Трейс шкалы: fixture."
+                notes[node["identity"]] = "Fixture. Scale trace: fixture."
         items = []
         for claim in self.manifest["claims"]:
             verdict = verdicts[claim["identity"]]
@@ -207,7 +207,7 @@ class BackfillControlPlaneTest(unittest.TestCase):
     def test_artifact_sets_must_be_complete_and_deterministic(self):
         target = self.right / self.manifest["nodes"][0]["artifact"]
         target.write_text("different\n", encoding="utf-8")
-        with self.assertRaisesRegex(backfill.BackfillError, "недетерминированы"):
+        with self.assertRaisesRegex(backfill.BackfillError, "nondeterministic"):
             backfill.verify_artifacts(self.manifest_path, self.left, self.right)
 
     def test_archive_requires_exact_frozen_worklist(self):
@@ -235,7 +235,7 @@ class BackfillControlPlaneTest(unittest.TestCase):
         broken["verdicts"][0]["evidence"] = "wave:fixture;arg:0"
         broken_path = self.repo / "process-only.json"
         backfill.write_json(broken_path, self._archive(broken))
-        with self.assertRaisesRegex(backfill.BackfillError, "нет factual evidence"):
+        with self.assertRaisesRegex(backfill.BackfillError, "no factual evidence"):
             backfill.validate_results(
                 self.manifest_path, self.artifact_path, broken_path
             )
@@ -273,7 +273,7 @@ class BackfillControlPlaneTest(unittest.TestCase):
         decision["evidence_rewrites"] = {
             "consumer:00012345@confidence": "site:00012346",
         }
-        with self.assertRaisesRegex(backfill.BackfillError, "только в ROM-site"):
+        with self.assertRaisesRegex(backfill.BackfillError, "only be rewritten as ROM site"):
             self._validated_decisions(decisions=decisions, results=results)
 
     def test_semantics_revision_cannot_change_scale_units(self):
@@ -285,7 +285,7 @@ class BackfillControlPlaneTest(unittest.TestCase):
         )
         decision["action"] = "revise"
         decision["values"] = {"units": "fixture units"}
-        with self.assertRaisesRegex(backfill.BackfillError, "запрещённые поля"):
+        with self.assertRaisesRegex(backfill.BackfillError, "prohibited fields"):
             self._validated_decisions(decisions=decisions)
 
     def test_raw_identity_is_not_a_scale_claim(self):
@@ -334,9 +334,9 @@ class BackfillControlPlaneTest(unittest.TestCase):
             "artifact_sha256": results["verdicts"][0]["artifact_sha256"],
             "decision": "downgrade",
             "blocker": "Fixture blocker.",
-            "verifier_rationale": "Заявка опровергнута fixture-проверкой.",
+            "verifier_rationale": "The fixture check refuted the claim.",
         }
-        with self.assertRaisesRegex(backfill.BackfillError, "нельзя принять"):
+        with self.assertRaisesRegex(backfill.BackfillError, "cannot be accepted"):
             self._validated_decisions(results=results)
 
     def test_recovery_composition_replaces_only_full_frozen_node(self):
@@ -357,7 +357,7 @@ class BackfillControlPlaneTest(unittest.TestCase):
                         for item in self.results["analyses"]
                         if item["node"] == node["identity"]
                     ),
-                    "summary": "Проверенный recovery-анализ.",
+                    "summary": "Verified recovery analysis.",
                 }
             ],
             "verdicts": [
@@ -391,7 +391,7 @@ class BackfillControlPlaneTest(unittest.TestCase):
             for item in run_set["result"]["analyses"]
             if item["node"] == node["identity"]
         )
-        self.assertEqual(replaced["summary"], "Проверенный recovery-анализ.")
+        self.assertEqual(replaced["summary"], "Verified recovery analysis.")
 
     def test_apply_is_idempotent_and_rejects_drift(self):
         backfill.validate_results(

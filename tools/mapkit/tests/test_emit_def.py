@@ -53,7 +53,7 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         presentation["static_axis_y"] = [1, 2, 3]
         self.assertEqual(
             emit_def.emittable(self.map, {}, presentation),
-            "нужна Static Y Axis из 6 точек",
+            "a Static Y Axis with 6 points is required",
         )
 
     def test_xml_keeps_row_major_geometry_mask_and_axis_types(self):
@@ -130,7 +130,7 @@ class EmitDefSwitchTest(unittest.TestCase):
     def test_switch_rejects_state_with_wrong_byte_count(self):
         switch = emit_def.dtc_switches("JK08A")[0]
         switch["state"][1]["data"] = "00"
-        with self.assertRaisesRegex(SystemExit, "12 hex-байт"):
+        with self.assertRaisesRegex(SystemExit, "12 hexadecimal bytes"):
             emit_def.switch_xml(switch, 2)
 
     def test_tracked_xml_contains_exact_generated_p1610_switch(self):

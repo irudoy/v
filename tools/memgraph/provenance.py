@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Чистая модель провенанса заявок слоя кода и калибровок.
+"""Pure provenance model for code and calibration-layer claims.
 
-Источник истины остаётся в CSV. Этот модуль разбирает evidence, строит граф заявок,
-вычисляет эффективную уверенность по слабейшему звену и обратный impact. Memgraph
-здесь не импортируется: загрузчик использует ту же модель, что и unit-тесты.
+CSV remains the source of truth. This module parses evidence, builds a claim graph,
+computes effective confidence from the weakest link, and calculates reverse impact.
+Memgraph is not imported here: the loader and unit tests use the same model.
 """
 from collections import Counter, defaultdict, deque
 from dataclasses import dataclass
@@ -22,7 +22,7 @@ PROPS_BY_LABEL = {
     "Axis": frozenset({"confidence", "scale_conf"}),
 }
 
-# Порядок меток совпадает с приоритетом разрешения адреса в load_code.py.
+# Label order matches address-resolution precedence in load_code.py.
 EDGE_ROLES = {
     "consumer": ("Func", "Reg"),
     "writes": ("Reg", "Func"),
@@ -50,7 +50,7 @@ ROM_CONST_BINDING_RE = re.compile(
 
 
 class ProvenanceError(ValueError):
-    """Ошибка схемы или несогласованность графа заявок."""
+    """Schema error or claim-graph inconsistency."""
 
 
 @dataclass(frozen=True, order=True)
@@ -62,14 +62,14 @@ class ClaimKey:
 
     def __post_init__(self):
         if self.label not in PROPS_BY_LABEL:
-            raise ProvenanceError(f"неизвестная метка заявки {self.label!r}")
+            raise ProvenanceError(f"unknown claim label {self.label!r}")
         if not ADDR_RE.match(self.addr):
-            raise ProvenanceError(f"адрес заявки не 8 hex-цифр: {self.addr!r}")
+            raise ProvenanceError(f"claim address is not eight hexadecimal digits: {self.addr!r}")
         if self.prop not in RANKED_PROPS:
-            raise ProvenanceError(f"свойство заявки не ранжируется: {self.prop!r}")
+            raise ProvenanceError(f"claim property is not ranked: {self.prop!r}")
         if self.prop not in PROPS_BY_LABEL[self.label]:
             raise ProvenanceError(
-                f"{self.label}.{self.prop} не существует; допустимо "
+                f"{self.label}.{self.prop} does not exist; allowed: "
                 f"{sorted(PROPS_BY_LABEL[self.label])}"
             )
 
@@ -109,26 +109,26 @@ class Dependency:
 
     def __post_init__(self):
         if self.role not in EDGE_ROLES:
-            raise ProvenanceError(f"роль ребра вне словаря: {self.role!r}")
+            raise ProvenanceError(f"relationship role is outside the vocabulary: {self.role!r}")
         if self.target_label not in EDGE_ROLES[self.role]:
             raise ProvenanceError(
-                f"роль {self.role} не может адресовать {self.target_label}"
+                f"role {self.role} cannot target {self.target_label}"
             )
         if not ADDR_RE.match(self.target_addr):
-            raise ProvenanceError(f"адрес цели не 8 hex-цифр: {self.target_addr!r}")
+            raise ProvenanceError(f"target address is not eight hexadecimal digits: {self.target_addr!r}")
         if edge_target(self.ref) != self.target_addr:
             raise ProvenanceError(
-                f"ссылка {self.ref!r} не адресует цель {self.target_addr}"
+                f"reference {self.ref!r} does not address target {self.target_addr}"
             )
         if self.target_prop not in TARGET_PROPS:
-            raise ProvenanceError(f"неизвестное свойство цели {self.target_prop!r}")
+            raise ProvenanceError(f"unknown target property {self.target_prop!r}")
         if (self.target_prop != STRUCTURAL
                 and self.target_prop not in PROPS_BY_LABEL[self.target_label]):
             raise ProvenanceError(
-                f"{self.target_label}.{self.target_prop} не существует"
+                f"{self.target_label}.{self.target_prop} does not exist"
             )
         if self.role == "from_map" and self.target_prop != STRUCTURAL:
-            raise ProvenanceError("from_map обязан ссылаться на @structural")
+            raise ProvenanceError("from_map must reference @structural")
 
     @property
     def target(self):
@@ -143,7 +143,7 @@ class Dependency:
 
     @property
     def target_identity(self):
-        """Полная цель, включая structural, для обратного impact."""
+        """Return the complete target, including structural identity, for reverse impact."""
         if self.target_prop == STRUCTURAL:
             return StructuralKey(
                 self.source.rom, self.target_label, self.target_addr
@@ -171,9 +171,9 @@ class StructuralKey:
 
     def __post_init__(self):
         if self.label not in PROPS_BY_LABEL:
-            raise ProvenanceError(f"неизвестная метка структуры {self.label!r}")
+            raise ProvenanceError(f"unknown structural label {self.label!r}")
         if not ADDR_RE.match(self.addr):
-            raise ProvenanceError(f"адрес структуры не 8 hex-цифр: {self.addr!r}")
+            raise ProvenanceError(f"structural address is not eight hexadecimal digits: {self.addr!r}")
 
     @property
     def prop(self):
@@ -201,19 +201,19 @@ class ClaimAnalysis:
 
 
 def edge_target(ref):
-    """Адрес начала цели из `addr` либо `addr+offset`."""
+    """Return the target start address from `addr` or `addr+offset`."""
     match = EDGE_REF_RE.match(ref)
     return match.group(1) if match else None
 
 
 def parse_evidence(text, source_prop, context="evidence"):
-    """Разобрать claim-specific evidence в типизированные токены.
+    """Parse claim-specific evidence into typed tokens.
 
-    Адресный токен обязан назвать свойство цели: `role:addr@target_prop`.
-    Терминал и метаданные процесса свойства цели не имеют.
+    An address token must name its target property: `role:addr@target_prop`.
+    Terminal and process-metadata tokens have no target property.
     """
     if source_prop not in RANKED_PROPS:
-        raise ProvenanceError(f"{context}: неизвестное source property {source_prop!r}")
+        raise ProvenanceError(f"{context}: unknown source property {source_prop!r}")
     tokens = []
     seen = set()
     for raw in text.split(";"):
@@ -221,34 +221,34 @@ def parse_evidence(text, source_prop, context="evidence"):
         if not raw:
             continue
         if ":" not in raw:
-            raise ProvenanceError(f"{context}: токен без класса: {raw!r}")
+            raise ProvenanceError(f"{context}: token has no class: {raw!r}")
         role, value = raw.split(":", 1)
         value = value.strip()
         if role not in VOCAB:
             raise ProvenanceError(
-                f"{context}: класс {role!r} вне словаря {sorted(VOCAB)}"
+                f"{context}: class {role!r} is outside vocabulary {sorted(VOCAB)}"
             )
         if not value:
-            raise ProvenanceError(f"{context}: пустое значение {role}:")
+            raise ProvenanceError(f"{context}: empty value for {role}:")
         if role in EDGE_ROLES:
             if "@" not in value:
                 raise ProvenanceError(
-                    f"{context}: адресный токен без @target_prop: {raw!r}"
+                    f"{context}: address token lacks @target_prop: {raw!r}"
                 )
             ref, target_prop = value.rsplit("@", 1)
             target = edge_target(ref)
             if target is None:
                 raise ProvenanceError(
-                    f"{context}: ссылка не имеет формы addr[+offset]: {ref!r}"
+                    f"{context}: reference does not have form addr[+offset]: {ref!r}"
                 )
             if target_prop not in TARGET_PROPS:
                 raise ProvenanceError(
-                    f"{context}: target property {target_prop!r} вне "
+                    f"{context}: target property {target_prop!r} is outside "
                     f"{sorted(TARGET_PROPS)}"
                 )
             if role == "from_map" and target_prop != STRUCTURAL:
                 raise ProvenanceError(
-                    f"{context}: from_map зависит от структуры, нужен @structural"
+                    f"{context}: from_map depends on structure and requires @structural"
                 )
             token = EvidenceToken(
                 source_prop, role, ref, target, target_prop
@@ -256,25 +256,25 @@ def parse_evidence(text, source_prop, context="evidence"):
         else:
             if "@" in value:
                 raise ProvenanceError(
-                    f"{context}: терминал/метаданные не принимают @target_prop: {raw!r}"
+                    f"{context}: terminal/metadata tokens do not accept @target_prop: {raw!r}"
                 )
             token = EvidenceToken(source_prop, role, value)
         if token in seen:
-            raise ProvenanceError(f"{context}: повтор evidence-токена {raw!r}")
+            raise ProvenanceError(f"{context}: duplicate evidence token {raw!r}")
         seen.add(token)
         tokens.append(token)
     return tokens
 
 
 def format_evidence_token(token):
-    """Сериализовать типизированный evidence-токен в каноническую форму."""
+    """Serialize a typed evidence token in canonical form."""
     if token.is_dependency:
         return f"{token.role}:{token.value}@{token.target_prop}"
     return f"{token.role}:{token.value}"
 
 
 def canonical_evidence_tokens(text, source_prop, context="evidence"):
-    """Разобрать evidence единым parser и вернуть канонические токены в исходном порядке."""
+    """Parse evidence with the shared parser and return canonical tokens in source order."""
     return [
         format_evidence_token(token)
         for token in parse_evidence(text, source_prop, context)
@@ -282,7 +282,7 @@ def canonical_evidence_tokens(text, source_prop, context="evidence"):
 
 
 def evidence_machine_anchor(token):
-    """Вернуть машинный адрес, если он определён грамматикой токена без эвристики."""
+    """Return a machine address when token grammar defines one without heuristics."""
     if token.is_dependency:
         return token.target_addr
     if token.role == "site" and ADDR_RE.fullmatch(token.value):
@@ -299,7 +299,7 @@ def target_property_allowed(label, prop):
 
 
 def _strongly_connected(nodes, adjacency):
-    """Tarjan SCC с детерминированным порядком обхода."""
+    """Compute Tarjan SCCs with deterministic traversal order."""
     index = 0
     indices = {}
     low = {}
@@ -336,26 +336,26 @@ def _strongly_connected(nodes, adjacency):
 
 
 def analyze_claims(levels, dependencies, grounded_claims=()):
-    """Вычислить effective confidence на condensation DAG графа заявок.
+    """Compute effective confidence on the claim graph's condensation DAG.
 
-    Цикл не подтверждает себя: SCC получает минимум локальных уровней и всех внешних
-    зависимостей. Grounding считается отдельно от уровня.
+    A cycle does not substantiate itself: an SCC receives the minimum of local confidence
+    levels and all external dependencies. Grounding is tracked separately from confidence.
     """
     levels = dict(levels)
     for claim, level in levels.items():
         if level not in LEVEL_RANK:
-            raise ProvenanceError(f"{claim.short()}: уровень {level!r} вне лестницы")
+            raise ProvenanceError(f"{claim.short()}: confidence {level!r} is outside the ladder")
     adjacency = {claim: set() for claim in levels}
     self_loops = set()
     for dep in dependencies:
         if dep.source not in levels:
-            raise ProvenanceError(f"нет исходной заявки {dep.source.short()}")
+            raise ProvenanceError(f"source claim not found: {dep.source.short()}")
         target = dep.target
         if target is None:
             continue
         if target not in levels:
             raise ProvenanceError(
-                f"{dep.source.short()}: целевая заявка {target.short()} не имеет уровня"
+                f"{dep.source.short()}: target claim {target.short()} has no confidence level"
             )
         adjacency[dep.source].add(target)
         if dep.source == target:
@@ -424,7 +424,7 @@ def analyze_claims(levels, dependencies, grounded_claims=()):
 
 
 def dependency_path(source, target, dependencies):
-    """Кратчайший детерминированный путь ranked-зависимостей между заявками."""
+    """Return the shortest deterministic path of ranked dependencies between claims."""
     adjacency = defaultdict(set)
     for dep in dependencies:
         ranked_target = dep.target
@@ -449,7 +449,7 @@ def dependency_path(source, target, dependencies):
 
 
 def reverse_impact(changed, dependencies):
-    """Зависимые заявки и минимальная глубина от изменённой claim identity."""
+    """Return dependent claims and minimum depth from the changed claim identity."""
     incoming = defaultdict(set)
     for dep in dependencies:
         incoming[dep.target_identity].add(dep.source)
@@ -479,7 +479,7 @@ class ProjectionDiff:
 
 
 def compare_projection(expected, actual):
-    """Точное сравнение проекции, включая дубликаты и stale-рёбра."""
+    """Compare projections exactly, including duplicates and stale relationships."""
     exp, got = Counter(expected), Counter(actual)
     return ProjectionDiff(
         missing=exp - got,

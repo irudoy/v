@@ -1,10 +1,12 @@
-// Поиск функции-владельца заданного адреса (обычно слот literal-pool или тело функции)
-// и её декомпиляция. Плюс перечисление инструкций, ссылающихся на этот адрес (mov.l @(disp,pc)).
-// Назначение: от адреса таблицы/пула выйти на использующую её функцию без точной точки входа.
+// Find and decompile the function owning a selected address, usually a
+// literal-pool slot or function body. Also list instructions that reference the
+// address through mov.l @(disp,pc). This connects a table/pool address to its
+// consuming function without requiring an exact entry point.
 //
-// Запуск: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
+// Usage: tools/ghidra/headless-analyze.sh <proj_dir> <proj> -process <bin> -noanalysis \
 //           -scriptPath tools/ghidra -postScript PoolUsers.java <outdir> <addr> [<addr>...]
-// Адреса – hex без 0x. Пишет <outdir>/decomp_<funcEntry>.c и печатает связи в лог (VQ_POOL).
+// Addresses are hexadecimal without 0x. Writes <outdir>/decomp_<funcEntry>.c and
+// prints relationships to the log with VQ_POOL.
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileResults;
 import ghidra.app.script.GhidraScript;
@@ -35,7 +37,7 @@ public class PoolUsers extends GhidraScript {
             println("VQ_POOL target=" + a[i]
                     + " containing=" + (fc==null?"-":fc.getEntryPoint()+"("+fc.getName()+")")
                     + " before=" + (fb==null?"-":fb.getEntryPoint()+"("+fb.getName()+")"));
-            // инструкции, ссылающиеся на этот адрес (кто грузит слот)
+            // Instructions that reference the address and load the slot.
             for (Reference r : rm.getReferencesTo(t)) {
                 Address from = r.getFromAddress();
                 Function ff = getFunctionContaining(from);

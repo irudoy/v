@@ -1,15 +1,15 @@
-// DumpFuncListing.java — дизассемблинг функции целиком, от точки входа до конца тела,
-// с разрешёнными ссылками (ref -> target [= прочитанное значение]).
+// DumpFuncListing.java - disassemble a complete function from entry through its
+// body, including resolved references (ref -> target [= value read]).
 //
-// Отличие от DumpListing: тот печатает окрестность адреса (окно +-24 инструкции) и
-// отвечает на вопрос "что стоит вокруг этого места". Здесь единица - функция, и границу
-// задаёт её тело, а не окно. Нужно там, где короткая функция целиком есть предмет
-// разбора: библиотека арифметики 0x21000..0x23000 передаёт аргументы регистрами, и
-// соглашение читается только по всему телу. Псевдокод для этого не годится - разворот
-// 32-шагового деления даёт 31 КБ на 282 байта кода.
+// Unlike DumpListing, which prints a +-24-instruction address window, this tool
+// uses the function body as its unit and boundary. It supports cases where a
+// complete short function is the subject of analysis. The arithmetic library at
+// 0x21000..0x23000 passes arguments through registers, and its convention is
+// visible only from the whole body. Pseudocode is unsuitable: expanding a
+// 32-step division produces 31 KB from 282 bytes of code.
 //
-// Запуск (headless): -postScript DumpFuncListing.java <out_dir> <addr> [<addr>...]
-// Выход: funclisting_<addr>.txt на каждую функцию.
+// Usage (headless): -postScript DumpFuncListing.java <out_dir> <addr> [<addr>...]
+// Output: one funclisting_<addr>.txt per function.
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
@@ -55,8 +55,9 @@ public class DumpFuncListing extends GhidraScript {
             String name = String.format("funclisting_%08x.txt", ep.getOffset() & 0xFFFFFFFFL);
             PrintWriter w = new PrintWriter(new FileWriter(new File(outDir, name)));
             w.println("// " + f.getName() + " @ " + ep + "  size=" + f.getBody().getNumAddresses());
-            // Тело функции - набор адресов, а не отрезок: Ghidra относит к функции и
-            // отделённые куски (общий хвост, разделяемый эпилог). Обход по набору берёт их.
+            // A function body is an address set rather than a continuous range.
+            // Ghidra can include separated pieces such as a shared tail or
+            // epilogue; iterating the set includes them.
             AddressSetView body = f.getBody();
             InstructionIterator it = listing.getInstructions(body, true);
             while (it.hasNext()) {
@@ -72,7 +73,7 @@ public class DumpFuncListing extends GhidraScript {
                         try {
                             long v = mem.getInt(to) & 0xFFFFFFFFL;
                             line.append(String.format(" [=%08x]", v));
-                        } catch (Exception e) { /* не инициализировано */ }
+                        } catch (Exception e) { /* uninitialized */ }
                     }
                 }
                 w.println(line.toString());

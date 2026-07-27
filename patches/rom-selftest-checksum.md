@@ -1,96 +1,100 @@
-# Контрольные суммы ROM – JK03A / JK08A
+# ROM checksums - JK03A / JK08A
 
-Образы JK03A и JK08A имеют размер 1 MiB, порядок байтов big-endian и base `0x0`.
-Их checksum layout совпадает и состоит из двух SUM16 и двух runtime
-selftest-доменов XOR+SUM.
+JK03A and JK08A images are 1 MiB, big-endian, and based at `0x0`. They share a
+checksum layout consisting of two SUM16 checks and two runtime self-test XOR+SUM
+domains.
 
-`apply_immo_off.py` изменяет только `ROM[0x8725].bit0` и оставляет хранимые checksum
-поля равными stock. При записи контрольные суммы корректирует флешер. Описанный ниже
-layout служит для анализа кода и независимой проверки содержимого ROM.
+`apply_immo_off.py` changes only `ROM[0x8725].bit0` and leaves stored checksum
+fields equal to stock. The flasher corrects checksums when writing. The layout
+below supports code analysis and independent verification of ROM content.
 
 ## SUM16
 
-| Проверка | Хранимое значение | Суммируемая область |
-|---|---:|---|
-| SUM16 A | BE `u16` по `0x008200` | BE `u16` по `[0x008202, 0x020000)` |
-| SUM16 B | BE `u16` по `0x020000` | BE `u16` по `[0x020002, 0x100000)` |
+| Check | Stored value | Summed region |
+|-------|-------------:|---------------|
+| SUM16 A | BE `u16` at `0x008200` | BE `u16` values in `[0x008202, 0x020000)` |
+| SUM16 B | BE `u16` at `0x020000` | BE `u16` values in `[0x020002, 0x100000)` |
 
-Сумма вычисляется по модулю `2^16`. Границы полуоткрытые: SUM16 A заканчивается
-перед `0x020000` и не включает хранимое слово SUM16 B. Обе проверки исключают
-собственные хранимые слова расположением диапазонов.
+The sum is computed modulo `2^16`. Bounds are half-open: SUM16 A ends before
+`0x020000` and does not include the stored SUM16 B word. Both checks exclude
+their own stored words through their range placement.
 
-Разметка соответствует 1 MiB SH7058-схеме из зеркала NissanECU wiki
-`refs/nissanecu-wiki/Checksums.md` и воспроизводит stock JK03A/JK08A.
+This layout matches the 1 MiB SH7058 scheme in the NissanECU wiki mirror at
+`refs/nissanecu-wiki/Checksums.md` and reproduces stock JK03A/JK08A.
 
-## Runtime selftest XOR+SUM
+## Runtime self-test XOR+SUM
 
-Каждый домен считает XOR и сумму по BE `u32`; сумма берётся по модулю `2^32`.
+Each domain computes XOR and a sum over big-endian `u32` values; the sum is
+modulo `2^32`.
 
-| Домен | Область | Эталон XOR | Эталон SUM | Исключения |
-|---|---|---:|---:|---|
+| Domain | Region | XOR reference | SUM reference | Exclusions |
+|--------|--------|--------------:|--------------:|------------|
 | A | `[0x008204, 0x100000)` | `0x0096d4` | `0x0096dc` | `0x0096d4`, `0x0096dc`, `0x020000` |
-| B | `[0x02040c, 0x02259c)` | `0x020408` | `0x020404` | нет |
+| B | `[0x02040c, 0x02259c)` | `0x020408` | `0x020404` | none |
 
-Границы лежат в ROM-константах и читаются кодом: `[0x022650] = 0x8204`,
-`[0x022654] = 0xfffff` для A; `[0x022648] = 0x2040c`,
-`[0x02264c] = 0x2259a` для B. Последнее слово B начинается по `0x22598` и
-покрывает байты до `0x2259b`.
+The bounds are stored as ROM constants and read by code:
+`[0x022650] = 0x8204`, `[0x022654] = 0xfffff` for A;
+`[0x022648] = 0x2040c`, `[0x02264c] = 0x2259a` for B. The final B word starts
+at `0x22598` and covers bytes through `0x2259b`.
 
-Порядок полей у доменов обратный: в A первым хранится XOR, в B первым хранится SUM.
-Исключения A обязательны: два адреса содержат собственные эталоны, `0x020000`
-содержит SUM16 B и начало таблицы векторов.
+Field order is reversed between the domains: A stores XOR first, while B stores
+SUM first. The A exclusions are mandatory: two addresses hold the domain's own
+references, and `0x020000` holds SUM16 B and the beginning of the vector table.
 
-## Зависимости и порядок пересчёта
+## Dependencies and recalculation order
 
-1. Рассчитать selftest B и записать SUM `0x020404`, XOR `0x020408`.
-2. Рассчитать selftest A с обновлёнными B-эталонами и записать XOR `0x0096d4`,
-   SUM `0x0096dc`.
-3. Рассчитать SUM16 A и записать `0x008200`.
-4. Рассчитать SUM16 B и записать `0x020000`.
+1. Compute self-test B and write SUM at `0x020404`, then XOR at `0x020408`.
+2. Compute self-test A with the updated B references and write XOR at `0x0096d4`,
+   then SUM at `0x0096dc`.
+3. Compute SUM16 A and write `0x008200`.
+4. Compute SUM16 B and write `0x020000`.
 
-B-эталоны входят в selftest A и SUM16 B. A-эталоны входят в SUM16 A.
-SUM16 B исключена из selftest A и находится за концом SUM16 A. Поэтому шаги 3 и 4
-независимы.
+The B references are included in self-test A and SUM16 B. The A references are
+included in SUM16 A. SUM16 B is excluded from self-test A and lies beyond the
+end of SUM16 A, so steps 3 and 4 are independent.
 
 ## RomRaider
 
-Нативные обработчики RomRaider воспроизводят layout в следующем порядке:
+The native RomRaider handlers reproduce the layout in this order:
 
-1. `alt` с `start=0x2040C`, `end=0x2259C`, `sumloc=0x20404`,
-   `xorloc=0x20408` записывает selftest B.
-2. `alt2` с `start=0x8200`, `end=0x100000`, `skiploc=0x20000`,
-   `sumloc=0x96DC`, `xorloc=0x96D4` записывает selftest A и обе SUM16.
+1. `alt` with `start=0x2040C`, `end=0x2259C`, `sumloc=0x20404`, and
+   `xorloc=0x20408` writes self-test B.
+2. `alt2` with `start=0x8200`, `end=0x100000`, `skiploc=0x20000`,
+   `sumloc=0x96DC`, and `xorloc=0x96D4` writes self-test A and both SUM16
+   values.
 
-Поля B входят в домен A, поэтому обратный порядок некорректен. `defs/JK08A.xml`
-содержит обработчики в порядке `alt` -> `alt2`.
+The B fields are part of domain A, so the reverse order is incorrect.
+`defs/JK08A.xml` contains the handlers in `alt` -> `alt2` order.
 
-## Проверенные stock-значения
+## Verified stock values
 
 | ROM | SUM16 A | SUM16 B | A XOR | A SUM | B SUM | B XOR |
-|---|---:|---:|---:|---:|---:|---:|
+|-----|---------|---------|-------|-------|-------|-------|
 | JK03A | `d58a` | `eee1` | `e93fb358` | `d61bc71c` | `ac399870` | `07131670` |
 | JK08A | `2cae` | `eee1` | `47a28253` | `094aa8cf` | `ac399870` | `07131670` |
 
-Домен B и его значения совпадают, поскольку область `0x020000..0x0fffff` у JK03A
-и JK08A тождественна. Значения A и SUM16 A отражают различия config/calibration.
+Domain B and its values match because JK03A and JK08A have an identical
+`0x020000..0x0fffff` region. The A and SUM16 A values reflect
+configuration/calibration differences.
 
-## Машинерия runtime selftest
+## Runtime self-test machinery
 
-| Адрес | Что делает |
-|---|---|
-| `00021610` | ставит курсор A: `[0xffff2c04] = 0x8204` |
-| `00021440` | обходит срез A, накапливает XOR и SUM |
-| `000214d0` | завершает A при курсоре `0x00100000` |
-| `00021562` | сверяет A с `[0x0096d4]` и `[0x0096dc]` |
-| `00021654` | ставит курсор B `0x2040c` и шаг обхода |
-| `0002167a` | обходит B, накапливает XOR и SUM |
-| `00021714` | сверяет B с `[0x020408]` и `[0x020404]` |
+| Address | Operation |
+|---------|-----------|
+| `00021610` | sets cursor A: `[0xffff2c04] = 0x8204` |
+| `00021440` | scans an A slice and accumulates XOR and SUM |
+| `000214d0` | completes A when the cursor reaches `0x00100000` |
+| `00021562` | compares A with `[0x0096d4]` and `[0x0096dc]` |
+| `00021654` | sets cursor B to `0x2040c` and sets the scan step |
+| `0002167a` | scans B and accumulates XOR and SUM |
+| `00021714` | compares B with `[0x020408]` and `[0x020404]` |
 
-При расхождении код `00021714` вызывает общий менеджер неисправностей `0007d8b8`
-с кодом `0x75`. Уровень доказательства этой семантики – `code`; реакция на реальном
-ECU не наблюдалась.
+On a mismatch, `00021714` invokes the shared fault manager `0007d8b8` with code
+`0x75`. This semantic claim has `code` confidence; the response has not been
+observed on a physical ECU.
 
-## Граница применимости
+## Scope
 
-Exact-layout профиль подтверждён для JK03A и JK08A. Для 1ND0A, 1ND3B, JK78C и JK00D
-расположение и охват checksum-полей этой спецификацией не утверждаются.
+The exact-layout profile is confirmed for JK03A and JK08A. This specification
+makes no claim about checksum-field locations or coverage for 1ND0A, 1ND3B,
+JK78C, or JK00D.
