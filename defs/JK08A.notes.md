@@ -1031,18 +1031,19 @@ rear O2, rear O2 heater, EVAP, manufacturer-specific P1422, and NATS P1610. In
 `0x80` participates in OBD/emissions representation, while `0x20` is used when
 initializing runtime diagnostic status.
 
-DTC suppression is atomic: the descriptor and its associated attribute are changed
-together. Clearing only one object leaves an inconsistent diagnostic state. The
-operation suppresses DTC publication but does not by itself prove that the physical
-monitor or sensor controller stops. Front A/F sensors are not part of the listed
-rear-O2/catalyst group.
+DTC suppression changes the descriptor and its associated attribute as one logical
+record. Clearing only one object leaves an incomplete diagnostic state. The RomRaider
+definition exposes each mutable range through a native `TableSwitch`. An ordinary DTC
+therefore has adjacent `1/2 Descriptor` and `2/2 Attribute` controls in one category.
+Both controls must use the same state before saving. The operation suppresses DTC
+publication but does not by itself prove that the physical monitor or sensor controller
+stops. Front A/F sensors are not part of the listed rear-O2/catalyst group.
 
 P1610 is at index 40: descriptor `0x19540` contains
 `0D 05 00 00 00 00 16 10 00 00 00 00`, and its associated attribute is at
-`0x160FE`. Its stock and disabled values are both `0000`, so atomic P1610 disablement
-reduces to clearing one contiguous 12-byte descriptor. Generator `emit_def.py`
-represents this special case as a separate `TableSwitch`; ordinary records requiring
-`00A0 -> 0000` are not emitted through a single switch.
+`0x160FE`. Its stock and disabled values are both `0000`, so P1610 suppression changes
+only the 12-byte descriptor. Generator `emit_def.py` emits only the P1610 descriptor
+switch.
 
 
 ## Candidate areas [CANDIDATE] - require confirmation from code
@@ -2719,7 +2720,7 @@ not established at `code`. Table `0x12E1A` has the presentation name
 
 
 
-## RomRaider NATS
+## RomRaider NATS and DTC switches
 
 The first `TableSwitch` provides the `Enabled (Stock)` and `Disabled (IMMO OFF)` states.
 It changes the byte at `0x08725` between `01` and `00`, clearing bit 0 of the stock
@@ -2733,11 +2734,12 @@ then selftest A and SUM16. Derived image
 by one bit. On-vehicle validation confirms engine start and normal operation; P1610
 persists after clearing and does not affect engine operation.
 
-The second `TableSwitch` is generated from the P1610 entry in `JK08A.dtc.csv`. State
-`Enabled (Stock)` preserves descriptor `0D 05 00 00 00 00 16 10 00 00 00 00`, while
-state `Disabled` writes 12 zero bytes at `0x19540`. The attribute at `0x160FE` remains
-`0000` in both states. The switch is intended to suppress P1610 publication; this
-separate change has not been validated on hardware.
+The 29 entries in `JK08A.dtc.csv` generate 57 native `TableSwitch` controls under one
+`Diagnostics / DTC` category. Each of the 28 emissions records has adjacent
+`1/2 Descriptor` and `2/2 Attribute` controls. Both select either `Enabled (Stock)` or
+`Disabled` and must use the same state before saving. P1610 uses descriptor `0x19540`;
+its attribute at `0x160FE` remains `0000` in both states, so only its descriptor switch
+is present. DTC suppression through these controls has not been validated on hardware.
 
 
 ## Next step

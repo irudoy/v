@@ -936,10 +936,12 @@ definition for the exact-code JK03A ROM:
 - **DTC registry** (`defs/<rom>.dtc.csv`, tracked in git): index, code, address of the
   12-byte descriptor, address of the associated uint16 attribute, and its stock and
   disabled values. The generator verifies each record against the exact stock ROM from
-  `rom-images/roms.csv`. It emits a single descriptor `TableSwitch` only for a
-  `code`-level row where `stock_attribute == disabled_attribute`; P1610 meets this
-  condition on JK08A. Records with a mutable attribute require two noncontiguous changes
-  and cannot be emitted as one `TableSwitch`.
+  `rom-images/roms.csv`. Every `code`-level row receives a native descriptor
+  `TableSwitch`. A second attribute `TableSwitch` is emitted when the stock and
+  disabled attribute values differ. The controls are numbered `1/2 Descriptor` and
+  `2/2 Attribute`, remain adjacent in one `Diagnostics / DTC` category, and must use
+  the same state before the ROM is saved. P1610 has a stock-zero attribute and
+  therefore receives only its descriptor switch.
 - **Presentation overrides** (`defs/<rom>.overrides.toml`, tracked in git):
   human-readable names, `category`, table ordering, editor increments
   (`format`/`fine`/`coarse`), the `romid` block, `<checksum>` parameters, a `mask` for

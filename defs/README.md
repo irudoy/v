@@ -39,11 +39,13 @@ under `defs/`, separately from `reference/`:
   `maps/build_tracker.py`.
 - `JK08A.dtc.csv` is an address registry for 29 analyzed DTC
   descriptor/attribute pairs. A descriptor is 12 bytes; the address of its
-  associated `uint16` attribute comes from a pointer table. Suppressing any of
-  28 emissions entries requires two noncontiguous changes: the descriptor and
-  attribute `00A0 -> 0000`, which one RomRaider `TableSwitch` cannot represent.
-  P1610 already has stock attribute `0000`, so the generator emits a separate
-  contiguous 12-byte descriptor switch for it.
+  associated `uint16` attribute comes from a pointer table. The generator
+  validates both regions against the exact stock ROM. Each mutable range is
+  emitted as a native `TableSwitch`: `1/2 Descriptor` selects the stock
+  12-byte descriptor or 12 zero bytes, and `2/2 Attribute` selects the stock
+  two-byte attribute or its disabled value. Both controls must use the same
+  state before saving. P1610 has a stock-zero attribute and therefore requires
+  only its descriptor switch.
 - `JK08A.notes.md` is a handwritten reverse-engineering journal containing
   rationale, listings, and traces. It is not loaded into the graph.
 - The handwritten calibration-layer sources are `JK08A.interp.csv` for
@@ -115,14 +117,15 @@ differs at 121 byte positions. In the graph, only the measured values of four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
 `0x190b0`. All 229 axes and the other 437 maps match.
 
-The working `JK08A.xml` contains calibration tables, two reference-axis views,
-and two verified native RomRaider checksum handlers. One `TableSwitch` at
-`0x8725` controls bit 0 of the factory Developer Immobilizer flag: `01` applies
-the immobilizer normally and `00` enables immo-off; engine starting and operation
-were verified in the vehicle. A second `TableSwitch` at `0x19540` controls the
-P1610 descriptor and still requires a separate hardware test. Checksum handlers
-run in `alt` -> `alt2` order. The owned VQ35HR bench ROM `JK00D` independently
-confirms the **SH705822N / SH7058 / 1 MiB** class.
+The working `JK08A.xml` contains calibration tables, 57 DTC switches, two
+reference-axis views, and two verified native RomRaider checksum handlers. One
+additional `TableSwitch` at `0x8725` controls bit 0 of the factory Developer
+Immobilizer flag: `01` applies the immobilizer normally and `00` enables
+immo-off; engine starting and operation were verified in the vehicle. All DTC
+controls share the `Diagnostics / DTC` category. Each ordinary DTC has adjacent
+descriptor and attribute controls; P1610 has only its descriptor control.
+Checksum handlers run in `alt` -> `alt2` order. The owned VQ35HR bench ROM
+`JK00D` independently confirms the **SH705822N / SH7058 / 1 MiB** class.
 
 The `flashmethod` attribute in HR definitions is unreliable metadata. SH7058
 `EV18A`/`CF92A` and SH7059 `1NX4A` name `Nisprog`, but open-source

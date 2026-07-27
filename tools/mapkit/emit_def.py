@@ -70,7 +70,8 @@ DTC_FIELDS = (
     "disabled_attribute", "group", "confidence", "note",
 )
 DTC_RECORD_SIZE = 12
-DTC_CATEGORIES = {"nats": "NATS / Immobilizer"}
+DTC_ATTRIBUTE_SIZE = 2
+DTC_CATEGORY = "Diagnostics / DTC"
 MASKED_VIEW_FIELDS = (
     "source", "name", "category", "mask", "units", "expression", "to_byte",
     "format", "fine", "coarse",
@@ -197,18 +198,17 @@ def static_axis_xml(values, name="Index", axis_type="Static X Axis",
     return out
 
 
-def switch_data(data):
-    """Format TableSwitch state bytes in the RomRaider representation."""
+def hex_bytes(data):
+    """Format bytes for descriptions and TableSwitch state data."""
     return " ".join(f"{byte:02X}" for byte in data)
 
 
 def dtc_switches(rom, image=None, manifest_path=None):
-    """Represent a DTC with an immutable attribute as a descriptor switch.
+    """Build explicit descriptor and attribute switches for each DTC record.
 
-    A normal registry entry requires two noncontiguous changes: a 12-byte descriptor and
-    its associated uint16 attribute. One TableSwitch cannot express both. If the stock
-    attribute already equals disabled_attribute, the atomic change affects only the
-    descriptor and can be represented as one contiguous 12-byte switch.
+    The descriptor and attribute occupy independent ROM ranges, so each mutable range
+    is represented by its own native TableSwitch. The paired names keep both controls
+    adjacent in the common DTC category without exposing raw table cells.
     """
     manifest_path = manifest_path or os.path.join(DEFS, f"{rom}.dtc.csv")
     if not os.path.exists(manifest_path):
@@ -225,22 +225,27 @@ def dtc_switches(rom, image=None, manifest_path=None):
 
     entries = []
     for row_index, row in enumerate(rows, 2):
-        if (row["stock_attribute"].lower()
-                != row["disabled_attribute"].lower()):
-            continue
         if row["confidence"] != "code":
             continue
         try:
+            record_index = int(row["index"], 10)
             record_addr = int(row["record_addr"], 16)
             attribute_addr = int(row["attribute_addr"], 16)
             dtc_code = int(row["dtc"][1:], 16)
             stock_attribute = bytes.fromhex(row["stock_attribute"])
+            disabled_attribute = bytes.fromhex(row["disabled_attribute"])
         except (TypeError, ValueError):
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
                      "invalid DTC, address, or attribute")
-        if len(stock_attribute) != 2:
+        if record_index < 0:
+            sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
+                     "DTC index must be non-negative")
+        if len(stock_attribute) != DTC_ATTRIBUTE_SIZE:
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
                      "attribute must occupy two bytes")
+        if len(disabled_attribute) != DTC_ATTRIBUTE_SIZE:
+            sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
+                     "disabled attribute must occupy two bytes")
         record = image.data[record_addr:record_addr + DTC_RECORD_SIZE]
         if len(record) != DTC_RECORD_SIZE:
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
@@ -255,33 +260,71 @@ def dtc_switches(rom, image=None, manifest_path=None):
             sys.exit(f"{os.path.basename(manifest_path)}:{row_index}: "
                      f"attribute at {attribute_addr:#x} does not match stock")
 
-        category = DTC_CATEGORIES.get(
-            row["group"], f"Diagnostics / DTC / {row['group']}"
-        )
         note = row["note"].split(";", 1)[0].rstrip(".")
+        base_name = f"DTC {row['dtc']} [index {record_index}]"
+        common_description = (
+            f"Exact {rom} only. Internal DTC record {record_index} "
+            f"({row['group']}): {note}. "
+        )
+        paired_description = (
+            "Set both the Descriptor and Attribute controls to the same state "
+            "before saving. "
+        )
+        has_attribute_switch = stock_attribute != disabled_attribute
         entries.append({
-            "name": f"DTC {row['dtc']} ({note})",
-            "category": category,
+            "name": (
+                f"{base_name} - 1/2 Descriptor"
+                if has_attribute_switch
+                else f"{base_name} - Descriptor"
+            ),
+            "category": DTC_CATEGORY,
             "storageaddress": hexa(row["record_addr"]),
             "storagetype": "uint8",
             "sizey": str(DTC_RECORD_SIZE),
             "endian": "big",
             "userlevel": "5",
             "description": (
-                f"Exact {rom} only. The linked attribute at "
-                f"{hexa(row['attribute_addr'])} is already "
-                f"{row['disabled_attribute'].upper()} in stock, so this switch "
-                f"changes only the {DTC_RECORD_SIZE}-byte descriptor. "
-                "Suppressing DTC publication does not disable the physical monitor."
+                common_description
+                + (paired_description
+                   if has_attribute_switch
+                   else
+                   f"The associated attribute at {hexa(row['attribute_addr'])} "
+                   "is already disabled in stock. ")
+                + "DTC suppression does not disable the physical monitor."
             ),
             "state": [
-                {"name": "Enabled (Stock)", "data": switch_data(record)},
+                {"name": "Enabled (Stock)", "data": hex_bytes(record)},
                 {
                     "name": "Disabled",
-                    "data": switch_data(bytes(DTC_RECORD_SIZE)),
+                    "data": hex_bytes(bytes(DTC_RECORD_SIZE)),
                 },
             ],
         })
+        if has_attribute_switch:
+            entries.append({
+                "name": f"{base_name} - 2/2 Attribute",
+                "category": DTC_CATEGORY,
+                "storageaddress": hexa(row["attribute_addr"]),
+                "storagetype": "uint8",
+                "sizey": str(DTC_ATTRIBUTE_SIZE),
+                "endian": "big",
+                "userlevel": "5",
+                "description": (
+                    common_description
+                    + paired_description
+                    + "DTC suppression does not disable the physical monitor."
+                ),
+                "state": [
+                    {
+                        "name": "Enabled (Stock)",
+                        "data": hex_bytes(stock_attribute),
+                    },
+                    {
+                        "name": "Disabled",
+                        "data": hex_bytes(disabled_attribute),
+                    },
+                ],
+            })
     return entries
 
 
@@ -678,7 +721,8 @@ def main():
     with open(out_path, "w") as f:
         f.write(xml)
 
-    print(f"{os.path.relpath(out_path)}: {len(emit)} tables, "
+    print(f"{os.path.relpath(out_path)}: {len(emit)} calibration tables, "
+          f"{len(dtc_entries)} DTC switches, "
           f"{len(view_entries)} masked views, {len(ovr.get('axisview', {}))} reference axes, "
           f"{len(switches)} switches")
     lvl = {}

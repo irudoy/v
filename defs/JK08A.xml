@@ -45,11 +45,459 @@
       <state name="Disabled (IMMO OFF)" data="00"/>
     </table>
 
-    <table type="Switch" name="DTC P1610 (NATS LOCK MODE)" category="NATS / Immobilizer"
+    <table type="Switch" name="DTC P0420 [index 17] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x1942C" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 17 (catalyst): Catalyst efficiency bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="06 06 0C 00 00 00 04 20 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0420 [index 17] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1603A" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 17 (catalyst): Catalyst efficiency bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0430 [index 18] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19438" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 18 (catalyst): Catalyst efficiency bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="06 05 0C 00 00 00 04 30 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0430 [index 18] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1603C" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 18 (catalyst): Catalyst efficiency bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1610 [index 40] - Descriptor" category="Diagnostics / DTC"
            storageaddress="0x19540" storagetype="uint8" sizey="12" endian="big" userlevel="5">
-      <description>Exact JK08A only. The linked attribute at 0x160FE is already 0000 in stock, so this switch changes only the 12-byte descriptor. Suppressing DTC publication does not disable the physical monitor.</description>
+      <description>Exact JK08A only. Internal DTC record 40 (nats): NATS LOCK MODE. The associated attribute at 0x160FE is already disabled in stock. DTC suppression does not disable the physical monitor.</description>
       <state name="Enabled (Stock)" data="0D 05 00 00 00 00 16 10 00 00 00 00"/>
       <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0443 [index 46] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19588" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 46 (evap): Purge control valve circuit. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="0F 02 06 00 00 00 04 43 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0443 [index 46] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16096" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 46 (evap): Purge control valve circuit. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0448 [index 47] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19594" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 47 (evap): Vent control circuit short. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="0F 01 06 00 00 00 04 48 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0448 [index 47] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16040" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 47 (evap): Vent control circuit short. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0455 [index 48] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x195A0" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 48 (evap): Gross leak. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="0F 00 09 00 00 00 04 55 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0455 [index 48] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x160C0" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 48 (evap): Gross leak. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0447 [index 49] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x195AC" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 49 (evap): Vent control circuit open. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="10 07 08 00 00 00 04 47 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0447 [index 49] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16042" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 49 (evap): Vent control circuit open. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0139 [index 167] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B34" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 167 (rear_o2): Slow response bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="32 07 03 00 00 00 01 39 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0139 [index 167] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16144" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 167 (rear_o2): Slow response bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0159 [index 168] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B40" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 168 (rear_o2): Slow response bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="32 06 04 00 00 00 01 59 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0159 [index 168] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16154" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 168 (rear_o2): Slow response bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0138 [index 169] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B4C" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 169 (rear_o2): High voltage path A bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="32 05 03 00 00 00 01 38 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0138 [index 169] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1613E" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 169 (rear_o2): High voltage path A bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0158 [index 170] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B58" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 170 (rear_o2): High voltage path A bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="32 04 04 00 00 00 01 58 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0158 [index 170] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1614E" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 170 (rear_o2): High voltage path A bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0137 [index 171] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B64" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 171 (rear_o2): Low voltage bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="32 03 03 00 00 00 01 37 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0137 [index 171] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16146" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 171 (rear_o2): Low voltage bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0157 [index 172] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B70" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 172 (rear_o2): Low voltage bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="32 02 04 00 00 00 01 57 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0157 [index 172] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16156" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 172 (rear_o2): Low voltage bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0138 [index 173] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B7C" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 173 (rear_o2): High voltage path B bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="32 01 03 00 00 00 01 38 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0138 [index 173] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1613C" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 173 (rear_o2): High voltage path B bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0158 [index 174] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B88" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 174 (rear_o2): High voltage path B bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="32 00 04 00 00 00 01 58 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0158 [index 174] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1614C" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 174 (rear_o2): High voltage path B bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0038 [index 175] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19B94" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 175 (rear_o2_heater): Heater control high bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="33 07 03 00 00 00 00 38 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0038 [index 175] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16186" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 175 (rear_o2_heater): Heater control high bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0058 [index 176] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19BA0" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 176 (rear_o2_heater): Heater control high bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="33 06 04 00 00 00 00 58 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0058 [index 176] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16188" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 176 (rear_o2_heater): Heater control high bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0037 [index 177] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19BAC" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 177 (rear_o2_heater): Heater control low bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="33 05 03 00 00 00 00 37 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0037 [index 177] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1618A" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 177 (rear_o2_heater): Heater control low bank 1 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0057 [index 178] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19BB8" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 178 (rear_o2_heater): Heater control low bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="33 04 04 00 00 00 00 57 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0057 [index 178] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1618C" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 178 (rear_o2_heater): Heater control low bank 2 sensor 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0451 [index 195] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19C84" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 195 (evap): Pressure sensor range or performance. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="35 00 06 00 00 00 04 51 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0451 [index 195] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x160B0" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 195 (evap): Pressure sensor range or performance. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0444 [index 201] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19CCC" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 201 (evap): Purge control valve circuit open. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="36 02 06 00 00 00 04 44 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0444 [index 201] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16098" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 201 (evap): Purge control valve circuit open. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0445 [index 202] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19CD8" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 202 (evap): Purge control valve circuit short. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="36 01 06 00 00 00 04 45 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0445 [index 202] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1609A" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 202 (evap): Purge control valve circuit short. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0452 [index 212] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19D50" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 212 (evap): Pressure sensor low. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="38 03 06 00 00 00 04 52 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0452 [index 212] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16092" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 212 (evap): Pressure sensor low. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0453 [index 213] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19D5C" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 213 (evap): Pressure sensor high. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="38 02 06 00 00 00 04 53 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0453 [index 213] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16090" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 213 (evap): Pressure sensor high. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0441 [index 214] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19D68" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 214 (evap): Incorrect purge flow. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="38 01 07 00 00 00 04 41 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0441 [index 214] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x160A0" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 214 (evap): Incorrect purge flow. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0447 [index 215] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19D74" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 215 (evap): Vent control circuit open alternate path. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="38 00 06 00 00 00 04 47 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0447 [index 215] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16044" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 215 (evap): Vent control circuit open alternate path. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0456 [index 216] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19D80" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 216 (evap): Very small leak. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="39 07 09 00 00 00 04 56 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0456 [index 216] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x160AE" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 216 (evap): Very small leak. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0442 [index 218] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19D98" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 218 (evap): Small leak. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="39 05 09 00 00 00 04 42 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0442 [index 218] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x160A8" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 218 (evap): Small leak. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1422 [index 293] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x1A11C" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 293 (manufacturer_specific): Local physical monitor name unresolved. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="46 01 00 00 00 00 14 22 10 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1422 [index 293] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x15FAA" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 293 (manufacturer_specific): Local physical monitor name unresolved. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
     </table>
 
     <!-- 0x0991A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)

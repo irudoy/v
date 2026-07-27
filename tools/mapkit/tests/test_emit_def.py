@@ -98,65 +98,122 @@ class EmitDefStaticAxesTest(unittest.TestCase):
 
 
 class EmitDefSwitchTest(unittest.TestCase):
-    def test_dtc_manifest_emits_only_contiguous_p1610_switch(self):
-        switches = emit_def.dtc_switches("JK08A")
-        self.assertEqual(len(switches), 1)
-        switch = switches[0]
-        self.assertEqual(switch["name"], "DTC P1610 (NATS LOCK MODE)")
-        self.assertEqual(switch["storageaddress"], "0x19540")
-        self.assertEqual(switch["sizey"], "12")
-        self.assertNotIn("sizex", switch)
-        self.assertEqual(
-            switch["state"][0]["data"],
-            "0D 05 00 00 00 00 16 10 00 00 00 00",
-        )
-        self.assertEqual(
-            switch["state"][1]["data"],
-            "00 00 00 00 00 00 00 00 00 00 00 00",
-        )
-
-    def test_multibyte_switch_uses_sizey_and_preserves_state_bytes(self):
-        switch = emit_def.dtc_switches("JK08A")[0]
-        xml = "\n".join(emit_def.switch_xml(switch, 2))
-        self.assertIn('type="Switch"', xml)
-        self.assertIn('storageaddress="0x19540"', xml)
-        self.assertIn('sizey="12"', xml)
-        self.assertNotIn('sizex=', xml)
-        self.assertIn(
-            'data="0D 05 00 00 00 00 16 10 00 00 00 00"',
-            xml,
-        )
-
     def test_switch_rejects_state_with_wrong_byte_count(self):
-        switch = emit_def.dtc_switches("JK08A")[0]
-        switch["state"][1]["data"] = "00"
-        with self.assertRaisesRegex(SystemExit, "12 hexadecimal bytes"):
+        switch = {
+            "name": "Test switch",
+            "category": "Test",
+            "storageaddress": "0x10000",
+            "storagetype": "uint8",
+            "sizex": "1",
+            "endian": "big",
+            "userlevel": "5",
+            "state": [
+                {"name": "Enabled", "data": "01"},
+                {"name": "Disabled", "data": "00"},
+            ],
+        }
+        switch["state"][1]["data"] = "00 00"
+        with self.assertRaisesRegex(SystemExit, "1 hexadecimal bytes"):
             emit_def.switch_xml(switch, 2)
 
-    def test_tracked_xml_contains_exact_generated_p1610_switch(self):
+
+class EmitDefDtcSwitchTest(unittest.TestCase):
+    def test_dtc_manifest_emits_paired_descriptor_attribute_switches(self):
+        switches = emit_def.dtc_switches("JK08A")
+        self.assertEqual(len(switches), 57)
+        self.assertEqual(len({switch["name"] for switch in switches}), 57)
+        self.assertEqual({switch["category"] for switch in switches},
+                         {"Diagnostics / DTC"})
+
+        p0420_descriptor = next(
+            switch for switch in switches
+            if switch["name"] == "DTC P0420 [index 17] - 1/2 Descriptor"
+        )
+        p0420_attribute = next(
+            switch for switch in switches
+            if switch["name"] == "DTC P0420 [index 17] - 2/2 Attribute"
+        )
+        self.assertEqual(p0420_descriptor["storageaddress"], "0x1942C")
+        self.assertEqual(p0420_descriptor["storagetype"], "uint8")
+        self.assertEqual(p0420_descriptor["sizey"], "12")
+        self.assertEqual(
+            p0420_descriptor["state"],
+            [
+                {
+                    "name": "Enabled (Stock)",
+                    "data": "06 06 0C 00 00 00 04 20 10 00 00 00",
+                },
+                {
+                    "name": "Disabled",
+                    "data": "00 00 00 00 00 00 00 00 00 00 00 00",
+                },
+            ],
+        )
+        self.assertEqual(p0420_attribute["storageaddress"], "0x1603A")
+        self.assertEqual(p0420_attribute["storagetype"], "uint8")
+        self.assertEqual(p0420_attribute["sizey"], "2")
+        self.assertEqual(
+            p0420_attribute["state"],
+            [
+                {"name": "Enabled (Stock)", "data": "00 A0"},
+                {"name": "Disabled", "data": "00 00"},
+            ],
+        )
+
+    def test_p1610_emits_only_descriptor_switch(self):
+        switches = emit_def.dtc_switches("JK08A")
+        p1610 = [
+            switch for switch in switches
+            if switch["name"].startswith("DTC P1610 [index 40]")
+        ]
+        self.assertEqual(len(p1610), 1)
+        self.assertEqual(
+            p1610[0]["name"],
+            "DTC P1610 [index 40] - Descriptor",
+        )
+        self.assertEqual(p1610[0]["storageaddress"], "0x19540")
+        self.assertEqual(
+            p1610[0]["state"][0]["data"],
+            "0D 05 00 00 00 00 16 10 00 00 00 00",
+        )
+
+    def test_tracked_xml_contains_exact_generated_dtc_switches(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         switches = {
             table.get("name"): table
             for table in rom.findall("./table")
             if table.get("type") == "Switch"
         }
-        self.assertEqual(
-            set(switches),
-            {"Developer Immobilizer", "DTC P1610 (NATS LOCK MODE)"},
-        )
-        p1610 = switches["DTC P1610 (NATS LOCK MODE)"]
-        self.assertEqual(p1610.get("storageaddress"), "0x19540")
-        self.assertEqual(p1610.get("sizey"), "12")
-        states = {
-            state.get("name"): state.get("data")
-            for state in p1610.findall("./state")
+        expected = {
+            switch["name"]: switch
+            for switch in emit_def.dtc_switches("JK08A")
         }
+        actual = {
+            name: table for name, table in switches.items()
+            if table.get("category") == "Diagnostics / DTC"
+        }
+        self.assertEqual(set(actual), set(expected))
+        self.assertEqual(len(actual), 57)
+        self.assertEqual(set(switches) - set(actual), {"Developer Immobilizer"})
+        for name, entry in expected.items():
+            node = actual[name]
+            self.assertEqual(node.get("storageaddress"), entry["storageaddress"])
+            self.assertEqual(node.get("storagetype"), entry["storagetype"])
+            self.assertEqual(node.get("sizey"), entry["sizey"])
+            self.assertEqual(
+                [
+                    {"name": state.get("name"), "data": state.get("data")}
+                    for state in node.findall("./state")
+                ],
+                entry["state"],
+            )
         self.assertEqual(
-            states,
-            {
-                "Enabled (Stock)": "0D 05 00 00 00 00 16 10 00 00 00 00",
-                "Disabled": "00 00 00 00 00 00 00 00 00 00 00 00",
-            },
+            [
+                table.get("name") for table in rom.findall("./table")
+                if table.get("type") == "3D"
+                and table.get("category") == "Diagnostics / DTC"
+            ],
+            [],
         )
 
 

@@ -268,16 +268,18 @@ uv run --no-project --with neo4j python tools/maps/build_tracker.py \
   JK03A /private/tmp/JK03A.maps.csv
 ```
 
-### RomRaider: NATS switches
+### RomRaider: NATS and DTC switches
 
 `defs/JK08A.xml` contains a `TableSwitch` at `0x08725` with states
 `Enabled (Stock) = 01` and `Disabled (IMMO OFF) = 00`. The switch directly clears bit0 of the
 factory Developer Immobilizer flag.
 
-The second `TableSwitch` at `0x19540` controls the 12-byte P1610 descriptor:
-stock `0D 05 00 00 00 00 16 10 00 00 00 00`; disabled is 12 zero bytes. It is generated from
-`defs/JK08A.dtc.csv` because the associated attribute at `0x160FE` already equals its disabled
-value `0000`. A DTC that also requires an attribute change is not emitted as one switch.
+The same definition contains 57 native DTC `TableSwitch` controls generated
+from `defs/JK08A.dtc.csv`. Each of the 28 emissions records has adjacent
+`1/2 Descriptor` and `2/2 Attribute` controls under `Diagnostics / DTC`.
+Both controls must be set to `Enabled (Stock)` or both to `Disabled` before
+saving. P1610 uses descriptor `0x19540`; its attribute at `0x160FE` is `0000`
+in both states, so P1610 has only the descriptor control.
 
 Native checksum handlers run in this order:
 
@@ -293,8 +295,9 @@ python3 patches/apply_immo_off.py --rom JK08A
 The resulting
 `rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
 differs from stock by one bit. Engine start and operation were confirmed on the vehicle.
-The patcher preserves the one-bit immo-off contract. P1610 is controlled only through the
-definition and requires a separate hardware test.
+The patcher preserves the one-bit immo-off contract. P1610 and the other DTC
+record changes are controlled only through the definition and require separate
+hardware tests.
 
 ### Memgraph backup
 
