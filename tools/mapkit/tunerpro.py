@@ -17,6 +17,9 @@ STORAGE_BYTES = {name: bits // 8 for name, bits in STORAGE_BITS.items()}
 
 DTC_INDIVIDUAL_CATEGORY = "Diagnostics / DTC / Individual"
 DTC_GROUP_CATEGORY = "Diagnostics / DTC / Disable Groups"
+CATEGORY_CONFIDENCE_SUFFIX = re.compile(
+    r"(?: \((?:traced|candidate)\))+$"
+)
 DTC_GROUP_NAMES = {
     "catalyst": "Catalyst",
     "evap": "EVAP",
@@ -77,6 +80,11 @@ def units_with_confidence(units, confidence):
     if confidence and confidence != "code":
         return f"{units} [cand]"
     return units
+
+
+def category_name(category):
+    """Return the functional XDF category without confidence annotations."""
+    return CATEGORY_CONFIDENCE_SUFFIX.sub("", str(category))
 
 
 def table_shape(calibration):
@@ -426,9 +434,7 @@ def add_calibration_table(
 ):
     if view is None:
         title = presentation["name"]
-        category = presentation["category"] + (
-            "" if calibration["confidence"] == "code" else " (candidate)"
-        )
+        category = category_name(presentation["category"])
         units = units_with_confidence(
             calibration["units"], calibration.get("scale_conf")
         )
@@ -438,7 +444,7 @@ def add_calibration_table(
         key = f"map:{calibration['addr']}"
     else:
         title = view["name"]
-        category = view["category"]
+        category = category_name(view["category"])
         units = units_with_confidence(
             view["units"], calibration.get("confidence")
         )
@@ -492,7 +498,7 @@ def add_axis_view(
     )
     node(
         table, "CATEGORYMEM", index=0,
-        category=categories[presentation["category"]],
+        category=categories[category_name(presentation["category"])],
     )
     add_static_axis(table, "x", range(axis_info["len"]), "Index")
     add_static_axis(table, "y", [0], "Series")
@@ -525,7 +531,7 @@ def add_patch(root, ids, categories, patch):
     node(element, "description", patch["description"])
     node(
         element, "CATEGORYMEM", index=0,
-        category=categories[patch["category"]],
+        category=categories[category_name(patch["category"])],
     )
     for entry in patch["entries"]:
         node(
@@ -554,20 +560,18 @@ def render(
     other_patches = switch_patches(switches)
     patches = other_patches + individual_patches + group_patches
 
-    categories_in_use = {patch["category"] for patch in patches}
+    categories_in_use = {
+        category_name(patch["category"]) for patch in patches
+    }
     for calibration in calibrations:
         presentation = overrides["table"][calibration["addr"]]
-        categories_in_use.add(
-            presentation["category"] + (
-                "" if calibration["confidence"] == "code" else " (candidate)"
-            )
-        )
+        categories_in_use.add(category_name(presentation["category"]))
         categories_in_use.update(
-            view["category"]
+            category_name(view["category"])
             for view in views_by_source.get(calibration["addr"], [])
         )
     categories_in_use.update(
-        presentation["category"]
+        category_name(presentation["category"])
         for presentation in overrides.get("axisview", {}).values()
     )
     categories = {
@@ -611,7 +615,7 @@ def render(
         desc=f"Exact {rom} {len(image):#x}-byte ROM image",
     )
     for category, index in categories.items():
-        node(header, "CATEGORY", index=f"0x{index:X}", name=category)
+        node(header, "CATEGORY", index=f"0x{index - 1:X}", name=category)
 
     ids = IdAllocator()
     for patch in patches:

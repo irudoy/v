@@ -8,33 +8,29 @@
     <BASEOFFSET offset="0" subtract="0" />
     <DEFAULTS datasizeinbits="8" sigdigits="2" outputtype="1" signed="0" lsbfirst="0" float="0" />
     <REGION type="0xFFFFFFFF" startaddress="0x0" size="0x100000" regioncolor="0x0" regionflags="0x0" name="Binary File" desc="Exact JK08A 0x100000-byte ROM image" />
-    <CATEGORY index="0x1" name="AFR / Lambda (traced)" />
-    <CATEGORY index="0x2" name="Airflow (candidate) (candidate)" />
-    <CATEGORY index="0x3" name="Diagnostics / DTC / Disable Groups" />
-    <CATEGORY index="0x4" name="Diagnostics / DTC / Individual" />
-    <CATEGORY index="0x5" name="Diagnostics / Knock Sensor Monitor (traced)" />
-    <CATEGORY index="0x6" name="Filters (traced)" />
-    <CATEGORY index="0x7" name="Filters (traced) (candidate)" />
-    <CATEGORY index="0x8" name="Fuel (traced) (candidate)" />
-    <CATEGORY index="0x9" name="Fuel Delivery / Main (traced)" />
-    <CATEGORY index="0xA" name="Ignition / Transient Correction (candidate)" />
-    <CATEGORY index="0xB" name="Ignition Timing / Knock Control / Main (traced)" />
-    <CATEGORY index="0xC" name="Ignition Timing / Knock Control / Thresholds (candidate)" />
-    <CATEGORY index="0xD" name="Ignition Timing / Knock Control / Thresholds (traced)" />
-    <CATEGORY index="0xE" name="Ignition Timing / Main (traced)" />
-    <CATEGORY index="0xF" name="Internal Calculations (candidate)" />
-    <CATEGORY index="0x10" name="Internal Calculations (candidate) (candidate)" />
-    <CATEGORY index="0x11" name="Internal Calculations (traced)" />
-    <CATEGORY index="0x12" name="Limiters (traced) (candidate)" />
-    <CATEGORY index="0x13" name="Load (traced) (candidate)" />
-    <CATEGORY index="0x14" name="NATS / Immobilizer" />
-    <CATEGORY index="0x15" name="Reference Axes" />
-    <CATEGORY index="0x16" name="Unidentified Calibrations (candidate)" />
+    <CATEGORY index="0x0" name="AFR / Lambda" />
+    <CATEGORY index="0x1" name="Airflow" />
+    <CATEGORY index="0x2" name="Diagnostics / DTC / Disable Groups" />
+    <CATEGORY index="0x3" name="Diagnostics / DTC / Individual" />
+    <CATEGORY index="0x4" name="Diagnostics / Knock Sensor Monitor" />
+    <CATEGORY index="0x5" name="Filters" />
+    <CATEGORY index="0x6" name="Fuel" />
+    <CATEGORY index="0x7" name="Fuel Delivery / Main" />
+    <CATEGORY index="0x8" name="Ignition / Transient Correction" />
+    <CATEGORY index="0x9" name="Ignition Timing / Knock Control / Main" />
+    <CATEGORY index="0xA" name="Ignition Timing / Knock Control / Thresholds" />
+    <CATEGORY index="0xB" name="Ignition Timing / Main" />
+    <CATEGORY index="0xC" name="Internal Calculations" />
+    <CATEGORY index="0xD" name="Limiters" />
+    <CATEGORY index="0xE" name="Load" />
+    <CATEGORY index="0xF" name="NATS / Immobilizer" />
+    <CATEGORY index="0x10" name="Reference Axes" />
+    <CATEGORY index="0x11" name="Unidentified Calibrations" />
   </XDFHEADER>
   <XDFPATCH uniqueid="0x3B07" flags="0x0">
     <title>Developer Immobilizer</title>
     <description>Exact JK08A only. Bit 0 enables ECM immobilizer enforcement. Vehicle start and operation verified. NATS DTC suppression is independent. Base state: Enabled (Stock). Patched state: Disabled (IMMO OFF).</description>
-    <CATEGORYMEM index="0" category="20" />
+    <CATEGORYMEM index="0" category="16" />
     <XDFPATCHENTRY name="Developer Immobilizer" address="0x8725" datasize="0x1" patchdata="00" basedata="01" />
   </XDFPATCH>
   <XDFPATCH uniqueid="0x30F6" flags="0x0">
@@ -329,7 +325,7 @@
   <XDFTABLE uniqueid="0x5BE9" flags="0x0">
     <title>Cold Ignition Timing Map (0x991A)</title>
     <description>Exact JK08A. Address 0x991A; 16 rows x 16 columns; uint8; map confidence code. Cold Ignition Timing Map: additive correction of calculated MBT in cold mode; the low 7 bits carry a signed-offset quantity, while bit 7 carries a knock-window flag. This view edits mask 0x7F and preserves the other bits in each cell. The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across the entire trio. The physical scale and mode name are confirmed by the A2L catalog; code confirms table selection, the 0x7f mask, and participation of the result in angle calculation.</description>
-    <CATEGORYMEM index="0" category="14" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -1395,7 +1391,7 @@
   <XDFTABLE uniqueid="0x82DF" flags="0x0">
     <title>Cold Ignition Timing Map Knock Window (0x991A bit7)</title>
     <description>Exact JK08A. Address 0x991A; 16 rows x 16 columns; uint8; map confidence code. Cold Ignition Timing Map: additive correction of calculated MBT in cold mode; the low 7 bits carry a signed-offset quantity, while bit 7 carries a knock-window flag. This view edits mask 0x80 and preserves the other bits in each cell. The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across the entire trio. The physical scale and mode name are confirmed by the A2L catalog; code confirms table selection, the 0x7f mask, and participation of the result in angle calculation.</description>
-    <CATEGORYMEM index="0" category="11" />
+    <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -2461,7 +2457,7 @@
   <XDFTABLE uniqueid="0x24E1" flags="0x0">
     <title>High Octane Ignition Timing Map (0x9A1A)</title>
     <description>Exact JK08A. Address 0x9A1A; 16 rows x 16 columns; uint8; map confidence code. High Octane Ignition Timing Map: additive correction of calculated MBT in high-octane mode; the low 7 bits carry a signed-offset quantity, while bit 7 carries a knock-window flag. This view edits mask 0x7F and preserves the other bits in each cell. Code selects the table relative to the high-detonation branch and preserves bit 7 separately. The physical name and scale match homolog EV18A 0x9a76 with the shared layout offset of +0x5c.</description>
-    <CATEGORYMEM index="0" category="14" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -3527,7 +3523,7 @@
   <XDFTABLE uniqueid="0x2461" flags="0x0">
     <title>High Octane Ignition Timing Map Knock Window (0x9A1A bit7)</title>
     <description>Exact JK08A. Address 0x9A1A; 16 rows x 16 columns; uint8; map confidence code. High Octane Ignition Timing Map: additive correction of calculated MBT in high-octane mode; the low 7 bits carry a signed-offset quantity, while bit 7 carries a knock-window flag. This view edits mask 0x80 and preserves the other bits in each cell. Code selects the table relative to the high-detonation branch and preserves bit 7 separately. The physical name and scale match homolog EV18A 0x9a76 with the shared layout offset of +0x5c.</description>
-    <CATEGORYMEM index="0" category="11" />
+    <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -4593,7 +4589,7 @@
   <XDFTABLE uniqueid="0x9AB8" flags="0x0">
     <title>High Detonation Ignition Timing Map (0x9B1A)</title>
     <description>Exact JK08A. Address 0x9B1A; 16 rows x 16 columns; uint8; map confidence code. High Detonation Ignition Timing Map: additive correction of calculated MBT in high-detonation mode; the low 7 bits carry a signed-offset quantity, while bit 7 carries a knock-window flag. This view edits mask 0x7F and preserves the other bits in each cell. Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared layout offset of +0x5c.</description>
-    <CATEGORYMEM index="0" category="14" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -5659,7 +5655,7 @@
   <XDFTABLE uniqueid="0xB463" flags="0x0">
     <title>High Detonation Ignition Timing Map Knock Window (0x9B1A bit7)</title>
     <description>Exact JK08A. Address 0x9B1A; 16 rows x 16 columns; uint8; map confidence code. High Detonation Ignition Timing Map: additive correction of calculated MBT in high-detonation mode; the low 7 bits carry a signed-offset quantity, while bit 7 carries a knock-window flag. This view edits mask 0x80 and preserves the other bits in each cell. Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared layout offset of +0x5c.</description>
-    <CATEGORYMEM index="0" category="11" />
+    <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -6725,7 +6721,7 @@
   <XDFTABLE uniqueid="0x194D" flags="0x0">
     <title>Fuel Compensation Map (0xA29A)</title>
     <description>Exact JK08A. Address 0xA29A; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="8" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11D4C" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>QH0 Flow Quantity [%] [cand]</units>
@@ -6977,7 +6973,7 @@
   <XDFTABLE uniqueid="0x9D3C" flags="0x0">
     <title>Rev Limit - Fuel Cut Maximum (0x8FDC)</title>
     <description>Exact JK08A. Address 0x8FDC; 1 rows x 2 columns; uint16; map confidence candidate. Rev Limit - Fuel Cut Maximum Semantic confidence: candidate. Blocking condition: In code, threshold selection is controlled by RAM[ffff246d].bit7, while RAM[ffff246a].bit7 is updated. The artifact does not prove that ffff246d.bit7 is the previous state of ffff246a.bit7 or an equivalent state. The two comparisons may therefore be mode-dependent thresholds rather than hysteresis. In addition, the shown consumers of RAM ffff246a contain no confirmed read of bit 7 specifically, so the sink -&gt; consumer trace is incomplete.</description>
-    <CATEGORYMEM index="0" category="18" />
+    <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -7020,7 +7016,7 @@
   <XDFTABLE uniqueid="0x1E69" flags="0x0">
     <title>Knock Slice Map - active bank (0x1108E)</title>
     <description>Exact JK08A. Address 0x1108E; 6 rows x 16 columns; uint16; map confidence code. Knock Slice Map: per-cylinder knock threshold by engine speed. Measured knock strength exceeding the interpolated threshold contributes to increasing the knock count. 00049ffc selects a cylinder row, interpolates 16 uint16 points along axis 0x15340, and stores the threshold for comparison in 0004a238. Value 0xffff is the uint16 upper bound and makes exceeding the threshold practically impossible.</description>
-    <CATEGORYMEM index="0" category="13" />
+    <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Engine Speed [RPM]</units>
@@ -7082,7 +7078,7 @@
   <XDFTABLE uniqueid="0x2B0E" flags="0x0">
     <title>Knock Slice Map - parallel bank (0x10F8E)</title>
     <description>Exact JK08A. Address 0x10F8E; 6 rows x 16 columns; uint16; map confidence candidate. Parallel Knock Slice threshold bank: structural counterpart of active per-cylinder knock-threshold map 0x1108e. The array is organized as 6 cylinders by 16 engine-speed points. No direct xref to this base was found, so the specific mode and bank activity remain candidate.</description>
-    <CATEGORYMEM index="0" category="12" />
+    <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Engine Speed [RPM]</units>
@@ -7144,7 +7140,7 @@
   <XDFTABLE uniqueid="0xAB6A" flags="0x0">
     <title>Over Run Fuel Cut threshold (0x121FE)</title>
     <description>Exact JK08A. Address 0x121FE; 1 rows x 8 columns; uint8; map confidence candidate. Over Run Fuel Cut threshold DISCREPANCY (Section 6, see notes.md): catalog name 'Over Run Fuel Cut threshold' from ProECU shape evidence versus trace of FUN_0005185c at site 00051882, where it is the second factor in a multiplicative chain with result @(0x4,r15). Neither interpretation has code confidence.</description>
-    <CATEGORYMEM index="0" category="18" />
+    <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -7193,7 +7189,7 @@
   <XDFTABLE uniqueid="0xE649" flags="0x0">
     <title>Fuel enrichment vs MBT-like axis (0x1236A)</title>
     <description>Exact JK08A. Address 0x1236A; 1 rows x 16 columns; uint8; map confidence candidate. Fuel enrichment vs MBT-like axis Input byte[0xFFFF11AE], axis step 8; feeds fuel rather than angle according to K2Y analysis.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1238A" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>RPM [cand]</units>
@@ -7235,7 +7231,7 @@
   <XDFTABLE uniqueid="0xAA84" flags="0x0">
     <title>Calculated Load Reference - 100% point (0x1491A)</title>
     <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence candidate. 100% reference value for calculated load: value ffff1024 at full scale ffff413e Semantic confidence: candidate. Blocking condition: In the blind artifact, the listing of kernel path 00026a64 ends at 00026aa2 immediately after reading two adjacent words. Subsequent arithmetic, convergence of branch 00026a9a, and return of the result in r0 are absent. Input r5 also ranges over 0x0000..0xff00, making both wrapper 000263f4 branches reachable: the path through the incomplete kernel when r5 &lt; 0xf000 and direct reading of the last element when r5 &gt;= 0xf000. Machine evidence does not close the connection from r0 at 000808da to the entire claimed interpolation.</description>
-    <CATEGORYMEM index="0" category="19" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -7292,7 +7288,7 @@
   <XDFTABLE uniqueid="0xB81A" flags="0x0">
     <title>Filter Weight - new-sample share Q16 (0x14E52)</title>
     <description>Exact JK08A. Address 0x14E52; 1 rows x 16 columns; uint16; map confidence candidate. New-value weight of a first-order lag filter Semantic confidence: candidate. Blocking condition: The complete code trace is not confirmed by the blind artifact. Kernel 00026a64 listing ends immediately after cell reads 00026aa0/00026aa2 and does not show calculation or return of r0 for branch param_2 &lt; 0xf000. The stated formula is also presented as final y, although after blending code executes branch 00064a74..00064a9a: if the truncated result is below the current value and equals the previous state, it is incremented by 1. Neither the raw source on every branch nor the exact stated result semantics are independently proven. Scale confidence: code. Scale: x/65536; inverse encoding: x*65536; units: Q16 fraction (0..1). Scale trace: 00064a32 loads target-map base 00014e52 and 00064a40 calls its 1D wrapper 000263f4. The index input is limited to an unsigned byte shifted by 8; the wrapper branch for value &gt;= 0xf000 returns the last uint16 cell, while the kernel branch reads adjacent uint16 cells at 00026aa0/00026aa2. The result returns in r0, is zero-extended as uint16 into r2 at 00064a44, and stored in RAM ffff1608 at 00064a4a. The same r2 is copied without conversion to r5 at 00064a6c and used as a coefficient inside 00064a1c: 00064a6e calculates current*raw; 00064a70/00064a74 forms 0x10000; 00064a76 calculates 0x10000-raw; 00064a7a calculates previous*(0x10000-raw); 00064a7e adds the products; the final expression is shifted right by 16. The contribution of current is therefore raw/65536 and that of previous is 1-raw/65536. After extu.w, raw is 0..65535, giving physical coefficient 0..65535/65536.</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -7349,7 +7345,7 @@
   <XDFTABLE uniqueid="0x485B" flags="0x0">
     <title>Internal Subtractive Correction (0x13CE8)</title>
     <description>Exact JK08A. Address 0x13CE8; 1 rows x 8 columns; uint16; map confidence code. Subtractive correction in internal calculation 000a5a06: interpolated uint16 M is written to ffff307e and, on a reachable path, subtracts M-32768 from a signed intermediate value with lower saturation and subsequent limiting. Result disposition: consumer. No physical quantity is asserted beyond narrow operational semantics. For raw result M in range 32768..34688, code 000a5a06 calculates a difference with internal sVar17. On the path reachable for this map, this is equivalent to subtracting M-32768 with int16 lower saturation; an additional conditional clamp relative to ffff2733 follows. This conditional conversion defines no invertible physical map scale, so only raw identity is claimed. Adjacent map 0000c78e and its sink ffff3080 are excluded from the semantic evidence.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x15C30" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>uint8 value from RAM ffff1071</units>
@@ -7391,7 +7387,7 @@
   <XDFTABLE uniqueid="0x8BEA" flags="0x0">
     <title>Unsigned Branch Multiplier (0x14C9A)</title>
     <description>Exact JK08A. Address 0x14C9A; 1 rows x 8 columns; uint16; map confidence candidate. Intermediate 1D table of an unsigned multiplier for two branches of one calculation: the interpolated uint16 result is multiplied by a separate uint8 result and normalized by a right shift of 7; the multiplier's physical quantity is unknown. All eight cells equal 32768. After interpolation, code multiplies the result by a separate quantity, applies conditional saturation, and shifts right by 7. This chain combines two maps and defines no separate invertible scale for 00014c9a, so raw identity is retained. Result disposition: writes. Blocking condition: At 0005feae and 0005ff6c, only multiplication of the target-map result by an anonymous uint8 result is proven. Direct RAM bindings at 0005fea4 and 0005ff62 lead to ffff8bee and ffff8bec, which have no external readers. The physical consumer and quantity unit are unknown.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x15D60" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>raw</units>
@@ -7433,7 +7429,7 @@
   <XDFTABLE uniqueid="0xF75" flags="0x0">
     <title>Negative Branch Multiplier (0x14CBA)</title>
     <description>Exact JK08A. Address 0x14CBA; 1 rows x 8 columns; uint16; map confidence code. Multiplier on negative branches of two channels: interpolated uint16 M is multiplied by the result of uint8 map 000122aa, and the product is saturated or divided by 128 and bounded by the corresponding param_4. Result disposition: consumer. No physical quantity is asserted beyond narrow operational semantics. All 8 cells equal 32768. The constant alone does not prove a unity coefficient or physical scale. Interpolation is followed by multiplication dependent on another table value, saturation, and bounding without an exact inverse pair, so the map scale remains raw.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x15D70" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>raw</units>
@@ -7475,7 +7471,7 @@
   <XDFTABLE uniqueid="0xC657" flags="0x0">
     <title>Two-channel Constant Calibration (0x14E82)</title>
     <description>Exact JK08A. Address 0x14E82; 1 rows x 8 columns; uint16; map confidence candidate. Unidentified 1D calibration table with constant raw value 6250, calculated for two channels and written through dynamic RAM sinks. The map is called for two channels. The first result also participates in selecting a maximum at site:00061df6, but this operation does not establish a physical quantity. The 1D-8 catalog contains 22 different classes and no match for a documented default. Result disposition: writes. Blocking condition: The trace stops at site:00061de6 and site:00061dee because the final RAM address is in r2 and unresolved, and accessor writes have no external readers. The physical consumer and quantity semantics are unknown.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13A68" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>raw</units>
@@ -7517,7 +7513,7 @@
   <XDFTABLE uniqueid="0xBD21" flags="0x0">
     <title>Nonnegative Branch Multiplier (0x15306)</title>
     <description>Exact JK08A. Address 0x15306; 1 rows x 8 columns; uint16; map confidence code. Multiplier on nonnegative branches of two channels: interpolated uint16 M is multiplied by a separate uint8 coefficient, and the product is saturated to 0xffff or divided by 128. The table is selected only for nonnegative param_1 elements; the negative branch uses adjacent 000153a0. Its result is multiplied by an 8-bit table result, compared with a saturation threshold, and shifted right by 7 on the unsaturated path. This conditional dynamic conversion is not a standalone map scale. All eight cells are zero, which does not prove a physical role. Catalogs give several classes of the same shape and no match to a documented flat value. Result disposition: consumer. No physical quantity is asserted beyond narrow operational semantics.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x15DA0" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>raw</units>
@@ -7559,7 +7555,7 @@
   <XDFTABLE uniqueid="0x7401" flags="0x0">
     <title>Negative Branch Multiplier (0x153A0)</title>
     <description>Exact JK08A. Address 0x153A0; 1 rows x 8 columns; uint16; map confidence code. Multiplier on negative branches of two channels: interpolated uint16 M is multiplied by a separate uint8 coefficient, and the product is saturated to 0xffff or divided by 128. Code proves only the operational role: returned uint16 is multiplied by uint8 from ffff8c3c, after which the result is saturated to 65535 or shifted right by 7. This conditional conversion with a dynamic multiplier defines no invertible map scale. Eight zero cells do not prove physical semantics, a threshold role, or branch unreachability. Result disposition: consumer. No physical quantity is asserted beyond narrow operational semantics.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x15DB0" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>raw</units>
@@ -7601,7 +7597,7 @@
   <XDFTABLE uniqueid="0x25E6" flags="0x0">
     <title>Signed Weighted Reference Term - raw u8 (0x1198E)</title>
     <description>Exact JK08A. Address 0x1198E; 1 rows x 16 columns; uint8; map confidence code. Signed table-derived term. The interpolated byte is written to ffff1660, read by the consumer as int8, and enters as a doubled second reference level in a weighted fixed-point calculation before ffff1600 is formed conditionally. Code confidence applies to the narrow operational semantics; the physical quantity is unknown. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -7658,7 +7654,7 @@
   <XDFTABLE uniqueid="0xBD70" flags="0x0">
     <title>Composite Product Multiplier A - raw u8 (0x11E46)</title>
     <description>Exact JK08A. Address 0x11E46; 1 rows x 16 columns; uint8; map confidence code. Interpolated unsigned multiplier of a composite value: the table byte through ffff1295 is multiplied by bytes ffff1296, ffff1297, and ffff1294. The high 8 bits of the 32-bit product are written to ffff22f8 and tested for zero; the test result sets or clears bit 0 of ffff2473. The claim is limited to the computational role proven by code. The multiplier's physical purpose is unknown; 0/255 contents and catalogs are not used for identification. ffff1295 has no external readers, but the value is read again and consumed inside 0004b9b4, so the branch is not dead. Result disposition: inline_comparison.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -7715,7 +7711,7 @@
   <XDFTABLE uniqueid="0x8C7F" flags="0x0">
     <title>Composite Product Window Coefficient (0x11E5E)</title>
     <description>Exact JK08A. Address 0x11E5E; 1 rows x 16 columns; uint8; map confidence candidate. Candidate Q0.8 window coefficient. The table byte is written to ffff1297 and enters as one of four factors in a composite value whose high byte is written to ffff22f8. The interpolation path through 00026740 is incomplete, and shifting the composite product by 24 does not distribute normalization unambiguously among the four factors; semantics and scale remain candidate. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -7772,7 +7768,7 @@
   <XDFTABLE uniqueid="0xC373" flags="0x0">
     <title>Saturated Difference Minuend - raw u8 (0x11E9E)</title>
     <description>Exact JK08A. Address 0x11E9E; 1 rows x 16 columns; uint8; map confidence code. The low byte of the result of calling 00026388 with base 00011e9e is stored in ffff12da and is the minuend in max(U8(ffff12da) - U8(ffff12d9), 0). The physical purpose of the pair and input quantity is unknown. Every element of both maps is zero in the current ROM. Result disposition: inline_comparison.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -7829,7 +7825,7 @@
   <XDFTABLE uniqueid="0x60F8" flags="0x0">
     <title>Intermediate Coefficient Multiplier - raw u8 (0x11F2A)</title>
     <description>Exact JK08A. Address 0x11F2A; 1 rows x 16 columns; uint8; map confidence code. Multiplier, constant in the current calibration, for an intermediate coefficient calculated from RAM ffff160a and ffff165e before a logical right shift by 15; the resulting coefficient then scales adjacent lookup results. All 16 cells equal 128, so the current calibration yields 128 for any index. Code proves the operational role: after zero extension, the byte multiplies intermediate value ((RAM[ffff160a] * RAM[ffff165e]) &gt;&gt; 8); the product is then passed to 0002227c with fixed shift 15, and the resulting coefficient participates in scaling adjacent lookup results. The physical quantity and distribution of fixed-point scales among multipliers are unknown, so the scale remains raw. The write to ffff1840 has no external readers, but the same SSA copy in r5 is consumed at 00056898; this is neither a comparison nor a return nor dead control flow. There is no explicit ROM axis, so axes are empty. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -7886,7 +7882,7 @@
   <XDFTABLE uniqueid="0x3ADC" flags="0x0">
     <title>Unsigned Product Multiplier - raw u8 (0x12042)</title>
     <description>Exact JK08A. Address 0x12042; 1 rows x 16 columns; uint8; map confidence code. The low byte returned by calling 00026388 with base 00012042 is multiplied without sign by U8(ffff1a18); the exact product in range 0..65025 is written as uint16 to ffff1720. The physical quantities of both factors and their product are unknown. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -7943,7 +7939,7 @@
   <XDFTABLE uniqueid="0x459" flags="0x0">
     <title>Constant Output 255 - raw u8 (0x120BE)</title>
     <description>Exact JK08A. Address 0x120BE; 1 rows x 16 columns; uint8; map confidence candidate. Physical semantics are unknown; a constant 1D table produces raw byte 255 for RAM ffff2ea2. All 16 elements equal 0xff, so the written raw byte is 255 for any index. This constant alone does not prove a limit role, threshold role, or physical quantity. The call and write are in a branch that tests bit 4 through ffff24b8; after execution, the bit is set at site 00039a18. Branch unreachability has not been proven, so the map is not dead. The catalog contains several incompatible 1D-16 uint8 classes and does not identify the map by shape or contents. Blocking condition: The trace stops at RAM ffff2ea2 after the write at site 00039a10: ffff2ea2 has no external readers, and inside 0003995a the target-map result is not compared, returned, or used in another consuming operation. Physical semantics therefore cannot be established from code. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="18" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8000,7 +7996,7 @@
   <XDFTABLE uniqueid="0xC113" flags="0x0">
     <title>Conditional Parameter High Byte - raw u8 (0x120F6)</title>
     <description>Exact JK08A. Address 0x120F6; 1 rows x 16 columns; uint8; map confidence candidate. Physical semantics are unknown; code defines a conditionally selected high byte of a composite 16-bit parameter obtained by 1D interpolation using input ffff110e. All 16 cells equal 60, so the index does not change the result, but a flat constant does not establish its purpose. The result is stored at 0004ff42 and, on a reachable conditional branch, loaded at 0004ff6c into the high byte of a returned uint16. Caller 0004ed88 first stores the word in ffff9f34, copies its high byte to ffff14bd, and passes the word to 000503e0. The catalog contains several incompatible classes and scales for 1D-16 uint8, so no unique identification exists. Blocking condition: The map result reaches 000503e0 only as the high byte of a composite third argument; the artifact lacks the consumer body or contract that would establish the physical meaning of this byte, so semantics and physical scale remain unknown. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8057,7 +8053,7 @@
   <XDFTABLE uniqueid="0xA1BE" flags="0x0">
     <title>Conditional Triple-Product Multiplier - raw u8 (0x12282)</title>
     <description>Exact JK08A. Address 0x12282; 1 rows x 16 columns; uint8; map confidence candidate. Branch-selected interpolated uint8 multiplier participates in calculating sat_u16(uint8(ffff2f94) * uint16(v) * uint8(out) &gt;&gt; 14). The target branch loads 00012282 at 000b212c, calls the wrapper at 000b2132, and writes a byte to ffff2f8d at 000b213c. On the alternate branch, the same RAM register receives the result of adjacent 000122b2; this trace applies only to the target branch. Common block LAB_000b227e reads ffff2f8d, includes the value in an unsigned product with byte ffff2f94 and a 16-bit intermediate quantity, shifts the full product right by 14, limits the result to 0xffff, and writes it through param_3. Caller 000b29b8 binds param_3 to ffff301c. The value is not dead. The shared shift by 14 does not distribute fractional bits unambiguously between the two byte multipliers, so a separate x/128 scale is not claimed for this map. Blocking condition: In caller 000b29b8, only reads of the high byte of derived 16-bit result ffff301c, comparisons with unnamed ROM thresholds, and flag changes are visible; the physical consumer and physical quantity are unknown. Promotion rejected: Target attribution is confirmed: 000b212c loads address 00012282, the call at 000b2132 passes it to wrapper 00026388, and 000b213c writes the low result byte to ffff2f8d. The alternate branch writes the result of 000122b2 there, so conditional map selection is distinguished. Passing the array into lookup and byte loads in the kernel confirm role=table. C pseudocode for 000b2096 shows matching arithmetic: uint8(ffff2f94) * (uVar4 &amp; 0xffff) * uint8(ffff2f8d) &gt;&gt; 14 with saturation to 0xffff; the local read of the target-map result confirms disposition=consumer. However, code confidence fails the complete machine-trace requirement: unannotated kernel 00026a84 ends by branching into finisher 00026740, whose listing and contract are absent, while the final multiplications, shift, and saturation are shown only in C pseudocode without machine listing. Wrapper 00026388 also has an endpoint branch that returns the last cell directly, so the literal characterization of the result as always interpolated is not proven. Semantics and evidence sufficiency are therefore refuted under the stated conservative rule. No separate scale is claimed; raw identity requires no scale evidence. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8114,7 +8110,7 @@
   <XDFTABLE uniqueid="0xD164" flags="0x0">
     <title>Centered Blend Coefficient Q0.7 (0x122F2)</title>
     <description>Exact JK08A. Address 0x122F2; 1 rows x 16 columns; uint8; map confidence code. Normalized Q0.7 blend coefficient for the result of map 000122ea: interpolated output 000122f2 multiplies the deviation of output 000122ea from 128; after division by 128, the deviation is added back to 128. The derived value is written to RAM ffff1553; FUN_000bdc66 reads it as initial local_1c and, after conditional processing, writes it to ffff2326. The claim is limited to functional semantics proven by code. The physical quantity of index RAM ffff106f and the physical process represented by ffff2326 are unknown. For raw x=0, the centered result is 128; for x=128, it equals the output of 000122ea. The numeric scale round trip over raw range 0..128 is exact: (x/128)*128=x. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8171,7 +8167,7 @@
   <XDFTABLE uniqueid="0x4F16" flags="0x0">
     <title>Four-Factor Product Multiplier - raw u8 (0x123C2)</title>
     <description>Exact JK08A. Address 0x123C2; 1 rows x 16 columns; uint8; map confidence code. The low byte returned by calling 00026388 with base 000123c2 is written to ffff1680. Code then forms (U8(ffff1680) * U8(ffff193d) * U8(ffff1955) * B) &gt;&gt; 12 and adds U16(ffff2ff0), where B is the same uint8 written immediately beforehand to ffff1b14. The physical quantities of the factors are unknown. The divisor role in 000532ae is excluded from the claim because argument layout for 00021bbc is unconfirmed. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8228,7 +8224,7 @@
   <XDFTABLE uniqueid="0xD9D1" flags="0x0">
     <title>Accumulator Base Term - internal u16 (0x123D2)</title>
     <description>Exact JK08A. Address 0x123D2; 1 rows x 16 columns; uint8; map confidence code. The low byte returned by calling 00026388 with base 000123d2 is converted to uint16(out &lt;&lt; 8) and written to ffff2ff0. Later, this word is zero-extended and added at 0005523e to a four-factor product after a right shift by 12. The physical name of a starting-fuel addition is unconfirmed. Scale x*256 describes the internal uint16 representation in ffff2ff0. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8285,7 +8281,7 @@
   <XDFTABLE uniqueid="0xF082" flags="0x0">
     <title>Linear Transition Target and Upper Clamp (0x12462)</title>
     <description>Exact JK08A. Address 0x12462; 1 rows x 16 columns; uint8; map confidence code. Raw table of a target level and upper bound for a linear transition: the lookup result is multiplied by a relative difference, divided by signed 32/32, then the original table value acts as the result's upper bound before it is written to ffff15ec. Code proves only raw semantics of the target level and upper bound for a linear transition, not the physical quantity. The 16 values of 0xff do not prove that the function is disabled. The target map executes on the branch where (RAM[ffff2466] &amp; 0x40) == 0; unreachability of this branch has not been proven. ffff15ee has no external readers, but the value is consumed inside 0004bbee, so this is not dead control flow. Result disposition: inline_comparison.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8342,7 +8338,7 @@
   <XDFTABLE uniqueid="0xCF54" flags="0x0">
     <title>Accumulator Additive Correction (0x124D2)</title>
     <description>Exact JK08A. Address 0x124D2; 1 rows x 16 columns; uint8; map confidence code. One-dimensional addition table for 16-bit accumulator ffff16a6: an interpolated unsigned byte is converted to an addition, combined with the current value, saturated to 0..65535, and written back. Code proves the operational semantics of an accumulator addition but not the physical purpose of RAM ffff11bc and ffff16a6. Values 128..255 decode to a nonnegative addition of 0..127. The summary section has no direct result-to-RAM binding, but the register trace from site 0004f398 to write 0004f3c8 is unambiguous. No catalog name is claimed. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8399,7 +8395,7 @@
   <XDFTABLE uniqueid="0xFE15" flags="0x0">
     <title>Unidentified Output to ffff15f1 - raw u8 (0x124E2)</title>
     <description>Exact JK08A. Address 0x124E2; 1 rows x 16 columns; uint8; map confidence candidate. Unidentified 1D uint8 table: an interpolated raw byte indexed by an unidentified input quantity from ffff10ca and written to ffff15f1 Shape, range 26..255, and decreasing profile confirm only a calibration table. There is no explicit ROM axis. The catalog contains several incompatible variants with the same shape, and the ffff15f1 binding has no consumer, so no name, physical units, or nontrivial scale are claimed. Blocking condition: The trace stops at instruction 0005678c, where the result is written unconditionally to RAM ffff15f1; ffff15f1 has no external readers, the value does not participate in an inline comparison after the write, and FUN_00056714 returns void. The physical purpose therefore cannot be established. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="18" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8456,7 +8452,7 @@
   <XDFTABLE uniqueid="0x4C68" flags="0x0">
     <title>Normalized-Byte Multiplier - raw u8 (0x12704)</title>
     <description>Exact JK08A. Address 0x12704; 1 rows x 16 columns; uint8; map confidence code. The interpolated uint8 output is a multiplier for normalized byte n; when the enable condition holds, (n * uint8(out)) &gt;&gt; 3 is calculated. The physical quantities of the multiplier and normalized byte are unknown. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8513,7 +8509,7 @@
   <XDFTABLE uniqueid="0xA7C5" flags="0x0">
     <title>Consumer Multiplier Curve - catalog RPM scale (0x12768)</title>
     <description>Exact JK08A. Address 0x12768; 1 rows x 16 columns; uint8; map confidence code. The low byte returned by calling 00026388 with base 00012768 is written to ffff16b1. Code calculates min(255, (U8(out) * U8(ffff23f3)) &gt;&gt; 7) and writes the resulting byte to ffff16ac. The map is not declared a Q7 coefficient because normalization may belong to ffff23f3. RPM scale x*12.5 remains a catalog-based candidate. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8570,7 +8566,7 @@
   <XDFTABLE uniqueid="0xBB0A" flags="0x0">
     <title>Paired Normalization Curve A - catalog RPM scale (0x12798)</title>
     <description>Exact JK08A. Address 0x12798; 1 rows x 16 columns; uint8; map confidence code. Curve A participates in paired normalization with 000127d8: for positive differences, 256 * (A(q)-B(q)) / (A(0x80)-B(0x80)) is calculated and saturated to 255. On a separate selector branch, 4*A(q) is written to ffff1752 as a term in a saturating uint16 aggregate. The curve's physical name is unconfirmed. RPM scale x*25 remains a catalog-based candidate. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8627,7 +8623,7 @@
   <XDFTABLE uniqueid="0x9813" flags="0x0">
     <title>Paired Normalization Curve B - raw u8 (0x127D8)</title>
     <description>Exact JK08A. Address 0x127D8; 1 rows x 16 columns; uint8; map confidence code. Results of calling 00026388 with base 000127d8 at inputs q and 0x80 are subtrahends in differences A(q)-B(q) and A(0x80)-B(0x80), used on a guarded paired-division path through 00021bbc. On a separate selector branch, 4*B(q) is written as uint16 to ffff1752. The curve's physical name and the aggregate's purpose are unknown. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8684,7 +8680,7 @@
   <XDFTABLE uniqueid="0x477E" flags="0x0">
     <title>Weighted Calculation Multiplier A (0x12808)</title>
     <description>Exact JK08A. Address 0x12808; 1 rows x 16 columns; uint8; map confidence code. First table-derived multiplier in an internal weighted calculation: the value from ffff1754 is multiplied in 00046fb2 by the centered output of map 00012a42, after which the product undergoes an arithmetic right shift by 6. The claim is limited to operational code semantics without an unproven physical name. For calibration byte x, direct scale to ffff1754 is x*2 and inverse scale is x/2; units are raw because no physical unit is traced. The centered output of 00012a42 lies in 0..64, and 000224fa arithmetically shifts the product right by 6. ffff1754 has no external readers, but read 00046fae and mul.l 00046fb2 prove internal consumption; the write is not dead control flow. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8741,7 +8737,7 @@
   <XDFTABLE uniqueid="0xF6B8" flags="0x0">
     <title>Signed Quotient Numerator Multiplier - raw u8 (0x12930)</title>
     <description>Exact JK08A. Address 0x12930; 1 rows x 16 columns; uint8; map confidence code. On the A &gt; B branch, interpolated uint8 output k is the multiplier in product k*(A-C), passed in r1 as numerator to signed division 00021bbc by denominator A-B; A=out(00012738), B=out(00012748), C=uint8(ffff16ab). The physical purpose of the multiplier and final derived value is unknown. The code claim ends when the product is passed into signed division. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8798,7 +8794,7 @@
   <XDFTABLE uniqueid="0x2F3D" flags="0x0">
     <title>Conditional Saturating Offset Curve - catalog RPM scale (0x1298C)</title>
     <description>Exact JK08A. Address 0x1298C; 1 rows x 16 columns; uint8; map confidence code. The interpolated uint8 output is stored in local slot stack+4 and, on branch ffff4250 &amp; 0x80 != 0, receives unsigned addition ROM8[000084e8] with saturation to 255. The overrun fuel cut physical identity and RPM scale x*25 remain candidate. The code claim describes only a branch-dependent raw addition with saturation. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8855,7 +8851,7 @@
   <XDFTABLE uniqueid="0x6D46" flags="0x0">
     <title>Normalized Reduction Share A Q0.8 (0x129E2)</title>
     <description>Exact JK08A. Address 0x129E2; 1 rows x 16 columns; uint8; map confidence code. First 8-bit calibrated component of a total normalized reduction fraction: the interpolated output is added to the output of 000129f2, the sum is saturated to 255, and it forms multiplier (256-sum)/256 for an intermediate quantity. Code proves the computational role but not a physical signal or subsystem. Scale x/256 applies to the fraction contributed by this map's output before saturation of the total sum; the final multiplier also depends on 000129f2 and equals (256 - min(255, x + y))/256. Result disposition: inline_comparison.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8912,7 +8908,7 @@
   <XDFTABLE uniqueid="0x3E85" flags="0x0">
     <title>Saturating Reduction Addend B - raw u8 (0x129F2)</title>
     <description>Exact JK08A. Address 0x129F2; 1 rows x 16 columns; uint8; map confidence code. Interpolated unsigned addition to the output of map 000129e2; the sum is bounded above by 255. The physical quantity is unknown. The result is written to ffff17bb at 000537ce, and this RAM register has no external readers. After the write, a live copy of the result in r2 is blended with the output of 000129e2. ffff17b9 is therefore not treated as the sink of the target map specifically. Comparison 000537dc tests saturation of the sum and does not define a threshold role for the map. Result disposition: inline_comparison.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -8969,7 +8965,7 @@
   <XDFTABLE uniqueid="0xBB5F" flags="0x0">
     <title>Signed Difference Reference Term - raw u8 (0x12A02)</title>
     <description>Exact JK08A. Address 0x12A02; 1 rows x 16 columns; uint8; map confidence code. Interpolated raw reference-term table for a signed difference: the uint8 result is written to ffff22ae, while the same register result forms clamp(interp(00012a02)-u8[ffff221c], -128, 127) for subsequent selection of an output correction inside 00062c68. Code confidence applies only to observed operational semantics. The physical quantity and unit are unknown. Comparisons at 00062d38 and 00062d46 implement saturation of the derived difference and do not make the map a threshold. The write to ffff22ae does not end the trace: the same result from r6 is copied to r2 at 00062d2a. The clamp is not treated as a scale. Result disposition: inline_comparison.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9026,7 +9022,7 @@
   <XDFTABLE uniqueid="0x6F31" flags="0x0">
     <title>Internal Product Coefficient Q0.7 (0x12C02)</title>
     <description>Exact JK08A. Address 0x12C02; 1 rows x 16 columns; uint8; map confidence code. Interpolated 1D table of a dimensionless coefficient with step 1/128 that multiplies byte[ffff1717] in calculation of derived byte ffff3218; a copy of the coefficient is written to ffff3406. The interpolated byte is written separately to ffff3406, but the RAM sink has no external readers. The write is not the final disposition: the same r4 remains live, is zero-extended at 000b5fee, and is multiplied at 000b6000. On branch byte[ffff22e0]==0, the derived result is calculated as an arithmetic right shift by 7 of expression M*uint8[ffff1717]-128*B, saturated to 0..255, and written to ffff3218; B is byte[00008bc4] or 0 depending on flag byte[ffff2458]. Saturation applies to the derived result rather than the map scale. The artifact does not establish the physical meaning of RAM quantities, so only operational semantics proven by code are claimed. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9083,7 +9079,7 @@
   <XDFTABLE uniqueid="0x3CBC" flags="0x0">
     <title>Init-only Constant Output 255 - raw u8 (0x12C3A)</title>
     <description>Exact JK08A. Address 0x12C3A; 1 rows x 16 columns; uint8; map confidence candidate. Physical semantics are unknown: the 1D lookup result is stored as an unnamed byte in RAM ffff1934. All 16 cells equal 0xff, so every lookup writes result 0xff. The call executes only when (RAM[ffff24b8]&amp;0x04)==0; code then sets mask 0x04, but the calculation branch has not been proven unreachable. The result's physical meaning and nontrivial scale are unknown. The artifact associates no separately addressed axis with the implicit map, so axes are empty. Blocking condition: The trace stops at instruction 000399fa, which writes the byte to RAM ffff1934; this register has no external readers. At 00039a02, r2 is overwritten with the adjacent map's input; there is no inline comparison or return of the target value. The calculation branch has not been proven unreachable. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="18" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9140,7 +9136,7 @@
   <XDFTABLE uniqueid="0x5F6D" flags="0x0">
     <title>Composite Product Multiplier - raw u8 (0x12C56)</title>
     <description>Exact JK08A. Address 0x12C56; 1 rows x 16 columns; uint8; map confidence code. Unsigned 8-bit multiplier interpolated by uint8 input ffff11b2 in the calculation inside 00055098: after being written to ffff1955, it is loaded again and multiplied by the product of values ffff1680 and ffff193d; the result is then multiplied by ffff1b14, shifted right by 12, added to ffff2ff0, saturated to 0xffff, and written to ffff15ce. ffff1955 has an internal reader in the same function despite no external consumers: the value is loaded into r4, zero-extended as a byte, and participates in mul.l. The artifact does not establish the physical quantity of final ffff15ce. The right shift by 12 applies to a product of four bytes, so no separate nontrivial scale can be assigned to map 00012c56. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9197,7 +9193,7 @@
   <XDFTABLE uniqueid="0x1B36" flags="0x0">
     <title>Batch Scale Multiplier A - raw u8 (0x12D22)</title>
     <description>Exact JK08A. Address 0x12D22; 1 rows x 16 columns; uint8; map confidence code. The interpolated uint8 output is a multiplier in y=min(65535,(uint16(ffff165e)*out*100)&gt;&gt;14); y is written to ffff2414 and then copied to ffff2416. The physical quantities of the multiplier and results ffff2414/ffff2416 are unknown. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9254,7 +9250,7 @@
   <XDFTABLE uniqueid="0x2A77" flags="0x0">
     <title>Batch Scale Multiplier B - raw u8 (0x12D32)</title>
     <description>Exact JK08A. Address 0x12D32; 1 rows x 16 columns; uint8; map confidence code. The interpolated uint8 output is a multiplier in y=min(65535,(uint16(ffff165e)*out*100)&gt;&gt;14); y is written to ffff1926 and then copied to ffff2418. The physical quantities of the multiplier and results ffff1926/ffff2418 are unknown. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9311,7 +9307,7 @@
   <XDFTABLE uniqueid="0xBCB0" flags="0x0">
     <title>Batch Scale Multiplier C - raw u8 (0x12D42)</title>
     <description>Exact JK08A. Address 0x12D42; 1 rows x 16 columns; uint8; map confidence code. The interpolated uint8 output is a multiplier in y=min(65535,(uint16(ffff165e)*out*100)&gt;&gt;14); y is written to ffff1928 and then copied to ffff241a. The physical quantities of the multiplier and results ffff1928/ffff241a are unknown. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9368,7 +9364,7 @@
   <XDFTABLE uniqueid="0x8DF1" flags="0x0">
     <title>Batch Scale Multiplier D - raw u8 (0x12D52)</title>
     <description>Exact JK08A. Address 0x12D52; 1 rows x 16 columns; uint8; map confidence code. The interpolated uint8 output is a multiplier in y=min(65535,(uint16(ffff165e)*out*100)&gt;&gt;14); y is written to ffff192a. The physical quantities of the multiplier and result ffff192a are unknown; a subsequent copy to ffff241c is outside the code claim. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9425,7 +9421,7 @@
   <XDFTABLE uniqueid="0xDE32" flags="0x0">
     <title>Batch Scale Multiplier E - raw u8 (0x12D62)</title>
     <description>Exact JK08A. Address 0x12D62; 1 rows x 16 columns; uint8; map confidence code. The interpolated uint8 output is a multiplier in y=min(65535,(uint16(ffff165e)*out*100)&gt;&gt;14); y is written to ffff192c. The physical quantities of the multiplier and result ffff192c are unknown; a subsequent copy to ffff241e is outside the code claim. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9482,7 +9478,7 @@
   <XDFTABLE uniqueid="0xEF73" flags="0x0">
     <title>Input-shaping Coefficient Q0.7 (0x12D72)</title>
     <description>Exact JK08A. Address 0x12D72; 1 rows x 16 columns; uint8; map confidence code. Unsigned scaling-coefficient table. For interpolated byte g, code calculates s=min(floor(uint8[ffff2015]*g/128),128), then q=min(2*(128-s),255), and passes q as the input to map 00012a02 at site 00062d22. Code proves only operational coefficient semantics, not the physical purpose of the source RAM quantities. Values 32..128 correspond to coefficients 0.25..1.0. After being written to ffff229e, the same value remains in r6, scales ffff2015, and participates in forming the adjacent map's input. ffff229e has no external readers, so output_disposition remains writes. Saturation of the intermediate result to 128 and adjacent-map input to 255 is not part of the scale conversion. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9539,7 +9535,7 @@
   <XDFTABLE uniqueid="0xF3F2" flags="0x0">
     <title>Additive Initialization Term - raw u8 (0x12D8A)</title>
     <description>Exact JK08A. Address 0x12D8A; 1 rows x 16 columns; uint8; map confidence code. The interpolated uint8 output is added to uint16(ffff5620); the low 16 bits of the sum are written to ffff1fb0. The physical quantity of the sum is unknown. Every map cell in the current ROM equals 76. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9596,7 +9592,7 @@
   <XDFTABLE uniqueid="0xE1E4" flags="0x0">
     <title>Composite Correction Multiplier Q0.7 (0x12DD2)</title>
     <description>Exact JK08A. Address 0x12DD2; 1 rows x 16 columns; uint8; map confidence code. Dimensionless 1D correction multiplier: the interpolated map value scales iVar6 in FUN_000474a4 together with coefficients from ffff2fc0 and ffff2fc1 before limiting and writing the result to ffff122a. FUN_000474a4 multiplies three byte map outputs and iVar6 with a total shift of 21 bits. Decomposition 2^21 = 128^3 assigns seven fractional bits to each byte coefficient; for the target map, 128 -&gt; 1, and pair x/128 with x*128 gives an exact numeric round trip. The artifact does not establish the physical quantity corrected by the product or the physical meaning of input ffff106f; no catalog name is claimed. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -9653,7 +9649,7 @@
   <XDFTABLE uniqueid="0x28BD" flags="0x0">
     <title>Saturating Pair Base Term - catalog opening-area scale (0x1465A)</title>
     <description>Exact JK08A. Address 0x1465A; 1 rows x 16 columns; uint16; map confidence code. Interpolated uint16 output M is written to ffff1e74 and forms base term min(min(M+out(0001469a),65535),uint16(ffff133e)). ISC physical identity and Opening Area scale x*0.0008 remain candidate. The code claim describes a raw uint16 combination. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -9710,7 +9706,7 @@
   <XDFTABLE uniqueid="0xA046" flags="0x0">
     <title>Minimum-selected Product Multiplier - raw u16 (0x14BFA)</title>
     <description>Exact JK08A. Address 0x14BFA; 1 rows x 16 columns; uint16; map confidence code. The interpolated raw 1D-table value forms a minimum with the result of map 00014bea; the selected minimum becomes a multiplier in calculating upper-limited byte ffff1831, which FUN 0004c136 conditionally copies to ffff2404. The physical quantity is unknown. The link to the target map is proven by calculating r14=00014bea+0x10 at 0004c0e6 and passing r14 into r4 in delay slot 0004c0ec of call 0004c0ea. The map result participates in a minimum with the result of 00014bea, then in a product, saturation to 0x7f, and write ffff1831. Function 0004c136 reads ffff1831 and conditionally transfers the byte to ffff2404. Code confidence applies only to these operational semantics; physical units and a nontrivial scale are unproven. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -9767,7 +9763,7 @@
   <XDFTABLE uniqueid="0x99B2" flags="0x0">
     <title>Conditional Blend Reference - raw u16 (0x14CEA)</title>
     <description>Exact JK08A. Address 0x14CEA; 1 rows x 16 columns; uint16; map confidence candidate. Interpolated uint16 output is written to ffff1910 and serves as a reference operand in branch-dependent blending with output of map 0000e98e inside FUN_00075c48. Physical semantics are unknown. All 16 cells equal 0xffff, but constancy does not prove purpose. After the write to ffff1910, the value conditionally participates in blending with result 0000e98e; contract 00021bbc confirms only signed division. Offset 0x8000, conditional blending, and saturation define no exact invertible physical scale. The axis is implicit and has no separate Axis claim. Blocking condition: The external trace stops at site 00075d28, which writes the result to ffff1910; ffff1910 has no external readers. The internal trace in 00075c48 reaches only conditional arithmetic and function 00021bbc, which reveal no physical quantity or units. Promotion rejected: Exact write attribution in /private/tmp/claude-501/-Users-isrudoy-src-docs-vq/d31db600-b7d4-488a-b83b-86388fed907c/scratchpad/sweep-p260-289/map-00014cea.md is confirmed: 00075d1a loads base 00014cea, 00075d1e calls wrapper 000263f4, 00075d22 moves r0 to r2, and 00075d28 writes the low word to ffff1910. The second call is separately bound to 0000e98e at 00075d26 and 00075d38. The 1D-16 uint16 shape and adjacent-word reads at 00026aa0 and 00026aa2 confirm role=table. Local read/write consumption of ffff1910 inside FUN_00075c48 confirms disposition=consumer; absence of external readers does not contradict this. Code confidence and stated arithmetic nevertheless lack a complete machine trace. The unannotated kernel 00026a64 listing ends at 00026aa2 immediately after reading two cells, without interpolation, a finisher, construction of r0, or return. The consumer listing ends at 00075d76 before the actual read of ffff1910, register preparation, call to 00021bbc, and final blend. Contract 00021bbc confirms only signed division r1/r0; without the missing region, it does not link operands to the two map outputs. C pseudocode does not replace a machine trace, especially under the helper calling convention described in the artifact. The wrapper also has a separate endpoint path for input &gt;= 0xf000, so 'interpolated' is not proven on every branch. No separate scale or scale evidence is claimed. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="22" />
+    <CATEGORYMEM index="0" category="18" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -9824,7 +9820,7 @@
   <XDFTABLE uniqueid="0xA5E3" flags="0x0">
     <title>High-range Quotient Divisor - raw u16 (0x15022)</title>
     <description>Exact JK08A. Address 0x15022; 1 rows x 16 columns; uint16; map confidence code. High-range branch of a piecewise denominator table: the high byte of interpolated uint16 is tested for zero and, when nonzero, used as divisor in unsigned quotient (ffff1737 &lt;&lt; 8) / value. Code establishes operational rather than physical semantics. The interpolation result is quantized as (r0 &gt;&gt; 8) &amp; 0xff, written to ffff1738, and used through the same r6 without reading RAM. ffff1738 has no external readers, but the flow is not dead: r6 is tested for zero and becomes divisor 00021ce0 on the nonzero branch; the zero branch forms 0xff. No physical quantity or engineering unit follows from this consumption. Loss of the low 8 bits has no exact inverse, so only raw identity is claimed. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -9881,7 +9877,7 @@
   <XDFTABLE uniqueid="0x265" flags="0x0">
     <title>Low-range Piecewise Source - raw u16 (0x15042)</title>
     <description>Exact JK08A. Address 0x15042; 1 rows x 16 columns; uint16; map confidence code. The map forms the lower branch of pair 00015042/00015022: when u &lt; 0x3c00, it is interpolated at coordinate 4*u, after which the high byte of the uint16 result is written to ffff1170, ffff1737, or ffff1738 depending on the calling path. The physical input and output quantities are unknown. Extracting the high byte of a derived result is not treated as the map's raw-representation scale. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -9938,7 +9934,7 @@
   <XDFTABLE uniqueid="0x260F" flags="0x0">
     <title>Protected Division Denominator - catalog torque-ratio scale (0x15770)</title>
     <description>Exact JK08A. Address 0x15770; 1 rows x 16 columns; uint16; map confidence candidate. The interpolated uint16 output is written to ffff19a2 and used as a zero-protected divisor for call 00021bbc in the seven shown consumers. Range 1024..1884, monotonic decrease toward 1024, an implicit normalized axis, and use of the result as a divisor are consistent with two catalog variants of Torque Converter Torque Ratio Table. Code proves the full chain to arithmetic consumption but does not identify the physical input ratio or consumer quantities, so the claim and scale remain candidate. The artifact has no separately addressable axis. Blocking condition: The trace stops at 00021bbc: consumers 00074b04, 00075306, 000718d8, 00071a10, 00071b7e, 0007654c, and 000ceabc prove use of ffff19a2 as a zero-protected divisor, but the artifact does not link the numerators or division results to torque and torque-converter speeds. Physical semantics and multiplier 0.000976563 are confirmed only by the catalog. Promotion rejected: Attribution is supported by the machine chain: 000751f6 loads address 00015770 into r4, 000751fc calls table wrapper 000263f4, 00075200 copies return value r0, and 00075204 writes a word to ffff19a2. The table-wrapper call and reads of adjacent uint16 cells at 00026aa0 and 00026aa2 confirm role=table. Disposition=consumer is supported by the structural set of seven ffff19a2 readers. The promoted semantics and its code evidence are disproven: the kernel listing ends immediately after reading two cells and does not show interpolation arithmetic through r0, while machine listings for the seven consumers are absent. Because of the nonstandard register contract, the shown C pseudocode does not reconstruct arguments to 00021bbc by itself. In five pseudocode listings, ffff19a2 appears only in a zero test, while in 00074b04 and 0007654c it appears in neither pseudocode nor expression tables. Those two functions show 000224fa before 00021bbc, so the artifact does not establish whether the divisor is the raw output, its shifted derivative, or another quantity. A complete machine trace for all seven consumers is absent. No separate scale or scale evidence is claimed. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -9995,7 +9991,7 @@
   <XDFTABLE uniqueid="0xF005" flags="0x0">
     <title>Saturating Pair Base Term - catalog opening-area scale (0x18C96)</title>
     <description>Exact JK08A. Address 0x18C96; 1 rows x 16 columns; uint16; map confidence code. Interpolated uint16 output M is written to ffff1cac, loaded again, and added to the output of 00018c76; the composite value is then saturated and capped. The physical ISC identity and Opening Area scale x*0.0008 remain candidate. The code claim describes a raw uint16 combination. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -10052,7 +10048,7 @@
   <XDFTABLE uniqueid="0xC88B" flags="0x0">
     <title>Composite Product Multiplier - catalog torque-ratio scale (0x19190)</title>
     <description>Exact JK08A. Address 0x19190; 1 rows x 16 columns; uint16; map confidence code. The interpolated uint16 output is written to ffff1d16; FUN_00074478 zero-extends it and uses it as a multiplier in mul.l at 0007448c, after which the derived product is shifted and multiplied again before call 00021bbc. The physical torque-converter-ratio identity and scale x*0.000976563 remain candidate. The code claim is limited to the visible arithmetic in FUN_00074478. Result disposition: consumer.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -10109,7 +10105,7 @@
   <XDFTABLE uniqueid="0xA5FC" flags="0x0">
     <title>Initial Retard Quantity - unresolved mode (0x11F6A)</title>
     <description>Exact JK08A. Address 0x11F6A; 1 rows x 4 columns; uint8; map confidence candidate. Initial retard quantity for transient ignition correction, without identifying a specific mode The candidate belongs to the Initial Retard Quantity family in Ignition Timing/Transient Correction/Main, but code does not distinguish the Fuel Cut, Lock-Up, or Stepping on from Idle mode. The result is written to ffff1394 and read again inside 0007b650; there is no visible inline comparison or returned value, and branch unreachability has not been proven. The Degrees scale with factor 1 comes only from five catalog matches. Blocking condition: After ffff1394 is read at 0007b6c2, the shown listing ends at 0007b6c8; subsequent use of r6 and the exact site that passes the quantity to 00021ce0 are absent. Contract 00021ce0 proves only unsigned division and does not establish physical semantics; the five catalog variants remain indistinguishable. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 64)</units>
@@ -10154,7 +10150,7 @@
   <XDFTABLE uniqueid="0x590D" flags="0x0">
     <title>Initial Retard Quantity - unresolved mode (0x1202E)</title>
     <description>Exact JK08A. Address 0x1202E; 1 rows x 4 columns; uint8; map confidence candidate. Candidate of the Initial Retard Quantity Table family: initial ignition-retard quantity for transient correction; the specific operating-mode variant is unknown. Code proves a conditional unsigned 1D-4 lookup: when (RAM ffff2459 &amp; 0x20)==0, the accessor constrains the index to 0..255, interpolates uint8 nodes, and copies the byte result into two RAM regions. All four cells equal 200, so every executed lookup writes 200. The catalog match establishes only a candidate for the general family and units, without an address or concept association. Index: x = min(max((uint16_t)r5 - 96, 0), 255). Implicit nodes are located at x=0, 64, 128, 192: for x&lt;192, i=x/64 and Q0.16 fraction (x-i*64)*1024 are used; for x&gt;=192, element 3 is returned. Result disposition: writes (RAM ffff1ee0 at site 0003e2da; RAM ffff257a at site 0003e2de). Blocking condition: The machine trace ends after writes 0003e2da/ffff1ee0 and 0003e2de/ffff257a: the artifact contains no external readers of either register and no consumer associated with the lookup result. The six shown consumers read ffff4226, which is not a sink for the map result. Therefore, code does not establish physical semantics or distinguish the five operating-mode variants in the catalog.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 64)</units>
@@ -10199,7 +10195,7 @@
   <XDFTABLE uniqueid="0x5FB1" flags="0x0">
     <title>Positive Difference Coefficient /100 (0x12522)</title>
     <description>Exact JK08A. Address 0x12522; 1 rows x 4 columns; uint8; map confidence code. Positive-branch coefficient for a difference between two channels: when s16[ffff288c+2*i]-s16[ffff4020+2*i]&gt;=0, the lookup result multiplies this difference, the product is divided by 100 as unsigned, and the quotient is added to 500 before a 16-bit write to ffff40a4+2*i. The physical subsystem is not established by code. All four bytes equal 100, so the current calibration gives coefficient 1 over the entire range. The lookup result is also written at 0005ad58 to ffff409c+i; the artifact contains no external readers of this indexed output. There is no explicit ROM axis. The inverse scale is exact on the representable grid with step 0.01. Index: implicit 1D-4 uint8; c=min(255,2*max(u8[ffff3529+i]-104,0)), i=0..1; for c&lt;192, kernel 00026a7c interpolates adjacent uint8 cells through Q0.16 finisher 00026740; for c&gt;=192, wrapper 00026358 returns cell 3. Result disposition: consumer (site 0005ad5c).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 64)</units>
@@ -10244,7 +10240,7 @@
   <XDFTABLE uniqueid="0x9BA8" flags="0x0">
     <title>Negative Difference Coefficient /100 (0x12526)</title>
     <description>Exact JK08A. Address 0x12526; 1 rows x 4 columns; uint8; map confidence code. Coefficient table for the negative branch of a signed mismatch. When d=int16(ffff288c[i])-int16(ffff4020[i])&lt;0, interpolated byte k defines dimensionless coefficient k/100; code calculates floor((-d)*k/100) and subtracts this correction from base value 500. The physical name of the controlled quantity is unknown. The physical subsystem is not established by code. The map is selected only on branch d&lt;0, where d=int16(ffff288c[i])-int16(ffff4020[i]). Its result is also written as a byte to ffff409c+i at site 0005ad58, but the artifact contains no external readers; the direct arithmetic chain provides the evidentiary semantics. Flat value 100 means current coefficient 1 but is not evidence by itself. Catalog names and default-value matches are not used. Index: Implicit 1D-4 axis. For each i=0..1, coordinate q=min(2*max(u8[ffff3529+i]-104,0),255). For q&gt;=192, wrapper 00026358 returns uint8 cell[3]; for q&lt;192, it passes adjacent-cell selection to kernel 00026a7c and Q0.16 interpolation 00026740. The artifact has no separate Axis claim. Result disposition: consumer (0005ac54 site 0005ad5c and function 00021ce0 through site 0005ad62; the derived int16 result is written to ffff40a4+2*i).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 64)</units>
@@ -10289,7 +10285,7 @@
   <XDFTABLE uniqueid="0xC7B7" flags="0x0">
     <title>Local Limit Base Term - raw u8 (0x1292C)</title>
     <description>Exact JK08A. Address 0x1292C; 1 rows x 4 columns; uint8; map confidence code. Four-point calibration of a local-limit quantity: the lookup result is treated as u8, doubled, receives an addition from RAM_ffff171d when the mode matches, and is capped at 510. All 4 cells equal 90, so both lookup paths return 90 and actual indexing does not change the output. The physical name of the quantity and the subsystem are unknown. The artifact has no associated external sink; the claim is limited to visible local arithmetic and comparison. Index: Implicit u8 index from RAM_ffff106f: for x&lt;192, i=floor(x/64), fraction=(x-i*64)*1024 in Q0.16, and cell[i]..cell[i+1] are interpolated; for x&gt;=192, cell[3] is returned. Result disposition: inline_comparison (site 00044d12).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 64)</units>
@@ -10334,7 +10330,7 @@
   <XDFTABLE uniqueid="0x27C2" flags="0x0">
     <title>Blend Coefficient Step A Q0.16 (0x153B0)</title>
     <description>Exact JK08A. Address 0x153B0; 1 rows x 4 columns; uint16; map confidence code. Step for changing a dimensionless Q0.16 blend coefficient: the lookup result is stored in ffff17f8, then 00074b68 subtracts it from ffff2422 or adds it to ffff2422 with limits; 00074c08 applies ffff2422 to linearly blend signed16 ffff18e8 and ffff18e6 and writes ffff18f4. The physical subsystem is unknown. The map result is a step, not the final coefficient. 00074b68 subtracts the step from ffff2422 or adds it with a lower limit and saturation; 00074c08 uses updated ffff2422 as a weight. Final weight value 0xffff is handled by a separate branch as full selection of ffff18e6. Index: implicit 1D-4; coordinate=min(abs(s16[ffff18e6]-s16[ffff18e8])*64,49152); for coordinate&gt;=49152 the wrapper returns element 3, otherwise interpolation proceeds through 00026a5c/00026740. Result disposition: consumer (00074b68 through ffff17f8).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16384)</units>
@@ -10379,7 +10375,7 @@
   <XDFTABLE uniqueid="0xAFF0" flags="0x0">
     <title>Blend Coefficient Step B Q0.16 (0x153B8)</title>
     <description>Exact JK08A. Address 0x153B8; 1 rows x 4 columns; uint16; map confidence code. Operational table of the step used to change a 16-bit blend coefficient. When unsigned RAM[ffff10d2] &lt; 200, lookup by the constrained absolute difference between signed16 RAM[ffff18e6] and RAM[ffff18e8] writes the step to RAM[ffff17f8]. On the active branch, 00074b68 subtracts this step with saturation toward 0 or adds it with saturation toward 65535, updating RAM[ffff2422]; 00074c08 uses the updated coefficient as the weight for linear blending of signed16 RAM[ffff18e8] and RAM[ffff18e6] and writes the result to RAM[ffff18f4]. The physical subsystem is unknown. The map result is a Q0.16 step: raw x represents dimensionless fraction x/65536, and inverse pair x*65536 is exact on the representable grid. Saturation occurs later when ffff2422 is updated and is not part of the map-value conversion. 00074c08 uses updated ffff2422 as a weight; separate handling of 0 and 65535 defines blend boundary cases, not a conditional map scale. When RAM[ffff10d2] &gt;= 200, the same accessor selects adjacent map 000153b0 rather than the target map. Index: 1D-4, implicit axis with no separate array; r5 = min(abs((int16)RAM[ffff18e6] - (int16)RAM[ffff18e8]) * 64, 49152), returning the last cell when r5 &gt;= 49152. Result disposition: consumer (RAM ffff17f8 -&gt; function 00074b68).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16384)</units>
@@ -10634,7 +10630,7 @@
   <XDFTABLE uniqueid="0x8C31" flags="0x0">
     <title>Four-Factor Product Multiplier B Q0.8 (0x11E56)</title>
     <description>Exact JK08A. Address 0x11E56; 1 rows x 8 columns; uint8; map confidence code. One of three unsigned table multipliers applied to base byte ffff1294. Its interpolated result participates in a four-factor product; the normalized result is written to ffff22f8 and controls bit 0 of ffff2473 according to whether it is zero. The artifact does not identify the physical subsystem. The lookup result is stored in ffff1296 and reread locally; ffff1296 has no external readers. ffff1294 is the base byte, while ffff1295, ffff1296, and ffff1297 are three Q0.8 multipliers: floor(ffff1294*ffff1295*ffff1296*ffff1297/2^24) is written to ffff22f8. A zero result clears bit 0 of ffff2473, while a nonzero result sets it. Numeric round trip for ROM value 13: (13/256)*256=13. Index: Implicit uniform 1D-8 axis: u=min((uint16[ffff1024]&gt;&gt;7),255); for u&lt;224, i=u&gt;&gt;5 and a Q0.16 fraction from the low 5 bits interpolate cells[i] and cells[i+1]; for u&gt;=224, cells[7] is returned. Result disposition: consumer (0004b9b4@0004ba18).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -10683,7 +10679,7 @@
   <XDFTABLE uniqueid="0x3375" flags="0x0">
     <title>Branching Saturated Calculation Base (0x11F12)</title>
     <description>Exact JK08A. Address 0x11F12; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table of the base operand for a branching saturating calculation: the interpolated value is used as a minuend or first addend, after which the derived result is constrained to range 0..255. The physical quantity and subsystem are unknown. The lookup result has no direct RAM sink: it is consumed in registers within FUN_0004afdc. The derived saturated byte is written to ffff12db at 0004b2d2. On one branch, the lookup of map 00011f1a and byte ffff1842 are subtracted from the value with a lower cap of zero; on another, the lookup of map 00011f22 is added with an upper cap of 255; on the remaining branch, ffff1842 is subtracted with a lower cap of zero. Index: Implicit eight-point axis by unsigned byte ffff106f: raw nodes 0, 32, 64, 96, 128, 160, 192, 224. For x &lt; 224, the index is x/32 with the remainder discarded and interpolation fraction (x%32)/32; for x &gt;= 224, cell 7 is selected. Result disposition: consumer (FUN_0004afdc: inline arithmetic sites 0004b186, 0004b1c8, 0004b1e4).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -10732,7 +10728,7 @@
   <XDFTABLE uniqueid="0x333B" flags="0x0">
     <title>Conditional Subtractive Term (0x11F1A)</title>
     <description>Exact JK08A. Address 0x11F1A; 1 rows x 8 columns; uint8; map confidence code. Conditional 1D table of a subtraction quantity: when bits 0x01 and 0x02 are both set in ffff22e1, the interpolated uint8 value of the target map is subtracted from the lookup result of map 00011f12, then uint8 from ffff1842 is subtracted; a negative result is replaced with zero and written as a byte to ffff12db. The physical subsystem and engineering unit are unknown. There is no separate ROM axis. ffff12db receives a composite result, not a copy of the target-map lookup. Index: implicit 1D-8: x = uint8 RAM ffff106f; fixed nodes 0, 32, 64, 96, 128, 160, 192, 224; for x &lt; 224, linear interpolation with a Q0.16 fraction is performed between adjacent uint8 values; for x &gt;= 224, cell[7] is returned. Result disposition: writes (RAM ffff12db, derived byte store at site 0004b2d2). Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -10781,7 +10777,7 @@
   <XDFTABLE uniqueid="0x60B6" flags="0x0">
     <title>Conditional Additive Term (0x11F22)</title>
     <description>Exact JK08A. Address 0x11F22; 1 rows x 8 columns; uint8; map confidence code. Conditional 1D table of an unsigned addition: lookup(00011f22, x) is added to lookup(00011f12, x), the sum is upper-saturated at 255, and the composite value is then written to RAM ffff12db. The lookup result has no separate direct RAM sink: the value is combined with the result of map 00011f12, after which the derived sum reaches RAM ffff12db. The physical name of the quantity and the unit of input ffff106f are unknown. All eight cells equal 0, so in this image the addition does not alter the composite result; this does not prove that the branch is unreachable. Index: Implicit uniform uint8 axis with step 32: x = RAM[ffff106f]; for x &lt; 224, i = x &gt;&gt; 5, Q0.16 fraction = (x &amp; 31) * 2048, and table[i] and table[i+1] are interpolated; for x &gt;= 224, table[7] is returned. Result disposition: writes (ffff12db). Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -10830,7 +10826,7 @@
   <XDFTABLE uniqueid="0xF9B5" flags="0x0">
     <title>Composite 7-bit Base / Multiplier (0x11FBE)</title>
     <description>Exact JK08A. Address 0x11FBE; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table of a base quantity or multiplier in a composite 7-bit result. The lookup interpolated by byte ffff106f at 0004c02e participates in conditional scaling and multiplication with other inputs, after which the result is capped at 127 and written to ffff1831; 0004c136 conditionally copies it to ffff2404. The physical name of the quantity and engineering scale are unknown. ffff1831 receives not the original lookup result but the saturated result of branching arithmetic with other inputs; function 0004c136 only conditionally copies this byte to ffff2404. Index: x=uint8[ffff106f]; for x&lt;224: i=x&gt;&gt;5, f=(x&amp;31)/32, y=unsigned linear interpolation of t[i] and t[i+1] with a Q0.16 fraction; for x&gt;=224: y=t[7]. Result disposition: writes (ffff1831). Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -10879,7 +10875,7 @@
   <XDFTABLE uniqueid="0x6F3C" flags="0x0">
     <title>Saturating State-Reduction Step Multiplier (0x11FE6)</title>
     <description>Exact JK08A. Address 0x11FE6; 1 rows x 8 columns; uint8; map confidence code. 1D step coefficient for saturating reduction of 16-bit state ffff1866: interpolated uint8 is multiplied by uint8 from ffff3373, the product reaches ffff13dc, and on the corresponding branch it is subtracted from nonzero ffff1866 with lower saturation at 0. The physical quantity of ffff3373 and the purpose of state ffff1866 are unknown. All eight cells equal 0, so the current calibration contributes zero for every input. The lookup result has no direct RAM sink: it is first consumed by multiplication, and ffff13dc receives the derived 16-bit product. This multiplication is runtime consumption, not a map scale. Index: implicit_1d_8_u8; input=clamp(((uint16(ffff40c6)*0x2d0e)&gt;&gt;15)-0x20,0,255); for input&lt;0xe0, the kernel linearly interpolates adjacent uint8 points of the implicit grid; for input&gt;=0xe0, element[7] is returned. Result disposition: consumer (ffff13dc).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -10928,7 +10924,7 @@
   <XDFTABLE uniqueid="0x3BC1" flags="0x0">
     <title>Piecewise Clamp y=min(x,224) (0x12006)</title>
     <description>Exact JK08A. Address 0x12006; 1 rows x 8 columns; uint8; map confidence code. Unsigned 8-bit piecewise-linear limit table: over nodes 0, 32, 64, 96, 128, 160, 192, 224, the lookup implements y=min(x,224) and writes y to RAM ffff17b8; FUN_0004ae6c then multiplies y by uint16 from RAM ffff14dc and tests the product for zero, with a zero result selecting sentinel 0xffff instead of the main calculation branch. The map has no explicit ROM axis: the index is formed directly from unsigned byte RAM ffff102c. The physical quantity and engineering unit are unknown. The external consumer proves the narrow operational role of the result in the zero test, but not the physical subsystem or the full arithmetic of subsequent division calls. Index: implicit 1D-8: 8 nodes at raw input 0, 32, 64, 96, 128, 160, 192, 224; linear interpolation is applied between adjacent uint8 cells, while input &gt;=224 selects element 7. Result disposition: consumer (0004ae6c).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -10977,7 +10973,7 @@
   <XDFTABLE uniqueid="0xB187" flags="0x0">
     <title>Composite Product Multiplier A - raw u8 (0x1208E)</title>
     <description>Exact JK08A. Address 0x1208E; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 multiplier table: after the byte lookup result is written to ffff144d, it is read again, multiplied by zero_extend16(r12), and then multiplied by the lookup result of map 00012096; the 32-bit product is divided as signed by 81920, the quotient is compared as unsigned with 255, values above 255 are replaced with 255, and the final byte is written to ffff1875. The physical name of the quantity and the unit of input ffff144c are unknown. Divisor 81920 applies to the composite expression and does not define an independent physical scale for this map. Index: implicit 1D-8 by uint8 input from ffff144c; input &gt;= 224 returns element 7, while for input &lt; 224 kernel 00026a80 selects adjacent uint8 cells and 00026740 performs linear interpolation with a Q0.16 fraction. Result disposition: consumer (site 0004c346).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11026,7 +11022,7 @@
   <XDFTABLE uniqueid="0x8088" flags="0x0">
     <title>Composite Product Multiplier B - raw u8 (0x12096)</title>
     <description>Exact JK08A. Address 0x12096; 1 rows x 8 columns; uint8; map confidence code. Unsigned 1D table of the second multiplier in a composite calculation. The interpolated byte is stored in ffff1451 and, at site 0004c34c, multiplied by low32(r12 * lookup(0001208e)); low32 of the product is passed as a signed 32-bit dividend to 00021bbc, divided by 0x14000 with truncation toward zero, capped at 255 by an unsigned comparison, and written as a byte to ffff1875. The physical quantities of input ffff1450 and the coefficient are unknown. There is no separate ROM axis: indexing is implicit, so axes is empty. ffff1451 has no external readers, but the saved copy of the result in r5 is consumed inside the accessor at site 0004c34c; the value is not dead. A nontrivial scale for the individual multiplier cannot be separated from the composite product with 0001208e and r12. Index: x=uint8(RAM[ffff1450]); for x&gt;=224, cell[7] is returned; otherwise i=x&gt;&gt;5, f=(x&amp;31)&lt;&lt;11 in Q0.16, and the result is unsigned linear interpolation of cell[i] and cell[i+1]. Result disposition: consumer (site 0004c34c).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11075,7 +11071,7 @@
   <XDFTABLE uniqueid="0x3518" flags="0x0">
     <title>Dual-Lookup Additive Correction (0x120CE)</title>
     <description>Exact JK08A. Address 0x120CE; 1 rows x 8 columns; uint8; map confidence code. Implicit eight-point byte-correction table. The accessor combines two linearly interpolated results of this map as (lookup@00068d08 + lookup@00068d3a - 128)*8 and writes the value as signed16 to ffff2018. Consumer 00068d58 adds the correction to the result of unsigned division 00021ce0, constrains the sum to range 125..(u16[ffff201a]-125), and writes the result to ffff201e. The physical name and unit of the quantity are unknown. Code does not define a single decoding scale for an individual cell: offset 128 applies only to the second lookup result, while multiplication by 8 occurs after the two results are added. The map has no addressable axes, so axes is empty. Index: Implicit 1D-8 with a byte selector and linear interpolation: for selector &lt;224, 00026370 passes calculation to 00026a80/00026740; for selector &gt;=224, it returns cell 7. Site 00068d08 uses the byte after an arithmetic right shift by 7 through 000224f8; site 00068d3a uses clamp(u16[ffff2020]-144,0,255). Result disposition: consumer (ffff2018 -&gt; 00068d58 -&gt; ffff201e).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11124,7 +11120,7 @@
   <XDFTABLE uniqueid="0x60F9" flags="0x0">
     <title>Triple-Product Multiplier A - raw u8 (0x1211E)</title>
     <description>Exact JK08A. Address 0x1211E; 1 rows x 8 columns; uint8; map confidence code. Unsigned 8-bit table multiplier M: lookup result 0001211e is stored in ffff14d8, then multiplied by the results of 0001212e and 00009d2a; the final value is calculated as min(255, (M*N*B)&gt;&gt;14) and written to ffff14d9. All eight cells equal 128, so in this ROM the lookup result does not depend on the index. ffff14d8 has no external readers, but the value is not dead: 0004ac7a reads it again and uses it in the product. Code does not establish the physical quantity or allocation of the common divisor 2^14 among the three multipliers, so the scale remains raw. Index: u=0 when U16[ffff18e2] &lt; 0x2000; u=floor((U16[ffff18e2]-0x2000)/64) when 0x2000 &lt;= U16[ffff18e2] &lt; 0x6000; u=255 when U16[ffff18e2] &gt;= 0x6000. u is passed as uint8; for u &gt;= 224, 00026370 returns cell[7]; otherwise it performs implicit 1D-8 interpolation of adjacent uint8 cells. Result disposition: consumer (ffff14d8 -&gt; 0004ac7a@0004ad60 -&gt; ffff14d9@0004ad7c).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11173,7 +11169,7 @@
   <XDFTABLE uniqueid="0x3374" flags="0x0">
     <title>Local Correction Coefficient /2048 (0x12126)</title>
     <description>Exact JK08A. Address 0x12126; 1 rows x 8 columns; uint8; map confidence code. Unsigned local-correction coefficient: on branch r5&gt;=r7, lookup result x in r4 multiplies nonnegative difference r5-r7, after which 0002251c forms floor((r5-r7)*x/2048). The physical name of the quantity is not proven. The formula is proven for branch r5&gt;=r7; the listing of the second branch is available only through 0003c56a, so the claim does not generalize it to r5&lt;r7. Numeric scale round trip: 5 -&gt; 0.00244140625 -&gt; 5; 12 -&gt; 0.005859375 -&gt; 12. Index: implicit 1D-8: r5=uint8[ffff1170]; for r5&lt;224, adjacent uint8 cells are interpolated; for r5&gt;=224, cell 7 is returned. Result disposition: consumer (site 0003c556).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11222,7 +11218,7 @@
   <XDFTABLE uniqueid="0x333A" flags="0x0">
     <title>Triple-Product Multiplier B Q0.7 (0x1212E)</title>
     <description>Exact JK08A. Address 0x1212E; 1 rows x 8 columns; uint8; map confidence code. Dimensionless 1D attenuation coefficient T selected by byte ffff106f. The interpolated result is read from ffff14db and serves as a multiplier in ffff14d9 = min(255, (T*A*B) &gt;&gt; 14), where A is in ffff14d8 and B is in ffff14da. The physical subsystem and the physical unit of input ffff106f are unknown. Quantity T is traced separately through ffff14db. In the current ROM, adjacent multiplier A from 0001211e is always 128, so the overall calculation reduces to floor(B*T/128), where B comes from 00009d2a. Saturation to 255 applies to the overall product. Numeric scale round trip: 102/128=0.796875, 0.796875*128=102; 128/128=1, 1*128=128. The implicit map has no explicit ROM axis, so axes is empty. Index: implicit 1D-8: u=uint8(ffff106f); for u&lt;224, index i=floor(u/32), fraction f=(u mod 32)/32, and cells i and i+1 are linearly interpolated; for u&gt;=224, cell 7 is returned. Result disposition: consumer (0004ad60).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11271,7 +11267,7 @@
   <XDFTABLE uniqueid="0xA5FD" flags="0x0">
     <title>Shifted Subtractive Correction - raw u8 (0x1215E)</title>
     <description>Exact JK08A. Address 0x1215E; 1 rows x 8 columns; uint8; map confidence code. 1D table of a subtracted correction: interpolated uint8 passes through ffff14fc to 0004e614 and 000224f8; the result of an arithmetic right shift by 7 is subtracted from ((sVar3-sVar2)&gt;&gt;2) before weighted multiplication, limiting, and writing a per-channel result. The physical subsystem and physical unit are not established by code. All eight bytes equal 0, so the current content gives a zero correction; flat content is not used as semantic evidence. The implicit family has no separate Axis claim, so axes is empty. Index: Implicit uniform 1D axis of 8 points: x=uint8(ffff11b3). For x&lt;224, index i=x&gt;&gt;5, Q0.16 fraction equals (x&amp;31)*2048, and uint8[i] and uint8[i+1] are interpolated. For x&gt;=224, element 7 is returned. Result disposition: consumer (RAM ffff14fc; consumer 0004e614; shift service 000224f8).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11320,7 +11316,7 @@
   <XDFTABLE uniqueid="0xC731" flags="0x0">
     <title>Negative-Branch Multiplier Source - raw u8 (0x12176)</title>
     <description>Exact JK08A. Address 0x12176; 1 rows x 8 columns; uint8; map confidence code. Eight-point table of an unsigned multiplier for the negative branch of signed16 ffff1a66: the interpolated map byte is divided by 2, written to ffff150a, and multiplied by ffff1a66 at 00052902; the product is divided by 256 with truncation toward zero, saturated to signed16, zeroed for a specified flag combination, and written to ffff2300. When ffff1a66 &gt;= 0, the map value is replaced with constant 64 before the write. The physical quantity is unknown. The map value affects the write to ffff150a only on path int16[ffff1a66] &lt; 0; when ffff1a66 &gt;= 0, the result register is replaced with constant 64. For map values 70..102, the map-derived byte after shar is 35..51. Conversion floor(x/2), subsequent multiplication, and division by 256 are conditional and do not form an exact invertible scale pair; in particular, x/512 does not correctly describe odd cells 77 and 93. Index: Implicit index: b=uint8[ffff102c]; q=(b&lt;128)?2*b:255. For q&gt;=224, equivalent to b&gt;=112, element 7 is selected; for q&lt;224, kernel 00026a80 reads adjacent uint8 values and passes them to Q0.16 interpolator 00026740. There is no explicit ROM axis; preparation of the exact index/fraction before the shown 00026a80 slice is not included in the artifact. Result disposition: writes (ffff150a).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11369,7 +11365,7 @@
   <XDFTABLE uniqueid="0xDBB0" flags="0x0">
     <title>Control Selector ffff23ed - raw u8 (0x1218E)</title>
     <description>Exact JK08A. Address 0x1218E; 1 rows x 8 columns; uint8; map confidence code. Byte table for control selector ffff23ed: the lookup result defines a zero/nonzero gate; 0 selects calculated consumer branches, including stepwise convergence at 0004355c, while !=0 selects a direct bypass path. The physical subsystem is unknown. Direct confirmed path 0002cd82 -&gt; ffff23ed is sufficient for operational semantics; 000420b8 additionally retains the lookup result in a local value. All eight cells equal 0, so the current ROM content always selects the zero branch, but the role is established from the RAM trace and consumers rather than from the flat shape. Index: 1D-8 uint8 with an implicit uniform axis over 8-bit input r5: for x &lt; 224, wrapper 00026370 directs the lookup to kernel 00026a80, which reads adjacent bytes and passes them to linear finisher 00026740; for x &gt;= 224, map+7 is returned. Sources of x: ffff1077 at 0002cd82 and ffff106f at 00042114. Result disposition: writes (ffff23ed). Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11418,7 +11414,7 @@
   <XDFTABLE uniqueid="0xEABF" flags="0x0">
     <title>Signed Additive Term A (x-128) (0x12196)</title>
     <description>Exact JK08A. Address 0x12196; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table with an implicit uniform axis over ffff11b2. The interpolated result encodes signed raw addend x-128 and is used in the accessor's saturating signed-byte composition. The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline, while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511 enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. The physical quantity is unknown. Numeric round trip over the actual range: 128 -&gt; 0 -&gt; 128; 145 -&gt; 17 -&gt; 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u &gt;= 224, y7 is selected. For u &lt; 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write of derived x-128 at site 0004b0d0).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11467,7 +11463,7 @@
   <XDFTABLE uniqueid="0xEAF1" flags="0x0">
     <title>Signed Additive Term B (x-128) (0x1219E)</title>
     <description>Exact JK08A. Address 0x1219E; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected 1D table of an additive term for a signed byte accumulator. Interpolated byte 128..160 is converted to 0..32, stored in ffff1511, and then enters saturating sums as a signed byte to form ffff1513 and ffff23ee. The physical subsystem and physical unit are unknown: the available trace ends in signed-byte arithmetic at 0004e112 and 0004bdc2 rather than an actuator path. Only proven operational semantics are claimed. Numeric scale round trip: 128 -&gt; 0 -&gt; 128; 160 -&gt; 32 -&gt; 160. Index: Implicit eight-point axis over uint8 ffff11b2: for q&lt;224, index i=q&gt;&gt;5 and the low 5 bits define a Q0.16 fraction between cells i and i+1; for q&gt;=224, cell 7 is selected. Result disposition: writes (RAM ffff1511, site 0004b0d0). Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11516,7 +11512,7 @@
   <XDFTABLE uniqueid="0x3DE3" flags="0x0">
     <title>Conditional Signed Additive Term C (x-128) (0x121A6)</title>
     <description>Exact JK08A. Address 0x121A6; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected eight-point linear-interpolation table whose centered result x-128 serves as a signed term in two saturating state calculations inside 0004afdc. Trace: conditional lookup by uint8 ffff11b2 -&gt; x-128 -&gt; ffff1511 -&gt; two saturating calculations producing ffff1513 and ffff23ee. The implicit 1D-8 grid has nodes 0, 32, ..., 224 and saturation at element 7. Round trip over the reachable range is exact: 128 -&gt; 0 -&gt; 128; 145 -&gt; 17 -&gt; 145. The physical subsystem and engineering unit are unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11565,7 +11561,7 @@
   <XDFTABLE uniqueid="0x3DAD" flags="0x0">
     <title>Centered Q13 Multiplier Shaping Curve - raw u8 (0x121AE)</title>
     <description>Exact JK08A. Address 0x121AE; 1 rows x 8 columns; uint8; map confidence code. Centered multiplier table for adjacent lookup results: byte y is converted into Q13 multiplier g=max(0,8192+(y-64)*u8(RAM[ffff10bf])); flat y=64 defines a unity multiplier. Three lookups by uint8 ffff106f form g=max(0,8192+(y-64)*uint8[ffff10bf]); g scales adjacent lookup results before a right shift by 13. All cells equal 64, so current g is 8192. The result is consumed in registers at 00051700 and 0005185c; the physical subsystem is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11614,7 +11610,7 @@
   <XDFTABLE uniqueid="0x5F61" flags="0x0">
     <title>Three-Factor Product Multiplier A - raw u8 (0x121C6)</title>
     <description>Exact JK08A. Address 0x121C6; 1 rows x 8 columns; uint8; map confidence code. One of three unsigned byte multipliers in a product normalized by a right shift of 14 and saturated to 255 before being written to ffff1532. Lookup by uint8 ffff11b3 writes a byte to ffff1528; the read at 000519fe includes it with ffff1531 and ffff152b in a three-factor product normalized by &gt;&gt;14, saturated to 255, and written to ffff1532. The implicit 1D-8 grid has step 32 and terminal element 7 for index &gt;=224. The physical quantity is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11663,7 +11659,7 @@
   <XDFTABLE uniqueid="0x5F2F" flags="0x0">
     <title>Cascaded Product Multiplier A - raw u8 (0x121CE)</title>
     <description>Exact JK08A. Address 0x121CE; 1 rows x 8 columns; uint8; map confidence code. Interpolated unsigned byte multiplier M: M is written to RAM ffff1529 and used in calculation RAM ffff152c = min(255, (M * uint8(RAM ffff152d)) &gt;&gt; 7). Lookup by uint8 ffff11b3 writes M to ffff1529; the saved register copy forms ffff152c=min(255,(M*uint8[ffff152d])&gt;&gt;7). The shift and saturation belong to the composite calculation rather than the map scale. The implicit RAM axis does not create a separate Axis row; the physical quantity is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11712,7 +11708,7 @@
   <XDFTABLE uniqueid="0xC9A6" flags="0x0">
     <title>Cascaded Product Multiplier B - raw u8 (0x121D6)</title>
     <description>Exact JK08A. Address 0x121D6; 1 rows x 8 columns; uint8; map confidence code. Unsigned 8-bit multiplier table: the result is multiplied by byte ffff1534, the product is arithmetically shifted right by 7, capped at 255, and written to ffff1535; the raw lookup result is also written to ffff152a. Lookup by uint8 ffff11b3 writes raw M to ffff152a; the same M forms ffff1535=min(255,(M*uint8[ffff1534])&gt;&gt;7). The implicit 1D-8 grid has step 32 and terminal element 7 for index &gt;=224. The physical quantity is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11761,7 +11757,7 @@
   <XDFTABLE uniqueid="0xC9E8" flags="0x0">
     <title>Conditional Three-Factor Product Multiplier - raw u8 (0x121DE)</title>
     <description>Exact JK08A. Address 0x121DE; 1 rows x 8 columns; uint8; map confidence code. Conditionally updated 1D-8 uint8 multiplier table: the lookup result is written to RAM_ffff152b and multiplied in the same pass by bytes RAM_ffff1531 and RAM_ffff1528 with normalization by &gt;&gt;14. When uint8[ffff120c] &gt;= ROM8[000086ad], lookup by min(uint16[ffff1024]&gt;&gt;7,255) updates ffff152b; otherwise the previous value is retained. ffff152b enters a product with ffff1531 and ffff1528 normalized by &gt;&gt;14. The map value remains raw; the physical subsystem is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11810,7 +11806,7 @@
   <XDFTABLE uniqueid="0xF8E7" flags="0x0">
     <title>Cascaded First-Stage Multiplier - raw u8 (0x121E6)</title>
     <description>Exact JK08A. Address 0x121E6; 1 rows x 8 columns; uint8; map confidence code. Unsigned 1D table of the first multiplier in a cascaded calculation: t=lookup(000121e6,u8[ffff106f]); q1=min(255,floor(max(0,8192+(lookup(000121ae,u8[ffff106f])-64)*u8[ffff10bf])*t/8192)) is written to ffff152d; q2=min(255,floor(lookup(000121ce,u8[ffff11b3])*q1/128)) is written to ffff152c. The lookup by uint8 ffff106f is the first cascade multiplier: together with the centered result from 000121ae, it forms ffff152d, after which 000121ce forms ffff152c. Normalizations &gt;&gt;13 and &gt;&gt;7 apply to composite expressions. The implicit RAM axis does not create a separate Axis row; the physical quantity is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11859,7 +11855,7 @@
   <XDFTABLE uniqueid="0xF8A9" flags="0x0">
     <title>Per-Channel Product Multiplier - raw u8 (0x121EE)</title>
     <description>Exact JK08A. Address 0x121EE; 1 rows x 8 columns; uint8; map confidence code. Unsigned 1D multiplier table: the interpolated byte is multiplied by uint8 RAM[ffff1533], then the product is multiplied by a saved intermediate multiplier and divided as unsigned by 0x0640 before a downstream chain of RAM multipliers. The lookup by uint8 ffff106f is multiplied by uint8 ffff1533 and a saved intermediate multiplier, then divided by 0x0640; the downstream chain writes six-channel uint16 arrays ffff155c and ffff1568. The map value remains raw, and the physical subsystem is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11908,7 +11904,7 @@
   <XDFTABLE uniqueid="0xEFE1" flags="0x0">
     <title>Cascaded Output Multiplier - raw u8 (0x1220E)</title>
     <description>Exact JK08A. Address 0x1220E; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table over RAM ffff106f; the interpolated result is multiplied by max(0, 8192 + (lookup(000121ae) - 64) * u8(RAM ffff10bf)), arithmetically shifted right by 13, capped at 255, and written to RAM ffff1534. The lookup by uint8 ffff106f is multiplied by max(0,8192+(lookup(000121ae)-64)*uint8[ffff10bf]), shifted right by 13, saturated to 255, and written to ffff1534. Implicit 1D-8 indexing is confirmed; the physical subsystem is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -11957,7 +11953,7 @@
   <XDFTABLE uniqueid="0x82A7" flags="0x0">
     <title>Shared Additive Base Term - raw u8 (0x122E2)</title>
     <description>Exact JK08A. Address 0x122E2; 1 rows x 8 columns; uint8; map confidence code. Raw eight-point uint8 table whose interpolated result is extended to uint16 in ffff1230 and used as an addend in a saturating sum and accumulators, an equality operand, and a byte source after local division by 4. The lookup by uint8 ffff1077 is extended to uint16 and written to ffff1230. Consumers use ffff1230 as an addend in saturating sums and accumulators, an equality operand, and a byte source after local division by 4. All cells equal 170; this does not establish a physical quantity. The implicit RAM axis is not emitted separately.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12006,7 +12002,7 @@
   <XDFTABLE uniqueid="0x4181" flags="0x0">
     <title>Offset-Summed State Term - raw u8 (0x12302)</title>
     <description>Exact JK08A. Address 0x12302; 1 rows x 8 columns; uint8; map confidence code. Contribution to calculation uint16[ffff192e] = 2*min(lookup_u8(00012302, uint8[ffff11b3]) + uint8[ffff340c], 209); all 8 cells equal 133. The normal branch forms ffff192e=2*min(lookup+uint8[ffff340c],209). All cells equal 133; doubling and saturation occur after the lookup and are not the map scale. The reader of ffff192e and the physical subsystem are unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12055,7 +12051,7 @@
   <XDFTABLE uniqueid="0x41CF" flags="0x0">
     <title>Conditional State Base Term - raw u8 (0x1230A)</title>
     <description>Exact JK08A. Address 0x1230A; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected eight-point uint8 table: interpolated value y forms uint16[ffff192e] = 2*min(y, 209). The special branch forms ffff192e=2*min(lookup,209); values 160..200 do not reach saturation. Doubling occurs after the lookup and is not the map scale. The reader of ffff192e and the physical subsystem are unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12104,7 +12100,7 @@
   <XDFTABLE uniqueid="0x8485" flags="0x0">
     <title>Saturating Sum Addend A - raw u8 (0x12342)</title>
     <description>Exact JK08A. Address 0x12342; 1 rows x 8 columns; uint8; map confidence code. Unsigned interpolated eight-point table whose result is a byte addend: it is written to ffff15b0, represented in parallel as x&lt;&lt;8, added with uint16 saturation to the result of 0001234a in the same representation, and the high byte of the sum is written to ffff15b1. The lookup by uint8 ffff1070 is written to ffff15b0, represented as x&lt;&lt;8, and added with saturation to the result of 0001234a; the high byte of the sum is written to ffff15b1. Direct sink ffff15b0 has no external readers, but the value continues through registers. The physical quantity is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12153,7 +12149,7 @@
   <XDFTABLE uniqueid="0x84CB" flags="0x0">
     <title>Saturating Sum Addend B - raw u8 (0x1234A)</title>
     <description>Exact JK08A. Address 0x1234A; 1 rows x 8 columns; uint8; map confidence code. On the lookup branch, the 8-bit table result is shifted left by 8 bits, added to the result of 00012342, converted back to byte form, and used at 000474a4 with coefficient 2 as a positive addend in a 16-bit calculation before saturation. The lookup by uint8 ffff1070 is represented as x&lt;&lt;8, added with saturation to the result of 00012342, and used through ffff15b1 at 000474a4 with coefficient 2. The uncombined result is also written to ffff15b5. The physical quantity is unknown; the implicit RAM axis is not emitted separately.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12202,7 +12198,7 @@
   <XDFTABLE uniqueid="0xB5C4" flags="0x0">
     <title>Paired Product Multiplier - raw u8 (0x12352)</title>
     <description>Exact JK08A. Address 0x12352; 1 rows x 8 columns; uint8; map confidence code. Interpolated unsigned 8-bit table of a multiplicative coefficient: its output ffff2fc1 enters two downstream products with ffff2fc0, fixed shifts, and saturation. The lookup by uint8 ffff10f4 is written to ffff2fc1 and enters products at 0005444c and 000474a4 with ffff2fc0, fixed shifts, and saturation. Range 128..154 is not used for physical identification. The map value remains raw.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12251,7 +12247,7 @@
   <XDFTABLE uniqueid="0xFA86" flags="0x0">
     <title>Negative-Branch Multiplier - raw u8 (0x1239A)</title>
     <description>Exact JK08A. Address 0x1239A; 1 rows x 8 columns; uint8; map confidence code. Unsigned table multiplier for a negative branch: when ffff15d2 == 0, the result multiplies -s16(ffff140a). When ffff15d2==0 and signed16 ffff140a&lt;0, the lookup multiplies -ffff140a; a raw copy is in ffff15ca, and internal reader 0004d0aa uses it in the calculation. The map is filled with zeros, but this does not prove dead control flow. The physical subsystem is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12300,7 +12296,7 @@
   <XDFTABLE uniqueid="0x2D94" flags="0x0">
     <title>Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)</title>
     <description>Exact JK08A. Address 0x123A2; 1 rows x 8 columns; uint8; map confidence candidate. Negative-contribution coefficient for the positive branch of signed difference u16[ffff11bc]-u16[ffff11be]: the raw map byte multiplies the positive difference, and the result is negated, divided by 4, and saturated to int8. Code confirms the lookup and write of the raw byte to ffff15c9. Decompilation associates the result with the negative contribution on the positive branch of the difference, but the machine listing for region 0004d0ba..0004d0cc is absent and ffff15c9 has no readers. Therefore, semantics and confidence remain candidate; zero content is not evidence.</description>
-    <CATEGORYMEM index="0" category="16" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12349,7 +12345,7 @@
   <XDFTABLE uniqueid="0xE890" flags="0x0">
     <title>Saturated Blend Product Multiplier - raw u8 (0x123E2)</title>
     <description>Exact JK08A. Address 0x123E2; 1 rows x 8 columns; uint8; map confidence code. Interpolated eight-point uint8 multiplier table: through ffff2ff2, its byte enters a product at 000a5284 with RAM8[ffff338a] and (param_2 &amp; 0xffff), after which the product participates in saturating 16-bit blending with (param_1 &amp; 0xffff). The lookup uses q=4*uint8[ffff110e] when the value is &lt;64 and q=255 otherwise; the result is written to ffff2ff2. 000a5284 includes this byte in a three-factor product and saturating 16-bit blend. On the bypass path, raw 128 is written to ffff2ff2; the physical quantity is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12398,7 +12394,7 @@
   <XDFTABLE uniqueid="0x3586" flags="0x0">
     <title>Rate-Limited State Multiplier - raw u8 (0x12422)</title>
     <description>Exact JK08A. Address 0x12422; 1 rows x 8 columns; uint8; map confidence code. Unsigned 1D interpolated multiplier table: the lookup result is multiplied by the selected byte from ROM 0000990a; the product is conditionally step-limited and upper-capped before updating 16-bit state ffff15da. The lookup by transformed uint8 ffff106f is written to ffff15dd, multiplied by selected ROM8[0000990a], and updates ffff15da after step limiting and an upper clamp. Direct sink ffff15dd has no external readers, but the register copy is consumed. The physical quantity is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12447,7 +12443,7 @@
   <XDFTABLE uniqueid="0x35C8" flags="0x0">
     <title>Centered Composite Multiplier Shaping Curve - raw u8 (0x1242A)</title>
     <description>Exact JK08A. Address 0x1242A; 1 rows x 8 columns; uint8; map confidence code. Interpolated 1D table of a neutral-centered multiplier for a composite byte result: 64 is subtracted from the lookup result, the difference is multiplied by RAM8[ffff10bf], divided by 128 with truncation toward zero, and offset again by 64; the resulting multiplier scales a base from maps 00009eda and 00012432 before being written to RAM8[ffff15de]. Flat value 64 defines a neutral multiplier. The lookup by uint8 ffff106f is converted to 64+trunc0((x-64)*uint8[ffff10bf]/128) and scales the base from 00009eda and 00012432 before the write to ffff15de. Operations -64/+64 belong to the consumer, so the map is retained as raw identity. Value 64 is neutral; the implicit RAM axis is not emitted separately. Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12496,7 +12492,7 @@
   <XDFTABLE uniqueid="0x4C7" flags="0x0">
     <title>Composite First-Stage Multiplier Q1.7 (0x12432)</title>
     <description>Exact JK08A. Address 0x12432; 1 rows x 8 columns; uint8; map confidence code. Unsigned 1D coefficient for the first multiplier of a composite byte output: lookup M is multiplied by the output of map 00009eda and normalized by division by 128; the result is then multiplied by a correction containing lookup 0001242a, normalized by division by 64, capped at 255, and written to ffff15de. The lookup by min(uint16[ffff1222]&gt;&gt;3,255) is a Q1.7 multiplier for the first stage of composite calculation ffff15de. Pair x/128 and x*128 is invertible on the representable grid: 0 -&gt; 0 -&gt; 0; 128 -&gt; 1 -&gt; 128; 255 -&gt; 1.9921875 -&gt; 255. The physical subsystem is unknown; the implicit RAM axis is not emitted separately.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12545,7 +12541,7 @@
   <XDFTABLE uniqueid="0x9AB5" flags="0x0">
     <title>Conditional Accumulator Product Coefficient - raw u8 (0x12562)</title>
     <description>Exact JK08A. Address 0x12562; 1 rows x 8 columns; uint8; map confidence code. Conditional unsigned coefficient for the first multiplicative term of the FUN_00054ee0 accumulator. The lookup by uint8 ffff106f is saved on the stack, restored as unsigned, and successively multiplied by the results of 00012572 and 00012582; normalizations &gt;&gt;6 and byte ffff10bf form the first term of accumulator 00054ee0, which a conditional branch can zero. There is no direct RAM sink; the physical subsystem is unknown. Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12594,7 +12590,7 @@
   <XDFTABLE uniqueid="0x8E53" flags="0x0">
     <title>Paired Product Multiplier A - raw u8 (0x126A0)</title>
     <description>Exact JK08A. Address 0x126A0; 1 rows x 8 columns; uint8; map confidence code. Interpolated eight-point uint8 multiplier: the lookup result in the same r2 is multiplied by the result of adjacent map 000126a8 from ffff1659, then participates in an integer calculation with a nonnegative RAM difference and constant 100, followed by a shift, saturation, and a result write to ffff1657. The lookup by clamp(uint16[ffff11bc]-0x20,0,255) is written to ffff1658; the saved copy is multiplied by ffff1659 from 000126a8 and enters the constrained calculation of ffff1657. Direct sink ffff1658 has no external readers, but the register copy is consumed. Zero content does not prove dead control flow.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12643,7 +12639,7 @@
   <XDFTABLE uniqueid="0x661" flags="0x0">
     <title>Paired Product Multiplier B - raw u8 (0x126A8)</title>
     <description>Exact JK08A. Address 0x126A8; 1 rows x 8 columns; uint8; map confidence code. Unsigned 8-bit table multiplier: the interpolated value is multiplied by the output of map 000126a0 and participates with nonnegative difference u16[ffff15fc]-s16[ffff15fe] in calculating constrained byte ffff1657; its high nibble is subtracted from the sum of bytes ffff22f8 and ffff22fe before writing ffff23c5. The lookup by min(uint16[ffff1024]&gt;&gt;7,255) is written to ffff1659, multiplied by the result of 000126a0, and participates in calculating ffff1657. 0004bb6a subtracts ffff1657&gt;&gt;4 from the sum ffff22f8+ffff22fe and writes constrained byte ffff23c5. Zero content is not used as semantic evidence.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12692,7 +12688,7 @@
   <XDFTABLE uniqueid="0xE0F8" flags="0x0">
     <title>Three-Factor Product Multiplier - raw u8 (0x12868)</title>
     <description>Exact JK08A. Address 0x12868; 1 rows x 8 columns; uint8; map confidence code. Unsigned byte multiplier in a three-factor product: the interpolated value is multiplied by bytes ffff15be and ffff183a, the result is shifted right by 14, saturated to 255, and written to ffff15c6. Both accessors use the high byte of uint16 ffff517c. The lookup is written to ffff16ca and simultaneously multiplied by uint8 ffff15be and ffff183a; the product is normalized by &gt;&gt;14, saturated to 255, and written to ffff15c6. Direct sink ffff16ca has no external readers, but the register copy is consumed; the physical subsystem is unknown.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12741,7 +12737,7 @@
   <XDFTABLE uniqueid="0x2B3" flags="0x0">
     <title>Shared Saturated Calculation Multiplier - raw u8 (0x1296C)</title>
     <description>Exact JK08A. Address 0x1296C; 1 rows x 8 columns; uint8; map confidence code. Eight-point table of a raw unsigned multiplier. The result interpolated by byte ffff106f forms ffff1766 directly or after conditional normalization; 0006e490 uses this byte as a multiplier of ROM_u16[000093c8] in a constrained fixed-point calculation for ffff1300, while 0006e442 uses it in a division conversion with addition of 0x32 and saturation to 0xff for ffff1f86. The physical subsystem and physical unit are unknown. When RAM[ffff244f]&amp;2 != 0, the lookup result reaches ffff1766 directly. When the bit is zero and RAM[ffff16b1] != 0, min(255, floor(lookup*RAM[ffff16ae]/RAM[ffff16b1])) is written; when the divisor is zero, 255 is written regardless of the map. 0006e490 calculates min(65535, (1250*min(4*ROM_u16[000093c8]*RAM_u8[ffff1766], 0x00346dc5)) &gt;&gt; 16) and writes the result to ffff1300. The claim relies on associated sink 0006e3d8/ffff1766 rather than other accessor registers. Index: x = uint8(RAM[ffff106f]); 8 implicit nodes 0,32,64,96,128,160,192,224; linear interpolation of adjacent uint8 cells for x &lt; 224, and cell 7 is returned for x &gt;= 224. Output trace: 0001296c -&gt; site 0006e3ec -&gt; 00026370 -&gt; (00026a80 -&gt; 00026740 for x &lt; 0xe0; 00012973 for x &gt;= 0xe0) -&gt; site 0006e3f2 -&gt; site 0006e440 -&gt; RAM ffff1766 -&gt; {0006e490 -&gt; RAM ffff1300; 0006e442 -&gt; RAM ffff1f86}. Alternate normalization branch: 0001296c -&gt; site 0006e40a -&gt; 00026370 -&gt; 00026a80 -&gt; 00026740 -&gt; site 0006e41a -&gt; site 0006e426/00021bbc -&gt; site 0006e440 -&gt; RAM ffff1766. Result disposition: consumer; Result target: RAM ffff1766 at site 0006e440; consumers 0006e490 and 0006e442; downstream RAM ffff1300 and ffff1f86. Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12790,7 +12786,7 @@
   <XDFTABLE uniqueid="0xCA8E" flags="0x0">
     <title>Three-Factor Product Multiplier A - raw u8 (0x129CA)</title>
     <description>Exact JK08A. Address 0x129CA; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 1D table of a multiplicative term in a composite calculation. Interpolated result x is zero-extended, multiplied by result y of map 00012dca and by 16-bit intermediate r14; the accessor calculates min(65535,(r14*x*y)&gt;&gt;14) and writes the result to ffff14dc. A copy of x is written to ffff179a. The physical subsystem is unknown. All 8 cells equal 128, so in this ROM the lookup always yields raw 128. This alone does not prove a unit or physical meaning. Code proves only the combined arithmetic min(65535,(r14*x*y)&gt;&gt;14), where x is the output of 000129ca and y is the output of 00012dca. Divisor 2^14 cannot be uniquely allocated among the scales of x, y, and r14 without an independent unit for one operand, so no separate nontrivial map scale is claimed. The map has no addressable axis, and its index grid is implicit. Index: implicit 1D-8 uint8. Selector extu.b(r12): r12=0 when uint16(ffff18e2)&lt;0x2000, r12=(uint16(ffff18e2)-0x2000)&gt;&gt;6 when 0x2000&lt;=uint16(ffff18e2)&lt;0x6000, otherwise r12=0xff. For selector &gt;=0xe0, wrapper 00026370 returns cell[7]; for a lower selector, kernel 00026a80 reads adjacent uint8 cells and finisher 00026740 performs unsigned linear interpolation. Output trace: 000129ca -&gt; site 0004ae20 -&gt; site 0004ae24 -&gt; 00026370 -&gt; 00026a80 -&gt; site 00026aac + site 00026aae -&gt; 00026740 -&gt; site 0004ae28 -&gt; [site 0004ae2c -&gt; ffff179a; site 0004ae2e -&gt; site 0004ae36 -&gt; site 0004ae3e -&gt; site 0004ae42 -&gt; site 0004ae44 -&gt; site 0004ae46 -&gt; site 0004ae48 -&gt; site 0004ae4a -&gt; site 0004ae4e -&gt; site 0004ae52 -&gt; ffff14dc]. Result disposition: consumer; Result target: site 0004ae36.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12839,7 +12835,7 @@
   <XDFTABLE uniqueid="0xD9DD" flags="0x0">
     <title>Paired Product Multiplier A - raw u8 (0x12A22)</title>
     <description>Exact JK08A. Address 0x12A22; 1 rows x 8 columns; uint8; map confidence code. On the enabled branch, the unsigned 1D-8 lookup result is used as one of two 8-bit factors: it is written to ffff17c7, zero-extended, and multiplied by byte ffff17c8, after which max(product, 0x4000) is written as uint16 to ffff19a4. The physical quantity and subsystem are not established: ffff17c7 has no external readers, while code proves the local multiplicative role. All 8 cells equal 128; this is not used as independent semantic evidence. There is no stored axis. Index: implicit 1D-8: z=min(floor(max(u16[ffff4524]-0x4600,0)/160),255). For z&lt;224, index i=floor(z/32), Q0.16 fraction equals (z mod 32)*2048; for z&gt;=224, element 7 is selected. Output trace: 000716f8(map 00012a22) -&gt; 000716fc(lookup) -&gt; 00026370 -&gt; [00026aac/00026aae -&gt; 00026740 for z&lt;224; element 7 for z&gt;=224] -&gt; 00071700(r0-&gt;r2) -&gt; 00071706(ffff17c7) -&gt; 00071708(r2 unsigned) -&gt; 00071710(MACL) -&gt; 00071716(r2) -&gt; 00071718 -&gt; 0007171c/0007171e -&gt; 00071722(ffff19a4). Result disposition: writes; Result target: ffff17c7.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12888,7 +12884,7 @@
   <XDFTABLE uniqueid="0xD993" flags="0x0">
     <title>Paired Product Multiplier B - raw u8 (0x12A2A)</title>
     <description>Exact JK08A. Address 0x12A2A; 1 rows x 8 columns; uint8; map confidence code. One of two unsigned 8-bit table multipliers: the interpolated output is multiplied by the output of map 00012a22, after which the product is lower-capped at 0x4000 and written to RAM ffff19a4. All 8 cells in the current image equal 128, so the lookup returns byte 128 for every q. Code proves only the operational multiplier role: the result is stored in ffff17c8, read again, and multiplied by the output of adjacent map 00012a22; the product is lower-capped at 0x4000 and written to ffff19a4. The physical subsystem and a nontrivial scale do not follow from the artifact. Index: q = min(max((u8[ffff10f4] - 80)*2, 0), 255); for q &lt; 224, wrapper 00026370 passes q to the linear-interpolation kernel for adjacent uint8 cells in the implicit 1D-8 grid; for q &gt;= 224, it returns cell 7. Output trace: 000716c0 -&gt; 000716c2 -&gt; 00026370 -&gt; 00026a80 -&gt; 00026aac -&gt; 00026aae -&gt; 00026740 -&gt; 000716c4 -&gt; 000716ca -&gt; ffff17c8 -&gt; 0007170c -&gt; 00071710 -&gt; 00071718 -&gt; 00071722 -&gt; ffff19a4 -&gt; 000718d8/00071a10/00071b7e. Result disposition: consumer; Result target: site 00071710.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12937,7 +12933,7 @@
   <XDFTABLE uniqueid="0xE8D2" flags="0x0">
     <title>Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)</title>
     <description>Exact JK08A. Address 0x12A3A; 1 rows x 8 columns; uint8; map confidence candidate. One-dimensional eight-element uint8 table with an implicit index from RAM byte ffff1077; the lookup result is linearly interpolated and written as a byte to ffff1f78. The physical purpose is unknown. All eight cells equal 0, so the lookup result is 0 for every input, but flat content does not by itself prove the purpose. The map has no separate calibration axis. Index: implicit u8: x=RAM[ffff1077]; for x&lt;224, i=x&gt;&gt;5 and q=(x&amp;31)*2048 in Q0.16, and the result is linear interpolation of map[i] and map[i+1]; for x&gt;=224, map[7] is selected. Output trace: 0003a76c[00012a3a-&gt;r4] -&gt; 0003a76e/0003a774[RAM ffff1077-&gt;u8 r5] -&gt; 0003a772[00026370] -&gt; (x&lt;224: 00026a80 -&gt; 00026aac/00026aae -&gt; 00026ab6 -&gt; 00026740; x&gt;=224: map[7] in 00026370) -&gt; 0003a776[r0-&gt;r2] -&gt; 0003a780[r2-&gt;RAM ffff1f78]; ffff1f78 has no readers. Result disposition: writes; Result target: ffff1f78. Evidence boundary: At 0003a780, the result is only written to ffff1f78; the artifact contains no read of ffff1f78, and 0003a750 is a root with no call sites. A machine trace from the sink to a physical consumer is absent, so the purpose and physical units are not established.</description>
-    <CATEGORYMEM index="0" category="16" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -12986,7 +12982,7 @@
   <XDFTABLE uniqueid="0x3157" flags="0x0">
     <title>Composite Output Coefficient K - raw u8 (0x12A82)</title>
     <description>Exact JK08A. Address 0x12A82; 1 rows x 8 columns; uint8; map confidence code. Unsigned eight-point coefficient table K for a calculated expression in 000532ae: interpolated K is written to ffff1601 and conditionally participates both in term 256*K and in difference K - 2*C before ffff1600 is formed. The physical name of the coefficient is unknown. On a conditional branch in 000532ae, value K from ffff1601 enters expression iVar12 = 256*K - B*(K - 2*C) + 2*(D*E + F), where B = uint8 ffff15df, C = int8 ffff1660, D = uint8 ffff193d, E = uint8 ffff1680, and F = uint16 ffff2ff0. The sign of iVar12 and subsequent scaling determine the byte written to ffff1600 with saturation to 255. Index: Implicit uniform 1D-8 axis over uint8 from ffff106f: raw points 0, 32, 64, 96, 128, 160, 192, 224; adjacent cells are linearly interpolated, and input &gt;= 224 selects the last cell. Output trace: 00012a82 -&gt; 00052f1e -&gt; 00052f28 -&gt; 00026370 -&gt; 00026a80 -&gt; 00026740 -&gt; 00052f30 -&gt; ffff1601 -&gt; 000532ae -&gt; ffff1600. Result disposition: consumer; Result target: 000532ae. Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13035,7 +13031,7 @@
   <XDFTABLE uniqueid="0x58" flags="0x0">
     <title>State Gate Byte Table - raw u8 (0x12A9A)</title>
     <description>Exact JK08A. Address 0x12A9A; 1 rows x 8 columns; uint8; map confidence code. Implicit 1D-8 table of an unsigned byte over RAM ffff1077. The result is stored in RAM ffff1fab and ffff24e1; in FUN_00038d44, saved ffff24e1 is tested for zero while bit 0x40 of RAM ffff4185 is set, and a true test is one condition for setting bit 0x02 of RAM ffff24bc. The physical subsystem is unknown. The lookup result is copied to ffff1fab and ffff24e1; a shown consumer exists only for ffff24e1. The map is updated when bit 0x40 of ffff4185 is clear, while the zero test of the saved byte acts when the bit is set, so the dependence crosses calls through RAM. All eight cells equal 90: the stock lookup always yields 90, and target disjunct ffff24e1 == 0 is false after the map write. This does not prove that the entire branch is unreachable because the bit-setting condition has other disjuncts. A nontrivial scale is not proven. Index: Implicit uniform eight-point axis over x = u8 RAM ffff1077: for x &lt; 224, index i = floor(x/32), fraction = (x-i*32)/32, and map[i]..map[i+1] are linearly interpolated; for x &gt;= 224, map[7] is selected. Output trace: 00012a9a -&gt; 00038e6e -&gt; 00038e74 -&gt; 00026370 -&gt; (00026a80 -&gt; 00026740 for x &lt; 224; map[7] for x &gt;= 224) -&gt; 00038e78 -&gt; 00038e84 -&gt; ffff24e1 -&gt; FUN_00038d44: (ffff4185 &amp; 0x40) != 0 &amp;&amp; ffff24e1 == 0 -&gt; ffff24bc |= 0x02. The same RAM copy is populated by path 00012a9a -&gt; 0002cfc0 -&gt; 0002cfd2 -&gt; ffff24e1. Result disposition: inline_comparison; Result target: RAM ffff24e1 in FUN_00038d44: inline test ffff24e1 == 0 under selector ffff4185 &amp; 0x40; a true disjunct participates in setting bit 0x02 of RAM ffff24bc. A mirrored result write is in RAM ffff1fab.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13084,7 +13080,7 @@
   <XDFTABLE uniqueid="0x8489" flags="0x0">
     <title>State Transition Initial Value - raw u8 (0x12AB2)</title>
     <description>Exact JK08A. Address 0x12AB2; 1 rows x 8 columns; uint8; map confidence candidate. Eight-point unsigned interpolated table of an initial byte value during internal state transition 0 -&gt; 1; the result is written to RAM ffff1f81, and the physical quantity is unknown. The map has eight uint8 cells 30,30,20,14,14,10,10,10. The lookup executes on the branch for internal state transition 0 -&gt; 1 and writes the result to associated sink ffff1f81. Other registers in this accessor are not used to infer semantics. There is no explicit ROM axis, so axes is empty. Catalog shape 1D-8 is ambiguous and does not identify the physical quantity. Index: x=u8[ffff1078]; for x&lt;224: i=floor(x/32), Q0.16 fraction=(x%32)*2048, linear interpolation of table[i]..table[i+1]; for x&gt;=224: table[7]. Output trace: 0003bdc4 -&gt; 0003bdc8 -&gt; 00026370 -&gt; 00026a80 -&gt; 00026aac/00026aae -&gt; 00026740 -&gt; 0003bdcc -&gt; 0003bdd4 -&gt; RAM ffff1f81; stop: no read site for ffff1f81. Result disposition: writes; Result target: RAM ffff1f81, 1 byte, site 0003bdd4. Evidence boundary: After the byte write at site 0003bdd4 to RAM ffff1f81, the artifact contains no machine read site or USES edge for this sink. ffff1f81 is not read within 0003bd74, and there are no external consumers, so the trace does not reach functional consumption of the quantity.</description>
-    <CATEGORYMEM index="0" category="16" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13133,7 +13129,7 @@
   <XDFTABLE uniqueid="0xB5C8" flags="0x0">
     <title>Three-Factor Product Multiplier B - raw u8 (0x12AC2)</title>
     <description>Exact JK08A. Address 0x12AC2; 1 rows x 8 columns; uint8; map confidence code. One of three unsigned byte factors in a normalized composition: the lookup result is multiplied by two other byte results, and the combined product is divided by 16384 and saturated to 255. Both accessors execute the same path. The interpolated value is written to ffff183a, read within the same accessor, and enters a product with two other unsigned byte results. The product is shifted right by a total of 14 bits, capped at 255, and written to ffff15c6. Code does not establish the physical purpose of the factor. The shift normalizes the combined product but, without independent scales for the other factors, does not define a separate physical map scale, so values remain raw. Index: 1D-8 uint8 with an implicit uniform axis: index = min(floor(input/32), 7), fraction = (input mod 32)/32, input = uint8 from ffff10f5; for input &gt;= 224, cell 7 is selected; otherwise adjacent cells are linearly interpolated. Output trace: 00081730(00012ac2) -&gt; 0008173c -&gt; 00026370 -&gt; 00026a80 -&gt; 00026aac/00026aae -&gt; 00026740 -&gt; 00081740 -&gt; 00081746 -&gt; ffff183a -&gt; 00081768 -&gt; 0008176e -&gt; 00081774 -&gt; 00081778/0008177a/0008177c/0008177e -&gt; 00081780/00081786 -&gt; 00081788 -&gt; ffff15c6; paired path: 00081f62(00012ac2) -&gt; 00081f6e -&gt; 00026370 -&gt; 00026a80 -&gt; 00026aac/00026aae -&gt; 00026740 -&gt; 00081f72 -&gt; 00081f78 -&gt; ffff183a -&gt; 00081f9a -&gt; 00081fa0 -&gt; 00081fa6 -&gt; 00081faa/00081fac/00081fae/00081fb0 -&gt; 00081fb2/00081fb8 -&gt; 00081fbc -&gt; ffff15c6. Result disposition: consumer; Result target: ffff183a -&gt; 0008152a/0008176e; ffff183a -&gt; 00081d74/00081fa0.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13182,7 +13178,7 @@
   <XDFTABLE uniqueid="0x2341" flags="0x0">
     <title>State 2 Hold Gate Table - raw u8 (0x12ADA)</title>
     <description>Exact JK08A. Address 0x12ADA; 1 rows x 8 columns; uint8; map confidence code. Implicit 1D table of a zero/nonzero permission to hold internal state 2. The lookup result is written to u8[ffff254b] and tested for zero on the state-2 branch: a nonzero result enables comparison u8[ffff1188] &gt; 100; if the comparison is true, state 2 is retained, otherwise state 1 is selected. The artifact does not identify the physical subsystem. All 8 cells in the stock map equal 6, so the lookup always yields a nonzero result and effectively enables test u8[ffff1188] &gt; 100. The write and read occur in 00038618 but belong to different states; ffff254b has no external readers. The implicit map has no separate axis array. Index: implicit 1D-8: x = u8[ffff107f]; for x &lt; 224, i = floor(x/32), Q0.16 fraction q = (x mod 32)*2048, interpolation of map[i]..map[i+1]; for x &gt;= 224, map[7] is returned. Output trace: 00038a68 -&gt; 00038a6e -&gt; 00026370 -&gt; 00026a80 -&gt; 00026740 -&gt; 00038a74 -&gt; ffff254b -&gt; 00038ad6 -&gt; 00038ad8; zero -&gt; 00038ada -&gt; 00038b7c, nonzero -&gt; 00038adc -&gt; 00038ae2 -&gt; 00038ae4 -&gt; 00038ae6. Result disposition: inline_comparison; Result target: RAM ffff254b; consumer 00038618; site 00038ad8.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13231,7 +13227,7 @@
   <XDFTABLE uniqueid="0x41C3" flags="0x0">
     <title>Bit 7 Hold State Table - raw u8 (0x12AFA)</title>
     <description>Exact JK08A. Address 0x12AFA; 1 rows x 8 columns; uint8; map confidence code. Eight-node byte-state table. When bit 6 of ffff2462 is set, the lookup writes the result to ffff254d and sets bit 7 of ffff246c. On the branch with bit 6 clear, saved byte ffff254d is tested for zero: zero clears bit 7 of ffff246c, while nonzero preserves it. All cells equal 6, so this map's result is always 6 and is handled as nonzero. The physical subsystem and engineering unit are not established: ffff254d has no external readers and the catalog shape is ambiguous. All eight cells equal 6, so interpolation and the terminal branch return 6; this proves a nonzero state and branch behavior but not the physical name of the quantity. Index: x=uint8(ffff106f). For x&lt;224: i=floor(x/32), q=(x-32*i)*2048 in Q0.16, and cell[i] and cell[i+1] are interpolated. For x&gt;=224, cell[7] is returned. The axis is implicit, with no separate Axis claim. Output trace: 00012afa -&gt; 00043afe -&gt; 00043b04 -&gt; 00026370 -&gt; 00026a80 -&gt; {00026aac,00026aae} -&gt; 00026740 -&gt; 00043b08 -&gt; ffff254d; subsequent state read: ffff254d -&gt; 00043b10 -&gt; 00043b12 -&gt; 00043b14 -&gt; 00043b1a. Value 6 does not follow zero branch 00043b18. Result disposition: inline_comparison; Result target: site 00043b12 through ffff254d. Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13280,7 +13276,7 @@
   <XDFTABLE uniqueid="0x776D" flags="0x0">
     <title>Three-Factor Product Multiplier B Q1.7 (0x12DCA)</title>
     <description>Exact JK08A. Address 0x12DCA; 1 rows x 8 columns; uint8; map confidence code. 1D table of an unsigned normalized coefficient selected by byte ffff106f. Interpolated value t is stored in ffff1a1f, then multiplied within 0004ac7a by the result of constant map 000129ca and by a quantity in r14 previously constrained to uint16; after a right shift of 14, ffff14dc is formed. For this ROM, the target map's effective coefficient is t/128. The physical subsystem is unknown. ffff1a1f has no external readers, but the value is not dead: it is read in the same function at site 0004ae32 and first consumed by multiplication at site 0004ae36. Adjacent map 000129ca is constant and returns 128, so the expression with a common shift of 14 gives effective target-map coefficient t/128. Numeric round trip: 102/128=0.796875, 0.796875*128=102; 128/128=1, 1*128=128. For t=102..128 and r14&lt;=65535, downstream uint16 saturation does not alter the result. Index: Implicit eight-point uint8 axis. The unsigned selector is read from ffff106f and passed in r5; for value &gt;=224, the wrapper returns element 7; for a lower value, linear interpolation in kernel 00026a80 is used. The selector's physical unit is unknown. Output trace: 00012dca -&gt; site 0004ae16 -&gt; site 0004ae18 -&gt; 00026370 -&gt; site 00026aac -&gt; site 00026ab6 -&gt; 00026740 -&gt; site 0004ae1c -&gt; site 0004ae26 -&gt; ffff1a1f -&gt; site 0004ae32 -&gt; site 0004ae36 -&gt; site 0004ae3e -&gt; site 0004ae42 -&gt; site 0004ae44 -&gt; site 0004ae46 -&gt; site 0004ae48 -&gt; site 0004ae52 -&gt; ffff14dc. Result disposition: consumer; Result target: site 0004ae36. Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13329,7 +13325,7 @@
   <XDFTABLE uniqueid="0x8544" flags="0x0">
     <title>Channel 0 Signed Additive Term (x-128) (0x12E72)</title>
     <description>Exact JK08A. Address 0x12E72; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table of a centered additive term for channel 0. The lookup is indexed by RAM ffff106f; interpolated byte x is stored in ffff1a7b. The accessor calculates RAM[ffff16e8] + (x-128)*65536, saturates the result to range 0..16777215, and writes ffff1a9c; FUN 000be814 reads this slot when param_1=0. The physical subsystem is unknown. Code proves the centered term and its path. Before saturation, A = RAM[ffff16e8] + (x-128)*65536; saturation to 0..16777215 applies to composite A and is not included in the invertible map scale. One whole scale unit equals 65536 internal counts; round trip is exact: (x-128)+128=x for bytes 0..255. The "Output association" section row stating that there is no sink contradicts the listing: result r0 is copied to r2 at 000be792, written to ffff1a7b at 000be798, and then the derived quantity is written to ffff1a9c at 000be7b6 and read by 000be814 for param_1=0. Axis 00011bdb belongs only to adjacent explicit maps and is not included in the claim. Index: implicit 1D-8: RAM byte ffff106f is passed in r5 to wrapper 00026370; for a value &lt;224, kernel 00026a80 selects adjacent uint8 cells and 00026740 performs unsigned linear interpolation; for a value &gt;=224, the wrapper selects element 7. Output trace: 00012e72 -&gt; 000be786 -&gt; 000be78e/00026370 -&gt; 00026a80 -&gt; 00026aac,00026aae -&gt; 00026740 -&gt; 000be792 -&gt; 000be798/ffff1a7b; 000be79e -&gt; 000be7a0 -&gt; 000be7a2 -&gt; 000be7a4 -&gt; 000be7a6,000be7aa,000be7ae,000be7ac,000be7b2 -&gt; 000be7b6/ffff1a9c -&gt; 000be814(param_1=0). Result disposition: consumer; Result target: FUN 000be814 through RAM ffff1a9c when param_1=0; raw copy in RAM ffff1a7b. Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13378,7 +13374,7 @@
   <XDFTABLE uniqueid="0x850A" flags="0x0">
     <title>Channel 1 Composite Addend - raw u8 (0x12E7A)</title>
     <description>Exact JK08A. Address 0x12E7A; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table with an implicit index that produces an additive integer term for an internal result: the interpolated byte is stored in ffff1a7c, then clamp(((uint8)y*65536)+RAM[ffff16ec]-0x00800000, 0, 0x00ffffff) is written to ffff1aa0. The physical name and unit are unknown. The catalog for shape 1D-8 is ambiguous. The 16-bit shift belongs to the internal consumption path; because of the downstream addition and saturation, it is not claimed as an independent invertible physical scale. Axis 00011bdb belongs only to adjacent explicit maps and is not included. The summary output-association row contradicts the machine listing: the listing directly shows both writes of the target-map result. Index: implicit 1D, 8 uint8 cells; input x = uint8(RAM[ffff106f]). For x &lt; 0x00e0, kernel 00026a80 interpolates adjacent bytes through finisher 00026740; for x &gt;= 0x00e0, wrapper 00026370 returns cell 7. There is no explicit ROM axis. Output trace: 00012e7a -&gt; 000be7d6 -&gt; 000be7de -&gt; 00026370 -&gt; 00026a80 -&gt; 00026aac/00026aae -&gt; 00026740 -&gt; 000be7e2 -&gt; 000be7e8 -&gt; ffff1a7c; 000be7e2 -&gt; 000be7e6 -&gt; 000be7ea -&gt; 000be7ee -&gt; 000be7f0 -&gt; 000be7f2 -&gt; 000be7f4/000be7f6/000be7f8 -&gt; 000be7fa/000be7fc/000be7fe/000be800 -&gt; 000be804 -&gt; ffff1aa0. Result disposition: writes; Result target: RAM ffff1a7c (uint8, interpolated byte); RAM ffff1aa0 (uint32, result in range 0..0x00ffffff). Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13427,7 +13423,7 @@
   <XDFTABLE uniqueid="0x2D06" flags="0x0">
     <title>Conditional Paired State Value A - raw u8 (0x12EFE)</title>
     <description>Exact JK08A. Address 0x12EFE; 1 rows x 8 columns; uint8; map confidence candidate. Mode-selected eight-point table of a raw byte value with implicit linear interpolation; the result is written to RAM ffff1a1e and mirrored to ffff25ee. Its physical and downstream operational semantics are unknown. The physical quantity is unknown. When bit 0 at address 00008616 equals 1, both accessors select 00012efe; the alternate branch selects adjacent 00012f06. All eight cells equal 5, so the lookup returns raw 5 for every input, but a flat constant does not prove semantics by itself. The result is also mirrored to RAM ffff25ee at 000bdc3c and 000bde94. Index: implicit 1D-8 by uint8 input u: nodes 0, 32, 64, 96, 128, 160, 192, 224; for u &lt; 224, index floor(u/32) and linear Q0.16 interpolation of adjacent uint8 cells; for u &gt;= 224, table[7] is returned. Output trace: 00012efe, pointer load 000bdc14 -&gt; wrapper call 00026370 at 000bdc2a -&gt; kernel 00026a80 -&gt; uint8 cell reads 00026aac/00026aae -&gt; finisher 00026740 -&gt; r0/r6 at 000bdc2e -&gt; RAM ffff1a1e at 000bdc34; 00012efe, pointer load 000bde70 -&gt; wrapper call 00026370 at 000bde82 -&gt; kernel 00026a80 -&gt; uint8 cell reads 00026aac/00026aae -&gt; finisher 00026740 -&gt; r0/r5 at 000bde86 -&gt; RAM ffff1a1e at 000bde8c. Both paths end with a write and no proven downstream consumption. Result disposition: writes; Result target: RAM ffff1a1e, writes 000bdc34 and 000bde8c; mirror RAM ffff25ee, writes 000bdc3c and 000bde94. Evidence boundary: The machine trace ends at RAM ffff1a1e writes at 000bdc34 and 000bde8c. On the first path, 000bdc3a branches unconditionally to 000bdc5c and bypasses the comparison at 000bdc52. On the second path, the result in r5 is overwritten after the write at 000bde9c, while the return from FUN_000bdc66 is not associated with the lookup. The shown read of ffff1a1e inside FUN_000bdc66 precedes the lookup and does not form an intra-call downstream trace. The artifact has no external readers of ffff1a1e.</description>
-    <CATEGORYMEM index="0" category="16" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13476,7 +13472,7 @@
   <XDFTABLE uniqueid="0x69C3" flags="0x0">
     <title>Conditional Paired State Value B - raw u8 (0x12F06)</title>
     <description>Exact JK08A. Address 0x12F06; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected 8-bit table for a paired write: on the update branch in 000bdc66, previous values ffff1a1e and ffff25ee form part of the gate; when 00012f06 is selected, uint8 ffff106f serves as the lookup index and the result is written to both registers. The physical meaning of the pair and the exact change to ffff2326 are not claimed. On the update branch in 000bdc66, previous values ffff1a1e != 0 and ffff25ee == 0 enter the gate before the lookup. The selector chooses 00012f06 instead of 00012efe; all eight cells in 00012f06 equal 5, so the current calibration returns 5 regardless of index. The physical subsystem, value unit, mechanism that clears ffff25ee, and exact change to ffff2326 are unknown. Index: implicit 1D-8 by uint8 ffff106f: linear interpolation of adjacent bytes for x&lt;224, element[7] for x&gt;=224. Output trace: 00012f06 -&gt; 000bde7a/000bde82 -&gt; 00026370 -&gt; 00026a80 -&gt; 00026aac/00026aae -&gt; 00026740 -&gt; 000bde86 -&gt; 000bde8c/000bde94 -&gt; ffff1a1e/ffff25ee; before the next write, previous values ffff1a1e and ffff25ee are tested in the 000bdc66 gate. Result disposition: consumer; Result target: RAM ffff1a1e and ffff25ee; consumer function 000bdc66. Static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13525,7 +13521,7 @@
   <XDFTABLE uniqueid="0x5CEA" flags="0x0">
     <title>Signed Difference Multiplier Q0.6 (0x1300E)</title>
     <description>Exact JK08A. Address 0x1300E; 1 rows x 8 columns; uint8; map confidence code. Dimensionless 1D table of a Q0.6 coefficient. Lookup by RAM byte ffff106f returns M; the same r6 scales signed difference 4*u16[ffff1046]-u16[ffff1024], forming trunc0((4*u16[ffff1046]-u16[ffff1024])*M/64), whose sign selects the downstream processing branch. There is no separate axis array. The lookup result is mirrored to RAM ffff1ca6 through site 00052328, but this RAM sink has no external readers; the actual code consumer of the same r6 is at site 00052338. For a negative product, site 00052342 adds 63 before the arithmetic shift, so the integer result is rounded toward zero. Downstream limiting and combination are visible in pseudocode but are not part of the invertible cell scale. Numeric round trip: 6 -&gt; 0.09375 -&gt; 6; 32 -&gt; 0.5 -&gt; 32. The artifact does not identify the physical subsystem. Index: implicit 1D-8 by u=uint8[ffff106f]: for u&lt;224, i=floor(u/32), fraction=(u%32)/32, and map[i]..map[i+1] are linearly interpolated; for u&gt;=224, map[7] is selected. Output trace: map 0001300e -&gt; site 0005231a -&gt; site 0005231e -&gt; function 00026370 -&gt; (site 00026a80 -&gt; function 00026740 | saturation return in function 00026370) -&gt; site 00052322 (r0-&gt;r6) -&gt; [site 00052328 -&gt; RAM ffff1ca6; site 00052338 -&gt; site 00052346 -&gt; function 000224fa -&gt; site 0005234a -&gt; site 0005234c]. Result disposition: consumer; Result target: site 00052338 (FUN_000522c4).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13574,7 +13570,7 @@
   <XDFTABLE uniqueid="0x6DE5" flags="0x0">
     <title>Conditional Signed State Value (x-128) (0x13016)</title>
     <description>Exact JK08A. Address 0x13016; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table of a centered signed value. The lookup result is decoded as x-128, constrained to range -16..15 when bit 0x40 of RAM ffff249f is set, or replaced with zero otherwise, then written as a byte to RAM ffff15c8. The physical quantity is unknown. All 8 cells equal 128, so the lookup yields 128, decoding yields 0, the clamp does not change the result, and with the enable bit clear the same 0 is written. The artifact has no external readers of ffff15c8; this remains a write rather than a proven dead branch. The physical quantity is unknown. The scale applies to the value before the clamp. Numeric round trip: 0 -&gt; -128 -&gt; 0; 128 -&gt; 0 -&gt; 128; 255 -&gt; 127 -&gt; 255. Index: Implicit uniform eight-point axis. q=min((u16 RAM[ffff1152] / 8),255). For q&lt;224, the kernel obtains the adjacent uint8-cell index with five right shifts of q and passes the cells to unsigned linear interpolation with a Q0.16 fraction; for q&gt;=224, the wrapper returns cell 7. Bit 0x40 of RAM[ffff249f] enables the lookup. Output trace: q&lt;224: 00013016 -&gt; 00076404 -&gt; 00076408 -&gt; 00026370 -&gt; 00026a80 -&gt; 00026aac/00026aae -&gt; 00026740 -&gt; 0007640c -&gt; 00076410 -&gt; 00076412 -&gt; 00076416/00076422 -&gt; 00076434 -&gt; ffff15c8; q&gt;=224: 00013016+7 -&gt; 00026370 -&gt; 0007640c -&gt; 00076410 -&gt; 00076412 -&gt; 00076416/00076422 -&gt; 00076434 -&gt; ffff15c8. Result disposition: writes; Result target: RAM ffff15c8, byte store site 00076434.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -13623,7 +13619,7 @@
   <XDFTABLE uniqueid="0xBB68" flags="0x0">
     <title>State Decrease Limit A - raw u16 (0x14304)</title>
     <description>Exact JK08A. Address 0x14304; 1 rows x 8 columns; uint16; map confidence code. Unsigned 1D table of quantity m that limits reduction of state ffff17c0. When t&lt;p and bit 0x20 of register ffff2458 is clear, code writes 0 for p&lt;m, otherwise max(t,p-m); p is previous ffff17c0, and t is uint16-saturated value uVar10&lt;&lt;3. On the other branches, m does not affect the write. The map is selected when the low byte of uVar8 lies within inclusive range PTR_DAT_00074fb8[1]..PTR_DAT_00074fb8[0]; the other branch uses adjacent 00014314. The lookup result is copied r0-&gt;r6 at 00074f48 and compared with previous ffff17c0 at 00074f70. ffff17c0 has no external readers, but the write is reachable. The physical quantity and unit are unknown. Index: implicit 1D-8 uint16; idx=(ffff1210&lt;&lt;7)&amp;0xffff when ffff1210&lt;0x0200, otherwise idx=0xffff; 000263d8 returns element 7 for idx&gt;=0xe000, otherwise calls 00026a60 and linear finisher 00026740. Output trace: 00014304 -&gt; 00074e4e -&gt; 00074f36 -&gt; 000263d8 -&gt; (00026a60 -&gt; 00026740 for idx &lt; 0000e000; direct element 7 in 000263d8 otherwise) -&gt; 00074f48 -&gt; 00074f70 -&gt; ffff17c0. Result disposition: writes; Result target: ffff17c0.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 8192)</units>
@@ -13672,7 +13668,7 @@
   <XDFTABLE uniqueid="0x8A29" flags="0x0">
     <title>State Decrease Step B - raw u16 (0x14314)</title>
     <description>Exact JK08A. Address 0x14314; 1 rows x 8 columns; uint16; map confidence code. 1D table of a decrement step for RAM state ffff17c0. During a descending update, the lookup is compared with current ffff17c0: if current &gt;= lookup and the calculated target &lt;= current - lookup, current - lookup is written; if current &lt; lookup, the state is zeroed. Otherwise the higher calculated target is retained. The physical subsystem is unknown. The map is selected by the branch that adds 0x10 to base 00014304 when a calculated 8-bit selector lies outside the range of two bytes at 00008ace. The lookup result is not written as an independent quantity: it is consumed inside 00074e4e while limiting a descending update of ffff17c0; external readers of derived ffff23fc are not used as evidence for target-map semantics. The map has no explicit ROM axis, so axes is empty. Index: 1D-8 with an implicit axis. Coordinate r5 is formed as saturating uint16(RAM_ffff1210 &lt;&lt; 7): for RAM_ffff1210 &gt;= 0x0200, 0xffff is used. For coordinate &lt; 0xe000, wrapper 000263d8 interpolates adjacent uint16 values through 00026a60/00026740; otherwise it returns element 7 at offset +0x0e. Output trace: 00014314 -&gt; site 00074f30 -&gt; site 00074f36 -&gt; 000263d8 -&gt; [00026a60 -&gt; 00026740 | direct +0x0e return] -&gt; site 00074f48 -&gt; site 00074f6c -&gt; site 00074f70 -&gt; 00074e4e -&gt; ffff17c0 -&gt; ffff23fc. Result disposition: inline_comparison; Result target: site 00074f70.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 8192)</units>
@@ -13721,7 +13717,7 @@
   <XDFTABLE uniqueid="0xD40F" flags="0x0">
     <title>Composite Product Multiplicand - raw u16 (0x14ED2)</title>
     <description>Exact JK08A. Address 0x14ED2; 1 rows x 8 columns; uint16; map confidence code. Eight-point uint16 table with an implicit index whose lookup result is a 16-bit multiplicand in a composite calculation: at 000525b0 it is multiplied by the uint8 result of 0000a8ea, the product is shifted right by 7, saturated to 0xffff, and written to ffff1652. The physical quantity, unit, and non-unity scale do not follow from code. ffff1652 already contains the product of outputs from 00014ed2 and 0000a8ea, so its two readers do not isolate the physical meaning of the target map. The implicit map has no separate ROM axis. Index: implicit 1D-8; q=min(RAM16[ffff1222]*32,65535); for q&lt;57344, interpolation is performed through 00026a60 and 00026740; for q&gt;=57344, map[7] is returned. Output trace: 00014ed2 -&gt; 000525a6 -&gt; 000525aa -&gt; 000263d8 -&gt; 00026a60 -&gt; 00026740 -&gt; 000525ae -&gt; 000525b0; product -&gt; 000525b6 -&gt; 000525b8 -&gt; 000525ba -&gt; 000525bc -&gt; 000525be -&gt; 000525c0 -&gt; 000525c2 -&gt; 000525c4 -&gt; 000525cc -&gt; ffff1652; ffff1652 -&gt; 000525d8, 0004e59c. Result disposition: consumer; Result target: site 000525b0.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 8192)</units>
@@ -13770,7 +13766,7 @@
   <XDFTABLE uniqueid="0x4D69" flags="0x0">
     <title>Rounded UQ0.16 Threshold Coefficient (0x15082)</title>
     <description>Exact JK08A. Address 0x15082; 1 rows x 8 columns; uint16; map confidence code. Eight-point implicit table of an unsigned UQ0.16 coefficient. The lookup result scales the lookup result of map 00015062; rounded product/65536 forms a local 16-bit comparison threshold. All 8 cells equal 0xffff, but constant content is not used as semantic evidence. The claim is based on trace lookup -&gt; fixed-point multiplication -&gt; derived threshold -&gt; comparison. The physical names of the indexing quantity and compared parameter are not proven. The inverse pair is exact in the raw domain: for r=0..65535, round((r/65536)*65536)=r. Index: v is selected by branching before the lookup: with bit 0x80 at 00008b3f clear, U16_BE[ffff10d2] is selected; on the other branch, v is formed from U16_BE[ffff1016] by multiplication by 0x280 and byte swapping at 0007316e..00073196. At 00073198..000731aa, q=sat_u16(v&lt;&lt;7) is calculated. For q&lt;0xe000, wrapper 000263d8 transfers control to implicit kernel 00026a60 for linear interpolation of 8 adjacent U16 cells through 00026740; for q&gt;=0xe000, the wrapper returns the last cell map[7] at offset +0x0e. There is no separate axis array in ROM. Output trace: On the path that reaches 000731b2: BE U16 cells of map 00015082 -&gt; wrapper 000263d8 -&gt; implicit kernel 00026a60 -&gt; linear finisher 00026740 -&gt; r0; 000731b6 zero-extends the result, 000731b8 multiplies it by the zero-extended lookup result of map 00015062 in r14, 000731be adds 0x8000, and 000731c0 extracts the high 16 bits into r4. 000731c8 writes the derived threshold to ffff1734, then 000731ee compares the current value in r5 with r4; the comparison result participates in updating bit 0x04 at ffff2488. The direct lookup result from 00015082 has no separate RAM sink. Result disposition: inline_comparison; Result target: 000731b8 (direct arithmetic consumer) -&gt; ffff1734 (derived threshold) -&gt; 000731ee (comparison).</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 8192)</units>
@@ -13819,7 +13815,7 @@
   <XDFTABLE uniqueid="0x4BD7" flags="0x0">
     <title>Saturating Internal State Load - raw u16 (0x15330)</title>
     <description>Exact JK08A. Address 0x15330; 1 rows x 8 columns; uint16; map confidence code. Eight-point uint16 table of a value for conditional internal-state loading: lookup result x is converted as min(x*256,65535), written to ffff32b8, and its high byte is written to ffff413f. On the alternate path, this state is compared with a step quantity and reduced with saturation toward zero. The physical subsystem and physical units are unknown: root FUN_00066186 has no call sites, and the artifact has no external readers of the RAM values. Code confidence applies only to narrow operational semantics. The map is flat, so in this ROM the lookup always yields 20; runtime conversion produces 5120 (0x1400), while 20 is written to ffff413f. Saturating conversion min(x*256,65535) is not claimed as a scale because it lacks an exact inverse pair. Index: implicit 1D-8: q=min(uint16[ffff40c6]*128,65535); for q&lt;57344, the kernel performs linear interpolation of adjacent uint16 values; for q&gt;=57344, the wrapper selects element 7. Output trace: 000661be [delay slot 000661c0 sets r4=00015330] -&gt; 000263d8 -&gt; 00026a60 -&gt; 00026740 -&gt; return to 000661c2 -&gt; 000661c6 -&gt; 000661ca/000661ce -&gt; 000661d6 -&gt; ffff32b8 -&gt; high-byte extraction in 00066186 -&gt; ffff413f; on the alternate path, ffff32b8 -&gt; 000661f4 -&gt; comparison and subtraction in 00066186 -&gt; ffff32b8. Result disposition: writes; Result target: RAM ffff32b8 at site 000661d6; RAM ffff413f receives the high byte of ffff32b8 in FUN_00066186.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 8192)</units>
@@ -13868,7 +13864,7 @@
   <XDFTABLE uniqueid="0x893C" flags="0x0">
     <title>Internal Multiplicand - BFS candidate scale (0x15630)</title>
     <description>Exact JK08A. Address 0x15630; 1 rows x 8 columns; uint16; map confidence code. Eight-point uint16 table of a multiplicand: lookup by coordinate=uint8(ffff1077)&lt;&lt;8; at 0003b75c, the result is shifted right by 2 and multiplied by unsigned byte ffff1160 before a downstream right shift. The artifact code does not name the physical quantity. A shape match of 1D-8 and element type uint16 with the sole catalog entry "Cranking Base Fuel Schedule Table" supports only a candidate BFS scale. For pair x*0.000488 and x/0.000488, endpoint values pass round trip: 15971 -&gt; 7.793848 -&gt; 15971, 24257 -&gt; 11.837416 -&gt; 24257. ffff1e44 and claimed second-accessor sink ffff1e16 have no external readers, but the lookup result is consumed directly within 0003b75c. Index: eight-point implicit uniform coordinate: coordinate=uint8(ffff1077)&lt;&lt;8; 00026a60 performs linear interpolation through 00026740, while 000263d8 returns uint16[7] at offset +0x0e for coordinate&gt;=0xe000. Output trace: 00015630 -&gt; 00026a60 -&gt; 00026740 -&gt; 000263d8 -&gt; r0 at 0003b8cc -&gt; ffff1e44 at 0003b8d0 -&gt; r0&gt;&gt;2 at 0003b8d4 -&gt; ffff1e40 at 0003b8d8 -&gt; mul.l with uint8 ffff1160 at 0003b8e6 -&gt; right shifts 0003b8ec..0003b8f4. Result disposition: consumer; Result target: 0003b8d4.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 8192)</units>
@@ -13917,7 +13913,7 @@
   <XDFTABLE uniqueid="0x7462" flags="0x0">
     <title>Dual-Channel Saturating Addend - raw u16 (0x23824)</title>
     <description>Exact JK08A. Address 0x23824; 1 rows x 8 columns; uint16; map confidence code. Unsigned 16-bit 1D table of a common addition. After the lookup, when (ffff41a5 &amp; 4)==0 the result is lower-capped at 46, written to ffff2eba, and separately added with saturation to 65535 to ffff2c4e and ffff2c50, forming ffff303c and ffff303e. The physical quantity, unit of input ffff40c6, and physical output scale are unknown. The shape match with catalogs is ambiguous. The conditional lower limit 46 and downstream saturation process the result and are not scale claims. Index: implicit 1D-8. Input min(uint16(ffff40c6)*128,65535): for value &lt;57344, implicit interpolation of 8 uint16 elements is performed through 00026a60/00026740; for value &gt;=57344, element 7 at address 00023824+14 is returned. Output trace: site 0006f918 (000263d8: 00023824 -&gt; 00026a60 -&gt; 00026740; for input&gt;=57344, direct read of 00023824+14) -&gt; site 0006f91e -&gt; (site 0006f920/site 0006f922/site 0006f924; site 0006f926/site 0006f928/site 0006f92c conditionally) -&gt; site 0006f936 -&gt; ffff2eba -&gt; 0006f938 -&gt; ffff303c; ffff2eba -&gt; 0006fe6e -&gt; ffff303e. Result disposition: writes; Result target: RAM ffff2eba.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 8192)</units>
@@ -13966,7 +13962,7 @@
   <XDFTABLE uniqueid="0x5943" flags="0x0">
     <title>Latched Zero Condition Table - raw u8 (0x12026)</title>
     <description>Exact JK08A. Address 0x12026; 1 rows x 8 columns; uint8; map confidence code. Eight-point table of a raw byte condition: the lookup result indexed by ffff1070 is conditionally latched in ffff42a8; ffff42a8 is then tested for equality to zero inside 00082c8a and, together with control flags, determines whether bit 1 of ffff41d2 is set or cleared. All eight cells equal 0, so lookup always returns 0 in this ROM; flat contents alone do not prove semantics. Code proves narrow operational semantics of a zero condition. Writing the result and the enabling zero test are mutually exclusive within one call, so the effective zero test may use a value previously latched in ffff42a8. On the alternate path, a ROM constant is written to ffff42a8 instead of the map result. The physical subsystem and physical name of the quantity are unknown. Index: Implicit uniform 1D-8 indexing by x=uint8 RAM[ffff1070]. When x&lt;224: i=floor(x/32), q=(x-32*i)*2048 in Q0.16, with interpolation between map[i] and map[i+1]. When x&gt;=224, map[7] is selected. Output trace: ffff1070 -&gt; site 00083868 (x in r5); 00012026 -&gt; site 0008386a (r4) -&gt; site 0008386e -&gt; 00026370. When x &lt; 224: 00026a80 -&gt; cell reads at 00026aac/00026aae -&gt; 00026740; when x &gt;= 224: direct cell 0001202d. Return r0 -&gt; site 00083872 (r12) -&gt; conditional write to ffff42a8 -&gt; test ffff42a8 == 0 inside 00082c8a -&gt; bit 1 of ffff41d2. ffff42a8 has no external readers. Result disposition: inline_comparison; Result target: RAM ffff42a8; zero test in function 00082c8a; the condition contributes to updating RAM ffff41d2 bit 1.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 32)</units>
@@ -14015,7 +14011,7 @@
   <XDFTABLE uniqueid="0x228C" flags="0x0">
     <title>Interpolated State Byte - raw u8 (0x12E1A)</title>
     <description>Exact JK08A. Address 0x12E1A; 1 rows x 16 columns; uint8; map confidence code. Interpolated 1D table of 16 uint8 elements indexed by unsigned byte input ffff106f. For input &gt;=0xf0, the last element is selected; otherwise the result is linearly interpolated between adjacent elements. The resulting byte is stored without arithmetic conversion in ffff351b and copied by consumer 000c5558 to ffff3af5. Interpolated 1D table of 16 uint8 elements indexed by unsigned byte input ffff106f. For input &gt;=0xf0, the last element is selected; otherwise the result is linearly interpolated between adjacent elements. The resulting byte is stored without arithmetic conversion in ffff351b and copied by consumer 000c5558 to ffff3af5. Result disposition: consumer. Result target: 000c5558 (R ffff351b, W ffff3af5). Machine trace: 000793ea: r4=00012e1a; 000793ec and delay slot 000793f4: byte from ffff106f is zero-extended into r5; 000793f2: call 00026388. For input &gt;=0xf0, the wrapper returns the last element at base+0x0f; otherwise it transfers control to kernel 00026a84. Branch 00026aaa..00026ab2 reads adjacent elements through mov.b and zero-extends them, then 00026ab4 passes y0/y1 and the Q0.16 fraction to finisher 00026740. The finisher performs unsigned linear interpolation with a result between y0 and y1. 000793f6 moves r0 to r2 without arithmetic; 00079400 writes the low byte to ffff351b. In 000c5558, expression *(ffff3ab5+0x40)=*(ffff28f8+0x0c23) copies byte ffff351b directly to ffff3af5.</description>
-    <CATEGORYMEM index="0" category="17" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 16)</units>
@@ -14072,7 +14068,7 @@
   <XDFTABLE uniqueid="0x4B01" flags="0x0">
     <title>Engine Speed Axis [RPM] (ref)</title>
     <description>Exact JK08A. Reference-axis view at 0x11ECE with 16 uint8 points; confidence candidate.</description>
-    <CATEGORYMEM index="0" category="21" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Index</units>
@@ -14129,7 +14125,7 @@
   <XDFTABLE uniqueid="0x7A40" flags="0x0">
     <title>Cylinder Filling Axis [%] (ref)</title>
     <description>Exact JK08A. Reference-axis view at 0x11EBE with 16 uint8 points; confidence candidate.</description>
-    <CATEGORYMEM index="0" category="21" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Index</units>

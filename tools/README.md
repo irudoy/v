@@ -369,6 +369,12 @@ checksums. The split low-7-bit and bit-7 ignition-map views use per-cell address
 variables in invertible conversion equations so an edit preserves the
 complementary field.
 
+TunerPro categories are functional rather than confidence partitions. The
+generator removes trailing `(traced)` and `(candidate)` annotations from XDF
+category names while retaining confidence in table descriptions and `[cand]`
+unit annotations. XDF header categories use zero-based indices; one-based
+`CATEGORYMEM` values refer to those header entries.
+
 ### Memgraph backup
 
 Backup runs only as the final step of the agent workflow. Cron and `launchd` are not used.

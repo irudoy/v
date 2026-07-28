@@ -160,9 +160,59 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for category in cls.root.findall("./XDFHEADER/CATEGORY")
         }
 
+    def item_category(self, item):
+        member = item.find("./CATEGORYMEM")
+        return self.categories[int(member.get("category")) - 1]
+
     def patch_category(self, patch):
-        member = patch.find("./CATEGORYMEM")
-        return self.categories[int(member.get("category"))]
+        return self.item_category(patch)
+
+    def test_categories_use_tunerpro_indices_and_functional_names(self):
+        self.assertEqual(
+            sorted(self.categories),
+            list(range(len(self.categories))),
+        )
+        self.assertTrue(all(
+            "(candidate)" not in name and "(traced)" not in name
+            for name in self.categories.values()
+        ))
+
+        patches = {
+            patch.findtext("./title"): patch
+            for patch in self.root.findall("./XDFPATCH")
+        }
+        tables = {
+            table.findtext("./title"): table
+            for table in self.root.findall("./XDFTABLE")
+        }
+        expected = {
+            "Developer Immobilizer": "NATS / Immobilizer",
+            "Target AFR - Power (0xB33A)": "AFR / Lambda",
+            "MAF Transfer Curve - unresolved channel (0x141F4)": "Airflow",
+            "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
+            "Engine Speed Axis [RPM] (ref)": "Reference Axes",
+        }
+        for title, category in expected.items():
+            with self.subTest(title=title):
+                item = patches[title] if title in patches else tables[title]
+                self.assertEqual(self.item_category(item), category)
+
+        individual = next(
+            patch for title, patch in patches.items()
+            if title.startswith("DTC P0420 ")
+        )
+        group = next(
+            patch for title, patch in patches.items()
+            if title.startswith("Disable DTC group: Catalyst ")
+        )
+        self.assertEqual(
+            self.patch_category(individual),
+            tunerpro.DTC_INDIVIDUAL_CATEGORY,
+        )
+        self.assertEqual(
+            self.patch_category(group),
+            tunerpro.DTC_GROUP_CATEGORY,
+        )
 
     def test_xdf_has_expected_tables_patches_and_no_checksum(self):
         patches = self.root.findall("./XDFPATCH")
