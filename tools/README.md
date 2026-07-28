@@ -186,6 +186,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 |--------|---------|--------|
 | `ghidra/ExportGraph.java` | Call graph: functions and CALLS | `funcs.csv`, `calls.csv` |
 | `ghidra/ExportXrefs.java` | Peripheral/RAM accesses at `0xFFFE8000` and above, plus literal pools | `xrefs.csv` |
+| `ghidra/ExportDiagnosticRefs.java` | Semantic-free 16-bit ROM-reference and instruction-immediate inventory for reviewing SID 0x22 candidates | `diagnostic_refs.csv` |
 | `ghidra/DecompileFuncs.java` | C pseudocode for specified functions | `decomp_<addr>.c` |
 | `ghidra/ScanImmoAnchors.java` | Scan immo DTC constants P1610-P1615 and B2193, plus DTC-table clusters | `immo_anchors.csv`, `immo_tables.csv` |
 | `ghidra/FindTableRefs.java` | Identify users of a ROM address range or table base through direct and literal-pool references | `table_refs.csv` |
@@ -209,18 +210,20 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `memgraph/load_maps.py` | Calibration layer: resolver censuses plus canonical `interp.csv`, `findings.csv`, and `axes.csv` resolved through `rom-inheritance.toml`, with values read from the target image in Stage 4 -> `:Interp`/`:Map`/`:Axis` and `:ACCESSES`/`:VIA`/`:KERNEL`/`:AXIS_X`/`:AXIS_Y` | Memgraph |
 | `memgraph/load_a2l.py` | Load `:A2LEntry` from `A2L.xml` as an address-free, ROM-independent HR-family reference for maps, scalars, and switches | Memgraph |
 | `memgraph/load_code.py` | Load the claim-specific layer from canonical `funcs.csv`, `vars.csv`, `findings.csv`, and `axes.csv`: claim properties, exact `:RESTS_ON` projection, and `(:Rom)-[:ANNOTATIONS_FROM]->(:Rom)`; `code`/`silicon` requires factual evidence for every Func/Reg/Map/Axis property; run last after target owners | Memgraph |
-| `memgraph/ingest.py` | Complete target-ROM ingest: offline source, export, and image preflight followed by `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` leaves the graph unchanged and `--strict` also requires effective confidence and grounding | Memgraph |
-| `memgraph/ingest_diagnostics.py` | Validate and load the source-preserving DTC, diagnostic request, parameter, operation, and CAN claim layer without modifying code or calibration nodes | Memgraph |
-| `memgraph/diagnostics_queries.cypher` | Query catalog for ROM DTC coverage, source conflicts, diagnostic parameters, and CAN routes | tracked |
-| `diagnostics/*.py` | Deterministic ESM, ROM, and pinned public-source importers plus the read-only diagnostic query CLI and hardware-verified DBC export | tracked CSV/JSONL, Memgraph reads |
+| `memgraph/load_diagnostic_bindings.py` | Validate and load the reviewed per-ROM bridge from firmware nodes to diagnostic parameters, DTC codes, or CAN signals; preserve confidence, source applicability, inheritance scope, and priority independently | Memgraph |
+| `memgraph/ingest.py` | Complete target-ROM ingest: offline source, export, and image preflight followed by `load_graph -> load_xrefs -> load_maps -> load_code -> load_diagnostic_bindings -> provenance audit`; `--dry-run` leaves the graph unchanged and `--strict` also requires effective confidence and grounding | Memgraph |
+| `memgraph/ingest_diagnostics.py` | Validate and load the source-preserving DTC, diagnostic request, parameter, operation, and CAN claim layer without modifying code or calibration nodes; replacement invalidates dependent per-ROM diagnostic bindings | Memgraph |
+| `memgraph/diagnostics_queries.cypher` | Query catalog for ROM DTC coverage, source conflicts, diagnostic parameters, CAN routes, and reviewed firmware bindings | tracked |
+| `diagnostics/extract_static_bindings.py` | Join exact known service 0x22 DIDs to `diagnostic_refs.csv` and same-function RAM references as a review-only worklist; never creates graph claims | CSV outside Git |
+| `diagnostics/*.py` | Deterministic ESM, ROM, and pinned public-source importers plus the read-only diagnostic and binding query CLI and hardware-verified DBC export | tracked CSV/JSONL, Memgraph reads |
 | `memgraph/backup.py` | Final agent-workflow step: check the 24-hour interval and SMB mount, then write `DUMP DATABASE`, native snapshot, manifest, and SHA-256 directly to NAS | NAS |
 | `memgraph/provenance_report.py` | Read-only exact audit, weakest path, and reverse impact over complete claim identity; `--strict` enables effective-confidence and grounding gates | stdout |
 | `memgraph/queries.cypher` | Query catalog for maps, sweep components, projection centrality, reference catalogs, and individual structural gates. `provenance_report.py` performs claim-specific exact audits. Parameter: `$rom` | tracked |
-| `maps/build_tracker.py` | Project the graph catalog into the canonical-ROM ledger `defs/<rom>.maps.csv`; an inheriting ROM permits only an explicitly specified temporary output path | tracked |
+| `maps/build_tracker.py` | Project the graph catalog into the canonical-ROM ledger `defs/<rom>.maps.csv`, including static diagnostic priority and context; an inheriting ROM permits only an explicitly specified temporary output path | tracked |
 | `sweep/build_artifacts.py` | Build blind sweep artifacts: component `comp-<addr>.md`, frozen map `map-<addr>.md`, or shared axis `axis-<addr>.md`. Axis focus aggregates all related maps and accessors. Shape, values, axes, pseudocode, listings, census operands, and catalogs remain visible; current answers are hidden through an allowlist verified on every run. Budgets must be nonnegative; the frozen caller experiment requires `8`/`24`. Arguments: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
 | `sweep/caller_ab_experiment.py` | Read-only control plane for the 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates, manual approval, finalized `verified` and neutral `placebo` cards, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores, and a per-control verifier gate; canonical CSV remains unchanged | JSON/Markdown outside git |
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
-| `mapkit/emit_def.py` | Project the graph, `defs/<rom>.dtc.csv` DTC registry, and `defs/<rom>.overrides.toml` presentation layer into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
+| `mapkit/emit_def.py` | Project the graph, reviewed static diagnostic context, `defs/<rom>.dtc.csv` DTC registry, and `defs/<rom>.overrides.toml` presentation layer into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
 | `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 29 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
 | `mapkit/show.py` | Display a map or axis in physical units: the graph supplies shape, axes, and scale, while the image supplies values. Arguments: `[<rom>] <addr>...` | stdout |
 | `mapkit/ptrscan.py` | Find pointers to an address by scanning both constant forms, `mov.l` and `mov.w`, without Ghidra or a project. Arguments: `[<rom>] <addr> [<addr_hi>]` | stdout |
@@ -278,6 +281,10 @@ H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
 #    ExportXrefs reads the persisted marking in a separate read-only run.
 H -postScript RecoverFuncs.java -postScript ExportGraph.java "$D"
 H -readOnly -postScript ExportXrefs.java "$D"
+#    Export exact 16-bit references for the review-only diagnostic worklist.
+H -readOnly -postScript ExportDiagnosticRefs.java "$D"
+uv run --no-project --with neo4j python \
+  tools/diagnostics/extract_static_bindings.py JK08A
 # 2. Operands: run the resolver for every registered engine. Approximately 100 seconds per census.
 for K in 26944 26984 26b84 26a5c 26a60 26a64 26a74 26a7c 26a80 26a84 26a88 26740 26c1c; do
   H -readOnly -postScript ResolveAccessors.java "$D" $K
@@ -285,13 +292,14 @@ done
 # 3. Complete target-ROM ingest. Before deleting any nodes, preflight validates headers, values,
 #    foreign keys, censuses, ROM/SHA, evidence resolution, and factual evidence for every
 #    code/silicon Func/Reg/Map/Axis property.
-#    Order: graph -> xrefs -> maps -> code -> exact audit.
+#    The global diagnostic corpus must already be loaded.
+#    Order: graph -> xrefs -> maps -> code -> diagnostic bindings -> exact audit.
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A --export-dir "$D" --strict
 # Preflight and exact commands only, without modifying the graph:
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A \
   --export-dir "$D" --strict --dry-run
 # Exact-code JK03A uses the same live annotation set but its own export, image, map measurements,
-# and graph layer:
+# and graph layer. Only diagnostic rows with rom_scope=exact-code transfer:
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A \
   --export-dir ~/tools/ghidra-projects/export-JK03A --strict
 # 4. HR reference catalog: ROM-independent and loaded once per family rather than per dump.
@@ -412,12 +420,20 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 2759 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 2793 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 976 source claims, 2759 expected edges, 821 claims at `code`, and 155 at
+current JK08A has 997 source claims, 2793 expected edges, 834 claims at `code`, and 163 at
 `candidate`;
 `effective below declared=0`, `without grounding=0`, 44 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
+
+`load_diagnostic_bindings.py` runs after `load_code.py` because its reviewed
+claims target firmware nodes and rest on both firmware evidence and
+source-specific diagnostic claims. It resolves all dependencies before
+replacing a ROM's binding projection. `defs/JK08A.diagnostic-bindings.csv`
+contains 21 source rows: 5 exact-code claims and 16 exact-ROM DTC claims. JK03A
+inherits only the 5 exact-code rows. Static confidence cannot exceed `code`;
+hardware evidence is outside this pipeline milestone.
 
 ```bash
 uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK08A
@@ -425,6 +441,8 @@ uv run --no-project --with neo4j python \
   tools/memgraph/provenance_report.py weakest JK08A Func 00021ce0 confidence
 uv run --no-project --with neo4j python \
   tools/memgraph/provenance_report.py impact JK08A Map 0001495a structural
+uv run --no-project --with neo4j python \
+  tools/diagnostics/query.py binding P0327 --rom JK08A
 ```
 
 Handwritten sources do not declare table or axis values; the image does. On every run, Stage 4
@@ -451,10 +469,10 @@ For JK08A, 38,627 instructions in 494 regions produce 353 functions, increasing 
 1958 to 2312, after which wrappers `0x26100` and `0x26230` acquire callers.
 
 Across 13 JK08A censuses there are 587 rows for 554 call sites. Data flow recovers a ROM base at
-551 call sites, compared with 493 for backtracking. The graph contains **439 maps**: 248
-explicit-axis, 188 implicit-axis, and 3 manually declared outside either access model. It also has
-229 axes, 586 unique accesses, and 47 interpolation nodes, consisting of 34 wrappers and 13
-engines. One fully duplicate census row collapses under the `ACCESSES` edge key.
+551 call sites, compared with 493 for backtracking. The graph contains **441 maps**: 248
+explicit-axis, 188 implicit-axis, 2 implicit two-dimensional, 2 direct row-major,
+and 1 comparator table. It also has 229 axes, 587 unique accesses, and 47
+interpolation nodes, consisting of 34 wrappers and 13 engines.
 
 | Family | Engines | Sites | `bt_r4` | `df_r4` | Wrappers | Maps |
 |--------|---------|-------|---------|---------|----------|------|
@@ -464,8 +482,8 @@ engines. One fully duplicate census row collapses under the `ACCESSES` edge key.
 Base-source distribution across 554 call sites is 407 pool slots, 102 backward slices, 27 phi
 nodes producing 59 branch rows, 15 `SymbolicPropogator` fallbacks producing 16 census rows, and 3
 unresolved dynamic cases (`dyn`). The loader verifies from its rows that the two families share no
-tables. The manual layer adds three maps outside both access models to the 436 census maps, for a
-catalog total of 439.
+tables. The manual layer declares five maps outside the census access models,
+for a catalog total of 441.
 
 The resolver reproduces both reference censuses site-for-site, 327 and 227 sites, and covers every
 reference base. It also recovers 13 additional explicit-axis tables and 16 additional bank tables.

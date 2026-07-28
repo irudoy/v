@@ -702,6 +702,8 @@
     <!-- 0x0ABBA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
          accessor 0xA52E4; r4 operand: pool
          scaling x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load
+         static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom];
+         DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom]
          The surface is selected when byte[ffff3427] <= byte[0x8796], where the ROM threshold is
          95. The physical unit of raw and the direction in which increasing a cell affects the
          final DTC verdict are unknown.
@@ -724,6 +726,8 @@
     <!-- 0x0ABFA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
          accessor 0xA52E4; r4 operand: pool
          scaling x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load
+         static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom];
+         DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom]
          The surface is selected when byte[ffff3427] > byte[0x8796], where the ROM threshold is
          95. The physical unit of raw and the direction in which increasing a cell affects the
          final DTC verdict are unknown.
@@ -2278,6 +2282,7 @@
     <!-- 0x141F4  64 uint16  map [candidate]; entry 0x26410 (implicit, core 0x26A74)
          accessor 0x3A904; r4 operand: slice
          scaling x raw
+         static diagnostic context: MASS AIRFLOW [candidate, homologous_vq35hr]
          Shape 1D-64 has a single catalog match, MAF Table, and vendor concept maf-curve, but
          the catalogs do not distinguish the two channels/banks and provide only candidate
          confidence. Code reliably associates 000141f4 with input field ffff1e4a and sink
@@ -2319,6 +2324,7 @@
     <!-- 0x14274  64 uint16  map [candidate]; entry 0x26410 (implicit, core 0x26A74)
          accessor 0x3A904; r4 operand: pool
          scaling x raw
+         static diagnostic context: MASS AIRFLOW [candidate, homologous_vq35hr]
          The only catalog shape match names the map MAF Table, while the A2L concept associates
          the shape with the maf-curve family. Code confirms 64-point uint16 interpolation of
          input ffff1e48 and a result write to ffff1054, but it does not confirm the physical
@@ -2407,6 +2413,8 @@
     <!-- 0x11F1A  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4AFDC; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical subsystem and engineering unit are unknown. There is no separate ROM axis.
          ffff12db receives a composite result, not a copy of the target-map lookup. Index:
          implicit 1D-8: x = uint8 RAM ffff106f; fixed nodes 0, 32, 64, 96, 128, 160, 192, 224;
@@ -2428,6 +2436,8 @@
     <!-- 0x11F22  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4AFDC; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The lookup result has no separate direct RAM sink: the value is combined with the
          result of map 00011f12, after which the derived sum reaches RAM ffff12db. The physical
          name of the quantity and the unit of input ffff106f are unknown. All eight cells equal
@@ -2451,6 +2461,8 @@
     <!-- 0x11FBE  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4C02E; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical name of the quantity and engineering scale are unknown. ffff1831 receives
          not the original lookup result but the saturated result of branching arithmetic with
          other inputs; function 0004c136 only conditionally copies this byte to ffff2404. Index:
@@ -2702,6 +2714,8 @@
     <!-- 0x1218E  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x2C648, 0x420B8; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical subsystem is unknown. Direct confirmed path 0002cd82 -> ffff23ed is
          sufficient for operational semantics; 000420b8 additionally retains the lookup result
          in a local value. All eight cells equal 0, so the current ROM content always selects
@@ -2749,6 +2763,8 @@
     <!-- 0x1219E  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4AFDC; r4 operand: pool
          scaling x-128 signed raw [code]
+         static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
+         writes]
          The physical subsystem and physical unit are unknown: the available trace ends in
          signed-byte arithmetic at 0004e112 and 0004bdc2 rather than an actuator path. Only
          proven operational semantics are claimed. Numeric scale round trip: 128 -> 0 -> 128;
@@ -3128,6 +3144,8 @@
     <!-- 0x1242A  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x526A0; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The lookup by uint8 ffff106f is converted to 64+trunc0((x-64)*uint8[ffff10bf]/128) and
          scales the base from 00009eda and 00012432 before the write to ffff15de. Operations
          -64/+64 belong to the consumer, so the map is retained as raw identity. Value 64 is
@@ -3166,6 +3184,8 @@
     <!-- 0x12562  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x54EE0; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The lookup by uint8 ffff106f is saved on the stack, restored as unsigned, and
          successively multiplied by the results of 00012572 and 00012582; normalizations >>6 and
          byte ffff10bf form the first term of accumulator 00054ee0, which a conditional branch
@@ -3242,6 +3262,8 @@
     <!-- 0x1296C  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x45758, 0x6E3D8; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical subsystem and physical unit are unknown. When RAM[ffff244f]&2 != 0, the
          lookup result reaches ffff1766 directly. When the bit is zero and RAM[ffff16b1] != 0,
          min(255, floor(lookup*RAM[ffff16ae]/RAM[ffff16b1])) is written; when the divisor is
@@ -3380,6 +3402,8 @@
     <!-- 0x12A82  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x52F00; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical name of the coefficient is unknown. On a conditional branch in 000532ae,
          value K from ffff1601 enters expression iVar12 = 256*K - B*(K - 2*C) + 2*(D*E + F),
          where B = uint8 ffff15df, C = int8 ffff1660, D = uint8 ffff193d, E = uint8 ffff1680,
@@ -3519,6 +3543,8 @@
     <!-- 0x12AFA  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x43AEE; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical subsystem and engineering unit are not established: ffff254d has no
          external readers and the catalog shape is ambiguous. All eight cells equal 6, so
          interpolation and the terminal branch return 6; this proves a nonzero state and branch
@@ -3545,6 +3571,8 @@
     <!-- 0x12DCA  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4AC7A; r4 operand: pool
          scaling x/128 ratio [code]
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical subsystem is unknown. ffff1a1f has no external readers, but the value is
          not dead: it is read in the same function at site 0004ae32 and first consumed by
          multiplication at site 0004ae36. Adjacent map 000129ca is constant and returns 128, so
@@ -3574,6 +3602,8 @@
     <!-- 0x12E72  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0xBE5BC; r4 operand: pool
          scaling x-128 signed_raw_offset [code]
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical subsystem is unknown. Code proves the centered term and its path. Before
          saturation, A = RAM[ffff16e8] + (x-128)*65536; saturation to 0..16777215 applies to
          composite A and is not included in the invertible map scale. One whole scale unit
@@ -3605,6 +3635,8 @@
     <!-- 0x12E7A  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0xBE5BC; r4 operand: pool
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          The physical name and unit are unknown. The catalog for shape 1D-8 is ambiguous. The
          16-bit shift belongs to the internal consumption path; because of the downstream
          addition and saturation, it is not claimed as an independent invertible physical scale.
@@ -3669,6 +3701,8 @@
     <!-- 0x12F06  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0xBDB66, 0xBDC66; r4 operand: phi
          scaling x raw
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
          On the update branch in 000bdc66, previous values ffff1a1e != 0 and ffff25ee == 0 enter
          the gate before the lookup. The selector chooses 00012f06 instead of 00012efe; all
          eight cells in 00012f06 equal 5, so the current calibration returns 5 regardless of

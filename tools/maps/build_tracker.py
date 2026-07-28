@@ -28,10 +28,11 @@ BOLT = "bolt://localhost:7687"
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import rom_sources  # noqa: E402
+import diagnostic_context  # noqa: E402
 
 FIELDS = ["table", "family", "via", "kernel", "dim", "storagetype", "vals", "scaling",
           "axis_x", "axis_y", "accessors", "sites", "confidence", "role", "semantics",
-          "note"]
+          "diag_priority", "diagnostic_context", "note"]
 
 # Resolved work appears first and open work last. Sort tables by confidence and
 # semantic presence, then non-tunable bases such as comparator thresholds and
@@ -72,26 +73,34 @@ def scaling(r):
 
 
 def project(rows):
-    out = [{
-        "table": r["table"],
-        "family": r["family"],
-        "via": ";".join(sorted(r["via"])),
-        "kernel": ";".join(sorted(r["kernel"])),
-        "dim": shape(r["width"], r["height"]),
-        "storagetype": r["storagetype"] or "",
-        "vals": f"{r['vmin']}..{r['vmax']}",
-        "scaling": scaling(r),
-        "axis_x": ";".join(sorted(r["axis_x"])),
-        "axis_y": ";".join(sorted(r["axis_y"])),
-        "accessors": ";".join(sorted(r["accessors"])),
-        "sites": str(r["sites"]),
-        "confidence": r["confidence"],
-        "role": r["role"],
-        "semantics": r["semantics"],
-        "note": r["note"],
-    } for r in rows]
+    out = []
+    for r in rows:
+        priority, context = diagnostic_context.summarize(
+            r.get("diagnostic_bindings", [])
+        )
+        out.append({
+            "table": r["table"],
+            "family": r["family"],
+            "via": ";".join(sorted(r["via"])),
+            "kernel": ";".join(sorted(r["kernel"])),
+            "dim": shape(r["width"], r["height"]),
+            "storagetype": r["storagetype"] or "",
+            "vals": f"{r['vmin']}..{r['vmax']}",
+            "scaling": scaling(r),
+            "axis_x": ";".join(sorted(r["axis_x"])),
+            "axis_y": ";".join(sorted(r["axis_y"])),
+            "accessors": ";".join(sorted(r["accessors"])),
+            "sites": str(r["sites"]),
+            "confidence": r["confidence"],
+            "role": r["role"],
+            "semantics": r["semantics"],
+            "diag_priority": str(priority) if priority else "",
+            "diagnostic_context": "; ".join(context),
+            "note": r["note"],
+        })
     out.sort(key=lambda r: (ROLE_ORDER.get(r["role"], 9),
                             LEVEL_ORDER.get(r["confidence"], 9),
+                            -int(r["diag_priority"] or 0),
                             r["semantics"] == "", r["family"], r["dim"], r["table"]))
     return out
 
@@ -111,6 +120,8 @@ def report(out, tracker):
     named = sum(1 for r in out if r["semantics"])
     empty = sum(1 for r in out if not r["via"] and not r["accessors"])
     print(f"  with semantics: {named}/{len(out)}")
+    diagnostic = sum(1 for r in out if r["diagnostic_context"])
+    print(f"  with static diagnostic context: {diagnostic}/{len(out)}")
     print(f"  open (candidate without semantics): "
           f"{sum(1 for r in out if r['confidence'] == 'candidate' and not r['semantics'])}")
     if empty:
@@ -137,9 +148,12 @@ def main():
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
     with driver.session() as s:
         rows = [r.data() for r in s.run(QUERY, rom=rom)]
+        bindings = diagnostic_context.map_bindings(s, rom)
     driver.close()
     if not rows:
         sys.exit(f"no maps for rom={rom} in graph; tools/memgraph/load_maps.py builds the layer")
+    for row in rows:
+        row["diagnostic_bindings"] = bindings.get(row["table"], [])
 
     out = project(rows)
     with open(tracker, "w", newline="") as fh:

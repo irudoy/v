@@ -67,6 +67,24 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         self.assertIn('type="Static Y Axis"', xml)
         self.assertIn('name="Cylinder"', xml)
 
+    def test_xml_comment_includes_static_diagnostic_context(self):
+        self.map["diagnostic_bindings"] = [{
+            "diagnostic_label": "DtcCode",
+            "diagnostic_key": "P0327",
+            "diagnostic_name": "P0327",
+            "confidence": "code",
+            "applicability": "exact_rom",
+            "priority": 100,
+        }]
+        overrides = {"table": {self.map["addr"]: self.presentation}}
+        xml = "\n".join(
+            emit_def.table_xml(self.map, overrides, {}, "JK08A")
+        )
+        self.assertIn(
+            "static diagnostic context: DTC P0327 [code, exact_rom]",
+            xml,
+        )
+
     def test_masked_view_reuses_source_geometry_and_has_independent_scaling(self):
         presentation = dict(self.presentation)
         presentation["mask"] = "7F"

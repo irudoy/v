@@ -60,6 +60,28 @@ class ExportValidationTest(unittest.TestCase):
         self.assertEqual(shown[:6], ingest.STABLE_PYTHON)
         self.assertEqual(shown[6:], ["/repo/load.py", "JK03A"])
 
+    def test_binding_loader_runs_after_code_and_before_audit(self):
+        paths = {
+            "Map": Path("/defs/maps.csv"),
+            "Axis": Path("/defs/axes.csv"),
+        }
+        steps = ingest.commands(
+            Path("/export"),
+            "TEST",
+            Path("/defs/interp.csv"),
+            paths,
+            False,
+        )
+        scripts = [Path(command[1]).name for command in steps]
+        self.assertEqual(
+            scripts[-3:],
+            [
+                "load_code.py",
+                "load_diagnostic_bindings.py",
+                "provenance_report.py",
+            ],
+        )
+
 
 class FakeTransaction:
     def __init__(self, rows):

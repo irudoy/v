@@ -40,7 +40,14 @@ under `defs/`, separately from `reference/`:
   tables, masked views, reference axes, and two-state feature patches. It does
   not declare editor-side checksum processing.
 - `JK08A.maps.csv` is the catalog ledger projected from the graph by
-  `maps/build_tracker.py`.
+  `maps/build_tracker.py`. Its diagnostic columns contain reviewed static
+  context and priority from the graph; they do not infer map identity from
+  names.
+- `JK08A.diagnostic-bindings.csv` is the reviewed per-ROM bridge from firmware
+  `Func`, `Reg`, `Map`, and `Axis` nodes to diagnostic parameters, DTC codes,
+  and CAN signals. Each row preserves firmware confidence, source
+  applicability, inheritance scope, priority, and machine-address evidence as
+  separate fields. Exact-ROM rows do not transfer to JK03A.
 - `JK08A.dtc.csv` is an address registry for 29 analyzed DTC
   descriptor/attribute pairs. A descriptor is 12 bytes; the address of its
   associated `uint16` attribute comes from a pointer table. The generator
@@ -58,7 +65,8 @@ under `defs/`, separately from `reference/`:
 - The handwritten calibration-layer sources are `JK08A.interp.csv` for
   interpolation-input geometry, `JK08A.findings.csv` for map findings,
   `JK08A.axes.csv` for axis semantics, and `JK08A.overrides.toml` for definition
-  presentation. Their contract is `../tools/map-flag-pipeline.md`.
+  presentation. `JK08A.diagnostic-bindings.csv` supplies the reviewed
+  diagnostic bridge. Their contract is `../tools/map-flag-pipeline.md`.
 - Resolver reference censuses are
   `JK08A.map_inventory.{26944,26984,26b84}.csv` from `MapInventory` per kernel,
   and `JK08A.direct_lookup_inventory.csv` from `DirectLookupInventory` for the
@@ -125,10 +133,12 @@ currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
 `0x190b0`. All 229 axes and the other 437 maps match.
 
 The generated JK08A definitions contain 145 calibration tables, three masked
-views, and two reference-axis views. `JK08A.xml` additionally contains 57 DTC
-switches and two verified native RomRaider checksum handlers. Each ordinary DTC
-has adjacent descriptor and attribute controls; P1610 has only its descriptor
-control. The checksum handlers run in `alt` -> `alt2` order.
+views, and two reference-axis views. Reviewed static diagnostic context is
+included in map comments and descriptions without changing map semantics or
+confidence. `JK08A.xml` additionally contains 57 DTC switches and two verified
+native RomRaider checksum handlers. Each ordinary DTC has adjacent descriptor
+and attribute controls; P1610 has only its descriptor control. The checksum
+handlers run in `alt` -> `alt2` order.
 
 `JK08A.xdf` contains 29 individual DTC patches and six group patches:
 `catalyst`, `evap`, `manufacturer_specific`, `nats`, `rear_o2`, and

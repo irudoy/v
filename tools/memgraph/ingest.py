@@ -2,7 +2,8 @@
 """Complete reproducible ingestion of one ROM into Memgraph.
 
 Node-owner order is fixed:
-  load_graph.py -> load_xrefs.py -> load_maps.py -> load_code.py -> audit
+  load_graph.py -> load_xrefs.py -> load_maps.py -> load_code.py
+  -> load_diagnostic_bindings.py -> audit
 
 Invocation:
   uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A
@@ -18,6 +19,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import load_code  # noqa: E402
+import load_diagnostic_bindings  # noqa: E402
 import load_maps  # noqa: E402
 import rom_sources  # noqa: E402
 from provenance import ProvenanceError, analyze_claims  # noqa: E402
@@ -201,6 +203,13 @@ def preflight(export_dir, rom, strict):
     exported_func_addrs = validate_exports(exported, export_dir)
 
     model, paths, funcs, vars_, _, _, claims = read_code_sources(rom)
+    binding_rows = load_diagnostic_bindings.validate_rows(
+        load_diagnostic_bindings.read_rows(paths["DiagnosticBinding"]),
+        paths["DiagnosticBinding"],
+    )
+    binding_rows = load_diagnostic_bindings.materialize_rows(
+        model, binding_rows
+    )
     registry, maps, axes, accesses = preflight_maps(
         export_dir, rom, model, paths
     )
@@ -239,7 +248,8 @@ def preflight(export_dir, rom, strict):
     print(
         f"Preflight {rom}: funcs={len(exported['funcs.csv'])}, "
         f"xrefs={len(exported['xrefs.csv'])}, maps={len(maps)}, axes={len(axes)}, "
-        f"claims={len(levels)}, RESTS_ON={len(dependencies)}"
+        f"claims={len(levels)}, RESTS_ON={len(dependencies)}, "
+        f"diagnostic_bindings={len(binding_rows)}"
     )
     print(
         f"  annotation source={model.source}, mode={model.kind}, "
@@ -262,6 +272,7 @@ def commands(export_dir, rom, registry, paths, strict):
             str(registry), str(paths["Map"]), str(paths["Axis"]),
         ],
         [python, str(MEMGRAPH / "load_code.py"), rom],
+        [python, str(MEMGRAPH / "load_diagnostic_bindings.py"), rom],
         [python, str(MEMGRAPH / "provenance_report.py"), "audit", rom],
     ]
     if strict:

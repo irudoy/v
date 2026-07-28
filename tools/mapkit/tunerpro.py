@@ -407,6 +407,9 @@ def map_description(rom, calibration, mask=None):
             )
     if calibration.get("note"):
         description += f" {calibration['note']}"
+    diagnostic = calibration.get("diagnostic_context", [])
+    if diagnostic:
+        description += " Static diagnostic context: " + "; ".join(diagnostic) + "."
     return description
 
 

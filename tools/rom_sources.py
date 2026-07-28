@@ -23,6 +23,7 @@ PROSE_FIELDS = {
     "Reg": frozenset({"semantics", "units", "note"}),
     "Map": frozenset({"semantics", "units", "note"}),
     "Axis": frozenset({"kind", "units", "note"}),
+    "DiagnosticBinding": frozenset({"note"}),
 }
 
 
@@ -166,6 +167,7 @@ def definition_paths(model):
         "Map": defs / f"{model.source}.findings.csv",
         "Axis": defs / f"{model.source}.axes.csv",
         "Interp": defs / f"{model.source}.interp.csv",
+        "DiagnosticBinding": defs / f"{model.source}.diagnostic-bindings.csv",
     }
 
 

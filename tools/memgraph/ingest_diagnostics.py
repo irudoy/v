@@ -925,6 +925,11 @@ def create_indexes(session: Any) -> None:
 
 
 def delete_graph_scope_claims(tx: Any) -> None:
+    # Static firmware bindings rest on source-specific diagnostic claims. A
+    # corpus replacement invalidates those edges, so remove the dependent
+    # projection instead of leaving apparently valid orphan claims. Per-ROM
+    # ingest recreates it after this global loader completes.
+    tx.run("MATCH (b:DiagnosticBinding) DETACH DELETE b").consume()
     tx.run(
         "MATCH (n) "
         "WHERE n.graph_scope = $scope AND n.dataset_id IS NOT NULL "

@@ -17,6 +17,53 @@ from typing import Any
 
 BOLT = "bolt://localhost:7687"
 
+STATIC_BINDING_QUERY = """
+MATCH (binding:DiagnosticBinding)-[:BINDS_DIAGNOSTIC]->(diagnostic)
+MATCH (binding)-[:BINDS_FIRMWARE]->(firmware)
+WITH binding, diagnostic, firmware,
+     toLower(
+       coalesce(binding.diagnostic_name, '') + ' ' +
+       coalesce(binding.diagnostic_key, '') + ' ' +
+       coalesce(binding.kind, '') + ' ' +
+       coalesce(binding.note, '') + ' ' +
+       coalesce(firmware.addr, '')
+     ) AS search_text
+WHERE ($rom = '' OR binding.rom = $rom)
+  AND (
+    $term = ''
+    OR (
+      $is_identifier
+      AND (
+        toLower(binding.diagnostic_key) = $identifier
+        OR toLower(firmware.addr) = $identifier
+      )
+    )
+    OR (NOT $is_identifier AND search_text CONTAINS toLower($term))
+  )
+RETURN binding.rom AS rom,
+       binding.kind AS kind,
+       labels(firmware) AS firmware_labels,
+       firmware.addr AS firmware_addr,
+       binding.diagnostic_label AS diagnostic_label,
+       binding.diagnostic_key AS diagnostic_key,
+       binding.diagnostic_name AS diagnostic_name,
+       binding.confidence AS confidence,
+       binding.firmware_confidence_prop AS firmware_confidence_prop,
+       binding.firmware_confidence AS firmware_confidence,
+       binding.applicability AS applicability,
+       binding.rom_scope AS rom_scope,
+       binding.priority AS priority,
+       binding.source_claim_label AS source_claim_label,
+       binding.source_claim_id AS source_claim_id,
+       binding.source_applicability AS source_applicability,
+       binding.source_verification AS source_verification,
+       binding.source_dataset_id AS source_dataset_id,
+       binding.evidence AS evidence,
+       binding.note AS note
+ORDER BY priority DESC, rom, diagnostic_key, firmware_addr
+LIMIT $limit
+"""
+
 DTC_EXISTS_QUERY = """
 MATCH (code:DtcCode {code:$code})
 RETURN code.code AS code
@@ -658,6 +705,16 @@ def canonical_operation_kind(value: str) -> str:
     return re.sub(r"[\s-]+", "_", value.strip().lower())
 
 
+def canonical_binding_identifier(value: str) -> str | None:
+    code = canonical_dtc_code(value)
+    if code is not None:
+        return code.lower()
+    address = value.strip().lower()
+    if address.startswith("0x"):
+        address = address[2:]
+    return address if re.fullmatch(r"[0-9a-f]{8}", address) else None
+
+
 def nonnegative_int(value: str) -> int:
     parsed = int(value)
     if parsed < 0:
@@ -1043,6 +1100,14 @@ def parser() -> argparse.ArgumentParser:
     operation.add_argument("term", nargs="?", default="")
     operation.add_argument("--limit", type=nonnegative_int, default=100)
 
+    binding = subparsers.add_parser(
+        "binding",
+        help="list static firmware-to-diagnostic claims",
+    )
+    binding.add_argument("term", nargs="?", default="")
+    binding.add_argument("--rom", default="")
+    binding.add_argument("--limit", type=nonnegative_int, default=100)
+
     subparsers.add_parser("coverage", help="show source and ROM semantic coverage")
 
     conflicts = subparsers.add_parser(
@@ -1136,6 +1201,18 @@ def main() -> int:
                         kind_term=canonical_operation_kind(term),
                         phrases=semantic_search_phrases(term),
                         aliases=semantic_search_aliases(term),
+                        limit=args.limit,
+                    )
+                )
+            elif args.command == "binding":
+                identifier = canonical_binding_identifier(args.term)
+                rows = record_dicts(
+                    session.run(
+                        STATIC_BINDING_QUERY,
+                        term=args.term.strip(),
+                        identifier=identifier or "",
+                        is_identifier=identifier is not None,
+                        rom=args.rom.strip(),
                         limit=args.limit,
                     )
                 )

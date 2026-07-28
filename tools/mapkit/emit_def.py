@@ -45,9 +45,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DEFS = os.path.join(HERE, "..", "..", "defs")
 if __package__:
     from . import rom as romkit, tunerpro
+    from tools import diagnostic_context
 else:
     sys.path.insert(0, os.path.dirname(HERE))
     from mapkit import rom as romkit, tunerpro
+    import diagnostic_context
 
 LEVELS = ("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
 
@@ -155,6 +157,10 @@ def fetch(rom):
                 RETURN m.addr AS a, collect(DISTINCT f.addr) AS accessors
                 """, rom=rom):
             maps[r["a"]]["accessors"] = r["accessors"]
+        for address, bindings in diagnostic_context.map_bindings(
+            s, rom
+        ).items():
+            maps[address]["diagnostic_bindings"] = bindings
         axes = {r["a"]: dict(r["x"]) for r in s.run(
             "MATCH (x:Axis {rom:$rom}) RETURN x.addr AS a, x AS x", rom=rom)}
         # An edge may have more than one axis when branching selects the axis and the resolver
@@ -169,8 +175,14 @@ def fetch(rom):
                 maps[r["a"]][edge.lower()] = r["ax"]
     driver.close()
     for m in maps.values():
-        for k in ("wrappers", "kernels", "steps", "accessors", "axis_x", "axis_y"):
+        for k in (
+            "wrappers", "kernels", "steps", "accessors",
+            "axis_x", "axis_y", "diagnostic_bindings",
+        ):
             m.setdefault(k, [])
+        _, m["diagnostic_context"] = diagnostic_context.summarize(
+            m["diagnostic_bindings"]
+        )
     return maps, axes
 
 
@@ -438,6 +450,11 @@ def evidence_lines(m, axes, rom):
             scale += (f'; {lbl} {hexa(x["addr"])} {x["kind"]}'
                       + (f' [{x["scale_conf"]}]' if x["scale_conf"] else ""))
     lines.append(scale)
+    _, diagnostic = diagnostic_context.summarize(
+        m.get("diagnostic_bindings", [])
+    )
+    if diagnostic:
+        lines.append("static diagnostic context: " + "; ".join(diagnostic))
     if m["note"]:
         lines.append(m["note"])
     lines.append(f"Analysis and method - defs/{rom}.notes.md")
@@ -517,8 +534,13 @@ def masked_view_xml(m, view, ovr, axes, rom):
         f'{hexa(m["addr"])}  {shape} {m["storagetype"]}  masked view '
         f'0x{view["mask"]} [{m["confidence"]}]',
         f'Semantics source: {m["semantics"]}',
-        f"Analysis and method - defs/{rom}.notes.md",
     ]
+    _, diagnostic = diagnostic_context.summarize(
+        m.get("diagnostic_bindings", [])
+    )
+    if diagnostic:
+        lines.append("Static diagnostic context: " + "; ".join(diagnostic))
+    lines.append(f"Analysis and method - defs/{rom}.notes.md")
     attrs = [
         f'type="{dims}"',
         f'name="{att(view["name"])}"',

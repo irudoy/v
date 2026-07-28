@@ -123,3 +123,28 @@ RETURN operation.name, operation.kind, operation.ecu_id,
        operation.description, operation.conditions, operation.usage,
        operation.executable, operation.dataset_id
 ORDER BY operation.ecu_id, operation.kind, operation.name;
+
+// Reviewed firmware targets associated with one exact DTC.
+MATCH (binding:DiagnosticBinding {rom:'JK08A'})
+      -[:BINDS_DIAGNOSTIC]->(:DtcCode {code:'P0327'})
+MATCH (binding)-[:BINDS_FIRMWARE]->(firmware)
+MATCH (binding)-[:RESTS_ON {role:'diagnostic_source'}]->(source_claim)
+RETURN binding.kind, labels(firmware) AS firmware_labels,
+       firmware.addr AS firmware_addr, binding.confidence,
+       binding.applicability, binding.priority,
+       labels(source_claim) AS source_labels,
+       source_claim.id AS source_claim_id
+ORDER BY binding.priority DESC, firmware_addr;
+
+// Per-ROM static binding coverage. Confidence and source applicability remain
+// independent dimensions and must not be collapsed into one rank.
+MATCH (binding:DiagnosticBinding)
+RETURN binding.rom, binding.kind, binding.confidence,
+       binding.applicability, count(*) AS claims
+ORDER BY binding.rom, binding.kind, binding.confidence,
+         binding.applicability;
+
+// Exact-ROM DTC claims must not cross the JK08A -> JK03A exact-code relation.
+MATCH (binding:DiagnosticBinding {rom:'JK03A'})
+      -[:BINDS_DIAGNOSTIC]->(code:DtcCode)
+RETURN binding.id, code.code;

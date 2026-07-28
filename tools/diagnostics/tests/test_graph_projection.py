@@ -108,6 +108,26 @@ class DiagnosticProjectionTest(unittest.TestCase):
             ingest_diagnostics.replace_projection(object(), {}, {})
         self.assertEqual(["delete", "write", "cleanup", "audit"], calls)
 
+    def test_corpus_replacement_invalidates_static_bindings(self) -> None:
+        queries = []
+
+        class Result:
+            @staticmethod
+            def consume():
+                return None
+
+        class Transaction:
+            @staticmethod
+            def run(query, **_parameters):
+                queries.append(query)
+                return Result()
+
+        ingest_diagnostics.delete_graph_scope_claims(Transaction())
+        self.assertIn(
+            "MATCH (b:DiagnosticBinding) DETACH DELETE b",
+            queries,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
