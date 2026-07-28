@@ -2271,25 +2271,21 @@
       </table>
     </table>
 
-    <!-- 0x141F4  64 uint16  map [candidate]; entry 0x26410 (implicit, core 0x26A74)
+    <!-- 0x141F4  64 uint16  map [code]; entry 0x26410 (implicit, core 0x26A74)
          accessor 0x3A904; r4 operand: slice
          scaling x raw
          static diagnostic context: MASS AIRFLOW [candidate, homologous_vq35hr]
-         Shape 1D-64 has a single catalog match, MAF Table, and vendor concept maf-curve, but
-         the catalogs do not distinguish the two channels/banks and provide only candidate
-         confidence. Code reliably associates 000141f4 with input field ffff1e4a and sink
-         ffff1056. A physical unit and nontrivial scale are not proven; x remains raw identity.
-         Index: implicit 1D-64: q = (u16[ffff1e4a] & 4095) * 16; for q >= 0x3f00, 00026410
-         selects element 63; otherwise 00026a74 interpolates adjacent uint16 cells. Result
-         disposition: consumer (ffff1056, store site 0003a94e; consumer 0003b520). Blocking
-         condition: After structural link ffff1056 -> 0003b520, the artifact does not show the
-         exact instruction that reads ffff1056 or the downstream def-use path to a consumer
-         operation. Listing 0003b520 is absent, and the C pseudocode reports removed blocks
-         0003b5d0, 0003b60c, and 0003b630. Therefore, physical MAF semantics are not confirmed
-         by a machine trace.
+         Code proves the operational contribution role and complete machine def-use. The 1D-64
+         lookup uses q=(u16[ffff1e4a]&0x0fff)<<4, clamps at element 63, and writes B to
+         ffff1056. Stock outputs are strictly positive, so A+B is nonzero and the quotient is
+         below 256. The unique catalog-family match and homologous VQ35HR factory monitor
+         support MAF only at candidate confidence: physical sensor identity, bank/channel
+         mapping, units, and nontrivial scale remain unresolved. This branch does not produce
+         ffff3a76. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="MAF Transfer Curve - unresolved channel (0x141F4)" category="Airflow"
-           storagetype="uint16" storageaddress="0x141F4" sizex="64" endian="big">
+    <table type="2D" name="Dual-Channel Contribution Curve B - MAF candidate (0x141F4)"
+           category="Airflow" storagetype="uint16" storageaddress="0x141F4" sizex="64"
+           endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="256"/>
       <table type="Static X Axis" name="Raw input (step 256)" sizex="64">
@@ -2312,23 +2308,21 @@
       </table>
     </table>
 
-    <!-- 0x14274  64 uint16  map [candidate]; entry 0x26410 (implicit, core 0x26A74)
+    <!-- 0x14274  64 uint16  map [code]; entry 0x26410 (implicit, core 0x26A74)
          accessor 0x3A904; r4 operand: pool
          scaling x raw
          static diagnostic context: MASS AIRFLOW [candidate, homologous_vq35hr]
-         The only catalog shape match names the map MAF Table, while the A2L concept associates
-         the shape with the maf-curve family. Code confirms 64-point uint16 interpolation of
-         input ffff1e48 and a result write to ffff1054, but it does not confirm the physical
-         name, units, bank, or downstream arithmetic inside 0003b520. The map has no explicit
-         ROM axes. Index: implicit 1D-64; input=((u16@ffff1e48 & 0x0fff) << 4). Result
-         disposition: consumer (0003b520). Blocking condition: The artifact has no machine
-         listing for 0003b520: it does not show the site that reads ffff1054 or the transfer of
-         this specific value into r0/r1 before the two calls to 00021bbc. Therefore, the trace
-         cannot continue to a specific consumer operation or distinguish the target channel from
-         the second result of the same accessor.
+         Code proves the operational contribution role and complete machine def-use. The 1D-64
+         lookup uses q=(u16[ffff1e48]&0x0fff)<<4, clamps at element 63, and writes A to
+         ffff1054. Stock outputs are strictly positive, so A+B is nonzero and the quotient is
+         below 256. The unique catalog-family match and homologous VQ35HR factory monitor
+         support MAF only at candidate confidence: physical sensor identity, bank/channel
+         mapping, units, and nontrivial scale remain unresolved. This branch does not produce
+         ffff3a76. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="MAF Transfer Curve - unresolved channel (0x14274)" category="Airflow"
-           storagetype="uint16" storageaddress="0x14274" sizex="64" endian="big">
+    <table type="2D" name="Dual-Channel Contribution Curve A - MAF candidate (0x14274)"
+           category="Airflow" storagetype="uint16" storageaddress="0x14274" sizex="64"
+           endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="256"/>
       <table type="Static X Axis" name="Raw input (step 256)" sizex="64">

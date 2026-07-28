@@ -188,7 +188,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         expected = {
             "Developer Immobilizer": "NATS / Immobilizer",
             "Target AFR - Power (0xB33A)": "AFR / Lambda",
-            "MAF Transfer Curve - unresolved channel (0x141F4)": "Airflow",
+            "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)": "Airflow",
             "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
             "Engine Speed Axis [RPM] (ref)": "Reference Axes",
         }

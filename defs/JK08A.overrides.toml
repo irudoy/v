@@ -739,7 +739,7 @@ fine = 0.0000152587890625
 coarse = 0.001
 
 [table.000141f4]
-name = "MAF Transfer Curve - unresolved channel (0x141F4)"
+name = "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)"
 category = "Airflow"
 order = 137
 format = "0"
@@ -747,7 +747,7 @@ fine = 1
 coarse = 256
 
 [table.00014274]
-name = "MAF Transfer Curve - unresolved channel (0x14274)"
+name = "Dual-Channel Contribution Curve A - MAF candidate (0x14274)"
 category = "Airflow"
 order = 138
 format = "0"

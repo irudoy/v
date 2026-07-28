@@ -25,11 +25,13 @@ provenance and are not paths in the current `JK08A` layer.
 - Identification: operational. The dump identifies itself with string `JK08A` at
   address `0x8205` (= the definition's `internalidaddress`) and calibration
   `1JK08A00000`. RomRaider identifies the ROM as JK08A from the romid skeleton.
-- Initial headless export `export-JK08A` uses the byte-identical functions from
-  `export-JK03A` (`SuperH:BE:32:SH-2A`, base 0x0, 1 MiB). ROM-dependent map and axis
-  values are not copied into the export: `load_maps.py` reads them from the JK08A image
-  itself. Accessor tracing through `FindTableRefs`/`DecompileFuncs`/`DumpListing`
-  works.
+- Canonical headless export `export-JK08A-exact` comes from the separate Ghidra program
+  imported from `1JK08A-20260726-stock.bin` (`SuperH:BE:32:SH-2A`, base 0x0, 1 MiB).
+  It contains 2315 functions and 63182 xrefs. Every one of the 2312 JK03A donor entries
+  is present, while exact auto-analysis retains three additional entries. Code bytes
+  match JK03A over `0x000000..0x0081ff` and `0x020000..0x0fffff`; all 13 resolver
+  censuses have identical row sets. Legacy `export-JK08A` remains a comparison artifact
+  and is not the default ingest source.
 - Annotated at `code` confidence: three 16x16 uint8 maps
   `0xB61A/0xB71A/0xB81A` through interpolator `0x26320` are sentinel thresholds, not
   ignition maps. `0xB61A` and `0xB71A` block the branch with value `0x80`; range
@@ -126,9 +128,45 @@ provenance and are not paths in the current `JK08A` layer.
   decel/cut flag base, so it has no decel-gated advance branch; `mTKADVA` is not
   represented by any explicit-axis map. The same calculation uses `0x26370`
   (slot `0x838bc`), so decel advance through implicit-axis maps is not excluded.
-- MAF: two 1D-64 uint16 transfer curves `0x141F4`/`0x14274` are localized as
-  `candidate`; channel and physical scale are unknown. Injector latency, speed
-  limiter, and the remainder of the `0x12xxx` cluster are not annotated.
+- Paired contribution curves: 1D-64 uint16 maps `0x141F4`/`0x14274` have
+  code-level operational semantics through a complete exact-JK08A machine trace.
+  Their physical identification as MAF remains `candidate`; sensor identity,
+  bank/channel mapping, units, and nontrivial scale are unknown. Injector latency,
+  speed limiter, and the remainder of the `0x12xxx` cluster are not annotated.
+
+
+## Exact JK08A paired-contribution trace
+
+The stock image is the primary machine-evidence source. The complete 456-byte listing
+of `FUN_0003B520` closes the def-use path that was absent from the donor-derived
+artifact:
+
+- `FUN_0003A904` interpolates `0x14274` from the low 12 bits of `ffff1e48` and
+  writes output `A` to `ffff1054` at `0x3A938`. It interpolates `0x141F4` from
+  the low 12 bits of `ffff1e4a` and writes output `B` to `ffff1056` at `0x3A94E`.
+- Sites `0x3B53C..0x3B558` calculate
+  `wA=uint8(trunc0((A<<8)/(A+B)))` through signed divider `0x21BBC` and write
+  the byte to `ffff3d44`.
+- Sites `0x3B55A..0x3B572` calculate
+  `wB=uint8(trunc0((B<<8)/(A+B)))` and write it to `ffff3d45`.
+- Stock outputs of both curves are strictly positive, so `A+B` is nonzero and
+  each quotient is below 256. Initializer `FUN_00059298` sets both contribution
+  bytes to 128 before runtime recalculation.
+- A separate piecewise conversion produces unsigned common value `T=ffff2842`.
+  Sites `0x3B600..0x3B61C` write `ffff2844=(T*wA)>>8`, while
+  `0x3B624..0x3B640` write `ffff2846=(T*wB)>>8`.
+- The machine listing contains blocks `0x3B5D0`, `0x3B60C`, and `0x3B630` that
+  the decompiler removes. Their signed-correction paths are unreachable for the
+  unsigned nonnegative operands in this calculation.
+
+The contribution branch does not feed `ffff3a76`. The latter is produced by a
+separate branch in the same function from `ffff284a`/`ffff284c` through inverse pair
+`0x13202`/`0x155A0`. `FUN_0003B468` writes `ffff3a76` to `ffff1e60` when
+`ffff4246.bit6=0`; when the bit is 1 it writes ROM word `0x916C`.
+
+Code therefore proves paired contribution and partition semantics, but it does not
+prove that the physical inputs are MAF signals. The unique catalog-family match and
+homologous VQ35HR factory monitor keep the MAF binding at `candidate` confidence.
 
 
 ## Method
@@ -1087,8 +1125,8 @@ a trace. RAM axis inputs are unresolved, so the pairs' physical semantics remain
 
 Selector flags, with selector role established and semantics candidate, are bits 0/1
 of `ffff23a6`, which select the source for interpolation `0x13202`/`0x155a0` in
-FUN_0003e548, and bit6 of `ffff4242`, whose writer FUN_0003b468 forwards the
-FUN_0003b520 result to `ffff1e60` or selects ROM default `0x916c`. Consumers
+FUN_0003e548, and bit6 of `ffff4246`, which makes FUN_0003b468 forward
+`ffff3a76` to `ffff1e60` when clear or select ROM default `0x916c` when set. Consumers
 (`0x3b468`, `0x6f236`, `0x70d20`, `0x72e5e`, `0x74728`, `0x7acb4`, `0x7b2c8`,
 `0x82604`) confirm a closed throttle/airflow/torque loop: FUN_0003b468 writes
 `ffff3a76` to `ffff1e60`, which FUN_0003b498 reads back. They do not establish
