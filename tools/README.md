@@ -201,7 +201,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `ghidra/FuncAt.java` | Report the function containing an address, including entry, size, and bounds, to assign pool slots through Ghidra function boundaries. Arguments: `<addr...>` | stdout |
 | `ghidra/RefsTo.java` | Report instructions referencing an address, their functions, and reference types; the referencing instruction identifies a pool-slot owner. Arguments: `<addr...>` | stdout |
 | `ghidra/PoolUsers.java` | Report the function owning an address, pool slot or body, along with its decompilation and referencing instructions. Arguments: `<outdir> <addr...>` | `decomp_<addr>.c` |
-| `ghidra/RecoverFuncs.java` | Mark code outside functions as functions; without direct calls these regions are absent from the call graph and cannot be decompiled | Ghidra project |
+| `ghidra/RecoverFuncs.java` | Mark code outside functions as functions; optional verified hexadecimal entry seeds disassemble missing code or split an auto-analysis function that absorbed a known entry. Arguments: `[<addr>...]` | Ghidra project |
 | `ghidra/RenameFuncs.java` | Apply curated names from `symbols.csv` to project functions | Ghidra project |
 | `ghidra/symbols.csv` | Function-name registry `(addr,name,note)`, the reverse-engineering source of truth | tracked |
 | `memgraph/load_graph.py` | Load `:Func` and `:CALLS`, then Louvain over the ROM call-graph projection | Memgraph |
@@ -262,30 +262,37 @@ Decompiler data flow recovers operands: `r4` is the table base and `r5`/`r6` are
 addresses. Linear backtracking remains the gate baseline. Sections 6 and 7 of
 `map-flag-pipeline.md` describe the mechanism.
 
-The initial `export-JK08A` uses headless artifacts from exact-code donor `JK03A`: all 2312 function
-ranges were compared with no differences. The separate Memgraph layer does not inherit map values
-from that export. `load_maps.py` reads values from the registered `JK08A` dump, and the four
-different candidate curves receive their own `values_hash`. The commands below reproduce a fresh
-export from the `JK08A` Ghidra program.
+The canonical `export-JK08A-exact` is built from the owned stock image
+`1JK08A-20260726-stock.bin`. The legacy `export-JK08A`, derived from exact-code donor `JK03A`,
+is retained only as a comparison artifact. Exact-image code bytes match JK03A over
+`0x000000..0x0081ff` and `0x020000..0x0fffff`; all 2312 donor function entries are present in the
+exact program, and all 13 accessor censuses have the same row sets. The exact auto-analysis also
+retains three additional function entries. Map and axis values always come from the registered
+JK08A image. The commands below reproduce the canonical export from the separate JK08A Ghidra
+program without overwriting the donor-derived artifact.
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -import rom-images/23710-JK08A/1JK08A-20260726-stock.bin \
   -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
-D=~/tools/ghidra-projects/export-JK08A
+D=~/tools/ghidra-projects/export-JK08A-exact
 # Use a function rather than a variable: zsh does not word-split an unquoted $H, so a variable
 # invocation would silently do nothing.
 H() { tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
         -process 1JK08A-20260726-stock.bin \
         -noanalysis -scriptPath tools/ghidra "$@"; }
-# 1. Mark code outside functions and export the graph in ONE mutating run.
+# 1. Restore verified function entries absorbed by auto-analysis, mark remaining code outside
+#    functions, and export the graph in ONE mutating run. These seeds are valid because their
+#    bytes and entries were compared with the exact-code JK03A program.
 #    ExportXrefs reads the persisted marking in a separate read-only run.
-H -postScript RecoverFuncs.java -postScript ExportGraph.java "$D"
+H -postScript RecoverFuncs.java \
+  24c2 27d2c 474a4 476d2 763e2 764cc 7c166 a8a5a b7fa6 \
+  -postScript ExportGraph.java "$D"
 H -readOnly -postScript ExportXrefs.java "$D"
 #    Export exact 16-bit references for the review-only diagnostic worklist.
 H -readOnly -postScript ExportDiagnosticRefs.java "$D"
 uv run --no-project --with neo4j python \
-  tools/diagnostics/extract_static_bindings.py JK08A
+  tools/diagnostics/extract_static_bindings.py JK08A --export-dir "$D"
 # 2. Operands: run the resolver for every registered engine. Approximately 100 seconds per census.
 for K in 26944 26984 26b84 26a5c 26a60 26a64 26a74 26a7c 26a80 26a84 26a88 26740 26c1c; do
   H -readOnly -postScript ResolveAccessors.java "$D" $K
@@ -295,10 +302,10 @@ done
 #    code/silicon Func/Reg/Map/Axis property.
 #    The global diagnostic corpus must already be loaded.
 #    Order: graph -> xrefs -> maps -> code -> diagnostic bindings -> exact audit.
-uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A --export-dir "$D" --strict
+uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A --strict
 # Preflight and exact commands only, without modifying the graph:
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A \
-  --export-dir "$D" --strict --dry-run
+  --strict --dry-run
 # Exact-code JK03A uses the same live annotation set but its own export, image, map measurements,
 # and graph layer. Only diagnostic rows with rom_scope=exact-code transfer:
 uv run --no-project --with neo4j python tools/memgraph/ingest.py JK03A \

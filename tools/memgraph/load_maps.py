@@ -92,7 +92,7 @@
 #
 # Invocation: uv run --no-project --with neo4j python tools/memgraph/load_maps.py \
 #           <export_dir> <rom_label> [<registry.csv>] [<findings.csv>] [<axes.csv>]
-# Defaults: export_dir = ~/tools/ghidra-projects/export-JK08A, rom = JK08A.
+# Defaults: export_dir = ~/tools/ghidra-projects/export-JK08A-exact, rom = JK08A.
 # defs/rom-inheritance.toml resolves structural and manual-layer paths.
 import csv
 import glob
@@ -646,9 +646,9 @@ def report(rows, maps, axes, interps, kernels, accesses, dropped, taken, finding
 
 
 def main():
-    default_dir = os.path.expanduser("~/tools/ghidra-projects/export-JK08A")
-    outdir = sys.argv[1] if len(sys.argv) > 1 else default_dir
     rom = sys.argv[2] if len(sys.argv) > 2 else "JK08A"
+    default_dir = str(rom_sources.default_export_dir(rom))
+    outdir = sys.argv[1] if len(sys.argv) > 1 else default_dir
     try:
         source_model = rom_sources.resolve(rom)
         rom_sources.verify_image_binding(source_model)

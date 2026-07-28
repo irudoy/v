@@ -25,6 +25,16 @@ class RomSourcesTest(unittest.TestCase):
         self.assertEqual(model.kind, "canonical")
         self.assertFalse(model.inherited)
 
+    def test_exact_jk08a_export_is_the_canonical_default(self):
+        self.assertEqual(
+            rom_sources.default_export_dir("JK08A").name,
+            "export-JK08A-exact",
+        )
+        self.assertEqual(
+            rom_sources.default_export_dir("JK03A").name,
+            "export-JK03A",
+        )
+
     def test_exact_code_inheritance_is_explicit(self):
         digest_a = "a" * 64
         digest_b = "b" * 64

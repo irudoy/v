@@ -104,7 +104,7 @@ replaced. Run the per-ROM ingest afterward to reconstruct valid bindings:
 ```bash
 uv run --no-project --with neo4j \
   python tools/memgraph/ingest.py JK08A \
-  --export-dir ~/tools/ghidra-projects/export-JK08A --strict
+  --export-dir ~/tools/ghidra-projects/export-JK08A-exact --strict
 
 uv run --no-project --with neo4j \
   python tools/memgraph/ingest.py JK03A \
@@ -166,7 +166,7 @@ constants and instruction immediates. The extractor joins exact known service
 function:
 
 ```bash
-D=~/tools/ghidra-projects/export-JK08A
+D=~/tools/ghidra-projects/export-JK08A-exact
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -process 1JK08A-20260726-stock.bin \
   -noanalysis -readOnly -scriptPath tools/ghidra \

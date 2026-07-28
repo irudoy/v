@@ -46,9 +46,9 @@ from neo4j import GraphDatabase
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from mapkit import rom as romkit          # noqa: E402 - adjacent package is not installed
+import rom_sources  # noqa: E402
 
 BOLT = "bolt://localhost:7687"
-EXPORT = os.path.expanduser("~/tools/ghidra-projects/export-{rom}")
 
 # --- Blinding boundary ---------------------------------------------------------------
 # The queries below return component map and axis data. Their RETURN clauses form the
@@ -1605,7 +1605,7 @@ def main():
     if focus_maps and focus_axes:
         p.error("map focus and axis focus are mutually exclusive")
 
-    export_dir = args.export_dir or EXPORT.format(rom=args.rom)
+    export_dir = args.export_dir or str(rom_sources.default_export_dir(args.rom))
     image = romkit.load(args.rom)
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
     os.makedirs(args.out_dir, exist_ok=True)

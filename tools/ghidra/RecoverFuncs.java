@@ -18,7 +18,14 @@
 // the disassembler. A region that does not start at a prologue (jump-only entry) or starts
 // with a delay slot makes createFunction fail; the report counts it and leaves the region.
 //
-// Headless invocation: -postScript RecoverFuncs.java
+// Optional hexadecimal arguments seed known entry points that auto-analysis did not
+// preserve. Each seed is disassembled and grouped as a function before the normal
+// outside-function pass. If auto-analysis attached the seed to a function with a different
+// entry, that function is removed and recreated on both verified entries in one transaction.
+// Use seeds only after the target bytes and addresses have been verified against their
+// evidence source.
+//
+// Headless invocation: -postScript RecoverFuncs.java [<addr>...]
 // With -readOnly the pass calculates and reports results but does not save definitions to the
 // project (dry run). Without -readOnly, headless analysis saves them for the next ExportGraph.
 //@category VQ
@@ -49,6 +56,7 @@ public class RecoverFuncs extends GhidraScript {
         println("VQ_RF input: " + funcBefore + " functions, " + insBefore
                 + " instructions outside functions in " + regBefore + " regions");
 
+        int seeded = recoverSeeds(getScriptArgs());
         int made = 0, failed = 0;
         for (int pass = 1; pass <= MAX_PASS; pass++) {
             if (monitor.isCancelled()) break;
@@ -78,7 +86,8 @@ public class RecoverFuncs extends GhidraScript {
 
         int insAfter = countOutside();
         List<Address> left = regionStarts();
-        println("VQ_RF functions created: " + made + ", total functions: "
+        println("VQ_RF functions created: seeded=" + seeded + ", regions=" + made
+                + ", total functions: "
                 + fm.getFunctionCount());
         println("VQ_RF instructions outside functions: " + insBefore + " -> " + insAfter
                 + " (regions " + regBefore + " -> " + left.size() + ", failures " + failed + ")");
@@ -88,6 +97,79 @@ public class RecoverFuncs extends GhidraScript {
                     + (ins == null ? "" : "  " + ins.toString()));
         }
         if (left.size() > 20) println("  ... " + (left.size() - 20) + " more regions");
+    }
+
+    int recoverSeeds(String[] args) {
+        int made = 0, split = 0, skipped = 0, failed = 0;
+        for (String arg : args) {
+            if (monitor.isCancelled()) break;
+            Address st;
+            try {
+                st = currentProgram.getAddressFactory().getDefaultAddressSpace()
+                        .getAddress(Long.parseLong(arg, 16));
+            } catch (Exception e) {
+                println("VQ_RF bad seed " + arg);
+                failed++;
+                continue;
+            }
+
+            Function exact = fm.getFunctionAt(st);
+            if (exact != null) {
+                println("VQ_RF seed " + st + " already exists");
+                skipped++;
+                continue;
+            }
+
+            Function containing = fm.getFunctionContaining(st);
+            Address displaced = containing == null ? null : containing.getEntryPoint();
+            int tx = currentProgram.startTransaction("recover-func-seed");
+            boolean ok = false;
+            try {
+                if (displaced != null && !fm.removeFunction(displaced)) {
+                    println("VQ_RF seed " + st + " could not remove covering function "
+                            + displaced);
+                    throw new IllegalStateException("covering function removal failed");
+                }
+                Instruction ins = listing.getInstructionAt(st);
+                if (ins == null && !disassemble(st)) {
+                    println("VQ_RF seed " + st + " could not be disassembled");
+                } else {
+                    ok = createFunction(st, null) != null;
+                    if (ok && displaced != null) {
+                        Function restored = fm.getFunctionAt(displaced);
+                        if (restored == null) {
+                            if (fm.getFunctionContaining(displaced) != null
+                                    || createFunction(displaced, null) == null) {
+                                println("VQ_RF seed " + st
+                                        + " could not restore displaced entry " + displaced);
+                                ok = false;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                ok = false;
+            } finally {
+                currentProgram.endTransaction(tx, ok);
+            }
+            if (ok) {
+                if (displaced == null) {
+                    println("VQ_RF seed " + st + " created");
+                } else {
+                    println("VQ_RF seed " + st + " split from " + displaced);
+                    split++;
+                }
+                made++;
+            } else {
+                println("VQ_RF seed " + st + " failed");
+                failed++;
+            }
+        }
+        if (args.length > 0) {
+            println("VQ_RF seeds: requested=" + args.length + ", created=" + made
+                    + ", split=" + split + ", existing=" + skipped + ", failed=" + failed);
+        }
+        return made;
     }
 
     // Starts of contiguous instruction regions outside functions: an instruction outside a

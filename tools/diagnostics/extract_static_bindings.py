@@ -258,7 +258,7 @@ def parser() -> argparse.ArgumentParser:
     result.add_argument(
         "--export-dir",
         type=Path,
-        help="Ghidra export directory; default: ~/tools/ghidra-projects/export-<rom>",
+        help="Ghidra export directory; default: canonical directory registered for the ROM",
     )
     result.add_argument(
         "--output",
@@ -273,7 +273,7 @@ def main() -> int:
     export_dir = (
         args.export_dir.expanduser().resolve()
         if args.export_dir
-        else Path(f"~/tools/ghidra-projects/export-{args.rom}").expanduser()
+        else rom_sources.default_export_dir(args.rom)
     )
     output = (
         args.output.expanduser().resolve()

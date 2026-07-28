@@ -12,6 +12,10 @@ import tomllib
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REGISTRY = ROOT / "defs" / "rom-inheritance.toml"
 IMAGE_REGISTRY = ROOT / "rom-images" / "roms.csv"
+EXPORT_ROOT = Path("~/tools/ghidra-projects").expanduser()
+EXACT_EXPORT_NAMES = {
+    "JK08A": "export-JK08A-exact",
+}
 ROM_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 KINDS = frozenset({"exact-code"})
@@ -157,6 +161,13 @@ def resolve(rom, path=DEFAULT_REGISTRY):
         rom,
         SourceModel(target=rom, source=rom, kind="canonical"),
     )
+
+
+def default_export_dir(rom):
+    """Return the canonical Ghidra export directory for a ROM label."""
+    if not isinstance(rom, str) or not ROM_RE.fullmatch(rom):
+        raise SourceModelError(f"invalid ROM label {rom!r}")
+    return EXPORT_ROOT / EXACT_EXPORT_NAMES.get(rom, f"export-{rom}")
 
 
 def definition_paths(model):

@@ -81,7 +81,19 @@ def read_rows(path, expected):
             raise LoadError(
                 f"{path}: header {reader.fieldnames}; expected {expected}"
             )
-        return list(reader)
+        rows = []
+        for line_number, row in enumerate(reader, 2):
+            if None in row:
+                raise LoadError(
+                    f"{path}:{line_number}: row has extra columns {row[None]!r}"
+                )
+            missing = [field for field, value in row.items() if value is None]
+            if missing:
+                raise LoadError(
+                    f"{path}:{line_number}: row is missing columns {missing}"
+                )
+            rows.append(row)
+        return rows
 
 
 def check_unique(rows, path):

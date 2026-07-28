@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import tempfile
 import types
 import unittest
 
@@ -81,6 +82,25 @@ class ExportValidationTest(unittest.TestCase):
                 "provenance_report.py",
             ],
         )
+
+
+class SourceCsvValidationTest(unittest.TestCase):
+    def source(self, text):
+        temp = tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False)
+        self.addCleanup(Path(temp.name).unlink, missing_ok=True)
+        temp.write(text)
+        temp.close()
+        return temp.name
+
+    def test_extra_columns_are_rejected_before_projection(self):
+        path = self.source("addr,role\n00000010,driver,extra\n")
+        with self.assertRaisesRegex(load_code.LoadError, "extra columns"):
+            load_code.read_rows(path, ["addr", "role"])
+
+    def test_missing_columns_are_rejected_before_projection(self):
+        path = self.source("addr,role\n00000010\n")
+        with self.assertRaisesRegex(load_code.LoadError, "missing columns"):
+            load_code.read_rows(path, ["addr", "role"])
 
 
 class FakeTransaction:
