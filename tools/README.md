@@ -81,7 +81,7 @@ loader and canonical trace storage are added.
 - `8192`+ - GhydraMCP plugin HTTP ports: the first CodeBrowser uses 8192, the second 8193, and so
   on; the bridge discovers them automatically.
 - `7687` - Memgraph Bolt for the `neo4j` driver and Lab; `7444` - log streaming to Lab.
-- `3000` - Memgraph Lab UI at http://localhost:3000.
+- `3100` - Memgraph Lab UI at http://localhost:3100.
 - Memgraph ports are explicitly bound to `127.0.0.1`, the IPv4 loopback, and the stack runs in the
   Docker Desktop context. A second stack in another context such as Lima or colima could occupy
   `127.0.0.1` and push Docker Desktop to IPv6 (`::1`), causing IPv4-first `localhost` and Lab to
@@ -109,6 +109,18 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -import rom-images/23710-1ND0A/11ND0A-20260715-stock.bin \
   -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
 ```
+
+### Memgraph startup metadata recovery
+
+If Memgraph exits because a RocksDB `MANIFEST` references a missing `.ldb`
+under `settings`, `auth`, `databases/.durability`, or `telemetry`, stop the
+Memgraph service before changing the bind mount. Rename only the exact
+directory named by the error to a sibling with a
+`.corrupt-YYYYMMDD-HHMMSS` suffix, then start the service again. The renamed
+directory is retained for inspection and rollback. Do not move or delete
+`snapshots/` or `wal/`: graph recovery uses those directories. Verify Bolt
+with `RETURN 1` before running a loader, and confirm that the container restart
+count remains stable.
 
 ## Memgraph MCP (agent graph access)
 
@@ -198,6 +210,9 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `memgraph/load_a2l.py` | Load `:A2LEntry` from `A2L.xml` as an address-free, ROM-independent HR-family reference for maps, scalars, and switches | Memgraph |
 | `memgraph/load_code.py` | Load the claim-specific layer from canonical `funcs.csv`, `vars.csv`, `findings.csv`, and `axes.csv`: claim properties, exact `:RESTS_ON` projection, and `(:Rom)-[:ANNOTATIONS_FROM]->(:Rom)`; `code`/`silicon` requires factual evidence for every Func/Reg/Map/Axis property; run last after target owners | Memgraph |
 | `memgraph/ingest.py` | Complete target-ROM ingest: offline source, export, and image preflight followed by `load_graph -> load_xrefs -> load_maps -> load_code -> provenance audit`; `--dry-run` leaves the graph unchanged and `--strict` also requires effective confidence and grounding | Memgraph |
+| `memgraph/ingest_diagnostics.py` | Validate and load the source-preserving DTC, diagnostic request, parameter, operation, and CAN claim layer without modifying code or calibration nodes | Memgraph |
+| `memgraph/diagnostics_queries.cypher` | Query catalog for ROM DTC coverage, source conflicts, diagnostic parameters, and CAN routes | tracked |
+| `diagnostics/*.py` | Deterministic ESM, ROM, and pinned public-source importers plus the read-only diagnostic query CLI and hardware-verified DBC export | tracked CSV/JSONL, Memgraph reads |
 | `memgraph/backup.py` | Final agent-workflow step: check the 24-hour interval and SMB mount, then write `DUMP DATABASE`, native snapshot, manifest, and SHA-256 directly to NAS | NAS |
 | `memgraph/provenance_report.py` | Read-only exact audit, weakest path, and reverse impact over complete claim identity; `--strict` enables effective-confidence and grounding gates | stdout |
 | `memgraph/queries.cypher` | Query catalog for maps, sweep components, projection centrality, reference catalogs, and individual structural gates. `provenance_report.py` performs claim-specific exact audits. Parameter: `$rom` | tracked |

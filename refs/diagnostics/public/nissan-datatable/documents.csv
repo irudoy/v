@@ -1,0 +1,2 @@
+id,dataset_id,filename,title,kind,sha256,page_count,license,applicability_status
+generic-nissan-datatable-2003-v1:nissandatatable,generic-nissan-datatable-2003-v1,NissanDatatable.pdf,Generic Nissan Engine ECU Register Table,source_file,1b9e8d5bb61b215d5995c8c0c958a778fddf286eac71368c23b640e941c285ae,7,unspecified,generic_legacy

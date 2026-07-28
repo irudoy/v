@@ -1,0 +1,34 @@
+dataset_id = "vq-hr-sh7058-rom-dtc-v1"
+
+[[layout]]
+rom = "JK08A"
+descriptor_start = 0x19360
+record_size = 12
+count = 297
+code_offset = 6
+pointer_start = 0x1A14C
+pointer_size = 4
+attribute_size = 2
+expected_unique = 227
+
+[[layout]]
+rom = "JK03A"
+descriptor_start = 0x19360
+record_size = 12
+count = 297
+code_offset = 6
+pointer_start = 0x1A14C
+pointer_size = 4
+attribute_size = 2
+expected_unique = 227
+
+[[layout]]
+rom = "JK00D"
+descriptor_start = 0x1C500
+record_size = 12
+count = 295
+code_offset = 6
+pointer_start = 0x1D2D4
+pointer_size = 4
+attribute_size = 2
+expected_unique = 225

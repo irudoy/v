@@ -1,0 +1,14 @@
+id = "vq-hr-sh7058-rom-dtc-v1"
+kind = "silicon_inventory"
+title = "VQ HR SH7058 ROM DTC descriptor catalogs"
+license = "project_data"
+vehicle_id = "vq-hr-rom-corpus"
+applicability_status = "exact_rom"
+source_tier = "silicon"
+expected_documents = 3
+expected_descriptors = 889
+
+[expected_unique_dtc]
+JK00D = 225
+JK03A = 227
+JK08A = 227

@@ -9,7 +9,7 @@
 #
 # Start:  docker compose -f tools/memgraph/docker-compose.yml up -d
 # Stop:   docker compose -f tools/memgraph/docker-compose.yml down
-# Lab UI: http://localhost:3000   Bolt: bolt://localhost:7687 (empty authentication)
+# Lab UI: http://localhost:3100   Bolt: bolt://localhost:7687 (empty authentication)
 #
 # Persistence: data (snapshots + WAL) lives in bind mount ./data
 #   (= tools/memgraph/data, ignored by git). It survives container recreation and does not
@@ -38,7 +38,7 @@ services:
     image: memgraph/lab:latest
     container_name: vq-memgraph-lab
     ports:
-      - "127.0.0.1:3000:3000"   # web UI: http://localhost:3000
+      - "127.0.0.1:3100:3000"   # web UI: http://localhost:3100
     depends_on:
       - memgraph
     environment:

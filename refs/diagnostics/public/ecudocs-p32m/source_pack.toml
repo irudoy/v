@@ -1,0 +1,17 @@
+id = "ecudocs-p32m-997c5a9"
+kind = "community_definition"
+title = "ecudocs.com N_P32M_ECM_TR25_20080313"
+source_url = "https://github.com/laravelcompany/ecudocs.com"
+revision = "997c5a98b4f7fe5a7dfebfeeaefce1710a11f385"
+revision_date = "2026-07-14T04:52:42+01:00"
+license = "GPL-3.0"
+vehicle_id = "nissan-p32m-tr25-2008"
+platform = "P32M"
+engine = "TR25"
+applicability_status = "homologous_profile"
+source_tier = "community"
+expected_documents = 1
+expected_parameters = 1226
+expected_requests = 104
+expected_service_22 = 64
+expected_request_parameter_links = 698

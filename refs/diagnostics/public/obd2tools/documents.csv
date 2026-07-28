@@ -1,0 +1,3 @@
+id,dataset_id,filename,title,kind,sha256,source_url,revision,license,applicability_status
+obd2tools-d27c9a2:pids-parsed-py,obd2tools-d27c9a2,pids/parsed.py,parsed.py,source_file,5d8896488ce4f8330cb6edb5b4ff1e7a93c8e05fcc8122f0d399320c4caeed76,https://github.com/elvisfox/obd2tools/blob/d27c9a203a03cf02b953f1bb06c79f7bb5885d53/pids/parsed.py,d27c9a203a03cf02b953f1bb06c79f7bb5885d53,unspecified,nissan_family_candidate
+obd2tools-d27c9a2:pids-nissan-py,obd2tools-d27c9a2,pids/nissan.py,nissan.py,source_file,5fc4c6dce58aed9f3445e0c199e644a9b1bb1a7cbdbcab59c592aca60fbced04,https://github.com/elvisfox/obd2tools/blob/d27c9a203a03cf02b953f1bb06c79f7bb5885d53/pids/nissan.py,d27c9a203a03cf02b953f1bb06c79f7bb5885d53,unspecified,nissan_family_candidate

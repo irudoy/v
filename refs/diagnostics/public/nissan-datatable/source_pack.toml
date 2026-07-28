@@ -1,0 +1,14 @@
+id = "generic-nissan-datatable-2003-v1"
+kind = "community_reference"
+title = "Generic Nissan Engine ECU Register Table"
+publication_date = "2003-11-16"
+authors = "TJ & MC"
+license = "unspecified"
+vehicle_id = "generic-nissan-legacy"
+applicability_status = "generic_legacy"
+source_tier = "community"
+expected_documents = 1
+expected_pages = 7
+expected_parameters = 93
+expected_operations = 40
+expected_requests = 17

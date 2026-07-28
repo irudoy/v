@@ -113,6 +113,11 @@ repository records a pointer to their local iCloud Drive path. They support
 precise identification of node mechanics and logic through factory circuit
 diagrams, connector pinouts, and system-operation descriptions.
 
+Machine-readable diagnostic projections from these documents, exact ROMs, and
+pinned public sources are versioned under `diagnostics/`. Their scope,
+provenance contract, source revisions, and completeness boundary are documented
+in `diagnostics/README.md`.
+
 - **Nissan ESM - 2007 Infiniti G35 Sedan (V36), VQ35HR engine.** Complete factory
   service manual with 56 PDFs across all systems. Because the 2007 G35 Sedan
   uses VQ35HR, its ECM section is a reference for the homologous NATS
