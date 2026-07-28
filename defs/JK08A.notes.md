@@ -80,10 +80,11 @@ provenance and are not paths in the current `JK08A` layer.
 - Definitions `JK08A.xml` and `JK08A.xdf` are graph projections from
   `tools/mapkit/emit_def.py` plus presentation layer `JK08A.overrides.toml`: names,
   categories, ordering, and editor steps. They emit what can be interpreted: `table`
-  role, semantics, and scale. Two supporting axes are emitted separately. A map below
-  `code` confidence goes into a `(candidate)` category, while a scale below `code`
-  confidence receives suffix `[cand]` in its units; address and multiplier are
-  separate claims. Manual XML or XDF edits do not survive regeneration.
+  role, semantics, and scale. Two supporting axes are emitted separately. Categories
+  remain functional at every confidence level. A map below `code` is marked
+  `[candidate]` in the generated evidence comment, while a scale below `code`
+  receives suffix `[cand]` in its units; address and multiplier are separate claims.
+  Manual XML or XDF edits do not survive regeneration.
 - Annotated at `code` confidence: `0xA29A` is a Fuel Compensation Map. Its unsigned
   byte is used in fuel calculation as a multiplicative correction; A2L defines scale
   `x*0.78125%` with neutral raw 128 = 100%. `0xB33A` is a control offset table with
@@ -2580,7 +2581,8 @@ The function layer gains ten new Func semantics claims at `code`: `0x38618`, `0x
 `0xBDC66`. Rows `0x522C4`, `0x52576`, and `0x71650` gain operational semantics and
 evidence. Function contracts do not change; `funcs.csv` contains 257 manually curated
 rows. The presentation layer gains 21 `table` maps at orders 182-202; the three
-`candidate` maps are in the `Internal Calculations (candidate)` category.
+`candidate` maps use the functional `Internal Calculations` category and retain
+their confidence in generated evidence comments.
 
 The post-batch snapshot contains 373 findings: 289 `code` and 84 `candidate`. The
 catalog contains 439 maps: 289 `code` and 150 `candidate`; semantics are defined for 369

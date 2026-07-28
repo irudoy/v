@@ -33,9 +33,9 @@ version = "WIP"
 [rom.comment]
 text = """
 Analysis and method: defs/JK08A.notes.md. Each table's confidence is recorded in
-its comment. A category ending in (candidate) denotes a map identified without a
-trace. Units ending in [cand] use a multiplier from the A2L catalog or data shape
-that has not been confirmed by code.
+its comment. Categories group tables by function and do not encode confidence.
+Units ending in [cand] use a multiplier from the A2L catalog or data shape that
+has not been confirmed by code.
 """
 
 [[checksum]]
@@ -99,7 +99,7 @@ coarse = 3.125
 
 [table.0000991a]
 name = "Cold Ignition Timing Map (0x991A)"
-category = "Ignition Timing / Main (traced)"
+category = "Ignition Timing / Main"
 order = 10
 mask = "7F"
 format = "0"
@@ -108,7 +108,7 @@ coarse = 4
 
 [table.00009a1a]
 name = "High Octane Ignition Timing Map (0x9A1A)"
-category = "Ignition Timing / Main (traced)"
+category = "Ignition Timing / Main"
 order = 11
 mask = "7F"
 format = "0"
@@ -117,7 +117,7 @@ coarse = 4
 
 [table.00009b1a]
 name = "High Detonation Ignition Timing Map (0x9B1A)"
-category = "Ignition Timing / Main (traced)"
+category = "Ignition Timing / Main"
 order = 12
 mask = "7F"
 format = "0"
@@ -127,7 +127,7 @@ coarse = 4
 [[masked_view]]
 source = "0000991a"
 name = "Cold Ignition Timing Map Knock Window (0x991A bit7)"
-category = "Ignition Timing / Knock Control / Main (traced)"
+category = "Ignition Timing / Knock Control / Main"
 mask = "80"
 units = "Knock Window (0: Off | 1: On)"
 expression = "x"
@@ -139,7 +139,7 @@ coarse = 1
 [[masked_view]]
 source = "00009a1a"
 name = "High Octane Ignition Timing Map Knock Window (0x9A1A bit7)"
-category = "Ignition Timing / Knock Control / Main (traced)"
+category = "Ignition Timing / Knock Control / Main"
 mask = "80"
 units = "Knock Window (0: Off | 1: On)"
 expression = "x"
@@ -151,7 +151,7 @@ coarse = 1
 [[masked_view]]
 source = "00009b1a"
 name = "High Detonation Ignition Timing Map Knock Window (0x9B1A bit7)"
-category = "Ignition Timing / Knock Control / Main (traced)"
+category = "Ignition Timing / Knock Control / Main"
 mask = "80"
 units = "Knock Window (0: Off | 1: On)"
 expression = "x"
@@ -162,7 +162,7 @@ coarse = 1
 
 [table.0000a29a]
 name = "Fuel Compensation Map (0xA29A)"
-category = "Fuel Delivery / Main (traced)"
+category = "Fuel Delivery / Main"
 order = 20
 format = "0.00"
 fine = 0.78125
@@ -170,7 +170,7 @@ coarse = 3.125
 
 [table.0000b33a]
 name = "Target AFR - Power (0xB33A)"
-category = "AFR / Lambda (traced)"
+category = "AFR / Lambda"
 order = 21
 format = "0.00"
 fine = 0.1
@@ -178,7 +178,7 @@ coarse = 0.5
 
 [table.0000abba]
 name = "Knock Sensor Circuit Monitor Surface A (0xABBA)"
-category = "Diagnostics / Knock Sensor Monitor (traced)"
+category = "Diagnostics / Knock Sensor Monitor"
 order = 30
 format = "0"
 fine = 1
@@ -186,7 +186,7 @@ coarse = 8
 
 [table.0000abfa]
 name = "Knock Sensor Circuit Monitor Surface B (0xABFA)"
-category = "Diagnostics / Knock Sensor Monitor (traced)"
+category = "Diagnostics / Knock Sensor Monitor"
 order = 31
 format = "0"
 fine = 1
@@ -194,13 +194,13 @@ coarse = 8
 
 [table.0000ab0a]
 name = "Filter Target Additive Correction (0xAB0A)"
-category = "Filters (traced)"
+category = "Filters"
 order = 32
 coarse = 4
 
 [table.0000b23a]
 name = "Filter Weight - new-sample share Q16 (0xB23A)"
-category = "Filters (traced)"
+category = "Filters"
 order = 33
 format = "0.000000"
 fine = 0.0000152587890625
@@ -208,7 +208,7 @@ coarse = 0.00006103515625
 
 [table.0001108e]
 name = "Knock Slice Map - active bank (0x1108E)"
-category = "Ignition Timing / Knock Control / Thresholds (traced)"
+category = "Ignition Timing / Knock Control / Thresholds"
 order = 40
 format = "0.000"
 fine = 0.0015259
@@ -238,7 +238,7 @@ static_axis_y = [1, 2, 3, 4, 5, 6]
 
 [table.00008fdc]
 name = "Rev Limit - Fuel Cut Maximum (0x8FDC)"
-category = "Limiters (traced)"
+category = "Limiters"
 order = 40
 fine = 12
 coarse = 125
@@ -248,19 +248,19 @@ static_axis = ["cut (bit7=0)", "restore (bit7=1)"]
 
 [table.000121fe]
 name = "Over Run Fuel Cut threshold (0x121FE)"
-category = "Limiters (traced)"
+category = "Limiters"
 order = 41
 coarse = 4
 
 [table.0001236a]
 name = "Fuel enrichment vs MBT-like axis (0x1236A)"
-category = "Fuel (traced)"
+category = "Fuel"
 order = 50
 coarse = 4
 
 [table.0001491a]
 name = "Calculated Load Reference - 100% point (0x1491A)"
-category = "Load (traced)"
+category = "Load"
 order = 60
 format = "0.000"
 fine = 0.001
@@ -268,7 +268,7 @@ coarse = 0.01
 
 [table.00014e52]
 name = "Filter Weight - new-sample share Q16 (0x14E52)"
-category = "Filters (traced)"
+category = "Filters"
 order = 70
 format = "0.0000"
 fine = 0.001
@@ -276,7 +276,7 @@ coarse = 0.01
 
 [table.00013ce8]
 name = "Internal Subtractive Correction (0x13CE8)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 80
 format = "0"
 fine = 1
@@ -292,7 +292,7 @@ coarse = 16
 
 [table.00014cba]
 name = "Negative Branch Multiplier (0x14CBA)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 82
 format = "0"
 fine = 1
@@ -308,7 +308,7 @@ coarse = 16
 
 [table.00015306]
 name = "Nonnegative Branch Multiplier (0x15306)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 84
 format = "0"
 fine = 1
@@ -316,7 +316,7 @@ coarse = 16
 
 [table.000153a0]
 name = "Negative Branch Multiplier (0x153A0)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 85
 format = "0"
 fine = 1
@@ -324,7 +324,7 @@ coarse = 16
 
 [table.0001198e]
 name = "Signed Weighted Reference Term - raw u8 (0x1198E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 86
 format = "0"
 fine = 1
@@ -332,7 +332,7 @@ coarse = 16
 
 [table.00011e46]
 name = "Composite Product Multiplier A - raw u8 (0x11E46)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 87
 format = "0"
 fine = 1
@@ -350,7 +350,7 @@ coarse = 0.0625
 # only the value role confirmed by code. Their physical names are unresolved.
 [table.00011e9e]
 name = "Saturated Difference Minuend - raw u8 (0x11E9E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 89
 format = "0"
 fine = 1
@@ -358,7 +358,7 @@ coarse = 16
 
 [table.00011f2a]
 name = "Intermediate Coefficient Multiplier - raw u8 (0x11F2A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 90
 format = "0"
 fine = 1
@@ -366,7 +366,7 @@ coarse = 16
 
 [table.00012042]
 name = "Unsigned Product Multiplier - raw u8 (0x12042)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 91
 format = "0"
 fine = 1
@@ -398,7 +398,7 @@ coarse = 16
 
 [table.000122f2]
 name = "Centered Blend Coefficient Q0.7 (0x122F2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 95
 format = "0.0000"
 fine = 0.0078125
@@ -406,7 +406,7 @@ coarse = 0.0625
 
 [table.000123c2]
 name = "Four-Factor Product Multiplier - raw u8 (0x123C2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 96
 format = "0"
 fine = 1
@@ -414,7 +414,7 @@ coarse = 16
 
 [table.000123d2]
 name = "Accumulator Base Term - internal u16 (0x123D2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 97
 format = "0"
 fine = 256
@@ -422,7 +422,7 @@ coarse = 4096
 
 [table.00012462]
 name = "Linear Transition Target and Upper Clamp (0x12462)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 98
 format = "0"
 fine = 1
@@ -430,7 +430,7 @@ coarse = 16
 
 [table.000124d2]
 name = "Accumulator Additive Correction (0x124D2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 99
 format = "0"
 fine = 1
@@ -446,7 +446,7 @@ coarse = 16
 
 [table.00012704]
 name = "Normalized-Byte Multiplier - raw u8 (0x12704)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 101
 format = "0"
 fine = 1
@@ -454,7 +454,7 @@ coarse = 16
 
 [table.00012768]
 name = "Consumer Multiplier Curve - catalog RPM scale (0x12768)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 102
 format = "0.0"
 fine = 12.5
@@ -462,7 +462,7 @@ coarse = 50
 
 [table.00012798]
 name = "Paired Normalization Curve A - catalog RPM scale (0x12798)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 103
 format = "0"
 fine = 25
@@ -470,7 +470,7 @@ coarse = 100
 
 [table.000127d8]
 name = "Paired Normalization Curve B - raw u8 (0x127D8)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 104
 format = "0"
 fine = 1
@@ -478,7 +478,7 @@ coarse = 16
 
 [table.00012808]
 name = "Weighted Calculation Multiplier A (0x12808)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 105
 format = "0"
 fine = 2
@@ -489,7 +489,7 @@ coarse = 16
 # signals for the internal calculations are unresolved.
 [table.00012930]
 name = "Signed Quotient Numerator Multiplier - raw u8 (0x12930)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 106
 format = "0"
 fine = 1
@@ -497,7 +497,7 @@ coarse = 16
 
 [table.0001298c]
 name = "Conditional Saturating Offset Curve - catalog RPM scale (0x1298C)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 107
 format = "0"
 fine = 25
@@ -505,7 +505,7 @@ coarse = 100
 
 [table.000129e2]
 name = "Normalized Reduction Share A Q0.8 (0x129E2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 108
 format = "0.0000"
 fine = 0.00390625
@@ -513,7 +513,7 @@ coarse = 0.0625
 
 [table.000129f2]
 name = "Saturating Reduction Addend B - raw u8 (0x129F2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 109
 format = "0"
 fine = 1
@@ -521,7 +521,7 @@ coarse = 16
 
 [table.00012a02]
 name = "Signed Difference Reference Term - raw u8 (0x12A02)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 110
 format = "0"
 fine = 1
@@ -529,7 +529,7 @@ coarse = 16
 
 [table.00012c02]
 name = "Internal Product Coefficient Q0.7 (0x12C02)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 111
 format = "0.0000"
 fine = 0.0078125
@@ -545,7 +545,7 @@ coarse = 16
 
 [table.00012c56]
 name = "Composite Product Multiplier - raw u8 (0x12C56)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 113
 format = "0"
 fine = 1
@@ -553,7 +553,7 @@ coarse = 16
 
 [table.00012d22]
 name = "Batch Scale Multiplier A - raw u8 (0x12D22)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 114
 format = "0"
 fine = 1
@@ -561,7 +561,7 @@ coarse = 16
 
 [table.00012d32]
 name = "Batch Scale Multiplier B - raw u8 (0x12D32)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 115
 format = "0"
 fine = 1
@@ -569,7 +569,7 @@ coarse = 16
 
 [table.00012d42]
 name = "Batch Scale Multiplier C - raw u8 (0x12D42)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 116
 format = "0"
 fine = 1
@@ -577,7 +577,7 @@ coarse = 16
 
 [table.00012d52]
 name = "Batch Scale Multiplier D - raw u8 (0x12D52)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 117
 format = "0"
 fine = 1
@@ -585,7 +585,7 @@ coarse = 16
 
 [table.00012d62]
 name = "Batch Scale Multiplier E - raw u8 (0x12D62)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 118
 format = "0"
 fine = 1
@@ -593,7 +593,7 @@ coarse = 16
 
 [table.00012d72]
 name = "Input-shaping Coefficient Q0.7 (0x12D72)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 119
 format = "0.0000"
 fine = 0.0078125
@@ -601,7 +601,7 @@ coarse = 0.0625
 
 [table.00012d8a]
 name = "Additive Initialization Term - raw u8 (0x12D8A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 120
 format = "0"
 fine = 1
@@ -609,7 +609,7 @@ coarse = 16
 
 [table.00012dd2]
 name = "Composite Correction Multiplier Q0.7 (0x12DD2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 121
 format = "0.0000"
 fine = 0.0078125
@@ -617,7 +617,7 @@ coarse = 0.0625
 
 [table.0001465a]
 name = "Saturating Pair Base Term - catalog opening-area scale (0x1465A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 122
 format = "0.0000"
 fine = 0.0008
@@ -625,7 +625,7 @@ coarse = 0.008
 
 [table.00014bfa]
 name = "Minimum-selected Product Multiplier - raw u16 (0x14BFA)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 123
 format = "0"
 fine = 1
@@ -641,7 +641,7 @@ coarse = 256
 
 [table.00015022]
 name = "High-range Quotient Divisor - raw u16 (0x15022)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 125
 format = "0"
 fine = 1
@@ -649,7 +649,7 @@ coarse = 256
 
 [table.00015042]
 name = "Low-range Piecewise Source - raw u16 (0x15042)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 126
 format = "0"
 fine = 1
@@ -665,7 +665,7 @@ coarse = 0.00976563
 
 [table.00018c96]
 name = "Saturating Pair Base Term - catalog opening-area scale (0x18C96)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 128
 format = "0.0000"
 fine = 0.0008
@@ -673,7 +673,7 @@ coarse = 0.008
 
 [table.00019190]
 name = "Composite Product Multiplier - catalog torque-ratio scale (0x19190)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 129
 format = "0.000000"
 fine = 0.000976563
@@ -700,7 +700,7 @@ coarse = 4
 
 [table.00012522]
 name = "Positive Difference Coefficient /100 (0x12522)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 132
 format = "0.00"
 fine = 0.01
@@ -708,7 +708,7 @@ coarse = 0.1
 
 [table.00012526]
 name = "Negative Difference Coefficient /100 (0x12526)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 133
 format = "0.00"
 fine = 0.01
@@ -716,7 +716,7 @@ coarse = 0.1
 
 [table.0001292c]
 name = "Local Limit Base Term - raw u8 (0x1292C)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 134
 format = "0"
 fine = 1
@@ -724,7 +724,7 @@ coarse = 16
 
 [table.000153b0]
 name = "Blend Coefficient Step A Q0.16 (0x153B0)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 135
 format = "0.000000"
 fine = 0.0000152587890625
@@ -732,7 +732,7 @@ coarse = 0.001
 
 [table.000153b8]
 name = "Blend Coefficient Step B Q0.16 (0x153B8)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 136
 format = "0.000000"
 fine = 0.0000152587890625
@@ -740,7 +740,7 @@ coarse = 0.001
 
 [table.000141f4]
 name = "MAF Transfer Curve - unresolved channel (0x141F4)"
-category = "Airflow (candidate)"
+category = "Airflow"
 order = 137
 format = "0"
 fine = 1
@@ -748,7 +748,7 @@ coarse = 256
 
 [table.00014274]
 name = "MAF Transfer Curve - unresolved channel (0x14274)"
-category = "Airflow (candidate)"
+category = "Airflow"
 order = 138
 format = "0"
 fine = 1
@@ -756,7 +756,7 @@ coarse = 256
 
 [table.00011e56]
 name = "Four-Factor Product Multiplier B Q0.8 (0x11E56)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 139
 format = "0.0000"
 fine = 0.00390625
@@ -764,7 +764,7 @@ coarse = 0.0625
 
 [table.00011f12]
 name = "Branching Saturated Calculation Base (0x11F12)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 140
 format = "0"
 fine = 1
@@ -772,7 +772,7 @@ coarse = 16
 
 [table.00011f1a]
 name = "Conditional Subtractive Term (0x11F1A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 141
 format = "0"
 fine = 1
@@ -780,7 +780,7 @@ coarse = 16
 
 [table.00011f22]
 name = "Conditional Additive Term (0x11F22)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 142
 format = "0"
 fine = 1
@@ -788,7 +788,7 @@ coarse = 16
 
 [table.00011fbe]
 name = "Composite 7-bit Base / Multiplier (0x11FBE)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 143
 format = "0"
 fine = 1
@@ -796,7 +796,7 @@ coarse = 16
 
 [table.00011fe6]
 name = "Saturating State-Reduction Step Multiplier (0x11FE6)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 144
 format = "0"
 fine = 1
@@ -804,7 +804,7 @@ coarse = 16
 
 [table.00012006]
 name = "Piecewise Clamp y=min(x,224) (0x12006)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 145
 format = "0"
 fine = 1
@@ -812,7 +812,7 @@ coarse = 16
 
 [table.0001208e]
 name = "Composite Product Multiplier A - raw u8 (0x1208E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 146
 format = "0"
 fine = 1
@@ -820,7 +820,7 @@ coarse = 16
 
 [table.00012096]
 name = "Composite Product Multiplier B - raw u8 (0x12096)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 147
 format = "0"
 fine = 1
@@ -828,7 +828,7 @@ coarse = 16
 
 [table.000120ce]
 name = "Dual-Lookup Additive Correction (0x120CE)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 148
 format = "0"
 fine = 1
@@ -836,7 +836,7 @@ coarse = 16
 
 [table.0001211e]
 name = "Triple-Product Multiplier A - raw u8 (0x1211E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 149
 format = "0"
 fine = 1
@@ -844,7 +844,7 @@ coarse = 16
 
 [table.00012126]
 name = "Local Correction Coefficient /2048 (0x12126)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 150
 format = "0.000000"
 fine = 0.00048828125
@@ -852,7 +852,7 @@ coarse = 0.0078125
 
 [table.0001212e]
 name = "Triple-Product Multiplier B Q0.7 (0x1212E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 151
 format = "0.0000"
 fine = 0.0078125
@@ -860,7 +860,7 @@ coarse = 0.0625
 
 [table.0001215e]
 name = "Shifted Subtractive Correction - raw u8 (0x1215E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 152
 format = "0"
 fine = 1
@@ -868,7 +868,7 @@ coarse = 16
 
 [table.00012176]
 name = "Negative-Branch Multiplier Source - raw u8 (0x12176)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 153
 format = "0"
 fine = 1
@@ -876,7 +876,7 @@ coarse = 16
 
 [table.0001218e]
 name = "Control Selector ffff23ed - raw u8 (0x1218E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 154
 format = "0"
 fine = 1
@@ -884,7 +884,7 @@ coarse = 16
 
 [table.00012196]
 name = "Signed Additive Term A (x-128) (0x12196)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 155
 format = "0"
 fine = 1
@@ -892,7 +892,7 @@ coarse = 16
 
 [table.0001219e]
 name = "Signed Additive Term B (x-128) (0x1219E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 156
 format = "0"
 fine = 1
@@ -900,7 +900,7 @@ coarse = 16
 
 [table.000121a6]
 name = "Conditional Signed Additive Term C (x-128) (0x121A6)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 157
 format = "0"
 fine = 1
@@ -908,7 +908,7 @@ coarse = 16
 
 [table.000121ae]
 name = "Centered Q13 Multiplier Shaping Curve - raw u8 (0x121AE)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 158
 format = "0"
 fine = 1
@@ -916,7 +916,7 @@ coarse = 16
 
 [table.000121c6]
 name = "Three-Factor Product Multiplier A - raw u8 (0x121C6)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 159
 format = "0"
 fine = 1
@@ -924,7 +924,7 @@ coarse = 16
 
 [table.000121ce]
 name = "Cascaded Product Multiplier A - raw u8 (0x121CE)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 160
 format = "0"
 fine = 1
@@ -932,7 +932,7 @@ coarse = 16
 
 [table.000121d6]
 name = "Cascaded Product Multiplier B - raw u8 (0x121D6)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 161
 format = "0"
 fine = 1
@@ -940,7 +940,7 @@ coarse = 16
 
 [table.000121de]
 name = "Conditional Three-Factor Product Multiplier - raw u8 (0x121DE)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 162
 format = "0"
 fine = 1
@@ -948,7 +948,7 @@ coarse = 16
 
 [table.000121e6]
 name = "Cascaded First-Stage Multiplier - raw u8 (0x121E6)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 163
 format = "0"
 fine = 1
@@ -956,7 +956,7 @@ coarse = 16
 
 [table.000121ee]
 name = "Per-Channel Product Multiplier - raw u8 (0x121EE)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 164
 format = "0"
 fine = 1
@@ -964,7 +964,7 @@ coarse = 16
 
 [table.0001220e]
 name = "Cascaded Output Multiplier - raw u8 (0x1220E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 165
 format = "0"
 fine = 1
@@ -972,7 +972,7 @@ coarse = 16
 
 [table.000122e2]
 name = "Shared Additive Base Term - raw u8 (0x122E2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 166
 format = "0"
 fine = 1
@@ -980,7 +980,7 @@ coarse = 16
 
 [table.00012302]
 name = "Offset-Summed State Term - raw u8 (0x12302)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 167
 format = "0"
 fine = 1
@@ -988,7 +988,7 @@ coarse = 16
 
 [table.0001230a]
 name = "Conditional State Base Term - raw u8 (0x1230A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 168
 format = "0"
 fine = 1
@@ -996,7 +996,7 @@ coarse = 16
 
 [table.00012342]
 name = "Saturating Sum Addend A - raw u8 (0x12342)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 169
 format = "0"
 fine = 1
@@ -1004,7 +1004,7 @@ coarse = 16
 
 [table.0001234a]
 name = "Saturating Sum Addend B - raw u8 (0x1234A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 170
 format = "0"
 fine = 1
@@ -1012,7 +1012,7 @@ coarse = 16
 
 [table.00012352]
 name = "Paired Product Multiplier - raw u8 (0x12352)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 171
 format = "0"
 fine = 1
@@ -1020,7 +1020,7 @@ coarse = 16
 
 [table.0001239a]
 name = "Negative-Branch Multiplier - raw u8 (0x1239A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 172
 format = "0"
 fine = 1
@@ -1028,7 +1028,7 @@ coarse = 16
 
 [table.000123a2]
 name = "Positive-Difference Subtractive Multiplier - raw u8 (0x123A2)"
-category = "Internal Calculations (candidate)"
+category = "Internal Calculations"
 order = 173
 format = "0"
 fine = 1
@@ -1036,7 +1036,7 @@ coarse = 16
 
 [table.000123e2]
 name = "Saturated Blend Product Multiplier - raw u8 (0x123E2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 174
 format = "0"
 fine = 1
@@ -1044,7 +1044,7 @@ coarse = 16
 
 [table.00012422]
 name = "Rate-Limited State Multiplier - raw u8 (0x12422)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 175
 format = "0"
 fine = 1
@@ -1052,7 +1052,7 @@ coarse = 16
 
 [table.0001242a]
 name = "Centered Composite Multiplier Shaping Curve - raw u8 (0x1242A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 176
 format = "0"
 fine = 1
@@ -1060,7 +1060,7 @@ coarse = 16
 
 [table.00012432]
 name = "Composite First-Stage Multiplier Q1.7 (0x12432)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 177
 format = "0.0000"
 fine = 0.0078125
@@ -1068,7 +1068,7 @@ coarse = 0.0625
 
 [table.00012562]
 name = "Conditional Accumulator Product Coefficient - raw u8 (0x12562)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 178
 format = "0"
 fine = 1
@@ -1076,7 +1076,7 @@ coarse = 16
 
 [table.000126a0]
 name = "Paired Product Multiplier A - raw u8 (0x126A0)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 179
 format = "0"
 fine = 1
@@ -1084,7 +1084,7 @@ coarse = 16
 
 [table.000126a8]
 name = "Paired Product Multiplier B - raw u8 (0x126A8)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 180
 format = "0"
 fine = 1
@@ -1092,7 +1092,7 @@ coarse = 16
 
 [table.00012868]
 name = "Three-Factor Product Multiplier - raw u8 (0x12868)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 181
 format = "0"
 fine = 1
@@ -1100,7 +1100,7 @@ coarse = 16
 
 [table.0001296c]
 name = "Shared Saturated Calculation Multiplier - raw u8 (0x1296C)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 182
 format = "0"
 fine = 1
@@ -1108,7 +1108,7 @@ coarse = 16
 
 [table.000129ca]
 name = "Three-Factor Product Multiplier A - raw u8 (0x129CA)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 183
 format = "0"
 fine = 1
@@ -1116,7 +1116,7 @@ coarse = 16
 
 [table.00012a22]
 name = "Paired Product Multiplier A - raw u8 (0x12A22)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 184
 format = "0"
 fine = 1
@@ -1124,7 +1124,7 @@ coarse = 16
 
 [table.00012a2a]
 name = "Paired Product Multiplier B - raw u8 (0x12A2A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 185
 format = "0"
 fine = 1
@@ -1132,7 +1132,7 @@ coarse = 16
 
 [table.00012a3a]
 name = "Unresolved RAM ffff1f78 Value - raw u8 (0x12A3A)"
-category = "Internal Calculations (candidate)"
+category = "Internal Calculations"
 order = 186
 format = "0"
 fine = 1
@@ -1140,7 +1140,7 @@ coarse = 16
 
 [table.00012a82]
 name = "Composite Output Coefficient K - raw u8 (0x12A82)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 187
 format = "0"
 fine = 1
@@ -1148,7 +1148,7 @@ coarse = 16
 
 [table.00012a9a]
 name = "State Gate Byte Table - raw u8 (0x12A9A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 188
 format = "0"
 fine = 1
@@ -1156,7 +1156,7 @@ coarse = 16
 
 [table.00012ab2]
 name = "State Transition Initial Value - raw u8 (0x12AB2)"
-category = "Internal Calculations (candidate)"
+category = "Internal Calculations"
 order = 189
 format = "0"
 fine = 1
@@ -1164,7 +1164,7 @@ coarse = 16
 
 [table.00012ac2]
 name = "Three-Factor Product Multiplier B - raw u8 (0x12AC2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 190
 format = "0"
 fine = 1
@@ -1172,7 +1172,7 @@ coarse = 16
 
 [table.00012ada]
 name = "State 2 Hold Gate Table - raw u8 (0x12ADA)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 191
 format = "0"
 fine = 1
@@ -1180,7 +1180,7 @@ coarse = 16
 
 [table.00012afa]
 name = "Bit 7 Hold State Table - raw u8 (0x12AFA)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 192
 format = "0"
 fine = 1
@@ -1188,7 +1188,7 @@ coarse = 16
 
 [table.00012dca]
 name = "Three-Factor Product Multiplier B Q1.7 (0x12DCA)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 193
 format = "0.0000"
 fine = 0.0078125
@@ -1196,7 +1196,7 @@ coarse = 0.0625
 
 [table.00012e72]
 name = "Channel 0 Signed Additive Term (x-128) (0x12E72)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 194
 format = "0"
 fine = 1
@@ -1204,7 +1204,7 @@ coarse = 16
 
 [table.00012e7a]
 name = "Channel 1 Composite Addend - raw u8 (0x12E7A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 195
 format = "0"
 fine = 1
@@ -1212,7 +1212,7 @@ coarse = 16
 
 [table.00012efe]
 name = "Conditional Paired State Value A - raw u8 (0x12EFE)"
-category = "Internal Calculations (candidate)"
+category = "Internal Calculations"
 order = 196
 format = "0"
 fine = 1
@@ -1220,7 +1220,7 @@ coarse = 16
 
 [table.00012f06]
 name = "Conditional Paired State Value B - raw u8 (0x12F06)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 197
 format = "0"
 fine = 1
@@ -1228,7 +1228,7 @@ coarse = 16
 
 [table.0001300e]
 name = "Signed Difference Multiplier Q0.6 (0x1300E)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 198
 format = "0.0000"
 fine = 0.015625
@@ -1236,7 +1236,7 @@ coarse = 0.125
 
 [table.00013016]
 name = "Conditional Signed State Value (x-128) (0x13016)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 199
 format = "0"
 fine = 1
@@ -1244,7 +1244,7 @@ coarse = 16
 
 [table.00014304]
 name = "State Decrease Limit A - raw u16 (0x14304)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 200
 format = "0"
 fine = 1
@@ -1252,7 +1252,7 @@ coarse = 256
 
 [table.00014314]
 name = "State Decrease Step B - raw u16 (0x14314)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 201
 format = "0"
 fine = 1
@@ -1260,7 +1260,7 @@ coarse = 256
 
 [table.00014ed2]
 name = "Composite Product Multiplicand - raw u16 (0x14ED2)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 202
 format = "0"
 fine = 1
@@ -1268,7 +1268,7 @@ coarse = 256
 
 [table.00015082]
 name = "Rounded UQ0.16 Threshold Coefficient (0x15082)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 203
 format = "0.000000"
 fine = 1.52587890625e-05
@@ -1276,7 +1276,7 @@ coarse = 0.0009765625
 
 [table.00015330]
 name = "Saturating Internal State Load - raw u16 (0x15330)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 204
 format = "0"
 fine = 1
@@ -1284,7 +1284,7 @@ coarse = 256
 
 [table.00015630]
 name = "Internal Multiplicand - BFS candidate scale (0x15630)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 205
 format = "0.000000"
 fine = 0.000488
@@ -1292,7 +1292,7 @@ coarse = 0.062464
 
 [table.00023824]
 name = "Dual-Channel Saturating Addend - raw u16 (0x23824)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 206
 format = "0"
 fine = 1
@@ -1300,7 +1300,7 @@ coarse = 256
 
 [table.00012026]
 name = "Latched Zero Condition Table - raw u8 (0x12026)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 207
 format = "0"
 fine = 1
@@ -1308,7 +1308,7 @@ coarse = 16
 
 [table.00012e1a]
 name = "Interpolated State Byte - raw u8 (0x12E1A)"
-category = "Internal Calculations (traced)"
+category = "Internal Calculations"
 order = 208
 format = "0"
 fine = 1

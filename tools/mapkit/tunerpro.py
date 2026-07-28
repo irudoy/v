@@ -11,15 +11,14 @@ import sys
 import xml.etree.ElementTree as ET
 import zlib
 
+from .presentation import category_name
+
 
 STORAGE_BITS = {"uint8": 8, "uint16": 16, "uint32": 32}
 STORAGE_BYTES = {name: bits // 8 for name, bits in STORAGE_BITS.items()}
 
 DTC_INDIVIDUAL_CATEGORY = "Diagnostics / DTC / Individual"
 DTC_GROUP_CATEGORY = "Diagnostics / DTC / Disable Groups"
-CATEGORY_CONFIDENCE_SUFFIX = re.compile(
-    r"(?: \((?:traced|candidate)\))+$"
-)
 DTC_GROUP_NAMES = {
     "catalyst": "Catalyst",
     "evap": "EVAP",
@@ -80,11 +79,6 @@ def units_with_confidence(units, confidence):
     if confidence and confidence != "code":
         return f"{units} [cand]"
     return units
-
-
-def category_name(category):
-    """Return the functional XDF category without confidence annotations."""
-    return CATEGORY_CONFIDENCE_SUFFIX.sub("", str(category))
 
 
 def table_shape(calibration):

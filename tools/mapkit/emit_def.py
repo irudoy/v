@@ -15,9 +15,9 @@
 # lists rejected maps because silent omission could be read as absence.
 #
 # Put confidence labels where each assertion appears:
-#   map below code    -> category suffix " (candidate)": identified but not traced;
+#   map confidence     -> generated comment above the table;
 #   scaling below code -> unit suffix " [cand]": the multiplier is not established by code.
-# A comment above the table records both confidence levels and supporting evidence.
+# Categories remain functional and do not partition tables by confidence.
 #
 # Translate wrapper axes to RomRaider axes as established from finishers; see
 # defs/<rom>.notes.md. A finisher addresses a cell as
@@ -44,11 +44,11 @@ BOLT = "bolt://localhost:7687"
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFS = os.path.join(HERE, "..", "..", "defs")
 if __package__:
-    from . import rom as romkit, tunerpro
+    from . import presentation, rom as romkit, tunerpro
     from tools import diagnostic_context
 else:
     sys.path.insert(0, os.path.dirname(HERE))
-    from mapkit import rom as romkit, tunerpro
+    from mapkit import presentation, rom as romkit, tunerpro
     import diagnostic_context
 
 LEVELS = ("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
@@ -396,9 +396,16 @@ def switch_xml(entry, index):
     if not isinstance(states, list) or len(states) < 2:
         sys.exit(f"switch #{index}: state must be an array with at least two states")
 
-    attrs = ['type="Switch"'] + [
-        f'{k}="{att(entry[k])}"' for k in SWITCH_FIELDS if k in entry
-    ]
+    attrs = ['type="Switch"']
+    for key in SWITCH_FIELDS:
+        if key not in entry:
+            continue
+        value = (
+            presentation.category_name(entry[key])
+            if key == "category"
+            else entry[key]
+        )
+        attrs.append(f'{key}="{att(value)}"')
     out = wrap("    ", "<table", attrs, ">")
     if entry.get("description"):
         out.append(f"      <description>{att(entry['description'])}</description>")
@@ -492,7 +499,7 @@ def table_axes_xml(m, o, ovr, axes):
 
 def table_xml(m, ovr, axes, rom):
     o = ovr["table"][m["addr"]]
-    cat = o["category"] + ("" if m["confidence"] == "code" else " (candidate)")
+    cat = presentation.category_name(o["category"])
     dims = "3D" if m["dims"] == 2 else "2D"
     # RomRaider shape: sizex is columns (r6 axis), while sizey is rows (r5 axis).
     # A one-dimensional map has one axis whose length is sizex.
@@ -544,7 +551,7 @@ def masked_view_xml(m, view, ovr, axes, rom):
     attrs = [
         f'type="{dims}"',
         f'name="{att(view["name"])}"',
-        f'category="{att(view["category"])}"',
+        f'category="{att(presentation.category_name(view["category"]))}"',
         f'storagetype="{att(m["storagetype"])}"',
         f'storageaddress="{hexa(m["addr"])}"',
     ] + size + ['endian="big"', f'mask="{att(view["mask"])}"']
@@ -717,12 +724,13 @@ def main():
     for a in sorted(ovr.get("axisview", {}),
                     key=lambda a: (ovr["axisview"][a].get("order", 1 << 20), a)):
         o, x = ovr["axisview"][a], axes[a]
+        category = presentation.category_name(o["category"])
         body += [comment([f'{hexa(a)}  axis with {x["len"]} points {x["storagetype"]}, '
                           f'{x["kind"]}' + (f' [{x["scale_conf"]}]'
                                             if x["scale_conf"] else ""),
                           x["note"] or "", f"Analysis and method - defs/{rom}.notes.md"])]
         body += wrap("    ", "<table", ['type="2D"', f'name="{att(o["name"])}"',
-                                        f'category="{att(o["category"])}"',
+                                        f'category="{att(category)}"',
                                         f'storagetype="{att(x["storagetype"])}"',
                                         f'storageaddress="{hexa(a)}"',
                                         f'sizex="{x["len"]}"', 'endian="big"'], ">")

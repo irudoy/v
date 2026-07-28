@@ -11,6 +11,7 @@
 #   ptrscan.py   - address candidate scan without Ghidra;
 #   emit_def.py  - shared RomRaider/XDF definition projection from graph, DTC,
 #                  and overrides (Stage 8, section 9);
+#   presentation.py - shared functional-category presentation policy;
 #   tunerpro.py  - TunerPro XDF rendering, patches, and masked conversions.
 #
 # Run modules as files (`python tools/mapkit/show.py ...`). Import with

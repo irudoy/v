@@ -1062,14 +1062,15 @@ the current user-facing definition for the exact-code JK03A ROM:
   rectangular map without axis edges passes only as `direct-row-major` and only with a
   complete pair of static axes.
 - **Confidence labeling** is attached to the claim it qualifies: a map below `code`
-  receives a category suffix `(candidate)`, while a scale below `code` receives a unit
-  suffix `[cand]`. The multiplier is a claim about values, not identification of the
-  table, so these levels can differ. At `0xB61A`, for example, code establishes the
-  address while the `x-64` multiplier comes from the A2L catalog. Overrides may specify
-  an ordered `<checksum>` array for RomRaider. For JK08A, the native handlers `alt` and
-  `alt2` reproduce the stock fields and run in B -> A order. The XDF contains no
-  `XDFCHECKSUM`; checksum correction belongs to the flashing workflow rather than the
-  TunerPro definition contract.
+  is marked `[candidate]` in the generated evidence comment, while a scale below
+  `code` receives a unit suffix `[cand]`. Categories remain functional and do not
+  partition maps by confidence. The multiplier is a claim about values, not
+  identification of the table, so these levels can differ. At `0xB61A`, for example,
+  code establishes the address while the `x-64` multiplier comes from the A2L catalog.
+  Overrides may specify an ordered `<checksum>` array for RomRaider. For JK08A, the
+  native handlers `alt` and `alt2` reproduce the stock fields and run in B -> A order.
+  The XDF contains no `XDFCHECKSUM`; checksum correction belongs to the flashing
+  workflow rather than the TunerPro definition contract.
 
 The generator template follows the `AGENTS.md` rules for declarative prose, en dashes,
 ASCII arrows, quotes, and comparison operators. Table and axis names are English
@@ -1139,7 +1140,7 @@ sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 | No regression against backtracking | sites where backtracking returned an in-ROM value but data flow did not | n/a -> **1, reviewed** (`0x56cd8`: value from an unreachable branch, not a base) | all reviewed |
 | Latent catalog defects | number of `conflict` results (`bt != df` at a site) | not measured -> **14, all reviewed** (6 base conflicts: reference wrong in every case; 3: unreachable branch and stale registers; 5: `mov.w` constant read as 32-bit by the reference). Four more base differences moved out of this class after operand-set expansion (section 6): the mechanisms selected different branches of one selector | all reviewed |
 | Catalog completeness | number of `:Map` nodes against known inventory; 0 maps outside graph | 223 bases in ledger, 0 in graph -> **441 of 441 in graph** across census and manual families; three dynamic call sites create no speculative map | every catalog map in graph; dynamic bases remain explicit |
-| Definition gate | number of emitted maps below `code` without explicit `(candidate)` category | not tracked -> **0**: definition emits 145 maps, 121 at `code` and 24 explicitly marked `(candidate)`; it also emits two standalone reference axes | 0 unmarked |
+| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: definition emits 145 maps, 121 at `code` and 24 explicitly marked `[candidate]`; it also emits two standalone reference axes | 0 unmarked |
 | Catalog geometry | number of `:Map` nodes without `storagetype`, which prevents emission | 66 of 441, all 2D -> **0**: 2D element type comes from the finisher | 0 |
 | Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **17** of 145; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
 | Deferred axes | number of `pattern`-level `:Axis` nodes reported only by backtracking with `k5`/`k6=sp` | not measured -> **14 of 229**; `0x8000` is erased flash; none pass emission | 0; Stage 6 resolves them |

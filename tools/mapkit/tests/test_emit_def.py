@@ -67,6 +67,23 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         self.assertIn('type="Static Y Axis"', xml)
         self.assertIn('name="Cylinder"', xml)
 
+    def test_candidate_map_keeps_a_functional_category(self):
+        self.map["confidence"] = "candidate"
+        presentation = dict(self.presentation)
+        presentation["category"] = (
+            "Ignition Timing / Knock Control (traced) (candidate)"
+        )
+        overrides = {"table": {self.map["addr"]: presentation}}
+        xml = "\n".join(
+            emit_def.table_xml(self.map, overrides, {}, "JK08A")
+        )
+        self.assertIn(
+            'category="Ignition Timing / Knock Control"',
+            xml,
+        )
+        self.assertNotIn("(traced)", xml)
+        self.assertIn("map [candidate]", xml)
+
     def test_xml_comment_includes_static_diagnostic_context(self):
         self.map["diagnostic_bindings"] = [{
             "diagnostic_label": "DtcCode",
@@ -233,6 +250,33 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             ],
             [],
         )
+
+    def test_tracked_xml_uses_functional_categories(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        tables = {
+            table.get("name"): table
+            for table in rom.findall("./table")
+        }
+        categories = {
+            table.get("category") for table in tables.values()
+        }
+        self.assertEqual(len(categories), 17)
+        self.assertTrue(all(
+            "(candidate)" not in category and "(traced)" not in category
+            for category in categories
+        ))
+
+        expected = {
+            "Developer Immobilizer": "NATS / Immobilizer",
+            "Target AFR - Power (0xB33A)": "AFR / Lambda",
+            "MAF Transfer Curve - unresolved channel (0x141F4)": "Airflow",
+            "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
+            "Engine Speed Axis [RPM] (ref)": "Reference Axes",
+            "Cylinder Filling Axis [%] (ref)": "Reference Axes",
+        }
+        for name, category in expected.items():
+            with self.subTest(name=name):
+                self.assertEqual(tables[name].get("category"), category)
 
 
 if __name__ == "__main__":

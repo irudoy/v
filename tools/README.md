@@ -224,6 +224,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `sweep/caller_ab_experiment.py` | Read-only control plane for the 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates, manual approval, finalized `verified` and neutral `placebo` cards, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores, and a per-control verifier gate; canonical CSV remains unchanged | JSON/Markdown outside git |
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
 | `mapkit/emit_def.py` | Project the graph, reviewed static diagnostic context, `defs/<rom>.dtc.csv` DTC registry, and `defs/<rom>.overrides.toml` presentation layer into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
+| `mapkit/presentation.py` | Normalize functional categories shared by the RomRaider and TunerPro projections without encoding confidence in the category name | imported by both renderers |
 | `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 29 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
 | `mapkit/show.py` | Display a map or axis in physical units: the graph supplies shape, axes, and scale, while the image supplies values. Arguments: `[<rom>] <addr>...` | stdout |
 | `mapkit/ptrscan.py` | Find pointers to an address by scanning both constant forms, `mov.l` and `mov.w`, without Ghidra or a project. Arguments: `[<rom>] <addr> [<addr_hi>]` | stdout |
@@ -369,11 +370,12 @@ checksums. The split low-7-bit and bit-7 ignition-map views use per-cell address
 variables in invertible conversion equations so an edit preserves the
 complementary field.
 
-TunerPro categories are functional rather than confidence partitions. The
-generator removes trailing `(traced)` and `(candidate)` annotations from XDF
-category names while retaining confidence in table descriptions and `[cand]`
-unit annotations. XDF header categories use zero-based indices; one-based
-`CATEGORYMEM` values refer to those header entries.
+Categories in both generated definitions are functional rather than confidence
+partitions. The shared presentation policy removes trailing `(traced)` and
+`(candidate)` annotations while retaining map confidence in table comments or
+descriptions and scale confidence in `[cand]` unit annotations. XDF header
+categories use zero-based indices; one-based `CATEGORYMEM` values refer to those
+header entries.
 
 ### Memgraph backup
 
