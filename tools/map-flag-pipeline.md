@@ -903,9 +903,9 @@ and 6 axis-scale claims. Recovery replaces a complete frozen node with all prope
 assigned blind artifact through EOF, and performs separate adversarial verification for every
 field. Map semantics and scale resolve independently.
 
-Caller-semantics harness `tools/sweep/caller_ab_experiment.py` has a provider-neutral active
-profile and a preserved historical profile. Active `closure-v1` measures the observed operational
-contrast over six exposed JK08A maps and two identical-input controls:
+Caller-semantics harness `tools/sweep/caller_ab_experiment.py` has a closed-inconclusive
+provider-neutral profile and a preserved historical profile. Frozen `closure-v1` defines an
+operational contrast over six exposed JK08A maps and two identical-input controls:
 
 ```text
 0000b23a 0000b33a 0000b71a 0000b81a
@@ -927,6 +927,12 @@ arms, and scoring must use the same provider/backend/model/effort/adapter descri
 small-footprint execution contains 58 calls: 5 prep Analyze, 5 prep Verify, 16 map Analyze,
 16 map Verify, and 16 blind scores. `tools/sweep/agent-workflow.md` defines the complete neutral
 execution contract.
+
+The registered `closure-v1` run stopped after the 10 Prep calls on 2026-07-30. Adversarial Verify
+accepted two of five caller cards and refuted three; caller `000bef6e` also failed exact citation
+binding. The mandatory Prep gate therefore prevented condition construction. No map-arm or score
+calls ran, no operational contrast was estimated, and no claim entered the definition. The frozen
+run is not retried or continued. A future attempt requires a separately preregistered experiment.
 
 The historical `full-v4` profile measures the same contrast over 24 frozen focused JK03A map
 items using Claude Code Dynamic Workflow v3. The selection commit is

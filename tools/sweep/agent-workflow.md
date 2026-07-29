@@ -27,6 +27,28 @@ One experiment must use the exact same executor descriptor for prep, both opaque
 and blind scoring. Changing provider, backend, model, effort, adapter, or adapter version
 changes the executor identity and is rejected.
 
+## Registered closure-v1 outcome
+
+The registered run `ar_e4757e629bc7d606a54fe869` closed without an effect estimate on
+2026-07-30. The executor
+`openai/codex-cli-chatgpt/gpt-5.6-terra:medium@codex-exec-json-schema:0.146.0`
+completed five Prep Analyze and five Prep Verify calls. Both result bundles pass the
+provider-neutral schema, executor, receipt, raw-output digest, freshness, and no-tools
+checks.
+
+Adversarial Verify accepted two of five caller cards and refuted three. Caller
+`000bef6e` also contains a citation excerpt that differs from the assigned artifact
+indentation. Consequently, `validate-prep` rejects the archive and the mandatory Prep
+gate prevents card finalization. Opaque arms and scoring did not run, so the experiment
+has no paired contrast or causal result. The remaining 48 calls are intentionally absent.
+This frozen run cannot be retried or continued; a future attempt is a new preregistered
+experiment.
+
+The private frozen artifacts and raw outputs remain outside Git under
+`~/tools/ghidra-projects/vq-caller-experiments/closure-v1-20260730-prep-failed/`.
+The `closure-v1-prep-failed.tar.gz` SHA-256 is
+`1a80ddf7ae06a444c187c7ec611ec872bb514ee02861e1f16b2de0d25c70f8f0`.
+
 ## Frozen task policy
 
 Every task has this policy:
@@ -103,7 +125,7 @@ The neutral receipt is an operator-attested local record, not independent provid
 attestation. A provider-native adapter may retain additional raw logs outside the
 archive, but those logs are not portable protocol fields.
 
-## closure-v1 sequence
+## Frozen closure-v1 sequence
 
 The frozen closure profile contains six exposed maps, two identical-input controls, and
 five unique direct callers. One complete run contains 58 fresh agent invocations:
@@ -154,8 +176,8 @@ python3 tools/sweep/agent_workflow.py archive \
   --output <prep-agent-archive.json>
 ```
 
-`validate-prep` accepts this archive directly. Manual exact-payload approval remains
-mandatory before `finalize-cards`.
+`validate-prep` accepts a conforming archive directly. Manual exact-payload approval
+remains mandatory before `finalize-cards`.
 
 ### 3. Opaque A/B arms
 

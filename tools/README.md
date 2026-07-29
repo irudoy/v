@@ -11,12 +11,12 @@ is outside the critical path. Design, map/flag pipeline, and component roles are
 
 The catalog-wide map sweep is specified in `map-sweep.md`: work unit, wave order, pilot blinding,
 submission schema, and gates. The same document defines the read-only caller-semantics harness
-`tools/sweep/caller_ab_experiment.py` and its two frozen profiles. `closure-v1` is the active
-8-map JK08A profile and uses the provider-neutral `tools/sweep/agent_protocol.py`; its complete
-operator contract is in `sweep/agent-workflow.md`. The protocol builds isolated task batches,
-validates JSON Schema responses and fresh no-tools receipts, enforces one exact executor across
-prep, both opaque arms, and scoring, and assembles agent-run archives without launching a model or
-importing a vendor SDK. The historical 24-map JK03A `full-v4` profile retains its frozen Claude
+`tools/sweep/caller_ab_experiment.py` and its two frozen profiles. The provider-neutral 8-map JK08A
+`closure-v1` profile closed without an effect estimate on 2026-07-30: its registered run stopped
+after the 10 Prep calls because only two of five caller cards survived adversarial Verify. Opaque
+arms and scoring did not run. The profile and its complete operator contract in
+`sweep/agent-workflow.md` remain frozen for reproducibility; any further attempt is a new
+preregistered experiment. The historical 24-map JK03A `full-v4` profile retains its frozen Claude
 Code Dynamic Workflow v3 contract and exact model allowlist.
 
 For both profiles, `freeze` accepts two independent byte-identical builds of map artifacts with
@@ -213,7 +213,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `maps/build_tracker.py` | Project the graph catalog into the canonical-ROM ledger `defs/<rom>.maps.csv`, including static diagnostic priority and context; an inheriting ROM permits only an explicitly specified temporary output path | tracked |
 | `logs/csv_to_mlg.py` | Convert long-form diagnostic CSV updates into validated MLVLG v2 snapshots with timestamp-gap bridging | tracked |
 | `sweep/build_artifacts.py` | Build blind sweep artifacts: component `comp-<addr>.md`, frozen map `map-<addr>.md`, or shared axis `axis-<addr>.md`. Axis focus aggregates all related maps and accessors. Shape, values, axes, pseudocode, listings, census operands, and catalogs remain visible; current answers are hidden through an allowlist verified on every run. Budgets must be nonnegative; the frozen caller experiment requires `8`/`24`. Arguments: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
-| `sweep/caller_ab_experiment.py` | Read-only control plane for caller-semantics profiles: active 8-map JK08A `closure-v1`, historical 24-map JK03A `full-v4`, frozen HMAC manifests, prep approval, opaque conditions, terminal evidence binding, blind scoring, and per-control verifier gates; canonical CSV remains unchanged | JSON/Markdown outside git |
+| `sweep/caller_ab_experiment.py` | Read-only control plane for caller-semantics profiles: closed-inconclusive 8-map JK08A `closure-v1`, historical 24-map JK03A `full-v4`, frozen HMAC manifests, prep approval, opaque conditions, terminal evidence binding, blind scoring, and per-control verifier gates; canonical CSV remains unchanged | JSON/Markdown outside git |
 | `sweep/agent_protocol.py` | Provider-neutral task, receipt, executor, and archive protocol for `closure-v1`; validates isolated no-tools execution, JSON Schema responses, exact Analyze/Verify linkage, raw-output digests, and executor identity without launching a model | JSON outside git |
 | `sweep/agent_workflow.py` | Local CLI for building Analyze/Verify/Score batches, validating agent-produced result bundles, and assembling or revalidating provider-neutral agent-run archives | JSON outside git |
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |

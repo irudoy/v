@@ -69,8 +69,8 @@ artifacts, agent-run archives, and reports are stored outside git.
 
 The control plane has two frozen profiles:
 
-- `closure-v1` is the active small-footprint JK08A experiment. It uses the provider-neutral
-  protocol in `tools/sweep/agent_protocol.py` and the local state processor
+- `closure-v1` is the closed-inconclusive small-footprint JK08A experiment. It uses the
+  provider-neutral protocol in `tools/sweep/agent_protocol.py` and the local state processor
   `tools/sweep/agent_workflow.py`. The protocol builds isolated JSON task batches and validates
   executor-produced result bundles; it does not launch a model or depend on a vendor SDK.
 - `full-v4` preserves the historical 24-map JK03A design and its Claude Code Dynamic Workflow v3
@@ -96,6 +96,22 @@ must use the exact same provider/backend/model/effort/adapter descriptor. Each t
 its prompt and JSON response schema, has no domain tools, and attests no fallback, retry, resume,
 or cache reuse. `tools/sweep/agent-workflow.md` defines the complete batch, receipt, archive, and
 command contract.
+
+The registered `closure-v1` run `ar_e4757e629bc7d606a54fe869` stopped at the mandatory Prep gate
+on 2026-07-30. It used
+`openai/codex-cli-chatgpt/gpt-5.6-terra:medium@codex-exec-json-schema:0.146.0` for five Analyze and
+five Verify calls. Both provider-neutral result bundles contain unique fresh invocation IDs, zero
+domain-tool calls, and no fallback, retry, or cache reuse. Adversarial Verify accepted two caller
+cards and refuted three. Caller `000bef6e` also has a citation excerpt that differs from the source
+indentation, so `validate-prep` rejects the archive before card finalization. Opaque conditions and
+blind scoring did not run; the remaining 48 calls were not made. The run therefore has no paired
+contrast or effect estimate and is closed without a causal result. It cannot be continued or
+repaired by retry; another attempt requires a new preregistered experiment.
+
+The private frozen artifacts and raw outputs are retained outside Git at
+`~/tools/ghidra-projects/vq-caller-experiments/closure-v1-20260730-prep-failed/`
+with archive SHA-256
+`1a80ddf7ae06a444c187c7ec611ec872bb514ee02861e1f16b2de0d25c70f8f0`.
 
 The two controls are valid only when every absolute field delta is at most `1/7` and neither pair
 has a verifier split. A failed control gate invalidates the exposed contrast. A passed gate reports
