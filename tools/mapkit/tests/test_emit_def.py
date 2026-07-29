@@ -274,6 +274,12 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "Fuel Cut RPM Hysteresis (0x85D9)": (
                 "Fuel Delivery / Fuel Cut / Thresholds"
             ),
+            "Fuel Cut Readiness Accumulator Threshold (0x911C)": (
+                "Fuel Delivery / Fuel Cut / Thresholds"
+            ),
+            "Fuel Cut Readiness Accumulator Step (0x124D2)": (
+                "Fuel Delivery / Fuel Cut / Thresholds"
+            ),
             "Throttle Rev Limiter (0x942C)": "Limiters",
             "Engine Speed Axis [RPM] (ref)": "Reference Axes",
             "Cylinder Filling Axis [%] (ref)": "Reference Axes",
@@ -281,6 +287,21 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         for name, category in expected.items():
             with self.subTest(name=name):
                 self.assertEqual(tables[name].get("category"), category)
+
+    def test_fuel_cut_readiness_uses_exact_scalar_and_code_scale(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        table = next(
+            table for table in rom.findall("./table")
+            if table.get("name") == (
+                "Fuel Cut Readiness Accumulator Threshold (0x911C)"
+            )
+        )
+        scaling = table.find("./scaling")
+        self.assertEqual(table.get("storageaddress"), "0x0911C")
+        self.assertEqual(table.get("storagetype"), "uint16")
+        self.assertEqual(table.get("sizex"), "1")
+        self.assertEqual(scaling.get("units"), "accumulator counts")
+        self.assertEqual(scaling.get("expression"), "x")
 
     def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")

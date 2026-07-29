@@ -823,16 +823,32 @@ aggregate six-channel fuel-output inhibit path [CONFIRMED by code]. Entry requir
 - `0xFFFF244F.bit2 == 1`;
 - `0xFFFF2458.bit5 == 0`.
 
-Bit 3 of `0xFFFF247F` initializes a timer/accumulator path through map `0x124D2`.
-Bit 4 records readiness. With readiness set and state bit 5 clear, the state is set
-when current engine speed `byte[0xFFFF11AE]` is greater than or equal to
-`ROM8[0x85D9]`. While state bit 5 is set, it is cleared when engine speed is below
-`ROM8[0x85DA]`.
+Bit 3 of `0xFFFF247F` initializes timer `0xFFFF258A` to 100. Whenever the timer
+reaches zero, `FUN_0004F324` indexes map `0x124D2` with
+`q=clamp((signed16[0xFFFF11BC]-160)/2,0,255)`, decodes the interpolated byte as
+`x-128`, adds it to unsigned accumulator `0xFFFF16A6` with saturation to
+`0..65535`, and reloads the timer with 100.
+
+Bit 4 records readiness. It is set when:
+
+```text
+uint16[0xFFFF16A6] >= ROM16[0x911C]
+and
+(uint8[0xFFFF1071] >= ROM8[0x8D0E] or 0xFFFF245D.bit6 == 1)
+```
+
+`ROM16[0x911C] = 0x017D`, or 381 accumulator counts. Stock
+`ROM8[0x8D0E] = 0`, so the unsigned comparison with `0xFFFF1071` is always
+true and bit 6 of `0xFFFF245D` cannot block readiness in JK08A. With readiness
+set and state bit 5 clear, the state is set when current engine speed
+`byte[0xFFFF11AE]` is greater than or equal to `ROM8[0x85D9]`. While state
+bit 5 is set, it is cleared when engine speed is below `ROM8[0x85DA]`.
 
 | address | raw | scale | threshold |
 |---|---:|---:|---:|
 | `0x85D9` | 36 | `x*50 RPM` | 1800 RPM activation |
 | `0x85DA` | 30 | `x*50 RPM` | 1500 RPM release |
+| `0x911C` | 381 | accumulator counts | readiness |
 
 The function returns state bit 5 as a Boolean. `FUN_0004ED88` ORs this result with
 other Boolean conditions. `FUN_0004FB5E` converts any nonzero aggregate to `0x3F`,
@@ -867,6 +883,12 @@ Identification of the `FUN_0004F324` condition specifically as Over Run Fuel Cut
 aggregate are confirmed, but the physical identities of the entry-gate signals are
 not.
 
+The static diagnostic corpus contains no reviewed binding for `0xFFFF247F`,
+`0xFFFF16A6`, `0xFFFF22E0`, or `0xFFFF1220`. The SID `0x22` review extractor
+finds some of these addresses in large same-function RAM candidate sets, but no
+dispatcher-to-response data-flow trace connects them to a returned value. No
+diagnostic fuel-cut state is therefore claimed.
+
 
 ### A branch can be disabled by calibration - a table is referenced but not read
 
@@ -894,22 +916,30 @@ table live. ROM adjacency and a plausible shape, such as a second curve always b
 the first and resembling hysteresis, do not replace a branch trace. The graph assigns
 `role=dead` to such bases, and the finding names the selector.
 
-Per-cylinder cut execution [CONFIRMED] is in `FUN_00051a98`, a loop over 6 V6
-cylinders. Fuel is present only when an AND condition holds. Its key calibrated term is
-`byte[0x87FD]<<3 (=25*8=200) <= (word[0xFFFF1024] - word[0xFFFF1028])`, the delta of
-two load/flow words. Other terms are per-cylinder masks `byte[0xFFFF22E0]`,
-`byte[0xFFFF128C+off]`, and flag bit5 in `byte[0xFFFF245D]`. The result is written as
-one bit per cylinder in cut mask `byte[0xFFFF120E+0x12]`; fuel equals zero when the
-condition fails.
+The internal six-channel writer in `FUN_00051A98` belongs to the disabled
+`ROM8[0x8D92].bit3=0` branch. One of its calibrated conditions is:
 
-Overrun detection [CONFIRMED] is signed
-`short[0xFFFF10B8] < -byte[0x86AE]` in the same `FUN_0005185c`. With
-`byte[0x86AE]=0`, the threshold is zero and any negative load slope triggers detection.
-The output is bit `0x10` in `byte[0xFFFF24D2]`, base `0xFFFF24CE+4`.
+```text
+ROM8[0x87FD]<<3 <= uint16[0xFFFF1024] - uint16[0xFFFF1028]
+```
 
-The physical meaning of words `0xFFFF1024`/`0xFFFF1028`, whether flow versus target or
-two MAF samples, is unknown. The quantitative effect of editing `byte[0x87FD]` therefore
-cannot be predicted, and it is not exposed as an editable scalar in the definition.
+Scheduler `FUN_00020DFE` proves the relation between these words. At
+`0x20F04..0x20F14` it copies the old `0xFFFF1024` value to `0xFFFF1028`,
+then copies new source `0xFFFF1026` to `0xFFFF1024`. The condition therefore
+tests a positive current-minus-previous sample increase of at least 200 raw
+counts. It is not a stock Over Run Fuel Cut threshold: stock
+`ROM8[0x8D92] = 0x7A` has bit 3 set and skips the writer, the `0x87FD`
+comparison, and the `0x121EE` calculation path. `0x87FD` is not exposed as an
+editable scalar.
+
+`FUN_0005185C` independently tests
+`signed16[0xFFFF10B8] < -ROM8[0x86AE]`. With `ROM8[0x86AE]=0`, any negative
+input slope sets bit `0x10` of `0xFFFF24D2`. No direct consumer connects this
+bit to the aggregate `0xFFFF22E0`; the detector is not used as proof for the
+`FUN_0004F324` mode identity.
+
+The physical sample quantity represented by `0xFFFF1026`,
+`0xFFFF1024`, and `0xFFFF1028` remains unknown.
 
 
 ### Throttle rev limiter scalar `0x942C`, FUN_0007584E [CONFIRMED PATH]

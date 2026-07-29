@@ -505,11 +505,12 @@
          scaling x*50 RPM [code]
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
-         The stored bytes are 36 and 30, or 1800 and 1500 RPM. Entry also requires ffff110e ==
-         0, ffff244f bit 2 set, and ffff2458 bit 5 clear. The physical identities of those gates
-         are unresolved, so identification of this condition specifically as Over Run Fuel Cut
-         remains candidate. The code-level claim is limited to RPM hysteresis and its path into
-         the aggregate six-channel fuel-output inhibit logic.
+         The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator
+         ffff16a6 to reach ROM16[0000911c]. The additional clause is ffff1071 >= ROM8[00008d0e]
+         or ffff245d bit 6; stock ROM8[00008d0e]=0 makes the unsigned comparison always true.
+         Entry also requires ffff110e == 0, ffff244f bit 2 set, and ffff2458 bit 5 clear. The
+         physical identities of those gates are unresolved, so identification of this condition
+         specifically as Over Run Fuel Cut remains candidate.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Fuel Cut RPM Hysteresis (0x85D9)"
            category="Fuel Delivery / Fuel Cut / Thresholds" storagetype="uint8"
@@ -564,6 +565,24 @@
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
         <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0911C  1 uint16  map [code]
+         accessor 0x4F324; r4 operand: manual
+         scaling x accumulator counts
+         The stock value is 381 accumulator counts. The threshold controls readiness for the RPM
+         hysteresis at 000085d9/000085da. Code proves the operational threshold role, but the
+         physical identities of the state-machine entry gates remain unresolved; the specific
+         Over Run Fuel Cut name remains candidate.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Fuel Cut Readiness Accumulator Threshold (0x911C)"
+           category="Fuel Delivery / Fuel Cut / Thresholds" storagetype="uint16"
+           storageaddress="0x0911C" sizex="1" endian="big">
+      <scaling units="accumulator counts" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>readiness</data>
       </table>
     </table>
 
@@ -654,6 +673,29 @@
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
         <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x124D2  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x4F324; r4 operand: pool
+         scaling x-128 accumulator counts [code]
+         The lookup coordinate is q=clamp((signed16(ffff11bc)-160)/2,0,255), with signed
+         rounding before division. Current values 128..255 decode to additions of 0..127.
+         ROM16[0000911c] is the inclusive readiness threshold for the accumulator. Code proves
+         this operational role in the fuel-output inhibit path, but the physical identity and
+         engineering scale of ffff11bc remain unresolved; no catalog name or physical axis is
+         claimed.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Fuel Cut Readiness Accumulator Step (0x124D2)"
+           category="Fuel Delivery / Fuel Cut / Thresholds" storagetype="uint8"
+           storageaddress="0x124D2" sizex="16" endian="big">
+      <scaling units="accumulator counts" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
+        <data>0</data><data>16</data><data>32</data><data>48</data>
+        <data>64</data><data>80</data><data>96</data><data>112</data>
+        <data>128</data><data>144</data><data>160</data><data>176</data>
+        <data>192</data><data>208</data><data>224</data><data>240</data>
       </table>
     </table>
 
@@ -1449,28 +1491,6 @@
            sizex="16" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="16"/>
-      <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
-        <data>0</data><data>16</data><data>32</data><data>48</data>
-        <data>64</data><data>80</data><data>96</data><data>112</data>
-        <data>128</data><data>144</data><data>160</data><data>176</data>
-        <data>192</data><data>208</data><data>224</data><data>240</data>
-      </table>
-    </table>
-
-    <!-- 0x124D2  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
-         accessor 0x4F324; r4 operand: pool
-         scaling x-128 accumulator counts [code]
-         Code proves the operational semantics of an accumulator addition but not the physical
-         purpose of RAM ffff11bc and ffff16a6. Values 128..255 decode to a nonnegative addition
-         of 0..127. The summary section has no direct result-to-RAM binding, but the register
-         trace from site 0004f398 to write 0004f3c8 is unambiguous. No catalog name is claimed.
-         Result disposition: writes.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Accumulator Additive Correction (0x124D2)"
-           category="Internal Calculations" storagetype="uint8" storageaddress="0x124D2"
-           sizex="16" endian="big">
-      <scaling units="accumulator counts" expression="x-128" to_byte="x+128" format="0"
-               fineincrement="1" coarseincrement="16"/>
       <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
         <data>0</data><data>16</data><data>32</data><data>48</data>
         <data>64</data><data>80</data><data>96</data><data>112</data>

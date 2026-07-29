@@ -256,6 +256,15 @@ coarse = 125
 # the threshold pair.
 static_axis = ["cut (bit7=0)", "restore (bit7=1)"]
 
+[table.0000911c]
+name = "Fuel Cut Readiness Accumulator Threshold (0x911C)"
+category = "Fuel Delivery / Fuel Cut / Thresholds"
+order = 11
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["readiness"]
+
 [table.0000942c]
 name = "Throttle Rev Limiter (0x942C)"
 category = "Limiters"
@@ -448,9 +457,9 @@ fine = 1
 coarse = 16
 
 [table.000124d2]
-name = "Accumulator Additive Correction (0x124D2)"
-category = "Internal Calculations"
-order = 99
+name = "Fuel Cut Readiness Accumulator Step (0x124D2)"
+category = "Fuel Delivery / Fuel Cut / Thresholds"
+order = 12
 format = "0"
 fine = 1
 coarse = 16

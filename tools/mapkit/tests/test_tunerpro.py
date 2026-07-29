@@ -190,6 +190,12 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "Target AFR - Power (0xB33A)": "AFR / Lambda",
             "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)": "Airflow",
             "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
+            "Fuel Cut Readiness Accumulator Threshold (0x911C)": (
+                "Fuel Delivery / Fuel Cut / Thresholds"
+            ),
+            "Fuel Cut Readiness Accumulator Step (0x124D2)": (
+                "Fuel Delivery / Fuel Cut / Thresholds"
+            ),
             "Throttle Rev Limiter (0x942C)": "Limiters",
             "Engine Speed Axis [RPM] (ref)": "Reference Axes",
         }
@@ -219,7 +225,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 36)
-        self.assertEqual(len(tables), 152)
+        self.assertEqual(len(tables), 153)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -240,6 +246,21 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "Disable all" in (patch.findtext("./title") or "")
             for patch in patches
         ))
+
+    def test_fuel_cut_readiness_uses_exact_scalar_and_code_scale(self):
+        table = next(
+            table for table in self.root.findall("./XDFTABLE")
+            if table.findtext("./title") == (
+                "Fuel Cut Readiness Accumulator Threshold (0x911C)"
+            )
+        )
+        axis = table.find("./XDFAXIS[@id='z']")
+        data = axis.find("./EMBEDDEDDATA")
+        self.assertEqual(data.get("mmedaddress"), "0x911C")
+        self.assertEqual(data.get("mmedelementsizebits"), "16")
+        self.assertEqual(data.get("mmedrowcount"), "1")
+        self.assertEqual(data.get("mmedcolcount"), "1")
+        self.assertEqual(axis.findtext("./units"), "accumulator counts")
 
     def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
         table = next(

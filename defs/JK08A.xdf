@@ -325,7 +325,7 @@
   </XDFPATCH>
   <XDFTABLE uniqueid="0xB53F" flags="0x0">
     <title>Fuel Cut RPM Hysteresis (0x85D9)</title>
-    <description>Exact JK08A. Address 0x85D9; 1 rows x 2 columns; uint8; map confidence code. Two-byte activation/release RPM hysteresis for one condition in the aggregate six-channel fuel-output inhibit path. With readiness bit 4 of ffff247f set and state bit 5 clear, engine speed ffff11ae greater than or equal to cell 0 sets bit 5. While bit 5 is set, speed below cell 1 clears it. FUN 0004f324 returns bit 5 as a Boolean; FUN 0004ed88 includes it in the aggregate passed through FUN 0004fb5e. The stored bytes are 36 and 30, or 1800 and 1500 RPM. Entry also requires ffff110e == 0, ffff244f bit 2 set, and ffff2458 bit 5 clear. The physical identities of those gates are unresolved, so identification of this condition specifically as Over Run Fuel Cut remains candidate. The code-level claim is limited to RPM hysteresis and its path into the aggregate six-channel fuel-output inhibit logic. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <description>Exact JK08A. Address 0x85D9; 1 rows x 2 columns; uint8; map confidence code. Two-byte activation/release RPM hysteresis for one condition in the aggregate six-channel fuel-output inhibit path. With readiness bit 4 of ffff247f set and state bit 5 clear, engine speed ffff11ae greater than or equal to cell 0 sets bit 5. While bit 5 is set, speed below cell 1 clears it. FUN 0004f324 returns bit 5 as a Boolean; FUN 0004ed88 includes it in the aggregate passed through FUN 0004fb5e. The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator ffff16a6 to reach ROM16[0000911c]. The additional clause is ffff1071 &gt;= ROM8[00008d0e] or ffff245d bit 6; stock ROM8[00008d0e]=0 makes the unsigned comparison always true. Entry also requires ffff110e == 0, ffff244f bit 2 set, and ffff2458 bit 5 clear. The physical identities of those gates are unresolved, so identification of this condition specifically as Over Run Fuel Cut remains candidate. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="8" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -2495,6 +2495,48 @@
       <MATH row="16" col="16" equation="(((X-(B&amp;127))/128))">
         <VAR id="X" />
         <VAR id="B" type="address" address="0x9A19" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x6B7D" flags="0x0">
+    <title>Fuel Cut Readiness Accumulator Threshold (0x911C)</title>
+    <description>Exact JK08A. Address 0x911C; 1 rows x 1 columns; uint16; map confidence code. Calibrated inclusive threshold for readiness accumulator ffff16a6 in one condition of the aggregate six-channel fuel-output inhibit path. FUN 0004f324 sets readiness bit 4 of ffff247f when the accumulator is greater than or equal to this scalar and its secondary gate passes. The stock value is 381 accumulator counts. The threshold controls readiness for the RPM hysteresis at 000085d9/000085da. Code proves the operational threshold role, but the physical identities of the state-machine entry gates remain unresolved; the specific Over Run Fuel Cut name remains candidate.</description>
+    <CATEGORYMEM index="0" category="8" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Selector</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="readiness" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x911C" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>accumulator counts</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
@@ -6762,6 +6804,63 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xCF54" flags="0x0">
+    <title>Fuel Cut Readiness Accumulator Step (0x124D2)</title>
+    <description>Exact JK08A. Address 0x124D2; 1 rows x 16 columns; uint8; map confidence code. One-dimensional signed-offset step table for readiness accumulator ffff16a6 in one condition of the aggregate six-channel fuel-output inhibit path. Every time timer ffff258a expires, FUN 0004f324 decodes the interpolated byte as x-128, adds it to the accumulator with saturation to 0..65535, and reloads the timer with 100. The lookup coordinate is q=clamp((signed16(ffff11bc)-160)/2,0,255), with signed rounding before division. Current values 128..255 decode to additions of 0..127. ROM16[0000911c] is the inclusive readiness threshold for the accumulator. Code proves this operational role in the fuel-output inhibit path, but the physical identity and engineering scale of ffff11bc remain unresolved; no catalog name or physical axis is claimed.</description>
+    <CATEGORYMEM index="0" category="8" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Raw input (step 16)</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="16" />
+      <LABEL index="2" value="32" />
+      <LABEL index="3" value="48" />
+      <LABEL index="4" value="64" />
+      <LABEL index="5" value="80" />
+      <LABEL index="6" value="96" />
+      <LABEL index="7" value="112" />
+      <LABEL index="8" value="128" />
+      <LABEL index="9" value="144" />
+      <LABEL index="10" value="160" />
+      <LABEL index="11" value="176" />
+      <LABEL index="12" value="192" />
+      <LABEL index="13" value="208" />
+      <LABEL index="14" value="224" />
+      <LABEL index="15" value="240" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x124D2" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>accumulator counts</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x194D" flags="0x0">
     <title>Fuel Compensation Map (0xA29A)</title>
     <description>Exact JK08A. Address 0xA29A; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal.</description>
@@ -8417,63 +8516,6 @@
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0xCF54" flags="0x0">
-    <title>Accumulator Additive Correction (0x124D2)</title>
-    <description>Exact JK08A. Address 0x124D2; 1 rows x 16 columns; uint8; map confidence code. One-dimensional addition table for 16-bit accumulator ffff16a6: an interpolated unsigned byte is converted to an addition, combined with the current value, saturated to 0..65535, and written back. Code proves the operational semantics of an accumulator addition but not the physical purpose of RAM ffff11bc and ffff16a6. Values 128..255 decode to a nonnegative addition of 0..127. The summary section has no direct result-to-RAM binding, but the register trace from site 0004f398 to write 0004f3c8 is unambiguous. No catalog name is claimed. Result disposition: writes.</description>
-    <CATEGORYMEM index="0" category="14" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Raw input (step 16)</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <LABEL index="1" value="16" />
-      <LABEL index="2" value="32" />
-      <LABEL index="3" value="48" />
-      <LABEL index="4" value="64" />
-      <LABEL index="5" value="80" />
-      <LABEL index="6" value="96" />
-      <LABEL index="7" value="112" />
-      <LABEL index="8" value="128" />
-      <LABEL index="9" value="144" />
-      <LABEL index="10" value="160" />
-      <LABEL index="11" value="176" />
-      <LABEL index="12" value="192" />
-      <LABEL index="13" value="208" />
-      <LABEL index="14" value="224" />
-      <LABEL index="15" value="240" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x124D2" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>accumulator counts</units>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X-128">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
