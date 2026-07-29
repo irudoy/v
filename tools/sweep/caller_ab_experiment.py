@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Control plane for the paired experiment on JK03A direct-caller semantics.
+"""Control plane for paired experiments on direct-caller semantics.
 
 Runtime files are created outside the repository. The tool freezes a private manifest,
 builds blinded caller packets, validates cards, assembles two opaquely named conditions,
-and compares complete Dynamic Workflow archives. This CLI never writes canonical CSV.
+and compares complete agent-run archives. This CLI never writes canonical CSV.
 """
 from __future__ import annotations
 
@@ -24,10 +24,14 @@ import sys
 import unicodedata
 
 ROOT = Path(__file__).resolve().parents[2]
+SWEEP_TOOLS = Path(__file__).resolve().parent
 MEMGRAPH_TOOLS = ROOT / "tools" / "memgraph"
+if str(SWEEP_TOOLS) not in sys.path:
+    sys.path.insert(0, str(SWEEP_TOOLS))
 if str(MEMGRAPH_TOOLS) not in sys.path:
     sys.path.insert(0, str(MEMGRAPH_TOOLS))
 
+import agent_protocol  # noqa: E402
 from provenance import (  # noqa: E402
     PROCESS as PROVENANCE_PROCESS_ROLES,
     ProvenanceError,
@@ -36,26 +40,107 @@ from provenance import (  # noqa: E402
     parse_evidence,
 )
 
-ROM = "JK03A"
-SELECTION_COMMIT = "b02d3b7157d900a0654b1c63f2c200d8154d315b"
-TRUTH_COMMIT = "849d76a6ea8f2fb931448bf7adb58b6739aa7a40"
-SELECTION_SCHEMA = "selection-v1"
-ADDRESS_LIST_SHA256 = "4e9b97f9e9a46d183d96d549403e8264856e1128209f363c6dd1a85bdf3bcc94"
-SELECTION_DIVERSITY_OBJECTIVE = (24, 16, 7, -4, -12)
-SELECTION_TIE_BREAK_SHA256 = "01889b5fbd018738bef760dd91cdd3fa8b4ef9660a4ed3923cee322d8ba77576"
-ADDRESSES = tuple(
+FULL_ADDRESSES = tuple(
     """0000a29a 0000ab4a 0000b23a 0000b33a 0000b71a 0000b81a
 0000d78e 00011ede 00012262 000122b2 00012312 00012908
 00012a32 00012a62 00012e1a 00012e3a 00012fc6 000131a2
 00014114 0001462a 0001473a 0001488a 0001497a 00016f48""".split()
 )
+CLOSURE_ADDRESSES = tuple(
+    """0000b23a 0000b33a 0000b71a 0000b81a
+0000d78e 00011ede 00012262 0001462a""".split()
+)
 
-PRIVATE_SCHEMA = "vq.caller-semantics-private/v4"
+PROFILES = {
+    "full-v4": {
+        "rom": "JK03A",
+        "selection_commit": "b02d3b7157d900a0654b1c63f2c200d8154d315b",
+        "truth_commit": "849d76a6ea8f2fb931448bf7adb58b6739aa7a40",
+        "source_path": "defs/JK03A.findings.csv",
+        "selection_schema": "selection-v1",
+        "address_list_sha256": (
+            "4e9b97f9e9a46d183d96d549403e8264856e1128209f363c6dd1a85bdf3bcc94"
+        ),
+        "selection_diversity_objective": (24, 16, 7, -4, -12),
+        "selection_tie_break_sha256": (
+            "01889b5fbd018738bef760dd91cdd3fa8b4ef9660a4ed3923cee322d8ba77576"
+        ),
+        "addresses": FULL_ADDRESSES,
+        "caller_count": 21,
+        "exposed_count": 22,
+        "control_count": 2,
+        "execution_mode": "claude-workflow-v3",
+        "private_schema": "vq.caller-semantics-private/v4",
+        "execution_config_schema": "vq.caller-semantics-execution-config/v3",
+        "prep_execution_schema": "vq.caller-semantics-prep-execution/v3",
+        "run_execution_schema": "vq.caller-semantics-run-execution/v3",
+        "score_execution_schema": "vq.caller-semantics-score-execution/v2",
+    },
+    "closure-v1": {
+        "rom": "JK08A",
+        "selection_commit": "0269c11b7fc18b7e9619144ba8ffdf7eb7642bc5",
+        "truth_commit": "0269c11b7fc18b7e9619144ba8ffdf7eb7642bc5",
+        "source_path": "defs/JK08A.findings.csv",
+        "selection_schema": "closure-v1",
+        "address_list_sha256": (
+            "e38b166b6bf48325e06bed365312fc8734db102b7ada073087c50e721ff6dd23"
+        ),
+        # maps, exposed maps, controls, unique callers, represented roles
+        "selection_diversity_objective": (8, 6, 2, 5, 3),
+        "selection_tie_break_sha256": (
+            "b2364bf70c978c7f3e36369d4318104c945409da4725860669c4b2457ddac944"
+        ),
+        "addresses": CLOSURE_ADDRESSES,
+        "caller_count": 5,
+        "exposed_count": 6,
+        "control_count": 2,
+        "execution_mode": "agent-protocol-v1",
+        "private_schema": "vq.caller-semantics-private/v5",
+        "execution_config_schema": "vq.caller-semantics-execution-config/v4",
+        "prep_execution_schema": "vq.caller-semantics-prep-execution/v4",
+        "run_execution_schema": "vq.caller-semantics-run-execution/v4",
+        "score_execution_schema": "vq.caller-semantics-score-execution/v3",
+    },
+}
+
+
+def activate_profile(name: str) -> None:
+    """Select one frozen experiment profile before constructing CLI defaults."""
+    try:
+        profile = PROFILES[name]
+    except KeyError as exc:
+        raise ExperimentError(f"unknown experiment profile: {name}") from exc
+    global PROFILE_NAME
+    global ROM, SELECTION_COMMIT, TRUTH_COMMIT, SOURCE_PATH
+    global SELECTION_SCHEMA, ADDRESS_LIST_SHA256
+    global SELECTION_DIVERSITY_OBJECTIVE, SELECTION_TIE_BREAK_SHA256, ADDRESSES
+    global EXPECTED_CALLER_COUNT, EXPECTED_EXPOSED_COUNT, EXPECTED_CONTROL_COUNT
+    global EXECUTION_MODE, PRIVATE_SCHEMA, EXECUTION_CONFIG_SCHEMA
+    global PREP_EXECUTION_SCHEMA, RUN_EXECUTION_SCHEMA, SCORE_EXECUTION_SCHEMA
+    PROFILE_NAME = name
+    ROM = profile["rom"]
+    SELECTION_COMMIT = profile["selection_commit"]
+    TRUTH_COMMIT = profile["truth_commit"]
+    SOURCE_PATH = profile["source_path"]
+    SELECTION_SCHEMA = profile["selection_schema"]
+    ADDRESS_LIST_SHA256 = profile["address_list_sha256"]
+    SELECTION_DIVERSITY_OBJECTIVE = profile["selection_diversity_objective"]
+    SELECTION_TIE_BREAK_SHA256 = profile["selection_tie_break_sha256"]
+    ADDRESSES = profile["addresses"]
+    EXPECTED_CALLER_COUNT = profile["caller_count"]
+    EXPECTED_EXPOSED_COUNT = profile["exposed_count"]
+    EXPECTED_CONTROL_COUNT = profile["control_count"]
+    EXECUTION_MODE = profile["execution_mode"]
+    PRIVATE_SCHEMA = profile["private_schema"]
+    EXECUTION_CONFIG_SCHEMA = profile["execution_config_schema"]
+    PREP_EXECUTION_SCHEMA = profile["prep_execution_schema"]
+    RUN_EXECUTION_SCHEMA = profile["run_execution_schema"]
+    SCORE_EXECUTION_SCHEMA = profile["score_execution_schema"]
+
+
 EXPORT_COHORT_SCHEMA = "vq.ghidra-export-cohort/v2"
 BLIND_AUDIT_SCHEMA = "vq.blind-artifact-audit/v1"
-EXECUTION_CONFIG_SCHEMA = "vq.caller-semantics-execution-config/v3"
 PREP_WORKLIST_SCHEMA = "vq.caller-semantics-prep-worklist/v1"
-PREP_EXECUTION_SCHEMA = "vq.caller-semantics-prep-execution/v3"
 PREP_RESULT_SCHEMA = "vq.caller-semantics-prep-results/v4"
 CARD_CANDIDATES_SCHEMA = "vq.caller-card-candidates/v1"
 CARD_APPROVALS_SCHEMA = "vq.caller-card-approvals/v1"
@@ -63,11 +148,9 @@ CARD_APPROVAL_POLICY = "manual_exact_payload_against_cited_frozen_artifact"
 CARDS_SCHEMA = "vq.caller-semantics-cards/v4"
 CONDITIONS_SCHEMA = "vq.caller-semantics-conditions-private/v4"
 RUN_WORKLIST_SCHEMA = "vq.caller-semantics-run-worklist/v1"
-RUN_EXECUTION_SCHEMA = "vq.caller-semantics-run-execution/v3"
 RUN_RESULT_SCHEMA = "vq.caller-semantics-run-results/v4"
 RUN_REPORT_SCHEMA = "vq.caller-semantics-run-report/v4"
 SCORE_WORKLIST_SCHEMA = "vq.caller-semantics-score-worklist/v2"
-SCORE_EXECUTION_SCHEMA = "vq.caller-semantics-score-execution/v2"
 SCORE_RESULT_SCHEMA = "vq.caller-semantics-score-results/v2"
 SEMANTICS_SCORE_SCHEMA = "vq.caller-semantics-arm-blind-scores/v4"
 COMPARISON_SCHEMA = "vq.caller-semantics-comparison/v4"
@@ -199,6 +282,9 @@ WORKFLOW_FILES = {
     "score": ".claude/workflows/vq-caller-score.js",
 }
 BLIND_AGENT_FILE = ".claude/agents/vq-ab-blind-worker.md"
+AGENT_PROTOCOL_FILE = "tools/sweep/agent_protocol.py"
+
+activate_profile("full-v4")
 
 SENSITIVE_TRUTH_FIELDS = frozenset({"semantics", "evidence", "note", "target", "trace"})
 
@@ -245,7 +331,24 @@ def blind_agent_has_no_tools(agent_text: str) -> bool:
     return tools_lines == ["tools: []"]
 
 
-def execution_config(repo: Path = ROOT) -> dict:
+def prompt_inventory() -> dict:
+    prompt_texts = {
+        "prep_analyze": PREP_ANALYZE_PROMPT,
+        "prep_verify": PREP_VERIFY_PROMPT,
+        "run_analyze": RUN_ANALYZE_PROMPT,
+        "run_verify": RUN_VERIFY_PROMPT,
+        "score": SCORE_PROMPT,
+    }
+    return {
+        name: {
+            "sha256": sha256_bytes(text.encode("utf-8")),
+            "text": text,
+        }
+        for name, text in prompt_texts.items()
+    }
+
+
+def legacy_execution_config(repo: Path = ROOT) -> dict:
     agent_path = repo / BLIND_AGENT_FILE
     try:
         agent_text = agent_path.read_text(encoding="utf-8")
@@ -265,22 +368,8 @@ def execution_config(repo: Path = ROOT) -> dict:
             "sha256": sha256_bytes(content.encode("utf-8")),
             "content": content,
         }
-    prompt_texts = {
-        "prep_analyze": PREP_ANALYZE_PROMPT,
-        "prep_verify": PREP_VERIFY_PROMPT,
-        "run_analyze": RUN_ANALYZE_PROMPT,
-        "run_verify": RUN_VERIFY_PROMPT,
-        "score": SCORE_PROMPT,
-    }
-    prompts = {
-        name: {
-            "sha256": sha256_bytes(text.encode("utf-8")),
-            "text": text,
-        }
-        for name, text in prompt_texts.items()
-    }
     return {
-        "schema": EXECUTION_CONFIG_SCHEMA,
+        "schema": "vq.caller-semantics-execution-config/v3",
         "model": MODEL_ID,
         "effort": EFFORT,
         "token_budget": "platform_default_same_response_schema",
@@ -295,15 +384,52 @@ def execution_config(repo: Path = ROOT) -> dict:
             "content": agent_text,
         },
         "workflows": workflows,
-        "prompts": prompts,
+        "prompts": prompt_inventory(),
     }
+
+
+def agent_execution_config(repo: Path = ROOT) -> dict:
+    protocol_path = repo / AGENT_PROTOCOL_FILE
+    try:
+        protocol_text = protocol_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise ExperimentError(
+            f"failed to read agent protocol {protocol_path}: {exc}"
+        ) from exc
+    return {
+        "schema": "vq.caller-semantics-execution-config/v4",
+        "protocol": {
+            "schema": agent_protocol.PROTOCOL_SCHEMA,
+            "path": AGENT_PROTOCOL_FILE,
+            "sha256": sha256_bytes(protocol_text.encode("utf-8")),
+            "content": protocol_text,
+        },
+        "executor_policy": {
+            "identity": "same_exact_executor_all_phases_and_stages",
+            "task_policy": dict(agent_protocol.TASK_POLICY),
+            "receipt": "embedded_raw_output_with_operator_attestation",
+        },
+        "token_budget": "executor_default_same_response_schema",
+        "stochastic_replicates": STOCHASTIC_REPLICATES,
+        "control_abs_max": CONTROL_ABS_MAX,
+        "placebo_contract": PLACEBO_CONTRACT,
+        "prompts": prompt_inventory(),
+    }
+
+
+def execution_config(repo: Path = ROOT) -> dict:
+    if EXECUTION_MODE == "claude-workflow-v3":
+        return legacy_execution_config(repo)
+    if EXECUTION_MODE == "agent-protocol-v1":
+        return agent_execution_config(repo)
+    raise ExperimentError(f"unsupported execution mode: {EXECUTION_MODE}")
 
 
 def execution_config_digest(config: dict) -> str:
     return sha256_bytes(stable_json_bytes(config, pretty=False))
 
 
-def validate_execution_config(config: dict) -> None:
+def validate_legacy_execution_config(config: dict) -> None:
     required = {
         "schema",
         "model",
@@ -321,7 +447,7 @@ def validate_execution_config(config: dict) -> None:
     if not isinstance(config, dict) or set(config) != required:
         raise ExperimentError("execution config contains a field outside the frozen schema")
     if (
-        config.get("schema") != EXECUTION_CONFIG_SCHEMA
+        config.get("schema") != "vq.caller-semantics-execution-config/v3"
         or config.get("model") != MODEL_ID
         or config.get("effort") != EFFORT
         or config.get("token_budget") != "platform_default_same_response_schema"
@@ -382,6 +508,65 @@ def validate_execution_config(config: dict) -> None:
             )
 
 
+def validate_agent_execution_config(config: dict) -> None:
+    required = {
+        "schema",
+        "protocol",
+        "executor_policy",
+        "token_budget",
+        "stochastic_replicates",
+        "control_abs_max",
+        "placebo_contract",
+        "prompts",
+    }
+    if not isinstance(config, dict) or set(config) != required:
+        raise ExperimentError(
+            "agent execution config contains a field outside the frozen schema"
+        )
+    if (
+        config.get("schema") != "vq.caller-semantics-execution-config/v4"
+        or config.get("token_budget")
+        != "executor_default_same_response_schema"
+        or config.get("stochastic_replicates") != 1
+        or config.get("control_abs_max") != 1 / 7
+        or config.get("placebo_contract") != PLACEBO_CONTRACT
+    ):
+        raise ExperimentError("agent execution config violates the frozen contract")
+    protocol = config.get("protocol")
+    if (
+        not isinstance(protocol, dict)
+        or set(protocol) != {"schema", "path", "sha256", "content"}
+        or protocol.get("schema") != agent_protocol.PROTOCOL_SCHEMA
+        or protocol.get("path") != AGENT_PROTOCOL_FILE
+        or not isinstance(protocol.get("content"), str)
+        or protocol.get("sha256")
+        != sha256_bytes(protocol.get("content", "").encode("utf-8"))
+    ):
+        raise ExperimentError("agent execution config has an invalid protocol source")
+    policy = config.get("executor_policy")
+    if policy != {
+        "identity": "same_exact_executor_all_phases_and_stages",
+        "task_policy": dict(agent_protocol.TASK_POLICY),
+        "receipt": "embedded_raw_output_with_operator_attestation",
+    }:
+        raise ExperimentError("agent execution config has an invalid executor policy")
+    prompts = config.get("prompts")
+    expected = prompt_inventory()
+    if prompts != expected:
+        raise ExperimentError("agent execution config has an invalid prompt inventory")
+
+
+def validate_execution_config(config: dict) -> None:
+    schema = config.get("schema") if isinstance(config, dict) else None
+    if schema == "vq.caller-semantics-execution-config/v3":
+        validate_legacy_execution_config(config)
+        return
+    if schema == "vq.caller-semantics-execution-config/v4":
+        validate_agent_execution_config(config)
+        return
+    raise ExperimentError(f"unknown execution config schema: {schema!r}")
+
+
 def frozen_prompt(manifest: dict, name: str) -> str:
     validate_execution_config(manifest["execution_config"])
     return manifest["execution_config"]["prompts"][name]["text"]
@@ -390,6 +575,8 @@ def frozen_prompt(manifest: dict, name: str) -> str:
 def runtime_binding(manifest: dict, workflow_kind: str) -> dict:
     config = manifest["execution_config"]
     validate_execution_config(config)
+    if config.get("schema") != "vq.caller-semantics-execution-config/v3":
+        raise ExperimentError("runtime binding is available only for legacy Workflow execution")
     workflow = config["workflows"][workflow_kind]
     return {
         "blind_agent_path": config["blind_agent"]["path"],
@@ -397,6 +584,27 @@ def runtime_binding(manifest: dict, workflow_kind: str) -> dict:
         "workflow_path": workflow["path"],
         "workflow_sha256": workflow["sha256"],
     }
+
+
+def protocol_binding(manifest: dict) -> dict:
+    config = manifest["execution_config"]
+    validate_execution_config(config)
+    if config.get("schema") != "vq.caller-semantics-execution-config/v4":
+        raise ExperimentError("protocol binding requires agent execution config v4")
+    protocol = config["protocol"]
+    return {
+        "schema": protocol["schema"],
+        "protocol_path": protocol["path"],
+        "protocol_sha256": protocol["sha256"],
+    }
+
+
+def execution_binding(manifest: dict, workflow_kind: str) -> tuple[str, dict]:
+    config = manifest["execution_config"]
+    validate_execution_config(config)
+    if config["schema"] == "vq.caller-semantics-execution-config/v3":
+        return "runtime_binding", runtime_binding(manifest, workflow_kind)
+    return "protocol_binding", protocol_binding(manifest)
 
 
 def validate_live_runtime_binding(binding: dict, repo: Path = ROOT) -> None:
@@ -425,11 +633,32 @@ def validate_live_runtime_binding(binding: dict, repo: Path = ROOT) -> None:
             raise ExperimentError(f"live runtime source drift: {path}")
 
 
+def validate_live_protocol_binding(binding: dict, repo: Path = ROOT) -> None:
+    required = {"schema", "protocol_path", "protocol_sha256"}
+    if not isinstance(binding, dict) or set(binding) != required:
+        raise ExperimentError("protocol binding contains a field outside the frozen schema")
+    relative = binding.get("protocol_path")
+    if (
+        binding.get("schema") != agent_protocol.PROTOCOL_SCHEMA
+        or not isinstance(relative, str)
+        or Path(relative).is_absolute()
+        or not SHA256.fullmatch(binding.get("protocol_sha256", ""))
+    ):
+        raise ExperimentError("protocol binding contains an invalid path or SHA-256")
+    path = repo / relative
+    if file_sha256(path) != binding["protocol_sha256"]:
+        raise ExperimentError(f"live agent protocol drift: {path}")
+
+
 def validate_archive_execution_input(
     execution: dict,
     workflow_kind: str,
     repo: Path = ROOT,
 ) -> None:
+    live_config = execution_config(repo)
+    validate_execution_config(live_config)
+    legacy = live_config["schema"] == "vq.caller-semantics-execution-config/v3"
+    binding_field = "runtime_binding" if legacy else "protocol_binding"
     specs = {
         "prep": {
             "schema": PREP_EXECUTION_SCHEMA,
@@ -438,14 +667,14 @@ def validate_archive_execution_input(
                 "schema",
                 "result_schema",
                 "execution_config_sha256",
-                "runtime_binding",
+                binding_field,
                 "private_manifest_sha256",
                 "worklist_sha256",
                 "prompts",
                 "items",
             },
             "hashes": {"private_manifest_sha256", "worklist_sha256"},
-            "count": 21,
+            "count": EXPECTED_CALLER_COUNT,
             "response_schema": PREP_RESPONSE_SCHEMA,
             "prompts": {
                 "analyze": PREP_ANALYZE_PROMPT,
@@ -459,14 +688,14 @@ def validate_archive_execution_input(
                 "schema",
                 "result_schema",
                 "execution_config_sha256",
-                "runtime_binding",
+                binding_field,
                 "condition_id",
                 "worklist_sha256",
                 "prompts",
                 "items",
             },
             "hashes": {"worklist_sha256"},
-            "count": 24,
+            "count": len(ADDRESSES),
             "response_schema": RUN_RESPONSE_SCHEMA,
             "prompts": {
                 "analyze": RUN_ANALYZE_PROMPT,
@@ -480,14 +709,14 @@ def validate_archive_execution_input(
                 "schema",
                 "result_schema",
                 "execution_config_sha256",
-                "runtime_binding",
+                binding_field,
                 "run_report_sha256",
                 "worklist_sha256",
                 "prompt",
                 "items",
             },
             "hashes": {"run_report_sha256", "worklist_sha256"},
-            "count": 48,
+            "count": 2 * len(ADDRESSES),
             "response_schema": SCORE_RESPONSE_SCHEMA,
             "prompt": SCORE_PROMPT,
         },
@@ -508,27 +737,37 @@ def validate_archive_execution_input(
         if not SHA256.fullmatch(execution.get(field, "")):
             raise ExperimentError(f"archive-workflow: invalid {field}")
 
-    live_config = execution_config(repo)
-    validate_execution_config(live_config)
     if execution.get("execution_config_sha256") != execution_config_digest(
         live_config
     ):
         raise ExperimentError(
             "archive-workflow: execution config does not match the live frozen contract"
         )
-    workflow = live_config["workflows"][workflow_kind]
-    expected_binding = {
-        "blind_agent_path": live_config["blind_agent"]["path"],
-        "blind_agent_sha256": live_config["blind_agent"]["sha256"],
-        "workflow_path": workflow["path"],
-        "workflow_sha256": workflow["sha256"],
-    }
-    binding = execution.get("runtime_binding")
+    if legacy:
+        workflow = live_config["workflows"][workflow_kind]
+        expected_binding = {
+            "blind_agent_path": live_config["blind_agent"]["path"],
+            "blind_agent_sha256": live_config["blind_agent"]["sha256"],
+            "workflow_path": workflow["path"],
+            "workflow_sha256": workflow["sha256"],
+        }
+    else:
+        protocol = live_config["protocol"]
+        expected_binding = {
+            "schema": protocol["schema"],
+            "protocol_path": protocol["path"],
+            "protocol_sha256": protocol["sha256"],
+        }
+    binding = execution.get(binding_field)
     if binding != expected_binding:
         raise ExperimentError(
-            "archive-workflow: runtime binding does not match the live frozen contract"
+            f"{'runtime' if legacy else 'protocol'} binding does not match "
+            "the live frozen contract"
         )
-    validate_live_runtime_binding(binding, repo)
+    if legacy:
+        validate_live_runtime_binding(binding, repo)
+    else:
+        validate_live_protocol_binding(binding, repo)
 
     if workflow_kind in {"prep", "run"}:
         if execution.get("prompts") != spec["prompts"]:
@@ -756,8 +995,11 @@ def expected_ids(manifest: dict) -> dict:
 
 
 def validate_address_scope() -> None:
-    if len(ADDRESSES) != 24 or len(set(ADDRESSES)) != 24:
-        raise ExperimentError("selection-v1 does not contain exactly 24 unique addresses")
+    expected_count = EXPECTED_EXPOSED_COUNT + EXPECTED_CONTROL_COUNT
+    if len(ADDRESSES) != expected_count or len(set(ADDRESSES)) != expected_count:
+        raise ExperimentError(
+            f"{SELECTION_SCHEMA} does not contain exactly {expected_count} unique addresses"
+        )
     digest = sha256_bytes("\n".join(ADDRESSES).encode())
     if digest != ADDRESS_LIST_SHA256:
         raise ExperimentError(f"address-list SHA-256 changed: {digest}")
@@ -767,6 +1009,28 @@ def source_entry(path: Path, kind: str) -> dict:
     if not path.is_file():
         raise ExperimentError(f"required export file is missing: {path}")
     return {"kind": kind, "path": str(path.resolve()), "sha256": file_sha256(path)}
+
+
+def decomp_export_path(export_dir: Path, address: str) -> Path:
+    """Resolve Ghidra's unpadded decomp filename while accepting old padded fixtures."""
+    if not re.fullmatch(r"(?:0x)?[0-9a-fA-F]{1,8}", address):
+        raise ExperimentError(f"invalid decomp address: {address}")
+    normalized = f"{int(address, 16):08x}"
+    candidates = [
+        export_dir / f"decomp_{normalized.lstrip('0') or '0'}.c",
+        export_dir / f"decomp_{normalized}.c",
+    ]
+    existing = list(dict.fromkeys(path for path in candidates if path.is_file()))
+    if not existing:
+        raise ExperimentError(f"required export file is missing: {candidates[0]}")
+    if len(existing) > 1:
+        hashes = {file_sha256(path) for path in existing}
+        if len(hashes) > 1:
+            raise ExperimentError(
+                f"conflicting decomp exports exist for {normalized}: "
+                + ", ".join(str(path) for path in existing)
+            )
+    return existing[0]
 
 
 def recursive_file_inventory(root: Path) -> list[dict]:
@@ -868,30 +1132,48 @@ def git_entry(repo: Path, commit: str, path: str) -> tuple[dict, bytes]:
 
 
 def extract_truth(row: dict) -> dict:
-    # The frozen truth commit predates repository localization. Keep its field labels as
-    # escaped compatibility constants so current project text remains English.
-    disposition_label = "\u0421\u0443\u0434\u044c\u0431\u0430 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430"
-    target_label = "\u0426\u0435\u043b\u044c \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430"
-    trace_label = "\u041c\u0430\u0448\u0438\u043d\u043d\u044b\u0439 \u0442\u0440\u0435\u0439\u0441"
-    level_label = "\u0423\u0440\u043e\u0432\u0435\u043d\u044c"
-    blocker_label = "\u0411\u043b\u043e\u043a\u0438\u0440\u0443\u044e\u0449\u0435\u0435"
+    # The full-v4 truth predates repository localization, while closure-v1 uses
+    # the current English layer. Accept both frozen field-label dialects.
+    disposition_labels = (
+        "Result disposition",
+        "\u0421\u0443\u0434\u044c\u0431\u0430 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430",
+    )
+    target_labels = (
+        "Result target",
+        "\u0426\u0435\u043b\u044c \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430",
+    )
+    trace_labels = (
+        "Machine trace",
+        "\u041c\u0430\u0448\u0438\u043d\u043d\u044b\u0439 \u0442\u0440\u0435\u0439\u0441",
+    )
+    trailing_labels = (
+        "Scale confidence",
+        "Scale blocking condition",
+        "Semantic confidence",
+        "Blocking condition",
+        "\u0423\u0440\u043e\u0432\u0435\u043d\u044c",
+        "\u0411\u043b\u043e\u043a\u0438\u0440\u0443\u044e\u0449\u0435\u0435",
+    )
     note = row.get("note", "")
     disposition = ""
     target = ""
     trace = ""
-    match = re.search(rf"{re.escape(disposition_label)}:\s*([a-z_]+)\.", note)
+    disposition_pattern = "|".join(re.escape(label) for label in disposition_labels)
+    target_pattern = "|".join(re.escape(label) for label in target_labels)
+    trace_pattern = "|".join(re.escape(label) for label in trace_labels)
+    trailing_pattern = "|".join(re.escape(label) for label in trailing_labels)
+    match = re.search(rf"(?:{disposition_pattern}):\s*([a-z_]+)\.", note)
     if match:
         disposition = match.group(1)
     match = re.search(
-        rf"{re.escape(target_label)}:\s*(.*?)\.\s*{re.escape(trace_label)}:",
+        rf"(?:{target_pattern}):\s*(.*?)\.\s*(?:{trace_pattern}):",
         note,
         re.DOTALL,
     )
     if match:
         target = re.sub(r"\s+", " ", match.group(1)).strip()
     match = re.search(
-        rf"{re.escape(trace_label)}:\s*(.*?)(?:\.\s*"
-        rf"(?:{re.escape(level_label)}|{re.escape(blocker_label)}|$))",
+        rf"(?:{trace_pattern}):\s*(.*?)(?:\.\s*(?:{trailing_pattern})|$)",
         note,
         re.DOTALL,
     )
@@ -962,7 +1244,9 @@ def validate_blind_audit(
     if audit.get("schema") != BLIND_AUDIT_SCHEMA or audit.get("rom") != ROM:
         raise ExperimentError("blind audit: invalid schema or ROM")
     if audit.get("mode") != "focus-maps" or audit.get("targets") != list(ADDRESSES):
-        raise ExperimentError("blind audit does not cover the 24 frozen focus maps")
+        raise ExperimentError(
+            f"blind audit does not cover the {len(ADDRESSES)} frozen focus maps"
+        )
     if frozen_builder is None:
         builder_path = (ROOT / "tools/sweep/build_artifacts.py").resolve()
         if audit.get("builder_path") != str(builder_path) or not builder_path.is_file():
@@ -989,8 +1273,10 @@ def validate_blind_audit(
     if audit.get("max_readers") != 8 or audit.get("max_consumer_decomp") != 24:
         raise ExperimentError("blind audit: frozen builder budgets must be 8 and 24")
     records = audit.get("artifacts")
-    if not isinstance(records, list) or len(records) != 24:
-        raise ExperimentError("blind audit must contain 24 artifact records")
+    if not isinstance(records, list) or len(records) != len(ADDRESSES):
+        raise ExperimentError(
+            f"blind audit must contain {len(ADDRESSES)} artifact records"
+        )
     by_target = {}
     for record in records:
         if not isinstance(record, dict) or set(record) != {
@@ -1053,12 +1339,14 @@ def build_private_manifest(
     selection_commit = run_git(repo, "rev-parse", f"{selection_commit}^{{commit}}")
     truth_commit = run_git(repo, "rev-parse", f"{truth_commit}^{{commit}}")
     if selection_commit != SELECTION_COMMIT or truth_commit != TRUTH_COMMIT:
-        raise ExperimentError("selection-v1 accepts only the frozen selection/truth commits")
+        raise ExperimentError(
+            f"{SELECTION_SCHEMA} accepts only the frozen selection/truth commits"
+        )
 
     selection_source, selection_data = git_entry(
-        repo, selection_commit, "defs/JK03A.findings.csv"
+        repo, selection_commit, SOURCE_PATH
     )
-    truth_source, truth_data = git_entry(repo, truth_commit, "defs/JK03A.findings.csv")
+    truth_source, truth_data = git_entry(repo, truth_commit, SOURCE_PATH)
     _fields, selection_rows = parse_csv_bytes(selection_data, selection_source["path"])
     _fields, truth_rows = parse_csv_bytes(truth_data, truth_source["path"])
     selected = {row.get("addr", "").lower(): row for row in selection_rows}
@@ -1128,7 +1416,7 @@ def build_private_manifest(
     sources.append(source_entry(funcs_path, "ghidra_functions_export"))
     callers = []
     for caller in sorted(caller_to_maps):
-        decomp = export_dir / f"decomp_{caller}.c"
+        decomp = decomp_export_path(export_dir, caller)
         decomp_source = source_entry(decomp, "ghidra_decomp_export")
         sources.append(decomp_source)
         callers.append(
@@ -1347,10 +1635,15 @@ def _validate_private_manifest_shape(manifest: dict) -> None:
     callers = manifest.get("callers")
     if not isinstance(maps, list) or not isinstance(callers, list):
         raise ExperimentError("private manifest: maps/callers must be arrays")
-    if len(callers) != 21:
-        raise ExperimentError("private manifest: frozen design requires 21 direct callers")
+    if len(callers) != EXPECTED_CALLER_COUNT:
+        raise ExperimentError(
+            "private manifest: frozen design requires "
+            f"{EXPECTED_CALLER_COUNT} direct callers"
+        )
     if [item.get("addr") for item in maps] != list(ADDRESSES):
-        raise ExperimentError("private manifest does not match the 24 frozen addresses")
+        raise ExperimentError(
+            f"private manifest does not match the {len(ADDRESSES)} frozen addresses"
+        )
     for key in ("pair_id",):
         values = [item.get(key) for item in maps]
         if None in values or len(values) != len(set(values)):
@@ -1442,8 +1735,15 @@ def _validate_private_manifest_shape(manifest: dict) -> None:
             if len(item.get(field, "")) != 64:
                 raise ExperimentError(f"private manifest: invalid {field} for {item['addr']}")
     exposure = Counter(bool(item.get("direct_callers")) for item in maps)
-    if exposure != Counter({True: 22, False: 2}):
-        raise ExperimentError("private manifest: 22 exposed maps and 2 controls required")
+    expected_exposure = Counter(
+        {True: EXPECTED_EXPOSED_COUNT, False: EXPECTED_CONTROL_COUNT}
+    )
+    if exposure != expected_exposure:
+        raise ExperimentError(
+            "private manifest: "
+            f"{EXPECTED_EXPOSED_COUNT} exposed maps and "
+            f"{EXPECTED_CONTROL_COUNT} controls required"
+        )
     kinds = Counter(manifest.get("condition_mapping", {}).values())
     if kinds != Counter({"verified": 1, "placebo": 1}):
         raise ExperimentError("private manifest: exactly two frozen condition ids required")
@@ -1895,11 +2195,11 @@ def prep_execution_document(manifest_path: Path, worklist_path: Path) -> dict:
     validate_public_projection(worklist)
     if worklist.get("schema") != PREP_WORKLIST_SCHEMA:
         raise ExperimentError("prep execution received a non-prep worklist")
-    return {
+    binding_name, binding = execution_binding(manifest, "prep")
+    document = {
         "schema": PREP_EXECUTION_SCHEMA,
         "result_schema": PREP_RESULT_SCHEMA,
         "execution_config_sha256": manifest["execution_config_sha256"],
-        "runtime_binding": runtime_binding(manifest, "prep"),
         "private_manifest_sha256": file_sha256(manifest_path),
         "worklist_sha256": file_sha256(worklist_path),
         "prompts": {
@@ -1908,21 +2208,29 @@ def prep_execution_document(manifest_path: Path, worklist_path: Path) -> dict:
         },
         "items": [execution_item(job) for job in worklist["jobs"]],
     }
+    document[binding_name] = binding
+    return document
 
 
 def expected_workflow_labels(workflow_kind: str) -> set[str]:
     if workflow_kind == "prep":
         return {
-            *(f"prep-analyze:{index}" for index in range(1, 22)),
-            *(f"prep-verify:{index}" for index in range(1, 22)),
+            *(
+                f"prep-analyze:{index}"
+                for index in range(1, EXPECTED_CALLER_COUNT + 1)
+            ),
+            *(
+                f"prep-verify:{index}"
+                for index in range(1, EXPECTED_CALLER_COUNT + 1)
+            ),
         }
     if workflow_kind == "run":
         return {
-            *(f"map-analyze:{index}" for index in range(1, 25)),
-            *(f"map-verify:{index}" for index in range(1, 25)),
+            *(f"map-analyze:{index}" for index in range(1, len(ADDRESSES) + 1)),
+            *(f"map-verify:{index}" for index in range(1, len(ADDRESSES) + 1)),
         }
     if workflow_kind == "score":
-        return {f"score:{index}" for index in range(1, 49)}
+        return {f"score:{index}" for index in range(1, 2 * len(ADDRESSES) + 1)}
     raise ExperimentError(f"unknown workflow kind {workflow_kind}")
 
 
@@ -2289,7 +2597,7 @@ def validate_native_workflow_output(archive: dict, workflow_kind: str) -> str:
     return resolved_model
 
 
-def validate_archive_envelope(
+def validate_legacy_archive_envelope(
     archive: dict,
     manifest: dict,
     workflow_kind: str,
@@ -2366,6 +2674,76 @@ def validate_archive_envelope(
     if expected_resolved_model is not None and resolved_model != expected_resolved_model:
         raise ExperimentError("Workflow archive was produced by another resolved model")
     return resolved_model
+
+
+def validate_agent_archive_envelope(
+    archive: dict,
+    manifest: dict,
+    workflow_kind: str,
+    execution: dict,
+    expected_resolved_model: str | None = None,
+) -> str:
+    if manifest.get("execution_config", {}).get("schema") != (
+        "vq.caller-semantics-execution-config/v4"
+    ):
+        raise ExperimentError("agent-run archive requires execution config v4")
+    validate_archive_execution_input(execution, workflow_kind)
+    binding = execution.get("protocol_binding")
+    normalized_binding = {
+        "schema": binding.get("schema") if isinstance(binding, dict) else None,
+        "sha256": (
+            binding.get("protocol_sha256") if isinstance(binding, dict) else None
+        ),
+    }
+    try:
+        executor = agent_protocol.validate_archive(
+            archive,
+            execution,
+            binding=normalized_binding,
+        )
+    except agent_protocol.ProtocolError as exc:
+        raise ExperimentError(f"agent-run archive: {exc}") from exc
+    protocol = manifest["execution_config"]["protocol"]
+    if (
+        archive.get("protocolSource") != protocol["content"]
+        or archive.get("protocolSha256") != protocol["sha256"]
+    ):
+        raise ExperimentError("agent-run archive was produced by another protocol")
+    validate_native_result_for_execution(archive["result"], execution, workflow_kind)
+    resolved_executor = agent_protocol.executor_label(executor)
+    if (
+        expected_resolved_model is not None
+        and resolved_executor != expected_resolved_model
+    ):
+        raise ExperimentError("agent-run archive was produced by another executor")
+    return resolved_executor
+
+
+def validate_archive_envelope(
+    archive: dict,
+    manifest: dict,
+    workflow_kind: str,
+    execution: dict,
+    expected_resolved_model: str | None = None,
+) -> str:
+    if (
+        isinstance(archive, dict)
+        and archive.get("schema") == agent_protocol.ARCHIVE_SCHEMA
+    ):
+        return validate_agent_archive_envelope(
+            archive,
+            manifest,
+            workflow_kind,
+            execution,
+            expected_resolved_model=expected_resolved_model,
+        )
+    return validate_legacy_archive_envelope(
+        archive,
+        manifest,
+        workflow_kind,
+        execution,
+        expected_resolved_model=expected_resolved_model,
+    )
 
 
 def build_prep(
@@ -2990,11 +3368,11 @@ def run_execution_document(
     conditions = {item["condition_id"] for item in worklist["jobs"]}
     if len(conditions) != 1:
         raise ExperimentError("run execution mixes condition ids")
-    return {
+    binding_name, binding = execution_binding(manifest, "run")
+    document = {
         "schema": RUN_EXECUTION_SCHEMA,
         "result_schema": RUN_RESULT_SCHEMA,
         "execution_config_sha256": manifest["execution_config_sha256"],
-        "runtime_binding": runtime_binding(manifest, "run"),
         "condition_id": next(iter(conditions)),
         "worklist_sha256": file_sha256(worklist_path),
         "prompts": {
@@ -3003,6 +3381,8 @@ def run_execution_document(
         },
         "items": [execution_item(job) for job in worklist["jobs"]],
     }
+    document[binding_name] = binding
+    return document
 
 
 def build_conditions(
@@ -3185,8 +3565,10 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
             path_leaks = leak_scan(job["artifact_path"], manifest, f"{kind}.artifact_path")
             if path_leaks:
                 raise ExperimentError(f"{kind}: public artifact path leakage: {path_leaks}")
-        if len(public["jobs"]) != 24:
-            raise ExperimentError(f"{kind}: public worklist must contain 24 jobs")
+        if len(public["jobs"]) != len(ADDRESSES):
+            raise ExperimentError(
+                f"{kind}: public worklist must contain {len(ADDRESSES)} jobs"
+            )
         execution_path = Path(condition["execution_input"])
         if file_sha256(execution_path) != condition["execution_input_sha256"]:
             raise ExperimentError(f"{kind}: execution input drift")
@@ -3216,10 +3598,12 @@ def verify_condition_document(document: dict, manifest_path: Path, cards_path: P
                 )
             all_copy_directories.add(copy_directory)
             files = copy_record.get("files")
-            if not isinstance(files, list) or len(files) != 24:
-                raise ExperimentError(f"{kind}: integrity copy must contain 24 files")
+            if not isinstance(files, list) or len(files) != len(ADDRESSES):
+                raise ExperimentError(
+                    f"{kind}: integrity copy must contain {len(ADDRESSES)} files"
+                )
             by_pair = {item.get("pair_id"): item for item in files if isinstance(item, dict)}
-            if len(by_pair) != 24:
+            if len(by_pair) != len(ADDRESSES):
                 raise ExperimentError(f"{kind}: duplicate pair_id in integrity copy")
             expected_names = {f"job-{item['pair_id']}.md" for item in manifest["maps"]}
             if not copy_directory.is_dir() or {item.name for item in copy_directory.iterdir()} != expected_names:
@@ -3583,7 +3967,12 @@ def validate_run_archive(
     verdict_by_id = {item.get("job_id"): item for item in verdicts}
     if len(analysis_by_id) != len(analyses) or len(verdict_by_id) != len(verdicts):
         raise ExperimentError("run result: duplicate job_id")
-    if len(analyses) != 24 or len(verdicts) != 24 or set(analysis_by_id) != set(jobs) or set(verdict_by_id) != set(jobs):
+    if (
+        len(analyses) != len(ADDRESSES)
+        or len(verdicts) != len(ADDRESSES)
+        or set(analysis_by_id) != set(jobs)
+        or set(verdict_by_id) != set(jobs)
+    ):
         missing_a = sorted(set(jobs) - set(analysis_by_id))
         extra_a = sorted(set(analysis_by_id) - set(jobs))
         missing_v = sorted(set(jobs) - set(verdict_by_id))
@@ -3616,7 +4005,10 @@ def validate_run_archive(
         normalized_verdicts.append(dict(verdict))
     return {
         "run_id": archive.get("runId", ""),
-        "script_path": archive.get("scriptPath", ""),
+        "script_path": archive.get(
+            "protocolPath",
+            archive.get("scriptPath", ""),
+        ),
         "resolved_model": resolved_model,
         "analyses": normalized_analyses,
         "verdicts": normalized_verdicts,
@@ -3844,16 +4236,17 @@ def score_documents(manifest_path: Path, run_report_path: Path) -> tuple[dict, d
         "schema": SCORE_WORKLIST_SCHEMA,
         "items": sorted(public_items, key=lambda item: item["score_id"]),
     }
+    binding_name, binding = execution_binding(manifest, "score")
     execution = {
         "schema": SCORE_EXECUTION_SCHEMA,
         "result_schema": SCORE_RESULT_SCHEMA,
         "execution_config_sha256": manifest["execution_config_sha256"],
-        "runtime_binding": runtime_binding(manifest, "score"),
         "run_report_sha256": file_sha256(run_report_path),
         "worklist_sha256": sha256_bytes(stable_json_bytes(public)),
         "prompt": frozen_prompt(manifest, "score"),
         "items": public["items"],
     }
+    execution[binding_name] = binding
     return public, execution, private_mapping
 
 
@@ -3928,7 +4321,10 @@ def validate_score_archive(
         raise ExperimentError("score results: scores must be an array of objects")
     by_id = {item.get("score_id"): item for item in scores}
     if len(by_id) != len(scores) or set(by_id) != set(mapping):
-        raise ExperimentError("score results do not cover 48 frozen responses")
+        raise ExperimentError(
+            "score results do not cover "
+            f"{2 * len(ADDRESSES)} frozen responses"
+        )
     normalized_scores = []
     for current_score_id in sorted(mapping):
         item = by_id[current_score_id]
@@ -4186,8 +4582,15 @@ def compare_results(
         )
     exposed = [item for item in pairs if item["exposed"]]
     controls = [item for item in pairs if not item["exposed"]]
-    if len(exposed) != 22 or len(controls) != 2:
-        raise ExperimentError("frozen design requires 22 exposed pairs and 2 controls")
+    if (
+        len(exposed) != EXPECTED_EXPOSED_COUNT
+        or len(controls) != EXPECTED_CONTROL_COUNT
+    ):
+        raise ExperimentError(
+            "frozen design requires "
+            f"{EXPECTED_EXPOSED_COUNT} exposed pairs and "
+            f"{EXPECTED_CONTROL_COUNT} controls"
+        )
     control_summary = summarize_control_gate(controls)
     controls_valid = control_summary["valid"]
     status = "controls_passed" if controls_valid else "invalid_controls"
@@ -4254,6 +4657,10 @@ def build_workflow_archive(
     output_path: Path,
     fresh_launch_attested: bool,
 ) -> dict:
+    if EXECUTION_MODE != "claude-workflow-v3":
+        raise ExperimentError(
+            "archive-workflow is legacy-only; use tools/sweep/agent_workflow.py archive"
+        )
     execution = read_json(execution_path)
     kind_by_schema = {
         PREP_EXECUTION_SCHEMA: "prep",
@@ -4350,7 +4757,7 @@ def cmd_build_prep(args):
     )
     print(f"prep jobs={len(public['jobs'])}")
     print(f"public worklist: {Path(args.public_output).resolve()}")
-    print(f"workflow execution input: {Path(args.execution_output).resolve()}")
+    print(f"agent execution input: {Path(args.execution_output).resolve()}")
 
 
 def cmd_validate_prep(args):
@@ -4385,7 +4792,10 @@ def cmd_build_conditions(args):
         Path(args.execution_dir),
         Path(args.private_output),
     )
-    print(f"conditions={len(document['conditions'])}, integrity_copies=2, jobs=24")
+    print(
+        f"conditions={len(document['conditions'])}, integrity_copies=2, "
+        f"jobs={len(ADDRESSES)}"
+    )
 
 
 def cmd_verify_artifacts(args):
@@ -4402,7 +4812,10 @@ def cmd_validate_run(args):
         [Path(path) for path in args.archive],
         Path(args.output),
     )
-    print(f"runs={len(report['runs'])}, analyses=48, verdicts=48")
+    print(
+        f"runs={len(report['runs'])}, analyses={2 * len(ADDRESSES)}, "
+        f"verdicts={2 * len(ADDRESSES)}"
+    )
 
 
 def cmd_build_score(args):
@@ -4413,7 +4826,7 @@ def cmd_build_score(args):
         Path(args.execution_output),
     )
     print(f"score jobs={len(worklist['items'])}")
-    print(f"workflow execution input: {Path(args.execution_output).resolve()}")
+    print(f"agent execution input: {Path(args.execution_output).resolve()}")
 
 
 def cmd_validate_score(args):
@@ -4474,11 +4887,17 @@ def cmd_status(args):
 
 def parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument(
+        "--profile",
+        choices=sorted(PROFILES),
+        default=PROFILE_NAME,
+        help="frozen experiment profile",
+    )
     sub = p.add_subparsers(dest="command", required=True)
 
     archive = sub.add_parser(
         "archive-workflow",
-        help="build an exact archive from native Workflow output",
+        help="build a legacy full-v4 archive from native Workflow output",
     )
     archive.add_argument("--run-id", required=True)
     archive.add_argument("--script-path", required=True)
@@ -4488,7 +4907,7 @@ def parser() -> argparse.ArgumentParser:
     archive.add_argument("--output", required=True)
     archive.set_defaults(func=cmd_archive_workflow)
 
-    freeze = sub.add_parser("freeze", help="freeze a private v4 manifest")
+    freeze = sub.add_parser("freeze", help="freeze a profile-specific private manifest")
     freeze.add_argument("--repo", default=str(ROOT))
     freeze.add_argument("--selection-commit", default=SELECTION_COMMIT)
     freeze.add_argument("--truth-commit", default=TRUTH_COMMIT)
@@ -4556,7 +4975,7 @@ def parser() -> argparse.ArgumentParser:
     verify.add_argument("--conditions", required=True)
     verify.set_defaults(func=cmd_verify_artifacts)
 
-    run = sub.add_parser("validate-run", help="validate two complete Workflow archives")
+    run = sub.add_parser("validate-run", help="validate two complete agent-run archives")
     run.add_argument("--manifest", required=True)
     run.add_argument("--cards", required=True)
     run.add_argument("--conditions", required=True)
@@ -4574,7 +4993,7 @@ def parser() -> argparse.ArgumentParser:
     score.set_defaults(func=cmd_build_score)
 
     validate_score = sub.add_parser(
-        "validate-score", help="validate a blind-scoring Workflow archive"
+        "validate-score", help="validate a blind-scoring agent-run archive"
     )
     validate_score.add_argument("--manifest", required=True)
     validate_score.add_argument("--runs", required=True)
@@ -4601,6 +5020,14 @@ def parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    pre_parser = argparse.ArgumentParser(add_help=False)
+    pre_parser.add_argument(
+        "--profile",
+        choices=sorted(PROFILES),
+        default="full-v4",
+    )
+    profile_args, _unknown = pre_parser.parse_known_args()
+    activate_profile(profile_args.profile)
     args = parser().parse_args()
     try:
         args.func(args)

@@ -60,12 +60,49 @@ all directly related maps and accessors so a shared axis is not represented by a
 selected map. Two independently built sets must match by name and SHA-256, pass blind audits, and
 cover all 58 nodes before Workflow launch.
 
-### Paired JK03A direct-caller-semantics experiment
+### Paired direct-caller-semantics experiment
 
 `tools/sweep/caller_ab_experiment.py` provides a separate read-only control plane for measuring
 the contribution of preverified direct-caller semantics to focused map analysis. Its CLI has no
 command that applies results or writes `defs/*.csv`. The private manifest, execution inputs,
-artifacts, Workflow archives, and reports are stored outside git.
+artifacts, agent-run archives, and reports are stored outside git.
+
+The control plane has two frozen profiles:
+
+- `closure-v1` is the active small-footprint JK08A experiment. It uses the provider-neutral
+  protocol in `tools/sweep/agent_protocol.py` and the local state processor
+  `tools/sweep/agent_workflow.py`. The protocol builds isolated JSON task batches and validates
+  executor-produced result bundles; it does not launch a model or depend on a vendor SDK.
+- `full-v4` preserves the historical 24-map JK03A design and its Claude Code Dynamic Workflow v3
+  contract. The remainder of this subsection records that frozen design for compatibility.
+
+Frozen `closure-v1` contains six exposed maps, two identical-input controls, five unique direct
+callers, and all three result roles:
+
+```text
+0000b23a 0000b33a 0000b71a 0000b81a
+0000d78e 00011ede 00012262 0001462a
+```
+
+Addresses are joined with LF and no trailing LF. The list SHA-256 is
+`e38b166b6bf48325e06bed365312fc8734db102b7ada073087c50e721ff6dd23`. Selection
+and truth use commit `0269c11b7fc18b7e9619144ba8ffdf7eb7642bc5`; the diversity objective is
+`(8,6,2,5,3)`, and the tie-break SHA-256 is
+`b2364bf70c978c7f3e36369d4318104c945409da4725860669c4b2457ddac944`.
+
+The closure execution contains 58 fresh isolated calls: 5 prep Analyze, 5 prep Verify,
+16 map Analyze, 16 map Verify, and 16 blind semantic scores. Prep, both opaque arms, and scoring
+must use the exact same provider/backend/model/effort/adapter descriptor. Each task receives only
+its prompt and JSON response schema, has no domain tools, and attests no fallback, retry, resume,
+or cache reuse. `tools/sweep/agent-workflow.md` defines the complete batch, receipt, archive, and
+command contract.
+
+The two controls are valid only when every absolute field delta is at most `1/7` and neither pair
+has a verifier split. A failed control gate invalidates the exposed contrast. A passed gate reports
+mean/median delta and wins/ties/losses for the six exposed pairs with `causal_claim=false` and
+`automatic_application=false`.
+
+#### Historical full-v4 Claude Workflow contract
 
 Frozen `selection-v1` contains exactly 24 maps:
 

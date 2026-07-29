@@ -149,6 +149,23 @@ class CallerExperimentFixture(unittest.TestCase):
                     encoding="utf-8",
                 )
 
+    def test_decomp_export_path_accepts_ghidra_unpadded_name(self):
+        padded = self.exports / "decomp_0005594a.c"
+        unpadded = self.exports / "decomp_5594a.c"
+        padded.write_text("same\n", encoding="utf-8")
+        unpadded.write_text("same\n", encoding="utf-8")
+        self.assertEqual(experiment.decomp_export_path(self.exports, "0005594a"), unpadded)
+        padded.unlink()
+        self.assertEqual(experiment.decomp_export_path(self.exports, "0005594a"), unpadded)
+
+    def test_decomp_export_path_rejects_conflicting_variants(self):
+        padded = self.exports / "decomp_0005594a.c"
+        unpadded = self.exports / "decomp_5594a.c"
+        padded.write_text("padded\n", encoding="utf-8")
+        unpadded.write_text("unpadded\n", encoding="utf-8")
+        with self.assertRaisesRegex(experiment.ExperimentError, "conflicting decomp exports"):
+            experiment.decomp_export_path(self.exports, "0005594a")
+
     def _write_blind_audit(self, directory, audit_path):
         builder = ROOT / "tools" / "sweep" / "build_artifacts.py"
         records = []
@@ -2778,6 +2795,205 @@ class CallerExperimentFixture(unittest.TestCase):
         self.assertIsNone(biased["summary"]["observed_paired"])
         self.assertFalse(biased["summary"]["causal_claim"])
         self.assertEqual(experiment.file_sha256(canonical), before)
+
+
+class ClosureProfileTest(unittest.TestCase):
+    def setUp(self):
+        self.addCleanup(experiment.activate_profile, "full-v4")
+        experiment.activate_profile("closure-v1")
+
+    def test_frozen_scope_has_six_exposed_maps_and_two_controls(self):
+        experiment.validate_address_scope()
+        self.assertEqual(len(experiment.ADDRESSES), 8)
+        self.assertEqual(experiment.EXPECTED_CALLER_COUNT, 5)
+        self.assertEqual(experiment.EXPECTED_EXPOSED_COUNT, 6)
+        self.assertEqual(experiment.EXPECTED_CONTROL_COUNT, 2)
+        self.assertEqual(experiment.ROM, "JK08A")
+        self.assertEqual(experiment.EXECUTION_MODE, "agent-protocol-v1")
+        self.assertEqual(
+            experiment.PREP_EXECUTION_SCHEMA,
+            "vq.caller-semantics-prep-execution/v4",
+        )
+
+    def test_current_english_truth_extracts_complete_scoring_fields(self):
+        data = experiment.git_source(
+            ROOT,
+            experiment.TRUTH_COMMIT,
+            experiment.SOURCE_PATH,
+        )
+        _fields, rows = experiment.parse_csv_bytes(data, experiment.SOURCE_PATH)
+        by_addr = {row["addr"]: row for row in rows}
+        for addr in experiment.ADDRESSES:
+            with self.subTest(addr=addr):
+                truth = experiment.extract_truth(by_addr[addr])
+                self.assertEqual(truth["confidence"], "code")
+                self.assertIn(truth["role"], experiment.ROLES)
+                self.assertIn(
+                    truth["disposition"],
+                    experiment.DISPOSITIONS - {"unresolved"},
+                )
+                self.assertTrue(truth["target"])
+                self.assertTrue(truth["trace"])
+                self.assertGreaterEqual(len(experiment.trace_addresses(truth["trace"])), 2)
+
+    def test_execution_config_binds_protocol_without_agent_vendor(self):
+        config = experiment.execution_config(ROOT)
+        experiment.validate_execution_config(config)
+        self.assertEqual(
+            config["schema"],
+            "vq.caller-semantics-execution-config/v4",
+        )
+        self.assertEqual(
+            config["protocol"]["path"],
+            "tools/sweep/agent_protocol.py",
+        )
+        self.assertNotIn("model", config)
+        self.assertNotIn("workflows", config)
+        self.assertNotIn("blind_agent", config)
+        self.assertEqual(
+            config["executor_policy"]["identity"],
+            "same_exact_executor_all_phases_and_stages",
+        )
+
+    def test_control_plane_accepts_provider_neutral_prep_archive(self):
+        protocol = experiment.agent_protocol
+        config = experiment.execution_config(ROOT)
+        binding = {
+            "schema": protocol.PROTOCOL_SCHEMA,
+            "protocol_path": config["protocol"]["path"],
+            "protocol_sha256": config["protocol"]["sha256"],
+        }
+        artifact = (
+            "# Caller context\n\n"
+            "## Machine evidence\n\n"
+            "```c\n"
+            "return local_value;\n"
+            "```\n"
+        )
+        execution = {
+            "schema": experiment.PREP_EXECUTION_SCHEMA,
+            "result_schema": experiment.PREP_RESULT_SCHEMA,
+            "execution_config_sha256": experiment.execution_config_digest(config),
+            "protocol_binding": binding,
+            "private_manifest_sha256": "1" * 64,
+            "worklist_sha256": "2" * 64,
+            "prompts": {
+                "analyze": experiment.PREP_ANALYZE_PROMPT,
+                "verify": experiment.PREP_VERIFY_PROMPT,
+            },
+            "items": [
+                {
+                    "experiment_id": "exp-" + "1" * 14,
+                    "condition_id": "cond-" + "2" * 14,
+                    "pair_id": "pair-" + "3" * 14,
+                    "job_id": "job-" + "4" * 14,
+                    "target_address": "00001000",
+                    "artifact_sha256": experiment.sha256_bytes(artifact.encode()),
+                    "response_schema": experiment.PREP_RESPONSE_SCHEMA,
+                    "artifact_text": artifact,
+                }
+            ],
+        }
+        normalized_binding = {
+            "schema": binding["schema"],
+            "sha256": binding["protocol_sha256"],
+        }
+        current_executor = {
+            "schema": protocol.EXECUTOR_SCHEMA,
+            "provider": "fixture-provider",
+            "backend": "fixture-backend",
+            "model": "fixture-model",
+            "effort": "high",
+            "adapter": "native-agent",
+            "adapter_version": "1",
+        }
+
+        def receipt(task_id, response):
+            return {
+                "invocation_id": f"invocation-{task_id.replace(':', '-')}",
+                "fresh": True,
+                "fallback": False,
+                "retry_count": 0,
+                "cache_reuse": False,
+                "domain_tool_calls": 0,
+                "input_tokens": None,
+                "output_tokens": None,
+                "duration_ms": None,
+                "cost_usd": None,
+                "raw_output": response,
+                "raw_output_sha256": protocol.value_sha256(response),
+            }
+
+        def result_bundle(batch, responses):
+            return {
+                "schema": protocol.TASK_RESULTS_SCHEMA,
+                "batch_sha256": protocol.value_sha256(batch),
+                "executor": current_executor,
+                "operator_attested": True,
+                "results": [
+                    {
+                        "task_id": task["task_id"],
+                        "status": "completed",
+                        "response": response,
+                        "receipt": receipt(task["task_id"], response),
+                    }
+                    for task, response in zip(batch["tasks"], responses)
+                ],
+            }
+
+        analysis = {
+            "role": "machine value processor",
+            "semantics": "Returns one locally computed machine value.",
+            "citations": [
+                {
+                    "line_start": 6,
+                    "line_end": 6,
+                    "excerpt": "return local_value;",
+                }
+            ],
+        }
+        analyze_batch = protocol.build_batch(
+            execution,
+            "analyze",
+            binding=normalized_binding,
+        )
+        analyze_results = result_bundle(analyze_batch, [analysis])
+        verify_batch = protocol.build_batch(
+            execution,
+            "verify",
+            prior_results=analyze_results,
+            binding=normalized_binding,
+        )
+        verify_results = result_bundle(
+            verify_batch,
+            [
+                {
+                    "mode": "adversarial",
+                    "verdict": "accept",
+                    **analysis,
+                    "rationale": "The cited return statement entails the payload.",
+                }
+            ],
+        )
+        archive = protocol.build_archive(
+            execution,
+            [analyze_results, verify_results],
+            run_id="ar_control-plane-fixture",
+            operator_attested=True,
+            binding=normalized_binding,
+        )
+        manifest = {"execution_config": config}
+        with mock.patch.object(
+            experiment,
+            "validate_archive_execution_input",
+        ):
+            resolved = experiment.validate_agent_archive_envelope(
+                archive,
+                manifest,
+                "prep",
+                execution,
+            )
+        self.assertEqual(resolved, protocol.executor_label(current_executor))
 
 
 if __name__ == "__main__":

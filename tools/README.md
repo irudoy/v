@@ -11,35 +11,25 @@ is outside the critical path. Design, map/flag pipeline, and component roles are
 
 The catalog-wide map sweep is specified in `map-sweep.md`: work unit, wave order, pilot blinding,
 submission schema, and gates. The same document defines the read-only caller-semantics harness
-`tools/sweep/caller_ab_experiment.py`, its no-tools Workflow definitions, and the frozen 24-map
-scope. `freeze` accepts two independent byte-identical builds of map artifacts with two blind
-audits and records the exact recursive inventory of the Ghidra export root, embedded builder and
-runtime sources, and a private HMAC mapping. The blind-worker policy requires exactly one top-level
-`tools: []` field in YAML frontmatter. The prep Workflow creates candidates, while
-`finalize-cards` requires complete manual approval with exact payload digests before constructing
-`verified` and neutral `placebo` cards; cards contain only printable ASCII English. Controls receive
-a byte-identical sham card. All three saved workflows pin the exact `claude-opus-4-8` model without
-an alias and, before the first agent call, validate the exact execution schema, prompts,
-runtime-binding paths, SHA-256 format, and item completeness.
+`tools/sweep/caller_ab_experiment.py` and its two frozen profiles. `closure-v1` is the active
+8-map JK08A profile and uses the provider-neutral `tools/sweep/agent_protocol.py`; its complete
+operator contract is in `sweep/agent-workflow.md`. The protocol builds isolated task batches,
+validates JSON Schema responses and fresh no-tools receipts, enforces one exact executor across
+prep, both opaque arms, and scoring, and assembles agent-run archives without launching a model or
+importing a vendor SDK. The historical 24-map JK03A `full-v4` profile retains its frozen Claude
+Code Dynamic Workflow v3 contract and exact model allowlist.
 
-The Python control plane remains the trusted launch boundary: it binds embedded `artifact_text` to
-`artifact_sha256` and verifies the live execution configuration and runtime sources.
-`archive-workflow` requires fresh-launch attestation, verifies the exact execution schema, live
-execution-config digest, canonical runtime binding, and native result schema, binds citation
-ranges and excerpts to embedded `artifact_text` and permitted code fences, verifies verbatim
-Analyze/Verify linkage and completeness, and then stores the exact native output with the embedded
-Workflow source. If native progress contains phase records, they must form the canonical sequence.
-Frozen agent records use a resolved model from the
-`claude-opus-4-8`/`claude-opus-4-8[1m]` allowlist and contain no fallback, retry, cache, or error
-provenance in metadata fields or values. The run schema uses terminal-only canonical evidence and
-non-directed `machine_references`; dependency evidence is prohibited without a frozen
-typed-support registry. Arm markers are prohibited in all free-form run-payload fields and in
-prep/run verifier rationale. Validation decodes HTML and removes comments and Unicode format
-controls. Scoring projects reference evidence into the same terminal-only domain. All 48 blind
-scores are stored separately, with no pooling, and the per-control gate accounts for field deltas
-and verifier splits. The result reports the observed paired contrast, sets `causal_claim=false`,
-and never modifies canonical CSV files. Manual approval and fresh-launch attestation are operator
-trust boundaries, not cryptographic proof of human actions.
+For both profiles, `freeze` accepts two independent byte-identical builds of map artifacts with
+two blind audits and records the exact recursive inventory of the Ghidra export root, embedded
+builder and runtime protocol sources, and a private HMAC mapping. Prep creates candidates, while
+`finalize-cards` requires complete manual approval with exact payload digests before constructing
+`verified` and neutral `placebo` cards. Controls receive a byte-identical sham card. The Python
+control plane binds embedded `artifact_text` to `artifact_sha256`, verifies citations and
+Analyze/Verify linkage, and rejects fallback, retry, cache reuse, executor drift, incomplete
+coverage, and arm markers. Scoring retains each blind score separately. The result reports the
+observed paired contrast, sets `causal_claim=false`, and never modifies canonical CSV files.
+Manual approval and fresh-launch attestation remain operator trust boundaries rather than
+cryptographic proof of human actions.
 
 Git tracks project configuration, wrappers, loaders, analysis scripts, and the browser-based pin
 tracer. Large third-party tools and Ghidra projects remain outside the repository because they are
@@ -222,7 +212,9 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `memgraph/queries.cypher` | Query catalog for maps, sweep components, projection centrality, reference catalogs, and individual structural gates. `provenance_report.py` performs claim-specific exact audits. Parameter: `$rom` | tracked |
 | `maps/build_tracker.py` | Project the graph catalog into the canonical-ROM ledger `defs/<rom>.maps.csv`, including static diagnostic priority and context; an inheriting ROM permits only an explicitly specified temporary output path | tracked |
 | `sweep/build_artifacts.py` | Build blind sweep artifacts: component `comp-<addr>.md`, frozen map `map-<addr>.md`, or shared axis `axis-<addr>.md`. Axis focus aggregates all related maps and accessors. Shape, values, axes, pseudocode, listings, census operands, and catalogs remain visible; current answers are hidden through an allowlist verified on every run. Budgets must be nonnegative; the frozen caller experiment requires `8`/`24`. Arguments: `<outdir> [--accessor <addr>] [--min-maps N] [--focus-map <addr>] [--focus-axis <addr>]` | Markdown |
-| `sweep/caller_ab_experiment.py` | Read-only control plane for the 24-map caller-semantics experiment: frozen HMAC manifest v4, prep candidates, manual approval, finalized `verified` and neutral `placebo` cards, fresh exact Workflow archives, terminal evidence binding, non-directed machine-reference scoring, raw blind scores, and a per-control verifier gate; canonical CSV remains unchanged | JSON/Markdown outside git |
+| `sweep/caller_ab_experiment.py` | Read-only control plane for caller-semantics profiles: active 8-map JK08A `closure-v1`, historical 24-map JK03A `full-v4`, frozen HMAC manifests, prep approval, opaque conditions, terminal evidence binding, blind scoring, and per-control verifier gates; canonical CSV remains unchanged | JSON/Markdown outside git |
+| `sweep/agent_protocol.py` | Provider-neutral task, receipt, executor, and archive protocol for `closure-v1`; validates isolated no-tools execution, JSON Schema responses, exact Analyze/Verify linkage, raw-output digests, and executor identity without launching a model | JSON outside git |
+| `sweep/agent_workflow.py` | Local CLI for building Analyze/Verify/Score batches, validating agent-produced result bundles, and assembling or revalidating provider-neutral agent-run archives | JSON outside git |
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
 | `mapkit/emit_def.py` | Project the graph, reviewed static diagnostic context, `defs/<rom>.dtc.csv` DTC registry, and `defs/<rom>.overrides.toml` presentation layer into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
 | `mapkit/presentation.py` | Normalize functional categories shared by the RomRaider and TunerPro projections without encoding confidence in the category name | imported by both renderers |

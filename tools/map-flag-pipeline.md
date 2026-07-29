@@ -903,9 +903,33 @@ and 6 axis-scale claims. Recovery replaces a complete frozen node with all prope
 assigned blind artifact through EOF, and performs separate adversarial verification for every
 field. Map semantics and scale resolve independently.
 
-Caller-semantics harness `tools/sweep/caller_ab_experiment.py` measures the observed operational
-contrast between manually approved direct-caller text and neutral placebo over 24 frozen focused
-JK03A map items. The selection commit is
+Caller-semantics harness `tools/sweep/caller_ab_experiment.py` has a provider-neutral active
+profile and a preserved historical profile. Active `closure-v1` measures the observed operational
+contrast over six exposed JK08A maps and two identical-input controls:
+
+```text
+0000b23a 0000b33a 0000b71a 0000b81a
+0000d78e 00011ede 00012262 0001462a
+```
+
+Selection and truth use commit `0269c11b7fc18b7e9619144ba8ffdf7eb7642bc5`. The LF-joined
+address-list SHA-256 is
+`e38b166b6bf48325e06bed365312fc8734db102b7ada073087c50e721ff6dd23`; the
+diversity objective is `(8,6,2,5,3)`, and the tie-break SHA-256 is
+`b2364bf70c978c7f3e36369d4318104c945409da4725860669c4b2457ddac944`.
+
+`closure-v1` binds `tools/sweep/agent_protocol.py`, not a provider runtime. The protocol produces
+isolated task batches containing only a worker prompt and JSON response schema. An
+operator-selected Claude, Codex, other hosted, or local agent environment supplies exact
+`vq.agent-task-results/v1` bundles. Receipts attest one fresh invocation per task, no domain tools,
+fallback, retry, resume, or cache reuse, and embed raw output with its digest. Prep, both opaque
+arms, and scoring must use the same provider/backend/model/effort/adapter descriptor. The complete
+small-footprint execution contains 58 calls: 5 prep Analyze, 5 prep Verify, 16 map Analyze,
+16 map Verify, and 16 blind scores. `tools/sweep/agent-workflow.md` defines the complete neutral
+execution contract.
+
+The historical `full-v4` profile measures the same contrast over 24 frozen focused JK03A map
+items using Claude Code Dynamic Workflow v3. The selection commit is
 `b02d3b7157d900a0654b1c63f2c200d8154d315b`, truth commit –
 `849d76a6ea8f2fb931448bf7adb58b6739aa7a40`, SHA-256 of the LF-joined address list –
 `4e9b97f9e9a46d183d96d549403e8264856e1128209f363c6dd1a85bdf3bcc94`, diversity objective
