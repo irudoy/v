@@ -159,7 +159,7 @@ metric regressions; those use the canonical headless path. The bridge does not e
 low-level API required by the operand resolver, including `HighFunction`, CALLIND signatures, and
 GBR register context, so that functionality is headless-only. Parameterized headless scripts
 answer common interactive questions without a GUI: `DecompileFuncs`, `PoolUsers`, `DumpListing`,
-and `FindTableRefs` by address.
+`FindTableRefs`, and `FindPoolWords` by address or literal value.
 
 Register it as the `ghydra` stdio MCP server at local scope for the vq project:
 
@@ -190,6 +190,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `ghidra/DecompileFuncs.java` | C pseudocode for specified functions | `decomp_<addr>.c` |
 | `ghidra/ScanImmoAnchors.java` | Scan immo DTC constants P1610-P1615 and B2193, plus DTC-table clusters | `immo_anchors.csv`, `immo_tables.csv` |
 | `ghidra/FindTableRefs.java` | Identify users of a ROM address range or table base through direct and literal-pool references | `table_refs.csv` |
+| `ghidra/FindPoolWords.java` | Find PC-relative `mov.w` loads whose literal-pool value matches one or more supplied hexadecimal words. This avoids treating arbitrary equal data words as references. Arguments: `<word_hex>...` | stdout |
 | `ghidra/MapInventory.java` | Census maps from an interpolation kernel: value slots -> wrappers -> call sites, with linear `r4/r5/r6` backtracking | `map_inventory.csv` |
 | `ghidra/FindInterpCore.java` | Detect interpolation kernels and entries through a data scan in Stage 1: code-address slot plus two indirection levels. Arguments: `<outdir> [<min_wrappers>]` | `interp_core.csv` |
 | `ghidra/ScanFlags.java` | Detect GBR flags locally around accessors and guard functions in Stage 6 using the "load - bit test - branch" triple and derive role from CFG branches. Arguments: `<outdir> <func_addr>...` | `flags.csv` |
@@ -435,10 +436,9 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 2793 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 2958 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 997 source claims, 2793 expected edges, 834 claims at `code`, and 163 at
-`candidate`;
+current JK08A has 1031 source claims and 2958 expected edges;
 `effective below declared=0`, `without grounding=0`, 44 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
 
@@ -484,9 +484,9 @@ For JK08A, 38,627 instructions in 494 regions produce 353 functions, increasing 
 1958 to 2312, after which wrappers `0x26100` and `0x26230` acquire callers.
 
 Across 13 JK08A censuses there are 587 rows for 554 call sites. Data flow recovers a ROM base at
-551 call sites, compared with 493 for backtracking. The graph contains **441 maps**: 248
+551 call sites, compared with 493 for backtracking. The graph contains **443 maps**: 248
 explicit-axis, 188 implicit-axis, 2 implicit two-dimensional, 2 direct row-major,
-and 1 comparator table. It also has 229 axes, 587 unique accesses, and 47
+and 3 comparator tables. It also has 229 axes, 587 unique accesses, and 47
 interpolation nodes, consisting of 34 wrappers and 13 engines.
 
 | Family | Engines | Sites | `bt_r4` | `df_r4` | Wrappers | Maps |
@@ -497,8 +497,8 @@ interpolation nodes, consisting of 34 wrappers and 13 engines.
 Base-source distribution across 554 call sites is 407 pool slots, 102 backward slices, 27 phi
 nodes producing 59 branch rows, 15 `SymbolicPropogator` fallbacks producing 16 census rows, and 3
 unresolved dynamic cases (`dyn`). The loader verifies from its rows that the two families share no
-tables. The manual layer declares five maps outside the census access models,
-for a catalog total of 441.
+tables. The manual layer declares seven maps outside the census access models,
+for a catalog total of 443.
 
 The resolver reproduces both reference censuses site-for-site, 327 and 227 sites, and covers every
 reference base. It also recovers 13 additional explicit-axis tables and 16 additional bank tables.

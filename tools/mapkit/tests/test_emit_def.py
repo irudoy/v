@@ -260,7 +260,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         categories = {
             table.get("category") for table in tables.values()
         }
-        self.assertEqual(len(categories), 17)
+        self.assertEqual(len(categories), 18)
         self.assertTrue(all(
             "(candidate)" not in category and "(traced)" not in category
             for category in categories
@@ -271,12 +271,29 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "Target AFR - Power (0xB33A)": "AFR / Lambda",
             "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)": "Airflow",
             "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
+            "Fuel Cut RPM Hysteresis (0x85D9)": (
+                "Fuel Delivery / Fuel Cut / Thresholds"
+            ),
+            "Throttle Rev Limiter (0x942C)": "Limiters",
             "Engine Speed Axis [RPM] (ref)": "Reference Axes",
             "Cylinder Filling Axis [%] (ref)": "Reference Axes",
         }
         for name, category in expected.items():
             with self.subTest(name=name):
                 self.assertEqual(tables[name].get("category"), category)
+
+    def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        table = next(
+            table for table in rom.findall("./table")
+            if table.get("name") == "Throttle Rev Limiter (0x942C)"
+        )
+        scaling = table.find("./scaling")
+        self.assertEqual(table.get("storageaddress"), "0x0942C")
+        self.assertEqual(table.get("storagetype"), "uint16")
+        self.assertEqual(table.get("sizex"), "1")
+        self.assertEqual(scaling.get("units"), "RPM [cand]")
+        self.assertEqual(scaling.get("expression"), "x*0.78125")
 
 
 if __name__ == "__main__":

@@ -130,9 +130,9 @@ Donor `JK03A` and owned target `JK08A` identify themselves as
 `0x020000..0x0fffff` regions are byte-identical, while configuration/calibration
 differs at 121 byte positions. In the graph, only the measured values of four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
-`0x190b0`. All 229 axes and the other 437 maps match.
+`0x190b0`. All 229 axes and the other 439 maps match.
 
-The generated JK08A definitions contain 145 calibration tables, three masked
+The generated JK08A definitions contain 147 calibration tables, three masked
 views, and two reference-axis views. Reviewed static diagnostic context is
 included in map comments and descriptions without changing map semantics or
 confidence. `JK08A.xml` additionally contains 57 DTC switches and two verified

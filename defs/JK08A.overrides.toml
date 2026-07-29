@@ -236,6 +236,16 @@ static_axis_x = [
 static_axis_y_name = "Cylinder"
 static_axis_y = [1, 2, 3, 4, 5, 6]
 
+[table.000085d9]
+name = "Fuel Cut RPM Hysteresis (0x85D9)"
+category = "Fuel Delivery / Fuel Cut / Thresholds"
+order = 10
+fine = 50
+coarse = 100
+# Code confirms activation/release state behavior. The specific Over Run mode
+# identification remains candidate until the physical entry gates are resolved.
+static_axis = ["activate", "release"]
+
 [table.00008fdc]
 name = "Rev Limit - Fuel Cut Maximum (0x8FDC)"
 category = "Limiters"
@@ -246,10 +256,19 @@ coarse = 125
 # the threshold pair.
 static_axis = ["cut (bit7=0)", "restore (bit7=1)"]
 
-[table.000121fe]
-name = "Over Run Fuel Cut threshold (0x121FE)"
+[table.0000942c]
+name = "Throttle Rev Limiter (0x942C)"
 category = "Limiters"
-order = 41
+order = 39
+format = "0"
+fine = 50
+coarse = 250
+static_axis = ["throttle cut"]
+
+[table.000121fe]
+name = "Composite Calculation Base Curve (0x121FE)"
+category = "Internal Calculations"
+order = 42
 coarse = 4
 
 [table.0001236a]

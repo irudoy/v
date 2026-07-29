@@ -8,7 +8,7 @@ SHA-256 `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`.
 
 Forum-sourced `JK03A` remains a separate donor ROM. The images differ at 121 byte
 positions in calibration/config, but none falls within the 2312 functions in the Ghidra
-export. All 16 `rom_const` values from structured evidence match. Of 441 maps, only four
+export. All 16 `rom_const` values from structured evidence match. Of 443 maps, only four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
 `0x190b0`; all 229 axes match. `JK08A.*` is the sole live source of structural and
 semantic claims for the exact-code pair. `defs/rom-inheritance.toml` projects them onto
@@ -56,20 +56,20 @@ provenance and are not paths in the current `JK08A` layer.
   the clamp for its search". implicit-axis has no axis array and uses N points at a
   uniform step over the raw input, implemented by a bank of 10 primitives
   (`0x26358..0x2642C` and `0x266A0`).
-- Layer measured from the image [CONFIRMED]: values of all 441 maps and 229 axes are
+- Layer measured from the image [CONFIRMED]: values of all 443 maps and 229 axes are
   read from each ROM's registered image by the same run that builds the layer (Stage 4,
   `tools/mapkit`). JK08A uses `1JK08A-20260726-stock.bin`. Axes carry their points and
   monotonicity; maps carry content range and hash. Two signals remain open: one axis is
   not read by reverse linear search (`0x119B2`), and 18 maps contain only `0xFF`.
 - Element encoding [CONFIRMED]: a 1D map's input reads the element, while for a 2D map
   the finisher reads it; all five 2D finishers read elements as unsigned.
-  `storagetype` is known for all 441 maps in the graph. Three byte-oriented 2D
+  `storagetype` is known for all 443 maps in the graph. Three byte-oriented 2D
   finishers handle bit7 differently: `0x26770` treats it as part of the value,
   `0x267CC` treats it as a pass-through flag over a 7-bit value, and `0x268A4`
   saturates it (values 0..127). See "2D map element encoding".
-- The catalog contains **441 maps**: the resolver obtains 436 through 34 entries
-  (248 explicit-axis and 188 implicit-axis), while the manual layer declares five:
-  the direct rev-limiter comparator, two implicit-2d input maps for `0x26040`, and two
+- The catalog contains **443 maps**: the resolver obtains 436 through 34 entries
+  (248 explicit-axis and 188 implicit-axis), while the manual layer declares seven:
+  three direct comparator tables, two implicit-2d input maps for `0x26040`, and two
   direct per-cylinder Knock Slice maps. No map belongs to more than one family; the
   loader verifies this.
 - Map progress is tracked by ledger `JK08A.maps.csv`, a projection of the catalog from
@@ -105,6 +105,12 @@ provenance and are not paths in the current `JK08A` layer.
   `0xB23A` supplies new-sample fraction `x/65536`. Both are in the definition.
   Catalog names "Transient Fuel Corr" remain [CANDIDATE]; the physical nature of the
   inputs and filtered quantity is unknown.
+- Annotated [CONFIRMED]: scalar `0x942C` is the calibrated upper rotational-speed
+  threshold in a throttle-control limiter path. `0xFFFF` disables the branch;
+  otherwise `FUN_0007584E` tracks current speed and writes one input of the signed
+  minimum arbiter in `FUN_00071508`, whose result enters controller calculation
+  `FUN_000702C6`. The public HR label `Throttle Rev Limiter` and scale `x*0.78125 RPM`
+  remain [CANDIDATE] catalog/homology claims. The stock value is 7500 RPM.
 - Candidate rev-limit pair `0x8FDC=7625`/`0x8FDE=6600 rpm` is localized in
   `FUN_00047A56`: code compares `word[0xFFFF266E]` with the selected threshold and
   updates `0xFFFF246A.bit7`. Selection reads `0xFFFF246D.bit7`; the trace does not prove
@@ -112,13 +118,16 @@ provenance and are not paths in the current `JK08A` layer.
   external consumer of `0xFFFF246A.bit7`. Hysteresis semantics and name
   `Rev Limit - Fuel Cut Maximum` therefore remain `candidate`; separate 2D working-limit
   maps have not been localized.
-- Annotated [CONFIRMED]: overrun fuel cut reads thresholds through `0x26370`.
-  `FUN_0005185c` performs 6 lookups (`0x1220E`/`0x121FE`/`0x121AE` by
-  `byte[0xFFFF106F]`, `0x121D6`/`0x121C6` by `byte[0xFFFF11B3]`, and `0x121DE` by
-  `word[0xFFFF1024]>>7`). [CANDIDATE] `mTNJC`: `0x121FE` decreases along its axis and
-  matches the shape of ProECU `Over Run Fuel Cut #2`; its value multiplier has not
-  been recovered. Cut execution is per-cylinder in `FUN_00051a98`. See the section of
-  the same name.
+- Annotated [CONFIRMED]: `FUN_0005185c` performs six calculation lookups through
+  `0x26370`. `0x121FE` is a composite-calculation base curve, not an RPM threshold:
+  its result is multiplied by a centered factor from `0x121AE`, normalized by 8192,
+  saturated to 255, and written to `ffff1531` before a second three-factor product
+  forms `ffff1532`.
+- Annotated [CONFIRMED]: `FUN_0004F324` implements 1800/1500 RPM activation/release
+  hysteresis from bytes `0x85D9`/`0x85DA` for one condition in the aggregate
+  six-channel fuel-output inhibit path. Its entry gates remain physically unresolved,
+  so identification of this condition specifically as Over Run Fuel Cut is
+  [CANDIDATE]. See "Fuel-output inhibit RPM hysteresis and stock six-channel path".
 - Annotated [CONFIRMED]: a calibration byte can disable a table-read branch.
   `FUN_00051700` selects a table set by `byte[0x8D92] bit3`; at `0x7A`, tables
   `0x12206`/`0x121F6` are not read. A code reference to a table does not mean the table
@@ -378,9 +387,9 @@ explicit-axis and 227 implicit-axis. Expanding selector alternatives turns 554 s
 into 587 rows.
 
 The resolver yields **436 maps**, 248 explicit-axis and 188 implicit-axis, with no map
-shared between families. The manual layer declares the direct rev-limiter comparator,
+shared between families. The manual layer declares three direct comparator tables,
 two implicit-2d input maps for `0x26040`, and two direct per-cylinder Knock Slice maps,
-bringing the complete graph to **441 maps**.
+bringing the complete graph to **443 maps**.
 
 
 ### explicit-axis: three kernels and 24 wrappers [CONFIRMED]
@@ -805,35 +814,58 @@ P0327/P0328/P0332/P0333. Code confirms the monitor role for knock-sensor circuit
 the selector's physical quantity and output scale are unknown.
 
 
-### Overrun fuel cut (decel) - threshold tables through direct lookup `0x26370`
+### Fuel-output inhibit RPM hysteresis and stock six-channel path
 
-Overrun fuel cut reads calibration tables through `0x26370`, not through kernel
-`0x26944`; see "implicit-axis". This family has no axis object.
+`FUN_0004F324` implements a state machine for one Boolean condition that enters the
+aggregate six-channel fuel-output inhibit path [CONFIRMED by code]. Entry requires:
 
-`FUN_0005185c`, decel detection at `0x5185c`, 388 B, holds a primitive pointer in slot
-`0x5197c` and performs six lookups through it [CONFIRMED by code]:
+- `byte[0xFFFF110E] == 0`;
+- `0xFFFF244F.bit2 == 1`;
+- `0xFFFF2458.bit5 == 0`.
 
-| table | input | slot |
-|---|---|---|
-| `0x1220E` | `byte[0xFFFF106F]` (= `0xFFFF1068+7`) | `0x519a4` |
-| `0x121FE` | `byte[0xFFFF106F]` | `0x519a8` |
-| `0x121AE` | `byte[0xFFFF106F]` | `0x51984` |
-| `0x121D6` | `byte[0xFFFF11B3]` (= `0xFFFF119C+0x17`) | `0x519ac` |
-| `0x121C6` | `byte[0xFFFF11B3]` | `0x519b0` |
-| `0x121DE` | `word[0xFFFF1024] >> 7` | `0x519ac`+8 |
+Bit 3 of `0xFFFF247F` initializes a timer/accumulator path through map `0x124D2`.
+Bit 4 records readiness. With readiness set and state bit 5 clear, the state is set
+when current engine speed `byte[0xFFFF11AE]` is greater than or equal to
+`ROM8[0x85D9]`. While state bit 5 is set, it is cleared when engine speed is below
+`ROM8[0x85DA]`.
 
-Candidate for A2L `mTNJC`, JECS cut speed, uint8, axis = coolant temperature, is
-`0x121FE = [82,70,60,58,55,52,50,50]`. It decreases monotonically: a cold engine cuts
-at a higher value and a hot engine at a lower one. Its shape matches
-`Over Run Fuel Cut #2` in the ProECU 370Z guide (`refs/ecutek/`), an engine-speed
-threshold for overrun fuel cut that depends on coolant temperature.
+| address | raw | scale | threshold |
+|---|---:|---:|---:|
+| `0x85D9` | 36 | `x*50 RPM` | 1800 RPM activation |
+| `0x85DA` | 30 | `x*50 RPM` | 1500 RPM release |
 
-[CONFIRMED]: the primitive, six lookup sites, table and input addresses, and the
-unconditional `0x121FE` call from `FUN_0005185c`.
+The function returns state bit 5 as a Boolean. `FUN_0004ED88` ORs this result with
+other Boolean conditions. `FUN_0004FB5E` converts any nonzero aggregate to `0x3F`,
+then additional per-channel masks are combined before `FUN_0004ED88` writes
+`0xFFFF22E0`.
 
-[CANDIDATE]: code does not establish identity `mTNJC`, the value multiplier, or
-semantics of `byte[0xFFFF106F]`, which is expected to be coolant temperature.
-This function contains no paired restoration table for `0x121FE`.
+The stock dispatcher uses `ROM8[0x8D92] = 0x7A`, so bit 3 is set. In this mode the
+six-channel path is:
+
+```text
+FUN_000522C4
+  -> FUN_0005727A  signed per-channel difference
+  -> FUN_00052034  ffff1220 bit writer
+  -> FUN_00051A98  per-channel calculation using the prepared bit
+  -> FUN_00051F1E  masked scheduler
+  -> FUN_0002C13C  ATU-II channel 8 one-shot scheduling
+```
+
+`FUN_00052034` sets a channel bit in `0xFFFF1220` only when the corresponding
+`0xFFFF22E0` bit is clear, signed difference `0xFFFF142E+2*i` is greater than or
+equal to `ROM8[0x87FE]<<7`, and the corresponding `0xFFFF16FF` bit is clear.
+`ROM8[0x87FE] = 5`, so the comparison threshold is 640 raw counts. The mask is
+therefore a pulse/update eligibility mask in stock mode, not a standalone global
+fuel-enable state.
+
+`FUN_0002C13C` schedules selected channels through SH7059 ATU-II channel 8
+down-counters `DCNT8A..DCNT8F` and start register `DSTR`. The cross-model pin-tracer
+mapping of these outputs to injector terminals remains candidate.
+
+Identification of the `FUN_0004F324` condition specifically as Over Run Fuel Cut is
+[CANDIDATE]. Its low-speed hysteresis and placement in the fuel-output inhibit
+aggregate are confirmed, but the physical identities of the entry-gate signals are
+not.
 
 
 ### A branch can be disabled by calibration - a table is referenced but not read
@@ -878,6 +910,50 @@ The output is bit `0x10` in `byte[0xFFFF24D2]`, base `0xFFFF24CE+4`.
 The physical meaning of words `0xFFFF1024`/`0xFFFF1028`, whether flow versus target or
 two MAF samples, is unknown. The quantitative effect of editing `byte[0x87FD]` therefore
 cannot be predicted, and it is not exposed as an editable scalar in the definition.
+
+
+### Throttle rev limiter scalar `0x942C`, FUN_0007584E [CONFIRMED PATH]
+
+`ROM16[0x942C] = 0x2580`. Three independent layers identify its role:
+
+- Code initializes dynamic threshold `0xFFFF1796` from `0x942C` at
+  `0x2CE68..0x2CE70`.
+- `FUN_0007584E` treats `0xFFFF` as a disabled sentinel and writes neutral
+  `0x7FFF` to `0xFFFF19D8`. On the enabled path it multiplies current rotational-speed
+  coordinate `0xFFFF11B6` by four, rate-limits `0xFFFF1796` toward the selected
+  threshold, and writes signed candidate `0xFFFF19D8`.
+- `FUN_00071508` includes `0xFFFF19D8` in a signed minimum cascade and writes selected
+  limit `0xFFFF243A`. `FUN_000702C6` consumes that limit in a closed-loop controller
+  calculation.
+
+The other direct runtime reader, `FUN_00077892`, is a separate branch. It caps a
+derived unsigned value at `ROM16[0x942C]`, applies lower bound
+`ROM16[0x94B2] = 0x0500`, and writes `0xFFFF32EC`. The same function is the only
+reader of that RAM word. This proves an auxiliary upper-bound use but does not assign
+the branch a physical throttle, speed, or gear-control meaning.
+
+The adjacent calibrated branch `FUN_00075798` reads `ROM16[0x9476] = 0x0708`, writes
+`0xFFFF19DE`, and feeds the same signed minimum cascade. Public EV18A definitions place
+`Throttle Rev Limiter` at `0x9478` and `Speed Limiter` at `0x94C2`; both corresponding
+JK08A scalars preserve an offset of `-0x4C`:
+
+```text
+EV18A 0x9478 -> JK08A 0x942C
+EV18A 0x94C2 -> JK08A 0x9476
+```
+
+The HR A2L catalog defines `Throttle Rev Limiter` as one uint16 value with multiplier
+`x*0.78125 RPM`. This converts stock `0x2580 = 9600` to 7500 RPM. The independently
+cataloged speed multiplier converts `0x0708 = 1800` to 180 km/h, supporting the second
+layout anchor. The candidate fuel-cut maximum at `0x8FDC` converts to 7625 RPM, so the
+throttle setting is 125 RPM lower, consistent with the independent UpRev rule that
+throttle closure precede fuel cut by at least 100 RPM.
+
+The address, disable sentinel, speed-coordinate conversion, state update, signed
+minimum path, and controller consumer are code facts. The physical label and
+`x*0.78125 RPM` multiplier are catalog/homology facts and remain `candidate` until
+hardware validation. The generated definitions expose one cell as
+`Throttle Rev Limiter (0x942C)` under `Limiters`.
 
 
 ### Threshold pair `0x8FDC`/`0x8FDE`, FUN_00047A56
@@ -1195,14 +1271,22 @@ channels/banks. Code establishes the integer index but not the physical meaning 
 the mask.
 
 
-### Section 6 discrepancy: `0x121FE` (accessor FUN_0005185c)
+### `0x121FE` composite calculation base curve
 
-The earlier annotation was "Over Run Fuel Cut threshold", based on ProECU vocabulary
-and shape. The FUN_0005185c trace places `0x121fe` as the **second multiplier in a
-multiplicative chain** at site `0x51882`, with the result at `@(0x4,r15)`, rather than
-as a threshold. Neither interpretation has `code` confidence; the discrepancy is
-recorded and is not resolved by voting. The first multiplier in the same chain is
-`0x1220e` at site `0x51878`.
+`FUN_0005185C` reads `0x121FE` through implicit one-dimensional accessor `0x26370`
+using unsigned byte `0xFFFF106F` [CONFIRMED by code]. It independently reads
+`0x121AE` and calculates:
+
+```text
+g = max(0, 8192 + (lookup(0x121AE) - 64) * uint8[0xFFFF10BF])
+ffff1531 = min(255, trunc0(lookup(0x121FE) * g / 8192))
+ffff1532 = min(255, trunc0(ffff1531 * ffff1528 * ffff152b / 16384))
+```
+
+`0x121FE` is therefore a base curve in a composite calculation, not an RPM
+comparison threshold. The physical quantities of `ffff1531` and `ffff1532`, and the
+physical identity of index `ffff106f`, remain unresolved. Its eight-cell shape does
+not establish the catalog identity Over Run Fuel Cut.
 
 
 ## Mass-pass Wave 2 (22 components, 4-7 maps)
@@ -1652,9 +1736,10 @@ same: `ffff24xx`/`ffff41xx`/`ffff92xx` for calibration bits in RAM and
   `ffff24c0` gates the entire branch in `00068cb8`; `ffff248b` selects a map path
   versus `0x8000` in `0007173c`.
 - **Master gates and status latches:** `0005525a` contains master gate `ffff2458`
-  plus threshold latches `ffff2492`/`ffff2493`, six flags; `0004f324` contains inhibit
-  `ffff2458` plus secondary hold `ffff245d`; `00051a98` uses per-cylinder enable mask
-  `ffff1220`.
+  plus threshold latches `ffff2492`/`ffff2493`, six flags. `0004f324` uses
+  `ffff2458.bit5` as an inhibit and `ffff245d.bit6` in its readiness gate.
+  In stock `ROM8[00008d92].bit3=1` mode, `00052034` writes six-channel pulse/update
+  mask `ffff1220`; `00051a98` only reads the prepared per-channel bit.
 - **Selectors and hysteresis:** `00071448` contains hysteresis comparators
   `ffff24a4`/`ffff24a1`, combined enable `ffff249a`, default selector `0x7fff`
   `ffff2466`, and second gate `0x870f`, five flags; `0009b816` contains init guard

@@ -190,6 +190,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "Target AFR - Power (0xB33A)": "AFR / Lambda",
             "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)": "Airflow",
             "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
+            "Throttle Rev Limiter (0x942C)": "Limiters",
             "Engine Speed Axis [RPM] (ref)": "Reference Axes",
         }
         for title, category in expected.items():
@@ -218,7 +219,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 36)
-        self.assertEqual(len(tables), 150)
+        self.assertEqual(len(tables), 152)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -239,6 +240,20 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "Disable all" in (patch.findtext("./title") or "")
             for patch in patches
         ))
+
+    def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
+        table = next(
+            table for table in self.root.findall("./XDFTABLE")
+            if table.findtext("./title") == "Throttle Rev Limiter (0x942C)"
+        )
+        axis = table.find("./XDFAXIS[@id='z']")
+        data = axis.find("./EMBEDDEDDATA")
+        self.assertEqual(data.get("mmedaddress"), "0x942C")
+        self.assertEqual(data.get("mmedelementsizebits"), "16")
+        self.assertEqual(data.get("mmedrowcount"), "1")
+        self.assertEqual(data.get("mmedcolcount"), "1")
+        self.assertEqual(axis.findtext("./units"), "RPM [cand]")
+        self.assertEqual(axis.find("./MATH").get("equation"), "X*0.78125")
 
     def test_patch_base_data_matches_exact_stock_image(self):
         for patch in self.root.findall("./XDFPATCH"):

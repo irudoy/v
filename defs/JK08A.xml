@@ -500,6 +500,27 @@
       <state name="Disabled" data="00 00"/>
     </table>
 
+    <!-- 0x085D9  2 uint8  map [code]
+         accessor 0x4F324; r4 operand: manual
+         scaling x*50 RPM [code]
+         static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
+         indexed_by]
+         The stored bytes are 36 and 30, or 1800 and 1500 RPM. Entry also requires ffff110e ==
+         0, ffff244f bit 2 set, and ffff2458 bit 5 clear. The physical identities of those gates
+         are unresolved, so identification of this condition specifically as Over Run Fuel Cut
+         remains candidate. The code-level claim is limited to RPM hysteresis and its path into
+         the aggregate six-channel fuel-output inhibit logic.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Fuel Cut RPM Hysteresis (0x85D9)"
+           category="Fuel Delivery / Fuel Cut / Thresholds" storagetype="uint8"
+           storageaddress="0x085D9" sizex="2" endian="big">
+      <scaling units="RPM" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Selector" sizex="2">
+        <data>activate</data><data>release</data>
+      </table>
+    </table>
+
     <!-- 0x0991A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x4E1C0; r4 operand: sp
          scaling x-64 degrees adjustment [candidate]; Y Axis 0x11ECE rpm [candidate]; X Axis
@@ -818,6 +839,27 @@
       </table>
     </table>
 
+    <!-- 0x0942C  1 uint16  map [code]
+         accessor 0x7584E; r4 operand: manual
+         scaling x*0.78125 RPM [candidate]
+         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier. Public EV18A
+         definitions place Throttle Rev Limiter at 0x9478 and Speed Limiter at 0x94c2; the
+         corresponding JK08A limiter scalars are 0x942c and 0x9476, preserving a -0x4c layout
+         offset for both anchors. The adjacent JK08A speed branch writes ffff19de into the same
+         signed minimum cascade. The 7500 RPM setting is 125 RPM below candidate fuel-cut
+         maximum 7625 RPM at 0x8fdc, matching the independent UpRev ordering rule. Code
+         confidence applies to the operational limiter path; the physical label and multiplier
+         are catalog/homology evidence and remain candidate pending hardware validation.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Throttle Rev Limiter (0x942C)" category="Limiters"
+           storagetype="uint16" storageaddress="0x0942C" sizex="1" endian="big">
+      <scaling units="RPM [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0"
+               fineincrement="50" coarseincrement="250"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>throttle cut</data>
+      </table>
+    </table>
+
     <!-- 0x08FDC  2 uint16  map [candidate]
          accessor 0x47A56; r4 operand: manual
          scaling x*12.5 RPM [candidate]
@@ -883,16 +925,18 @@
       </table>
     </table>
 
-    <!-- 0x121FE  8 uint8  map [candidate]; entry 0x26370 (implicit, core 0x26A80)
+    <!-- 0x121FE  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x5185C; r4 operand: pool
          scaling x raw
-         DISCREPANCY (Section 6, see notes.md): catalog name 'Over Run Fuel Cut threshold' from
-         ProECU shape evidence versus trace of FUN_0005185c at site 00051882, where it is the
-         second factor in a multiplicative chain with result @(0x4,r15). Neither interpretation
-         has code confidence.
+         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
+         evidence: indexed_by]
+         Code establishes a composite-calculation base curve, not an RPM threshold. The physical
+         quantity and subsystem of ffff1531 and ffff1532 remain unresolved. Table shape alone
+         does not support the catalog name Over Run Fuel Cut.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Over Run Fuel Cut threshold (0x121FE)" category="Limiters"
-           storagetype="uint8" storageaddress="0x121FE" sizex="8" endian="big">
+    <table type="2D" name="Composite Calculation Base Curve (0x121FE)"
+           category="Internal Calculations" storagetype="uint8" storageaddress="0x121FE"
+           sizex="8" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" coarseincrement="4"/>
       <table type="Static X Axis" name="Raw input (step 32)" sizex="8">
         <data>0</data><data>32</data><data>64</data><data>96</data>

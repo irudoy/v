@@ -511,9 +511,9 @@ holds: the same 47 `0x26474` sites occur in both the `0x26944` census and the `0
 census, so counting by entry address alone would duplicate them. The loader verifies that access
 families share no table. A shared table would be a finding rather than normal variation.
 
-JK03A has 587 rows for 554 call sites, producing 441 maps (248 explicit-axis,
-188 implicit-axis, 2 implicit two-dimensional, and 3 manual non-census
-families), 229 axes, 587 unique accesses, and 47 interpolation nodes
+JK03A has 587 rows for 554 call sites, producing 443 maps (248 explicit-axis,
+188 implicit-axis, and 7 manual non-census maps across 3 families), 229 axes,
+587 unique accesses, and 47 interpolation nodes
 (34 entries plus 13 engines). No table is shared between census families.
 
 Both families load in one pass because their census mechanism is shared. The bank primitive is a
@@ -733,14 +733,14 @@ anchor.
   `defs/rom-inheritance.toml` binds JK03A to the single live JK08A annotation set and verifies the
   relationship through SHA-256 and exact-code ranges. Transfer validation finds no differences
   across 2312 functions and 16 `rom_const` values; Stage 4 measures each image independently.
-  Four unnamed candidate curves differ among 441 maps, while all 229 axes match.
+  Four unnamed candidate curves differ among 443 maps, while all 229 axes match.
 - A constant anchor supplies a second homology signal independent of the call graph and does not
   wait for second-dump resolution. The anchor is a **block signature, not the number alone**.
   K-Factor `26806` (`0x68B6`) is identified by `0000 5E24 A5F0 FFFF [68B6]`, homologous across
   all six registered images: 1ND0A and 1ND3B at `0x9106`, JK78C at `0x8F80`, JK03A and JK08A
   at `0x9284`, and JK00D at `0x931C`. The value alone is insufficient. It occurs once at word
   alignment in four images but twice in exact-code pair JK03A/JK08A. The second occurrence at
-  `0x162FA` lacks the signature, lies in data not covered by any of 441 catalog maps or 229 axes,
+  `0x162FA` lacks the signature, lies in data not covered by any of 443 catalog maps or 229 axes,
   and has no functions. It is a table cell whose value happens to match, not a second K-Factor.
   Code already identifies `Rev Limit - Fuel Cut Maximum` in the same JK03A block at
   `0x8FDC`/`0x8FDE` through `FUN_00047a56`, so other documented scalars are reasonable targets
@@ -870,7 +870,7 @@ directions.
 
 ### 8.4 Catalog-wide workflow over headless artifacts
 
-Stage 2 deterministically identifies a catalog of 441 maps across both families and 230 accessors:
+Stage 2 deterministically identifies a catalog of 443 maps across both families and 230 accessors:
 141 use explicit axes, 114 use the bank, and 25 use both. A catalog pass is therefore fan-out,
 not discovery. Orchestration replaces a manual sweep and runs **over headless-produced artifacts
 without a live GUI**. Stage 3 resolution and batch accessor decompilation through `DecompileFuncs`
@@ -1098,7 +1098,7 @@ verification is outside the static pipeline milestone.
 load_diagnostic_bindings -> audit`. Catalog references (`load_a2l.py` +
 `load_vendor.py`) and the diagnostic corpus are family-wide; the ledger and XML
 are built only after a successful audit. The catalog covers both access families
-plus the manual layer: all 441 catalog maps are graph nodes. Three call sites
+plus the manual layer: all 443 catalog maps are graph nodes. Three call sites
 retain an explicit dynamic base and create no speculative map node.
 
 The work sequence is therefore catalog sweep (section 8.4; contract in `map-sweep.md`;
@@ -1119,9 +1119,9 @@ applies to the other half of this mechanism: a branch-selected axis. `0x14114` c
 two axes on one edge (`0xE98E` and `0x8000`, where the flash is erased), and
 backtracking alone reports both.
 
-The definition emits 145 of the 441 catalog maps and two standalone reference axes.
-The catalog contains 295 `code` maps and 146 `candidate` maps. Semantics are present
-for 384 maps and `scale_expr` for 350; the rest are rejected by role or an unlabeled
+The definition emits 147 of the 443 catalog maps and two standalone reference axes.
+The catalog contains 300 `code` maps and 143 `candidate` maps. Semantics are present
+for 386 maps and `scale_expr` for 352; the rest are rejected by role or an unlabeled
 axis. The ledger has 57 open `candidate` maps without semantics. The `vals` column
 divides this work: 17 open maps contain one value across the entire table. `mapkit`
 also closes Stage 5 `:MATCHES`: reading the axes, rather than the catalog, provides
@@ -1166,17 +1166,17 @@ anywhere in the graph. It is a separate diagnostic, not a condition of local bac
 
 | Metric | Check | JK08A fact | Target |
 |--------|-------|------------|--------|
-| Source claims | strict rows across all four CSV files | **997**: Func semantics 246, Func contract 32, Reg 185, Map semantics 384, Map scale 131, Axis scale 19; manual files contain 275 rows in `funcs.csv`, 185 in `vars.csv`, 384 in `findings.csv`, and 24 in `axes.csv` | entire schema resolves |
-| Evidence projection | expected against actual by complete edge key | **2793 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
+| Source claims | strict rows across all four CSV files | **1031**; manual files contain 285 annotated functions in `funcs.csv`, 205 variables in `vars.csv`, 386 map findings in `findings.csv`, and 24 axis findings in `axes.csv` | entire schema resolves |
+| Evidence projection | expected against actual by complete edge key | **2958 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
 | Local code-layer gate | `code`/`silicon` Func/Reg/Map/Axis without factual evidence | **0**; frozen debt of Map semantics 52, Map scale 20, and Axis scale 6 is closed | 0 |
-| Weakest link | `code`/`silicon` where effective level is below declared | **0**; all 834 `code` claims retain their declared level | 0 |
+| Weakest link | `code`/`silicon` where effective level is below declared | **0**; all `code` claims retain their declared level | 0 |
 | Transitive grounding | `code`/`silicon` without a terminal, structural support, or grounded leaf | **0** | 0 |
 | Cycles | SCCs and ungrounded SCCs | **44 SCCs, 0 ungrounded** | a cycle cannot support itself |
 | Map/Axis evidence backfill | frozen decisions by property identity | **78 of 78**: 28 `accept`, 27 `revise`, 23 `downgrade`; result is 55 `code` and 23 `candidate` | unresolved=0, local debt=0 |
 | Core code in artifact | cores without a `:Func` whose listing is present in an artifact | **6 of 6** | 100% |
 
 `from_map@structural` separates a dependency on map existence and geometry from a
-dependency on its semantic confidence. Consequently, 146 `candidate` maps out of 441
+dependency on its semantic confidence. Consequently, 143 `candidate` maps out of 443
 do not automatically downgrade proven table-reading code.
 
 ## 12. Reproducibility and invariants
