@@ -106,23 +106,24 @@ transcriptions, `proecu-maps.csv` and `uprev-maps.csv`, are handwritten;
 `tools/vendor/build_catalog.py` generates the combined catalog. Edit the source
 transcriptions rather than the generated file.
 
-## External primary sources stored locally
+## Nissan factory ESM stored locally
 
-Large proprietary collections are not copied into `refs/` or versioned. The
-repository records a pointer to their local iCloud Drive path. They support
-precise identification of node mechanics and logic through factory circuit
-diagrams, connector pinouts, and system-operation descriptions.
+The complete 2007 Infiniti G35 Sedan factory service manual is stored under
+`nissan-esm-2007-g35-sedan/` as 56 original PDFs. It supports precise
+identification of node mechanics and logic through factory circuit diagrams,
+connector pinouts, diagnostic procedures, and system-operation descriptions.
 
-Machine-readable diagnostic projections from these documents, exact ROMs, and
-pinned public sources are versioned under `diagnostics/`. Their scope,
-provenance contract, source revisions, and completeness boundary are documented
-in `diagnostics/README.md`.
+The machine-readable diagnostic projection is stored separately under
+`diagnostics/nissan-esm-2007-g35-sedan/`. Its scope, provenance contract, source
+revision, and completeness boundary are documented in `diagnostics/README.md`.
 
 - **Nissan ESM - 2007 Infiniti G35 Sedan (V36), VQ35HR engine.** Complete factory
   service manual with 56 PDFs across all systems. Because the 2007 G35 Sedan
   uses VQ35HR, its ECM section is a reference for the homologous NATS
   architecture in the HR firmware under study, including VQ37VHR `1ND*`.
-  Path:
+  Repository path: `refs/nissan-esm-2007-g35-sedan/`.
+
+  Original source path:
   `~/Library/Mobile Documents/com~apple~CloudDocs/Auto/Nissan/V36/scheme/2007_G35_Sedan/`
 
   Relevant sections:
@@ -138,7 +139,11 @@ in `diagnostics/README.md`.
     permission, inputs, and outputs. Table EC-525 names P1610 `LOCK MODE` and
     points to SEC-37, whose heading associates P1610 with B2190
     `NATS ANTENNA AMP`. The P1610 name alone therefore does not associate a
-    specific RAM Lock bit without firmware verification.
+    specific RAM Lock bit without firmware verification. EC-117 defines
+    `A/F SEN1 (B1/B2)` as an A/F signal computed by the ECM. EC-187 plots
+    increasing signal voltage with increasing air-fuel ratio, while EC-188 and
+    EC-484 specify fluctuation around 2.2 V on a warmed engine held at 2,000 rpm
+    without load. EC-121 documents the `FUEL INJECTION` active test.
   - `STARTING SYSTEM.pdf` - starter and crank permission; cranking without a
     start directs diagnostics to engine control / EC.
   - `BODY CONTROL SYSTEM.pdf` - BCM as immobilizer master and key/antenna

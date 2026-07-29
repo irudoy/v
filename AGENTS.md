@@ -110,8 +110,11 @@ and responses without local changes do not trigger a backup.
   files are versioned. The `rom-images/README.md` manifest records SHA-256,
   part number, identification, and provenance. A dump is identified by SHA-256.
 - `refs/` - external datasheets and manuals (Renesas SH7059 hardware manual,
-  PCMflash module list, Bosch LSU 4.9, NERS, MoTeC M150, UpRev), plus the
-  NissanECU RE wiki mirror under `refs/nissanecu-wiki/`. Original PDFs,
+  PCMflash module list, Bosch LSU 4.9, NERS, MoTeC M150, UpRev), the complete
+  2007 Infiniti G35 Sedan factory ESM with 56 PDFs under
+  `refs/nissan-esm-2007-g35-sedan/`, plus the NissanECU RE wiki mirror under
+  `refs/nissanecu-wiki/`. The machine-readable ESM projection is stored
+  separately under `refs/diagnostics/nissan-esm-2007-g35-sedan/`. Original PDFs,
   MarkItDown conversions (`*.md`), and `refs/README.md` are versioned.
 - `tools/` - reverse-engineering infrastructure: `ghidra/` contains Java
   extractors, `headless-analyze.sh`, and `symbols.csv`; `memgraph/` contains the
