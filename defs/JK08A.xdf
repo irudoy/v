@@ -7316,7 +7316,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xAA84" flags="0x0">
     <title>Calculated Load Reference - 100% point (0x1491A)</title>
-    <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence candidate. 100% reference value for calculated load: value ffff1024 at full scale ffff413e Semantic confidence: candidate. Blocking condition: In the blind artifact, the listing of kernel path 00026a64 ends at 00026aa2 immediately after reading two adjacent words. Subsequent arithmetic, convergence of branch 00026a9a, and return of the result in r0 are absent. Input r5 also ranges over 0x0000..0xff00, making both wrapper 000263f4 branches reachable: the path through the incomplete kernel when r5 &lt; 0xf000 and direct reading of the last element when r5 &gt;= 0xf000. Machine evidence does not close the connection from r0 at 000808da to the entire claimed interpolation.</description>
+    <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence code. Sixteen-point uint16 normalization reference for the calculated-load byte. Lookup M by uint8[ffff11b3]&lt;&lt;8 enters q=floor((uint16[ffff1024]&lt;&lt;8)/M); an optional second normalization uses ffff329f, and the result is clamped to 255 and written to ffff413e for J1979 Mode 01 PID 0x04. The exact image closes both wrapper branches: 000263f4 calls the complete uint16 interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell 15 otherwise. FUN_0008083c calculates the load code, optionally applies floor((q&lt;&lt;7)/uint8[ffff329f]) when ROM8[0x870e] bit 4 is set, clamps to 255, and writes ffff413e. FUN_00035856 returns this byte for PID 0x04; standard conversion is 100*A/255. The operational 100% normalization role has code confidence. The BFS unit, x*0.000488 scale, and static RPM axis come from the HR A2L catalog and remain candidate. Static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence: writes].</description>
     <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -7363,7 +7363,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1491A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>ms BFS [cand]</units>
+      <units>BFS [cand]</units>
       <decimalpl>3</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.000488">
@@ -13948,8 +13948,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x893C" flags="0x0">
-    <title>Internal Multiplicand - BFS candidate scale (0x15630)</title>
-    <description>Exact JK08A. Address 0x15630; 1 rows x 8 columns; uint16; map confidence code. Eight-point uint16 table of a multiplicand: lookup by coordinate=uint8(ffff1077)&lt;&lt;8; at 0003b75c, the result is shifted right by 2 and multiplied by unsigned byte ffff1160 before a downstream right shift. The artifact code does not name the physical quantity. A shape match of 1D-8 and element type uint16 with the sole catalog entry "Cranking Base Fuel Schedule Table" supports only a candidate BFS scale. For pair x*0.000488 and x/0.000488, endpoint values pass round trip: 15971 -&gt; 7.793848 -&gt; 15971, 24257 -&gt; 11.837416 -&gt; 24257. ffff1e44 and claimed second-accessor sink ffff1e16 have no external readers, but the lookup result is consumed directly within 0003b75c. Index: eight-point implicit uniform coordinate: coordinate=uint8(ffff1077)&lt;&lt;8; 00026a60 performs linear interpolation through 00026740, while 000263d8 returns uint16[7] at offset +0x0e for coordinate&gt;=0xe000. Output trace: 00015630 -&gt; 00026a60 -&gt; 00026740 -&gt; 000263d8 -&gt; r0 at 0003b8cc -&gt; ffff1e44 at 0003b8d0 -&gt; r0&gt;&gt;2 at 0003b8d4 -&gt; ffff1e40 at 0003b8d8 -&gt; mul.l with uint8 ffff1160 at 0003b8e6 -&gt; right shifts 0003b8ec..0003b8f4. Result disposition: consumer; Result target: 0003b8d4.</description>
+    <title>Fallback Source Table - BFS candidate scale (0x15630)</title>
+    <description>Exact JK08A. Address 0x15630; 1 rows x 8 columns; uint16; map confidence code. Eight-point uint16 fallback source table. Lookup M by uint8[ffff1077]&lt;&lt;8 is used during initialization and selected runtime fallback: init writes ffff1062=min(65535,floor(M*uint8[ffff1160]/512)); runtime writes min(65535,floor(floor(M/4)*uint8[ffff1160]/128)). The runtime map branch is selected when uint8[ffff2804] is zero, when ffff4185 bit 7 is set with nonzero ffff437a, or when ffff4185 bit 6 is set with uint8[ffff2804] below 0x20. The other runtime branch supplies the common result through independent arithmetic and does not read 0x15630. Raw M is written to ffff1e44 and floor(M/4) to ffff1e40; neither scratch sink has an external reader. ffff1062 is consumed as a four-times comparison width by FUN_00039316 and FUN_0003a750. Code proves the fallback-source role and formulas but not the physical quantity. The Cranking Base Fuel Schedule identity and x*0.000488 BFS scale remain catalog candidates. Result disposition: consumer.</description>
     <CATEGORYMEM index="0" category="14" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />

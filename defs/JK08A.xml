@@ -959,20 +959,23 @@
       </table>
     </table>
 
-    <!-- 0x1491A  16 uint16  map [candidate]; entry 0x263F4 (implicit, core 0x26A64)
+    <!-- 0x1491A  16 uint16  map [code]; entry 0x263F4 (implicit, core 0x26A64)
          accessor 0x8083C; r4 operand: pool
-         scaling x*0.000488 ms BFS [candidate]
-         Semantic confidence: candidate. Blocking condition: In the blind artifact, the listing
-         of kernel path 00026a64 ends at 00026aa2 immediately after reading two adjacent words.
-         Subsequent arithmetic, convergence of branch 00026a9a, and return of the result in r0
-         are absent. Input r5 also ranges over 0x0000..0xff00, making both wrapper 000263f4
-         branches reachable: the path through the incomplete kernel when r5 < 0xf000 and direct
-         reading of the last element when r5 >= 0xf000. Machine evidence does not close the
-         connection from r0 at 000808da to the entire claimed interpolation.
+         scaling x*0.000488 BFS [candidate]
+         static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence:
+         writes]
+         The exact image closes both wrapper branches: 000263f4 calls the complete uint16
+         interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell
+         15 otherwise. FUN_0008083c calculates the load code, optionally applies
+         floor((q<<7)/uint8[ffff329f]) when ROM8[0x870e] bit 4 is set, clamps to 255, and writes
+         ffff413e. FUN_00035856 returns this byte for PID 0x04; standard conversion is
+         100*A/255. The operational 100% normalization role has code confidence. The BFS unit,
+         x*0.000488 scale, and static RPM axis come from the HR A2L catalog and remain
+         candidate.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Calculated Load Reference - 100% point (0x1491A)" category="Load"
            storagetype="uint16" storageaddress="0x1491A" sizex="16" endian="big">
-      <scaling units="ms BFS [cand]" expression="x*0.000488" to_byte="x/0.000488" format="0.000"
+      <scaling units="BFS [cand]" expression="x*0.000488" to_byte="x/0.000488" format="0.000"
                fineincrement="0.001" coarseincrement="0.01"/>
       <table type="Static X Axis" name="Raw input (step 4096)" sizex="16">
         <data>0</data><data>4096</data><data>8192</data><data>12288</data>
@@ -3954,20 +3957,17 @@
     <!-- 0x15630  8 uint16  map [code]; entry 0x263D8 (implicit, core 0x26A60)
          accessor 0x2C648, 0x3B75C; r4 operand: pool
          scaling x*0.000488 BFS [candidate]
-         The artifact code does not name the physical quantity. A shape match of 1D-8 and
-         element type uint16 with the sole catalog entry "Cranking Base Fuel Schedule Table"
-         supports only a candidate BFS scale. For pair x*0.000488 and x/0.000488, endpoint
-         values pass round trip: 15971 -> 7.793848 -> 15971, 24257 -> 11.837416 -> 24257.
-         ffff1e44 and claimed second-accessor sink ffff1e16 have no external readers, but the
-         lookup result is consumed directly within 0003b75c. Index: eight-point implicit uniform
-         coordinate: coordinate=uint8(ffff1077)<<8; 00026a60 performs linear interpolation
-         through 00026740, while 000263d8 returns uint16[7] at offset +0x0e for
-         coordinate>=0xe000. Output trace: 00015630 -> 00026a60 -> 00026740 -> 000263d8 -> r0 at
-         0003b8cc -> ffff1e44 at 0003b8d0 -> r0>>2 at 0003b8d4 -> ffff1e40 at 0003b8d8 -> mul.l
-         with uint8 ffff1160 at 0003b8e6 -> right shifts 0003b8ec..0003b8f4. Result disposition:
-         consumer; Result target: 0003b8d4.
+         The runtime map branch is selected when uint8[ffff2804] is zero, when ffff4185 bit 7 is
+         set with nonzero ffff437a, or when ffff4185 bit 6 is set with uint8[ffff2804] below
+         0x20. The other runtime branch supplies the common result through independent
+         arithmetic and does not read 0x15630. Raw M is written to ffff1e44 and floor(M/4) to
+         ffff1e40; neither scratch sink has an external reader. ffff1062 is consumed as a four-
+         times comparison width by FUN_00039316 and FUN_0003a750. Code proves the fallback-
+         source role and formulas but not the physical quantity. The Cranking Base Fuel Schedule
+         identity and x*0.000488 BFS scale remain catalog candidates. Result disposition:
+         consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Internal Multiplicand - BFS candidate scale (0x15630)"
+    <table type="2D" name="Fallback Source Table - BFS candidate scale (0x15630)"
            category="Internal Calculations" storagetype="uint16" storageaddress="0x15630"
            sizex="8" endian="big">
       <scaling units="BFS [cand]" expression="x*0.000488" to_byte="x/0.000488" format="0.000000"

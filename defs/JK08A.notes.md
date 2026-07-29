@@ -956,6 +956,54 @@ hardware validation. The generated definitions expose one cell as
 `Throttle Rev Limiter (0x942C)` under `Limiters`.
 
 
+### Independent calculated-load and fallback schedule paths
+
+The exact JK08A image closes the complete path from `0x1491A` to the standard
+calculated-load response:
+
+- `FUN_0008083C` indexes the 16-cell uint16 table by
+  `uint8[0xFFFF11B3] << 8`. Wrapper `FUN_000263F4` uses the complete interpolation
+  kernel `FUN_00026A60` and unsigned linear finisher `FUN_00026740` below
+  coordinate `0xF000`; the upper branch returns cell 15.
+- With lookup result `M`, the producer calculates
+  `q = floor((uint16[0xFFFF1024] << 8) / M)`. If
+  `ROM8[0x870E].bit4` is set, it additionally calculates
+  `q = floor((q << 7) / uint8[0xFFFF329F])`; a zero optional divisor forces 255.
+  The final value is clamped to 255 and written to `0xFFFF413E`. Other entry gates
+  can force 0 or 255.
+- Factory diagnostic dispatcher `FUN_00035634` selects the Mode 01 handler
+  `FUN_00035856`. Its PID `0x04` branch returns `0xFFFF413E` directly through the
+  response-byte writer. Freeze-frame code copies the same byte. Standard physical
+  conversion is `100*A/255`.
+
+Code therefore establishes the calculated-load normalization role of `0x1491A` and
+the exact output representation. The A2L name `Load Base Fuel Schedule Table`, BFS
+unit, multiplier `x*0.000488`, and static RPM axis remain catalog-level candidates.
+
+Table `0x15630` belongs to an independent path and has no machine connection to the
+two-channel `0x141F4`/`0x14274` branch:
+
+- Initialization in `FUN_0002C648` looks up `M` by
+  `uint8[0xFFFF1077] << 8`, writes raw `M` to `0xFFFF1E44`,
+  `floor(M/4)` to `0xFFFF1E40`, and writes
+  `min(65535, floor(M*uint8[0xFFFF1160]/512))` to `0xFFFF1062`.
+- Runtime function `FUN_0003B75C` reads the table only on a fallback path. The
+  fallback is selected when `uint8[0xFFFF2804] == 0`, when
+  `0xFFFF4185.bit7` is set and `0xFFFF437A != 0`, or when
+  `0xFFFF4185.bit6` is set and `uint8[0xFFFF2804] < 0x20`. It writes
+  `min(65535, floor(floor(M/4)*uint8[0xFFFF1160]/128))` to `0xFFFF1062`.
+  The main branch creates the same common result through independent arithmetic
+  without reading `0x15630`.
+- `FUN_00039316` uses `4*0xFFFF1062` as an absolute-difference tolerance.
+  `FUN_0003A750` uses the same four-times value as a comparison width around
+  `ROM8[0x8AD9] << 8`. These consumers close the operational path but do not name
+  its physical quantity.
+
+The generated name `Fallback Source Table - BFS candidate scale (0x15630)` reflects
+the code boundary. Shape matching to the catalog entry `Cranking Base Fuel Schedule
+Table` and multiplier `x*0.000488 BFS` remain candidate evidence only.
+
+
 ### Threshold pair `0x8FDC`/`0x8FDE`, FUN_00047A56
 
 `FUN_00047A56` compares `word[0xFFFF266E]` with one of two thresholds. Listing

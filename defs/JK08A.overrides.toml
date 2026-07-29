@@ -1302,7 +1302,7 @@ fine = 1
 coarse = 256
 
 [table.00015630]
-name = "Internal Multiplicand - BFS candidate scale (0x15630)"
+name = "Fallback Source Table - BFS candidate scale (0x15630)"
 category = "Internal Calculations"
 order = 205
 format = "0.000000"
