@@ -630,8 +630,8 @@
 
     <!-- 0x0991A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x4E1C0; r4 operand: sp
-         scaling x-64 degrees adjustment [candidate]; Y Axis 0x11ECE rpm [candidate]; X Axis
-         0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
+         Axis 0x11EBE load [candidate]
          The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across
          the entire trio. The physical scale and mode name are confirmed by the A2L catalog;
          code confirms table selection, the 0x7f mask, and participation of the result in angle
@@ -640,8 +640,8 @@
     <table type="3D" name="Ignition Timing Trim Cold" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0x0991A" sizex="16" sizey="16" endian="big"
            mask="7F">
-      <scaling units="degrees adjustment [cand]" expression="x-64" to_byte="x+64" format="0"
-               fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
+               format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
         <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -676,8 +676,8 @@
 
     <!-- 0x09A1A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
-         scaling x-64 degrees adjustment [candidate]; Y Axis 0x11ECE rpm [candidate]; X Axis
-         0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
+         Axis 0x11EBE load [candidate]
          Code selects the table relative to the high-detonation branch and preserves bit 7
          separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
          layout offset of +0x5c.
@@ -685,8 +685,8 @@
     <table type="3D" name="Ignition Timing Trim Main" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0x09A1A" sizex="16" sizey="16" endian="big"
            mask="7F">
-      <scaling units="degrees adjustment [cand]" expression="x-64" to_byte="x+64" format="0"
-               fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
+               format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
         <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -721,8 +721,8 @@
 
     <!-- 0x09B1A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
-         scaling x-64 degrees adjustment [candidate]; Y Axis 0x11ECE rpm [candidate]; X Axis
-         0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
+         Axis 0x11EBE load [candidate]
          Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
          input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
          layout offset of +0x5c.
@@ -730,8 +730,8 @@
     <table type="3D" name="Ignition Timing Trim High Det" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0x09B1A" sizex="16" sizey="16" endian="big"
            mask="7F">
-      <scaling units="degrees adjustment [cand]" expression="x-64" to_byte="x+64" format="0"
-               fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
+               format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
         <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"

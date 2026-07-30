@@ -176,6 +176,8 @@ one-entry patch. Its XDF intentionally has no checksum object because checksum
 correction belongs to the flashing workflow. The three split-field ignition
 maps use per-cell XDF conversion variables so editing the low seven bits
 preserves bit 7, while editing the bit-7 view preserves the low seven bits.
+Their low-seven-bit view is labeled `Timing adjustment (deg) [cand]`: it is a
+relative trim of the calculated MBT value, not final ignition timing in BTDC.
 
 The owned VQ35HR bench ROM `JK00D` independently confirms the
 **SH705822N / SH7058 / 1 MiB** class.

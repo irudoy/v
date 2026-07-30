@@ -428,6 +428,28 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertEqual(scale.get("to_byte"), "1881.6/x")
         self.assertEqual(scale.get("format"), "0.00")
 
+    def test_tracked_ignition_trim_is_labeled_as_relative_adjustment(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        by_name = {
+            table.get("name"): table
+            for table in rom.findall("./table")
+        }
+        for name in (
+            "Ignition Timing Trim Cold",
+            "Ignition Timing Trim Main",
+            "Ignition Timing Trim High Det",
+        ):
+            with self.subTest(name=name):
+                table = by_name[name]
+                scale = table.find("./scaling")
+                self.assertEqual(table.get("mask"), "7F")
+                self.assertEqual(
+                    scale.get("units"),
+                    "Timing adjustment (deg) [cand]",
+                )
+                self.assertEqual(scale.get("expression"), "x-64")
+                self.assertEqual(scale.get("to_byte"), "x+64")
+
     def test_research_only_tables_remain_outside_the_working_definition(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         addresses = {

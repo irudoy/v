@@ -258,6 +258,24 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertEqual(axis.findtext("./decimalpl"), "2")
         self.assertEqual(axis.find("./MATH").get("equation"), "1881.6/X")
 
+    def test_ignition_trim_is_labeled_as_relative_adjustment(self):
+        by_title = {
+            table.findtext("./title"): table
+            for table in self.root.findall("./XDFTABLE")
+        }
+        for title in (
+            "Ignition Timing Trim Cold",
+            "Ignition Timing Trim Main",
+            "Ignition Timing Trim High Det",
+        ):
+            with self.subTest(title=title):
+                axis = by_title[title].find("./XDFAXIS[@id='z']")
+                self.assertEqual(
+                    axis.findtext("./units"),
+                    "Timing adjustment (deg) [cand]",
+                )
+                self.assertEqual(axis.findtext("./decimalpl"), "0")
+
     def test_xdf_has_expected_tables_patches_and_no_checksum(self):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
