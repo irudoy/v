@@ -99,8 +99,8 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 32)
-        self.assertEqual(len(inherited), 12)
+        self.assertEqual(len(rows), 37)
+        self.assertEqual(len(inherited), 17)
         self.assertEqual(
             sum(row["rom_scope"] == "exact-rom" for row in rows), 20
         )
@@ -141,6 +141,20 @@ class BindingSourceTest(unittest.TestCase):
         self.assertIn(
             "writes:000bd9f0@structural",
             by_id["intake-valve-timing-bank-1"]["evidence"],
+        )
+        self.assertEqual(
+            {
+                row["id"]
+                for row in inherited
+                if row["id"].startswith("throttle-")
+            },
+            {
+                "throttle-position-sensor-1-bank-1",
+                "throttle-position-sensor-2-bank-1",
+                "throttle-position-sensor-1-bank-2",
+                "throttle-position-sensor-2-bank-2",
+                "throttle-control-motor-relay",
+            },
         )
 
 

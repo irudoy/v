@@ -998,14 +998,51 @@ The physical sample quantity represented by `0xFFFF1026`,
   coordinate `0xFFFF11B6` by four, rate-limits `0xFFFF1796` toward the selected
   threshold, and writes signed candidate `0xFFFF19D8`.
 - `FUN_00071508` includes `0xFFFF19D8` in a signed minimum cascade and writes selected
-  limit `0xFFFF243A`. `FUN_000702C6` consumes that limit in a closed-loop controller
-  calculation.
+  limit `0xFFFF243A`.
 
 The other direct runtime reader, `FUN_00077892`, is a separate branch. It caps a
 derived unsigned value at `ROM16[0x942C]`, applies lower bound
 `ROM16[0x94B2] = 0x0500`, and writes `0xFFFF32EC`. The same function is the only
 reader of that RAM word. This proves an auxiliary upper-bound use but does not assign
 the branch a physical throttle, speed, or gear-control meaning.
+
+The exact downstream request path is:
+
+```text
+ROM16[0x942c]
+  -> FUN_0007584e -> ffff19d8
+  -> FUN_00071508 -> ffff243a
+  -> FUN_000702c6 -> controller state ffff1878
+  -> FUN_00070cd6 -> ffff188c
+  -> FUN_00070d20 -> ffff19c0
+  -> FUN_00070d82 -> ffff2438 and ffff19c2
+  -> FUN_00079030 -> ffff19c6
+  -> FUN_00073432 / FUN_00073628 -> downstream interpolation branches
+```
+
+Scheduler `FUN_000702A0` calls the controller stages in the order
+`702C6 -> 7038A -> 703B2 -> 7054A -> 70670 -> 70812 -> 70CD6 -> 70D20 ->
+70D82`. `FUN_00070D82` implements the final selection:
+
+- with `0xFFFF2490.bit1 = 0`, it selects `0xFFFF243A`;
+- with the bit set, it selects `0xFFFF19C0`;
+- with the bit set and `0xFFFF25D6 = 0`, it takes the signed minimum of
+  `0xFFFF19C0` and `0xFFFF243A`.
+
+The selected signed value is written identically to `0xFFFF2438` and
+`0xFFFF19C2`. `FUN_00079030` reads both copies, applies additional
+mode-controlled signed bounds, and writes `0xFFFF19C6`. `FUN_00073432` adds
+numeric bias `0x8000` to this value to form an unsigned interpolation key and
+writes `0xFFFF1984`/`0xFFFF198A`; `FUN_000730FC` consumes both outputs.
+`FUN_00073628` uses the same `0xFFFF19C6` coordinate in a parallel branch
+through `0xFFFF1D14`.
+
+This trace closes the limiter path to a shared signed request coordinate in the
+airflow/torque controller. It does not close a path to a bank-specific throttle
+angle, an SH7058 timer/PWM register, or an ECM terminal. No direct call or data
+edge from `FUN_00070D20` to `FUN_0003B498` is present; the functions belong to a
+larger connected controller subsystem, but component membership is not a motor
+output proof.
 
 The adjacent calibrated branch `FUN_00075798` reads `ROM16[0x9476] = 0x0708`, writes
 `0xFFFF19DE`, and feeds the same signed minimum cascade. Public EV18A definitions place
@@ -1025,12 +1062,75 @@ threshold of 7650 RPM and Normal release threshold of 7450 RPM. The throttle set
 therefore 150 RPM below fuel-cut activation and 50 RPM above fuel-cut release, consistent
 with throttle intervention preceding the final fuel cut.
 
-The address, disable sentinel, speed-coordinate conversion, state update, signed
-minimum path, and electronic-throttle/airflow controller association are code facts.
-The physical label and `x*0.78125 RPM` multiplier are catalog/homology facts and remain
-`candidate` until hardware validation. The final controller-to-ETC-motor pin route is
-not closed. The generated definitions expose one cell as `Throttle Rev Limiter
-(0x942C)` under `Limiters`.
+#### Independent exact throttle-feedback and relay anchors
+
+`FUN_0003235C` is the exact JK08A UDS ReadDataByIdentifier handler. Its high-byte
+`0x12` table at `0x2289C` provides four independent throttle-position feedback
+anchors:
+
+| DID | exact RAM word | reviewed diagnostic identity |
+|---|---|---|
+| `0x120F` | `0xFFFF2756` | `TP SEN 1-B1` |
+| `0x1210` | `0xFFFF275E` | `TP SEN 2-B1` |
+| `0x124B` | `0xFFFF285C` | `TP SEN 1-B2` |
+| `0x124C` | `0xFFFF2864` | `TP SEN 2-B2` |
+
+The pointer values are present at `0x228D8`, `0x228DC`, `0x229C8`, and
+`0x229CC`. Reviewed Nissan diagnostic profiles bind the DIDs to the parameter
+names, and the factory VQ35HR manual defines all four as throttle-position
+sensor voltages. The manual also states that sensor 2 is converted internally,
+so its displayed value differs from the ECM terminal voltage.
+
+The second-bank processing branch is partially closed in exact code.
+`FUN_0003E4CC` writes `0xFFFF2864` as `0x0400 - uint16[0xFFFF363C]`, subtracts
+learned offset `0xFFFF561C`, clamps the signed correction, and writes
+`0xFFFF2860`. `FUN_0003E63C` can select that corrected value into
+`0xFFFF284C`; it selects the paired channel into `0xFFFF284A`, runs both
+through inverse pair `0x13202`/`0x155A0`, and writes their combined result.
+`FUN_0003B520` consumes `0xFFFF284A` and `0xFFFF284C` in the two-bank
+ETC/airflow component.
+
+For relay state, high-byte `0x13` table `0x229E0` maps DID `0x130A` to
+`0xFFFF2C56`. The record's support pointer selects `ROM8[0x11A39] = 0x10`,
+which marks bit 4 as supported. `FUN_0002E2E8` sets that bit only when
+`0xFFFF24D2.bit3 = 1` and `0xFFFF4255.bit3 = 0`. Reviewed diagnostic profiles
+and the factory manual identify bit 4 as `THRTL RELAY`, the throttle-control
+motor relay condition determined by the ECM. This is a reported control state,
+not the physical relay pin.
+
+These anchors provide a hardware-observable feedback boundary for validating
+`0x942C`. They do not create a static data edge from `0xFFFF19C6` to the
+position-sensor words.
+
+#### Controlled hardware validation
+
+The calibration label and `x*0.78125 RPM` multiplier remain `candidate` until
+the following differential test succeeds:
+
+1. Use a chassis or engine dynamometer with an operator-controlled abort. Do
+   not use stationary free revving: the independent stationary fuel limiter at
+   1800 RPM can mask this path.
+2. Record a stock baseline with `ENG SPEED`, `ACCEL SEN 1/2`, all four
+   `TP SEN` values, `THRTL RELAY`, `INJ PULSE-B1/B2`, calculated load, and DTC
+   state.
+3. Change only `0x942C` from stock `0x2580` to `0x0F00`, which is 3000 RPM
+   under the candidate multiplier. Keep the main fuel-cut table at its stock
+   7650 RPM setting so fuel cut cannot mask the observation.
+4. At nonzero wheel speed and modest stable load, sweep from below 2500 RPM
+   toward 3300 RPM while keeping accelerator demand steady. Abort on a new
+   DTC, `THRTL RELAY = OFF`, disagreement between paired position sensors, or
+   unexpected engine behavior.
+5. A positive result is coordinated closing movement in both throttle banks
+   near 3000 RPM while accelerator demand remains steady, the relay remains
+   on, and injection pulse remains present. Fuel pulse disappearing before
+   throttle feedback moves indicates a fuel-cut or fail-safe intervention and
+   does not validate `0x942C`.
+6. Restore the stock word and repeat the same sweep. The intervention must move
+   back out of the 3000 RPM test window.
+
+The generated definitions expose one cell as `Throttle Rev Limiter (0x942C)`
+under `Limiters`. The definition description states the proven request boundary
+and the unresolved motor-output boundary.
 
 
 ### Independent calculated-load and fallback schedule paths
@@ -1395,11 +1495,13 @@ switch in RomRaider and only the descriptor entry in both TunerPro patch scopes.
 - Strong pointer anchors without attribution: `0x0975A` with 13 references and
   `0x11FB6` / `0x11EBE` with 3 each. Pointer clusters in `0x16000..0x163xx` form a
   calibration region for fuel/torque.
-- Limiter physical closure: `0x942C` has a continuous code path into the
-  electronic-throttle/airflow controller, but the final controller-to-ETC-motor pin
-  route remains unresolved. `0x934E` has a continuous code path into the global
-  six-channel fuel-output inhibit mask; its Normal/Reverse labels and RPM scale still
-  require hardware validation.
+- Limiter physical closure: `0x942C` has a continuous code path through the signed
+  limiter arbiter and controller stages to shared request coordinate `ffff19c6`.
+  Exact UDS bindings expose four banked throttle-position feedback values and the
+  throttle-motor relay state, but no static path reaches a bank-specific angle command,
+  motor PWM register, or ECM terminal. `0x934E` has a continuous code path into the
+  global six-channel fuel-output inhibit mask; its Normal/Reverse labels and RPM scale
+  still require hardware validation.
 
 
 ### ETC / electronic throttle - inverse conversion pairs (accessor FUN_0003b498)

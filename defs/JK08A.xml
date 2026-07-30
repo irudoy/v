@@ -1041,9 +1041,10 @@
          offset for both anchors. The adjacent JK08A speed branch writes ffff19de into the same
          signed minimum cascade. Working fuel-cut table 0000934e has candidate Normal activation
          and release values of 7650 and 7450 RPM, placing the 7500 RPM throttle setting between
-         them. Code confidence applies to the operational limiter path; the physical label and
-         multiplier are catalog/homology evidence and remain candidate pending hardware
-         validation.
+         them. Exact code closes the limiter path through the shared signed airflow/torque-
+         request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-
+         angle command, motor PWM register, or ECM terminal. The physical label and multiplier
+         remain catalog/homology evidence pending a controlled hardware test.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Throttle Rev Limiter (0x942C)" category="Limiters"
            storagetype="uint16" storageaddress="0x0942C" sizex="1" endian="big">

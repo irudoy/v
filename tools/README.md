@@ -430,9 +430,9 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 3209 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 3397 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 1093 source claims and 3209 expected edges;
+current JK08A has 1121 source claims and 3397 expected edges;
 `effective below declared=0`, `without grounding=0`, 44 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
 
@@ -440,8 +440,8 @@ ungrounded SCCs. Read-only verification and interactive queries:
 claims target firmware nodes and rest on both firmware evidence and
 source-specific diagnostic claims. It resolves all dependencies before
 replacing a ROM's binding projection. `defs/JK08A.diagnostic-bindings.csv`
-contains 31 source rows: 11 exact-code claims and 20 exact-ROM DTC claims. JK03A
-inherits only the 11 exact-code rows. Static confidence cannot exceed `code`;
+contains 37 source rows: 17 exact-code claims and 20 exact-ROM DTC claims. JK03A
+inherits only the 17 exact-code rows. Static confidence cannot exceed `code`;
 hardware evidence is outside this pipeline milestone.
 
 ```bash

@@ -634,7 +634,7 @@ value, and conversion first. With the JK08A exact-code export and tracked
 diagnostic corpus, it reports 397 review candidates across 383 known DIDs; 58
 candidate rows occur in functions containing more than one known DID.
 
-The JK08A binding projection contains 32 reviewed claims:
+The JK08A binding projection contains 37 reviewed claims:
 
 - engine speed at `0xFFFF11AE` has `code` association and homologous VQ35HR
   monitor applicability;
@@ -657,6 +657,12 @@ The JK08A binding projection contains 32 reviewed claims:
   writes it as the first member of a centered two-bank angle pair through
   `0xBD9F0`, while homologous VQ35HR sources identify the value as intake valve
   timing bank 1;
+- exact UDS DIDs `0x120F`, `0x1210`, `0x124B`, and `0x124C` return the four
+  bank-specific throttle-position sensor words at `0xFFFF2756`, `0xFFFF275E`,
+  `0xFFFF285C`, and `0xFFFF2864`. DID `0x130A` exposes the throttle-relay status
+  at `0xFFFF2C56` bit 4. These values provide observable feedback for validating
+  the `0x942C` throttle-limiter candidate without asserting a static edge from
+  the limiter request coordinate to the feedback producers;
 - knock-monitor maps `0xABBA` and `0xABFA`, function `0xA52E4`, and state byte
   `0xFFFF4204` have exact-ROM, code-traced links to P0327, P0328, P0332, and
   P0333.
@@ -667,7 +673,7 @@ runtime writer. For intake CVTC, exact code proves
 diagnostic definitions supply candidate conversion `raw*0.5-64 degCA`; hardware
 validation remains required. Unsupported community candidates `0x1211/0x1212`
 and `0x1127/0x1128` are excluded because the exact JK08A pointer tables contain
-`0xFFFFFFFF` for those DIDs. JK03A receives the twelve exact-code claims and
+`0xFFFFFFFF` for those DIDs. JK03A receives the seventeen exact-code claims and
 none of the twenty exact-ROM DTC claims.
 
 The static milestone ends at `code`. `silicon` is rejected by the loader, and
@@ -1199,14 +1205,14 @@ sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 | No regression against backtracking | sites where backtracking returned an in-ROM value but data flow did not | n/a -> **1, reviewed** (`0x56cd8`: value from an unreachable branch, not a base) | all reviewed |
 | Latent catalog defects | number of `conflict` results (`bt != df` at a site) | not measured -> **14, all reviewed** (6 base conflicts: reference wrong in every case; 3: unreachable branch and stale registers; 5: `mov.w` constant read as 32-bit by the reference). Four more base differences moved out of this class after operand-set expansion (section 6): the mechanisms selected different branches of one selector | all reviewed |
 | Catalog completeness | number of `:Map` nodes against known inventory; 0 maps outside graph | 223 bases in ledger, 0 in graph -> **446 of 446 in graph** across census and manual families; three dynamic call sites create no speculative map | every catalog map in graph; dynamic bases remain explicit |
-| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: definition emits 150 maps, 131 at `code` and 19 explicitly marked `[candidate]`; it also emits two standalone reference axes | 0 unmarked |
+| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: definition emits 153 maps, 134 at `code` and 19 explicitly marked `[candidate]`; it also emits two standalone reference axes | 0 unmarked |
 | Catalog geometry | number of `:Map` nodes without `storagetype`, which prevents emission | 66 of 441, all 2D -> **0**: 2D element type comes from the finisher | 0 |
-| Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **18** of 150; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
+| Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **17** of 153; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
 | Deferred axes | number of `pattern`-level `:Axis` nodes reported only by backtracking with `k5`/`k6=sp` | not measured -> **14 of 229**; `0x8000` is erased flash; none pass emission | 0; Stage 6 resolves them |
 | Axis against core code | number of `:Axis` nodes with `monotonic=false`; reverse linear search cannot read such an array | not measured -> **1 of 229** (`0x119B2`; its map `0x9C5A` is entirely `0xFF`). This caught an axis element declared from the core rather than the wrapper/axis pair: 2 of 22 wrappers and 2 axes had been read as words instead of bytes | 0 |
 | Measured layer | number of `:Map`/`:Axis` nodes without values from the image, meaning shape without contents | not tracked -> **0 of 446 and 229**: the same run that builds the layer reads the image | 0; a read miss stops loading |
 | Output disposition of `code` maps | structured evidence distinguishes writes, consumer, inline comparison, return, and dead control flow | format active: focused positions 50-395 covered 346/346; backfill retained 41 prior `code` Map semantics claims with a disposition and downgraded 11 unsupported claims | 100% of `code` Map semantics |
-| Static diagnostic bindings | reviewed claims with resolved firmware, diagnostic, source-claim, and evidence targets; exact-ROM rows must not cross inheritance | **JK08A 31, JK03A 11**; JK08A has 20 exact-ROM DTC claims and 11 exact-code parameter claims; direct or provenance-reachable context prioritizes 33 of 446 JK08A maps and 31 of 446 JK03A maps | every loaded row resolves exactly once; hardware validation remains explicit |
+| Static diagnostic bindings | reviewed claims with resolved firmware, diagnostic, source-claim, and evidence targets; exact-ROM rows must not cross inheritance | **JK08A 37, JK03A 17**; JK08A has 20 exact-ROM DTC claims and 17 exact-code parameter claims; direct or provenance-reachable context prioritizes 36 of 446 JK08A maps and 34 of 446 JK03A maps | every loaded row resolves exactly once; hardware validation remains explicit |
 | Identity coverage | share of `:Map` nodes with `:MATCHES` or `:HOMOLOG` | 0; references are in the graph (188 `:A2LEntry`, including 106 maps; 371 `:VendorEntry`, including 243 factory entries); match keys follow Stage 4 | advisory, increasing |
 | Dictionary convergence | number of `concept` values shared by A2L and both vendors | not measured -> **17 of 23** labeled; `concept` is present on 45 of 188 A2L records and 170 of 371 vendor records, representing 49 values | increases with analysis; 100% is impossible because A2L has no VVEL entries (0); Stage 6 labels flags |
 | Vendor anchors in image | number of `:VendorFact {kind:'const'}` values found in the dump | 22 documented -> **1 found** (K-Factor `26806`: block signature in all 6 registered ROMs) | search all; a bare value match is `pattern` (two in JK03A/JK08A), block signature is `candidate`, trace is `code` |
@@ -1225,8 +1231,8 @@ anywhere in the graph. It is a separate diagnostic, not a condition of local bac
 
 | Metric | Check | JK08A fact | Target |
 |--------|-------|------------|--------|
-| Source claims | strict rows across all four CSV files | **1093**; manual files contain 312 annotated functions in `funcs.csv`, 236 variables in `vars.csv`, 389 map findings in `findings.csv`, and 24 axis findings in `axes.csv` | entire schema resolves |
-| Evidence projection | expected against actual by complete edge key | **3209 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
+| Source claims | strict rows across all four CSV files | **1121**; manual files contain 325 annotated functions in `funcs.csv`, 249 variables in `vars.csv`, 389 map findings in `findings.csv`, and 24 axis findings in `axes.csv` | entire schema resolves |
+| Evidence projection | expected against actual by complete edge key | **3397 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
 | Local code-layer gate | `code`/`silicon` Func/Reg/Map/Axis without factual evidence | **0**; frozen debt of Map semantics 52, Map scale 20, and Axis scale 6 is closed | 0 |
 | Weakest link | `code`/`silicon` where effective level is below declared | **0**; all `code` claims retain their declared level | 0 |
 | Transitive grounding | `code`/`silicon` without a terminal, structural support, or grounded leaf | **0** | 0 |
