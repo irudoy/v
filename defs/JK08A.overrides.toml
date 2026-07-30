@@ -247,14 +247,13 @@ coarse = 100
 static_axis = ["activate", "release"]
 
 [table.00008fdc]
-name = "Rev Limit - Fuel Cut Maximum (0x8FDC)"
-category = "Limiters"
-order = 40
-fine = 12
-coarse = 125
-# The axis is not a ROM array but a branch selection: a direct comparator reads
-# the threshold pair.
-static_axis = ["cut (bit7=0)", "restore (bit7=1)"]
+name = "Accelerator Pedal High-State Hysteresis (0x8FDC)"
+category = "Throttle / Accelerator Pedal / Thresholds"
+order = 10
+format = "0"
+fine = 1
+coarse = 8
+static_axis = ["activate", "release"]
 
 [table.0000911c]
 name = "Fuel Cut Readiness Accumulator Threshold (0x911C)"
@@ -264,6 +263,18 @@ format = "0"
 fine = 1
 coarse = 16
 static_axis = ["readiness"]
+
+[table.0000934e]
+name = "Rev Limit - Fuel Cut (0x934E)"
+category = "Fuel Delivery / Fuel Cut / Main"
+order = 5
+format = "0.0"
+fine = 12.5
+coarse = 125
+static_axis_x_name = "State"
+static_axis_x = ["Normal", "Reverse"]
+static_axis_y_name = "Fuel"
+static_axis_y = ["Cut", "Restore"]
 
 [table.0000942c]
 name = "Throttle Rev Limiter (0x942C)"

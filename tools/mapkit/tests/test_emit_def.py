@@ -292,7 +292,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         categories = {
             table.get("category") for table in tables.values()
         }
-        self.assertEqual(len(categories), 18)
+        self.assertEqual(len(categories), 20)
         self.assertTrue(all(
             "(candidate)" not in category and "(traced)" not in category
             for category in categories
@@ -311,6 +311,12 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             ),
             "Fuel Cut Readiness Accumulator Step (0x124D2)": (
                 "Fuel Delivery / Fuel Cut / Thresholds"
+            ),
+            "Rev Limit - Fuel Cut (0x934E)": (
+                "Fuel Delivery / Fuel Cut / Main"
+            ),
+            "Accelerator Pedal High-State Hysteresis (0x8FDC)": (
+                "Throttle / Accelerator Pedal / Thresholds"
             ),
             "Throttle Rev Limiter (0x942C)": "Limiters",
             "Engine Speed Axis [RPM] (ref)": "Reference Axes",
@@ -334,6 +340,50 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertEqual(table.get("sizex"), "1")
         self.assertEqual(scaling.get("units"), "accumulator counts")
         self.assertEqual(scaling.get("expression"), "x")
+
+    def test_working_fuel_cut_uses_exact_2x2_layout_and_candidate_scale(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        table = next(
+            table for table in rom.findall("./table")
+            if table.get("name") == "Rev Limit - Fuel Cut (0x934E)"
+        )
+        scaling = table.find("./scaling")
+        axis_x = table.find("./table[@type='Static X Axis']")
+        axis_y = table.find("./table[@type='Static Y Axis']")
+        self.assertEqual(table.get("storageaddress"), "0x0934E")
+        self.assertEqual(table.get("storagetype"), "uint16")
+        self.assertEqual(table.get("sizex"), "2")
+        self.assertEqual(table.get("sizey"), "2")
+        self.assertEqual(scaling.get("units"), "RPM [cand]")
+        self.assertEqual(scaling.get("expression"), "x*12.5")
+        self.assertEqual(
+            [node.text for node in axis_x.findall("./data")],
+            ["Normal", "Reverse"],
+        )
+        self.assertEqual(
+            [node.text for node in axis_y.findall("./data")],
+            ["Cut", "Restore"],
+        )
+
+    def test_accelerator_pedal_hysteresis_uses_raw_code_scale(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        table = next(
+            table for table in rom.findall("./table")
+            if table.get("name") == (
+                "Accelerator Pedal High-State Hysteresis (0x8FDC)"
+            )
+        )
+        scaling = table.find("./scaling")
+        axis = table.find("./table[@type='Static X Axis']")
+        self.assertEqual(table.get("storageaddress"), "0x08FDC")
+        self.assertEqual(table.get("storagetype"), "uint16")
+        self.assertEqual(table.get("sizex"), "2")
+        self.assertEqual(scaling.get("units"), "normalized ADC counts")
+        self.assertEqual(scaling.get("expression"), "x")
+        self.assertEqual(
+            [node.text for node in axis.findall("./data")],
+            ["activate", "release"],
+        )
 
     def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")

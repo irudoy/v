@@ -207,7 +207,7 @@ advice not to change it. The value is identified by a homologous scalar-block si
 
 The value alone is insufficient. `0x68B6` is the only word-aligned occurrence in four images,
 but appears **twice** in the exact-code JK03A/JK08A pair. The second occurrence at `0x162FA`
-lacks the signature and lies in a data region covered by none of the 439 catalog maps or 229
+lacks the signature and lies in a data region covered by none of the 446 catalog maps or 229
 axes, with no functions present. It is a table cell that happens to share the value, not a
 second K-Factor. The block signature, rather than the scalar alone, is the anchor.
 
@@ -215,6 +215,9 @@ Confidence is `candidate`: a signature match rather than a code trace. Promotion
 requires tracing the MAF-to-load multiplication and remains in Phase 3 of the roadmap. UpRev
 sets a lower range bound of 10,000; the default is about 2.7 times higher.
 
-The same block already contains a code-identified `Rev Limit - Fuel Cut Maximum`
-(JK03A `0x8FDC` / `0x8FDE`, `FUN_00047a56`), so the remaining documented scalars are
-reasonable targets in that region.
+The `Rev Limit - Fuel Cut Maximum` catalog entry is not assigned to JK03A/JK08A
+`0x8FDC`/`0x8FDE`. Exact code identifies that pair through `FUN_00047a56` as
+accelerator-pedal high-state hysteresis fed by A/D channels AN10 and AN17. The working
+engine-speed fuel-cut table is independently localized at `0x934E` through
+`FUN_0004f282`. Nearby documented scalars remain search candidates only when their own
+code paths support the identity.

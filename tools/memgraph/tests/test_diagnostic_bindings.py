@@ -92,10 +92,10 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 25)
-        self.assertEqual(len(inherited), 9)
+        self.assertEqual(len(rows), 31)
+        self.assertEqual(len(inherited), 11)
         self.assertEqual(
-            sum(row["rom_scope"] == "exact-rom" for row in rows), 16
+            sum(row["rom_scope"] == "exact-rom" for row in rows), 20
         )
         self.assertTrue(
             any(row["kind"] == "calibration_context" for row in rows)
@@ -104,12 +104,18 @@ class BindingSourceTest(unittest.TestCase):
             {
                 row["id"]
                 for row in rows
-                if row["id"].startswith(("injection-pulse-", "intake-valve-"))
+                if row["id"].startswith((
+                    "injection-pulse-",
+                    "intake-valve-",
+                    "accelerator-pedal-position-",
+                ))
             },
             {
                 "injection-pulse-bank-1",
                 "injection-pulse-bank-2",
                 "intake-valve-timing-bank-1",
+                "accelerator-pedal-position-1",
+                "accelerator-pedal-position-2",
             },
         )
         by_id = {row["id"]: row for row in rows}

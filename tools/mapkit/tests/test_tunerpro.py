@@ -196,6 +196,12 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "Fuel Cut Readiness Accumulator Step (0x124D2)": (
                 "Fuel Delivery / Fuel Cut / Thresholds"
             ),
+            "Rev Limit - Fuel Cut (0x934E)": (
+                "Fuel Delivery / Fuel Cut / Main"
+            ),
+            "Accelerator Pedal High-State Hysteresis (0x8FDC)": (
+                "Throttle / Accelerator Pedal / Thresholds"
+            ),
             "Throttle Rev Limiter (0x942C)": "Limiters",
             "Engine Speed Axis [RPM] (ref)": "Reference Axes",
         }
@@ -225,7 +231,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 36)
-        self.assertEqual(len(tables), 154)
+        self.assertEqual(len(tables), 155)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -261,6 +267,51 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertEqual(data.get("mmedrowcount"), "1")
         self.assertEqual(data.get("mmedcolcount"), "1")
         self.assertEqual(axis.findtext("./units"), "accumulator counts")
+
+    def test_working_fuel_cut_uses_exact_2x2_layout_and_candidate_scale(self):
+        table = next(
+            table for table in self.root.findall("./XDFTABLE")
+            if table.findtext("./title") == "Rev Limit - Fuel Cut (0x934E)"
+        )
+        axis_x = table.find("./XDFAXIS[@id='x']")
+        axis_y = table.find("./XDFAXIS[@id='y']")
+        axis_z = table.find("./XDFAXIS[@id='z']")
+        data = axis_z.find("./EMBEDDEDDATA")
+        self.assertEqual(data.get("mmedaddress"), "0x934E")
+        self.assertEqual(data.get("mmedelementsizebits"), "16")
+        self.assertEqual(data.get("mmedrowcount"), "2")
+        self.assertEqual(data.get("mmedcolcount"), "2")
+        self.assertEqual(axis_z.findtext("./units"), "RPM [cand]")
+        self.assertEqual(axis_z.find("./MATH").get("equation"), "X*12.5")
+        self.assertEqual(
+            [node.get("value") for node in axis_x.findall("./LABEL")],
+            ["Normal", "Reverse"],
+        )
+        self.assertEqual(
+            [node.get("value") for node in axis_y.findall("./LABEL")],
+            ["Cut", "Restore"],
+        )
+
+    def test_accelerator_pedal_hysteresis_uses_raw_code_scale(self):
+        table = next(
+            table for table in self.root.findall("./XDFTABLE")
+            if table.findtext("./title") == (
+                "Accelerator Pedal High-State Hysteresis (0x8FDC)"
+            )
+        )
+        axis_x = table.find("./XDFAXIS[@id='x']")
+        axis_z = table.find("./XDFAXIS[@id='z']")
+        data = axis_z.find("./EMBEDDEDDATA")
+        self.assertEqual(data.get("mmedaddress"), "0x8FDC")
+        self.assertEqual(data.get("mmedelementsizebits"), "16")
+        self.assertEqual(data.get("mmedrowcount"), "1")
+        self.assertEqual(data.get("mmedcolcount"), "2")
+        self.assertEqual(axis_z.findtext("./units"), "normalized ADC counts")
+        self.assertEqual(axis_z.find("./MATH").get("equation"), "X")
+        self.assertEqual(
+            [node.get("value") for node in axis_x.findall("./LABEL")],
+            ["activate", "release"],
+        )
 
     def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
         table = next(

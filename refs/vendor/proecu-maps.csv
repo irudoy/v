@@ -165,7 +165,7 @@ tuning-guide,Ignition,Ignition Timing,Ignition Timing-Min Allowed #1,,,images/im
 tuning-guide,Ignition,Ignition Timing,Ignition Timing-Min Allowed #2,,,images/image2019-8-27_10-29-3.png,
 tuning-guide,Limiters,Limiters//Factory - Not Recommended,Rev Limit - Fuel Cut,,,images/image2019-8-27_10-30-10.png,
 tuning-guide,Limiters,Limiters//Factory - Not Recommended,Rev Limit - Fuel Cut Restore,,,images/image2019-8-27_10-30-10.png,
-tuning-guide,Limiters,Limiters,Rev Limit - Fuel Cut Maximum,,,images/image2019-8-27_10-30-10.png,"identified from code in JK03A: 0x8FDC/0x8FDE, FUN_00047a56"
+tuning-guide,Limiters,Limiters,Rev Limit - Fuel Cut Maximum,,,images/image2019-8-27_10-30-10.png,"not assigned to JK08A 0x8FDC/0x8FDE: exact code identifies that pair as accelerator-pedal high-state hysteresis; working fuel cut is at 0x934E"
 tuning-guide,Limiters,Limiters,Rev Limit - Throttle Cut,,,images/image2019-8-27_10-30-10.png,
 tuning-guide,Limiters,Limiters,Speed Limit - Fuel Cut Minimum RPM,,,images/image2019-8-27_10-30-10.png,
 tuning-guide,Limiters,Limiters,Speed Limit - Fuel Cut Off,,,images/image2019-8-27_10-30-10.png,

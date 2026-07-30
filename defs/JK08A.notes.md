@@ -111,13 +111,18 @@ provenance and are not paths in the current `JK08A` layer.
   minimum arbiter in `FUN_00071508`, whose result enters controller calculation
   `FUN_000702C6`. The public HR label `Throttle Rev Limiter` and scale `x*0.78125 RPM`
   remain [CANDIDATE] catalog/homology claims. The stock value is 7500 RPM.
-- Candidate rev-limit pair `0x8FDC=7625`/`0x8FDE=6600 rpm` is localized in
-  `FUN_00047A56`: code compares `word[0xFFFF266E]` with the selected threshold and
-  updates `0xFFFF246A.bit7`. Selection reads `0xFFFF246D.bit7`; the trace does not prove
-  that this bit is the previous or equivalent state of the output bit and finds no
-  external consumer of `0xFFFF246A.bit7`. Hysteresis semantics and name
-  `Rev Limit - Fuel Cut Maximum` therefore remain `candidate`; separate 2D working-limit
-  maps have not been localized.
+- Annotated [CONFIRMED PATH]: `0x934E` is the active 2x2 engine-speed fuel-cut
+  table. `FUN_0004F282` selects one activation/release pair, maintains
+  `0xFFFF2497.bit2`, and returns that state directly to aggregate six-channel
+  fuel-output inhibit builder `FUN_0004ED88`. The public HR A2L layout gives
+  Normal/Reverse columns, Cut/Restore rows, and candidate scale `x*12.5 RPM`.
+  Stock cells decode to 7650/7450 RPM for Normal and 7450/4600 RPM for Reverse.
+- Annotated [CONFIRMED]: `0x8FDC`/`0x8FDE` is accelerator-pedal high-state
+  hysteresis, not an engine-speed limiter. Scheduler `FUN_00020DFE` copies current
+  state `0xFFFF246A.bit7` to previous-cycle state `0xFFFF246D.bit7`. The compared
+  input is produced from A/D channels AN10 and AN17. Exact DID `0x120D`/`0x120E`
+  bindings and P2122/P2123/P2127/P2128 monitor paths identify the paired
+  accelerator-pedal sensors. The raw activation/release thresholds are 610/528.
 - Annotated [CONFIRMED]: `FUN_0005185c` performs six calculation lookups through
   `0x26370`. `0x121FE` is a composite-calculation base curve, not an RPM threshold:
   its result is multiplied by a centered factor from `0x121AE`, normalized by 8192,
@@ -975,15 +980,17 @@ EV18A 0x94C2 -> JK08A 0x9476
 The HR A2L catalog defines `Throttle Rev Limiter` as one uint16 value with multiplier
 `x*0.78125 RPM`. This converts stock `0x2580 = 9600` to 7500 RPM. The independently
 cataloged speed multiplier converts `0x0708 = 1800` to 180 km/h, supporting the second
-layout anchor. The candidate fuel-cut maximum at `0x8FDC` converts to 7625 RPM, so the
-throttle setting is 125 RPM lower, consistent with the independent UpRev rule that
-throttle closure precede fuel cut by at least 100 RPM.
+layout anchor. The working fuel-cut table at `0x934E` has a candidate Normal activation
+threshold of 7650 RPM and Normal release threshold of 7450 RPM. The throttle setting is
+therefore 150 RPM below fuel-cut activation and 50 RPM above fuel-cut release, consistent
+with throttle intervention preceding the final fuel cut.
 
 The address, disable sentinel, speed-coordinate conversion, state update, signed
-minimum path, and controller consumer are code facts. The physical label and
-`x*0.78125 RPM` multiplier are catalog/homology facts and remain `candidate` until
-hardware validation. The generated definitions expose one cell as
-`Throttle Rev Limiter (0x942C)` under `Limiters`.
+minimum path, and electronic-throttle/airflow controller association are code facts.
+The physical label and `x*0.78125 RPM` multiplier are catalog/homology facts and remain
+`candidate` until hardware validation. The final controller-to-ETC-motor pin route is
+not closed. The generated definitions expose one cell as `Throttle Rev Limiter
+(0x942C)` under `Limiters`.
 
 
 ### Independent calculated-load and fallback schedule paths
@@ -1083,31 +1090,72 @@ unresolved indexed candidates with concrete anchors in that range, and found
 injection and two-channel CVTC writers that direct xrefs miss.
 
 
-### Threshold pair `0x8FDC`/`0x8FDE`, FUN_00047A56
+### Working engine-speed fuel cut `0x934E`, FUN_0004F282 [CONFIRMED PATH]
 
-`FUN_00047A56` compares `word[0xFFFF266E]` with one of two thresholds. Listing
-`0x47B8A..0x47BB4`:
+`FUN_0004F282` directly consumes the first four uint16 words at `0x934E` as two
+activation/release pairs:
 
-- `byte[0xFFFF246D] bit7 == 0` selects `0x8FDC = 0x0262`.
-- `byte[0xFFFF246D] bit7 == 1` selects `0x8FDE = 0x0210`.
-- `cmp/hs word[0xFFFF266E] >= threshold` sets bit7 in `byte[0xFFFF246A]`; otherwise
-  it clears the bit.
+| State | Column 0 | Column 1 |
+|---|---:|---:|
+| activation | 612 | 596 |
+| release | 596 | 368 |
 
-Code confirms the addresses, comparison direction, and output bit. Interpreting the
-input as RPM, multiplier `x*12.5`, and name `Rev Limit - Fuel Cut Maximum` remain
-`candidate`. The key gap is that code does not prove input selector
-`0xFFFF246D.bit7` to be the previous or equivalent state of output
-`0xFFFF246A.bit7`; no external consumer of the output bit7 is traced either. These
-comparisons can therefore define mode thresholds rather than cut/restore hysteresis.
+Stock `ROM8[0x8B38] = 0x63` leaves bit 7 clear, so the alternate words
+`0x9356`/`0x9358` are outside the stock path. `0xFFFF2468.bit4` selects column 0 or 1.
+With `0xFFFF2497.bit2` clear, current speed coordinate `0xFFFF11BC` at or above the
+selected activation threshold arms optional delay `0xFFFF24F1`; stock
+`ROM8[0x8C69] = 0` activates state bit 2 immediately. While active, speed below the
+selected release threshold clears the state. The returned Boolean enters
+`FUN_0004ED88`, which converts any active global inhibit condition to mask `0x3F` and
+writes the final six-channel injection-output mask `0xFFFF22E0`.
 
-The same guide lists separate 2D maps `Rev Limit - Fuel Cut` and
-`Rev Limit - Fuel Cut Restore`, which define a working limit below the maximum; the
-guide does not identify their input axis. They have not been localized in the dump.
+The public HR A2L catalog defines the matching 2x2 layout as Normal/Reverse columns,
+Cut/Restore rows, with `x*12.5 RPM`. Under that candidate physical interpretation the
+stock values are:
 
-The definition presents the pair as candidate table
-`Rev Limit - Fuel Cut Maximum (0x8FDC)`, two uint16 cells with `candidate` scale
-`x*12.5`. Adjacent `0x8FD8=[6325,6050] rpm` are constants used by other functions
-(`0x6edbc`/`0x7054a`), not the rev limiter, and are excluded from the map.
+| Fuel state | Normal | Reverse |
+|---|---:|---:|
+| Cut | 7650 RPM | 7450 RPM |
+| Restore | 7450 RPM | 4600 RPM |
+
+Code proves the table address, 2x2 layout, hysteresis, active state, and global
+six-injector inhibit path. Axis labels and the RPM multiplier remain catalog-supported
+candidates pending CONSULT/bench validation.
+
+
+### Accelerator-pedal high-state hysteresis `0x8FDC`/`0x8FDE`, FUN_00047A56 [CONFIRMED]
+
+`FUN_00047A56` compares `word[0xFFFF266E]` with one of two thresholds:
+
+- previous-cycle `0xFFFF246D.bit7 == 0` selects activation threshold
+  `0x8FDC = 0x0262` (610);
+- previous-cycle `0xFFFF246D.bit7 == 1` selects release threshold
+  `0x8FDE = 0x0210` (528);
+- comparison true sets current `0xFFFF246A.bit7`; comparison false clears it.
+
+Scheduler `FUN_00020DFE` copies three current state bytes
+`0xFFFF246A..0xFFFF246C` to previous-cycle bytes
+`0xFFFF246D..0xFFFF246F`, closing exact activation/release hysteresis.
+
+The compared input is a normalized dual-channel analog quantity:
+
+```text
+AN10 -> ffff362c -> ffff27a0 = sample - offset
+AN17 -> ffff362e -> ffff27a4 = 2*sample - offset
+                         min/clamp/rate limit -> ffff2672 -> ffff266e
+```
+
+Exact service-0x22 pointers map DID `0x120D` and `0x120E` to
+`0xFFFF269E` and `0xFFFF26A2`. The same values feed exact JK08A diagnostic
+monitor functions that dispatch descriptor indices for
+P2123/P2122 and P2128/P2127. Homologous diagnostic definitions name the DIDs
+Accelerator Pedal Position 1 and 2. This evidence establishes the accelerator-pedal
+subsystem and excludes an RPM interpretation. The exact downstream meaning of the
+high state, such as WOT or kickdown, remains unassigned.
+
+The definition presents the two uint16 cells as
+`Accelerator Pedal High-State Hysteresis (0x8FDC)` in normalized ADC counts.
+Adjacent words at `0x8FD8` belong to other functions and are excluded.
 
 
 ### K2Y decel ignition (`mTKADVA`) - no decel-gated branch in timing calculation [CONFIRMED]
@@ -1307,10 +1355,11 @@ switch in RomRaider and only the descriptor entry in both TunerPro patch scopes.
 - Strong pointer anchors without attribution: `0x0975A` with 13 references and
   `0x11FB6` / `0x11EBE` with 3 each. Pointer clusters in `0x16000..0x163xx` form a
   calibration region for fuel/torque.
-- Rev limiter: pair `0x8FDC`/`0x8FDE` is localized through comparison in
-  `FUN_00047A56`, but the relation between input `ffff246d.bit7` and output
-  `ffff246a.bit7` is not closed. Semantics remain `candidate`; see "Threshold pair".
-  A data scan of 24 uint16 candidates in `0x08FD8..0x191FE` is ambiguous by itself.
+- Limiter physical closure: `0x942C` has a continuous code path into the
+  electronic-throttle/airflow controller, but the final controller-to-ETC-motor pin
+  route remains unresolved. `0x934E` has a continuous code path into the global
+  six-channel fuel-output inhibit mask; its Normal/Reverse labels and RPM scale still
+  require hardware validation.
 
 
 ### ETC / electronic throttle - inverse conversion pairs (accessor FUN_0003b498)
@@ -1715,14 +1764,12 @@ establish scale, not the physical class of the quantity. `0x12bda` is recorded i
 `findings.csv` with code scale but has no annotated axis, so it is not emitted.
 
 
-### Rev limiter: the blinded harness rediscovered the Stage 4 finding skeleton - `0x8fdc`/`0x1473a` (FUN_00047a56)
+### Accelerator-pedal high-state comparator `0x8FDC`/`0x1473A` (FUN_00047A56)
 
-Component `00047A56` independently reproduced the skeleton of existing candidate
-finding `0x8FDC`: the same accessor, signal `ffff266e`, selector
-`ffff246d.bit7`, and raw threshold pair 610/528 at `0x8FDC`/`0x8FDE`. Code does not
-associate the input selector with output `ffff246a.bit7`, so cut/restore hysteresis
-is unproven. Name Rev Limit, RPM, and `x*12.5` remain a `candidate` catalog
-interpretation; `role=table` remains at that confidence. Twin `0x1473A` is an
+Component `00047A56` uses raw activation/release thresholds 610/528 at
+`0x8FDC`/`0x8FDE` for normalized dual-channel accelerator-pedal input `ffff266e`.
+Scheduler `00020DFE` copies current output `ffff246a.bit7` to previous-cycle selector
+`ffff246d.bit7`, so the pair is code-confirmed hysteresis. Twin `0x1473A` is an
 interpolated variant of the same raw threshold, but calibration disables its branch
 with `0000870c.bit7=0`, giving it `code/dead` from the branch trace. Proving
 unreachability does not require the mathematics of kernel `0x26A60`.
@@ -1784,10 +1831,10 @@ FUN_000bd20a; and `0xb23a`, IIR-lag coefficient in FUN_000befb0. The sole axis c
 Symmetric pairs such as increment/decrement and active/alternate curve consistently
 split: one branch traces to an output, while the paired branch does not.
 
-Reissue chain: five new code-confidence maps are in `findings.csv`; `0x8fdc` was already
-present from Stage 4 and its row was preserved. None is emitted. `0x12bda` has a code
-scale but no annotated axis; the others also lack scales. Axes and `overrides.toml`
-are unchanged. The definition remains byte-identical, as in Waves 2-3a.
+Five code-confidence maps from this pass remain in `findings.csv`. `0x8FDC` is emitted
+as accelerator-pedal high-state hysteresis after its current/previous state and analog
+source chains are closed. `0x12BDA` has a code scale but no annotated axis; the other
+maps also lack complete scales and remain excluded.
 
 
 ## Mass-pass Wave 4 (79 singleton components, 1 map)
@@ -3045,10 +3092,10 @@ transcription:
   (`0x15da0`/`0x15db0`/`0x13a68`/`0x18fd6`); physical units remain unresolved because
   inputs arrive from callers outside the components (`0x5fac0`, `0x60fb4`). Axes
   through `0x26B84` were not analyzed separately.
-- **The value multiplier of emitted maps** is not derived from code: the rev limiter's
-  `x*12.5` comes from the A2L catalog and agreement with redline, is marked with `[cand]`
-  units, and requires a consumer-arithmetic trace rather than the data shape for
-  confirmation. The `x-64` scale of `0xB61A`/`0xB71A`/`0xB81A` has already been
+- **The value multiplier of emitted maps** is not always derived from code: the
+  `0x934E` fuel-cut table's `x*12.5` comes from the A2L catalog and native speed-domain
+  convergence, is marked with `[cand]` units, and requires hardware confirmation.
+  The `x-64` scale of `0xB61A`/`0xB71A`/`0xB81A` has already been
   resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
   value cannot represent degrees (see "Rotation-monitor thresholds").
 

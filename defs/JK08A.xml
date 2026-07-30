@@ -500,6 +500,29 @@
       <state name="Disabled" data="00 00"/>
     </table>
 
+    <!-- 0x0934E  2x2 uint16  map [code]
+         accessor 0x4F282; r4 operand: manual
+         scaling x*12.5 RPM [candidate]
+         The active stock 2x2 cells decode to Normal Cut 7650 RPM, Reverse Cut 7450 RPM, Normal
+         Restore 7450 RPM, and Reverse Restore 4600 RPM. ROM8[00008b38]=0x63 keeps the alternate
+         words at 00009356/00009358 outside the stock path. Code proves the operational fuel-
+         output state and table layout; axis labels and RPM multiplier come from the public HR
+         A2L catalog plus the native speed-domain conversion and remain candidate pending
+         hardware validation.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Rev Limit - Fuel Cut (0x934E)"
+           category="Fuel Delivery / Fuel Cut / Main" storagetype="uint16"
+           storageaddress="0x0934E" sizex="2" sizey="2" endian="big">
+      <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0.0"
+               fineincrement="12.5" coarseincrement="125"/>
+      <table type="Static X Axis" name="State" sizex="2">
+        <data>Normal</data><data>Reverse</data>
+      </table>
+      <table type="Static Y Axis" name="Fuel" sizey="2">
+        <data>Cut</data><data>Restore</data>
+      </table>
+    </table>
+
     <!-- 0x085D9  2 uint8  map [code]
          accessor 0x4F324; r4 operand: manual
          scaling x*50 RPM [code]
@@ -517,6 +540,26 @@
            storageaddress="0x085D9" sizex="2" endian="big">
       <scaling units="RPM" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
                coarseincrement="100"/>
+      <table type="Static X Axis" name="Selector" sizex="2">
+        <data>activate</data><data>release</data>
+      </table>
+    </table>
+
+    <!-- 0x08FDC  2 uint16  map [code]
+         accessor 0x47A56; r4 operand: manual
+         scaling x normalized ADC counts
+         The stock activation and release thresholds are 610 and 528 counts. The input is
+         produced from on-chip A/D channels AN10 and AN17 through dual-channel adjustment and
+         minimum selection. Exact JK08A diagnostic paths expose the paired accelerator-pedal
+         sensors as DID 0x120D/0x120E and monitor them through P2122/P2123/P2127/P2128. The
+         operational high-state role is proven; a narrower WOT or kickdown interpretation is not
+         asserted.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Accelerator Pedal High-State Hysteresis (0x8FDC)"
+           category="Throttle / Accelerator Pedal / Thresholds" storagetype="uint16"
+           storageaddress="0x08FDC" sizex="2" endian="big">
+      <scaling units="normalized ADC counts" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="8"/>
       <table type="Static X Axis" name="Selector" sizex="2">
         <data>activate</data><data>release</data>
       </table>
@@ -909,10 +952,11 @@
          definitions place Throttle Rev Limiter at 0x9478 and Speed Limiter at 0x94c2; the
          corresponding JK08A limiter scalars are 0x942c and 0x9476, preserving a -0x4c layout
          offset for both anchors. The adjacent JK08A speed branch writes ffff19de into the same
-         signed minimum cascade. The 7500 RPM setting is 125 RPM below candidate fuel-cut
-         maximum 7625 RPM at 0x8fdc, matching the independent UpRev ordering rule. Code
-         confidence applies to the operational limiter path; the physical label and multiplier
-         are catalog/homology evidence and remain candidate pending hardware validation.
+         signed minimum cascade. Working fuel-cut table 0000934e has candidate Normal activation
+         and release values of 7650 and 7450 RPM, placing the 7500 RPM throttle setting between
+         them. Code confidence applies to the operational limiter path; the physical label and
+         multiplier are catalog/homology evidence and remain candidate pending hardware
+         validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Throttle Rev Limiter (0x942C)" category="Limiters"
            storagetype="uint16" storageaddress="0x0942C" sizex="1" endian="big">
@@ -920,25 +964,6 @@
                fineincrement="50" coarseincrement="250"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>throttle cut</data>
-      </table>
-    </table>
-
-    <!-- 0x08FDC  2 uint16  map [candidate]
-         accessor 0x47A56; r4 operand: manual
-         scaling x*12.5 RPM [candidate]
-         Semantic confidence: candidate. Blocking condition: In code, threshold selection is
-         controlled by RAM[ffff246d].bit7, while RAM[ffff246a].bit7 is updated. The artifact
-         does not prove that ffff246d.bit7 is the previous state of ffff246a.bit7 or an
-         equivalent state. The two comparisons may therefore be mode-dependent thresholds rather
-         than hysteresis. In addition, the shown consumers of RAM ffff246a contain no confirmed
-         read of bit 7 specifically, so the sink -> consumer trace is incomplete.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rev Limit - Fuel Cut Maximum (0x8FDC)" category="Limiters"
-           storagetype="uint16" storageaddress="0x08FDC" sizex="2" endian="big">
-      <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0"
-               fineincrement="12" coarseincrement="125"/>
-      <table type="Static X Axis" name="Selector" sizex="2">
-        <data>cut (bit7=0)</data><data>restore (bit7=1)</data>
       </table>
     </table>
 
