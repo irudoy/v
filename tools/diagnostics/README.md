@@ -181,6 +181,25 @@ Git. It is deliberately incompatible with the binding loader. A DID literal
 and same-function RAM reference remain candidates until a dispatcher-to-response
 data-flow trace establishes the request path, returned value, and conversion.
 
+`TraceRamAccesses.java` resolves decompiler p-code LOAD/STORE effective
+addresses for a selected RAM range. It is used after the dispatcher trace to
+search for runtime producers whose base-plus-offset accesses are absent from
+direct xrefs:
+
+```bash
+D=~/tools/ghidra-projects/export-JK08A-exact
+tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+  -process 1JK08A-20260726-stock.bin \
+  -noanalysis -readOnly -scriptPath tools/ghidra \
+  -postScript TraceRamAccesses.java "$D" ffff23bc ffff23cc
+```
+
+The reviewed JK08A projection binds DIDs `0x1206` and `0x1207` to the
+big-endian injection pulse values at `0xFFFF23C8` and `0xFFFF23CA`, and DID
+`0x1135` to intake valve timing bank 1 at `0xFFFF2442`. The response paths are
+code-traced; the runtime producers and the physical conversion of `0x1135`
+remain open.
+
 Reusable Cypher examples are in
 `tools/memgraph/diagnostics_queries.cypher`.
 

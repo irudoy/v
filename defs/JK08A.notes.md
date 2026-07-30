@@ -1034,6 +1034,41 @@ the code boundary. Shape matching to the catalog entry `Cranking Base Fuel Sched
 Table` and multiplier `x*0.000488 BFS` remain candidate evidence only.
 
 
+### UDS SID 0x22 injection and intake-CVTC response paths
+
+The exact JK08A UDS dispatcher and ReadDataByIdentifier handler establish the
+request-to-RAM path independently of public PID lists:
+
+- `FUN_0002F928` compares the service byte with `0x22` at `0x2F9C4` and jumps
+  through literal-pool entry `0x2FB00` to `FUN_0003235C`.
+- `FUN_0003235C` indexes the `0x11xx` pointer table at `0x226AC` or the `0x12xx`
+  table at `0x2289C`. A normal `0x11xx` entry returns one byte. A normal `0x12xx`
+  entry returns two consecutive bytes in big-endian order. Both paths emit
+  positive response SID `0x62`.
+- Entries `0x1206` and `0x1207` point to `0xFFFF23C8` and `0xFFFF23CA`.
+  A homologous structured Nissan profile defines them as `INJ PULSE-B1` and
+  `INJ PULSE-B2` with conversion `raw/100 ms`. The VQ35HR factory manual defines
+  the corresponding CONSULT parameters as the actual injection pulse width
+  compensated by the ECM input signals.
+- Entry `0x1135` points to byte `0xFFFF2442`. The exact firmware uses
+  `0xFFFF2442/0xFFFF2443` as a two-bank centered angle pair in the
+  `0x9DBA` ignition-angle path, and initializer `FUN_000BCD44` writes `0x80` to
+  both bytes. Homologous VQ35HR sources identify `0x1135` as intake valve timing
+  bank 1. The exact runtime writer and physical conversion are not statically
+  resolved.
+
+The exact table rejects prior community candidates `0x1211/0x1212` for injection
+and `0x1127/0x1128` for intake CVTC because their entries are `0xFFFFFFFF`.
+No definition or hardware test uses those unsupported identifiers.
+
+The response sources for `0x1206/0x1207` have no resolved runtime writer. A
+decompiler p-code scan covers all 153 functions that load containing base
+`0xFFFF23BC` and all 469 functions that load master base `0xFFFF128C`; it finds
+the exact response reads but no write to `0xFFFF23C8/0xFFFF23CA`. This leaves
+producer-to-map attribution open without weakening the exact DID, response width,
+byte order, or RAM binding.
+
+
 ### Threshold pair `0x8FDC`/`0x8FDE`, FUN_00047A56
 
 `FUN_00047A56` compares `word[0xFFFF266E]` with one of two thresholds. Listing
