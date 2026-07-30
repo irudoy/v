@@ -167,7 +167,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
     def patch_category(self, patch):
         return self.item_category(patch)
 
-    def test_categories_use_tunerpro_indices_and_functional_names(self):
+    def test_categories_use_tunerpro_indices_and_vendor_style_names(self):
         self.assertEqual(
             sorted(self.categories),
             list(range(len(self.categories))),
@@ -185,36 +185,42 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             table.findtext("./title"): table
             for table in self.root.findall("./XDFTABLE")
         }
-        expected = {
-            "Developer Immobilizer": "NATS / Immobilizer",
-            "Target AFR - Power (0xB33A)": "AFR / Lambda",
-            "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)": "Airflow",
-            "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
-            "Stationary Rev Limiter Readiness Threshold (0x911C)": (
+        expected_tables = {
+            "Fuel Targets": "Fuelling / Fuel Targets",
+            "Fuel Compensation Main": "Fuelling / Fuel Compensation",
+            "Overrun Fuel Cut": "Fuelling / Overrun",
+            "Overrun Fuel Cut Restore": "Fuelling / Overrun",
+            "Calculated Load": "Fuelling / Engine Load",
+            "Ignition Timing Trim Cold": "Ignition Timing / Main",
+            "Ignition Timing Trim Main": "Ignition Timing / Main",
+            "Ignition Timing Trim High Det": "Ignition Timing / Main",
+            "Knock Control Enable - Cold": (
+                "Ignition Timing / Knock Control"
+            ),
+            "Knock Control Enable - Main": (
+                "Ignition Timing / Knock Control"
+            ),
+            "Knock Control Enable - High Det": (
+                "Ignition Timing / Knock Control"
+            ),
+            "Knock Sensitivity": "Ignition Timing / Knock Control",
+            "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
+            "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
+            "Stationary Rev Limiter": (
                 "Limiters / Stationary Rev Limiter"
             ),
-            "Stationary Rev Limiter Accumulator Step (0x124D2)": (
-                "Limiters / Stationary Rev Limiter"
-            ),
-            "Rev Limit - Fuel Cut (0x934E)": (
-                "Fuel Delivery / Fuel Cut / Main"
-            ),
-            "Over Run Fuel Cut - JECS/Hitachi (0x12718)": (
-                "Fuel Delivery / Fuel Cut / Main"
-            ),
-            "Over Run Fuel Restore - JECS/Hitachi (0x12818)": (
-                "Fuel Delivery / Fuel Cut / Main"
-            ),
-            "Accelerator Pedal High-State Hysteresis (0x8FDC)": (
-                "Throttle / Accelerator Pedal / Thresholds"
-            ),
-            "Throttle Rev Limiter (0x942C)": "Limiters",
-            "Engine Speed Axis [RPM] (ref)": "Reference Axes",
         }
-        for title, category in expected.items():
+        self.assertEqual(set(tables), set(expected_tables))
+        for title, category in expected_tables.items():
             with self.subTest(title=title):
-                item = patches[title] if title in patches else tables[title]
-                self.assertEqual(self.item_category(item), category)
+                self.assertEqual(self.item_category(tables[title]), category)
+
+        expected_patches = {
+            "Developer Immobilizer": "NATS / Immobilizer",
+        }
+        for title, category in expected_patches.items():
+            with self.subTest(title=title):
+                self.assertEqual(self.item_category(patches[title]), category)
 
         individual = next(
             patch for title, patch in patches.items()
@@ -232,12 +238,21 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             self.patch_category(group),
             tunerpro.DTC_GROUP_CATEGORY,
         )
+        self.assertEqual(
+            set(self.categories.values()),
+            set(expected_tables.values())
+            | set(expected_patches.values())
+            | {
+                tunerpro.DTC_INDIVIDUAL_CATEGORY,
+                tunerpro.DTC_GROUP_CATEGORY,
+            },
+        )
 
     def test_xdf_has_expected_tables_patches_and_no_checksum(self):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 36)
-        self.assertEqual(len(tables), 158)
+        self.assertEqual(len(tables), 15)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -259,27 +274,25 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for patch in patches
         ))
 
-    def test_stationary_rev_limiter_readiness_uses_exact_scalar_and_code_scale(self):
-        table = next(
-            table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == (
-                "Stationary Rev Limiter Readiness Threshold (0x911C)"
-            )
-        )
-        axis = table.find("./XDFAXIS[@id='z']")
-        data = axis.find("./EMBEDDEDDATA")
-        self.assertEqual(data.get("mmedaddress"), "0x911C")
-        self.assertEqual(data.get("mmedelementsizebits"), "16")
-        self.assertEqual(data.get("mmedrowcount"), "1")
-        self.assertEqual(data.get("mmedcolcount"), "1")
-        self.assertEqual(axis.findtext("./units"), "accumulator counts")
+    def test_research_only_tables_remain_outside_the_working_definition(self):
+        addresses = {
+            table.find("./XDFAXIS[@id='z']/EMBEDDEDDATA").get("mmedaddress")
+            for table in self.root.findall("./XDFTABLE")
+        }
+        self.assertTrue({
+            "0x8FDC",
+            "0x911C",
+            "0x10F8E",
+            "0x124D2",
+            "0x126E4",
+            "0x1298C",
+            "0x141F4",
+        }.isdisjoint(addresses))
 
     def test_overrun_tables_use_coolant_axis_and_rpm_scale(self):
         expected = {
-            "Over Run Fuel Cut - Bosch (0x126E4)": "0x126E4",
-            "Over Run Fuel Cut - JECS/Hitachi (0x12718)": "0x12718",
-            "Over Run Fuel Restore - JECS/Hitachi (0x12818)": "0x12818",
-            "Over Run Fuel Restore - Bosch (0x1298C)": "0x1298C",
+            "Overrun Fuel Cut": "0x12718",
+            "Overrun Fuel Cut Restore": "0x12818",
         }
         tables = {
             table.findtext("./title"): table
@@ -309,7 +322,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
     def test_working_fuel_cut_uses_exact_2x2_layout_and_candidate_scale(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == "Rev Limit - Fuel Cut (0x934E)"
+            if table.findtext("./title") == "Rev Limit - Fuel Cut"
         )
         axis_x = table.find("./XDFAXIS[@id='x']")
         axis_y = table.find("./XDFAXIS[@id='y']")
@@ -330,31 +343,10 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             ["Cut", "Restore"],
         )
 
-    def test_accelerator_pedal_hysteresis_uses_raw_code_scale(self):
-        table = next(
-            table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == (
-                "Accelerator Pedal High-State Hysteresis (0x8FDC)"
-            )
-        )
-        axis_x = table.find("./XDFAXIS[@id='x']")
-        axis_z = table.find("./XDFAXIS[@id='z']")
-        data = axis_z.find("./EMBEDDEDDATA")
-        self.assertEqual(data.get("mmedaddress"), "0x8FDC")
-        self.assertEqual(data.get("mmedelementsizebits"), "16")
-        self.assertEqual(data.get("mmedrowcount"), "1")
-        self.assertEqual(data.get("mmedcolcount"), "2")
-        self.assertEqual(axis_z.findtext("./units"), "normalized ADC counts")
-        self.assertEqual(axis_z.find("./MATH").get("equation"), "X")
-        self.assertEqual(
-            [node.get("value") for node in axis_x.findall("./LABEL")],
-            ["activate", "release"],
-        )
-
     def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == "Throttle Rev Limiter (0x942C)"
+            if table.findtext("./title") == "Rev Limit - Throttle Cut"
         )
         axis = table.find("./XDFAXIS[@id='z']")
         data = axis.find("./EMBEDDEDDATA")
@@ -397,10 +389,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             table.findtext("./title"): table
             for table in self.root.findall("./XDFTABLE")
         }
-        low = by_title["Cold Ignition Timing Map (0x991A)"]
-        flag = by_title[
-            "Cold Ignition Timing Map Knock Window (0x991A bit7)"
-        ]
+        low = by_title["Ignition Timing Trim Cold"]
+        flag = by_title["Knock Control Enable - Cold"]
         for table, other_mask, divisor in (
             (low, "128", "1"),
             (flag, "127", "128"),

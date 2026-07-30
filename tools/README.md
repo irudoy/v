@@ -218,7 +218,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `sweep/agent_protocol.py` | Provider-neutral task, receipt, executor, and archive protocol for `closure-v1`; validates isolated no-tools execution, JSON Schema responses, exact Analyze/Verify linkage, raw-output digests, and executor identity without launching a model | JSON outside git |
 | `sweep/agent_workflow.py` | Local CLI for building Analyze/Verify/Score batches, validating agent-produced result bundles, and assembling or revalidating provider-neutral agent-run archives | JSON outside git |
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
-| `mapkit/emit_def.py` | Project the graph, reviewed static diagnostic context, `defs/<rom>.dtc.csv` DTC registry, and `defs/<rom>.overrides.toml` presentation layer into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
+| `mapkit/emit_def.py` | Project the graph, reviewed static diagnostic context, `defs/<rom>.dtc.csv` DTC registry, and the tuner-facing visibility and presentation policy in `defs/<rom>.overrides.toml` into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
 | `mapkit/presentation.py` | Normalize functional categories shared by the RomRaider and TunerPro projections without encoding confidence in the category name | imported by both renderers |
 | `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 29 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
 | `mapkit/show.py` | Display a map or axis in physical units: the graph supplies shape, axes, and scale, while the image supplies values. Arguments: `[<rom>] <addr>...` | stdout |
@@ -372,12 +372,20 @@ checksums. The split low-7-bit and bit-7 ignition-map views use per-cell address
 variables in invertible conversion equations so an edit preserves the
 complementary field.
 
-Categories in both generated definitions are functional rather than confidence
-partitions. The shared presentation policy removes trailing `(traced)` and
-`(candidate)` annotations while retaining map confidence in table comments or
-descriptions and scale confidence in `[cand]` unit annotations. XDF header
-categories use zero-based indices; one-based `CATEGORYMEM` values refer to those
-header entries.
+JK08A uses an explicit tuner-facing allowlist in the shared presentation layer.
+The generated XML and XDF contain 12 calibration tables and three masked
+ignition views; research maps, internal calculations, inactive-family maps, and
+standalone reference-axis views remain outside the working editor tree without
+being removed from the graph or ledger.
+
+Categories in both generated definitions follow a vendor-style functional tree:
+`Fuelling`, `Ignition Timing`, and `Limiters`, with separate `Diagnostics` and
+`NATS` controls. They do not partition content by confidence. Names omit ROM
+addresses; address and evidence remain in comments or descriptions. The shared
+presentation policy removes trailing `(traced)` and `(candidate)` annotations
+while retaining map confidence in table comments or descriptions and scale
+confidence in `[cand]` unit annotations. XDF header categories use zero-based
+indices; one-based `CATEGORYMEM` values refer to those header entries.
 
 ### Memgraph backup
 

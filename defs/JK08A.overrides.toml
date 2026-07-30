@@ -6,6 +6,12 @@
 # Read by tools/mapkit/emit_def.py for both RomRaider XML and TunerPro XDF. The
 # merge key is the graph map or axis address: eight lowercase hexadecimal digits.
 
+[presentation]
+# Working definitions expose an explicit tuner-facing allowlist. Maps without
+# emit = true remain in the canonical graph, ledger, and presentation source but
+# do not appear in RomRaider or TunerPro.
+default_emit = false
+
 [rom]
 xmlid = "JK08A"
 internalidaddress = "8205"
@@ -33,9 +39,11 @@ version = "WIP"
 [rom.comment]
 text = """
 Analysis and method: defs/JK08A.notes.md. Each table's confidence is recorded in
-its comment. Categories group tables by function and do not encode confidence.
-Units ending in [cand] use a multiplier from the A2L catalog or data shape that
-has not been confirmed by code.
+its comment. The working definition contains an explicit tuner-facing calibration
+set; research and inactive-family maps remain in the canonical ledger. Categories
+follow the functional organization used by commercial Nissan tuning suites and do
+not encode confidence. Units ending in [cand] use a multiplier from the A2L catalog
+or data shape that has not been confirmed by code.
 """
 
 [[checksum]]
@@ -74,22 +82,8 @@ state = [
   { name = "Disabled (IMMO OFF)", data = "00" },
 ]
 
-# Ignition-map axes are also exposed as separate tables for direct breakpoint
-# inspection and editing.
-[axisview.00011ece]
-name = "Engine Speed Axis [RPM] (ref)"
-category = "Reference Axes"
-order = 1
-fine = 50
-coarse = 200
-
-[axisview.00011ebe]
-name = "Cylinder Filling Axis [%] (ref)"
-category = "Reference Axes"
-order = 2
-format = "0.00"
-fine = 0.78125
-coarse = 3.125
+# Calibration axes remain embedded in their tables. Canonical axis facts stay in
+# the graph and defs/JK08A.axes.csv without separate editable reference views.
 
 # The 0xB61A/0xB71A/0xB81A trio contains base thresholds for the misfire
 # detector based on crankshaft rotational irregularity, accessor 0x82c8a.
@@ -98,27 +92,30 @@ coarse = 3.125
 # definition and they have no presentation entries. See defs/JK08A.notes.md.
 
 [table.0000991a]
-name = "Cold Ignition Timing Map (0x991A)"
+name = "Ignition Timing Trim Cold"
 category = "Ignition Timing / Main"
-order = 10
+order = 100
+emit = true
 mask = "7F"
 format = "0"
 fine = 1
 coarse = 4
 
 [table.00009a1a]
-name = "High Octane Ignition Timing Map (0x9A1A)"
+name = "Ignition Timing Trim Main"
 category = "Ignition Timing / Main"
-order = 11
+order = 101
+emit = true
 mask = "7F"
 format = "0"
 fine = 1
 coarse = 4
 
 [table.00009b1a]
-name = "High Detonation Ignition Timing Map (0x9B1A)"
+name = "Ignition Timing Trim High Det"
 category = "Ignition Timing / Main"
-order = 12
+order = 102
+emit = true
 mask = "7F"
 format = "0"
 fine = 1
@@ -126,8 +123,8 @@ coarse = 4
 
 [[masked_view]]
 source = "0000991a"
-name = "Cold Ignition Timing Map Knock Window (0x991A bit7)"
-category = "Ignition Timing / Knock Control / Main"
+name = "Knock Control Enable - Cold"
+category = "Ignition Timing / Knock Control"
 mask = "80"
 units = "Knock Window (0: Off | 1: On)"
 expression = "x"
@@ -138,8 +135,8 @@ coarse = 1
 
 [[masked_view]]
 source = "00009a1a"
-name = "High Octane Ignition Timing Map Knock Window (0x9A1A bit7)"
-category = "Ignition Timing / Knock Control / Main"
+name = "Knock Control Enable - Main"
+category = "Ignition Timing / Knock Control"
 mask = "80"
 units = "Knock Window (0: Off | 1: On)"
 expression = "x"
@@ -150,8 +147,8 @@ coarse = 1
 
 [[masked_view]]
 source = "00009b1a"
-name = "High Detonation Ignition Timing Map Knock Window (0x9B1A bit7)"
-category = "Ignition Timing / Knock Control / Main"
+name = "Knock Control Enable - High Det"
+category = "Ignition Timing / Knock Control"
 mask = "80"
 units = "Knock Window (0: Off | 1: On)"
 expression = "x"
@@ -161,17 +158,19 @@ fine = 1
 coarse = 1
 
 [table.0000a29a]
-name = "Fuel Compensation Map (0xA29A)"
-category = "Fuel Delivery / Main"
+name = "Fuel Compensation Main"
+category = "Fuelling / Fuel Compensation"
 order = 20
+emit = true
 format = "0.00"
 fine = 0.78125
 coarse = 3.125
 
 [table.0000b33a]
-name = "Target AFR - Power (0xB33A)"
-category = "AFR / Lambda"
-order = 21
+name = "Fuel Targets"
+category = "Fuelling / Fuel Targets"
+order = 10
+emit = true
 format = "0.00"
 fine = 0.1
 coarse = 0.5
@@ -207,9 +206,10 @@ fine = 0.0000152587890625
 coarse = 0.00006103515625
 
 [table.0001108e]
-name = "Knock Slice Map - active bank (0x1108E)"
-category = "Ignition Timing / Knock Control / Thresholds"
-order = 40
+name = "Knock Sensitivity"
+category = "Ignition Timing / Knock Control"
+order = 110
+emit = true
 format = "0.000"
 fine = 0.0015259
 coarse = 0.015259
@@ -237,9 +237,10 @@ static_axis_y_name = "Cylinder"
 static_axis_y = [1, 2, 3, 4, 5, 6]
 
 [table.000085d9]
-name = "Stationary Rev Limiter - Fuel Cut/Restore (0x85D9)"
+name = "Stationary Rev Limiter"
 category = "Limiters / Stationary Rev Limiter"
-order = 10
+order = 210
+emit = true
 fine = 50
 coarse = 100
 static_axis = ["fuel cut", "fuel restore"]
@@ -263,9 +264,10 @@ coarse = 16
 static_axis = ["readiness"]
 
 [table.0000934e]
-name = "Rev Limit - Fuel Cut (0x934E)"
-category = "Fuel Delivery / Fuel Cut / Main"
-order = 5
+name = "Rev Limit - Fuel Cut"
+category = "Limiters / Rev Limit"
+order = 200
+emit = true
 format = "0.0"
 fine = 12.5
 coarse = 125
@@ -275,9 +277,10 @@ static_axis_y_name = "Fuel"
 static_axis_y = ["Cut", "Restore"]
 
 [table.0000942c]
-name = "Throttle Rev Limiter (0x942C)"
-category = "Limiters"
-order = 39
+name = "Rev Limit - Throttle Cut"
+category = "Limiters / Rev Limit"
+order = 201
+emit = true
 format = "0"
 fine = 50
 coarse = 250
@@ -296,9 +299,10 @@ order = 50
 coarse = 4
 
 [table.0001491a]
-name = "Calculated Load Reference - 100% point (0x1491A)"
-category = "Load"
-order = 60
+name = "Calculated Load"
+category = "Fuelling / Engine Load"
+order = 40
+emit = true
 format = "0.000"
 fine = 0.001
 coarse = 0.01
@@ -523,11 +527,13 @@ coarse = 16
 
 # Code establishes the cut/restore use and RPM scale for these four coolant-indexed
 # thresholds. Bosch versus JECS/Hitachi assignment follows the exact four-table
-# ordering documented by the Nissan A2L registry and homologous definitions.
+# ordering documented by the Nissan A2L registry and homologous definitions. JK08A
+# uses the JECS/Hitachi pair; the Bosch pair is explicitly hidden from working defs.
 [table.000126e4]
 name = "Over Run Fuel Cut - Bosch (0x126E4)"
 category = "Fuel Delivery / Fuel Cut / Main"
 order = 10
+emit = false
 format = "0"
 fine = 25
 coarse = 100
@@ -538,9 +544,10 @@ static_axis = [
 ]
 
 [table.00012718]
-name = "Over Run Fuel Cut - JECS/Hitachi (0x12718)"
-category = "Fuel Delivery / Fuel Cut / Main"
-order = 11
+name = "Overrun Fuel Cut"
+category = "Fuelling / Overrun"
+order = 30
+emit = true
 format = "0"
 fine = 25
 coarse = 100
@@ -551,9 +558,10 @@ static_axis = [
 ]
 
 [table.00012818]
-name = "Over Run Fuel Restore - JECS/Hitachi (0x12818)"
-category = "Fuel Delivery / Fuel Cut / Main"
-order = 12
+name = "Overrun Fuel Cut Restore"
+category = "Fuelling / Overrun"
+order = 31
+emit = true
 format = "0"
 fine = 25
 coarse = 100
@@ -567,6 +575,7 @@ static_axis = [
 name = "Over Run Fuel Restore - Bosch (0x1298C)"
 category = "Fuel Delivery / Fuel Cut / Main"
 order = 13
+emit = false
 format = "0"
 fine = 25
 coarse = 100

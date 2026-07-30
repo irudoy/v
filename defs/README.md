@@ -37,8 +37,8 @@ under `defs/`, separately from `reference/`:
   registry, and presentation layer by `mapkit/emit_def.py`.
 - `JK08A.xdf` is the TunerPro XDF 1.70 definition projected by the same
   generator from the same model. It contains the same emitted calibration
-  tables, masked views, reference axes, and two-state feature patches. It does
-  not declare editor-side checksum processing.
+  tables, masked views, and two-state feature patches. It does not declare
+  editor-side checksum processing.
 - `JK08A.maps.csv` is the catalog ledger projected from the graph by
   `maps/build_tracker.py`. Its diagnostic columns contain reviewed static
   context and priority from the graph; they do not infer map identity from
@@ -65,8 +65,10 @@ under `defs/`, separately from `reference/`:
 - The handwritten calibration-layer sources are `JK08A.interp.csv` for
   interpolation-input geometry, `JK08A.findings.csv` for map findings,
   `JK08A.axes.csv` for axis semantics, and `JK08A.overrides.toml` for definition
-  presentation. `JK08A.diagnostic-bindings.csv` supplies the reviewed
-  diagnostic bridge. Their contract is `../tools/map-flag-pipeline.md`.
+  presentation. Its `[presentation]` policy and per-table `emit` fields select
+  the tuner-facing subset without removing research maps from the graph or
+  ledger. `JK08A.diagnostic-bindings.csv` supplies the reviewed diagnostic
+  bridge. Their contract is `../tools/map-flag-pipeline.md`.
 - Resolver reference censuses are
   `JK08A.map_inventory.{26944,26984,26b84}.csv` from `MapInventory` per kernel,
   and `JK08A.direct_lookup_inventory.csv` from `DirectLookupInventory` for the
@@ -132,13 +134,29 @@ differs at 121 byte positions. In the graph, only the measured values of four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
 `0x190b0`. All 229 axes and the other 442 maps match.
 
-The generated JK08A definitions contain 150 calibration tables, three masked
-views, and two reference-axis views. Reviewed static diagnostic context is
-included in map comments and descriptions without changing map semantics or
-confidence. `JK08A.xml` additionally contains 57 DTC switches and two verified
-native RomRaider checksum handlers. Each ordinary DTC has adjacent descriptor
-and attribute controls; P1610 has only its descriptor control. The checksum
+The generated JK08A definitions contain a tuner-facing allowlist of 12
+calibration tables and three masked ignition views. Calibration axes are
+embedded in their tables; separate editable reference-axis views are not
+emitted. The 434 other catalog maps, including the inactive Bosch overrun pair
+and internal calculations, remain available in the graph, ledger, and
+presentation source. Reviewed static diagnostic context is included in map
+comments and descriptions without changing map semantics or confidence.
+`JK08A.xml` additionally contains 57 DTC switches and two verified native
+RomRaider checksum handlers. Each ordinary DTC has adjacent descriptor and
+attribute controls; P1610 has only its descriptor control. The checksum
 handlers run in `alt` -> `alt2` order.
+
+The working category tree follows the functional organization used by UpRev
+and EcuTek:
+
+- `Fuelling / Fuel Targets`, `Fuel Compensation`, `Overrun`, and `Engine Load`;
+- `Ignition Timing / Main` and `Knock Control`;
+- `Limiters / Rev Limit` and `Stationary Rev Limiter`;
+- `Diagnostics / DTC` and `NATS / Immobilizer`.
+
+Editor names omit addresses and use established vendor terminology where it
+matches the recovered JK08A role. Addresses, confidence, and evidence remain in
+the generated descriptions and canonical sources.
 
 `JK08A.xdf` contains 29 individual DTC patches and six group patches:
 `catalyst`, `evap`, `manufacturer_specific`, `nats`, `rear_o2`, and

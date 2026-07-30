@@ -81,12 +81,15 @@ provenance and are not paths in the current `JK08A` layer.
   semantics; the script prints the counters, so this log does not duplicate them.
 - Definitions `JK08A.xml` and `JK08A.xdf` are graph projections from
   `tools/mapkit/emit_def.py` plus presentation layer `JK08A.overrides.toml`: names,
-  categories, ordering, and editor steps. They emit what can be interpreted: `table`
-  role, semantics, and scale. Two supporting axes are emitted separately. Categories
-  remain functional at every confidence level. A map below `code` is marked
-  `[candidate]` in the generated evidence comment, while a scale below `code`
-  receives suffix `[cand]` in its units; address and multiplier are separate claims.
-  Manual XML or XDF edits do not survive regeneration.
+  visibility, categories, ordering, and editor steps. The working definition is an
+  explicit allowlist of 12 calibration tables and three masked ignition views.
+  Research maps and inactive families remain in the graph and ledger. Calibration
+  axes are embedded in their tables rather than emitted as separate editable views.
+  Categories use the functional UpRev/EcuTek organization and do not encode
+  confidence. A map below `code` is marked `[candidate]` in the generated evidence
+  comment, while a scale below `code` receives suffix `[cand]` in its units; address
+  and multiplier are separate claims. Manual XML or XDF edits do not survive
+  regeneration.
 - Annotated at `code` confidence: `0xA29A` is a Fuel Compensation Map. Its unsigned
   byte is used in fuel calculation as a multiplicative correction; A2L defines scale
   `x*0.78125%` with neutral raw 128 = 100%. `0xB33A` is a control offset table with
@@ -102,9 +105,9 @@ provenance and are not paths in the current `JK08A` layer.
   Window as separate masked views over the same ROM region.
 - Annotated [CONFIRMED]: 8x8 pair `0xAB0A`/`0xB23A` through accessor `0xBEFB0`.
   `0xAB0A` supplies an additive raw correction to the target of an aperiodic filter;
-  `0xB23A` supplies new-sample fraction `x/65536`. Both are in the definition.
-  Catalog names "Transient Fuel Corr" remain [CANDIDATE]; the physical nature of the
-  inputs and filtered quantity is unknown.
+  `0xB23A` supplies new-sample fraction `x/65536`. Both remain research-only and are
+  hidden from the working definition. Catalog names "Transient Fuel Corr" remain
+  [CANDIDATE]; the physical nature of the inputs and filtered quantity is unknown.
 - Annotated [CONFIRMED]: scalar `0x942C` is the calibrated upper rotational-speed
   threshold in a throttle-control limiter path. `0xFFFF` disables the branch;
   otherwise `FUN_0007584E` tracks current speed and writes one input of the signed
@@ -911,7 +914,9 @@ The Bosch versus JECS/Hitachi names rest on the exact four-table order declared
 by the Nissan A2L registry and repeated in homologous Nissan definitions. JK08A
 is a Hitachi ECU, so `0x12718` and `0x12818` are the operational family pair.
 The firmware still contains and reads both family thresholds under
-mode-dependent branches.
+mode-dependent branches. The working definitions expose only the operational pair
+as `Overrun Fuel Cut` and `Overrun Fuel Cut Restore` under `Fuelling / Overrun`;
+the Bosch pair remains in the graph, ledger, and presentation source.
 
 At 80 deg C, the JECS/Hitachi cells are 1050 RPM cut and 900 RPM restore. At
 110 deg C they are 1400 RPM cut and 1200 RPM restore. Calibration edits require
@@ -1128,8 +1133,9 @@ the following differential test succeeds:
 6. Restore the stock word and repeat the same sweep. The intervention must move
    back out of the 3000 RPM test window.
 
-The generated definitions expose one cell as `Throttle Rev Limiter (0x942C)`
-under `Limiters`. The definition description states the proven request boundary
+The generated definitions expose one cell as `Rev Limit - Throttle Cut` under
+`Limiters / Rev Limit`. The vendor-style name remains a candidate physical
+interpretation; the definition description states the proven request boundary
 and the unresolved motor-output boundary.
 
 
@@ -1293,9 +1299,10 @@ Accelerator Pedal Position 1 and 2. This evidence establishes the accelerator-pe
 subsystem and excludes an RPM interpretation. The exact downstream meaning of the
 high state, such as WOT or kickdown, remains unassigned.
 
-The definition presents the two uint16 cells as
+The two uint16 cells remain in the graph and ledger as
 `Accelerator Pedal High-State Hysteresis (0x8FDC)` in normalized ADC counts.
-Adjacent words at `0x8FD8` belong to other functions and are excluded.
+They are research-only and hidden from the working definitions. Adjacent words
+at `0x8FD8` belong to other functions and are excluded.
 
 
 ### K2Y decel ignition (`mTKADVA`) - no decel-gated branch in timing calculation [CONFIRMED]

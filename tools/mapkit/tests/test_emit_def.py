@@ -1,6 +1,7 @@
+from pathlib import Path
+import tomllib
 import unittest
 import xml.etree.ElementTree as ET
-from pathlib import Path
 
 from tools.mapkit import emit_def
 
@@ -195,6 +196,58 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         self.assertIn('type="Static Y Axis"', xml)
 
 
+class DefinitionPresentationPolicyTest(unittest.TestCase):
+    def test_definitions_remain_opt_out_without_a_presentation_policy(self):
+        self.assertTrue(emit_def.presentation_default_emit({}))
+        self.assertTrue(emit_def.table_emit_enabled({}, True))
+        self.assertFalse(emit_def.table_emit_enabled({"emit": False}, True))
+
+    def test_allowlist_policy_requires_an_explicit_table_opt_in(self):
+        overrides = {"presentation": {"default_emit": False}}
+        default = emit_def.presentation_default_emit(overrides)
+        self.assertFalse(emit_def.table_emit_enabled({}, default))
+        self.assertTrue(emit_def.table_emit_enabled({"emit": True}, default))
+
+    def test_visibility_controls_reject_non_boolean_values(self):
+        with self.assertRaisesRegex(SystemExit, "default_emit must be a boolean"):
+            emit_def.presentation_default_emit(
+                {"presentation": {"default_emit": "false"}}
+            )
+        with self.assertRaisesRegex(SystemExit, "emit must be a boolean"):
+            emit_def.table_emit_enabled({"emit": 1}, False, "0000991a")
+
+    def test_jk08a_allowlist_keeps_research_maps_in_the_source(self):
+        with open(ROOT / "defs" / "JK08A.overrides.toml", "rb") as source:
+            overrides = tomllib.load(source)
+        default = emit_def.presentation_default_emit(overrides)
+        emitted = {
+            address
+            for address, entry in overrides["table"].items()
+            if emit_def.table_emit_enabled(entry, default, address)
+        }
+        self.assertEqual(
+            emitted,
+            {
+                "000085d9",
+                "0000934e",
+                "0000942c",
+                "0000991a",
+                "00009a1a",
+                "00009b1a",
+                "0000a29a",
+                "0000b33a",
+                "0001108e",
+                "00012718",
+                "00012818",
+                "0001491a",
+            },
+        )
+        self.assertTrue(
+            {"000126e4", "0001298c"} <= set(overrides["table"])
+        )
+        self.assertNotIn("axisview", overrides)
+
+
 class EmitDefSwitchTest(unittest.TestCase):
     def test_switch_rejects_state_with_wrong_byte_count(self):
         switch = {
@@ -314,77 +367,77 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             [],
         )
 
-    def test_tracked_xml_uses_functional_categories(self):
+    def test_tracked_xml_exposes_only_the_tuner_facing_inventory(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
-        tables = {
+        tuner_items = {
             table.get("name"): table
             for table in rom.findall("./table")
+            if table.get("category") != "Diagnostics / DTC"
         }
         categories = {
-            table.get("category") for table in tables.values()
+            table.get("category") for table in rom.findall("./table")
         }
-        self.assertEqual(len(categories), 20)
+        expected = {
+            "Developer Immobilizer": "NATS / Immobilizer",
+            "Fuel Targets": "Fuelling / Fuel Targets",
+            "Fuel Compensation Main": "Fuelling / Fuel Compensation",
+            "Overrun Fuel Cut": "Fuelling / Overrun",
+            "Overrun Fuel Cut Restore": "Fuelling / Overrun",
+            "Calculated Load": "Fuelling / Engine Load",
+            "Ignition Timing Trim Cold": "Ignition Timing / Main",
+            "Ignition Timing Trim Main": "Ignition Timing / Main",
+            "Ignition Timing Trim High Det": "Ignition Timing / Main",
+            "Knock Control Enable - Cold": (
+                "Ignition Timing / Knock Control"
+            ),
+            "Knock Control Enable - Main": (
+                "Ignition Timing / Knock Control"
+            ),
+            "Knock Control Enable - High Det": (
+                "Ignition Timing / Knock Control"
+            ),
+            "Knock Sensitivity": "Ignition Timing / Knock Control",
+            "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
+            "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
+            "Stationary Rev Limiter": (
+                "Limiters / Stationary Rev Limiter"
+            ),
+        }
+        self.assertEqual(set(tuner_items), set(expected))
+        for name, category in expected.items():
+            with self.subTest(name=name):
+                self.assertEqual(tuner_items[name].get("category"), category)
+        self.assertEqual(
+            categories,
+            set(expected.values()) | {"Diagnostics / DTC"},
+        )
         self.assertTrue(all(
             "(candidate)" not in category and "(traced)" not in category
             for category in categories
         ))
 
-        expected = {
-            "Developer Immobilizer": "NATS / Immobilizer",
-            "Target AFR - Power (0xB33A)": "AFR / Lambda",
-            "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)": "Airflow",
-            "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
-            "Stationary Rev Limiter - Fuel Cut/Restore (0x85D9)": (
-                "Limiters / Stationary Rev Limiter"
-            ),
-            "Stationary Rev Limiter Readiness Threshold (0x911C)": (
-                "Limiters / Stationary Rev Limiter"
-            ),
-            "Stationary Rev Limiter Accumulator Step (0x124D2)": (
-                "Limiters / Stationary Rev Limiter"
-            ),
-            "Over Run Fuel Cut - JECS/Hitachi (0x12718)": (
-                "Fuel Delivery / Fuel Cut / Main"
-            ),
-            "Over Run Fuel Restore - JECS/Hitachi (0x12818)": (
-                "Fuel Delivery / Fuel Cut / Main"
-            ),
-            "Rev Limit - Fuel Cut (0x934E)": (
-                "Fuel Delivery / Fuel Cut / Main"
-            ),
-            "Accelerator Pedal High-State Hysteresis (0x8FDC)": (
-                "Throttle / Accelerator Pedal / Thresholds"
-            ),
-            "Throttle Rev Limiter (0x942C)": "Limiters",
-            "Engine Speed Axis [RPM] (ref)": "Reference Axes",
-            "Cylinder Filling Axis [%] (ref)": "Reference Axes",
-        }
-        for name, category in expected.items():
-            with self.subTest(name=name):
-                self.assertEqual(tables[name].get("category"), category)
-
-    def test_stationary_limiter_readiness_uses_exact_scalar_and_code_scale(self):
+    def test_research_only_tables_remain_outside_the_working_definition(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
-        table = next(
-            table for table in rom.findall("./table")
-            if table.get("name") == (
-                "Stationary Rev Limiter Readiness Threshold (0x911C)"
-            )
-        )
-        scaling = table.find("./scaling")
-        self.assertEqual(table.get("storageaddress"), "0x0911C")
-        self.assertEqual(table.get("storagetype"), "uint16")
-        self.assertEqual(table.get("sizex"), "1")
-        self.assertEqual(scaling.get("units"), "accumulator counts")
-        self.assertEqual(scaling.get("expression"), "x")
+        addresses = {
+            table.get("storageaddress")
+            for table in rom.findall("./table")
+            if table.get("type") != "Switch"
+        }
+        self.assertTrue({
+            "0x08FDC",
+            "0x0911C",
+            "0x10F8E",
+            "0x124D2",
+            "0x126E4",
+            "0x1298C",
+            "0x141F4",
+        }.isdisjoint(addresses))
 
     def test_overrun_fuel_cut_uses_coolant_axis_and_code_rpm_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         expected = {
-            "Over Run Fuel Cut - Bosch (0x126E4)": "0x126E4",
-            "Over Run Fuel Cut - JECS/Hitachi (0x12718)": "0x12718",
-            "Over Run Fuel Restore - JECS/Hitachi (0x12818)": "0x12818",
-            "Over Run Fuel Restore - Bosch (0x1298C)": "0x1298C",
+            "Overrun Fuel Cut": "0x12718",
+            "Overrun Fuel Cut Restore": "0x12818",
         }
         for name, address in expected.items():
             with self.subTest(name=name):
@@ -411,7 +464,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
-            if table.get("name") == "Rev Limit - Fuel Cut (0x934E)"
+            if table.get("name") == "Rev Limit - Fuel Cut"
         )
         scaling = table.find("./scaling")
         axis_x = table.find("./table[@type='Static X Axis']")
@@ -431,31 +484,11 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             ["Cut", "Restore"],
         )
 
-    def test_accelerator_pedal_hysteresis_uses_raw_code_scale(self):
-        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
-        table = next(
-            table for table in rom.findall("./table")
-            if table.get("name") == (
-                "Accelerator Pedal High-State Hysteresis (0x8FDC)"
-            )
-        )
-        scaling = table.find("./scaling")
-        axis = table.find("./table[@type='Static X Axis']")
-        self.assertEqual(table.get("storageaddress"), "0x08FDC")
-        self.assertEqual(table.get("storagetype"), "uint16")
-        self.assertEqual(table.get("sizex"), "2")
-        self.assertEqual(scaling.get("units"), "normalized ADC counts")
-        self.assertEqual(scaling.get("expression"), "x")
-        self.assertEqual(
-            [node.text for node in axis.findall("./data")],
-            ["activate", "release"],
-        )
-
     def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
-            if table.get("name") == "Throttle Rev Limiter (0x942C)"
+            if table.get("name") == "Rev Limit - Throttle Cut"
         )
         scaling = table.find("./scaling")
         self.assertEqual(table.get("storageaddress"), "0x0942C")

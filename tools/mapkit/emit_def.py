@@ -9,10 +9,11 @@
 # The definition file is not a source for either set, and edits to it do not survive the next
 # run.
 #
-# Emission gate (section 9): emit a table when it can be interpreted, meaning it has the
-# table role, semantics, and scaling. Without semantics a map is only an address and shape;
-# without scaling it is a grid of raw bytes. Both already belong in the ledger. The report
-# lists rejected maps because silent omission could be read as absence.
+# Definition output has two independent gates. The presentation layer selects maps intended
+# for tuner-facing definitions; the interpretation gate then requires table role, semantics,
+# scaling, confidence, and complete geometry. Maps hidden by presentation remain available in
+# the canonical graph and ledger. The report distinguishes hidden maps from rejected maps so
+# that presentation policy is not mistaken for missing reverse-engineering evidence.
 #
 # Put confidence labels where each assertion appears:
 #   map confidence     -> generated comment above the table;
@@ -82,6 +83,7 @@ MASKED_VIEW_FIELDS = (
     "source", "name", "category", "mask", "units", "expression", "to_byte",
     "format", "fine", "coarse",
 )
+PRESENTATION_FIELDS = ("default_emit",)
 # Axis name derived from its semantics. Several maps can share an axis, so define its name
 # once here rather than per map; [axis.<addr>] in overrides handles a special case.
 AXIS_NAMES = {"rpm": "Engine Speed [RPM]", "load": "Engine Load",
@@ -616,6 +618,29 @@ def masked_views(ovr, emitted):
     return entries, by_source
 
 
+def presentation_default_emit(ovr):
+    """Return the default tuner-definition visibility selected by the presentation layer."""
+    entry = ovr.get("presentation", {})
+    if not isinstance(entry, dict):
+        sys.exit("presentation must be a TOML table")
+    unknown = sorted(set(entry) - set(PRESENTATION_FIELDS))
+    if unknown:
+        sys.exit("presentation contains unknown fields " + ", ".join(unknown))
+    value = entry.get("default_emit", True)
+    if not isinstance(value, bool):
+        sys.exit("presentation.default_emit must be a boolean")
+    return value
+
+
+def table_emit_enabled(entry, default, address=None):
+    """Apply an optional per-table visibility override to the presentation default."""
+    value = entry.get("emit", default)
+    if not isinstance(value, bool):
+        prefix = f"[table.{address}]: " if address else ""
+        sys.exit(prefix + "emit must be a boolean")
+    return value
+
+
 def emittable(m, axes, ovr=None):
     """Return the section 9 emission-gate failure reason, or None when a map can be emitted."""
     ovr = ovr or {}
@@ -671,13 +696,27 @@ def main():
         ovr = tomllib.load(f)
 
     maps, axes = fetch(rom)
-    emit, skipped = [], []
+    table_overrides = ovr.get("table", {})
+    if not isinstance(table_overrides, dict):
+        sys.exit(f"{os.path.basename(ovr_path)}: table must be a TOML table")
+    unknown = sorted(set(table_overrides) - set(maps))
+    if unknown:
+        sys.exit("override exists for a map absent from the graph: "
+                 + ", ".join(f"[table.{a}]" for a in unknown))
+    default_emit = presentation_default_emit(ovr)
+    emit, hidden, skipped = [], [], []
     for a, m in sorted(maps.items()):
-        o = ovr.get("table", {}).get(a, {})
+        o = table_overrides.get(a, {})
+        if not table_emit_enabled(o, default_emit, a):
+            hidden.append(m)
+            continue
         why = emittable(m, axes, o)
         if why:
             if m["semantics"] and m["role"] == "table":
                 skipped.append((a, m["semantics"], why))
+            if o:
+                sys.exit(f"[table.{a}]: visible override does not pass the "
+                         f"interpretation gate: {why}")
             continue
         if not o.get("name") or not o.get("category"):
             sys.exit(f"map {hexa(a)} ({m['semantics']}) passes the emission gate but has "
@@ -701,11 +740,6 @@ def main():
                 sys.exit(f"[table.{a}]: static axis overlaps graph axes: "
                          + ", ".join(sorted(static_keys)))
         emit.append(m)
-    unknown = sorted(set(ovr.get("table", {})) - {m["addr"] for m in emit})
-    if unknown:
-        sys.exit("override exists for a map not emitted into the definition: "
-                 + ", ".join(f"[table.{a}]" for a in unknown)
-                 + " - either the address is wrong or the map does not pass the gate")
     for a in sorted(ovr.get("axisview", {})):
         if a not in axes:
             sys.exit(f"[axisview.{a}] overrides an axis absent from the graph")
@@ -839,7 +873,9 @@ def main():
     cand = [m for m in emit if m["scale_conf"] and m["scale_conf"] != "code"]
     print(f"  scaling not established by code: {len(cand)} "
           f"({', '.join(hexa(m['addr']) for m in cand)})")
-    print(f"  catalog: {len(maps)} maps; not emitted: {len(maps) - len(emit)}")
+    print(f"  catalog: {len(maps)} maps; visible: {len(emit)}; "
+          f"hidden by presentation: {len(hidden)}; "
+          f"rejected by interpretation gate: {len(skipped)}")
     for a, sem, why in skipped:
         print(f"    {hexa(a)} {sem}: {why}")
     nosem = sum(1 for m in maps.values() if not m["semantics"] and m["role"] == "table")
