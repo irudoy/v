@@ -504,8 +504,8 @@
 
     <!-- 0x0B33A  16x16 uint8  map [code]; entry 0x261B8 (explicit, core 0x26944)
          accessor 0xBFDC0; r4 operand: slice
-         scaling x-128 code counts relative to neutral 128 [code]; Y Axis 0x12F2E rpm
-         [candidate]; X Axis 0x12F0E load
+         scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
+         Axis 0x12F0E load
          Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
          is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
          map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
@@ -516,20 +516,14 @@
          000bfe54/000bfe56: +128 -> 000bfe58..000bfe68: clamp 0..255 -> 000bfe6c -> ffff1c5d.
          For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d
          through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state.
-         Scale confidence: code. Scale: x-128; inverse encoding: x+128; units: code counts
-         relative to neutral 128. Scale trace: raw uint8 map 0000b33a (128..178) ->
-         000bfe22/000261b8 -> 00026944/00026770/00026740, unsigned interpolation without a scale
-         change -> 000bfe28 extu.b into r13 -> 000bfe2e: with the flag clear, delay slot
-         000bfe30 transfers raw directly to r6; with the flag set, raw uint8 map 0000ab4a
-         (128..148) -> 000bfe4c/00026084 -> 000bfe50 extu.b into r2 -> 000bfe52 r13=raw_target-
-         raw_reference -> 000bfe54 forms constant 128 in r12 -> 000bfe56 r13+=128 ->
-         000bfe58..000bfe68 saturates to 0..255 in r6 -> both branches converge at 000bfe6c ->
-         ffff1c5d -> 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6, preserves the
-         byte encoding in local_60, and tests neutral local_60==0x80.
+         The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the
+         UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x
+         maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical
+         identity remains unverified on JK08A hardware.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Fuel Targets" category="Fuelling / Fuel Targets" storagetype="uint8"
            storageaddress="0x0B33A" sizex="16" sizey="16" endian="big">
-      <scaling units="code counts relative to neutral 128" expression="x-128" to_byte="x+128"
+      <scaling units="AFR (gasoline scale) [cand]" expression="1881.6/x" to_byte="1881.6/x"
                format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">

@@ -156,7 +156,10 @@ and EcuTek:
 
 Editor names omit addresses and use established vendor terminology where it
 matches the recovered JK08A role. Addresses, confidence, and evidence remain in
-the generated descriptions and canonical sources.
+the generated descriptions and canonical sources. `Fuel Targets` uses the
+candidate gasoline-AFR projection `1881.6/x`: raw 128 is 14.70 AFR, raw 168 is
+11.20 AFR, and raw 178 is 10.57 AFR. The code-proven centered raw arithmetic
+remains separate in the map semantics and evidence.
 
 `JK08A.xdf` contains 29 individual DTC patches and six group patches:
 `catalyst`, `evap`, `manufacturer_specific`, `nats`, `rear_o2`, and

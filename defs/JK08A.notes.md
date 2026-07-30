@@ -92,10 +92,11 @@ provenance and are not paths in the current `JK08A` layer.
   regeneration.
 - Annotated at `code` confidence: `0xA29A` is a Fuel Compensation Map. Its unsigned
   byte is used in fuel calculation as a multiplicative correction; A2L defines scale
-  `x*0.78125%` with neutral raw 128 = 100%. `0xB33A` is a control offset table with
-  neutral 128 and scale `x-128`; when `ffff2466.bit6=1`, code calculates
+  `x*0.78125%` with neutral raw 128 = 100%. `0xB33A` is a centered raw control table:
+  when `ffff2466.bit6=1`, code calculates
   `clamp_u8(this - map_0xAB4A + 128)`, otherwise it passes the value directly to
-  `ffff1c5d`.
+  `ffff1c5d`. Its tuner-facing gasoline-AFR projection is `1881.6/x` at `candidate`
+  confidence from the HR A2L and vendor fuel-target descriptions.
 - Maps `0x991A`/`0x9A1A`/`0x9B1A` are Cold, High Octane, and High Detonation Ignition
   Timing Maps. Code selects the mode, separates bit7 as the knock window, and uses the
   low 7 bits as a signed-offset timing correction. Shared axes `0x11ECE`/`0x11EBE`
@@ -1364,7 +1365,9 @@ Semantics remain [CANDIDATE].
 - Through `FUN_000BFDC0`, `0xB33A` is an offset-encoded control table with neutral
   value 128. When `ffff2466.bit6=1`, code calculates
   `clamp_u8(this - map_0xAB4A + 128)`; otherwise it passes raw directly to
-  `ffff1c5d`. Scale `x-128` and inverse encoding `x+128` have `code` confidence.
+  `ffff1c5d`. The centered `x-128` operation has `code` confidence as raw arithmetic,
+  not as a physical scale. The tuner definition uses candidate gasoline AFR
+  `1881.6/x`, with the same expression as its inverse.
 - Through `FUN_0002C648`, `0xA29A` participates in the multiplicative portion of a
   fuel calculation followed by saturation. Its geometry, axes, and constant layout
   offset `+0x5C` from EV18A `0xA2F6` identify it as Fuel Compensation Map. A2L defines
@@ -1818,9 +1821,11 @@ blended quantities remains unknown.
 4x4 surface `0xab4a` is subtracted from base map `0xb33a` when bit6 of `ffff2466`
 equals 1: output `ffff1c5d = clamp((b33a - ab4a) + 0x80)`; otherwise only `b33a` is
 used. Value 128 means no trim, while range 128..148 subtracts 0..20. Literal `0x80`,
-the pedestal, and subtraction establish `x-128` from code. Base `0xB33A` is also
-confirmed as an offset-encoded table in the same domain; physical name Target AFR
-remains a catalog hypothesis. Bit3 of `ffff2468` selects the Y-axis input source:
+the pedestal, and subtraction establish centered raw arithmetic from code. Base
+`0xB33A` is also confirmed as an offset-encoded table in the same domain; physical
+name Target AFR and gasoline-AFR projection `1881.6/x` remain a catalog hypothesis.
+The conversion maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to
+10.57 AFR. Bit3 of `ffff2468` selects the Y-axis input source:
 when clear, or when bit0 of `ffff5773` is clear, normal source `ffff102c` is used;
 otherwise `0xff` forces the top of the Y axis.
 
@@ -1879,9 +1884,10 @@ centered offset-binary table with scale `x-128`. Physical labels for
 `0x1214e`/`0xa9aa`/`0x12552` in FUN_0005594a and `0xb2fa` in FUN_000bfdc0 also
 remain candidate. The claim that `0xB33A` is a trim base agrees with an independent
 code finding: `0xB33A` is an offset-encoded control table with neutral 128, but
-physical name Target AFR is unconfirmed. Physical axis inputs `ffff11bc`, `ffff1024`,
-and `ffff10d2` come from callers outside the components, so their units do not reach
-`code` confidence.
+physical name Target AFR is unconfirmed. The working tuner definition exposes the
+candidate `1881.6/x` gasoline-AFR projection and retains `[cand]` in its units.
+Physical axis inputs `ffff11bc`, `ffff1024`, and `ffff10d2` come from callers outside
+the components, so their units do not reach `code` confidence.
 
 Reissue chain: five code-confidence maps are in `findings.csv`; none is emitted.
 Three have scales but physically unresolved axes, while the floor maps lack a scale as

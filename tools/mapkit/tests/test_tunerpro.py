@@ -248,6 +248,16 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             },
         )
 
+    def test_fuel_targets_use_gasoline_afr_scaling(self):
+        table = next(
+            table for table in self.root.findall("./XDFTABLE")
+            if table.findtext("./title") == "Fuel Targets"
+        )
+        axis = table.find("./XDFAXIS[@id='z']")
+        self.assertEqual(axis.findtext("./units"), "AFR (gasoline scale) [cand]")
+        self.assertEqual(axis.findtext("./decimalpl"), "2")
+        self.assertEqual(axis.find("./MATH").get("equation"), "1881.6/X")
+
     def test_xdf_has_expected_tables_patches_and_no_checksum(self):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")

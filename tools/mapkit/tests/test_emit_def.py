@@ -416,6 +416,18 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             for category in categories
         ))
 
+    def test_tracked_fuel_targets_use_gasoline_afr_scaling(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        table = next(
+            table for table in rom.findall("./table")
+            if table.get("name") == "Fuel Targets"
+        )
+        scale = table.find("./scaling")
+        self.assertEqual(scale.get("units"), "AFR (gasoline scale) [cand]")
+        self.assertEqual(scale.get("expression"), "1881.6/x")
+        self.assertEqual(scale.get("to_byte"), "1881.6/x")
+        self.assertEqual(scale.get("format"), "0.00")
+
     def test_research_only_tables_remain_outside_the_working_definition(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         addresses = {

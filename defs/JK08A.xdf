@@ -317,7 +317,7 @@
   </XDFPATCH>
   <XDFTABLE uniqueid="0x341E" flags="0x0">
     <title>Fuel Targets</title>
-    <description>Exact JK08A. Address 0xB33A; 16 rows x 16 columns; uint8; map confidence code. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Result disposition: writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] -&gt; 000bfe22/000261b8 -&gt; 00026770/00026944/00026c78/00026740 -&gt; 000bfe28 extu.b. ffff2466[0x40]=0 -&gt; 000bfe2e/000bfe30 -&gt; 000bfe6c -&gt; ffff1c5d. ffff2466[0x40]=1 -&gt; 000bfe4c(0000ab4a, uint8 128..148) -&gt; 000bfe50/000bfe52: this-other -&gt; 000bfe54/000bfe56: +128 -&gt; 000bfe58..000bfe68: clamp 0..255 -&gt; 000bfe6c -&gt; ffff1c5d. For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state. Scale confidence: code. Scale: x-128; inverse encoding: x+128; units: code counts relative to neutral 128. Scale trace: raw uint8 map 0000b33a (128..178) -&gt; 000bfe22/000261b8 -&gt; 00026944/00026770/00026740, unsigned interpolation without a scale change -&gt; 000bfe28 extu.b into r13 -&gt; 000bfe2e: with the flag clear, delay slot 000bfe30 transfers raw directly to r6; with the flag set, raw uint8 map 0000ab4a (128..148) -&gt; 000bfe4c/00026084 -&gt; 000bfe50 extu.b into r2 -&gt; 000bfe52 r13=raw_target-raw_reference -&gt; 000bfe54 forms constant 128 in r12 -&gt; 000bfe56 r13+=128 -&gt; 000bfe58..000bfe68 saturates to 0..255 in r6 -&gt; both branches converge at 000bfe6c -&gt; ffff1c5d -&gt; 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6, preserves the byte encoding in local_60, and tests neutral local_60==0x80.</description>
+    <description>Exact JK08A. Address 0xB33A; 16 rows x 16 columns; uint8; map confidence code. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Result disposition: writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] -&gt; 000bfe22/000261b8 -&gt; 00026770/00026944/00026c78/00026740 -&gt; 000bfe28 extu.b. ffff2466[0x40]=0 -&gt; 000bfe2e/000bfe30 -&gt; 000bfe6c -&gt; ffff1c5d. ffff2466[0x40]=1 -&gt; 000bfe4c(0000ab4a, uint8 128..148) -&gt; 000bfe50/000bfe52: this-other -&gt; 000bfe54/000bfe56: +128 -&gt; 000bfe58..000bfe68: clamp 0..255 -&gt; 000bfe6c -&gt; ffff1c5d. For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state. The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical identity remains unverified on JK08A hardware.</description>
     <CATEGORYMEM index="0" category="5" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -349,10 +349,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xB33A" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>code counts relative to neutral 128</units>
+      <units>AFR (gasoline scale) [cand]</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X-128">
+      <MATH equation="1881.6/X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
