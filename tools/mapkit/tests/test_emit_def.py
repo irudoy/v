@@ -56,6 +56,38 @@ class EmitDefStaticAxesTest(unittest.TestCase):
             "a Static Y Axis with 6 points is required",
         )
 
+    def test_direct_indexed_map_accepts_named_static_axis(self):
+        direct_map = dict(
+            self.map,
+            addr="000129c0",
+            family="direct-indexed",
+            dims=1,
+            width=6,
+            height=None,
+            storagetype="uint8",
+            semantics="Per-channel injection pulse multiplier",
+            units="ratio",
+            scale_expr="x/128",
+            to_byte="x*128",
+            scale_conf="code",
+            accessors=["0004eba2"],
+        )
+        presentation = {
+            "name": "Injection Pulse Channel Multiplier",
+            "category": "Fuel Delivery / Main",
+            "static_axis_name": "Channel",
+            "static_axis": [1, 2, 3, 4, 5, 6],
+        }
+        self.assertIsNone(
+            emit_def.emittable(direct_map, {}, presentation)
+        )
+        overrides = {"table": {direct_map["addr"]: presentation}}
+        xml = "\n".join(
+            emit_def.table_xml(direct_map, overrides, {}, "JK08A")
+        )
+        self.assertIn('type="Static X Axis" name="Channel"', xml)
+        self.assertEqual(xml.count("<data>"), 6)
+
     def test_xml_keeps_row_major_geometry_mask_and_axis_types(self):
         overrides = {"table": {self.map["addr"]: self.presentation}}
         xml = "\n".join(emit_def.table_xml(self.map, overrides, {}, "JK08A"))

@@ -492,8 +492,10 @@ def table_axes_xml(m, o, ovr, axes):
         out += static_axis_xml([i * step for i in range(m["width"])],
                                f"Raw input (step {step})")
     else:
-        # Compare family: no lookup exists; branching selects cells and overrides label branches.
-        out += static_axis_xml(o["static_axis"], "Selector")
+        # A direct no-axis family obtains labels from the presentation layer.
+        out += static_axis_xml(
+            o["static_axis"], o.get("static_axis_name", "Selector")
+        )
     return out
 
 
@@ -635,9 +637,12 @@ def emittable(m, axes, ovr=None):
             return f'a Static X Axis with {m["width"]} points is required'
         if len(ovr.get("static_axis_y", [])) != m["height"]:
             return f'a Static Y Axis with {m["height"]} points is required'
-    # A one-dimensional map axis is defined by an array (explicit), an input step (implicit),
-    # or not at all for the compare family, where branching selects cells without a lookup.
-    if m["dims"] == 1 and not (m["axis_x"] or m["steps"] or m["family"] == "compare"):
+    # A one-dimensional map axis is defined by an array (explicit), an input
+    # step (implicit), or static labels for a manually traced direct family.
+    static_families = {"compare", "direct-indexed"}
+    if m["dims"] == 1 and not (
+        m["axis_x"] or m["steps"] or m["family"] in static_families
+    ):
         return "axis is defined by neither an array nor a step"
     return None
 
@@ -670,11 +675,10 @@ def main():
             sys.exit(f"map {hexa(a)} ({m['semantics']}) passes the emission gate but has "
                      f"no name or category; declare [table.{a}] in "
                      f"{os.path.basename(ovr_path)}")
-        # For a map without an axis, only an override can provide cell labels: branching
-        # names them rather than the graph.
+        # For a map without an axis, only an override can provide cell labels.
         if m["dims"] == 1 and not (m["axis_x"] or m["steps"]):
             if len(o.get("static_axis", [])) != m["width"]:
-                sys.exit(f"[table.{a}]: the map has no axis and branching selects cells; "
+                sys.exit(f"[table.{a}]: the map has no graph axis; "
                          f"static_axis with {m['width']} labels is required")
         elif m["dims"] == 1 and "static_axis" in o:
             sys.exit(f"[table.{a}]: static_axis overlaps graph axis "

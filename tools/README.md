@@ -177,7 +177,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `ghidra/ExportGraph.java` | Call graph: functions and CALLS | `funcs.csv`, `calls.csv` |
 | `ghidra/ExportXrefs.java` | Peripheral/RAM accesses at `0xFFFE8000` and above, plus literal pools | `xrefs.csv` |
 | `ghidra/ExportDiagnosticRefs.java` | Semantic-free 16-bit ROM-reference and instruction-immediate inventory for reviewing SID 0x22 candidates | `diagnostic_refs.csv` |
-| `ghidra/TraceRamAccesses.java` | Resolve decompiler p-code LOAD/STORE effective addresses in a selected RAM range, including base-plus-offset accesses absent from direct xrefs. Arguments: `<outdir> <lo> <hi> [<func_addr>...]` | `ram_accesses.csv` |
+| `ghidra/TraceRamAccesses.java` | Resolve decompiler p-code LOAD/STORE effective addresses and constant call arguments in a selected RAM range. Optional `--candidates` records unresolved indexed expressions that contain concrete RAM anchors. Arguments: `<outdir> <lo> <hi> [--candidates] [<func_addr>...]` | `ram_accesses.csv`, `ram_calls.csv`, optional `ram_access_candidates.csv` |
 | `ghidra/DecompileFuncs.java` | C pseudocode for specified functions | `decomp_<addr>.c` |
 | `ghidra/ScanImmoAnchors.java` | Scan immo DTC constants P1610-P1615 and B2193, plus DTC-table clusters | `immo_anchors.csv`, `immo_tables.csv` |
 | `ghidra/FindTableRefs.java` | Identify users of a ROM address range or table base through direct and literal-pool references | `table_refs.csv` |
@@ -430,9 +430,9 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 3054 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 3139 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 1047 source claims and 3054 expected edges;
+current JK08A has 1073 source claims and 3139 expected edges;
 `effective below declared=0`, `without grounding=0`, 45 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
 
@@ -478,9 +478,9 @@ For JK08A, 38,627 instructions in 494 regions produce 353 functions, increasing 
 1958 to 2312, after which wrappers `0x26100` and `0x26230` acquire callers.
 
 Across 13 JK08A censuses there are 587 rows for 554 call sites. Data flow recovers a ROM base at
-551 call sites, compared with 493 for backtracking. The graph contains **444 maps**: 248
+551 call sites, compared with 493 for backtracking. The graph contains **445 maps**: 248
 explicit-axis, 188 implicit-axis, 2 implicit two-dimensional, 2 direct row-major,
-and 4 comparator tables. It also has 229 axes, 587 unique accesses, and 47
+4 comparator tables, and 1 direct-indexed table. It also has 229 axes, 591 unique accesses, and 47
 interpolation nodes, consisting of 34 wrappers and 13 engines.
 
 | Family | Engines | Sites | `bt_r4` | `df_r4` | Wrappers | Maps |
@@ -491,8 +491,8 @@ interpolation nodes, consisting of 34 wrappers and 13 engines.
 Base-source distribution across 554 call sites is 407 pool slots, 102 backward slices, 27 phi
 nodes producing 59 branch rows, 15 `SymbolicPropogator` fallbacks producing 16 census rows, and 3
 unresolved dynamic cases (`dyn`). The loader verifies from its rows that the two families share no
-tables. The manual layer declares eight maps outside the census access models,
-for a catalog total of 444.
+tables. The manual layer declares nine maps outside the census access models,
+for a catalog total of 445.
 
 The resolver reproduces both reference censuses site-for-site, 327 and 227 sites, and covers every
 reference base. It also recovers 13 additional explicit-axis tables and 16 additional bank tables.

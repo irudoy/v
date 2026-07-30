@@ -1341,3 +1341,13 @@ order = 208
 format = "0"
 fine = 1
 coarse = 16
+
+[table.000129c0]
+name = "Injection Pulse Channel Multiplier (0x129C0)"
+category = "Fuel Delivery / Main"
+order = 22
+static_axis_name = "Channel"
+static_axis = [1, 2, 3, 4, 5, 6]
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625

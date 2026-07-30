@@ -1046,6 +1046,13 @@ request-to-RAM path independently of public PID lists:
   entry returns two consecutive bytes in big-endian order. Both paths emit
   positive response SID `0x62`.
 - Entries `0x1206` and `0x1207` point to `0xFFFF23C8` and `0xFFFF23CA`.
+  `FUN_0004ECAC` calls `FUN_0004EAD4` for two base terms and then calls
+  `FUN_0004EBA2` for channel indices 0..5. `FUN_0004EBA2` writes the six
+  consecutive words at `0xFFFF23C8+2*i`. It selects the base by channel parity,
+  adds signed correction `0xFFFF1396+2*i`, conditionally subtracts
+  `0xFFFF1466+2*i`, and applies direct-indexed byte `0x129C0+i` as Q1.7 before
+  uint16 saturation. All six stock bytes at `0x129C0` are `0x80`, so the
+  multiplier is 1.0.
   A homologous structured Nissan profile defines them as `INJ PULSE-B1` and
   `INJ PULSE-B2` with conversion `raw/100 ms`. The VQ35HR factory manual defines
   the corresponding CONSULT parameters as the actual injection pulse width
@@ -1053,20 +1060,27 @@ request-to-RAM path independently of public PID lists:
 - Entry `0x1135` points to byte `0xFFFF2442`. The exact firmware uses
   `0xFFFF2442/0xFFFF2443` as a two-bank centered angle pair in the
   `0x9DBA` ignition-angle path, and initializer `FUN_000BCD44` writes `0x80` to
-  both bytes. Homologous VQ35HR sources identify `0x1135` as intake valve timing
-  bank 1. The exact runtime writer and physical conversion are not statically
-  resolved.
+  both bytes. Runtime writer `FUN_000BD9F0` is called for channels 0 and 1 by
+  `FUN_000BD170` and writes
+  `clamp_u8(0x80 + reference[channel] - capture[channel])`; a hardware-control
+  branch forces neutral `0x80`. Reference bytes `0xFFFF4799/0xFFFF479A` are
+  initialized from ROM bytes `0x831C/0x8321` and maintained by
+  `FUN_000BDF5C`. Capture bytes `0xFFFF22CC/0xFFFF22CD` trace to ATU-II channel
+  1A GR1F and GR1E processing in `FUN_0002A5CC` and `FUN_0002A36A`.
+  Homologous VQ35HR sources identify `0x1135` as intake valve timing bank 1.
+  Community diagnostic definitions support candidate conversion
+  `raw*0.5-64 degCA`; exact code proves the centered representation but not the
+  physical scale.
 
 The exact table rejects prior community candidates `0x1211/0x1212` for injection
 and `0x1127/0x1128` for intake CVTC because their entries are `0xFFFFFFFF`.
 No definition or hardware test uses those unsupported identifiers.
 
-The response sources for `0x1206/0x1207` have no resolved runtime writer. A
-decompiler p-code scan covers all 153 functions that load containing base
-`0xFFFF23BC` and all 469 functions that load master base `0xFFFF128C`; it finds
-the exact response reads but no write to `0xFFFF23C8/0xFFFF23CA`. This leaves
-producer-to-map attribution open without weakening the exact DID, response width,
-byte order, or RAM binding.
+`TraceRamAccesses.java` scanned all 2,315 defined functions over selected range
+`0xFFFF128C..0xFFFF4FFF`. It resolved 29,579 exact accesses, retained 2,679
+unresolved indexed candidates with concrete anchors in that range, and found
+131 constant RAM call arguments. The indexed candidates expose the six-channel
+injection and two-channel CVTC writers that direct xrefs miss.
 
 
 ### Threshold pair `0x8FDC`/`0x8FDE`, FUN_00047A56

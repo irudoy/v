@@ -225,7 +225,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 36)
-        self.assertEqual(len(tables), 153)
+        self.assertEqual(len(tables), 154)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [

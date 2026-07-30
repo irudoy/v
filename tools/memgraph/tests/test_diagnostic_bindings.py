@@ -112,6 +112,23 @@ class BindingSourceTest(unittest.TestCase):
                 "intake-valve-timing-bank-1",
             },
         )
+        by_id = {row["id"]: row for row in rows}
+        for binding_id in (
+            "injection-pulse-bank-1",
+            "injection-pulse-bank-2",
+        ):
+            self.assertIn(
+                "writes:0004eba2@structural",
+                by_id[binding_id]["evidence"],
+            )
+            self.assertIn(
+                "from_map:000129c0@structural",
+                by_id[binding_id]["evidence"],
+            )
+        self.assertIn(
+            "writes:000bd9f0@structural",
+            by_id["intake-valve-timing-bank-1"]["evidence"],
+        )
 
 
 class FakeResult:

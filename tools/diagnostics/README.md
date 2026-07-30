@@ -182,23 +182,44 @@ and same-function RAM reference remain candidates until a dispatcher-to-response
 data-flow trace establishes the request path, returned value, and conversion.
 
 `TraceRamAccesses.java` resolves decompiler p-code LOAD/STORE effective
-addresses for a selected RAM range. It is used after the dispatcher trace to
-search for runtime producers whose base-plus-offset accesses are absent from
-direct xrefs:
+addresses and constant call arguments for a selected RAM range. Optional
+`--candidates` retains unresolved indexed expressions that contain a concrete
+RAM anchor. It is used after the dispatcher trace to find base-plus-offset
+runtime producers that are absent from direct xrefs:
 
 ```bash
 D=~/tools/ghidra-projects/export-JK08A-exact
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -process 1JK08A-20260726-stock.bin \
   -noanalysis -readOnly -scriptPath tools/ghidra \
-  -postScript TraceRamAccesses.java "$D" ffff23bc ffff23cc
+  -postScript TraceRamAccesses.java "$D" ffff128c ffff4fff --candidates
 ```
 
 The reviewed JK08A projection binds DIDs `0x1206` and `0x1207` to the
 big-endian injection pulse values at `0xFFFF23C8` and `0xFFFF23CA`, and DID
-`0x1135` to intake valve timing bank 1 at `0xFFFF2442`. The response paths are
-code-traced; the runtime producers and the physical conversion of `0x1135`
-remain open.
+`0x1135` to intake valve timing bank 1 at `0xFFFF2442`.
+
+`FUN_0004EBA2` is the exact runtime producer of six consecutive pulse words at
+`0xFFFF23C8+2*i`. It selects an even/odd base, adds a signed per-channel
+correction, conditionally subtracts a second signed correction, and applies the
+direct-indexed Q1.7 multiplier at `0x129C0+i`. All six stock multiplier bytes
+are `0x80`, or 1.0. DIDs `0x1206` and `0x1207` return the first two words; the
+factory monitor and homologous profile identify them as bank 1 and bank 2
+injection pulse width with conversion `raw/100 ms`.
+
+`FUN_000BD9F0` is the exact two-channel runtime writer of
+`0xFFFF2442/0xFFFF2443`:
+
+```text
+clamp_u8(0x80 + reference[channel] - capture[channel])
+```
+
+The reference bytes are `0xFFFF4799/0xFFFF479A`; the capture-derived bytes are
+`0xFFFF22CC/0xFFFF22CD`. The latter trace to ATU-II channel 1A registers GR1F
+and GR1E. A hardware-control path forces neutral `0x80`, and zero enable byte
+`0xFFFF11DE` suppresses the update. Homologous diagnostic definitions support
+candidate conversion `raw*0.5-64 degCA`; exact code proves the centered
+representation but not this physical scale.
 
 Reusable Cypher examples are in
 `tools/memgraph/diagnostics_queries.cypher`.

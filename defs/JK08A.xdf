@@ -6945,6 +6945,53 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xABEC" flags="0x0">
+    <title>Injection Pulse Channel Multiplier (0x129C0)</title>
+    <description>Exact JK08A. Address 0x129C0; 1 rows x 6 columns; uint8; map confidence code. Six-channel injection-pulse multiplier indexed directly by channel number 0..5. For a positive calculated pulse, FUN_0004eba2 multiplies by the selected byte, shifts the product right by 7, saturates to uint16, and writes the raw and transformed six-channel output arrays. All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in override mask ffff22e0 bypasses this multiplier and selects word ffff2436. The trace proves channel indexing but does not establish the physical cylinder order; presentation labels remain generic channel numbers. Static diagnostic context: INJ PULSE-B1 [code, homologous_vq35hr, via map evidence: writes].</description>
+    <CATEGORYMEM index="0" category="9" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Channel</units>
+      <indexcount>6</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="1" />
+      <LABEL index="1" value="2" />
+      <LABEL index="2" value="3" />
+      <LABEL index="3" value="4" />
+      <LABEL index="4" value="5" />
+      <LABEL index="5" value="6" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x129C0" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="6" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>ratio</units>
+      <decimalpl>4</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xB362" flags="0x0">
     <title>Knock Sensor Circuit Monitor Surface A (0xABBA)</title>
     <description>Exact JK08A. Address 0xABBA; 8 rows x 8 columns; uint8; map confidence code. Knock Sensor Circuit Monitor Surface A: the first mode surface in the evaluation path for P0327/P0328/P0332/P0333. Output ffff338a scales the monitor metric, participates in accumulation into ffff3334, and reaches diagnostic state byte ffff4204. The surface is selected when byte[ffff3427] &lt;= byte[0x8796], where the ROM threshold is 95. The physical unit of raw and the direction in which increasing a cell affects the final DTC verdict are unknown. Static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom]; DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom].</description>

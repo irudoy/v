@@ -761,6 +761,27 @@
       </table>
     </table>
 
+    <!-- 0x129C0  6 uint8  map [code]
+         accessor 0x4EBA2; r4 operand: manual
+         scaling x/128 ratio [code]
+         static diagnostic context: INJ PULSE-B1 [code, homologous_vq35hr, via map evidence:
+         writes]
+         All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in
+         override mask ffff22e0 bypasses this multiplier and selects word ffff2436. The trace
+         proves channel indexing but does not establish the physical cylinder order;
+         presentation labels remain generic channel numbers.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Injection Pulse Channel Multiplier (0x129C0)"
+           category="Fuel Delivery / Main" storagetype="uint8" storageaddress="0x129C0"
+           sizex="6" endian="big">
+      <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.0000"
+               fineincrement="0.0078125" coarseincrement="0.0625"/>
+      <table type="Static X Axis" name="Channel" sizex="6">
+        <data>1</data><data>2</data><data>3</data><data>4</data>
+        <data>5</data><data>6</data>
+      </table>
+    </table>
+
     <!-- 0x0ABBA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
          accessor 0xA52E4; r4 operand: pool
          scaling x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load

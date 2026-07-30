@@ -312,7 +312,12 @@ def add_table_axes(table, calibration, presentation, overrides, axes):
             f"Raw input (step {step})",
         )
     else:
-        add_static_axis(table, "x", presentation["static_axis"], "Selector")
+        add_static_axis(
+            table,
+            "x",
+            presentation["static_axis"],
+            presentation.get("static_axis_name", "Selector"),
+        )
     add_static_axis(table, "y", [0], "Series")
 
 

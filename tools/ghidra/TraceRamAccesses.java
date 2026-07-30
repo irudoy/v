@@ -8,11 +8,15 @@
 // concrete LOAD/STORE address when it can be reduced to a constant.
 //
 // Usage (headless):
-//   -postScript TraceRamAccesses.java <out_dir> <lo_hex> <hi_hex> [<func_addr>...]
+//   -postScript TraceRamAccesses.java <out_dir> <lo_hex> <hi_hex>
+//       [--candidates] [<func_addr>...]
 //
 // With function addresses, only those functions are inspected. Without them,
-// every defined function is inspected. Output:
-//   ram_accesses.csv (func_addr,ins_addr,access,width,address)
+// every defined function is inspected. --candidates also records unresolved
+// memory addresses that depend on a concrete RAM anchor. Output:
+//   ram_accesses.csv
+//   ram_calls.csv
+//   ram_access_candidates.csv (with --candidates)
 //@category VQ
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileOptions;
@@ -47,7 +51,8 @@ public class TraceRamAccesses extends GhidraScript {
     public void run() throws Exception {
         String[] args = getScriptArgs();
         if (args.length < 3) {
-            println("VQ_RAM need: <out_dir> <lo_hex> <hi_hex> [<func_addr>...]");
+            println("VQ_RAM need: <out_dir> <lo_hex> <hi_hex>"
+                    + " [--candidates] [<func_addr>...]");
             return;
         }
 
@@ -62,14 +67,23 @@ public class TraceRamAccesses extends GhidraScript {
         mem = currentProgram.getMemory();
         FunctionManager fm = currentProgram.getFunctionManager();
         List<Function> functions = new ArrayList<>();
-        if (args.length > 3) {
-            for (int i = 3; i < args.length; i++) {
+        boolean candidates = false;
+        List<String> functionArgs = new ArrayList<>();
+        for (int i = 3; i < args.length; i++) {
+            if ("--candidates".equals(args[i])) {
+                candidates = true;
+            } else {
+                functionArgs.add(args[i]);
+            }
+        }
+        if (!functionArgs.isEmpty()) {
+            for (String functionArg : functionArgs) {
                 Address ep = currentProgram.getAddressFactory()
                         .getDefaultAddressSpace()
-                        .getAddress(Long.parseUnsignedLong(args[i], 16));
+                        .getAddress(Long.parseUnsignedLong(functionArg, 16));
                 Function f = fm.getFunctionAt(ep);
                 if (f == null) {
-                    println("VQ_RAM no function at " + args[i]);
+                    println("VQ_RAM no function at " + functionArg);
                     continue;
                 }
                 functions.add(f);
@@ -81,6 +95,8 @@ public class TraceRamAccesses extends GhidraScript {
         }
 
         TreeSet<String> rows = new TreeSet<>();
+        TreeSet<String> callRows = new TreeSet<>();
+        TreeSet<String> candidateRows = new TreeSet<>();
         DecompInterface ifc = new DecompInterface();
         DecompileOptions options = new DecompileOptions();
         options.grabFromProgram(currentProgram);
@@ -108,11 +124,18 @@ public class TraceRamAccesses extends GhidraScript {
                 while (it.hasNext()) {
                     PcodeOpAST op = it.next();
                     int opcode = op.getOpcode();
+                    if (opcode == PcodeOp.CALL || opcode == PcodeOp.CALLIND) {
+                        collectCallArguments(f, op, lo, hi, callRows);
+                        continue;
+                    }
                     if (opcode != PcodeOp.LOAD && opcode != PcodeOp.STORE) {
                         continue;
                     }
                     Long address = eval(op.getInput(1), 0, new HashSet<Varnode>());
                     if (address == null) {
+                        if (candidates) {
+                            collectCandidate(f, op, lo, hi, candidateRows);
+                        }
                         continue;
                     }
                     long normalized = address & 0xFFFFFFFFL;
@@ -143,8 +166,180 @@ public class TraceRamAccesses extends GhidraScript {
             out.println(row);
         }
         out.close();
+        writeRows(
+                new File(outDir, "ram_calls.csv"),
+                "func_addr,ins_addr,callee,arg_index,address",
+                callRows);
+        if (candidates) {
+            writeRows(
+                    new File(outDir, "ram_access_candidates.csv"),
+                    "func_addr,ins_addr,access,width,ram_anchors,address_expr",
+                    candidateRows);
+        }
         println("VQ_RAM completed=" + completed + " failed=" + failed
-                + " accesses=" + rows.size() + " dir=" + outDir);
+                + " accesses=" + rows.size()
+                + " calls=" + callRows.size()
+                + " candidates=" + candidateRows.size()
+                + " dir=" + outDir);
+    }
+
+    void collectCallArguments(
+            Function function,
+            PcodeOpAST op,
+            long lo,
+            long hi,
+            Set<String> rows) {
+        Long callee = eval(op.getInput(0), 0, new HashSet<Varnode>());
+        String calleeText = callee == null
+                ? csv(op.getInput(0).toString())
+                : String.format("%08x", callee & 0xFFFFFFFFL);
+        for (int i = 1; i < op.getNumInputs(); i++) {
+            Long value = eval(op.getInput(i), 0, new HashSet<Varnode>());
+            if (value == null) {
+                continue;
+            }
+            long normalized = value & 0xFFFFFFFFL;
+            if (Long.compareUnsigned(normalized, lo) < 0
+                    || Long.compareUnsigned(normalized, hi) > 0) {
+                continue;
+            }
+            rows.add(String.format(
+                    "%s,%08x,%s,%d,%08x",
+                    function.getEntryPoint(),
+                    op.getSeqnum().getTarget().getOffset() & 0xFFFFFFFFL,
+                    calleeText,
+                    i - 1,
+                    normalized));
+        }
+    }
+
+    void collectCandidate(
+            Function function,
+            PcodeOpAST op,
+            long lo,
+            long hi,
+            Set<String> rows) {
+        TreeSet<Long> anchors = new TreeSet<>((a, b) ->
+                Long.compareUnsigned(a, b));
+        collectRamAnchors(
+                op.getInput(1), 0, new HashSet<Varnode>(), lo, hi, anchors);
+        if (anchors.isEmpty()) {
+            return;
+        }
+        int opcode = op.getOpcode();
+        int width = opcode == PcodeOp.LOAD
+                ? op.getOutput().getSize()
+                : op.getInput(2).getSize();
+        StringBuilder anchorText = new StringBuilder();
+        for (Long anchor : anchors) {
+            if (anchorText.length() != 0) {
+                anchorText.append(';');
+            }
+            anchorText.append(String.format("%08x", anchor & 0xFFFFFFFFL));
+        }
+        rows.add(String.format(
+                "%s,%08x,%s,%d,%s,%s",
+                function.getEntryPoint(),
+                op.getSeqnum().getTarget().getOffset() & 0xFFFFFFFFL,
+                opcode == PcodeOp.LOAD ? "R" : "W",
+                width,
+                csv(anchorText.toString()),
+                csv(describe(op.getInput(1), 0, new HashSet<Varnode>()))));
+    }
+
+    void collectRamAnchors(
+            Varnode node,
+            int depth,
+            Set<Varnode> active,
+            long lo,
+            long hi,
+            Set<Long> anchors) {
+        if (node == null || depth > SLICE_DEPTH || active.contains(node)) {
+            return;
+        }
+        Long exact = eval(node, 0, new HashSet<Varnode>());
+        if (exact != null && isSelectedAddress(exact, lo, hi)) {
+            anchors.add(exact & 0xFFFFFFFFL);
+            return;
+        }
+        if (node.isConstant()) {
+            long value = mask(node.getOffset(), node.getSize());
+            if (isSelectedAddress(value, lo, hi)) {
+                anchors.add(value & 0xFFFFFFFFL);
+            }
+            return;
+        }
+        if (isRomStorage(node)) {
+            Long value = readWord(node.getAddress(), node.getSize());
+            if (value != null && isSelectedAddress(value, lo, hi)) {
+                anchors.add(value & 0xFFFFFFFFL);
+            }
+            return;
+        }
+        PcodeOp def = node.getDef();
+        if (def == null) {
+            return;
+        }
+        active.add(node);
+        for (int i = 0; i < def.getNumInputs(); i++) {
+            collectRamAnchors(
+                    def.getInput(i), depth + 1, active, lo, hi, anchors);
+        }
+        active.remove(node);
+    }
+
+    String describe(Varnode node, int depth, Set<Varnode> active) {
+        if (node == null) {
+            return "null";
+        }
+        if (depth > 10 || active.contains(node)) {
+            return "...";
+        }
+        if (node.isConstant()) {
+            return String.format("0x%x", mask(node.getOffset(), node.getSize()));
+        }
+        if (isRomStorage(node)) {
+            Long value = readWord(node.getAddress(), node.getSize());
+            if (value != null) {
+                return String.format(
+                        "ROM[%s]=0x%x", node.getAddress(), value);
+            }
+        }
+        PcodeOp def = node.getDef();
+        if (def == null) {
+            return node.toString();
+        }
+        active.add(node);
+        StringBuilder text = new StringBuilder(def.getMnemonic());
+        text.append('(');
+        for (int i = 0; i < def.getNumInputs(); i++) {
+            if (i != 0) {
+                text.append(',');
+            }
+            text.append(describe(def.getInput(i), depth + 1, active));
+        }
+        text.append(')');
+        active.remove(node);
+        return text.toString();
+    }
+
+    boolean isSelectedAddress(long value, long lo, long hi) {
+        long normalized = value & 0xFFFFFFFFL;
+        return Long.compareUnsigned(normalized, lo) >= 0
+                && Long.compareUnsigned(normalized, hi) <= 0;
+    }
+
+    void writeRows(File file, String header, Set<String> rows) throws Exception {
+        PrintWriter out = new PrintWriter(new FileWriter(file));
+        out.println(header);
+        for (String row : rows) {
+            out.println(row);
+        }
+        out.close();
+    }
+
+    String csv(String value) {
+        return "\"" + value.replace("\"", "\"\"") + "\"";
     }
 
     Long eval(Varnode node, int depth, Set<Varnode> active) {
