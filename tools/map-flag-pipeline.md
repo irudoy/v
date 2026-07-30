@@ -634,15 +634,20 @@ value, and conversion first. With the JK08A exact-code export and tracked
 diagnostic corpus, it reports 397 review candidates across 383 known DIDs; 58
 candidate rows occur in functions containing more than one known DID.
 
-The JK08A binding projection contains 25 reviewed claims:
+The JK08A binding projection contains 32 reviewed claims:
 
 - engine speed at `0xFFFF11AE` has `code` association and homologous VQ35HR
   monitor applicability;
+- exact UDS DID `0x1201` returns word `0xFFFF11F4`. Its common producer with
+  RPM/25 `0xFFFF11B3` and RPM/50 `0xFFFF11AE` establishes the JK08A
+  representation as RPM/12.5;
 - calculated load at `0xFFFF413E` has a `code` association through the exact
   Mode 01 PID `0x04` dispatcher path and homologous VQ35HR monitor applicability;
-- coolant temperature at `0xFFFF106F`, ignition angle at `0xFFFF23EE`, and two
-  MAF transfer maps at `0x141F4` and `0x14274` remain `candidate` associations
-  with homologous monitor semantics;
+- exact UDS DID `0x1101` returns coolant byte `0xFFFF1079`. Code normalizes it
+  through `0xFFFF1077` into previous-cycle calibration index `0xFFFF106F`;
+  homologous measured diagnostic data supplies conversion `raw-50 deg C`;
+- ignition angle at `0xFFFF23EE` and two MAF transfer maps at `0x141F4` and
+  `0x14274` remain `candidate` associations with homologous monitor semantics;
 - UDS DIDs `0x1206` and `0x1207` have `code` associations with the two-byte
   big-endian values at `0xFFFF23C8` and `0xFFFF23CA`. Homologous VQ35HR
   diagnostic sources identify the values as injection pulse width for banks 1
@@ -662,8 +667,8 @@ runtime writer. For intake CVTC, exact code proves
 diagnostic definitions supply candidate conversion `raw*0.5-64 degCA`; hardware
 validation remains required. Unsupported community candidates `0x1211/0x1212`
 and `0x1127/0x1128` are excluded because the exact JK08A pointer tables contain
-`0xFFFFFFFF` for those DIDs. JK03A receives the nine exact-code parameter
-claims and none of the sixteen exact-ROM DTC claims.
+`0xFFFFFFFF` for those DIDs. JK03A receives the twelve exact-code claims and
+none of the twenty exact-ROM DTC claims.
 
 The static milestone ends at `code`. `silicon` is rejected by the loader, and
 hardware-loop verification is not a completion gate for this stage.
@@ -1091,7 +1096,10 @@ the current user-facing definition for the exact-code JK03A ROM:
   independent editing of element bit fields, cosmetic comments, and cell labels for a
   map without an axis. The manual `direct-row-major` family defines both static axes in
   this layer: `static_axis_x` has `width` elements and `static_axis_y` has `height`
-  elements; geometry and element type remain facts in `findings.csv`. A
+  elements; geometry and element type remain facts in `findings.csv`. An implicit
+  one-dimensional map may define `static_axis` labels that replace the generated raw
+  input nodes when a physical conversion is reviewed; its implicit step and geometry
+  remain graph facts. A
   `[[masked_view]]` array creates an additional view of the same cells: `source`
   references an emitted map, its separate `mask` does not overlap the primary table
   mask, and shape and axes are reused from the Map fact. This exposes a value field and

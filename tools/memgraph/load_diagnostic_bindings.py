@@ -81,6 +81,7 @@ KINDS = frozenset({
 APPLICABILITIES = frozenset({
     "exact_rom",
     "exact_code",
+    "homologous_community",
     "homologous_vq35hr",
     "nissan_family_candidate",
 })

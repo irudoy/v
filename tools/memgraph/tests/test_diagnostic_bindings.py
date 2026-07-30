@@ -43,6 +43,13 @@ class BindingSourceTest(unittest.TestCase):
         self.assertEqual(rows[0]["priority"], 90)
         self.assertEqual(len(rows[0]["tokens"]), 2)
 
+    def test_homologous_community_applicability_is_supported(self):
+        rows = bindings.validate_rows(
+            [self.row(applicability="homologous_community")],
+            "fixture.csv",
+        )
+        self.assertEqual(rows[0]["applicability"], "homologous_community")
+
     def test_every_claim_requires_machine_anchor(self):
         with self.assertRaisesRegex(
             bindings.BindingError, "machine-address anchor"
@@ -92,8 +99,8 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 31)
-        self.assertEqual(len(inherited), 11)
+        self.assertEqual(len(rows), 32)
+        self.assertEqual(len(inherited), 12)
         self.assertEqual(
             sum(row["rom_scope"] == "exact-rom" for row in rows), 20
         )

@@ -128,11 +128,11 @@ provenance and are not paths in the current `JK08A` layer.
   its result is multiplied by a centered factor from `0x121AE`, normalized by 8192,
   saturated to 255, and written to `ffff1531` before a second three-factor product
   forms `ffff1532`.
-- Annotated [CONFIRMED]: `FUN_0004F324` implements 1800/1500 RPM activation/release
-  hysteresis from bytes `0x85D9`/`0x85DA` for one condition in the aggregate
-  six-channel fuel-output inhibit path. Its entry gates remain physically unresolved,
-  so identification of this condition specifically as Over Run Fuel Cut is
-  [CANDIDATE]. See "Fuel-output inhibit RPM hysteresis and stock six-channel path".
+- Annotated [CONFIRMED]: `FUN_0004F324` implements the stationary rev limiter with
+  1800/1500 RPM fuel-cut/restore hysteresis at `0x85D9`/`0x85DA`. Exact firmware
+  traces its required zero-speed input from CAN frame `0x280` through
+  `ffff113c`, `ffff115e`, `ffff118e`, and snapshot `ffff110e`. See
+  "Stationary rev limiter and fuel-output inhibit path".
 - Annotated [CONFIRMED]: a calibration byte can disable a table-read branch.
   `FUN_00051700` selects a table set by `byte[0x8D92] bit3`; at `0x7A`, tables
   `0x12206`/`0x121F6` are not read. A code reference to a table does not mean the table
@@ -819,80 +819,120 @@ P0327/P0328/P0332/P0333. Code confirms the monitor role for knock-sensor circuit
 the selector's physical quantity and output scale are unknown.
 
 
-### Fuel-output inhibit RPM hysteresis and stock six-channel path
+### Stationary rev limiter and fuel-output inhibit path
 
-`FUN_0004F324` implements a state machine for one Boolean condition that enters the
-aggregate six-channel fuel-output inhibit path [CONFIRMED by code]. Entry requires:
-
-- `byte[0xFFFF110E] == 0`;
-- `0xFFFF244F.bit2 == 1`;
-- `0xFFFF2458.bit5 == 0`.
-
-Bit 3 of `0xFFFF247F` initializes timer `0xFFFF258A` to 100. Whenever the timer
-reaches zero, `FUN_0004F324` indexes map `0x124D2` with
-`q=clamp((signed16[0xFFFF11BC]-160)/2,0,255)`, decodes the interpolated byte as
-`x-128`, adds it to unsigned accumulator `0xFFFF16A6` with saturation to
-`0..65535`, and reloads the timer with 100.
-
-Bit 4 records readiness. It is set when:
+`FUN_0004F324` is the stationary rev-limiter state machine [CONFIRMED by code].
+Its first entry condition is `byte[0xFFFF110E] == 0`. The exact source chain is:
 
 ```text
-uint16[0xFFFF16A6] >= ROM16[0x911C]
-and
-(uint8[0xFFFF1071] >= ROM8[0x8D0E] or 0xFFFF245D.bit6 == 1)
+CAN 0x280 bytes 4..5, big-endian
+  -> FUN_000C4506, divide by 10
+  -> ffff113c
+  -> FUN_0003A174 filtered ffff115e
+  -> FUN_0003A254, divide by 20
+  -> current byte ffff118e
+  -> FUN_00020DFE snapshot
+  -> previous-cycle byte ffff110e
 ```
 
-`ROM16[0x911C] = 0x017D`, or 381 accumulator counts. Stock
-`ROM8[0x8D0E] = 0`, so the unsigned comparison with `0xFFFF1071` is always
-true and bit 6 of `0xFFFF245D` cannot block readiness in JK08A. With readiness
-set and state bit 5 clear, the state is set when current engine speed
-`byte[0xFFFF11AE]` is greater than or equal to `ROM8[0x85D9]`. While state
-bit 5 is set, it is cleared when engine speed is below `ROM8[0x85DA]`.
+Homologous observed Z34 CAN data identifies frame `0x280` bytes 4 and 5 as vehicle
+speed with an approximate `raw/100 km/h` conversion. The two exact firmware
+divisions produce approximately 2 km/h per `ffff110e` count. The required zero
+value unambiguously limits the state machine to a stationary vehicle. The EcuTek
+catalog independently contains a `Stationary Rev Limiter`.
 
-| address | raw | scale | threshold |
+The other entry requirements are `0xFFFF244F.bit2 == 1` and
+`0xFFFF2458.bit5 == 0`. `FUN_00038618` forms the current source of
+`0xFFFF244F.bit2` from:
+
+```text
+uint8[ffff1188] <= 100 or (uint8[ffff1164] & 0x04) == 0
+```
+
+`ffff1188` originates at ADC channel AN0, MCU pin 86/H17. `ffff1164.bit2`
+originates at PHDR bit 4, MCU pin 67/B19, with active-low polarity. Their ECM
+terminals and physical signal names remain unresolved. `ffff2458.bit5` belongs
+to a broader inhibit/fail-safe state and also remains physically unnamed.
+
+Map `0x124D2` advances readiness accumulator `0xFFFF16A6`. ROM word `0x911C`
+contains its inclusive threshold of 381 counts. With readiness set, the
+RPM/50 byte at `0xFFFF11AE` controls fuel-cut state bit 5:
+
+| address | raw | scale | stationary threshold |
 |---|---:|---:|---:|
-| `0x85D9` | 36 | `x*50 RPM` | 1800 RPM activation |
-| `0x85DA` | 30 | `x*50 RPM` | 1500 RPM release |
+| `0x85D9` | 36 | `x*50 RPM` | fuel cut at 1800 RPM |
+| `0x85DA` | 30 | `x*50 RPM` | fuel restore below 1500 RPM |
 | `0x911C` | 381 | accumulator counts | readiness |
 
-The function returns state bit 5 as a Boolean. `FUN_0004ED88` ORs this result with
-other Boolean conditions. `FUN_0004FB5E` converts any nonzero aggregate to `0x3F`,
-then additional per-channel masks are combined before `FUN_0004ED88` writes
-`0xFFFF22E0`.
+The returned Boolean enters `FUN_0004ED88`, which combines global and
+per-channel inhibit masks and writes `0xFFFF22E0`.
 
-The stock dispatcher uses `ROM8[0x8D92] = 0x7A`, so bit 3 is set. In this mode the
-six-channel path is:
+
+### Over Run Fuel Cut and Restore tables
+
+The deceleration fuel-cut path is a separate sequence in `FUN_0004ED88`
+[CONFIRMED by code]:
+
+```text
+FUN_0004FBE2  cut request
+  + FUN_00050018  restore/inhibit state
+  -> FUN_000503E0  timed fuel-cut state machine
+  -> aggregate mask
+  -> ffff22e0
+```
+
+Both threshold accessors use `uint8[0xFFFF106F]` as their 16-point input and
+compare selected table outputs with `uint8[0xFFFF11B3]`. `FUN_000384FE`,
+`FUN_000384CC`, and scheduler `FUN_00020DFE` prove that `ffff11b3` is engine
+speed in RPM/25 representation.
+
+The coolant axis is also code-traced. Exact UDS DID `0x1101` returns
+`ffff1079`; homologous measured diagnostic data defines
+`coolant_deg_C = raw-50`. `FUN_00039634` converts this byte to current index
+`ffff1077`, and the scheduler copies it to `ffff106f`:
+
+```text
+raw < 10       -> index 0
+10 <= raw < 170 -> floor(240*(raw-10)/150)
+raw >= 170     -> index 255
+```
+
+Implicit lookup nodes `0,16,...240` therefore represent coolant temperatures
+`-40,-30,...110 deg C`.
+
+| address | code role | registry family | stored scale |
+|---|---|---|---|
+| `0x126E4` | first cut threshold | Bosch Fuel Cut | `x*25 RPM` |
+| `0x12718` | second cut threshold | JECS/Hitachi Fuel Cut | `x*25 RPM` |
+| `0x12818` | second restore threshold | JECS/Hitachi Fuel Restore | `x*25 RPM` |
+| `0x1298C` | first restore threshold | Bosch Fuel Restore | `x*25 RPM` |
+
+The Bosch versus JECS/Hitachi names rest on the exact four-table order declared
+by the Nissan A2L registry and repeated in homologous Nissan definitions. JK08A
+is a Hitachi ECU, so `0x12718` and `0x12818` are the operational family pair.
+The firmware still contains and reads both family thresholds under
+mode-dependent branches.
+
+At 80 deg C, the JECS/Hitachi cells are 1050 RPM cut and 900 RPM restore. At
+110 deg C they are 1400 RPM cut and 1200 RPM restore. Calibration edits require
+hardware validation because additional gates, offsets, delays, and state
+transitions can prevent or defer the visible result.
+
+The stock six-channel scheduling path remains:
 
 ```text
 FUN_000522C4
-  -> FUN_0005727A  signed per-channel difference
-  -> FUN_00052034  ffff1220 bit writer
-  -> FUN_00051A98  per-channel calculation using the prepared bit
-  -> FUN_00051F1E  masked scheduler
-  -> FUN_0002C13C  ATU-II channel 8 one-shot scheduling
+  -> FUN_0005727A
+  -> FUN_00052034
+  -> FUN_00051A98
+  -> FUN_00051F1E
+  -> FUN_0002C13C
 ```
 
-`FUN_00052034` sets a channel bit in `0xFFFF1220` only when the corresponding
-`0xFFFF22E0` bit is clear, signed difference `0xFFFF142E+2*i` is greater than or
-equal to `ROM8[0x87FE]<<7`, and the corresponding `0xFFFF16FF` bit is clear.
-`ROM8[0x87FE] = 5`, so the comparison threshold is 640 raw counts. The mask is
-therefore a pulse/update eligibility mask in stock mode, not a standalone global
-fuel-enable state.
-
-`FUN_0002C13C` schedules selected channels through SH7059 ATU-II channel 8
-down-counters `DCNT8A..DCNT8F` and start register `DSTR`. The cross-model pin-tracer
-mapping of these outputs to injector terminals remains candidate.
-
-Identification of the `FUN_0004F324` condition specifically as Over Run Fuel Cut is
-[CANDIDATE]. Its low-speed hysteresis and placement in the fuel-output inhibit
-aggregate are confirmed, but the physical identities of the entry-gate signals are
-not.
-
-The static diagnostic corpus contains no reviewed binding for `0xFFFF247F`,
-`0xFFFF16A6`, `0xFFFF22E0`, or `0xFFFF1220`. The SID `0x22` review extractor
-finds some of these addresses in large same-function RAM candidate sets, but no
-dispatcher-to-response data-flow trace connects them to a returned value. No
-diagnostic fuel-cut state is therefore claimed.
+`FUN_00052034` writes pulse/update eligibility mask `0xFFFF1220` from
+`0xFFFF22E0`, per-channel state, and signed-difference threshold
+`ROM8[0x87FE]<<7`. `FUN_0002C13C` schedules selected ATU-II channel 8
+down-counters. No diagnostic fuel-cut-state binding is claimed.
 
 
 ### A branch can be disabled by calibration - a table is referenced but not read
@@ -1460,9 +1500,10 @@ ffff1532 = min(255, trunc0(ffff1531 * ffff1528 * ffff152b / 16384))
 ```
 
 `0x121FE` is therefore a base curve in a composite calculation, not an RPM
-comparison threshold. The physical quantities of `ffff1531` and `ffff1532`, and the
-physical identity of index `ffff106f`, remain unresolved. Its eight-cell shape does
-not establish the catalog identity Over Run Fuel Cut.
+comparison threshold. The physical quantities of `ffff1531` and `ffff1532` remain
+unresolved. Index `ffff106f` is the previous-cycle normalized coolant-temperature
+index, but this input identity does not turn the composite curve into an Over Run
+Fuel Cut threshold.
 
 
 ## Mass-pass Wave 2 (22 components, 4-7 maps)
@@ -2615,12 +2656,11 @@ returns unsigned linear interpolation
 `0x26740..0x2676C`, including delay slots `0x2675A` and `0x2676C`, establishes both
 branches, preservation of `MACL`, and the result in `r0`.
 
-Adversarial validation of nine narrowed claims accepts 9/9. Final semantics-promotion
-adjudication accepts 12 promotions and rejects 4. Maps `0x11FF6`, `0x12282`,
-`0x12472`, and `0x12718` remain `candidate`: available machine windows do not cover,
-respectively, the final write and reverse read of `ffff13ea`, a saturating
-three-factor formula, upper and lower clamps, and completion of comparisons with
-`ffff11b3`. C pseudocode does not replace a missing machine-code tail.
+Maps `0x11FF6`, `0x12282`, and `0x12472` remain `candidate`: their available
+machine windows do not cover the final write and reverse read of `ffff13ea`, a
+saturating three-factor formula, and upper/lower clamps. Map `0x12718` has a complete
+machine trace through the final RPM/25 comparisons and is a code-confidence Over Run
+Fuel Cut threshold.
 
 `findings.csv` receives 23 Map semantics at `code` and seven at `candidate`; five
 Map scales are `code` and four `candidate`. The function layer receives four Func
@@ -2666,8 +2706,9 @@ incomplete trace of initial-retard mode.
 `findings.csv` receives 25 Map semantics at `code` and five at `candidate`; roles are
 25 `table` and five `threshold`. Four Map scales have `code` confidence: `x/256` for
 `0x129E2`, and `x/128` for `0x12C02`, `0x12D72`, and `0x12DD2`. Five scales remain
-`candidate`: `0x1298C`, `0x1465A`, `0x15770`, `0x18C96`, and `0x19190`. The other
-21 maps have raw identity only. There are no Axis claims.
+`candidate`: `0x1465A`, `0x15770`, `0x18C96`, and `0x19190`. Map `0x1298C` has a
+code-derived RPM/25 comparison scale and Over Run Fuel Restore role. The other maps
+have raw identity only. There are no Axis claims.
 
 The function layer receives four Func semantics at `code`: paired lookup accessors
 `0x53698`, `0x476D2`, and `0x72378`, plus batch lookup accessor `0x56A7A`. Path

@@ -305,12 +305,20 @@ def add_table_axes(table, calibration, presentation, overrides, axes):
             overrides.get("axis", {}).get(axis_info["addr"], {}),
         )
     elif calibration["steps"]:
-        step = calibration["steps"][0]
-        add_static_axis(
-            table, "x",
-            [index * step for index in range(calibration["width"])],
-            f"Raw input (step {step})",
-        )
+        if "static_axis" in presentation:
+            add_static_axis(
+                table,
+                "x",
+                presentation["static_axis"],
+                presentation.get("static_axis_name", "X Axis"),
+            )
+        else:
+            step = calibration["steps"][0]
+            add_static_axis(
+                table, "x",
+                [index * step for index in range(calibration["width"])],
+                f"Raw input (step {step})",
+            )
     else:
         add_static_axis(
             table,

@@ -88,6 +88,37 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         self.assertIn('type="Static X Axis" name="Channel"', xml)
         self.assertEqual(xml.count("<data>"), 6)
 
+    def test_implicit_map_accepts_reviewed_physical_axis_labels(self):
+        implicit_map = dict(
+            self.map,
+            family="implicit",
+            dims=1,
+            width=16,
+            height=None,
+            axis_x=[],
+            axis_y=[],
+            steps=[16],
+        )
+        presentation = {
+            "name": "Coolant-indexed RPM threshold",
+            "category": "Fuel Delivery / Fuel Cut / Main",
+            "static_axis_name": "Coolant Temperature [deg C]",
+            "static_axis": list(range(-40, 120, 10)),
+        }
+        self.assertIsNone(
+            emit_def.emittable(implicit_map, {}, presentation)
+        )
+        overrides = {"table": {implicit_map["addr"]: presentation}}
+        xml = "\n".join(
+            emit_def.table_xml(implicit_map, overrides, {}, "JK08A")
+        )
+        self.assertIn(
+            'name="Coolant Temperature [deg C]"',
+            xml,
+        )
+        self.assertIn("<data>-40</data>", xml)
+        self.assertNotIn("Raw input", xml)
+
     def test_xml_keeps_row_major_geometry_mask_and_axis_types(self):
         overrides = {"table": {self.map["addr"]: self.presentation}}
         xml = "\n".join(emit_def.table_xml(self.map, overrides, {}, "JK08A"))
@@ -303,14 +334,20 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "Target AFR - Power (0xB33A)": "AFR / Lambda",
             "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)": "Airflow",
             "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
-            "Fuel Cut RPM Hysteresis (0x85D9)": (
-                "Fuel Delivery / Fuel Cut / Thresholds"
+            "Stationary Rev Limiter - Fuel Cut/Restore (0x85D9)": (
+                "Limiters / Stationary Rev Limiter"
             ),
-            "Fuel Cut Readiness Accumulator Threshold (0x911C)": (
-                "Fuel Delivery / Fuel Cut / Thresholds"
+            "Stationary Rev Limiter Readiness Threshold (0x911C)": (
+                "Limiters / Stationary Rev Limiter"
             ),
-            "Fuel Cut Readiness Accumulator Step (0x124D2)": (
-                "Fuel Delivery / Fuel Cut / Thresholds"
+            "Stationary Rev Limiter Accumulator Step (0x124D2)": (
+                "Limiters / Stationary Rev Limiter"
+            ),
+            "Over Run Fuel Cut - JECS/Hitachi (0x12718)": (
+                "Fuel Delivery / Fuel Cut / Main"
+            ),
+            "Over Run Fuel Restore - JECS/Hitachi (0x12818)": (
+                "Fuel Delivery / Fuel Cut / Main"
             ),
             "Rev Limit - Fuel Cut (0x934E)": (
                 "Fuel Delivery / Fuel Cut / Main"
@@ -326,12 +363,12 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertEqual(tables[name].get("category"), category)
 
-    def test_fuel_cut_readiness_uses_exact_scalar_and_code_scale(self):
+    def test_stationary_limiter_readiness_uses_exact_scalar_and_code_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
             if table.get("name") == (
-                "Fuel Cut Readiness Accumulator Threshold (0x911C)"
+                "Stationary Rev Limiter Readiness Threshold (0x911C)"
             )
         )
         scaling = table.find("./scaling")
@@ -340,6 +377,35 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertEqual(table.get("sizex"), "1")
         self.assertEqual(scaling.get("units"), "accumulator counts")
         self.assertEqual(scaling.get("expression"), "x")
+
+    def test_overrun_fuel_cut_uses_coolant_axis_and_code_rpm_scale(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        expected = {
+            "Over Run Fuel Cut - Bosch (0x126E4)": "0x126E4",
+            "Over Run Fuel Cut - JECS/Hitachi (0x12718)": "0x12718",
+            "Over Run Fuel Restore - JECS/Hitachi (0x12818)": "0x12818",
+            "Over Run Fuel Restore - Bosch (0x1298C)": "0x1298C",
+        }
+        for name, address in expected.items():
+            with self.subTest(name=name):
+                table = next(
+                    node for node in rom.findall("./table")
+                    if node.get("name") == name
+                )
+                scaling = table.find("./scaling")
+                axis = table.find("./table[@type='Static X Axis']")
+                self.assertEqual(table.get("storageaddress"), address)
+                self.assertEqual(table.get("storagetype"), "uint8")
+                self.assertEqual(table.get("sizex"), "16")
+                self.assertEqual(scaling.get("units"), "RPM")
+                self.assertEqual(scaling.get("expression"), "x*25")
+                self.assertEqual(
+                    [node.text for node in axis.findall("./data")],
+                    [
+                        "-40", "-30", "-20", "-10", "0", "10", "20", "30",
+                        "40", "50", "60", "70", "80", "90", "100", "110",
+                    ],
+                )
 
     def test_working_fuel_cut_uses_exact_2x2_layout_and_candidate_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")

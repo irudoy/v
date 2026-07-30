@@ -27,7 +27,9 @@
 # :AXIS_X -> Y Axis and :AXIS_Y -> X Axis. A one-dimensional map has one axis, which
 # RomRaider calls X Axis. The manual direct-row-major family stores X as the inner dimension
 # and has no axis edges: width -> sizex, height -> sizey, and overrides define both static
-# axes.
+# axes. For an implicit one-dimensional map, a reviewed static_axis override may replace
+# the generated raw input nodes with physical labels; the lookup step and geometry remain
+# graph facts.
 #
 # Invocation:
 # uv run --no-project --with neo4j python tools/mapkit/emit_def.py \
@@ -487,10 +489,16 @@ def table_axes_xml(m, o, ovr, axes):
     elif m["axis_x"]:
         out += axis_xml("X Axis", axes[m["axis_x"][0]], ovr, "sizex")
     elif m["steps"]:
-        # Implicit axis: no array exists; points are 0..(n-1) at the input step.
-        step = m["steps"][0]
-        out += static_axis_xml([i * step for i in range(m["width"])],
-                               f"Raw input (step {step})")
+        # An implicit axis has no ROM array. Presentation may replace its raw
+        # nodes with reviewed physical labels while preserving table geometry.
+        if "static_axis" in o:
+            out += static_axis_xml(
+                o["static_axis"], o.get("static_axis_name", "X Axis")
+            )
+        else:
+            step = m["steps"][0]
+            out += static_axis_xml([i * step for i in range(m["width"])],
+                                   f"Raw input (step {step})")
     else:
         # A direct no-axis family obtains labels from the presentation layer.
         out += static_axis_xml(
@@ -681,8 +689,12 @@ def main():
                 sys.exit(f"[table.{a}]: the map has no graph axis; "
                          f"static_axis with {m['width']} labels is required")
         elif m["dims"] == 1 and "static_axis" in o:
-            sys.exit(f"[table.{a}]: static_axis overlaps graph axis "
-                     f"{hexa((m['axis_x'] or ['-'])[0])}; overrides must not replace it")
+            if m["axis_x"]:
+                sys.exit(f"[table.{a}]: static_axis overlaps graph axis "
+                         f"{hexa(m['axis_x'][0])}; overrides must not replace it")
+            if len(o["static_axis"]) != m["width"]:
+                sys.exit(f"[table.{a}]: static_axis must contain "
+                         f"{m['width']} labels")
         if m["dims"] == 2 and m["axis_x"] and m["axis_y"]:
             static_keys = {"static_axis_x", "static_axis_y"} & set(o)
             if static_keys:

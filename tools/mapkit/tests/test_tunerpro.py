@@ -190,13 +190,19 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "Target AFR - Power (0xB33A)": "AFR / Lambda",
             "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)": "Airflow",
             "Cold Ignition Timing Map (0x991A)": "Ignition Timing / Main",
-            "Fuel Cut Readiness Accumulator Threshold (0x911C)": (
-                "Fuel Delivery / Fuel Cut / Thresholds"
+            "Stationary Rev Limiter Readiness Threshold (0x911C)": (
+                "Limiters / Stationary Rev Limiter"
             ),
-            "Fuel Cut Readiness Accumulator Step (0x124D2)": (
-                "Fuel Delivery / Fuel Cut / Thresholds"
+            "Stationary Rev Limiter Accumulator Step (0x124D2)": (
+                "Limiters / Stationary Rev Limiter"
             ),
             "Rev Limit - Fuel Cut (0x934E)": (
+                "Fuel Delivery / Fuel Cut / Main"
+            ),
+            "Over Run Fuel Cut - JECS/Hitachi (0x12718)": (
+                "Fuel Delivery / Fuel Cut / Main"
+            ),
+            "Over Run Fuel Restore - JECS/Hitachi (0x12818)": (
                 "Fuel Delivery / Fuel Cut / Main"
             ),
             "Accelerator Pedal High-State Hysteresis (0x8FDC)": (
@@ -231,7 +237,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 36)
-        self.assertEqual(len(tables), 155)
+        self.assertEqual(len(tables), 158)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -253,11 +259,11 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for patch in patches
         ))
 
-    def test_fuel_cut_readiness_uses_exact_scalar_and_code_scale(self):
+    def test_stationary_rev_limiter_readiness_uses_exact_scalar_and_code_scale(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
             if table.findtext("./title") == (
-                "Fuel Cut Readiness Accumulator Threshold (0x911C)"
+                "Stationary Rev Limiter Readiness Threshold (0x911C)"
             )
         )
         axis = table.find("./XDFAXIS[@id='z']")
@@ -267,6 +273,38 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertEqual(data.get("mmedrowcount"), "1")
         self.assertEqual(data.get("mmedcolcount"), "1")
         self.assertEqual(axis.findtext("./units"), "accumulator counts")
+
+    def test_overrun_tables_use_coolant_axis_and_rpm_scale(self):
+        expected = {
+            "Over Run Fuel Cut - Bosch (0x126E4)": "0x126E4",
+            "Over Run Fuel Cut - JECS/Hitachi (0x12718)": "0x12718",
+            "Over Run Fuel Restore - JECS/Hitachi (0x12818)": "0x12818",
+            "Over Run Fuel Restore - Bosch (0x1298C)": "0x1298C",
+        }
+        tables = {
+            table.findtext("./title"): table
+            for table in self.root.findall("./XDFTABLE")
+        }
+        for title, address in expected.items():
+            with self.subTest(title=title):
+                table = tables[title]
+                axis_x = table.find("./XDFAXIS[@id='x']")
+                axis_z = table.find("./XDFAXIS[@id='z']")
+                data = axis_z.find("./EMBEDDEDDATA")
+                self.assertEqual(
+                    axis_x.findtext("./units"),
+                    "Coolant Temperature [deg C]",
+                )
+                self.assertEqual(
+                    [node.get("value") for node in axis_x.findall("./LABEL")],
+                    [str(value) for value in range(-40, 120, 10)],
+                )
+                self.assertEqual(data.get("mmedaddress"), address)
+                self.assertEqual(data.get("mmedelementsizebits"), "8")
+                self.assertEqual(data.get("mmedrowcount"), "1")
+                self.assertEqual(data.get("mmedcolcount"), "16")
+                self.assertEqual(axis_z.findtext("./units"), "RPM")
+                self.assertEqual(axis_z.find("./MATH").get("equation"), "X*25")
 
     def test_working_fuel_cut_uses_exact_2x2_layout_and_candidate_scale(self):
         table = next(

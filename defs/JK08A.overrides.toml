@@ -237,14 +237,12 @@ static_axis_y_name = "Cylinder"
 static_axis_y = [1, 2, 3, 4, 5, 6]
 
 [table.000085d9]
-name = "Fuel Cut RPM Hysteresis (0x85D9)"
-category = "Fuel Delivery / Fuel Cut / Thresholds"
+name = "Stationary Rev Limiter - Fuel Cut/Restore (0x85D9)"
+category = "Limiters / Stationary Rev Limiter"
 order = 10
 fine = 50
 coarse = 100
-# Code confirms activation/release state behavior. The specific Over Run mode
-# identification remains candidate until the physical entry gates are resolved.
-static_axis = ["activate", "release"]
+static_axis = ["fuel cut", "fuel restore"]
 
 [table.00008fdc]
 name = "Accelerator Pedal High-State Hysteresis (0x8FDC)"
@@ -256,8 +254,8 @@ coarse = 8
 static_axis = ["activate", "release"]
 
 [table.0000911c]
-name = "Fuel Cut Readiness Accumulator Threshold (0x911C)"
-category = "Fuel Delivery / Fuel Cut / Thresholds"
+name = "Stationary Rev Limiter Readiness Threshold (0x911C)"
+category = "Limiters / Stationary Rev Limiter"
 order = 11
 format = "0"
 fine = 1
@@ -468,8 +466,8 @@ fine = 1
 coarse = 16
 
 [table.000124d2]
-name = "Fuel Cut Readiness Accumulator Step (0x124D2)"
-category = "Fuel Delivery / Fuel Cut / Thresholds"
+name = "Stationary Rev Limiter Accumulator Step (0x124D2)"
+category = "Limiters / Stationary Rev Limiter"
 order = 12
 format = "0"
 fine = 1
@@ -523,9 +521,64 @@ format = "0"
 fine = 2
 coarse = 16
 
-# Operational names for calibrations in sweep range 0x11F6A..0x19190 describe
-# proven arithmetic use or an explicitly marked catalog hypothesis. Physical
-# signals for the internal calculations are unresolved.
+# Code establishes the cut/restore use and RPM scale for these four coolant-indexed
+# thresholds. Bosch versus JECS/Hitachi assignment follows the exact four-table
+# ordering documented by the Nissan A2L registry and homologous definitions.
+[table.000126e4]
+name = "Over Run Fuel Cut - Bosch (0x126E4)"
+category = "Fuel Delivery / Fuel Cut / Main"
+order = 10
+format = "0"
+fine = 25
+coarse = 100
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+
+[table.00012718]
+name = "Over Run Fuel Cut - JECS/Hitachi (0x12718)"
+category = "Fuel Delivery / Fuel Cut / Main"
+order = 11
+format = "0"
+fine = 25
+coarse = 100
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+
+[table.00012818]
+name = "Over Run Fuel Restore - JECS/Hitachi (0x12818)"
+category = "Fuel Delivery / Fuel Cut / Main"
+order = 12
+format = "0"
+fine = 25
+coarse = 100
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+
+[table.0001298c]
+name = "Over Run Fuel Restore - Bosch (0x1298C)"
+category = "Fuel Delivery / Fuel Cut / Main"
+order = 13
+format = "0"
+fine = 25
+coarse = 100
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+
+# Operational names for other calibrations in sweep range 0x11F6A..0x19190
+# describe proven arithmetic use or an explicitly marked catalog hypothesis.
+# Physical signals for the internal calculations are unresolved.
 [table.00012930]
 name = "Signed Quotient Numerator Multiplier - raw u8 (0x12930)"
 category = "Internal Calculations"
@@ -533,14 +586,6 @@ order = 106
 format = "0"
 fine = 1
 coarse = 16
-
-[table.0001298c]
-name = "Conditional Saturating Offset Curve - catalog RPM scale (0x1298C)"
-category = "Internal Calculations"
-order = 107
-format = "0"
-fine = 25
-coarse = 100
 
 [table.000129e2]
 name = "Normalized Reduction Share A Q0.8 (0x129E2)"

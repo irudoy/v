@@ -529,19 +529,18 @@
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
          The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator
-         ffff16a6 to reach ROM16[0000911c]. The additional clause is ffff1071 >= ROM8[00008d0e]
-         or ffff245d bit 6; stock ROM8[00008d0e]=0 makes the unsigned comparison always true.
-         Entry also requires ffff110e == 0, ffff244f bit 2 set, and ffff2458 bit 5 clear. The
-         physical identities of those gates are unresolved, so identification of this condition
-         specifically as Over Run Fuel Cut remains candidate.
+         ffff16a6 to reach ROM16[0000911c]. Exact firmware traces CAN 0x280 vehicle speed
+         through ffff113c, ffff115e, ffff118e, and the scheduler snapshot ffff110e; the required
+         zero value establishes the stationary role. Additional entry gates ffff244f bit 2 and
+         ffff2458 bit 5 remain physically unnamed.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Fuel Cut RPM Hysteresis (0x85D9)"
-           category="Fuel Delivery / Fuel Cut / Thresholds" storagetype="uint8"
+    <table type="2D" name="Stationary Rev Limiter - Fuel Cut/Restore (0x85D9)"
+           category="Limiters / Stationary Rev Limiter" storagetype="uint8"
            storageaddress="0x085D9" sizex="2" endian="big">
       <scaling units="RPM" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Selector" sizex="2">
-        <data>activate</data><data>release</data>
+        <data>fuel cut</data><data>fuel restore</data>
       </table>
     </table>
 
@@ -611,16 +610,37 @@
       </table>
     </table>
 
+    <!-- 0x126E4  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x4FBE2; r4 operand: pool
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         Code proves the overrun cut role and RPM scale. The Nissan A2L four-table ordering and
+         homologous address layouts identify this first cut threshold as the Bosch table; JK08A
+         is a Hitachi ECU and uses the JECS-family branch. Result disposition:
+         inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Over Run Fuel Cut - Bosch (0x126E4)"
+           category="Fuel Delivery / Fuel Cut / Main" storagetype="uint8"
+           storageaddress="0x126E4" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
     <!-- 0x0911C  1 uint16  map [code]
          accessor 0x4F324; r4 operand: manual
          scaling x accumulator counts
-         The stock value is 381 accumulator counts. The threshold controls readiness for the RPM
-         hysteresis at 000085d9/000085da. Code proves the operational threshold role, but the
-         physical identities of the state-machine entry gates remain unresolved; the specific
-         Over Run Fuel Cut name remains candidate.
+         The stock value is 381 accumulator counts. The threshold controls readiness for
+         stationary fuel-cut/restore hysteresis 000085d9/000085da.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Fuel Cut Readiness Accumulator Threshold (0x911C)"
-           category="Fuel Delivery / Fuel Cut / Thresholds" storagetype="uint16"
+    <table type="2D" name="Stationary Rev Limiter Readiness Threshold (0x911C)"
+           category="Limiters / Stationary Rev Limiter" storagetype="uint16"
            storageaddress="0x0911C" sizex="1" endian="big">
       <scaling units="accumulator counts" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="16"/>
@@ -674,6 +694,30 @@
       </table>
     </table>
 
+    <!-- 0x12718  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x4FBE2; r4 operand: pool
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         A complete machine listing covers the lookup, saturation, lower-bound branches, and
+         final comparisons with ffff11b3. The common producer FUN 000384cc establishes the
+         RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts
+         identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU
+         family. Result disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Over Run Fuel Cut - JECS/Hitachi (0x12718)"
+           category="Fuel Delivery / Fuel Cut / Main" storagetype="uint8"
+           storageaddress="0x12718" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
     <!-- 0x09B1A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          scaling x-64 degrees adjustment [candidate]; Y Axis 0x11ECE rpm [candidate]; X Axis
@@ -724,13 +768,11 @@
          scaling x-128 accumulator counts [code]
          The lookup coordinate is q=clamp((signed16(ffff11bc)-160)/2,0,255), with signed
          rounding before division. Current values 128..255 decode to additions of 0..127.
-         ROM16[0000911c] is the inclusive readiness threshold for the accumulator. Code proves
-         this operational role in the fuel-output inhibit path, but the physical identity and
-         engineering scale of ffff11bc remain unresolved; no catalog name or physical axis is
-         claimed.
+         ROM16[0000911c] is the inclusive readiness threshold. The physical identity and
+         engineering scale of ffff11bc remain unresolved.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Fuel Cut Readiness Accumulator Step (0x124D2)"
-           category="Fuel Delivery / Fuel Cut / Thresholds" storagetype="uint8"
+    <table type="2D" name="Stationary Rev Limiter Accumulator Step (0x124D2)"
+           category="Limiters / Stationary Rev Limiter" storagetype="uint8"
            storageaddress="0x124D2" sizex="16" endian="big">
       <scaling units="accumulator counts" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="16"/>
@@ -739,6 +781,51 @@
         <data>64</data><data>80</data><data>96</data><data>112</data>
         <data>128</data><data>144</data><data>160</data><data>176</data>
         <data>192</data><data>208</data><data>224</data><data>240</data>
+      </table>
+    </table>
+
+    <!-- 0x12818  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x50018; r4 operand: pool
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering
+         and homologous address layouts identify this second restore threshold as the
+         JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Over Run Fuel Restore - JECS/Hitachi (0x12818)"
+           category="Fuel Delivery / Fuel Cut / Main" storagetype="uint8"
+           storageaddress="0x12818" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
+    <!-- 0x1298C  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x50018; r4 operand: pool
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering
+         and homologous address layouts identify this first restore threshold as the Bosch
+         table; JK08A is a Hitachi ECU and uses the JECS-family branch. Result disposition:
+         inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Over Run Fuel Restore - Bosch (0x1298C)"
+           category="Fuel Delivery / Fuel Cut / Main" storagetype="uint8"
+           storageaddress="0x1298C" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
       </table>
     </table>
 
@@ -1016,8 +1103,8 @@
     <!-- 0x121FE  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x5185C; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          Code establishes a composite-calculation base curve, not an RPM threshold. The physical
          quantity and subsystem of ffff1531 and ffff1532 remain unresolved. Table shape alone
          does not support the catalog name Over Run Fuel Cut.
@@ -1681,26 +1768,6 @@
            sizex="16" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="16"/>
-      <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
-        <data>0</data><data>16</data><data>32</data><data>48</data>
-        <data>64</data><data>80</data><data>96</data><data>112</data>
-        <data>128</data><data>144</data><data>160</data><data>176</data>
-        <data>192</data><data>208</data><data>224</data><data>240</data>
-      </table>
-    </table>
-
-    <!-- 0x1298C  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
-         accessor 0x50018; r4 operand: pool
-         scaling x*25 RPM [candidate]
-         The overrun fuel cut physical identity and RPM scale x*25 remain candidate. The code
-         claim describes only a branch-dependent raw addition with saturation. Result
-         disposition: consumer.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Conditional Saturating Offset Curve - catalog RPM scale (0x1298C)"
-           category="Internal Calculations" storagetype="uint8" storageaddress="0x1298C"
-           sizex="16" endian="big">
-      <scaling units="RPM [cand]" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
-               coarseincrement="100"/>
       <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
         <data>0</data><data>16</data><data>32</data><data>48</data>
         <data>64</data><data>80</data><data>96</data><data>112</data>
@@ -2510,8 +2577,8 @@
     <!-- 0x11F1A  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4AFDC; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical subsystem and engineering unit are unknown. There is no separate ROM axis.
          ffff12db receives a composite result, not a copy of the target-map lookup. Index:
          implicit 1D-8: x = uint8 RAM ffff106f; fixed nodes 0, 32, 64, 96, 128, 160, 192, 224;
@@ -2533,8 +2600,8 @@
     <!-- 0x11F22  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4AFDC; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The lookup result has no separate direct RAM sink: the value is combined with the
          result of map 00011f12, after which the derived sum reaches RAM ffff12db. The physical
          name of the quantity and the unit of input ffff106f are unknown. All eight cells equal
@@ -2557,8 +2624,8 @@
     <!-- 0x11FBE  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4C02E; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical name of the quantity and engineering scale are unknown. ffff1831 receives
          not the original lookup result but the saturated result of branching arithmetic with
          other inputs; function 0004c136 only conditionally copies this byte to ffff2404. Index:
@@ -2810,8 +2877,8 @@
     <!-- 0x1218E  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x2C648, 0x420B8; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical subsystem is unknown. Direct confirmed path 0002cd82 -> ffff23ed is
          sufficient for operational semantics; 000420b8 additionally retains the lookup result
          in a local value. All eight cells equal 0, so the current ROM content always selects
@@ -3240,8 +3307,8 @@
     <!-- 0x1242A  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x526A0; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The lookup by uint8 ffff106f is converted to 64+trunc0((x-64)*uint8[ffff10bf]/128) and
          scales the base from 00009eda and 00012432 before the write to ffff15de. Operations
          -64/+64 belong to the consumer, so the map is retained as raw identity. Value 64 is
@@ -3280,8 +3347,8 @@
     <!-- 0x12562  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x54EE0; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The lookup by uint8 ffff106f is saved on the stack, restored as unsigned, and
          successively multiplied by the results of 00012572 and 00012582; normalizations >>6 and
          byte ffff10bf form the first term of accumulator 00054ee0, which a conditional branch
@@ -3358,8 +3425,8 @@
     <!-- 0x1296C  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x45758, 0x6E3D8; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical subsystem and physical unit are unknown. When RAM[ffff244f]&2 != 0, the
          lookup result reaches ffff1766 directly. When the bit is zero and RAM[ffff16b1] != 0,
          min(255, floor(lookup*RAM[ffff16ae]/RAM[ffff16b1])) is written; when the divisor is
@@ -3498,8 +3565,8 @@
     <!-- 0x12A82  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x52F00; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical name of the coefficient is unknown. On a conditional branch in 000532ae,
          value K from ffff1601 enters expression iVar12 = 256*K - B*(K - 2*C) + 2*(D*E + F),
          where B = uint8 ffff15df, C = int8 ffff1660, D = uint8 ffff193d, E = uint8 ffff1680,
@@ -3639,8 +3706,8 @@
     <!-- 0x12AFA  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x43AEE; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical subsystem and engineering unit are not established: ffff254d has no
          external readers and the catalog shape is ambiguous. All eight cells equal 6, so
          interpolation and the terminal branch return 6; this proves a nonzero state and branch
@@ -3667,8 +3734,8 @@
     <!-- 0x12DCA  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0x4AC7A; r4 operand: pool
          scaling x/128 ratio [code]
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical subsystem is unknown. ffff1a1f has no external readers, but the value is
          not dead: it is read in the same function at site 0004ae32 and first consumed by
          multiplication at site 0004ae36. Adjacent map 000129ca is constant and returns 128, so
@@ -3698,8 +3765,8 @@
     <!-- 0x12E72  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0xBE5BC; r4 operand: pool
          scaling x-128 signed_raw_offset [code]
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical subsystem is unknown. Code proves the centered term and its path. Before
          saturation, A = RAM[ffff16e8] + (x-128)*65536; saturation to 0..16777215 applies to
          composite A and is not included in the invertible map scale. One whole scale unit
@@ -3731,8 +3798,8 @@
     <!-- 0x12E7A  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0xBE5BC; r4 operand: pool
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          The physical name and unit are unknown. The catalog for shape 1D-8 is ambiguous. The
          16-bit shift belongs to the internal consumption path; because of the downstream
          addition and saturation, it is not claimed as an independent invertible physical scale.
@@ -3797,8 +3864,8 @@
     <!-- 0x12F06  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
          accessor 0xBDB66, 0xBDC66; r4 operand: phi
          scaling x raw
-         static diagnostic context: COOLAN TEMP/S [candidate, homologous_vq35hr, via map
-         evidence: indexed_by]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
          On the update branch in 000bdc66, previous values ffff1a1e != 0 and ffff25ee == 0 enter
          the gate before the lookup. The selector chooses 00012f06 instead of 00012efe; all
          eight cells in 00012f06 equal 5, so the current calibration returns 5 regardless of
