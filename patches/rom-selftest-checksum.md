@@ -7,6 +7,9 @@ domains.
 `apply_immo_off.py` changes only `ROM[0x8725].bit0` and leaves stored checksum
 fields equal to stock. The flasher corrects checksums when writing. The layout
 below supports code analysis and independent verification of ROM content.
+`jk08a_checksums.py` implements the complete layout, and
+`apply_map_switching.py` requires a valid input and writes a recalculated,
+self-consistent output.
 
 ## SUM16
 
@@ -52,6 +55,12 @@ references, and `0x020000` holds SUM16 B and the beginning of the vector table.
 The B references are included in self-test A and SUM16 B. The A references are
 included in SUM16 A. SUM16 B is excluded from self-test A and lies beyond the
 end of SUM16 A, so steps 3 and 4 are independent.
+
+`jk08a_checksums.py` verifies stored values against independently calculated
+values, reports every mismatched field, and recalculates in the order above.
+Its output is verified again before return. The map-switching patcher permits
+final byte changes only inside its declared composition ranges and these six
+checksum fields.
 
 ## RomRaider
 

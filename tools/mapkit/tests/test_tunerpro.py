@@ -8,6 +8,31 @@ from tools.mapkit import emit_def, rom as romkit, tunerpro
 ROOT = Path(__file__).resolve().parents[3]
 XDF = ROOT / "defs" / "JK08A.xdf"
 
+COMMON_TABLES = {
+    "Calculated Load": "Fuelling / Engine Load",
+    "Ignition Timing Trim Cold": "Ignition Timing / Main",
+    "Knock Control Enable - Cold": "Ignition Timing / Knock Control",
+    "Knock Sensitivity": "Ignition Timing / Knock Control",
+    "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
+}
+
+SLOT_TABLES = {
+    "Fuel Targets": "Fuelling / Fuel Targets",
+    "Fuel Compensation Main": "Fuelling / Fuel Compensation",
+    "Overrun Fuel Cut": "Fuelling / Overrun",
+    "Overrun Fuel Cut Restore": "Fuelling / Overrun",
+    "Ignition Timing Trim Main": "Ignition Timing / Main",
+    "Knock Control Enable - Main": "Ignition Timing / Knock Control",
+    "Ignition Timing Trim High Det": "Ignition Timing / Main",
+    "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
+    "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
+    "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
+}
+
+
+def slot_name(slot, name):
+    return f"Map {slot} - {name}"
+
 
 def apply_patch(stock, patch):
     result = bytearray(stock)
@@ -185,31 +210,12 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             table.findtext("./title"): table
             for table in self.root.findall("./XDFTABLE")
         }
-        expected_tables = {
-            "Fuel Targets": "Fuelling / Fuel Targets",
-            "Fuel Compensation Main": "Fuelling / Fuel Compensation",
-            "Overrun Fuel Cut": "Fuelling / Overrun",
-            "Overrun Fuel Cut Restore": "Fuelling / Overrun",
-            "Calculated Load": "Fuelling / Engine Load",
-            "Ignition Timing Trim Cold": "Ignition Timing / Main",
-            "Ignition Timing Trim Main": "Ignition Timing / Main",
-            "Ignition Timing Trim High Det": "Ignition Timing / Main",
-            "Knock Control Enable - Cold": (
-                "Ignition Timing / Knock Control"
-            ),
-            "Knock Control Enable - Main": (
-                "Ignition Timing / Knock Control"
-            ),
-            "Knock Control Enable - High Det": (
-                "Ignition Timing / Knock Control"
-            ),
-            "Knock Sensitivity": "Ignition Timing / Knock Control",
-            "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
-            "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-            "Stationary Rev Limiter": (
-                "Limiters / Stationary Rev Limiter"
-            ),
-        }
+        expected_tables = dict(COMMON_TABLES)
+        expected_tables.update({
+            slot_name(slot, name): category
+            for slot in range(1, 6)
+            for name, category in SLOT_TABLES.items()
+        })
         self.assertEqual(set(tables), set(expected_tables))
         for title, category in expected_tables.items():
             with self.subTest(title=title):
@@ -251,7 +257,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
     def test_fuel_targets_use_gasoline_afr_scaling(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == "Fuel Targets"
+            if table.findtext("./title") == slot_name(1, "Fuel Targets")
         )
         axis = table.find("./XDFAXIS[@id='z']")
         self.assertEqual(axis.findtext("./units"), "AFR (gasoline scale) [cand]")
@@ -265,8 +271,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         }
         for title in (
             "Ignition Timing Trim Cold",
-            "Ignition Timing Trim Main",
-            "Ignition Timing Trim High Det",
+            slot_name(1, "Ignition Timing Trim Main"),
+            slot_name(1, "Ignition Timing Trim High Det"),
         ):
             with self.subTest(title=title):
                 axis = by_title[title].find("./XDFAXIS[@id='z']")
@@ -280,7 +286,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 36)
-        self.assertEqual(len(tables), 15)
+        self.assertEqual(len(tables), 55)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -319,8 +325,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
 
     def test_overrun_tables_use_coolant_axis_and_rpm_scale(self):
         expected = {
-            "Overrun Fuel Cut": "0x12718",
-            "Overrun Fuel Cut Restore": "0x12818",
+            slot_name(1, "Overrun Fuel Cut"): "0x12718",
+            slot_name(1, "Overrun Fuel Cut Restore"): "0x12818",
         }
         tables = {
             table.findtext("./title"): table
@@ -350,7 +356,9 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
     def test_working_fuel_cut_uses_exact_2x2_layout_and_candidate_scale(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == "Rev Limit - Fuel Cut"
+            if table.findtext("./title") == slot_name(
+                1, "Rev Limit - Fuel Cut"
+            )
         )
         axis_x = table.find("./XDFAXIS[@id='x']")
         axis_y = table.find("./XDFAXIS[@id='y']")
@@ -374,7 +382,9 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
     def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == "Rev Limit - Throttle Cut"
+            if table.findtext("./title") == slot_name(
+                1, "Rev Limit - Throttle Cut"
+            )
         )
         axis = table.find("./XDFAXIS[@id='z']")
         data = axis.find("./EMBEDDEDDATA")

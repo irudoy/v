@@ -99,10 +99,10 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 37)
-        self.assertEqual(len(inherited), 17)
+        self.assertEqual(len(rows), 41)
+        self.assertEqual(len(inherited), 19)
         self.assertEqual(
-            sum(row["rom_scope"] == "exact-rom" for row in rows), 20
+            sum(row["rom_scope"] == "exact-rom" for row in rows), 22
         )
         self.assertTrue(
             any(row["kind"] == "calibration_context" for row in rows)

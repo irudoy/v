@@ -8,6 +8,32 @@ from tools.mapkit import emit_def
 
 ROOT = Path(__file__).resolve().parents[3]
 
+COMMON_TABLES = {
+    "Developer Immobilizer": "NATS / Immobilizer",
+    "Calculated Load": "Fuelling / Engine Load",
+    "Ignition Timing Trim Cold": "Ignition Timing / Main",
+    "Knock Control Enable - Cold": "Ignition Timing / Knock Control",
+    "Knock Sensitivity": "Ignition Timing / Knock Control",
+    "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
+}
+
+SLOT_TABLES = {
+    "Fuel Targets": "Fuelling / Fuel Targets",
+    "Fuel Compensation Main": "Fuelling / Fuel Compensation",
+    "Overrun Fuel Cut": "Fuelling / Overrun",
+    "Overrun Fuel Cut Restore": "Fuelling / Overrun",
+    "Ignition Timing Trim Main": "Ignition Timing / Main",
+    "Knock Control Enable - Main": "Ignition Timing / Knock Control",
+    "Ignition Timing Trim High Det": "Ignition Timing / Main",
+    "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
+    "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
+    "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
+}
+
+
+def slot_name(slot, name):
+    return f"Map {slot} - {name}"
+
 
 class EmitDefStaticAxesTest(unittest.TestCase):
     def setUp(self):
@@ -219,6 +245,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
     def test_jk08a_allowlist_keeps_research_maps_in_the_source(self):
         with open(ROOT / "defs" / "JK08A.overrides.toml", "rb") as source:
             overrides = tomllib.load(source)
+        self.assertTrue(emit_def.map_switching_enabled(overrides))
         default = emit_def.presentation_default_emit(overrides)
         emitted = {
             address
@@ -246,6 +273,15 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             {"000126e4", "0001298c"} <= set(overrides["table"])
         )
         self.assertNotIn("axisview", overrides)
+
+    def test_map_switching_visibility_requires_a_boolean(self):
+        self.assertFalse(emit_def.map_switching_enabled({}))
+        with self.assertRaisesRegex(
+            SystemExit, "map_switching.enabled must be a boolean"
+        ):
+            emit_def.map_switching_enabled(
+                {"map_switching": {"enabled": "true"}}
+            )
 
 
 class EmitDefSwitchTest(unittest.TestCase):
@@ -377,32 +413,12 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         categories = {
             table.get("category") for table in rom.findall("./table")
         }
-        expected = {
-            "Developer Immobilizer": "NATS / Immobilizer",
-            "Fuel Targets": "Fuelling / Fuel Targets",
-            "Fuel Compensation Main": "Fuelling / Fuel Compensation",
-            "Overrun Fuel Cut": "Fuelling / Overrun",
-            "Overrun Fuel Cut Restore": "Fuelling / Overrun",
-            "Calculated Load": "Fuelling / Engine Load",
-            "Ignition Timing Trim Cold": "Ignition Timing / Main",
-            "Ignition Timing Trim Main": "Ignition Timing / Main",
-            "Ignition Timing Trim High Det": "Ignition Timing / Main",
-            "Knock Control Enable - Cold": (
-                "Ignition Timing / Knock Control"
-            ),
-            "Knock Control Enable - Main": (
-                "Ignition Timing / Knock Control"
-            ),
-            "Knock Control Enable - High Det": (
-                "Ignition Timing / Knock Control"
-            ),
-            "Knock Sensitivity": "Ignition Timing / Knock Control",
-            "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
-            "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-            "Stationary Rev Limiter": (
-                "Limiters / Stationary Rev Limiter"
-            ),
-        }
+        expected = dict(COMMON_TABLES)
+        expected.update({
+            slot_name(slot, name): category
+            for slot in range(1, 6)
+            for name, category in SLOT_TABLES.items()
+        })
         self.assertEqual(set(tuner_items), set(expected))
         for name, category in expected.items():
             with self.subTest(name=name):
@@ -420,7 +436,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
-            if table.get("name") == "Fuel Targets"
+            if table.get("name") == slot_name(1, "Fuel Targets")
         )
         scale = table.find("./scaling")
         self.assertEqual(scale.get("units"), "AFR (gasoline scale) [cand]")
@@ -436,8 +452,8 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         }
         for name in (
             "Ignition Timing Trim Cold",
-            "Ignition Timing Trim Main",
-            "Ignition Timing Trim High Det",
+            slot_name(1, "Ignition Timing Trim Main"),
+            slot_name(1, "Ignition Timing Trim High Det"),
         ):
             with self.subTest(name=name):
                 table = by_name[name]
@@ -470,8 +486,8 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
     def test_overrun_fuel_cut_uses_coolant_axis_and_code_rpm_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         expected = {
-            "Overrun Fuel Cut": "0x12718",
-            "Overrun Fuel Cut Restore": "0x12818",
+            slot_name(1, "Overrun Fuel Cut"): "0x12718",
+            slot_name(1, "Overrun Fuel Cut Restore"): "0x12818",
         }
         for name, address in expected.items():
             with self.subTest(name=name):
@@ -498,7 +514,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
-            if table.get("name") == "Rev Limit - Fuel Cut"
+            if table.get("name") == slot_name(1, "Rev Limit - Fuel Cut")
         )
         scaling = table.find("./scaling")
         axis_x = table.find("./table[@type='Static X Axis']")
@@ -522,7 +538,9 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
-            if table.get("name") == "Rev Limit - Throttle Cut"
+            if table.get("name") == slot_name(
+                1, "Rev Limit - Throttle Cut"
+            )
         )
         scaling = table.find("./scaling")
         self.assertEqual(table.get("storageaddress"), "0x0942C")

@@ -1,0 +1,329 @@
+#!/usr/bin/env python3
+"""Add the validated five-slot map-switching runtime to a compatible JK08A ROM.
+
+The input may contain calibration and configuration changes below 0x20000. Its
+identity, checksum state, patch anchors, erased allocation, and complete upper
+ROM partition must match the exact JK08A baseline. Existing input bytes are
+preserved outside the declared map-switching and checksum write sets.
+"""
+
+from __future__ import annotations
+
+import argparse
+from dataclasses import dataclass
+import hashlib
+from itertools import chain
+from pathlib import Path
+import sys
+import tomllib
+
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from patches import jk08a_checksums as checksums
+from patches import map_switching_compose as composer
+from patches import map_switching_layout as layout_model
+from tools.mapkit import rom as romkit
+
+
+DEFAULT_PAYLOADS = Path(__file__).with_name(
+    "map-switching-payloads.toml"
+)
+
+
+class PatchError(ValueError):
+    """Raised when input, payload, output, or preservation checks fail."""
+
+
+@dataclass(frozen=True)
+class PatchResult:
+    data: bytes
+    source_sha256: str
+    output_sha256: str
+    source_checksums: checksums.ChecksumValues
+    output_checksums: checksums.ChecksumValues
+    composition_changed_bytes: int
+    final_changed_bytes: int
+    permitted_write_bytes: int
+    checksum_changed_bytes: int
+
+
+def sha256(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def md5(data):
+    return hashlib.md5(data).hexdigest()
+
+
+def default_output_path(source):
+    source = Path(source)
+    return source.with_name(f"{source.stem}-map-switching.bin")
+
+
+def load_payloads(layout=None, path=DEFAULT_PAYLOADS):
+    """Read and SHA-validate the tracked raw machine-code payloads."""
+    layout = layout or layout_model.load_layout()
+    path = Path(path)
+    with path.open("rb") as source:
+        raw = tomllib.load(source)
+    if raw.get("schema_version") != 1:
+        raise PatchError(
+            f"{path}: unsupported payload schema "
+            f"{raw.get('schema_version')!r}"
+        )
+    units = raw.get("units")
+    if not isinstance(units, dict):
+        raise PatchError(f"{path}: missing [units] table")
+    expected = set(layout.assembly_unit_by_key)
+    actual = set(units)
+    if actual != expected:
+        raise PatchError(
+            f"{path}: payload set differs; "
+            f"missing={sorted(expected - actual)}; "
+            f"extra={sorted(actual - expected)}"
+        )
+    result = {}
+    for unit in layout.assembly_units:
+        text = units[unit.key]
+        if not isinstance(text, str):
+            raise PatchError(f"{path}: {unit.key} payload is not text")
+        try:
+            blob = bytes.fromhex("".join(text.split()))
+        except ValueError as error:
+            raise PatchError(
+                f"{path}: {unit.key} payload is not hexadecimal"
+            ) from error
+        try:
+            result[unit.key] = layout_model.validate_assembled_blob(
+                unit, blob
+            )
+        except ValueError as error:
+            raise PatchError(f"{path}: {error}") from error
+    return result
+
+
+def load_blob_overrides(layout, arguments):
+    overrides = {}
+    for key, path in arguments:
+        if key in overrides:
+            raise PatchError(f"duplicate blob override for {key!r}")
+        unit = layout.assembly_unit_by_key.get(key)
+        if unit is None:
+            raise PatchError(f"unknown assembly unit {key!r}")
+        try:
+            overrides[key] = layout_model.validate_assembled_blob(unit, path)
+        except (OSError, ValueError) as error:
+            raise PatchError(f"{path}: {error}") from error
+    return overrides
+
+
+def _final_write_offsets(layout):
+    composition_offsets = set(
+        chain.from_iterable(
+            range(region.start, region.end)
+            for region in composer.composition_write_ranges(layout)
+        )
+    )
+    return composition_offsets | set(checksums.checksum_byte_offsets())
+
+
+def _validate_slot_initialization(layout, source, patched):
+    for family in layout.families:
+        canonical = source[
+            family.canonical_address :
+            family.canonical_address + family.byte_length
+        ]
+        for address in family.copies:
+            if patched[address : address + family.byte_length] != canonical:
+                raise PatchError(
+                    f"{family.key}: initialized map copy at "
+                    f"{address:#x} differs from input Map 1"
+                )
+
+
+def _validate_preservation(layout, source, patched):
+    permitted = _final_write_offsets(layout)
+    changed = {
+        offset
+        for offset, (before, after) in enumerate(zip(source, patched))
+        if before != after
+    }
+    outside = changed - permitted
+    if outside:
+        raise PatchError(
+            "final image changes undeclared input byte at "
+            f"{min(outside):#x}"
+        )
+    return len(changed), len(permitted)
+
+
+def patch_image(source, layout=None, blobs=None, source_name="<memory>"):
+    """Return a checked, self-consistent map-switching image."""
+    layout = layout or layout_model.load_layout()
+    source = bytes(source)
+    image = romkit.Image(layout.rom, source_name, source)
+    try:
+        source_verification = checksums.require_valid(source, source_name)
+        layout_model.validate_compatible_image(layout, image)
+        composition = composer.compose(
+            layout=layout,
+            image=image,
+            blobs=blobs or load_payloads(layout),
+            source_policy="compatible",
+        )
+        patched = checksums.recalculate(composition.data)
+        output_verification = checksums.require_valid(
+            patched, "map-switching output"
+        )
+    except (checksums.ChecksumError, ValueError) as error:
+        raise PatchError(str(error)) from error
+
+    _validate_slot_initialization(layout, source, patched)
+    final_changed_bytes, permitted_write_bytes = _validate_preservation(
+        layout, source, patched
+    )
+    checksum_offsets = checksums.checksum_byte_offsets()
+    checksum_changed_bytes = sum(
+        source[offset] != patched[offset] for offset in checksum_offsets
+    )
+    return PatchResult(
+        data=patched,
+        source_sha256=sha256(source),
+        output_sha256=sha256(patched),
+        source_checksums=source_verification.stored,
+        output_checksums=output_verification.stored,
+        composition_changed_bytes=composition.changed_bytes,
+        final_changed_bytes=final_changed_bytes,
+        permitted_write_bytes=permitted_write_bytes,
+        checksum_changed_bytes=checksum_changed_bytes,
+    )
+
+
+def write_output(path, image):
+    """Create an output exclusively or accept an already identical file."""
+    path = Path(path)
+    if path.exists():
+        if path.read_bytes() == image:
+            return False
+        raise PatchError(f"existing output differs: {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("xb") as output:
+        output.write(image)
+    return True
+
+
+def write_md5_sidecar(path, image):
+    path = Path(path)
+    sidecar = path.with_name(f"{path.name}.md5")
+    content = f"{md5(image)} *{path.name}\n"
+    if sidecar.exists():
+        if sidecar.read_text(encoding="ascii") == content:
+            return False
+        raise PatchError(f"existing MD5 sidecar differs: {sidecar}")
+    sidecar.write_text(content, encoding="ascii")
+    return True
+
+
+def _blob_argument(text):
+    key, separator, value = text.partition("=")
+    if not separator or not key or not value:
+        raise argparse.ArgumentTypeError("expected KEY=PATH")
+    return key, Path(value)
+
+
+def _format_checksums(values):
+    return ",".join(f"{name}={value:#x}" for name, value in values.items())
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("input", type=Path, help="compatible JK08A input ROM")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="output path; defaults to INPUT-map-switching.bin",
+    )
+    parser.add_argument(
+        "--payloads",
+        type=Path,
+        default=DEFAULT_PAYLOADS,
+        help="tracked machine-code payload bundle",
+    )
+    parser.add_argument(
+        "--blob",
+        action="append",
+        type=_blob_argument,
+        default=[],
+        metavar="KEY=PATH",
+        help="optional independently rebuilt raw blob override",
+    )
+    parser.add_argument(
+        "--verify-only",
+        action="store_true",
+        help="compose and verify without writing files",
+    )
+    args = parser.parse_args(argv)
+
+    layout = layout_model.load_layout()
+    try:
+        source = args.input.read_bytes()
+        blobs = load_payloads(layout, args.payloads)
+        blobs.update(load_blob_overrides(layout, args.blob))
+        result = patch_image(
+            source,
+            layout=layout,
+            blobs=blobs,
+            source_name=str(args.input),
+        )
+    except (OSError, PatchError) as error:
+        parser.error(str(error))
+
+    print(
+        f"status=PASS rom={layout.rom} slots={layout.slot_count} "
+        f"families={len(layout.families)}"
+    )
+    print(
+        f"source={args.input} source_sha256={result.source_sha256}"
+    )
+    print(
+        f"source_checksums={_format_checksums(result.source_checksums)}"
+    )
+    print(
+        f"output_sha256={result.output_sha256} "
+        f"output_checksums={_format_checksums(result.output_checksums)}"
+    )
+    print(
+        f"composition_changed_bytes={result.composition_changed_bytes} "
+        f"final_changed_bytes={result.final_changed_bytes} "
+        f"permitted_write_bytes={result.permitted_write_bytes} "
+        f"checksum_changed_bytes={result.checksum_changed_bytes}"
+    )
+    print(
+        "feedback_frame_counts="
+        f"{layout.feedback.default_on_frames},"
+        f"{layout.feedback.default_off_frames} "
+        f"feedback_state={layout.feedback.lamp_on_value}"
+    )
+
+    if args.verify_only:
+        print("no ROM file was written")
+        return 0
+
+    output = args.output or default_output_path(args.input)
+    if output.resolve() == args.input.resolve():
+        parser.error("input and output paths must differ")
+    try:
+        created = write_output(output, result.data)
+        write_md5_sidecar(output, result.data)
+    except (OSError, PatchError) as error:
+        parser.error(str(error))
+    print(f"output={output} status={'created' if created else 'already_exact'}")
+    print(f"md5={md5(result.data)} sidecar={output.name}.md5")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

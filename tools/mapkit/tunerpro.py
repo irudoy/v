@@ -413,6 +413,20 @@ def map_description(rom, calibration, mask=None):
         f"map confidence {calibration['confidence']}. "
         f"{calibration['semantics']}"
     )
+    source = calibration.get("map_switching_source")
+    slot = calibration.get("map_switching_slot")
+    if source is not None:
+        if slot == 1:
+            description += (
+                " Common-definition Map 1 uses the canonical stock storage."
+            )
+        else:
+            description += (
+                f" Common-definition Map {slot} storage is projected from "
+                f"{xdf_address(source)}. Stock firmware does not reference "
+                "this allocated storage; it becomes runtime-active only with "
+                "the project map-switching patch."
+            )
     if mask is not None:
         bits = STORAGE_BITS[calibration["storagetype"]]
         if int(str(mask), 16) != (1 << bits) - 1:
@@ -598,6 +612,14 @@ def render(
             f"and defs/{rom}.overrides.toml. Individual and group DTC patches "
             "overlap by design. No editor-side checksum is declared; the flashing "
             "workflow handles checksum correction."
+            + (
+                " The common definition includes Map 1 through Map 5 storage "
+                "from patches/map-switching-layout.toml. Map 2 through Map 5 "
+                "are inactive erased ranges in stock firmware and require the "
+                "project map-switching patch."
+                if overrides.get("map_switching", {}).get("enabled")
+                else ""
+            )
         ),
     )
     node(header, "author", overrides["rom"]["author"])

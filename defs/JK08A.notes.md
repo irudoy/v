@@ -3206,10 +3206,229 @@ The 29 entries in `JK08A.dtc.csv` generate 57 native `TableSwitch` controls unde
 its attribute at `0x160FE` remains `0000` in both states, so only its descriptor switch
 is present. DTC suppression through these controls has not been validated on hardware.
 
+## Map-switching input anchor
+
+The stock JK08A firmware contains a closed ASCD steering-switch path that can serve as
+the first input anchor for a new map-switching design. This is an implementation
+candidate for this ROM, not evidence about the internal design of UpRev or another
+commercial product.
+
+- Service 0x22 table entries map DID 0x130D to value byte `0xFFFF2A83` and support mask
+  `0xFFFF2A81`, and DID 0x130E to value byte `0xFFFF2A84` and support mask
+  `0xFFFF2A82`. The pointer records are at `0x22A48..0x22A54`.
+- `FUN_000CF020` copies the prior stable code from `0xFFFF2A85` to `0xFFFF2A86`, then
+  accepts a replacement only when five consecutive decoded samples
+  `0xFFFF2701..0xFFFF2705` are equal.
+- The stable one-hot codes are `0x00` released, `0x02` CANCEL, `0x08` SET/COAST,
+  `0x10` RESUME/ACCEL, and `0x20` MAIN-button pulse. DID 0x130D independently exposes
+  SET, RESUME, and CANCEL as output bits 3, 2, and 1. `FUN_000913D0` reads the same
+  stable byte for exact DTC P1564 and masks codes `0x02`, `0x08`, and `0x10` with
+  `0x1A`.
+- `FUN_000CF020` also packs DID 0x130E. Code establishes its source bits; homologous
+  factory and measured diagnostics identify output bit 5 as SET LAMP and bit 2 as
+  CRUISE LAMP.
+- `FUN_000D093C` initializes the paired support masks from ROM8[`0x8B28`]. DID 0x130D
+  can expose masks `0x00`, `0x3F`, `0x31`, or `0x7F`; DID 0x130E exposes `0x00`,
+  `0x3F`, or `0x04`.
+
+The 2007 VQ35HR factory manual establishes the physical input form: the MAIN, CANCEL,
+SET/COAST, and RESUME/ACCEL buttons form an analog resistor ladder wired directly to
+ECM terminal M107-101. A whole-program direct RAM-access scan found no writer for
+`0xFFFF2701..0xFFFF2705`; the producer is pointer-mediated or otherwise unresolved.
+The exact JK08A ADC channel and MCU pin therefore remain open.
+
+Because the decoder publishes one stable code at a time, a two-button gesture cannot
+be modeled as simultaneous bits in `0xFFFF2A85`. On the resistor ladder, pressing
+CANCEL while SET is held is expected to produce a transition sequence such as
+SET -> CANCEL -> SET, but this electrical behavior requires bench confirmation on the
+target steering-switch assembly.
+
+The formal contract is `patches/map-switching-selector.md`.
+`patches/map-switching-layout.toml` is the authoritative ROM/RAM allocation and hook
+manifest, `patches/map_switching_layout.py` validates it against the exact stock ROM,
+and `patches/map_switching_selector.py` is the executable selector and calibration
+transaction model. `patches/map_switching_assembly.py` validates the address, literal,
+ABI, and delay-slot contract of implemented SH source slices. The selector provides
+five slots. A valid gesture contains one through five `SET -> CANCEL -> SET` pulses
+and commits only on the final SET release. Any unexpected transition, timeout, sixth
+pulse, invalid state, or ASCD enable aborts the gesture and retains the validated
+active slot.
+
+The implementation boundary is statically bounded:
+
+- The selector owns `0xFFFF5D00..0xFFFF5D07`; the fuel-cut and throttle clusters use
+  shadows at `0xFFFF5D10..0xFFFF5D1B` and `0xFFFF5D20..0xFFFF5D3B`. A complete
+  2315-function RAM-access trace has zero failures and zero accesses, call arguments,
+  or unresolved indexed candidates in `0xFFFF5D00..0xFFFF5D3B`. The preceding
+  application access is at `0xFFFF5CF9`; the only nearby unresolved indexed loop ends
+  at `0xFFFF5CF1`.
+- Startup literal `0x29CC` changes from `0xFFFF7000` to `0xFFFF5D00`, extending the
+  stock clear loop and guaranteeing map 1 after reset.
+- The unique thunk literal at `0x27D28` redirects stock initializer `0x2C648` through
+  a wrapper at `0xD22A0`. The wrapper runs stock initialization first, then refreshes
+  both limiter shadows and stock throttle runtime scalar `0xFFFF1796`.
+- Literal `0xCE8DC` redirects the scheduled `FUN_000D09D8` call to a wrapper at
+  `0xD2108`. The wrapper calls the stock function first, then the selector and
+  diagnostic mirror, preserving the stock P1564 path.
+- `[0xD2108, 0xE1C2A)` is the conservative free-ROM allocation: 64,290 bytes of
+  `0xFF` with no instructions, defined data, function bodies, or inbound Ghidra
+  references. The manifest claims `[0xD2108, 0xD3860)` for code, 32 calibration
+  copies, eight five-entry pointer tables, the CAN feedback wrapper, and its
+  separate pulse engine.
+  `AuditFreeRegion.java` reproduces both the claimed-range and conservative-range
+  gates.
+- Six families are adapter-backed. Overrun uses stock wrapper `0x26388`, ignition uses
+  `0x26230`, Fuel Compensation Main uses `0x261F0`, and Fuel Targets uses `0x261B8`.
+  Each adapter redirects approved bases only and tail-jumps every other base to the
+  stock wrapper. Cold ignition and the Bosch overrun pair remain global.
+- `patches/map-switching-adapter-helper.s` owns `0xD2270..0xD229F`, and
+  `patches/map-switching-adapters.s` owns `0xD2300..0xD23FF`. Ghidra 12.1.2
+  assembles and round-trip decodes 59 instructions and 68 literal bytes. The two raw
+  blobs are locked by SHA-256 in the layout. Ghidra SuperH p-code passes 47/47 cases
+  over 676 executed instructions: all five slots for all six families, indices 5 and
+  255 falling back to map 1, Cold Ignition and Bosch pass-through, unknown fuel-base
+  pass-through, exact stock-wrapper destinations, and preservation of `r5..r15`, PR,
+  GBR, MACH, and MACL. Comparison instructions may change the caller-clobbered T
+  bit; every other SR bit remains unchanged. This path uses no radare2 and creates
+  no ROM.
+- `patches/map-switching-startup-wrapper.s` owns `0xD22A0..0xD22FF`, and
+  `patches/map-switching-limiter-commit.s` owns `0xD3660..0xD375F`. The latter
+  saves and restores exact SR, masks interrupts for every runtime write, fills both
+  complete limiter shadows, updates `0xFFFF1796`, clears transient state, and
+  publishes the normalized index last. Fuel Cut stock addresses `0x0934E` and
+  `0x09356` are only word-aligned, so all 12 fuel bytes use `MOV.W`; the aligned
+  28-byte throttle cluster uses seven `MOV.L` copies. Their 69 instructions and 48
+  literal bytes are SHA-locked. Fourteen Ghidra p-code cases cover direct commit and
+  startup for indices 0-5 and 255 using exact stock containers, synthetic alternate
+  slots, and surrounding RAM sentinels. All 14 pass over 1537 executed instructions.
+- Rev Limit - Fuel Cut is read with two adjacent stock words through the unique
+  `0x4F468` literal, so its active shadow contains the complete 12-byte cluster.
+  Throttle limiting is consumed through the `0x09424..0x0943F` cluster and a secondary
+  scalar path, so its active shadow preserves all 28 stock bytes and replaces only
+  `0x0942C`.
+- Limiter shadows, `0xFFFF1796`, and the new index form one SR-protected transaction.
+  The active-index byte is stored last. The reference model exposes no partially
+  updated state. The standalone SH unit passes source-order and p-code gates. The
+  complete locked composition repeats those scenarios at final addresses and
+  preserves exact entry SR; interrupt latency remains a hardware validation gate.
+- Exact JK08A mailbox record `0x09766 = 03 08 AA 20` configures HCAN1 transmit
+  mailbox 3 with DLC 8 and standard ID `0x551`. `FUN_000C3ED2` dispatches that
+  record through the unique literal at `0xC3FA4`, whose stock target is serializer
+  `FUN_000C5372`. The serializer writes payload bytes to
+  `0xFFFF3AD5..0xFFFF3ADC`; byte 5 at `0xFFFF3ADA` contains the low two-bit ASCD
+  status state. The hook target `0xD35E0` calls the stock serializer first and may
+  replace only those two bits while visual feedback is active.
+
+Map slots have numeric identities only. No firmware or definition artifact assigns
+driving-profile semantics to maps 2-5. `tools/mapkit/map_switching.py` projects the
+manifest into the common `JK08A.xml` and `JK08A.xdf`. Every approved switchable
+family appears as `Map 1` through `Map 5` inside its canonical functional
+category, reusing the canonical JK08A storage type, scale, axes, mask, and editor
+increments. Map 1 points to stock data; maps 2-5 point to allocated copies
+initialized with identical bytes in the first bench image. Calibration values are
+edited manually after the identical-map bench gate.
+
+`tools/mapkit/validate_map_switching.py` validates the live 446-map graph and the
+478-map common projection without writing files. The tracked definitions contain
+44 calibration tables and 11 masked views. The switchable subset contains 40
+calibration tables plus ten ignition bit-7 views, for 50 slot-specific editor
+views. Both formats retain the common `JK08A` identity; no separate map-switching
+definition exists.
+
+In a stock image, Map 2 through Map 5 expose erased `0xFF` allocations that runtime
+code does not reference. Their presence in the common definition does not imply
+stock map-switching support. Global engine-model, sensor, diagnostic, NATS, code,
+pointer, and checksum objects are not duplicated per slot.
+
+The target pilot contains eight independently switched storage families:
+
+- Ignition Timing Trim Main `0x09A1A`;
+- Ignition Timing Trim High Det `0x09B1A`;
+- Fuel Targets `0x0B33A`;
+- Fuel Compensation Main `0x0A29A`;
+- Rev Limit - Fuel Cut `0x0934E`;
+- Rev Limit - Throttle Cut `0x0942C`;
+- Hitachi Over Run Fuel Cut `0x12718`;
+- Hitachi Over Run Fuel Restore `0x12818`.
+
+Main and High Det timing are paired so a detonation-mode transition cannot cross
+slots. Fuel Targets and Fuel Compensation Main form the main fuel group. Fuel Cut
+and Throttle Cut form the runtime rev-limiter group. This grouping does not
+promote evidence confidence: the tuner-facing AFR projection of Fuel Targets and
+the physical names and scales of the rev limiters remain candidate until
+controlled hardware validation. Cold Ignition Timing, Stationary Rev Limiter,
+speed limiting, axes, knock sensitivity, VTC/VVEL, sensor models, and diagnostic
+objects remain global in the pilot.
+
+The timing maps retain complete bytes in every copy: bits 0 through 6 carry the
+timing adjustment and bit 7 carries the knock-window flag. RomRaider and TunerPro
+may expose both masked views without creating separate storage.
+
+All eight families have exact-ROM access traces, fail-closed reference behavior,
+allocated copies, pointer tables, and executable model tests. All eight runtime
+access paths have standalone assembled and p-code-emulated units: fail-closed lookup
+adapters for six families and one atomic shadow transaction for both limiter
+families. The selector host is also assembled and SHA-locked. Its 17 Ghidra p-code
+cases cover the state machine, commits, aborts, feedback blocking, diagnostic
+mirror, invalid-index recovery, and protected registers. The CAN feedback wrapper
+and leaf pulse engine are assembled and SHA-locked. Nine p-code cases cover 17
+serializer invocations and preserve every payload field except byte 5 bits 0-1.
+Their locked frame counts are `10, 10`; a zero/zero pair remains the fail-closed
+disabled configuration. The deterministic in-memory composition
+applies all seven blobs, 15 hooks, 32 copies, and eight pointer tables. It changes
+5371 bytes inside the 5884-byte declared write set and has fixture SHA-256
+`6afacc1425ebe6de5946255caf3a3a69662c208b49dc75daa11490d4095499d0`.
+It ties all 386 instruction byte pairs and ten code entries to their final
+absolute addresses. `EmulateMapSwitchingComposition.java` independently rebuilds
+that fixture from the exact Ghidra program and passes all 87 scenarios over 4525
+instructions. Every scenario starts from a fresh complete image, all ten code
+entries execute, real pointer tables and copied calibration bytes are checked,
+the limiter restores exact SR, and the other paths preserve every non-T SR bit.
+The composer exposes no output-file operation, leaves stored checksums unchanged,
+and reports `flashable=false`.
+
+`map-switching-payloads.toml` tracks the complete SHA-locked machine-code spans.
+`apply_map_switching.py` accepts checksum-valid JK08A inputs with lower-partition
+calibration/configuration changes while requiring the exact protected upper ROM,
+identity, anchors, and erased allocation. It initializes maps 2-5 from the input
+Map 1 values, installs the runtime, recalculates all checksum domains through
+`jk08a_checksums.py`, proves byte preservation outside the composition and checksum
+fields, and creates a non-overwriting ROM plus MD5 sidecar.
+
+Raw DID `0x130E.bit7` is reserved as prototype instrumentation: clear means map 1 and
+set means maps 2-5. It is deliberately absent from the stock support mask. The
+driver-visible contract uses one through five CRUISE-indicator pulses after a valid
+commit. The official UpRev guide independently documents five map slots and a
+flashing cruise-control light, but this contract does not claim UpRev's internal
+implementation.
+
+The factory manual establishes the ECM ASCD-status CAN signal as the physical route to
+the combination meter CRUISE indicator. A homologous Z34 community decoder maps CAN
+0x551 byte 5 value `2` to active cruise status. The byte and value align with the
+exact JK08A serializer, but V36 applicability remains candidate evidence until a
+target-vehicle test confirms the lamp response. Feedback advances once per 0x551
+serialization, preserves the upper six bits of byte 5 and every other payload byte,
+and does not modify `0xFFFF41AE`, `0xFFFF4252`, or another stock ASCD control state.
+The pilot uses ten on frames and ten off frames. Their wall-clock duration depends
+on the target's actual 0x551 period. The patcher creates derived map-switching
+images; no derived image is versioned in `rom-images/`.
 
 ## Next step
 
-The inventory of all families is represented in ledger `JK08A.maps.csv`. The frozen
+Map switching is the active hardware-validation track. The locked `10, 10`
+composition passes disassembly plus 17 selector, 47 adapter, 14 startup/limiter,
+and nine feedback p-code cases. The file-writing patcher and checksum
+recalculation pass their preservation and negative-input tests.
+
+The next gate is an end-to-end target-vehicle test with byte-identical maps. With
+the vehicle stationary and engine stopped, verify the steering-switch ladder,
+CAN 0x551 byte 5 state `2`, visible `10, 10` pulse timing, and one through five
+indications without changing stock ASCD state. Then confirm reset Map 1, raw DID
+0x130E bit 7, startup and critical-section timing, and unchanged engine behavior
+while selecting all five identical maps. A separate stock-period capture is not
+a prerequisite for this first test.
+
+The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
 The next semantic pass is built from the current projection, which contains 60
 `candidate` maps without semantics. This is a separate follow-up worklist, not a

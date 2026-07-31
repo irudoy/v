@@ -12,6 +12,12 @@
 # do not appear in RomRaider or TunerPro.
 default_emit = false
 
+[map_switching]
+# The common JK08A XML/XDF expose all five storage slots. Map 1 uses stock
+# storage. Map 2 through Map 5 point into the allocated project layout and are
+# runtime-active only when the map-switching patch is present.
+enabled = true
+
 [rom]
 xmlid = "JK08A"
 internalidaddress = "8205"
@@ -43,7 +49,10 @@ its comment. The working definition contains an explicit tuner-facing calibratio
 set; research and inactive-family maps remain in the canonical ledger. Categories
 follow the functional organization used by commercial Nissan tuning suites and do
 not encode confidence. Units ending in [cand] use a multiplier from the A2L catalog
-or data shape that has not been confirmed by code.
+or data shape that has not been confirmed by code. The common definition exposes
+Map 1 through Map 5 storage from patches/map-switching-layout.toml. Map 2 through
+Map 5 are erased and inactive in stock firmware; they require the project
+map-switching patch before runtime use.
 """
 
 [[checksum]]

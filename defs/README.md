@@ -62,6 +62,38 @@ under `defs/`, separately from `reference/`:
   There is no catch-all DTC patch.
 - `JK08A.notes.md` is a handwritten reverse-engineering journal containing
   rationale, listings, and traces. It is not loaded into the graph.
+- The tracked common `JK08A.xml` and `JK08A.xdf` include the five-slot
+  map-switching projection under the unchanged `JK08A` identity.
+  `../patches/map-switching-layout.toml` owns the
+  eight-family ROM/RAM layout and the exact CAN 0x551 feedback boundary,
+  `../patches/map-switching-adapter-helper.s` and
+  `../patches/map-switching-adapters.s` implement the Ghidra-assembled
+  fail-closed accessors for all six adapter-backed families,
+  `../patches/map-switching-startup-wrapper.s` and
+  `../patches/map-switching-limiter-commit.s` implement startup refresh and
+  the SR-protected transaction for both direct limiter families,
+  `../tools/mapkit/map_switching.py` projects 40 slot tables and ten
+  slot-specific masked ignition views, and
+  `../tools/mapkit/validate_map_switching.py` renders the projection against
+  the live graph and verifies both tracked common definition files.
+  The seven standalone assembly units pass 87 Ghidra p-code cases: 17 selector,
+  47 adapter, 14 startup/limiter, and nine feedback cases.
+  `../tools/ghidra/EmulateMapSwitchingComposition.java` repeats all 87 cases
+  over 4525 instructions from the complete locked fixture, reaches all ten code
+  entries at final addresses, and verifies the same SHA-256 and write boundary
+  as `../patches/map_switching_compose.py`. Feedback uses state value `2` with
+  locked `10, 10` on/off frame counts; the V36 meter response remains a hardware
+  validation gate. `../patches/apply_map_switching.py` accepts a checksum-valid
+  JK08A input with lower-partition calibration/configuration changes, requires
+  exact protected code and patch anchors, initializes Map 2 through Map 5 from
+  the input Map 1 values, injects the tracked SHA-locked payloads, recalculates
+  all checksum domains, and writes a non-overwriting ROM plus MD5 sidecar.
+  Map 1 uses canonical stock storage. Map 2 through Map 5 point to erased
+  `0xFF` allocations in the stock image and become runtime-active only with
+  the project patch. Their presence in the common definitions does not imply
+  stock map-switching support. Each slot table remains in the canonical
+  functional category and carries the slot number in its editor name. No
+  separate map-switching definition identity exists.
 - The handwritten calibration-layer sources are `JK08A.interp.csv` for
   interpolation-input geometry, `JK08A.findings.csv` for map findings,
   `JK08A.axes.csv` for axis semantics, and `JK08A.overrides.toml` for definition

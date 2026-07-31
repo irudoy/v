@@ -1,0 +1,440 @@
+# Authoritative layout for the exact JK08A five-slot map-switching pilot.
+#
+# This manifest allocates storage and records verified hook literals. It does
+# not contain injected SH-2E machine code and is not a ROM patch recipe.
+
+schema_version = 1
+rom = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+slot_count = 5
+byte_order = "big"
+
+# Ghidra AuditFreeRegion uses inclusive bounds. The Python model uses the
+# equivalent half-open intervals.
+free_rom_start = 0x000D2108
+free_rom_end = 0x000E1C2A
+claimed_rom_start = 0x000D2108
+claimed_rom_end = 0x000D3860
+
+[ram]
+reservation_start = 0xFFFF5D00
+reservation_end = 0xFFFF5D3C
+selector_start = 0xFFFF5D00
+selector_size = 8
+fuel_cut_shadow_start = 0xFFFF5D10
+fuel_cut_shadow_size = 12
+throttle_shadow_start = 0xFFFF5D20
+throttle_shadow_size = 28
+throttle_selected_offset = 8
+stock_throttle_runtime = 0xFFFF1796
+
+[feedback]
+can_channel = 1
+mailbox_index = 3
+config_record_address = 0x00009766
+config_record = 0x0308AA20
+frame_id = 0x551
+dlc = 8
+serializer = 0x000C5372
+dispatch_literal = 0x000C3FA4
+serializer_payload_base_literal = 0x000C5434
+serializer_payload_base = 0xFFFF3AB5
+payload_offset = 0x20
+payload_start = 0xFFFF3AD5
+status_byte_index = 5
+status_byte_address = 0xFFFF3ADA
+status_mask = 0x03
+lamp_on_value = 0x02
+lamp_off_value = 0x00
+phase_counts_address = 0x000D3848
+default_on_frames = 10
+default_off_frames = 10
+encoding_evidence = "homologous_community_aligned_with_exact_serializer"
+
+[[code_region]]
+key = "selector_host"
+start = 0x000D2108
+end = 0x000D2270
+entry = 0x000D2108
+
+[[code_region]]
+key = "adapter_select_helper"
+start = 0x000D2270
+end = 0x000D22A0
+entry = 0x000D2270
+
+[[code_region]]
+key = "startup_wrapper"
+start = 0x000D22A0
+end = 0x000D2300
+entry = 0x000D22A0
+
+[[code_region]]
+key = "overrun_adapter"
+start = 0x000D2300
+end = 0x000D2340
+entry = 0x000D2300
+
+[[code_region]]
+key = "ignition_adapter"
+start = 0x000D2340
+end = 0x000D2380
+entry = 0x000D2340
+
+[[code_region]]
+key = "fuel_compensation_adapter"
+start = 0x000D2380
+end = 0x000D23C0
+entry = 0x000D2380
+
+[[code_region]]
+key = "fuel_targets_adapter"
+start = 0x000D23C0
+end = 0x000D2400
+entry = 0x000D23C0
+
+[[code_region]]
+key = "cruise_feedback_wrapper"
+start = 0x000D35E0
+end = 0x000D3660
+entry = 0x000D35E0
+
+[[code_region]]
+key = "limiter_commit"
+start = 0x000D3660
+end = 0x000D3760
+entry = 0x000D3660
+
+[[code_region]]
+key = "cruise_feedback_engine"
+start = 0x000D3760
+end = 0x000D3860
+entry = 0x000D3760
+
+[[assembly_unit]]
+key = "selector_host"
+source = "map-switching-selector-host.s"
+start = 0x000D2108
+end = 0x000D2270
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "7cc557156f89d764b4e2a224bfc2159fe78e4e519e8645692b9783abbb49472e"
+instruction_count = 168
+data_bytes = 24
+code_regions = ["selector_host"]
+
+[[assembly_unit]]
+key = "adapter_select_helper"
+source = "map-switching-adapter-helper.s"
+start = 0x000D2270
+end = 0x000D22A0
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "40cea0183a38d189808b7637ea47cb594d8cb56ee615efb246c714da5f499a34"
+instruction_count = 11
+data_bytes = 4
+code_regions = ["adapter_select_helper"]
+
+[[assembly_unit]]
+key = "lookup_adapters"
+source = "map-switching-adapters.s"
+start = 0x000D2300
+end = 0x000D2400
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "1e3b12d0c436fca39d092a7a06e875b12c75fd8a8d000c90a402a27e088b068a"
+instruction_count = 48
+data_bytes = 64
+code_regions = [
+    "overrun_adapter",
+    "ignition_adapter",
+    "fuel_compensation_adapter",
+    "fuel_targets_adapter",
+]
+
+[[assembly_unit]]
+key = "startup_wrapper"
+source = "map-switching-startup-wrapper.s"
+start = 0x000D22A0
+end = 0x000D2300
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "fbab3032582bfced276a09c737de62e0c82e58f28d1a1e17e58d8b4d42474dca"
+instruction_count = 13
+data_bytes = 12
+code_regions = ["startup_wrapper"]
+
+[[assembly_unit]]
+key = "limiter_commit"
+source = "map-switching-limiter-commit.s"
+start = 0x000D3660
+end = 0x000D3760
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "e1e296e0d2f1dccef21982f14f4e3e1aebdc39fba6b68ae8b3e2ecbc16d5a5aa"
+instruction_count = 56
+data_bytes = 36
+code_regions = ["limiter_commit"]
+
+[[assembly_unit]]
+key = "cruise_feedback_wrapper"
+source = "map-switching-feedback-wrapper.s"
+start = 0x000D35E0
+end = 0x000D3660
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36"
+instruction_count = 10
+data_bytes = 8
+code_regions = ["cruise_feedback_wrapper"]
+
+[[assembly_unit]]
+key = "cruise_feedback_engine"
+source = "map-switching-feedback-engine.s"
+start = 0x000D3760
+end = 0x000D3860
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "c3a10706e283bc53c5634730d7ad96a5c49bebd8dc22536f96cfc411ef46a784"
+instruction_count = 80
+data_bytes = 10
+code_regions = ["cruise_feedback_engine"]
+
+[[hook]]
+key = "startup_clear_start"
+address = 0x000029CC
+width = 4
+stock = 0xFFFF7000
+replacement = 0xFFFF5D00
+purpose = "Extend the stock zero-fill loop over selector state and limiter shadows."
+
+[[hook]]
+key = "selector_host_call"
+address = 0x000CE8DC
+width = 4
+stock = 0x000D09D8
+replacement = 0x000D2108
+purpose = "Call the selector host wrapper after the stock ASCD input debounce."
+
+[[hook]]
+key = "startup_initializer"
+address = 0x00027D28
+width = 4
+stock = 0x0002C648
+replacement = 0x000D22A0
+purpose = "Run the stock initializer and then initialize limiter shadows."
+
+[[hook]]
+key = "overrun_cut_lookup"
+address = 0x0004FDD0
+width = 4
+stock = 0x00026388
+replacement = 0x000D2300
+purpose = "Route the shared overrun cut lookup through a pass-through adapter."
+
+[[hook]]
+key = "overrun_restore_lookup"
+address = 0x00050258
+width = 4
+stock = 0x00026388
+replacement = 0x000D2300
+purpose = "Route the shared overrun restore lookup through a pass-through adapter."
+
+[[hook]]
+key = "ignition_lookup_493e8"
+address = 0x000496C0
+width = 4
+stock = 0x00026230
+replacement = 0x000D2340
+purpose = "Route the ignition lookup through a base-selecting pass-through adapter."
+
+[[hook]]
+key = "ignition_lookup_4e1c0_a"
+address = 0x0004E474
+width = 4
+stock = 0x00026230
+replacement = 0x000D2340
+purpose = "Route the ignition lookup through a base-selecting pass-through adapter."
+
+[[hook]]
+key = "ignition_lookup_4e1c0_b"
+address = 0x0004E58C
+width = 4
+stock = 0x00026230
+replacement = 0x000D2340
+purpose = "Route the ignition lookup through a base-selecting pass-through adapter."
+
+[[hook]]
+key = "fuel_compensation_lookup_2c648"
+address = 0x0002CF1C
+width = 4
+stock = 0x000261F0
+replacement = 0x000D2380
+purpose = "Route the fuel compensation lookup through a base-selecting adapter."
+
+[[hook]]
+key = "fuel_compensation_lookup_3be3c"
+address = 0x0003C388
+width = 4
+stock = 0x000261F0
+replacement = 0x000D2380
+purpose = "Route the fuel compensation lookup through a base-selecting adapter."
+
+[[hook]]
+key = "fuel_targets_lookup"
+address = 0x000C0020
+width = 4
+stock = 0x000261B8
+replacement = 0x000D23C0
+purpose = "Route the fuel target lookup through a base-selecting adapter."
+
+[[hook]]
+key = "rev_fuel_cut_base"
+address = 0x0004F468
+width = 4
+stock = 0x0000934E
+replacement = 0xFFFF5D10
+purpose = "Redirect the complete fuel-cut cluster to its active RAM shadow."
+
+[[hook]]
+key = "rev_throttle_cluster_base"
+address = 0x00075964
+width = 4
+stock = 0x00009424
+replacement = 0xFFFF5D20
+purpose = "Redirect the complete throttle-limit cluster to its RAM shadow."
+
+[[hook]]
+key = "rev_throttle_scalar_base"
+address = 0x00077BAC
+width = 4
+stock = 0x0000942C
+replacement = 0xFFFF5D28
+purpose = "Redirect the secondary throttle-limit scalar read to the shadow."
+
+[[hook]]
+key = "cruise_feedback_serializer"
+address = 0x000C3FA4
+width = 4
+stock = 0x000C5372
+replacement = 0x000D35E0
+purpose = "Call the stock CAN 0x551 serializer and then override only its cruise-status field while feedback is active."
+
+[[family]]
+key = "over_run_fuel_cut"
+group = "overrun"
+name = "Over Run Fuel Cut"
+canonical_address = 0x00012718
+width = 16
+height = 1
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "overrun_adapter"
+copy_alignment = 16
+copies = [0x000D2400, 0x000D2410, 0x000D2420, 0x000D2430]
+pointer_table = 0x000D3540
+
+[[family]]
+key = "over_run_fuel_restore"
+group = "overrun"
+name = "Over Run Fuel Restore"
+canonical_address = 0x00012818
+width = 16
+height = 1
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "overrun_adapter"
+copy_alignment = 16
+copies = [0x000D2440, 0x000D2450, 0x000D2460, 0x000D2470]
+pointer_table = 0x000D3554
+
+[[family]]
+key = "ignition_timing_trim_main"
+group = "ignition"
+name = "Ignition Timing Trim Main"
+canonical_address = 0x00009A1A
+width = 16
+height = 16
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "ignition_adapter"
+copy_alignment = 256
+copies = [0x000D2500, 0x000D2600, 0x000D2700, 0x000D2800]
+pointer_table = 0x000D3568
+
+[[family]]
+key = "ignition_timing_trim_high_det"
+group = "ignition"
+name = "Ignition Timing Trim High Det"
+canonical_address = 0x00009B1A
+width = 16
+height = 16
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "ignition_adapter"
+copy_alignment = 256
+copies = [0x000D2900, 0x000D2A00, 0x000D2B00, 0x000D2C00]
+pointer_table = 0x000D357C
+
+[[family]]
+key = "fuel_targets"
+group = "fuel"
+name = "Fuel Targets"
+canonical_address = 0x0000B33A
+width = 16
+height = 16
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "fuel_targets_adapter"
+copy_alignment = 256
+copies = [0x000D2D00, 0x000D2E00, 0x000D2F00, 0x000D3000]
+pointer_table = 0x000D3590
+
+[[family]]
+key = "fuel_compensation_main"
+group = "fuel"
+name = "Fuel Compensation Main"
+canonical_address = 0x0000A29A
+width = 16
+height = 16
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "fuel_compensation_adapter"
+copy_alignment = 256
+copies = [0x000D3100, 0x000D3200, 0x000D3300, 0x000D3400]
+pointer_table = 0x000D35A4
+
+[[family]]
+key = "rev_limit_fuel_cut"
+group = "rev_limiter"
+name = "Rev Limit - Fuel Cut"
+canonical_address = 0x0000934E
+width = 2
+height = 2
+storage_type = "uint16"
+access_kind = "ram_shadow"
+copy_alignment = 8
+copies = [0x000D3500, 0x000D3508, 0x000D3510, 0x000D3518]
+pointer_table = 0x000D35B8
+stock_container_start = 0x0000934E
+stock_container_size = 12
+selected_offset = 0
+shadow_start = 0xFFFF5D10
+
+[[family]]
+key = "rev_limit_throttle_cut"
+group = "rev_limiter"
+name = "Rev Limit - Throttle Cut"
+canonical_address = 0x0000942C
+width = 1
+height = 1
+storage_type = "uint16"
+access_kind = "ram_shadow"
+copy_alignment = 2
+copies = [0x000D3520, 0x000D3522, 0x000D3524, 0x000D3526]
+pointer_table = 0x000D35CC
+stock_container_start = 0x00009424
+stock_container_size = 28
+selected_offset = 8
+shadow_start = 0xFFFF5D20
+runtime_shadow_address = 0xFFFF1796

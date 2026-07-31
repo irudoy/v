@@ -45,13 +45,16 @@ from neo4j import GraphDatabase
 
 BOLT = "bolt://localhost:7687"
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFS = os.path.join(HERE, "..", "..", "defs")
+ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
+DEFS = os.path.join(ROOT, "defs")
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
 if __package__:
-    from . import presentation, rom as romkit, tunerpro
+    from . import map_switching, presentation, rom as romkit, tunerpro
     from tools import diagnostic_context
 else:
     sys.path.insert(0, os.path.dirname(HERE))
-    from mapkit import presentation, rom as romkit, tunerpro
+    from mapkit import map_switching, presentation, rom as romkit, tunerpro
     import diagnostic_context
 
 LEVELS = ("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
@@ -84,6 +87,7 @@ MASKED_VIEW_FIELDS = (
     "format", "fine", "coarse",
 )
 PRESENTATION_FIELDS = ("default_emit",)
+MAP_SWITCHING_FIELDS = ("enabled",)
 # Axis name derived from its semantics. Several maps can share an axis, so define its name
 # once here rather than per map; [axis.<addr>] in overrides handles a special case.
 AXIS_NAMES = {"rpm": "Engine Speed [RPM]", "load": "Engine Load",
@@ -447,11 +451,34 @@ def evidence_lines(m, axes, rom):
     if m["wrappers"]:
         via = (f'; entry {", ".join(hexa(w) for w in sorted(m["wrappers"]))} '
                f'({m["family"]}, core {", ".join(hexa(k) for k in sorted(m["kernels"]))})')
-    lines = [f'{hexa(m["addr"])}  {shape} {m["storagetype"]}  '
-             f'map [{m["confidence"]}]{via}']
+    source = m.get("map_switching_source")
+    slot = m.get("map_switching_slot")
+    if source is not None:
+        lines = [
+            f'{hexa(m["addr"])}  {shape} {m["storagetype"]}  '
+            f'common-definition Map {slot} storage projected from '
+            f'{hexa(source)} '
+            f'[{m["confidence"]}]'
+        ]
+        if slot == 1:
+            lines.append("Map 1 uses canonical stock storage")
+        else:
+            lines.append(
+                "Stock firmware does not reference this erased allocation; "
+                "runtime use requires the project map-switching patch"
+            )
+    else:
+        lines = [f'{hexa(m["addr"])}  {shape} {m["storagetype"]}  '
+                 f'map [{m["confidence"]}]{via}']
     if m["accessors"]:
-        lines.append("accessor " + ", ".join(hexa(a) for a in sorted(m["accessors"]))
+        prefix = "canonical accessor " if source is not None else "accessor "
+        lines.append(prefix + ", ".join(hexa(a) for a in sorted(m["accessors"]))
                      + "; r4 operand: " + ", ".join(sorted(m["resolver_kinds"])))
+    if source is not None:
+        lines.append(
+            "Runtime redirection and storage ownership - "
+            "patches/map-switching-selector.md"
+        )
     scale = f'scaling {m["scale_expr"]} {m["units"]}'
     if m["scale_conf"]:
         scale += f' [{m["scale_conf"]}]'
@@ -549,9 +576,17 @@ def masked_view_xml(m, view, ovr, axes, rom):
     else:
         size = [f'sizex="{m["width"]}"']
     shape = (f'{m["width"]}x{m["height"]}' if m["dims"] == 2 else f'{m["width"]}')
+    source_address = m.get("map_switching_source")
+    source_text = (
+        f'; common-definition Map {m["map_switching_slot"]} storage '
+        f'projected from '
+        f'{hexa(source_address)}'
+        if source_address is not None
+        else ""
+    )
     lines = [
         f'{hexa(m["addr"])}  {shape} {m["storagetype"]}  masked view '
-        f'0x{view["mask"]} [{m["confidence"]}]',
+        f'0x{view["mask"]} [{m["confidence"]}]{source_text}',
         f'Semantics source: {m["semantics"]}',
     ]
     _, diagnostic = diagnostic_context.summarize(
@@ -641,6 +676,40 @@ def table_emit_enabled(entry, default, address=None):
     return value
 
 
+def map_switching_enabled(overrides):
+    """Return whether the common definition includes map-switching slots."""
+    config = overrides.get("map_switching")
+    if config is None:
+        return False
+    if not isinstance(config, dict):
+        sys.exit("map_switching must be a TOML table")
+    unknown = sorted(set(config) - set(MAP_SWITCHING_FIELDS))
+    if unknown:
+        sys.exit(
+            "map_switching contains unknown fields "
+            + ", ".join(unknown)
+        )
+    enabled = config.get("enabled", False)
+    if not isinstance(enabled, bool):
+        sys.exit("map_switching.enabled must be a boolean")
+    return enabled
+
+
+def apply_definition_projections(rom, maps, overrides):
+    """Apply optional derived layouts inside the common ROM definition."""
+    if not map_switching_enabled(overrides):
+        return maps, overrides, None
+    layout = map_switching.load_layout()
+    if layout.rom != rom:
+        sys.exit(
+            f"map-switching layout targets {layout.rom}, not {rom}"
+        )
+    projection = map_switching.project_definition_model(
+        maps, overrides, layout
+    )
+    return projection.maps, projection.overrides, projection
+
+
 def emittable(m, axes, ovr=None):
     """Return the section 9 emission-gate failure reason, or None when a map can be emitted."""
     ovr = ovr or {}
@@ -696,6 +765,10 @@ def main():
         ovr = tomllib.load(f)
 
     maps, axes = fetch(rom)
+    catalog_map_count = len(maps)
+    maps, ovr, switching_projection = apply_definition_projections(
+        rom, maps, ovr
+    )
     table_overrides = ovr.get("table", {})
     if not isinstance(table_overrides, dict):
         sys.exit(f"{os.path.basename(ovr_path)}: table must be a TOML table")
@@ -797,6 +870,10 @@ def main():
     if dtc_entries:
         sources.append(f"defs/{rom}.dtc.csv (DTC)")
     sources.append(f"defs/{rom}.overrides.toml (presentation)")
+    if switching_projection is not None:
+        sources.append(
+            "patches/map-switching-layout.toml (common map-switching slots)"
+        )
     head = [comment([f"RomRaider definition for {rom}. Generated by tools/mapkit/emit_def.py from "
                      + ", ".join(sources) + ".",
                      "Edits to this file do not survive the next run.",
@@ -873,9 +950,17 @@ def main():
     cand = [m for m in emit if m["scale_conf"] and m["scale_conf"] != "code"]
     print(f"  scaling not established by code: {len(cand)} "
           f"({', '.join(hexa(m['addr']) for m in cand)})")
-    print(f"  catalog: {len(maps)} maps; visible: {len(emit)}; "
+    print(f"  catalog: {catalog_map_count} maps; "
+          f"projected model: {len(maps)} maps; visible: {len(emit)}; "
           f"hidden by presentation: {len(hidden)}; "
           f"rejected by interpretation gate: {len(skipped)}")
+    if switching_projection is not None:
+        print(
+            "  common map-switching definition: "
+            f"slot tables={switching_projection.slot_table_count}; "
+            f"slot masked views={switching_projection.slot_masked_view_count}; "
+            f"slot editor views={switching_projection.slot_editor_view_count}"
+        )
     for a, sem, why in skipped:
         print(f"    {hexa(a)} {sem}: {why}")
     nosem = sum(1 for m in maps.values() if not m["semantics"] and m["role"] == "table")

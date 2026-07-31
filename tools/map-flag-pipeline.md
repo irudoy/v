@@ -634,7 +634,7 @@ value, and conversion first. With the JK08A exact-code export and tracked
 diagnostic corpus, it reports 397 review candidates across 383 known DIDs; 58
 candidate rows occur in functions containing more than one known DID.
 
-The JK08A binding projection contains 37 reviewed claims:
+The JK08A binding projection contains 41 reviewed claims:
 
 - engine speed at `0xFFFF11AE` has `code` association and homologous VQ35HR
   monitor applicability;
@@ -663,6 +663,10 @@ The JK08A binding projection contains 37 reviewed claims:
   at `0xFFFF2C56` bit 4. These values provide observable feedback for validating
   the `0x942C` throttle-limiter candidate without asserting a static edge from
   the limiter request coordinate to the feedback producers;
+- exact UDS DIDs `0x130D` and `0x130E` expose ASCD switch and lamp status at
+  `0xFFFF2A83` and `0xFFFF2A84`. Stable one-hot switch code `0xFFFF2A85` is
+  accepted after five equal samples and feeds the exact P1564 monitor at
+  `0x913D0`;
 - knock-monitor maps `0xABBA` and `0xABFA`, function `0xA52E4`, and state byte
   `0xFFFF4204` have exact-ROM, code-traced links to P0327, P0328, P0332, and
   P0333.
@@ -673,8 +677,8 @@ runtime writer. For intake CVTC, exact code proves
 diagnostic definitions supply candidate conversion `raw*0.5-64 degCA`; hardware
 validation remains required. Unsupported community candidates `0x1211/0x1212`
 and `0x1127/0x1128` are excluded because the exact JK08A pointer tables contain
-`0xFFFFFFFF` for those DIDs. JK03A receives the seventeen exact-code claims and
-none of the twenty exact-ROM DTC claims.
+`0xFFFFFFFF` for those DIDs. JK03A receives the nineteen exact-code claims and
+none of the twenty-two exact-ROM DTC claims.
 
 The static milestone ends at `code`. `silicon` is rejected by the loader, and
 hardware-loop verification is not a completion gate for this stage.
@@ -839,6 +843,16 @@ live presentation layer. JK03A remains a graph measurement layer without separat
 The presentation layer may define `presentation.default_emit = false` and opt individual
 tables in with `emit = true`. This produces a stable tuner-facing allowlist while preserving
 the complete reverse-engineering catalog in the graph and ledger.
+
+For JK08A, `[map_switching].enabled = true` expands selected calibration families into
+Map 1 through Map 5 inside the common `JK08A` definition identity. The canonical graph
+catalog remains unchanged at 446 maps. The projected editor model contains 478 maps:
+Map 1 reuses each canonical stock address, while Map 2 through Map 5 use the erased flash
+allocations declared in `patches/map-switching-layout.toml`. Those additional slots contain
+`0xFF` and are inactive under stock firmware; the map-switching patch is required before
+they can affect runtime behavior. The slot number is part of each table name, while every
+copy remains in the canonical functional category beside the original calibration family.
+No separate map-switching definition identity is emitted.
 
 The `defs/<rom>.maps.csv` ledger is a projection of the same catalog through
 `tools/maps/build_tracker.py`: a reviewable graph snapshot visible in diffs and the analysis
@@ -1112,7 +1126,11 @@ the current user-facing definition for the exact-code JK03A ROM:
   elements; geometry and element type remain facts in `findings.csv`. An implicit
   one-dimensional map may define `static_axis` labels that replace the generated raw
   input nodes when a physical conversion is reviewed; its implicit step and geometry
-  remain graph facts. A
+  remain graph facts. The optional `[map_switching]` table enables a definition-only
+  projection from `patches/map-switching-layout.toml`. The projection retains the
+  canonical ROM identity, uses canonical storage for Map 1, and adds Map 2 through
+  Map 5 at their reserved addresses without adding speculative `:Map` nodes to the
+  graph. A
   `[[masked_view]]` array creates an additional view of the same cells: `source`
   references an emitted map, its separate `mask` does not overlap the primary table
   mask, and shape and axes are reused from the Map fact. This exposes a value field and
@@ -1194,15 +1212,18 @@ applies to the other half of this mechanism: a branch-selected axis. `0x14114` c
 two axes on one edge (`0xE98E` and `0x8000`, where the flash is erased), and
 backtracking alone reports both.
 
-The working definition selects 12 of the 446 catalog maps and adds three masked
-ignition views. It emits no standalone reference axes. The other 434 maps remain
-available for reverse engineering in the graph and ledger. The catalog contains 306
-`code` maps and 140 `candidate` maps. Semantics are present for 389 maps and
-`scale_expr` for 355. The ledger has 57 open `candidate` maps without semantics. The
-`vals` column divides this work: 17 open maps contain one value across the entire
-table. `mapkit` also closes Stage 5 `:MATCHES`: reading the axes, rather than the
-catalog, provides match keys such as scale family and axis semantics. Cross-ROM
-homology, the second half of P7, awaits resolution of 1ND0A.
+The canonical working allowlist selects 12 of the 446 catalog maps and adds three
+masked ignition views. The common JK08A projection expands eight selected calibration
+families into 40 Map 1 through Map 5 tables and two masked families into ten slot views.
+The emitted definition therefore contains 44 calibration tables and 11 masked views
+without standalone reference axes. The other 434 canonical maps remain available for
+reverse engineering in the graph and ledger. The catalog contains 306 `code` maps and
+140 `candidate` maps. Semantics are present for 389 maps and `scale_expr` for 355. The
+ledger has 57 open `candidate` maps without semantics. The `vals` column divides this
+work: 17 open maps contain one value across the entire table. `mapkit` also closes
+Stage 5 `:MATCHES`: reading the axes, rather than the catalog, provides match keys such
+as scale family and axis semantics. Cross-ROM homology, the second half of P7, awaits
+resolution of 1ND0A.
 
 ## 11. Metrics and effectiveness gates
 
@@ -1216,9 +1237,9 @@ sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 | No regression against backtracking | sites where backtracking returned an in-ROM value but data flow did not | n/a -> **1, reviewed** (`0x56cd8`: value from an unreachable branch, not a base) | all reviewed |
 | Latent catalog defects | number of `conflict` results (`bt != df` at a site) | not measured -> **14, all reviewed** (6 base conflicts: reference wrong in every case; 3: unreachable branch and stale registers; 5: `mov.w` constant read as 32-bit by the reference). Four more base differences moved out of this class after operand-set expansion (section 6): the mechanisms selected different branches of one selector | all reviewed |
 | Catalog completeness | number of `:Map` nodes against known inventory; 0 maps outside graph | 223 bases in ledger, 0 in graph -> **446 of 446 in graph** across census and manual families; three dynamic call sites create no speculative map | every catalog map in graph; dynamic bases remain explicit |
-| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: the working allowlist emits 12 `code` maps and three masked views; it emits no standalone reference axes | 0 unmarked |
+| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: the common definition emits 44 `code` maps and 11 masked views; it emits no standalone reference axes | 0 unmarked |
 | Catalog geometry | number of `:Map` nodes without `storagetype`, which prevents emission | 66 of 441, all 2D -> **0**: 2D element type comes from the finisher | 0 |
-| Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **9** of 12; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
+| Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **33** of 44; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
 | Deferred axes | number of `pattern`-level `:Axis` nodes reported only by backtracking with `k5`/`k6=sp` | not measured -> **14 of 229**; `0x8000` is erased flash; none pass emission | 0; Stage 6 resolves them |
 | Axis against core code | number of `:Axis` nodes with `monotonic=false`; reverse linear search cannot read such an array | not measured -> **1 of 229** (`0x119B2`; its map `0x9C5A` is entirely `0xFF`). This caught an axis element declared from the core rather than the wrapper/axis pair: 2 of 22 wrappers and 2 axes had been read as words instead of bytes | 0 |
 | Measured layer | number of `:Map`/`:Axis` nodes without values from the image, meaning shape without contents | not tracked -> **0 of 446 and 229**: the same run that builds the layer reads the image | 0; a read miss stops loading |
@@ -1242,8 +1263,8 @@ anywhere in the graph. It is a separate diagnostic, not a condition of local bac
 
 | Metric | Check | JK08A fact | Target |
 |--------|-------|------------|--------|
-| Source claims | strict rows across all four CSV files | **1121**; manual files contain 325 annotated functions in `funcs.csv`, 249 variables in `vars.csv`, 389 map findings in `findings.csv`, and 24 axis findings in `axes.csv` | entire schema resolves |
-| Evidence projection | expected against actual by complete edge key | **3397 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
+| Source claims | strict rows across all four CSV files | **1131**; manual files contain 328 annotated functions in `funcs.csv`, 256 variables in `vars.csv`, 389 map findings in `findings.csv`, and 24 axis findings in `axes.csv` | entire schema resolves |
+| Evidence projection | expected against actual by complete edge key | **3424 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
 | Local code-layer gate | `code`/`silicon` Func/Reg/Map/Axis without factual evidence | **0**; frozen debt of Map semantics 52, Map scale 20, and Axis scale 6 is closed | 0 |
 | Weakest link | `code`/`silicon` where effective level is below declared | **0**; all `code` claims retain their declared level | 0 |
 | Transitive grounding | `code`/`silicon` without a terminal, structural support, or grounded leaf | **0** | 0 |
