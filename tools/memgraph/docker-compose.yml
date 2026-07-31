@@ -28,6 +28,7 @@ services:
       - "--storage-snapshot-retention-count=3"
       - "--storage-wal-enabled=true"            # WAL between snapshots
       - "--data-recovery-on-startup=true"       # graph recovery on startup
+      - "--schema-info-enabled=true"            # runtime schema introspection for MCP agents
       - "--log-level=WARNING"
     volumes:
       - ./data/lib:/var/lib/memgraph   # snapshots + WAL (graph persistence)

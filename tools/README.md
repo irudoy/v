@@ -119,7 +119,8 @@ The `.mcp.json` file is at the repository root but excluded by the global gitign
 on a new machine with the command below. The server is **headless-native**: Memgraph is a server
 and requires no GUI, so this MCP works in autonomous runs. It operates in **read-only** mode:
 `CREATE/MERGE/DELETE/SET/DROP/REMOVE` are blocked server-side, and only
-`memgraph/load_*.py` loaders write to the graph.
+`memgraph/load_*.py` loaders write to the graph. The compose configuration enables
+`--schema-info-enabled=true`, allowing MCP schema discovery through `SHOW SCHEMA INFO`.
 
 ```bash
 claude mcp add memgraph --scope project \
