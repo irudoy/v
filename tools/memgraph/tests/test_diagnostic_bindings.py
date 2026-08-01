@@ -99,8 +99,8 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 41)
-        self.assertEqual(len(inherited), 19)
+        self.assertEqual(len(rows), 45)
+        self.assertEqual(len(inherited), 23)
         self.assertEqual(
             sum(row["rom_scope"] == "exact-rom" for row in rows), 22
         )
@@ -112,12 +112,17 @@ class BindingSourceTest(unittest.TestCase):
                 row["id"]
                 for row in rows
                 if row["id"].startswith((
+                    "ignition-timing-did-",
                     "injection-pulse-",
                     "intake-valve-",
                     "accelerator-pedal-position-",
                 ))
             },
             {
+                "ignition-timing-did-1107",
+                "ignition-timing-did-1108",
+                "ignition-timing-did-1109",
+                "ignition-timing-did-110a",
                 "injection-pulse-bank-1",
                 "injection-pulse-bank-2",
                 "intake-valve-timing-bank-1",
@@ -142,6 +147,22 @@ class BindingSourceTest(unittest.TestCase):
             "writes:000bd9f0@structural",
             by_id["intake-valve-timing-bank-1"]["evidence"],
         )
+        for binding_id in (
+            "ignition-timing-did-1107",
+            "ignition-timing-did-1108",
+            "ignition-timing-did-1109",
+            "ignition-timing-did-110a",
+        ):
+            self.assertEqual(by_id[binding_id]["firmware_addr"], "ffff2022")
+            self.assertEqual(by_id[binding_id]["rom_scope"], "exact-code")
+            self.assertIn(
+                "writes:0004df82@structural",
+                by_id[binding_id]["evidence"],
+            )
+            self.assertIn(
+                "from_map:000147da@structural",
+                by_id[binding_id]["evidence"],
+            )
         self.assertEqual(
             {
                 row["id"]

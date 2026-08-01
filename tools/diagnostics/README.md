@@ -180,6 +180,11 @@ The generated `diagnostic-binding-candidates.csv` is a review artifact outside
 Git. It is deliberately incompatible with the binding loader. A DID literal
 and same-function RAM reference remain candidates until a dispatcher-to-response
 data-flow trace establishes the request path, returned value, and conversion.
+With the current corpus of 383 known service `0x22` DIDs, the JK08A export
+produces 937 source-specific rows. Collapsing duplicate diagnostic claims leaves
+197 distinct firmware reference hits for 34 matched DIDs; 58 hits occur in
+functions containing more than one known DID. These are queue metrics, not
+reviewed bindings.
 
 `TraceRamAccesses.java` resolves decompiler p-code LOAD/STORE effective
 addresses and constant call arguments for a selected RAM range. Optional
@@ -195,9 +200,26 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -postScript TraceRamAccesses.java "$D" ffff128c ffff4fff --candidates
 ```
 
-The reviewed JK08A projection binds DIDs `0x1206` and `0x1207` to the
-big-endian injection pulse values at `0xFFFF23C8` and `0xFFFF23CA`, and DID
-`0x1135` to intake valve timing bank 1 at `0xFFFF2442`.
+The reviewed JK08A projection binds DIDs `0x1107` through `0x110A` to the
+common ignition-timing response byte at `0xFFFF2022`, DIDs `0x1206` and
+`0x1207` to the big-endian injection pulse values at `0xFFFF23C8` and
+`0xFFFF23CA`, and DID `0x1135` to intake valve timing bank 1 at `0xFFFF2442`.
+
+The four ignition DIDs are exact aliases in pointer-table locations
+`0x226C8..0x226D4`. `FUN_0004DF82` normally writes
+`110 - uint8[0xFFFF11D4]` to `0xFFFF2022`. A community formula for DID
+`0x110A` applies `110 - raw`, exactly inverting this normal firmware transform.
+Gated control modes add or subtract stock offsets with saturation, or force a
+fixed value, so the affine relation is not universal.
+
+The upstream code path is
+`0x147DA -> FUN_0004D99C -> 0xFFFF12D6 -> FUN_0004DBE8 ->`
+`0xFFFF11D4 -> FUN_0004DF82 -> 0xFFFF2022 -> FUN_0003235C`.
+This establishes map `0x147DA` as a conditional subtractive correction in the
+internal ignition-timing coordinate. The exact operating-mode qualifier,
+physical degree unit, and producer of axis input `0xFFFF237E` remain unresolved.
+The full p-code scan finds one read and no exact or base-plus-offset writer for
+that axis input.
 
 `FUN_0004EBA2` is the exact runtime producer of six consecutive pulse words at
 `0xFFFF23C8+2*i`. It selects an even/odd base, adds a signed per-channel

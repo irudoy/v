@@ -1188,7 +1188,7 @@ the code boundary. Shape matching to the catalog entry `Cranking Base Fuel Sched
 Table` and multiplier `x*0.000488 BFS` remain candidate evidence only.
 
 
-### UDS SID 0x22 injection and intake-CVTC response paths
+### UDS SID 0x22 ignition, injection, and intake-CVTC response paths
 
 The exact JK08A UDS dispatcher and ReadDataByIdentifier handler establish the
 request-to-RAM path independently of public PID lists:
@@ -1199,6 +1199,32 @@ request-to-RAM path independently of public PID lists:
   table at `0x2289C`. A normal `0x11xx` entry returns one byte. A normal `0x12xx`
   entry returns two consecutive bytes in big-endian order. Both paths emit
   positive response SID `0x62`.
+- Entries `0x1107`, `0x1108`, `0x1109`, and `0x110A` at pointer-table locations
+  `0x226C8..0x226D4` all address byte `0xFFFF2022`. They are exact aliases for
+  one firmware value, not four independent runtime coordinates.
+  `FUN_0004DF82` normally writes
+  `ROM8[0x83D5] - uint8[0xFFFF11D4]`, where stock `ROM8[0x83D5] = 110`.
+  A community definition for DID `0x110A` uses display conversion `110 - raw`,
+  exactly inverting the normal firmware transform. Other control modes add
+  stock `ROM8[0x8C95] = 10` with saturation, subtract stock
+  `ROM8[0x83EA] = 30` and cap by stock `ROM8[0x864A] = 80`, or force
+  `110 - 20 = 90`. The single affine formula therefore describes only the
+  normal response path.
+- The upstream data flow closes a calibration-to-diagnostic slice:
+  `0x147DA -> FUN_0004D99C -> 0xFFFF12D6 -> FUN_0004DBE8 ->`
+  `0xFFFF11D4 -> FUN_0004DF82 -> 0xFFFF2022 -> FUN_0003235C ->`
+  DIDs `0x1107..0x110A`. Map `0x147DA` is a `1D-8` uint16 table with stock
+  values `0, 5, 6, 7, 8, 9, 10, 11` and explicit axis `0x13C48`.
+  `FUN_0004D99C` interpolates it by word `0xFFFF237E`, stores the raw result in
+  `0xFFFF2000`, multiplies by a selected byte coefficient, divides by 100,
+  subtracts the quotient from a signed intermediate, clamps to `[-128, 127]`,
+  and writes `0xFFFF12D6`. `FUN_0004DBE8` conditionally includes that correction
+  while forming final internal ignition-timing coordinate `0xFFFF11D4`.
+  This establishes the narrow ignition-timing correction role at `code`
+  confidence. The specific operating mode, physical degree unit, and producer
+  of axis input `0xFFFF237E` remain unresolved. A full p-code scan of all 2,315
+  defined functions found only the read at `0x4DA82`, with no exact or
+  base-plus-offset writer.
 - Entries `0x1206` and `0x1207` point to `0xFFFF23C8` and `0xFFFF23CA`.
   `FUN_0004ECAC` calls `FUN_0004EAD4` for two base terms and then calls
   `FUN_0004EBA2` for channel indices 0..5. `FUN_0004EBA2` writes the six
@@ -1565,6 +1591,11 @@ uint16 range 15..55, reaches the sum as addend `uVar8` through `mul.l`/`0x21ce0`
 Its exact role, whether knock limit, torque ratio, or timing limit, is unresolved.
 Base maps use index `ffff11b2`; corrections use `ffff106f`. These are two different
 inputs, so the cluster has no single "engine speed" axis.
+
+The exact SID `0x22` ignition-timing response path uses internal coordinate
+`ffff11d4` and response byte `ffff2022`. No direct data-flow edge from the
+`ffff23ee` accumulator to that path is established. The `ffff23ee` association
+with the factory `IGN TIMING` monitor therefore remains a separate candidate.
 
 
 ### Rate-limited speed hysteresis (accessor FUN_0006205c)
