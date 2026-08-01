@@ -1561,6 +1561,58 @@ only the 12-byte descriptor. Generator `emit_def.py` emits only the P1610 descri
 switch in RomRaider and only the descriptor entry in both TunerPro patch scopes.
 
 
+### Exact rear O2 and catalyst monitor paths
+
+The exact JK08A descriptor indices close the rear O2 monitor paths without assigning
+a physical scale to the internal working bytes:
+
+- `FUN_00089D92(bank)` calls common fault dispatcher `FUN_0007D8B8` with indices
+  `0xA7/0xA8` for P0139/P0159, `0xAB/0xAC` for P0137/P0157, and
+  `0xA9/0xAA` for the path-A P0138/P0158 descriptors. The corresponding
+  records are `0x19B34..0x19B70`.
+- P0139/P0159 is selected when either bank-indexed byte at `0xFFFF26E9` or
+  `0xFFFF26EB` is below `ROM8[0x851B] = 0x80`. P0137/P0157 is selected when
+  `0xFFFF2726[bank] < ROM8[0x8ABE] = 0x24`. Path-A P0138/P0158 is selected
+  when `0xFFFF2724[bank] >= ROM8[0x8ABD] = 0xFF`.
+- `FUN_0008A258(bank)` implements a second high-condition path. Working arrays
+  `0xFFFF42B0[bank]` and `0xFFFF42B2[bank]` reload from
+  `ROM8[0x8BCE] = 5`; a zero in either array under the monitor gates dispatches
+  index `0xAD/0xAE`. Exact records `0x19B7C/0x19B88` contain the second
+  P0138/P0158 pair.
+- `FUN_00089A88` compares the same primary values on complementary outcomes but
+  calls `FUN_000B4EF8`, not common fault dispatcher `0x7D8B8`. Its call alone is
+  not labeled as a pass or fail operation.
+
+A whole-program `TraceRamAccesses.java` pass over all 2,315 defined functions found
+the indexed reads and reset stores for `0xFFFF26E9`, `0xFFFF26EB`, `0xFFFF2724`,
+and `0xFFFF2726`, but no direct runtime producer. `FUN_00089310` initializes the
+first three values to zero and `0xFFFF2724` to `0xFF`; `FUN_0008AA46` repeats the
+reset. Runtime production is pointer-mediated or otherwise unresolved. These bytes
+are therefore documented as exact monitor metrics, not as raw sensor voltage or a
+time quantity.
+
+Two direct catalyst-efficiency dispatch paths are present:
+
+- `FUN_000A2254` selects a bank from runtime state and calls `FUN_0007D8B8` with
+  index `0x11` or `0x12`. Exact descriptor records `0x1942C` and `0x19438`
+  contain P0420 and P0430.
+- Per-bank dispatcher `FUN_000A38DC` calls metric producer `FUN_000A2D66`, limit
+  producer `FUN_000A2EE4`, and evaluator `FUN_000A2F56` in order.
+  `FUN_000A2D66` scales a bank byte, accumulates a saturated uint16 sum, divides
+  it by the bank sample count, caps the average at 255, and writes
+  `0xFFFF314D[bank]`. `FUN_000A2EE4` interpolates 1D-8 uint8 table `0x11FB6`
+  by byte `0xFFFF11B2` and writes `0xFFFF2B6F[bank]`. `FUN_000A2F56` calls the
+  common fault dispatcher only when unsigned metric `0xFFFF314D[bank]` is below
+  that limit.
+
+All eight stock cells at `0x11FB6` are zero. An unsigned byte cannot be below zero,
+so this calibrated P0420/P0430 branch is statically unreachable in unmodified JK08A.
+The independent `FUN_000A2254` result path remains present. Code proves the table's
+narrow operational association and stock liveness result; it does not prove the
+physical quantity, engineering unit, or the effect of changing this calibration on
+hardware.
+
+
 ## Candidate areas [CANDIDATE] - require confirmation from code
 
 - Ignition timing: trio `0x991A`/`0x9A1A`/`0x9B1A` is annotated at `code`
@@ -1568,7 +1620,7 @@ switch in RomRaider and only the descriptor entry in both TunerPro patch scopes.
   `0xB61A`/`0xB71A`/`0xB81A` contains thresholds for the crankshaft-rotation
   nonuniformity monitor and does not enter the ignition path.
 - Strong pointer anchors without attribution: `0x0975A` with 13 references and
-  `0x11FB6` / `0x11EBE` with 3 each. Pointer clusters in `0x16000..0x163xx` form a
+  `0x11EBE` with 3. Pointer clusters in `0x16000..0x163xx` form a
   calibration region for fuel/torque.
 - Limiter physical closure: `0x942C` has a continuous code path through the signed
   limiter arbiter and controller stages to shared request coordinate `ffff19c6`.

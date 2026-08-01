@@ -151,6 +151,23 @@ The current static milestone has no hardware-loop completion gate. The binding
 loader therefore cannot emit `silicon`; a later hardware-backed workflow may
 add that level under a separate evidence contract.
 
+The exact-ROM portion includes code-traced rear O2 and catalyst monitor slices.
+`FUN_00089D92` dispatches the P0139/P0159, P0137/P0157, and first
+P0138/P0158 descriptor pairs from bank-indexed metrics at `0xFFFF26E9`,
+`0xFFFF26EB`, `0xFFFF2726`, and `0xFFFF2724`. `FUN_0008A258` dispatches the
+second P0138/P0158 pair from two bank-indexed working arrays at `0xFFFF42B0`
+and `0xFFFF42B2`. The duplicate P0138/P0158 rows preserve their distinct exact
+descriptor claims rather than collapsing the two firmware paths.
+
+For catalyst efficiency, `FUN_000A2254` independently dispatches descriptor
+indices `0x11/0x12` for P0420/P0430. A separate calibrated branch runs
+`0x11FB6 -> FUN_000A2EE4 -> 0xFFFF2B6F[bank]`, compares bank metric
+`0xFFFF314D[bank]` in `FUN_000A2F56`, and dispatches the same DTC pair only when
+the unsigned metric is below the limit. All eight stock cells at `0x11FB6` are
+zero, so this particular below-limit fault branch is unreachable in unmodified
+JK08A. The independent `FUN_000A2254` result path remains present. Internal
+metric units and hardware behavior after calibration changes are unresolved.
+
 Map worklist and definition generators render both direct Map bindings and
 bindings reachable through a Map or Axis `RESTS_ON` path. Indirect context is
 marked with its path and evidence role, such as

@@ -99,10 +99,10 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 49)
+        self.assertEqual(len(rows), 81)
         self.assertEqual(len(inherited), 27)
         self.assertEqual(
-            sum(row["rom_scope"] == "exact-rom" for row in rows), 22
+            sum(row["rom_scope"] == "exact-rom" for row in rows), 54
         )
         self.assertTrue(
             any(row["kind"] == "calibration_context" for row in rows)
@@ -137,6 +137,69 @@ class BindingSourceTest(unittest.TestCase):
             },
         )
         by_id = {row["id"]: row for row in rows}
+        rear_o2_and_catalyst_ids = {
+            "rear-o2-main-slow-response-p0139",
+            "rear-o2-main-slow-response-p0159",
+            "rear-o2-main-low-p0137",
+            "rear-o2-main-low-p0157",
+            "rear-o2-main-high-a-p0138",
+            "rear-o2-main-high-a-p0158",
+            "rear-o2-alt-high-b-p0138",
+            "rear-o2-alt-high-b-p0158",
+            "rear-o2-slow-metric-a-p0139",
+            "rear-o2-slow-metric-a-p0159",
+            "rear-o2-slow-metric-b-p0139",
+            "rear-o2-slow-metric-b-p0159",
+            "rear-o2-low-metric-p0137",
+            "rear-o2-low-metric-p0157",
+            "rear-o2-high-a-metric-p0138",
+            "rear-o2-high-a-metric-p0158",
+            "rear-o2-high-b-working-a-p0138",
+            "rear-o2-high-b-working-a-p0158",
+            "rear-o2-high-b-working-b-p0138",
+            "rear-o2-high-b-working-b-p0158",
+            "catalyst-result-dispatch-p0420",
+            "catalyst-result-dispatch-p0430",
+            "catalyst-limit-monitor-p0420",
+            "catalyst-limit-monitor-p0430",
+            "catalyst-limit-accessor-p0420",
+            "catalyst-limit-accessor-p0430",
+            "catalyst-limit-table-p0420",
+            "catalyst-limit-table-p0430",
+            "catalyst-limit-state-p0420",
+            "catalyst-limit-state-p0430",
+            "catalyst-metric-p0420",
+            "catalyst-metric-p0430",
+        }
+        self.assertEqual(
+            {
+                row["id"]
+                for row in rows
+                if row["id"].startswith(("rear-o2-", "catalyst-"))
+            },
+            rear_o2_and_catalyst_ids,
+        )
+        for binding_id in rear_o2_and_catalyst_ids:
+            self.assertEqual(by_id[binding_id]["rom_scope"], "exact-rom")
+            self.assertEqual(
+                by_id[binding_id]["applicability"], "exact_rom"
+            )
+        self.assertEqual(
+            by_id["rear-o2-main-high-a-p0138"]["source_claim_id"],
+            "jk08a:00019b4c",
+        )
+        self.assertEqual(
+            by_id["rear-o2-alt-high-b-p0138"]["source_claim_id"],
+            "jk08a:00019b7c",
+        )
+        self.assertEqual(
+            by_id["catalyst-limit-table-p0420"]["firmware_addr"],
+            "00011fb6",
+        )
+        self.assertIn(
+            "consumer:000a2f56@confidence",
+            by_id["catalyst-limit-table-p0420"]["evidence"],
+        )
         for binding_id in (
             "injection-pulse-bank-1",
             "injection-pulse-bank-2",
