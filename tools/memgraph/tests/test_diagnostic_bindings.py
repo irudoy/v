@@ -99,8 +99,8 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 45)
-        self.assertEqual(len(inherited), 23)
+        self.assertEqual(len(rows), 49)
+        self.assertEqual(len(inherited), 27)
         self.assertEqual(
             sum(row["rom_scope"] == "exact-rom" for row in rows), 22
         )
@@ -113,6 +113,8 @@ class BindingSourceTest(unittest.TestCase):
                 for row in rows
                 if row["id"].startswith((
                     "ignition-timing-did-",
+                    "short-term-fuel-trim-",
+                    "long-term-fuel-trim-",
                     "injection-pulse-",
                     "intake-valve-",
                     "accelerator-pedal-position-",
@@ -123,6 +125,10 @@ class BindingSourceTest(unittest.TestCase):
                 "ignition-timing-did-1108",
                 "ignition-timing-did-1109",
                 "ignition-timing-did-110a",
+                "short-term-fuel-trim-bank-1-did-1123",
+                "short-term-fuel-trim-bank-2-did-1124",
+                "long-term-fuel-trim-bank-1-did-1125",
+                "long-term-fuel-trim-bank-2-did-1126",
                 "injection-pulse-bank-1",
                 "injection-pulse-bank-2",
                 "intake-valve-timing-bank-1",
@@ -161,6 +167,32 @@ class BindingSourceTest(unittest.TestCase):
             )
             self.assertIn(
                 "from_map:000147da@structural",
+                by_id[binding_id]["evidence"],
+            )
+        fuel_trim_targets = {
+            "short-term-fuel-trim-bank-1-did-1123": (
+                "ffff22dc",
+                "writes:0005c910@structural",
+            ),
+            "short-term-fuel-trim-bank-2-did-1124": (
+                "ffff22de",
+                "writes:0005c910@structural",
+            ),
+            "long-term-fuel-trim-bank-1-did-1125": (
+                "ffff2302",
+                "writes:00057b26@structural",
+            ),
+            "long-term-fuel-trim-bank-2-did-1126": (
+                "ffff2304",
+                "writes:00057b26@structural",
+            ),
+        }
+        for binding_id, (firmware_addr, writer) in fuel_trim_targets.items():
+            self.assertEqual(by_id[binding_id]["firmware_addr"], firmware_addr)
+            self.assertEqual(by_id[binding_id]["rom_scope"], "exact-code")
+            self.assertIn(writer, by_id[binding_id]["evidence"])
+            self.assertIn(
+                "consumer:00035856@structural",
                 by_id[binding_id]["evidence"],
             )
         self.assertEqual(

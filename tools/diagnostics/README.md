@@ -201,9 +201,10 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
 ```
 
 The reviewed JK08A projection binds DIDs `0x1107` through `0x110A` to the
-common ignition-timing response byte at `0xFFFF2022`, DIDs `0x1206` and
-`0x1207` to the big-endian injection pulse values at `0xFFFF23C8` and
-`0xFFFF23CA`, and DID `0x1135` to intake valve timing bank 1 at `0xFFFF2442`.
+common ignition-timing response byte at `0xFFFF2022`, DIDs `0x1123` through
+`0x1126` to the four fuel-trim response words, DIDs `0x1206` and `0x1207` to
+the big-endian injection pulse values at `0xFFFF23C8` and `0xFFFF23CA`, and DID
+`0x1135` to intake valve timing bank 1 at `0xFFFF2442`.
 
 The four ignition DIDs are exact aliases in pointer-table locations
 `0x226C8..0x226D4`. `FUN_0004DF82` normally writes
@@ -220,6 +221,26 @@ internal ignition-timing coordinate. The exact operating-mode qualifier,
 physical degree unit, and producer of axis input `0xFFFF237E` remain unresolved.
 The full p-code scan finds one read and no exact or base-plus-offset writer for
 that axis input.
+
+The fuel-trim pointer entries at `0x22738..0x22744` address words
+`0xFFFF22DC`, `0xFFFF22DE`, `0xFFFF2302`, and `0xFFFF2304`; service `0x22`
+returns each high byte. Exact J1979 handler `FUN_00035856` reads the same words
+for Mode 01 PIDs `0x06`, `0x07`, `0x08`, and `0x09` in standard STFT B1, LTFT
+B1, STFT B2, LTFT B2 order. Each Mode 01 branch returns
+`min(255, floor(word/200))`. This proves an internal percent*256 representation:
+initializer `FUN_000593AC` writes neutral `0x6400`, UDS raw 100 displays as 0
+percent correction through `raw-100`, and Mode 01 raw 128 displays as 0 percent
+through the standard formula.
+
+`FUN_0005C910` publishes the two STFT words from working values
+`0xFFFF40AC/0xFFFF40AE`; an alternate control path forces a common value
+clamped to 75..125 percent. The LTFT path uses 64-word adaptive RAM grids at
+`0xFFFF4B90/0xFFFF4B10`. `FUN_0005796C` selects one cell per bank from an 8x8
+operating-region index, `FUN_00057D1E` updates selected cells within stock
+90..110 percent limits, and `FUN_00057B26` combines the selected cell with a
+bank adjustment around `0x6400` before writing `0xFFFF2302/0xFFFF2304`.
+Fault and control gates can force neutral. The exact meaning of one grid
+coordinate and the learning cadence remain unresolved.
 
 `FUN_0004EBA2` is the exact runtime producer of six consecutive pulse words at
 `0xFFFF23C8+2*i`. It selects an even/odd base, adds a signed per-channel

@@ -1188,7 +1188,7 @@ the code boundary. Shape matching to the catalog entry `Cranking Base Fuel Sched
 Table` and multiplier `x*0.000488 BFS` remain candidate evidence only.
 
 
-### UDS SID 0x22 ignition, injection, and intake-CVTC response paths
+### UDS SID 0x22 ignition, fuel-trim, injection, and intake-CVTC response paths
 
 The exact JK08A UDS dispatcher and ReadDataByIdentifier handler establish the
 request-to-RAM path independently of public PID lists:
@@ -1225,6 +1225,45 @@ request-to-RAM path independently of public PID lists:
   of axis input `0xFFFF237E` remain unresolved. A full p-code scan of all 2,315
   defined functions found only the read at `0x4DA82`, with no exact or
   base-plus-offset writer.
+- Entries `0x1123`, `0x1124`, `0x1125`, and `0x1126` at pointer-table locations
+  `0x22738..0x22744` address the high bytes of big-endian words
+  `0xFFFF22DC`, `0xFFFF22DE`, `0xFFFF2302`, and `0xFFFF2304`. Exact J1979
+  handler `FUN_00035856` independently identifies those words: Mode 01 PIDs
+  `0x06`, `0x07`, `0x08`, and `0x09` read them in the standard order STFT B1,
+  LTFT B1, STFT B2, and LTFT B2. Every branch returns
+  `min(255, floor(word/200))`. Combining this transform with the standard PID
+  scale proves that each internal word represents percent multiplied by 256.
+  Initialization routine `FUN_000593AC` writes `0x6400`, exactly 100 percent,
+  to all four words. The SID `0x22` path returns only each high byte, so the
+  reviewed community conversion `raw - 100` yields signed correction percent
+  with neutral raw 100.
+- `FUN_0005C910` publishes STFT. It first calls the two-bank closed-loop
+  calculation `FUN_0005CBEC`, whose final working words are
+  `0xFFFF40AC/0xFFFF40AE`, and normally copies them to
+  `0xFFFF22DC/0xFFFF22DE`. An alternate control mode takes one byte, clamps it
+  to 75..125, shifts it left by eight, and writes the same forced value to both
+  banks. The exact output routing and scale are established; the narrower
+  physical names of internal feedback terms in `FUN_0005CBEC` remain
+  unresolved.
+- `FUN_0005911C` coordinates the adaptive LTFT path for parameter 0 (bank 1)
+  and parameter 1 (bank 2). `FUN_0005796C` selects one Q8.8-percent cell from
+  a 64-word RAM grid at `0xFFFF4B90` or `0xFFFF4B10`. The 8x8 operating-region
+  index uses word `0xFFFF1024` against ROM thresholds at `0x12592` and
+  engine-speed byte `0xFFFF11AE` against thresholds at `0x126DC`. The RPM
+  thresholds are 0, 1000, 1500, 2200, 3400, 4400, 5400, and 6400 RPM. Selected
+  cells are copied to `0xFFFF2306/0xFFFF2308`; invalid state resets all 64
+  cells of the affected bank to `0x6400`.
+- `FUN_00057D1E` adapts the selected grid cell through a signed step and clamps
+  it to stock limits 90..110 percent from ROM bytes `0x8A9E/0x8A9F`.
+  `FUN_00058168` maintains a second bank term at
+  `0xFFFF5648/0xFFFF564A`. Final producer `FUN_00057B26` calculates
+  `selected_cell + bank_term - 0x6400`, conditionally clamps it to 90..110
+  percent using ROM bytes `0x8E5B/0x8E5A`, forces `0x6400` under fault/control
+  gates, and writes diagnostic LTFT words `0xFFFF2302/0xFFFF2304`. A focused
+  `TraceRamAccesses.java` pass over all 2,315 functions resolved the indexed
+  stores at `0x57C2A`; all functions decompiled successfully. The physical
+  meaning of the `0xFFFF1024` grid dimension and the exact learning cadence
+  remain unresolved.
 - Entries `0x1206` and `0x1207` point to `0xFFFF23C8` and `0xFFFF23CA`.
   `FUN_0004ECAC` calls `FUN_0004EAD4` for two base terms and then calls
   `FUN_0004EBA2` for channel indices 0..5. `FUN_0004EBA2` writes the six
