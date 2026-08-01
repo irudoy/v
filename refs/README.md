@@ -42,10 +42,21 @@ use English while preserving the source structure and technical content.
 - MoTeC M150 datasheet mirror: https://www.milspecwiring.com/DATA%20SHEETS/ECU/M150.pdf
 - UpRev Nissan Tuning Guide: https://uprev.com/wp-content/uploads/2023/05/UpRev-Nissan-Tuning-Guide-Rev2.pdf
 - NissanECU RE wiki mirror under `nissanecu-wiki/`: https://nissanecu.miraheze.org/wiki/Main_Page
+- RomRaider Nissan ECU unbrick and hard-reflash thread under `romraider/`: https://www.romraider.com/forum/viewtopic.php?f=65&t=12821
 - EcuTek Support KB, 370Z ProECU conversion under `ecutek/`: https://ecutek.atlassian.net/wiki/spaces/SUPPORT/pages/7143430
 
 To restore locally, download the PDFs from these URLs into `refs/` and convert
 them to `*.md` with MarkItDown.
+
+## RomRaider Nissan ECU unbrick thread
+
+`romraider/unbrick-hard-reflash-nissan-ecu/` contains a complete Markdown
+mirror of the five-page RomRaider thread `HOW TO: Unbrick and/or Hard Reflash
+Nissan ECU (Step-by-Step)`. The archive contains all **64 posts** and all **48
+content images**, stored locally in an adjacent `images/` directory. Forum
+emoticons are represented by their text alternatives. Two downloadable archive
+attachments were absent from the saved source, so their links still point to
+the original forum. The printable views were retrieved on **2026-08-02**.
 
 ## NissanECU RE wiki local mirror
 
