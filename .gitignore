@@ -3,6 +3,13 @@
 *.swp
 *~
 
+# KiCad local state and automatic backups
+*.kicad_prl
+*-backups/
+.history/
+*.kicad_sch-bak
+*.kicad_pcb-bak
+
 # Temporary / scratch
 scratch/
 tmp/
