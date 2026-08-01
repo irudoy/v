@@ -16,6 +16,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         cls.image = layout_model.validate_image(cls.layout)
 
     def test_manifest_targets_exact_jk08a_and_complete_pilot(self):
+        self.assertEqual(self.layout.schema_version, 2)
         self.assertEqual(self.layout.rom, "JK08A")
         self.assertEqual(self.layout.slot_count, 5)
         self.assertEqual(len(self.layout.families), 8)
@@ -53,6 +54,42 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                     self.layout.byte_order,
                 )
                 self.assertEqual(actual, hook.stock)
+
+    def test_fallback_zero_fill_literal_is_a_read_only_stock_anchor(self):
+        anchor = next(
+            item
+            for item in self.layout.anchors
+            if item.key == "startup_clear_start_stock"
+        )
+        self.assertEqual(anchor.address, 0x000029CC)
+        self.assertEqual(anchor.width, 4)
+        self.assertEqual(anchor.value, 0xFFFF7000)
+        self.assertNotIn(
+            anchor.address,
+            {hook.address for hook in self.layout.hooks},
+        )
+        actual = int.from_bytes(
+            self.image.data[
+                anchor.address : anchor.address + anchor.width
+            ],
+            self.layout.byte_order,
+        )
+        self.assertEqual(actual, anchor.value)
+
+    def test_read_only_anchor_rejects_partial_hook_overlap(self):
+        anchor = self.layout.anchor_by_key["startup_clear_start_stock"]
+        overlapping = replace(
+            self.layout.hooks[0],
+            address=anchor.address + 2,
+        )
+        layout = replace(
+            self.layout,
+            hooks=(overlapping,) + self.layout.hooks[1:],
+        )
+        with self.assertRaisesRegex(
+            ValueError, "read-only anchor overlaps writable range"
+        ):
+            layout_model.validate_structure(layout)
 
     def test_feedback_contract_matches_exact_can_551_serializer(self):
         feedback = self.layout.feedback
@@ -144,12 +181,50 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            386,
+            387,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
             set(),
         )
+
+    def test_assembly_rejects_instruction_outside_sh7058s_sh2e(self):
+        parsed = map_switching_assembly.ParsedSource(
+            Path("synthetic-sh2a-only.s"),
+            {},
+            (
+                map_switching_assembly.SourceStatement(
+                    1, 0xD2108, "instruction", "movli.l @r0,r1", 2
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(
+            ValueError, "outside the audited SH7058S SH-2E subset"
+        ):
+            map_switching_assembly._validate_sh7058s_instruction_subset(
+                parsed
+            )
+
+    def test_startup_wrapper_forces_map_1_on_both_sides_of_initializer(self):
+        parsed = map_switching_assembly.validate_assembly_sources(
+            self.layout
+        )["startup_wrapper"]
+        texts = [
+            statement.text.lower()
+            for statement in parsed.statements
+            if statement.kind == "instruction"
+        ]
+        jsr_indexes = [
+            index for index, text in enumerate(texts) if text == "jsr @r0"
+        ]
+        preinitializer_zero = texts.index("mov #0x0,r0")
+        commit_zero = texts.index("mov #0x0,r4")
+        store_index = texts.index("mov.b r0,@r1")
+        self.assertEqual(len(jsr_indexes), 2)
+        self.assertLess(preinitializer_zero, store_index)
+        self.assertLess(store_index, jsr_indexes[0])
+        self.assertLess(jsr_indexes[0], commit_zero)
+        self.assertLess(commit_zero, jsr_indexes[1])
 
     def test_assembly_blob_lock_rejects_wrong_length_and_hash(self):
         unit = self.layout.assembly_unit_by_key[

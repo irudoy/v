@@ -2,7 +2,7 @@
 // map-switching p-code case from one deterministic in-memory composition.
 //
 // The fixture begins with the exact 1 MiB stock program, applies all seven
-// SHA-locked blobs, 15 hook literals, 32 calibration copies, and eight pointer
+// SHA-locked blobs, 14 hook literals, 32 calibration copies, and eight pointer
 // tables, and verifies the same SHA-256 and write boundary as the Python
 // composer. Every test case receives a fresh emulator state loaded from those
 // complete bytes.
@@ -82,7 +82,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "6afacc1425ebe6de5946255caf3a3a69662c208b49dc75daa11490d4095499d0";
+            "499f25ed560bf8e5bc00138e29ceabf740d2f13303eb07604f2e11b537bebb16";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -166,7 +166,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "1e3b12d0c436fca39d092a7a06e875b12c75fd8a8d000c90a402a27e088b068a"),
         new UnitSpec(
                 "startup_wrapper", 3, 0x000D22A0L, 0x60,
-                "fbab3032582bfced276a09c737de62e0c82e58f28d1a1e17e58d8b4d42474dca"),
+                "352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3"),
         new UnitSpec(
                 "limiter_commit", 4, 0x000D3660L, 0x100,
                 "e1e296e0d2f1dccef21982f14f4e3e1aebdc39fba6b68ae8b3e2ecbc16d5a5aa"),
@@ -179,9 +179,6 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     };
 
     static final HookSpec[] HOOKS = {
-        new HookSpec(
-                "startup_clear_start", 0x000029CCL,
-                0xFFFF7000L, 0xFFFF5D00L),
         new HookSpec(
                 "selector_host_call", 0x000CE8DCL,
                 0x000D09D8L, 0x000D2108L),
@@ -389,8 +386,8 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 + " fixture_sha256=%s cases=%d"
                 + " selector=%d adapters=%d limiter=%d feedback=%d"
                 + " feedback_invocations=%d instructions=%d"
-                + " entries=%d hooks=%d changed_bytes=5371"
-                + " permitted_write_bytes=5884",
+                + " entries=%d hooks=%d changed_bytes=5372"
+                + " permitted_write_bytes=5880",
                 languageId, COMPOSED_SHA, totalCases,
                 selectorCases, adapterCases, limiterCases, feedbackCases,
                 feedbackInvocations, totalInstructions,
@@ -461,7 +458,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 changed++;
             }
         }
-        if (changed != 5371 || permittedBytes != 5884) {
+        if (changed != 5372 || permittedBytes != 5880) {
             throw new IllegalStateException(
                     "composition boundary differs: changed=" + changed
                     + " permitted=" + permittedBytes);
@@ -641,6 +638,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     void runLimiterCase(String name, boolean throughStartup, int requested)
             throws Exception {
         int normalized = requested >= 0 && requested < 5 ? requested : 0;
+        int expectedIndex = throughStartup ? 0 : normalized;
         PcodeEmulator emulator = newCompositeEmulator(name);
         PcodeExecutorState<byte[]> shared = emulator.getSharedState();
         setMemory(shared, STOCK_INITIALIZER, RETURN_STUB);
@@ -669,7 +667,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
 
         int executed = stepUntil(
                 thread, RETURN_ADDRESS, 200, "limiter." + name);
-        if (readRegister(thread, "r4") != normalized) {
+        if (readRegister(thread, "r4") != expectedIndex) {
             throw new IllegalStateException(name + ": normalized r4 differs");
         }
         if (readRegister(thread, "sr") != ENTRY_SR) {
@@ -678,7 +676,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     name, readRegister(thread, "sr"), ENTRY_SR));
         }
         verifyRegisters(thread, protectedRegisters, before, name);
-        verifyLimiterMemory(thread, name, normalized);
+        verifyLimiterMemory(thread, name, expectedIndex);
         limiterCases++;
         limiterInstructions += executed;
     }
@@ -1173,10 +1171,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         }
         int totalInstructions = selectorInstructions + adapterInstructions
                 + limiterInstructions + feedbackInstructions;
-        if (totalInstructions != 4525) {
+        if (totalInstructions != 4530) {
             throw new IllegalStateException(
                     "instruction total is " + totalInstructions
-                    + ", expected 4525");
+                    + ", expected 4530");
         }
         List<String> missing = new ArrayList<>();
         for (long entry : CODE_ENTRIES) {

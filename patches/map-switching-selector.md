@@ -45,16 +45,77 @@ JK08A RomRaider and TunerPro definitions.
 Seven independent SH units are implemented: the selector host, shared
 fail-closed adapter helper, four lookup adapters, startup wrapper, atomic
 limiter transaction, CAN serializer wrapper, and feedback pulse engine. Ghidra
-12.1.2 assembles and round-trip decodes their 386 instructions and 158 literal
-bytes. Its SuperH p-code emulators pass 17 selector, 47 adapter, 14
+12.1.2 assembles and round-trip decodes their 387 instructions and 158 literal
+bytes. The source validator restricts all injected code to the 28 used
+mnemonics listed for the SH7058S SH-2E core in Renesas REJ09B0177 section 2.4.1;
+the SH-2A Ghidra profile cannot introduce an unaudited instruction. Its
+SuperH p-code emulators pass 17 selector, 47 adapter, 14
 startup/limiter, and nine feedback cases. The seven generated raw blobs are
 SHA-256 locked in the layout manifest. Their complete spans are tracked in the
 payload bundle; independently rebuilt raw blobs and listings remain
 regenerable temporary artifacts. The complete-composition harness passes the
-same 87 cases over 4525 instructions, executes all ten declared code entries,
+same 87 cases over 4530 instructions, executes all ten declared code entries,
 and verifies the locked fixture SHA-256 and write boundary. The patcher extends
 this pure composition with input compatibility, checksum recalculation,
 non-overwriting file creation, and final preservation checks.
+
+The differentiated candidate
+`tmp/1JK08A-20260726-map-sw-tune.bin`, SHA-256
+`d61853b7c1f1b2b29d3ccf2a551be8dacebeef65b82b464d0327fc9b11e93e5d`,
+has a hardware result of FAIL. PCMFlash reported a successful write, but the
+modified ECU did not start the engine and did not identify through PCMFlash.
+Installing the stock ECU restored normal engine start on the same vehicle.
+On the bench, the modified ECU produces no application CAN traffic, and
+PCMFlash module 18 cannot identify, read, or write it. A normal complete
+readback is therefore unavailable, and the actually programmed user MAT cannot
+be recovered with the available paths. Native SH7058 boot mode is a separate
+hardware path through SCI and mode/reset pins, but it does not provide a
+pre-erase dump path. Transitioning that mode into its programming/erasing state
+automatically erases the user MAT and user boot MAT, as specified by the
+Renesas hardware manual. A binary comparison cannot establish the root cause
+for this ECU. The pre-fix candidate remains unchanged as a controlled
+reproduction image, not as the current runtime release. A replacement ECU must
+have a recorded baseline, working recovery path, supply-current measurement,
+and complete PCMFlash log before that reproduction write.
+
+The candidate file itself passes the available independent static gates:
+
+- the installed RomRaider `ChecksumALT` implementation verifies 2/2 regions;
+- the installed RomRaider `ChecksumALT2` implementation verifies 4/4 regions;
+- all seven injected code spans, 15 hook literals, and eight pointer tables are
+  byte-identical to the generated map-switching image;
+- the 394 differences from the generated image consist of 12 checksum bytes
+  and 382 calibration bytes, including the global Cold Ignition edits and the
+  manually differentiated slot maps;
+- reset-selection bytes at `0x8000`, `0x8080`, and `0xFFF80..0xFFF87` are
+  identical in the working, generated, and differentiated images.
+
+The reset-fixed successor is
+`tmp/1JK08A-20260726-map-sw-tune-fixed-reset.bin`, SHA-256
+`3e37f03a2ac879714556ab720fa657eb4132d1b22ecdccbb2c4edce631842ced`
+and MD5 `4985aaec122bd62fd9d636346529a953`. It differs from the pre-fix
+candidate at 38 bytes inside the 120-byte upgrade write set: the fallback
+zero-fill literal, startup-wrapper span, and recalculated checksum fields.
+Every calibration byte remains exact. The installed RomRaider independently
+verifies `ChecksumALT` 2/2 and `ChecksumALT2` 4/4. Its hardware status is
+untested.
+
+The official PCMFlash module list declares the SH7058 protocol as a one-MiB
+`RD/WR/CK` protocol rather than a calibration-only protocol. It does not
+publish erase-block selection or post-write comparison behavior. A skipped,
+partially programmed, or otherwise corrupted flash block remains possible but
+cannot be established without the original PCMFlash operation log or a
+readback. No candidate-file difference found in this audit explains the
+complete loss of application startup and PCMFlash identification.
+
+The unresolved evidence branches are the actual programming transaction,
+board-level power/reset/clock state, and behavior inside the hardware-oriented
+initialization calls that the p-code harness must stub. The original PCMFlash
+log can establish which address ranges and verification stages the tool
+reported. Measurements on the failed ECU can classify a power, reset, clock,
+or watchdog failure. A known-working replacement ECU permits staged A/B images
+that isolate allocation, startup, selector, and CAN-feedback hooks. The
+available evidence does not rank these branches.
 
 ## Pilot calibration scope
 
@@ -147,7 +208,10 @@ branch at the accepted-state store `0xCF1B2` is not part of the contract:
 
 The wrapper preserves PR around its nested calls. Injected code uses only
 caller-saved `r0..r7`; it preserves `r8..r14`, GBR, MACH, MACL, and the caller's
-stack layout.
+stack layout. At the exact call site, the following `FUN_000913D0` call has no
+register arguments, and `FUN_000CE854` reloads or overwrites its later
+caller-saved values. No live `r0..r7` value from `FUN_000D09D8` crosses the
+wrapper boundary.
 
 `map-switching-selector-host.s` fills `0xD2108..0xD226F` with 168
 instructions and 24 literal bytes. Its locked SHA-256 is:
@@ -228,24 +292,46 @@ functions with zero decompilation failures.
   reaches the wider `0xFFFF5D00..0xFFFF6FFF` interval.
 - Initial SP is `0xFFFF7FFC`; the candidate state is outside the stack area.
 
-Stock startup function `FUN_0000284E` clears `0xFFFF7000..0xFFFF7247`.
-Literal `0x29CC` is its unique start-address input. The implementation changes:
+Fallback startup function `FUN_0000284E` clears
+`0xFFFF7000..0xFFFF7247`. Literal `0x29CC` is its unique start-address input.
+The pre-fix candidate changed:
 
 ```text
 ROM32[0x29CC]: 0xFFFF7000 -> 0xFFFF5D00
 ```
 
-The same stock loop then clears `0xFFFF5D00..0xFFFF7237`; its following loops
-still clear `0xFFFF7238..0xFFFF7247`. This adds 1216 longword stores before
-normal startup and guarantees map 1 after reset without relying on undefined
-SRAM contents. The additional boot time requires bench measurement.
+The same loop would clear `0xFFFF5D00..0xFFFF7237`; its following loops would
+still clear `0xFFFF7238..0xFFFF7247`. This adds 1216 longword stores on the
+fallback path and clears a continuous range much larger than the declared
+60-byte reservation.
+
+The exact power-on path does not execute this function. `FUN_0000261C` reads
+`ROM8[0x8000]=0xFF` and `ROM8[0x8080]=0xEE`, producing `0xFE`, and matches the
+header marker `ROM32[0xFFF84]=0x4E4855F9`. It enters TRAPA `0x3E`, whose vector
+is `FUN_00027E24`. That handler calls the stock startup thunk and then remains
+in its scheduler loop. It does not return to the fallback call of
+`FUN_00002B8E`, which is the only caller of `FUN_0000284E`. The candidate and
+both comparison images contain identical branch inputs and header marker.
+
+The `0x29CC` hook therefore did not establish a map-1 default on the exact
+normal reset path. The current schema-2 layout removes the write and retains
+`ROM32[0x29CC]=0xFFFF7000` as a read-only input anchor. The startup wrapper
+stores zero to `active_index` before the stock initializer runs, then commits
+map 1 after the initializer returns. Startup lookups and both limiter shadows
+therefore use map 1 without clearing unrelated RAM.
+
+The Python test named `test_reference_model_defaults_to_map_1` expresses this
+required contract through a newly constructed reference-model state. The
+source validator separately requires the zero-store before the first JSR and a
+second zero before the limiter commit. The exact reset harness below executes
+the fixed machine code for all retained selector seeds.
 
 The stock thunk at `FUN_00027CE4` tail-jumps through its unique literal at
 `0x27D28`, which contains `0x0002C648`. The literal changes to `0x000D22A0`.
-The startup wrapper calls `FUN_0002C648`, refreshes both limiter shadows for a
-validated index with map-1 fallback, updates `0xFFFF1796`, and returns with the
-caller's PR and callee-saved registers intact. Repeated calls to the stock
-initializer therefore cannot leave the direct-access paths stale.
+The startup wrapper publishes map 1, calls `FUN_0002C648`, refreshes both
+limiter shadows for map 1, updates `0xFFFF1796`, and returns with the caller's
+PR and callee-saved registers intact. Every invocation re-establishes the
+required reset default.
 
 ## Gesture grammar
 
@@ -505,48 +591,84 @@ all 12 fuel bytes with `MOV.W`. `MOV.L` would violate the SH7058 alignment
 contract for map 1. The throttle cluster begins at aligned `0x09424` and is
 copied as seven longwords before its selected word is replaced.
 
-`map-switching-startup-wrapper.s` occupies `0xD22A0..0xD22FF`. Its 13
+`map-switching-startup-wrapper.s` occupies `0xD22A0..0xD22FF`. Its 14
 instructions and 12 literal bytes produce:
 
 ```text
-fbab3032582bfced276a09c737de62e0c82e58f28d1a1e17e58d8b4d42474dca
+352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3
 ```
 
-The wrapper saves the incoming PR, calls exact stock initializer `0x2C648`,
-reads the retained selector index, calls the atomic commit, restores PR, and
-returns. The source-level validator proves the SR mask/write/publication order,
-word-aligned fuel copies, leaf commit ABI, and both `JSR` delay slots.
+The wrapper saves the incoming PR, publishes map 1 through `r0` without
+changing the initializer's incoming `r4`, calls exact stock initializer
+`0x2C648`, commits map 1 atomically, restores PR, and returns. The
+source-level validator proves both map-1 writes around the initializer, the SR
+mask/write/publication order, word-aligned fuel copies, leaf commit ABI, and
+both `JSR` delay slots.
 
 `tools/ghidra/EmulateMapSwitchingLimiter.java` executes both locked blobs. Its
 14 cases cover direct commit and startup paths for indices 0 through 5 and 255.
 It uses the exact stock 12-byte Fuel Cut and 28-byte throttle containers,
 distinct synthetic values for maps 2-5, and sentinels around all reserved RAM.
 All cases preserve entry SR, PR, `r8..r15`, GBR, MACH, and MACL; produce the
-complete shadows and `0xFFFF1796`; clear bytes 1-7; publish the normalized
-index; and leave every surrounding sentinel unchanged. The result is 14/14
-PASS over 1537 executed instructions.
+complete shadows and `0xFFFF1796`; clear bytes 1-7; publish the requested index
+for direct commits and map 1 for every startup case; and leave every
+surrounding sentinel unchanged. The result is 14/14 PASS over 1542 executed
+instructions.
+
+`tools/ghidra/EmulateMapSwitchingBoot.java` closes a narrower integration gap
+left by those unit cases. It loads a complete patched ROM, starts at the real
+stock thunk `0x27CE4`, executes the injected wrapper, the complete 1906-byte
+body of `FUN_0002C648`, the injected fuel-compensation adapter, the stock
+fuel-compensation lookup wrapper at `0x261F0`, and the limiter commit. Fourteen
+unchanged direct callees of the stock initializer use deterministic return-zero
+stubs so the test does not claim peripheral or full-reset emulation. The
+reset-fixed candidate returns through the expected PR after 1809 instructions,
+preserves the stack and all callee-saved registers, forces map 1, and produces
+both complete limiter shadows and `0xFFFF1796`.
+
+`tools/ghidra/EmulateMapSwitchingReset.java` extends the integration check to
+the exact TRAPA handler at `0x27E24`. It executes the working base image, the
+generated reset-fixed image, and the reset-fixed tuned candidate with
+nine initial selector bytes: `00`, `01`, `02`, `03`, `04`, `05`, `7F`, `80`,
+and `FF`. Each execution reaches the real thunk from its actual caller,
+executes the complete stock initializer body and injected startup path, and
+continues through the first complete scheduler-loop iteration. Six pre-thunk,
+14 initializer, and five post-thunk hardware-oriented callees use the same
+deterministic return-zero stubs in all images.
+
+The fixed differential run passes over 51,057 executed instructions. All
+images
+restore the thunk ABI, reach the same scheduler state, and leave every RAM byte
+outside the declared reservation, selected runtime scalar, and stale stack
+frames below the restored SP identical. The live scheduler stack remains in
+the byte-for-byte comparison. The minimum observed SP is `0xFFFF7F84`, above
+the reserved RAM. The generated and differentiated images independently
+produce the exact map-1 fuel shadow, throttle shadow, zeroed selector state,
+and map-1 `0xFFFF1796` value for every seed. The test does not emulate the
+stubbed peripheral functions and cannot prove the actual flash contents or
+silicon behavior.
 
 ## Composition and output gates
 
 `map_switching_compose.py` accepts exactly the seven manifest-locked assembly
 blobs. It validates every length and SHA-256, materializes 32 calibration
-copies and eight five-entry pointer tables, applies all 15 hook literals, and
+copies and eight five-entry pointer tables, applies all 14 hook literals, and
 places every assembly unit at its declared final address. The complete result
 is compared byte-for-byte with the declared write set.
 
 The locked exact-stock fixture produces:
 
 ```text
-in_memory_sha256=6afacc1425ebe6de5946255caf3a3a69662c208b49dc75daa11490d4095499d0
-changed_bytes=5371
-permitted_write_bytes=5884
+in_memory_sha256=499f25ed560bf8e5bc00138e29ceabf740d2f13303eb07604f2e11b537bebb16
+changed_bytes=5372
+permitted_write_bytes=5880
 feedback_frame_counts=10,10
-instruction_placements=386
+instruction_placements=387
 code_entries=10
 ```
 
-The 5884-byte write set consists of 5824 bytes allocated under the layout plus
-60 bytes occupied by the 15 four-byte hook literals. Filler bytes and source
+The 5880-byte write set consists of 5824 bytes allocated under the layout plus
+56 bytes occupied by the 14 four-byte hook literals. Filler bytes and source
 bytes that already equal their composed values are permitted writes but do not
 appear in `changed_bytes`. Any changed byte outside this set fails validation.
 Every source instruction is also tied to the corresponding bytes at its final
@@ -554,13 +676,13 @@ absolute address, and all ten declared code entries must begin on an
 instruction. Ghidra independently round-trip decodes the same SHA-locked blobs.
 
 `EmulateMapSwitchingComposition.java` begins with the exact one-MiB stock
-program, independently applies the seven blobs, 15 hooks, 32 copies, and eight
+program, independently applies the seven blobs, 14 hooks, 32 copies, and eight
 pointer tables, and refuses any fixture whose hash or write boundary differs.
 Each scenario receives a fresh emulator loaded with the complete fixture.
 Deterministic stubs replace only the three stock callees outside the injected
 implementation; feedback cases may additionally replace only the two
 frame-count bytes. The harness executes the same 17 selector, 47 adapter, 14
-startup/limiter, and nine feedback scenarios over 4525 instructions. It
+startup/limiter, and nine feedback scenarios over 4530 instructions. It
 reaches all ten declared code entries, checks real copied calibration bytes,
 verifies exact limiter SR restoration, and permits only the caller-clobbered T
 bit to differ on comparison-heavy adapter, selector, and feedback paths.
@@ -577,14 +699,14 @@ changes only below `0x20000`, while requiring the exact calibration identity,
 hook anchors, CAN serializer anchors, erased allocation, and complete protected
 upper partition. It also requires a self-consistent input checksum state. The
 patcher initializes all 32 alternate-map copies from the input Map 1 values,
-installs the eight pointer tables, 15 hooks, and seven tracked payloads, then
+installs the eight pointer tables, 14 hooks, and seven tracked payloads, then
 recalculates checksums in this order:
 
 ```text
 self-test B -> self-test A -> SUM16 A -> SUM16 B
 ```
 
-The final declared write set contains the 5884 composition bytes plus 20
+The final declared write set contains the 5880 composition bytes plus 20
 checksum-reference bytes. Every input byte outside this set must remain exact.
 The output is independently checksum-verified before an exclusive create, and
 an MD5 sidecar is created for the flashing workflow. Thirteen patcher cases and
@@ -592,6 +714,18 @@ four checksum cases cover compatible calibration changes, exact preservation,
 slot initialization, payload locks, checksum recalculation, wrong identity,
 changed code or anchors, occupied storage, repeat application, and
 non-overwriting output behavior.
+
+`upgrade_map_switching_reset.py` accepts only the complete pre-fix runtime. It
+requires the old `0x29CC` value and startup-wrapper SHA-256, every other tracked
+payload and hook, exact pointer tables, the stock protected upper partition
+outside declared map-switching and checksum storage, JK08A identity, and valid
+input checksums. It restores the stock fallback literal, installs the fixed startup
+wrapper, recalculates checksums, and rejects every output difference outside
+those two spans and checksum fields. The 120-byte permitted set produces 38
+changed bytes for the differentiated candidate while preserving every manual
+calibration byte. Seven upgrade tests cover exact migration, permitted lower
+and slot calibration preservation, runtime-hook, protected-code, and unlocked
+payload rejection, plus non-destructive output naming.
 
 ## Common definition projection and calibration ownership
 
@@ -740,7 +874,10 @@ The exact call sequence is `MOV.L @(0xC3FA4,PC),r3` at `0xC3F3A`, `JSR @r3`
 at `0xC3F3C`, and `NOP` in the delay slot. `FUN_000C5372` is a leaf that
 returns through `RTS` at `0xC5504`; its observed register set is
 `r0/r2/r4..r7`. The injected wrapper preserves PR around both nested calls and
-uses only caller-saved registers.
+uses only caller-saved registers. The dispatcher branches from `0xC3F40` to
+the common block at `0xC3FB2`, whose live loop state is held in `r10..r14`.
+Those registers remain unchanged across the wrapper, and no serializer return
+value is consumed.
 
 ```text
 0xFFFF3ADA.bits0..1 = 2  for lamp on

@@ -84,6 +84,15 @@ class Hook:
 
 
 @dataclass(frozen=True)
+class Anchor:
+    key: str
+    address: int
+    width: int
+    value: int
+    purpose: str
+
+
+@dataclass(frozen=True)
 class Family:
     key: str
     group: str
@@ -169,6 +178,7 @@ class Layout:
     feedback: FeedbackLayout
     code_regions: tuple[CodeRegion, ...]
     assembly_units: tuple[AssemblyUnit, ...]
+    anchors: tuple[Anchor, ...]
     hooks: tuple[Hook, ...]
     families: tuple[Family, ...]
 
@@ -193,6 +203,10 @@ class Layout:
     @property
     def assembly_unit_by_key(self):
         return {unit.key: unit for unit in self.assembly_units}
+
+    @property
+    def anchor_by_key(self):
+        return {anchor.key: anchor for anchor in self.anchors}
 
     @property
     def assembled_region_keys(self):
@@ -274,6 +288,7 @@ def load_layout(path=DEFAULT_MANIFEST):
             "feedback",
             "code_region",
             "assembly_unit",
+            "anchor",
             "hook",
             "family",
         ),
@@ -401,6 +416,15 @@ def load_layout(path=DEFAULT_MANIFEST):
             )
         )
 
+    anchors = []
+    for item in raw["anchor"]:
+        _require_keys(
+            item,
+            ("key", "address", "width", "value", "purpose"),
+            "anchor",
+        )
+        anchors.append(Anchor(**item))
+
     hooks = []
     for item in raw["hook"]:
         _require_keys(
@@ -481,6 +505,7 @@ def load_layout(path=DEFAULT_MANIFEST):
         feedback=feedback,
         code_regions=tuple(code_regions),
         assembly_units=tuple(assembly_units),
+        anchors=tuple(anchors),
         hooks=tuple(hooks),
         families=tuple(families),
     )
@@ -490,7 +515,7 @@ def load_layout(path=DEFAULT_MANIFEST):
 
 def validate_structure(layout):
     """Validate all manifest invariants that do not require image bytes."""
-    if layout.schema_version != 1:
+    if layout.schema_version != 2:
         raise ValueError(
             f"unsupported map-switching layout schema {layout.schema_version}"
         )
@@ -534,8 +559,20 @@ def validate_structure(layout):
         lambda item: item.source,
         "assembly_unit sources",
     )
+    _unique(layout.anchors, lambda item: item.key, "anchor keys")
+    _unique(layout.anchors, lambda item: item.address, "anchor addresses")
     _unique(layout.hooks, lambda item: item.key, "hook keys")
     _unique(layout.hooks, lambda item: item.address, "hook addresses")
+    startup_anchor = layout.anchor_by_key.get("startup_clear_start_stock")
+    if (
+        startup_anchor is None
+        or startup_anchor.address != 0x000029CC
+        or startup_anchor.width != 4
+        or startup_anchor.value != 0xFFFF7000
+    ):
+        raise ValueError(
+            "startup fallback clear must remain a stock read-only anchor"
+        )
     _unique(layout.families, lambda item: item.key, "family keys")
     _unique(
         layout.families,
@@ -783,6 +820,19 @@ def validate_structure(layout):
             "feedback frame counts must both be zero or both be nonzero"
         )
 
+    for anchor in layout.anchors:
+        if anchor.width not in {1, 2, 4}:
+            raise ValueError(
+                f"{anchor.key}: unsupported anchor width {anchor.width}"
+            )
+        limit = 1 << (anchor.width * 8)
+        if not 0 <= anchor.value < limit:
+            raise ValueError(
+                f"{anchor.key}: value exceeds anchor width"
+            )
+        if not anchor.purpose:
+            raise ValueError(f"{anchor.key}: anchor purpose is empty")
+
     code_entries = {region.entry for region in layout.code_regions}
     for hook in layout.hooks:
         if hook.width not in {1, 2, 4}:
@@ -804,6 +854,28 @@ def validate_structure(layout):
                 f"{hook.key}: replacement is neither a code entry nor "
                 "reserved RAM"
             )
+
+    writable_ranges = list(layout.reserved_rom_ranges())
+    writable_ranges.extend(
+        AddressRange(
+            hook.address,
+            hook.address + hook.width,
+            f"hook.{hook.key}",
+        )
+        for hook in layout.hooks
+    )
+    for anchor in layout.anchors:
+        anchor_range = AddressRange(
+            anchor.address,
+            anchor.address + anchor.width,
+            f"anchor.{anchor.key}",
+        )
+        for writable in writable_ranges:
+            if anchor_range.overlaps(writable):
+                raise ValueError(
+                    f"{anchor.key}: read-only anchor overlaps writable "
+                    f"range {writable.key}"
+                )
 
     feedback_hook = next(
         (
@@ -884,6 +956,19 @@ def _validate_image_contract(layout, image):
             "claimed ROM is not erased at "
             f"{layout.claimed_rom.start + first:#x}"
         )
+
+    for anchor in layout.anchors:
+        actual = int.from_bytes(
+            image.data[
+                anchor.address : anchor.address + anchor.width
+            ],
+            layout.byte_order,
+        )
+        if actual != anchor.value:
+            raise ValueError(
+                f"{anchor.key}: anchor at {anchor.address:#x} is "
+                f"{actual:#x}, expected {anchor.value:#x}"
+            )
 
     for hook in layout.hooks:
         actual = int.from_bytes(

@@ -32,7 +32,7 @@ ffffffffffffffffffffffffffffffff
 """
 
 startup_wrapper = """
-4f22d00f400b0009d10e6410644cd00e400b00094f26000b0009ffffffffffffffffffffffffffffffffffffffffffff
+4f22d110e0002100d00d400b0009e400d00d400b00094f26000b0009ffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff0002c648ffff5d00000d3660ffffffffffffffffffffffffffffffffffffffff
 """
 

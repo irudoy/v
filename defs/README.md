@@ -79,7 +79,7 @@ under `defs/`, separately from `reference/`:
   The seven standalone assembly units pass 87 Ghidra p-code cases: 17 selector,
   47 adapter, 14 startup/limiter, and nine feedback cases.
   `../tools/ghidra/EmulateMapSwitchingComposition.java` repeats all 87 cases
-  over 4525 instructions from the complete locked fixture, reaches all ten code
+  over 4530 instructions from the complete locked fixture, reaches all ten code
   entries at final addresses, and verifies the same SHA-256 and write boundary
   as `../patches/map_switching_compose.py`. Feedback uses state value `2` with
   locked `10, 10` on/off frame counts; the V36 meter response remains a hardware
@@ -88,6 +88,11 @@ under `defs/`, separately from `reference/`:
   exact protected code and patch anchors, initializes Map 2 through Map 5 from
   the input Map 1 values, injects the tracked SHA-locked payloads, recalculates
   all checksum domains, and writes a non-overwriting ROM plus MD5 sidecar.
+  `../patches/upgrade_map_switching_reset.py` accepts only the complete pre-fix
+  runtime with an exact protected upper partition outside declared
+  map-switching and checksum storage,
+  restores the stock fallback-clear anchor, installs the reset-fixed startup
+  wrapper, recalculates checksums, and preserves calibration bytes.
   Map 1 uses canonical stock storage. Map 2 through Map 5 point to erased
   `0xFF` allocations in the stock image and become runtime-active only with
   the project patch. Their presence in the common definitions does not imply

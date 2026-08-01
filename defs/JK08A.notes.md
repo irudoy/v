@@ -3262,11 +3262,14 @@ The implementation boundary is statically bounded:
   or unresolved indexed candidates in `0xFFFF5D00..0xFFFF5D3B`. The preceding
   application access is at `0xFFFF5CF9`; the only nearby unresolved indexed loop ends
   at `0xFFFF5CF1`.
-- Startup literal `0x29CC` changes from `0xFFFF7000` to `0xFFFF5D00`, extending the
-  stock clear loop and guaranteeing map 1 after reset.
+- Startup literal `0x29CC` remains the read-only stock anchor
+  `0xFFFF7000`. The map-switching layout validator rejects any other value and
+  the composer does not write this location.
 - The unique thunk literal at `0x27D28` redirects stock initializer `0x2C648` through
-  a wrapper at `0xD22A0`. The wrapper runs stock initialization first, then refreshes
-  both limiter shadows and stock throttle runtime scalar `0xFFFF1796`.
+  a wrapper at `0xD22A0`. The wrapper publishes map 1 before running stock
+  initialization without changing its incoming `r4`, then commits map 1 after it
+  returns by refreshing both limiter shadows and stock throttle runtime scalar
+  `0xFFFF1796` before publishing the active index.
 - Literal `0xCE8DC` redirects the scheduled `FUN_000D09D8` call to a wrapper at
   `0xD2108`. The wrapper calls the stock function first, then the selector and
   diagnostic mirror, preserving the stock P1564 path.
@@ -3297,10 +3300,10 @@ The implementation boundary is statically bounded:
   complete limiter shadows, updates `0xFFFF1796`, clears transient state, and
   publishes the normalized index last. Fuel Cut stock addresses `0x0934E` and
   `0x09356` are only word-aligned, so all 12 fuel bytes use `MOV.W`; the aligned
-  28-byte throttle cluster uses seven `MOV.L` copies. Their 69 instructions and 48
+  28-byte throttle cluster uses seven `MOV.L` copies. Their 71 instructions and 48
   literal bytes are SHA-locked. Fourteen Ghidra p-code cases cover direct commit and
   startup for indices 0-5 and 255 using exact stock containers, synthetic alternate
-  slots, and surrounding RAM sentinels. All 14 pass over 1537 executed instructions.
+  slots, and surrounding RAM sentinels. All 14 pass over 1542 executed instructions.
 - Rev Limit - Fuel Cut is read with two adjacent stock words through the unique
   `0x4F468` literal, so its active shadow contains the complete 12-byte cluster.
   Throttle limiting is consumed through the `0x09424..0x0943F` cluster and a secondary
@@ -3375,12 +3378,12 @@ and leaf pulse engine are assembled and SHA-locked. Nine p-code cases cover 17
 serializer invocations and preserve every payload field except byte 5 bits 0-1.
 Their locked frame counts are `10, 10`; a zero/zero pair remains the fail-closed
 disabled configuration. The deterministic in-memory composition
-applies all seven blobs, 15 hooks, 32 copies, and eight pointer tables. It changes
-5371 bytes inside the 5884-byte declared write set and has fixture SHA-256
-`6afacc1425ebe6de5946255caf3a3a69662c208b49dc75daa11490d4095499d0`.
-It ties all 386 instruction byte pairs and ten code entries to their final
+applies all seven blobs, 14 hooks, 32 copies, and eight pointer tables. It changes
+5372 bytes inside the 5880-byte declared write set and has fixture SHA-256
+`499f25ed560bf8e5bc00138e29ceabf740d2f13303eb07604f2e11b537bebb16`.
+It ties all 387 instruction byte pairs and ten code entries to their final
 absolute addresses. `EmulateMapSwitchingComposition.java` independently rebuilds
-that fixture from the exact Ghidra program and passes all 87 scenarios over 4525
+that fixture from the exact Ghidra program and passes all 87 scenarios over 4530
 instructions. Every scenario starts from a fresh complete image, all ten code
 entries execute, real pointer tables and copied calibration bytes are checked,
 the limiter restores exact SR, and the other paths preserve every non-T SR bit.
@@ -3394,6 +3397,16 @@ identity, anchors, and erased allocation. It initializes maps 2-5 from the input
 Map 1 values, installs the runtime, recalculates all checksum domains through
 `jk08a_checksums.py`, proves byte preservation outside the composition and checksum
 fields, and creates a non-overwriting ROM plus MD5 sidecar.
+
+`upgrade_map_switching_reset.py` accepts only the complete pre-fix runtime with
+the locked old startup wrapper, the old `0x29CC=0xFFFF5D00` literal, all other
+payloads, hooks, and pointer tables intact, an exact protected upper partition
+outside declared map-switching and checksum storage, and valid input checksums. It restores the
+stock anchor, installs the reset-fixed wrapper, recalculates all checksum domains,
+and proves that calibration bytes remain unchanged. The reset-fixed tuned candidate
+has SHA-256
+`3e37f03a2ac879714556ab720fa657eb4132d1b22ecdccbb2c4edce631842ced` and remains
+hardware-untested.
 
 Raw DID `0x130E.bit7` is reserved as prototype instrumentation: clear means map 1 and
 set means maps 2-5. It is deliberately absent from the stock support mask. The

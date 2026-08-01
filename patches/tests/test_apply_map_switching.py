@@ -131,11 +131,13 @@ class ApplyMapSwitchingTest(unittest.TestCase):
                 corrupt, self.layout, self.blobs, "bad checksum"
             )
 
-    def test_changed_patch_anchor_is_rejected(self):
+    def test_changed_read_only_anchor_is_rejected(self):
         corrupt = bytearray(self.tuned)
         corrupt[0x29CC] ^= 0x01
         corrupt = checksums.recalculate(corrupt)
-        with self.assertRaisesRegex(patcher.PatchError, "startup_clear_start"):
+        with self.assertRaisesRegex(
+            patcher.PatchError, "startup_clear_start_stock"
+        ):
             patcher.patch_image(
                 corrupt, self.layout, self.blobs, "changed anchor"
             )

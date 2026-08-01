@@ -3,7 +3,7 @@
 # This manifest allocates storage and records verified hook literals. It does
 # not contain injected SH-2E machine code and is not a ROM patch recipe.
 
-schema_version = 1
+schema_version = 2
 rom = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 slot_count = 5
@@ -159,8 +159,8 @@ start = 0x000D22A0
 end = 0x000D2300
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "fbab3032582bfced276a09c737de62e0c82e58f28d1a1e17e58d8b4d42474dca"
-instruction_count = 13
+expected_sha256 = "352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3"
+instruction_count = 14
 data_bytes = 12
 code_regions = ["startup_wrapper"]
 
@@ -200,13 +200,12 @@ instruction_count = 80
 data_bytes = 10
 code_regions = ["cruise_feedback_engine"]
 
-[[hook]]
-key = "startup_clear_start"
+[[anchor]]
+key = "startup_clear_start_stock"
 address = 0x000029CC
 width = 4
-stock = 0xFFFF7000
-replacement = 0xFFFF5D00
-purpose = "Extend the stock zero-fill loop over selector state and limiter shadows."
+value = 0xFFFF7000
+purpose = "Keep the fallback zero-fill start at its exact stock value; normal TRAPA startup initializes map 1 in the wrapper."
 
 [[hook]]
 key = "selector_host_call"

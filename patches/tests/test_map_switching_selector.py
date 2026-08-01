@@ -39,7 +39,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             selector.SET_COAST,
         )
 
-    def test_reset_defaults_to_map_1(self):
+    def test_reference_model_defaults_to_map_1(self):
         self.assertEqual(self.state, selector.SelectorState())
         self.assertEqual(
             selector.select_calibration_base(

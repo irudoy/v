@@ -60,7 +60,7 @@ public class EmulateMapSwitchingLimiter extends GhidraScript {
     static final long ENTRY_SR = 0x000000A1L;
 
     static final String STARTUP_SHA =
-            "fbab3032582bfced276a09c737de62e0c82e58f28d1a1e17e58d8b4d42474dca";
+            "352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3";
     static final String COMMIT_SHA =
             "e1e296e0d2f1dccef21982f14f4e3e1aebdc39fba6b68ae8b3e2ecbc16d5a5aa";
 
@@ -125,6 +125,7 @@ public class EmulateMapSwitchingLimiter extends GhidraScript {
     void runCase(String name, boolean throughStartup, int requested)
             throws Exception {
         int normalized = requested >= 0 && requested < 5 ? requested : 0;
+        int expectedIndex = throughStartup ? 0 : normalized;
         PcodeEmulator emulator = new PcodeEmulator(language);
         PcodeExecutorState<byte[]> shared = emulator.getSharedState();
         setMemory(shared, STARTUP_BASE, startup);
@@ -196,7 +197,7 @@ public class EmulateMapSwitchingLimiter extends GhidraScript {
             throw new IllegalStateException(
                     name + ": did not return, pc=" + thread.getCounter());
         }
-        if (readRegister(thread, "r4") != normalized) {
+        if (readRegister(thread, "r4") != expectedIndex) {
             throw new IllegalStateException(
                     name + ": normalized r4 differs");
         }
@@ -214,7 +215,7 @@ public class EmulateMapSwitchingLimiter extends GhidraScript {
                         name, register, before[index], after));
             }
         }
-        verifyMemory(thread, name, normalized);
+        verifyMemory(thread, name, expectedIndex);
         cases++;
         instructions += executed;
     }

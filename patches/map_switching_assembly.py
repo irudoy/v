@@ -31,6 +31,41 @@ REGISTER_RE = re.compile(r"\b(?:r(?:1[0-5]|[0-9])|pr|gbr|sr|mach|macl)\b")
 CONTROL_RE = re.compile(r"^(bra|bsr|bt|bf|jmp|jsr|rts)\b", re.IGNORECASE)
 ALLOWED_REGISTERS = {"r0", "r1", "r2", "r3", "r4"}
 
+# Renesas REJ09B0177 section 2.4.1 lists these mnemonics for the
+# SH-2E core in the SH7058S. Keeping the injected source inside this explicit
+# subset prevents the SH-2A Ghidra assembler profile from admitting a newer
+# instruction that the target silicon cannot execute.
+SH7058S_SH2E_MNEMONICS = frozenset({
+    "add",
+    "and",
+    "bf",
+    "bra",
+    "bt",
+    "cmp/eq",
+    "cmp/hs",
+    "dt",
+    "extu.b",
+    "extu.w",
+    "jmp",
+    "jsr",
+    "ldc",
+    "lds.l",
+    "mov",
+    "mov.b",
+    "mov.l",
+    "mov.w",
+    "nop",
+    "or",
+    "rts",
+    "shll",
+    "shll2",
+    "shlr8",
+    "stc",
+    "sts.l",
+    "sub",
+    "tst",
+})
+
 
 @dataclass(frozen=True)
 class SourceStatement:
@@ -330,6 +365,18 @@ def _instruction_texts(parsed):
     ]
 
 
+def _validate_sh7058s_instruction_subset(parsed):
+    for statement in parsed.statements:
+        if statement.kind != "instruction":
+            continue
+        mnemonic = statement.text.split(None, 1)[0].lower()
+        if mnemonic not in SH7058S_SH2E_MNEMONICS:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: instruction "
+                f"{mnemonic} is outside the audited SH7058S SH-2E subset"
+            )
+
+
 def _validate_limiter_commit(parsed):
     instructions = [
         item for item in parsed.statements if item.kind == "instruction"
@@ -411,6 +458,27 @@ def _validate_startup_wrapper(parsed):
     ):
         raise ValueError(
             f"{parsed.path}: startup calls need two JSR/NOP pairs"
+        )
+    if texts.count("mov #0x0,r0") != 1 or texts.count("mov #0x0,r4") != 1:
+        raise ValueError(
+            f"{parsed.path}: startup wrapper must select map 1 before "
+            "and after the stock initializer"
+        )
+    try:
+        preinitializer_store = texts.index("mov.b r0,@r1")
+    except ValueError as error:
+        raise ValueError(
+            f"{parsed.path}: startup wrapper does not publish map 1 "
+            "before the stock initializer"
+        ) from error
+    preinitializer_zero = texts.index("mov #0x0,r0")
+    commit_zero = texts.index("mov #0x0,r4")
+    if not (
+        preinitializer_zero < preinitializer_store < jsr_indexes[0]
+        < commit_zero < jsr_indexes[1]
+    ):
+        raise ValueError(
+            f"{parsed.path}: map-1 startup publication/commit order differs"
         )
 
 
@@ -529,6 +597,7 @@ def validate_assembly_sources(layout=None):
             source_dir / unit.source, unit.span.start, unit.span.end
         )
         parsed_by_unit[unit.key] = parsed
+        _validate_sh7058s_instruction_subset(parsed)
         if parsed.instruction_count != unit.instruction_count:
             raise ValueError(
                 f"{unit.key}: source has {parsed.instruction_count} "
