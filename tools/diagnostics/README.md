@@ -187,6 +187,37 @@ no writer. The binding projection therefore records the exact command/status
 packing and homologous names but does not claim a firmware-to-MCU-to-terminal
 output path.
 
+### Exact EVAP monitor slice
+
+The JK08A ROM contains 13 EVAP descriptor paths. `FUN_0007D8B8` is the common
+fault-state dispatcher. `FUN_000B4EF8` is a descriptor-aware complementary
+state updater and does not by itself prove fault assertion. Exact descriptor
+identity and stock reachability are separate claims:
+
+| DTC path | Descriptor | Exact code path | Stock JK08A reachability |
+|----------|------------|-----------------|---------------------------|
+| P0443 purge-control circuit | `0x19588`, index `0x2E` | `FUN_000ACC54 -> 0xFFFF247F.bit7 -> FUN_000ABCA2` | Producer call and dispatch are skipped because `ROM8[0x186D7].bit2` is clear |
+| P0448 vent-control circuit short | `0x19594`, index `0x2F` | `FUN_000AACC0 -> 0xFFFF247A.bit7 -> FUN_000ABCA2` | The combined vent-control configuration gate is false |
+| P0455 gross leak | `0x195A0`, index `0x30` | `FUN_000B29B8` dispatches when `0xFFFF2C9C < ROM16[0x915E]`, where the stock limit is `0x0600` | No static configuration disable was found |
+| P0447 vent-control circuit open, path A | `0x195AC`, index `0x31` | `FUN_000AAB54 -> 0xFFFF247A.bit6 -> FUN_000ABCA2` | The combined vent-control configuration gate is false |
+| P0451 pressure-sensor range | `0x19C84`, index `0xC3` | `FUN_000AE1A8` dispatches when 21-sample metric `0xFFFF2CAC > ROM16[0x92F8]`, where the stock limit is `0x0C00` | Separate from the disabled coordinator branches; no static configuration disable was found |
+| P0444 purge-control circuit open | `0x19CCC`, index `0xC9` | `FUN_000AB844 -> 0xFFFF423E.bit0 -> FUN_000ABCA2` | Producer and dispatch are skipped because `ROM8[0x186FE]` is zero |
+| P0445 purge-control circuit short | `0x19CD8`, index `0xCA` | `FUN_000AB844 -> 0xFFFF423F.bit7 -> FUN_000ABCA2` | Configuration-disabled; the only recovered producer also requires an unsigned value below the stock zero threshold at `0x850A` |
+| P0452 pressure-sensor circuit low | `0x19D50`, index `0xD4` | `FUN_000AC994 -> FUN_000AC934 -> 0xFFFF247E.bit6 -> FUN_000ABCA2`; low threshold `ROM8[0x8553]=0x16` | The pressure-circuit producer and dispatch branch are configuration-disabled |
+| P0453 pressure-sensor circuit high | `0x19D5C`, index `0xD5` | `FUN_000AC994 -> FUN_000AC934 -> 0xFFFF247E.bit5 -> FUN_000ABCA2`; high threshold `ROM8[0x8552]=0xFE` | The pressure-circuit producer and dispatch branch are configuration-disabled |
+| P0441 incorrect purge flow | `0x19D68`, index `0xD6` | `FUN_000AD8FE -> 0xFFFF24A1.bit6 -> FUN_000ABCA2` | Producer and dispatch are skipped because `ROM8[0x18700].bit1` is clear |
+| P0447 vent-control circuit open, path B | `0x19D74`, index `0xD7` | Entry 6 of `FUN_000A6DC4`, selected only by `FUN_000A6FEE` | The only caller skips entry 6 because `ROM8[0x18700].bit0` is clear |
+| P0456 very small leak | `0x19D80`, index `0xD8` | `FUN_000B29B8` calls `FUN_000B4EF8` from two descriptor-aware result branches | Direct fault assertion remains unresolved; no `FUN_0007D8B8(0xD8)` call was found |
+| P0442 small leak | `0x19D98`, index `0xDA` | `FUN_000B2838` dispatches when the high byte of `0xFFFF301C` reaches stock threshold `ROM8[0x880C]=0xFF`; the below-threshold branch calls `FUN_000B4EF8` | No static configuration disable was found |
+
+The eight direct branches coordinated by `FUN_000ABCA2` are present in the
+exact code but skipped by stock JK08A configuration bytes. P0451 and the
+P0442/P0455/P0456 leak state machine are separate. A present code path or a
+descriptor identity does not establish hardware behavior. The homologous 2007
+VQ35HR ESM supplies factory EVAP terminology and Service $06 display units, but
+those units are not assigned to JK08A internal variables without a conversion
+trace and hardware validation.
+
 Map worklist and definition generators render both direct Map bindings and
 bindings reachable through a Map or Axis `RESTS_ON` path. Indirect context is
 marked with its path and evidence role, such as

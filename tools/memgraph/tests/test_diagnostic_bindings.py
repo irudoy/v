@@ -99,10 +99,10 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 91)
+        self.assertEqual(len(rows), 117)
         self.assertEqual(len(inherited), 29)
         self.assertEqual(
-            sum(row["rom_scope"] == "exact-rom" for row in rows), 62
+            sum(row["rom_scope"] == "exact-rom" for row in rows), 88
         )
         self.assertTrue(
             any(row["kind"] == "calibration_context" for row in rows)
@@ -231,6 +231,84 @@ class BindingSourceTest(unittest.TestCase):
                 "rom_const:00022a38=ffff2c57",
                 by_id[binding_id]["evidence"],
             )
+        evap_ids = {
+            "evap-purge-circuit-p0443",
+            "evap-vent-short-p0448",
+            "evap-gross-leak-p0455",
+            "evap-vent-open-a-p0447",
+            "evap-pressure-range-p0451",
+            "evap-purge-open-p0444",
+            "evap-purge-short-p0445",
+            "evap-pressure-low-p0452",
+            "evap-pressure-high-p0453",
+            "evap-purge-flow-p0441",
+            "evap-vent-open-b-p0447",
+            "evap-very-small-leak-result-p0456",
+            "evap-small-leak-p0442",
+            "evap-purge-circuit-producer-p0443",
+            "evap-vent-short-state-p0448",
+            "evap-gross-leak-metric-p0455",
+            "evap-vent-open-a-state-p0447",
+            "evap-pressure-range-metric-p0451",
+            "evap-purge-open-state-p0444",
+            "evap-purge-short-state-p0445",
+            "evap-pressure-low-state-p0452",
+            "evap-pressure-high-state-p0453",
+            "evap-purge-flow-state-p0441",
+            "evap-vent-open-b-input-p0447",
+            "evap-very-small-leak-metric-p0456",
+            "evap-small-leak-metric-p0442",
+        }
+        self.assertEqual(
+            {
+                row["id"]
+                for row in rows
+                if row["id"].startswith("evap-")
+            },
+            evap_ids,
+        )
+        for binding_id in evap_ids:
+            self.assertEqual(by_id[binding_id]["rom_scope"], "exact-rom")
+            self.assertEqual(by_id[binding_id]["applicability"], "exact_rom")
+        self.assertEqual(
+            by_id["evap-vent-open-a-p0447"]["source_claim_id"],
+            "jk08a:000195ac",
+        )
+        self.assertEqual(
+            by_id["evap-vent-open-b-p0447"]["source_claim_id"],
+            "jk08a:00019d74",
+        )
+        self.assertIn(
+            "rom_const:00018700=0x00",
+            by_id["evap-vent-open-b-p0447"]["evidence"],
+        )
+        self.assertIn(
+            "rom_const:0000850a=0x00",
+            by_id["evap-purge-short-state-p0445"]["evidence"],
+        )
+        self.assertEqual(
+            (
+                by_id["evap-purge-circuit-producer-p0443"]["firmware_label"],
+                by_id["evap-purge-circuit-producer-p0443"]["firmware_addr"],
+            ),
+            ("Func", "000acc54"),
+        )
+        self.assertFalse(
+            any(
+                row["diagnostic_key"] == "P0443"
+                and row["firmware_label"] == "Reg"
+                and row["firmware_addr"] == "ffff247f"
+                for row in rows
+            )
+        )
+        self.assertIn(
+            "consumer:000b4ef8@structural",
+            by_id["evap-very-small-leak-result-p0456"]["evidence"],
+        )
+        self.assertNotIn(
+            "consumer:0007d8b8@structural",
+            by_id["evap-very-small-leak-result-p0456"]["evidence"],
+        )
         for binding_id in (
             "injection-pulse-bank-1",
             "injection-pulse-bank-2",
