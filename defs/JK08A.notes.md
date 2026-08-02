@@ -364,16 +364,35 @@ Scheduler `FUN_00020dfe` snapshots current raw coolant `ffff1079` to `ffff1071`.
 `FUN_000394b8` and stateful selector `FUN_0003967a` form current selected pair
 `ffff1076`/`ffff1078`; the scheduler snapshots it to `ffff106e`/`ffff1070`. On the
 primary-pair branch, these are raw coolant `ffff1079` and normalized coolant
-`ffff1077`. On the alternate branch they come from physically unresolved bytes
-`ffff107e`/`ffff1080`. Selector bit `ffff24be.bit6` makes the alternate branch stateful;
-its physical mode remains unresolved.
+`ffff1077`. On the alternate branch they come from application-lifecycle zero bytes
+`ffff107e`/`ffff1080`. Selector bit `ffff24be.bit6` makes the alternate branch stateful:
+the first pass outside the primary condition still selects the primary pair, while
+subsequent passes select the zero fallback until the primary condition clears the latch.
+The physical mode represented by this selector condition remains unresolved.
+
+Normal startup reaches `FUN_00027c50` before the main loop. Its descriptor-driven
+longword loop starts at `ffff1000` and continues while the pointer is below unaligned
+stop `ffff261a`, giving effective write span `[ffff1000,ffff261c)`; this contains
+`ffff107e..ffff1080`. Conditional services `FUN_0002fc24` and `FUN_00034b70` use
+unaligned stop `ffff5cf2`, giving effective write span `[ffff1000,ffff5cf4)` on
+command/recovery paths. A whole-program
+p-code scan of `ffff107e..ffff1080` resolves four reads and no writes: one read of each
+selected fallback byte in `FUN_000394b8` and two reads of adjacent byte `ffff107f` in
+`FUN_00038618`. The broader `ffff1000..ffff10ff` writer audit excludes the only three
+indexed stores whose arithmetic could appear to approach the block: their complete
+caller sets restrict the indices to 0 and 1, yielding only `ffff101c/101e`,
+`ffff104c/1050`, and `ffff1058/105a`. Large function `FUN_00069374` only reads
+`ffff106a+4/+7` and `ffff1094+0x30/+0x48/+0x5c`. No application runtime producer for
+the fallback bytes exists in the stock image. An external or peripheral writer is not
+established by static analysis.
 
 On the primary-pair branch, normalized coolant is 0 below raw 10,
 `floor(240*(raw-10)/150)` for raw 10..169, and 255 at raw 170 or above. With stock
 `0x12de2 = ff ff ff 2b 2b 2b 2b 2b`, the first three temperature conditions reduce
 exactly to raw coolant 43..149, or `-7 <= coolant deg C < 100` under the exact DID
-0x1101 conversion `deg C = raw-50`. This reduction does not apply to the alternate
-pair until its physical source and scale are resolved.
+0x1101 conversion `deg C = raw-50`. On the alternate branch, the selected raw snapshot
+is zero and therefore fails the independent `ffff106e >= 40` P030 readiness condition.
+The zero fallback is an inhibit path, not a second code-produced temperature scale.
 
 The fourth condition uses a block snapshot rather than a direct writer.
 `FUN_0003d832` copies `ffff3f4c` to `ffff283c`; `FUN_0003d702` writes
