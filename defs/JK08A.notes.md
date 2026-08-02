@@ -296,10 +296,11 @@ independently checked against the image and graph outside agent runs
 (`wf_94cbe023-181`, pilot Section 8 gate).
 
 
-### Misfire-monitor component - classifier, readiness, and counters (accessor FUN_00082c8a)
+### Rotational-irregularity component - classifier, readiness, and counters (accessor FUN_00082c8a)
 
 The threshold trio feeds one subsystem. Accessor `FUN_00082c8a` and consumer
-`FUN_00085a70` form a crankshaft-rotation-nonuniformity misfire detector. Run
+`FUN_00085a70` form a crankshaft-rotation-nonuniformity monitor. Its interpretation
+as a misfire detector remains candidate until an exact DTC descriptor path is traced. Run
 `wf_94cbe023-181` annotated the entire component, containing 14 maps, 3 axes, and
 7 flags. It was originally consolidated in `08a5b04:defs/JK03A.findings.csv` and
 transferred to `defs/JK08A.findings.csv`. Its remaining nodes are:
@@ -317,21 +318,31 @@ curves over axis `0x1264A` with input `ffff11ae`; their output is compared with
 - `0x12CBE` duplicates curve `0x1263A` in an inhibit role: it writes
   `ffff444a`/`ffff444c`/`ffff444d`, which `00085a70` reads.
 
-**Five-level ladder `0x1265A`..`0x1268A` (candidate, threshold).** Four boundaries
-`t0..t3` through wrapper `0x26388`, implicit 1D-16, classify `ffff1024>>8` into level
-`ffff2b4b`; the complete meaning of the boundaries is not traced.
+**Five-level ladder `0x1265A`..`0x1268A` (code, threshold).** Four boundaries
+`t0..t3` through wrapper `0x26388`, implicit 1D-16, classify `ffff1024>>8` into state
+`ffff2b4b` in the closed range 0..4. The only external consumer is `00085a70`, which
+uses that state as the index of ROM byte table `0x11A28` and adds the selected byte to
+32-bit accumulators `ffff36e8` and `ffff36ec`. JK03A and JK08A are byte-identical at
+the four maps and the five reachable table bytes. The stock thresholds are
+255/254/253/252, and `ROM[0x11A28..0x11A2C] = ff ff ff ff ff`, so the state varies but
+both accumulator increments remain 255 for every state. This proves the operational
+selector role without identifying the physical meaning of `ffff1024` or the table.
 
-**Counting readiness `ffff41d2` (gates).** Two thresholds feed condition
+**Counting readiness `ffff41d2` (code within this component).** Two thresholds feed condition
 `ffff41d2 & 3 == 3`, which enables incrementing misfire counters:
 
-- `0x12DE2` (candidate) sets bit 0 of `ffff41d2` at site `0x8397a` when
+- `0x12DE2` (code) sets bit 0 of `ffff41d2` at site `0x8397a` when
   `output(2*ffff1070) <= ffff1071` and three related checks pass.
-- `0x12026` (candidate) sets bit 1 at site `0x8391a` through `ffff42a8 == 0` and masks
-  `ffff244f`/`ffff4184`.
-- Bit 2 is a combined counting permission formed from six conditions, including
-  `ffff4251 & 0x80` and windows over `ffff11b3`/`ffff1024>>8`; `00082c8a` reads it as
-  `pbVar[0x4e] & 4`. Its confidence is `candidate`: two terms are bits 0/1 from the
-  previous pass.
+- `0x12026` (code) supplies a condition latched in `ffff42a8`; a zero value together
+  with masks `ffff244f`/`ffff4184` sets bit 1 at site `0x8391a`. The lookup write and
+  enabling zero test are mutually exclusive within one call, so the test can consume
+  the value from an earlier pass.
+- Both bits set retain and update `ffff36e8`/`ffff36ec` and three event-counter groups
+  in `00085a70`; clearing either bit resets the corresponding state.
+- Bit 2 is set at `0x83848` after bits 0/1 and additional operating gates pass. A later
+  event path tests it at `0x8444a` before incrementing `ffff3115`, then clears it at
+  `0x84552`. Other functions also reference byte `ffff41d2`, so this claim is limited
+  to bits 0..2 inside `00082c8a` and `00085a70`.
 
 **Event-count thresholds `0x1497A` / `0x14982` (code, threshold).** Two constant
 1D-4 uint16 curves through wrapper `0x263bc`, with input
@@ -347,10 +358,11 @@ curves over axis `0x1264A` with input `ffff11ae`; their output is compared with
 bit 3 of register `ffff41c6`. This links the trio to event counting through
 `ffff314a` and its threshold.
 
-Component confidence is `code` for the trio, classifier, event counters, and flags
-`ffff4217`/`ffff41c3`/`ffff4218`; it is `candidate` for the ladder, readiness gates, and
-bit 2 of `ffff41d2`. Threshold-map scales have not been derived (offset-binary), while
-counter scale is identity in event-count units.
+Component confidence is `code` for the trio, classifier, five-state selector,
+readiness bits 0..2, event counters, and flags `ffff4217`/`ffff41c3`/`ffff4218`.
+Threshold-map scales have not been derived (offset-binary), while counter scale is
+identity in event-count units. The physical monitor name and an exact JK08A descriptor
+path to P0300..P0306 remain unresolved.
 
 
 ### Table-access library - region `0x26000..0x26E00` [CONFIRMED]
