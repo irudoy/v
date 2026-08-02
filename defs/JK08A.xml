@@ -51,6 +51,118 @@
       <state name="Disabled (IMMO OFF)" data="00"/>
     </table>
 
+    <table type="Switch" name="DTC P0306 [index 10] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x193D8" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 10 (misfire): Cylinder 6 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="05 05 0D 00 00 00 03 06 40 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0306 [index 10] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16112" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 10 (misfire): Cylinder 6 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 30"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0305 [index 11] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x193E4" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 11 (misfire): Cylinder 5 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="05 04 0D 00 00 00 03 05 40 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0305 [index 11] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16110" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 11 (misfire): Cylinder 5 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 30"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0304 [index 12] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x193F0" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 12 (misfire): Cylinder 4 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="05 03 0D 00 00 00 03 04 40 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0304 [index 12] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1610E" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 12 (misfire): Cylinder 4 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 30"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0303 [index 13] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x193FC" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 13 (misfire): Cylinder 3 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="05 02 0D 00 00 00 03 03 40 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0303 [index 13] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1610C" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 13 (misfire): Cylinder 3 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 30"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0302 [index 14] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19408" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 14 (misfire): Cylinder 2 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="05 01 0D 00 00 00 03 02 40 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0302 [index 14] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x1610A" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 14 (misfire): Cylinder 2 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 30"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0301 [index 15] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19414" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 15 (misfire): Cylinder 1 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="05 00 0D 00 00 00 03 01 40 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0301 [index 15] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16108" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 15 (misfire): Cylinder 1 misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 30"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0300 [index 16] - 1/2 Descriptor"
+           category="Diagnostics / DTC" storageaddress="0x19420" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 16 (misfire): Random or multiple cylinder misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="06 07 0D 00 00 00 03 00 40 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0300 [index 16] - 2/2 Attribute"
+           category="Diagnostics / DTC" storageaddress="0x16114" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 16 (misfire): Random or multiple cylinder misfire detected. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 30"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
     <table type="Switch" name="DTC P0420 [index 17] - 1/2 Descriptor"
            category="Diagnostics / DTC" storageaddress="0x1942C" storagetype="uint8" sizey="12"
            endian="big" userlevel="5">

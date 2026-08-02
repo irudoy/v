@@ -61,7 +61,7 @@ class RomDtcCatalogTest(unittest.TestCase):
         path = ROOT / "defs" / "JK08A.dtc.csv"
         with path.open(newline="", encoding="utf-8") as source:
             curated = list(csv.DictReader(source))
-        self.assertEqual(29, len(curated))
+        self.assertEqual(36, len(curated))
         for row in curated:
             descriptor = by_index[int(row["index"])]
             self.assertEqual(row["dtc"], descriptor["code"])

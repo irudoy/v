@@ -1,4 +1,11 @@
 index,dtc,record_addr,attribute_addr,stock_attribute,disabled_attribute,group,confidence,note
+10,P0306,000193d8,00016112,0030,0000,misfire,code,Cylinder 6 misfire detected
+11,P0305,000193e4,00016110,0030,0000,misfire,code,Cylinder 5 misfire detected
+12,P0304,000193f0,0001610e,0030,0000,misfire,code,Cylinder 4 misfire detected
+13,P0303,000193fc,0001610c,0030,0000,misfire,code,Cylinder 3 misfire detected
+14,P0302,00019408,0001610a,0030,0000,misfire,code,Cylinder 2 misfire detected
+15,P0301,00019414,00016108,0030,0000,misfire,code,Cylinder 1 misfire detected
+16,P0300,00019420,00016114,0030,0000,misfire,code,Random or multiple cylinder misfire detected
 17,P0420,0001942c,0001603a,00a0,0000,catalyst,code,Catalyst efficiency bank 1
 18,P0430,00019438,0001603c,00a0,0000,catalyst,code,Catalyst efficiency bank 2
 40,P1610,00019540,000160fe,0000,0000,nats,code,NATS LOCK MODE; descriptor suppression only because attribute is already zero

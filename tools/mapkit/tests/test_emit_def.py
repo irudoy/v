@@ -307,8 +307,8 @@ class EmitDefSwitchTest(unittest.TestCase):
 class EmitDefDtcSwitchTest(unittest.TestCase):
     def test_dtc_manifest_emits_paired_descriptor_attribute_switches(self):
         switches = emit_def.dtc_switches("JK08A")
-        self.assertEqual(len(switches), 57)
-        self.assertEqual(len({switch["name"] for switch in switches}), 57)
+        self.assertEqual(len(switches), 71)
+        self.assertEqual(len({switch["name"] for switch in switches}), 71)
         self.assertEqual({switch["category"] for switch in switches},
                          {"Diagnostics / DTC"})
 
@@ -380,7 +380,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             if table.get("category") == "Diagnostics / DTC"
         }
         self.assertEqual(set(actual), set(expected))
-        self.assertEqual(len(actual), 57)
+        self.assertEqual(len(actual), 71)
         self.assertEqual(set(switches) - set(actual), {"Developer Immobilizer"})
         for name, entry in expected.items():
             node = actual[name]

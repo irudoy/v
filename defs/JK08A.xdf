@@ -26,6 +26,55 @@
     <CATEGORYMEM index="0" category="11" />
     <XDFPATCHENTRY name="Developer Immobilizer" address="0x8725" datasize="0x1" patchdata="00" basedata="01" />
   </XDFPATCH>
+  <XDFPATCH uniqueid="0xA555" flags="0x0">
+    <title>DTC P0306 [index 10] - Cylinder 6 misfire detected</title>
+    <description>Exact JK08A only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0306 [10] descriptor" address="0x193D8" datasize="0xC" patchdata="000000000000000000000000" basedata="05050D000000030640000000" />
+    <XDFPATCHENTRY name="P0306 [10] attribute" address="0x16112" datasize="0x2" patchdata="0000" basedata="0030" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x95C3" flags="0x0">
+    <title>DTC P0305 [index 11] - Cylinder 5 misfire detected</title>
+    <description>Exact JK08A only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0305 [11] descriptor" address="0x193E4" datasize="0xC" patchdata="000000000000000000000000" basedata="05040D000000030540000000" />
+    <XDFPATCHENTRY name="P0305 [11] attribute" address="0x16110" datasize="0x2" patchdata="0000" basedata="0030" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0xC479" flags="0x0">
+    <title>DTC P0304 [index 12] - Cylinder 4 misfire detected</title>
+    <description>Exact JK08A only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0304 [12] descriptor" address="0x193F0" datasize="0xC" patchdata="000000000000000000000000" basedata="05030D000000030440000000" />
+    <XDFPATCHENTRY name="P0304 [12] attribute" address="0x1610E" datasize="0x2" patchdata="0000" basedata="0030" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0xF4EF" flags="0x0">
+    <title>DTC P0303 [index 13] - Cylinder 3 misfire detected</title>
+    <description>Exact JK08A only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0303 [13] descriptor" address="0x193FC" datasize="0xC" patchdata="000000000000000000000000" basedata="05020D000000030340000000" />
+    <XDFPATCHENTRY name="P0303 [13] attribute" address="0x1610C" datasize="0x2" patchdata="0000" basedata="0030" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x614C" flags="0x0">
+    <title>DTC P0302 [index 14] - Cylinder 2 misfire detected</title>
+    <description>Exact JK08A only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0302 [14] descriptor" address="0x19408" datasize="0xC" patchdata="000000000000000000000000" basedata="05010D000000030240000000" />
+    <XDFPATCHENTRY name="P0302 [14] attribute" address="0x1610A" datasize="0x2" patchdata="0000" basedata="0030" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x51DA" flags="0x0">
+    <title>DTC P0301 [index 15] - Cylinder 1 misfire detected</title>
+    <description>Exact JK08A only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0301 [15] descriptor" address="0x19414" datasize="0xC" patchdata="000000000000000000000000" basedata="05000D000000030140000000" />
+    <XDFPATCHENTRY name="P0301 [15] attribute" address="0x16108" datasize="0x2" patchdata="0000" basedata="0030" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x60" flags="0x0">
+    <title>DTC P0300 [index 16] - Random or multiple cylinder misfire detected</title>
+    <description>Exact JK08A only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0300 [16] descriptor" address="0x19420" datasize="0xC" patchdata="000000000000000000000000" basedata="06070D000000030040000000" />
+    <XDFPATCHENTRY name="P0300 [16] attribute" address="0x16114" datasize="0x2" patchdata="0000" basedata="0030" />
+  </XDFPATCH>
   <XDFPATCH uniqueid="0x30F6" flags="0x0">
     <title>DTC P0420 [index 17] - Catalyst efficiency bank 1</title>
     <description>Exact JK08A only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
@@ -274,6 +323,25 @@
     <CATEGORYMEM index="0" category="1" />
     <XDFPATCHENTRY name="P1422 [293] descriptor" address="0x1A11C" datasize="0xC" patchdata="000000000000000000000000" basedata="460100000000142210000000" />
     <XDFPATCHENTRY name="P1422 [293] attribute" address="0x15FAA" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x5AF" flags="0x0">
+    <title>Disable DTC group: Misfire (7 records)</title>
+    <description>Exact JK08A only. Atomically disables these records: P0306 [10], P0305 [11], P0304 [12], P0303 [13], P0302 [14], P0301 [15], P0300 [16]. The patch contains every mutable descriptor and attribute range for the group and does not disable physical monitors. It overlaps the corresponding individual DTC patches; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="1" />
+    <XDFPATCHENTRY name="P0306 [10] descriptor" address="0x193D8" datasize="0xC" patchdata="000000000000000000000000" basedata="05050D000000030640000000" />
+    <XDFPATCHENTRY name="P0306 [10] attribute" address="0x16112" datasize="0x2" patchdata="0000" basedata="0030" />
+    <XDFPATCHENTRY name="P0305 [11] descriptor" address="0x193E4" datasize="0xC" patchdata="000000000000000000000000" basedata="05040D000000030540000000" />
+    <XDFPATCHENTRY name="P0305 [11] attribute" address="0x16110" datasize="0x2" patchdata="0000" basedata="0030" />
+    <XDFPATCHENTRY name="P0304 [12] descriptor" address="0x193F0" datasize="0xC" patchdata="000000000000000000000000" basedata="05030D000000030440000000" />
+    <XDFPATCHENTRY name="P0304 [12] attribute" address="0x1610E" datasize="0x2" patchdata="0000" basedata="0030" />
+    <XDFPATCHENTRY name="P0303 [13] descriptor" address="0x193FC" datasize="0xC" patchdata="000000000000000000000000" basedata="05020D000000030340000000" />
+    <XDFPATCHENTRY name="P0303 [13] attribute" address="0x1610C" datasize="0x2" patchdata="0000" basedata="0030" />
+    <XDFPATCHENTRY name="P0302 [14] descriptor" address="0x19408" datasize="0xC" patchdata="000000000000000000000000" basedata="05010D000000030240000000" />
+    <XDFPATCHENTRY name="P0302 [14] attribute" address="0x1610A" datasize="0x2" patchdata="0000" basedata="0030" />
+    <XDFPATCHENTRY name="P0301 [15] descriptor" address="0x19414" datasize="0xC" patchdata="000000000000000000000000" basedata="05000D000000030140000000" />
+    <XDFPATCHENTRY name="P0301 [15] attribute" address="0x16108" datasize="0x2" patchdata="0000" basedata="0030" />
+    <XDFPATCHENTRY name="P0300 [16] descriptor" address="0x19420" datasize="0xC" patchdata="000000000000000000000000" basedata="06070D000000030040000000" />
+    <XDFPATCHENTRY name="P0300 [16] attribute" address="0x16114" datasize="0x2" patchdata="0000" basedata="0030" />
   </XDFPATCH>
   <XDFPATCH uniqueid="0xBABB" flags="0x0">
     <title>Disable DTC group: NATS (1 record)</title>

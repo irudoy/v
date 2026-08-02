@@ -23,6 +23,7 @@ DTC_GROUP_NAMES = {
     "catalyst": "Catalyst",
     "evap": "EVAP",
     "manufacturer_specific": "Manufacturer Specific",
+    "misfire": "Misfire",
     "nats": "NATS",
     "rear_o2": "Rear O2",
     "rear_o2_heater": "Rear O2 Heater",

@@ -57,15 +57,15 @@ class TunerProDtcPatchModelTest(unittest.TestCase):
         )
 
     def test_inventory_has_individual_and_group_scopes_without_all_patch(self):
-        self.assertEqual(len(self.individual), 29)
-        self.assertEqual(len(self.groups), 6)
+        self.assertEqual(len(self.individual), 36)
+        self.assertEqual(len(self.groups), 7)
         self.assertEqual(
             sum(len(patch["entries"]) for patch in self.individual),
-            57,
+            71,
         )
         self.assertEqual(
             sum(len(patch["entries"]) for patch in self.groups),
-            57,
+            71,
         )
         self.assertFalse(any("all" in patch["key"] for patch in self.groups))
 
@@ -74,6 +74,7 @@ class TunerProDtcPatchModelTest(unittest.TestCase):
             "catalyst": (2, 4),
             "evap": (13, 26),
             "manufacturer_specific": (1, 2),
+            "misfire": (7, 14),
             "nats": (1, 1),
             "rear_o2": (8, 16),
             "rear_o2_heater": (4, 8),
@@ -285,7 +286,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
     def test_xdf_has_expected_tables_patches_and_no_checksum(self):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
-        self.assertEqual(len(patches), 36)
+        self.assertEqual(len(patches), 44)
         self.assertEqual(len(tables), 55)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
@@ -297,11 +298,11 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             patch for patch in patches
             if self.patch_category(patch) == tunerpro.DTC_GROUP_CATEGORY
         ]
-        self.assertEqual(len(individual), 29)
-        self.assertEqual(len(groups), 6)
+        self.assertEqual(len(individual), 36)
+        self.assertEqual(len(groups), 7)
         self.assertEqual(
             sum(len(patch.findall("./XDFPATCHENTRY")) for patch in groups),
-            57,
+            71,
         )
         self.assertFalse(any(
             "Disable all" in (patch.findtext("./title") or "")

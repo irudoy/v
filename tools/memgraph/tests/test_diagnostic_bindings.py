@@ -99,10 +99,10 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 117)
+        self.assertEqual(len(rows), 145)
         self.assertEqual(len(inherited), 29)
         self.assertEqual(
-            sum(row["rom_scope"] == "exact-rom" for row in rows), 88
+            sum(row["rom_scope"] == "exact-rom" for row in rows), 116
         )
         self.assertTrue(
             any(row["kind"] == "calibration_context" for row in rows)
@@ -137,6 +137,28 @@ class BindingSourceTest(unittest.TestCase):
             },
         )
         by_id = {row["id"]: row for row in rows}
+        misfire_ids = {
+            *(f"misfire-result-dispatch-p030{cylinder}" for cylinder in range(7)),
+            *(f"misfire-coordinator-p030{cylinder}" for cylinder in range(7)),
+            *(f"misfire-detection-core-p030{cylinder}" for cylinder in range(7)),
+            "misfire-aggregate-select-p0300",
+            *(f"misfire-cylinder-select-p030{cylinder}" for cylinder in range(1, 7)),
+        }
+        self.assertEqual(
+            {row["id"] for row in rows if row["id"].startswith("misfire-")},
+            misfire_ids,
+        )
+        for binding_id in misfire_ids:
+            self.assertEqual(by_id[binding_id]["rom_scope"], "exact-rom")
+            self.assertEqual(by_id[binding_id]["applicability"], "exact_rom")
+        self.assertEqual(
+            by_id["misfire-result-dispatch-p0306"]["source_claim_id"],
+            "jk08a:000193d8",
+        )
+        self.assertEqual(
+            by_id["misfire-result-dispatch-p0300"]["source_claim_id"],
+            "jk08a:00019420",
+        )
         rear_o2_and_catalyst_ids = {
             "rear-o2-main-slow-response-p0139",
             "rear-o2-main-slow-response-p0159",

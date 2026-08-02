@@ -48,7 +48,7 @@ under `defs/`, separately from `reference/`:
   and CAN signals. Each row preserves firmware confidence, source
   applicability, inheritance scope, priority, and machine-address evidence as
   separate fields. Exact-ROM rows do not transfer to JK03A.
-- `JK08A.dtc.csv` is an address registry for 29 analyzed DTC
+- `JK08A.dtc.csv` is an address registry for 36 analyzed DTC
   descriptor/attribute pairs. A descriptor is 12 bytes; the address of its
   associated `uint16` attribute comes from a pointer table. The generator
   validates both regions against the exact stock ROM. RomRaider receives one
@@ -57,8 +57,8 @@ under `defs/`, separately from `reference/`:
   two-byte attribute or its disabled value. Both controls must use the same
   state before saving. P1610 has a stock-zero attribute and therefore requires
   only its descriptor switch. TunerPro receives one atomic `XDFPATCH` per DTC
-  and one atomic `XDFPATCH` per value of the `group` column. The six group
-  patches contain the same 57 mutable ranges as the 29 individual patches.
+  and one atomic `XDFPATCH` per value of the `group` column. The seven group
+  patches contain the same 71 mutable ranges as the 36 individual patches.
   There is no catch-all DTC patch.
 - `JK08A.notes.md` is a handwritten reverse-engineering journal containing
   rationale, listings, and traces. It is not loaded into the graph.
@@ -178,7 +178,7 @@ emitted. The 434 other catalog maps, including the inactive Bosch overrun pair
 and internal calculations, remain available in the graph, ledger, and
 presentation source. Reviewed static diagnostic context is included in map
 comments and descriptions without changing map semantics or confidence.
-`JK08A.xml` additionally contains 57 DTC switches and two verified native
+`JK08A.xml` additionally contains 71 DTC switches and two verified native
 RomRaider checksum handlers. Each ordinary DTC has adjacent descriptor and
 attribute controls; P1610 has only its descriptor control. The checksum
 handlers run in `alt` -> `alt2` order.
@@ -198,8 +198,8 @@ candidate gasoline-AFR projection `1881.6/x`: raw 128 is 14.70 AFR, raw 168 is
 11.20 AFR, and raw 178 is 10.57 AFR. The code-proven centered raw arithmetic
 remains separate in the map semantics and evidence.
 
-`JK08A.xdf` contains 29 individual DTC patches and six group patches:
-`catalyst`, `evap`, `manufacturer_specific`, `nats`, `rear_o2`, and
+`JK08A.xdf` contains 36 individual DTC patches and seven group patches:
+`catalyst`, `evap`, `manufacturer_specific`, `misfire`, `nats`, `rear_o2`, and
 `rear_o2_heater`. Individual and group patches overlap by design. Applying a
 group makes all of its individual patches read as patched; changing only part
 of a group makes the group state indeterminate. The patch payload remains

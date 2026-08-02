@@ -288,22 +288,19 @@ maps at step `0x100`, rather than code: P6. The consumer trace disproves it:
   disables a channel (`ffff3101`, `ffff3104`).
 
 Code establishes that the three maps are base surfaces f(speed, load), from which
-`00085a70` derives thresholds for a crankshaft-rotation nonuniformity monitor; their
-role is `table` and sentinel is `0x80`. Code does not establish the physical input
-quantity or map-value multiplier. The monitor name, inferred from algorithm shape as a
-misfire detector, is not established by code and remains `candidate`. Confirmation was
-independently checked against the image and graph outside agent runs
+`00085a70` derives thresholds for a misfire monitor; their role is `table` and sentinel
+is `0x80`. The exact component/data-flow path is `00085a70 -> state consumed by 00082c8a
+-> 00084cd0 -> 0007d8b8`, ending at P0300..P0306. Code does not establish the physical
+input quantity or map-value multiplier. The image and graph independently preserve the same trace
 (`wf_94cbe023-181`, pilot Section 8 gate).
 
 
 ### Rotational-irregularity component - classifier, readiness, and counters (accessor FUN_00082c8a)
 
-The threshold trio feeds one subsystem. Accessor `FUN_00082c8a` and consumer
-`FUN_00085a70` form a crankshaft-rotation-nonuniformity monitor. Its interpretation
-as a misfire detector remains candidate until an exact DTC descriptor path is traced. Run
-`wf_94cbe023-181` annotated the entire component, containing 14 maps, 3 axes, and
-7 flags. It was originally consolidated in `08a5b04:defs/JK03A.findings.csv` and
-transferred to `defs/JK08A.findings.csv`. Its remaining nodes are:
+The threshold trio feeds one subsystem. Coordinator `FUN_00082c8a`, detection core
+`FUN_00085a70`, and local DTC reporter `FUN_00084cd0` form a code-proven misfire
+monitor. The component contains 14 maps, 3 axes, and 7 flags. Its structural findings
+are consolidated in `defs/JK08A.findings.csv`. Its remaining nodes are:
 
 **Load classifier `0x1261A` / `0x1263A` / `0x12CBE` (code, threshold).** Three 1D-16
 curves over axis `0x1264A` with input `ffff11ae`; their output is compared with
@@ -358,11 +355,34 @@ selector role without identifying the physical meaning of `ffff1024` or the tabl
 bit 3 of register `ffff41c6`. This links the trio to event counting through
 `ffff314a` and its threshold.
 
+**Exact P0300..P0306 reporter (code).** `FUN_00084cd0` has exactly four callers, all
+inside `FUN_00082c8a` at `0x83D7C`, `0x84398`, `0x84544`, and `0x84794`. Its tail
+calls common fault dispatcher `FUN_0007d8b8` with these exact descriptor indices:
+
+| Runtime selector | Descriptor index | Record | DTC |
+|---|---:|---:|---|
+| `ffff4200.bit7` | `0x0A` | `0x193D8` | P0306 |
+| `ffff41ff.bit0` | `0x0B` | `0x193E4` | P0305 |
+| `ffff41ff.bit1` | `0x0C` | `0x193F0` | P0304 |
+| `ffff41ff.bit2` | `0x0D` | `0x193FC` | P0303 |
+| `ffff41ff.bit3` | `0x0E` | `0x19408` | P0302 |
+| `ffff41ff.bit4` | `0x0F` | `0x19414` | P0301 |
+| `ffff4200.bit6` or no individual selector | `0x10` | `0x19420` | P0300 |
+
+Individual selectors are tested in table order from P0306 through P0301; the first
+active selector wins. P0300 is selected when bit 6 forces aggregate reporting, when
+operating gates suppress individual selection, or when no individual selector is
+active. The reporter also tests bit 2 of the seven three-byte runtime DTC records at
+`ffff5718 + 3*index + 2`. Its input low bit controls local result bookkeeping, while
+`input >> 1` selects one of three snapshot groups. The physical meaning and timing of
+those snapshot groups remain unresolved.
+
 Component confidence is `code` for the trio, classifier, five-state selector,
 readiness bits 0..2, event counters, and flags `ffff4217`/`ffff41c3`/`ffff4218`.
 Threshold-map scales have not been derived (offset-binary), while counter scale is
-identity in event-count units. The physical monitor name and an exact JK08A descriptor
-path to P0300..P0306 remain unresolved.
+identity in event-count units. The exact P0300..P0306 path establishes the physical
+monitor class as misfire detection; the internal metric and threshold engineering units
+remain unresolved.
 
 
 ### Table-access library - region `0x26000..0x26E00` [CONFIRMED]
@@ -1542,11 +1562,12 @@ dtc_code(index)      = BE16[record(index) + 6]
 attribute_ptr(index) = BE32[0x1A14C + index*4]
 ```
 
-Registry `JK08A.dtc.csv` contains 29 analyzed descriptor/attribute pairs for catalyst,
-rear O2, rear O2 heater, EVAP, manufacturer-specific P1422, and NATS P1610. In
-28 emissions records, stock attribute `0x00A0` contains bits `0x80` and `0x20`:
-`0x80` participates in OBD/emissions representation, while `0x20` is used when
-initializing runtime diagnostic status.
+Registry `JK08A.dtc.csv` contains 36 analyzed descriptor/attribute pairs for misfire,
+catalyst, rear O2, rear O2 heater, EVAP, manufacturer-specific P1422, and NATS P1610.
+The seven P0300..P0306 records use stock attribute `0x0030`. In 28 other emissions
+records, stock attribute `0x00A0` contains bits `0x80` and `0x20`: `0x80` participates
+in OBD/emissions representation, while `0x20` is used when initializing runtime
+diagnostic status.
 
 DTC suppression changes the descriptor and its associated attribute as one logical
 record. Clearing only one object leaves an incomplete diagnostic state. The RomRaider
@@ -1559,10 +1580,10 @@ stops. Front A/F sensors are not part of the listed rear-O2/catalyst group.
 The TunerPro definition represents the logical record as one reversible `XDFPATCH`.
 Each ordinary record patch has a 12-byte descriptor entry and a two-byte attribute
 entry, so the editor applies both ranges as one operation. P1610 has only its
-descriptor entry. Six additional patches are generated from the registry `group`
-column: `catalyst`, `evap`, `manufacturer_specific`, `nats`, `rear_o2`, and
-`rear_o2_heater`. These patches contain 4, 26, 2, 1, 16, and 8 entries respectively,
-covering the same 57 mutable ranges as the 29 individual patches. No patch combines
+descriptor entry. Seven additional patches are generated from the registry `group`
+column: `catalyst`, `evap`, `manufacturer_specific`, `misfire`, `nats`, `rear_o2`, and
+`rear_o2_heater`. These patches contain 4, 26, 2, 14, 1, 16, and 8 entries respectively,
+covering the same 71 mutable ranges as the 36 individual patches. No patch combines
 all DTC groups. Individual and group patches overlap by design and every entry carries
 the exact stock bytes as `basedata`.
 
@@ -3388,8 +3409,8 @@ then selftest A and SUM16. Derived image
 by one bit. On-vehicle validation confirms engine start and normal operation; P1610
 persists after clearing and does not affect engine operation.
 
-The 29 entries in `JK08A.dtc.csv` generate 57 native `TableSwitch` controls under one
-`Diagnostics / DTC` category. Each of the 28 emissions records has adjacent
+The 36 entries in `JK08A.dtc.csv` generate 71 native `TableSwitch` controls under one
+`Diagnostics / DTC` category. Each of the 35 ordinary records has adjacent
 `1/2 Descriptor` and `2/2 Attribute` controls. Both select either `Enabled (Stock)` or
 `Disabled` and must use the same state before saving. P1610 uses descriptor `0x19540`;
 its attribute at `0x160FE` remains `0000` in both states, so only its descriptor switch

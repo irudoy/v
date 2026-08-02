@@ -238,7 +238,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `../patches/upgrade_map_switching_reset.py` | Upgrade only the complete pre-fix map-switching runtime with an exact protected upper partition outside declared map-switching and checksum storage: restore the stock fallback zero-fill anchor, install the fixed startup wrapper, recalculate checksums, and preserve every calibration byte | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/apply_map_switching.py` | Validate a checksum-valid JK08A input against the exact identity, anchors, erased allocation, and protected upper ROM; initialize alternate maps from input Map 1, install the tracked runtime, recalculate checksums, prove input-byte preservation, and create a non-overwriting ROM plus MD5 sidecar | derived ROM and `.md5` |
 | `mapkit/presentation.py` | Normalize functional categories shared by the RomRaider and TunerPro projections without encoding confidence in the category name | imported by both renderers |
-| `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 29 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
+| `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 36 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
 | `mapkit/show.py` | Display a map or axis in physical units: the graph supplies shape, axes, and scale, while the image supplies values. Arguments: `[<rom>] <addr>...` | stdout |
 | `mapkit/ptrscan.py` | Find pointers to an address by scanning both constant forms, `mov.l` and `mov.w`, without Ghidra or a project. Arguments: `[<rom>] <addr> [<addr_hi>]` | stdout |
 
@@ -493,8 +493,8 @@ bytes remain unchanged. Its permitted set contains the four-byte anchor, the
 `Enabled (Stock) = 01` and `Disabled (IMMO OFF) = 00`. The switch directly clears bit0 of the
 factory Developer Immobilizer flag.
 
-The same definition contains 57 native DTC `TableSwitch` controls generated
-from `defs/JK08A.dtc.csv`. Each of the 28 emissions records has adjacent
+The same definition contains 71 native DTC `TableSwitch` controls generated
+from `defs/JK08A.dtc.csv`. Each of the 35 ordinary records has adjacent
 `1/2 Descriptor` and `2/2 Attribute` controls under `Diagnostics / DTC`.
 Both controls must be set to `Enabled (Stock)` or both to `Disabled` before
 saving. P1610 uses descriptor `0x19540`; its attribute at `0x160FE` is `0000`
@@ -518,9 +518,9 @@ The patcher preserves the one-bit immo-off contract. P1610 and the other DTC
 record changes are controlled only through the definition and require separate
 hardware tests.
 
-The same generator writes `defs/JK08A.xdf` for TunerPro. Each of the 29 DTC
-records is one atomic `XDFPATCH`: 28 patches contain a descriptor entry and an
-attribute entry, while P1610 contains only its descriptor entry. Six additional
+The same generator writes `defs/JK08A.xdf` for TunerPro. Each of the 36 DTC
+records is one atomic `XDFPATCH`: 35 patches contain a descriptor entry and an
+attribute entry, while P1610 contains only its descriptor entry. Seven additional
 patches group records by the manifest `group` field:
 
 | Group | DTC records | Patch entries |
@@ -528,11 +528,12 @@ patches group records by the manifest `group` field:
 | `catalyst` | 2 | 4 |
 | `evap` | 13 | 26 |
 | `manufacturer_specific` | 1 | 2 |
+| `misfire` | 7 | 14 |
 | `nats` | 1 | 1 |
 | `rear_o2` | 8 | 16 |
 | `rear_o2_heater` | 4 | 8 |
 
-The group patches cover 57 mutable ranges in total. There is no all-DTC patch.
+The group patches cover 71 mutable ranges in total. There is no all-DTC patch.
 Individual and group patches intentionally overlap; each patch is internally
 atomic, while partial use across scopes makes the corresponding group state
 indeterminate. Every entry contains exact stock `basedata`.
@@ -610,9 +611,9 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 3785 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 3804 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 1211 source claims and 3785 expected edges;
+current JK08A has 1215 source claims and 3804 expected edges;
 `effective below declared=0`, `without grounding=0`, 42 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
 
@@ -620,7 +621,7 @@ ungrounded SCCs. Read-only verification and interactive queries:
 claims target firmware nodes and rest on both firmware evidence and
 source-specific diagnostic claims. It resolves all dependencies before
 replacing a ROM's binding projection. `defs/JK08A.diagnostic-bindings.csv`
-contains 117 source rows: 29 exact-code claims and 88 exact-ROM DTC claims. JK03A
+contains 145 source rows: 29 exact-code claims and 116 exact-ROM DTC claims. JK03A
 inherits only the 29 exact-code rows. Static confidence cannot exceed `code`;
 hardware evidence is outside this pipeline milestone.
 
