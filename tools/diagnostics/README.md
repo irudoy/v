@@ -168,6 +168,25 @@ zero, so this particular below-limit fault branch is unreachable in unmodified
 JK08A. The independent `FUN_000A2254` result path remains present. Internal
 metric units and hardware behavior after calibration changes are unresolved.
 
+The exact rear O2 heater circuit monitor is separate from those voltage and
+catalyst paths. `FUN_0008B604` calls bank-indexed `FUN_0008B93A`, which reads
+`0xFFFF2722[bank]`. Values below `ROM8[0x8AAF] = 0x0C` dispatch exact
+P0037/P0057 descriptors; values at or above `ROM8[0x8AB0] = 0xEC` dispatch
+exact P0038/P0058 descriptors. The in-range path reloads monitor state
+`0xFFFF4293[bank]` from `ROM8[0x8AB2] = 5`. A whole-program p-code scan found
+all five direct or pointer-recovered feedback reads and no write, so the producer
+and physical scale remain unresolved.
+
+Exact DID `0x130B` provides an independent observation point. Its record at
+`0x22A38` returns `0xFFFF2C57` with support mask `0x03`. Builder
+`FUN_0002E2E8` maps `0xFFFF2377` bit 0 to response bit 1 and bit 1 to response
+bit 0; `ROM8[0x8B2A] = 0x09` permits the second mapping. A homologous structured
+Nissan profile names those supported bits as the bank-1 and bank-2 HO2S2 heater
+states. A second whole-program scan found the two readers of `0xFFFF2377` and
+no writer. The binding projection therefore records the exact command/status
+packing and homologous names but does not claim a firmware-to-MCU-to-terminal
+output path.
+
 Map worklist and definition generators render both direct Map bindings and
 bindings reachable through a Map or Axis `RESTS_ON` path. Indirect context is
 marked with its path and evidence role, such as

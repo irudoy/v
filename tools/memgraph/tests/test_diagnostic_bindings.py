@@ -99,10 +99,10 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 81)
-        self.assertEqual(len(inherited), 27)
+        self.assertEqual(len(rows), 91)
+        self.assertEqual(len(inherited), 29)
         self.assertEqual(
-            sum(row["rom_scope"] == "exact-rom" for row in rows), 54
+            sum(row["rom_scope"] == "exact-rom" for row in rows), 62
         )
         self.assertTrue(
             any(row["kind"] == "calibration_context" for row in rows)
@@ -170,6 +170,14 @@ class BindingSourceTest(unittest.TestCase):
             "catalyst-limit-state-p0430",
             "catalyst-metric-p0420",
             "catalyst-metric-p0430",
+            "rear-o2-heater-monitor-high-p0038",
+            "rear-o2-heater-monitor-high-p0058",
+            "rear-o2-heater-monitor-low-p0037",
+            "rear-o2-heater-monitor-low-p0057",
+            "rear-o2-heater-feedback-high-p0038",
+            "rear-o2-heater-feedback-high-p0058",
+            "rear-o2-heater-feedback-low-p0037",
+            "rear-o2-heater-feedback-low-p0057",
         }
         self.assertEqual(
             {
@@ -200,6 +208,29 @@ class BindingSourceTest(unittest.TestCase):
             "consumer:000a2f56@confidence",
             by_id["catalyst-limit-table-p0420"]["evidence"],
         )
+        heater_did_ids = {
+            "ho2s2-heater-bank-1-did-130b",
+            "ho2s2-heater-bank-2-did-130b",
+        }
+        self.assertTrue(
+            heater_did_ids
+            <= {row["id"] for row in inherited}
+        )
+        self.assertEqual(
+            by_id["ho2s2-heater-bank-1-did-130b"]["diagnostic_key"],
+            "diagnostic-parameter:semantic:cid-130bh-bit1-ho2s2-htr-b1",
+        )
+        self.assertEqual(
+            by_id["ho2s2-heater-bank-2-did-130b"]["source_claim_id"],
+            "ecudocs-p32m-997c5a9:data:cid-130bh-bit0-ho2s2-htr-b2-6435fe15",
+        )
+        for binding_id in heater_did_ids:
+            self.assertEqual(by_id[binding_id]["rom_scope"], "exact-code")
+            self.assertEqual(by_id[binding_id]["firmware_addr"], "ffff2c57")
+            self.assertIn(
+                "rom_const:00022a38=ffff2c57",
+                by_id[binding_id]["evidence"],
+            )
         for binding_id in (
             "injection-pulse-bank-1",
             "injection-pulse-bank-2",

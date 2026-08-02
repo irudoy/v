@@ -1613,6 +1613,61 @@ physical quantity, engineering unit, or the effect of changing this calibration 
 hardware.
 
 
+### Exact rear O2 heater circuit monitor and command status
+
+The four exact rear O2 heater descriptors are consecutive but their high/low order
+differs from the branch order in the monitor:
+
+| Index | Record | DTC | Exact monitor condition |
+|---:|---:|---|---|
+| `0xAF` | `0x19B94` | P0038 | bank 1 feedback `>= 0xEC` |
+| `0xB0` | `0x19BA0` | P0058 | bank 2 feedback `>= 0xEC` |
+| `0xB1` | `0x19BAC` | P0037 | bank 1 feedback `< 0x0C` |
+| `0xB2` | `0x19BB8` | P0057 | bank 2 feedback `< 0x0C` |
+
+`FUN_0008B604` invokes `FUN_0008B93A(0)` at `0x8B65A` and
+`FUN_0008B93A(1)` at `0x8B7C6`. The bank-indexed monitor reads
+`0xFFFF2722[bank]`, compares it with `ROM8[0x8AAF] = 0x0C` and
+`ROM8[0x8AB0] = 0xEC`, and calls common fault dispatcher `FUN_0007D8B8` with
+the descriptor indices above. In-range state reloads `0xFFFF4293[bank]` from
+`ROM8[0x8AB2] = 5`; fault dispatch is reached only when this state byte is zero.
+The major exact gates also include `0xFFFF41C8` bit 7, byte `0xFFFF1108` from
+`ROM8[0x8AB4] = 0x83` through 199, the selected bit in `0xFFFF2403`, the high
+byte of `0xFFFF17A2 + 2*bank` at or above `ROM8[0x8A38] = 3`, and a zero
+`0xFFFF42C4[bank]` state on the main path.
+
+A whole-program `TraceRamAccesses.java` scan over all 2,315 defined functions
+found direct coordinator reads at `0x8B70E/0x8B8BA` and three pointer-recovered
+reads in `FUN_0008B93A` at `0x8B9D6`, `0x8BAD6`, and `0x8BB0E`. It found no
+write to `0xFFFF2722..0xFFFF2723`. The feedback producer is pointer-mediated,
+external, or unresolved, so the raw byte is not assigned a current or voltage
+scale.
+
+The observable command-status path is distinct from the fault-feedback path:
+
+- The exact DID `0x130B` record at `0x22A38` returns byte `0xFFFF2C57` and
+  support mask `ROM8[0x11A3A] = 0x03`.
+- `FUN_0002E2E8` maps `0xFFFF2377` bit 0 to supported response bit 1. It maps
+  input bit 1 to supported response bit 0 because `ROM8[0x8B2A] = 0x09` has
+  bit 2 clear.
+- A homologous structured Nissan P32M profile identifies response bit 1 as
+  `HO2S2 HTR (B1)` and bit 0 as `HO2S2 HTR (B2)`. These physical names retain
+  `nissan_family_candidate` applicability; the pointer, support mask, bit
+  packing, and input bits are exact-code facts.
+- `FUN_000A38DC` calls `FUN_000A25FA(bank)`, which observes the same input bits,
+  maintains a per-bank latch in `0xFFFF3298`, and clears
+  `0xFFFF4295[bank]` when the selected command bit is inactive.
+
+A second whole-program scan found only the reads at `0x2E3CA` and `0xA2600`
+and no write to `0xFFFF2377`. The firmware writer, MCU peripheral, output driver,
+and board route therefore remain unresolved. The homologous VQ35HR factory ESM
+maps ECM connector F101 terminal 17 to bank-1 `O2HR1` and terminal 33 to bank-2
+`O2HR2`, describes the DTCs as heater current outside the normal range, and gives
+a sensor-heater resistance of 3.4..4.4 ohm at 25 deg C. Those manual facts do not
+establish continuity from the JK08A firmware state to either physical terminal.
+Bench measurement or reviewed board continuity is required to close that boundary.
+
+
 ## Candidate areas [CANDIDATE] - require confirmation from code
 
 - Ignition timing: trio `0x991A`/`0x9A1A`/`0x9B1A` is annotated at `code`
