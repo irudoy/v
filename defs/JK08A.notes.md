@@ -373,12 +373,61 @@ Individual selectors are tested in table order from P0306 through P0301; the fir
 active selector wins. P0300 is selected when bit 6 forces aggregate reporting, when
 operating gates suppress individual selection, or when no individual selector is
 active. The reporter also tests bit 2 of the seven three-byte runtime DTC records at
-`ffff5718 + 3*index + 2`. Its input low bit controls local result bookkeeping, while
-`input >> 1` selects one of three snapshot groups. The physical meaning and timing of
-those snapshot groups remain unresolved.
+`ffff5718 + 3*index + 2`.
+
+**Reporter argument and retained groups (code).** Whole-caller data flow restricts the
+argument to `0..5`; there is no other caller. The encoding is exact:
+
+| Argument | Group (`arg >> 1`) | Retention path (`arg & 1`) | Caller outcome bit in `ffff5b2b` |
+|---:|---:|---|---|
+| 0 | 0 | Preserve other groups | Set bit 6 |
+| 1 | 0 | Retain only group 0 | Clear bits 4..6 |
+| 2 | 1 | Preserve other groups | Set bit 5 |
+| 3 | 1 | Retain only group 1 | Clear bits 4..6 |
+| 4 | 2 | Preserve other groups | Set bit 4 |
+| 5 | 2 | Retain only group 2 | Clear bits 4..6 |
+
+The odd path clears the two nonselected payloads and their retention markers, then
+sets bit 3 of `ffff5b2c`. The even path does not clear other groups. Group 0 capture
+requires `ffff41c1.bit1 == 0`; argument 0 sets that latch after capture. Groups 1 and
+2 capture unconditionally. Every group contains the same operating-point payload:
+
+| Group | Native-speed word from `ffff11bc` | Calculated-load byte from `ffff413e` | Coolant byte from `ffff3fa4` | Retention marker |
+|---:|---|---|---|---|
+| 0 | `ffff4a70` | `ffff4a45` | `ffff4ac6` | `ffff5b2a.bit2` |
+| 1 | `ffff4a72` | `ffff4a46` | `ffff4ac7` | `ffff5b2a.bit0` |
+| 2 | `ffff4a74` | `ffff4a47` | `ffff4ac8` | `ffff5b2b.bit7` |
+
+Each capture clears the corresponding auxiliary pair `ffff4a4a..4c` and
+`ffff48c2..c4`; every capture also clears `ffff4a49`.
+
+**Coolant payload producer (code).** `FUN_0002c4f8` obtains a 16-bit analog result
+through `FUN_00028668(0)`, stores it at `ffff1d60`, and writes
+`uint8(result >> 2)` to `ffff1186`. Lookup `00012DEA(ffff1186)` writes exact UDS DID
+0x1101 response byte `ffff1079`. `FUN_0008092e` repeats the same lookup and writes
+`ffff3fa4 = max(output - 10, 0)`. DID 0x1101 has `deg C = raw - 50`, so snapshot code
+0 represents coolant at or below -40 deg C; positive snapshot code `A` represents
+`A - 40 deg C`. This identifies only the `ffff1186` invocation of shared table
+`0x12DEA`; other input sources of that table remain physically unresolved.
+
+**Snapshot reuse (code).** Before later result handling, `FUN_00082c8a` passes all
+three retained groups to `FUN_000847dc`. Under `ffff4251.bit7` and
+`ffff41d2.bits0/1`, the matcher returns 1 exactly when:
+
+- current `ffff11bc` is in
+  `[max(snapshot_speed - 30, 0), min(snapshot_speed + 30, 255))`;
+- current calculated-load code `ffff413e` is in
+  `[floor(8 * snapshot_load / 10), floor(12 * snapshot_load / 10))`;
+- current and retained coolant codes are both below 110 or both at least 110.
+
+Coolant code 110 is 70 deg C. The payload and match contract are therefore exact
+operating-point snapshot semantics. The firmware does not name the diagnostic phases
+represented by groups 0..2 or establish their cadence in physical time, so those
+identities remain deliberately numbered.
 
 Component confidence is `code` for the trio, classifier, five-state selector,
-readiness bits 0..2, event counters, and flags `ffff4217`/`ffff41c3`/`ffff4218`.
+readiness bits 0..2, event counters, retained operating-point snapshots, snapshot
+matcher, and flags `ffff4217`/`ffff41c3`/`ffff4218`.
 Threshold-map scales have not been derived (offset-binary), while counter scale is
 identity in event-count units. The exact P0300..P0306 path establishes the physical
 monitor class as misfire detection; the internal metric and threshold engineering units
