@@ -400,18 +400,44 @@ exactly to raw coolant 43..149, or `-7 <= coolant deg C < 100` under the exact D
 is zero and therefore fails the independent `ffff106e >= 40` P030 readiness condition.
 The zero fallback is an inhibit path, not a second code-produced temperature scale.
 
-The fourth condition uses a block snapshot rather than a direct writer.
-`FUN_0003d832` copies `ffff3f4c` to `ffff283c`; `FUN_0003d702` writes
+The fourth condition uses an AN1-derived running-minimum chain rather than a direct
+sensor snapshot. Cyclic sampler `FUN_000280d8` reads aligned SH7058 A/D result register
+ADDR1 at `fffff802`, shifts it right by six, and writes 10-bit sample `ffff1d58` on
+internal phase 1 and `ffff1d5a` on phase 3. The SH7058 hardware manual maps ADDR1 to
+channel AN1 at MCU pin 87/G18. A whole-program p-code pass resolves exactly these two
+direct writes and no computed-address writer candidates in `ffff1d58..ffff1d5b`.
+The corresponding ECM terminal and physical signal remain unresolved. The two phases
+can reflect external selection that is not visible from the common MCU input.
+
+`FUN_0003d832` calls `FUN_0003d258` for indices 0 and 1. Bits 0 and 1 of `ffff3f3e`
+admit alternate invocations, and `ffff3f44` marks the first sample of each lane. The
+first admitted sample is copied to `ffff2832/ffff2834`; later samples use
+`floor((3*previous + sample)/4)` with a one-count upward anti-stall correction. Under
+stock configuration bytes `0x8b34 = 0x81` and `0x8b42 = 0xe0`, `FUN_0003d2dc`
+converts `uint8(filtered >> 2)` through shared table `0x12dea` and writes
+`ffff2838/ffff2839`. The alternate configuration branch writes fixed code 75. Table
+reuse does not assign coolant identity or the coolant engineering scale to this AN1
+path.
+
+`FUN_0003d45c` is the indexed runtime writer omitted by exact-address xrefs. For each
+lane it updates `ffff3f4c[index]` only when `ffff4185.bit6 == 0`,
+`ffff417f.bit5 == 0`, and the corresponding `ffff3f3e` phase bit is set; the update
+occurs only when the current transfer code is below the retained value. The accumulator
+is therefore monotonically nonincreasing. Normal startup executes `FUN_00027ac0`,
+which clears the containing range, then reaches `FUN_0002d120` through tail helper
+`FUN_00027c34`, seeding `ffff3f4c/ffff3f4d` to 255. Conditional services
+`FUN_0002fc24` and `FUN_00034b70` clear the accumulator to zero on their command or
+recovery paths without reseeding it inside those functions.
+
+`FUN_0003d832` copies accumulator element 0 to `ffff283c`; `FUN_0003d702` writes
 `ffff283a = max(ffff283c-offset, 0)`, with offset 0 when `ffff1076 < 90` and
-`abs(ffff454c-ffff1076) < 12`, and offset 15 otherwise. Scheduler `FUN_00020dfe` then
-uses the exact byte-copy contract of `FUN_00022558` to copy 0x104 bytes from
-`ffff277e..ffff2881` to `ffff267a..ffff277d`, mapping `ffff283a` to `ffff2736`.
-`FUN_0002d120` initializes `ffff3f4c` to `0xff`; a whole-program exact-address scan
-found no other direct writer. Its runtime producer, physical quantity, and engineering
-scale remain unresolved. `FUN_0003d7b4` transiently copies exact DID 0x1106 source
-`ffff2837` to `ffff283a` before calling `FUN_0003d702`, which overwrites the byte in the
-same invocation; the final readiness source is therefore not assigned intake-air
-temperature semantics.
+`abs(ffff454c-ffff1076) < 12`, and offset 15 otherwise. Scheduler `FUN_00020dfe` uses
+the exact byte-copy contract of `FUN_00022558` to map `ffff283a` to `ffff2736` through
+the 0x104-byte snapshot. P030 readiness requires `ffff2736 >= 40`, equivalent to
+`ffff3f4c >= 40` on the zero-offset branch and `ffff3f4c >= 55` on the 15-count
+branch. `FUN_0003d7b4` transiently copies exact DID 0x1106 source `ffff2837` to
+`ffff283a`, but `FUN_0003d702` overwrites it in the same invocation; the final source
+is not assigned intake-air-temperature semantics.
 
 Exactly five external functions consume the low pair, and every one requires
 `ffff41d2 & 3 == 3`: snapshot matcher `000847dc`, auxiliary state service `00085020`,
