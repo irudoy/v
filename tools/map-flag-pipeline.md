@@ -697,6 +697,18 @@ The JK08A binding projection contains 145 reviewed claims:
   5 and 6 of the seven runtime-record third bytes. Reconciler `0x8042C`, global
   expiry `0x7C57A`, and record-aging pass `0x7CF14` close the latch lifecycle.
   The branch polarities and record bits have operational labels only;
+- the P030 revolution cadence is code-closed through engine-event feeder `0x208F8`,
+  pending-task dispatcher `0x209D8`, revolution-phase dispatcher `0x7C494`, and
+  window producer `0x872D0`. Every third admitted current-cylinder event schedules
+  one producer invocation, corresponding to one crankshaft revolution on the V6.
+  Stock counters set `0xFFFF4241.bit5` after 200 admitted revolutions,
+  `bit7` after 1,000, and `bit6` after a second 200-revolution track. Coordinator
+  `0x82C8A` maps these windows to reporter arguments `{0,1}`, `{2,3,4,5}`, and
+  `{0,1}` followed by `{2,3,4,5}` respectively. Retained groups therefore do not
+  map one-to-one to cadence windows. The homologous VQ35HR ESM independently assigns
+  200 revolutions to one-trip TWC-damage monitoring and 1,000 revolutions to two-trip
+  emissions-deterioration monitoring; exact JK08A code does not name groups 0..2 or
+  reporter polarity as physical pass/fail phases;
 - primary rear O2 dispatcher `0x89D92` links bank-indexed metrics
   `0xFFFF26E9`, `0xFFFF26EB`, `0xFFFF2726`, and `0xFFFF2724` to exact
   P0139/P0159, P0137/P0157, and path-A P0138/P0158 descriptors. Alternate

@@ -410,6 +410,39 @@ through `FUN_00028668(0)`, stores it at `ffff1d60`, and writes
 `A - 40 deg C`. This identifies only the `ffff1186` invocation of shared table
 `0x12DEA`; other input sources of that table remain physically unresolved.
 
+**Revolution cadence and completion flags (code, corroborated by homologous ESM).**
+The exact scheduler path begins at `FUN_000208f8`. Both callers are engine-event
+paths that update the current-cylinder state. Each admitted event sets
+`ffff84ba.bit7`; modulo-3 counter `ffff9f24` sets `ffff84ba.bit6` after every third
+event. `FUN_000209d8` uses that pending bit to run the three-entry table at
+`0x21960`; its second entry is `FUN_0007c494`, which tail-calls window producer
+`FUN_000872d0`. Three current-cylinder events per crankshaft revolution on the V6
+therefore give one producer invocation per revolution. The VQ35HR ESM independently
+describes the exact P0300..P0306 monitor as checking CKP variation every 200 engine
+revolutions for one-trip TWC-damage detection and every 1,000 engine revolutions for
+two-trip emissions-deterioration detection. The ESM supplies homologous diagnostic
+terminology; the exact JK08A code supplies the counters and scheduler relation.
+
+`FUN_000872d0` maintains three 16-bit admitted-revolution counters. Stock JK03A and
+JK08A both contain `ROM8[0x8354] = 1`, `ROM8[0x8656] = 1`, and
+`ROM8[0x186CE] = 0x80`:
+
+| Completion flag | Counter | Stock threshold | Reporter arguments available when serviced |
+|---|---|---:|---|
+| `ffff4241.bit5` | `ffff409e` | `200 * ROM8[0x8354] = 200` | `0/1` |
+| `ffff4241.bit7` | `ffff40a0` | `1000` | `2/3` or `4/5` |
+| `ffff4241.bit6` | `ffff40a2` | `200 * ROM8[0x8656] = 200` | first `0/1`, later `2/3` or `4/5` |
+
+The first two counters increment together only while `ffff444d == 0`; the third uses
+`ffff444c == 0`. Clearing `ffff4251.bit7` or either of `ffff41d2.bits0/1` resets all
+three. A value below 31 in warm-up/history byte `ffff3834`, or a nonzero per-track
+inhibit, freezes the affected counters rather than clearing them. Threshold checks
+precede gate evaluation and increments in each producer call. Coordinator
+`FUN_00082c8a` consumes and clears completion bits independently in the order bit 5,
+bit 7, bit 6, so simultaneous window completions are handled in one coordinator pass.
+The matrix proves that retained groups are result families shared by multiple windows,
+not one-to-one cadence identifiers.
+
 **Snapshot reuse (code).** Before later result handling, `FUN_00082c8a` passes all
 three retained groups to `FUN_000847dc`. Under `ffff4251.bit7` and
 `ffff41d2.bits0/1`, the matcher returns 1 exactly when:
@@ -421,9 +454,9 @@ three retained groups to `FUN_000847dc`. Under `ffff4251.bit7` and
 - current and retained coolant codes are both below 110 or both at least 110.
 
 Coolant code 110 is 70 deg C. The payload and match contract are therefore exact
-operating-point snapshot semantics. The firmware does not name the diagnostic phases
-represented by groups 0..2 or establish their cadence in physical time, so those
-identities remain deliberately numbered.
+operating-point snapshot semantics. The window cadence is exact, but the firmware does
+not name the diagnostic phases represented by groups 0..2. Those identities remain
+deliberately numbered.
 
 **P030 result-latch lifecycle (code).** Bit 3 of `ffff5b2c` is a global result latch
 shared by the seven exact P0306..P0300 runtime records, not a retention marker for one
@@ -462,11 +495,11 @@ The clear and cleanup paths are also closed:
 The internal record-bit transitions and odd/even reporter polarity are exact. Static
 code does not establish UDS names for these bits, physical pass/fail meaning for either
 polarity, diagnostic phase names for groups 0..2, or a physical-time duration for the
-maintenance counts.
+maintenance counts. The separate 200/1000-revolution completion cadence is exact.
 
 Component confidence is `code` for the trio, classifier, five-state selector,
 readiness bits 0..2, event counters, retained operating-point snapshots, snapshot
-matcher, P030 runtime result lifecycle, and flags
+matcher, revolution-window cadence, P030 runtime result lifecycle, and flags
 `ffff4217`/`ffff41c3`/`ffff4218`.
 Threshold-map scales have not been derived (offset-binary), while counter scale is
 identity in event-count units. The exact P0300..P0306 path establishes the physical
