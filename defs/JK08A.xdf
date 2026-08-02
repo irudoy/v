@@ -385,7 +385,7 @@
   </XDFPATCH>
   <XDFTABLE uniqueid="0xAA84" flags="0x0">
     <title>Calculated Load</title>
-    <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence code. Sixteen-point uint16 normalization reference for the calculated-load byte. Lookup M by uint8[ffff11b3]&lt;&lt;8 enters q=floor((uint16[ffff1024]&lt;&lt;8)/M); an optional second normalization uses ffff329f, and the result is clamped to 255 and written to ffff413e for J1979 Mode 01 PID 0x04. The exact image closes both wrapper branches: 000263f4 calls the complete uint16 interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell 15 otherwise. FUN_0008083c calculates the load code, optionally applies floor((q&lt;&lt;7)/uint8[ffff329f]) when ROM8[0x870e] bit 4 is set, clamps to 255, and writes ffff413e. FUN_00035856 returns this byte for PID 0x04; standard conversion is 100*A/255. The operational 100% normalization role has code confidence. The BFS unit, x*0.000488 scale, and static RPM axis come from the HR A2L catalog and remain candidate. Static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence: writes].</description>
+    <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence code. Sixteen-point Base Fuel Schedule normalization reference for the calculated-load byte. Lookup M by RPM/25 byte ffff11b3 enters q=floor((uint16[ffff1024]&lt;&lt;8)/M); an optional second normalization uses ffff329f, and the result is clamped to 255 and written to ffff413e for J1979 Mode 01 PID 0x04. The exact image closes both wrapper branches: 000263f4 calls the complete uint16 interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell 15 otherwise. Exact DID 0x1208 identifies numerator ffff1024 as current Base Fuel Schedule; the quotient therefore compares it with a same-dimension 100% reference. FUN 0008083c optionally applies floor((q&lt;&lt;7)/uint8[ffff329f]), clamps to 255, and writes ffff413e. FUN 00035856 returns this byte for PID 0x04; standard conversion is 100*A/255. The operational role has code confidence. The raw/2048 ms conversion and static RPM-axis presentation remain candidate and require hardware validation. Static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence: writes].</description>
     <CATEGORYMEM index="0" category="3" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -432,10 +432,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1491A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>BFS [cand]</units>
+      <units>BFS ms [cand]</units>
       <decimalpl>3</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.000488">
+      <MATH equation="X/2048">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

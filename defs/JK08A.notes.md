@@ -323,7 +323,9 @@ uses that state as the index of ROM byte table `0x11A28` and adds the selected b
 the four maps and the five reachable table bytes. The stock thresholds are
 255/254/253/252, and `ROM[0x11A28..0x11A2C] = ff ff ff ff ff`, so the state varies but
 both accumulator increments remain 255 for every state. This proves the operational
-selector role without identifying the physical meaning of `ffff1024` or the table.
+selector role. Exact DID `0x1208` identifies `ffff1024` as the current Base Fuel
+Schedule sample; the downstream meaning of the invariant increment table remains
+unresolved.
 
 **Counting readiness `ffff41d2.bits0/1` (code).** A whole-program p-code census of all
 2,315 functions found 79 exact accesses to byte `ffff41d2` and no unresolved
@@ -1384,8 +1386,22 @@ input slope sets bit `0x10` of `0xFFFF24D2`. No direct consumer connects this
 bit to the aggregate `0xFFFF22E0`; the detector is not used as proof for the
 `FUN_0004F324` mode identity.
 
-The physical sample quantity represented by `0xFFFF1026`,
-`0xFFFF1024`, and `0xFFFF1028` remains unknown.
+The three sample words carry Base Fuel Schedule. `ROM32[0x228BC] = 0xFFFF1026`
+makes `0xFFFF1026` the exact two-byte big-endian response source for UDS DID
+`0x1208`. A whole-program p-code scan found only the init writer in
+`FUN_0002C648` and runtime writer in `FUN_0003B75C`, with no unresolved
+computed-address candidates. The every-fourth-base-interrupt table at `0x21818`
+runs `FUN_0003B75C` at index 3. The main-loop scheduler then rolls newest
+`0xFFFF1026` into current `0xFFFF1024` and current into previous
+`0xFFFF1028` every tenth base interrupt. The physical base-interrupt period is
+not established.
+
+A structured homologous Nissan diagnostic profile names DID `0x1208`
+`B/FUEL SCHDL` and defines `raw/2048 ms`. The VQ35HR factory ESM independently
+defines Base Fuel Schedule as the fuel-injection pulse width programmed before
+learned onboard correction. The exact JK08A address and producer identity have
+code confidence. The engineering conversion remains candidate until CONSULT3P
+or bench measurements confirm it on JK08A.
 
 
 ### Throttle rev limiter scalar `0x942C`, FUN_0007584E [CONFIRMED PATH]
@@ -1535,52 +1551,81 @@ interpretation; the definition description states the proven request boundary
 and the unresolved motor-output boundary.
 
 
-### Independent calculated-load and fallback schedule paths
+### Base Fuel Schedule producer, fallbacks, and calculated load
 
-The exact JK08A image closes the complete path from `0x1491A` to the standard
-calculated-load response:
+The exact JK08A image closes the runtime Base Fuel Schedule chain before the
+calculated-load normalization:
 
-- `FUN_0008083C` indexes the 16-cell uint16 table by
-  `uint8[0xFFFF11B3] << 8`. Wrapper `FUN_000263F4` uses the complete interpolation
-  kernel `FUN_00026A60` and unsigned linear finisher `FUN_00026740` below
-  coordinate `0xF000`; the upper branch returns cell 15.
-- With lookup result `M`, the producer calculates
+- `FUN_0003A904` completes a dual-channel processing pass and calls
+  `FUN_0003B252`. The latter writes
+  `0xFFFF1E38 = max(0, int32[0xFFFF1DF8] + int32[0xFFFF1DFC] +
+  int16[0xFFFF1E2A] + uint16[0xFFFF2368])`.
+- The primary branch of `FUN_0003B75C` reads `0xFFFF1E38` and uses
+  `ROM16[0x9284] = 26806` in an exact fixed-point division, remainder,
+  limiting, multiplication, and shift sequence to form `0xFFFF1E40`.
+  The public HR catalog calls `0x9284` the K-factor or MAF Factor and calls the
+  upstream transfer curves MAF tables. Those narrower physical names remain
+  candidate; code proves only the aggregate and arithmetic path.
+- The fallback branch is selected when `uint8[0xFFFF2804] == 0`, when
+  `0xFFFF4185.bit7` is set with nonzero `0xFFFF437A`, or when
+  `0xFFFF4185.bit6` is set with `uint8[0xFFFF2804] < 0x20`. It looks up `M`
+  from uint16 table `0x15630` by normalized coolant index
+  `uint8[0xFFFF1077] << 8`, writes `M` to `0xFFFF1E44`, and writes
+  `floor(M/4)` to `0xFFFF1E40`.
+- Both branches calculate
+  `f = min(65535, floor(0xFFFF1E40*uint8[0xFFFF1160]/128))` and write it to
+  `0xFFFF1062`. Let
+  `T = sat_u32(4*f*uint16[0xFFFF115C])` and
+  `P = uint16[0xFFFF1F30]*uint16[0xFFFF1E06]`. With
+  `ROM8[0x8D92].bit4` clear, `0xFFFF1DEE` receives the saturated
+  `(T+P)>>13` result with the one-count anti-stall rule. With bit 4 set, as in
+  stock `ROM8[0x8D92] = 0x7A`, it receives
+  `min(65535, max(P-T,0)>>13)`.
+- Under its enable gates, signed correction `0xFFFF1060` is
+  `clamp_s16(arithmetic_shift7(160*(0xFFFF1DEE-0xFFFF1E06)))`; otherwise it
+  is zero. Stock bit-4 processing selects `0xFFFF1DEC` either directly from
+  `0xFFFF1DEE` or through
+  `(c*0xFFFF1DEE + (256-c)*0xFFFF1E04)>>8`, where `c=uint8[0xFFFF1EE1]`.
+  Dispatcher `FUN_000209D8` copies the 24-byte working block after every
+  producer pass, making `0xFFFF1E04` and `0xFFFF1E06` the prior selected and
+  unblended samples.
+- When `0xFFFF2449.bit7` is clear, the nonnegative corrected candidate is
+  capped by RPM/25 curve `0x12C9E`, whose byte result is shifted left by eight,
+  and written to `0xFFFF1026`. When the bit is set, direct 3x4 uint8 grid
+  `0x974E` supplies the word. Its rows cover RPM ranges below 800, 1600, and
+  2400; 2400 RPM and above produces zero. Columns use `0xFFFF1075` thresholds
+  7, 15, and 22. The stock cells are
+  `36 3c 4c 61 / 32 34 40 5a / 30 31 38 54`, and the selected byte is shifted
+  left by eight.
+
+Initialization in `FUN_0002C648` uses the same `0x15630` fallback table. For
+`q = min(65535, floor(M*uint8[0xFFFF1160]/512))`, it writes `q` to
+`0xFFFF1062` and `min(65535,4*q)` to the working schedule words and
+`0xFFFF1026`. This is the only non-runtime direct writer found by the
+whole-program p-code scan.
+
+The calculated-load path consumes the current scheduler snapshot:
+
+- `FUN_0008083C` indexes 16-cell uint16 table `0x1491A` by
+  `uint8[0xFFFF11B3] << 8`. Wrapper `FUN_000263F4` uses the complete uint16
+  interpolation path below coordinate `0xF000`; the upper branch returns cell
+  15.
+- With lookup result `M`, it calculates
   `q = floor((uint16[0xFFFF1024] << 8) / M)`. If
   `ROM8[0x870E].bit4` is set, it additionally calculates
-  `q = floor((q << 7) / uint8[0xFFFF329F])`; a zero optional divisor forces 255.
-  The final value is clamped to 255 and written to `0xFFFF413E`. Other entry gates
-  can force 0 or 255.
-- Factory diagnostic dispatcher `FUN_00035634` selects the Mode 01 handler
-  `FUN_00035856`. Its PID `0x04` branch returns `0xFFFF413E` directly through the
-  response-byte writer. Freeze-frame code copies the same byte. Standard physical
-  conversion is `100*A/255`.
+  `q = floor((q << 7) / uint8[0xFFFF329F])`; a zero optional divisor forces
+  255. The final value is clamped to 255 and written to `0xFFFF413E`. Other
+  entry gates can force 0 or 255.
+- `FUN_00035856` returns `0xFFFF413E` for J1979 Mode 01 PID `0x04`, with
+  standard conversion `100*A/255`.
 
-Code therefore establishes the calculated-load normalization role of `0x1491A` and
-the exact output representation. The A2L name `Load Base Fuel Schedule Table`, BFS
-unit, multiplier `x*0.000488`, and static RPM axis remain catalog-level candidates.
-
-Table `0x15630` belongs to an independent path and has no machine connection to the
-two-channel `0x141F4`/`0x14274` branch:
-
-- Initialization in `FUN_0002C648` looks up `M` by
-  `uint8[0xFFFF1077] << 8`, writes raw `M` to `0xFFFF1E44`,
-  `floor(M/4)` to `0xFFFF1E40`, and writes
-  `min(65535, floor(M*uint8[0xFFFF1160]/512))` to `0xFFFF1062`.
-- Runtime function `FUN_0003B75C` reads the table only on a fallback path. The
-  fallback is selected when `uint8[0xFFFF2804] == 0`, when
-  `0xFFFF4185.bit7` is set and `0xFFFF437A != 0`, or when
-  `0xFFFF4185.bit6` is set and `uint8[0xFFFF2804] < 0x20`. It writes
-  `min(65535, floor(floor(M/4)*uint8[0xFFFF1160]/128))` to `0xFFFF1062`.
-  The main branch creates the same common result through independent arithmetic
-  without reading `0x15630`.
-- `FUN_00039316` uses `4*0xFFFF1062` as an absolute-difference tolerance.
-  `FUN_0003A750` uses the same four-times value as a comparison width around
-  `ROM8[0x8AD9] << 8`. These consumers close the operational path but do not name
-  its physical quantity.
-
-The generated name `Fallback Source Table - BFS candidate scale (0x15630)` reflects
-the code boundary. Shape matching to the catalog entry `Cranking Base Fuel Schedule
-Table` and multiplier `x*0.000488 BFS` remain candidate evidence only.
+Exact DID `0x1208` identifies the numerator and producer output as Base Fuel
+Schedule, so `0x1491A` is a same-dimension 100% normalization reference and
+`0x15630` is a Base Fuel Schedule fallback source. The structured homologous
+Nissan profile defines the full word as `raw/2048 ms`; this makes the high-byte
+tables use `raw/8 ms`. The conversion, the `Cranking` qualifier for `0x15630`,
+and tuner-facing RPM-axis labels remain candidates pending a controlled
+CONSULT3P or bench measurement.
 
 
 ### UDS SID 0x22 ignition, fuel-trim, injection, and intake-CVTC response paths
@@ -1594,6 +1639,10 @@ request-to-RAM path independently of public PID lists:
   table at `0x2289C`. A normal `0x11xx` entry returns one byte. A normal `0x12xx`
   entry returns two consecutive bytes in big-endian order. Both paths emit
   positive response SID `0x62`.
+- Pointer `ROM32[0x228BC] = 0xFFFF1026` binds DID `0x1208` to the newest Base
+  Fuel Schedule word. The structured homologous Nissan profile names the same
+  DID `B/FUEL SCHDL` and defines `raw/2048 ms`; the address binding is exact and
+  the engineering conversion remains a hardware-validation target.
 - Entries `0x1107`, `0x1108`, `0x1109`, and `0x110A` at pointer-table locations
   `0x226C8..0x226D4` all address byte `0xFFFF2022`. They are exact aliases for
   one firmware value, not four independent runtime coordinates.
@@ -2786,8 +2835,10 @@ the association by checking
   pass's only map with an external association: the division result reaches
   `ffff413e`, calculated load for J1979 mode 01 PID `0x04`. Dispatcher `00035856`
   returns it as a byte, and it also enters freeze-frame data. The trace establishes
-  relation `load[%] = 100 * (ffff1024 * 256 / x) / 255`; scale `x*0.000488`
-  in ms BFS comes from the catalog, so `scale_conf = candidate`.
+  relation `load[%] = 100 * (ffff1024 * 256 / x) / 255`. Exact DID `0x1208`
+  identifies `ffff1024` as current Base Fuel Schedule. Scale `x/2048 ms` is shared
+  by the HR catalog and a structured homologous Nissan diagnostic profile, so
+  `scale_conf = candidate` until hardware validation.
 
 
 ### Dead branch proven by an image byte - `0x122b2`
@@ -3662,7 +3713,7 @@ All 16 maps in the batch are included in `findings.csv`:
   `0x51718` branches to `0x517A8`, and both `0x121F6` and `0x12206` lookups and their
   downstream calculations are skipped;
 - three Map scale claims are nontrivial: `0x15082` has the code-proven UQ0.16 scale
-  `x/65536`, `0x15630` has the catalog BFS scale `x*0.000488` at `candidate`, and
+  `x/65536`, `0x15630` has the profile-derived BFS scale `x/2048` at `candidate`, and
   `0xA8EA` has the arithmetic-derived scale `x/128` at `candidate`. The durable inverse
   for `0x15082` is recorded as the valid expression `x*65536`; round-trip behavior is
   fixed by separate `spec:` evidence items;

@@ -620,21 +620,21 @@
 
     <!-- 0x1491A  16 uint16  map [code]; entry 0x263F4 (implicit, core 0x26A64)
          accessor 0x8083C; r4 operand: pool
-         scaling x*0.000488 BFS [candidate]
+         scaling x/2048 BFS ms [candidate]
          static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence:
          writes]
          The exact image closes both wrapper branches: 000263f4 calls the complete uint16
          interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell
-         15 otherwise. FUN_0008083c calculates the load code, optionally applies
-         floor((q<<7)/uint8[ffff329f]) when ROM8[0x870e] bit 4 is set, clamps to 255, and writes
-         ffff413e. FUN_00035856 returns this byte for PID 0x04; standard conversion is
-         100*A/255. The operational 100% normalization role has code confidence. The BFS unit,
-         x*0.000488 scale, and static RPM axis come from the HR A2L catalog and remain
-         candidate.
+         15 otherwise. Exact DID 0x1208 identifies numerator ffff1024 as current Base Fuel
+         Schedule; the quotient therefore compares it with a same-dimension 100% reference. FUN
+         0008083c optionally applies floor((q<<7)/uint8[ffff329f]), clamps to 255, and writes
+         ffff413e. FUN 00035856 returns this byte for PID 0x04; standard conversion is
+         100*A/255. The operational role has code confidence. The raw/2048 ms conversion and
+         static RPM-axis presentation remain candidate and require hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Calculated Load" category="Fuelling / Engine Load"
            storagetype="uint16" storageaddress="0x1491A" sizex="16" endian="big">
-      <scaling units="BFS [cand]" expression="x*0.000488" to_byte="x/0.000488" format="0.000"
+      <scaling units="BFS ms [cand]" expression="x/2048" to_byte="x*2048" format="0.000"
                fineincrement="0.001" coarseincrement="0.01"/>
       <table type="Static X Axis" name="Raw input (step 4096)" sizex="16">
         <data>0</data><data>4096</data><data>8192</data><data>12288</data>
