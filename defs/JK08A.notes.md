@@ -392,7 +392,7 @@ sets bit 3 of `ffff5b2c`. The even path does not clear other groups. Group 0 cap
 requires `ffff41c1.bit1 == 0`; argument 0 sets that latch after capture. Groups 1 and
 2 capture unconditionally. Every group contains the same operating-point payload:
 
-| Group | Native-speed word from `ffff11bc` | Calculated-load byte from `ffff413e` | Coolant byte from `ffff3fa4` | Retention marker |
+| Group | RPM/12.5 word from `ffff11bc` | Calculated-load byte from `ffff413e` | Coolant byte from `ffff3fa4` | Retention marker |
 |---:|---|---|---|---|
 | 0 | `ffff4a70` | `ffff4a45` | `ffff4ac6` | `ffff5b2a.bit2` |
 | 1 | `ffff4a72` | `ffff4a46` | `ffff4ac7` | `ffff5b2a.bit0` |
@@ -443,6 +443,31 @@ bit 7, bit 6, so simultaneous window completions are handled in one coordinator 
 The matrix proves that retained groups are result families shared by multiple windows,
 not one-to-one cadence identifiers.
 
+**Engine-speed qualification (code).** `FUN_000384fe` writes
+`ffff11e8 = ffff1196 >> 3`; `FUN_0003846e` then writes
+`ffff11ea = min(255, ffff11e8 >> 3) = min(255, ffff1196 >> 6)`. Scheduler
+`FUN_00020dfe` calls copy helper `FUN_000220f8` for the 56-byte
+`ffff11d4..ffff120b -> ffff119c..ffff11d3` block, which maps `ffff11ea` to
+`ffff11b2` and word `ffff11f4` to `ffff11bc`. Because
+`ffff11f4 = ffff1196 >> 6`, both snapshot destinations use the exact RPM/12.5
+count scale. Byte `ffff11b2` saturates at 255; its implicit 1D-8 nodes
+0, 32, ..., 224 correspond to 0, 400, ..., 2800 RPM. Word `ffff11bc` retains the
+unsaturated engine-speed coordinate.
+
+Once-per-revolution `FUN_0007c4e0` applies hysteresis to `ffff11b2` through
+`ffff24c4.bit7`. A clear state sets at stock `ROM8[0x8BDA] = 32` (400 RPM). An
+already-set state adds four counts before comparison, so it remains set at 28
+(350 RPM) and clears below that value. While set, the function increments saturating
+counter `ffff4096`; while clear, it resets the counter. Stock JK03A and JK08A contain
+the same threshold byte.
+
+`FUN_0003cf24` and coordinator `FUN_00082c8a` both require
+`ffff4096 >= ROM8[0x83B8]`; the stock byte is 1. The coordinator's below-threshold
+path clears `ffff4251.bits6/7`. Whole-program p-code passes over all 2,315 functions
+found four exact accesses and no unresolved candidates for each of `ffff4096` and
+`ffff24c4`. `FUN_0007c4e0` is the sole writer of `ffff4096` and the sole bit-7 writer
+of `ffff24c4`; the other exact write, in `FUN_000593ac`, ORs only bit 6.
+
 **Rotational-reference history qualification (code).** In current-cylinder event path
 `FUN_00029588`, event state `ffff13b2 == ROM8[0x8BDC]` with a valid previous reference
 causes the absolute difference between timer captures `fffff434` and `ffff84d4` to be
@@ -469,8 +494,9 @@ source therefore remain unresolved.
 three retained groups to `FUN_000847dc`. Under `ffff4251.bit7` and
 `ffff41d2.bits0/1`, the matcher returns 1 exactly when:
 
-- current `ffff11bc` is in
-  `[max(snapshot_speed - 30, 0), min(snapshot_speed + 30, 255))`;
+- current RPM/12.5 word `ffff11bc` is in
+  `[max(snapshot_speed - 30, 0), min(snapshot_speed + 30, 255))`; the 30-count
+  tolerance is 375 RPM;
 - current calculated-load code `ffff413e` is in
   `[floor(8 * snapshot_load / 10), floor(12 * snapshot_load / 10))`;
 - current and retained coolant codes are both below 110 or both at least 110.
@@ -968,10 +994,10 @@ would associate `0xFFFF11AE` with physical engine speed. Shapes of axes `0x11B6B
 `0x12F2E`, and `0x11CF0` are compatible with RPM and multiplier `x*50`, but this is a
 `candidate` catalog interpretation rather than code evidence.
 
-Axis `0x11ECE` uses different RAM input `ffff11bc`, and machine arithmetic establishes
-comparison domain `x*4` in internal units. User-facing RPM scale `x*50` and range
-400..7400 rpm remain `candidate` from A2L homology. Code confirms axis structure but
-not its physical unit.
+Axis `0x11ECE` uses RPM/12.5 word `ffff11bc`. Machine arithmetic multiplies each raw
+axis point by four before comparison, which establishes user-facing scale `x*50 RPM`
+and range 400..7400 RPM at `code` confidence. A2L homology independently agrees with
+the same scale.
 
 
 ### Correction and filter weight `0xAB0A`/`0xB23A`, FUN_000BEFB0
@@ -1490,25 +1516,25 @@ activation/release pairs:
 
 Stock `ROM8[0x8B38] = 0x63` leaves bit 7 clear, so the alternate words
 `0x9356`/`0x9358` are outside the stock path. `0xFFFF2468.bit4` selects column 0 or 1.
-With `0xFFFF2497.bit2` clear, current speed coordinate `0xFFFF11BC` at or above the
+With `0xFFFF2497.bit2` clear, current RPM/12.5 word `0xFFFF11BC` at or above the
 selected activation threshold arms optional delay `0xFFFF24F1`; stock
 `ROM8[0x8C69] = 0` activates state bit 2 immediately. While active, speed below the
 selected release threshold clears the state. The returned Boolean enters
 `FUN_0004ED88`, which converts any active global inhibit condition to mask `0x3F` and
 writes the final six-channel injection-output mask `0xFFFF22E0`.
 
-The public HR A2L catalog defines the matching 2x2 layout as Normal/Reverse columns,
-Cut/Restore rows, with `x*12.5 RPM`. Under that candidate physical interpretation the
-stock values are:
+Exact code establishes `x*12.5 RPM` through producer `FUN_000384FE` and the snapshot
+copy in `FUN_00020DFE`. The public HR A2L catalog identifies the matching 2x2 layout
+as Normal/Reverse columns and Cut/Restore rows. The stock values are:
 
 | Fuel state | Normal | Reverse |
 |---|---:|---:|
 | Cut | 7650 RPM | 7450 RPM |
 | Restore | 7450 RPM | 4600 RPM |
 
-Code proves the table address, 2x2 layout, hysteresis, active state, and global
-six-injector inhibit path. Axis labels and the RPM multiplier remain catalog-supported
-candidates pending CONSULT/bench validation.
+Code proves the table address, 2x2 layout, RPM multiplier, hysteresis, active state,
+and global six-injector inhibit path. The Normal/Reverse column labels remain
+catalog-supported candidates pending CONSULT/bench validation.
 
 
 ### Accelerator-pedal high-state hysteresis `0x8FDC`/`0x8FDE`, FUN_00047A56 [CONFIRMED]
@@ -1623,9 +1649,9 @@ physical scales remain `candidate` from A2L.
 
 Row axis `0x11ECE` contains
 `[8,12,16,24,32,40,48,56,64,72,88,104,120,128,136,148]`, corresponding to
-`400..7400 rpm` at scale `x*50`. Kernel `0x269C4` converts points to internal domain
-`x*4` for comparison with RAM `ffff11bc`; this internal representation is not the
-RomRaider user scale.
+`400..7400 RPM` at scale `x*50`. Kernel `0x269C4` converts points to RPM/12.5
+domain with `x*4` for comparison with RAM `ffff11bc`; the exact producer and
+snapshot-copy chain raises this axis scale to `code` confidence.
 
 Column axis `0x11EBE` contains 16 points `8..128`, corresponding to
 `6.25..100%` Cylinder Filling at scale `x*0.78125`. Entry `0x26230` uses both axes
@@ -1912,8 +1938,9 @@ and bit4 of `ffff248d` selects an adaptive-learn path that writes `ffff1513`, co
 by learn routine `0x4e112`. Throttle-gated pair `0x11efa`, flat at 100, and `0x147ca`,
 uint16 range 15..55, reaches the sum as addend `uVar8` through `mul.l`/`0x21ce0`.
 Its exact role, whether knock limit, torque ratio, or timing limit, is unresolved.
-Base maps use index `ffff11b2`; corrections use `ffff106f`. These are two different
-inputs, so the cluster has no single "engine speed" axis.
+Base maps use saturated RPM/12.5 engine-speed index `ffff11b2`; corrections use
+normalized coolant index `ffff106f`. These are two different physical inputs, so the
+cluster has no single shared axis.
 
 The exact SID `0x22` ignition-timing response path uses internal coordinate
 `ffff11d4` and response byte `ffff2022`. No direct data-flow edge from the
@@ -2240,8 +2267,9 @@ remain candidate. The claim that `0xB33A` is a trim base agrees with an independ
 code finding: `0xB33A` is an offset-encoded control table with neutral 128, but
 physical name Target AFR is unconfirmed. The working tuner definition exposes the
 candidate `1881.6/x` gasoline-AFR projection and retains `[cand]` in its units.
-Physical axis inputs `ffff11bc`, `ffff1024`, and `ffff10d2` come from callers outside
-the components, so their units do not reach `code` confidence.
+Physical axis inputs `ffff1024` and `ffff10d2` come from callers outside the
+components, so their units do not reach `code` confidence. Input `ffff11bc` is exact
+RPM/12.5 through its producer and snapshot-copy chain.
 
 Reissue chain: five code-confidence maps are in `findings.csv`; none is emitted.
 Three have scales but physically unresolved axes, while the floor maps lack a scale as
@@ -2532,9 +2560,10 @@ but only compared, and the comparison branch leads to setting a fault code.
   comparison polarity is not proven.
 - `0x11ede` in FUN_0005651c is the activation point for channel `ffff123c`.
   Hysteresis is zero in this image because ROM byte at `0x86ea` equals `0x00`.
-- `0x12a32` in FUN_000507ce is a threshold for `ffff11bc` with hysteresis 16. All
-  cells equal `255`, making the threshold constant at 510 and the axis inert. The
-  read is unconditional, so the map is not `dead`.
+- `0x12a32` in FUN_000507ce is an engine-speed threshold for RPM/12.5 word
+  `ffff11bc` with hysteresis 16 counts. All cells equal `255`, making the threshold
+  constant at 510 counts, or 6375 RPM, and the axis inert. The read is unconditional,
+  so the map is not `dead`.
 - `0x12136` in FUN_00056ea6 is confirmation dwell in accessor passes. This is the
   only case in the pass with a strictly established unit: the value is compared with
   an integer counter incremented by 1 each pass, so a fractional scale is impossible.

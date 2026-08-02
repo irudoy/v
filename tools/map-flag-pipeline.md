@@ -709,6 +709,18 @@ The JK08A binding projection contains 145 reviewed claims:
   200 revolutions to one-trip TWC-damage monitoring and 1,000 revolutions to two-trip
   emissions-deterioration monitoring; exact JK08A code does not name groups 0..2 or
   reporter polarity as physical pass/fail phases;
+- P030 engine-speed qualification is code-closed through
+  `0x384FE -> 0x3846E -> 0xFFFF11EA -> 0x20DFE/0x220F8 -> 0xFFFF11B2`.
+  The byte is saturated engine speed in RPM/12.5. The same snapshot block copies
+  unsaturated RPM/12.5 word `0xFFFF11F4` to `0xFFFF11BC`, code-closing retained
+  P030 speed, ignition axis `0x11ECE`, fuel-cut table `0x934E`, and threshold
+  `0x12A32` scales. Once-per-revolution updater
+  `0x7C4E0` sets `0xFFFF24C4.bit7` at stock raw 32 (400 RPM), retains it at raw
+  28 (350 RPM), and increments saturating counter `0xFFFF4096`; a clear state resets
+  the counter. History updater `0x3CF24` and coordinator `0x82C8A` both require the
+  stock count threshold 1. Whole-program p-code passes found four exact accesses and
+  no unresolved candidates for each state; `0x7C4E0` is the sole counter writer and
+  sole hysteresis-bit writer;
 - P030 interval-history qualification is separate from the 200/1,000-revolution
   windows. Current-cylinder event path `0x29588` stores an absolute timer-capture
   interval and sets `0xFFFF84F2.bit7` at stock reference state 9. History updater
