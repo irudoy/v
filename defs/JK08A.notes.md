@@ -468,6 +468,71 @@ found four exact accesses and no unresolved candidates for each of `ffff4096` an
 `ffff24c4`. `FUN_0007c4e0` is the sole writer of `ffff4096` and the sole bit-7 writer
 of `ffff24c4`; the other exact write, in `FUN_000593ac`, ORs only bit 6.
 
+**Common readiness gate `ffff4251.bit7` (code).** Coordinator `FUN_00082c8a` is
+the only function that writes bits 6 or 7 of this multipurpose byte. Its stock
+success path requires every condition below:
+
+| Condition | Exact stock requirement | Failure effect |
+|---|---|---|
+| Speed-qualified revolution age | `ffff4096 >= ROM8[0x83B8] = 1` | Clear bits 6/7 |
+| Latched local inhibit | `ffff436f == 0` | Clear bits 6/7 |
+| Shared diagnostic permission | `ffff41c8.bit7 == 1` | Clear bits 6/7 |
+| Composite runtime-record gate | `FUN_00025a12() == 0` | Clear bits 6/7 |
+| Six direct runtime-record gates | `FUN_000259e4(index) == 0` for `0x129`, `0x12A`, `0`, `0x130`, `0x14`, and `-1` | Clear bits 6/7 |
+| AN0-derived snapshot | unsigned `ffff1108 >= 0x89` | Clear bits 6/7 |
+| Engine speed | `ROM8[0x88E4] <= ffff11ae < ROM8[0x88E5]`, stock `6 <= value < 0x98` | Clear bits 6/7 |
+
+Byte `ffff11ae` is RPM/50, so the speed interval is exactly
+`300 <= RPM < 7600`. Scheduler `FUN_00020dfe` populates `ffff1108` from current
+byte `ffff1188` through the 128-byte
+`ffff1114..ffff1193 -> ffff1094..ffff1113` snapshot copy. `FUN_00039a9e`
+produces `ffff1188` from SH7058 ADC channel AN0 at MCU pin 86/H17. The ECM terminal,
+physical signal, and engineering scale remain unresolved. A whole-program p-code
+pass found 96 exact reads of `ffff1108`, no direct writes, and no unresolved
+candidates; the block-copy helper explains the absent direct store.
+
+The runtime-record helpers have closed contracts. `FUN_000259e4(index)` addresses
+the third byte of `ffff5718 + 3*index` and returns 1 when bit 5 or bit 6 is set. It
+returns 0 when both bits are clear, and signed index `-1` returns 0 without a RAM
+read. `FUN_00025a12` OR-reduces that predicate over index `0x14`, the range
+`0x47..0x4C`, and the range `0x8A..0x8C`; its two calls with `-1` are inert. The
+coordinator therefore admits the gate only when none of the listed diagnostic
+runtime records carries either operational result-state bit. These internal bits
+are not assigned UDS status names, and the physical grouping of the checked records
+remains unresolved.
+
+The local inhibit is a latch, not a countdown. Before testing the common gate,
+`FUN_00082c8a` checks `ffff84c3.bit6` and unsigned `ffff2b73` against
+`ROM8[0x8500] = 5`. If both conditions pass, it writes
+`ROM8[0x8C2E] = 0x32` to `ffff436f`. A second whole-program p-code pass found only
+this write and the subsequent gate read among all 2,315 functions, with no unresolved
+candidates and no statically resolved clear. Reset-time or pointer-mediated
+initialization remains unresolved; no time unit is assigned.
+
+After all prerequisites pass, the coordinator first sets `ffff4251.bit6`. Stock
+`ROM8[0x8AFC] = 0x28` has bit 3 set, so the same path then sets bit 7
+unconditionally. If that ROM bit were clear, the alternate branch would set bit 7
+when `ffff4184.bit6` is clear and clear bit 7 when it is set. Stock JK03A contains
+the same constants `01`, `05`, `06 98`, `28`, and `32` at the five gate locations,
+and its executable code is byte-identical to JK08A.
+
+The exhaustive external bit-7 consumers are:
+
+- `FUN_000847dc`, the retained operating-point snapshot matcher;
+- `FUN_00085020`, an auxiliary P030 state service called only by the coordinator;
+- `FUN_00085a70`, which gates the weighted accumulators and counter groups;
+- `FUN_000867c4`, the five-channel accumulation helper called only by
+  `FUN_00085a70`;
+- `FUN_000872d0`, which resets all three revolution-window counters when the gate is
+  clear.
+
+The coordinator also reads bit 7 after writing it and resets its P030 accumulators
+and related working state when clear. A whole-program `TraceRamAccesses.java` pass
+found 81 exact accesses to byte `ffff4251`, no unresolved candidates, and 20 writer
+functions. Machine-mask inspection shows that the other 19 writers affect only bits
+0..5. The read in engine-event driver `FUN_00029588` tests bit 0, not bit 7, and is
+not part of this gate.
+
 **Rotational-reference history qualification (code).** In current-cylinder event path
 `FUN_00029588`, event state `ffff13b2 == ROM8[0x8BDC]` with a valid previous reference
 causes the absolute difference between timer captures `fffff434` and `ffff84d4` to be
