@@ -722,14 +722,18 @@ The JK08A binding projection contains 145 reviewed claims:
   no unresolved candidates for each state; `0x7C4E0` is the sole counter writer and
   sole hysteresis-bit writer;
 - P030 interval-history qualification is separate from the 200/1,000-revolution
-  windows. Current-cylinder event path `0x29588` stores an absolute timer-capture
-  interval and sets `0xFFFF84F2.bit7` at stock reference state 9. History updater
+  windows. ATU-II engine-event selector `0xFFFF13B2` dispatches modes 0, 4, 6, 7, 8,
+  and 9. With both stock selector constants at `0x8BDC/0x8BDD` equal to 9,
+  `0x29588` seeds `0xFFFF84D4` from 32-bit channel-0A `ICR0A` on the first
+  selector-9 capture and produces `abs(ICR0A - previous)` plus pending flag
+  `0xFFFF84F2.bit7` on every subsequent selector-9 invocation. History updater
   `0x3CF24` consumes that pending sample, shifts 14 interval values, and maintains
-  configuration-gated saturating count `0xFFFF3834`. Detection starts at 19 qualified
-  samples; revolution-window accumulation starts at 31. A whole-program p-code pass
-  found 86 exact accesses to `0xFFFF4240..0xFFFF4247`, no unresolved candidates, and
-  no application-code writer for the enabling `0xFFFF4247.bit6`; its initialization
-  source and the physical cadence of state-9 samples remain unresolved;
+  configuration-gated saturating count `0xFFFF3834`. Detection starts at 19 accepted
+  intervals; revolution-window accumulation starts at 31. Exact and broader
+  whole-program source audits found no application writer for selector
+  `0xFFFF13B2` or enabling `0xFFFF4247.bit6`. The selector-mode identities,
+  initialization sources, TI0A signal source, and number of selector-9 captures per
+  crankshaft revolution or unit time remain unresolved;
 - primary rear O2 dispatcher `0x89D92` links bank-indexed metrics
   `0xFFFF26E9`, `0xFFFF26EB`, `0xFFFF2726`, and `0xFFFF2724` to exact
   P0139/P0159, P0137/P0157, and path-A P0138/P0158 descriptors. Alternate

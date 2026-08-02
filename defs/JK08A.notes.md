@@ -593,27 +593,44 @@ functions. Machine-mask inspection shows that the other 19 writers affect only b
 0..5. The read in engine-event driver `FUN_00029588` tests bit 0, not bit 7, and is
 not part of this gate.
 
-**Rotational-reference history qualification (code).** In current-cylinder event path
-`FUN_00029588`, event state `ffff13b2 == ROM8[0x8BDC]` with a valid previous reference
-causes the absolute difference between timer captures `fffff434` and `ffff84d4` to be
-stored at `ffff1dac`; it then sets `ffff84f2.bit7`. Stock JK03A and JK08A both contain
-reference-state bytes 9/9 at `0x8BDC`/`0x8BDD` and speed-qualification byte 1 at
-`0x83B8`.
+**ATU-II capture-interval history qualification (code).** Byte `ffff13b2` is an
+ATU-II engine-event mode selector. `FUN_00029588` dispatches values 0, 4, 6, 7, 8,
+and 9. When the selector equals `ROM8[0x8BDC] = 9` and `ffff84f1.bit7` indicates a
+valid previous capture, the function reads the 32-bit ATU-II channel 0A input-capture
+register `ICR0A` at `fffff434`, stores `abs(ICR0A - ffff84d4)` at `ffff1dac`,
+and sets coalescing flag `ffff84f2.bit7`. A second comparison uses
+`ROM8[0x8BDD] = 9`; the same selector-9 invocation refreshes `ffff84d4` from
+`ICR0A` and sets `ffff84f1.bit7`. The first selector-9 capture therefore seeds the
+reference, and every subsequent selector-9 invocation produces an interval between
+consecutive `ICR0A` captures.
 
-`FUN_0003cf24` consumes and clears the pending bit, shifts the 14-longword history
+A whole-program exact-address pass found nine reads of `ffff13b2`, no writes, and no
+unresolved candidate anchored at the byte. A broader pass over
+`ffff128c..ffff13ff` produced 107 candidate writes. The 103 direct base-relative
+candidates start at offset `0x18A`, beyond target offset `0x126`. The four
+pointer-table writes in `FUN_00040e6c` resolve only to `fffff74e` and
+`ffff1e92..ffff1f10`. Review of all seven constant-address calls likewise found no
+writer capable of reaching `ffff13b2`. Its initializer or runtime producer and the
+physical names of selector modes remain unresolved.
+
+`FUN_0003cf24` consumes and clears `ffff84f2.bit7`, shifts the 14-longword history
 `ffff1dac..ffff1de0`, and updates saturating history-age counters. Invalid speed or
 prior-reference state fills the history with the current interval and resets all three
 age counters. On valid samples, `ffff3834` increments only while configuration
 `ffff4247.bit6` is set; otherwise it resets. Detection core `FUN_00085a70` requires
 `ffff3834 >= 19`, while revolution-window producer `FUN_000872d0` requires
-`ffff3834 >= 31`. These are qualified interval-sample gates, not time or revolution
-counts. Static code does not establish how often state 9 occurs in physical crank angle.
+`ffff3834 >= 31`. These thresholds count accepted consecutive selector-9 capture
+intervals. Static code does not establish how many selector-9 captures occur per
+crankshaft revolution or unit time, so neither threshold is converted to revolutions
+or duration.
 
-A whole-program p-code pass over all 2,315 JK08A functions found 86 exact accesses to
-`ffff4240..ffff4247`, no unresolved candidates, and no resolved writer for
-`ffff4247.bit6`. The sole exact write to byte `ffff4247` is `FUN_000d093c` ORing bit 4.
-The bit-6 feature name and its startup, retained-memory, or external configuration
-source therefore remain unresolved.
+An exact-byte whole-program p-code pass over all 2,315 JK08A functions found 12
+accesses to `ffff4247` in eight functions and no unresolved candidate. The sole
+resolved write is `FUN_000d093c`, which preserves the byte and ORs bit 4. A broader
+source-boundary pass over `ffff4000..ffff42ff` found no base-relative,
+pointer-derived, or constant-address write capable of producing bit 6. The bit-6
+feature name and its startup, retained-memory, or external configuration source remain
+unresolved.
 
 **Snapshot reuse (code).** Before later result handling, `FUN_00082c8a` passes all
 three retained groups to `FUN_000847dc`. Under `ffff4251.bit7` and
