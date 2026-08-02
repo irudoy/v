@@ -341,17 +341,23 @@ and the `0x12026` lookup result otherwise. Bit 1 is set only when the latch equa
 Stock JK03A and JK08A contain `ROM8[0x8afc] = 0x28`, `ROM8[0x8499] = 0xb4`, and eight
 zero cells at `0x12026`. The stock lifecycle therefore reduces to:
 
-- while `F == 0`, every coordinator pass refreshes `ffff42a8` to `0xb4` when
-  `ffff422d.bit4` is set or to zero when it is clear, and bit 1 is clear;
-- while `F != 0`, the latch is retained and bit 1 is set exactly when the retained
-  value is zero.
+- startup initializer `FUN_00027ac0` clears effective longword span
+  `[ffff261c,ffff4514)`, including `ffff41d2`, `ffff422d`, and `ffff42a8`;
+- the conditional initializers in `FUN_0002fc24` and `FUN_00034b70` clear all three
+  bytes again through effective span `[ffff1000,ffff5cf4)`;
+- while `F == 0`, every normal coordinator pass refreshes `ffff42a8` to zero and
+  clears bit 1;
+- while `F != 0`, the latch remains zero and the normal coordinator pass sets bit 1.
 
 `FUN_00027530` maintains five-state longword `ffff39d8`: states 2..4 set bit 5 in both
 `ffff2451` and `ffff244f`, while states 0/1 clear it. Scheduler `FUN_00020dfe` also
 copies `ffff2451` to `ffff244f`. An exhaustive `ffff422d` scan found 30 exact accesses
 and no candidates; its seven resolved writers change only bits 0, 1, 2, 3, 5, or 6.
-The initialization or indirect source and physical meaning of `ffff422d.bit4` remain
-unresolved. The startup value of `ffff42a8` is also not established.
+They preserve bit 4 after its startup clear. An exhaustive exact-address scan of
+`ffff42a8` found only the two writes and one read in `FUN_00082c8a`. Therefore the
+structural `0xb4` branch is not reached under the proven stock application-code
+lifecycle, the latch stays zero, and the normal coordinator update makes bit 1 follow
+`F`. The physical meaning of `ffff422d.bit4` remains unresolved.
 
 Bit 0 is set exactly when all four unsigned conditions pass:
 
