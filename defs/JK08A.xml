@@ -646,8 +646,8 @@
 
     <!-- 0x0991A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x4E1C0; r4 operand: sp
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across
          the entire trio. The physical scale and mode name are confirmed by the A2L catalog;
          code confirms table selection, the 0x7f mask, and participation of the result in angle
@@ -665,7 +665,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -686,7 +686,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -846,8 +846,8 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code selects the table relative to the high-detonation branch and preserves bit 7
          separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
          layout offset of +0x5c.
@@ -864,7 +864,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -886,7 +886,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -894,8 +894,8 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
          input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
          layout offset of +0x5c.
@@ -912,7 +912,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -934,7 +934,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -942,17 +942,15 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x4F282; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [candidate]
-         The active stock 2x2 cells decode to Normal Cut 7650 RPM, Reverse Cut 7450 RPM, Normal
-         Restore 7450 RPM, and Reverse Restore 4600 RPM. ROM8[00008b38]=0x63 keeps the alternate
-         words at 00009356/00009358 outside the stock path. Code proves the operational fuel-
-         output state and table layout; axis labels and RPM multiplier come from the public HR
-         A2L catalog plus the native speed-domain conversion and remain candidate pending
-         hardware validation.
+         scaling x*12.5 RPM [code]
+         The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
+         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
+         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
+         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0x0934E" sizex="2" sizey="2" endian="big">
-      <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0.0"
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
         <data>Normal</data><data>Reverse</data>
@@ -1105,8 +1103,8 @@
          project map-switching patch
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code selects the table relative to the high-detonation branch and preserves bit 7
          separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
          layout offset of +0x5c.
@@ -1123,7 +1121,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1145,7 +1143,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1154,8 +1152,8 @@
          project map-switching patch
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
          input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
          layout offset of +0x5c.
@@ -1172,7 +1170,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1194,7 +1192,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1203,17 +1201,15 @@
          project map-switching patch
          canonical accessor 0x4F282; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [candidate]
-         The active stock 2x2 cells decode to Normal Cut 7650 RPM, Reverse Cut 7450 RPM, Normal
-         Restore 7450 RPM, and Reverse Restore 4600 RPM. ROM8[00008b38]=0x63 keeps the alternate
-         words at 00009356/00009358 outside the stock path. Code proves the operational fuel-
-         output state and table layout; axis labels and RPM multiplier come from the public HR
-         A2L catalog plus the native speed-domain conversion and remain candidate pending
-         hardware validation.
+         scaling x*12.5 RPM [code]
+         The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
+         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
+         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
+         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3500" sizex="2" sizey="2" endian="big">
-      <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0.0"
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
         <data>Normal</data><data>Reverse</data>
@@ -1367,8 +1363,8 @@
          project map-switching patch
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code selects the table relative to the high-detonation branch and preserves bit 7
          separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
          layout offset of +0x5c.
@@ -1385,7 +1381,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1407,7 +1403,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1416,8 +1412,8 @@
          project map-switching patch
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
          input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
          layout offset of +0x5c.
@@ -1434,7 +1430,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1456,7 +1452,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1465,17 +1461,15 @@
          project map-switching patch
          canonical accessor 0x4F282; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [candidate]
-         The active stock 2x2 cells decode to Normal Cut 7650 RPM, Reverse Cut 7450 RPM, Normal
-         Restore 7450 RPM, and Reverse Restore 4600 RPM. ROM8[00008b38]=0x63 keeps the alternate
-         words at 00009356/00009358 outside the stock path. Code proves the operational fuel-
-         output state and table layout; axis labels and RPM multiplier come from the public HR
-         A2L catalog plus the native speed-domain conversion and remain candidate pending
-         hardware validation.
+         scaling x*12.5 RPM [code]
+         The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
+         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
+         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
+         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3508" sizex="2" sizey="2" endian="big">
-      <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0.0"
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
         <data>Normal</data><data>Reverse</data>
@@ -1629,8 +1623,8 @@
          project map-switching patch
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code selects the table relative to the high-detonation branch and preserves bit 7
          separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
          layout offset of +0x5c.
@@ -1647,7 +1641,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1669,7 +1663,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1678,8 +1672,8 @@
          project map-switching patch
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
          input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
          layout offset of +0x5c.
@@ -1696,7 +1690,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1718,7 +1712,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1727,17 +1721,15 @@
          project map-switching patch
          canonical accessor 0x4F282; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [candidate]
-         The active stock 2x2 cells decode to Normal Cut 7650 RPM, Reverse Cut 7450 RPM, Normal
-         Restore 7450 RPM, and Reverse Restore 4600 RPM. ROM8[00008b38]=0x63 keeps the alternate
-         words at 00009356/00009358 outside the stock path. Code proves the operational fuel-
-         output state and table layout; axis labels and RPM multiplier come from the public HR
-         A2L catalog plus the native speed-domain conversion and remain candidate pending
-         hardware validation.
+         scaling x*12.5 RPM [code]
+         The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
+         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
+         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
+         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3510" sizex="2" sizey="2" endian="big">
-      <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0.0"
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
         <data>Normal</data><data>Reverse</data>
@@ -1891,8 +1883,8 @@
          project map-switching patch
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code selects the table relative to the high-detonation branch and preserves bit 7
          separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
          layout offset of +0x5c.
@@ -1909,7 +1901,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1931,7 +1923,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1940,8 +1932,8 @@
          project map-switching patch
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [candidate]; X
-         Axis 0x11EBE load [candidate]
+         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
+         0x11EBE load [candidate]
          Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
          input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
          layout offset of +0x5c.
@@ -1958,7 +1950,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1980,7 +1972,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1989,17 +1981,15 @@
          project map-switching patch
          canonical accessor 0x4F282; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*12.5 RPM [candidate]
-         The active stock 2x2 cells decode to Normal Cut 7650 RPM, Reverse Cut 7450 RPM, Normal
-         Restore 7450 RPM, and Reverse Restore 4600 RPM. ROM8[00008b38]=0x63 keeps the alternate
-         words at 00009356/00009358 outside the stock path. Code proves the operational fuel-
-         output state and table layout; axis labels and RPM multiplier come from the public HR
-         A2L catalog plus the native speed-domain conversion and remain candidate pending
-         hardware validation.
+         scaling x*12.5 RPM [code]
+         The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
+         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
+         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
+         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3518" sizex="2" sizey="2" endian="big">
-      <scaling units="RPM [cand]" expression="x*12.5" to_byte="x/12.5" format="0.0"
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
         <data>Normal</data><data>Reverse</data>
