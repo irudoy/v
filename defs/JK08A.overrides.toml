@@ -272,6 +272,16 @@ fine = 1
 coarse = 16
 static_axis = ["readiness"]
 
+[table.00009284]
+name = "Base Fuel Schedule K-Value"
+category = "Fuelling / MAF Scaling"
+order = 42
+emit = true
+format = "0"
+fine = 1
+coarse = 100
+static_axis = ["K-Value"]
+
 [table.0000934e]
 name = "Rev Limit - Fuel Cut"
 category = "Limiters / Rev Limit"
@@ -841,20 +851,44 @@ fine = 0.0000152587890625
 coarse = 0.001
 
 [table.000141f4]
-name = "Dual-Channel Contribution Curve B - MAF candidate (0x141F4)"
-category = "Airflow"
+name = "MAF Sensor Scaling Bank 2"
+category = "Fuelling / MAF Scaling"
 order = 137
+emit = true
 format = "0"
 fine = 1
 coarse = 256
+static_axis_name = "MAF Sensor Voltage [V, cand]"
+static_axis = [
+  0.00, 0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56,
+  0.64, 0.72, 0.80, 0.88, 0.96, 1.04, 1.12, 1.20,
+  1.28, 1.36, 1.44, 1.52, 1.60, 1.68, 1.76, 1.84,
+  1.92, 2.00, 2.08, 2.16, 2.24, 2.32, 2.40, 2.48,
+  2.56, 2.64, 2.72, 2.80, 2.88, 2.96, 3.04, 3.12,
+  3.20, 3.28, 3.36, 3.44, 3.52, 3.60, 3.68, 3.76,
+  3.84, 3.92, 4.00, 4.08, 4.16, 4.24, 4.32, 4.40,
+  4.48, 4.56, 4.64, 4.72, 4.80, 4.88, 4.96, 5.04,
+]
 
 [table.00014274]
-name = "Dual-Channel Contribution Curve A - MAF candidate (0x14274)"
-category = "Airflow"
+name = "MAF Sensor Scaling Bank 1"
+category = "Fuelling / MAF Scaling"
 order = 138
+emit = true
 format = "0"
 fine = 1
 coarse = 256
+static_axis_name = "MAF Sensor Voltage [V, cand]"
+static_axis = [
+  0.00, 0.08, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56,
+  0.64, 0.72, 0.80, 0.88, 0.96, 1.04, 1.12, 1.20,
+  1.28, 1.36, 1.44, 1.52, 1.60, 1.68, 1.76, 1.84,
+  1.92, 2.00, 2.08, 2.16, 2.24, 2.32, 2.40, 2.48,
+  2.56, 2.64, 2.72, 2.80, 2.88, 2.96, 3.04, 3.12,
+  3.20, 3.28, 3.36, 3.44, 3.52, 3.60, 3.68, 3.76,
+  3.84, 3.92, 4.00, 4.08, 4.16, 4.24, 4.32, 4.40,
+  4.48, 4.56, 4.64, 4.72, 4.80, 4.88, 4.96, 5.04,
+]
 
 [table.00011e56]
 name = "Four-Factor Product Multiplier B Q0.8 (0x11E56)"

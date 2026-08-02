@@ -10,10 +10,13 @@ ROOT = Path(__file__).resolve().parents[3]
 
 COMMON_TABLES = {
     "Developer Immobilizer": "NATS / Immobilizer",
+    "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
     "Calculated Load": "Fuelling / Engine Load",
     "Ignition Timing Trim Cold": "Ignition Timing / Main",
     "Knock Control Enable - Cold": "Ignition Timing / Knock Control",
     "Knock Sensitivity": "Ignition Timing / Knock Control",
+    "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
+    "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
 }
 
@@ -146,6 +149,31 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         self.assertIn("<data>-40</data>", xml)
         self.assertNotIn("Raw input", xml)
 
+    def test_direct_scalar_accepts_one_reviewed_label(self):
+        scalar = dict(
+            self.map,
+            family="direct-scalar",
+            dims=1,
+            width=1,
+            height=None,
+            axis_x=[],
+            axis_y=[],
+            steps=[],
+        )
+        presentation = {
+            "name": "Base Fuel Schedule K-Value",
+            "category": "Fuelling / MAF Scaling",
+            "static_axis": ["K-Value"],
+        }
+        self.assertIsNone(
+            emit_def.emittable(scalar, {}, presentation)
+        )
+        overrides = {"table": {scalar["addr"]: presentation}}
+        xml = "\n".join(
+            emit_def.table_xml(scalar, overrides, {}, "JK08A")
+        )
+        self.assertIn("<data>K-Value</data>", xml)
+
     def test_xml_keeps_row_major_geometry_mask_and_axis_types(self):
         overrides = {"table": {self.map["addr"]: self.presentation}}
         xml = "\n".join(emit_def.table_xml(self.map, overrides, {}, "JK08A"))
@@ -266,6 +294,9 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
                 "0001108e",
                 "00012718",
                 "00012818",
+                "00009284",
+                "000141f4",
+                "00014274",
                 "0001491a",
             },
         )
@@ -480,8 +511,28 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "0x124D2",
             "0x126E4",
             "0x1298C",
-            "0x141F4",
         }.isdisjoint(addresses))
+
+    def test_maf_tables_use_reviewed_candidate_voltage_axes(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        by_name = {
+            table.get("name"): table
+            for table in rom.findall("./table")
+        }
+        for name in (
+            "MAF Sensor Scaling Bank 1",
+            "MAF Sensor Scaling Bank 2",
+        ):
+            with self.subTest(name=name):
+                table = by_name[name]
+                axis = table.find("./table[@type='Static X Axis']")
+                self.assertEqual(
+                    axis.get("name"), "MAF Sensor Voltage [V, cand]"
+                )
+                values = [float(node.text) for node in axis.findall("./data")]
+                self.assertEqual(len(values), 64)
+                self.assertEqual(values[0], 0.0)
+                self.assertEqual(values[-1], 5.04)
 
     def test_overrun_fuel_cut_uses_coolant_axis_and_code_rpm_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")

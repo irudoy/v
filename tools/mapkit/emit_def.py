@@ -741,7 +741,7 @@ def emittable(m, axes, ovr=None):
             return f'a Static Y Axis with {m["height"]} points is required'
     # A one-dimensional map axis is defined by an array (explicit), an input
     # step (implicit), or static labels for a manually traced direct family.
-    static_families = {"compare", "direct-indexed"}
+    static_families = {"compare", "direct-indexed", "direct-scalar"}
     if m["dims"] == 1 and not (
         m["axis_x"] or m["steps"] or m["family"] in static_families
     ):

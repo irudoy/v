@@ -644,6 +644,26 @@
       </table>
     </table>
 
+    <!-- 0x09284  1 uint16  map [code]
+         accessor 0x3B75C; r4 operand: manual
+         scaling x*1 ms/kg [candidate]
+         static diagnostic context: CID=1208H_B/FUEL SCHDL [code, nissan_family_candidate, via
+         map evidence: writes]
+         Exact code establishes the address, uint16 representation, stock value 26806, MAF-to-
+         BFS position, and multiplicative role. UpRev names this calibration K - Fuel Multiplier
+         and states MAF * K = BFS; A2L independently names it K-Value and supplies ms/kg. The
+         engineering unit remains source-derived pending hardware validation. A2L MAF Factor is
+         a separate airflow scalar and is not an alias for this word.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Base Fuel Schedule K-Value" category="Fuelling / MAF Scaling"
+           storagetype="uint16" storageaddress="0x09284" sizex="1" endian="big">
+      <scaling units="ms/kg [cand]" expression="x*1" to_byte="x/1" format="0" fineincrement="1"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>K-Value</data>
+      </table>
+    </table>
+
     <!-- 0x0991A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x4E1C0; r4 operand: sp
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
@@ -710,6 +730,76 @@
       <table type="Static Y Axis" name="Cylinder" sizey="6">
         <data>1</data><data>2</data><data>3</data><data>4</data>
         <data>5</data><data>6</data>
+      </table>
+    </table>
+
+    <!-- 0x141F4  64 uint16  map [code]; entry 0x26410 (implicit, core 0x26A74)
+         accessor 0x3A904; r4 operand: slice
+         scaling x raw
+         static diagnostic context: Mass Airflow Sensor Bank 2 [code, homologous_community]
+         Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing
+         ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS
+         A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous
+         profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at
+         candidate scale. Stock outputs are strictly positive, so the contribution denominator
+         A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="MAF Sensor Scaling Bank 2" category="Fuelling / MAF Scaling"
+           storagetype="uint16" storageaddress="0x141F4" sizex="64" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="256"/>
+      <table type="Static X Axis" name="MAF Sensor Voltage [V, cand]" sizex="64">
+        <data>0.0</data><data>0.08</data><data>0.16</data><data>0.24</data>
+        <data>0.32</data><data>0.4</data><data>0.48</data><data>0.56</data>
+        <data>0.64</data><data>0.72</data><data>0.8</data><data>0.88</data>
+        <data>0.96</data><data>1.04</data><data>1.12</data><data>1.2</data>
+        <data>1.28</data><data>1.36</data><data>1.44</data><data>1.52</data>
+        <data>1.6</data><data>1.68</data><data>1.76</data><data>1.84</data>
+        <data>1.92</data><data>2.0</data><data>2.08</data><data>2.16</data>
+        <data>2.24</data><data>2.32</data><data>2.4</data><data>2.48</data>
+        <data>2.56</data><data>2.64</data><data>2.72</data><data>2.8</data>
+        <data>2.88</data><data>2.96</data><data>3.04</data><data>3.12</data>
+        <data>3.2</data><data>3.28</data><data>3.36</data><data>3.44</data>
+        <data>3.52</data><data>3.6</data><data>3.68</data><data>3.76</data>
+        <data>3.84</data><data>3.92</data><data>4.0</data><data>4.08</data>
+        <data>4.16</data><data>4.24</data><data>4.32</data><data>4.4</data>
+        <data>4.48</data><data>4.56</data><data>4.64</data><data>4.72</data>
+        <data>4.8</data><data>4.88</data><data>4.96</data><data>5.04</data>
+      </table>
+    </table>
+
+    <!-- 0x14274  64 uint16  map [code]; entry 0x26410 (implicit, core 0x26A74)
+         accessor 0x3A904; r4 operand: pool
+         scaling x raw
+         static diagnostic context: Mass Airflow Sensor Bank 1 [code, homologous_community]
+         Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing
+         ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS
+         A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous
+         profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at
+         candidate scale. Stock outputs are strictly positive, so the contribution denominator
+         A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="MAF Sensor Scaling Bank 1" category="Fuelling / MAF Scaling"
+           storagetype="uint16" storageaddress="0x14274" sizex="64" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="256"/>
+      <table type="Static X Axis" name="MAF Sensor Voltage [V, cand]" sizex="64">
+        <data>0.0</data><data>0.08</data><data>0.16</data><data>0.24</data>
+        <data>0.32</data><data>0.4</data><data>0.48</data><data>0.56</data>
+        <data>0.64</data><data>0.72</data><data>0.8</data><data>0.88</data>
+        <data>0.96</data><data>1.04</data><data>1.12</data><data>1.2</data>
+        <data>1.28</data><data>1.36</data><data>1.44</data><data>1.52</data>
+        <data>1.6</data><data>1.68</data><data>1.76</data><data>1.84</data>
+        <data>1.92</data><data>2.0</data><data>2.08</data><data>2.16</data>
+        <data>2.24</data><data>2.32</data><data>2.4</data><data>2.48</data>
+        <data>2.56</data><data>2.64</data><data>2.72</data><data>2.8</data>
+        <data>2.88</data><data>2.96</data><data>3.04</data><data>3.12</data>
+        <data>3.2</data><data>3.28</data><data>3.36</data><data>3.44</data>
+        <data>3.52</data><data>3.6</data><data>3.68</data><data>3.76</data>
+        <data>3.84</data><data>3.92</data><data>4.0</data><data>4.08</data>
+        <data>4.16</data><data>4.24</data><data>4.32</data><data>4.4</data>
+        <data>4.48</data><data>4.56</data><data>4.64</data><data>4.72</data>
+        <data>4.8</data><data>4.88</data><data>4.96</data><data>5.04</data>
       </table>
     </table>
 

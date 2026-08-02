@@ -9,10 +9,13 @@ ROOT = Path(__file__).resolve().parents[3]
 XDF = ROOT / "defs" / "JK08A.xdf"
 
 COMMON_TABLES = {
+    "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
     "Calculated Load": "Fuelling / Engine Load",
     "Ignition Timing Trim Cold": "Ignition Timing / Main",
     "Knock Control Enable - Cold": "Ignition Timing / Knock Control",
     "Knock Sensitivity": "Ignition Timing / Knock Control",
+    "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
+    "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
 }
 
@@ -287,7 +290,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 44)
-        self.assertEqual(len(tables), 55)
+        self.assertEqual(len(tables), 58)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -321,8 +324,30 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "0x124D2",
             "0x126E4",
             "0x1298C",
-            "0x141F4",
         }.isdisjoint(addresses))
+
+    def test_maf_tables_use_reviewed_candidate_voltage_axes(self):
+        tables = {
+            table.findtext("./title"): table
+            for table in self.root.findall("./XDFTABLE")
+        }
+        for title in (
+            "MAF Sensor Scaling Bank 1",
+            "MAF Sensor Scaling Bank 2",
+        ):
+            with self.subTest(title=title):
+                axis = tables[title].find("./XDFAXIS[@id='x']")
+                self.assertEqual(
+                    axis.findtext("./units"),
+                    "MAF Sensor Voltage [V, cand]",
+                )
+                labels = [
+                    float(node.get("value"))
+                    for node in axis.findall("./LABEL")
+                ]
+                self.assertEqual(len(labels), 64)
+                self.assertEqual(labels[0], 0.0)
+                self.assertEqual(labels[-1], 5.04)
 
     def test_overrun_tables_use_coolant_axis_and_rpm_scale(self):
         expected = {

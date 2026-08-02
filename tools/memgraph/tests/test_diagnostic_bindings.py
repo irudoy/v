@@ -99,8 +99,8 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 146)
-        self.assertEqual(len(inherited), 30)
+        self.assertEqual(len(rows), 149)
+        self.assertEqual(len(inherited), 33)
         self.assertEqual(
             sum(row["rom_scope"] == "exact-rom" for row in rows), 116
         )
@@ -137,6 +137,28 @@ class BindingSourceTest(unittest.TestCase):
             },
         )
         by_id = {row["id"]: row for row in rows}
+        maf_targets = {
+            "mass-airflow-sensor-bank-1-did-1204": (
+                "ffff101c", "diagnostic-parameter:request:221204"
+            ),
+            "mass-airflow-sensor-bank-2-did-1205": (
+                "ffff101e", "diagnostic-parameter:request:221205"
+            ),
+            "mass-airflow-rate-did-1209": (
+                "ffff3852", "diagnostic-parameter:request:221209"
+            ),
+        }
+        for binding_id, (firmware_addr, diagnostic_key) in maf_targets.items():
+            self.assertEqual(by_id[binding_id]["firmware_addr"], firmware_addr)
+            self.assertEqual(by_id[binding_id]["diagnostic_key"], diagnostic_key)
+            self.assertEqual(by_id[binding_id]["rom_scope"], "exact-code")
+            self.assertEqual(by_id[binding_id]["confidence"], "code")
+        self.assertEqual(
+            by_id["maf-transfer-bank-1"]["firmware_addr"], "00014274"
+        )
+        self.assertEqual(
+            by_id["maf-transfer-bank-2"]["firmware_addr"], "000141f4"
+        )
         misfire_ids = {
             *(f"misfire-result-dispatch-p030{cylinder}" for cylinder in range(7)),
             *(f"misfire-coordinator-p030{cylinder}" for cylinder in range(7)),

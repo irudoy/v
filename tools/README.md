@@ -620,18 +620,18 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 3930 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 4596 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 1237 source claims and 3930 expected edges;
-`effective below declared=0`, `without grounding=0`, 39 cyclic SCCs, and 0
+current JK08A has 1368 source claims and 4596 expected edges;
+`effective below declared=0`, `without grounding=0`, 41 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
 
 `load_diagnostic_bindings.py` runs after `load_code.py` because its reviewed
 claims target firmware nodes and rest on both firmware evidence and
 source-specific diagnostic claims. It resolves all dependencies before
 replacing a ROM's binding projection. `defs/JK08A.diagnostic-bindings.csv`
-contains 145 source rows: 29 exact-code claims and 116 exact-ROM DTC claims. JK03A
-inherits only the 29 exact-code rows. Static confidence cannot exceed `code`;
+contains 149 source rows: 33 exact-code claims and 116 exact-ROM DTC claims. JK03A
+inherits only the 33 exact-code rows. Static confidence cannot exceed `code`;
 hardware evidence is outside this pipeline milestone.
 
 ```bash
@@ -668,9 +668,9 @@ For JK08A, 38,627 instructions in 494 regions produce 353 functions, increasing 
 1958 to 2312, after which wrappers `0x26100` and `0x26230` acquire callers.
 
 Across 13 JK08A censuses there are 587 rows for 554 call sites. Data flow recovers a ROM base at
-551 call sites, compared with 493 for backtracking. The graph contains **446 maps**: 248
-explicit-axis, 188 implicit-axis, 2 implicit two-dimensional, 3 direct row-major,
-4 comparator tables, and 1 direct-indexed table. It also has 229 axes, 592 unique accesses, and 47
+551 call sites, compared with 493 for backtracking. The graph contains **448 maps**: 248
+explicit-axis, 188 implicit-axis, 2 implicit two-dimensional, 4 direct row-major,
+4 comparator tables, 1 direct-indexed table, and 1 direct scalar. It also has 229 axes, 594 unique accesses, and 47
 interpolation nodes, consisting of 34 wrappers and 13 engines.
 
 | Family | Engines | Sites | `bt_r4` | `df_r4` | Wrappers | Maps |
@@ -681,8 +681,8 @@ interpolation nodes, consisting of 34 wrappers and 13 engines.
 Base-source distribution across 554 call sites is 407 pool slots, 102 backward slices, 27 phi
 nodes producing 59 branch rows, 15 `SymbolicPropogator` fallbacks producing 16 census rows, and 3
 unresolved dynamic cases (`dyn`). The loader verifies from its rows that the two families share no
-tables. The manual layer declares ten maps outside the census access models,
-for a catalog total of 446.
+tables. The manual layer declares 12 maps outside the census access models,
+for a catalog total of 448.
 
 The resolver reproduces both reference censuses site-for-site, 327 and 227 sites, and covers every
 reference base. It also recovers 13 additional explicit-axis tables and 16 additional bank tables.

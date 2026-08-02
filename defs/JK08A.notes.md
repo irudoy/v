@@ -146,18 +146,59 @@ provenance and are not paths in the current `JK08A` layer.
   decel/cut flag base, so it has no decel-gated advance branch; `mTKADVA` is not
   represented by any explicit-axis map. The same calculation uses `0x26370`
   (slot `0x838bc`), so decel advance through implicit-axis maps is not excluded.
-- Paired contribution curves: 1D-64 uint16 maps `0x141F4`/`0x14274` have
-  code-level operational semantics through a complete exact-JK08A machine trace.
-  Their physical identification as MAF remains `candidate`; sensor identity,
-  bank/channel mapping, units, and nontrivial scale are unknown. Injector latency,
-  speed limiter, and the remainder of the `0x12xxx` cluster are not annotated.
+- MAF transfer curves: `0x14274` is the 64-point uint16 bank-1 curve and
+  `0x141F4` is the bank-2 curve. Exact code traces SH7058 AN4/AN15 through DID
+  `0x1204`/`0x1205`, both curves, combined MAF DID `0x1209`, and Base Fuel
+  Schedule DID `0x1208`. The voltage and mass-flow engineering conversions remain
+  hardware-validation targets. Injector latency, speed limiter, and the remainder
+  of the `0x12xxx` cluster are not annotated.
 
 
-## Exact JK08A paired-contribution trace
+## Exact JK08A MAF channels, transfer curves, and contribution trace
 
-The stock image is the primary machine-evidence source. The complete 456-byte listing
-of `FUN_0003B520` closes the def-use path that was absent from the donor-derived
-artifact:
+The stock image establishes a continuous dual-bank path from the MCU A/D registers to
+the factory diagnostic response and the MAF calibrations:
+
+- `FUN_00028098` reads SH7058 `ADDR4` (`0xFFFFF808`) and `ADDR15`
+  (`0xFFFFF826`), shifts each aligned result right by six, and writes ten-bit samples
+  `ffff1d62` and `ffff1d64`. The hardware manual maps these registers to AN4 at MCU
+  pin 90/H18 and AN15 at MCU pin 104/L20.
+- `FUN_0003C408` scales the two samples through shared Q1.15 coefficient
+  `ffff4970`, writes `ffff101c`/`ffff101e`, and adds one for full-scale raw sample
+  `0x03ff`. `FUN_00067188` constrains the coefficient to `0x7900..0x8700` and
+  restores stock `ROM16[0x92BE] = 0x8000` outside that range. The normal transform
+  is therefore identity except that sample 1023 is published as 1024.
+- The exact service-0x22 pointer table maps DID `0x1204` at `0x228AC` to
+  `ffff101c` and DID `0x1205` at `0x228B0` to `ffff101e`. Homologous diagnostic
+  definitions name them MAS A/F SE-B1 and MAS A/F SE-B2. The firmware mapping is
+  therefore AN4 -> bank 1 and AN15 -> bank 2.
+- `FUN_0003AE8A` preprocesses these words into `ffff1e48`/`ffff1e4a`.
+  `FUN_0003A904` interpolates bank-1 curve `0x14274` from the low 12 bits of
+  `ffff1e48` and writes output `A` to `ffff1054`; it interpolates bank-2 curve
+  `0x141F4` from `ffff1e4a` and writes output `B` to `ffff1056`.
+- The implicit lookup advances one cell for 16 input counts. The independently
+  cataloged static MAF axis advances by 0.08 V, consistent with the homologous
+  DID conversion of 0.005 V per count. The working definitions expose
+  `0.00..5.04 V` as a candidate axis; the stored output remains raw.
+- `FUN_0003A982` copies the outputs to `ffff1058`/`ffff105a`.
+  `FUN_0003B27E` combines both values with `ffff2368`, filters and saturates the
+  sum into `ffff1df4`, subtracts stock offset `ROM16[0x93CE] = 320`, and writes
+  `ffff105c`. `FUN_0003C3AC` publishes
+  `ffff3852=min(65535,floor(105*ffff105c/256))`; the exact DID table maps this word
+  to MASS AIRFLOW DID `0x1209` at `0x228C0`.
+
+A whole-program p-code scan found the following complete writer boundaries:
+
+- `FUN_00028098` is the only writer of `ffff1d62`/`ffff1d64`;
+- the indexed store in `FUN_0003C408`, called only with indices 0 and 1, is the
+  only writer of `ffff101c`/`ffff101e`;
+- `ffff2368` has three readers and no direct or computed-address writer. Startup
+  clear `FUN_00027C50` covers it within `[ffff1000,ffff261c)`, so it remains zero
+  in the recovered normal application-code lifecycle. Static analysis does not
+  establish an external or peripheral producer.
+
+The complete 456-byte listing of `FUN_0003B520` establishes the secondary
+contribution-share use of the same transfer outputs:
 
 - `FUN_0003A904` interpolates `0x14274` from the low 12 bits of `ffff1e48` and
   writes output `A` to `ffff1054` at `0x3A938`. It interpolates `0x141F4` from
@@ -182,9 +223,10 @@ separate branch in the same function from `ffff284a`/`ffff284c` through inverse 
 `0x13202`/`0x155A0`. `FUN_0003B468` writes `ffff3a76` to `ffff1e60` when
 `ffff4246.bit6=0`; when the bit is 1 it writes ROM word `0x916C`.
 
-Code therefore proves paired contribution and partition semantics, but it does not
-prove that the physical inputs are MAF signals. The unique catalog-family match and
-homologous VQ35HR factory monitor keep the MAF binding at `candidate` confidence.
+The contribution branch does not establish the engineering unit of the transfer
+output. The physical MAF identity and bank mapping instead follow from the exact
+AN4/AN15 -> DID `0x1204`/`0x1205` -> curves -> DID `0x1209` chain. ECM-terminal
+continuity and all engineering conversions remain hardware-validation boundaries.
 
 
 ## Method
@@ -1563,9 +1605,10 @@ calculated-load normalization:
 - The primary branch of `FUN_0003B75C` reads `0xFFFF1E38` and uses
   `ROM16[0x9284] = 26806` in an exact fixed-point division, remainder,
   limiting, multiplication, and shift sequence to form `0xFFFF1E40`.
-  The public HR catalog calls `0x9284` the K-factor or MAF Factor and calls the
-  upstream transfer curves MAF tables. Those narrower physical names remain
-  candidate; code proves only the aggregate and arithmetic path.
+  Exact code establishes `0x9284` as the Base Fuel Schedule multiplier on the
+  combined MAF path. UpRev calls this calibration K - Fuel Multiplier and states
+  `MAF * K = BFS`; A2L calls it K-Value and supplies the candidate `ms/kg` unit.
+  A2L MAF Factor is a separate airflow scalar and is not an alias for `0x9284`.
 - The fallback branch is selected when `uint8[0xFFFF2804] == 0`, when
   `0xFFFF4185.bit7` is set with nonzero `0xFFFF437A`, or when
   `0xFFFF4185.bit6` is set with `uint8[0xFFFF2804] < 0x20`. It looks up `M`
@@ -3495,17 +3538,17 @@ assigned artifact path, with no other paths or tools used.
 
 All 30 maps in the batch are included in `findings.csv`:
 
-- 27 Map semantics claims at `code`: `0x12522`, `0x12526`, `0x1292C`, `0x153B0`,
+- 29 Map semantics claims at `code`: `0x12522`, `0x12526`, `0x1292C`, `0x153B0`,
   `0x153B8`, `0x11C6D`, `0x11E56`, `0x11F0A`, `0x11F12`, `0x11F1A`, `0x11F22`,
   `0x11FBE`, `0x11FE6`, `0x12006`, `0x12032`, `0x12086`, `0x1208E`, `0x12096`,
   `0x120CE`, `0x1211E`, `0x12126`, `0x1212E`, `0x1215E`, `0x12176`, `0x1218E`,
-  `0x12196`, and `0x1219E`. This confidence applies to a threshold, multiplicative,
+  `0x12196`, `0x1219E`, `0x141F4`, and `0x14274`. This confidence applies to a threshold, multiplicative,
   limiting, additive, or blending role directly proven by the machine trace;
-- three Map semantics claims at `candidate`: `0x1202E` remains the catalog hypothesis
+- one Map semantics claim remains at `candidate`: `0x1202E` is the catalog hypothesis
   Initial Retard Quantity because no external reader was found for stores to
-  `ffff1ee0`/`ffff257a`; `0x141F4` and `0x14274` are 64-point `uint16` transfer curves
-  with stores to `ffff1056`/`ffff1054`, but machine def-use within `0x3B520` does not
-  establish the physical MAF identity or channel;
+  `ffff1ee0`/`ffff257a`. Independent exact-JK08A analysis promotes `0x141F4` and
+  `0x14274` to code-confidence bank-2 and bank-1 MAF transfer curves through the
+  AN15/AN4 and DID `0x1205`/`0x1204` paths;
 - nine Map scale claims at `code`: `x/100` for `0x12522`/`0x12526`, `x/65536` for
   `0x153B0`/`0x153B8`, `x/256` for `0x11E56`, `x/2048` for `0x12126`, `x/128` for
   `0x1212E`, and `x-128` for `0x12196`/`0x1219E`. The other 21 maps use raw identity;
@@ -3958,9 +4001,9 @@ increments. Map 1 points to stock data; maps 2-5 point to allocated copies
 initialized with identical bytes in the first bench image. Calibration values are
 edited manually after the identical-map bench gate.
 
-`tools/mapkit/validate_map_switching.py` validates the live 446-map graph and the
-478-map common projection without writing files. The tracked definitions contain
-44 calibration tables and 11 masked views. The switchable subset contains 40
+`tools/mapkit/validate_map_switching.py` validates the live 448-map graph and the
+480-map common projection without writing files. The tracked definitions contain
+47 calibration tables and 11 masked views. The switchable subset contains 40
 calibration tables plus ten ignition bit-7 views, for 50 slot-specific editor
 views. Both formats retain the common `JK08A` identity; no separate map-switching
 definition exists.
