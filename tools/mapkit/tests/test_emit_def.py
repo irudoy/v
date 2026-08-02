@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 COMMON_TABLES = {
     "Developer Immobilizer": "NATS / Immobilizer",
+    "MAF Factor": "Fuelling / MAF Scaling",
     "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
     "Calculated Load": "Fuelling / Engine Load",
     "Ignition Timing Trim Cold": "Ignition Timing / Main",
@@ -294,6 +295,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
                 "0001108e",
                 "00012718",
                 "00012818",
+                "00008a27",
                 "00009284",
                 "000141f4",
                 "00014274",

@@ -644,6 +644,24 @@
       </table>
     </table>
 
+    <!-- 0x08A27  1 uint8  map [code]
+         accessor 0x3B75C; r4 operand: manual
+         scaling x*0.0001 kg/hr [candidate]
+         Stock F is 109. The A2L MAF Factor entry matches the byte's operational position,
+         representation, and cross-ROM literal-pool signature and distinguishes it from K-Value.
+         Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132
+         for JK00D. The engineering unit and multiplier remain source-derived pending hardware
+         validation.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="MAF Factor" category="Fuelling / MAF Scaling" storagetype="uint8"
+           storageaddress="0x08A27" sizex="1" endian="big">
+      <scaling units="kg/hr [cand]" expression="x*0.0001" to_byte="x/0.0001" format="0.0000"
+               fineincrement="1" coarseincrement="10"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>MAF Factor</data>
+      </table>
+    </table>
+
     <!-- 0x09284  1 uint16  map [code]
          accessor 0x3B75C; r4 operand: manual
          scaling x*1 ms/kg [candidate]

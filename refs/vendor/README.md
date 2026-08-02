@@ -24,7 +24,7 @@ three independent sources about one subject provides stronger confidence than an
 | `proecu-maps.csv` | ProECU name catalog, transcribed verbatim from map-tree screenshots | 295 |
 | `uprev-maps.csv` | UpRev catalog: names, axes, and outputs extracted from prose | 76 |
 | `catalog.csv` | Combined catalog with derived `origin` and `concept` columns | 371 |
-| `facts.csv` | Anchor facts: constants, units, axes, mechanics, and vendor gaps | 121 |
+| `facts.csv` | Anchor facts: constants, units, axes, mechanics, and vendor gaps | 138 |
 
 `catalog.csv` is generated from the first two files. Edit the source transcriptions rather
 than the generated catalog.
@@ -97,6 +97,15 @@ A2L `MAF Factor` (`kg/hr`) is a **different** quantity corresponding to ProECU
 it states that the factor can be used instead of adjusting K and is Nissan's factory method
 for MAF scaling. This matches EcuTek's advice to leave K unchanged and adjust the second value
 for larger MAF housings.
+
+Exact JK08A code resolves both scalars. `ROM16[0x9284] = 26806` is K-Value, while
+`ROM8[0x8A27] = 109` is MAF Factor. `FUN_0003B75C` multiplies both with the combined
+MAF aggregate before dividing by `ROM8[0x88FB] = 3` and engine speed. A second function,
+`FUN_00082604`, reads the same three scalars and again uses MAF Factor separately from K.
+The adjacent literal-pool signature transfers across all six project ROMs: MAF Factor is
+133 in 1ND0A/1ND3B, 131 in JK78C, 109 in JK03A/JK08A, and 132 in JK00D; K stays 26806
+and the V6 event scalar stays 3. The A2L scale gives 0.0109 kg/hr per aggregate count in
+JK08A. The physical units remain subject to hardware validation.
 
 Names alone cannot establish a link. A2L `MAF Voltage Lower Limit` appears to match
 `MAF Voltage Min Allowed`, but A2L describes its threshold as AFM power-supply fault judgment

@@ -441,6 +441,48 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xE486" flags="0x0">
+    <title>MAF Factor</title>
+    <description>Exact JK08A. Address 0x8A27; 1 rows x 1 columns; uint8; map confidence code. Unsigned airflow-unit scalar in the primary Base Fuel Schedule calculation. With Q=uint32[ffff1e38], F=ROM8[0x8a27], K=ROM16[0x9284], E=ROM8[0x88fb], and engine-speed count N, FUN 0003b75c forms min(floor(floor(F*K*Q/256)/(E*N)),0x726f9) before the final fixed-point conversion to ffff1e40. Stock F is 109. The A2L MAF Factor entry matches the byte's operational position, representation, and cross-ROM literal-pool signature and distinguishes it from K-Value. Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132 for JK00D. The engineering unit and multiplier remain source-derived pending hardware validation.</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Selector</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="MAF Factor" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x8A27" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>kg/hr [cand]</units>
+      <decimalpl>4</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.0001">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xAA3A" flags="0x0">
     <title>Base Fuel Schedule K-Value</title>
     <description>Exact JK08A. Address 0x9284; 1 rows x 1 columns; uint16; map confidence code. Base Fuel Schedule K-Value. The primary calculation in FUN 0003b75c multiplies nonnegative MAF aggregate ffff1e38 by this uint16 scalar before fixed-point normalization produces ffff1e40 and, downstream, Base Fuel Schedule DID 0x1208. Exact code establishes the address, uint16 representation, stock value 26806, MAF-to-BFS position, and multiplicative role. UpRev names this calibration K - Fuel Multiplier and states MAF * K = BFS; A2L independently names it K-Value and supplies ms/kg. The engineering unit remains source-derived pending hardware validation. A2L MAF Factor is a separate airflow scalar and is not an alias for this word. Static diagnostic context: CID=1208H_B/FUEL SCHDL [code, nissan_family_candidate, via map evidence: writes].</description>

@@ -82,7 +82,7 @@ provenance and are not paths in the current `JK08A` layer.
 - Definitions `JK08A.xml` and `JK08A.xdf` are graph projections from
   `tools/mapkit/emit_def.py` plus presentation layer `JK08A.overrides.toml`: names,
   visibility, categories, ordering, and editor steps. The working definition is an
-  explicit allowlist of 12 calibration tables and three masked ignition views.
+  explicit allowlist of 16 canonical maps and three masked ignition views.
   Research maps and inactive families remain in the graph and ledger. Calibration
   axes are embedded in their tables rather than emitted as separate editable views.
   Categories use the functional UpRev/EcuTek organization and do not encode
@@ -1602,13 +1602,28 @@ calculated-load normalization:
   `FUN_0003B252`. The latter writes
   `0xFFFF1E38 = max(0, int32[0xFFFF1DF8] + int32[0xFFFF1DFC] +
   int16[0xFFFF1E2A] + uint16[0xFFFF2368])`.
-- The primary branch of `FUN_0003B75C` reads `0xFFFF1E38` and uses
-  `ROM16[0x9284] = 26806` in an exact fixed-point division, remainder,
-  limiting, multiplication, and shift sequence to form `0xFFFF1E40`.
-  Exact code establishes `0x9284` as the Base Fuel Schedule multiplier on the
-  combined MAF path. UpRev calls this calibration K - Fuel Multiplier and states
-  `MAF * K = BFS`; A2L calls it K-Value and supplies the candidate `ms/kg` unit.
-  A2L MAF Factor is a separate airflow scalar and is not an alias for `0x9284`.
+- The primary branch of `FUN_0003B75C` uses three separate ROM scalars. Let
+  `Q = uint32[0xFFFF1E38]`, `F = ROM8[0x8A27] = 109`,
+  `K = ROM16[0x9284] = 26806`, `E = ROM8[0x88FB] = 3`, and `N` be the
+  selected engine-speed count clamped to at least 64. The exact split multiply
+  and quotient/remainder sequence is equivalent to
+  `fixed = min(floor(floor(F*K*Q/256)/(E*N)), 0x726F9)`, followed by
+  `0xFFFF1E40 = floor(fixed*9163/65536)`. Random equivalence testing over
+  100,000 input tuples reproduced the instruction sequence exactly. The cap
+  maps to 65535 after the final multiply and shift; the next input would map to
+  65536, proving an intentional uint16 saturation boundary.
+- Exact code establishes `0x9284` as the Base Fuel Schedule multiplier and
+  `0x8A27` as a distinct airflow-unit scalar. UpRev calls the former K - Fuel
+  Multiplier and states `MAF * K = BFS`; A2L calls it K-Value and supplies the
+  candidate `ms/kg` unit. The separate A2L MAF Factor entry supplies uint8,
+  `kg/hr`, and `x*0.0001`, and its description places it in the main fuel
+  calculation as Nissan's factory alternative to changing K. Those properties
+  match `0x8A27`, not `0x9284`.
+- `ROM8[0x88FB]` is 3 in all six project ROMs. It also scales an
+  engine-frequency calculation in `FUN_000385BC` and another schedule path in
+  `FUN_0005E278`, matching the three intake events per crankshaft revolution of
+  a four-stroke V6. Byte `0x89FB`, stock value `0x20`, is unrelated: its many
+  readers test individual mode bits in torque and throttle functions.
 - The fallback branch is selected when `uint8[0xFFFF2804] == 0`, when
   `0xFFFF4185.bit7` is set with nonzero `0xFFFF437A`, or when
   `0xFFFF4185.bit6` is set with `uint8[0xFFFF2804] < 0x20`. It looks up `M`
@@ -1640,6 +1655,40 @@ calculated-load normalization:
   7, 15, and 22. The stock cells are
   `36 3c 4c 61 / 32 34 40 5a / 30 31 38 54`, and the selected byte is shifted
   left by eight.
+
+The adjacent literal-pool order `[K][MAF Factor][event scalar]` transfers across
+all exact and structural project homologs:
+
+| ROM | Engine | K-Value | MAF Factor | Event scalar |
+|-----|--------|---------|------------|--------------|
+| 1ND0A | VQ37VHR | `0x9106 = 26806` | `0x8939 = 133` | `0x8838 = 3` |
+| 1ND3B | VQ37VHR | `0x9106 = 26806` | `0x8939 = 133` | `0x8838 = 3` |
+| JK78C | VQ37VHR | `0x8F80 = 26806` | `0x8896 = 131` | `0x87AB = 3` |
+| JK03A | VQ25HR | `0x9284 = 26806` | `0x8A27 = 109` | `0x88FB = 3` |
+| JK08A | VQ25HR | `0x9284 = 26806` | `0x8A27 = 109` | `0x88FB = 3` |
+| JK00D | VQ35HR | `0x931C = 26806` | `0x8A4D = 132` | `0x891B = 3` |
+
+The value pattern is consistent with the roles: K remains an architecture
+constant, the event scalar remains the V6 count, and MAF Factor changes with
+engine and calibration. With the A2L scale, each JK08A aggregate count is
+`109*0.0001 kg/hr = 0.00302778 g/s`. The independent dimensional closure is:
+
+- `RPM = 1.5625*N`, established by the common engine-speed source;
+- firmware coefficient expressed against RPM:
+  `1.5625/256 * 9163/65536 = 0.0008533708751`;
+- expected coefficient for `kg/hr * ms/kg`, three intake events per revolution,
+  Base Fuel Schedule `raw/2048 ms`, and the quarter-BFS intermediate:
+  `0.0001/60 * 2048/4 = 0.0008533333333`.
+
+The 43.994 ppm difference is consistent with the firmware's integer conversion
+constant and independently supports the A2L MAF Factor and K-Value scales. The
+scales remain source-derived until hardware validation.
+
+This closure also selects the community-measured `raw/100 g/s` conversion for
+DID `0x1209` as the working candidate. Its exact producer can reach about 26,800
+raw counts, so the conflicting structured-profile `raw*1 g/s` formula would
+imply about 26,800 g/s; `raw/100` gives a plausible ceiling near 268 g/s.
+Hardware validation remains required.
 
 Initialization in `FUN_0002C648` uses the same `0x15630` fallback table. For
 `q = min(65535, floor(M*uint8[0xFFFF1160]/512))`, it writes `q` to
@@ -4001,9 +4050,9 @@ increments. Map 1 points to stock data; maps 2-5 point to allocated copies
 initialized with identical bytes in the first bench image. Calibration values are
 edited manually after the identical-map bench gate.
 
-`tools/mapkit/validate_map_switching.py` validates the live 448-map graph and the
-480-map common projection without writing files. The tracked definitions contain
-47 calibration tables and 11 masked views. The switchable subset contains 40
+`tools/mapkit/validate_map_switching.py` validates the live 449-map graph and the
+481-map common projection without writing files. The tracked definitions contain
+48 calibration tables and 11 masked views. The switchable subset contains 40
 calibration tables plus ten ignition bit-7 views, for 50 slot-specific editor
 views. Both formats retain the common `JK08A` identity; no separate map-switching
 definition exists.

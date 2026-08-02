@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[3]
 XDF = ROOT / "defs" / "JK08A.xdf"
 
 COMMON_TABLES = {
+    "MAF Factor": "Fuelling / MAF Scaling",
     "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
     "Calculated Load": "Fuelling / Engine Load",
     "Ignition Timing Trim Cold": "Ignition Timing / Main",
@@ -290,7 +291,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 44)
-        self.assertEqual(len(tables), 58)
+        self.assertEqual(len(tables), 59)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [

@@ -272,6 +272,16 @@ fine = 1
 coarse = 16
 static_axis = ["readiness"]
 
+[table.00008a27]
+name = "MAF Factor"
+category = "Fuelling / MAF Scaling"
+order = 41
+emit = true
+format = "0.0000"
+fine = 1
+coarse = 10
+static_axis = ["MAF Factor"]
+
 [table.00009284]
 name = "Base Fuel Schedule K-Value"
 category = "Fuelling / MAF Scaling"

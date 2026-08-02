@@ -169,13 +169,14 @@ Donor `JK03A` and owned target `JK08A` identify themselves as
 `0x020000..0x0fffff` regions are byte-identical, while configuration/calibration
 differs at 121 byte positions. In the graph, only the measured values of four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
-`0x190b0`. All 229 axes and the other 442 maps match.
+`0x190b0`. All 229 axes and the other 445 maps match.
 
-The generated JK08A definitions contain a tuner-facing allowlist of 12
-calibration tables and three masked ignition views. Calibration axes are
-embedded in their tables; separate editable reference-axis views are not
-emitted. The 434 other catalog maps, including the inactive Bosch overrun pair
-and internal calculations, remain available in the graph, ledger, and
+The generated JK08A definitions contain a tuner-facing allowlist of 16
+canonical maps and three masked ignition views. Map-switching projection expands
+the selected families into 48 calibration tables and 11 masked views.
+Calibration axes are embedded in their tables; separate editable reference-axis
+views are not emitted. The 433 other catalog maps, including the inactive Bosch
+overrun pair and internal calculations, remain available in the graph, ledger, and
 presentation source. Reviewed static diagnostic context is included in map
 comments and descriptions without changing map semantics or confidence.
 `JK08A.xml` additionally contains 71 DTC switches and two verified native
