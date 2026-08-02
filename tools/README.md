@@ -563,6 +563,8 @@ indices; one-based `CATEGORYMEM` values refer to those header entries.
 ### Memgraph backup
 
 Backup runs only as the final step of the agent workflow. Cron and `launchd` are not used.
+Docker subprocesses receive `DOCKER_CONTEXT=desktop-linux`; the backup does not depend on the
+caller's active Docker context and does not change it.
 Create the local configuration from `memgraph/backup.example.toml`; it is not tracked:
 
 ```toml

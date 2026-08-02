@@ -62,6 +62,39 @@ class ConfigTest(unittest.TestCase):
                 backup.load_config(self.write(directory, body))
 
 
+class DockerEnvironmentTest(unittest.TestCase):
+    def test_desktop_context_replaces_caller_docker_settings(self):
+        with mock.patch.dict(
+            backup.os.environ,
+            {
+                "DOCKER_CONTEXT": "other-context",
+                "DOCKER_HOST": "unix:///tmp/other-docker.sock",
+            },
+        ):
+            environment = backup.docker_environment()
+
+        self.assertEqual(environment["DOCKER_CONTEXT"], "desktop-linux")
+        self.assertNotIn("DOCKER_HOST", environment)
+
+    def test_mgconsole_receives_docker_environment(self):
+        config = backup.Config(
+            smb_url="smb://Junkyard/Backup",
+            mount_point=Path("/Volumes/Backup"),
+            backup_subdir=backup.PurePosixPath("vq-memgraph"),
+            minimum_interval_hours=24,
+            container_name="vq-memgraph-mage",
+            mount_timeout_seconds=30,
+            command_timeout_seconds=900,
+        )
+        with mock.patch.object(backup, "run_capture", return_value="") as capture:
+            backup.docker_mgconsole(config, "RETURN 1;\n", "csv")
+
+        self.assertEqual(
+            capture.call_args.kwargs["env"]["DOCKER_CONTEXT"],
+            "desktop-linux",
+        )
+
+
 class DueTest(unittest.TestCase):
     DESTINATION = Path("/Volumes/Backup/vq-memgraph")
 

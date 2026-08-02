@@ -45,6 +45,7 @@ DEFAULT_LOCK = MEMGRAPH_DIR / "backup.lock"
 SNAPSHOT_DIR = MEMGRAPH_DIR / "data" / "lib" / "snapshots"
 FORMAT_VERSION = 1
 MINIMUM_ALLOWED_INTERVAL_HOURS = 24
+DOCKER_CONTEXT = "desktop-linux"
 
 
 class BackupError(RuntimeError):
@@ -256,7 +257,7 @@ def exclusive_lock(path: Path):
         yield
 
 
-def run_capture(args, *, input_text=None, timeout=30, cwd=None):
+def run_capture(args, *, input_text=None, timeout=30, cwd=None, env=None):
     try:
         result = subprocess.run(
             args,
@@ -266,6 +267,7 @@ def run_capture(args, *, input_text=None, timeout=30, cwd=None):
             stderr=subprocess.PIPE,
             timeout=timeout,
             cwd=cwd,
+            env=env,
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as error:
@@ -277,6 +279,14 @@ def run_capture(args, *, input_text=None, timeout=30, cwd=None):
             f"{' '.join(args)}: {detail}"
         )
     return result.stdout
+
+
+def docker_environment():
+    environment = os.environ.copy()
+    environment["DOCKER_CONTEXT"] = DOCKER_CONTEXT
+    # DOCKER_HOST takes precedence over DOCKER_CONTEXT in the Docker CLI.
+    environment.pop("DOCKER_HOST", None)
+    return environment
 
 
 def mount_record(mount_point: Path) -> str | None:
@@ -347,6 +357,7 @@ def docker_mgconsole(config: Config, query: str, output_format: str) -> str:
         ],
         input_text=query,
         timeout=config.command_timeout_seconds,
+        env=docker_environment(),
     )
 
 
@@ -354,12 +365,14 @@ def container_image(config: Config) -> str:
     running = run_capture(
         ["docker", "inspect", "--format={{.State.Running}}", config.container_name],
         timeout=30,
+        env=docker_environment(),
     ).strip()
     if running != "true":
         raise BackupError(f"container {config.container_name} is not running")
     return run_capture(
         ["docker", "inspect", "--format={{.Config.Image}}", config.container_name],
         timeout=30,
+        env=docker_environment(),
     ).strip()
 
 
@@ -414,6 +427,7 @@ def stream_dump(config: Config, destination: Path) -> None:
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                env=docker_environment(),
             )
             assert database.stdout is not None
             compressor = subprocess.Popen(
