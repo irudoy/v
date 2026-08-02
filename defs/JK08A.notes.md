@@ -325,21 +325,81 @@ the four maps and the five reachable table bytes. The stock thresholds are
 both accumulator increments remain 255 for every state. This proves the operational
 selector role without identifying the physical meaning of `ffff1024` or the table.
 
-**Counting readiness `ffff41d2` (code within this component).** Two thresholds feed condition
-`ffff41d2 & 3 == 3`, which enables incrementing misfire counters:
+**Counting readiness `ffff41d2.bits0/1` (code).** A whole-program p-code census of all
+2,315 functions found 79 exact accesses to byte `ffff41d2` and no unresolved
+candidates. Coordinator `FUN_00082c8a` is the only resolved writer that changes bits 0
+or 1. Its initialization block clears both with mask `0xfc`; the normal path
+recalculates bit 1 at `0x8391a` and bit 0 at `0x8397a`. Every other resolved writer
+changes only bits 4, 5, or 7 and preserves the low pair.
 
-- `0x12DE2` (code) sets bit 0 of `ffff41d2` at site `0x8397a` when
-  `output(2*ffff1070) <= ffff1071` and three related checks pass.
-- `0x12026` (code) supplies a condition latched in `ffff42a8`; a zero value together
-  with masks `ffff244f`/`ffff4184` sets bit 1 at site `0x8391a`. The lookup write and
-  enabling zero test are mutually exclusive within one call, so the test can consume
-  the value from an earlier pass.
-- Both bits set retain and update `ffff36e8`/`ffff36ec` and three event-counter groups
-  in `00085a70`; clearing either bit resets the corresponding state.
-- Bit 2 is set at `0x83848` after bits 0/1 and additional operating gates pass. A later
-  event path tests it at `0x8444a` before incrementing `ffff3115`, then clears it at
-  `0x84552`. Other functions also reference byte `ffff41d2`, so this claim is limited
-  to bits 0..2 inside `00082c8a` and `00085a70`.
+Bit 1 is an inter-cycle validation latch. Let `F = ffff244f.bit5`. The generic code
+refreshes `ffff42a8` when `F == 0`, or when `F != 0`, `ffff4184.bit6 == 1`, and
+`ROM8[0x8afc].bit3 == 0`. A refresh writes `ROM8[0x8499]` when `ffff422d.bit4` is set
+and the `0x12026` lookup result otherwise. Bit 1 is set only when the latch equals zero,
+`F != 0`, and either `ffff4184.bit6 == 0` or `ROM8[0x8afc].bit3 == 1`.
+
+Stock JK03A and JK08A contain `ROM8[0x8afc] = 0x28`, `ROM8[0x8499] = 0xb4`, and eight
+zero cells at `0x12026`. The stock lifecycle therefore reduces to:
+
+- while `F == 0`, every coordinator pass refreshes `ffff42a8` to `0xb4` when
+  `ffff422d.bit4` is set or to zero when it is clear, and bit 1 is clear;
+- while `F != 0`, the latch is retained and bit 1 is set exactly when the retained
+  value is zero.
+
+`FUN_00027530` maintains five-state longword `ffff39d8`: states 2..4 set bit 5 in both
+`ffff2451` and `ffff244f`, while states 0/1 clear it. Scheduler `FUN_00020dfe` also
+copies `ffff2451` to `ffff244f`. An exhaustive `ffff422d` scan found 30 exact accesses
+and no candidates; its seven resolved writers change only bits 0, 1, 2, 3, 5, or 6.
+The initialization or indirect source and physical meaning of `ffff422d.bit4` remain
+unresolved. The startup value of `ffff42a8` is also not established.
+
+Bit 0 is set exactly when all four unsigned conditions pass:
+
+1. `ffff1071 < ROM8[0x8cff] = 150`;
+2. `ffff1071 >= lookup_u8(0x12de2, min(2*ffff1070, 255))`;
+3. `ffff106e >= ROM8[0x8d01] = 40`;
+4. `ffff2736 >= ROM8[0x8b50] = 40`.
+
+Scheduler `FUN_00020dfe` snapshots current raw coolant `ffff1079` to `ffff1071`.
+`FUN_000394b8` and stateful selector `FUN_0003967a` form current selected pair
+`ffff1076`/`ffff1078`; the scheduler snapshots it to `ffff106e`/`ffff1070`. On the
+primary-pair branch, these are raw coolant `ffff1079` and normalized coolant
+`ffff1077`. On the alternate branch they come from physically unresolved bytes
+`ffff107e`/`ffff1080`. Selector bit `ffff24be.bit6` makes the alternate branch stateful;
+its physical mode remains unresolved.
+
+On the primary-pair branch, normalized coolant is 0 below raw 10,
+`floor(240*(raw-10)/150)` for raw 10..169, and 255 at raw 170 or above. With stock
+`0x12de2 = ff ff ff 2b 2b 2b 2b 2b`, the first three temperature conditions reduce
+exactly to raw coolant 43..149, or `-7 <= coolant deg C < 100` under the exact DID
+0x1101 conversion `deg C = raw-50`. This reduction does not apply to the alternate
+pair until its physical source and scale are resolved.
+
+The fourth condition uses a block snapshot rather than a direct writer.
+`FUN_0003d832` copies `ffff3f4c` to `ffff283c`; `FUN_0003d702` writes
+`ffff283a = max(ffff283c-offset, 0)`, with offset 0 when `ffff1076 < 90` and
+`abs(ffff454c-ffff1076) < 12`, and offset 15 otherwise. Scheduler `FUN_00020dfe` then
+uses the exact byte-copy contract of `FUN_00022558` to copy 0x104 bytes from
+`ffff277e..ffff2881` to `ffff267a..ffff277d`, mapping `ffff283a` to `ffff2736`.
+`FUN_0002d120` initializes `ffff3f4c` to `0xff`; a whole-program exact-address scan
+found no other direct writer. Its runtime producer, physical quantity, and engineering
+scale remain unresolved. `FUN_0003d7b4` transiently copies exact DID 0x1106 source
+`ffff2837` to `ffff283a` before calling `FUN_0003d702`, which overwrites the byte in the
+same invocation; the final readiness source is therefore not assigned intake-air
+temperature semantics.
+
+Exactly five external functions consume the low pair, and every one requires
+`ffff41d2 & 3 == 3`: snapshot matcher `000847dc`, auxiliary state service `00085020`,
+detection core `00085a70`, six-bucket operating-range updater `00086d2a`, and
+revolution-window producer `000872d0`. `FUN_00086d2a` bins calculated-load code at 128
+and RPM/25 at 64 and 160, then saturating-increments one of six counters; failure of the
+low-bit gate clears all six. All other resolved readers of `ffff41d2` test only bits 4,
+6, or 7.
+
+Bit 2 remains a coordinator-local event latch. It is set at `0x83848` after bits 0/1
+and additional operating gates pass, tested at `0x8444a` before incrementing
+`ffff3115`, and cleared at `0x84552`. No external reader consumes bit 2 in the exhaustive
+census.
 
 **Event-count thresholds `0x1497A` / `0x14982` (code, threshold).** Two constant
 1D-4 uint16 curves through wrapper `0x263bc`, with input
