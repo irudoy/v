@@ -354,7 +354,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                 self.assertEqual(axis_z.findtext("./units"), "RPM")
                 self.assertEqual(axis_z.find("./MATH").get("equation"), "X*25")
 
-    def test_working_fuel_cut_uses_exact_2x2_layout_and_candidate_scale(self):
+    def test_working_fuel_cut_uses_exact_2x2_layout_and_code_scale(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
             if table.findtext("./title") == slot_name(
@@ -369,7 +369,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertEqual(data.get("mmedelementsizebits"), "16")
         self.assertEqual(data.get("mmedrowcount"), "2")
         self.assertEqual(data.get("mmedcolcount"), "2")
-        self.assertEqual(axis_z.findtext("./units"), "RPM [cand]")
+        self.assertEqual(axis_z.findtext("./units"), "RPM")
         self.assertEqual(axis_z.find("./MATH").get("equation"), "X*12.5")
         self.assertEqual(
             [node.get("value") for node in axis_x.findall("./LABEL")],

@@ -510,7 +510,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                     ],
                 )
 
-    def test_working_fuel_cut_uses_exact_2x2_layout_and_candidate_scale(self):
+    def test_working_fuel_cut_uses_exact_2x2_layout_and_code_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
@@ -523,7 +523,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertEqual(table.get("storagetype"), "uint16")
         self.assertEqual(table.get("sizex"), "2")
         self.assertEqual(table.get("sizey"), "2")
-        self.assertEqual(scaling.get("units"), "RPM [cand]")
+        self.assertEqual(scaling.get("units"), "RPM")
         self.assertEqual(scaling.get("expression"), "x*12.5")
         self.assertEqual(
             [node.text for node in axis_x.findall("./data")],
