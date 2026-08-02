@@ -92,12 +92,22 @@ If `due=true`, the agent performs one run without separate confirmation:
 python3 tools/memgraph/backup.py --if-due
 ```
 
+An explicit user request for an immediate backup permits one forced run:
+
+```bash
+python3 tools/memgraph/backup.py --force
+```
+
+Forced mode bypasses only the local and remote 24-hour interval checks. Locking,
+SMB mount validation, dump validation, hashes, and atomic publication remain mandatory.
+Agents do not use forced mode for the automatic final backup check.
+
 The script mounts the SMB share from the gitignored
 `tools/memgraph/backup.local.toml`, verifies that the destination is an SMB
-mount, and does not create a backup more often than once every 24 hours. A backup
-contains a gzip-compressed `DUMP DATABASE`, a native snapshot, a manifest, and
-SHA-256 hashes. Intermediate data is written directly to the NAS. Read-only work
-and responses without local changes do not trigger a backup.
+mount, and `--if-due` does not create a backup more often than once every 24
+hours. A backup contains a gzip-compressed `DUMP DATABASE`, a native snapshot, a
+manifest, and SHA-256 hashes. Intermediate data is written directly to the NAS.
+Read-only work and responses without local changes do not trigger a backup.
 
 ## Repository map
 

@@ -591,10 +591,17 @@ completed directory by rename only after gzip and SHA-256 validation:
 python3 tools/memgraph/backup.py --if-due
 ```
 
+An explicitly requested immediate backup can bypass the local and remote interval checks while
+retaining the lock, SMB validation, dump validation, hashes, and atomic publication:
+
+```bash
+python3 tools/memgraph/backup.py --force
+```
+
 `minimum_interval_hours` cannot be less than 24. Local `memgraph/backup.state.json` contains only
 the time and path of the last successful backup. A native snapshot is tied to the Memgraph
-version. `manifest.json` records the container image, snapshot timestamp, node/edge/index counts,
-git commit, and worktree state.
+version. `manifest.json` records whether the interval was bypassed, the container image, snapshot
+timestamp, node/edge/index counts, git commit, and worktree state.
 
 Manual map inspection uses the same facts without Ghidra:
 

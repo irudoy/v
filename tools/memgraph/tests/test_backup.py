@@ -140,6 +140,61 @@ class DueTest(unittest.TestCase):
         self.assertTrue(due)
 
 
+class RunBackupTest(unittest.TestCase):
+    def test_force_bypasses_local_and_remote_interval_checks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = backup.Config(
+                smb_url="smb://Junkyard/Backup",
+                mount_point=root,
+                backup_subdir=backup.PurePosixPath("vq-memgraph"),
+                minimum_interval_hours=24,
+                container_name="vq-memgraph-mage",
+                mount_timeout_seconds=30,
+                command_timeout_seconds=900,
+            )
+            state_path = root / "state.json"
+            lock_path = root / "backup.lock"
+            backup.write_state(
+                state_path,
+                backup.BackupState(NOW, str(config.destination), "existing"),
+            )
+            created = backup.BackupState(
+                NOW,
+                str(config.destination),
+                "forced",
+            )
+            with (
+                mock.patch.object(backup, "utc_now", return_value=NOW),
+                mock.patch.object(
+                    backup,
+                    "ensure_smb_mount",
+                    return_value=False,
+                ),
+                mock.patch.object(backup, "latest_remote_state") as remote,
+                mock.patch.object(
+                    backup,
+                    "create_bundle",
+                    return_value=created,
+                ) as create,
+            ):
+                result = backup.run_backup(
+                    config,
+                    state_path,
+                    lock_path,
+                    force=True,
+                )
+
+            self.assertEqual(result, 0)
+            remote.assert_not_called()
+            create.assert_called_once_with(config, NOW, forced=True)
+            self.assertEqual(backup.read_state(state_path).bundle, "forced")
+
+    def test_parser_accepts_force_mode(self):
+        args = backup.parser().parse_args(["--force"])
+        self.assertTrue(args.force)
+
+
 class DumpTest(unittest.TestCase):
     def test_complete_dump_is_measured(self):
         lines = [
@@ -341,6 +396,7 @@ class BundleTest(unittest.TestCase):
             self.assertTrue((bundle / "snapshot" / "snapshot.source").is_file())
             self.assertEqual(manifest["database"]["nodes"], 2)
             self.assertEqual(manifest["database"]["relationships"], 1)
+            self.assertFalse(manifest["forced"])
             self.assertFalse(any(
                 child.name.startswith(".") for child in config.destination.iterdir()
             ))

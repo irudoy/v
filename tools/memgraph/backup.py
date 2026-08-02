@@ -3,7 +3,7 @@
 
 The script does not use a local intermediate archive:
 
-1. checks the 24-hour interval against local state;
+1. checks the 24-hour interval against local state unless forced;
 2. mounts the SMB share through macOS Keychain if it is not connected;
 3. creates a native snapshot;
 4. streams DUMP DATABASE through gzip directly to the NAS;
@@ -13,6 +13,7 @@ The script does not use a local intermediate archive:
 Invocation:
   python3 tools/memgraph/backup.py --status
   python3 tools/memgraph/backup.py --if-due
+  python3 tools/memgraph/backup.py --force
 """
 
 from __future__ import annotations
@@ -563,7 +564,12 @@ def backup_name(created_at: datetime) -> str:
     return created_at.astimezone(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
 
 
-def create_bundle(config: Config, created_at: datetime) -> BackupState:
+def create_bundle(
+    config: Config,
+    created_at: datetime,
+    *,
+    forced: bool = False,
+) -> BackupState:
     require_smb_mount(config)
     destination = config.destination
     destination.mkdir(parents=True, exist_ok=True)
@@ -621,6 +627,7 @@ def create_bundle(config: Config, created_at: datetime) -> BackupState:
             "project": "vq-hr-ecu",
             "created_at_utc": iso_utc(created_at),
             "minimum_interval_hours": config.minimum_interval_hours,
+            "forced": forced,
             "source": {
                 "container": config.container_name,
                 "image": image,
@@ -672,39 +679,48 @@ def print_status(config: Config, state: BackupState | None, now: datetime) -> bo
     return due
 
 
-def run_if_due(config: Config, state_path: Path, lock_path: Path) -> int:
+def run_backup(
+    config: Config,
+    state_path: Path,
+    lock_path: Path,
+    *,
+    force: bool = False,
+) -> int:
     with exclusive_lock(lock_path):
         now = utc_now()
-        state = read_state(state_path)
-        due, _, _ = due_status(
-            state,
-            config.destination,
-            config.minimum_interval_hours,
-            now,
-        )
-        if not due:
-            print_status(config, state, now)
-            return 0
-
-        mounted_by_script = ensure_smb_mount(config)
-        remote_state = latest_remote_state(config.destination)
-        if remote_state is not None:
-            remote_due, _, _ = due_status(
-                remote_state,
+        if not force:
+            state = read_state(state_path)
+            due, _, _ = due_status(
+                state,
                 config.destination,
                 config.minimum_interval_hours,
                 now,
             )
-            if not remote_due:
-                write_state(state_path, remote_state)
-                print_status(config, remote_state, now)
+            if not due:
+                print_status(config, state, now)
                 return 0
 
-        created = create_bundle(config, now)
+        mounted_by_script = ensure_smb_mount(config)
+        if not force:
+            remote_state = latest_remote_state(config.destination)
+            if remote_state is not None:
+                remote_due, _, _ = due_status(
+                    remote_state,
+                    config.destination,
+                    config.minimum_interval_hours,
+                    now,
+                )
+                if not remote_due:
+                    write_state(state_path, remote_state)
+                    print_status(config, remote_state, now)
+                    return 0
+
+        created = create_bundle(config, now, forced=force)
         write_state(state_path, created)
         print(
             f"backup_created={created.bundle} destination={created.destination} "
-            f"mounted_by_script={'true' if mounted_by_script else 'false'}"
+            f"mounted_by_script={'true' if mounted_by_script else 'false'} "
+            f"forced={'true' if force else 'false'}"
         )
         return 0
 
@@ -722,6 +738,11 @@ def parser():
         action="store_true",
         help="create a backup only when the interval has elapsed",
     )
+    mode.add_argument(
+        "--force",
+        action="store_true",
+        help="create a backup without applying the 24-hour interval",
+    )
     out.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     out.add_argument("--state-file", type=Path, default=DEFAULT_STATE)
     out.add_argument("--lock-file", type=Path, default=DEFAULT_LOCK)
@@ -736,10 +757,11 @@ def main():
         if args.status:
             print_status(config, read_state(state_path), utc_now())
             return 0
-        return run_if_due(
+        return run_backup(
             config,
             state_path,
             args.lock_file.expanduser().resolve(),
+            force=args.force,
         )
     except BackupError as error:
         print(f"backup error: {error}", file=sys.stderr)
