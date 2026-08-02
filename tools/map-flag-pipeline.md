@@ -709,6 +709,15 @@ The JK08A binding projection contains 145 reviewed claims:
   200 revolutions to one-trip TWC-damage monitoring and 1,000 revolutions to two-trip
   emissions-deterioration monitoring; exact JK08A code does not name groups 0..2 or
   reporter polarity as physical pass/fail phases;
+- P030 interval-history qualification is separate from the 200/1,000-revolution
+  windows. Current-cylinder event path `0x29588` stores an absolute timer-capture
+  interval and sets `0xFFFF84F2.bit7` at stock reference state 9. History updater
+  `0x3CF24` consumes that pending sample, shifts 14 interval values, and maintains
+  configuration-gated saturating count `0xFFFF3834`. Detection starts at 19 qualified
+  samples; revolution-window accumulation starts at 31. A whole-program p-code pass
+  found 86 exact accesses to `0xFFFF4240..0xFFFF4247`, no unresolved candidates, and
+  no application-code writer for the enabling `0xFFFF4247.bit6`; its initialization
+  source and the physical cadence of state-9 samples remain unresolved;
 - primary rear O2 dispatcher `0x89D92` links bank-indexed metrics
   `0xFFFF26E9`, `0xFFFF26EB`, `0xFFFF2726`, and `0xFFFF2724` to exact
   P0139/P0159, P0137/P0157, and path-A P0138/P0158 descriptors. Alternate

@@ -435,13 +435,35 @@ JK08A both contain `ROM8[0x8354] = 1`, `ROM8[0x8656] = 1`, and
 
 The first two counters increment together only while `ffff444d == 0`; the third uses
 `ffff444c == 0`. Clearing `ffff4251.bit7` or either of `ffff41d2.bits0/1` resets all
-three. A value below 31 in warm-up/history byte `ffff3834`, or a nonzero per-track
+three. Qualified interval-sample count `ffff3834` below 31, or a nonzero per-track
 inhibit, freezes the affected counters rather than clearing them. Threshold checks
 precede gate evaluation and increments in each producer call. Coordinator
 `FUN_00082c8a` consumes and clears completion bits independently in the order bit 5,
 bit 7, bit 6, so simultaneous window completions are handled in one coordinator pass.
 The matrix proves that retained groups are result families shared by multiple windows,
 not one-to-one cadence identifiers.
+
+**Rotational-reference history qualification (code).** In current-cylinder event path
+`FUN_00029588`, event state `ffff13b2 == ROM8[0x8BDC]` with a valid previous reference
+causes the absolute difference between timer captures `fffff434` and `ffff84d4` to be
+stored at `ffff1dac`; it then sets `ffff84f2.bit7`. Stock JK03A and JK08A both contain
+reference-state bytes 9/9 at `0x8BDC`/`0x8BDD` and speed-qualification byte 1 at
+`0x83B8`.
+
+`FUN_0003cf24` consumes and clears the pending bit, shifts the 14-longword history
+`ffff1dac..ffff1de0`, and updates saturating history-age counters. Invalid speed or
+prior-reference state fills the history with the current interval and resets all three
+age counters. On valid samples, `ffff3834` increments only while configuration
+`ffff4247.bit6` is set; otherwise it resets. Detection core `FUN_00085a70` requires
+`ffff3834 >= 19`, while revolution-window producer `FUN_000872d0` requires
+`ffff3834 >= 31`. These are qualified interval-sample gates, not time or revolution
+counts. Static code does not establish how often state 9 occurs in physical crank angle.
+
+A whole-program p-code pass over all 2,315 JK08A functions found 86 exact accesses to
+`ffff4240..ffff4247`, no unresolved candidates, and no resolved writer for
+`ffff4247.bit6`. The sole exact write to byte `ffff4247` is `FUN_000d093c` ORing bit 4.
+The bit-6 feature name and its startup, retained-memory, or external configuration
+source therefore remain unresolved.
 
 **Snapshot reuse (code).** Before later result handling, `FUN_00082c8a` passes all
 three retained groups to `FUN_000847dc`. Under `ffff4251.bit7` and
