@@ -691,7 +691,12 @@ The JK08A binding projection contains 145 reviewed claims:
   `0x84CD0` have exact-ROM links to P0300..P0306. The reporter maps
   `0xFFFF4200.bit7` and `0xFFFF41FF.bits0..4` to cylinder descriptors P0306
   through P0301, while `0xFFFF4200.bit6` or the no-cylinder fallback selects
-  P0300;
+  P0300. Odd reporter arguments clear selector bits `0xFFFF5B2B.bits4..6` and
+  set global result latch `0xFFFF5B2C.bit3`; even arguments set one selector
+  bit. Common descriptor handler `0x7DC32` projects the two branches onto bits
+  5 and 6 of the seven runtime-record third bytes. Reconciler `0x8042C`, global
+  expiry `0x7C57A`, and record-aging pass `0x7CF14` close the latch lifecycle.
+  The branch polarities and record bits have operational labels only;
 - primary rear O2 dispatcher `0x89D92` links bank-indexed metrics
   `0xFFFF26E9`, `0xFFFF26EB`, `0xFFFF2726`, and `0xFFFF2724` to exact
   P0139/P0159, P0137/P0157, and path-A P0138/P0158 descriptors. Alternate
@@ -1310,8 +1315,8 @@ anywhere in the graph. It is a separate diagnostic, not a condition of local bac
 
 | Metric | Check | JK08A fact | Target |
 |--------|-------|------------|--------|
-| Source claims | strict rows across all four CSV files | **1227**; manual files contain 367 annotated functions in `funcs.csv`, 311 variables in `vars.csv`, 389 map findings in `findings.csv`, and 24 axis findings in `axes.csv` | entire schema resolves |
-| Evidence projection | expected against actual by complete edge key | **3867 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
+| Source claims | strict rows across all four CSV files | **1237**; manual files contain 375 annotated functions in `funcs.csv`, 313 variables in `vars.csv`, 389 map findings in `findings.csv`, and 24 axis findings in `axes.csv` | entire schema resolves |
+| Evidence projection | expected against actual by complete edge key | **3930 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
 | Local code-layer gate | `code`/`silicon` Func/Reg/Map/Axis without factual evidence | **0**; frozen debt of Map semantics 52, Map scale 20, and Axis scale 6 is closed | 0 |
 | Weakest link | `code`/`silicon` where effective level is below declared | **0**; all `code` claims retain their declared level | 0 |
 | Transitive grounding | `code`/`silicon` without a terminal, structural support, or grounded leaf | **0** | 0 |

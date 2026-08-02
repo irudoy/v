@@ -425,9 +425,49 @@ operating-point snapshot semantics. The firmware does not name the diagnostic ph
 represented by groups 0..2 or establish their cadence in physical time, so those
 identities remain deliberately numbered.
 
+**P030 result-latch lifecycle (code).** Bit 3 of `ffff5b2c` is a global result latch
+shared by the seven exact P0306..P0300 runtime records, not a retention marker for one
+snapshot group. The reporter argument supplies an operational polarity:
+
+- even arguments set one of `ffff5b2b.bits4..6` before dispatch;
+- odd arguments clear all three selector bits and set `ffff5b2c.bit3` before dispatch.
+
+All seven descriptors have byte 8 equal to `0x40`, so common dispatcher
+`FUN_0007d8b8` routes them to `FUN_0007dc32`. That handler always sets bits 0 and 1 in
+the selected record's third byte. A nonzero selector mask calls `FUN_0008c942`, which
+sets record bits 3 and 6. A zero selector mask sets record bit 5, calls
+`FUN_0008c968` to set record bit 4, and sets `ffff5b2c.bit3`. The odd reporter tail
+sets the same latch once more after dispatch. These redundant writes make the
+odd-polarity latch independent of the descriptor-specific subpath.
+
+`FUN_0008042c` scans the seven third bytes in descriptor order from P0306 to P0300.
+Third-byte bit 6 terminates the scan without retaining the global latch. Bit 5, tested
+after bit 6, terminates the scan and retains the latch. Records carrying neither bit
+clear `ffff2461.bit3` and advance. Therefore `ffff5b2c.bit3` survives reconciliation
+exactly when the first record carrying either result bit has bit 5 set and bit 6 clear.
+
+The clear and cleanup paths are also closed:
+
+- the `ffff424f.bit2` initialization block in `FUN_00082c8a` clears the latch with all
+  retained snapshot state;
+- `FUN_0007c57a` increments saturating counter `ffff4a49` while the latch and its
+  maintenance gates are active. At count 3 it clears bit 5 from the second and third
+  bytes of all seven P030 records, the global latch, all three snapshot payloads and
+  markers, the group-0 capture latch, and auxiliary group bytes;
+- common record-aging pass `FUN_0007cf14` clears the global latch when an aged record
+  belongs to exact descriptor indices `0x0A..0x10`;
+- group-0 and group-2 cleanup functions `FUN_0007c8fa` and `FUN_0007c9a8` defer their
+  bit-6 and retained-payload cleanup while the global latch remains set.
+
+The internal record-bit transitions and odd/even reporter polarity are exact. Static
+code does not establish UDS names for these bits, physical pass/fail meaning for either
+polarity, diagnostic phase names for groups 0..2, or a physical-time duration for the
+maintenance counts.
+
 Component confidence is `code` for the trio, classifier, five-state selector,
 readiness bits 0..2, event counters, retained operating-point snapshots, snapshot
-matcher, and flags `ffff4217`/`ffff41c3`/`ffff4218`.
+matcher, P030 runtime result lifecycle, and flags
+`ffff4217`/`ffff41c3`/`ffff4218`.
 Threshold-map scales have not been derived (offset-binary), while counter scale is
 identity in event-count units. The exact P0300..P0306 path establishes the physical
 monitor class as misfire detection; the internal metric and threshold engineering units
