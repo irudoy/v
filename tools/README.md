@@ -546,10 +546,10 @@ variables in invertible conversion equations so an edit preserves the
 complementary field.
 
 JK08A uses an explicit tuner-facing allowlist in the shared presentation layer.
-The generated XML and XDF contain 12 calibration tables and three masked
-ignition views; research maps, internal calculations, inactive-family maps, and
-standalone reference-axis views remain outside the working editor tree without
-being removed from the graph or ledger.
+The common generated XML and XDF contain 48 calibration tables and 11 masked
+views after five-slot expansion; research maps, internal calculations,
+inactive-family maps, and standalone reference-axis views remain outside the
+working editor tree without being removed from the graph or ledger.
 
 Categories in both generated definitions follow a vendor-style functional tree:
 `Fuelling`, `Ignition Timing`, and `Limiters`, with separate `Diagnostics` and
@@ -620,9 +620,9 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 4966 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 5192 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 1444 source claims and 4966 expected edges;
+current JK08A has 1483 source claims and 5192 expected edges;
 `effective below declared=0`, `without grounding=0`, 39 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
 

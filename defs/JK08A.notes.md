@@ -2631,17 +2631,116 @@ selection remains candidate.
   explicit `0x264a0` with axis `0x12778`; bit1 of `ffff244f` selects a curve pair,
   35..101 versus 27..122; bit1 of `ffff2451` gates the differential term contribution,
   multiplying by output `0x12704` with `>>3` or zeroing it.
-- `0x4d2a6`: bit3 of `ffff24a9` provides hysteresis for `ffff1071` against calibration
-  `0x8e03`, a threshold; bit6 of `ffff24a9` is a gate from parity of the
-  `FUN_000259d0` result; bit5 of `ffff2458` selects the branch that combines outputs
-  `ffff1636..1638`.
+- `0x4d2a6`: bit3 of `ffff24a9` sets at `ffff1071 >= 107` and clears at
+  `ffff1071 <= 103`; bit6 sets at `ffff1071 <= 170` and clears at
+  `ffff1071 >= 174`. Bit5 of `ffff2458` selects the response-curve coefficient
+  branch unconditionally; with the bit clear, map `0x124b2` selects between the
+  response-curve and bank-deviation coefficient branches.
 - `0xbe5bc`: bit0 at `0x8616` selects a map family, implicit
   `0x12e72`/`0x12e7a` through `0x26370` versus explicit
   `0x12e82`/`0x12e8a` through `0x26474` with axis `0x11bdb`. One family is live and
   the other dead, but the artifact does not contain the byte value, so it cannot
   identify which family is dead.
-- `0xc0d90`: `ffff14c8` selects a 1D-16 variant, `0x15b10` versus out-of-component
-  `0x15ad0`.
+- `0xc0d90`: for channel `p`, `(ffff14c8 & (p+1)) != 0` selects `0x15ad0`, while
+  a clear bit selects `0x15b10`. Both maps are members of the same accessor
+  component and are byte-identical in stock JK08A.
+
+
+### Intake-cam-deviation ignition correction - `0x4d2a6`
+
+`FUN_0004d2a6` writes centered correction byte `ffff1a7d`. Shared response curve
+`C(x)` is map `0x125ca` over axis `0x125ba`. Three calls evaluate `T0`, `T1`, and
+`T2` from coordinates derived from centered intake-cam bytes `ffff2442`/`ffff2443`
+and reference bytes `ffff2324..ffff2327`.
+
+The response-curve branch interpolates coefficient `W` from 16x16 map `0x0a4aa`
+using `RPM/50` and `uint8[ffff102c] >> 3`. Its exact code-level scale is `W/512`:
+
+```text
+c0 = max(0, 64 + trunc0(W * (T0 - T2) / 512))
+c1 = max(0, 64 + trunc0(W * (T1 - T2) / 512))
+```
+
+The high-`ffff102c` fallback branch interpolates coefficient `K` from map
+`0x09f1a` over the same runtime coordinates. Its exact scale is `K/256`:
+
+```text
+d0 = max(0, 64 + trunc0(K * (uint8[ffff1a8d] - 128) / 256))
+d1 = max(0, 64 + trunc0(K * (uint8[ffff1a8c] - 128) / 256))
+```
+
+The normal gated result is:
+
+```text
+ffff1a7d = clamp_u8(floor((c0 + c1) / 2) + min(d0, d1, 64) - 64)
+```
+
+Ignition-angle functions `0x4afdc`, `0x4bdc2`, and `0x62fa4` consume this byte
+as `ffff1a7d - 64` or an algebraically equivalent centered term. Code establishes
+the intake-cam-deviation and ignition path, both coefficient normalizations, and
+the coolant hysteresis. The reference-byte identities, engineering degree scale,
+and final calibration name remain unresolved.
+
+
+### Duplicate signed-endpoint surfaces - `0x74028` and `0x7604c`
+
+Four 16x16 uint16 surfaces form two endpoint pairs: `0x171c8`/`0x16fc8` and
+`0x0de8e`/`0x0e08e`. All four have content hash `7ea800ce2e95136a`, range
+`32249..50049`, and offset-binary value conversion `x-32768`. The common runtime
+coordinates are:
+
+```text
+x = uint16[ffff1210]
+y = uint16[ffff10d2]                              if ffff4255.bit7 == 0
+y = max(uint16[ffff10d2], uint16[ffff10e2])      if ffff4255.bit7 == 1
+```
+
+Axes `0x13d14`/`0x18916` are byte-identical and span `0..727`; axes
+`0x13d34`/`0x18936` are byte-identical and span `0..2000`.
+
+`FUN_00074028` writes decoded endpoints to `ffff1cfc` and `ffff1cfe`.
+`FUN_000740ae` moves Q0.16 weight `ffff1d0c` by 300 toward 0 or 65535 according
+to `ffff245c.bit2`, and `FUN_000740e2` writes:
+
+```text
+ffff1cf6 = floor(((65536-w) * A + w * B) / 65536)
+```
+
+The second pair follows the same arithmetic through `FUN_0007604c`, endpoints
+`ffff18ec`/`ffff18ee`, weight `ffff2420`, and `FUN_00076108`. Stock
+`ROM8[0x8b3f]=0x18` passes the first gate, while `ROM8[0x89fa]=0x40` has bit5
+clear and skips this evaluator and blend. `FUN_00074c08` can later blend
+`ffff18e8` with `ffff18e6` into `ffff18f4` through Q0.16 weight `ffff2422`.
+
+The endpoint maps are equal for every stock coordinate, so neither endpoint
+weight changes the stock result. The physical quantity and engineering unit are
+unresolved.
+
+
+### Offset-binary additive curve selector - `0xc0d90`
+
+Maps `0x15ad0` and `0x15b10` are 1D-16 uint16 curves over shared axis `0x149ca`.
+The axis points are `8,16,...,128`, and the runtime coordinate is
+`uint8[ffff11ae]`. For channel `p` in `{0,1}`:
+
+```text
+map = 0x15ad0 if (ffff14c8 & (p+1)) != 0 else 0x15b10
+ffff1a98[p] = interp_u16(map, axis 0x149ca, uint8[ffff11ae])
+```
+
+`FUN_000bced0` initializes `ffff1a98` and `ffff1a9a` to neutral `0x8000`.
+`FUN_000c1dec` consumes the selected output with the parallel pair
+`ffff1a86`/`ffff1a88` as:
+
+```text
+u16[ffff1a86 + 2*p] + u16[ffff1a98 + 2*p] - 65536
+= (A - 32768) + (B - 32768)
+```
+
+This proves offset-binary conversion `x-32768` and inverse `x+32768`. Both maps
+have content hash `1f73c08bd51a5611`, range `32778..32786`, and identical stock
+contents, so selector `ffff14c8` cannot change the stock value. The physical
+quantity and engineering unit are unresolved.
 
 
 ### Section 6 discrepancy and one-time init reads - `0x2c4f8` (accessor FUN_0002c4f8)
@@ -4330,14 +4429,14 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The next semantic pass is built from the current projection, which contains 35
-`candidate` maps without semantics in 26 accessor-connected components. Of these,
-22 maps contain changing values and 13 are flat. This is a separate follow-up
+The next semantic pass is built from the current projection, which contains 27
+`candidate` maps without semantics in 22 accessor-connected components. Of these,
+14 maps contain changing values and 13 are flat. This is a separate follow-up
 worklist, not a continuation of the frozen slice. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 13 of the 35 open maps contain one value
+Column `vals` partitions the follow-up work: 13 of the 27 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 one with `65535..65535`, and one with `16..16`. `tools/mapkit/show.py` prints a map with
 its axes (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4377,22 +4476,21 @@ transcription:
   resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
   value cannot represent degrees (see "Rotation-monitor thresholds").
 
-Follow-up worklist for 35 `candidate` maps without semantics:
+Follow-up worklist for 27 `candidate` maps without semantics:
 
-1. Classify by geometry (from the wrapper or primitive), `A2L` scale, and value
-   signature: MAF, injector latency, rev/speed limiter, and the large `0x12xxx` cluster
-   (primitives `0x26370` and `0x26388`). EV18A and the ProECU 370Z guide
-   (`refs/ecutek/`, stock VQ37VHR maps) are donor checklists for names and geometry, not
-   addresses; VVEL-specific details do not apply to the non-VVEL VQ25HR.
+1. Trace the two-changing-map component `0x127a8`/`0x127e8` through accessors
+   `0x413cc` and `0x4569c`, followed by component `0x124f2`/`0x14e22` through
+   accessor `0x69374`. Classify each result from its complete consumer arithmetic;
+   catalog names and value shapes remain supporting evidence only.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
    when its axis is resolved, in `JK08A.axes.csv`; record the name and category in
    `JK08A.overrides.toml`. `emit_def.py` builds the definition on the next run. Verify
    against the map shape and downstream RAM output.
 
-The scale of the open portion makes it a candidate for a Dynamic Workflow, following
-the project's immo RE process: parallel tracing plus adversarial review over headless
-artifacts. The JK08A graph in Memgraph (`ExportGraph.java`) provides kernel caller trees
-directly.
+The component queue is derived from the current Memgraph projection rather than stored
+as a second worklist. The JK08A graph provides accessor-to-map components and caller
+trees; each accepted result is recorded in the canonical CSV sources before the graph
+and ledger are rebuilt.
 
 Structural row and column orientation is resolved for the five 2D maps through kernel
 `0x26944`. The physical names RPM/load and multiplier `x*50` remain at `candidate`: the
