@@ -1142,13 +1142,15 @@ Any collapsed site (`pool`, `slice`, or `const`) promotes it to `candidate`; wit
 such a site, the fallback word is a heuristic. Axes of all nine maps emitted by the
 definition are collapsed.
 
-The same mechanism creates ambiguous geometry. `0x14114` carries two axes on its
-`:AXIS_X` edge, `0xE98E` and `0x8000`, both from `k5=sp` sites in accessor `0x73432`
-using entry `0x264f8`. Meanwhile `0xE98E` itself is a 16x16 map through entry
-`0x262e0`, whose `r6` axis is `0x14114`; all eight of those sites are collapsed
-(`pool`/`slice`). Data shape does not resolve this mutual declaration, but operand
-confidence does: the collapsed side states a fact, while the uncollapsed side guesses.
-The definition gate rejects such a map; resolution belongs to Stage 6.
+The same mechanism creates an apparent reciprocal declaration. Census fallback for
+accessor `0x73432` reports `0x8000` beside `0x14114`, while `0xE98E` itself is a 16x16
+map through entry `0x262e0` with `0x14114` as its collapsed `r6` axis. The complete
+machine listing resolves the conflict. FUN_00073432 first interpolates a local
+16-point row from `0xE98E`, then delay-slot instruction `0x735AE` replaces `r5` with
+the stack-row pointer before the inverse lookup. Value `0x8000` is added only to the
+signed request. Table `0x14114` supplies the returned coordinate values and is also
+the normal column axis of `0xE98E`. The fallback-only `0x8000` axis remains a
+structural census artifact and is not a semantic or scaling source.
 
 
 ### An axis element defines its search clamp, not the kernel [CONFIRMED]
@@ -2294,31 +2296,58 @@ Bench measurement or reviewed board continuity is required to close that boundar
   still require hardware validation.
 
 
-### ETC / electronic throttle - inverse conversion pairs (accessor FUN_0003b498)
+### Electronic-throttle angle/area and QH0/torque transforms
 
-Component `0x3b498`, containing 20 maps and 22 accessors, is an electronic-throttle
-and airflow-calculation subsystem. Its structural backbone consists of **inverse
-pairs**, where a map and its axis are each other, both 1D-32:
-`0x13202`<->`0x155a0`, `0x15500`<->`0x15690`, and
-`0x15540`<->`0x156d0`. Code establishes the pairs through wrapper `0x26524`, kernel
-`0x26984`, sites `0x3b6c2`/`0x3b6e0`/`0x3e5e6`/`0x3e604`, and accessors
-FUN_0003b520/FUN_0003e548. Physical identities flow/opening-area and scales
-`x*0.0008`/`x*0.001525879` come from a catalog shape match to 1D-32 ETC rather than
-a trace. RAM axis inputs are unresolved, so the pairs' physical semantics remain
-`candidate`.
+Component `0x3b498`, containing 20 maps and 22 accessors, includes the primary
+target-throttle reciprocal pair `0x13202`<->`0x155a0`. Table `0x13202` is a monotonic
+1D-32 uint16 angle-to-area curve, while `0x155a0` is its monotonic angle coordinate.
+The same arrays exchange table and axis positions for the inverse area-to-angle lookup.
+Exact duplicate pair `0x18766`<->`0x190d0` forms the parallel trustful channel.
 
-Selector flags, with selector role established and semantics candidate, are bits 0/1
-of `ffff23a6`, which select the source for interpolation `0x13202`/`0x155a0` in
-FUN_0003e548, and bit6 of `ffff4246`, which makes FUN_0003b468 forward
-`ffff3a76` to `ffff1e60` when clear or select ROM default `0x916c` when set. Consumers
-(`0x3b468`, `0x6f236`, `0x70d20`, `0x72e5e`, `0x74728`, `0x7acb4`, `0x7b2c8`,
-`0x82604`) confirm a closed throttle/airflow/torque loop: FUN_0003b468 writes
-`ffff3a76` to `ffff1e60`, which FUN_0003b498 reads back. They do not establish
-physical units. Maps `0xe98e` of the 16x16 torque class, `0xd68e`/`0x10b0e` of the
-8x8 class, flat maps `0x14cea`/`0x15082` containing `0xFFFF`, and `0x15062` cannot be
-classified as `dead` because no disabling branch is found. `0x14ea2` is read by a
-different accessor, FUN_0007ab18; ROM[`0x83c1`] bit0=0 makes its branch unreachable
-and establishes `role=dead`.
+The HR A2L catalog contains exactly two matching 1D-32 entries: `Target Throttle Valve
+Opening Table` and its `Trustful` copy. Both use opening area `x*0.0008 cm^2` over TVO
+`x*0.0275 degrees`. The stock primary/trustful arrays are byte-identical. The separate
+catalog entry `Throttle Body Opening Area Calibration Table` has the same output shape
+but no trustful partner and therefore does not explain the duplicated firmware family.
+
+Code independently establishes the bidirectional transform. FUN_0003E548 and
+FUN_0003E63C multiply two selected feedback coordinates by four, convert each through
+`0x13202`, average the results in the area domain, reverse the relation through
+`0x155a0`, divide by four, and write the recovered coordinate. FUN_0003B520 performs
+the same forward conversion for `ffff284a`/`ffff284c` before combining the area-domain
+results. Exact DID `0x124C` and its preprocessing path bind one exposed source to
+second-bank throttle-position sensor feedback. The Target Throttle Valve Opening names
+and engineering scales remain `candidate` until CONSULT3P or bench validation.
+
+The same subsystem contains two 16x16 offset-binary surfaces:
+
+- primary `0x0E98E`, with byte RPM axis `0x11D0C` and uint16 coordinate axis
+  `0x14114`;
+- trustful `0x175C8`, with byte RPM axis `0x18716` and uint16 coordinate axis
+  `0x18AC6`.
+
+All three primary arrays are byte-identical to their trustful counterparts. Normal
+2D consumers use the surfaces in the forward direction and subtract `0x8000` from
+the result before signed arithmetic. FUN_00073432 and FUN_00073628 implement the
+inverse direction: each selects or interpolates a complete 16-point surface row at
+the current RPM, adds `0x8000` to a signed request, searches the generated row, and
+returns a value from `0x14114` or `0x18AC6`. The results are written to
+`ffff1984`/`ffff198a` and `ffff1d14`.
+
+This exact forward/inverse topology and duplicate layout match A2L `QH0/ Torque
+Conversion Map` plus `Trustful`, whose description requires both maps to remain
+identical. Candidate physical scales are requested torque `x*0.1-3276.8 Nm`, QH0
+flow potential `x*0.00152588%`, and RPM `x*50`. Code proves offset-binary output
+centering and reciprocal-coordinate use; hardware validation remains required for
+the physical labels and multipliers.
+
+Reciprocal pairs `0x15500`<->`0x15690` and `0x15540`<->`0x156d0` form an additional
+piecewise conversion whose physical quantity remains unresolved. Selector bits 0/1
+of `ffff23a6` choose sources for the target-throttle transform. Bit 6 of `ffff4246`
+selects whether FUN_0003B468 forwards `ffff3a76` to `ffff1e60` or uses ROM default
+`0x916c`. Maps `0x14cea`, `0x15082`, and `0x15062` remain live unless a disabling
+branch is demonstrated. ROM[`0x83c1`].bit0 clears the alternative `0x14ea2` branch
+in FUN_0007AB18 and establishes `role=dead` for that map.
 
 
 ### Ignition-angle accumulator in degrees - `ffff23ee` (accessor FUN_0004afdc)
@@ -2519,18 +2548,22 @@ wide-range linearization, candidate airflow/MAF class.
 At **code confidence** structurally, axis `0x18fd6` belongs to table `0x18e86` at site
 `0x7386c`. It has no scale because the kernel compares points in raw form, so it is not
 added to `axes.csv`, which is the scale layer; its role is recorded here. Partners
-`0x18e86`/`0x18f96`/`0x18e46` were downgraded to candidate. The reciprocal role is
-confirmed by trace, but the physical quantity and unit are not, because RAM inputs
-`ffff1d08`/`ffff1d10`/`ffff35fe` lack an identified source.
+`0x18e86`/`0x18f96`/`0x18e46` remain candidate. The reciprocal role is confirmed by
+trace, but the physical quantity and unit are unresolved because RAM inputs
+`ffff1d08`/`ffff1d10` lack an identified source.
 
-Code-confidence flags: bit6 of `ffff24ac` is a one-shot initialization latch that
-gates a single baseline lookup of map `0x18766`, with test-then-set in `0x73824`;
-bit5 at `0x89fb` selects interpolation versus direct passthrough in `0x74728`.
-Bit4 of `ffff24ac`, claimed as threshold "clamp activated", received no verdict and
-remains candidate. Code establishes signed centering `x-0x8000` for `0x175c8`, but
-whether the correction applies to fuel, spark, or torque remains unresolved.
-Consumers `0x73a44`/`0x74728`/`0x749bc` are arbitration/limiter paths with no named
-sink.
+Bit 6 of `ffff24ac` is a one-shot initialization latch that gates a single baseline
+lookup of trustful target-throttle opening-area table `0x18766`, with test-then-set in
+`0x73824`. Table `0x190d0` performs its inverse area-to-angle conversion. These arrays
+are byte-identical to primary pair `0x13202`/`0x155a0`; their physical identity and
+scales remain candidate. Bit 5 at `0x89fb` selects interpolation versus direct
+passthrough in `0x74728`. Bit 4 of `ffff24ac`, claimed as threshold "clamp activated",
+received no verdict and remains candidate.
+
+Downstream consumers `0x73a44`/`0x74728`/`0x749bc` use trustful QH0/torque surface
+`0x175c8` over axes `0x18716`/`0x18ac6` and subtract `0x8000` from its result. The
+surface identity is supported by its exact primary/trustful family; the individual
+consumers remain arbitration or limiter paths without a physical output sink.
 
 
 ### Additive base plus a gated product/sum - `0x55098`, `0x54ee0`
@@ -2854,7 +2887,12 @@ add r5,r6). It is never dereferenced as an array base. The real axis is
 `r15`=local_50; delay-slot instruction `000735ae` `_mov r15,r5` overwrites the
 snapshot before the call. The 16 `0xFFFF` words listed as an "axis" are empty-ROM data
 read at `0x8000`. This is not an axis and does not enter `axes.csv`; it is recorded as
-a Section 6 shape-versus-trace discrepancy.
+a Section 6 shape-versus-trace discrepancy. The generated local row comes from
+`0x0E98E` over RPM axis `0x11D0C`; `0x14114` is passed as the inverse lookup's value
+table. The lookup converts offset-binary requested torque into the QH0 coordinate and
+writes `ffff1984` or `ffff198a`. Parallel FUN_00073628 performs the same operation
+with byte-identical trustful family `0x175C8`/`0x18716`/`0x18AC6` and writes
+`ffff1d14`.
 
 
 ### Implicit axis x*2 established by code - `0x0a643c`/`ffff3510`
@@ -4261,14 +4299,14 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The next semantic pass is built from the current projection, which contains 41
-`candidate` maps without semantics in 30 accessor-connected components. Of these,
-28 maps contain changing values and 13 are flat. This is a separate follow-up
+The next semantic pass is built from the current projection, which contains 37
+`candidate` maps without semantics in 27 accessor-connected components. Of these,
+24 maps contain changing values and 13 are flat. This is a separate follow-up
 worklist, not a continuation of the frozen slice. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 13 of the 41 open maps contain one value
+Column `vals` partitions the follow-up work: 13 of the 37 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 one with `65535..65535`, and one with `16..16`. `tools/mapkit/show.py` prints a map with
 its axes (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4282,10 +4320,12 @@ transcription:
   backtracking disagrees with data-flow base `0x15330`. Neither backtracking value is a
   fact. Alternatives `0x12412`, `0x1252A`, and `0x12B32` are resolved as `phi` nodes
   and are present in the graph.
-- **14 axes occur only on fallback branches** at `pattern` confidence, and `0x14114`
-  carries two axes on a single edge. This has the same Stage 6 status and rationale; see
-  "An axis also selects a branch". This group also includes `0x119B2`, the only axis
-  not read by the core's inverse linear search.
+- **14 axes occur only on fallback branches** at `pattern` confidence. The census
+  projection for `0x14114` still includes false axis `0x8000`, but the complete
+  FUN_00073432 listing proves that `0x8000` is an offset-binary bias and the actual
+  search axis is an RPM-interpolated stack row from `0x0E98E`; see "An axis also
+  selects a branch". This group also includes `0x119B2`, the only axis not read by
+  the core's inverse linear search.
 - **18 maps contain only `0xFF`** (11 byte maps and 7 word maps), indicating either
   unprogrammed flash or a saturated limit. The signature is identical, and only the
   consumer trace distinguishes them; the data shape alone is not evidence.
@@ -4306,7 +4346,7 @@ transcription:
   resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
   value cannot represent degrees (see "Rotation-monitor thresholds").
 
-Follow-up worklist for 41 `candidate` maps without semantics:
+Follow-up worklist for 37 `candidate` maps without semantics:
 
 1. Classify by geometry (from the wrapper or primitive), `A2L` scale, and value
    signature: MAF, injector latency, rev/speed limiter, and the large `0x12xxx` cluster

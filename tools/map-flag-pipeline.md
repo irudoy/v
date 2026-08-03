@@ -1300,19 +1300,21 @@ for those sites, although GBR accesses and `tst` are present. On SP-based sites,
 base is selected by an index rather than a bit. Operand-set expansion identifies
 register-indexed table arrays (`0x64344`: six tables through `r5`; `0xbe39a`: two
 through `r13`), while `0x68cb8` branches on `cmp`. Resolver branch enumeration, not
-flag detection, closes the final four maps and SP-based sites. The same treatment
-applies to the other half of this mechanism: a branch-selected axis. `0x14114` carries
-two axes on one edge (`0xE98E` and `0x8000`, where the flash is erased), and
-backtracking alone reports both.
+flag detection, closes the final four maps and SP-based sites. Axis fallback has the
+same structural limitation: the census attaches both `0xE98E` and erased-flash
+address `0x8000` to the inverse access of `0x14114`. The complete FUN_00073432 listing
+shows that `0xE98E` supplies an RPM-interpolated stack row, while `0x8000` is only the
+offset-binary bias added to the request before that row is searched. Backtracking alone
+cannot distinguish them.
 
 The canonical working allowlist selects 16 of the 449 catalog maps and adds three
 masked ignition views. The common JK08A projection expands eight selected calibration
 families into 40 Map 1 through Map 5 tables and two masked families into ten slot views.
 The emitted definition therefore contains 48 calibration tables and 11 masked views
 without standalone reference axes. The other 433 canonical maps remain available for
-reverse engineering in the graph and ledger. The catalog contains 327 `code` maps and
-122 `candidate` maps. Semantics are present for 408 maps and `scale_expr` for 367. The
-ledger has 41 open `candidate` maps without semantics in 30 accessor-connected
+reverse engineering in the graph and ledger. The catalog contains 328 `code` maps and
+121 `candidate` maps. Semantics are present for 412 maps and `scale_expr` for 374. The
+ledger has 37 open `candidate` maps without semantics in 27 accessor-connected
 components. The `vals` column divides this work: 13 open maps contain one value across
 the entire table. `mapkit` also closes
 Stage 5 `:MATCHES`: reading the axes, rather than the catalog, provides match keys such
@@ -1357,8 +1359,8 @@ anywhere in the graph. It is a separate diagnostic, not a condition of local bac
 
 | Metric | Check | JK08A fact | Target |
 |--------|-------|------------|--------|
-| Source claims | strict rows across all four CSV files | **1417**; manual files contain 431 annotated functions in `funcs.csv`, 398 variables in `vars.csv`, 408 map findings in `findings.csv`, and 24 axis findings in `axes.csv` | entire schema resolves |
-| Evidence projection | expected against actual by complete edge key | **4859 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
+| Source claims | strict rows across all four CSV files | **1438**; manual files contain 433 annotated functions in `funcs.csv`, 398 variables in `vars.csv`, 412 map findings in `findings.csv`, and 32 axis findings in `axes.csv` | entire schema resolves |
+| Evidence projection | expected against actual by complete edge key | **4912 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
 | Local code-layer gate | `code`/`silicon` Func/Reg/Map/Axis without factual evidence | **0**; frozen debt of Map semantics 52, Map scale 20, and Axis scale 6 is closed | 0 |
 | Weakest link | `code`/`silicon` where effective level is below declared | **0**; all `code` claims retain their declared level | 0 |
 | Transitive grounding | `code`/`silicon` without a terminal, structural support, or grounded leaf | **0** | 0 |
@@ -1367,7 +1369,7 @@ anywhere in the graph. It is a separate diagnostic, not a condition of local bac
 | Core code in artifact | cores without a `:Func` whose listing is present in an artifact | **6 of 6** | 100% |
 
 `from_map@structural` separates a dependency on map existence and geometry from a
-dependency on its semantic confidence. Consequently, 122 `candidate` maps out of 449
+dependency on its semantic confidence. Consequently, 121 `candidate` maps out of 449
 do not automatically downgrade proven table-reading code.
 
 ## 12. Reproducibility and invariants
