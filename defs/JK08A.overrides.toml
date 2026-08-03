@@ -514,6 +514,14 @@ format = "0"
 fine = 1
 coarse = 16
 
+[table.000124f2]
+name = "Branch-Selected Product Coefficient Q1.7 (0x124F2)"
+category = "Internal Calculations"
+order = 189
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
 [table.00012704]
 name = "Normalized-Byte Multiplier - raw u8 (0x12704)"
 category = "Internal Calculations"
@@ -538,6 +546,14 @@ format = "0"
 fine = 25
 coarse = 100
 
+[table.000127a8]
+name = "Selected Aggregate Curve A - raw u8 (0x127A8)"
+category = "Internal Calculations"
+order = 190
+format = "0"
+fine = 1
+coarse = 16
+
 [table.000127d8]
 name = "Paired Normalization Curve B - raw u8 (0x127D8)"
 category = "Internal Calculations"
@@ -545,6 +561,22 @@ order = 104
 format = "0"
 fine = 1
 coarse = 16
+
+[table.000127e8]
+name = "Selected Aggregate Curve B - raw u8 (0x127E8)"
+category = "Internal Calculations"
+order = 191
+format = "0"
+fine = 1
+coarse = 16
+
+[table.00014e22]
+name = "Alternate Product Coefficient Q1.7 (0x14E22)"
+category = "Internal Calculations"
+order = 192
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
 
 [table.00012808]
 name = "Weighted Calculation Multiplier A (0x12808)"
@@ -1533,3 +1565,43 @@ order = 127
 format = "0.00"
 fine = 0.1
 coarse = 1
+
+[table.00012292]
+name = "Dual-Channel Deviation Divisor Q1.7 (0x12292)"
+category = "Internal Calculations"
+order = 193
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.000148fa]
+name = "Dual-Channel Conversion Curve - raw u16 (0x148FA)"
+category = "Internal Calculations"
+order = 194
+format = "0"
+fine = 1
+coarse = 100
+
+[table.00012272]
+name = "Diagnostic Signed-Value Multiplier Q1.7 (0x12272)"
+category = "Diagnostics / Internal Calculations"
+order = 195
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.000129d2]
+name = "Calculated Load Secondary Divisor Q1.7 (0x129D2)"
+category = "Internal Calculations"
+order = 196
+format = "0.0000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.000122d2]
+name = "Shared Nonzero Enable Curve - raw u8 (0x122D2)"
+category = "Internal Calculations"
+order = 197
+format = "0"
+fine = 1
+coarse = 8

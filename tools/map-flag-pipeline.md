@@ -1312,11 +1312,11 @@ masked ignition views. The common JK08A projection expands eight selected calibr
 families into 40 Map 1 through Map 5 tables and two masked families into ten slot views.
 The emitted definition therefore contains 48 calibration tables and 11 masked views
 without standalone reference axes. The other 433 canonical maps remain available for
-reverse engineering in the graph and ledger. The catalog contains 339 `code` maps and
-110 `candidate` maps. Semantics are present for 422 maps and `scale_expr` for 384. The
-ledger has 27 open `candidate` maps without semantics in 22 accessor-connected
-components. Fourteen open maps contain changing values; the `vals` column identifies
-the other 13 as flat across the entire table. `mapkit` also closes
+reverse engineering in the graph and ledger. The catalog contains 348 `code` maps and
+101 `candidate` maps. Semantics are present for 431 maps and `scale_expr` for 394. The
+ledger has 18 open `candidate` maps without semantics in 15 accessor-connected
+components. Six open maps contain changing values; the `vals` column identifies the
+other 12 as flat across the entire table. `mapkit` also closes
 Stage 5 `:MATCHES`: reading the axes, rather than the catalog, provides match keys such
 as scale family and axis semantics. Cross-ROM homology, the second half of P7, awaits
 resolution of 1ND0A.
@@ -1359,17 +1359,17 @@ anywhere in the graph. It is a separate diagnostic, not a condition of local bac
 
 | Metric | Check | JK08A fact | Target |
 |--------|-------|------------|--------|
-| Source claims | strict rows across all four CSV files | **1483**; manual files contain 446 annotated functions in `funcs.csv`, 407 variables in `vars.csv`, 422 map findings in `findings.csv`, and 45 axis findings in `axes.csv` | entire schema resolves |
-| Evidence projection | expected against actual by complete edge key | **5192 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
+| Source claims | strict rows across all four CSV files | **1518**; manual files contain 452 annotated functions in `funcs.csv`, 421 variables in `vars.csv`, 431 map findings in `findings.csv`, and 53 axis findings in `axes.csv` | entire schema resolves |
+| Evidence projection | expected against actual by complete edge key | **5427 expected `:RESTS_ON` edges**; `missing=0`, `extra=0`, `duplicate_expected=0`, `duplicate_actual=0`, `unresolved=0` | all five counters are 0 after ingestion |
 | Local code-layer gate | `code`/`silicon` Func/Reg/Map/Axis without factual evidence | **0**; frozen debt of Map semantics 52, Map scale 20, and Axis scale 6 is closed | 0 |
 | Weakest link | `code`/`silicon` where effective level is below declared | **0**; all `code` claims retain their declared level | 0 |
 | Transitive grounding | `code`/`silicon` without a terminal, structural support, or grounded leaf | **0** | 0 |
-| Cycles | SCCs and ungrounded SCCs | **39 SCCs, 0 ungrounded** | a cycle cannot support itself |
+| Cycles | SCCs and ungrounded SCCs | **38 SCCs, 0 ungrounded** | a cycle cannot support itself |
 | Map/Axis evidence backfill | frozen decisions by property identity | **78 of 78**: 28 `accept`, 27 `revise`, 23 `downgrade`; result is 55 `code` and 23 `candidate` | unresolved=0, local debt=0 |
 | Core code in artifact | cores without a `:Func` whose listing is present in an artifact | **6 of 6** | 100% |
 
 `from_map@structural` separates a dependency on map existence and geometry from a
-dependency on its semantic confidence. Consequently, 110 `candidate` maps out of 449
+dependency on its semantic confidence. Consequently, 101 `candidate` maps out of 449
 do not automatically downgrade proven table-reading code.
 
 ## 12. Reproducibility and invariants

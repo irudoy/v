@@ -4192,6 +4192,65 @@ The 36 entries in `JK08A.dtc.csv` generate 71 native `TableSwitch` controls unde
 its attribute at `0x160FE` remains `0000` in both states, so only its descriptor switch
 is present. DTC suppression through these controls has not been validated on hardware.
 
+## Selected aggregate curves and branch coefficient
+
+`FUN_0004569C` selects one of four related uint8 curves. Let
+`x = uint8[0xFFFF22E4]`. `ROM8[0x8710].bit3` selects the curve form: set uses explicit
+axis `0x12778`, while clear uses the implicit coordinate `min(2*x,255)`.
+`0xFFFF244F.bit1` selects curve A (`0x127A8` explicit or `0x12798` implicit) when
+clear and curve B (`0x127E8` explicit or `0x127D8` implicit) when set. The selected
+lookup is multiplied by four and written to uint16 `0xFFFF1752`. Stock
+`ROM8[0x8710]=0x7C` has bit 3 set, so `0x127A8` and `0x127E8` are the active forms in
+this function.
+
+The selected term has two exact downstream uses. `FUN_00041DB6` includes it in
+`D = u16[0xFFFF1752] + 4*u8[0xFFFF1765] + u8[0xFFFF1763] +
+u8[0xFFFF1F62]` and conditionally writes
+`clamp(floor(s16[0xFFFF2266]*128/D)+128,0,255)`. `FUN_000468B0` includes it in a
+saturating aggregate with `0xFFFF1765`, `0xFFFF1748`, `0xFFFF1230`, `0xFFFF15AC`,
+`0xFFFF13F7`, and `0xFFFF170A`, plus optional `0xFFFF1F62`. The physical quantity of
+the selected term remains unresolved. `FUN_000413CC` is a separate paired
+normalization over the implicit curves `0x12798` and `0x127D8`; it does not read
+`ROM8[0x8710]` or select the explicit curves.
+
+`FUN_00069374` selects coefficient K by `0xFFFF420B.bit4`. A clear bit selects the
+uint8 curve `0x124F2` by `uint8[0xFFFF10F0]` over axis `0x23814`; a set bit selects
+the uint16 curve `0x14E22` by `uint16[0xFFFF31DC]` over axis `0x13798` and limits the
+result to 255. It writes K to `0xFFFF90D0` and calculates
+`min(65535,floor(K*floor(14*d/64)/128))`, where
+`d = (u16[0xFFFF1040]-u16[0xFFFF8DC8]) mod 65536`; the result is written to
+`0xFFFF8F0A`. K therefore has the exact Q1.7 scale `x/128`. Every stock cell of
+`0x14E22` equals 16 and every point of its axis equals zero, so that branch supplies
+the fixed coefficient 0.125. Its physical subsystem remains unresolved.
+
+## Dual-channel conversion and diagnostic coefficients
+
+`FUN_0003EF74` uses `0x12292` as a Q1.7 divisor for two input channels. It indexes
+the curve by the high byte of `uint16[0xFFFF4524]` over axis `0x11B47`. For each
+source X, it forms `d = sat_s16(X-880)` and, when the range gates pass and divisor C
+is nonzero, returns `max(0,880+sat_s16(trunc0(128*d/C)))`; otherwise it retains X.
+`ROM8[0x8978].bit3` selects the source pair. Stock value `0xA0` has the bit clear and
+selects twice `0xFFFF267C` and twice `0xFFFF267E`; the set branch selects
+`0xFFFF2882` and `0xFFFF2884`.
+
+`FUN_0003EDB4` uses the two adjusted coordinates to interpolate common uint16 curve
+`0x148FA`. Let Y1/Y2 be these lookup results, A1/A2 the results of correction maps
+`0xC10E`/`0xC18E`, O1/O2 signed states `0xFFFF45A0`/`0xFFFF45A2`, and P1/P2 signed
+terms `0xFFFF2B54`/`0xFFFF2B56`. The function writes
+`clamp(Y1+A1+O1+P1-32768,0,65535)` to `0xFFFF29E2` and the parallel result to
+`0xFFFF29E4`. Stock `ROM16[0x8EA4]=0` disables P1/P2. The vendor AFR Conversion Table
+name and two-bank fuel-trim context support a physical hypothesis, but code does not
+establish an AFR scale.
+
+Maps `0x12262` and `0x12272` are independent Q1.7 multipliers in two-bank diagnostic
+paths of `FUN_00094F26`. Each multiplies a signed channel value and divides by 128
+with truncation toward zero before a separate threshold comparison. Map `0x129D2` is
+a Q1.7 secondary divisor for the calculated-load byte: `FUN_0008083C` conditionally
+applies `floor((q<<7)/K)`, with K zero forcing 255. Stock `ROM8[0x870E]=0x28` has bit
+4 clear, so this secondary normalization is inactive. Shared curve `0x122D2` feeds
+three state controllers, but every consumer tests only zero versus nonzero and
+discards the interpolated magnitude.
+
 ## Map-switching input anchor
 
 The stock JK08A firmware contains a closed ASCD steering-switch path that can serve as
@@ -4429,17 +4488,17 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The next semantic pass is built from the current projection, which contains 27
-`candidate` maps without semantics in 22 accessor-connected components. Of these,
-14 maps contain changing values and 13 are flat. This is a separate follow-up
+The next semantic pass is built from the current projection, which contains 18
+`candidate` maps without semantics in 15 accessor-connected components. Of these,
+six maps contain changing values and 12 are flat. This is a separate follow-up
 worklist, not a continuation of the frozen slice. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 13 of the 27 open maps contain one value
+Column `vals` partitions the follow-up work: 12 of the 18 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
-one with `65535..65535`, and one with `16..16`. `tools/mapkit/show.py` prints a map with
-its axes (`show.py b33a` prints the grid in physical units together with both axes).
+and one with `65535..65535`. `tools/mapkit/show.py` prints a map with its axes
+(`show.py b33a` prints the grid in physical units together with both axes).
 
 The entry-point inventory is complete: 39 regional entry points are listed and all 35
 table-driven entries have been transcribed. Open questions remaining after the
@@ -4476,12 +4535,13 @@ transcription:
   resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
   value cannot represent degrees (see "Rotation-monitor thresholds").
 
-Follow-up worklist for 27 `candidate` maps without semantics:
+Follow-up worklist for 18 `candidate` maps without semantics:
 
-1. Trace the two-changing-map component `0x127a8`/`0x127e8` through accessors
-   `0x413cc` and `0x4569c`, followed by component `0x124f2`/`0x14e22` through
-   accessor `0x69374`. Classify each result from its complete consumer arithmetic;
-   catalog names and value shapes remain supporting evidence only.
+1. Trace changing singleton `0x0C78E` through accessor `0xA5A06`, followed by
+   `0x10B8E` through `0x65928` and `0x152D6` through `0xB29B8`/`0xB2096`. Continue
+   with changing singletons `0x0B43A`, `0x12EDE`, and `0x13D14` before the flat-only
+   components. Classify each result from its complete consumer arithmetic; catalog
+   names and value shapes remain supporting evidence only.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
    when its axis is resolved, in `JK08A.axes.csv`; record the name and category in
    `JK08A.overrides.toml`. `emit_def.py` builds the definition on the next run. Verify
