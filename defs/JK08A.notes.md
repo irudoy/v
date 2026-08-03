@@ -1602,6 +1602,40 @@ calculated-load normalization:
   `FUN_0003B252`. The latter writes
   `0xFFFF1E38 = max(0, int32[0xFFFF1DF8] + int32[0xFFFF1DFC] +
   int16[0xFFFF1E2A] + uint16[0xFFFF2368])`.
+- `FUN_0003B320` runs immediately before the per-bank and combined calculations
+  and completely defines signed common correction `0xFFFF1E2A`. Let
+  `A = (ROM8[0x86F9] & 0x20) != 0`,
+  `B = (ROM8[0x8B3F] & 1) != 0`, `C = ROM8[0x8782]`,
+  `U = uint8[0xFFFF1E73]`, and `S = int8[0xFFFF56BA]`. Its branches are:
+  `!A && !B -> 0`; `!A && B -> floor(C*S/32)`;
+  `A && B -> preserve the prior word`; and, for `A && !B`,
+  `5 <= U <= 122 -> floor(C*(U-123)/32)`,
+  `133 <= U <= 250 -> floor(C*(U-133)/32)`, otherwise zero. Five SH-2E
+  `shar` instructions implement floor division for negative products.
+  JK08A has `ROM8[0x86F9] = 0xDC`, `ROM8[0x8B3F] = 0x18`, and
+  `ROM8[0x8782] = 10`, so `A=false` and `B=false`: every stock invocation
+  writes zero. The stock aggregate therefore simplifies to
+  `max(0, int32[0xFFFF1DF8] + int32[0xFFFF1DFC] +
+  uint16[0xFFFF2368])`.
+- A complete p-code pass over all 2,315 functions found one resolved
+  application-code read of `0xFFFF1E73`, inside `FUN_0003B320`, and no direct
+  or computed-address writer. This absence is not required for the stock-zero
+  result because the ROM flags bypass the read. `0xFFFF56BA` has two resolved
+  writers. `FUN_000686B8` stores the high byte of stable-read key `0x7E` after
+  `FUN_0006727C` accepts two equal reads; `FUN_000683CC` can copy
+  `0xFFFF99DE` under runtime gates. The low-level primitive `FUN_00066BD0`
+  uses SCI2 TDR2, SSR2, and RDR2 to read two consecutive byte addresses. The
+  SH7058 manual establishes those peripheral-register identities, but neither
+  the external peer nor the correction's physical quantity follows from the
+  transaction mechanics.
+- JK03A has byte-identical code and the same calibration bytes. The JK00D
+  structural homolog at `0x3C0CC` uses `0x8713 = 0xDC`,
+  `0x8B73 = 0x18`, and `0x879D = 10`, selecting the same zero-write branch.
+  The JK78C structural body near `0x3FA48` uses `0x85F6 = 0xCC`,
+  `0x8968 = 0x80`, and `0x866B = 0`, also selecting a zero write. The
+  corresponding piecewise body has no byte-level match in 1ND0A/1ND3B, whose
+  MAF chain is structurally different, so this correction semantic is not
+  transferred to those ROMs.
 - The primary branch of `FUN_0003B75C` uses three separate ROM scalars. Let
   `Q = uint32[0xFFFF1E38]`, `F = ROM8[0x8A27] = 109`,
   `K = ROM16[0x9284] = 26806`, `E = ROM8[0x88FB] = 3`, and `N` be the
