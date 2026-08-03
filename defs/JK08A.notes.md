@@ -2353,20 +2353,32 @@ The exact SID `0x22` ignition-timing response path uses internal coordinate
 with the factory `IGN TIMING` monitor therefore remains a separate candidate.
 
 
-### Rate-limited speed hysteresis (accessor FUN_0006205c)
+### Rate-limited raw-state and paired-output component (accessor FUN_0006205c)
 
-Component `0x6205c` maintains a rate-limited hysteretic speed state in `ffff33a8`
-(Q12) and writes a clamped value to `ffff33a4`. `0x13182`, an upper threshold,
-`0x131a2`, a byte-identical lower threshold, and `0x131c2`, a direct assignment on one
-branch, contain values around 7300 and are read as RPM. Code does not establish their
-multiplier, so this remains candidate. `0x133d2` is ramp rate; all values are zero, so
-rate=0, but the map is read and is not `dead`. `0x145ca` is multiplied by constant
-map `0x1495a`, flat at 50000, through `0x21ce0`. Catalog axis `0x15ce0`, 10..160 in
-steps of 10, is candidate Coolant Temp (F). Consumers of outputs
-`ffff33a4`/`ffff33a8` are unidentified, so the structural rev-limit/overrun-cut
-hypothesis remains candidate. **Section 6 discrepancy:** catalog shape 1D-16 suggests
-Fuel Cut/Restore RPM with scale `x*25` and uint8 elements, but the actual maps are
-uint16 with raw values around 7300; the catalog scale does not transfer.
+Component `0x6205c` maintains unsigned Q12 accumulator `ffff33a8`. On the normal
+path, `T = lookup(0x13182)`, `H = lookup(0x131a2)`, and
+`S = lookup(0x133d2)`. Initialization writes `H << 12`. When `H < T`, the update
+adds `S`; otherwise it subtracts `S`. Both paths clamp the accumulator to `T` when
+the update crosses the target. The alternate path writes
+`lookup(0x131c2) << 12` directly. Stock maps `0x13182` and `0x131a2` are
+byte-identical, and every cell of `0x133d2` is zero, so the normal stock update is
+neutral while the lookup remains live.
+
+Map `0x1495a` supplies coefficient `K`; all stock cells equal 50000. Selector inputs
+choose `U` from primary curve `0x1459a` or default curve `0x145ca`, after which code
+forms `Q = min(floor(U * K / 50000), 65535)`. With
+`A = min(ffff33a8 >> 12, 65535)`, the enabled gate publishes
+`ffff33a4 = max(A, Q)` and the disabled gate publishes `ffff33a4 = A`.
+
+A separate mode branch looks up paired maps `0x14de2` and `0x14e02`, stores their
+results in `ffff2ffa` and `ffff2ffc`, and returns them through the two-word output
+pair. Both maps and their shared axis `0x13b98` contain only zeros in stock JK08A,
+so the live override branch publishes a zero pair.
+
+The physical quantity, engineering scales, subsystem identity, selector meanings,
+and caller-visible purpose of the output pair remain unresolved. Values near 7300
+and catalog shape matches do not establish RPM, rev-limit, overrun-cut, or coolant
+temperature semantics.
 
 
 ### RAM initialization and constant tables (accessors FUN_0002c648, FUN_00069374)
@@ -4233,14 +4245,15 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The next semantic pass is built from the current projection, which contains 60
-`candidate` maps without semantics. This is a separate follow-up worklist, not a
-continuation of the frozen slice. Map-analysis results are recorded as findings in
-`JK08A.findings.csv`, not written to the ledger: the ledger is a graph projection, so
-direct edits would not survive regeneration.
+The next semantic pass is built from the current projection, which contains 50
+`candidate` maps without semantics in 32 accessor-connected components. Of these,
+36 maps contain changing values and 14 are flat. This is a separate follow-up
+worklist, not a continuation of the frozen slice. Map-analysis results are recorded
+as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
+projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 17 of the 60 open maps contain one value
-across the entire table. These comprise 13 maps with `0..0`, two with `32768..32768`,
+Column `vals` partitions the follow-up work: 14 of the 50 open maps contain one value
+across the entire table. These comprise ten maps with `0..0`, two with `32768..32768`,
 one with `65535..65535`, and one with `16..16`. `tools/mapkit/show.py` prints a map with
 its axes (`show.py b33a` prints the grid in physical units together with both axes).
 
@@ -4277,7 +4290,7 @@ transcription:
   resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
   value cannot represent degrees (see "Rotation-monitor thresholds").
 
-Follow-up worklist for 60 `candidate` maps without semantics:
+Follow-up worklist for 50 `candidate` maps without semantics:
 
 1. Classify by geometry (from the wrapper or primitive), `A2L` scale, and value
    signature: MAF, injector latency, rev/speed limiter, and the large `0x12xxx` cluster
