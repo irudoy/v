@@ -193,9 +193,24 @@ A whole-program p-code scan found the following complete writer boundaries:
 - the indexed store in `FUN_0003C408`, called only with indices 0 and 1, is the
   only writer of `ffff101c`/`ffff101e`;
 - `ffff2368` has three readers and no direct or computed-address writer. Startup
-  clear `FUN_00027C50` covers it within `[ffff1000,ffff261c)`, so it remains zero
-  in the recovered normal application-code lifecycle. Static analysis does not
-  establish an external or peripheral producer.
+  clear `FUN_00027C50` covers it within `[ffff1000,ffff261c)`. A complete Ghidra
+  direct-reference audit of `DMAOR` and every byte of the four
+  `SAR`/`DAR`/`DMATCR`/`CHCR` register blocks found no recovered DMA destination
+  covering the word. It therefore remains zero in the recovered normal
+  application-code and statically recovered DMAC configuration.
+- DMAC channels 0, 1, and 3 have no statically resolved source, destination, or
+  count setup in the application. Channel 2 is the only recovered complete
+  setup: `FUN_0004A5AC` and interrupt
+  handler `FUN_0004A6D4` select ADC2 `ADDR24` at `0xFFFFF840` or `ADDR28` at
+  `0xFFFFF848`, write `DAR2=0xFFFF86CC+0x80*uint8[ffff20c0]`, set
+  `DMATCR2=128`, and install `CHCR2=0x010D110D`. The manual decodes this as an
+  ADC2-requested, source-reloaded, byte-size transfer with an incrementing
+  destination and completion interrupt. The two destination buffers cover
+  `ffff86cc..ffff874b` and `ffff874c..ffff87cb`, far outside `ffff2368`.
+  `TraceRamAccesses` does not currently sign-extend the immediate-built
+  peripheral addresses in this code, so its empty DMAC-window output is not
+  evidence; the DMAC result rests on the direct register references and complete
+  function listings.
 
 The complete 456-byte listing of `FUN_0003B520` establishes the secondary
 contribution-share use of the same transfer outputs:
@@ -1636,6 +1651,28 @@ calculated-load normalization:
   corresponding piecewise body has no byte-level match in 1ND0A/1ND3B, whose
   MAF chain is structurally different, so this correction semantic is not
   transferred to those ROMs.
+- Unsigned auxiliary contribution `0xFFFF2368` has a closed stock lifecycle in
+  JK08A. A complete p-code pass over all 2,315 functions found only reads at
+  `0x3B23C`, `0x3B268`, and `0x3B29E`, with no direct or computed-address writer;
+  startup initializer `FUN_00027C50` clears the containing range
+  `[0xFFFF1000,0xFFFF261C)`. The complete direct-reference audit described above
+  excludes every recovered DMAC transfer setup in the analyzed application. An
+  unresolved computed peripheral access, external bus master, or execution
+  outside the analyzed application remains beyond this static boundary, and the
+  physical meaning of the disabled contribution is not assigned.
+- The JK03A exact-code pair inherits the same address, readers, startup clear,
+  and DMAC configuration. JK00D translates the word to `0xFFFF23E6`: structural
+  consumers `0x3BFD0`, `0x3BFFE`, and `0x3C02A` provide its only three accesses
+  in a complete 2,387-function p-code pass, all reads, while initializer
+  `FUN_000288BC` clears `[0xFFFF1000,0xFFFF26C4)`. JK00D therefore independently
+  has the same normal application-code zero result.
+- The JK78C combined and total MAF structural bodies at `0x3F97C` and `0x3F9A8`
+  read the translated unsigned term `0xFFFF22B8`; startup body `0x2A61C` clears
+  `[0xFFFF1000,0xFFFF2564)`. Its per-bank body differs and JK78C is not present
+  as an analyzed Ghidra program for a whole-program p-code census, so the
+  no-writer result is not transferred. The 1ND0A/1ND3B MAF chain has no
+  byte-level match for these consumer bodies, so no auxiliary-term semantic is
+  transferred to SH7059.
 - The primary branch of `FUN_0003B75C` uses three separate ROM scalars. Let
   `Q = uint32[0xFFFF1E38]`, `F = ROM8[0x8A27] = 109`,
   `K = ROM16[0x9284] = 26806`, `E = ROM8[0x88FB] = 3`, and `N` be the
