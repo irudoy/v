@@ -1605,3 +1605,11 @@ order = 197
 format = "0"
 fine = 1
 coarse = 8
+
+[table.0000c78e]
+name = "Current/Prior-Cycle State Coefficient - raw u16 (0x0C78E)"
+category = "Internal Calculations"
+order = 209
+format = "0"
+fine = 1
+coarse = 256

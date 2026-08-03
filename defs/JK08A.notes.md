@@ -4471,6 +4471,37 @@ The pilot uses ten on frames and ten off frames. Their wall-clock duration depen
 on the target's actual 0x551 period. The patcher creates derived map-switching
 images; no derived image is versioned in `rom-images/`.
 
+## Current/prior-cycle coefficient surface - `0x0C78E`
+
+Map `0x0C78E` is a live unsigned 16x16 coefficient surface in internal state
+calculation `FUN_000a5a06`. Wrapper `0x262A8` evaluates its row axis `0x14F62`
+from full uint16 Base Fuel Schedule word `ffff1024` and its column axis `0x13EA4`
+from current engine-speed word `ffff11bc`. The row points span raw 0..40960; the
+homologous diagnostic conversion `x/2048 ms` remains candidate. The column points
+convert by the code-proven `x*12.5 RPM` representation to 0, 800, 1200,
+1400..3600, and 10000 RPM.
+
+The current lookup result `C[n]` is written to `ffff3080` and zero-extended before
+multiplication. The prior result `C[n-1]` is read from retained state `ffff9ab0`
+and also zero-extended. SH instructions at `0xA5DE2..0xA5E02` form two signed
+products, shift each right by one, add them, and shift the sum right by two. The
+coefficient term is combined with two independently calculated signed terms shifted
+right by one and 13. The composite is saturated, split into a signed coarse word and
+residual through arithmetic shift by 12, and then adjusted by subtractive map
+`0x13CE8`. The bounded coarse output is written to `ffff3106`. At
+`0xA6328..0xA632A`, `ffff3080` replaces `ffff9ab0` for the next invocation.
+
+A whole-program p-code scan covers all 2315 recovered functions without decompiler
+failures. It finds no access to `ffff3080` or `ffff3106` outside
+`FUN_000a5a06`; both addresses are staging fields of this retained state rather than
+external publications. The map's physical subsystem and fixed-point value scale are
+unresolved. Its `0..64000` range is insufficient to assert a Q0.16 representation.
+
+The strict JK08A projection contains 1524 source claims and 5465 `RESTS_ON` edges.
+The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
+ungrounded claims. The catalog contains 349 `code` maps and 100 `candidate` maps;
+semantics are present for 432 maps and scaling for 394.
+
 ## Next step
 
 Map switching is the active hardware-validation track. The locked `10, 10`
@@ -4488,14 +4519,14 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The next semantic pass is built from the current projection, which contains 18
-`candidate` maps without semantics in 15 accessor-connected components. Of these,
-six maps contain changing values and 12 are flat. This is a separate follow-up
+The next semantic pass is built from the current projection, which contains 17
+`candidate` maps without semantics in 14 accessor-connected components. Of these,
+five maps contain changing values and 12 are flat. This is a separate follow-up
 worklist, not a continuation of the frozen slice. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 12 of the 18 open maps contain one value
+Column `vals` partitions the follow-up work: 12 of the 17 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 and one with `65535..65535`. `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4535,10 +4566,10 @@ transcription:
   resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
   value cannot represent degrees (see "Rotation-monitor thresholds").
 
-Follow-up worklist for 18 `candidate` maps without semantics:
+Follow-up worklist for 17 `candidate` maps without semantics:
 
-1. Trace changing singleton `0x0C78E` through accessor `0xA5A06`, followed by
-   `0x10B8E` through `0x65928` and `0x152D6` through `0xB29B8`/`0xB2096`. Continue
+1. Trace changing singleton `0x10B8E` through `0x65928`, followed by
+   `0x152D6` through `0xB29B8`/`0xB2096`. Continue
    with changing singletons `0x0B43A`, `0x12EDE`, and `0x13D14` before the flat-only
    components. Classify each result from its complete consumer arithmetic; catalog
    names and value shapes remain supporting evidence only.
