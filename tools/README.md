@@ -620,9 +620,9 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 4912 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 4966 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 1438 source claims and 4912 expected edges;
+current JK08A has 1444 source claims and 4966 expected edges;
 `effective below declared=0`, `without grounding=0`, 39 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
 

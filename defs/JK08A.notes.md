@@ -1226,6 +1226,37 @@ and `0x7AAE0` reverse them. These are forward and inverse tables of one relation
 not an annotation contradiction: the site defines the role, not the array itself.
 
 
+### Reciprocal nonlinear coordinate pair `0x1199E`/`0x11D24` [CONFIRMED]
+
+The 16-byte arrays exchange table and axis roles. Define
+`F(z) = interp_u8(0x11D24, axis 0x1199E, z)` and
+`G(q) = interp_u8(0x1199E, axis 0x11D24, q)`. The breakpoints of `F` are
+`[0,3,6,9,12,15,18,20,22,24,26,28,31,34,37,40]`; its returned values are
+`[0,1,4,9,16,25,36,45,54,64,76,88,107,129,153,179]`. The second lookup reverses
+these roles. Code proves an operational reciprocal transform, not an exact
+mathematical inverse at every interpolated integer.
+
+Four consumers establish the transform's arithmetic:
+
+- `FUN_0006469C` forms
+  `x=clamp_u8(s8[ffff23f1]-s8[ffff2404])`, `a=F(x)`, and
+  `y=floor((0xff00-u8[ffff1862]*(256-a))/256)`, then writes
+  `clamp_s8(s8[ffff23f1]-G(y))` to `ffff1346`.
+- `FUN_00063F30` uses the same forward-blend-inverse construction with weight
+  `ffff186a` to update bounded Q8 state `ffff23c2`. A mode selected by
+  `ffff2482.bit2` instead evaluates `F` at two separated coordinates, updates
+  `ffff14c0` and `ffff2ec3`, and counts `ffff23c2` down to zero.
+- `FUN_000655B4` and `FUN_00065B08` apply channel-specific coordinate increments and
+  calculate `trunc0(K*(256-F(x1))/(256-F(x0)))`, where
+  `K=s16[ffff18cc]`. Their alternate paths use
+  `trunc0(K*(256-F(x))/256)` or copy the paired channel. Signed saturation produces
+  `ffff18d4` and `ffff18ce`. The divisor is always nonzero because `max(F)=179`, so
+  `256-F(x)>=77`.
+
+The convex, near-square table shape is descriptive evidence only. The physical
+quantity, engineering units, and names of the two channel states remain unresolved.
+
+
 ### Map axes: orientation is proven, physical scale remains candidate
 
 Kernel `0x26944` performs a one-dimensional axis search. It reads `byte[axis + i]`
@@ -4299,14 +4330,14 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The next semantic pass is built from the current projection, which contains 37
-`candidate` maps without semantics in 27 accessor-connected components. Of these,
-24 maps contain changing values and 13 are flat. This is a separate follow-up
+The next semantic pass is built from the current projection, which contains 35
+`candidate` maps without semantics in 26 accessor-connected components. Of these,
+22 maps contain changing values and 13 are flat. This is a separate follow-up
 worklist, not a continuation of the frozen slice. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 13 of the 37 open maps contain one value
+Column `vals` partitions the follow-up work: 13 of the 35 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 one with `65535..65535`, and one with `16..16`. `tools/mapkit/show.py` prints a map with
 its axes (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4346,7 +4377,7 @@ transcription:
   resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
   value cannot represent degrees (see "Rotation-monitor thresholds").
 
-Follow-up worklist for 37 `candidate` maps without semantics:
+Follow-up worklist for 35 `candidate` maps without semantics:
 
 1. Classify by geometry (from the wrapper or primitive), `A2L` scale, and value
    signature: MAF, injector latency, rev/speed limiter, and the large `0x12xxx` cluster
