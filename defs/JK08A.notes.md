@@ -2597,28 +2597,51 @@ surface identity is supported by its exact primary/trustful family; the individu
 consumers remain arbitration or limiter paths without a physical output sink.
 
 
-### Additive base plus a gated product/sum - `0x55098`, `0x54ee0`
+### Centered two-bank bypass-relative multiplier - `0x12EDE`, `0x55098`
 
-Both accessors assemble a 16-bit output as an **additive base plus a gated set of
-table terms**, with saturation.
+`FUN 0x55098` selects the fourth byte factor of a composite product from the two-bank
+centered intake-cam timing pair. When `ffff246b.bit6` is set, it computes
+`min(u8[ffff2442], u8[ffff2443])` and interpolates `0x12EDE` on explicit axis
+`0x11BFB` through wrapper `0x264A0`. When the bit is clear, it substitutes raw `64`
+in the same factor slot. The selected byte is written to `ffff1b14`.
 
-`0x55098`, output `ffff15ce`: base `ffff2ff0` plus a product of four byte multipliers
-`>>12`, saturated to `0xffff`. `0x12ede` is one of four equivalent multipliers, with
-neutral value 64 from default `0x40`; bit6 of `ffff246b` gates its application at
-**code** confidence. Code establishes the multiplier's neutral value 64 and table
-role. Label "compensation" and scale `x/64` remain candidate because shift `>>12` is
-distributed across four factors and does not pin an individual scale. Base-mode
-selectors bit6 of `ffff4184` and bit6 of `ffff84c3` were rejected: the switching
-mechanism is code, but label "enrichment curves" is P6, and the `ffff84c3` claim joined
-two mutually exclusive branches. Kernel `0x26a84`, reached by wrapper `0x26388`
-through a jump/jump table, is **NOT ANNOTATED** for the component's four maps, which
-remain candidate.
+The exact output is:
 
-`0x54ee0`: output is a sum of terms, each under an OR combination of flag bits.
-Code-confidence enable gates are calibration ROM byte `0x8b37`, `ffff1239`, bits 0/1
-of `ffff230e`, bits 0/1 of `ffff161a` under joint condition `0x4000 < ...`, and bit1
-of `ffff2485`, a one-shot initialization latch inside term2. All are selectors/gates
-by control flow; the physical quantities of the terms are not traced.
+```text
+ffff15ce = min(
+  65535,
+  u16(ffff2ff0)
+  + ((u8(ffff1680) * u8(ffff193d) * u8(ffff1955) * u8(ffff1b14)) >> 12)
+)
+```
+
+The map scale `x/64` is code-proven as a bypass-relative gain: raw `64` reproduces
+the clear-bit factor and raw `18` contributes `18/64 = 0.28125` of that factor. The
+scale does not assign an absolute fixed-point representation to all four factors or
+physical units to `ffff15ce`. Axis points are raw values 48, 68, 88, 108, 128, 138,
+148, 158, 168, 178, 188, 198, 208, 218, 228, and 248. Candidate conversion
+`(x-128)*0.5` gives `-40..60 degCA`; the raw minimum selector and intake-cam source
+pair are code facts, while the engineering conversion requires hardware validation.
+
+Coordinator `0x57608` calls `0x55098`, `0x52F00`, `0x54EE0`, and `0x554AE` in that
+order. `0x52F00` calls `0x532AE`, which consumes `ffff15ce`, and writes its 32-bit
+return to `ffff15f8`. Ignition-angle accumulator `0x4AFDC` uses `ffff15f8` as a
+coordinate between ROM thresholds. `0x554AE` also forms
+`ffff231a=sat_u16(0x4000+ffff15f8+ffff230c+ffff15da)`. These paths establish
+consumption without identifying the physical subsystem.
+
+JK03A has byte-identical map and axis bytes at the same addresses. VQ35HR JK00D
+contains homologous `FUN 0x56FC8` with the same 312-byte control/arithmetic shape,
+the same 16 axis points at `0x13EB8`, and homologous table `0x1528B`. Its table uses
+64/0/64 regions and its gate tests a different bit, while the minimum-bank selector,
+bypass value 64, and four-factor product remain invariant.
+
+`FUN 0x54EE0` assembles a separate saturated sum in `ffff230c`. Its first term uses
+maps `0x12562`, `0x12572`, and `0x12582`; the latter two are Q6 coefficients. An
+additional term uses map `0xA49A`, bytes `ffff1600` and current `ffff1b14`, and
+`ROM8[0x87E8]`. Calibration byte `0x8B37`, `ffff1239`, bits 0/1 of `ffff230e`, bits
+0/1 of `ffff161a`, and `ffff2485.bit1` gate individual terms. Their control-flow roles
+are exact; the physical quantities of the terms remain unresolved.
 
 
 ### Map-variant selector flags - `0x413cc`, `0x4d2a6`, `0xbe5bc`, `0xc0d90`
@@ -4611,10 +4634,10 @@ producer and conversion of `0xFFFF102C` are unresolved. Map values use centered 
 128 in code. The candidate engineering conversion `(raw - 128) * 0.5 degrees` comes
 from the HR A2L and homologous intake-cam diagnostics and requires hardware validation.
 
-The strict JK08A projection contains 1560 source claims and 5700 `RESTS_ON` edges.
+The strict JK08A projection contains 1565 source claims and 5747 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 355 `code` maps and 94 `candidate` maps;
-semantics are present for 435 maps and scaling for 397.
+ungrounded claims. The catalog contains 356 `code` maps and 93 `candidate` maps;
+semantics are present for 436 maps and scaling for 398.
 
 ## Next step
 
@@ -4633,13 +4656,13 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The follow-up semantic pass is built from the current projection, which contains 14
-`candidate` maps without semantics in 11 accessor-connected components. Of these,
-two maps contain changing values and 12 are flat. Map-analysis results are recorded
+The follow-up semantic pass is built from the current projection, which contains 13
+`candidate` maps without semantics in 10 accessor-connected components. Of these,
+one map contains changing values and 12 are flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 12 of the 14 open maps contain one value
+Column `vals` partitions the follow-up work: 12 of the 13 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 and one with `65535..65535`. `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4679,11 +4702,11 @@ transcription:
   `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
   "Rotation-monitor thresholds").
 
-Follow-up worklist for 14 `candidate` maps without semantics:
+Follow-up worklist for 13 `candidate` maps without semantics:
 
-1. Trace changing singletons `0x12EDE` and `0x13D14` before the flat-only
-   components. Classify each result from its complete consumer arithmetic; catalog
-   names and value shapes remain supporting evidence only.
+1. Trace changing singleton `0x13D14` before the flat-only components. Classify the
+   result from its complete consumer arithmetic; catalog names and value shapes remain
+   supporting evidence only.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
    when its axis is resolved, in `JK08A.axes.csv`; record the name and category in
    `JK08A.overrides.toml`. `emit_def.py` builds the definition on the next run. Verify

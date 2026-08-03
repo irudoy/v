@@ -729,6 +729,20 @@ format = "0"
 fine = 1
 coarse = 16
 
+[table.00012ede]
+name = "Minimum Intake-Cam Product Multiplier (0x12EDE)"
+category = "Internal Calculations"
+order = 114
+format = "0.0000"
+fine = 0.015625
+coarse = 0.0625
+
+[axis.00011bfb]
+name = "Minimum Two-Bank Intake Cam Timing"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
 [table.00012d22]
 name = "Batch Scale Multiplier A - raw u8 (0x12D22)"
 category = "Internal Calculations"
