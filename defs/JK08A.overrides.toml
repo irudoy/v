@@ -184,6 +184,30 @@ format = "0.00"
 fine = 0.1
 coarse = 0.5
 
+[table.0000b43a]
+name = "Intake Cam Timing Main"
+category = "Variable Valve Timing / Intake Cam"
+order = 10
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[table.0000b53a]
+name = "Intake Cam Timing Cold"
+category = "Variable Valve Timing / Intake Cam"
+order = 11
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[table.0000ab5a]
+name = "Intake Cam Timing Conditional Correction"
+category = "Variable Valve Timing / Intake Cam"
+order = 12
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
 [table.0000abba]
 name = "Knock Sensor Circuit Monitor Surface A (0xABBA)"
 category = "Diagnostics / Knock Sensor Monitor"

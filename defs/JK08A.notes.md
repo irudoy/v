@@ -4575,10 +4575,46 @@ map `0x12282` also has `code` confidence: its lookup result is one of the two by
 multipliers in the final product. The shared right shift by 14 does not prove an
 individual fixed-point scale for either multiplier.
 
-The strict JK08A projection contains 1548 source claims and 5611 `RESTS_ON` edges.
+### Intake CVTC main/cold target component - `0x0B43A`, `0x0B53A`, and `0x0AB5A`
+
+`FUN_000BD170` is the two-channel intake CVTC dispatcher. It updates centered timing
+bytes `0xFFFF2442` and `0xFFFF2443`, calls target accessor `FUN_000BDA64`, calls coolant
+selector `FUN_000BDC66`, and then runs the paired downstream control calculations.
+Within this dispatcher, `0x0B43A` is the 16x16 warm/main intake-cam target surface,
+`0x0B53A` is the 8x8 cold target surface, and `0x0AB5A` is a conditional 4x4
+subtractive correction.
+
+`FUN_000BDA64` indexes all three surfaces by current RPM/50 byte `0xFFFF11AE` and
+load-like byte `0xFFFF102C`. It writes the cold result to `0xFFFF1C5E`. The main
+result is written to `0xFFFF1C5C`; when `0xFFFF2466.bit6` is set, the stored value is
+`clamp_u8(main - correction + 128)`. The code establishes the conditional correction,
+but not the physical meaning of the selector bit. The A2L name High Detonation Intake
+Cam Timing therefore remains candidate evidence.
+
+Stock raw coolant thresholds are `ROM8[0x8D2E]=106` and `ROM8[0x8D2D]=131`.
+`FUN_000BDC66` selects the cold target at `coolant <= 106`, selects the main target at
+`coolant > 131`, and uses the following interpolation between the thresholds:
+
+```text
+cold + floor((coolant - 106) * (main - cold) / 25)
+```
+
+The selected byte is copied to `0xFFFF1BEE`, then mode, rate, and offset logic writes
+conditioned target/reference byte `0xFFFF2326`. `FUN_0004D2A6` compares this byte with
+both centered intake-cam timing channels in the cam-deviation path. This consumer and
+the CVTC dispatcher establish the physical target family independently of the catalog.
+
+Axes `0x12F3E`, `0x12ECA`, and `0x12F9A` have code-proven `RPM = raw * 50` scaling.
+Axes `0x12F1E`, `0x12EAA`, and `0x12F92` receive `0xFFFF102C` directly. Their Cylinder
+Filling name and `raw * 0.78125%` scale remain A2L candidates because the physical
+producer and conversion of `0xFFFF102C` are unresolved. Map values use centered raw
+128 in code. The candidate engineering conversion `(raw - 128) * 0.5 degrees` comes
+from the HR A2L and homologous intake-cam diagnostics and requires hardware validation.
+
+The strict JK08A projection contains 1560 source claims and 5700 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 354 `code` maps and 95 `candidate` maps;
-semantics are present for 434 maps and scaling for 395.
+ungrounded claims. The catalog contains 355 `code` maps and 94 `candidate` maps;
+semantics are present for 435 maps and scaling for 397.
 
 ## Next step
 
@@ -4597,13 +4633,13 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The follow-up semantic pass is built from the current projection, which contains 15
-`candidate` maps without semantics in 12 accessor-connected components. Of these,
-three maps contain changing values and 12 are flat. Map-analysis results are recorded
+The follow-up semantic pass is built from the current projection, which contains 14
+`candidate` maps without semantics in 11 accessor-connected components. Of these,
+two maps contain changing values and 12 are flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 12 of the 15 open maps contain one value
+Column `vals` partitions the follow-up work: 12 of the 14 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 and one with `65535..65535`. `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4643,9 +4679,9 @@ transcription:
   `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
   "Rotation-monitor thresholds").
 
-Follow-up worklist for 15 `candidate` maps without semantics:
+Follow-up worklist for 14 `candidate` maps without semantics:
 
-1. Trace changing singletons `0x0B43A`, `0x12EDE`, and `0x13D14` before the flat-only
+1. Trace changing singletons `0x12EDE` and `0x13D14` before the flat-only
    components. Classify each result from its complete consumer arithmetic; catalog
    names and value shapes remain supporting evidence only.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
@@ -4659,6 +4695,7 @@ trees; each accepted result is recorded in the canonical CSV sources before the 
 and ledger are rebuilt.
 
 Structural row and column orientation is resolved for the five 2D maps through kernel
-`0x26944`. The physical names RPM/load and multiplier `x*50` remain at `candidate`: the
-code reads raw RAM inputs but does not show their writers. Separate axis `0x11ECE` has
-the confirmed internal scale `x*4` without a physical name.
+`0x26944`. Axes driven by `0xFFFF11AE` have code-proven RPM and `x*50` scaling from the
+current engine-speed producer. The physical identity and scale of `0xFFFF102C` remain
+unresolved; Cylinder Filling and `x*0.78125%` are catalog candidates. Separate axis
+`0x11ECE` has its own code-proven RPM scale through `0xFFFF11BC` arithmetic.
