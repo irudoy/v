@@ -77,7 +77,7 @@
 #     value also appears in r6 at 15 of 240 1D sites, but r6 is not an argument there; the
 #     fallback recovered a register value at the site address. The report counts discarded
 #     values.
-#   - operand kind (pool | slice | const | sp | gbrrel | dyn) is stored on :ACCESSES and in
+#   - operand kind (pool | slice | const | copy | sp | gbrrel | dyn) is stored on :ACCESSES and in
 #     map resolver_kinds. kind=sp means the decompiler did not reduce the base to one value
 #     and the fallback recovered it. Branching defines r4 there, so the recovered base is
 #     one member of a set (0x64344 selects six tables by r5; 0xbe39a selects two by r13).

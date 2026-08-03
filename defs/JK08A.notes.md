@@ -8,9 +8,9 @@ SHA-256 `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`.
 
 Forum-sourced `JK03A` remains a separate donor ROM. The images differ at 121 byte
 positions in calibration/config, but none falls within the 2312 functions in the Ghidra
-export. All 16 `rom_const` values from structured evidence match. Of 443 maps, only four
+export. All 16 `rom_const` values from structured evidence match. Of 449 maps, only four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
-`0x190b0`; all 229 axes match. `JK08A.*` is the sole live source of structural and
+`0x190b0`; all 230 axes match. `JK08A.*` is the sole live source of structural and
 semantic claims for the exact-code pair. `defs/rom-inheritance.toml` projects them onto
 a separate JK03A layer, while map ranges and hashes are measured from each ROM's own
 dump during every ingest. There is no live `defs/JK03A.*` set.
@@ -56,21 +56,21 @@ provenance and are not paths in the current `JK08A` layer.
   the clamp for its search". implicit-axis has no axis array and uses N points at a
   uniform step over the raw input, implemented by a bank of 10 primitives
   (`0x26358..0x2642C` and `0x266A0`).
-- Layer measured from the image [CONFIRMED]: values of all 443 maps and 229 axes are
+- Layer measured from the image [CONFIRMED]: values of all 449 maps and 230 axes are
   read from each ROM's registered image by the same run that builds the layer (Stage 4,
   `tools/mapkit`). JK08A uses `1JK08A-20260726-stock.bin`. Axes carry their points and
   monotonicity; maps carry content range and hash. Two signals remain open: one axis is
   not read by reverse linear search (`0x119B2`), and 18 maps contain only `0xFF`.
 - Element encoding [CONFIRMED]: a 1D map's input reads the element, while for a 2D map
   the finisher reads it; all five 2D finishers read elements as unsigned.
-  `storagetype` is known for all 443 maps in the graph. Three byte-oriented 2D
+  `storagetype` is known for all 449 maps in the graph. Three byte-oriented 2D
   finishers handle bit7 differently: `0x26770` treats it as part of the value,
   `0x267CC` treats it as a pass-through flag over a 7-bit value, and `0x268A4`
   saturates it (values 0..127). See "2D map element encoding".
-- The catalog contains **443 maps**: the resolver obtains 436 through 34 entries
-  (248 explicit-axis and 188 implicit-axis), while the manual layer declares seven:
-  three direct comparator tables, two implicit-2d input maps for `0x26040`, and two
-  direct per-cylinder Knock Slice maps. No map belongs to more than one family; the
+- The catalog contains **449 maps**: the resolver obtains 436 through 34 entries
+  (248 explicit-axis and 188 implicit-axis), while the manual layer declares 13 across
+  five families: four comparator, four direct-row-major, two implicit-2d, two
+  direct-scalar, and one direct-indexed map. No map belongs to more than one family; the
   loader verifies this.
 - Map progress is tracked by ledger `JK08A.maps.csv`, a projection of the catalog from
   the graph (`tools/maps/build_tracker.py`): one row per map with family, entry, kernel,
@@ -850,9 +850,9 @@ explicit-axis and 227 implicit-axis. Expanding selector alternatives turns 554 s
 into 587 rows.
 
 The resolver yields **436 maps**, 248 explicit-axis and 188 implicit-axis, with no map
-shared between families. The manual layer declares three direct comparator tables,
-two implicit-2d input maps for `0x26040`, and two direct per-cylinder Knock Slice maps,
-bringing the complete graph to **443 maps**.
+shared between families. The manual layer declares 13 maps across five families: four
+comparator, four direct-row-major, two implicit-2d, two direct-scalar, and one
+direct-indexed map, bringing the complete graph to **449 maps**.
 
 
 ### explicit-axis: three kernels and 24 wrappers [CONFIRMED]
@@ -1128,8 +1128,8 @@ code resolves the discrepancy.
 
 ### An axis also selects a branch - 14 fallback-only axes [CONFIRMED]
 
-In the graph, 256 of 586 `:ACCESSES` edges carry an uncollapsed axis
-(`kind5/kind6=sp`), and 14 of 229 axes are named by nothing else. The fallback can be
+In the graph, 256 of 595 `:ACCESSES` edges carry an uncollapsed axis
+(`kind5/kind6=sp`), and 14 of 230 axes are named by nothing else. The fallback can be
 wrong for axes just as it can for bases. Direct evidence is site `0x735ac`, which names
 `0x8000` as an axis even though erased flash begins there:
 
@@ -1138,7 +1138,7 @@ wrong for axes just as it can for bases. Direct evidence is site `0x735ac`, whic
 ```
 
 An axis named only by the fallback therefore stays at `pattern`, not `candidate`.
-Any collapsed site (`pool`, `slice`, or `const`) promotes it to `candidate`; without
+Any collapsed site (`pool`, `slice`, `const`, or reviewed `copy`) promotes it to `candidate`; without
 such a site, the fallback word is a heuristic. Axes of all nine maps emitted by the
 definition are collapsed.
 
@@ -4497,10 +4497,60 @@ failures. It finds no access to `ffff3080` or `ffff3106` outside
 external publications. The map's physical subsystem and fixed-point value scale are
 unresolved. Its `0..64000` range is insufficient to assert a Q0.16 representation.
 
-The strict JK08A projection contains 1524 source claims and 5465 `RESTS_ON` edges.
+## Engine Torque surface - `0x10B8E`
+
+Map `0x10B8E` is a live offset-binary 16x16 uint16 Engine Torque surface.
+`FUN_00065928` copies the 16-word array at `0x2378C` to a local buffer through
+byte-copy helper `0x22558`, then calls wrapper `0x262A8` with map `0x10B8E`, RPM
+axis `0x14B4A`, and the local copy as the second axis. Resolver source `copy`
+preserves the byte-identical ROM origin of the stack operand in the graph.
+
+The RPM coordinate is current word `ffff11b6`. Axis `0x14B4A` contains
+`128, 256, ..., 1664, 1920, 2176, 2432`; candidate catalog scale `x*3.125 RPM`
+gives 400..7600 RPM. The second coordinate is
+
+```
+q = min(65535, floor(u16[ffff1024] * 40960 / ROM16[0x9534]))
+```
+
+and is stored in `ffff15c4`. Stock `ROM16[0x9534]=0x6A5A`. Axis `0x2378C`
+contains `0x0000, 0x1000, ..., 0xF000`; candidate catalog scale
+`x*160/65536 %` gives 0..150% Cylinder Filling and reduces the coordinate
+formula to `100*BFS/scaler`. The lookup result is centered by subtracting
+`0x8000` and stored as signed word `ffff18ca`. Raw map range 31944..37084
+corresponds to -82.4..431.6 Nm under candidate Engine Torque scale
+`x*0.1-3276.8`.
+
+`FUN_000659ae` adds unsigned term `ffff2408` to signed `ffff18ca`, applies a
+Q14 multiplier and Q8 complement `256-lookup_u8(0x1245A)`, saturates to int16,
+and writes `ffff18cc`. Stock `ROM8[0x87EE]=0` makes the Q14 multiplier unity;
+map `0x1245A` and its axis `0x11A55` are flat zero, making the Q8 multiplier
+unity. The stock expression is therefore
+`ffff18cc=sat_s16(s16[ffff18ca]+u16[ffff2408])`. Functions `0x655B4` and
+`0x65B08` consume this state in two nonlinear channels.
+
+`FUN_00065c26` builds `ffff2408` from RPM curve `0x154A0`, a
+Base-Fuel-Schedule-dependent subtraction, and a calibrated nonnegative
+correction. Stock `ROM8[0x87F3]=32` makes that correction zero. `FUN_000658a4`
+scales RPM curve `0x14C1A` by a selected nonnegative byte difference and writes
+`ffff14e2`; `FUN_00065cd8` and `FUN_00064a1c` consume it in the same signed
+torque-state component. Curves `0x154A0` and `0x14C1A` therefore have code-level
+engine-torque base/correction roles, with candidate physical scale `x*0.1 Nm`.
+Their shared axis `0x14ABA` has the code-proven `x*12.5 RPM` representation and
+spans 800..7600 RPM.
+
+Owned VQ35HR ROM JK00D contains the homologous accessor `FUN_00067be8` with the
+same 126-byte structure. It uses map `0x12922`, byte-identical RPM axis
+`0x16F3C`, column axis `0x23884`, and scaler `0x95F6=38557`; JK08A uses scaler
+27226. The VQ35 map's candidate range -117.0..605.5 Nm and the larger scaler are
+consistent independent family evidence for the Engine Torque identity. Physical
+units and both catalog-derived percentage/torque scales remain hardware-validation
+items.
+
+The strict JK08A projection contains 1538 source claims and 5559 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 349 `code` maps and 100 `candidate` maps;
-semantics are present for 432 maps and scaling for 394.
+ungrounded claims. The catalog contains 352 `code` maps and 97 `candidate` maps;
+semantics are present for 433 maps and scaling for 395.
 
 ## Next step
 
@@ -4519,14 +4569,13 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The next semantic pass is built from the current projection, which contains 17
-`candidate` maps without semantics in 14 accessor-connected components. Of these,
-five maps contain changing values and 12 are flat. This is a separate follow-up
-worklist, not a continuation of the frozen slice. Map-analysis results are recorded
+The follow-up semantic pass is built from the current projection, which contains 16
+`candidate` maps without semantics in 13 accessor-connected components. Of these,
+four maps contain changing values and 12 are flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 12 of the 17 open maps contain one value
+Column `vals` partitions the follow-up work: 12 of the 16 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 and one with `65535..65535`. `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4562,15 +4611,14 @@ transcription:
 - **The value multiplier of emitted maps** is not always derived from code: the
   `0x934E` fuel-cut table's `x*12.5` comes from the A2L catalog and native speed-domain
   convergence, is marked with `[cand]` units, and requires hardware confirmation.
-  The `x-64` scale of `0xB61A`/`0xB71A`/`0xB81A` has already been
-  resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
-  value cannot represent degrees (see "Rotation-monitor thresholds").
+  The `x-64` scale does not apply to `0xB61A`/`0xB71A`/`0xB81A`: finisher
+  `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
+  "Rotation-monitor thresholds").
 
-Follow-up worklist for 17 `candidate` maps without semantics:
+Follow-up worklist for 16 `candidate` maps without semantics:
 
-1. Trace changing singleton `0x10B8E` through `0x65928`, followed by
-   `0x152D6` through `0xB29B8`/`0xB2096`. Continue
-   with changing singletons `0x0B43A`, `0x12EDE`, and `0x13D14` before the flat-only
+1. Trace changing map `0x152D6` through `0xB29B8`/`0xB2096`, followed by
+   changing singletons `0x0B43A`, `0x12EDE`, and `0x13D14` before the flat-only
    components. Classify each result from its complete consumer arithmetic; catalog
    names and value shapes remain supporting evidence only.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,

@@ -1613,3 +1613,35 @@ order = 209
 format = "0"
 fine = 1
 coarse = 256
+
+[table.00010b8e]
+name = "Engine Torque Map"
+category = "Transmission / Shifting Performance"
+order = 210
+format = "0.0"
+fine = 1
+coarse = 10
+
+[table.000154a0]
+name = "Engine Torque Base Correction vs RPM"
+category = "Transmission / Shifting Performance"
+order = 211
+format = "0.0"
+fine = 1
+coarse = 10
+
+[table.00014c1a]
+name = "Engine Torque Scaled Correction vs RPM"
+category = "Transmission / Shifting Performance"
+order = 212
+format = "0.0"
+fine = 1
+coarse = 10
+
+[table.0001245a]
+name = "Engine Torque State Attenuation - raw u8 (0x1245A)"
+category = "Internal Calculations"
+order = 213
+format = "0"
+fine = 1
+coarse = 8

@@ -169,7 +169,7 @@ Donor `JK03A` and owned target `JK08A` identify themselves as
 `0x020000..0x0fffff` regions are byte-identical, while configuration/calibration
 differs at 121 byte positions. In the graph, only the measured values of four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
-`0x190b0`. All 229 axes and the other 445 maps match.
+`0x190b0`. All 230 axes and the other 445 maps match.
 
 The generated JK08A definitions contain a tuner-facing allowlist of 16
 canonical maps and three masked ignition views. Map-switching projection expands

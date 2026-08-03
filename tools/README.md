@@ -195,7 +195,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `ghidra/MapInventory.java` | Census maps from an interpolation kernel: value slots -> wrappers -> call sites, with linear `r4/r5/r6` backtracking | `map_inventory.csv` |
 | `ghidra/FindInterpCore.java` | Detect interpolation kernels and entries through a data scan in Stage 1: code-address slot plus two indirection levels. Arguments: `<outdir> [<min_wrappers>]` | `interp_core.csv` |
 | `ghidra/ScanFlags.java` | Detect GBR flags locally around accessors and guard functions in Stage 6 using the "load - bit test - branch" triple and derive role from CFG branches. Arguments: `<outdir> <func_addr>...` | `flags.csv` |
-| `ghidra/ResolveAccessors.java` | Resolve accessor operands using decompiler data flow against backtracking, recover functions for unmarked sites, and expand operand sets (`MULTIEQUAL`) into one row per branch; run once per kernel | `accessors.<kernel>.csv` |
+| `ghidra/ResolveAccessors.java` | Resolve accessor operands using decompiler data flow against backtracking, recover functions for unmarked sites, expand operand sets (`MULTIEQUAL`) into one row per branch, and recover stack-materialized ROM operands through explicitly declared byte-copy helpers; run once per kernel | `accessors.<kernel>.csv` |
 | `ghidra/ProbeResolver.java` | Headless probe for resolver condition A: determine whether the decompiler recovers constant `r4/r5/r6` at interpolation CALLIND sites, baseline versus forced `0x26320` signature; `-readOnly` diagnostic | stdout |
 | `ghidra/DirectLookupInventory.java` | Census the implicit-axis bank with a forward scan from its slot, derive primitive geometry from code, and recover operands with linear backtracking | `direct_lookup_inventory.csv` |
 | `ghidra/DumpListing.java` | Disassemble an address neighborhood with resolved references | `listing_<addr>.txt` |
@@ -308,7 +308,7 @@ uv run --no-project --with neo4j python \
   tools/diagnostics/extract_static_bindings.py JK08A --export-dir "$D"
 # 2. Operands: run the resolver for every registered engine. Approximately 100 seconds per census.
 for K in 26944 26984 26b84 26a5c 26a60 26a64 26a74 26a7c 26a80 26a84 26a88 26740 26c1c; do
-  H -readOnly -postScript ResolveAccessors.java "$D" $K
+  H -readOnly -postScript ResolveAccessors.java "$D" $K 22558
 done
 # 3. Complete target-ROM ingest. Before deleting any nodes, preflight validates headers, values,
 #    foreign keys, censuses, ROM/SHA, evidence resolution, and factual evidence for every
@@ -620,9 +620,9 @@ is undeclared.
 `load_code.py` runs last among provenance-target owners because earlier loaders delete their nodes
 and all incoming and outgoing `:RESTS_ON` edges. It reads four canonical CSV files, validates nodes
 and claim-specific properties, requires factual evidence for every `code`/`silicon` property,
-builds 5465 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
+builds 5559 claim-specific JK08A edges, and performs an exact expected-versus-actual audit in one
 transaction. Local source gates pass with zero Map/Axis debt. Global `--strict` also passes: the
-current JK08A has 1524 source claims and 5465 expected edges;
+current JK08A has 1538 source claims and 5559 expected edges;
 `effective below declared=0`, `without grounding=0`, 38 cyclic SCCs, and 0
 ungrounded SCCs. Read-only verification and interactive queries:
 
@@ -647,7 +647,7 @@ uv run --no-project --with neo4j python \
 Handwritten sources do not declare table or axis values; the image does. On every run, Stage 4
 reads values from the image using addresses and shapes from the census. The image is selected by
 ROM label from `rom-images/roms.csv` and verified by SHA-256. Without that check, a substituted
-dump would not necessarily fail but could produce 229 axes of plausible values from the wrong
+dump would not necessarily fail but could produce 230 axes of plausible values from the wrong
 image. Each axis stores its points and monotonicity; each map stores its range and content hash.
 
 The reference censuses, `MapInventory.java` per kernel and `DirectLookupInventory.java` for the
@@ -670,7 +670,7 @@ For JK08A, 38,627 instructions in 494 regions produce 353 functions, increasing 
 Across 13 JK08A censuses there are 587 rows for 554 call sites. Data flow recovers a ROM base at
 551 call sites, compared with 493 for backtracking. The graph contains **449 maps**: 248
 explicit-axis, 188 implicit-axis, 2 implicit two-dimensional, 4 direct row-major,
-4 comparator tables, 1 direct-indexed table, and 2 direct scalars. It also has 229 axes, 595 unique accesses, and 47
+4 comparator tables, 1 direct-indexed table, and 2 direct scalars. It also has 230 axes, 595 unique accesses, and 47
 interpolation nodes, consisting of 34 wrappers and 13 engines.
 
 | Family | Engines | Sites | `bt_r4` | `df_r4` | Wrappers | Maps |
@@ -703,7 +703,7 @@ full duplicate collapses. The recovered value is one element of a branch-selecte
 recovers the complete set.
 
 Fallback behavior is similarly unreliable for axes. There are 256 projected accesses at 247 call
-sites with an unresolved axis (`kind5`/`kind6=sp`), and 14 of 229 axes depend solely on this
+sites with an unresolved axis (`kind5`/`kind6=sp`), and 14 of 230 axes depend solely on this
 fallback. Those axes are marked `pattern`; any resolved site raises them to `candidate`. A direct
 counterexample is site `0x735ac`, which reports `0x8000` as an axis even though that address
 contains erased flash. The same mechanism produces ambiguous geometry: `0x14114` has axes

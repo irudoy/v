@@ -10,6 +10,11 @@
 //                 A RAM varnode is a pool slot whose value is the slot contents;
 //                 register/unique varnodes are reduced with a backward p-code slice.
 // Fallback: SymbolicPropogator over instructions for varnodes not reduced by the slice.
+// A stack-relative explicit axis can also be materialized by a reviewed byte-copy helper:
+// the helper copies a ROM array to a local buffer and the accessor passes that buffer to the
+// interpolation wrapper. Optional script arguments identify helpers with the project ABI
+// r0=length, r1=destination, r2=source. In that case the resolver emits the original ROM source
+// as kind copy rather than losing the axis behind a dynamic stack pointer.
 //
 // GBR (condition B) is resolved locally: each function sets its own value (`ldc rN,gbr`).
 // JK03A has both a RAM base (FUN_0003b75c: gbr=0xffff1dec) and a ROM base
@@ -48,7 +53,8 @@
 // This applies only when every operand phi belongs to the same block and has equal length.
 // Otherwise, alignment is unsupported and the fallback leaves the site as one row.
 //
-// Headless invocation: -postScript ResolveAccessors.java <out_dir> <kernel_hex>
+// Headless invocation:
+//   -postScript ResolveAccessors.java <out_dir> <kernel_hex> [byte_copy_helper_hex ...]
 // Output: accessors.<kernel>.csv, one file per census. Several table-access cores exist
 // (JK03A: 0x26944 for byte axes, 0x26984 and 0x26b84 for word axes). Run the script for
 // each core; the loader builds the calibration layer from all censuses together. Therefore,
@@ -57,8 +63,9 @@
 //   k4,k5,k6,k7,verdict
 // func: orig (function was already defined) | recovered (created here) | none.
 // Source of each data-flow operand in columns k4..k7: pool (dereferenced pool slot), const,
-// slice (reduced through p-code), sp (SymbolicPropogator fallback), gbrrel (gbr-relative
-// value with gbr supplied by the caller), dyn (not reducible), or none (no input).
+// slice (reduced through p-code), copy (ROM source of a reviewed byte-copy into the passed stack
+// buffer), sp (SymbolicPropogator fallback), gbrrel (gbr-relative value with gbr supplied by the
+// caller), dyn (not reducible), or none (no input).
 //@category VQ
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileResults;
@@ -105,6 +112,8 @@ public class ResolveAccessors extends GhidraScript {
     ReferenceManager rm;
     Register rGbr;
     Register[] argRegs = new Register[4];   // r4, r5, r6, r7
+    Register rSp, rCopyDst, rCopySrc;       // r15, r1, r2 for reviewed byte-copy ABI
+    List<Long> copyHelpers = new ArrayList<>();
     boolean lastGbrRel;                     // SP returned a gbr-relative value; gbr was not reduced
 
     DecompInterface ifc;
@@ -126,6 +135,7 @@ public class ResolveAccessors extends GhidraScript {
         String[] a = getScriptArgs();
         String outDir = a[0];
         long kernel = Long.parseLong(a[1], 16);
+        for (int i = 2; i < a.length; i++) copyHelpers.add(Long.parseLong(a[i], 16));
 
         listing = currentProgram.getListing();
         mem = currentProgram.getMemory();
@@ -133,12 +143,15 @@ public class ResolveAccessors extends GhidraScript {
         rm = currentProgram.getReferenceManager();
         rGbr = currentProgram.getRegister("gbr");
         for (int i = 0; i < 4; i++) argRegs[i] = currentProgram.getRegister("r" + (i + 4));
+        rSp = currentProgram.getRegister("r15");
+        rCopyDst = currentProgram.getRegister("r1");
+        rCopySrc = currentProgram.getRegister("r2");
 
         List<Address> slots = findSlots(kernel);
         Map<Function, Address> wrappers = findWrappers(slots);
         List<Site> sites = collectSites(wrappers);
         println("VQ_RES input: slots=" + slots.size() + " wrappers=" + wrappers.size()
-                + " call_sites=" + sites.size());
+                + " call_sites=" + sites.size() + " copy_helpers=" + copyHelpers.size());
 
         int recovered = recoverFuncs(sites);
         println("VQ_RES recovered functions: " + recovered);
@@ -265,6 +278,14 @@ public class ResolveAccessors extends GhidraScript {
                 }
                 selectorBranches(s, in);
             }
+        }
+        // A reviewed byte-copy helper can materialize a ROM axis in a local stack buffer. The
+        // interpolation call then carries only the stack pointer, so recover the byte-identical
+        // ROM source before the generic SymbolicPropogator fallback classifies it as dynamic.
+        for (int k = 0; k < 3; k++) {
+            if (s.df[k] != -1) continue;
+            Long v = copiedRomSource(s, argRegs[k]);
+            if (v != null) { s.df[k] = v; s.kind[k] = "copy"; }
         }
         // Fallback for varnodes not reduced by the slice.
         for (int k = 0; k < 4; k++) {
@@ -441,6 +462,53 @@ public class ResolveAccessors extends GhidraScript {
             return null;
         }
         return v.getValue() & 0xFFFFFFFFL;
+    }
+
+    // Recover the ROM source of a local buffer populated by a reviewed byte-copy helper.
+    // Both the lookup argument and helper destination must be the same offset from the same
+    // incoming stack register. The nearest preceding matching copy wins. Restricting helpers to
+    // explicit script arguments prevents an arbitrary r1/r2 call from being treated as memcpy.
+    Long copiedRomSource(Site s, Register operand) {
+        if (copyHelpers.isEmpty() || s.func == null || operand == null || rSp == null
+                || rCopyDst == null || rCopySrc == null) return null;
+        SymbolicPropogator sp = propagator(s);
+        if (sp == null) return null;
+        SymbolicPropogator.Value wanted = sp.getRegisterValue(s.at, operand);
+        if (!relativeTo(wanted, rSp)) return null;
+
+        Long found = null;
+        Iterator<Instruction> ii = listing.getInstructions(s.func.getBody(), true).iterator();
+        while (ii.hasNext()) {
+            Instruction ins = ii.next();
+            if (ins.getAddress().compareTo(s.at) >= 0) break;
+            if (!ins.getFlowType().isCall() || !isCopyHelperCall(ins)) continue;
+            SymbolicPropogator.Value dst = sp.getRegisterValue(ins.getAddress(), rCopyDst);
+            if (!sameRelative(wanted, dst)) continue;
+            SymbolicPropogator.Value src = sp.getRegisterValue(ins.getAddress(), rCopySrc);
+            if (src == null || src.isRegisterRelativeValue()) continue;
+            long v = src.getValue() & 0xFFFFFFFFL;
+            Address a = toAddr(v);
+            if (v < ROM_HI && a != null && mem.contains(a)) found = v;
+        }
+        return found;
+    }
+
+    boolean isCopyHelperCall(Instruction ins) {
+        for (Reference r : ins.getReferencesFrom()) {
+            if (!r.getReferenceType().isCall() || r.getToAddress() == null) continue;
+            long v = r.getToAddress().getOffset() & 0xFFFFFFFFL;
+            if (copyHelpers.contains(v)) return true;
+        }
+        return false;
+    }
+
+    boolean relativeTo(SymbolicPropogator.Value v, Register base) {
+        if (v == null || !v.isRegisterRelativeValue() || v.getRelativeRegister() == null) return false;
+        return v.getRelativeRegister().getName().equals(base.getName());
+    }
+
+    boolean sameRelative(SymbolicPropogator.Value a, SymbolicPropogator.Value b) {
+        return relativeTo(a, rSp) && relativeTo(b, rSp) && a.getValue() == b.getValue();
     }
 
     SymbolicPropogator propagator(Site s) {
