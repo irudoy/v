@@ -4547,10 +4547,38 @@ consistent independent family evidence for the Engine Torque identity. Physical
 units and both catalog-derived percentage/torque scales remain hardware-validation
 items.
 
-The strict JK08A projection contains 1538 source claims and 5559 `RESTS_ON` edges.
+Map `0x152D6` is the code-proven EVAP negative-pressure leak transfer. Its explicit
+axis is `0x13C18`. `FUN_000B2096` indexes the curve by baseline-relative coordinate
+`0xFFFF2C92` and stores `0xFFFF3240`; caller `FUN_000B29B8` builds corrected and
+saturated coordinate `0xFFFF2C98`, performs the second lookup, and stores
+`0xFFFF3242`. The consumer uses only the positive transformed difference, normalizes
+it with `0xFFFF2C86`, and writes intermediate `0xFFFF3018`. The final result is
+`sat_u16(uint8[0xFFFF2F8D] * uint16[0xFFFF3018] * uint8[0xFFFF2F94] >> 14)` at
+`0xFFFF301C`; P0442 and P0456 monitor branches consume its high byte.
+
+Direct producer paths copy shared EVAP sample `0xFFFF10C4` into baseline
+`0xFFFF2ABC`, call `FUN_000ABB84`, and clamp a negative return before writing
+`0xFFFF2C92`. The helper contract is
+`min(65535, floor((uint16(baseline)-uint16(current))*112/32))`; the lower clamp
+belongs to its callers. The stored `0x152D6` points differ from `sqrt(12.75*x)` by
+less than 0.566 raw at the knots, establishing a square-root-like measured shape but
+not an exact formula. The same map and axis byte sequences occur in the registered
+VQ37VHR pair at `0x16B32`/`0x15492`, VQ35HR JK00D at
+`0x177E8`/`0x15FCA`, VQ25HR JK03A/JK08A at `0x152D6`/`0x13C18`, and JK78C at
+`0x16524`/`0x14F5C`.
+
+Factory ESM pages EC-274 and EC-316 identify the surrounding P0442/P0456 strategy
+as a negative-pressure leak test. EC-529 defines the Service 06 publication unit as
+`1/128 mm2`, but no firmware trace binds that conversion to `0x152D6` or
+`0xFFFF301C`; all internal coordinates and results remain raw. Adjacent stock-selected
+map `0x12282` also has `code` confidence: its lookup result is one of the two byte
+multipliers in the final product. The shared right shift by 14 does not prove an
+individual fixed-point scale for either multiplier.
+
+The strict JK08A projection contains 1548 source claims and 5611 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 352 `code` maps and 97 `candidate` maps;
-semantics are present for 433 maps and scaling for 395.
+ungrounded claims. The catalog contains 354 `code` maps and 95 `candidate` maps;
+semantics are present for 434 maps and scaling for 395.
 
 ## Next step
 
@@ -4569,13 +4597,13 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The follow-up semantic pass is built from the current projection, which contains 16
-`candidate` maps without semantics in 13 accessor-connected components. Of these,
-four maps contain changing values and 12 are flat. Map-analysis results are recorded
+The follow-up semantic pass is built from the current projection, which contains 15
+`candidate` maps without semantics in 12 accessor-connected components. Of these,
+three maps contain changing values and 12 are flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 12 of the 16 open maps contain one value
+Column `vals` partitions the follow-up work: 12 of the 15 open maps contain one value
 across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 and one with `65535..65535`. `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4615,10 +4643,9 @@ transcription:
   `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
   "Rotation-monitor thresholds").
 
-Follow-up worklist for 16 `candidate` maps without semantics:
+Follow-up worklist for 15 `candidate` maps without semantics:
 
-1. Trace changing map `0x152D6` through `0xB29B8`/`0xB2096`, followed by
-   changing singletons `0x0B43A`, `0x12EDE`, and `0x13D14` before the flat-only
+1. Trace changing singletons `0x0B43A`, `0x12EDE`, and `0x13D14` before the flat-only
    components. Classify each result from its complete consumer arithmetic; catalog
    names and value shapes remain supporting evidence only.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
