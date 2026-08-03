@@ -2431,39 +2431,55 @@ emittable **maps** reached code confidence, specifically Q15 blend weights, rath
 only `dead`/`threshold` roles.
 
 
-### Crossfade blend of calibration curves - `0x7a592` / `0x7a804` (accessors FUN_0007a592, FUN_0007a804)
+### Parallel raw-output crossfade channels - `0x7a592` / `0x7a804`
 
-Both components form output by a linear Q15 blend:
-`out = ((0x8000-w)*a + w*b) >> 15`, where `a` and `b` are interpolations of two
-1D curves and `w` is a weight from a separate 2D map. Code establishes the complete
-mechanism. Wrappers `0x26270`/`0x265f0`, kernels `0x26848`/`0x26b28`, and finishers
-`0x26740`/`0x26d10` are decompiled; the "NOT ANNOTATED" caveat does not apply to this
-path.
+FUN `0x7a592` and FUN `0x7a804` are parallel calculation channels in one raw
+domain. Both consume uint16 coordinate `ffff2698` without rescaling. Their explicit
+breakpoint axes `0x14f82` and `0x18f76` are byte-identical and contain
+`0, 56, 112, ..., 840`. Code passes the coordinate directly as an unsigned lookup
+key. The physical quantity, engineering unit, and independent axis scale remain
+unresolved.
 
-Weight maps at **code confidence**, recorded in `findings.csv`, are `0xd78e` for
-0x7a592 with output `ffff31c8` and `0x16f48` for 0x7a804 with output `ffff35f4`.
-They are 2D Q15 weights with scale `x/32768`; content contains only `0`/`0x8000`,
-which performs hard branch selection. Multiplier evidence is pivot `0x8000` and
-consumer shift `>>15`, not a catalog. `0x18d36` in 0x7a804 is also included: a Q15
-multiplicative trim applied to the blend result when its gate is set. Its calibration
-is flat at `0x8000`, trim=1.0 and therefore a no-op, but the branch is not dead.
+Bit 1 of `ffff249f` selects one endpoint pair in each channel:
 
-Blend endpoints remain **candidate**. Code establishes structural role as term a/b,
-pairing, axis `0x14f82`, and input `ffff2698`, but not the domain. In 0x7a592, pairs are
-`0x1480a`/`0x1482a` when `ffff249f`&2==0 and `0x15360`/`0x15380` when nonzero, with
-`0x15380` outside the component. In 0x7a804, they are
-`0x18cf6`/`0x18d16`/`0x19090`/`0x190b0`. Catalog concepts load-100pct, fuel-target,
-vtc-advance, and overrun-fuel-cut cover the entire geometry class but do not identify
-one table. They establish a class, not identity. Endpoint labels
-"load-limit"/"torque-request" were rejected as P6.
+- clear: first channel `0x1480a`/`0x1482a`, second channel
+  `0x18cf6`/`0x18d16`;
+- set: first channel `0x15360`/`0x15380`, second channel
+  `0x19090`/`0x190b0`.
 
-Blend control flags have code-established roles and candidate physical meaning:
-bit7 at `0x83c1` selects map weight `0xd78e`/`0x16f48` versus constant `0x8000`;
-bit1 of `ffff249f` selects the endpoint pair; bit6 of `ffff245e` gates trim
-application; and bit6 of `ffff4214` overrides the final output from `ffff35ea`.
-Rejected claims were bit0 of `ffff41f3`, where the override-gate mechanism is code but
-label "load" is P6, and bit1 of `ffff249f` in 0x7a804, whose map pairing was inverted
-in the claim. The latter was downgraded and the pairs were corrected from the trace.
+The clear-branch curves are duplicated across channels:
+`0x1480a == 0x18cf6` and `0x1482a == 0x18d16`. All four set-branch
+curves are byte-identical. Consequently, the crossfade weight cannot change the stock
+result when bit 1 is set. Each endpoint has a code-confidence operational annotation
+with raw identity scaling. This confidence asserts the selected A/B role and exact
+consumer arithmetic, not a physical load, torque, fuel, VTC, or overrun identity.
+
+Each channel forms a Q15 crossfade:
+`blend = floor((A*(32768-w) + B*w)/32768)`. Map `0xd78e` supplies first-channel
+weight `w` through scratch word `ffff31c8`; map `0x16f48` supplies second-channel
+weight through `ffff35f4`. ROM byte `0x83c1` bit 7 selects the interpolated weight or
+a constant `0x8000` source. Both weight maps contain only `0` and `0x8000`, so their
+stock cells select one endpoint directly. The actual blend results are `ffff2a7c`
+and `ffff35ca`; the weight scratch words are not blend outputs.
+
+Bit 6 of `ffff245e` gates a channel-specific Q15 trim. The first channel uses map
+`0x1484a`; the second uses `0x18d36`. Both 16-point maps are flat at `0x8000`, or
+unity, while both lookup paths remain reachable. Common coefficient `ffff31e2`,
+produced by FUN `0x7a4de`, is applied as another Q15 multiplier. Stock upper-limit
+map `0x14fa2` keeps this common coefficient at unity.
+
+Bounds and overrides produce final channel words `ffff2a7a` and `ffff35cc`.
+FUN `0x79a98` coordinates common upper bound `ffff3024`, first-channel override
+source `ffff3026`, and gate `ffff41f3` bit 0. FUN `0x79ba4` coordinates
+second-channel source `ffff35ea` and gate `ffff4214` bit 6. The two channels publish
+scaled counterparts `ffff1210` and `ffff1248` using
+`floor(value*727/800)`.
+
+FUN `0x8d194` closes the structural relationship between the channels. Under its
+entry gates it writes
+`ffff2c1c = abs(uint16(ffff2a7a) - uint16(ffff35cc))`; a difference greater than 26
+can invoke service dispatcher `0x7d8b8` with argument `0x62` after a local countdown.
+This proves parallel checked outputs without identifying the physical subsystem.
 
 
 ### Offset-binary axes of FUN_0005fac0 interpolators - `0x602f2`, `0x617ea`, `0x5fdb0`
@@ -4245,15 +4261,15 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The next semantic pass is built from the current projection, which contains 50
-`candidate` maps without semantics in 32 accessor-connected components. Of these,
-36 maps contain changing values and 14 are flat. This is a separate follow-up
+The next semantic pass is built from the current projection, which contains 41
+`candidate` maps without semantics in 30 accessor-connected components. Of these,
+28 maps contain changing values and 13 are flat. This is a separate follow-up
 worklist, not a continuation of the frozen slice. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 14 of the 50 open maps contain one value
-across the entire table. These comprise ten maps with `0..0`, two with `32768..32768`,
+Column `vals` partitions the follow-up work: 13 of the 41 open maps contain one value
+across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
 one with `65535..65535`, and one with `16..16`. `tools/mapkit/show.py` prints a map with
 its axes (`show.py b33a` prints the grid in physical units together with both axes).
 
@@ -4290,7 +4306,7 @@ transcription:
   resolved by trace and refuted: finisher `0x268a4` saturates cells >= `0x80`, so the
   value cannot represent degrees (see "Rotation-monitor thresholds").
 
-Follow-up worklist for 50 `candidate` maps without semantics:
+Follow-up worklist for 41 `candidate` maps without semantics:
 
 1. Classify by geometry (from the wrapper or primitive), `A2L` scale, and value
    signature: MAF, injector latency, rev/speed limiter, and the large `0x12xxx` cluster
