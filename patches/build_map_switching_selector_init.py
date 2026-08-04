@@ -146,6 +146,12 @@ def _require_selector_init_contract():
     )
     if actual_statements != expected_statements:
         raise SelectorInitError("selector-init source statements differ")
+    try:
+        assembly.validate_source_blob(
+            parsed, SELECTOR_INIT_BLOB, SELECTOR_INIT_START
+        )
+    except ValueError as error:
+        raise SelectorInitError(str(error)) from error
     return parsed
 
 

@@ -2,6 +2,7 @@ from dataclasses import replace
 from pathlib import Path
 import unittest
 
+from patches import apply_map_switching
 from patches import map_switching_layout as layout_model
 from patches import map_switching_assembly
 
@@ -225,6 +226,92 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "BRA delay slot is not NOP"):
             map_switching_assembly._validate_registers_and_control_flow(
                 parsed, 0xD2270
+            )
+
+    def test_all_machine_control_flow_and_pc_relative_literals_are_audited(self):
+        parsed = map_switching_assembly.validate_assembly_sources(
+            self.layout
+        )
+        audit = map_switching_assembly.validate_instruction_semantics(
+            self.layout,
+            parsed,
+            apply_map_switching.load_payloads(self.layout),
+        )
+        self.assertEqual(audit.instructions, 387)
+        self.assertEqual(audit.delayed_transfers, 34)
+        self.assertEqual(audit.pc_relative_references, 43)
+        self.assertEqual(audit.direct_branches, 69)
+        self.assertEqual(audit.indirect_transfers, 20)
+
+    def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):
+        parsed = map_switching_assembly.ParsedSource(
+            Path("synthetic-jsr-delay-slot.s"),
+            {"literal": 0x1008},
+            (
+                map_switching_assembly.SourceStatement(
+                    1, 0x1000, "instruction", "jsr @r0", 2
+                ),
+                map_switching_assembly.SourceStatement(
+                    2,
+                    0x1002,
+                    "instruction",
+                    "mov.l @(literal,pc),r1",
+                    2,
+                ),
+                map_switching_assembly.SourceStatement(
+                    3, 0x1008, "long", "0x12345678", 4
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "JSR delay slot is not NOP"):
+            map_switching_assembly.validate_source_blob(
+                parsed, bytes(12), 0x1000
+            )
+
+    def test_binary_delay_slot_gate_rejects_non_nop_word(self):
+        parsed = map_switching_assembly.ParsedSource(
+            Path("synthetic-binary-delay-slot.s"),
+            {},
+            (
+                map_switching_assembly.SourceStatement(
+                    1, 0x1000, "instruction", "jsr @r0", 2
+                ),
+                map_switching_assembly.SourceStatement(
+                    2, 0x1002, "instruction", "nop", 2
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(
+            ValueError, "binary JSR delay slot is not NOP"
+        ):
+            map_switching_assembly.validate_source_blob(
+                parsed, bytes.fromhex("400b0008"), 0x1000
+            )
+
+    def test_pc_relative_gate_rejects_wrong_encoded_literal_target(self):
+        parsed = map_switching_assembly.ParsedSource(
+            Path("synthetic-pc-relative.s"),
+            {"literal": 0x1008},
+            (
+                map_switching_assembly.SourceStatement(
+                    1,
+                    0x1000,
+                    "instruction",
+                    "mov.l @(literal,pc),r0",
+                    2,
+                ),
+                map_switching_assembly.SourceStatement(
+                    2, 0x1008, "long", "0x12345678", 4
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(
+            ValueError, "resolves to 0x1004, expected 0x1008"
+        ):
+            map_switching_assembly.validate_source_blob(
+                parsed,
+                bytes.fromhex("d000ffffffffffff12345678"),
+                0x1000,
             )
 
     def test_startup_wrapper_forces_map_1_on_both_sides_of_initializer(self):

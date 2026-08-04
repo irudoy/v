@@ -149,6 +149,9 @@ def _validate_write_set(stock, composed, ranges):
 
 def _validate_instruction_placement(layout, composed, blobs):
     parsed_by_unit = assembly_model.validate_assembly_sources(layout)
+    assembly_model.validate_instruction_semantics(
+        layout, parsed_by_unit, blobs
+    )
     instruction_count = 0
     code_entries = set()
     for unit in layout.assembly_units:

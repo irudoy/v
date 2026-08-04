@@ -126,6 +126,12 @@ def _require_trampoline_contract():
     )
     if actual_statements != expected_statements:
         raise TrampolineError("trampoline source statements differ")
+    try:
+        assembly.validate_source_blob(
+            parsed, TRAMPOLINE_BLOB, TRAMPOLINE_START
+        )
+    except ValueError as error:
+        raise TrampolineError(str(error)) from error
     return parsed
 
 

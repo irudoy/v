@@ -2,9 +2,10 @@
 """Static contract checks for the JK08A map-switching SH assembly slices.
 
 Ghidra remains the assembler and round-trip decoder. This module checks the
-source-level address, ABI, literal, region-ownership, and delay-slot contract,
-and can validate raw Ghidra output blobs against the SHA-256 locks in the
-authoritative layout. It never assembles code or writes a ROM.
+source-level address, ABI, literal, region-ownership, and delay-slot contract.
+For SHA-locked Ghidra blobs it also decodes every control transfer and every
+PC-relative reference independently from the machine word. It never assembles
+code or writes a ROM.
 """
 
 from __future__ import annotations
@@ -29,6 +30,22 @@ from patches.map_switching_layout import (
 LABEL_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*):$")
 REGISTER_RE = re.compile(r"\b(?:r(?:1[0-5]|[0-9])|pr|gbr|sr|mach|macl)\b")
 CONTROL_RE = re.compile(r"^(bra|bsr|bt|bf|jmp|jsr|rts)\b", re.IGNORECASE)
+PC_RELATIVE_RE = re.compile(
+    r"^(mov\.(?P<width>[wl])|mova)\s+"
+    r"@\((?P<label>[A-Za-z_][A-Za-z0-9_]*),\s*pc\),"
+    r"(?P<register>r(?:1[0-5]|[0-9]))$",
+    re.IGNORECASE,
+)
+DIRECT_BRANCH_MNEMONICS = frozenset({
+    "bra", "bsr", "bt", "bf", "bt/s", "bf/s",
+})
+INDIRECT_CONTROL_MNEMONICS = frozenset({
+    "braf", "bsrf", "jmp", "jsr", "rts", "rte",
+})
+DELAYED_CONTROL_MNEMONICS = frozenset({
+    "bra", "bsr", "braf", "bsrf", "jmp", "jsr", "rts", "rte",
+    "bt/s", "bf/s",
+})
 ALLOWED_REGISTERS = {"r0", "r1", "r2", "r3", "r4"}
 
 # Renesas REJ09B0177 section 2.4.1 lists these mnemonics for the
@@ -97,6 +114,284 @@ class ParsedSource:
     @property
     def statement_by_address(self):
         return {item.address: item for item in self.statements}
+
+
+@dataclass(frozen=True)
+class InstructionAudit:
+    instructions: int
+    delayed_transfers: int
+    pc_relative_references: int
+    direct_branches: int
+    indirect_transfers: int
+
+
+def _mnemonic(statement):
+    return statement.text.split(None, 1)[0].lower()
+
+
+def _sign_extend(value, bits):
+    sign = 1 << (bits - 1)
+    return (value ^ sign) - sign
+
+
+def _source_target(parsed, statement):
+    operand = statement.text.split(None, 1)[1].strip()
+    if operand in parsed.labels:
+        return parsed.labels[operand]
+    try:
+        return _number(operand)
+    except ValueError as error:
+        raise ValueError(
+            f"{parsed.path}:{statement.line_number}: unresolved control-flow "
+            f"target {operand!r}"
+        ) from error
+
+
+def _validate_delay_slots(parsed):
+    """Require an explicit NOP after every delayed SH-2E transfer."""
+    statements = parsed.statement_by_address
+    for statement in parsed.statements:
+        if (
+            statement.kind != "instruction"
+            or _mnemonic(statement) not in DELAYED_CONTROL_MNEMONICS
+        ):
+            continue
+        slot = statements.get(statement.address + 2)
+        if (
+            slot is None
+            or slot.kind != "instruction"
+            or slot.text.lower() != "nop"
+        ):
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: "
+                f"{_mnemonic(statement).upper()} delay slot is not NOP"
+            )
+
+
+def _validate_direct_branch_encoding(parsed, statement, word):
+    mnemonic = _mnemonic(statement)
+    if mnemonic in {"bra", "bsr"}:
+        expected_prefix = 0xA000 if mnemonic == "bra" else 0xB000
+        if word & 0xF000 != expected_prefix:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: {mnemonic.upper()} "
+                f"machine word is {word:#06x}"
+            )
+        displacement = _sign_extend(word & 0x0FFF, 12)
+    else:
+        prefixes = {
+            "bt": 0x8900,
+            "bf": 0x8B00,
+            "bt/s": 0x8D00,
+            "bf/s": 0x8F00,
+        }
+        if word & 0xFF00 != prefixes[mnemonic]:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: {mnemonic.upper()} "
+                f"machine word is {word:#06x}"
+            )
+        displacement = _sign_extend(word & 0x00FF, 8)
+    actual = statement.address + 4 + displacement * 2
+    expected = _source_target(parsed, statement)
+    if actual != expected:
+        raise ValueError(
+            f"{parsed.path}:{statement.line_number}: {mnemonic.upper()} "
+            f"targets {actual:#x}, expected {expected:#x}"
+        )
+    return actual
+
+
+def _register_number(text, prefix):
+    match = re.fullmatch(
+        re.escape(prefix) + r"\s+@?r(?P<register>1[0-5]|[0-9])",
+        text,
+        re.IGNORECASE,
+    )
+    if match is None:
+        raise ValueError(f"invalid {prefix.upper()} register operand: {text}")
+    return int(match.group("register"))
+
+
+def _validate_indirect_control_encoding(parsed, statement, word):
+    mnemonic = _mnemonic(statement)
+    text = statement.text.lower()
+    if mnemonic == "rts":
+        expected = 0x000B
+    elif mnemonic == "rte":
+        expected = 0x002B
+    else:
+        register = _register_number(text, mnemonic)
+        suffixes = {
+            "braf": 0x0023,
+            "bsrf": 0x0003,
+            "jmp": 0x402B,
+            "jsr": 0x400B,
+        }
+        expected = suffixes[mnemonic] | register << 8
+    if word != expected:
+        raise ValueError(
+            f"{parsed.path}:{statement.line_number}: {mnemonic.upper()} "
+            f"machine word is {word:#06x}, expected {expected:#06x}"
+        )
+
+
+def _validate_pc_relative_encoding(parsed, statement, word):
+    match = PC_RELATIVE_RE.fullmatch(statement.text)
+    if match is None:
+        return False
+    label = match.group("label")
+    if label not in parsed.labels:
+        raise ValueError(
+            f"{parsed.path}:{statement.line_number}: unresolved PC-relative "
+            f"label {label!r}"
+        )
+    mnemonic = _mnemonic(statement)
+    register = int(match.group("register")[1:])
+    displacement = word & 0xFF
+    if mnemonic == "mov.w":
+        if word & 0xF000 != 0x9000 or (word >> 8) & 0xF != register:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: MOV.W PC-relative "
+                f"machine word is {word:#06x}"
+            )
+        actual = statement.address + 4 + displacement * 2
+        expected_kind = "word"
+    elif mnemonic == "mov.l":
+        if word & 0xF000 != 0xD000 or (word >> 8) & 0xF != register:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: MOV.L PC-relative "
+                f"machine word is {word:#06x}"
+            )
+        actual = ((statement.address + 4) & ~3) + displacement * 4
+        expected_kind = "long"
+    else:
+        if word & 0xFF00 != 0xC700 or register != 0:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: MOVA PC-relative "
+                f"machine word is {word:#06x}"
+            )
+        actual = ((statement.address + 4) & ~3) + displacement * 4
+        expected_kind = None
+    expected = parsed.labels[label]
+    if actual != expected:
+        raise ValueError(
+            f"{parsed.path}:{statement.line_number}: PC-relative reference "
+            f"resolves to {actual:#x}, expected {expected:#x}"
+        )
+    target = parsed.statement_by_address.get(expected)
+    if expected_kind is not None and (
+        target is None or target.kind != expected_kind
+    ):
+        raise ValueError(
+            f"{parsed.path}:{statement.line_number}: PC-relative {mnemonic} "
+            f"target {label!r} is not .{expected_kind} data"
+        )
+    if expected_kind == "long" and expected & 3:
+        raise ValueError(
+            f"{parsed.path}:{statement.line_number}: MOV.L literal is not "
+            "four-byte aligned"
+        )
+    if expected_kind == "word" and expected & 1:
+        raise ValueError(
+            f"{parsed.path}:{statement.line_number}: MOV.W literal is not "
+            "two-byte aligned"
+        )
+    return True
+
+
+def validate_source_blob(
+    parsed, blob, start, valid_instruction_addresses=None
+):
+    """Independently audit control flow and PC-relative machine encodings."""
+    blob = bytes(blob)
+    _validate_sh7058s_instruction_subset(parsed)
+    _validate_delay_slots(parsed)
+    instruction_addresses = {
+        statement.address
+        for statement in parsed.statements
+        if statement.kind == "instruction"
+    }
+    valid_targets = (
+        instruction_addresses
+        if valid_instruction_addresses is None
+        else set(valid_instruction_addresses)
+    )
+    delayed = 0
+    pc_relative = 0
+    direct = 0
+    indirect = 0
+    for statement in parsed.statements:
+        if statement.kind != "instruction":
+            continue
+        offset = statement.address - start
+        if offset < 0 or offset + 2 > len(blob):
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: instruction bytes "
+                "are outside the supplied blob"
+            )
+        word = int.from_bytes(blob[offset : offset + 2], "big")
+        mnemonic = _mnemonic(statement)
+        if mnemonic in DELAYED_CONTROL_MNEMONICS:
+            delayed += 1
+            slot_offset = offset + 2
+            if (
+                slot_offset + 2 > len(blob)
+                or blob[slot_offset : slot_offset + 2] != b"\x00\x09"
+            ):
+                raise ValueError(
+                    f"{parsed.path}:{statement.line_number}: binary "
+                    f"{mnemonic.upper()} delay slot is not NOP"
+                )
+        if _validate_pc_relative_encoding(parsed, statement, word):
+            pc_relative += 1
+        if mnemonic in DIRECT_BRANCH_MNEMONICS:
+            target = _validate_direct_branch_encoding(parsed, statement, word)
+            if target not in valid_targets:
+                raise ValueError(
+                    f"{parsed.path}:{statement.line_number}: branch target "
+                    f"{target:#x} is not a declared instruction"
+                )
+            direct += 1
+        elif mnemonic in INDIRECT_CONTROL_MNEMONICS:
+            _validate_indirect_control_encoding(parsed, statement, word)
+            indirect += 1
+    return InstructionAudit(
+        instructions=parsed.instruction_count,
+        delayed_transfers=delayed,
+        pc_relative_references=pc_relative,
+        direct_branches=direct,
+        indirect_transfers=indirect,
+    )
+
+
+def validate_instruction_semantics(layout, parsed_by_unit, blobs):
+    """Audit every tracked instruction against the SHA-locked raw blobs."""
+    all_instruction_addresses = {
+        statement.address
+        for parsed in parsed_by_unit.values()
+        for statement in parsed.statements
+        if statement.kind == "instruction"
+    }
+    audits = []
+    for unit in layout.assembly_units:
+        blob = validate_assembled_blob(unit, blobs[unit.key])
+        audits.append(
+            validate_source_blob(
+                parsed_by_unit[unit.key],
+                blob,
+                unit.span.start,
+                all_instruction_addresses,
+            )
+        )
+    return InstructionAudit(
+        instructions=sum(item.instructions for item in audits),
+        delayed_transfers=sum(item.delayed_transfers for item in audits),
+        pc_relative_references=sum(
+            item.pc_relative_references for item in audits
+        ),
+        direct_branches=sum(item.direct_branches for item in audits),
+        indirect_transfers=sum(item.indirect_transfers for item in audits),
+    )
 
 
 def _strip_comment(line):
@@ -598,6 +893,7 @@ def validate_assembly_sources(layout=None):
         )
         parsed_by_unit[unit.key] = parsed
         _validate_sh7058s_instruction_subset(parsed)
+        _validate_delay_slots(parsed)
         if parsed.instruction_count != unit.instruction_count:
             raise ValueError(
                 f"{unit.key}: source has {parsed.instruction_count} "
@@ -681,19 +977,46 @@ def main(argv=None):
     parsed = validate_assembly_sources(layout)
     unit_by_key = layout.assembly_unit_by_key
     seen = set()
+    blobs = {}
+    all_instruction_addresses = {
+        statement.address
+        for unit_source in parsed.values()
+        for statement in unit_source.statements
+        if statement.kind == "instruction"
+    }
     for key, path in args.blob:
         if key not in unit_by_key:
             parser.error(f"unknown assembly unit {key!r}")
         if key in seen:
             parser.error(f"duplicate blob for {key!r}")
-        validate_assembled_blob(unit_by_key[key], path)
+        blob = validate_assembled_blob(unit_by_key[key], path)
+        validate_source_blob(
+            parsed[key],
+            blob,
+            unit_by_key[key].span.start,
+            all_instruction_addresses,
+        )
+        blobs[key] = blob
         seen.add(key)
+    audit = (
+        validate_instruction_semantics(layout, parsed, blobs)
+        if seen == set(unit_by_key)
+        else None
+    )
     print(
         "status=PASS"
         f" sources={len(parsed)}"
         f" instructions={sum(unit.instruction_count for unit in layout.assembly_units)}"
         f" data_bytes={sum(unit.data_bytes for unit in layout.assembly_units)}"
         f" blobs={len(seen)}"
+        + (
+            f" delayed_transfers={audit.delayed_transfers}"
+            f" pc_relative_references={audit.pc_relative_references}"
+            f" direct_branches={audit.direct_branches}"
+            f" indirect_transfers={audit.indirect_transfers}"
+            if audit is not None
+            else ""
+        )
     )
 
 

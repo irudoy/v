@@ -5,6 +5,10 @@
 // firmware patch. The selector host, limiter transaction, startup wrapper, and
 // CAN feedback wrapper are intentionally absent. The external helper at
 // 0x000D2270 is assembled from map-switching-adapter-helper.s.
+//
+// Every BRA delay slot must remain NOP. On SH-2E, a PC-relative MOV in that
+// slot uses the branch destination plus two as its PC basis, not the static
+// address of the delay-slot instruction.
 
 .org 0x000D2300
 overrun_adapter:

@@ -1,8 +1,8 @@
-from dataclasses import replace
 import hashlib
 from pathlib import Path
 import unittest
 
+from patches import apply_map_switching
 from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
 
@@ -13,34 +13,9 @@ ROOT = Path(__file__).resolve().parents[2]
 class MapSwitchingCompositionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        base_layout = layout_model.load_layout()
-        cls.image = layout_model.validate_image(base_layout)
-        units = []
-        blobs = {}
-        for index, unit in enumerate(base_layout.assembly_units, 1):
-            blob = bytearray([unit.fill]) * unit.span.size
-            blob[0:4] = bytes((0xA0, index, 0x5A, index ^ 0xFF))
-            if unit.key == "cruise_feedback_engine":
-                counts_offset = (
-                    base_layout.feedback.phase_counts_address
-                    - unit.span.start
-                )
-                blob[counts_offset : counts_offset + 2] = bytes(
-                    (
-                        base_layout.feedback.default_on_frames,
-                        base_layout.feedback.default_off_frames,
-                    )
-                )
-            blob = bytes(blob)
-            blobs[unit.key] = blob
-            units.append(
-                replace(
-                    unit,
-                    expected_sha256=hashlib.sha256(blob).hexdigest(),
-                )
-            )
-        cls.layout = replace(base_layout, assembly_units=tuple(units))
-        cls.blobs = blobs
+        cls.layout = layout_model.load_layout()
+        cls.image = layout_model.validate_image(cls.layout)
+        cls.blobs = apply_map_switching.load_payloads(cls.layout)
 
     def test_composition_installs_every_declared_write(self):
         result = composer.compose(self.layout, self.image, self.blobs)

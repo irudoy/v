@@ -27,7 +27,8 @@ manifest. `map_switching_layout.py` validates exact and compatible inputs and
 materializes identical slot storage in memory. `map_switching_selector.py` is
 the executable selector, adapter, and limiter-shadow reference model.
 `map_switching_assembly.py` validates the source-level address, literal, ABI,
-and delay-slot contract for implemented SH slices.
+and delay-slot contract for implemented SH slices, then independently decodes
+every control transfer and PC-relative reference from the locked machine word.
 `map_switching_compose.py` validates all locked blobs and applies code,
 calibration copies, pointer tables, and hooks to an in-memory image without
 exposing an output-file operation. `map-switching-payloads.toml` stores the
@@ -48,9 +49,10 @@ limiter transaction, CAN serializer wrapper, and feedback pulse engine. Ghidra
 12.1.2 assembles and round-trip decodes their 387 instructions and 158 literal
 bytes. The source validator restricts all injected code to the 28 used
 mnemonics listed for the SH7058S SH-2E core in Renesas REJ09B0177 section 2.4.1;
-the SH-2A Ghidra profile cannot introduce an unaudited instruction. Adapter
-source validation also requires `NOP` in every `BRA` delay slot, preventing a
-PC-relative load from depending on the hardware branch destination. Its
+the SH-2A Ghidra profile cannot introduce an unaudited instruction. Global
+source and machine validation requires `NOP` after every delayed control
+transfer, preventing any instruction from acquiring delay-slot-specific
+hardware semantics. Its
 SuperH p-code emulators pass 17 selector, 47 adapter, 14
 startup/limiter, and nine feedback cases. The seven generated raw blobs are
 SHA-256 locked in the layout manifest. Their complete spans are tracked in the
@@ -516,6 +518,20 @@ over 2333 instructions. RomRaider source commit
 as `ChecksumALT` 2/2 and `ChecksumALT2` 4/4, and recalculation is byte-identical.
 The revision-2 lookup chain has status `READY_FOR_HARDWARE`; its stages 06
 through 14 have hardware status `UNTESTED`.
+
+The complete instruction audit covers all 387 final-runtime instructions. It
+independently verifies 34 delayed transfers and their encoded `NOP` slots, 43
+PC-relative references and their effective literal addresses, 69 direct branch
+targets, and 20 indirect control-transfer encodings. The startup-trampoline and
+startup-selector-init gate sources add 13 alternative instruction instances,
+three delayed transfers, and three PC-relative references under the same gate.
+All nine source units rebuild through Ghidra with their exact locked hashes.
+The corrected exact-stock full-ROM fixture has SHA-256
+`b092abe21ca412a88e3ced398354763a3ab6b778f5a1c3b3a8e2e4e507ce232f`;
+its startup harness passes at 1810 instructions and its exact reset differential
+passes nine seeds at 33,660 instructions. No other delayed slot contains an
+executable instruction, and no other PC-relative reference resolves away from
+its declared literal.
 
 ## Pilot calibration scope
 
@@ -1068,7 +1084,7 @@ is compared byte-for-byte with the declared write set.
 The locked exact-stock fixture produces:
 
 ```text
-in_memory_sha256=499f25ed560bf8e5bc00138e29ceabf740d2f13303eb07604f2e11b537bebb16
+in_memory_sha256=e4ee7822f5bb10e6d884441cf22102e33ccbad3b28e489224df7969658a18c70
 changed_bytes=5372
 permitted_write_bytes=5880
 feedback_frame_counts=10,10
