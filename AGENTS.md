@@ -76,6 +76,20 @@ not semantics. Every technical claim must be verified on hardware with
 CONSULT3P live data or a bench before flashing; the final result is validated in
 the engine.
 
+Every current or future firmware patch that adds, removes, replaces, or
+redirects executable instructions must extend the executable verification gate
+under `tools/sh-elf-run/` and pass it before an image is described as ready for
+hardware or supplied for flashing. This requirement is not specific to map
+switching. The gate must bind the exact instruction bytes emitted into the ROM
+to an independently assembled or reconstructed SH-2E fixture and execute all
+changed entries, branch outcomes, delay slots, call/return paths, and relevant
+boundary cases. Simulator-only relocations and stock-function stubs must be
+explicit, documented, and must not alter the instructions under test. If the
+simulator cannot represent behavior required by a patch, the limitation must be
+documented and the image remains ineligible for hardware testing until an
+equivalent executable check is available. This software gate complements, but
+does not replace, static instruction auditing and hardware validation.
+
 ## Memgraph backup
 
 Memgraph backup is a separate final step in the agent workflow. No operating

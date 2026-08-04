@@ -347,12 +347,22 @@ uv run --no-project --with neo4j python tools/maps/build_tracker.py \
   JK03A /private/tmp/JK03A.maps.csv
 ```
 
-### Map-switching assembly verification
+### Firmware instruction execution verification
 
-The implemented assembly slices contain the selector host, shared fail-closed
-selector helper, four lookup adapters, startup wrapper, limiter commit, CAN
-serializer wrapper, and feedback pulse engine. They are built and executed
-independently of any ROM image:
+`sh-elf-run/` is the mandatory executable gate for every current or future
+firmware patch that changes instruction bytes. A patch is not ready for hardware
+testing until its exact emitted instructions are covered by an executable
+fixture in this directory and the gate passes. Each patch-specific verifier must
+cover every changed entry, branch outcome, delay slot, call/return path, and
+relevant boundary case. Any simulator-only relocation or stock-function stub
+must be explicit and must leave the instructions under test unchanged. The
+complete contract and extension checklist are in `sh-elf-run/README.md`.
+
+The first registered implementation is the complete map-switching runtime. Its
+assembly slices contain the selector host, shared fail-closed selector helper,
+four lookup adapters, startup wrapper, limiter commit, CAN serializer wrapper,
+and feedback pulse engine. They are built and executed independently of any ROM
+image.
 
 The GNU executable gate is independent of Ghidra and runs first-class SH-2E
 machine semantics, including the delayed-branch rule that caused the hardware

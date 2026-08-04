@@ -1,8 +1,10 @@
-# GNU SH-ELF map-switching verification
+# GNU SH-ELF firmware instruction verification
 
-This directory provides an independent executable gate for the complete JK08A
-map-switching implementation. It uses the GNU SH-2E assembler, linker, and
-instruction-set simulator from Debian trixie instead of Ghidra p-code.
+This directory is the mandatory independent executable gate for every current
+or future firmware patch that changes instruction bytes. It uses the GNU SH-2E
+assembler, linker, and instruction-set simulator from Debian trixie instead of
+Ghidra p-code. The currently registered verifier covers the complete JK08A
+map-switching implementation.
 
 Run the complete gate from the repository root:
 
@@ -41,6 +43,28 @@ then relocates only those validated `.long` data literals to a dedicated
 `0x01000000` test region. Instruction bytes and control-flow addresses remain
 unchanged. This is an implementation-level ECU fixture, not peripheral or
 whole-firmware emulation.
+
+## Adding an instruction-changing patch
+
+The change that introduces a patch must also extend this gate. The verifier for
+that patch must:
+
+1. Independently assemble the source or reconstruct the declared raw machine
+   words, then prove byte identity with the instructions emitted into the ROM.
+2. Execute every changed entry and reachable branch outcome, including all
+   delay slots, call/return paths, failure paths, and relevant boundary inputs.
+3. Use distinct fixture values wherever equal production defaults could conceal
+   an incorrect address, slot, width, or branch selection.
+4. Declare every simulator-only relocation and stock-function stub, apply them
+   only after byte identity is established, and leave the tested instruction
+   bytes and control-flow addresses unchanged.
+5. Add deterministic host-side tests for the verifier and make the top-level
+   `tools/sh-elf-run/run.sh` command execute the new check.
+
+A simulator limitation is not a waiver. Until an equivalent executable check
+exists, the resulting image must not be described as ready for hardware or
+supplied for flashing. Passing this gate does not model ECU peripherals, prove a
+complete reset sequence, or replace bench and engine validation.
 
 A successful run ends with both markers:
 
