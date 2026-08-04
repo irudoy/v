@@ -48,14 +48,15 @@ python3 -m unittest patches.tests.test_rom_images_layout -v
 
 `1ND0A` / `1ND3B` (1.5 MiB, SH7059, JDM) and `JK78C` (1.0 MiB, SH7058,
 USDM) are **VQ37VHR** images of the same engine across two ECU generations. They
-form a homolog pair for reverse engineering. `JK03A`, `JK03B`, and `JK08A`
-(1.0 MiB, SH7058, JDM) are for the **VQ25HR** V36 Skyline 250GT and form one
-exact-code family. JK03A is a forum package containing `ROM + external SPI
-EEPROM`; JK03B is an owned pre-write bench read; JK08A is an owned read from
-the target vehicle ECU without an EEPROM read. `JK00C` and `JK00D` (1.0 MiB,
-SH7058) are owned ROMs from physical **VQ35HR**-class bench ECUs; their code
-bases differ. Documentation for the physical ECUs and the project is in the
-Russian-language Obsidian project
+form a homolog pair for reverse engineering. `JK00A`, `JK03A`, `JK03B`, and
+`JK08A` (1.0 MiB, SH7058, JDM) share their known executable ranges and form one
+cross-application exact-code family. JK00A is for the **VQ35HR** PV36 Skyline
+350GT; JK03A, JK03B, and JK08A are for the **VQ25HR** V36 Skyline 250GT. JK03A
+is a forum package containing `ROM + external SPI EEPROM`; the other three are
+owned reads without EEPROM dumps. `JK00C` and `JK00D` (1.0 MiB, SH7058) are
+owned ROMs from physical **VQ35HR**-class bench ECUs and use code bases distinct
+from both the shared `7MFKAVN86` family and each other. Documentation for the
+physical ECUs and the project is in the Russian-language Obsidian project
 `🎛️ Electronics/VQ HR ECU Tuning`; see `../AGENTS.md`.
 
 The MCU core is **SH-2E** (SH-2 plus a single-precision FPU), as confirmed by the
@@ -69,6 +70,7 @@ Renesas datasheet
 |------|-------------:|-------------|------------|---------|--------|--------|-----|
 | `23710-1ND0A/11ND0A-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND0A | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
 | `23710-1ND3B/11ND3B-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND3B | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
+| `23710-JK00A/1JK00A-20260804-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00A | V36 Skyline 350GT (PV36; exact-part marketplace) | VQ35HR | JDM | CAN |
 | `23710-JK00C/1JK00C-20260803-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00C | V36 Skyline 350GT (PV36; hardware-family) | VQ35HR | JDM | CAN |
 | `23710-JK00D/1JK00D-20260726-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00D | bench ECU | VQ35HR | unknown | CAN |
 | `23710-JK03A/1JK03A-20260715-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 | 23710-JK03A | V36 Skyline 250GT | VQ25HR | JDM | CAN * |
@@ -97,6 +99,16 @@ byte-identical. The executable code and Developer Immobilizer flag at `0x8725`
 are an exact match; calibration/configuration data is not identical. The package
 does not contain an EEPROM read or PCMFlash screenshot. The directory README
 contains the complete local identification.
+
+`JK00A` is an owned read dated 2026-08-04. PCMFlash identification and ROM
+strings record calibration `1JK00A00000`, software `7MFKAVN86`, and type
+`SH705822N`; the original filename records Hitachi hardware `MEC100-120 C1`,
+lot `7515`. Public exact-part listings associate it with the automatic JDM PV36
+Skyline 350GT and VQ35HR. Its known executable ranges are byte-identical to the
+VQ25HR JK03A, JK03B, and JK08A images despite the different engine application.
+JK00A differs from those images at 9,125, 9,118, and 9,163 byte positions,
+respectively, all within `0x008200..0x0191ad`. The directory README contains
+the complete identification and confidence boundary.
 
 `JK03B` is an owned pre-write read dated 2026-08-04. PCMFlash identification
 and ROM strings record calibration `1JK03B00000`, software `7MFKAVN86`, and
@@ -168,6 +180,12 @@ modification README.
   provenance confirms the part number and read method. ROM content confirms the
   software identifier, calibration, SH7058 class, and flash size, giving
   **high confidence**. The external EEPROM was not read.
+- `JK00A`: an owned physical ECU read with PCMFlash. The part number,
+  calibration, software ID, MCU class, hardware identifier, and hashes have
+  local provenance. Public exact-part records identify the automatic PV36
+  Skyline 350GT / VQ35HR application at **marketplace-grade** confidence. Its
+  exact-code relationship to JK03A/JK03B/JK08A is established independently by
+  ROM comparison. The external EEPROM was not read.
 - `JK03B`: an owned physical ECU with a pre-write PCMFlash read. The part
   number, calibration, software ID, MCU class, hardware identifier, and hashes
   have local provenance. Exact-code homology with JK03A/JK08A and public
@@ -194,6 +212,8 @@ modification README.
 - Flash evolution from 1 MB to 1.5 MB: https://www.romraider.com/forum/viewtopic.php?f=65&t=21905
 - Nissan stock ROM list (Z34 VQ37VHR loader 705927): https://www.romraider.com/forum/viewtopic.php?f=65&t=11098
 - JK03A (V36 VQ25HR 2WD 5AT, ROM + SPI EEPROM, Break_Neck): https://www.romraider.com/forum/viewtopic.php?p=150228#p150228
+- JK00A (exact part, PV36 Skyline 350GT, VQ35HR): https://www.carsjp.ru/parts/nissan/skyline/blok_upravleniya_dvs
+- JK00A / MEC100-120 (exact part and hardware, PV36, VQ35HR): https://www.wiweb.ru/vladivostok/parts/auto?mark=nissan&model=skyline&page=2&sort=date_asc
 - JK03B (exact part, V36 2.5 AT, SH7058): https://otomotiv-forum.com/threads/chip-ttyuning-nissan-skyline-v36-at-2-5i-proshivka-yevro-2-tyun.63512/
 - MEC100-191 A1 (V36 250GT, VQ25HR, AT): https://yahoo.aleado.com/lot?auctionID=m403371593
 - MEC100-120 C1 (PV36 350GT, VQ35HR, AT): https://www.ebay.com/itm/284029944805

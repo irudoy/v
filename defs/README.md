@@ -178,6 +178,14 @@ differs at 121 byte positions. In the graph, only the measured values of four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
 `0x190b0`. All 230 axes and the other 445 maps match.
 
+Owned VQ35HR `JK00A` identifies itself as the same MCU class and software ID.
+Its known executable ranges `0x000000..0x0081ff` and
+`0x020000..0x0fffff` are byte-identical to JK03A and JK08A, while it differs
+from them at 9,125 and 9,163 byte positions in configuration/calibration space.
+This establishes a cross-application exact-code relationship, not map-value
+equivalence. JK00A remains an inventoried binary without a Ghidra export,
+Memgraph layer, or annotation inheritance entry.
+
 The generated JK08A definitions contain a tuner-facing allowlist of 18
 canonical maps and three masked ignition views. Map-switching projection expands
 the selected families into 50 calibration tables and 11 masked views.

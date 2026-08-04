@@ -34,18 +34,19 @@ The PCMFlash identity agrees with strings inside the image:
 | Protocol | Hitachi CAN | PCMFlash module profile |
 
 The image independently satisfies all six checksum references documented for
-the JK03A / JK03B / JK08A exact-code family.
+the JK00A / JK03A / JK03B / JK08A exact-code family.
 
 ## Application and exact-code relationship
 
 Exact-part and hardware-family sources identify this ECU as a JDM V36 Skyline
 250GT with a VQ25HR engine and automatic transmission. The ROM provides an
 independent structural cross-check: its known executable ranges
-`0x000000..0x0081ff` and `0x020000..0x0fffff` are byte-identical to both JK03A
-and JK08A, and all three images use software ID `7MFKAVN86`.
+`0x000000..0x0081ff` and `0x020000..0x0fffff` are byte-identical to JK00A,
+JK03A, and JK08A, and all four images use software ID `7MFKAVN86`.
 
-JK03B differs from JK03A at 118 byte positions in 44 contiguous ranges, all
-within `0x008200..0x014ff1`. It differs from JK08A at 229 byte positions in 94
+JK03B differs from JK00A at 9,118 byte positions in 1,439 contiguous ranges,
+all within `0x008200..0x0191ad`. It differs from JK03A at 118 positions in 44
+ranges, all within `0x008200..0x014ff1`, and from JK08A at 229 positions in 94
 ranges, all within `0x008200..0x0190c9`. These are separate stock calibration
 and configuration images in one exact-code family; JK03B does not inherit the
 live JK08A annotation set until it has its own export and graph layer. Its

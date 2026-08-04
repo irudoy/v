@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Calculate and verify the exact JK03A/JK03B/JK08A checksum layout."""
+"""Calculate and verify the exact JK00A/JK03A/JK03B/JK08A checksum layout."""
 
 from __future__ import annotations
 
@@ -81,7 +81,7 @@ def _validated_data(image):
     data = bytes(image)
     if len(data) != ROM_SIZE:
         raise ChecksumError(
-            f"JK08A image has {len(data)} bytes, expected {ROM_SIZE}"
+            f"image has {len(data)} bytes, expected {ROM_SIZE}"
         )
     return data
 
