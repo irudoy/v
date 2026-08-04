@@ -77,3 +77,28 @@ addr,name,note
 00057608,fuel_multiplier_coordinator,Run the ordered fuel-multiplier calculation stages
 000593ac,fuel_trim_init,Initialize trim and offset-neutral bank correction words
 0005b7ec,pulse_affine_floor_transform,Apply the saturating affine floor to a compensated pulse word
+00028af8,event_interval_snapshot_a,Measure a wrap-corrected event interval and publish the value shifted right by five
+00028b5c,event_interval_snapshot_b,Measure the second wrap-corrected event interval and publish the value shifted right by five
+00028e7c,split_u8_by_ten,Split an unsigned byte into quotient and remainder modulo ten
+0002a892,apc_set_compare_scheduler,Convert the primary timing command into an APC GR11A compare event
+0002acba,apc_reset_compare_scheduler,Convert the offset timing command into an APC GR11B compare event
+0002b768,capture_interval_update,Normalize the captured engine-event interval and publish its division by twelve
+000493e8,knock_timing_state_coordinator,Update knock and high-detonation timing state and publish the hot-map term
+00049ffc,knock_slice_threshold_lookup,Interpolate the current-cylinder knock threshold by engine speed
+0004a238,knock_slice_evaluator,Compare the current-cylinder knock metric with its interpolated threshold
+0004aad0,bounded_mode_state_source,Publish a bounded signed mode-dependent state for the periodic snapshot
+0004af38,selected_timing_state_terms,Extract the selected map fields and publish downstream timing-state terms
+0004afdc,signed_timing_state_accumulator,Combine mode-selected base and correction terms into signed timing state
+0004bdc2,timing_state_compositor,Compose the selected timing state and publish the bounded byte
+0004c136,timing_state_latch,Latch the active timing-state byte for the nonlinear transition controller
+0004d888,periodic_timing_coordinator,Run the ordered periodic timing calculation stages
+0004d99c,event_timing_correction_builder,Build the signed engine-event timing correction from map and state inputs
+0004dbe8,final_timing_coordinate_builder,Apply mode-dependent limits and publish the final timing coordinate
+0004df82,apc_set_command_builder,Transform the final timing coordinate and schedule the APC set compare
+0004e080,apc_reset_command_builder,Add the pulse offset and schedule the APC reset compare
+0004e112,timing_state_decay,Move the gated signed timing state one count toward zero
+0004e162,engine_event_timing_dispatch,Run the ordered engine-event timing command stages
+0004e1c0,cold_hot_timing_map_selector,Select and blend cold and hot timing maps into two runtime samples
+00063f30,nonlinear_transition_controller,Update the bounded Q8 transition state through reciprocal curves
+0007b650,transient_threshold_builder,Scale the transient calibration lookup into the runtime threshold byte
+0007b7c0,transient_hysteresis_state_update,Apply the scaled transient threshold and hysteresis to the state bit

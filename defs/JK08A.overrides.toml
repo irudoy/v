@@ -899,7 +899,7 @@ fine = 0.000976563
 coarse = 0.00976563
 
 [table.00011f6a]
-name = "Initial Retard Quantity - unresolved mode (0x11F6A)"
+name = "Transient State Threshold Base - catalog initial-retard family (0x11F6A)"
 category = "Ignition / Transient Correction"
 order = 130
 format = "0"

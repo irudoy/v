@@ -2388,36 +2388,92 @@ branch is demonstrated. ROM[`0x83c1`].bit0 clears the alternative `0x14ea2` bran
 in FUN_0007AB18 and establishes `role=dead` for that map.
 
 
-### Ignition-angle accumulator in degrees - `ffff23ee` (accessor FUN_0004afdc)
+### Static ignition command path to APC
 
-Component `0x4afdc` adds a set of maps into a **signed ignition-angle sum** in degrees
-at `ffff23ee`. Mode-selected base maps are `0x12196`/`0x1219e`/`0x121a6`, three
-variants of which `0x12196` and `0x121a6` are byte-identical. Wrapper `0x26370` reads
-them by index `ffff11b2`; the result with bias `-0x80` reaches `ffff1511` as a sum
-term. Corrections are `0x11f0a`/`0x11f12`, with branch selected by bit2 of
-`ffff244f`; `0x11f1a`, gated by bits 0 and 1 of `ffff22e1`; and flat-zero but live
-`0x11f22`. They feed `ffff12db` and use index `ffff106f`. 2D surface `0x9dba` is
-read from two banks selected through `ffff2442`/`ffff2443` by wrapper `0x26140`;
-folding `(r1+r2-256)/2-128` reaches `ffff1514`.
+The periodic scheduler table at `0x21970` establishes the calculation order used by
+the timing state. Index 63 reaches map selector `0x4e1c0` through thunk `0x4e576`,
+index 64 invokes knock/high-detonation coordinator `0x493e8`, index 65 invokes
+transition coordinator `0x65434`, and index 70 invokes timing coordinator `0x4d888`.
+The relevant order inside `0x4d888` is `0x4aad0`, `0x4af38`, the intervening state
+stages, `0x4d2a6`, `0x4afdc`, `0x4bdc2`, and `0x4c136`. Index 71 function `0x62fa4`
+writes `ffff23ea`; no external consumer connects that byte to the actuator path.
 
-Code establishes element conversion `x-128` for the base and 2D maps; double `-128`
-means one `-128` per bank. Unit "degrees" and qualifier "idle" come from catalog and
-vendor evidence, P6, so semantics remain `candidate`: code proves a signed angle
-quantity at `ffff23ee`, but not specifically an idle path. Gate flags have code-proven
-structure and candidate semantics: bit2 of `ffff244f` selects the correction branch,
-bit5 of `ffff41de` gates the base, bit6 of `ffff41ab` gates a throttle subsection,
-and bit4 of `ffff248d` selects an adaptive-learn path that writes `ffff1513`, consumed
-by learn routine `0x4e112`. Throttle-gated pair `0x11efa`, flat at 100, and `0x147ca`,
-uint16 range 15..55, reaches the sum as addend `uVar8` through `mul.l`/`0x21ce0`.
-Its exact role, whether knock limit, torque ratio, or timing limit, is unresolved.
-Base maps use saturated RPM/12.5 engine-speed index `ffff11b2`; corrections use
-normalized coolant index `ffff106f`. These are two different physical inputs, so the
-cluster has no single shared axis.
+Selector `0x4e1c0` reads the shared 16x16 maps and writes two intermediate samples,
+`ffff160f` and `ffff1610`. Bit 6 of `ffff2466` chooses hot surface `0x9a1a` when
+clear and `0x9b1a` when set. Coolant-coordinate byte `ffff1071` and ROM thresholds
+106 and 131 select cold surface `0x991a`, a linear cold/hot blend, or the selected
+hot surface. Endpoint bit 7 is preserved with OR while only the low seven bits are
+blended. The normal primary sample uses runtime coordinate `ffff102c`; the paired
+sample uses `0xff` at the relevant endpoint. These surfaces feed state, control, and
+limits before the engine-event command and are not direct final-angle tables.
 
-The exact SID `0x22` ignition-timing response path uses internal coordinate
-`ffff11d4` and response byte `ffff2022`. No direct data-flow edge from the
-`ffff23ee` accumulator to that path is established. The `ffff23ee` association
-with the factory `IGN TIMING` monitor therefore remains a separate candidate.
+Two static paths connect the selected hot-map state to the event command:
+
+1. `0x493e8` independently looks up `0x9a1a` and `0x9b1a`, forms signed word
+   `ffff121a`, and publishes its high byte as `ffff22fa`. The direct path is
+   `ffff22fa -> 0x4d99c -> ffff12d6`.
+2. `0x4af38` extracts `ffff23bd` from selected sample `ffff160f`; `0x4bdc2` writes
+   `ffff1830`; `0x4c136` latches `ffff2404`; and `0x63f30` writes Q8 transition
+   state `ffff23c2`. Stock ROM byte `0x8710=0x7c` has bit 5 set, so `0x4d99c`
+   consumes the high byte of `ffff23c2`. This path spans multiple periodic passes.
+
+The knock loop uses per-cylinder threshold surface `0x1108e`. Accessor `0x49ffc`
+selects one of six rows and interpolates it by speed; evaluator `0x4a238` updates
+event state; coordinator `0x493e8` updates `ffff2466.bit6`; and selector `0x4e1c0`
+uses that bit on the following pass. Parallel surface `0x10f8e` has no direct xref.
+
+Accumulator `0x4afdc` combines the mode-selected bases
+`0x12196`/`0x1219e`/`0x121a6`, coolant-indexed corrections
+`0x11f0a`/`0x11f12`/`0x11f1a`/`0x11f22`, two-bank surface `0x9dba`, and multiplier
+`0x147ca`. Its final expression is
+`clamp_s8(s8(ffff1514) + u8(ffff12db) + s8(ffff1511) + u8(ffff1512) +
+u8(ffff1349) - 128)` at `ffff23ee`. The alternate branch of `0x4bdc2` carries
+`ffff23ee` into the same multi-pass state path. A separate branch derives
+`ffff1513` from `ffff2404`; `0x4e112` only moves it one count toward zero, and no
+reference connects `ffff1513` directly to `ffff11d4` or an APC compare.
+
+Engine-event scheduler `0x208f8` invokes table index 4, `0x4e162`. Its exact order is
+`0x4e112 -> 0x4e0c2 -> 0x4d99c -> 0x4dbe8 -> 0x4df82 -> 0x4e080`.
+Function `0x4d99c` combines map/state terms and conditional map `0x147da` into
+signed correction `ffff12d6`. Function `0x4dbe8` applies mode-dependent bounds and
+publishes final timing coordinate `ffff11d4`. Its conditional input `ffff564c` is a
+periodic snapshot copied from `ffff56b2`; `0x4aad0` is the sole direct writer of
+`ffff56b2`.
+
+The actuator-facing chain is:
+
+`ffff11d4 -> 0x4df82 -> ffff2022 -> 0x2a892 -> GR11A`
+
+`ffff2022 + offset(0x4e080) -> 0x2acba -> GR11B`
+
+The normal `0x4df82` transform is `ROM8[0x83d5] - ffff11d4`, with
+`ROM8[0x83d5]=110`. The result at `ffff2022` is both the primary APC command and
+the common source for UDS DIDs `0x1107..0x110a`. Function `0x4e080` calculates a
+nonnegative secondary offset from `120 - ffff237a` and an optional ROM subtraction.
+
+Capture handler `0x2b768` derives a wrap-corrected event interval and stores its
+unsigned quotient by 12 at `ffff22bc`. Schedulers `0x2a892` and `0x2acba` split the
+command into quotient and remainder by 10, calculate
+`floor(ffff22bc * remainder / 10)`, and program `GR11A` at `0xfffff5c2` and `GR11B`
+at `0xfffff5c4`. `TCNT11` is at `0xfffff5c0`, `TSR11` at `0xfffff5ca`, and `POPCR`
+at `0xfffff700`. The SH7058 hardware manual establishes that low POPCR bits set the
+selected PULS output on GR11A compare and high POPCR bits reset it on GR11B compare.
+Firmware structure does not establish the external driver polarity, which compare
+edge corresponds to spark, the physical degree scale, or cylinder-to-pin continuity
+on the target ECU.
+
+Transient table `0x11f6a` has a separate closed operational role. Function `0x7b650`
+looks it up, scales the result into `ffff1393`, and `0x7b7c0` uses
+`32*ffff1393` with `32*ROM8[0x8383]` hysteresis to maintain `ffff2478.bit6`.
+Catalog evidence places the table in the Initial Retard Quantity family but does not
+distinguish its five mode variants. No direct path from bit 6 to `ffff11d4` or an APC
+compare is established. Candidate table `0x1202e` writes `ffff1ee0` and `ffff257a`;
+no external readers connect either sink to the command path.
+
+Static code establishes the software command path through both APC compare
+registers. Hardware validation remains required for physical angle units, pulse
+polarity, cylinder outputs, the physical qualifier of `0x147da`, and the source
+semantics of `ffff237e` and `ffff237a`.
 
 
 ### Rate-limited raw-state and paired-output component (accessor FUN_0006205c)

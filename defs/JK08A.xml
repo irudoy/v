@@ -732,9 +732,9 @@
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
          The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across
-         the entire trio. The physical scale and mode name are confirmed by the A2L catalog;
-         code confirms table selection, the 0x7f mask, and participation of the result in angle
-         calculation.
+         the trio. Code proves selection and downstream state flow, but not a direct final-angle
+         or calculated-MBT interpretation. The physical name and scale remain A2L/catalog-
+         supported candidates.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Ignition Timing Trim Cold" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0x0991A" sizex="16" sizey="16" endian="big"
@@ -753,9 +753,10 @@
     </table>
 
     <!-- 0x0991A  16x16 uint8  masked view 0x80 [code]
-         Semantics source: Cold Ignition Timing Map: additive correction of calculated MBT in
-         cold mode; the low 7 bits carry a signed-offset quantity, while bit 7 carries a knock-
-         window flag.
+         Semantics source: Cold timing-state surface. Coolant-coordinate selection in 0004e1c0
+         uses it below the cold threshold and blends it with the selected hot surface in the
+         transition band. The low seven bits feed timing state and bit 7 remains a separate
+         control field.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Knock Control Enable - Cold"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -1000,9 +1001,9 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code selects the table relative to the high-detonation branch and preserves bit 7
-         separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
-         layout offset of +0x5c.
+         The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
+         0004df82. Code does not prove this surface as a direct final angle. The physical name
+         and scale match homolog EV18A 0x9a76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Ignition Timing Trim Main" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0x09A1A" sizex="16" sizey="16" endian="big"
@@ -1022,9 +1023,9 @@
 
     <!-- 0x09A1A  16x16 uint8  masked view 0x80 [code]; common-definition Map 1 storage
          projected from 0x09A1A
-         Semantics source: High Octane Ignition Timing Map: additive correction of calculated
-         MBT in high-octane mode; the low 7 bits carry a signed-offset quantity, while bit 7
-         carries a knock-window flag.
+         Semantics source: High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses
+         it when clear. Its low-seven-bit result feeds both selected-map state and the signed
+         ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Knock Control Enable - Main"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -1048,9 +1049,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
-         input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
-         layout offset of +0x5c.
+         Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
+         selector for the next pass. A code-proven APC path exists through ffff22fa; code does
+         not prove this surface as a direct final angle. The physical name and scale match
+         homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Ignition Timing Trim High Det"
            category="Ignition Timing / Main" storagetype="uint8" storageaddress="0x09B1A"
@@ -1070,9 +1072,9 @@
 
     <!-- 0x09B1A  16x16 uint8  masked view 0x80 [code]; common-definition Map 1 storage
          projected from 0x09B1A
-         Semantics source: High Detonation Ignition Timing Map: additive correction of
-         calculated MBT in high-detonation mode; the low 7 bits carry a signed-offset quantity,
-         while bit 7 carries a knock-window flag.
+         Semantics source: High-detonation hot timing-state surface. Selector ffff2466 bit 6
+         chooses it when set. Its low-seven-bit result feeds both selected-map state and the
+         signed ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Knock Control Enable - High Det"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -1256,9 +1258,9 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code selects the table relative to the high-detonation branch and preserves bit 7
-         separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
-         layout offset of +0x5c.
+         The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
+         0004df82. Code does not prove this surface as a direct final angle. The physical name
+         and scale match homolog EV18A 0x9a76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Ignition Timing Trim Main" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0xD2500" sizex="16" sizey="16" endian="big"
@@ -1278,9 +1280,9 @@
 
     <!-- 0xD2500  16x16 uint8  masked view 0x80 [code]; common-definition Map 2 storage
          projected from 0x09A1A
-         Semantics source: High Octane Ignition Timing Map: additive correction of calculated
-         MBT in high-octane mode; the low 7 bits carry a signed-offset quantity, while bit 7
-         carries a knock-window flag.
+         Semantics source: High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses
+         it when clear. Its low-seven-bit result feeds both selected-map state and the signed
+         ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Knock Control Enable - Main"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -1305,9 +1307,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
-         input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
-         layout offset of +0x5c.
+         Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
+         selector for the next pass. A code-proven APC path exists through ffff22fa; code does
+         not prove this surface as a direct final angle. The physical name and scale match
+         homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Ignition Timing Trim High Det"
            category="Ignition Timing / Main" storagetype="uint8" storageaddress="0xD2900"
@@ -1327,9 +1330,9 @@
 
     <!-- 0xD2900  16x16 uint8  masked view 0x80 [code]; common-definition Map 2 storage
          projected from 0x09B1A
-         Semantics source: High Detonation Ignition Timing Map: additive correction of
-         calculated MBT in high-detonation mode; the low 7 bits carry a signed-offset quantity,
-         while bit 7 carries a knock-window flag.
+         Semantics source: High-detonation hot timing-state surface. Selector ffff2466 bit 6
+         chooses it when set. Its low-seven-bit result feeds both selected-map state and the
+         signed ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Knock Control Enable - High Det"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -1515,9 +1518,9 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code selects the table relative to the high-detonation branch and preserves bit 7
-         separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
-         layout offset of +0x5c.
+         The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
+         0004df82. Code does not prove this surface as a direct final angle. The physical name
+         and scale match homolog EV18A 0x9a76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Ignition Timing Trim Main" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0xD2600" sizex="16" sizey="16" endian="big"
@@ -1537,9 +1540,9 @@
 
     <!-- 0xD2600  16x16 uint8  masked view 0x80 [code]; common-definition Map 3 storage
          projected from 0x09A1A
-         Semantics source: High Octane Ignition Timing Map: additive correction of calculated
-         MBT in high-octane mode; the low 7 bits carry a signed-offset quantity, while bit 7
-         carries a knock-window flag.
+         Semantics source: High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses
+         it when clear. Its low-seven-bit result feeds both selected-map state and the signed
+         ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Knock Control Enable - Main"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -1564,9 +1567,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
-         input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
-         layout offset of +0x5c.
+         Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
+         selector for the next pass. A code-proven APC path exists through ffff22fa; code does
+         not prove this surface as a direct final angle. The physical name and scale match
+         homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Ignition Timing Trim High Det"
            category="Ignition Timing / Main" storagetype="uint8" storageaddress="0xD2A00"
@@ -1586,9 +1590,9 @@
 
     <!-- 0xD2A00  16x16 uint8  masked view 0x80 [code]; common-definition Map 3 storage
          projected from 0x09B1A
-         Semantics source: High Detonation Ignition Timing Map: additive correction of
-         calculated MBT in high-detonation mode; the low 7 bits carry a signed-offset quantity,
-         while bit 7 carries a knock-window flag.
+         Semantics source: High-detonation hot timing-state surface. Selector ffff2466 bit 6
+         chooses it when set. Its low-seven-bit result feeds both selected-map state and the
+         signed ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Knock Control Enable - High Det"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -1774,9 +1778,9 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code selects the table relative to the high-detonation branch and preserves bit 7
-         separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
-         layout offset of +0x5c.
+         The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
+         0004df82. Code does not prove this surface as a direct final angle. The physical name
+         and scale match homolog EV18A 0x9a76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Ignition Timing Trim Main" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0xD2700" sizex="16" sizey="16" endian="big"
@@ -1796,9 +1800,9 @@
 
     <!-- 0xD2700  16x16 uint8  masked view 0x80 [code]; common-definition Map 4 storage
          projected from 0x09A1A
-         Semantics source: High Octane Ignition Timing Map: additive correction of calculated
-         MBT in high-octane mode; the low 7 bits carry a signed-offset quantity, while bit 7
-         carries a knock-window flag.
+         Semantics source: High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses
+         it when clear. Its low-seven-bit result feeds both selected-map state and the signed
+         ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Knock Control Enable - Main"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -1823,9 +1827,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
-         input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
-         layout offset of +0x5c.
+         Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
+         selector for the next pass. A code-proven APC path exists through ffff22fa; code does
+         not prove this surface as a direct final angle. The physical name and scale match
+         homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Ignition Timing Trim High Det"
            category="Ignition Timing / Main" storagetype="uint8" storageaddress="0xD2B00"
@@ -1845,9 +1850,9 @@
 
     <!-- 0xD2B00  16x16 uint8  masked view 0x80 [code]; common-definition Map 4 storage
          projected from 0x09B1A
-         Semantics source: High Detonation Ignition Timing Map: additive correction of
-         calculated MBT in high-detonation mode; the low 7 bits carry a signed-offset quantity,
-         while bit 7 carries a knock-window flag.
+         Semantics source: High-detonation hot timing-state surface. Selector ffff2466 bit 6
+         chooses it when set. Its low-seven-bit result feeds both selected-map state and the
+         signed ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Knock Control Enable - High Det"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -2033,9 +2038,9 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code selects the table relative to the high-detonation branch and preserves bit 7
-         separately. The physical name and scale match homolog EV18A 0x9a76 with the shared
-         layout offset of +0x5c.
+         The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
+         0004df82. Code does not prove this surface as a direct final angle. The physical name
+         and scale match homolog EV18A 0x9a76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Ignition Timing Trim Main" category="Ignition Timing / Main"
            storagetype="uint8" storageaddress="0xD2800" sizex="16" sizey="16" endian="big"
@@ -2055,9 +2060,9 @@
 
     <!-- 0xD2800  16x16 uint8  masked view 0x80 [code]; common-definition Map 5 storage
          projected from 0x09A1A
-         Semantics source: High Octane Ignition Timing Map: additive correction of calculated
-         MBT in high-octane mode; the low 7 bits carry a signed-offset quantity, while bit 7
-         carries a knock-window flag.
+         Semantics source: High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses
+         it when clear. Its low-seven-bit result feeds both selected-map state and the signed
+         ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Knock Control Enable - Main"
            category="Ignition Timing / Knock Control" storagetype="uint8"
@@ -2082,9 +2087,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
          0x11EBE load [candidate]
-         Code leaves 0x9b1a selected while the high-detonation branch is active and uses shared
-         input 0x26230. The physical name and scale match homolog EV18A 0x9b76 with the shared
-         layout offset of +0x5c.
+         Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
+         selector for the next pass. A code-proven APC path exists through ffff22fa; code does
+         not prove this surface as a direct final angle. The physical name and scale match
+         homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Ignition Timing Trim High Det"
            category="Ignition Timing / Main" storagetype="uint8" storageaddress="0xD2C00"
@@ -2104,9 +2110,9 @@
 
     <!-- 0xD2C00  16x16 uint8  masked view 0x80 [code]; common-definition Map 5 storage
          projected from 0x09B1A
-         Semantics source: High Detonation Ignition Timing Map: additive correction of
-         calculated MBT in high-detonation mode; the low 7 bits carry a signed-offset quantity,
-         while bit 7 carries a knock-window flag.
+         Semantics source: High-detonation hot timing-state surface. Selector ffff2466 bit 6
+         chooses it when set. Its low-seven-bit result feeds both selected-map state and the
+         signed ffff22fa term consumed by the engine-event timing correction.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Knock Control Enable - High Det"
            category="Ignition Timing / Knock Control" storagetype="uint8"
