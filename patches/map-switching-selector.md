@@ -516,8 +516,20 @@ over 718 instructions. The complete-composition harness passes 87 cases over
 over 2333 instructions. RomRaider source commit
 `874325319be98fc487e3875e5b26d25b8869e162` verifies revision-2 stages 06 and 07
 as `ChecksumALT` 2/2 and `ChecksumALT2` 4/4, and recalculation is byte-identical.
-The revision-2 lookup chain has status `READY_FOR_HARDWARE`; its stages 06
-through 14 have hardware status `UNTESTED`.
+The revision-2 lookup chain has hardware status `PASS_EXACT`. PCMFlash wrote
+stages 06 through 14 in order, and identification returned `1JK08A00000`,
+`7MFKAVN86`, and `23710-JK08A` after every stage. Stages 06 through 13 have
+status `PASS`. The complete stage-14 readback is byte-identical to its input;
+both have SHA-256
+`f0a03f6fef205aa1ac42e4471dd0bad995a7082c35d24bdb639fc342ccdda892`
+and MD5 `f1865bc339166c90151d7a32f7f4e136`, and all six stored checksum
+references equal the independently calculated values. The PCMFlash log has
+SHA-256 `bb23b1dd25b3f7c0681cecec2258d458591efe7afacff2c18b05113d11c954a2`.
+This result validates application startup and PCMFlash identification with the
+corrected adapters and all eight lookup hook literals active on the bench ECU.
+It does not establish lookup behavior under engine conditions. Selector-host
+execution and CAN feedback remain absent from this chain and retain separate
+hardware gates.
 
 The complete instruction audit covers all 387 final-runtime instructions. It
 independently verifies 34 delayed transfers and their encoded `NOP` slots, 43
@@ -1397,7 +1409,9 @@ verifies the recalculated output before writing it.
    installs inactive code and Map 1-equivalent storage. Stages 07 through 14
    activate literals `0x4FDD0`, `0x50258`, `0x496C0`, `0x4E474`, `0x4E58C`,
    `0x3C388`, `0xC0020`, and `0x2CF1C` one at a time. The chain has status
-   `READY_FOR_HARDWARE`; every lookup stage has hardware status `UNTESTED`.
+   `PASS_EXACT`: stages 06 through 13 pass write, power cycle, and
+   identification, while the byte-identical stage-14 readback gives the
+   complete lookup endpoint status `PASS_EXACT`.
 6. Add selector-host execution in a subsequent single-feature stage. Add CAN
    feedback last.
 7. Patch a checksum-valid compatible input with `apply_map_switching.py` and
