@@ -1727,3 +1727,11 @@ order = 215
 format = "0"
 fine = 1
 coarse = 256
+
+[table.00014cca]
+name = "P0128 Inverse-Weight Curve - raw u16 (0x14CCA)"
+category = "Diagnostics / Internal Calculations"
+order = 216
+format = "0"
+fine = 1
+coarse = 256

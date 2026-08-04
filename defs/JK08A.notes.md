@@ -4681,7 +4681,7 @@ producer and conversion of `0xFFFF102C` are unresolved. Map values use centered 
 128 in code. The candidate engineering conversion `(raw - 128) * 0.5 degrees` comes
 from the HR A2L and homologous intake-cam diagnostics and requires hardware validation.
 
-## P0128 thermostat-model balance terms - `0x0D40E` and `0x14B0A`
+## P0128 thermostat-model balance terms - `0x0D40E`, `0x14B0A`, and `0x14CCA`
 
 `FUN_000B5908` is the P0128 monitor dispatcher. Counter `0xFFFF33F8` makes it invoke
 `FUN_000B6B5A` every tenth pass. Its two completion branches pass descriptor index
@@ -4745,10 +4745,44 @@ upstream curve `0x15C40` are all zero, `L` and this term are always zero in stoc
 JK03A and JK08A. The coefficient's physical heat-transfer interpretation and
 engineering scale remain unresolved.
 
-The strict JK08A projection contains 1594 source claims and 5934 `RESTS_ON` edges.
+The third accessor, `FUN_000B78DA`, receives previous-cycle coarse vehicle speed
+`0xFFFF110E`, the same IAT snapshot and model-temperature state, and nonzero
+parameter `P` from RPM/12.5 curve `0x15BF0`. `FUN_000B784E` replaces a zero
+`0x15BF0` lookup with one. The accessor calculates
+
+```text
+P = lookup_u16(0x15BF0, 0x13CA8, RPM_12_5); if P == 0: P = 1
+d = clamp(trunc0(ffff3348 / 20000) - 50 * uint8[ffff2733] + 2500,
+          0, 32767)
+c = ROM8[0x86D2] if uint8[ffff110e] <= 2 else ROM8[0x86D3]
+B = min(floor(d * c / 2), 65535)
+q = max(0, 65535 - floor(20 * ROM16[0x9292] * ROM8[0x8819] / P))
+x = lookup_u16(0x14CCA, 0x13B38, q)
+w = 255 - min(x, 255)
+ffff2f98 = floor(P * floor(B * w / 255) / 250)
+```
+
+The `raw - 50` IAT representation makes `d` the nonnegative
+model-temperature-minus-IAT difference in 0.02 deg C units. Coarse speed selects
+two calibrated coefficient bytes at `<=2` versus `>2` counts, approximately
+`4 km/h` under the homologous vehicle-speed scale. The map supplies inverse weight
+`w`; its clamped conversion is not expressible as an invertible map scale in the
+current definition vocabulary. `FUN_000B6B5A` adds `0xFFFF2F98` to
+`0xFFFF3228` with uint32 saturation before placing the sum on the subtractive
+side of the P0128 balance. The whole-program projection has one writer and one
+reader for both `0xFFFF35A0` and `0xFFFF2F98`.
+
+All cells of `0x14CCA`, axis `0x13B38`, and upstream curve `0x15BF0` are zero
+in JK03A and JK08A. Stock `P` is therefore one and the map weight is 255. Both
+speed-selected coefficients at `0x86D2`/`0x86D3` and both coordinate constants
+at `0x9292`/`0x8819` are zero, so `B` and `0xFFFF2F98` are always zero. The
+physical heat-transfer interpretation and engineering meaning of `P` remain
+unresolved.
+
+The strict JK08A projection contains 1599 source claims and 5983 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 360 `code` maps and 90 `candidate` maps;
-semantics are present for 440 maps and scaling for 402. The diagnostic projection
+ungrounded claims. The catalog contains 361 `code` maps and 89 `candidate` maps;
+semantics are present for 441 maps and scaling for 403. The diagnostic projection
 contains 150 reviewed JK08A bindings and 34 inherited exact-code JK03A bindings.
 
 ## Next step
@@ -4768,13 +4802,13 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The follow-up semantic pass is built from the current projection, which contains 10
-`candidate` maps without semantics in 7 accessor-connected components. Every open
+The follow-up semantic pass is built from the current projection, which contains 9
+`candidate` maps without semantics in 6 accessor-connected components. Every open
 map is flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: eight maps contain `0..0`, one contains
+Column `vals` partitions the follow-up work: seven maps contain `0..0`, one contains
 `32768..32768`, and one contains `65535..65535` across the entire table.
 `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4814,9 +4848,9 @@ transcription:
   `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
   "Rotation-monitor thresholds").
 
-Follow-up worklist for 10 `candidate` maps without semantics:
+Follow-up worklist for 9 `candidate` maps without semantics:
 
-1. Trace flat curve `0x14CCA` through `FUN_000B78DA`, its temperature inputs,
+1. Trace flat curve `0x151F2` through `FUN_000B7A3C`, its temperature inputs,
    output destination, downstream arithmetic, and the same P0128 monitor context.
    Flat contents do not establish semantics.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
