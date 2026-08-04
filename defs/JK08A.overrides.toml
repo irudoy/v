@@ -1743,3 +1743,11 @@ order = 217
 format = "0"
 fine = 1
 coarse = 256
+
+[table.00014bca]
+name = "EVAP Fuel-Level Coordinate / Sentinel Curve - raw u16 (0x14BCA)"
+category = "Diagnostics / Internal Calculations"
+order = 218
+format = "0"
+fine = 1
+coarse = 256

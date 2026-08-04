@@ -3507,9 +3507,11 @@ Nine rows enter `findings.csv`:
 
 Synthesis does not transfer three classes of formally surviving results:
 
-- The agent assigns `role=dead` to `0x14BCA`, but its disposition is `writes`:
-  two sites write `ffff282e`, and there are no indexed readers. Absence of a reader
-  does not prove a disabled branch, so the claim does not enter the manual layer.
+- The automated claim assigns `role=dead` to `0x14BCA`, but its disposition is
+  `writes`: two sites write `ffff282e`, and a direct-address scan finds no reader.
+  The claim does not enter the manual layer. The runtime block snapshot in
+  `FUN_00020DFE` publishes `ffff282e` as `ffff272a`, which has seven reads in four
+  EVAP functions; the complete manual finding is recorded below.
 - Conversion for `0x14CCA` is `(255-min(x,255))/255`. Its clamp cannot be expressed
   exactly as an invertible arithmetic pair in the `load_maps.py` vocabulary, so it
   remains in the artifact instead of becoming a CSV scale.
@@ -4809,10 +4811,64 @@ and both axes are also zero. The hard-coded coefficient 10 for `S=0` cannot chan
 the zero result. Code proves a state-weighted inverse-weight term; its physical
 heat-transfer interpretation, parameter `H`, and engineering scale remain unresolved.
 
-The strict JK08A projection contains 1603 source claims and 6031 `RESTS_ON` edges.
+## EVAP fuel-level coordinate and sentinel - `0x14BCA`
+
+`FUN_000C456C` handles encoded CAN identifier `0x5000` from the meter dispatcher.
+It assembles two ten-bit payload fields. The field used here is:
+
+```text
+ffff3e24 = payload[1] + ((payload[2] >> 6) & 3) * 256
+```
+
+The homologous VQ35HR factory ESM states that the combination meter sends the
+fuel-level sensor signal to the ECM over CAN. The exact JK08A diagnostic descriptor indices used by the
+consumer are `0x45` for P0461 and `0x46` for P0460, independently fixing the
+fuel-level monitor context. Voltage, percentage, and tank-volume conversions remain
+unresolved.
+
+`FUN_0003DAC6` scales the field into an unsigned coordinate:
+
+```text
+q = min(65535, floor(39680 * uint16[ffff3e24] / 1024))
+```
+
+It conditionally retains `q` in `0xFFFF3E26`, then updates slow state `0xFFFF27FC`
+through `FUN_0003DA98` with stock coefficient `ROM8[0x8315]=1`, corresponding to
+1/256 of the new sample. Initialization seeds the filter directly. Result-state
+predicates for indices `0x14A`, `0x45`/P0461, `0x46`/P0460, and `-1` select either
+the filtered coordinate or zero. Both the normal and reset paths evaluate
+`0x14BCA` over axis `0x13AC8` and write `0xFFFF282E`.
+
+The 16 axis points are:
+
+```text
+0, 3642, 3643, 10307, 14918, 19878, 24335, 28558,
+32085, 34642, 36580, 38400, 44800, 51200, 57600, 64000
+```
+
+The scheduler copies the complete 0x104-byte current-state block to its previous-cycle
+snapshot, including `0xFFFF282E -> 0xFFFF272A`. A whole-program p-code scan completed
+all 2315 functions with zero failures. It finds exactly two direct writes to
+`0xFFFF282E` and seven reads of the snapshot in `FUN_000AE5A4`, `FUN_000AF076`,
+`FUN_000B2096`, and `FUN_000B3A54`.
+
+The EVAP consumers use the snapshot high byte in two forms. Signed checks interpret
+`0xFFFF` as `-1` and reject operating windows that require a nonnegative value.
+`FUN_000B2096` uses the unsigned high byte as the coordinate for coefficient curves
+`0x1259A`, `0x125A2`, and `0x125AA`. Stock `ROM8[0x893F]=0xC0` selects `0x125AA`;
+coordinate 255 selects its terminal cell, raw 133, in the P0442/P0456 leak-monitor
+calculation.
+
+All 16 cells of `0x14BCA` equal `0xFFFF` in JK03A and JK08A. The table therefore
+publishes a live, constant sentinel regardless of its input: the signed high byte is
+`-1`, while the unsigned high byte is `255`. The map is classified at `code`
+confidence as a fuel-level-derived EVAP coordinate and sentinel curve with raw
+identity scaling. Its physical engineering conversion remains unresolved.
+
+The strict JK08A projection contains 1610 source claims and 6066 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 362 `code` maps and 88 `candidate` maps;
-semantics are present for 442 maps and scaling for 404. The diagnostic projection
+ungrounded claims. The catalog contains 363 `code` maps and 87 `candidate` maps;
+semantics are present for 443 maps and scaling for 405. The diagnostic projection
 contains 150 reviewed JK08A bindings and 34 inherited exact-code JK03A bindings.
 
 ## Next step
@@ -4832,14 +4888,14 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The follow-up semantic pass is built from the current projection, which contains 8
-`candidate` maps without semantics in 5 accessor-connected components. Every open
+The follow-up semantic pass is built from the current projection, which contains 7
+`candidate` maps without semantics in 4 accessor-connected components. Every open
 map is flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: six maps contain `0..0`, one contains
-`32768..32768`, and one contains `65535..65535` across the entire table.
+Column `vals` partitions the follow-up work: six maps contain `0..0`, and one contains
+`32768..32768` across the entire table.
 `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
 
@@ -4878,11 +4934,10 @@ transcription:
   `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
   "Rotation-monitor thresholds").
 
-Follow-up worklist for 8 `candidate` maps without semantics:
+Follow-up worklist for 7 `candidate` maps without semantics:
 
-1. Trace saturated curve `0x14BCA` through `FUN_0003DAC6`, its caller inputs,
-   output destination, and downstream arithmetic. Uniform `0xFFFF` contents do not
-   distinguish an unprogrammed table from a saturated limit.
+1. Trace paired zero curves `0x154C0` and `0x154E0` through `FUN_0007AF78`, including
+   the selector, input coordinate, output destinations, and downstream arithmetic.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
    when its axis is resolved, in `JK08A.axes.csv`; record the name and category in
    `JK08A.overrides.toml`. `emit_def.py` builds the definition on the next run. Verify
