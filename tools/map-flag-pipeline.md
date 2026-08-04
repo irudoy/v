@@ -644,7 +644,7 @@ Collapsing duplicate diagnostic claims leaves 197 distinct firmware reference
 hits for 34 matched DIDs; 58 hits occur in functions containing more than one
 known DID.
 
-The JK08A binding projection contains 149 reviewed claims:
+The JK08A binding projection contains 150 reviewed claims:
 
 - engine speed at `0xFFFF11AE` has `code` association and homologous VQ35HR
   monitor applicability;
@@ -656,6 +656,10 @@ The JK08A binding projection contains 149 reviewed claims:
 - exact UDS DID `0x1101` returns coolant byte `0xFFFF1079`. Code normalizes it
   through `0xFFFF1077` into previous-cycle calibration index `0xFFFF106F`;
   homologous measured diagnostic data supplies conversion `raw-50 deg C`;
+- exact UDS DID `0x1106` returns AN1-derived byte `0xFFFF2837`. Homologous
+  measured diagnostic data identifies it as Intake Air Temperature with
+  conversion `raw-50 deg C`; scheduler snapshot `0xFFFF2733` enters the P0128
+  model-temperature-difference calculation;
 - ignition angle at `0xFFFF23EE` remains a `candidate` association with
   homologous monitor semantics. Exact code maps DID `0x1204`/`0x1205` to
   `0xFFFF101C`/`0xFFFF101E`, traces those bank-1/bank-2 MAF channels through
@@ -1347,7 +1351,7 @@ sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 | Axis against core code | number of `:Axis` nodes with `monotonic=false`; reverse linear search cannot read such an array | not measured -> **1 of 230** (`0x119B2`; its map `0x9C5A` is entirely `0xFF`). This caught an axis element declared from the core rather than the wrapper/axis pair: 2 of 22 wrappers and 2 axes had been read as words instead of bytes | 0 |
 | Measured layer | number of `:Map`/`:Axis` nodes without values from the image, meaning shape without contents | not tracked -> **0 of 450 and 230**: the same run that builds the layer reads the image | 0; a read miss stops loading |
 | Output disposition of `code` maps | structured evidence distinguishes writes, consumer, inline comparison, return, and dead control flow | format active: focused positions 50-395 covered 346/346; backfill retained 41 prior `code` Map semantics claims with a disposition and downgraded 11 unsupported claims | 100% of `code` Map semantics |
-| Static diagnostic bindings | reviewed claims with resolved firmware, diagnostic, source-claim, and evidence targets; exact-ROM rows must not cross inheritance | **JK08A 149, JK03A 33**; JK08A has 116 exact-ROM DTC claims and 33 exact-code parameter claims; direct or provenance-reachable context prioritizes 61 of 450 JK08A maps and 46 of 450 JK03A maps | every loaded row resolves exactly once; hardware validation remains explicit |
+| Static diagnostic bindings | reviewed claims with resolved firmware, diagnostic, source-claim, and evidence targets; exact-ROM rows must not cross inheritance | **JK08A 150, JK03A 34**; JK08A has 116 exact-ROM DTC claims and 34 exact-code parameter claims; direct or provenance-reachable context prioritizes 61 of 450 JK08A maps and 46 of 450 JK03A maps | every loaded row resolves exactly once; hardware validation remains explicit |
 | Identity coverage | share of `:Map` nodes with `:MATCHES` or `:HOMOLOG` | 0; references are in the graph (188 `:A2LEntry`, including 106 maps; 371 `:VendorEntry`, including 243 factory entries); match keys follow Stage 4 | advisory, increasing |
 | Dictionary convergence | number of `concept` values shared by A2L and both vendors | not measured -> **17 of 23** labeled; `concept` is present on 45 of 188 A2L records and 170 of 371 vendor records, representing 49 values | increases with analysis; 100% is impossible because A2L has no VVEL entries (0); Stage 6 labels flags |
 | Vendor anchors in image | number of `:VendorFact {kind:'const'}` values found in the dump | 22 documented -> **1 found** (K-Factor `26806`: block signature in all 6 registered ROMs) | search all; a bare value match is `pattern` (two in JK03A/JK08A), block signature is `candidate`, trace is `code` |

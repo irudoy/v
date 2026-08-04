@@ -1719,3 +1719,11 @@ order = 214
 format = "0"
 fine = 1
 coarse = 256
+
+[table.00014b0a]
+name = "P0128 Temperature-Difference Model Coefficient Curve - raw u16 (0x14B0A)"
+category = "Diagnostics / Internal Calculations"
+order = 215
+format = "0"
+fine = 1
+coarse = 256

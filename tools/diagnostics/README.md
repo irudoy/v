@@ -151,6 +151,14 @@ The current static milestone has no hardware-loop completion gate. The binding
 loader therefore cannot emit `silicon`; a later hardware-backed workflow may
 add that level under a separate evidence contract.
 
+Exact UDS DID `0x1106` points to AN1-derived byte `0xFFFF2837` through table
+entry `0x226C4`. Homologous measured Nissan diagnostics identify the byte as
+Intake Air Temperature with `deg C = raw - 50`. Scheduler `FUN_00020DFE`
+copies it to `0xFFFF2733`; the P0128 thermostat model uses that snapshot in a
+nonnegative model-temperature-minus-IAT calculation. The DID association and
+firmware flow are code-proven, while the ECM terminal and physical sensor
+conversion require hardware validation.
+
 The exact-ROM portion includes code-traced rear O2 and catalyst monitor slices.
 `FUN_00089D92` dispatches the P0139/P0159, P0137/P0157, and first
 P0138/P0158 descriptor pairs from bank-indexed metrics at `0xFFFF26E9`,
