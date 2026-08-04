@@ -540,12 +540,29 @@ def _expected_long_literals(layout):
             family["over_run_fuel_cut"].canonical_address,
         "overrun_restore_base":
             family["over_run_fuel_restore"].canonical_address,
-        "overrun_stock_wrapper":
-            _hook_stock_for_adapter(layout, "overrun_adapter"),
+        "overrun_stock_wrapper": 0x00026388,
         "overrun_cut_pointers":
             family["over_run_fuel_cut"].pointer_table,
         "overrun_restore_pointers":
             family["over_run_fuel_restore"].pointer_table,
+        "full_dfco_hold_base":
+            family["over_run_fuel_hold"].canonical_address,
+        "full_dfco_entry_base":
+            family["over_run_fuel_cut"].canonical_address,
+        "full_dfco_full_restore_base":
+            family["over_run_fuel_restore"].canonical_address,
+        "full_dfco_intermediate_restore_base":
+            family["over_run_fuel_intermediate_restore"].canonical_address,
+        "full_dfco_stock_wrapper":
+            _hook_stock_for_adapter(layout, "full_dfco_adapter"),
+        "full_dfco_hold_pointers":
+            family["over_run_fuel_hold"].pointer_table,
+        "full_dfco_entry_pointers":
+            family["over_run_fuel_cut"].pointer_table,
+        "full_dfco_full_restore_pointers":
+            family["over_run_fuel_restore"].pointer_table,
+        "full_dfco_intermediate_restore_pointers":
+            family["over_run_fuel_intermediate_restore"].pointer_table,
         "ignition_main_base":
             family["ignition_timing_trim_main"].canonical_address,
         "ignition_high_det_base":
@@ -917,7 +934,11 @@ def validate_assembly_sources(layout=None):
             _validate_feedback_wrapper(parsed)
         elif unit.key == "cruise_feedback_engine":
             _validate_feedback_engine(parsed, layout)
-        elif unit.key in {"adapter_select_helper", "lookup_adapters"}:
+        elif unit.key in {
+            "adapter_select_helper",
+            "lookup_adapters",
+            "full_dfco_adapter",
+        }:
             _validate_registers_and_control_flow(
                 parsed,
                 layout.code_region_by_key["adapter_select_helper"].entry,

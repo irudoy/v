@@ -10,6 +10,7 @@ Scanmatik-SM2 USB adapter.
 - `1JK08A-20260726-stock.bin` - flash ROM, 1,048,576 bytes (`0x100000`);
 - `1JK08A-20260726-stock.bin.md5` - MD5 sidecar;
 - `mods/immo-off/` - one-bit immo-off modification.
+- `mods/map-switching/` - software-verified ten-family production map-switching image.
 
 ROM hashes:
 

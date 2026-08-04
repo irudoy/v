@@ -30,8 +30,10 @@ class ApplyMapSwitchingTest(unittest.TestCase):
         tuned[0x09B1A] ^= 0x22
         tuned[0x0A29A] ^= 0x33
         tuned[0x0B33A] ^= 0x44
+        tuned[0x126E4] ^= 0x77
         tuned[0x12718] ^= 0x55
         tuned[0x12818] ^= 0x66
+        tuned[0x1298C] ^= 0x88
         cls.tuned = checksums.recalculate(tuned)
         cls.blobs = patcher.load_payloads(cls.layout)
         cls.result = patcher.patch_image(
@@ -87,8 +89,10 @@ class ApplyMapSwitchingTest(unittest.TestCase):
             0x09B1A,
             0x0A29A,
             0x0B33A,
+            0x126E4,
             0x12718,
             0x12818,
+            0x1298C,
         ):
             with self.subTest(offset=offset):
                 self.assertEqual(

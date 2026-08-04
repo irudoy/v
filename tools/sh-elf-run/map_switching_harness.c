@@ -21,6 +21,7 @@
 #define SELECTOR_HOST 0x000d2108U
 #define STARTUP_WRAPPER 0x000d22a0U
 #define OVER_RUN_ADAPTER 0x000d2300U
+#define FULL_DFCO_ADAPTER 0x000d2480U
 #define IGNITION_ADAPTER 0x000d2340U
 #define FUEL_COMP_ADAPTER 0x000d2380U
 #define FUEL_TARGET_ADAPTER 0x000d23c0U
@@ -68,14 +69,36 @@ struct feedback_case {
 
 static const struct family adapter_families[] = {
     {
-        "over_run_fuel_cut", OVER_RUN_ADAPTER, 0x00012718U, 16U,
+        "legacy_over_run_fuel_cut", OVER_RUN_ADAPTER, 0x00012718U, 16U,
         {0x00012718U, 0x000d2400U, 0x000d2410U, 0x000d2420U,
          0x000d2430U},
     },
     {
-        "over_run_fuel_restore", OVER_RUN_ADAPTER, 0x00012818U, 16U,
+        "legacy_over_run_fuel_restore", OVER_RUN_ADAPTER, 0x00012818U,
+        16U,
         {0x00012818U, 0x000d2440U, 0x000d2450U, 0x000d2460U,
          0x000d2470U},
+    },
+    {
+        "over_run_fuel_hold", FULL_DFCO_ADAPTER, 0x000126e4U, 16U,
+        {0x000126e4U, 0x000d3f80U, 0x000d3f90U, 0x000d3fa0U,
+         0x000d3fb0U},
+    },
+    {
+        "over_run_fuel_cut", FULL_DFCO_ADAPTER, 0x00012718U, 16U,
+        {0x00012718U, 0x000d2400U, 0x000d2410U, 0x000d2420U,
+         0x000d2430U},
+    },
+    {
+        "over_run_fuel_restore", FULL_DFCO_ADAPTER, 0x00012818U, 16U,
+        {0x00012818U, 0x000d2440U, 0x000d2450U, 0x000d2460U,
+         0x000d2470U},
+    },
+    {
+        "over_run_fuel_intermediate_restore", FULL_DFCO_ADAPTER,
+        0x0001298cU, 16U,
+        {0x0001298cU, 0x000d3fc0U, 0x000d3fd0U, 0x000d3fe0U,
+         0x000d3ff0U},
     },
     {
         "ignition_timing_trim_main", IGNITION_ADAPTER, 0x00009a1aU,
@@ -104,6 +127,7 @@ static const struct family adapter_families[] = {
 static const struct pass_through pass_throughs[] = {
     {"overrun_bosch_cut", OVER_RUN_ADAPTER, 0x000126e4U},
     {"overrun_bosch_restore", OVER_RUN_ADAPTER, 0x0001298cU},
+    {"full_dfco_unknown", FULL_DFCO_ADAPTER, 0x0001298dU},
     {"ignition_cold", IGNITION_ADAPTER, 0x0000991aU},
     {"fuel_compensation_unknown", FUEL_COMP_ADAPTER, 0x0000a29bU},
     {"fuel_targets_unknown", FUEL_TARGET_ADAPTER, 0x0000b33bU},
@@ -609,16 +633,16 @@ int main(void)
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
-    if (total_cases != 87U)
-        return fail_value("summary", "case_count", total_cases, 87);
+    if (total_cases != 116U)
+        return fail_value("summary", "case_count", total_cases, 116);
     if (feedback_invocations != 17U)
         return fail_value(
             "summary", "feedback_invocations", feedback_invocations, 17);
 
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
-        "adapters=47 limiter=14 feedback=9 feedback_invocations=%lu "
-        "entries=10\n",
+        "adapters=76 limiter=14 feedback=9 feedback_invocations=%lu "
+        "entries=11\n",
         (unsigned long)total_cases, (unsigned long)feedback_invocations);
     return 0;
 }

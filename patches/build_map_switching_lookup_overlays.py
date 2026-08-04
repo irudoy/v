@@ -45,6 +45,15 @@ LOOKUP_UNIT_KEYS = (
     "adapter_select_helper",
     "lookup_adapters",
 )
+LEGACY_LOOKUP_FAMILY_KEYS = (
+    "over_run_fuel_cut",
+    "over_run_fuel_restore",
+    "ignition_timing_trim_main",
+    "ignition_timing_trim_high_det",
+    "fuel_targets",
+    "fuel_compensation_main",
+)
+LEGACY_OVERRUN_ADAPTER_ENTRY = 0x000D2300
 LOOKUP_HOOK_ORDER = (
     "overrun_cut_lookup",
     "overrun_restore_lookup",
@@ -189,7 +198,7 @@ def _hook_by_key(layout, key):
 
 def _lookup_families(layout):
     families = tuple(
-        family for family in layout.families if family.access_kind == "adapter"
+        layout.family_by_key[key] for key in LEGACY_LOOKUP_FAMILY_KEYS
     )
     if len(families) != 6:
         raise LookupOverlayError(
@@ -198,6 +207,12 @@ def _lookup_families(layout):
     if any(family.adapter is None for family in families):
         raise LookupOverlayError("adapter family has no adapter code region")
     return families
+
+
+def _legacy_hook_replacement(hook):
+    if hook.key in {"overrun_cut_lookup", "overrun_restore_lookup"}:
+        return LEGACY_OVERRUN_ADAPTER_ENTRY
+    return hook.replacement
 
 
 def _lookup_storage_offsets(layout):
@@ -301,7 +316,7 @@ def _require_hooks(layout, data, active_lookup_hook_keys, context):
             or hook.key in limiter_gate.LIMITER_HOOK_KEYS
             or hook.key in active_lookup_hook_keys
         )
-        expected = hook.replacement if active else hook.stock
+        expected = _legacy_hook_replacement(hook) if active else hook.stock
         if actual != expected:
             raise LookupOverlayError(
                 f"{context}: {hook.key} at {hook.address:#x} is "
@@ -354,7 +369,9 @@ def _apply_component(layout, base, current, payloads, spec):
     elif spec.component_kind == "hook" and spec.hook_key is not None:
         hook = _hook_by_key(layout, spec.hook_key)
         patched[hook.address : hook.address + hook.width] = (
-            hook.replacement.to_bytes(hook.width, layout.byte_order)
+            _legacy_hook_replacement(hook).to_bytes(
+                hook.width, layout.byte_order
+            )
         )
     else:
         raise LookupOverlayError(f"unsupported component for {spec.key}")
@@ -428,7 +445,9 @@ def _build_final_endpoint(layout, source, payloads):
     for key in LOOKUP_HOOK_ORDER:
         hook = _hook_by_key(layout, key)
         patched[hook.address : hook.address + hook.width] = (
-            hook.replacement.to_bytes(hook.width, layout.byte_order)
+            _legacy_hook_replacement(hook).to_bytes(
+                hook.width, layout.byte_order
+            )
         )
     return bytes(checksums.recalculate(patched))
 

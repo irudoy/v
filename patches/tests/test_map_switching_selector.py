@@ -41,20 +41,19 @@ class MapSwitchingSelectorTest(unittest.TestCase):
 
     def test_reference_model_defaults_to_map_1(self):
         self.assertEqual(self.state, selector.SelectorState())
-        self.assertEqual(
-            selector.select_calibration_base(
-                selector.STOCK_OVER_RUN_CUT_BASE,
-                self.state.active_index,
-            ),
+        for base in (
+            selector.STOCK_OVER_RUN_HOLD_BASE,
             selector.STOCK_OVER_RUN_CUT_BASE,
-        )
-        self.assertEqual(
-            selector.select_calibration_base(
-                selector.STOCK_OVER_RUN_RESTORE_BASE,
-                self.state.active_index,
-            ),
             selector.STOCK_OVER_RUN_RESTORE_BASE,
-        )
+            selector.STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BASE,
+        ):
+            with self.subTest(base=hex(base)):
+                self.assertEqual(
+                    selector.select_calibration_base(
+                        base, self.state.active_index
+                    ),
+                    base,
+                )
 
     def test_one_cancel_pulse_commits_map_1_on_release(self):
         state = pulse(self.arm())
@@ -139,12 +138,10 @@ class MapSwitchingSelectorTest(unittest.TestCase):
 
     def test_accessor_changes_only_the_selected_stock_base(self):
         self.assertEqual(
-            selector.select_calibration_base(0x000126E4, 1),
-            0x000126E4,
-        )
-        self.assertEqual(
-            selector.select_calibration_base(0x0001298C, 1),
-            0x0001298C,
+            selector.select_calibration_base(
+                selector.STOCK_OVER_RUN_HOLD_BASE, 1
+            ),
+            selector.OVER_RUN_HOLD_BASES[1],
         )
         self.assertEqual(
             selector.select_calibration_base(
@@ -158,51 +155,62 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             ),
             selector.OVER_RUN_RESTORE_BASES[1],
         )
+        self.assertEqual(
+            selector.select_calibration_base(
+                selector.STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BASE, 1
+            ),
+            selector.OVER_RUN_INTERMEDIATE_RESTORE_BASES[1],
+        )
 
     def test_accessor_falls_back_to_map_1_for_invalid_index(self):
         for active_index in (-1, 5, 0xFF):
             with self.subTest(active_index=active_index):
-                self.assertEqual(
-                    selector.select_calibration_base(
-                        selector.STOCK_OVER_RUN_CUT_BASE,
-                        active_index,
-                    ),
+                for base in (
+                    selector.STOCK_OVER_RUN_HOLD_BASE,
                     selector.STOCK_OVER_RUN_CUT_BASE,
-                )
-                self.assertEqual(
-                    selector.select_calibration_base(
-                        selector.STOCK_OVER_RUN_RESTORE_BASE,
-                        active_index,
-                    ),
                     selector.STOCK_OVER_RUN_RESTORE_BASE,
-                )
+                    selector.STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BASE,
+                ):
+                    self.assertEqual(
+                        selector.select_calibration_base(base, active_index),
+                        base,
+                    )
 
-    def test_accessor_exposes_all_five_bases_for_both_overrun_tables(self):
-        cut_actual = [
-            selector.select_calibration_base(
-                selector.STOCK_OVER_RUN_CUT_BASE, active_index
-            )
-            for active_index in range(selector.SLOT_COUNT)
-        ]
-        restore_actual = [
-            selector.select_calibration_base(
-                selector.STOCK_OVER_RUN_RESTORE_BASE, active_index
-            )
-            for active_index in range(selector.SLOT_COUNT)
-        ]
-        self.assertEqual(cut_actual, list(selector.OVER_RUN_CUT_BASES))
-        self.assertEqual(
-            restore_actual,
-            list(selector.OVER_RUN_RESTORE_BASES),
-        )
+    def test_accessor_exposes_all_five_bases_for_all_dfco_tables(self):
+        for stock_base, expected_bases in (
+            (
+                selector.STOCK_OVER_RUN_HOLD_BASE,
+                selector.OVER_RUN_HOLD_BASES,
+            ),
+            (
+                selector.STOCK_OVER_RUN_CUT_BASE,
+                selector.OVER_RUN_CUT_BASES,
+            ),
+            (
+                selector.STOCK_OVER_RUN_RESTORE_BASE,
+                selector.OVER_RUN_RESTORE_BASES,
+            ),
+            (
+                selector.STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BASE,
+                selector.OVER_RUN_INTERMEDIATE_RESTORE_BASES,
+            ),
+        ):
+            with self.subTest(base=hex(stock_base)):
+                actual = [
+                    selector.select_calibration_base(
+                        stock_base, active_index
+                    )
+                    for active_index in range(selector.SLOT_COUNT)
+                ]
+                self.assertEqual(actual, list(expected_bases))
 
-    def test_accessor_exposes_all_six_adapter_backed_families(self):
+    def test_accessor_exposes_all_eight_adapter_backed_families(self):
         adapter_families = [
             family
             for family in selector.LAYOUT.families
             if family.access_kind == "adapter"
         ]
-        self.assertEqual(len(adapter_families), 6)
+        self.assertEqual(len(adapter_families), 8)
         for family in adapter_families:
             with self.subTest(family=family.key):
                 self.assertEqual(
@@ -238,12 +246,20 @@ class MapSwitchingSelectorTest(unittest.TestCase):
         ).read_bytes()
         for base, expected in (
             (
+                selector.STOCK_OVER_RUN_HOLD_BASE,
+                selector.STOCK_OVER_RUN_HOLD_BYTES,
+            ),
+            (
                 selector.STOCK_OVER_RUN_CUT_BASE,
                 selector.STOCK_OVER_RUN_CUT_BYTES,
             ),
             (
                 selector.STOCK_OVER_RUN_RESTORE_BASE,
                 selector.STOCK_OVER_RUN_RESTORE_BYTES,
+            ),
+            (
+                selector.STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BASE,
+                selector.STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BYTES,
             ),
         ):
             with self.subTest(base=hex(base)):

@@ -120,8 +120,10 @@ def validate():
         )
     if "Map 5 - Fuel Targets" not in xdf:
         raise ValueError("TunerPro projection lacks Map 5 Fuel Targets")
-    if projection.slot_editor_view_count != 50:
-        raise ValueError("pilot does not expose 50 slot-specific editor views")
+    if projection.slot_editor_view_count != 60:
+        raise ValueError(
+            "runtime does not expose 60 slot-specific editor views"
+        )
 
     xml_path = ROOT / "defs" / f"{layout.rom}.xml"
     xdf_path = ROOT / "defs" / f"{layout.rom}.xdf"

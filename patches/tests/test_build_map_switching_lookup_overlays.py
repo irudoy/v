@@ -334,7 +334,11 @@ class BuildMapSwitchingLookupOverlaysTest(unittest.TestCase):
                 image[hook.address : hook.address + hook.width],
                 self.layout.byte_order,
             )
-            expected = hook.replacement if key in active_keys else hook.stock
+            expected = (
+                lookup_overlays._legacy_hook_replacement(hook)
+                if key in active_keys
+                else hook.stock
+            )
             self.assertEqual(actual, expected)
 
 

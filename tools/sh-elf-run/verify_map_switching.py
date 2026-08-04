@@ -24,6 +24,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import apply_map_switching
+from patches import (
+    build_map_switching_full_dfco_overlays as full_dfco_overlays,
+)
+from patches import jk08a_checksums as checksums
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
@@ -32,13 +36,14 @@ from patches import map_switching_layout as layout_model
 TOOL_DIR = Path(__file__).resolve().parent
 EXPECTED_SIMULATOR_VERSION = "16.3"
 EXPECTED_COMPOSITION_SHA256 = (
-    "e4ee7822f5bb10e6d884441cf22102e33ccbad3b28e489224df7969658a18c70"
+    "ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 5372
-EXPECTED_COMPOSITION_WRITE_BYTES = 5880
-EXPECTED_INSTRUCTION_COUNT = 387
-EXPECTED_CODE_ENTRY_COUNT = 10
-EXPECTED_DYNAMIC_CASES = 87
+EXPECTED_COMPOSITION_CHANGED_BYTES = 5630
+EXPECTED_COMPOSITION_WRITE_BYTES = 6144
+EXPECTED_INSTRUCTION_COUNT = 414
+EXPECTED_CODE_ENTRY_COUNT = 11
+EXPECTED_DYNAMIC_CASES = 116
+EXPECTED_OVERLAY_INSTRUCTION_COUNTS = (156, 156, 156, 324, 414)
 TEST_RAM_BASE = 0x01000000
 HIGH_RAM_BASE = 0xFFFF0000
 ROM_SIZE = 0x00100000
@@ -111,7 +116,7 @@ def preprocess_gnu_source(source):
         if match:
             line = f"{match.group(1)}.balign {match.group(2)}"
         immediate = re.match(
-            r"^(\s*)(add|and|cmp/eq|or|xor)\s+"
+            r"^(\s*)(add|and|cmp/eq|or|tst|xor)\s+"
             r"(?P<value>-?(?:0x[0-9a-f]+|[0-9]+)),",
             line,
             re.IGNORECASE,
@@ -227,6 +232,115 @@ def require_composition(layout, blobs):
             f"composition contract differs: actual={actual} expected={expected}"
         )
     return result
+
+
+def require_full_dfco_overlay_chain(layout, composition, blobs):
+    """Build all final overlays from GNU-assembled instruction bytes."""
+    source = bytearray(composition.data)
+    source[
+        full_dfco_overlays.limiter_gate.RESET_SELECTOR_LINE_START :
+        full_dfco_overlays.limiter_gate.RESET_SELECTOR_LINE_END
+    ] = bytes(128)
+    for key in (
+        *full_dfco_overlays.FULL_DFCO_UNIT_KEYS,
+        *full_dfco_overlays.SELECTOR_UNIT_KEYS,
+        *full_dfco_overlays.FEEDBACK_UNIT_KEYS,
+    ):
+        unit = layout.assembly_unit_by_key[key]
+        source[unit.span.start : unit.span.end] = (
+            bytes([unit.fill]) * unit.span.size
+        )
+    for key in (
+        *full_dfco_overlays.FULL_DFCO_HOOK_KEYS,
+        *full_dfco_overlays.SELECTOR_HOOK_KEYS,
+        *full_dfco_overlays.FEEDBACK_HOOK_KEYS,
+    ):
+        hook = full_dfco_overlays._hook_by_key(layout, key)
+        value = (
+            full_dfco_overlays.lookup_overlays
+            .LEGACY_OVERRUN_ADAPTER_ENTRY
+            if key in full_dfco_overlays.FULL_DFCO_HOOK_KEYS
+            else hook.stock
+        )
+        source[hook.address : hook.address + hook.width] = value.to_bytes(
+            hook.width, layout.byte_order
+        )
+    for family in full_dfco_overlays._full_dfco_families(layout):
+        for address in family.copies:
+            source[address : address + family.byte_length] = bytes(
+                [0xFF]
+            ) * family.byte_length
+        source[
+            family.pointer_table :
+            family.pointer_table + layout.pointer_table_size
+        ] = bytes([0xFF]) * layout.pointer_table_size
+    source = checksums.recalculate(source)
+    source_sha256 = hashlib.sha256(source).hexdigest()
+
+    try:
+        results = full_dfco_overlays.build_overlays(
+            source,
+            layout=layout,
+            payloads=blobs,
+            source_name="GNU synthetic lookup Overlay 14",
+            expected_source_sha256=source_sha256,
+            expected_output_sha256=None,
+        )
+    except full_dfco_overlays.FullDfcoOverlayError as error:
+        raise VerificationError(str(error)) from error
+
+    instruction_counts = tuple(
+        sum(
+            unit.instruction_count
+            for unit in layout.assembly_units
+            if unit.key in result.spec.active_unit_keys
+        )
+        for result in results
+    )
+    if instruction_counts != EXPECTED_OVERLAY_INSTRUCTION_COUNTS:
+        raise VerificationError(
+            "full-DFCO overlay instruction counts differ: "
+            f"actual={instruction_counts} "
+            f"expected={EXPECTED_OVERLAY_INSTRUCTION_COUNTS}"
+        )
+    if tuple(
+        result.spec.sequence for result in results
+    ) != (15, 16, 17, 18, 19):
+        raise VerificationError("full-DFCO overlay order differs")
+    if any(
+        result.spec.functional_selection_allowed for result in results[:-1]
+    ):
+        raise VerificationError("pre-final overlay is marked functional")
+    if not results[-1].spec.functional_selection_allowed:
+        raise VerificationError("stage 19 is not marked functional")
+
+    expected_final = bytearray(composition.data)
+    expected_final[
+        full_dfco_overlays.limiter_gate.RESET_SELECTOR_LINE_START :
+        full_dfco_overlays.limiter_gate.RESET_SELECTOR_LINE_END
+    ] = bytes(128)
+    expected_final = checksums.recalculate(expected_final)
+    if results[-1].data != expected_final:
+        raise VerificationError(
+            "stage 19 differs from the independently composed full runtime"
+        )
+
+    hardware_hashes = full_dfco_overlays.EXPECTED_OUTPUT_SHA256
+    if hardware_hashes is None or len(hardware_hashes) != len(results):
+        raise VerificationError(
+            "full-DFCO hardware hashes are not locked"
+        )
+    marker = (
+        f"VQ_SH_ELF_OVERLAYS status=PASS stages={len(results)} "
+        + " ".join(
+            f"stage{result.spec.sequence}_instructions={count} "
+            f"hardware_stage{result.spec.sequence}_sha256={digest}"
+            for result, count, digest in zip(
+                results, instruction_counts, hardware_hashes
+            )
+        )
+    )
+    return results, marker
 
 
 def alias_high_ram(value):
@@ -380,9 +494,9 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=120,
     )
     marker = (
-        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=87 selector=17 "
-        "adapters=47 limiter=14 feedback=9 feedback_invocations=17 "
-        "entries=10"
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=116 selector=17 "
+        "adapters=76 limiter=14 feedback=9 feedback_invocations=17 "
+        "entries=11"
     )
     if marker not in result.stdout:
         raise VerificationError(
@@ -488,12 +602,18 @@ def verify(verbose=False):
             layout, parsed_by_unit, blobs
         )
         composition = require_composition(layout, blobs)
+        overlay_results, overlay_marker = (
+            require_full_dfco_overlay_chain(
+                layout, composition, blobs
+            )
+        )
         fixture, relocated, differentiated, stubs = build_dynamic_fixture(
             composition, layout, parsed_by_unit
         )
         dynamic_marker = build_and_run_dynamic_harness(fixture, build_dir)
         incident_signal = verify_delay_slot_incident(build_dir)
 
+    print(overlay_marker)
     print(dynamic_marker)
     print(
         "VQ_SH_ELF_VERIFY status=PASS"

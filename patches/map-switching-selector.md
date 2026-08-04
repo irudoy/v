@@ -16,7 +16,7 @@ calibration/configuration partition differs from stock. The complete
 `0x20000..0xFFFFF` partition, ROM identity, patch anchors, and erased allocation
 must still match the exact baseline.
 
-The target pilot has five slots and eight switchable calibration families. Six
+The target pilot has five slots and ten switchable calibration families. Eight
 families use fail-closed lookup adapters. The two directly accessed rev-limiter
 families use complete RAM shadows refreshed as part of the same atomic commit.
 At patch time, Map 2 through Map 5 receive exact copies of the input Map 1
@@ -32,7 +32,7 @@ every control transfer and PC-relative reference from the locked machine word.
 `map_switching_compose.py` validates all locked blobs and applies code,
 calibration copies, pointer tables, and hooks to an in-memory image without
 exposing an output-file operation. `map-switching-payloads.toml` stores the
-seven validated machine-code spans as hexadecimal data.
+eight validated machine-code spans as hexadecimal data.
 `apply_map_switching.py` is the output boundary: it validates the input and
 payloads, invokes the compatible-input composition, recalculates every JK08A
 checksum domain, proves byte preservation outside the declared write set, and
@@ -43,22 +43,23 @@ machine-code scenario against final composed addresses.
 `tools/mapkit/map_switching.py` projects the same addresses into the common
 JK08A RomRaider and TunerPro definitions.
 
-Seven independent SH units are implemented: the selector host, shared
-fail-closed adapter helper, four lookup adapters, startup wrapper, atomic
-limiter transaction, CAN serializer wrapper, and feedback pulse engine. Ghidra
-12.1.2 assembles and round-trip decodes their 387 instructions and 158 literal
-bytes. The source validator restricts all injected code to the 28 used
+Eight independent SH assembly units are implemented: the selector host, shared
+fail-closed adapter helper, four legacy lookup adapters, four-family DFCO
+adapter, startup wrapper, atomic limiter transaction, CAN serializer wrapper,
+and feedback pulse engine. Ghidra 12.1.2 assembles and round-trip decodes their
+414 instructions and 194 literal bytes. The source validator restricts all
+injected code to an explicit 29-mnemonic subset
 mnemonics listed for the SH7058S SH-2E core in Renesas REJ09B0177 section 2.4.1;
 the SH-2A Ghidra profile cannot introduce an unaudited instruction. Global
 source and machine validation requires `NOP` after every delayed control
 transfer, preventing any instruction from acquiring delay-slot-specific
 hardware semantics. Its
-SuperH p-code emulators pass 17 selector, 47 adapter, 14
-startup/limiter, and nine feedback cases. The seven generated raw blobs are
+SuperH p-code emulators pass 17 selector, 76 adapter, 14
+startup/limiter, and nine feedback cases. The eight generated raw blobs are
 SHA-256 locked in the layout manifest. Their complete spans are tracked in the
 payload bundle; independently rebuilt raw blobs and listings remain
 regenerable temporary artifacts. The complete-composition harness passes the
-same 87 cases over 4572 instructions, executes all ten declared code entries,
+same 116 cases over 5140 instructions, executes all eleven declared code entries,
 and verifies the locked fixture SHA-256 and write boundary. The patcher extends
 this pure composition with input compatibility, checksum recalculation,
 non-overwriting file creation, and final preservation checks.
@@ -510,9 +511,9 @@ endpoint while retaining the successful limiter runtime.
 The ordered SHA-256 manifest is
 `tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-overlay-v2-lookup.sha256`.
 Ghidra 12.1.2 independently rebuilds the 48-byte helper and 256-byte adapter
-spans with their locked SHA-256 values and passes 47/47 adapter p-code cases
-over 718 instructions. The complete-composition harness passes 87 cases over
-4572 instructions, and the exact Overlay 06/07 caller gate passes seven cases
+spans with their locked SHA-256 values and passes 47/47 legacy-adapter p-code
+cases over 718 instructions. The current complete-composition harness passes
+116 cases over 5140 instructions, and the exact Overlay 06/07 caller gate passes seven cases
 over 2333 instructions. RomRaider source commit
 `874325319be98fc487e3875e5b26d25b8869e162` verifies revision-2 stages 06 and 07
 as `ChecksumALT` 2/2 and `ChecksumALT2` 4/4, and recalculation is byte-identical.
@@ -531,13 +532,58 @@ It does not establish lookup behavior under engine conditions. Selector-host
 execution and CAN feedback remain absent from this chain and retain separate
 hardware gates.
 
-The complete instruction audit covers all 387 final-runtime instructions. It
-independently verifies 34 delayed transfers and their encoded `NOP` slots, 43
-PC-relative references and their effective literal addresses, 69 direct branch
-targets, and 20 indirect control-transfer encodings. The startup-trampoline and
+`build_map_switching_full_dfco_overlays.py` emits five cumulative hardware
+gates from the byte-identical stage-14 readback. Stage 15 installs the inactive
+96-byte four-family DFCO adapter, four Map 1-equivalent Hold copies, four Map
+1-equivalent Intermediate Restore copies, and their pointer tables. Stage 16
+routes the shared Hold and Entry call site at `0x4FDD0` through the new adapter.
+Stage 17 routes the shared Full and Intermediate Restore call site at `0x50258`
+through the same adapter. Stages 15 through 17 have no selector-host code or
+hook and therefore remain fixed on Map 1. Stage 18 installs the 360-byte
+selector-host unit and activates the scheduler literal at `0xCE8DC`, while the
+CAN serializer literal at `0xC3FA4` remains stock and both feedback units
+remain erased. A completed selector gesture would queue visual feedback that
+cannot drain, so no map-selection gesture is permitted on stage 18. Stage 19
+installs the 128-byte feedback wrapper, the 256-byte pulse engine, and the
+serializer hook. Stage 19 equals the complete ten-family runtime endpoint for
+the hardware source.
+
+| Stage | Newly active component | SHA-256 | MD5 |
+|---:|---|---|---|
+| 15 | Inactive full-DFCO adapter, Hold and Intermediate Restore Map 1 storage | `5b7816f7be70e12f1312dbff9727df9a5677192811515ce8f6b66d1793bea7f2` | `c26b83085b76befe0ace9aaa7f99e0b6` |
+| 16 | Shared Hold and Entry hook at `0x4FDD0` | `84796d58bdd3c45ba4c6774f936bedd54109cbee7a60053dcecf0b38c4777e58` | `aeea9d950f02ed177298fa03ca3fb7b1` |
+| 17 | Shared Full and Intermediate Restore hook at `0x50258` | `e89bd22402e416c9178286b554b1d1d054586c49096574d1c88d9bd5e96f9e0d` | `a3bbd6562236859726824bce5311746f` |
+| 18 | Selector host and scheduler hook; boot-only, no map gesture | `4732168ad4aa0f8b8bf11e0b25b1ae506eed50713c789d3fb4297fafa9c37ac0` | `b966ac0ab8fe41c57f19913ffae7c057` |
+| 19 | CAN feedback wrapper, pulse engine, and serializer hook; complete runtime | `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1` | `0ae4b2be585c46cd6addea01c6e845dd` |
+
+Stages 15 through 19 change `270, 9, 9, 365, 208` bytes from their immediate
+predecessors inside adjacent permitted sets of `284, 24, 24, 384, 408` bytes.
+Every image is one MiB, passes all six checksum references, preserves every
+byte outside its cumulative component and checksum write set, and is locked to
+source SHA-256
+`f0a03f6fef205aa1ac42e4471dd0bad995a7082c35d24bdb639fc342ccdda892`.
+Their ordered manifest is
+`tmp/hardware-full-dfco/1JK08A-map-switching-safe-v3-full-dfco.sha256`.
+
+The production composition is
+`rom-images/23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin`.
+Its checksum-valid tuned input has SHA-256
+`1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471`;
+the output has SHA-256
+`0efb43e6cf1feba91bf0beb19120d8f54d996a72650868a5469a0d81ede98da6`
+and MD5 `693917aad583784b082f0cec77bad4cc`. It differs from stage 19 at
+exactly the 128 bytes in `[0x8080, 0x8100)`: the production input retains
+`0xEE`, while the PCMFlash readback-derived hardware chain retains the accepted
+zero-filled line. No checksum field differs.
+
+The complete instruction audit covers all 414 final-runtime instructions. It
+independently verifies 39 delayed transfers and their encoded `NOP` slots, 52
+PC-relative references and their effective literal addresses, 77 direct branch
+targets, and 21 indirect control-transfer encodings. The startup-trampoline and
 startup-selector-init gate sources add 13 alternative instruction instances,
 three delayed transfers, and three PC-relative references under the same gate.
-All nine source units rebuild through Ghidra with their exact locked hashes.
+All ten source units, including the two historical startup gates, rebuild
+through Ghidra with their exact locked hashes.
 The corrected exact-stock full-ROM fixture has SHA-256
 `b092abe21ca412a88e3ced398354763a3ab6b778f5a1c3b3a8e2e4e507ce232f`;
 its startup harness passes at 1810 instructions and its exact reset differential
@@ -557,8 +603,10 @@ The pilot contains these independently switched storage families:
 | Fuel | Fuel Compensation Main | `0x0A29A` | `16x16 uint8` |
 | Rev limiter | Rev Limit - Fuel Cut | `0x0934E` | `2x2 uint16` |
 | Rev limiter | Rev Limit - Throttle Cut | `0x0942C` | `1x uint16` |
+| Overrun | DFCO Hold RPM Threshold | `0x126E4` | `1x16 uint8` |
 | Overrun | DFCO Entry RPM Threshold | `0x12718` | `1x16 uint8` |
 | Overrun | DFCO Full Restore RPM Threshold | `0x12818` | `1x16 uint8` |
+| Overrun | DFCO Intermediate Restore RPM Threshold | `0x1298C` | `1x16 uint8` |
 
 The ignition pair is switched together so the high-detonation fallback cannot
 remain on a different slot. The two main fuel tables are switched together
@@ -581,12 +629,12 @@ limiter, shared axes, knock sensitivity, VTC/VVEL, sensor models, and diagnostic
 objects remain global in the pilot.
 
 Exact-ROM access paths, hook literals, copy allocations, and fail-closed
-selection behavior are closed for all eight families at the reference-model
-level. The six adapter-backed families have assembled and p-code-emulated
+selection behavior are closed for all ten families at the reference-model
+level. The eight adapter-backed families have assembled and p-code-emulated
 accessors, and both direct limiter families have an assembled atomic shadow
 transaction and startup path. The selector and feedback paths are also
 assembled and p-code-emulated. Deterministic byte composition is closed for the
-locked `10, 10` feedback configuration, including execution of all 87 p-code
+locked `10, 10` feedback configuration, including execution of all 116 p-code
 cases against the complete composition. The patcher recalculates and verifies
 all checksum domains. V36 meter behavior, real selector input, timing, and
 engine behavior remain hardware gates.
@@ -824,7 +872,7 @@ The eight-byte record at `0xFFF80..0xFFF87` is preserved:
 ```
 
 Bytes after that record are not claimed as free space. The manifest claims the
-half-open interval `[0xD2108, 0xD3860)`:
+half-open interval `[0xD2108, 0xD4000)`:
 
 | ROM range | Purpose |
 |---|---|
@@ -835,26 +883,32 @@ half-open interval `[0xD2108, 0xD3860)`:
 | `0xD2340..0xD237F` | ignition lookup adapter |
 | `0xD2380..0xD23BF` | fuel-compensation lookup adapter |
 | `0xD23C0..0xD23FF` | fuel-target lookup adapter |
-| `0xD2400..0xD247F` | overrun Cut and Restore copies |
-| `0xD2480..0xD24FF` | alignment reserve |
+| `0xD2400..0xD247F` | DFCO Entry and Full Restore copies |
+| `0xD2480..0xD24DF` | four-family DFCO lookup adapter |
+| `0xD24E0..0xD24F3` | DFCO Hold five-entry pointer table |
+| `0xD24F4..0xD24FF` | alignment reserve |
 | `0xD2500..0xD28FF` | Ignition Timing Trim Main copies |
 | `0xD2900..0xD2CFF` | Ignition Timing Trim High Det copies |
 | `0xD2D00..0xD30FF` | Fuel Targets copies |
 | `0xD3100..0xD34FF` | Fuel Compensation Main copies |
 | `0xD3500..0xD351F` | Rev Limit - Fuel Cut copies |
 | `0xD3520..0xD3527` | Rev Limit - Throttle Cut copies |
-| `0xD3528..0xD353F` | alignment reserve |
+| `0xD3528..0xD353B` | DFCO Intermediate Restore five-entry pointer table |
+| `0xD353C..0xD353F` | alignment reserve |
 | `0xD3540..0xD35DF` | eight five-entry ROM pointer tables |
 | `0xD35E0..0xD365F` | CAN 0x551 CRUISE-feedback wrapper |
 | `0xD3660..0xD375F` | atomic limiter-shadow commit |
 | `0xD3760..0xD385F` | fail-closed feedback pulse engine and frame-count configuration |
-| `0xD3860..0xE1C29` | unallocated within the conservative free region |
+| `0xD3860..0xD3F7F` | unallocated by map switching; available to a separately validated extension |
+| `0xD3F80..0xD3FBF` | DFCO Hold copies |
+| `0xD3FC0..0xD3FFF` | DFCO Intermediate Restore copies |
+| `0xD4000..0xE1C29` | unallocated within the conservative free region |
 | `0xE1C2A..0xFFF7F` | fill tail, not allocated by this contract |
 
 Code ranges are fixed envelopes; assembly must fit each entry without changing
 the calibration or pointer-table addresses. Unused bytes remain `0xFF`.
 
-`AuditFreeRegion.java D2108 D385F FF` is the reproducible gate for the claimed
+`AuditFreeRegion.java D2108 D3FFF FF` is the reproducible gate for the claimed
 allocation interval. `AuditFreeRegion.java D2108 E1C29 FF` additionally checks
 the remaining conservative region. Both runs require `status=PASS` with zero
 bad bytes, instructions, data objects, functions, and references.
@@ -863,7 +917,7 @@ bad bytes, instructions, data objects, functions, and references.
 
 ### Adapter-backed families
 
-Six families enter stock interpolation wrappers through replaceable function
+Eight families enter stock interpolation wrappers through replaceable function
 literals. Each injected adapter recognizes only its approved canonical bases,
 selects one pointer from the manifest table, and tail-jumps to the original
 wrapper with the incoming PR. Every unrecognized base passes through unchanged.
@@ -871,8 +925,10 @@ An invalid index selects map 1.
 
 | Family | Stock base | Stock wrapper | Hook literals | Adapter | Maps 2-5 |
 |---|---:|---:|---|---:|---|
-| DFCO Entry RPM Threshold | `0x12718` | `0x26388` | `0x4FDD0` | `0xD2300` | `0xD2400`, `0xD2410`, `0xD2420`, `0xD2430` |
-| DFCO Full Restore RPM Threshold | `0x12818` | `0x26388` | `0x50258` | `0xD2300` | `0xD2440`, `0xD2450`, `0xD2460`, `0xD2470` |
+| DFCO Hold RPM Threshold | `0x126E4` | `0x26388` | `0x4FDD0` | `0xD2480` | `0xD3F80`, `0xD3F90`, `0xD3FA0`, `0xD3FB0` |
+| DFCO Entry RPM Threshold | `0x12718` | `0x26388` | `0x4FDD0` | `0xD2480` | `0xD2400`, `0xD2410`, `0xD2420`, `0xD2430` |
+| DFCO Full Restore RPM Threshold | `0x12818` | `0x26388` | `0x50258` | `0xD2480` | `0xD2440`, `0xD2450`, `0xD2460`, `0xD2470` |
+| DFCO Intermediate Restore RPM Threshold | `0x1298C` | `0x26388` | `0x50258` | `0xD2480` | `0xD3FC0`, `0xD3FD0`, `0xD3FE0`, `0xD3FF0` |
 | Ignition Timing Trim Main | `0x09A1A` | `0x26230` | `0x496C0`, `0x4E474`, `0x4E58C` | `0xD2340` | `0xD2500`, `0xD2600`, `0xD2700`, `0xD2800` |
 | Ignition Timing Trim High Det | `0x09B1A` | `0x26230` | `0x496C0`, `0x4E474`, `0x4E58C` | `0xD2340` | `0xD2900`, `0xD2A00`, `0xD2B00`, `0xD2C00` |
 | Fuel Targets | `0x0B33A` | `0x261B8` | `0xC0020` | `0xD23C0` | `0xD2D00`, `0xD2E00`, `0xD2F00`, `0xD3000` |
@@ -880,13 +936,11 @@ An invalid index selects map 1.
 
 The ignition adapter receives Main, High Det, and Cold bases from shared call
 sites. It redirects `0x09A1A` and `0x09B1A` only. Cold
-`0x0991A` and every other base continue to stock storage. The overrun adapter
-likewise leaves `0x126E4` and `0x1298C` unchanged. Exact JK08A code uses all
-four overrun tables dynamically: `0x12718` is the rising-edge entry threshold,
+`0x0991A` and every other base continue to stock storage. The DFCO adapter
+recognizes all four live overrun tables dynamically: `0x12718` is the rising-edge entry threshold,
 `0x126E4` is the held-request threshold, `0x12818` is the lower/full-restore
-threshold, and `0x1298C` is the upper/intermediate-restore threshold. The
-current adapter therefore provides partial DFCO switching rather than a
-complete switch of DFCO calibration behavior.
+threshold, and `0x1298C` is the upper/intermediate-restore threshold. Every
+other base continues to stock storage.
 
 `FUN_0004FBE2` calls the overrun Cut wrapper for `0x126E4` at `0x4FC08` and
 `0x12718` at `0x4FC16`. `FUN_00050018` calls the Restore wrapper for `0x1298C`
@@ -914,12 +968,13 @@ The wrapper-specific input registers and callee-visible state remain unchanged.
 `AssemblyBuffer`, so assembly does not patch the exact stock program. It emits
 a bounded raw blob, round-trip decodes every instruction with the same
 `SuperH:BE:32:SH-2A` language, and refuses to overwrite a different output.
-The layout locks the two units:
+The layout locks the three adapter units:
 
 | Unit | ROM envelope | Instructions | Data bytes | Blob SHA-256 |
 |---|---|---:|---:|---|
 | Shared helper | `0xD2270..0xD229F` | 11 | 4 | `40cea0183a38d189808b7637ea47cb594d8cb56ee615efb246c714da5f499a34` |
 | Four adapters | `0xD2300..0xD23FF` | 48 | 64 | `a938e1334e7850a0c368c50e98dbbdf67bc2589524025659a31d5b5f328c0e6c` |
+| Four-family DFCO adapter | `0xD2480..0xD24DF` | 27 | 36 | `2a5a65671e077400b753cb7fabb15c0520ddd7e96be8234e44297b6cd7052ba7` |
 
 `map_switching_assembly.py` independently verifies that each entry label and
 literal matches the authoritative manifest. The source may use only
@@ -934,11 +989,11 @@ required because an SH-2E PC-relative move in that slot derives its PC from the
 branch destination rather than the static slot address.
 
 `tools/ghidra/EmulateMapSwitchingAdapters.java` executes the assembled bytes,
-not the Python reference model. Its 47 cases cover all five slots for all six
-families, active indices 5 and 255, Cold Ignition, both unredirected overrun bases,
-unknown fuel bases, exact stock-wrapper destinations, and preservation of
-`r5..r15`, PR, GBR, MACH, and MACL. The result is 47/47 PASS over 718
-executed instructions.
+not the Python reference model. Its 76 cases cover all five slots for all eight
+families, active indices 5 and 255, Cold Ignition, the historical overrun
+pass-through cases, unknown bases, exact stock-wrapper destinations, and
+preservation of `r5..r15`, PR, GBR, MACH, and MACL. The result is 76/76 PASS
+over 1286 executed instructions.
 
 This closes the standalone machine-code gate for lookup adapters. The
 complete-composition harness separately executes the adapters with the
@@ -1087,46 +1142,46 @@ silicon behavior.
 
 ## Composition and output gates
 
-`map_switching_compose.py` accepts exactly the seven manifest-locked assembly
-blobs. It validates every length and SHA-256, materializes 32 calibration
-copies and eight five-entry pointer tables, applies all 14 hook literals, and
+`map_switching_compose.py` accepts exactly the eight manifest-locked assembly
+blobs. It validates every length and SHA-256, materializes 40 calibration
+copies and ten five-entry pointer tables, applies all 14 hook literals, and
 places every assembly unit at its declared final address. The complete result
 is compared byte-for-byte with the declared write set.
 
 The locked exact-stock fixture produces:
 
 ```text
-in_memory_sha256=e4ee7822f5bb10e6d884441cf22102e33ccbad3b28e489224df7969658a18c70
-changed_bytes=5372
-permitted_write_bytes=5880
+in_memory_sha256=ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd
+changed_bytes=5630
+permitted_write_bytes=6144
 feedback_frame_counts=10,10
-instruction_placements=387
-code_entries=10
+instruction_placements=414
+code_entries=11
 ```
 
-The 5880-byte write set consists of 5824 bytes allocated under the layout plus
+The 6144-byte write set consists of 6088 bytes allocated under the layout plus
 56 bytes occupied by the 14 four-byte hook literals. Filler bytes and source
 bytes that already equal their composed values are permitted writes but do not
 appear in `changed_bytes`. Any changed byte outside this set fails validation.
 Every source instruction is also tied to the corresponding bytes at its final
-absolute address, and all ten declared code entries must begin on an
+absolute address, and all eleven declared code entries must begin on an
 instruction. Ghidra independently round-trip decodes the same SHA-locked blobs.
 
 `EmulateMapSwitchingComposition.java` begins with the exact one-MiB stock
-program, independently applies the seven blobs, 14 hooks, 32 copies, and eight
+program, independently applies the eight blobs, 14 hooks, 40 copies, and ten
 pointer tables, and refuses any fixture whose hash or write boundary differs.
 Each scenario receives a fresh emulator loaded with the complete fixture.
 Deterministic stubs replace only the three stock callees outside the injected
 implementation; feedback cases may additionally replace only the two
-frame-count bytes. The harness executes the same 17 selector, 47 adapter, 14
-startup/limiter, and nine feedback scenarios over 4572 instructions. It
-reaches all ten declared code entries, checks real copied calibration bytes,
+frame-count bytes. The harness executes the same 17 selector, 76 adapter, 14
+startup/limiter, and nine feedback scenarios over 5140 instructions. It
+reaches all eleven declared code entries, checks real copied calibration bytes,
 verifies exact limiter SR restoration, and permits only the caller-clobbered T
 bit to differ on comparison-heavy adapter, selector, and feedback paths.
 
 This hash identifies an ephemeral verification result, not a ROM release.
 Stored checksum fields remain stock, `flashable=false`, and the pure composer
-has no output-file option. Nine Python cases cover deterministic composition,
+has no output-file option. Python tests cover deterministic composition,
 complete blob-set enforcement, hash rejection, hooks, copies, pointer tables,
 locked feedback counts, rejection of an out-of-contract byte, and static
 agreement between the Ghidra harness and the authoritative layout manifest.
@@ -1135,19 +1190,19 @@ agreement between the Ghidra harness and the authoritative layout manifest.
 changes only below `0x20000`, while requiring the exact calibration identity,
 hook anchors, CAN serializer anchors, erased allocation, and complete protected
 upper partition. It also requires a self-consistent input checksum state. The
-patcher initializes all 32 alternate-map copies from the input Map 1 values,
-installs the eight pointer tables, 14 hooks, and seven tracked payloads, then
+patcher initializes all 40 alternate-map copies from the input Map 1 values,
+installs the ten pointer tables, 14 hooks, and eight tracked payloads, then
 recalculates checksums in this order:
 
 ```text
 self-test B -> self-test A -> SUM16 A -> SUM16 B
 ```
 
-The final declared write set contains the 5880 composition bytes plus 20
+The final declared write set contains the 6144 composition bytes plus 20
 checksum-reference bytes. Every input byte outside this set must remain exact.
 The output is independently checksum-verified before an exclusive create, and
-an MD5 sidecar is created for the flashing workflow. Thirteen patcher cases and
-four checksum cases cover compatible calibration changes, exact preservation,
+an MD5 sidecar is created for the flashing workflow. Patcher and checksum tests
+cover compatible calibration changes, exact preservation,
 slot initialization, payload locks, checksum recalculation, wrong identity,
 changed code or anchors, occupied storage, repeat application, and
 non-overwriting output behavior.
@@ -1198,20 +1253,20 @@ tables, hooks, and RAM shadows. Both the calibration materializer and definition
 projection consume this manifest, so ROM storage, RomRaider XML, and TunerPro
 XDF cannot drift.
 
-The projection contains 40 slot-specific calibration tables. The masked bit-7
+The projection contains 50 slot-specific calibration tables. The masked bit-7
 views for both switched ignition families add ten slot-specific editor views,
-for 50 slot-specific views in total. Cold ignition keeps its one global masked
+for 60 slot-specific views in total. Cold ignition keeps its one global masked
 view. A read-only validation against the live graph and tracked common
 definitions reports:
 
 ```text
-canonical graph maps:       446
-projected maps:             478
-calibration tables:          44
+canonical graph maps:       450
+projected maps:             490
+calibration tables:          58
 masked views:                11
-slot calibration tables:     40
+slot calibration tables:     50
 slot masked views:           10
-slot editor views:           50
+slot editor views:           60
 ```
 
 `tools/mapkit/validate_map_switching.py` renders every RomRaider table fragment
@@ -1412,27 +1467,37 @@ verifies the recalculated output before writing it.
    `PASS_EXACT`: stages 06 through 13 pass write, power cycle, and
    identification, while the byte-identical stage-14 readback gives the
    complete lookup endpoint status `PASS_EXACT`.
-6. Add selector-host execution in a subsequent single-feature stage. Add CAN
-   feedback last.
-7. Patch a checksum-valid compatible input with `apply_map_switching.py` and
+6. Write full-DFCO stages 15 through 17 in numeric order, power cycle, and
+   confirm identification after each write. Stage 15 installs inactive code,
+   Map 1-equivalent Hold and Intermediate Restore storage, and pointer tables.
+   Stage 16 activates the shared Hold and Entry hook. Stage 17 activates the
+   shared Full and Intermediate Restore hook. Selector-host and CAN feedback
+   remain absent in all three stages.
+7. Write stage 18, power cycle, and confirm identification without operating
+   the ASCD selector buttons. This stage is a boot-only selector-host gate; a
+   completed selection would queue feedback that cannot drain while the CAN
+   serializer remains stock. Then write stage 19, power cycle, confirm
+   identification, and obtain the complete readback before functional map
+   selection. Stage 19 adds CAN feedback and is the complete runtime endpoint.
+8. Patch a checksum-valid compatible input with `apply_map_switching.py` and
    retain the reported input/output SHA-256 values and MD5 sidecar.
-8. Verify that Map 2 through Map 5 equal the input Map 1 in all eight families,
+9. Verify that Map 2 through Map 5 equal the input Map 1 in all ten families,
    all checksum domains pass, and the common `JK08A` XML/XDF projection matches
    the layout.
-9. Confirm the raw ladder sequence `SET -> CANCEL -> SET` on the target switch
+10. Confirm the raw ladder sequence `SET -> CANCEL -> SET` on the target switch
    assembly.
-10. With the vehicle stationary and the engine stopped, confirm that CAN 0x551
+11. With the vehicle stationary and the engine stopped, confirm that CAN 0x551
    byte 5 state `2` produces the CRUISE indication and that the locked `10, 10`
    timing gives a visible pulse. This is the first silicon check of the explicit
    feedback hypothesis and does not require a separate stock-period capture.
-11. Verify one through five indication pulses and confirm that stock ASCD control
+12. Verify one through five indication pulses and confirm that stock ASCD control
    state remains unchanged.
-12. Confirm reset Map 1 and raw DID 0x130E bit 7 on a bench ECU or the target
+13. Confirm reset Map 1 and raw DID 0x130E bit 7 on a bench ECU or the target
    vehicle.
-13. Measure the extended startup clear and commit critical-section latency.
-14. Confirm unchanged lookup outputs for every input index in all five selector
+14. Measure the extended startup clear and commit critical-section latency.
+15. Confirm unchanged lookup outputs for every input index in all five selector
    states.
-15. Start the engine with byte-identical maps and exercise all five selections
+16. Start the engine with byte-identical maps and exercise all five selections
    before changing any alternate map.
 
 Ground truth remains the physical ECU and engine.

@@ -18,21 +18,26 @@ The first run builds `vq-sh-elf-run:16.3`. Later runs reuse Docker layers. Set
 Dockerfile. Docker's standard `DOCKER_CONTEXT` variable selects a non-default
 local context when required.
 
-The gate performs four independent checks:
+The gate performs five independent checks:
 
-1. GNU `sh-elf-as --isa=sh2e` assembles all seven source units. Explicit
+1. GNU `sh-elf-as --isa=sh2e` assembles all eight source units. Explicit
    instruction and data bytes are reconstructed over each declared `0xFF`
    envelope and must be byte-identical to the SHA-locked Ghidra payloads.
 2. Those independent bytes build the exact non-flashable one-MiB composition.
-   Its SHA-256, write boundary, 387 instruction placements, and ten entries are
+   Its SHA-256, write boundary, 414 instruction placements, and eleven entries are
    locked before any simulator-only transformation.
-3. `sh-elf-run` executes 87 behavior cases: 47 adapter cases, 14 limiter and
+3. The GNU-assembled bytes independently build the five cumulative full-DFCO
+   hardware-overlay compositions. Stages 15 through 17 each contain 156
+   instruction placements, stage 18 contains 324, and stage 19 contains all
+   414. The exact hardware-output hashes are locked, and stage 19 must equal
+   the complete ten-family runtime endpoint.
+4. `sh-elf-run` executes 116 behavior cases: 76 adapter cases, 14 limiter and
    startup cases, 17 selector cases, and nine feedback sequences containing 17
    wrapper invocations. Every declared implementation entry executes. Map
    copies receive distinct simulator-only values so a wrong slot cannot pass
    merely because all initial copies equal Map 1. Only documented stock callees
    outside the implementation are replaced with `RTS/NOP` stubs.
-4. A separate ELF places the exact failed Overlay 07 words `AFAC D304` at
+5. A separate ELF places the exact failed Overlay 07 words `AFAC D304` at
    `0xD2314`. GNU simulator 16.3 must stop with signal 4. A control ELF at the
    same addresses replaces only `D304` with `NOP` and must return normally.
 
@@ -66,9 +71,10 @@ exists, the resulting image must not be described as ready for hardware or
 supplied for flashing. Passing this gate does not model ECU peripherals, prove a
 complete reset sequence, or replace bench and engine validation.
 
-A successful run ends with both markers:
+A successful run includes all three markers:
 
 ```text
-VQ_SH_ELF_MAP_SWITCHING status=PASS cases=87 selector=17 adapters=47 limiter=14 feedback=9 feedback_invocations=17 entries=10
+VQ_SH_ELF_OVERLAYS status=PASS stages=5 stage15_instructions=156 stage16_instructions=156 stage17_instructions=156 stage18_instructions=324 stage19_instructions=414 ...
+VQ_SH_ELF_MAP_SWITCHING status=PASS cases=116 selector=17 adapters=76 limiter=14 feedback=9 feedback_invocations=17 entries=11
 VQ_SH_ELF_VERIFY status=PASS ... unsafe_signal=4
 ```

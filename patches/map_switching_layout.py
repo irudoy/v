@@ -533,11 +533,13 @@ def validate_structure(layout):
         raise ValueError("source_sha256 is not hexadecimal") from error
     if not layout.free_rom.contains(layout.claimed_rom):
         raise ValueError("claimed ROM range is outside the audited free region")
-    if len(layout.families) != 8:
-        raise ValueError("the pilot contract requires eight calibration families")
+    if len(layout.families) != 10:
+        raise ValueError("the production contract requires ten calibration families")
     required_family_keys = {
+        "over_run_fuel_hold",
         "over_run_fuel_cut",
         "over_run_fuel_restore",
+        "over_run_fuel_intermediate_restore",
         "ignition_timing_trim_main",
         "ignition_timing_trim_high_det",
         "fuel_targets",
@@ -914,9 +916,10 @@ def validate_structure(layout):
     shadow_count = sum(
         family.access_kind == "ram_shadow" for family in layout.families
     )
-    if (adapter_count, shadow_count) != (6, 2):
+    if (adapter_count, shadow_count) != (8, 2):
         raise ValueError(
-            "pilot access split must contain six adapters and two RAM shadows"
+            "production access split must contain eight adapters and two "
+            "RAM shadows"
         )
 
     expected_assembled_regions = {
@@ -924,6 +927,7 @@ def validate_structure(layout):
         "adapter_select_helper",
         "startup_wrapper",
         "overrun_adapter",
+        "full_dfco_adapter",
         "ignition_adapter",
         "fuel_compensation_adapter",
         "fuel_targets_adapter",

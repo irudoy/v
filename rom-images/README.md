@@ -241,3 +241,21 @@ Immobilizer flag whose execution path is described in
 Stored checksum fields match stock; the flasher performs the required correction
 when writing. The patcher test verifies byte-for-byte that the derived file
 differs from stock by exactly one bit.
+
+## Derived ten-family map-switching production image
+
+`23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin`
+is the complete five-slot runtime over the checksum-valid tuned JK08A input.
+It includes per-slot DFCO Hold, Entry, Full Restore, and Intermediate Restore
+tables in addition to the ignition, fuel, and limiter families.
+
+| File | Size | Source SHA-256 | Output SHA-256 | Status |
+|------|-----:|----------------|----------------|--------|
+| `23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin` | 1,048,576 | `1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471` | `0efb43e6cf1feba91bf0beb19120d8f54d996a72650868a5469a0d81ede98da6` | software-verified; hardware stages pending |
+
+All six checksum references pass. The GNU SH-2E and Ghidra p-code gates each
+execute 116 map-switching scenarios across all 11 implementation entries.
+The hardware overlay chain ends at SHA-256
+`e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1`;
+it differs from this production file only in the accepted PCMFlash
+`0x8080..0x80FF` line variant.

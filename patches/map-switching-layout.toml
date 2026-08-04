@@ -14,7 +14,7 @@ byte_order = "big"
 free_rom_start = 0x000D2108
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D2108
-claimed_rom_end = 0x000D3860
+claimed_rom_end = 0x000D4000
 
 [ram]
 reservation_start = 0xFFFF5D00
@@ -94,6 +94,12 @@ end = 0x000D2400
 entry = 0x000D23C0
 
 [[code_region]]
+key = "full_dfco_adapter"
+start = 0x000D2480
+end = 0x000D24E0
+entry = 0x000D2480
+
+[[code_region]]
 key = "cruise_feedback_wrapper"
 start = 0x000D35E0
 end = 0x000D3660
@@ -151,6 +157,18 @@ code_regions = [
     "fuel_compensation_adapter",
     "fuel_targets_adapter",
 ]
+
+[[assembly_unit]]
+key = "full_dfco_adapter"
+source = "map-switching-full-dfco-adapter.s"
+start = 0x000D2480
+end = 0x000D24E0
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "2a5a65671e077400b753cb7fabb15c0520ddd7e96be8234e44297b6cd7052ba7"
+instruction_count = 27
+data_bytes = 36
+code_regions = ["full_dfco_adapter"]
 
 [[assembly_unit]]
 key = "startup_wrapper"
@@ -228,16 +246,16 @@ key = "overrun_cut_lookup"
 address = 0x0004FDD0
 width = 4
 stock = 0x00026388
-replacement = 0x000D2300
-purpose = "Route the shared overrun cut lookup through a pass-through adapter."
+replacement = 0x000D2480
+purpose = "Route the shared DFCO Hold and Entry lookups through the four-family adapter."
 
 [[hook]]
 key = "overrun_restore_lookup"
 address = 0x00050258
 width = 4
 stock = 0x00026388
-replacement = 0x000D2300
-purpose = "Route the shared overrun restore lookup through a pass-through adapter."
+replacement = 0x000D2480
+purpose = "Route the shared DFCO Full and Intermediate Restore lookups through the four-family adapter."
 
 [[hook]]
 key = "ignition_lookup_493e8"
@@ -320,6 +338,20 @@ replacement = 0x000D35E0
 purpose = "Call the stock CAN 0x551 serializer and then override only its cruise-status field while feedback is active."
 
 [[family]]
+key = "over_run_fuel_hold"
+group = "overrun"
+name = "DFCO Hold RPM Threshold"
+canonical_address = 0x000126E4
+width = 16
+height = 1
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "full_dfco_adapter"
+copy_alignment = 16
+copies = [0x000D3F80, 0x000D3F90, 0x000D3FA0, 0x000D3FB0]
+pointer_table = 0x000D24E0
+
+[[family]]
 key = "over_run_fuel_cut"
 group = "overrun"
 name = "DFCO Entry RPM Threshold"
@@ -328,7 +360,7 @@ width = 16
 height = 1
 storage_type = "uint8"
 access_kind = "adapter"
-adapter = "overrun_adapter"
+adapter = "full_dfco_adapter"
 copy_alignment = 16
 copies = [0x000D2400, 0x000D2410, 0x000D2420, 0x000D2430]
 pointer_table = 0x000D3540
@@ -342,10 +374,24 @@ width = 16
 height = 1
 storage_type = "uint8"
 access_kind = "adapter"
-adapter = "overrun_adapter"
+adapter = "full_dfco_adapter"
 copy_alignment = 16
 copies = [0x000D2440, 0x000D2450, 0x000D2460, 0x000D2470]
 pointer_table = 0x000D3554
+
+[[family]]
+key = "over_run_fuel_intermediate_restore"
+group = "overrun"
+name = "DFCO Intermediate Restore RPM Threshold"
+canonical_address = 0x0001298C
+width = 16
+height = 1
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "full_dfco_adapter"
+copy_alignment = 16
+copies = [0x000D3FC0, 0x000D3FD0, 0x000D3FE0, 0x000D3FF0]
+pointer_table = 0x000D3528
 
 [[family]]
 key = "ignition_timing_trim_main"

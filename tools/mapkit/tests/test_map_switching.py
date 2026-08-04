@@ -110,12 +110,12 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             self.maps, self.overrides, self.layout
         )
 
-    def test_projection_contains_forty_tables_and_fifty_slot_views(self):
+    def test_projection_contains_fifty_tables_and_sixty_slot_views(self):
         projection = self.project()
-        self.assertEqual(projection.slot_table_count, 40)
+        self.assertEqual(projection.slot_table_count, 50)
         self.assertEqual(projection.slot_masked_view_count, 10)
-        self.assertEqual(projection.slot_editor_view_count, 50)
-        self.assertEqual(len(projection.switchable_addresses), 40)
+        self.assertEqual(projection.slot_editor_view_count, 60)
+        self.assertEqual(len(projection.switchable_addresses), 50)
 
     def test_projection_uses_manifest_addresses_names_and_categories(self):
         projection = self.project()
@@ -371,7 +371,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             [],
             [],
         )
-        self.assertEqual(stats["calibration_tables"], 41)
+        self.assertEqual(stats["calibration_tables"], 51)
         self.assertEqual(stats["masked_views"], 11)
         self.assertIn("<title>Map 5 - Fuel Targets</title>", xdf)
         self.assertIn('mmedaddress="0xD3000"', xdf)
@@ -386,7 +386,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             "JK08A", self.maps, self.overrides
         )
         self.assertIsNotNone(projection)
-        self.assertEqual(projection.slot_editor_view_count, 50)
+        self.assertEqual(projection.slot_editor_view_count, 60)
         self.assertEqual(maps, projection.maps)
         self.assertEqual(overrides, projection.overrides)
 

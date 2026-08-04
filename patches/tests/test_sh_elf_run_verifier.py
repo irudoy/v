@@ -3,7 +3,9 @@ from pathlib import Path
 from types import SimpleNamespace
 import unittest
 
+from patches import apply_map_switching as runtime
 from patches import map_switching_assembly as assembly_model
+from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
 
 
@@ -15,7 +17,6 @@ SPEC = importlib.util.spec_from_file_location(
 VERIFIER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VERIFIER)
 
-
 class ShElfRunVerifierTest(unittest.TestCase):
     def test_preprocessor_translates_only_dialect_differences(self):
         source = """// comment
@@ -23,13 +24,15 @@ class ShElfRunVerifierTest(unittest.TestCase):
 cmp/eq 0x2,r0
 add -0x1,r4
 or 0xF0,r0
+tst 0x80,r0
 cmp/hs r1,r0
 mov #0x5,r1
 """
         self.assertEqual(
             VERIFIER.preprocess_gnu_source(source),
             "\n.balign 4\ncmp/eq #0x2,r0\nadd #-0x1,r4\n"
-            "or #0xF0,r0\ncmp/hs r1,r0\nmov #0x5,r1\n",
+            "or #0xF0,r0\ntst #0x80,r0\ncmp/hs r1,r0\n"
+            "mov #0x5,r1\n",
         )
 
     def test_high_ram_alias_preserves_low_sixteen_bits(self):
@@ -130,6 +133,30 @@ mov #0x5,r1
         self.assertEqual(VERIFIER.INCIDENT_UNSAFE_SLOT_WORD, 0xD304)
         self.assertEqual(VERIFIER.INCIDENT_SAFE_SLOT_WORD, 0x0009)
 
+    def test_full_dfco_overlays_use_locked_instruction_bytes(self):
+        layout = layout_model.load_layout()
+        blobs = runtime.load_payloads(layout)
+        composition = composer.compose(layout=layout, blobs=blobs)
+
+        results, marker = VERIFIER.require_full_dfco_overlay_chain(
+            layout, composition, blobs
+        )
+
+        self.assertEqual(
+            tuple(result.spec.sequence for result in results),
+            (15, 16, 17, 18, 19),
+        )
+        self.assertFalse(
+            any(
+                result.spec.functional_selection_allowed
+                for result in results[:-1]
+            )
+        )
+        self.assertTrue(results[-1].spec.functional_selection_allowed)
+        self.assertIn("VQ_SH_ELF_OVERLAYS status=PASS", marker)
+        self.assertIn("stage15_instructions=156", marker)
+        self.assertIn("stage18_instructions=324", marker)
+        self.assertIn("stage19_instructions=414", marker)
 
 if __name__ == "__main__":
     unittest.main()

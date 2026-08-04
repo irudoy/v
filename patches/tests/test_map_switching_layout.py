@@ -16,11 +16,11 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         cls.layout = layout_model.load_layout()
         cls.image = layout_model.validate_image(cls.layout)
 
-    def test_manifest_targets_exact_jk08a_and_complete_pilot(self):
+    def test_manifest_targets_exact_jk08a_and_complete_runtime(self):
         self.assertEqual(self.layout.schema_version, 2)
         self.assertEqual(self.layout.rom, "JK08A")
         self.assertEqual(self.layout.slot_count, 5)
-        self.assertEqual(len(self.layout.families), 8)
+        self.assertEqual(len(self.layout.families), 10)
         self.assertEqual(
             self.layout.source_sha256,
             "ab60f18793fb121e4f55f626246117a6c"
@@ -156,6 +156,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "selector_host",
                 "adapter_select_helper",
                 "lookup_adapters",
+                "full_dfco_adapter",
                 "startup_wrapper",
                 "limiter_commit",
                 "cruise_feedback_wrapper",
@@ -171,6 +172,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "ignition_adapter",
                 "fuel_compensation_adapter",
                 "fuel_targets_adapter",
+                "full_dfco_adapter",
                 "startup_wrapper",
                 "limiter_commit",
                 "cruise_feedback_wrapper",
@@ -182,7 +184,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            387,
+            414,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
@@ -237,11 +239,11 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             parsed,
             apply_map_switching.load_payloads(self.layout),
         )
-        self.assertEqual(audit.instructions, 387)
-        self.assertEqual(audit.delayed_transfers, 34)
-        self.assertEqual(audit.pc_relative_references, 43)
-        self.assertEqual(audit.direct_branches, 69)
-        self.assertEqual(audit.indirect_transfers, 20)
+        self.assertEqual(audit.instructions, 414)
+        self.assertEqual(audit.delayed_transfers, 39)
+        self.assertEqual(audit.pc_relative_references, 52)
+        self.assertEqual(audit.direct_branches, 77)
+        self.assertEqual(audit.indirect_transfers, 21)
 
     def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):
         parsed = map_switching_assembly.ParsedSource(

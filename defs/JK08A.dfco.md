@@ -136,6 +136,30 @@ though the upper table is not used by every branch.
 `0xFFFF2468.bit6` forces return 1. A clear current `0xFFFF2458.bit5` also
 returns 1 and updates the associated status bit.
 
+## Per-slot map-switching projection
+
+The complete five-slot JK08A runtime switches all four live DFCO threshold
+families together with the selected map:
+
+| Family | Map 1 | Maps 2 through 5 | Pointer table |
+|---|---:|---:|---:|
+| Hold | `0x126E4` | `0xD3F80..0xD3FBF` | `0xD24E0` |
+| Entry | `0x12718` | `0xD2400..0xD243F` | `0xD3540` |
+| Full Restore | `0x12818` | `0xD2440..0xD247F` | `0xD3554` |
+| Intermediate Restore | `0x1298C` | `0xD3FC0..0xD3FFF` | `0xD3528` |
+
+The two stock call sites are shared. Hook `0x4FDD0` can receive the Hold or
+Entry base, while hook `0x50258` can receive the Full Restore or Intermediate
+Restore base. The adapter at `0xD2480` recognizes all four exact bases, chooses
+the matching five-entry pointer table, and delegates slot normalization to the
+shared helper at `0xD2270`. Selector indices outside `0..4` fall back to Map 1.
+An unrecognized base tail-jumps to stock wrapper `0x26388` unchanged.
+
+Map 2 through Map 5 are initialized byte-identically from the input Map 1.
+RomRaider and TunerPro expose five independent tables for each family. Hardware
+overlays 15 through 17 install the inactive payload and then activate the two
+shared hook literals independently before selector execution is introduced.
+
 ## Entry and exit delays
 
 `FUN_0004FE9C` returns `stage1 << 8 | stage2`. The state machine loads the high
@@ -292,11 +316,11 @@ effective behavior.
 
 ## Map-switching consequence
 
-The current map-switching layout redirects only `0x12718` and `0x12818`.
-Consequently it switches the rising-edge entry threshold and the lower/full
-restore threshold, while held-request table `0x126E4` and upper/intermediate
-restore table `0x1298C` remain in Map 1 storage. This is a partial DFCO
-calibration switch, not a complete switch of DFCO behavior.
+The map-switching layout redirects all four live DFCO thresholds through the
+base-discriminating adapter. Hold, Entry, Full Restore, and Intermediate Restore
+therefore resolve from one atomic slot index. Shared axes, delays, state-machine
+logic, offsets, floors, and arbitration remain global and byte-identical to the
+input firmware.
 
 ## Hardware validation boundary
 

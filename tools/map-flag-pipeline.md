@@ -1320,9 +1320,9 @@ offset-binary bias added to the request before that row is searched. Backtrackin
 cannot distinguish them.
 
 The canonical working allowlist selects 18 of the 450 catalog maps and adds three
-masked ignition views. The common JK08A projection expands eight selected calibration
-families into 40 Map 1 through Map 5 tables and two masked families into ten slot views.
-The emitted definition therefore contains 50 calibration tables and 11 masked views
+masked ignition views. The common JK08A projection expands ten selected calibration
+families into 50 Map 1 through Map 5 tables and two masked families into ten slot views.
+The emitted definition therefore contains 58 calibration tables and 11 masked views
 without standalone reference axes. The other 432 canonical maps remain available for
 reverse engineering in the graph and ledger. The catalog contains 364 `code` maps and
 86 `candidate` maps. Semantics are present for 443 maps and `scale_expr` for 405. The

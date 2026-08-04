@@ -23,6 +23,15 @@ FAMILIES = LAYOUT.family_by_key
 SLOT_COUNT = LAYOUT.slot_count
 TIMEOUT_TICKS = 100
 
+STOCK_OVER_RUN_HOLD_BASE = FAMILIES[
+    "over_run_fuel_hold"
+].canonical_address
+OVER_RUN_HOLD_BASES = FAMILIES[
+    "over_run_fuel_hold"
+].all_slot_addresses
+STOCK_OVER_RUN_HOLD_BYTES = bytes.fromhex(
+    "78 78 78 78 78 70 6c 68 64 60 58 50 48 48 48 48"
+)
 STOCK_OVER_RUN_CUT_BASE = FAMILIES[
     "over_run_fuel_cut"
 ].canonical_address
@@ -40,6 +49,15 @@ OVER_RUN_RESTORE_BASES = FAMILIES[
 ].all_slot_addresses
 STOCK_OVER_RUN_RESTORE_BYTES = bytes.fromhex(
     "50 50 50 50 50 48 44 40 3c 38 38 30 24 24 24 30"
+)
+STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BASE = FAMILIES[
+    "over_run_fuel_intermediate_restore"
+].canonical_address
+OVER_RUN_INTERMEDIATE_RESTORE_BASES = FAMILIES[
+    "over_run_fuel_intermediate_restore"
+].all_slot_addresses
+STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BYTES = bytes.fromhex(
+    "6c 6c 6c 6c 6c 64 60 5c 58 54 4c 30 24 24 24 30"
 )
 
 STOCK_IGNITION_MAIN_BASE = FAMILIES[

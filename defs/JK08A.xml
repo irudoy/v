@@ -618,51 +618,6 @@
       <state name="Disabled" data="00 00"/>
     </table>
 
-    <!-- 0x126E4  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
-         accessor 0x4FBE2; r4 operand: pool
-         scaling x*25 RPM [code]
-         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
-         map evidence: indexed_by]
-         The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
-         address as the Bosch-family table, but exact JK08A code interpolates and selects it
-         dynamically in stock operation. It is not an inactive-family calibration. Result
-         disposition: inline_comparison.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="DFCO Hold RPM Threshold" category="Fuelling / Overrun"
-           storagetype="uint8" storageaddress="0x126E4" sizex="16" endian="big">
-      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
-               coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
-        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
-        <data>0</data><data>10</data><data>20</data><data>30</data>
-        <data>40</data><data>50</data><data>60</data><data>70</data>
-        <data>80</data><data>90</data><data>100</data><data>110</data>
-      </table>
-    </table>
-
-    <!-- 0x1298C  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
-         accessor 0x50018; r4 operand: pool
-         scaling x*25 RPM [code]
-         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
-         map evidence: indexed_by]
-         The Nissan A2L registry labels this address as the Bosch-family restore table, but
-         exact JK08A code always interpolates it and uses it in live classifier branches. It is
-         not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
-         floor can raise its effective value. Result disposition: inline_comparison.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="DFCO Intermediate Restore RPM Threshold"
-           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0x1298C" sizex="16"
-           endian="big">
-      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
-               coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
-        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
-        <data>0</data><data>10</data><data>20</data><data>30</data>
-        <data>40</data><data>50</data><data>60</data><data>70</data>
-        <data>80</data><data>90</data><data>100</data><data>110</data>
-      </table>
-    </table>
-
     <!-- 0x1491A  16 uint16  map [code]; entry 0x263F4 (implicit, core 0x26A64)
          accessor 0x8083C; r4 operand: pool
          scaling x/2048 BFS ms [candidate]
@@ -948,6 +903,30 @@
       </table>
     </table>
 
+    <!-- 0x126E4  16 uint8  common-definition Map 1 storage projected from 0x126E4 [code]
+         Map 1 uses canonical stock storage
+         canonical accessor 0x4FBE2; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
+         address as the Bosch-family table, but exact JK08A code interpolates and selects it
+         dynamically in stock operation. It is not an inactive-family calibration. Result
+         disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 1 - DFCO Hold RPM Threshold" category="Fuelling / Overrun"
+           storagetype="uint8" storageaddress="0x126E4" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
     <!-- 0x12718  16 uint8  common-definition Map 1 storage projected from 0x12718 [code]
          Map 1 uses canonical stock storage
          canonical accessor 0x4FBE2; r4 operand: pool
@@ -984,6 +963,31 @@
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - DFCO Full Restore RPM Threshold"
            category="Fuelling / Overrun" storagetype="uint8" storageaddress="0x12818" sizex="16"
+           endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
+    <!-- 0x1298C  16 uint8  common-definition Map 1 storage projected from 0x1298C [code]
+         Map 1 uses canonical stock storage
+         canonical accessor 0x50018; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The Nissan A2L registry labels this address as the Bosch-family restore table, but
+         exact JK08A code always interpolates it and uses it in live classifier branches. It is
+         not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
+         floor can raise its effective value. Result disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 1 - DFCO Intermediate Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0x1298C" sizex="16"
            endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -1200,6 +1204,31 @@
       </table>
     </table>
 
+    <!-- 0xD3F80  16 uint8  common-definition Map 2 storage projected from 0x126E4 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4FBE2; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
+         address as the Bosch-family table, but exact JK08A code interpolates and selects it
+         dynamically in stock operation. It is not an inactive-family calibration. Result
+         disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 2 - DFCO Hold RPM Threshold" category="Fuelling / Overrun"
+           storagetype="uint8" storageaddress="0xD3F80" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
     <!-- 0xD2400  16 uint8  common-definition Map 2 storage projected from 0x12718 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -1238,6 +1267,32 @@
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - DFCO Full Restore RPM Threshold"
            category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD2440" sizex="16"
+           endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
+    <!-- 0xD3FC0  16 uint8  common-definition Map 2 storage projected from 0x1298C [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x50018; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The Nissan A2L registry labels this address as the Bosch-family restore table, but
+         exact JK08A code always interpolates it and uses it in live classifier branches. It is
+         not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
+         floor can raise its effective value. Result disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 2 - DFCO Intermediate Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD3FC0" sizex="16"
            endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -1458,6 +1513,31 @@
       </table>
     </table>
 
+    <!-- 0xD3F90  16 uint8  common-definition Map 3 storage projected from 0x126E4 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4FBE2; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
+         address as the Bosch-family table, but exact JK08A code interpolates and selects it
+         dynamically in stock operation. It is not an inactive-family calibration. Result
+         disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 3 - DFCO Hold RPM Threshold" category="Fuelling / Overrun"
+           storagetype="uint8" storageaddress="0xD3F90" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
     <!-- 0xD2410  16 uint8  common-definition Map 3 storage projected from 0x12718 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -1496,6 +1576,32 @@
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - DFCO Full Restore RPM Threshold"
            category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD2450" sizex="16"
+           endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
+    <!-- 0xD3FD0  16 uint8  common-definition Map 3 storage projected from 0x1298C [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x50018; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The Nissan A2L registry labels this address as the Bosch-family restore table, but
+         exact JK08A code always interpolates it and uses it in live classifier branches. It is
+         not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
+         floor can raise its effective value. Result disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 3 - DFCO Intermediate Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD3FD0" sizex="16"
            endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -1716,6 +1822,31 @@
       </table>
     </table>
 
+    <!-- 0xD3FA0  16 uint8  common-definition Map 4 storage projected from 0x126E4 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4FBE2; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
+         address as the Bosch-family table, but exact JK08A code interpolates and selects it
+         dynamically in stock operation. It is not an inactive-family calibration. Result
+         disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 4 - DFCO Hold RPM Threshold" category="Fuelling / Overrun"
+           storagetype="uint8" storageaddress="0xD3FA0" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
     <!-- 0xD2420  16 uint8  common-definition Map 4 storage projected from 0x12718 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -1754,6 +1885,32 @@
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - DFCO Full Restore RPM Threshold"
            category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD2460" sizex="16"
+           endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
+    <!-- 0xD3FE0  16 uint8  common-definition Map 4 storage projected from 0x1298C [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x50018; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The Nissan A2L registry labels this address as the Bosch-family restore table, but
+         exact JK08A code always interpolates it and uses it in live classifier branches. It is
+         not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
+         floor can raise its effective value. Result disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 4 - DFCO Intermediate Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD3FE0" sizex="16"
            endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -1974,6 +2131,31 @@
       </table>
     </table>
 
+    <!-- 0xD3FB0  16 uint8  common-definition Map 5 storage projected from 0x126E4 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4FBE2; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
+         address as the Bosch-family table, but exact JK08A code interpolates and selects it
+         dynamically in stock operation. It is not an inactive-family calibration. Result
+         disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 5 - DFCO Hold RPM Threshold" category="Fuelling / Overrun"
+           storagetype="uint8" storageaddress="0xD3FB0" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
     <!-- 0xD2430  16 uint8  common-definition Map 5 storage projected from 0x12718 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -2012,6 +2194,32 @@
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - DFCO Full Restore RPM Threshold"
            category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD2470" sizex="16"
+           endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
+    <!-- 0xD3FF0  16 uint8  common-definition Map 5 storage projected from 0x1298C [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x50018; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The Nissan A2L registry labels this address as the Bosch-family restore table, but
+         exact JK08A code always interpolates it and uses it in live classifier branches. It is
+         not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
+         floor can raise its effective value. Result disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 5 - DFCO Intermediate Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD3FF0" sizex="16"
            endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>

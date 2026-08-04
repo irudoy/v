@@ -1,4 +1,4 @@
-"""Common-definition projection for the JK08A five-slot map-switching pilot.
+"""Common-definition projection for the JK08A five-slot map-switching runtime.
 
 The input maps remain graph-backed canonical facts. This module clones only
 their storage addresses and tuner presentation for the slot copies declared by

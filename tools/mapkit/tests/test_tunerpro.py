@@ -18,8 +18,6 @@ COMMON_TABLES = {
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
-    "DFCO Hold RPM Threshold": "Fuelling / Overrun",
-    "DFCO Intermediate Restore RPM Threshold": "Fuelling / Overrun",
 }
 
 SLOT_TABLES = {
@@ -27,6 +25,8 @@ SLOT_TABLES = {
     "Fuel Compensation Main": "Fuelling / Fuel Compensation",
     "DFCO Entry RPM Threshold": "Fuelling / Overrun",
     "DFCO Full Restore RPM Threshold": "Fuelling / Overrun",
+    "DFCO Hold RPM Threshold": "Fuelling / Overrun",
+    "DFCO Intermediate Restore RPM Threshold": "Fuelling / Overrun",
     "Ignition Timing Trim Main": "Ignition Timing / Main",
     "Knock Control Enable - Main": "Ignition Timing / Knock Control",
     "Ignition Timing Trim High Det": "Ignition Timing / Main",
@@ -293,7 +293,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 44)
-        self.assertEqual(len(tables), 61)
+        self.assertEqual(len(tables), 69)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -352,10 +352,11 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
 
     def test_dfco_thresholds_use_coolant_axis_and_rpm_scale(self):
         expected = {
-            "DFCO Hold RPM Threshold": "0x126E4",
+            slot_name(1, "DFCO Hold RPM Threshold"): "0x126E4",
             slot_name(1, "DFCO Entry RPM Threshold"): "0x12718",
             slot_name(1, "DFCO Full Restore RPM Threshold"): "0x12818",
-            "DFCO Intermediate Restore RPM Threshold": "0x1298C",
+            slot_name(1, "DFCO Intermediate Restore RPM Threshold"):
+                "0x1298C",
         }
         tables = {
             table.findtext("./title"): table
