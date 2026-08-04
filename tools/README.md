@@ -47,6 +47,7 @@ machine-local; their locations are listed below.
 | Ghidra project | - | `~/tools/ghidra-projects/vq-hr` | no |
 | Headless wrapper | - | `ghidra/headless-analyze.sh` | **yes** |
 | ECU pin tracer | schema v1 | `pin-tracer/index.html` | **yes** |
+| GNU SH-ELF executable gate | simulator 16.3, GCC 13.3.0, binutils 2.44 | `sh-elf-run/` Docker image | **yes** |
 
 ## Manual board tracing
 
@@ -352,6 +353,20 @@ The implemented assembly slices contain the selector host, shared fail-closed
 selector helper, four lookup adapters, startup wrapper, limiter commit, CAN
 serializer wrapper, and feedback pulse engine. They are built and executed
 independently of any ROM image:
+
+The GNU executable gate is independent of Ghidra and runs first-class SH-2E
+machine semantics, including the delayed-branch rule that caused the hardware
+failure:
+
+```bash
+tools/sh-elf-run/run.sh --verbose
+```
+
+It independently reproduces all seven locked payloads with GNU `sh-elf-as`,
+rebuilds the exact verification composition, executes all 87 implementation
+cases in `sh-elf-run`, and requires the exact failed `AFAC D304` pair at
+`0xD2314` to stop with signal 4. The complete environment and the documented
+31-bit simulator RAM relocation are in `sh-elf-run/README.md`.
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
