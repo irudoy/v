@@ -1,0 +1,206 @@
+# Authoritative in-memory composition contract for exact JK08A Rolling Launch.
+#
+# The composition extends the complete SHA-locked map-switching runtime. It is
+# a verification fixture only: checksum fields are not recalculated and no
+# output-file operation is exposed.
+
+schema_version = 1
+rom = "JK08A"
+byte_order = "big"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+base_composition_sha256 = "ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd"
+expected_composition_sha256 = "7d4a642c1b19d5dc7267c388750997cf53aeb2bcaee65e4bdd68ed4f3512e2af"
+free_rom_start = 0x000D3860
+free_rom_end = 0x000E1C2A
+claimed_rom_start = 0x000D3860
+claimed_rom_end = 0x000D3F80
+configuration_address = 0x000D3F60
+configuration_size = 32
+default_configuration = "524c0100000000ff010000a0000100100008012c0064737373737300adb3a55a"
+
+[scheduler]
+table_address = 0x00021970
+table_index = 0
+tick_numerator = 204800
+pphi_candidate_hz = 20000000
+candidate_tick_microseconds = 10240
+
+[ram]
+proven_free_start = 0xFFFF5D00
+proven_free_end = 0xFFFF7000
+base_reservation_start = 0xFFFF5D00
+base_reservation_end = 0xFFFF5D3C
+state_start = 0xFFFF5D40
+state_size = 20
+fuel_shadow_start = 0xFFFF5D10
+fuel_shadow_size = 12
+
+[[code_region]]
+key = "periodic_wrapper"
+start = 0x000D3860
+end = 0x000D3880
+entry = 0x000D3860
+
+[[code_region]]
+key = "selector_arbiter"
+start = 0x000D3880
+end = 0x000D38A0
+entry = 0x000D3880
+
+[[code_region]]
+key = "startup_wrapper"
+start = 0x000D38A0
+end = 0x000D38E4
+entry = 0x000D38A0
+
+[[code_region]]
+key = "engine"
+start = 0x000D38E4
+end = 0x000D3EA0
+entry = 0x000D38E4
+
+[[code_region]]
+key = "ignition_adapter"
+start = 0x000D3EA0
+end = 0x000D3F60
+entry = 0x000D3EA0
+
+[[assembly_unit]]
+key = "wrappers"
+source = "rolling-launch-wrappers.s"
+start = 0x000D3860
+end = 0x000D38E4
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45"
+instruction_count = 34
+data_bytes = 28
+code_regions = ["periodic_wrapper", "selector_arbiter", "startup_wrapper"]
+
+[[assembly_unit]]
+key = "engine"
+source = "rolling-launch-engine.s"
+start = 0x000D38E4
+end = 0x000D3EA0
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "280873b0e4c04e946c9dedaea686ec61bc689587e53f8d295046139fd8b89889"
+instruction_count = 648
+data_bytes = 99
+code_regions = ["engine"]
+
+[[assembly_unit]]
+key = "ignition_adapter"
+source = "rolling-launch-ignition-adapter.s"
+start = 0x000D3EA0
+end = 0x000D3F60
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "058b161ad9fb6c23e5374c1420cff6341fa18d02e116a9d836f7e01039dea1bc"
+instruction_count = 69
+data_bytes = 31
+code_regions = ["ignition_adapter"]
+
+[[hook]]
+key = "periodic_scheduler_index_0"
+address = 0x00021970
+width = 4
+stock = 0x000A9554
+replacement = 0x000D3860
+purpose = "Run the displaced periodic task and then advance Rolling Launch once per exact scheduler tick."
+
+[[hook]]
+key = "selector_arbitration"
+address = 0x000CE8DC
+width = 4
+stock = 0x000D2108
+replacement = 0x000D3880
+purpose = "Allow SET-based map selection only while Rolling Launch is IDLE."
+
+[[hook]]
+key = "startup_state_clear"
+address = 0x00027D28
+width = 4
+stock = 0x000D22A0
+replacement = 0x000D38A0
+purpose = "Clear dedicated Rolling Launch RAM before the map-switching startup wrapper."
+
+[[hook]]
+key = "primary_ignition_command"
+address = 0x0004E198
+width = 4
+stock = 0x0002A892
+replacement = 0x000D3EA0
+purpose = "Apply the retard-only command rule before the displaced stock consumer."
+
+[[diagnostic]]
+did = 0x1211
+pointer_address = 0x000228E0
+stock = 0xFFFFFFFF
+target = 0xFFFF5D40
+width = 2
+name = "phase_abort_reason"
+
+[[diagnostic]]
+did = 0x1212
+pointer_address = 0x000228E4
+stock = 0xFFFFFFFF
+target = 0xFFFF5D42
+width = 2
+name = "flags"
+
+[[diagnostic]]
+did = 0x1213
+pointer_address = 0x000228E8
+stock = 0xFFFFFFFF
+target = 0xFFFF5D44
+width = 2
+name = "map_mode_snapshot"
+
+[[diagnostic]]
+did = 0x1216
+pointer_address = 0x000228F4
+stock = 0xFFFFFFFF
+target = 0xFFFF5D46
+width = 2
+name = "run_ticks"
+
+[[diagnostic]]
+did = 0x1217
+pointer_address = 0x000228F8
+stock = 0xFFFFFFFF
+target = 0xFFFF5D48
+width = 2
+name = "rearm_ticks"
+
+[[diagnostic]]
+did = 0x1224
+pointer_address = 0x0002292C
+stock = 0xFFFFFFFF
+target = 0xFFFF5D4A
+width = 2
+name = "captured_rpm_native"
+
+[[diagnostic]]
+did = 0x1227
+pointer_address = 0x00022938
+stock = 0xFFFFFFFF
+target = 0xFFFF5D4C
+width = 2
+name = "cut_rpm_native"
+
+[[diagnostic]]
+did = 0x1228
+pointer_address = 0x0002293C
+stock = 0xFFFFFFFF
+target = 0xFFFF5D4E
+width = 2
+name = "restore_rpm_native"
+
+[[diagnostic]]
+did = 0x1229
+pointer_address = 0x00022940
+stock = 0xFFFFFFFF
+target = 0xFFFF5D50
+width = 2
+name = "stock_effective_ignition_command"

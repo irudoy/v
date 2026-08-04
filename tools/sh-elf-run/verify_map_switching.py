@@ -615,6 +615,16 @@ def verify(verbose=False):
 
     print(overlay_marker)
     print(dynamic_marker)
+    try:
+        import verify_rolling_launch
+
+        rolling_result = verify_rolling_launch.verify(
+            verbose=verbose, check_toolchain=False
+        )
+    except Exception as error:
+        raise VerificationError(
+            f"Rolling Launch executable gate failed: {error}"
+        ) from error
     print(
         "VQ_SH_ELF_VERIFY status=PASS"
         f" simulator={EXPECTED_SIMULATOR_VERSION}"
@@ -627,6 +637,10 @@ def verify(verbose=False):
         f" indirect_transfers={audit.indirect_transfers}"
         f" composition_sha256={composition.sha256}"
         f" dynamic_cases={EXPECTED_DYNAMIC_CASES}"
+        f" hardware_overlay_stages={len(overlay_results)}"
+        f" rolling_launch_instructions="
+        f"{rolling_result['audit'].instructions}"
+        f" rolling_launch_cases={rolling_result['dynamic_cases']}"
         f" ram_literals_relocated={relocated}"
         f" differentiated_bytes={differentiated}"
         f" stock_stubs={stubs}"

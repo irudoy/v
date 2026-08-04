@@ -11,6 +11,7 @@ Scanmatik-SM2 USB adapter.
 - `1JK08A-20260726-stock.bin.md5` - MD5 sidecar;
 - `mods/immo-off/` - one-bit immo-off modification.
 - `mods/map-switching/` - software-verified ten-family production map-switching image.
+- `mods/rolling-launch/` - software-verified Map 1 Rolling RPM Hold hardware-test image.
 
 ROM hashes:
 

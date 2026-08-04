@@ -1,0 +1,398 @@
+#!/usr/bin/env python3
+"""Add the validated JK08A Rolling RPM Hold runtime to an exact base ROM.
+
+The production profile is deliberately narrow: mode 1 (RPM hold), Map 1 only,
+no brake gate, and no ignition retard. The input must be the exact complete
+ten-family map-switching stage-19 endpoint derived from the hardware-readback
+lookup stage. Machine payloads, hooks, diagnostics, configuration, checksums,
+and the
+closed write set are all revalidated before an output can be written.
+"""
+
+from __future__ import annotations
+
+import argparse
+from dataclasses import dataclass
+import hashlib
+from itertools import chain
+from pathlib import Path
+import sys
+
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from patches import apply_map_switching as map_runtime
+from patches import jk08a_checksums as checksums
+from patches import map_switching_layout as map_layout_model
+from patches import rolling_launch
+from patches import rolling_launch_assembly
+from patches import rolling_launch_compose
+from patches import rolling_launch_layout as rolling_layout_model
+
+
+ROM_SIZE = 0x100000
+PROFILE_NAME = "rpm-hold-map1-test"
+LOCKED_MAP_SWITCHING_SOURCE_SHA256 = (
+    "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
+)
+LOCKED_PROFILE_OUTPUT_SHA256 = (
+    "f6ab51aeb005b49333656090df2287b7834596f473eb37a869436f5c63eadbf4"
+)
+PROFILE_CALIBRATION = rolling_launch.Calibration(
+    mode=rolling_launch.Mode.RPM_HOLD,
+    enable_mask=0x01,
+)
+
+
+class PatchError(ValueError):
+    """Raised when an input, payload, configuration, or output is unsafe."""
+
+
+@dataclass(frozen=True)
+class PatchResult:
+    data: bytes
+    profile: str
+    configuration: bytes
+    source_sha256: str
+    output_sha256: str
+    source_checksums: checksums.ChecksumValues
+    output_checksums: checksums.ChecksumValues
+    composition_changed_bytes: int
+    final_changed_bytes: int
+    permitted_write_bytes: int
+    checksum_changed_bytes: int
+    instruction_count: int
+    code_entry_count: int
+    diagnostic_count: int
+
+
+def sha256(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def md5(data):
+    return hashlib.md5(data).hexdigest()
+
+
+def default_output_path(source):
+    source = Path(source)
+    return source.with_name(f"{source.stem}-rolling-launch-{PROFILE_NAME}.bin")
+
+
+def _read_integer(data, address, width, byte_order):
+    return int.from_bytes(data[address : address + width], byte_order)
+
+
+def _require_map_switching_endpoint(
+    source, layout, payloads, context
+):
+    for unit in layout.assembly_units:
+        actual = source[unit.span.start : unit.span.end]
+        if actual != payloads[unit.key]:
+            raise PatchError(
+                f"{context}: map-switching unit {unit.key} differs"
+            )
+    for hook in layout.hooks:
+        actual = _read_integer(
+            source, hook.address, hook.width, layout.byte_order
+        )
+        expected = hook.replacement
+        if actual != expected:
+            raise PatchError(
+                f"{context}: map-switching hook {hook.key} is "
+                f"{actual:#x}, expected {expected:#x}"
+            )
+
+
+def _require_rolling_base(source, layout, context):
+    erased = bytes([0xFF]) * layout.claimed_rom.size
+    actual = source[layout.claimed_rom.start : layout.claimed_rom.end]
+    if actual != erased:
+        raise PatchError(f"{context}: Rolling Launch ROM allocation is occupied")
+    for hook in layout.hooks:
+        value = _read_integer(
+            source, hook.address, hook.width, layout.byte_order
+        )
+        if value != hook.stock:
+            raise PatchError(
+                f"{context}: Rolling Launch base hook {hook.key} is "
+                f"{value:#x}, expected {hook.stock:#x}"
+            )
+    for item in layout.diagnostics:
+        value = _read_integer(
+            source, item.pointer_address, 4, layout.byte_order
+        )
+        if value != item.stock:
+            raise PatchError(
+                f"{context}: DID {item.did:#06x} pointer is occupied"
+            )
+
+
+def _validate_source(
+    source,
+    map_layout,
+    rolling_layout,
+    map_payloads,
+    source_name,
+    expected_source_sha256,
+):
+    source = bytes(source)
+    if len(source) != ROM_SIZE:
+        raise PatchError(
+            f"{source_name}: source has {len(source)} bytes, expected "
+            f"{ROM_SIZE}"
+        )
+    digest = sha256(source)
+    if expected_source_sha256 is not None and digest != expected_source_sha256:
+        raise PatchError(
+            f"{source_name}: source SHA-256 is {digest}, expected "
+            f"{expected_source_sha256}"
+        )
+    try:
+        verification = checksums.require_valid(source, source_name)
+    except checksums.ChecksumError as error:
+        raise PatchError(str(error)) from error
+    _require_map_switching_endpoint(
+        source, map_layout, map_payloads, source_name
+    )
+    _require_rolling_base(source, rolling_layout, source_name)
+    return source, digest, verification
+
+
+def _validate_calibration(calibration):
+    if calibration is None:
+        calibration = PROFILE_CALIBRATION
+    if not isinstance(calibration, rolling_launch.Calibration):
+        raise PatchError("calibration must be a Rolling Launch Calibration")
+    if not calibration.is_valid():
+        raise PatchError("Rolling Launch calibration is invalid")
+    configuration = calibration.to_bytes()
+    if rolling_launch.Calibration.from_bytes(configuration) != calibration:
+        raise PatchError("Rolling Launch calibration round trip differs")
+    return calibration, configuration
+
+
+def _final_write_offsets(layout):
+    composition = set(chain.from_iterable(
+        range(item.start, item.end)
+        for item in rolling_launch_compose.composition_write_ranges(layout)
+    ))
+    checksum = set(checksums.checksum_byte_offsets())
+    overlap = composition & checksum
+    if overlap:
+        raise PatchError(
+            f"checksum field overlaps Rolling Launch write set at "
+            f"{min(overlap):#x}"
+        )
+    return composition | checksum, checksum
+
+
+def _validate_final_preservation(source, patched, layout):
+    permitted, checksum_offsets = _final_write_offsets(layout)
+    changed = {
+        offset
+        for offset, (before, after) in enumerate(zip(source, patched))
+        if before != after
+    }
+    outside = changed - permitted
+    if outside:
+        raise PatchError(
+            f"final image changes undeclared source byte at {min(outside):#x}"
+        )
+    return len(changed), len(permitted), len(changed & checksum_offsets)
+
+
+def patch_image(
+    source,
+    *,
+    calibration=None,
+    map_layout=None,
+    rolling_layout=None,
+    map_payloads=None,
+    rolling_payloads=None,
+    source_name="<memory>",
+    expected_source_sha256=LOCKED_MAP_SWITCHING_SOURCE_SHA256,
+):
+    """Return one checksum-valid Rolling RPM Hold image after strict checks."""
+    map_layout = map_layout or map_layout_model.load_layout()
+    rolling_layout = rolling_layout or rolling_layout_model.load_layout()
+    try:
+        map_payloads = map_payloads or map_runtime.load_payloads(map_layout)
+        rolling_payloads = rolling_payloads or (
+            rolling_launch_assembly.load_payloads(rolling_layout)
+        )
+    except (OSError, ValueError, map_runtime.PatchError) as error:
+        raise PatchError(str(error)) from error
+
+    expected_map_units = set(map_layout.assembly_unit_by_key)
+    if set(map_payloads) != expected_map_units:
+        raise PatchError("map-switching payload set differs from layout")
+    try:
+        map_payloads = {
+            unit.key: map_layout_model.validate_assembled_blob(
+                unit, map_payloads[unit.key]
+            )
+            for unit in map_layout.assembly_units
+        }
+        rolling_payloads = rolling_launch_compose._validated_blobs(
+            rolling_layout, rolling_payloads
+        )
+    except (OSError, ValueError) as error:
+        raise PatchError(str(error)) from error
+
+    source, source_digest, source_verification = _validate_source(
+        source,
+        map_layout,
+        rolling_layout,
+        map_payloads,
+        source_name,
+        expected_source_sha256,
+    )
+    calibration, configuration = _validate_calibration(calibration)
+    try:
+        composed = rolling_launch_compose._build_expected(
+            rolling_layout, source, rolling_payloads, configuration
+        )
+        (
+            composition_changed,
+            _,
+            instruction_count,
+            code_entry_count,
+        ) = rolling_launch_compose._validate_composed(
+            rolling_layout,
+            source,
+            composed,
+            rolling_payloads,
+            configuration,
+        )
+        patched = bytes(checksums.recalculate(composed))
+        output_verification = checksums.require_valid(
+            patched, "Rolling Launch output"
+        )
+    except (checksums.ChecksumError, ValueError) as error:
+        raise PatchError(str(error)) from error
+
+    final_changed, permitted, checksum_changed = _validate_final_preservation(
+        source, patched, rolling_layout
+    )
+    checksum_offsets = set(checksums.checksum_byte_offsets())
+    for offset, (before, after) in enumerate(zip(composed, patched)):
+        if before != after and offset not in checksum_offsets:
+            raise PatchError(
+                f"checksum recalculation changed payload byte at {offset:#x}"
+            )
+    if patched[
+        rolling_layout.configuration.start : rolling_layout.configuration.end
+    ] != configuration:
+        raise PatchError("final Rolling Launch configuration differs")
+
+    output_digest = sha256(patched)
+    if (
+        source_digest == LOCKED_MAP_SWITCHING_SOURCE_SHA256
+        and calibration == PROFILE_CALIBRATION
+        and output_digest != LOCKED_PROFILE_OUTPUT_SHA256
+    ):
+        raise PatchError(
+            f"locked profile output SHA-256 is {output_digest}, expected "
+            f"{LOCKED_PROFILE_OUTPUT_SHA256}"
+        )
+
+    return PatchResult(
+        data=patched,
+        profile=PROFILE_NAME,
+        configuration=configuration,
+        source_sha256=source_digest,
+        output_sha256=output_digest,
+        source_checksums=source_verification.stored,
+        output_checksums=output_verification.stored,
+        composition_changed_bytes=composition_changed,
+        final_changed_bytes=final_changed,
+        permitted_write_bytes=permitted,
+        checksum_changed_bytes=checksum_changed,
+        instruction_count=instruction_count,
+        code_entry_count=code_entry_count,
+        diagnostic_count=len(rolling_layout.diagnostics),
+    )
+
+
+def _format_checksums(values):
+    return ",".join(f"{name}={value:#x}" for name, value in values.items())
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "input", type=Path, help="exact complete map-switching stage-19 ROM"
+    )
+    parser.add_argument(
+        "--output", type=Path, help="output path; defaults beside INPUT"
+    )
+    parser.add_argument(
+        "--profile",
+        choices=(PROFILE_NAME,),
+        default=PROFILE_NAME,
+        help="locked hardware-test calibration profile",
+    )
+    parser.add_argument(
+        "--verify-only",
+        action="store_true",
+        help="compose and verify without writing files",
+    )
+    args = parser.parse_args(argv)
+
+    try:
+        source = args.input.read_bytes()
+        result = patch_image(source, source_name=str(args.input))
+    except (OSError, PatchError) as error:
+        parser.error(str(error))
+
+    calibration = rolling_launch.Calibration.from_bytes(result.configuration)
+    print(
+        f"status=PASS profile={result.profile} source={args.input} "
+        f"source_sha256={result.source_sha256}"
+    )
+    print(
+        f"mode={int(calibration.mode)} enable_mask={calibration.enable_mask:#04x} "
+        f"rpm_offset_native={calibration.rpm_offset_native} "
+        f"hysteresis_native={calibration.hysteresis_native} "
+        f"run_timeout_ticks={calibration.run_timeout_ticks} "
+        f"rearm_ticks={calibration.rearm_ticks} "
+        f"configuration={result.configuration.hex()}"
+    )
+    print(f"source_checksums={_format_checksums(result.source_checksums)}")
+    print(
+        f"output_sha256={result.output_sha256} md5={md5(result.data)} "
+        f"output_checksums={_format_checksums(result.output_checksums)}"
+    )
+    print(
+        f"composition_changed_bytes={result.composition_changed_bytes} "
+        f"final_changed_bytes={result.final_changed_bytes} "
+        f"permitted_write_bytes={result.permitted_write_bytes} "
+        f"checksum_changed_bytes={result.checksum_changed_bytes} "
+        f"instructions={result.instruction_count} "
+        f"entries={result.code_entry_count} "
+        f"diagnostics={result.diagnostic_count}"
+    )
+    print("ignition_retard=false brake_gate=false map1_only=true checksums=PASS")
+
+    if args.verify_only:
+        print("no ROM file was written")
+        return 0
+
+    output = args.output or default_output_path(args.input)
+    if output.resolve() == args.input.resolve():
+        parser.error("input and output paths must differ")
+    try:
+        created = map_runtime.write_output(output, result.data)
+        map_runtime.write_md5_sidecar(output, result.data)
+    except (OSError, map_runtime.PatchError) as error:
+        parser.error(str(error))
+    print(f"output={output} status={'created' if created else 'already_exact'}")
+    print(f"sidecar={output.name}.md5")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

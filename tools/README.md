@@ -239,6 +239,11 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `../patches/map_switching_assembly.py` | Cross-check implemented SH source labels, regions, literal pools, protected registers, control transfers, every delayed slot, and the explicit SH7058S SH-2E instruction subset against the authoritative map-switching layout; independently decode direct and indirect control transfers plus PC-relative effective addresses from SHA-locked machine words | stdout; no ROM write |
 | `../patches/map_switching_compose.py` | Apply all eight SHA-locked blobs, 14 hooks, 40 calibration copies, and ten pointer tables to exact stock by default or an explicitly validated compatible input through the library API; reject every change outside the declared composition write set | stdout; no output-file option |
 | `../patches/map-switching-payloads.toml` | Store the complete SHA-locked SH-2E assembly-unit spans as hexadecimal data for deterministic patcher use | tracked |
+| `../patches/rolling_launch.py` | Define the independent fail-closed Rolling Launch configuration, gate priority, `IDLE`/`ACTIVE`/`COOLDOWN` transitions, fuel-overlay actions, and retard-only ignition command rule | imported by tests and the composition validator; no ROM access |
+| `../patches/rolling_launch_layout.py` and `rolling-launch-layout.toml` | Lock the exact map-switching base endpoint, erased ROM allocation, dedicated RAM, periodic/selector/startup/ignition hooks, nine UDS DID pointers, default-disabled configuration, and final in-memory SHA-256 | stdout/library validation; no ROM write |
+| `../patches/rolling_launch_assembly.py` and `rolling-launch-payloads.toml` | Audit 751 SH7058S SH-2E instructions across three source units, require 16-bit instruction forms, ABI/literal/delay-slot contracts, and decode every control transfer and PC-relative reference from the SHA-locked Ghidra bytes | stdout; no ROM write |
+| `../patches/rolling_launch_compose.py` | Extend only the exact complete map-switching composition with Rolling Launch code, configuration, four hooks, and nine DID pointers through a 1876-byte closed write set; keep the default map mask zero and all checksum fields unchanged | stdout; no output-file option |
+| `../patches/apply_rolling_launch.py` | Accept only the exact checksum-valid complete ten-family map-switching stage-19 endpoint; install the SHA-locked Rolling Launch payload, four hooks, nine DIDs, and the Map 1-only RPM Hold test profile; recalculate all checksum domains and prove preservation outside the Rolling Launch and checksum write sets | derived ROM and `.md5`; non-overwriting |
 | `../patches/jk08a_checksums.py` | Calculate, verify, and recalculate JK03A/JK08A SUM16 and runtime XOR+SUM domains in dependency order | imported by the patcher and tests |
 | `../patches/upgrade_map_switching_reset.py` | Upgrade only the complete pre-fix map-switching runtime with an exact protected upper partition outside declared map-switching and checksum storage: restore the stock fallback zero-fill anchor, install the fixed startup wrapper, recalculate checksums, and preserve every calibration byte | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/build_map_switching_marker.py` | Build the first incident-isolation gate from the SHA-locked known-working JK08A tuned ROM: zero-fill only the complete 128-byte line at `0xD2280`, retain all runtime hooks at stock values, recalculate checksums, and prove the exact write boundary | ROM plus MD5 sidecar; non-overwriting |
@@ -359,11 +364,13 @@ relevant boundary case. Any simulator-only relocation or stock-function stub
 must be explicit and must leave the instructions under test unchanged. The
 complete contract and extension checklist are in `sh-elf-run/README.md`.
 
-The first registered implementation is the complete map-switching runtime. Its
-assembly slices contain the selector host, shared fail-closed selector helper,
-five lookup adapters across the legacy and full-DFCO blobs, startup wrapper,
-limiter commit, CAN serializer wrapper, and feedback pulse engine. They are
-built and executed independently of any ROM image.
+The registered implementations are the complete map-switching runtime and its
+default-disabled Rolling Launch extension. Map switching provides the selector,
+lookup adapters, limiter commit, startup wrapper, CAN serializer wrapper, and
+feedback engine. Rolling Launch provides periodic/selector/startup arbitration,
+the fail-closed state engine, an atomic temporary fuel threshold overlay, and a
+retard-only ignition command adapter. Both are built and executed independently
+of a flashable ROM image.
 
 The GNU executable gate is independent of Ghidra and runs first-class SH-2E
 machine semantics, including the delayed-branch rule that caused the hardware
@@ -373,14 +380,18 @@ failure:
 tools/sh-elf-run/run.sh --verbose
 ```
 
-It independently reproduces all eight locked payloads with GNU `sh-elf-as`,
-rebuilds the exact verification composition, executes all 116 implementation
-cases in `sh-elf-run`, and requires the exact failed `AFAC D304` pair at
-`0xD2314` to stop with signal 4. It also composes full-DFCO Overlays 15 through
-19 from the GNU-assembled bytes, locks every hardware-output hash, and proves
-that stage 19 equals the complete ten-family runtime endpoint. The complete
+It independently reproduces eight map-switching and three Rolling Launch locked
+payloads with GNU `sh-elf-as`, rebuilds both exact verification compositions,
+executes 116 map-switching and 94 Rolling Launch behavior cases, and requires the
+exact failed `AFAC D304` pair at `0xD2314` to stop with signal 4. The complete
 environment and the documented 31-bit simulator RAM relocation are in
 `sh-elf-run/README.md`.
+
+The same command independently composes full-DFCO Overlays 15 through 19 from
+the GNU-assembled bytes. It requires 156 instruction placements in stages 15
+through 17, 324 in stage 18, and all 414 in stage 19. It locks every hardware
+output hash and proves that stage 19 equals the complete ten-family runtime
+endpoint before the chain is eligible for hardware testing.
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
@@ -550,7 +561,7 @@ The Fuel Cut transaction uses word copies because stock addresses `0x0934E`
 and `0x09356` are not longword-aligned. Feedback frame counts at `0xD3848` are
 locked to `10, 10`. State `2` in CAN 0x551 byte 5 is an explicit V36
 hardware-test hypothesis. Ghidra uses the `SuperH:BE:32:SH-2A` language, while
-the source validator permits only 28 used mnemonics listed for the
+the source validator permits only an explicit 29-mnemonic subset listed for the
 SH7058S SH-2E core in Renesas REJ09B0177 section 2.4.1. radare2 is not part of
 the assembly or verification path. Generated raw blobs and listings are
 regenerable temporary artifacts, while their complete validated spans are

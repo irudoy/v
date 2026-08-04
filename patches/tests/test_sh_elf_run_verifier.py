@@ -7,6 +7,9 @@ from patches import apply_map_switching as runtime
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
+from patches import rolling_launch_assembly
+from patches import rolling_launch_compose
+from patches import rolling_launch_layout
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -16,6 +19,14 @@ SPEC = importlib.util.spec_from_file_location(
 )
 VERIFIER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VERIFIER)
+
+ROLLING_MODULE_PATH = ROOT / "tools/sh-elf-run/verify_rolling_launch.py"
+ROLLING_SPEC = importlib.util.spec_from_file_location(
+    "verify_rolling_launch_sh_elf", ROLLING_MODULE_PATH
+)
+ROLLING_VERIFIER = importlib.util.module_from_spec(ROLLING_SPEC)
+ROLLING_SPEC.loader.exec_module(ROLLING_VERIFIER)
+
 
 class ShElfRunVerifierTest(unittest.TestCase):
     def test_preprocessor_translates_only_dialect_differences(self):
@@ -157,6 +168,81 @@ mov #0x5,r1
         self.assertIn("stage15_instructions=156", marker)
         self.assertIn("stage18_instructions=324", marker)
         self.assertIn("stage19_instructions=414", marker)
+
+    def test_rolling_launch_composition_lock_matches_verifier(self):
+        layout = rolling_launch_layout.load_layout()
+        blobs = rolling_launch_assembly.load_payloads(layout)
+
+        result = ROLLING_VERIFIER.require_composition(layout, blobs)
+
+        self.assertEqual(
+            result.sha256,
+            ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
+        )
+        self.assertEqual(result.instruction_count, 751)
+        self.assertEqual(result.diagnostic_count, 9)
+
+    def test_rolling_stock_stubs_come_from_both_manifests(self):
+        base_layout = layout_model.load_layout()
+        rolling_layout = rolling_launch_layout.load_layout()
+        fixture = bytearray(VERIFIER.ROM_SIZE)
+
+        count = ROLLING_VERIFIER.install_stock_return_stubs(
+            fixture, base_layout, rolling_layout
+        )
+
+        self.assertEqual(count, 4)
+        for address in (0xD09D8, 0x2C648, 0xA9554, 0x2A892):
+            with self.subTest(address=address):
+                self.assertEqual(
+                    fixture[address : address + 4],
+                    ROLLING_VERIFIER.RETURN_STUB,
+                )
+
+    def test_rolling_dynamic_transform_preserves_new_instructions(self):
+        base_layout = layout_model.load_layout()
+        rolling_layout = rolling_launch_layout.load_layout()
+        parsed = rolling_launch_assembly.validate_assembly_sources(
+            rolling_layout
+        )
+        composition = rolling_launch_compose.compose(
+            layout=rolling_layout
+        )
+
+        fixture, _, relocated, differentiated, stubs = (
+            ROLLING_VERIFIER.build_dynamic_fixture(
+                composition,
+                parsed,
+                base_layout,
+                rolling_layout,
+            )
+        )
+
+        self.assertGreater(relocated, 0)
+        self.assertGreater(differentiated, 0)
+        self.assertEqual(stubs, 4)
+        for unit in rolling_layout.assembly_units:
+            for statement in parsed[unit.key].statements:
+                if statement.kind != "instruction":
+                    continue
+                self.assertEqual(
+                    fixture[statement.address : statement.address + 2],
+                    composition.data[
+                        statement.address : statement.address + 2
+                    ],
+                )
+
+    def test_top_level_gate_registers_rolling_launch(self):
+        source = MODULE_PATH.read_text(encoding="utf-8")
+        harness = (
+            ROOT / "tools/sh-elf-run/rolling_launch_harness.c"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("verify_rolling_launch.verify", source)
+        self.assertIn("rolling_launch_cases", source)
+        self.assertIn("cases=%lu", harness)
+        self.assertIn("entries=5", harness)
+
 
 if __name__ == "__main__":
     unittest.main()

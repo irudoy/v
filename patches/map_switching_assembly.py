@@ -57,6 +57,7 @@ SH7058S_SH2E_MNEMONICS = frozenset({
     "and",
     "bf",
     "bra",
+    "bsr",
     "bt",
     "cmp/eq",
     "cmp/hs",

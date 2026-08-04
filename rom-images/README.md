@@ -259,3 +259,19 @@ The hardware overlay chain ends at SHA-256
 `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1`;
 it differs from this production file only in the accepted PCMFlash
 `0x8080..0x80FF` line variant.
+
+## Derived Rolling RPM Hold hardware-test image
+
+`23710-JK08A/mods/rolling-launch/1JK08A-20260804-map-switching-rolling-launch-rpm-hold-map1-test.bin`
+extends the exact checksum-valid complete ten-family map-switching stage-19
+endpoint. It enables Rolling RPM Hold only on Map 1. Ignition retard and the
+candidate brake gate remain disabled.
+
+| File | Size | Source SHA-256 | Output SHA-256 | Status |
+|------|-----:|----------------|----------------|--------|
+| `23710-JK08A/mods/rolling-launch/1JK08A-20260804-map-switching-rolling-launch-rpm-hold-map1-test.bin` | 1,048,576 | `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1` | `f6ab51aeb005b49333656090df2287b7834596f473eb37a869436f5c63eadbf4` | software-verified; hardware untested |
+
+All six checksum references pass. The exact GNU SH-2E gate executes 210
+combined map-switching and Rolling Launch scenarios. Hardware validation must
+follow map-switching stages 15 through 19 and the staged procedure in
+`../patches/rolling-launch.md`.
