@@ -1098,9 +1098,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
-         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
-         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
-         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
+         column 1. Activation occurs at RPM >= threshold; equality to the release value retains
+         cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
+         00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
+         candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0x0934E" sizex="2" sizey="2" endian="big">
@@ -1119,16 +1120,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier. Public EV18A
-         definitions place Throttle Rev Limiter at 0x9478 and Speed Limiter at 0x94c2; the
-         corresponding JK08A limiter scalars are 0x942c and 0x9476, preserving a -0x4c layout
-         offset for both anchors. The adjacent JK08A speed branch writes ffff19de into the same
-         signed minimum cascade. Working fuel-cut table 0000934e has candidate Normal activation
-         and release values of 7650 and 7450 RPM, placing the 7500 RPM throttle setting between
-         them. Exact code closes the limiter path through the shared signed airflow/torque-
-         request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-
-         angle command, motor PWM register, or ECM terminal. The physical label and multiplier
-         remain catalog/homology evidence pending a controlled hardware test.
+         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
+         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
+         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
+         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
+         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
+         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
+         pending controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - Rev Limit - Throttle Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0x0942C" sizex="1" endian="big">
@@ -1357,9 +1355,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
-         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
-         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
-         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
+         column 1. Activation occurs at RPM >= threshold; equality to the release value retains
+         cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
+         00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
+         candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3500" sizex="2" sizey="2" endian="big">
@@ -1379,16 +1378,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier. Public EV18A
-         definitions place Throttle Rev Limiter at 0x9478 and Speed Limiter at 0x94c2; the
-         corresponding JK08A limiter scalars are 0x942c and 0x9476, preserving a -0x4c layout
-         offset for both anchors. The adjacent JK08A speed branch writes ffff19de into the same
-         signed minimum cascade. Working fuel-cut table 0000934e has candidate Normal activation
-         and release values of 7650 and 7450 RPM, placing the 7500 RPM throttle setting between
-         them. Exact code closes the limiter path through the shared signed airflow/torque-
-         request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-
-         angle command, motor PWM register, or ECM terminal. The physical label and multiplier
-         remain catalog/homology evidence pending a controlled hardware test.
+         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
+         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
+         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
+         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
+         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
+         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
+         pending controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - Rev Limit - Throttle Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3520" sizex="1" endian="big">
@@ -1617,9 +1613,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
-         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
-         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
-         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
+         column 1. Activation occurs at RPM >= threshold; equality to the release value retains
+         cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
+         00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
+         candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3508" sizex="2" sizey="2" endian="big">
@@ -1639,16 +1636,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier. Public EV18A
-         definitions place Throttle Rev Limiter at 0x9478 and Speed Limiter at 0x94c2; the
-         corresponding JK08A limiter scalars are 0x942c and 0x9476, preserving a -0x4c layout
-         offset for both anchors. The adjacent JK08A speed branch writes ffff19de into the same
-         signed minimum cascade. Working fuel-cut table 0000934e has candidate Normal activation
-         and release values of 7650 and 7450 RPM, placing the 7500 RPM throttle setting between
-         them. Exact code closes the limiter path through the shared signed airflow/torque-
-         request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-
-         angle command, motor PWM register, or ECM terminal. The physical label and multiplier
-         remain catalog/homology evidence pending a controlled hardware test.
+         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
+         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
+         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
+         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
+         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
+         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
+         pending controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - Rev Limit - Throttle Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3522" sizex="1" endian="big">
@@ -1877,9 +1871,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
-         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
-         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
-         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
+         column 1. Activation occurs at RPM >= threshold; equality to the release value retains
+         cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
+         00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
+         candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3510" sizex="2" sizey="2" endian="big">
@@ -1899,16 +1894,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier. Public EV18A
-         definitions place Throttle Rev Limiter at 0x9478 and Speed Limiter at 0x94c2; the
-         corresponding JK08A limiter scalars are 0x942c and 0x9476, preserving a -0x4c layout
-         offset for both anchors. The adjacent JK08A speed branch writes ffff19de into the same
-         signed minimum cascade. Working fuel-cut table 0000934e has candidate Normal activation
-         and release values of 7650 and 7450 RPM, placing the 7500 RPM throttle setting between
-         them. Exact code closes the limiter path through the shared signed airflow/torque-
-         request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-
-         angle command, motor PWM register, or ECM terminal. The physical label and multiplier
-         remain catalog/homology evidence pending a controlled hardware test.
+         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
+         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
+         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
+         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
+         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
+         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
+         pending controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - Rev Limit - Throttle Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3524" sizex="1" endian="big">
@@ -2137,9 +2129,10 @@
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*12.5 RPM [code]
          The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in
-         column 1. ROM8[00008b38]=0x63 keeps the alternate words at 00009356/00009358 outside
-         the stock path. Exact code proves the RPM multiplier through ffff11f4 -> ffff11bc; the
-         public HR A2L catalog supplies the candidate Normal/Reverse column labels.
+         column 1. Activation occurs at RPM >= threshold; equality to the release value retains
+         cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
+         00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
+         candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Rev Limit - Fuel Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3518" sizex="2" sizey="2" endian="big">
@@ -2159,16 +2152,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier. Public EV18A
-         definitions place Throttle Rev Limiter at 0x9478 and Speed Limiter at 0x94c2; the
-         corresponding JK08A limiter scalars are 0x942c and 0x9476, preserving a -0x4c layout
-         offset for both anchors. The adjacent JK08A speed branch writes ffff19de into the same
-         signed minimum cascade. Working fuel-cut table 0000934e has candidate Normal activation
-         and release values of 7650 and 7450 RPM, placing the 7500 RPM throttle setting between
-         them. Exact code closes the limiter path through the shared signed airflow/torque-
-         request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-
-         angle command, motor PWM register, or ECM terminal. The physical label and multiplier
-         remain catalog/homology evidence pending a controlled hardware test.
+         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
+         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
+         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
+         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
+         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
+         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
+         pending controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - Rev Limit - Throttle Cut" category="Limiters / Rev Limit"
            storagetype="uint16" storageaddress="0xD3526" sizex="1" endian="big">

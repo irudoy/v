@@ -21,6 +21,11 @@ ordered as follows:
 
 | Index | Function | Established role |
 |---:|---|---|
+| 11 | `FUN_000769C0` | request-limit source coordinator, including the `0x0942C` branch |
+| 18 | `FUN_00071508` | signed-minimum request-limit arbiter |
+| 20 | `FUN_000702A0` | ordered request-controller stages and final selector |
+| 21 | `FUN_00079DD8` | signed request-boundary dispatch |
+| 22 | `FUN_000730FC` | downstream inverse-coordinate and limit calculations |
 | 27 | `FUN_0004ED88` | final six-channel inhibit/override mask `0xFFFF22E0` |
 | 35 | `FUN_00057608` | fuel-multiplier calculation coordinator |
 | 38 | `FUN_00056FC0` | common additive and masked-channel override word `0xFFFF2436` |
@@ -36,6 +41,11 @@ The ordering proves current-pass dependencies from the inhibit mask and fuel
 multiplier through the transient term and pulse calculation. It does not imply
 that the later fuel-target result at index 83 controls the pulse already
 calculated at index 60 in the same pass.
+
+The request limiter is calculated before the fuel-output inhibit mask, but it
+does not feed that mask. Its signed-minimum controller path and the exact
+main/stationary/DFCO mask precedence are documented in
+[`JK08A.limiters.md`](JK08A.limiters.md).
 
 The MAF/BFS producer uses a separate every-fourth-base-interrupt table at
 `0x21818`. `FUN_0003A904` is index 2 and `FUN_0003B75C` is index 3. The periodic

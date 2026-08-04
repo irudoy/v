@@ -69,6 +69,9 @@ under `defs/`, separately from `reference/`:
   Base Fuel Schedule through Fuel Compensation Main, periodic multiplier,
   bank-specific trims, six compensated pulse words, and the explicitly bounded
   ATU-II hardware-output trace.
+- `JK08A.limiters.md` is the code-grounded arbitration model for the main and
+  stationary engine-speed fuel cuts and the separate rotational-speed request
+  limiter, including periodic execution order and exact fuel-mask precedence.
 - The tracked common `JK08A.xml` and `JK08A.xdf` include the five-slot
   map-switching projection under the unchanged `JK08A` identity.
   `../patches/map-switching-layout.toml` owns the

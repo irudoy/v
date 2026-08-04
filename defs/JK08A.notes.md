@@ -1355,6 +1355,15 @@ RPM/50 byte at `0xFFFF11AE` controls fuel-cut state bit 5:
 | `0x85DA` | 30 | `x*50 RPM` | fuel restore below 1500 RPM |
 | `0x911C` | 381 | accumulator counts | readiness |
 
+The state machine loads timer `0xFFFF258A` with 100 on entry and after every
+readiness update. `FUN_0002040C` decrements that byte every tenth base interrupt.
+The lookup coordinate is
+`clamp((signed16(0xFFFF11BC)-160)/2, 0, 255)`, and each expiry adds
+`lookup(0x124D2)-128` with saturation. At or below 2000 RPM the stock step is
+zero. In the high-RPM limiter region it is 127, so exactly three expiries reach
+`3*127 = 381`, or 300 countdown counts. The exact countdown period is
+`204800/Pphi`; candidate `Pphi = 20 MHz` gives about 3.072 seconds.
+
 The returned Boolean enters `FUN_0004ED88`, which combines global and
 per-channel inhibit masks and writes `0xFFFF22E0`.
 
@@ -1513,6 +1522,13 @@ or bench measurements confirm it on JK08A.
   threshold, and writes signed candidate `0xFFFF19D8`.
 - `FUN_00071508` includes `0xFFFF19D8` in a signed minimum cascade and writes selected
   limit `0xFFFF243A`.
+
+The speed state is exact: the first pass stores `min(65535, 4*N)` and later
+passes store `min(65535, N + floor(3*S_previous/4))`, where
+`N = uint16[0xFFFF11B6]`. Stable input therefore converges to `4*N`. Stock
+increment and decrement steps at `0x9430` and `0x9436` are zero and the
+alternative cap at `0x9434` is `0xFFFF`, so normal-path threshold
+`0xFFFF1796` remains at initialized value `0x2580`.
 
 The other direct runtime reader, `FUN_00077892`, is a separate branch. It caps a
 derived unsigned value at `ROM16[0x942C]`, applies lower bound
@@ -1980,6 +1996,33 @@ as Normal/Reverse columns and Cut/Restore rows. The stock values are:
 Code proves the table address, 2x2 layout, RPM multiplier, hysteresis, active state,
 and global six-injector inhibit path. The Normal/Reverse column labels remain
 catalog-supported candidates pending CONSULT/bench validation.
+
+
+### Unified rev-limiter arbitration [CONFIRMED PATH]
+
+The complete static model is maintained in
+[`JK08A.limiters.md`](JK08A.limiters.md). Periodic table `0x21970` calculates
+the `0x942C` request branch at index 11, its signed-minimum arbitration at index
+18, controller selection at index 20, request boundary at index 21, and
+downstream inverse-coordinate stages at index 22. `FUN_0004ED88` calculates the
+separate six-channel fuel-output mask at index 27.
+
+The exact fuel-mask expression is:
+
+```text
+G = 0x3F when any global Boolean cutoff is active, otherwise 0x00
+P = G | DFCO_mask | count_mask
+R = runtime_replacement when enabled, otherwise P
+ffff22e0 = (R | auxiliary_mask) & 0x3F
+```
+
+Main RPM fuel cut and stationary RPM fuel cut both enter `G`, so neither has
+priority over the other and either produces all six bits. The runtime
+replacement can substitute their result together with DFCO/count bits; the
+auxiliary mask is applied after that replacement. The `0x942C` path does not
+enter this expression and cannot delay or clear hard fuel cut. If its request
+reduction does not keep speed below the selected `0x934E` activation threshold,
+the main limiter independently asserts `0x3F` later in the same periodic pass.
 
 
 ### Accelerator-pedal high-state hysteresis `0x8FDC`/`0x8FDE`, FUN_00047A56 [CONFIRMED]

@@ -221,13 +221,13 @@ synchronized to injector events rather than only to the periodic DFCO task.
 coordinator:
 
 ```text
-global Boolean conditions -> FUN_0004FB5E -> 0x00 or 0x3F
-DFCO request/class/delays  -> FUN_000503E0 -> DFCO mask
-per-channel count          -> FUN_0005079C -> count mask
-auxiliary RPM branch       -> FUN_0005096C -> auxiliary mask
-runtime override           -> FUN_00050A06/FUN_00050A34
-all selected masks         -> FUN_00050A4C -> value & 0x3F
-                                              -> 0xFFFF22E0
+G = 0x3F when any global Boolean condition is active, otherwise 0x00
+D = mask returned by FUN_000503E0
+C = mask returned by FUN_0005079C
+P = G | D | C
+R = runtime replacement byte when FUN_00050A34 selects it, otherwise P
+A = mask returned by FUN_0005096C
+0xFFFF22E0 = (R | A) & 0x3F
 ```
 
 The global Boolean group includes the main RPM limiter `FUN_0004F282`, the
@@ -235,8 +235,14 @@ stationary RPM limiter `FUN_0004F324`, and additional unresolved conditions.
 `FUN_0005079C` maps a clamped count through masks
 `[0x01, 0x05, 0x15, 0x17, 0x1F, 0x3F]`. `FUN_0005096C` creates an independent
 RPM-shaped mask under its own status gates. `FUN_00050A06` can activate a
-runtime replacement byte from `0xFFFF992F`. These contributors share the final
-mask but are not evidence that their physical causes are DFCO.
+runtime replacement byte from `0xFFFF992F`. The replacement is applied after
+the global/DFCO/count OR and can substitute or clear those bits. The auxiliary
+mask is ORed after the replacement and cannot be cleared by it. Main and
+stationary fuel cuts each contribute a full `0x3F`, which absorbs any partial
+DFCO or count mask before the replacement stage. These contributors share the
+final mask but are not evidence that their physical causes are DFCO. The unified
+ordering and limiter boundaries are maintained in
+[`JK08A.limiters.md`](JK08A.limiters.md).
 
 ## Output path
 

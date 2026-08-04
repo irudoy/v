@@ -102,3 +102,15 @@ addr,name,note
 00063f30,nonlinear_transition_controller,Update the bounded Q8 transition state through reciprocal curves
 0007b650,transient_threshold_builder,Scale the transient calibration lookup into the runtime threshold byte
 0007b7c0,transient_hysteresis_state_update,Apply the scaled transient threshold and hysteresis to the state bit
+0004f282,rpm_fuel_cut_state_machine,Apply calibrated activation and release thresholds to the hard fuel-cut state
+0004f324,stationary_rpm_fuel_cut_state_machine,Accumulate stationary readiness and apply the low-speed hard fuel-cut hysteresis
+0007584e,rotational_speed_request_limiter,Build the calibrated rotational-speed signed request-limit candidate
+000769c0,request_limit_source_dispatch,Run periodic request-limit candidate producers
+00075e9e,request_limiter_candidate_dispatch,Dispatch the rotational-speed request-limit candidate calculation
+00071508,signed_request_limit_arbiter,Select the most restrictive signed request-limit candidate
+000702a0,request_controller_dispatch,Run the ordered request-controller stages and final selector
+00070d82,request_limit_selector,Select and publish the signed limiter or controller result
+00079dd8,request_boundary_dispatch,Run the periodic signed request-boundary stages
+00079030,signed_request_boundary,Apply signed request bounds and publish the shared coordinate
+000730fc,request_coordinate_coordinator,Run downstream request-coordinate and local threshold calculations
+00073432,primary_request_inverse_lookup,Convert the shared signed request into inverse lookup coordinates
