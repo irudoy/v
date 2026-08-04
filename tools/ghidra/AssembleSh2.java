@@ -96,7 +96,7 @@ public class AssembleSh2 extends GhidraScript {
                 : null;
         long base = parseNumber(args[2], "base");
         long end = parseNumber(args[3], "end");
-        int fill = args.length == 5
+        int fill = args.length >= 5
                 ? checkedUnsigned(parseNumber(args[4], "fill"), 8, "fill")
                 : 0xFF;
         if (base < 0 || end <= base || end > 0x1_0000_0000L) {

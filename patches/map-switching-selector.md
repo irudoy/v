@@ -205,10 +205,10 @@ failure. The marker readback proves that normal module-18 programming can
 install a newly non-`0xFF` line in the injected tail and preserve every
 checksum byte. It does not reconstruct either failed pre-fix user MAT, so a
 candidate-specific omission is not logically excluded, but generic omission
-of the new tail is no longer the leading branch. The next staged gate isolates
-execution through the startup hook and a minimal tail trampoline. Individual
-runtime hooks, hardware-oriented initialization, asynchronous interrupts, and
-later periods remain subsequent silicon-only branches.
+of the new tail is no longer the leading branch. The prepared second gate
+isolates execution through the startup hook and a minimal tail trampoline.
+Individual runtime hooks, hardware-oriented initialization, asynchronous
+interrupts, and later periods remain subsequent silicon-only branches.
 
 `build_map_switching_marker.py` implements the first staged hardware gate. It
 accepts only the known-working tuned base with SHA-256
@@ -225,9 +225,216 @@ and MD5 `ae982b7e05fdd04af51f4136637f60cd`. It differs from its base at all
 copy is installed. Write, power cycle, identification, tail readback, checksum
 comparison, and normalized full-image comparison pass on the bench. The only
 raw comparison difference is the accepted `0x8080` variant described above.
-The marker gate therefore has status `PASS_WITH_0x8080_VARIANT`. A separate
-minimal startup trampoline is the next permitted image; individual runtime
-hooks follow only after that gate passes.
+The marker gate therefore has status `PASS_WITH_0x8080_VARIANT`.
+
+`build_map_switching_trampoline.py` implements the second staged hardware gate.
+Its only accepted source is the successful marker readback with SHA-256
+`d5cb0000f77c8c1112d912474cbb471f78051805027e3358fbedc28cf1bf58b3`,
+which already contains the accepted zero-filled `0x8080` line. The gate changes
+startup pointer `ROM32[0x27D28]` from `0x0002C648` to `0x000D22A0` and installs
+this 12-byte payload at `0xD22A0`:
+
+```text
+d001  mov.l @(0xD22A8,pc),r0
+402b  jmp @r0
+0009  nop
+0000  alignment fill
+0002c648  stock initializer literal
+```
+
+The `JMP` preserves the original caller's `PR`; loading `r0=0x2C648` also
+restores the value seen by the stock initializer on the original path. No RAM
+write, stack operation, selector logic, calibration copy, pointer table, or
+other runtime hook is present. Ghidra 12.1.2 independently assembles and
+round-trip decodes the three physical instructions and four literal bytes. The
+12-byte payload SHA-256 is
+`5e3e791f1a0d302b905db989c9a646440a69fe531921a246a21f3082712eb603`.
+
+The generated image is
+`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-trampoline-d22a0.bin`:
+
+- SHA-256:
+  `6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55`;
+- MD5: `8598014aa80faa4fff4faccba6cae17d`;
+- 23 changed bytes relative to the readback source: three hook bytes, eight
+  nonzero trampoline bytes, and 12 checksum bytes;
+- a 36-byte permitted set: four hook bytes, 12 trampoline bytes, and 20
+  checksum-reference bytes;
+- all six checksum references pass, all other 13 hooks remain stock, and all
+  bytes in the marker line outside `[0xD22A0,0xD22AC)` remain zero.
+
+`EmulateMapSwitchingTrampoline.java` executes the complete stock initializer
+from the real startup thunk against the hardware readback and gate images.
+Fourteen unchanged direct callees use identical deterministic return-zero
+stubs. The baseline and gate return through the same original `PR` with
+byte-identical complete RAM and all compared registers, the same minimum SP
+`0xFFFF7FBC`, and 1680 versus 1682 Ghidra p-code steps. The two-step delta
+represents `MOV.L` plus `JMP` with its delay-slot `NOP`.
+
+The 2026-08-04 PCMFlash transaction gives the gate hardware status
+`PASS_EXACT`. Writing completed successfully at 11:18:30, identification at
+11:19:29 reported `1JK08A00000`, and the complete read finished successfully at
+11:48:15. A final identification at 11:50:41 reported the same software. The
+readback is byte-identical to the input image and has the same SHA-256
+`6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55`.
+All six checksum references pass. The current PCMFlash journal containing this
+transaction and the subsequent selector-init transaction has SHA-256
+`382804d07e7ea391c39346d24a966672d19e0e934f5d806a3f87481a9cb505d2`.
+This result excludes generic omission of the startup hook or tail and excludes
+the transparent `0x27D28 -> 0xD22A0 -> 0x2C648` path as the direct cause of
+`FAIL-BOOT`.
+
+`build_map_switching_selector_init.py` implements the third staged hardware
+gate. Its only accepted source is the exact successful trampoline readback.
+The already installed startup hook remains unchanged, while the transparent
+tail is replaced by this 28-byte wrapper at `[0xD22A0,0xD22BC)`:
+
+```text
+4f22  sts.l pr,@-r15
+d105  mov.l @(0xD22B8,pc),r1
+e000  mov #0x0,r0
+2100  mov.b r0,@r1
+d002  mov.l @(0xD22B4,pc),r0
+400b  jsr @r0
+0009  nop
+4f26  lds.l @r15+,pr
+000b  rts
+0009  nop
+0002c648  stock initializer literal
+ffff5d00  selector-state literal
+```
+
+The wrapper performs exactly one persistent application-RAM write:
+`RAM8[0xFFFF5D00]=0`, selecting Map 1 before the stock initializer. It preserves
+the original `PR`, returns with the same register state, and installs no
+limiter, lookup adapter, selector host, calibration copy, pointer table, or CAN
+feedback. Ghidra independently assembles and round-trip decodes ten physical
+instructions and eight literal bytes. The payload SHA-256 is
+`906991815705fe9a0b91d3817fab1a59d4664e3f04ad126820d969e47d7f5612`.
+
+The generated image is
+`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-selector-init-d22a0.bin`:
+
+- SHA-256:
+  `7dcb43b2181c030bde772999b674afb72a8cd196e93a0aae3fecf90069ed62d3`;
+- MD5: `f9d6e71af479a7169368d675e5a314cc`;
+- 33 changed bytes relative to the successful trampoline readback: 21 payload
+  bytes and 12 checksum bytes;
+- a 48-byte permitted set: 28 selector-init bytes and 20 checksum-reference
+  bytes;
+- all six checksum references pass, the startup hook remains `0xD22A0`, and
+  the other 13 hooks remain stock.
+
+`EmulateMapSwitchingSelectorInit.java` compares the successful trampoline
+readback and third gate from the real startup thunk through the complete stock
+initializer. The gate changes only the selector sentinel `0xA5` to Map 1 at
+`0xFFFF5D00` outside the released stack. Final registers are identical. The
+initializer stack is exactly shifted down by four bytes, the saved outer `PR`
+is exact, and the initializer return address changes only from the original
+caller to the wrapper continuation. The source and gate take 1682 and 1688
+Ghidra p-code steps, with minimum SP `0xFFFF7FBC` and `0xFFFF7FB8` respectively.
+
+The 2026-08-04 PCMFlash transaction gives the selector-init gate hardware
+status `PASS_EXACT`. Writing the exact file completed successfully at 12:19:54.
+Identification after the power cycle reported `1JK08A00000` at 12:21:42. The
+complete one-MiB read finished successfully at 12:50:19, and final
+identification reported the same software at 12:51:58. The readback
+`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-selector-init-d22a0_readback.bin`
+is byte-identical to the input image and has the same SHA-256
+`7dcb43b2181c030bde772999b674afb72a8cd196e93a0aae3fecf90069ed62d3`.
+All six stored checksum references equal their independently calculated
+values. This excludes the isolated persistent selector write and its complete
+`PR`-preserving wrapper as the direct cause of `FAIL-BOOT`.
+
+`build_map_switching_limiter.py` constructs the aggregate limiter endpoint.
+Its only accepted source is the exact successful selector-init readback. The
+image installs the final startup wrapper and atomic limiter commit, initializes
+Map 2 through Map 5 from the input Map 1 for only the two rev-limiter families,
+materializes their two five-entry pointer tables, and replaces these three
+direct limiter literals:
+
+```text
+ROM32[0x4F468]: 0x0000934E -> 0xFFFF5D10
+ROM32[0x75964]: 0x00009424 -> 0xFFFF5D20
+ROM32[0x77BAC]: 0x0000942C -> 0xFFFF5D28
+```
+
+No selector-host call, lookup adapter, adapter-backed calibration copy or
+pointer table, or CAN-feedback component is present. Startup is the only caller
+of the limiter commit and always supplies index zero. The resulting runtime
+therefore exercises complete Map 1 fuel-cut and throttle shadows without
+enabling a map-selection path.
+
+The generated image is
+`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-limiter-map1-d3660.bin`:
+
+- SHA-256:
+  `1833922fc7d3428ed9f9998a99281d4c02b66c027cc39f7620aa3a79d541964a`;
+- MD5: `b3586f278e236499d7e0816bad1a8e46`;
+- 314 changed bytes relative to the successful selector-init readback: 80
+  startup-wrapper bytes, 138 limiter-commit bytes, 32 limiter-copy bytes, 40
+  pointer-table bytes, 12 direct-hook bytes, and 12 checksum bytes;
+- a 464-byte permitted set: the 96-byte startup-wrapper envelope, 256-byte
+  limiter-commit envelope, 40 limiter-copy bytes, 40 pointer-table bytes, 12
+  direct-hook bytes, and 20 checksum-reference bytes;
+- all six checksum references pass, Map 2 through Map 5 are byte-identical to
+  input Map 1 for both limiter families, and every non-limiter runtime hook and
+  storage range remains at the preceding stage.
+
+Ghidra 12.1.2 independently rebuilds the final startup and limiter spans with
+SHA-256 `352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3`
+and `e1e296e0d2f1dccef21982f14f4e3e1aebdc39fba6b68ae8b3e2ecbc16d5a5aa`.
+The isolated limiter harness passes 14/14 cases over 1542 p-code instructions.
+`EmulateMapSwitchingLimiterGate.java` differentially executes the exact source
+and gate images from the real startup thunk through the complete stock
+initializer. The source and gate take 1688 and 1795 steps, an exact delta of
+107, and both have minimum SP `0xFFFF7FB8`. The gate clears all eight selector
+bytes, creates the exact 12-byte fuel shadow and 28-byte throttle shadow from
+Map 1, preserves the Map 1 value in `0xFFFF1796`, restores SR exactly, preserves
+all protected registers, and leaves every RAM byte outside the reservation
+equal to the source run. The image has status `READY_FOR_HARDWARE` and hardware
+status `UNTESTED`, but it is not the first limiter image in the hardware
+sequence.
+
+`build_map_switching_limiter_overlays.py` decomposes that aggregate endpoint
+into five cumulative, atomic hardware overlays. Every output is a complete
+one-MiB ROM, not a partial patch. Each image is built from the preceding planned
+image in memory, all six checksum references are recalculated at every step,
+and no intermediate hardware readback becomes the next source. The exact
+successful selector-init readback remains the single chain root.
+
+| Stage | Newly active component | Direct limiter hooks | SHA-256 | MD5 |
+|---:|---|---:|---|---|
+| 01 | Inactive limiter commit, Map 1-equivalent copies, and pointer tables | 0 | `9bb1704f93a6050593abbf30b450cc1b75bc4d141ed4455b7528148de69f56c4` | `0b945f8909358e704039cc15386b14df` |
+| 02 | Final startup wrapper and execution of limiter commit | 0 | `135512525ed64b7728348a2b8859e9a7b607f931f57f6a7951e0d2d7dc847da5` | `58e187733c04e5dc42417c0edc7ce408` |
+| 03 | Fuel-cut base hook at `0x4F468` | 1 | `22f824be2e9ca941b42760de27accc7cd1c7365e23a0b19eda29387fd1dd196c` | `f21f4c62933aa1ce5d4d0ce7f37f0505` |
+| 04 | Throttle-cluster base hook at `0x75964` | 2 | `3aa4bce11eb9030dc688c04744170e8aee61b1b9f8e3dd99a57a4d5ca1f626db` | `bc1df55ec410d0c2053c5cd1021a016a` |
+| 05 | Throttle-scalar base hook at `0x77BAC` | 3 | `1833922fc7d3428ed9f9998a99281d4c02b66c027cc39f7620aa3a79d541964a` | `b3586f278e236499d7e0816bad1a8e46` |
+
+The adjacent-image permitted sets contain 356 bytes for stage 01, 116 bytes
+for stage 02, and 24 bytes for each hook stage. The actual adjacent changes are
+222, 92, 15, 15, and 15 bytes respectively; checksum references account for
+12, 12, 11, 11, and 11 of those bytes. Stage 05 is byte-identical to the
+aggregate limiter endpoint above.
+
+The ordered SHA-256 manifest is
+`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-limiter-overlay.sha256`.
+`EmulateMapSwitchingLimiterGate.java` executes all five exact images. Stage 01
+is behaviorally identical to the selector-init source at 1688 p-code steps and
+does not reach limiter commit. Stages 02 through 05 reach the commit and finish
+at 1795 steps, the exact 107-step delta. Every run has minimum SP
+`0xFFFF7FB8`; the five stages pass their cumulative hook contract, exact RAM
+reservation contract, protected-register checks, and complete RAM comparison
+outside the reservation.
+
+The hardware procedure writes stages 01 through 05 strictly in order. A stage
+passes when programming completes, a power cycle completes, and identification
+reports `1JK08A00000`. No full readback is required between stages. PCMFlash
+recovery mode for this module does not provide a read operation, so a failed
+stage cannot be verified after the fact. The first failed stage terminates the
+sequence; no later overlay is written, and recovery writes the last identified
+image. The chain has status `READY_FOR_HARDWARE`; every stage has hardware
+status `UNTESTED`.
 
 ## Pilot calibration scope
 
@@ -1061,25 +1268,45 @@ verifies the recalculated output before writing it.
    marker and checksum bytes plus a full-image comparison that permits only an
    explicitly characterized reset-selector line. The 2026-08-04 transaction
    passes with the sole `0x8080` variant described above.
-2. Patch a checksum-valid compatible input with `apply_map_switching.py` and
+2. Write the startup-trampoline gate built only from the successful marker
+   readback, power cycle, confirm identification, and obtain a complete
+   readback. Require the exact startup hook, 12-byte trampoline, checksum
+   references, and all other bytes. The 2026-08-04 transaction has status
+   `PASS_EXACT`: the readback equals the input byte for byte.
+3. Write the startup selector-init gate built only from the successful
+   trampoline readback, power cycle, confirm identification, and obtain a
+   complete readback. Require exact equality with the input image. This gate
+   adds one persistent RAM write to `0xFFFF5D00` and no other runtime feature.
+   The 2026-08-04 transaction has status `PASS_EXACT`: the readback equals the
+   input byte for byte.
+4. Write the five cumulative limiter overlays strictly in numeric order. After
+   every write, power cycle and confirm identification before proceeding. Do
+   not require an intermediate readback. Stage 01 installs inactive payload and
+   storage, stage 02 executes startup commit with stock consumers, and stages
+   03 through 05 activate the fuel, throttle-cluster, and throttle-scalar hooks
+   one at a time. Stop at the first failed identification and do not write any
+   later overlay. All five hardware statuses are `UNTESTED`.
+5. Add lookup adapters and their Map 1-equivalent storage, then selector-host
+   execution, in subsequent single-feature stages. Add CAN feedback last.
+6. Patch a checksum-valid compatible input with `apply_map_switching.py` and
    retain the reported input/output SHA-256 values and MD5 sidecar.
-3. Verify that Map 2 through Map 5 equal the input Map 1 in all eight families,
+7. Verify that Map 2 through Map 5 equal the input Map 1 in all eight families,
    all checksum domains pass, and the common `JK08A` XML/XDF projection matches
    the layout.
-4. Confirm the raw ladder sequence `SET -> CANCEL -> SET` on the target switch
+8. Confirm the raw ladder sequence `SET -> CANCEL -> SET` on the target switch
    assembly.
-5. With the vehicle stationary and the engine stopped, confirm that CAN 0x551
+9. With the vehicle stationary and the engine stopped, confirm that CAN 0x551
    byte 5 state `2` produces the CRUISE indication and that the locked `10, 10`
    timing gives a visible pulse. This is the first silicon check of the explicit
    feedback hypothesis and does not require a separate stock-period capture.
-6. Verify one through five indication pulses and confirm that stock ASCD control
+10. Verify one through five indication pulses and confirm that stock ASCD control
    state remains unchanged.
-7. Confirm reset Map 1 and raw DID 0x130E bit 7 on a bench ECU or the target
+11. Confirm reset Map 1 and raw DID 0x130E bit 7 on a bench ECU or the target
    vehicle.
-8. Measure the extended startup clear and commit critical-section latency.
-9. Confirm unchanged lookup outputs for every input index in all five selector
+12. Measure the extended startup clear and commit critical-section latency.
+13. Confirm unchanged lookup outputs for every input index in all five selector
    states.
-10. Start the engine with byte-identical maps and exercise all five selections
+14. Start the engine with byte-identical maps and exercise all five selections
    before changing any alternate map.
 
 Ground truth remains the physical ECU and engine.

@@ -185,6 +185,9 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `ghidra/EmulateMapSwitchingAdapters.java` | Execute the two SHA-locked JK08A adapter blobs in Ghidra's SuperH p-code emulator; verify five slots, invalid-index fallback, unrecognized-base pass-through, exact stock-wrapper destinations, and protected-register preservation. Arguments: `<helper_blob> <adapters_blob>` | stdout with `VQ_ADAPTER_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingLimiter.java` | Execute the SHA-locked startup and limiter-commit blobs using exact stock limiter containers, synthetic slot values, and RAM sentinels; verify normalized indices, complete shadows, publication, runtime scalar, SR restoration, return ABI, and write boundaries. Arguments: `<startup_blob> <commit_blob>` | stdout with `VQ_LIMITER_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingBoot.java` | Execute a complete patched ROM from the stock startup thunk through the injected wrapper, the full 1906-byte stock initializer body, the injected fuel-compensation adapter, the stock lookup wrapper, and the limiter commit. Unchanged direct callees of the initializer are deterministic return-zero stubs. The harness verifies stack and callee-saved registers, invalid-index normalization, both limiter shadows, and the stock runtime scalar. Argument: `<patched_rom>` | stdout with `VQ_BOOT_EMU status=PASS` |
+| `ghidra/EmulateMapSwitchingTrampoline.java` | Differentially execute the stock startup thunk through the successful marker readback and minimal startup-trampoline gate. Both runs execute the complete stock initializer with identical deterministic direct-callee stubs. The harness requires entry through `0xD22A0`, the tail jump to `0x2C648`, the original return address, identical complete RAM and register state, and the expected two-step p-code delta for three physical instructions including the jump delay slot. Arguments: `<baseline_rom> <gate_rom>` | stdout with `VQ_TRAMPOLINE_EMU status=PASS` |
+| `ghidra/EmulateMapSwitchingSelectorInit.java` | Differentially execute the successful startup-trampoline readback and minimal selector-init gate through the complete stock initializer. It requires identical final registers, the sole non-stack RAM change `0xFFFF5D00: 0xA5 -> 0`, exact four-byte stack displacement, exact saved outer `PR`, and the single expected initializer-return substitution. Arguments: `<trampoline_rom> <gate_rom>` | stdout with `VQ_SELECTOR_INIT_EMU status=PASS` |
+| `ghidra/EmulateMapSwitchingLimiterGate.java` | Differentially execute the successful selector-init readback and either the aggregate limiter gate or all five cumulative limiter overlays through the real startup thunk and complete stock initializer. Stage 01 must remain behaviorally identical to the source; stages 02 through 05 must have the exact 107-step delta, equal stack floor, Map 1 shadows, cumulative direct-hook contract, restored SR, protected registers, and equal RAM outside the reservation. Arguments: `<selector_rom> <gate_rom>` or `<selector_rom> <overlay_01> ... <overlay_05>` | stdout with `VQ_LIMITER_GATE_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingReset.java` | Differentially execute a working ROM, generated map-switching ROM, and optional tuned ROM from the exact TRAPA handler through the real startup thunk and one complete scheduler-loop iteration. It checks that nine retained selector values all initialize map 1, plus thunk ABI, scheduler checkpoint state, exact limiter outputs, stack floor, and all RAM outside the declared reservation, selected runtime scalar, and stale stack frames below the restored SP. The live scheduler stack remains compared. Arguments: `<working_rom> <patched_rom> [tuned_rom]` | stdout with `VQ_RESET_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingFeedback.java` | Execute the SHA-locked CAN wrapper and pulse engine with a deterministic serializer stub; verify fail-closed configuration, pulse timing, payload preservation, protected registers, and stack balance. Arguments: `<wrapper_blob> <engine_blob>` | stdout with `VQ_FEEDBACK_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingComposition.java` | Build the exact one-MiB composition from the stock Ghidra program, seven SHA-locked blobs, 14 hooks, 32 copies, and eight pointer tables, then execute all 87 p-code cases from fresh complete-image states. It verifies the fixture hash, write boundary, checksum-field preservation, all ten code entries, limiter SR restoration, and preservation of every non-T SR bit on caller-clobbered paths. Arguments: the seven blobs in manifest order | stdout with `VQ_COMPOSITION_EMU status=PASS` |
@@ -237,6 +240,10 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `../patches/jk08a_checksums.py` | Calculate, verify, and recalculate JK03A/JK08A SUM16 and runtime XOR+SUM domains in dependency order | imported by the patcher and tests |
 | `../patches/upgrade_map_switching_reset.py` | Upgrade only the complete pre-fix map-switching runtime with an exact protected upper partition outside declared map-switching and checksum storage: restore the stock fallback zero-fill anchor, install the fixed startup wrapper, recalculate checksums, and preserve every calibration byte | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/build_map_switching_marker.py` | Build the first incident-isolation gate from the SHA-locked known-working JK08A tuned ROM: zero-fill only the complete 128-byte line at `0xD2280`, retain all runtime hooks at stock values, recalculate checksums, and prove the exact write boundary | ROM plus MD5 sidecar; non-overwriting |
+| `../patches/build_map_switching_trampoline.py` | Build the second incident-isolation gate from the SHA-locked successful marker readback: replace only startup pointer `0x27D28`, install the transparent 12-byte tail jump at `0xD22A0`, retain the other 13 hooks and zero marker-line remainder, and recalculate checksums | ROM plus MD5 sidecar; non-overwriting |
+| `../patches/build_map_switching_selector_init.py` | Build the third incident-isolation gate from the SHA-locked successful trampoline readback: preserve the startup hook, replace the transparent tail with a 28-byte wrapper that writes Map 1 only to `0xFFFF5D00`, retain the other 13 hooks, omit every other runtime feature, and recalculate checksums | ROM plus MD5 sidecar; non-overwriting |
+| `../patches/build_map_switching_limiter.py` | Build the aggregate limiter endpoint from the SHA-locked successful selector-init readback: install the final startup wrapper, atomic limiter commit, two Map 1-equivalent limiter families, two pointer tables, and three direct shadow hooks; omit lookup adapters, selector host, and CAN feedback. This image is the equivalence target for overlay stage 05, not the first limiter hardware write | ROM plus MD5 sidecar; non-overwriting |
+| `../patches/build_map_switching_limiter_overlays.py` | Decompose the aggregate limiter gate into five cumulative complete-ROM overlays: inactive payload and storage, startup commit, fuel hook, throttle-cluster hook, and throttle-scalar hook. Lock the exact source and every output SHA-256, recalculate all checksums per stage, prove each adjacent write boundary, and emit ordered outputs, MD5 sidecars, and a SHA-256 manifest | five ROMs, five MD5 sidecars, and ordered SHA-256 manifest; non-overwriting |
 | `../patches/apply_map_switching.py` | Validate a checksum-valid JK08A input against the exact identity, anchors, erased allocation, and protected upper ROM; initialize alternate maps from input Map 1, install the tracked runtime, recalculate checksums, prove input-byte preservation, and create a non-overwriting ROM plus MD5 sidecar | derived ROM and `.md5` |
 | `mapkit/presentation.py` | Normalize functional categories shared by the RomRaider and TunerPro projections without encoding confidence in the category name | imported by both renderers |
 | `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 36 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
@@ -369,6 +376,16 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
     D22A0 D2300 FF \
     /private/tmp/jk08a-map-switching-startup-wrapper.lst \
   -postScript AssembleSh2.java \
+    patches/map-switching-startup-trampoline.s \
+    /private/tmp/jk08a-map-switching-startup-trampoline.bin \
+    D22A0 D22AC 00 \
+    /private/tmp/jk08a-map-switching-startup-trampoline.lst \
+  -postScript AssembleSh2.java \
+    patches/map-switching-startup-selector-init.s \
+    /private/tmp/jk08a-map-switching-startup-selector-init.bin \
+    D22A0 D22BC 00 \
+    /private/tmp/jk08a-map-switching-startup-selector-init.lst \
+  -postScript AssembleSh2.java \
     patches/map-switching-limiter-commit.s \
     /private/tmp/jk08a-map-switching-limiter-commit.bin \
     D3660 D3760 FF \
@@ -405,6 +422,11 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
     /private/tmp/jk08a-map-switching-feedback-engine.bin \
   -postScript EmulateMapSwitchingBoot.java \
     PATCHED-ROM.bin \
+  -postScript EmulateMapSwitchingLimiterGate.java \
+    SELECTOR-INIT-READBACK.bin \
+    LIMITER-OVERLAY-01.bin LIMITER-OVERLAY-02.bin \
+    LIMITER-OVERLAY-03.bin LIMITER-OVERLAY-04.bin \
+    LIMITER-OVERLAY-05.bin \
   -postScript EmulateMapSwitchingReset.java \
     WORKING-ROM.bin PATCHED-ROM.bin TUNED-ROM.bin
 python3 patches/map_switching_assembly.py \
@@ -427,6 +449,14 @@ python3 patches/apply_map_switching.py INPUT.bin \
   --output OUTPUT-map-switching.bin
 python3 patches/build_map_switching_marker.py WORKING-ROM.bin \
   --output WORKING-ROM-marker-only-d2280.bin
+python3 patches/build_map_switching_trampoline.py MARKER-READBACK.bin \
+  --output MARKER-READBACK-startup-trampoline-d22a0.bin
+python3 patches/build_map_switching_selector_init.py TRAMPOLINE-READBACK.bin \
+  --output TRAMPOLINE-READBACK-startup-selector-init-d22a0.bin
+python3 patches/build_map_switching_limiter.py SELECTOR-INIT-READBACK.bin \
+  --output SELECTOR-INIT-READBACK-startup-limiter-map1-d3660.bin
+python3 patches/build_map_switching_limiter_overlays.py \
+  SELECTOR-INIT-READBACK.bin --output-prefix LIMITER-OVERLAY
 python3 patches/upgrade_map_switching_reset.py PRE-FIX.bin \
   --output PRE-FIX-fixed-reset.bin
 ```
@@ -489,6 +519,48 @@ restores the stock `0x29CC=0xFFFF7000` anchor, installs the reset-fixed startup
 wrapper, recalculates all checksum domains, and proves that all calibration
 bytes remain unchanged. Its permitted set contains the four-byte anchor, the
 96-byte startup-wrapper span, and 20 checksum bytes.
+
+`build_map_switching_trampoline.py` accepts only the successful marker
+readback with SHA-256
+`d5cb0000f77c8c1112d912474cbb471f78051805027e3358fbedc28cf1bf58b3`.
+It replaces the stock startup target `0x2C648` at `0x27D28` with `0xD22A0`,
+installs a three-instruction transparent tail jump back to `0x2C648`, and
+recalculates all checksum references. Its complete permitted set is the
+four-byte hook, 12-byte trampoline, and 20 checksum bytes. All other runtime
+hooks remain stock and the gate performs no RAM write.
+
+`build_map_switching_selector_init.py` accepts only the exact successful
+trampoline readback with SHA-256
+`6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55`.
+It preserves startup hook `0x27D28 -> 0xD22A0`, replaces the transparent
+trampoline with a 28-byte wrapper that writes Map 1 to `0xFFFF5D00` before the
+stock initializer, and recalculates all checksum references. Its permitted set
+contains only the 28-byte wrapper and 20 checksum bytes. The other 13 hooks
+remain stock; limiter, lookup, selector-host, calibration, pointer-table, and
+CAN-feedback behavior are absent.
+
+`build_map_switching_limiter.py` constructs the aggregate endpoint and accepts
+only the exact successful
+selector-init readback with SHA-256
+`7dcb43b2181c030bde772999b674afb72a8cd196e93a0aae3fecf90069ed62d3`.
+It installs the final 96-byte startup-wrapper envelope, the 256-byte atomic
+limiter-commit envelope, the two rev-limiter families with Map 2 through Map 5
+equal to input Map 1, their two pointer tables, and the three direct RAM-shadow
+hooks. Its permitted set contains those 444 runtime bytes plus 20 checksum
+bytes. The startup hook remains active. All lookup and selector-host hooks
+remain stock, and lookup adapters, adapter-backed storage, selector-host code,
+and CAN-feedback code remain absent.
+
+`build_map_switching_limiter_overlays.py` uses the same exact source and
+payload contracts but emits five cumulative one-MiB images for sequential
+hardware writes without intermediate readback. Stage 01 adds only inactive
+limiter code, Map 1-equivalent copies, and pointer tables. Stage 02 installs the
+final startup wrapper and executes limiter commit while every direct consumer
+remains stock. Stages 03 through 05 replace the fuel-cut, throttle-cluster, and
+throttle-scalar literals one at a time. The adjacent permitted sets are 356,
+116, 24, 24, and 24 bytes including checksum-reference fields. The ordered
+SHA-256 manifest prevents reordering, and stage 05 is byte-identical to the
+aggregate output from `build_map_switching_limiter.py`.
 
 ### RomRaider and TunerPro: NATS and DTC controls
 
