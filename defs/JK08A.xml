@@ -618,6 +618,51 @@
       <state name="Disabled" data="00 00"/>
     </table>
 
+    <!-- 0x126E4  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x4FBE2; r4 operand: pool
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
+         address as the Bosch-family table, but exact JK08A code interpolates and selects it
+         dynamically in stock operation. It is not an inactive-family calibration. Result
+         disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="DFCO Hold RPM Threshold" category="Fuelling / Overrun"
+           storagetype="uint8" storageaddress="0x126E4" sizex="16" endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
+    <!-- 0x1298C  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x50018; r4 operand: pool
+         scaling x*25 RPM [code]
+         static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
+         map evidence: indexed_by]
+         The Nissan A2L registry labels this address as the Bosch-family restore table, but
+         exact JK08A code always interpolates it and uses it in live classifier branches. It is
+         not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
+         floor can raise its effective value. Result disposition: inline_comparison.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="DFCO Intermediate Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0x1298C" sizex="16"
+           endian="big">
+      <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+        <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
+        <data>0</data><data>10</data><data>20</data><data>30</data>
+        <data>40</data><data>50</data><data>60</data><data>70</data>
+        <data>80</data><data>90</data><data>100</data><data>110</data>
+      </table>
+    </table>
+
     <!-- 0x1491A  16 uint16  map [code]; entry 0x263F4 (implicit, core 0x26A64)
          accessor 0x8083C; r4 operand: pool
          scaling x/2048 BFS ms [candidate]
@@ -909,13 +954,11 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         A complete machine listing covers the lookup, saturation, lower-bound branches, and
-         final comparisons with ffff11b3. The common producer FUN 000384cc establishes the
-         RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts
-         identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU
-         family. Result disposition: inline_comparison.
+         The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
+         tables on every evaluation and selects this one for the rising mode edge. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Overrun Fuel Cut" category="Fuelling / Overrun"
+    <table type="2D" name="Map 1 - DFCO Entry RPM Threshold" category="Fuelling / Overrun"
            storagetype="uint8" storageaddress="0x12718" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -934,12 +977,13 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering
-         and homologous address layouts identify this second restore threshold as the
-         JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison.
+         Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
+         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Overrun Fuel Cut Restore" category="Fuelling / Overrun"
-           storagetype="uint8" storageaddress="0x12818" sizex="16" endian="big">
+    <table type="2D" name="Map 1 - DFCO Full Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0x12818" sizex="16"
+           endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1164,13 +1208,11 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         A complete machine listing covers the lookup, saturation, lower-bound branches, and
-         final comparisons with ffff11b3. The common producer FUN 000384cc establishes the
-         RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts
-         identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU
-         family. Result disposition: inline_comparison.
+         The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
+         tables on every evaluation and selects this one for the rising mode edge. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Overrun Fuel Cut" category="Fuelling / Overrun"
+    <table type="2D" name="Map 2 - DFCO Entry RPM Threshold" category="Fuelling / Overrun"
            storagetype="uint8" storageaddress="0xD2400" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -1190,12 +1232,13 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering
-         and homologous address layouts identify this second restore threshold as the
-         JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison.
+         Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
+         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Overrun Fuel Cut Restore" category="Fuelling / Overrun"
-           storagetype="uint8" storageaddress="0xD2440" sizex="16" endian="big">
+    <table type="2D" name="Map 2 - DFCO Full Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD2440" sizex="16"
+           endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1424,13 +1467,11 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         A complete machine listing covers the lookup, saturation, lower-bound branches, and
-         final comparisons with ffff11b3. The common producer FUN 000384cc establishes the
-         RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts
-         identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU
-         family. Result disposition: inline_comparison.
+         The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
+         tables on every evaluation and selects this one for the rising mode edge. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Overrun Fuel Cut" category="Fuelling / Overrun"
+    <table type="2D" name="Map 3 - DFCO Entry RPM Threshold" category="Fuelling / Overrun"
            storagetype="uint8" storageaddress="0xD2410" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -1450,12 +1491,13 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering
-         and homologous address layouts identify this second restore threshold as the
-         JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison.
+         Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
+         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Overrun Fuel Cut Restore" category="Fuelling / Overrun"
-           storagetype="uint8" storageaddress="0xD2450" sizex="16" endian="big">
+    <table type="2D" name="Map 3 - DFCO Full Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD2450" sizex="16"
+           endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1684,13 +1726,11 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         A complete machine listing covers the lookup, saturation, lower-bound branches, and
-         final comparisons with ffff11b3. The common producer FUN 000384cc establishes the
-         RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts
-         identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU
-         family. Result disposition: inline_comparison.
+         The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
+         tables on every evaluation and selects this one for the rising mode edge. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Overrun Fuel Cut" category="Fuelling / Overrun"
+    <table type="2D" name="Map 4 - DFCO Entry RPM Threshold" category="Fuelling / Overrun"
            storagetype="uint8" storageaddress="0xD2420" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -1710,12 +1750,13 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering
-         and homologous address layouts identify this second restore threshold as the
-         JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison.
+         Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
+         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Overrun Fuel Cut Restore" category="Fuelling / Overrun"
-           storagetype="uint8" storageaddress="0xD2460" sizex="16" endian="big">
+    <table type="2D" name="Map 4 - DFCO Full Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD2460" sizex="16"
+           endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1944,13 +1985,11 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         A complete machine listing covers the lookup, saturation, lower-bound branches, and
-         final comparisons with ffff11b3. The common producer FUN 000384cc establishes the
-         RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts
-         identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU
-         family. Result disposition: inline_comparison.
+         The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
+         tables on every evaluation and selects this one for the rising mode edge. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Overrun Fuel Cut" category="Fuelling / Overrun"
+    <table type="2D" name="Map 5 - DFCO Entry RPM Threshold" category="Fuelling / Overrun"
            storagetype="uint8" storageaddress="0xD2430" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
@@ -1970,12 +2009,13 @@
          scaling x*25 RPM [code]
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
-         Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering
-         and homologous address layouts identify this second restore threshold as the
-         JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison.
+         Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
+         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Overrun Fuel Cut Restore" category="Fuelling / Overrun"
-           storagetype="uint8" storageaddress="0xD2470" sizex="16" endian="big">
+    <table type="2D" name="Map 5 - DFCO Full Restore RPM Threshold"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0xD2470" sizex="16"
+           endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">

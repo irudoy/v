@@ -475,8 +475,8 @@ fine = 1
 coarse = 16
 
 [table.000120f6]
-name = "Conditional Parameter High Byte - raw u8 (0x120F6)"
-category = "Internal Calculations"
+name = "Conditional DFCO Entry Delay - scheduler counts (0x120F6)"
+category = "Fuelling / Overrun"
 order = 93
 format = "0"
 fine = 1
@@ -610,26 +610,11 @@ format = "0"
 fine = 2
 coarse = 16
 
-# Code establishes the cut/restore use and RPM scale for these four coolant-indexed
-# thresholds. Bosch versus JECS/Hitachi assignment follows the exact four-table
-# ordering documented by the Nissan A2L registry and homologous definitions. JK08A
-# uses the JECS/Hitachi pair; the Bosch pair is explicitly hidden from working defs.
+# Exact JK08A code establishes the dynamic role and RPM scale of all four
+# coolant-indexed thresholds. Registry family labels do not describe the runtime
+# selection in this executable: both source-labeled pairs are live.
 [table.000126e4]
-name = "Over Run Fuel Cut - Bosch (0x126E4)"
-category = "Fuel Delivery / Fuel Cut / Main"
-order = 10
-emit = false
-format = "0"
-fine = 25
-coarse = 100
-static_axis_name = "Coolant Temperature [deg C]"
-static_axis = [
-  -40, -30, -20, -10, 0, 10, 20, 30,
-  40, 50, 60, 70, 80, 90, 100, 110,
-]
-
-[table.00012718]
-name = "Overrun Fuel Cut"
+name = "DFCO Hold RPM Threshold"
 category = "Fuelling / Overrun"
 order = 30
 emit = true
@@ -642,8 +627,8 @@ static_axis = [
   40, 50, 60, 70, 80, 90, 100, 110,
 ]
 
-[table.00012818]
-name = "Overrun Fuel Cut Restore"
+[table.00012718]
+name = "DFCO Entry RPM Threshold"
 category = "Fuelling / Overrun"
 order = 31
 emit = true
@@ -656,11 +641,25 @@ static_axis = [
   40, 50, 60, 70, 80, 90, 100, 110,
 ]
 
+[table.00012818]
+name = "DFCO Full Restore RPM Threshold"
+category = "Fuelling / Overrun"
+order = 32
+emit = true
+format = "0"
+fine = 25
+coarse = 100
+static_axis_name = "Coolant Temperature [deg C]"
+static_axis = [
+  -40, -30, -20, -10, 0, 10, 20, 30,
+  40, 50, 60, 70, 80, 90, 100, 110,
+]
+
 [table.0001298c]
-name = "Over Run Fuel Restore - Bosch (0x1298C)"
-category = "Fuel Delivery / Fuel Cut / Main"
-order = 13
-emit = false
+name = "DFCO Intermediate Restore RPM Threshold"
+category = "Fuelling / Overrun"
+order = 33
+emit = true
 format = "0"
 fine = 25
 coarse = 100

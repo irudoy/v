@@ -384,6 +384,120 @@
     <XDFPATCHENTRY name="P0057 [178] descriptor" address="0x19BB8" datasize="0xC" patchdata="000000000000000000000000" basedata="330404000000005700000000" />
     <XDFPATCHENTRY name="P0057 [178] attribute" address="0x1618C" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
+  <XDFTABLE uniqueid="0x8F4E" flags="0x0">
+    <title>DFCO Hold RPM Threshold</title>
+    <description>Exact JK08A. Address 0x126E4; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed held-request RPM threshold in DFCO request evaluator FUN 0004fbe2. Exact stock branch logic selects it after upstream DFCO mode bit 5 is already present in both current snapshot ffff2458 and previous snapshot ffff245a, subject to additional runtime gates. The comparison is strict RPM/25 &gt; threshold. The Nissan A2L registry labels this address as the Bosch-family table, but exact JK08A code interpolates and selects it dynamically in stock operation. It is not an inactive-family calibration. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="7" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Coolant Temperature [deg C]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="-40" />
+      <LABEL index="1" value="-30" />
+      <LABEL index="2" value="-20" />
+      <LABEL index="3" value="-10" />
+      <LABEL index="4" value="0" />
+      <LABEL index="5" value="10" />
+      <LABEL index="6" value="20" />
+      <LABEL index="7" value="30" />
+      <LABEL index="8" value="40" />
+      <LABEL index="9" value="50" />
+      <LABEL index="10" value="60" />
+      <LABEL index="11" value="70" />
+      <LABEL index="12" value="80" />
+      <LABEL index="13" value="90" />
+      <LABEL index="14" value="100" />
+      <LABEL index="15" value="110" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x126E4" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*25">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x2F3D" flags="0x0">
+    <title>DFCO Intermediate Restore RPM Threshold</title>
+    <description>Exact JK08A. Address 0x1298C; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed upper/intermediate-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff1778. At low vehicle speed RPM above the lower 00012818 threshold and at or below this threshold returns restore class 2. The Nissan A2L registry labels this address as the Bosch-family restore table, but exact JK08A code always interpolates it and uses it in live classifier branches. It is not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="7" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Coolant Temperature [deg C]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="-40" />
+      <LABEL index="1" value="-30" />
+      <LABEL index="2" value="-20" />
+      <LABEL index="3" value="-10" />
+      <LABEL index="4" value="0" />
+      <LABEL index="5" value="10" />
+      <LABEL index="6" value="20" />
+      <LABEL index="7" value="30" />
+      <LABEL index="8" value="40" />
+      <LABEL index="9" value="50" />
+      <LABEL index="10" value="60" />
+      <LABEL index="11" value="70" />
+      <LABEL index="12" value="80" />
+      <LABEL index="13" value="90" />
+      <LABEL index="14" value="100" />
+      <LABEL index="15" value="110" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1298C" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*25">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xAA84" flags="0x0">
     <title>Calculated Load</title>
     <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence code. Sixteen-point Base Fuel Schedule normalization reference for the calculated-load byte. Lookup M by RPM/25 byte ffff11b3 enters q=floor((uint16[ffff1024]&lt;&lt;8)/M); an optional second normalization uses ffff329f, and the result is clamped to 255 and written to ffff413e for J1979 Mode 01 PID 0x04. The exact image closes both wrapper branches: 000263f4 calls the complete uint16 interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell 15 otherwise. Exact DID 0x1208 identifies numerator ffff1024 as current Base Fuel Schedule; the quotient therefore compares it with a same-dimension 100% reference. FUN 0008083c optionally applies floor((q&lt;&lt;7)/uint8[ffff329f]), clamps to 255, and writes ffff413e. FUN 00035856 returns this byte for PID 0x04; standard conversion is 100*A/255. The operational role has code confidence. The raw/2048 ms conversion and static RPM-axis presentation remain candidate and require hardware validation. Static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence: writes].</description>
@@ -3057,8 +3171,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x3102" flags="0x0">
-    <title>Map 1 - Overrun Fuel Cut</title>
-    <description>Exact JK08A. Address 0x12718; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM cut threshold in the Over Run Fuel Cut request evaluator FUN 0004fbe2. After branch-dependent saturation and lower bounding, the selected threshold is compared with RPM/25 byte ffff11b3; a true request enters state machine FUN 000503e0. Common-definition Map 1 uses the canonical stock storage. A complete machine listing covers the lookup, saturation, lower-bound branches, and final comparisons with ffff11b3. The common producer FUN 000384cc establishes the RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 1 - DFCO Entry RPM Threshold</title>
+    <description>Exact JK08A. Address 0x12718; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 1 uses the canonical stock storage. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -3114,8 +3228,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x763F" flags="0x0">
-    <title>Map 1 - Overrun Fuel Cut Restore</title>
-    <description>Exact JK08A. Address 0x12818; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM restore threshold in FUN 00050018. The selected and branch-adjusted threshold is compared with RPM/25 byte ffff11b3, and the resulting restore/inhibit state is passed to Over Run Fuel Cut state machine FUN 000503e0. Common-definition Map 1 uses the canonical stock storage. Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering and homologous address layouts identify this second restore threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 1 - DFCO Full Restore RPM Threshold</title>
+    <description>Exact JK08A. Address 0x12818; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 1 uses the canonical stock storage. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -7605,8 +7719,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x7693" flags="0x0">
-    <title>Map 2 - Overrun Fuel Cut</title>
-    <description>Exact JK08A. Address 0xD2400; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM cut threshold in the Over Run Fuel Cut request evaluator FUN 0004fbe2. After branch-dependent saturation and lower bounding, the selected threshold is compared with RPM/25 byte ffff11b3; a true request enters state machine FUN 000503e0. Common-definition Map 2 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. A complete machine listing covers the lookup, saturation, lower-bound branches, and final comparisons with ffff11b3. The common producer FUN 000384cc establishes the RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 2 - DFCO Entry RPM Threshold</title>
+    <description>Exact JK08A. Address 0xD2400; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 2 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -7662,8 +7776,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xB397" flags="0x0">
-    <title>Map 2 - Overrun Fuel Cut Restore</title>
-    <description>Exact JK08A. Address 0xD2440; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM restore threshold in FUN 00050018. The selected and branch-adjusted threshold is compared with RPM/25 byte ffff11b3, and the resulting restore/inhibit state is passed to Over Run Fuel Cut state machine FUN 000503e0. Common-definition Map 2 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering and homologous address layouts identify this second restore threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 2 - DFCO Full Restore RPM Threshold</title>
+    <description>Exact JK08A. Address 0xD2440; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 2 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -12153,8 +12267,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x47D2" flags="0x0">
-    <title>Map 3 - Overrun Fuel Cut</title>
-    <description>Exact JK08A. Address 0xD2410; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM cut threshold in the Over Run Fuel Cut request evaluator FUN 0004fbe2. After branch-dependent saturation and lower bounding, the selected threshold is compared with RPM/25 byte ffff11b3; a true request enters state machine FUN 000503e0. Common-definition Map 3 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. A complete machine listing covers the lookup, saturation, lower-bound branches, and final comparisons with ffff11b3. The common producer FUN 000384cc establishes the RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 3 - DFCO Entry RPM Threshold</title>
+    <description>Exact JK08A. Address 0xD2410; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 3 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -12210,8 +12324,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x82D6" flags="0x0">
-    <title>Map 3 - Overrun Fuel Cut Restore</title>
-    <description>Exact JK08A. Address 0xD2450; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM restore threshold in FUN 00050018. The selected and branch-adjusted threshold is compared with RPM/25 byte ffff11b3, and the resulting restore/inhibit state is passed to Over Run Fuel Cut state machine FUN 000503e0. Common-definition Map 3 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering and homologous address layouts identify this second restore threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 3 - DFCO Full Restore RPM Threshold</title>
+    <description>Exact JK08A. Address 0xD2450; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 3 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -16701,8 +16815,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x1411" flags="0x0">
-    <title>Map 4 - Overrun Fuel Cut</title>
-    <description>Exact JK08A. Address 0xD2420; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM cut threshold in the Over Run Fuel Cut request evaluator FUN 0004fbe2. After branch-dependent saturation and lower bounding, the selected threshold is compared with RPM/25 byte ffff11b3; a true request enters state machine FUN 000503e0. Common-definition Map 4 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. A complete machine listing covers the lookup, saturation, lower-bound branches, and final comparisons with ffff11b3. The common producer FUN 000384cc establishes the RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 4 - DFCO Entry RPM Threshold</title>
+    <description>Exact JK08A. Address 0xD2420; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 4 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -16758,8 +16872,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xD115" flags="0x0">
-    <title>Map 4 - Overrun Fuel Cut Restore</title>
-    <description>Exact JK08A. Address 0xD2460; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM restore threshold in FUN 00050018. The selected and branch-adjusted threshold is compared with RPM/25 byte ffff11b3, and the resulting restore/inhibit state is passed to Over Run Fuel Cut state machine FUN 000503e0. Common-definition Map 4 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering and homologous address layouts identify this second restore threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 4 - DFCO Full Restore RPM Threshold</title>
+    <description>Exact JK08A. Address 0xD2460; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 4 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -21249,8 +21363,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x2550" flags="0x0">
-    <title>Map 5 - Overrun Fuel Cut</title>
-    <description>Exact JK08A. Address 0xD2430; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM cut threshold in the Over Run Fuel Cut request evaluator FUN 0004fbe2. After branch-dependent saturation and lower bounding, the selected threshold is compared with RPM/25 byte ffff11b3; a true request enters state machine FUN 000503e0. Common-definition Map 5 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. A complete machine listing covers the lookup, saturation, lower-bound branches, and final comparisons with ffff11b3. The common producer FUN 000384cc establishes the RPM/25 scale. The Nissan A2L four-table ordering and homologous address layouts identify this second cut threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 5 - DFCO Entry RPM Threshold</title>
+    <description>Exact JK08A. Address 0xD2430; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 5 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -21306,8 +21420,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xE054" flags="0x0">
-    <title>Map 5 - Overrun Fuel Cut Restore</title>
-    <description>Exact JK08A. Address 0xD2470; 1 rows x 16 columns; uint8; map confidence code. Second coolant-indexed RPM restore threshold in FUN 00050018. The selected and branch-adjusted threshold is compared with RPM/25 byte ffff11b3, and the resulting restore/inhibit state is passed to Over Run Fuel Cut state machine FUN 000503e0. Common-definition Map 5 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Code proves the overrun restore role and RPM scale. The Nissan A2L four-table ordering and homologous address layouts identify this second restore threshold as the JECS/Hitachi table used by the JK08A ECU family. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
+    <title>Map 5 - DFCO Full Restore RPM Threshold</title>
+    <description>Exact JK08A. Address 0xD2470; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 5 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />

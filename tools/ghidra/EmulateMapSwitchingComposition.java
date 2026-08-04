@@ -82,7 +82,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "499f25ed560bf8e5bc00138e29ceabf740d2f13303eb07604f2e11b537bebb16";
+            "e4ee7822f5bb10e6d884441cf22102e33ccbad3b28e489224df7969658a18c70";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -163,7 +163,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "40cea0183a38d189808b7637ea47cb594d8cb56ee615efb246c714da5f499a34"),
         new UnitSpec(
                 "lookup_adapters", 2, 0x000D2300L, 0x100,
-                "1e3b12d0c436fca39d092a7a06e875b12c75fd8a8d000c90a402a27e088b068a"),
+                "a938e1334e7850a0c368c50e98dbbdf67bc2589524025659a31d5b5f328c0e6c"),
         new UnitSpec(
                 "startup_wrapper", 3, 0x000D22A0L, 0x60,
                 "352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3"),
@@ -1171,10 +1171,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         }
         int totalInstructions = selectorInstructions + adapterInstructions
                 + limiterInstructions + feedbackInstructions;
-        if (totalInstructions != 4530) {
+        if (totalInstructions != 4572) {
             throw new IllegalStateException(
                     "instruction total is " + totalInstructions
-                    + ", expected 4530");
+                    + ", expected 4572");
         }
         List<String> missing = new ArrayList<>();
         for (long entry : CODE_ENTRIES) {

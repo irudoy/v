@@ -205,6 +205,28 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 parsed
             )
 
+    def test_adapter_rejects_pc_relative_load_in_bra_delay_slot(self):
+        parsed = map_switching_assembly.ParsedSource(
+            Path("synthetic-delay-slot.s"),
+            {},
+            (
+                map_switching_assembly.SourceStatement(
+                    1, 0xD2300, "instruction", "bra 0xD2270", 2
+                ),
+                map_switching_assembly.SourceStatement(
+                    2,
+                    0xD2302,
+                    "instruction",
+                    "mov.l @(stock_wrapper,pc),r3",
+                    2,
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "BRA delay slot is not NOP"):
+            map_switching_assembly._validate_registers_and_control_flow(
+                parsed, 0xD2270
+            )
+
     def test_startup_wrapper_forces_map_1_on_both_sides_of_initializer(self):
         parsed = map_switching_assembly.validate_assembly_sources(
             self.layout

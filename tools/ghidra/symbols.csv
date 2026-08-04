@@ -37,3 +37,43 @@ addr,name,note
 000812fa,engine_immo_status_reporter,reads immo-present 0xFFFE930E among engine signals; writes status images 0xFFFE830E/0xFFFEA366 plus staged 0xFFFEB3A2/B440; feeds a status frame under generic CAN TX; zero hardware registers
 000c7bc4,immo_status_byte_stager,reads immo-present 0xFFFE930E; stages status bytes 0xFFFEB3A2-A4/0xFFFEB440/0xFFFEB294 for frame cluster 0x000c8xxx; zero hardware registers
 000d3ed0,hcan_mailbox_config,init-time mailbox-control configuration 0xFFFFD904 (=0x700); called from hcan1_init; NOT a runtime TX serializer (mailbox data at 0xFFFFD900+ is written through a base pointer)
+0002040c,periodic_tick_isr,ATU-II channel 3 periodic tick and scheduler-divider ISR
+00020dfe,periodic_snapshot_dispatch,Periodic snapshot copier and scheduler dispatch
+000274ac,atu2_prescaler_init,ATU-II prescaler initialization with PSCR1 value 1
+0002be40,injector_event_isr,Per-channel injector event handler and DFCO release-history update
+0002c13c,injector_oneshot_mask_scheduler,Six-channel masked ATU-II one-shot scheduler
+0004eba2,injector_channel_pulse_builder,Per-channel pulse calculation with aggregate-mask override
+0004ed88,fuel_output_inhibit_coordinator,Aggregate six-channel cutoff and override coordinator
+0004fb5e,boolean_to_six_channel_mask,Convert Boolean cutoff request to mask 0x3f
+0004fbe2,dfco_cut_request,Edge-sensitive DFCO cut-request evaluator
+0004fe9c,dfco_entry_delay_select,Select two-stage DFCO entry delay
+00050018,dfco_restore_classify,Classify DFCO remain-cut and restore state
+0005038a,dfco_exit_delay_select,Select DFCO exit delay
+000503e0,dfco_state_machine,Five-state DFCO machine and injector-event release tail
+00050766,rotate_six_channel_mask,Rotate one-hot mask through six channels
+0005079c,count_to_inhibit_mask,Map clamped channel count to six-channel inhibit mask
+0005096c,auxiliary_rpm_inhibit_mask,Build independent RPM-shaped six-channel inhibit mask
+00050a06,fuel_inhibit_override_update,Update runtime fuel-inhibit replacement state
+00050a34,fuel_inhibit_override_apply,Apply runtime fuel-inhibit replacement byte
+00050a4c,merge_six_channel_masks,Merge three inputs and limit result to six bits
+00056fc0,fuel_output_override_word,Produce masked-channel override word ffff2436
+0006efbc,dfco_upstream_mode_update,Update upstream DFCO mode or eligibility bit 5
+0008c3fa,dfco_upstream_aux_gate,Evaluate auxiliary gate for upstream DFCO mode
+0002657c,signed_fixed_point_multiply,Signed 32 by unsigned 16 fixed-point multiply with variable shift
+0003a904,dual_bank_maf_coordinator,Process both MAF channels and publish the combined airflow aggregate
+0003b252,combined_maf_aggregate,Build the nonnegative combined MAF value used by BFS
+0003b75c,base_fuel_schedule_producer,Calculate and publish newest Base Fuel Schedule word ffff1026
+0003be3c,fuel_compensation_coordinator,Publish Fuel Compensation Main byte ffff1160 and selected multiplier ffff115c
+0004e974,injection_pulse_precursor_builder,Build common and two-bank injection pulse precursors
+0004ead4,bank_base_pulse_builder,Apply bank trims and common additive word to form two parity bases
+0004ecac,six_channel_pulse_dispatch,Build two parity bases then calculate six compensated pulse channels
+000521a8,transformed_pulse_maximum,Reduce six transformed pulse words and derive scalar outputs
+000528be,transient_fuel_term_coordinator,Select transient coefficient and invoke the signed additive-term producer
+00052902,transient_fuel_additive,Publish signed current-pass pulse additive word ffff2300
+00053698,fuel_common_gain_builder,Publish common Q14 fuel gain ffff165e on alternating passes
+000554ae,fuel_base_accumulator,Publish saturated base accumulator ffff231a
+000554f8,conditional_cranking_fuel_term,Publish capped conditional 0x154b0 term ffff240a
+000556ec,fuel_multiplier_publisher,Rate-limit the fuel multiplier and force zero under full inhibit
+00057608,fuel_multiplier_coordinator,Run the ordered fuel-multiplier calculation stages
+000593ac,fuel_trim_init,Initialize trim and offset-neutral bank correction words
+0005b7ec,pulse_affine_floor_transform,Apply the saturating affine floor to a compensated pulse word

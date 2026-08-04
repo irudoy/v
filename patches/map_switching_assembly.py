@@ -335,12 +335,12 @@ def _validate_registers_and_control_flow(parsed, helper_entry):
                     f"{parsed.path}:{statement.line_number}: "
                     "external branch does not target the shared helper"
                 )
-            if index + 1 >= len(instructions) or not instructions[
-                index + 1
-            ].text.lower().startswith("mov.l "):
+            if index + 1 >= len(instructions) or (
+                instructions[index + 1].text.lower() != "nop"
+            ):
                 raise ValueError(
                     f"{parsed.path}:{statement.line_number}: "
-                    "BRA delay slot does not load the stock wrapper"
+                    "BRA delay slot is not NOP"
                 )
         elif mnemonic == "jmp":
             if text != "jmp @r3":

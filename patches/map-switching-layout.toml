@@ -142,7 +142,7 @@ start = 0x000D2300
 end = 0x000D2400
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "1e3b12d0c436fca39d092a7a06e875b12c75fd8a8d000c90a402a27e088b068a"
+expected_sha256 = "a938e1334e7850a0c368c50e98dbbdf67bc2589524025659a31d5b5f328c0e6c"
 instruction_count = 48
 data_bytes = 64
 code_regions = [
@@ -322,7 +322,7 @@ purpose = "Call the stock CAN 0x551 serializer and then override only its cruise
 [[family]]
 key = "over_run_fuel_cut"
 group = "overrun"
-name = "Over Run Fuel Cut"
+name = "DFCO Entry RPM Threshold"
 canonical_address = 0x00012718
 width = 16
 height = 1
@@ -336,7 +336,7 @@ pointer_table = 0x000D3540
 [[family]]
 key = "over_run_fuel_restore"
 group = "overrun"
-name = "Over Run Fuel Restore"
+name = "DFCO Full Restore RPM Threshold"
 canonical_address = 0x00012818
 width = 16
 height = 1

@@ -35,7 +35,7 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
     static final String HELPER_SHA =
             "40cea0183a38d189808b7637ea47cb594d8cb56ee615efb246c714da5f499a34";
     static final String ADAPTER_SHA =
-            "1e3b12d0c436fca39d092a7a06e875b12c75fd8a8d000c90a402a27e088b068a";
+            "a938e1334e7850a0c368c50e98dbbdf67bc2589524025659a31d5b5f328c0e6c";
 
     static class Vector {
         final String name;

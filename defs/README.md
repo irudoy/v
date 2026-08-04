@@ -62,6 +62,13 @@ under `defs/`, separately from `reference/`:
   There is no catch-all DTC patch.
 - `JK08A.notes.md` is a handwritten reverse-engineering journal containing
   rationale, listings, and traces. It is not loaded into the graph.
+- `JK08A.dfco.md` is the code-grounded subsystem model for deceleration fuel
+  cut, including threshold selection, timers, the five-state machine, final
+  six-channel arbitration, and the ATU-II injector-output path.
+- `JK08A.fuel.md` is the code-grounded main-fuel model from dual-bank MAF and
+  Base Fuel Schedule through Fuel Compensation Main, periodic multiplier,
+  bank-specific trims, six compensated pulse words, and the explicitly bounded
+  ATU-II hardware-output trace.
 - The tracked common `JK08A.xml` and `JK08A.xdf` include the five-slot
   map-switching projection under the unchanged `JK08A` identity.
   `../patches/map-switching-layout.toml` owns the
@@ -79,7 +86,7 @@ under `defs/`, separately from `reference/`:
   The seven standalone assembly units pass 87 Ghidra p-code cases: 17 selector,
   47 adapter, 14 startup/limiter, and nine feedback cases.
   `../tools/ghidra/EmulateMapSwitchingComposition.java` repeats all 87 cases
-  over 4530 instructions from the complete locked fixture, reaches all ten code
+  over 4572 instructions from the complete locked fixture, reaches all ten code
   entries at final addresses, and verifies the same SHA-256 and write boundary
   as `../patches/map_switching_compose.py`. Feedback uses state value `2` with
   locked `10, 10` on/off frame counts; the V36 meter response remains a hardware
@@ -171,13 +178,13 @@ differs at 121 byte positions. In the graph, only the measured values of four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
 `0x190b0`. All 230 axes and the other 445 maps match.
 
-The generated JK08A definitions contain a tuner-facing allowlist of 16
+The generated JK08A definitions contain a tuner-facing allowlist of 18
 canonical maps and three masked ignition views. Map-switching projection expands
-the selected families into 48 calibration tables and 11 masked views.
+the selected families into 50 calibration tables and 11 masked views.
 Calibration axes are embedded in their tables; separate editable reference-axis
-views are not emitted. The 433 other catalog maps, including the inactive Bosch
-overrun pair and internal calculations, remain available in the graph, ledger, and
-presentation source. Reviewed static diagnostic context is included in map
+views are not emitted. The 432 other catalog maps, including internal
+calculations, remain available in the graph, ledger, and presentation source.
+All four code-proven DFCO RPM threshold tables are emitted. Reviewed static diagnostic context is included in map
 comments and descriptions without changing map semantics or confidence.
 `JK08A.xml` additionally contains 71 DTC switches and two verified native
 RomRaider checksum handlers. Each ordinary DTC has adjacent descriptor and

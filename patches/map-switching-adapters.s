@@ -8,23 +8,23 @@
 
 .org 0x000D2300
 overrun_adapter:
+mov.l @(overrun_stock_wrapper,pc),r3
 mov.l @(overrun_cut_base,pc),r0
 cmp/eq r0,r4
 bt overrun_select_cut
 mov.l @(overrun_restore_base,pc),r0
 cmp/eq r0,r4
 bt overrun_select_restore
-mov.l @(overrun_stock_wrapper,pc),r3
 jmp @r3
 nop
 overrun_select_cut:
 mov.l @(overrun_cut_pointers,pc),r2
 bra 0x000D2270
-mov.l @(overrun_stock_wrapper,pc),r3
+nop
 overrun_select_restore:
 mov.l @(overrun_restore_pointers,pc),r2
 bra 0x000D2270
-mov.l @(overrun_stock_wrapper,pc),r3
+nop
 
 .org 0x000D2320
 overrun_cut_base:
@@ -40,23 +40,23 @@ overrun_restore_pointers:
 
 .org 0x000D2340
 ignition_adapter:
+mov.l @(ignition_stock_wrapper,pc),r3
 mov.l @(ignition_main_base,pc),r0
 cmp/eq r0,r4
 bt ignition_select_main
 mov.l @(ignition_high_det_base,pc),r0
 cmp/eq r0,r4
 bt ignition_select_high_det
-mov.l @(ignition_stock_wrapper,pc),r3
 jmp @r3
 nop
 ignition_select_main:
 mov.l @(ignition_main_pointers,pc),r2
 bra 0x000D2270
-mov.l @(ignition_stock_wrapper,pc),r3
+nop
 ignition_select_high_det:
 mov.l @(ignition_high_det_pointers,pc),r2
 bra 0x000D2270
-mov.l @(ignition_stock_wrapper,pc),r3
+nop
 
 .org 0x000D2360
 ignition_main_base:
@@ -72,16 +72,16 @@ ignition_high_det_pointers:
 
 .org 0x000D2380
 fuel_compensation_adapter:
+mov.l @(fuel_compensation_stock_wrapper,pc),r3
 mov.l @(fuel_compensation_base,pc),r0
 cmp/eq r0,r4
 bt fuel_compensation_select
-mov.l @(fuel_compensation_stock_wrapper,pc),r3
 jmp @r3
 nop
 fuel_compensation_select:
 mov.l @(fuel_compensation_pointers,pc),r2
 bra 0x000D2270
-mov.l @(fuel_compensation_stock_wrapper,pc),r3
+nop
 
 .org 0x000D23A0
 fuel_compensation_base:
@@ -93,16 +93,16 @@ fuel_compensation_pointers:
 
 .org 0x000D23C0
 fuel_targets_adapter:
+mov.l @(fuel_targets_stock_wrapper,pc),r3
 mov.l @(fuel_targets_base,pc),r0
 cmp/eq r0,r4
 bt fuel_targets_select
-mov.l @(fuel_targets_stock_wrapper,pc),r3
 jmp @r3
 nop
 fuel_targets_select:
 mov.l @(fuel_targets_pointers,pc),r2
 bra 0x000D2270
-mov.l @(fuel_targets_stock_wrapper,pc),r3
+nop
 
 .org 0x000D23E0
 fuel_targets_base:

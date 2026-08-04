@@ -19,13 +19,15 @@ COMMON_TABLES = {
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
+    "DFCO Hold RPM Threshold": "Fuelling / Overrun",
+    "DFCO Intermediate Restore RPM Threshold": "Fuelling / Overrun",
 }
 
 SLOT_TABLES = {
     "Fuel Targets": "Fuelling / Fuel Targets",
     "Fuel Compensation Main": "Fuelling / Fuel Compensation",
-    "Overrun Fuel Cut": "Fuelling / Overrun",
-    "Overrun Fuel Cut Restore": "Fuelling / Overrun",
+    "DFCO Entry RPM Threshold": "Fuelling / Overrun",
+    "DFCO Full Restore RPM Threshold": "Fuelling / Overrun",
     "Ignition Timing Trim Main": "Ignition Timing / Main",
     "Knock Control Enable - Main": "Ignition Timing / Knock Control",
     "Ignition Timing Trim High Det": "Ignition Timing / Main",
@@ -293,8 +295,10 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
                 "0000a29a",
                 "0000b33a",
                 "0001108e",
+                "000126e4",
                 "00012718",
                 "00012818",
+                "0001298c",
                 "00008a27",
                 "00009284",
                 "000141f4",
@@ -511,8 +515,6 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "0x0911C",
             "0x10F8E",
             "0x124D2",
-            "0x126E4",
-            "0x1298C",
         }.isdisjoint(addresses))
 
     def test_maf_tables_use_reviewed_candidate_voltage_axes(self):
@@ -536,11 +538,13 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                 self.assertEqual(values[0], 0.0)
                 self.assertEqual(values[-1], 5.04)
 
-    def test_overrun_fuel_cut_uses_coolant_axis_and_code_rpm_scale(self):
+    def test_dfco_thresholds_use_coolant_axis_and_code_rpm_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         expected = {
-            slot_name(1, "Overrun Fuel Cut"): "0x12718",
-            slot_name(1, "Overrun Fuel Cut Restore"): "0x12818",
+            "DFCO Hold RPM Threshold": "0x126E4",
+            slot_name(1, "DFCO Entry RPM Threshold"): "0x12718",
+            slot_name(1, "DFCO Full Restore RPM Threshold"): "0x12818",
+            "DFCO Intermediate Restore RPM Threshold": "0x1298C",
         }
         for name, address in expected.items():
             with self.subTest(name=name):

@@ -1319,15 +1319,14 @@ shows that `0xE98E` supplies an RPM-interpolated stack row, while `0x8000` is on
 offset-binary bias added to the request before that row is searched. Backtracking alone
 cannot distinguish them.
 
-The canonical working allowlist selects 16 of the 450 catalog maps and adds three
+The canonical working allowlist selects 18 of the 450 catalog maps and adds three
 masked ignition views. The common JK08A projection expands eight selected calibration
 families into 40 Map 1 through Map 5 tables and two masked families into ten slot views.
-The emitted definition therefore contains 48 calibration tables and 11 masked views
-without standalone reference axes. The other 434 canonical maps remain available for
-reverse engineering in the graph and ledger. The catalog contains 358 `code` maps and
-92 `candidate` maps. Semantics are present for 438 maps and `scale_expr` for 400. The
-ledger has 12 open `candidate` maps without semantics in 9 accessor-connected
-components. Every open map is flat across its entire table. `mapkit` also closes
+The emitted definition therefore contains 50 calibration tables and 11 masked views
+without standalone reference axes. The other 432 canonical maps remain available for
+reverse engineering in the graph and ledger. The catalog contains 364 `code` maps and
+86 `candidate` maps. Semantics are present for 443 maps and `scale_expr` for 405. The
+ledger has seven open `candidate` maps without semantics. `mapkit` also closes
 Stage 5 `:MATCHES`: reading the axes, rather than the catalog, provides match keys such
 as scale family and axis semantics. Cross-ROM homology, the second half of P7, awaits
 resolution of 1ND0A.

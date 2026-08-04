@@ -82,8 +82,8 @@ provenance and are not paths in the current `JK08A` layer.
 - Definitions `JK08A.xml` and `JK08A.xdf` are graph projections from
   `tools/mapkit/emit_def.py` plus presentation layer `JK08A.overrides.toml`: names,
   visibility, categories, ordering, and editor steps. The working definition is an
-  explicit allowlist of 16 canonical maps and three masked ignition views.
-  Research maps and inactive families remain in the graph and ledger. Calibration
+  explicit allowlist of 18 canonical maps and three masked ignition views.
+  Non-emitted research maps remain in the graph and ledger. Calibration
   axes are embedded in their tables rather than emitted as separate editable views.
   Categories use the functional UpRev/EcuTek organization and do not encode
   confidence. A map below `code` is marked `[candidate]` in the generated evidence
@@ -1361,21 +1361,34 @@ per-channel inhibit masks and writes `0xFFFF22E0`.
 
 ### Over Run Fuel Cut and Restore tables
 
-The deceleration fuel-cut path is a separate sequence in `FUN_0004ED88`
-[CONFIRMED by code]:
+The complete deceleration fuel-cut model is maintained in
+[`JK08A.dfco.md`](JK08A.dfco.md). Its static path is code-confirmed:
 
 ```text
 FUN_0004FBE2  cut request
-  + FUN_00050018  restore/inhibit state
-  -> FUN_000503E0  timed fuel-cut state machine
-  -> aggregate mask
+  + FUN_00050018  restore classifier
+  + FUN_0004FE9C/FUN_0005038A  entry and exit delays
+  -> FUN_000503E0  five-state DFCO machine
+  -> FUN_0004ED88  aggregate six-channel arbitration
   -> ffff22e0
+  -> injector pulse eligibility and ATU-II one-shot scheduling
 ```
 
-Both threshold accessors use `uint8[0xFFFF106F]` as their 16-point input and
-compare selected table outputs with `uint8[0xFFFF11B3]`. `FUN_000384FE`,
-`FUN_000384CC`, and scheduler `FUN_00020DFE` prove that `ffff11b3` is engine
-speed in RPM/25 representation.
+All four coolant-indexed RPM tables are live in exact JK08A code. The A2L
+Bosch/JECS labels describe source families but do not identify inactive tables
+in this executable:
+
+| address | exact JK08A role | stored scale |
+|---|---|---|
+| `0x126E4` | held-request threshold | `x*25 RPM` |
+| `0x12718` | rising-edge entry threshold | `x*25 RPM` |
+| `0x12818` | lower/full-restore threshold | `x*25 RPM` |
+| `0x1298C` | upper/intermediate-restore threshold | `x*25 RPM` |
+
+`FUN_0004FBE2` uses the current and previous snapshots of
+`0xFFFF2459.bit5` to distinguish a rising DFCO-mode edge from a held request.
+`FUN_00050018` always interpolates both restore maps and returns class 0, 1, 2,
+or 3 for remain-cut, master inhibit, intermediate restore, or full restore.
 
 The coolant axis is also code-traced. Exact UDS DID `0x1101` returns
 `ffff1079`; homologous measured diagnostic data defines
@@ -1391,41 +1404,35 @@ raw >= 170     -> index 255
 Implicit lookup nodes `0,16,...240` therefore represent coolant temperatures
 `-40,-30,...110 deg C`.
 
-| address | code role | registry family | stored scale |
-|---|---|---|---|
-| `0x126E4` | first cut threshold | Bosch Fuel Cut | `x*25 RPM` |
-| `0x12718` | second cut threshold | JECS/Hitachi Fuel Cut | `x*25 RPM` |
-| `0x12818` | second restore threshold | JECS/Hitachi Fuel Restore | `x*25 RPM` |
-| `0x1298C` | first restore threshold | Bosch Fuel Restore | `x*25 RPM` |
+Normal startup proves a timer input of `Pphi/64`; the DFCO timer cadence is
+exactly `204800/Pphi` seconds per count. The board-level 10 MHz crystal and
+manual `Pphi = EXTAL*2` relation imply a candidate 10.24 ms per count. Stock
+entry delays are 40, 60, or 75 counts depending on runtime branches, while the
+normal stage-2 and exit delays are zero. Conditional map `0x120F6` is a
+code-proven stage-1 entry-delay table but is selected only by a non-stock
+configuration branch.
 
-The Bosch versus JECS/Hitachi names rest on the exact four-table order declared
-by the Nissan A2L registry and repeated in homologous Nissan definitions. JK08A
-is a Hitachi ECU, so `0x12718` and `0x12818` are the operational family pair.
-The firmware still contains and reads both family thresholds under
-mode-dependent branches. The working definitions expose only the operational pair
-as `Overrun Fuel Cut` and `Overrun Fuel Cut Restore` under `Fuelling / Overrun`;
-the Bosch pair remains in the graph, ledger, and presentation source.
+The state byte `0xFFFF14C1` has closed states 0 through 4 and mask table
+`[0x00, 0x00, 0x15, 0x3F, 0x15]` at `0x2371C`. Zero stock stage-2 and exit
+delays make the partial-mask states transient in the normal path. A separate
+release branch rotates a short fallback history across injector events near
+750 RPM.
 
-At 80 deg C, the JECS/Hitachi cells are 1050 RPM cut and 900 RPM restore. At
-110 deg C they are 1400 RPM cut and 1200 RPM restore. Calibration edits require
-hardware validation because additional gates, offsets, delays, and state
-transitions can prevent or defer the visible result.
-
-The stock six-channel scheduling path remains:
+The output path is:
 
 ```text
-FUN_000522C4
-  -> FUN_0005727A
-  -> FUN_00052034
-  -> FUN_00051A98
-  -> FUN_00051F1E
-  -> FUN_0002C13C
+ffff22e0
+  -> FUN_0004EBA2  per-channel override selection
+  -> FUN_00052034/FUN_00051A98  pulse/update eligibility
+  -> FUN_0002C13C  fallback selection and ATU-II scheduling
 ```
 
-`FUN_00052034` writes pulse/update eligibility mask `0xFFFF1220` from
-`0xFFFF22E0`, per-channel state, and signed-difference threshold
-`ROM8[0x87FE]<<7`. `FUN_0002C13C` schedules selected ATU-II channel 8
-down-counters. No diagnostic fuel-cut-state binding is claimed.
+This proves an inhibit/override chain to the six ATU-II channel 8 one-shot
+outputs. It does not prove that a diagnostic injector-duration value becomes
+zero: masked channels select fallback and override words rather than a literal
+zero at every stage. Physical injector closure, channel-to-cylinder order, the
+upstream mode-bit identity, and the candidate timing conversion remain hardware
+validation items.
 
 
 ### A branch can be disabled by calibration - a table is referenced but not read
@@ -4449,8 +4456,8 @@ initialized with identical bytes in the first bench image. Calibration values ar
 edited manually after the identical-map bench gate.
 
 `tools/mapkit/validate_map_switching.py` validates the live 450-map graph and the
-481-map common projection without writing files. The tracked definitions contain
-48 calibration tables and 11 masked views. The switchable subset contains 40
+482-map common projection without writing files. The tracked definitions contain
+50 calibration tables and 11 masked views. The switchable subset contains 40
 calibration tables plus ten ignition bit-7 views, for 50 slot-specific editor
 views. Both formats retain the common `JK08A` identity; no separate map-switching
 definition exists.
@@ -4468,8 +4475,8 @@ The target pilot contains eight independently switched storage families:
 - Fuel Compensation Main `0x0A29A`;
 - Rev Limit - Fuel Cut `0x0934E`;
 - Rev Limit - Throttle Cut `0x0942C`;
-- Hitachi Over Run Fuel Cut `0x12718`;
-- Hitachi Over Run Fuel Restore `0x12818`.
+- DFCO rising-edge entry threshold `0x12718`;
+- DFCO lower/full-restore threshold `0x12818`.
 
 Main and High Det timing are paired so a detonation-mode transition cannot cross
 slots. Fuel Targets and Fuel Compensation Main form the main fuel group. Fuel Cut
@@ -4479,6 +4486,10 @@ the physical names and scales of the rev limiters remain candidate until
 controlled hardware validation. Cold Ignition Timing, Stationary Rev Limiter,
 speed limiting, axes, knock sensitivity, VTC/VVEL, sensor models, and diagnostic
 objects remain global in the pilot.
+
+The overrun pair is a partial DFCO switch. Exact code also uses held-request
+threshold `0x126E4` and upper/intermediate-restore threshold `0x1298C`; both
+remain on canonical Map 1 storage in the current layout.
 
 The timing maps retain complete bytes in every copy: bits 0 through 6 carry the
 timing adjustment and bit 7 carries the knock-window flag. RomRaider and TunerPro
@@ -4865,26 +4876,73 @@ publishes a live, constant sentinel regardless of its input: the signed high byt
 confidence as a fuel-level-derived EVAP coordinate and sentinel curve with raw
 identity scaling. Its physical engineering conversion remains unresolved.
 
-The strict JK08A projection contains 1610 source claims and 6066 `RESTS_ON` edges.
+The strict JK08A projection contains 1660 source claims and 6348 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 363 `code` maps and 87 `candidate` maps;
+ungrounded claims. The catalog contains 364 `code` maps and 86 `candidate` maps;
 semantics are present for 443 maps and scaling for 405. The diagnostic projection
 contains 150 reviewed JK08A bindings and 34 inherited exact-code JK03A bindings.
 
+## Main fuel calculation closure
+
+The subsystem model is maintained in `JK08A.fuel.md`. The established static
+chain is:
+
+```text
+dual-bank MAF -> combined airflow -> newest/current BFS
+              -> Fuel Compensation Main 0xA29A through ffff1160
+              -> periodic fuel multiplier ffff22e6
+              -> current-pass transient and Q14 gain
+              -> two bank/parity bases
+              -> six raw and six transformed compensated pulse words
+```
+
+`FUN_0003BE3C` is the runtime writer that connects `0xA29A` to Q7 coefficient
+`0xFFFF1160`; raw 128 is neutral. Separate word `0xFFFF115C` is selected from
+other working sources and enters the following BFS stage. These values are not
+the same calibration layer.
+
+Periodic table order proves `FUN_0004ED88` inhibit mask at index 27,
+`FUN_00057608` fuel-multiplier coordinator at 35, `FUN_00053698` common-gain
+builder at 39, transient coordinator `FUN_000522C4` at 41, precursor
+`FUN_0004E974` at 42, and six-channel builder `FUN_0004ECAC` at 60. Full mask
+`0x3F` makes `FUN_000556EC` publish zero to `0xFFFF22E6` before the pulse
+precursor runs.
+
+`FUN_0004E974` produces two bank-indexed words at `0xFFFF18C0/0xFFFF18C2`.
+`FUN_0004EAD4` applies STFT, LTFT, an extra bank term, a startup-neutral
+`0x8000` correction, and common additive word `0xFFFF2436` to form parity bases
+`0xFFFF191C/0xFFFF191E`. `FUN_0004EBA2` reuses them across six channels and
+writes raw array `0xFFFF23C8..0xFFFF23D3` plus the exact affine-floor transform
+at `0xFFFF23D4..0xFFFF23DF`.
+
+The static hardware boundary remains explicit. The inhibit mask independently
+reaches the six ATU-II channel-8 one-shot outputs through `FUN_0002C13C`, but a
+whole-program p-code census does not connect either calculated pulse array to
+that scheduler's source words. Physical pulse units, terminal order, injector
+closure, and any hidden transfer mechanism remain bench or engine validation
+items.
+
 ## Next step
 
-Map switching is the active hardware-validation track. The locked `10, 10`
-composition passes disassembly plus 17 selector, 47 adapter, 14 startup/limiter,
-and nine feedback p-code cases. The file-writing patcher and checksum
-recalculation pass their preservation and negative-input tests.
+FAIL-BOOT diagnosis and repair is the active map-switching implementation gate.
+The locked `10, 10` composition passes disassembly plus 17 selector, 47 adapter,
+14 startup/limiter, and nine feedback p-code cases. The file-writing patcher and
+checksum recalculation pass their preservation and negative-input tests.
 
-The next gate is an end-to-end target-vehicle test with byte-identical maps. With
-the vehicle stationary and engine stopped, verify the steering-switch ladder,
-CAN 0x551 byte 5 state `2`, visible `10, 10` pulse timing, and one through five
-indications without changing stock ASCD state. Then confirm reset Map 1, raw DID
-0x130E bit 7, startup and critical-section timing, and unchanged engine behavior
-while selecting all five identical maps. A separate stock-period capture is not
-a prerequisite for this first test.
+After FAIL-BOOT is fixed, the first hardware gate is an end-to-end target-vehicle
+test with byte-identical maps. With the vehicle stationary and engine stopped,
+verify the steering-switch ladder, CAN 0x551 byte 5 state `2`, visible `10, 10`
+pulse timing, and one through five indications without changing stock ASCD
+state. Then confirm reset Map 1, raw DID 0x130E bit 7, startup and
+critical-section timing, and unchanged engine behavior while selecting all five
+identical maps. A separate stock-period capture is not a prerequisite for this
+first test.
+
+Only after that gate passes, add Map 1-5 storage and runtime selection for DFCO
+held-request threshold `0x126E4` and upper/intermediate-restore threshold
+`0x1298C`. Until then both remain on canonical Map 1 storage. The static reverse-
+engineering priority remains fuel, ignition, and cutoffs; additional logs are
+not a prerequisite for the current static track.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
