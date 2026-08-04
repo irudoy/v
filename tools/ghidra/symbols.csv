@@ -42,8 +42,24 @@ addr,name,note
 000274ac,atu2_prescaler_init,ATU-II prescaler initialization with PSCR1 value 1
 0002be40,injector_event_isr,Per-channel injector event handler and DFCO release-history update
 0002c13c,injector_oneshot_mask_scheduler,Six-channel masked ATU-II one-shot scheduler
+000259aa,u8_hysteresis_below,Unsigned byte-domain below-threshold helper with state-dependent hysteresis
+000259e4,diagnostic_record_byte2_fault_predicate,Test runtime diagnostic record byte 2 bits 5 or 6 with minus-one sentinel support
+00025e20,diagnostic_record_byte1_bit7_predicate,Test runtime diagnostic record byte 1 bit 7 with minus-one sentinel support
+00030c4c,nissan_service_30_output_control,Nissan service 0x30 Output Control handler including IOLID 0x0c Power Balance
 0004eba2,injector_channel_pulse_builder,Per-channel pulse calculation with aggregate-mask override
-0004ed88,fuel_output_inhibit_coordinator,Aggregate six-channel cutoff and override coordinator
+0004ed88,fuel_output_inhibit_coordinator,Aggregate exactly 15 global Boolean conditions with DFCO count Power Balance and ETC masks
+0004f050,vehicle_speed_cut_rpm_gate_update,Update the 4500 and 5000 RPM hysteresis gate for vehicle-speed fuel cut
+0004f14e,zero_speed_high_bfs_rpm_inhibit,Delayed zero-speed high-BFS high-RPM fuel inhibit
+0004f19c,vehicle_speed_fuel_cut_state_machine,Coarse vehicle-speed fuel-cut state with RPM gate
+0004f494,engine_overtemperature_fuel_inhibit,P1217 engine-overtemperature RPM-gated fuel inhibit
+0004f662,stock_inert_bfs_hysteresis_inhibit,All-zero stock BFS-threshold hysteresis contributor
+0004f736,diagnostic_record_129_rpm_inhibit,Runtime diagnostic record 0x129 RPM-gated fuel inhibit
+0004f758,low_speed_bfs_rpm_latch_update,Update low-speed BFS-derived RPM eligibility latch with discarded return
+0004f7e0,low_speed_rpm_exposure_accumulator_update,Update sustained low-speed RPM exposure accumulator with discarded return
+0004f958,low_speed_sustained_rpm_inhibit,Sustained low-speed RPM full fuel-inhibit state
+0004f9c4,transition_window_low_speed_rpm_inhibit,Transition-window warm low-speed RPM fuel inhibit
+0004faa0,shared_status_bit1_fuel_inhibit,Direct shared status byte bit 1 fuel-inhibit contributor
+0004faac,status_gated_engine_running_inhibit,Status-gated engine-running fuel-inhibit contributor
 0004fb5e,boolean_to_six_channel_mask,Convert Boolean cutoff request to mask 0x3f
 0004fbe2,dfco_cut_request,Edge-sensitive DFCO cut-request evaluator
 0004fe9c,dfco_entry_delay_select,Select two-stage DFCO entry delay
@@ -52,13 +68,22 @@ addr,name,note
 000503e0,dfco_state_machine,Five-state DFCO machine and injector-event release tail
 00050766,rotate_six_channel_mask,Rotate one-hot mask through six channels
 0005079c,count_to_inhibit_mask,Map clamped channel count to six-channel inhibit mask
-0005096c,auxiliary_rpm_inhibit_mask,Build independent RPM-shaped six-channel inhibit mask
-00050a06,fuel_inhibit_override_update,Update runtime fuel-inhibit replacement state
-00050a34,fuel_inhibit_override_apply,Apply runtime fuel-inhibit replacement byte
+000507ce,composite_status_rpm_inhibit,Combine direct low-RPM and high-RPM status-gated fuel-inhibit paths
+00050920,diagnostic_phase_rpm_inhibit,Diagnostic-phase elapsed-count RPM fuel inhibit
+0005096c,etc_actuator_fault_inhibit_mask,Build post-replacement P2119 or P1238 RPM-shaped inhibit mask
+000509a0,etc_fault_staged_rpm_mask,Map RPM/25 to staged six-channel ETC fault mask
+000509ea,etc_fault_low_speed_full_mask,Add a full ETC fault mask under the low-speed status gate
+00050a06,power_balance_mask_update,Cache service 0x30 IOLID 0x0c Power Balance mask and active state
+00050a34,power_balance_mask_apply,Replace aggregate inhibit bits with active Power Balance mask
 00050a4c,merge_six_channel_masks,Merge three inputs and limit result to six bits
+00050a60,can_requested_rpm_ceiling_inhibit,CAN-derived requested RPM ceiling fuel inhibit
+00050b3c,intake_valve_timing_fault_rpm_inhibit,P0011 or P0021 qualified RPM fuel inhibit
 00056fc0,fuel_output_override_word,Produce masked-channel override word ffff2436
+0007d856,diagnostic_phase_counter_update,Update elapsed counter for the fuel-inhibit diagnostic phase
 0006efbc,dfco_upstream_mode_update,Update upstream DFCO mode or eligibility bit 5
 0008c3fa,dfco_upstream_aux_gate,Evaluate auxiliary gate for upstream DFCO mode
+000c4ace,can_2ee0_payload_decoder,Decode internal CAN dispatch key 0x2ee0 including requested RPM ceiling byte
+000c5d2e,can_2ee0_invalid_fallback,Publish neutral requested RPM ceiling fallback for invalid key 0x2ee0 data
 0002657c,signed_fixed_point_multiply,Signed 32 by unsigned 16 fixed-point multiply with variable shift
 0003a904,dual_bank_maf_coordinator,Process both MAF channels and publish the combined airflow aggregate
 0003b252,combined_maf_aggregate,Build the nonnegative combined MAF value used by BFS
@@ -102,8 +127,8 @@ addr,name,note
 00063f30,nonlinear_transition_controller,Update the bounded Q8 transition state through reciprocal curves
 0007b650,transient_threshold_builder,Scale the transient calibration lookup into the runtime threshold byte
 0007b7c0,transient_hysteresis_state_update,Apply the scaled transient threshold and hysteresis to the state bit
-0004f282,rpm_fuel_cut_state_machine,Apply calibrated activation and release thresholds to the hard fuel-cut state
-0004f324,stationary_rpm_fuel_cut_state_machine,Accumulate stationary readiness and apply the low-speed hard fuel-cut hysteresis
+0004f282,main_rpm_fuel_cut_state_machine,Apply calibrated activation and release thresholds to the main full fuel-cut state
+0004f324,stationary_rpm_fuel_cut_state_machine,Accumulate stationary readiness and apply the low-speed full fuel-cut hysteresis
 0007584e,rotational_speed_request_limiter,Build the calibrated rotational-speed signed request-limit candidate
 000769c0,request_limit_source_dispatch,Run periodic request-limit candidate producers
 00075e9e,request_limiter_candidate_dispatch,Dispatch the rotational-speed request-limit candidate calculation

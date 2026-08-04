@@ -69,6 +69,9 @@ under `defs/`, separately from `reference/`:
   Base Fuel Schedule through Fuel Compensation Main, periodic multiplier,
   bank-specific trims, six compensated pulse words, and the explicitly bounded
   ATU-II hardware-output trace.
+- `JK08A.fuel-inhibit.md` is the complete static model of all 15 global
+  fuel-output inhibit contributors, the Power Balance replacement, the
+  ETC-actuator-fault auxiliary mask, and final six-channel precedence.
 - `JK08A.limiters.md` is the code-grounded arbitration model for the main and
   stationary engine-speed fuel cuts and the separate rotational-speed request
   limiter, including periodic execution order and exact fuel-mask precedence.

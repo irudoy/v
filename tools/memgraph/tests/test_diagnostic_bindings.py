@@ -99,10 +99,10 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 150)
-        self.assertEqual(len(inherited), 34)
+        self.assertEqual(len(rows), 156)
+        self.assertEqual(len(inherited), 35)
         self.assertEqual(
-            sum(row["rom_scope"] == "exact-rom" for row in rows), 116
+            sum(row["rom_scope"] == "exact-rom" for row in rows), 121
         )
         self.assertTrue(
             any(row["kind"] == "calibration_context" for row in rows)
@@ -116,7 +116,7 @@ class BindingSourceTest(unittest.TestCase):
                     "short-term-fuel-trim-",
                     "long-term-fuel-trim-",
                     "injection-pulse-",
-                    "intake-valve-",
+                    "intake-valve-timing-bank-",
                     "accelerator-pedal-position-",
                 ))
             },
@@ -137,6 +137,52 @@ class BindingSourceTest(unittest.TestCase):
             },
         )
         by_id = {row["id"]: row for row in rows}
+        self.assertEqual(
+            by_id["power-balance-mask-iolid-0c"]["firmware_addr"],
+            "ffff992f",
+        )
+        self.assertEqual(
+            by_id["power-balance-mask-iolid-0c"]["source_claim_id"],
+            "ecudocs-p32m-997c5a9:data:"
+            "iolid-0ch-power-balance-param-c9761d97",
+        )
+        fuel_inhibit_dtc_targets = {
+            "engine-overtemperature-inhibit-p1217": (
+                "0004f494",
+                "P1217",
+                "jk08a:00019378",
+            ),
+            "etc-actuator-fault-mask-p2119": (
+                "0005096c",
+                "P2119",
+                "jk08a:000198ac",
+            ),
+            "etc-actuator-fault-mask-p1238": (
+                "0005096c",
+                "P1238",
+                "jk08a:0001a104",
+            ),
+            "intake-valve-timing-fault-inhibit-p0011": (
+                "00050b3c",
+                "P0011",
+                "jk08a:00019d20",
+            ),
+            "intake-valve-timing-fault-inhibit-p0021": (
+                "00050b3c",
+                "P0021",
+                "jk08a:00019d2c",
+            ),
+        }
+        for binding_id, (
+            firmware_addr,
+            diagnostic_key,
+            source_claim_id,
+        ) in fuel_inhibit_dtc_targets.items():
+            self.assertEqual(by_id[binding_id]["firmware_addr"], firmware_addr)
+            self.assertEqual(by_id[binding_id]["diagnostic_key"], diagnostic_key)
+            self.assertEqual(by_id[binding_id]["source_claim_id"], source_claim_id)
+            self.assertEqual(by_id[binding_id]["rom_scope"], "exact-rom")
+            self.assertEqual(by_id[binding_id]["applicability"], "exact_rom")
         maf_targets = {
             "mass-airflow-sensor-bank-1-did-1204": (
                 "ffff101c", "diagnostic-parameter:request:221204"

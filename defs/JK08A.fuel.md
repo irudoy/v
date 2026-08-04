@@ -6,7 +6,9 @@ This document records the static code model of the main fuel calculation in the
 exact JK08A/JK03A executable. The established path covers dual-bank MAF input,
 Base Fuel Schedule (BFS), Fuel Compensation Main, the periodic fuel multiplier,
 bank-specific base terms, closed-loop trims, six per-channel compensated pulse
-words, and the shared fuel-output inhibit mask.
+words, and the shared fuel-output inhibit mask. The complete source and
+precedence model for that mask is maintained in
+[`JK08A.fuel-inhibit.md`](JK08A.fuel-inhibit.md).
 
 No road log or bench observation is used here. Arithmetic, RAM data flow,
 scheduler ordering, diagnostic bindings, and ATU-II register use are

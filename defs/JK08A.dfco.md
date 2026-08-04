@@ -225,17 +225,21 @@ G = 0x3F when any global Boolean condition is active, otherwise 0x00
 D = mask returned by FUN_000503E0
 C = mask returned by FUN_0005079C
 P = G | D | C
-R = runtime replacement byte when FUN_00050A34 selects it, otherwise P
-A = mask returned by FUN_0005096C
+R = Power Balance mask when FUN_00050A34 selects it, otherwise P
+A = ETC-actuator-fault mask returned by FUN_0005096C
 0xFFFF22E0 = (R | A) & 0x3F
 ```
 
-The global Boolean group includes the main RPM limiter `FUN_0004F282`, the
-stationary RPM limiter `FUN_0004F324`, and additional unresolved conditions.
+The global Boolean group contains exactly 15 contributors. It includes the main
+RPM limiter `FUN_0004F282`, the stationary RPM limiter `FUN_0004F324`, and 13
+other statically classified conditions. Two intervening calls update state but
+do not contribute their return values. The complete inventory is maintained in
+[`JK08A.fuel-inhibit.md`](JK08A.fuel-inhibit.md).
 `FUN_0005079C` maps a clamped count through masks
 `[0x01, 0x05, 0x15, 0x17, 0x1F, 0x3F]`. `FUN_0005096C` creates an independent
-RPM-shaped mask under its own status gates. `FUN_00050A06` can activate a
-runtime replacement byte from `0xFFFF992F`. The replacement is applied after
+RPM-shaped mask for exact P2119/P1238 ETC actuator fault records. Nissan
+service 0x30 IOLID `0x0C` can activate a Power Balance replacement byte from
+`0xFFFF992F`. The replacement is applied after
 the global/DFCO/count OR and can substitute or clear those bits. The auxiliary
 mask is ORed after the replacement and cannot be cleared by it. Main and
 stationary fuel cuts each contribute a full `0x3F`, which absorbs any partial

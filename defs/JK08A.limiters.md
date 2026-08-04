@@ -144,17 +144,20 @@ time.
 
 ## Exact fuel-mask precedence
 
-Let `B` be the OR of the sixteen global Boolean results evaluated by
-`FUN_0004ED88`. It includes `FUN_0004F282`, `FUN_0004F324`, and fourteen other
-independent conditions. The exact mask calculation is:
+Let `B` be the OR of the 15 global Boolean results evaluated by
+`fuel_output_inhibit_coordinator`. It includes the main and stationary
+engine-speed cuts plus 13 other conditions. Two additional calls update state
+but have their return values discarded. The complete contributor inventory is
+maintained in [`JK08A.fuel-inhibit.md`](JK08A.fuel-inhibit.md). The exact mask
+calculation is:
 
 ```text
 G = 0x3F if B != 0 else 0x00
 D = mask returned by DFCO state machine FUN_000503E0
 C = count-derived mask returned by FUN_0005079C
 P = G | D | C
-R = uint8[0xFFFF2B2C] if runtime replacement is active else P
-A = auxiliary RPM-shaped mask returned by FUN_0005096C
+R = uint8[0xFFFF2B2C] if Power Balance is active else P
+A = ETC-actuator-fault mask returned by FUN_0005096C
 0xFFFF22E0 = (R | A) & 0x3F
 ```
 
@@ -163,11 +166,11 @@ This gives the following precedence rules:
 1. Main RPM fuel cut and stationary fuel cut have no priority over each other. Either
    active Boolean makes `G=0x3F`; simultaneous activation produces the same result.
 2. A global `0x3F` absorbs every partial DFCO or count-derived bit through OR.
-3. `FUN_00050A34` applies the runtime replacement after that OR. When its active bit
-   is set, the replacement can substitute or clear any main/stationary/DFCO/count
-   bits in `P`.
-4. `FUN_0005096C` is ORed after the replacement, so its auxiliary bits cannot be
-   cleared by that replacement.
+3. `power_balance_mask_apply` applies the diagnostic replacement after that OR.
+   When service 0x30 IOLID `0x0C` is active, the replacement can substitute or
+   clear any main/stationary/DFCO/count bits in `P`.
+4. `etc_actuator_fault_inhibit_mask` is ORed after the replacement, so P2119/P1238
+   auxiliary bits cannot be cleared by Power Balance.
 5. `FUN_00050A4C` removes bits 6 and 7 from the final result.
 
 The stationary entry gate requires `0xFFFF2458.bit5=0`, while a new or held DFCO cut
@@ -192,5 +195,5 @@ override/fallback paths through `FUN_0004EBA2`, `FUN_00052034`, and
 Static code therefore establishes a hard six-channel fuel-output path for main and
 stationary RPM cut, and a separate softer signed-request path for `0x0942C`. Hardware
 validation remains required for the physical throttle action, exact `0x0942C` scale,
-external injector-driver behavior, channel-to-cylinder order, and the physical source
-of the runtime replacement and auxiliary mask gates.
+external injector-driver behavior, channel-to-cylinder order, and the upstream source
+of the two unresolved shared status bits in the global contributor group.
