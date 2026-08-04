@@ -55,21 +55,34 @@ class RomImagesLayoutTest(unittest.TestCase):
                     self.assertTrue((mod / "README.md").is_file())
                     self.assertEqual(len(list(mod.glob("*.bin"))), 1)
 
-    def test_registry_paths_exist_inside_part_directories(self):
+    def test_registry_covers_and_identifies_stock_sources(self):
         with (ROMDIR / "roms.csv").open(newline="", encoding="utf-8") as fh:
             rows = list(csv.DictReader(fh))
         self.assertTrue(rows)
+        registered_paths = [row["path"] for row in rows]
         self.assertEqual(
-            [row["path"] for row in rows],
-            sorted(row["path"] for row in rows),
+            registered_paths,
+            sorted(registered_paths),
         )
+        self.assertEqual(len(registered_paths), len(set(registered_paths)))
         for row in rows:
             path = Path(row["path"])
             with self.subTest(path=path):
                 self.assertEqual(len(path.parts), 2)
                 self.assertRegex(path.parts[0], rf"^{PART_RE.pattern}$")
                 self.assertRegex(path.name, rf"^{BIN_RE.pattern}$")
-                self.assertTrue((ROMDIR / path).is_file())
+                binary = ROMDIR / path
+                self.assertTrue(binary.is_file())
+                self.assertRegex(row["sha256"], r"^[0-9a-f]{64}$")
+                self.assertEqual(
+                    row["sha256"],
+                    hashlib.sha256(binary.read_bytes()).hexdigest(),
+                )
+        stock_sources = {
+            str(path.relative_to(ROMDIR))
+            for path in ROMDIR.glob("23710-*/*.bin")
+        }
+        self.assertEqual(set(registered_paths), stock_sources)
 
 
 if __name__ == "__main__":

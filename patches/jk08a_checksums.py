@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Calculate, verify, and recalculate the exact JK03A/JK08A checksums."""
+"""Calculate and verify the exact JK03A/JK03B/JK08A checksum layout."""
 
 from __future__ import annotations
 

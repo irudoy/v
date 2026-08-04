@@ -11,12 +11,19 @@ STOCK = (
     / "23710-JK08A"
     / "1JK08A-20260726-stock.bin"
 )
+JK03B_STOCK = (
+    ROOT
+    / "rom-images"
+    / "23710-JK03B"
+    / "1JK03B-20260804-stock.bin"
+)
 
 
 class Jk08aChecksumsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.stock = STOCK.read_bytes()
+        cls.jk03b_stock = JK03B_STOCK.read_bytes()
 
     def test_stock_values_match_the_documented_contract(self):
         result = checksums.require_valid(self.stock)
@@ -27,6 +34,20 @@ class Jk08aChecksumsTest(unittest.TestCase):
                 sum16_b=0xEEE1,
                 runtime_a_xor=0x47A28253,
                 runtime_a_sum=0x094AA8CF,
+                runtime_b_sum=0xAC399870,
+                runtime_b_xor=0x07131670,
+            ),
+        )
+
+    def test_jk03b_values_match_the_documented_contract(self):
+        result = checksums.require_valid(self.jk03b_stock, "JK03B stock")
+        self.assertEqual(
+            result.stored,
+            checksums.ChecksumValues(
+                sum16_a=0x9A0A,
+                sum16_b=0xEEE1,
+                runtime_a_xor=0xFF15D54A,
+                runtime_a_sum=0x2EC1B4D2,
                 runtime_b_sum=0xAC399870,
                 runtime_b_xor=0x07131670,
             ),

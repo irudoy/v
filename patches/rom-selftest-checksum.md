@@ -1,8 +1,8 @@
-# ROM checksums - JK03A / JK08A
+# ROM checksums - JK03A / JK03B / JK08A
 
-JK03A and JK08A images are 1 MiB, big-endian, and based at `0x0`. They share a
-checksum layout consisting of two SUM16 checks and two runtime self-test XOR+SUM
-domains.
+JK03A, JK03B, and JK08A images are 1 MiB, big-endian, and based at `0x0`. They
+share a checksum layout consisting of two SUM16 checks and two runtime self-test
+XOR+SUM domains.
 
 `apply_immo_off.py` changes only `ROM[0x8725].bit0` and leaves stored checksum
 fields equal to stock. The flasher corrects checksums when writing. The layout
@@ -23,7 +23,7 @@ The sum is computed modulo `2^16`. Bounds are half-open: SUM16 A ends before
 their own stored words through their range placement.
 
 This layout matches the 1 MiB SH7058 scheme in the NissanECU wiki mirror at
-`refs/nissanecu-wiki/Checksums.md` and reproduces stock JK03A/JK08A.
+`refs/nissanecu-wiki/Checksums.md` and reproduces stock JK03A/JK03B/JK08A.
 
 ## Runtime self-test XOR+SUM
 
@@ -87,9 +87,10 @@ the XDF contract.
 | ROM | SUM16 A | SUM16 B | A XOR | A SUM | B SUM | B XOR |
 |-----|---------|---------|-------|-------|-------|-------|
 | JK03A | `d58a` | `eee1` | `e93fb358` | `d61bc71c` | `ac399870` | `07131670` |
+| JK03B | `9a0a` | `eee1` | `ff15d54a` | `2ec1b4d2` | `ac399870` | `07131670` |
 | JK08A | `2cae` | `eee1` | `47a28253` | `094aa8cf` | `ac399870` | `07131670` |
 
-Domain B and its values match because JK03A and JK08A have an identical
+Domain B and its values match because JK03A, JK03B, and JK08A have an identical
 `0x020000..0x0fffff` region. The A and SUM16 A values reflect
 configuration/calibration differences.
 
@@ -111,6 +112,6 @@ observed on a physical ECU.
 
 ## Scope
 
-The exact-layout profile is confirmed for JK03A and JK08A. This specification
-makes no claim about checksum-field locations or coverage for 1ND0A, 1ND3B,
-JK78C, or JK00D.
+The exact-layout profile is confirmed for JK03A, JK03B, and JK08A. This
+specification makes no claim about checksum-field locations or coverage for
+1ND0A, 1ND3B, JK78C, JK00C, or JK00D.

@@ -112,10 +112,11 @@ Read-only work and responses without local changes do not trigger a backup.
 ## Repository map
 
 - `rom-images/` - ROM dumps (`*.bin`): a VQ37VHR homolog pair from the RomRaider
-  forum (SH7058 USDM / SH7059 JDM), donor `JK03A`, the owned target `JK08A`
-  (VQ25HR exact-code pair with different calibration/config), the owned
-  bench-ECU dump `JK00D` (VQ35HR, SH7058), and derived image
-  `1JK08A-20260727-immo-off.bin`. Each part number has its own
+  forum (SH7058 USDM / SH7059 JDM); the VQ25HR exact-code family comprising
+  donor `JK03A`, owned pre-write baseline `JK03B`, and owned target `JK08A`;
+  the owned VQ35HR-class bench baselines `JK00C` and `JK00D`, which use
+  different code bases; and derived image `1JK08A-20260727-immo-off.bin`.
+  Each part number has its own
   `23710-XXXXX` directory; modifications live under `mods/<short-desc>/`. These
   files are versioned. The `rom-images/README.md` manifest records SHA-256,
   part number, identification, and provenance. A dump is identified by SHA-256.
@@ -141,8 +142,10 @@ Read-only work and responses without local changes do not trigger a backup.
   Ghidra/Memgraph caches. Content artifacts such as ROMs, datasheets,
   definitions, and mirrors are versioned.
 - `defs/` - table definitions. `JK08A.*` is the only live annotation set for the
-  exact-code pair. `rom-inheritance.toml` projects it onto a separate JK03A
-  measurement layer without copying source CSV, ledger, or XML files.
+  exact-code family. `rom-inheritance.toml` projects it onto a separate JK03A
+  measurement layer without copying source CSV, ledger, or XML files. JK03B
+  remains an inventoried binary without an export, graph layer, or annotation
+  inheritance entry.
   `defs/reference/` contains submodules with public RomRaider Nissan definitions
   (Pytrex and a33b); their manifest and relevance are in `defs/README.md`.
 - `patches/` - the immo-off specification and patcher

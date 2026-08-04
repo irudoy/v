@@ -48,12 +48,14 @@ python3 -m unittest patches.tests.test_rom_images_layout -v
 
 `1ND0A` / `1ND3B` (1.5 MiB, SH7059, JDM) and `JK78C` (1.0 MiB, SH7058,
 USDM) are **VQ37VHR** images of the same engine across two ECU generations. They
-form a homolog pair for reverse engineering. `JK03A` and `JK08A` (1.0 MiB,
-SH7058, JDM) are for the **VQ25HR** V36 Skyline 250GT. JK03A is a forum package
-containing `ROM + external SPI EEPROM`; JK08A is an owned read from the target
-vehicle ECU without an EEPROM read. `JK00D` (1.0 MiB, SH7058) is an owned ROM
-from a physical **VQ35HR** bench ECU. Documentation for the physical ECUs and the
-project is in the Russian-language Obsidian project
+form a homolog pair for reverse engineering. `JK03A`, `JK03B`, and `JK08A`
+(1.0 MiB, SH7058, JDM) are for the **VQ25HR** V36 Skyline 250GT and form one
+exact-code family. JK03A is a forum package containing `ROM + external SPI
+EEPROM`; JK03B is an owned pre-write bench read; JK08A is an owned read from
+the target vehicle ECU without an EEPROM read. `JK00C` and `JK00D` (1.0 MiB,
+SH7058) are owned ROMs from physical **VQ35HR**-class bench ECUs; their code
+bases differ. Documentation for the physical ECUs and the project is in the
+Russian-language Obsidian project
 `🎛️ Electronics/VQ HR ECU Tuning`; see `../AGENTS.md`.
 
 The MCU core is **SH-2E** (SH-2 plus a single-precision FPU), as confirmed by the
@@ -67,8 +69,10 @@ Renesas datasheet
 |------|-------------:|-------------|------------|---------|--------|--------|-----|
 | `23710-1ND0A/11ND0A-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND0A | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
 | `23710-1ND3B/11ND3B-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND3B | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
+| `23710-JK00C/1JK00C-20260803-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00C | V36 Skyline 350GT (PV36; hardware-family) | VQ35HR | JDM | CAN |
 | `23710-JK00D/1JK00D-20260726-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00D | bench ECU | VQ35HR | unknown | CAN |
 | `23710-JK03A/1JK03A-20260715-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 | 23710-JK03A | V36 Skyline 250GT | VQ25HR | JDM | CAN * |
+| `23710-JK03B/1JK03B-20260804-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK03B | V36 Skyline 250GT | VQ25HR | JDM | CAN |
 | `23710-JK08A/1JK08A-20260726-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK08A | V36 Skyline 250GT | VQ25HR | JDM | CAN |
 | `23710-JK78C/1JK78C-20260715-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 * | 23710-JK78C | Infiniti G37 (2008-09) | VQ37VHR | USDM | CAN * |
 
@@ -93,6 +97,27 @@ byte-identical. The executable code and Developer Immobilizer flag at `0x8725`
 are an exact match; calibration/configuration data is not identical. The package
 does not contain an EEPROM read or PCMFlash screenshot. The directory README
 contains the complete local identification.
+
+`JK03B` is an owned pre-write read dated 2026-08-04. PCMFlash identification
+and ROM strings record calibration `1JK03B00000`, software `7MFKAVN86`, and
+type `SH705822N`; the original filename records Hitachi hardware
+`MEC100-191 A1`, lot `7911`. Its known executable ranges are byte-identical to
+JK03A and JK08A. JK03B differs from JK03A at 118 byte positions in 44 ranges,
+all within `0x008200..0x014ff1`, and from JK08A at 229 byte positions in 94
+ranges, all within `0x008200..0x0190c9`. Its stock `[0x8080, 0x8100)` line is
+filled with `0xEE`, which rules out an unconditional PCMFlash read transform as
+the cause of the zero line in the later marker-only readback. The directory
+README contains the complete identification and public application evidence.
+
+`JK00C` is an owned pre-write read dated 2026-08-03 from the physical bench ECU
+later used for the controlled map-switching failure reproduction. PCMFlash
+identification and ROM strings record calibration `1JK00C00000`, software
+`8MFKPCN14`, and type `SH705822N`; the original filename records Hitachi
+hardware `MEC100-120 C1`, lot `6Z03`. Public hardware-family evidence associates
+`MEC100-120 C1` with the automatic JDM PV36 Skyline 350GT and VQ35HR, but an
+exact public catalog entry for `23710-JK00C` was not found. JK00C and JK00D
+differ at 466,806 byte positions and are not an exact-code pair. The directory
+README contains the full provenance and confidence boundary.
 
 `JK00D` is an owned read from a physical bench ECU dated 2026-07-26. PCMFlash
 1.2.0 module 18 over Scanmatik-SM2 USB reports `23710-JK00D`, calibration
@@ -143,6 +168,17 @@ modification README.
   provenance confirms the part number and read method. ROM content confirms the
   software identifier, calibration, SH7058 class, and flash size, giving
   **high confidence**. The external EEPROM was not read.
+- `JK03B`: an owned physical ECU with a pre-write PCMFlash read. The part
+  number, calibration, software ID, MCU class, hardware identifier, and hashes
+  have local provenance. Exact-code homology with JK03A/JK08A and public
+  exact-part/hardware-family records identify the V36 Skyline 250GT / VQ25HR
+  application with **high confidence**. The external EEPROM was not read.
+- `JK00C`: an owned physical ECU with a pre-write PCMFlash read. The part
+  number, calibration, software ID, MCU class, hardware identifier, and hashes
+  have local provenance. The PV36 Skyline 350GT / VQ35HR application is based
+  on public `MEC100-120 C1` hardware-family records rather than an exact
+  `23710-JK00C` catalog record and is therefore **marketplace-grade**. The
+  external EEPROM was not read.
 - `JK00D`: an owned physical bench ECU. PCMFlash reading and identification
   confirm the part number, software identifier, calibration, SH7058 class,
   flash size, and CAN protocol, giving **high confidence**. The donor vehicle
@@ -158,6 +194,9 @@ modification README.
 - Flash evolution from 1 MB to 1.5 MB: https://www.romraider.com/forum/viewtopic.php?f=65&t=21905
 - Nissan stock ROM list (Z34 VQ37VHR loader 705927): https://www.romraider.com/forum/viewtopic.php?f=65&t=11098
 - JK03A (V36 VQ25HR 2WD 5AT, ROM + SPI EEPROM, Break_Neck): https://www.romraider.com/forum/viewtopic.php?p=150228#p150228
+- JK03B (exact part, V36 2.5 AT, SH7058): https://otomotiv-forum.com/threads/chip-ttyuning-nissan-skyline-v36-at-2-5i-proshivka-yevro-2-tyun.63512/
+- MEC100-191 A1 (V36 250GT, VQ25HR, AT): https://yahoo.aleado.com/lot?auctionID=m403371593
+- MEC100-120 C1 (PV36 350GT, VQ35HR, AT): https://www.ebay.com/itm/284029944805
 - JK7x = 2008 Infiniti G37 3.7L: https://www.fs1inc.com/23710-jk78a-2008-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play.html
 - 23710 = Nissan ECM part-number prefix: https://parts.nissanusa.com/parts/nissan-engine-control-module-ecm-23710zv24a
 - Renesas SH7059 / SH7058S (SH-2E core, 1.5 / 1.0 MiB flash): https://www.renesas.com/en/document/mah/sh-2e-sh7059-f-ztattm-sh7058s-f-ztattm-hardware-manual

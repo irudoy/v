@@ -1,8 +1,10 @@
 path,rom,sha256,note
 23710-1ND0A/11ND0A-20260715-stock.bin,1ND0A,650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978,
 23710-1ND3B/11ND3B-20260715-stock.bin,1ND3B,0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e,
+23710-JK00C/1JK00C-20260803-stock.bin,,b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289,"owned pre-write dump from physical ECU 23710-JK00C; no graph layer; PCMFlash 1.2.0 module 18 / Scanmatik-SM2 USB, 2026-08-03"
 23710-JK00D/1JK00D-20260726-stock.bin,JK00D,e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3,"owned dump from bench ECU 23710-JK00D, PCMFlash 1.2.0 module 18 / Scanmatik-SM2 USB, 2026-07-26"
 23710-JK03A/1JK03A-20260715-stock.bin,JK03A,f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4,
 23710-JK03A/ST95320-20260715-nats-sync.bin,,68bb95f6ed70ec247f752a2d6817c83f14cdb7dc9db55c316852c0be0d362aaf,"external ST95320 SPI EEPROM (NATS synchronization/adaptation); not ECU flash ROM and has no graph label"
+23710-JK03B/1JK03B-20260804-stock.bin,,a9aa7a337375b7c9419b0970c32674e98f12ea4215c079898190c5c771a96f1a,"owned pre-write dump from physical ECU 23710-JK03B; no graph layer; PCMFlash 1.2.0 module 18 / Scanmatik-SM2 USB, 2026-08-04"
 23710-JK08A/1JK08A-20260726-stock.bin,JK08A,ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23,"owned dump from target 23710-JK08A, V36 Skyline 250GT, PCMFlash 1.2.0 module 18 / Scanmatik-SM2 USB, 2026-07-26"
 23710-JK78C/1JK78C-20260715-stock.bin,JK78C,86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d,
