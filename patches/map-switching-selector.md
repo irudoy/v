@@ -78,6 +78,24 @@ reproduction image, not as the current runtime release. A replacement ECU must
 have a recorded baseline, working recovery path, supply-current measurement,
 and complete PCMFlash log before that reproduction write.
 
+The controlled reproduction on a fresh bench ECU establishes an image-specific
+failure. Its initial identification was `1JK00C00000`. Three consecutive stock
+writes each survived a power cycle and identified as `1JK08A00000`; the next
+write selected
+`C:\Users\rudoo\OneDrive\Desktop\rom\1JK08A-20260726-map-sw-tune.bin`,
+reported success, and was followed by two failed identifications. The complete
+PCMFlash 1.2.0 log records the same erase, area-1 transfer, validation, and
+completion stages for all four operations. Stock transfer durations were 128,
+131, and 131 seconds; the candidate transfer took 129 seconds. Validation took
+about one second, while a complete one-MiB read on the same bench took 227
+seconds. The readable log contains no programmed address ranges, input-file
+digest, or byte-comparison result. The selected Windows file has independently
+confirmed SHA-256
+`d61853b7c1f1b2b29d3ccf2a551be8dacebeef65b82b464d0327fc9b11e93e5d`,
+which is exact to the locally audited candidate. This excludes a random
+transport failure and a stale or different input file as the leading
+explanations, but it does not bind the resulting user MAT to those bytes.
+
 The candidate file itself passes the available independent static gates:
 
 - the installed RomRaider `ChecksumALT` implementation verifies 2/2 regions;
@@ -102,20 +120,114 @@ untested.
 
 The official PCMFlash module list declares the SH7058 protocol as a one-MiB
 `RD/WR/CK` protocol rather than a calibration-only protocol. It does not
-publish erase-block selection or post-write comparison behavior. A skipped,
-partially programmed, or otherwise corrupted flash block remains possible but
-cannot be established without the original PCMFlash operation log or a
-readback. No candidate-file difference found in this audit explains the
-complete loss of application startup and PCMFlash identification.
+publish erase-block selection or post-write comparison behavior.
 
-The unresolved evidence branches are the actual programming transaction,
-board-level power/reset/clock state, and behavior inside the hardware-oriented
-initialization calls that the p-code harness must stub. The original PCMFlash
-log can establish which address ranges and verification stages the tool
-reported. Measurements on the failed ECU can classify a power, reset, clock,
-or watchdog failure. A known-working replacement ECU permits staged A/B images
-that isolate allocation, startup, selector, and CAN-feedback hooks. The
-available evidence does not rank these branches.
+The successful marker transaction has a complete hardware readback. The input
+SHA-256 is
+`e1fef7ccf862243be7b231b26865c9cd099283993cfe8c73abb9952b1e5358b7`;
+the readback SHA-256 is
+`d5cb0000f77c8c1112d912474cbb471f78051805027e3358fbedc28cf1bf58b3`.
+They differ at exactly 128 bytes in the single line
+`[0x8080, 0x8100)`: the input contains `0xEE`, while the readback contains
+`0x00`. Replacing that input line with 128 zero bytes produces the readback
+exactly. Every other byte matches, including the complete marker line
+`[0xD2280, 0xD2300)`, all five changed checksum bytes, all 14 stock hooks,
+and the rest of the one-MiB image. Both files independently satisfy all six
+checksum references. PCMFlash did not alter any stored checksum field relative
+to the already valid input. The layer responsible for the exceptional
+`0x8080` transformation remains to be isolated.
+
+The PCMFlash progress denominator does not independently establish programming
+coverage. The public manual describes this value as a counter of transferred
+blocks and subblocks, without specifying their byte size or requiring read and
+write to use the same transfer unit. One MiB contains 8192 native 128-byte
+SH7058S programming units but 16384 64-byte read payloads. The observed bench
+values of approximately 16640 during read and approximately 7900 during write
+are therefore compatible with different protocol framing. If the exact write
+denominator is 7936, it arithmetically matches 128-byte programming of
+`[0x8000, 0x100000)`, but neither the approximate observation nor the public
+protocol documentation proves that address range. The PCMFlash log records the
+transfer stages but not the GUI denominators. The marker transfer lasted 128
+seconds, while its full readback area took 1705 seconds. The one-MiB input is a
+raw address image, not a container with a generic effective-range field; any
+selected or protected address range is part of the PCMFlash module protocol.
+
+The `0x8080` line is outside every documented JK08A checksum domain. In the
+reset selector, the input image produces
+`0xFF & (0xEE | 0xF0) = 0xFE`, while the hardware readback produces
+`0xFF & (0x00 | 0xF0) = 0xF0`. Both values pass the accepted `0xF0..0xFE`
+range, match the header marker at `0xFFF84`, and enter TRAPA `0x3E`. Neither
+variant reaches the fallback call that uses the `0x29CC` clear-start literal.
+
+The complete pre-flash `1JK03B_7MFKAVN86` baseline has SHA-256
+`a9aa7a337375b7c9419b0970c32674e98f12ea4215c079898190c5c771a96f1a`
+and independently satisfies all six checksum references. Its complete
+`[0x8080, 0x8100)` line contains `0xEE`, exactly like the marker input, while
+the post-write readback contains `0x00`. The same read path therefore exposed
+the input value before programming and the changed value afterwards; this was
+not preservation of an ECU-specific baseline line. The baseline differs from
+the marker input at 675 bytes spanning `0x8200..0xD22FF` in 57 native
+128-byte lines. Every one of those 675 bytes equals the marker input in the
+post-write readback. The post-write image additionally differs from the
+baseline at all 128 bytes of the `0x8080` line. The successful transaction
+therefore applies all available input deltas and separately transforms one
+line that was identical in the baseline and input. The available evidence does
+not distinguish an optional checksum-correction transformation from a core
+module-18 programming rule. A controlled write of an already checksum-valid
+gate image with checksum correction disabled can isolate those layers; recovery
+mode is not required for the responding ECU.
+
+The pre-fix candidate differs from its known-working tuned base below `0x8000`
+at exactly one byte, `0x29CE`. This changes the longword literal at `0x29CC`
+from `0xFFFF7000` to `0xFFFF5D00`; the exact reset audit establishes that its
+containing initialization path does not execute on the observed TRAPA power-on
+path. Every executable hook and the complete injected tail are at or above
+`0x8000`. Consequently, even if the conditional `[0x8000, 0x100000)` write
+hypothesis is confirmed, omission of the lower 32 KiB does not explain the
+loss of startup.
+
+An expanded read-only p-code diagnostic executes the exact reset path,
+`FUN_00020DFE`, all 124 entries in its periodic table, and their software
+callees for the working and pre-fix images. Only SCI2 wait primitive
+`FUN_00066BD0` is stubbed inside the periodic path because it requires a
+physical peripheral response. All nine retained selector seeds complete the
+first full period over 3,386,971 total instructions with minimum SP
+`0xFFFF7DA0`. For map 1, the working image executes 187,918 instructions and
+the pre-fix image executes 188,212, a delta of 294; their complete RAM states
+match outside the declared selector/shadow reservation, selected runtime
+scalar, and released stack frames. Maps 2 through 5 contain intentionally
+different calibrations, so their diagnostic verifies completion, protected
+registers, SR, selector state, and limiter shadows without requiring equal
+application RAM.
+
+The first complete reconstructed software period does not reproduce the
+failure. The marker readback proves that normal module-18 programming can
+install a newly non-`0xFF` line in the injected tail and preserve every
+checksum byte. It does not reconstruct either failed pre-fix user MAT, so a
+candidate-specific omission is not logically excluded, but generic omission
+of the new tail is no longer the leading branch. The next staged gate isolates
+execution through the startup hook and a minimal tail trampoline. Individual
+runtime hooks, hardware-oriented initialization, asynchronous interrupts, and
+later periods remain subsequent silicon-only branches.
+
+`build_map_switching_marker.py` implements the first staged hardware gate. It
+accepts only the known-working tuned base with SHA-256
+`1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471`,
+replaces the complete erased line `[0xD2280,0xD2300)` with 128 zero bytes,
+recalculates all six checksum references, and proves that all 14 runtime hooks
+remain stock. The local output
+`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-marker-only-d2280.bin`
+has SHA-256
+`e1fef7ccf862243be7b231b26865c9cd099283993cfe8c73abb9952b1e5358b7`
+and MD5 `ae982b7e05fdd04af51f4136637f60cd`. It differs from its base at all
+128 marker bytes and five checksum bytes: `0x8201`, `0x96DE..0x96DF`, and
+`0x20000..0x20001`. No executable payload, hook, pointer table, or calibration
+copy is installed. Write, power cycle, identification, tail readback, checksum
+comparison, and normalized full-image comparison pass on the bench. The only
+raw comparison difference is the accepted `0x8080` variant described above.
+The marker gate therefore has status `PASS_WITH_0x8080_VARIANT`. A separate
+minimal startup trampoline is the next permitted image; individual runtime
+hooks follow only after that gate passes.
 
 ## Pilot calibration scope
 
@@ -306,12 +418,13 @@ fallback path and clears a continuous range much larger than the declared
 60-byte reservation.
 
 The exact power-on path does not execute this function. `FUN_0000261C` reads
-`ROM8[0x8000]=0xFF` and `ROM8[0x8080]=0xEE`, producing `0xFE`, and matches the
-header marker `ROM32[0xFFF84]=0x4E4855F9`. It enters TRAPA `0x3E`, whose vector
-is `FUN_00027E24`. That handler calls the stock startup thunk and then remains
-in its scheduler loop. It does not return to the fallback call of
-`FUN_00002B8E`, which is the only caller of `FUN_0000284E`. The candidate and
-both comparison images contain identical branch inputs and header marker.
+`ROM8[0x8000]=0xFF` and the first byte at `0x8080`. An input value of `0xEE`
+produces selector `0xFE`; the marker hardware readback value `0x00` produces
+selector `0xF0`. Both are accepted, match header marker
+`ROM32[0xFFF84]=0x4E4855F9`, and enter TRAPA `0x3E`, whose vector is
+`FUN_00027E24`. That handler calls the stock startup thunk and then remains in
+its scheduler loop. It does not return to the fallback call of
+`FUN_00002B8E`, which is the only caller of `FUN_0000284E`.
 
 The `0x29CC` hook therefore did not establish a map-1 default on the exact
 normal reset path. The current schema-2 layout removes the write and retains
@@ -943,25 +1056,30 @@ verifies the recalculated output before writing it.
 
 ## Validation gates before an engine test
 
-1. Patch a checksum-valid compatible input with `apply_map_switching.py` and
+1. On a known-working bench ECU, write the SHA-locked marker-only image, power
+   cycle, confirm identification, and obtain a complete readback. Require exact
+   marker and checksum bytes plus a full-image comparison that permits only an
+   explicitly characterized reset-selector line. The 2026-08-04 transaction
+   passes with the sole `0x8080` variant described above.
+2. Patch a checksum-valid compatible input with `apply_map_switching.py` and
    retain the reported input/output SHA-256 values and MD5 sidecar.
-2. Verify that Map 2 through Map 5 equal the input Map 1 in all eight families,
+3. Verify that Map 2 through Map 5 equal the input Map 1 in all eight families,
    all checksum domains pass, and the common `JK08A` XML/XDF projection matches
    the layout.
-3. Confirm the raw ladder sequence `SET -> CANCEL -> SET` on the target switch
+4. Confirm the raw ladder sequence `SET -> CANCEL -> SET` on the target switch
    assembly.
-4. With the vehicle stationary and the engine stopped, confirm that CAN 0x551
+5. With the vehicle stationary and the engine stopped, confirm that CAN 0x551
    byte 5 state `2` produces the CRUISE indication and that the locked `10, 10`
    timing gives a visible pulse. This is the first silicon check of the explicit
    feedback hypothesis and does not require a separate stock-period capture.
-5. Verify one through five indication pulses and confirm that stock ASCD control
+6. Verify one through five indication pulses and confirm that stock ASCD control
    state remains unchanged.
-6. Confirm reset Map 1 and raw DID 0x130E bit 7 on a bench ECU or the target
+7. Confirm reset Map 1 and raw DID 0x130E bit 7 on a bench ECU or the target
    vehicle.
-7. Measure the extended startup clear and commit critical-section latency.
-8. Confirm unchanged lookup outputs for every input index in all five selector
+8. Measure the extended startup clear and commit critical-section latency.
+9. Confirm unchanged lookup outputs for every input index in all five selector
    states.
-9. Start the engine with byte-identical maps and exercise all five selections
+10. Start the engine with byte-identical maps and exercise all five selections
    before changing any alternate map.
 
 Ground truth remains the physical ECU and engine.

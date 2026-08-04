@@ -236,6 +236,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `../patches/map-switching-payloads.toml` | Store the complete SHA-locked SH-2E assembly-unit spans as hexadecimal data for deterministic patcher use | tracked |
 | `../patches/jk08a_checksums.py` | Calculate, verify, and recalculate JK03A/JK08A SUM16 and runtime XOR+SUM domains in dependency order | imported by the patcher and tests |
 | `../patches/upgrade_map_switching_reset.py` | Upgrade only the complete pre-fix map-switching runtime with an exact protected upper partition outside declared map-switching and checksum storage: restore the stock fallback zero-fill anchor, install the fixed startup wrapper, recalculate checksums, and preserve every calibration byte | ROM plus MD5 sidecar; non-overwriting |
+| `../patches/build_map_switching_marker.py` | Build the first incident-isolation gate from the SHA-locked known-working JK08A tuned ROM: zero-fill only the complete 128-byte line at `0xD2280`, retain all runtime hooks at stock values, recalculate checksums, and prove the exact write boundary | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/apply_map_switching.py` | Validate a checksum-valid JK08A input against the exact identity, anchors, erased allocation, and protected upper ROM; initialize alternate maps from input Map 1, install the tracked runtime, recalculate checksums, prove input-byte preservation, and create a non-overwriting ROM plus MD5 sidecar | derived ROM and `.md5` |
 | `mapkit/presentation.py` | Normalize functional categories shared by the RomRaider and TunerPro projections without encoding confidence in the category name | imported by both renderers |
 | `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 36 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
@@ -424,6 +425,8 @@ python3 patches/map_switching_compose.py \
   --blob cruise_feedback_engine=/private/tmp/jk08a-map-switching-feedback-engine.bin
 python3 patches/apply_map_switching.py INPUT.bin \
   --output OUTPUT-map-switching.bin
+python3 patches/build_map_switching_marker.py WORKING-ROM.bin \
+  --output WORKING-ROM-marker-only-d2280.bin
 python3 patches/upgrade_map_switching_reset.py PRE-FIX.bin \
   --output PRE-FIX-fixed-reset.bin
 ```
