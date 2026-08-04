@@ -4681,10 +4681,45 @@ producer and conversion of `0xFFFF102C` are unresolved. Map values use centered 
 128 in code. The candidate engineering conversion `(raw - 128) * 0.5 degrees` comes
 from the HR A2L and homologous intake-cam diagnostics and requires hardware validation.
 
-The strict JK08A projection contains 1580 source claims and 5843 `RESTS_ON` edges.
+## P0128 thermostat-model balance surface - `0x0D40E`
+
+`FUN_000B5908` is the P0128 monitor dispatcher. Counter `0xFFFF33F8` makes it invoke
+`FUN_000B6B5A` every tenth pass. Its two completion branches pass descriptor index
+`0xCB`; the exact descriptor record at `0x19CE4` contains DTC P0128.
+
+At the start of the coordinator, `FUN_000B7B98` evaluates uint16 surface `0x0D40E`.
+Axis `0x13D74` receives current RPM/12.5 word `0xFFFF11BC`; axis `0x13DB4` receives
+current Base Fuel Schedule word `0xFFFF1024`. The second source has exact DID 0x1208
+identity, while its `x/2048 ms` conversion remains a homologous-profile candidate.
+A nonzero aggregate six-channel inhibit mask `0xFFFF22E0` forces the surface term to
+zero. Otherwise, the lookup is multiplied by the maximum of two selected byte
+coefficients and written as uint32 `0xFFFF2D04`.
+
+The whole-program xref projection has one writer and one reader for `0xFFFF2D04`.
+`FUN_000B6B5A` calculates
+
+```text
+T = sat_u32(ffff3220 + sat_u32(ffff3228 + ffff2f98))
+D = (u32[ffff2d04] >> 1) - (T >> 1)
+```
+
+and stores `D` in `0xFFFF33FC`. `FUN_000B7C84` clamps it to -107350..107350,
+calculates `K=min(ROM8[0x8542]*ROM8[0x8543],10735)`, applies
+`trunc0(20000*D/K)`, and saturates the result to -200000..200000 in
+`0xFFFF3400`. Stock bytes 20 and 8 give `K=160` and an unsaturated gain of 125.
+The transformed term is added to `0xFFFF3348` with signed saturation before the
+monitor continues.
+
+Every cell of `0x0D40E` and every point of both axes is zero in JK03A and JK08A.
+The stock lookup and `0xFFFF2D04` are therefore always zero, but the scheduled call,
+signed balance, scaler, and downstream state are live. Code proves a P0128 model
+balance contribution; it does not establish a physical heat-flow quantity or an
+engineering scale for the surface values.
+
+The strict JK08A projection contains 1588 source claims and 5893 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 358 `code` maps and 92 `candidate` maps;
-semantics are present for 438 maps and scaling for 400.
+ungrounded claims. The catalog contains 359 `code` maps and 91 `candidate` maps;
+semantics are present for 439 maps and scaling for 401.
 
 ## Next step
 
@@ -4703,13 +4738,13 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The follow-up semantic pass is built from the current projection, which contains 12
-`candidate` maps without semantics in 9 accessor-connected components. Every open
+The follow-up semantic pass is built from the current projection, which contains 11
+`candidate` maps without semantics in 8 accessor-connected components. Every open
 map is flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: ten maps contain `0..0`, one contains
+Column `vals` partitions the follow-up work: nine maps contain `0..0`, one contains
 `32768..32768`, and one contains `65535..65535` across the entire table.
 `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4749,10 +4784,11 @@ transcription:
   `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
   "Rotation-monitor thresholds").
 
-Follow-up worklist for 12 `candidate` maps without semantics:
+Follow-up worklist for 11 `candidate` maps without semantics:
 
-1. Trace flat singleton `0xD40E` through `FUN_000B7B98`, its output destination,
-   downstream readers, and calibration gates. Flat contents do not establish semantics.
+1. Trace flat curve `0x14B0A` through `FUN_000B7768`, its output destinations,
+   downstream arithmetic, and P0128 monitor context. Flat contents do not establish
+   semantics.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
    when its axis is resolved, in `JK08A.axes.csv`; record the name and category in
    `JK08A.overrides.toml`. `emit_def.py` builds the definition on the next run. Verify

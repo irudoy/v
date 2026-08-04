@@ -1711,3 +1711,11 @@ order = 213
 format = "0"
 fine = 1
 coarse = 8
+
+[table.0000d40e]
+name = "P0128 Thermostat Model Balance Surface - raw u16 (0x0D40E)"
+category = "Diagnostics / Internal Calculations"
+order = 214
+format = "0"
+fine = 1
+coarse = 256
