@@ -4681,7 +4681,7 @@ producer and conversion of `0xFFFF102C` are unresolved. Map values use centered 
 128 in code. The candidate engineering conversion `(raw - 128) * 0.5 degrees` comes
 from the HR A2L and homologous intake-cam diagnostics and requires hardware validation.
 
-## P0128 thermostat-model balance terms - `0x0D40E`, `0x14B0A`, and `0x14CCA`
+## P0128 thermostat-model balance terms - `0x0D40E`, `0x14B0A`, `0x14CCA`, and `0x151F2`
 
 `FUN_000B5908` is the P0128 monitor dispatcher. Counter `0xFFFF33F8` makes it invoke
 `FUN_000B6B5A` every tenth pass. Its two completion branches pass descriptor index
@@ -4779,10 +4779,40 @@ at `0x9292`/`0x8819` are zero, so `B` and `0xFFFF2F98` are always zero. The
 physical heat-transfer interpretation and engineering meaning of `P` remain
 unresolved.
 
-The strict JK08A projection contains 1599 source claims and 5983 `RESTS_ON` edges.
+The fourth term accessor, `FUN_000B7A3C`, receives conditional parameter `H` from
+RPM/12.5 curve `0x15C80`, runtime selector `S` from `0xFFFF178E`, the same IAT
+snapshot and model-temperature state, and previous-cycle coarse vehicle speed.
+`FUN_000B784E` writes the `0x15C80` result when the model-temperature threshold is
+met and one otherwise. `FUN_00048400` constrains `S` to values 0 through 3; code
+does not identify the physical subsystem represented by those states. The accessor
+calculates
+
+```text
+d = clamp(trunc0(ffff3348 / 20000) - 50 * uint8[ffff2733] + 2500,
+          0, 32767)
+B = min(floor(d * ROM8[0x8A30] / 2), 65535)
+A = lookup_u16(0x14E42, 0x13BB8, uint8[ffff110e] << 8)
+q = max(0, 65535 - floor(20 * A * ROM8[0x8832] / H)) if H != 0
+q = 65535 if H == 0 and A * ROM8[0x8832] == 0 else 0
+x = lookup_u16(0x151F2, 0x13BF8, q)
+w = 255 - min(x, 255)
+K = 10 if S == 0 else ROM8[0x8A35] if S == 1 else
+    ROM8[0x8A36] if S == 2 else ROM8[0x8A34]
+ffff3228 = K * floor(H * floor(B * w / 255) / 2500)
+```
+
+`FUN_000B6B5A` is the only reader of `0xFFFF3228`; it adds the word to
+`0xFFFF2F98` with uint32 saturation before placing the sum on the subtractive side
+of the P0128 balance. Stock `ROM8[0x8A30]` is zero, so `B` and `0xFFFF3228` are
+always zero. `ROM8[0x8832]`, all three table-selected state coefficients, both maps,
+and both axes are also zero. The hard-coded coefficient 10 for `S=0` cannot change
+the zero result. Code proves a state-weighted inverse-weight term; its physical
+heat-transfer interpretation, parameter `H`, and engineering scale remain unresolved.
+
+The strict JK08A projection contains 1603 source claims and 6031 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 361 `code` maps and 89 `candidate` maps;
-semantics are present for 441 maps and scaling for 403. The diagnostic projection
+ungrounded claims. The catalog contains 362 `code` maps and 88 `candidate` maps;
+semantics are present for 442 maps and scaling for 404. The diagnostic projection
 contains 150 reviewed JK08A bindings and 34 inherited exact-code JK03A bindings.
 
 ## Next step
@@ -4802,13 +4832,13 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The follow-up semantic pass is built from the current projection, which contains 9
-`candidate` maps without semantics in 6 accessor-connected components. Every open
+The follow-up semantic pass is built from the current projection, which contains 8
+`candidate` maps without semantics in 5 accessor-connected components. Every open
 map is flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: seven maps contain `0..0`, one contains
+Column `vals` partitions the follow-up work: six maps contain `0..0`, one contains
 `32768..32768`, and one contains `65535..65535` across the entire table.
 `tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
@@ -4848,11 +4878,11 @@ transcription:
   `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
   "Rotation-monitor thresholds").
 
-Follow-up worklist for 9 `candidate` maps without semantics:
+Follow-up worklist for 8 `candidate` maps without semantics:
 
-1. Trace flat curve `0x151F2` through `FUN_000B7A3C`, its temperature inputs,
-   output destination, downstream arithmetic, and the same P0128 monitor context.
-   Flat contents do not establish semantics.
+1. Trace saturated curve `0x14BCA` through `FUN_0003DAC6`, its caller inputs,
+   output destination, and downstream arithmetic. Uniform `0xFFFF` contents do not
+   distinguish an unprogrammed table from a saturated limit.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
    when its axis is resolved, in `JK08A.axes.csv`; record the name and category in
    `JK08A.overrides.toml`. `emit_def.py` builds the definition on the next run. Verify

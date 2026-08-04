@@ -1735,3 +1735,11 @@ order = 216
 format = "0"
 fine = 1
 coarse = 256
+
+[table.000151f2]
+name = "P0128 State-Weighted Inverse-Weight Curve - raw u16 (0x151F2)"
+category = "Diagnostics / Internal Calculations"
+order = 217
+format = "0"
+fine = 1
+coarse = 256
