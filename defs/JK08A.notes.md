@@ -8,7 +8,7 @@ SHA-256 `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`.
 
 Forum-sourced `JK03A` remains a separate donor ROM. The images differ at 121 byte
 positions in calibration/config, but none falls within the 2312 functions in the Ghidra
-export. All 16 `rom_const` values from structured evidence match. Of 449 maps, only four
+export. All 16 `rom_const` values from structured evidence match. Of 450 maps, only four
 currently unnamed candidate curves differ: `0x15360`, `0x15380`, `0x19090`, and
 `0x190b0`; all 230 axes match. `JK08A.*` is the sole live source of structural and
 semantic claims for the exact-code pair. `defs/rom-inheritance.toml` projects them onto
@@ -56,20 +56,20 @@ provenance and are not paths in the current `JK08A` layer.
   the clamp for its search". implicit-axis has no axis array and uses N points at a
   uniform step over the raw input, implemented by a bank of 10 primitives
   (`0x26358..0x2642C` and `0x266A0`).
-- Layer measured from the image [CONFIRMED]: values of all 449 maps and 230 axes are
+- Layer measured from the image [CONFIRMED]: values of all 450 maps and 230 axes are
   read from each ROM's registered image by the same run that builds the layer (Stage 4,
   `tools/mapkit`). JK08A uses `1JK08A-20260726-stock.bin`. Axes carry their points and
   monotonicity; maps carry content range and hash. Two signals remain open: one axis is
   not read by reverse linear search (`0x119B2`), and 18 maps contain only `0xFF`.
 - Element encoding [CONFIRMED]: a 1D map's input reads the element, while for a 2D map
   the finisher reads it; all five 2D finishers read elements as unsigned.
-  `storagetype` is known for all 449 maps in the graph. Three byte-oriented 2D
+  `storagetype` is known for all 450 maps in the graph. Three byte-oriented 2D
   finishers handle bit7 differently: `0x26770` treats it as part of the value,
   `0x267CC` treats it as a pass-through flag over a 7-bit value, and `0x268A4`
   saturates it (values 0..127). See "2D map element encoding".
-- The catalog contains **449 maps**: the resolver obtains 436 through 34 entries
-  (248 explicit-axis and 188 implicit-axis), while the manual layer declares 13 across
-  five families: four comparator, four direct-row-major, two implicit-2d, two
+- The catalog contains **450 maps**: the resolver obtains 436 through 34 entries
+  (248 explicit-axis and 188 implicit-axis), while the manual layer declares 14 across
+  five families: four comparator, five direct-row-major, two implicit-2d, two
   direct-scalar, and one direct-indexed map. No map belongs to more than one family; the
   loader verifies this.
 - Map progress is tracked by ledger `JK08A.maps.csv`, a projection of the catalog from
@@ -850,9 +850,9 @@ explicit-axis and 227 implicit-axis. Expanding selector alternatives turns 554 s
 into 587 rows.
 
 The resolver yields **436 maps**, 248 explicit-axis and 188 implicit-axis, with no map
-shared between families. The manual layer declares 13 maps across five families: four
-comparator, four direct-row-major, two implicit-2d, two direct-scalar, and one
-direct-indexed map, bringing the complete graph to **449 maps**.
+shared between families. The manual layer declares 14 maps across five families: four
+comparator, five direct-row-major, two implicit-2d, two direct-scalar, and one
+direct-indexed map, bringing the complete graph to **450 maps**.
 
 
 ### explicit-axis: three kernels and 24 wrappers [CONFIRMED]
@@ -2739,6 +2739,53 @@ The endpoint maps are equal for every stock coordinate, so neither endpoint
 weight changes the stock result. The physical quantity and engineering unit are
 unresolved.
 
+Axis `0x13d14` also serves as a 1D-16 identity output table for the conditional
+inverse evaluator `FUN_00076AD0`. The function selects its secondary coordinate as:
+
+```text
+y = uint16[ffff1152]                              if ffff4255.bit7 == 0
+y = max(uint16[ffff1152], uint16[ffff1162])       if ffff4255.bit7 == 1
+```
+
+It interpolates each row of `0x0de8e` at `y` and places the resulting 16 signed-
+surface storage words on the stack. This dynamic vector is the search axis passed
+to `0x264f8`; `0x13d14` is the returned-value table. The offset-binary search target
+is `signed16[ffff18ea]+32768` when `ROM8[0x89fa].bit5` is set, or
+`signed16[ffff3394]+32768` when `ROM8[0x8b29].bit6` is the sole entry gate. The
+first inverse coordinate is stored in `ffff1f60`.
+
+A second direct row-major surface begins at `0x0e28e`. It is not part of the
+forward endpoint pair and was absent from the wrapper-based map census because
+`FUN_00076AD0` reads its rows directly. The same `y` slice becomes a second dynamic
+search axis; inverse lookup through `0x13d14` writes `ffff1e7a`. All 256 stock cells
+are zero, so every decoded cell is -32768 and every stored search-axis cell is zero.
+For a positive offset-binary target, the search reaches terminal coordinate 727.
+Additional gates permit:
+
+```text
+ffff1f5e = floor((uint8[ffff3e72] * uint16[ffff1f60]
+                + (255-uint8[ffff3e72]) * uint16[ffff1e7a]) / 255)
+```
+
+The selected inverse coordinate is restored into the first-channel `0..800` domain:
+
+```text
+ffff2816 = min(800, floor(inverse_coordinate * 800 / 727))
+```
+
+`FUN_000D16C2` performs the reciprocal `floor(ffff2816*727/800)` conversion before
+its later state and bounds logic. This establishes code-level scaling for axes
+`0x13d14` and `0x18916` as `x*800/727`; it does not identify the physical quantity.
+Stock `ROM8[0x89fa]=0x40` has bit5 clear and `ROM8[0x8b29]=0x29` has bit6 clear, so
+the inverse body is disabled and `FUN_00076AD0` copies `ffff2a7a` to `ffff2816`.
+
+The mechanism is conserved outside the exact-code pair. VQ35HR JK00D keeps the
+two-surface algorithm with identity table `0x160e6`, populated primary surface
+`0x0f922`, and all-zero alternate surface `0x0fd22`. VQ37VHR 1ND0A keeps a simplified
+one-surface inverse at `FUN_000AAB28`, identity table `0x155e2`, surface `0x0f6c8`,
+and the same `727/800` range conversion. The first-channel physical quantity remains
+unresolved; the rejected load-limit and torque-request labels are not reinstated.
+
 
 ### Offset-binary additive curve selector - `0xc0d90`
 
@@ -4399,7 +4446,7 @@ increments. Map 1 points to stock data; maps 2-5 point to allocated copies
 initialized with identical bytes in the first bench image. Calibration values are
 edited manually after the identical-map bench gate.
 
-`tools/mapkit/validate_map_switching.py` validates the live 449-map graph and the
+`tools/mapkit/validate_map_switching.py` validates the live 450-map graph and the
 481-map common projection without writing files. The tracked definitions contain
 48 calibration tables and 11 masked views. The switchable subset contains 40
 calibration tables plus ten ignition bit-7 views, for 50 slot-specific editor
@@ -4634,10 +4681,10 @@ producer and conversion of `0xFFFF102C` are unresolved. Map values use centered 
 128 in code. The candidate engineering conversion `(raw - 128) * 0.5 degrees` comes
 from the HR A2L and homologous intake-cam diagnostics and requires hardware validation.
 
-The strict JK08A projection contains 1565 source claims and 5747 `RESTS_ON` edges.
+The strict JK08A projection contains 1580 source claims and 5843 `RESTS_ON` edges.
 The exact audit reports zero missing, extra, duplicate, unresolved, downgraded, or
-ungrounded claims. The catalog contains 356 `code` maps and 93 `candidate` maps;
-semantics are present for 436 maps and scaling for 398.
+ungrounded claims. The catalog contains 358 `code` maps and 92 `candidate` maps;
+semantics are present for 438 maps and scaling for 400.
 
 ## Next step
 
@@ -4656,15 +4703,15 @@ a prerequisite for this first test.
 
 The map-annotation backlog remains represented in ledger `JK08A.maps.csv`. The frozen
 positional worklist of 396 source positions has been processed in full, positions 0-395.
-The follow-up semantic pass is built from the current projection, which contains 13
-`candidate` maps without semantics in 10 accessor-connected components. Of these,
-one map contains changing values and 12 are flat. Map-analysis results are recorded
+The follow-up semantic pass is built from the current projection, which contains 12
+`candidate` maps without semantics in 9 accessor-connected components. Every open
+map is flat. Map-analysis results are recorded
 as findings in `JK08A.findings.csv`, not written to the ledger: the ledger is a graph
 projection, so direct edits would not survive regeneration.
 
-Column `vals` partitions the follow-up work: 12 of the 13 open maps contain one value
-across the entire table. These comprise ten maps with `0..0`, one with `32768..32768`,
-and one with `65535..65535`. `tools/mapkit/show.py` prints a map with its axes
+Column `vals` partitions the follow-up work: ten maps contain `0..0`, one contains
+`32768..32768`, and one contains `65535..65535` across the entire table.
+`tools/mapkit/show.py` prints a map with its axes
 (`show.py b33a` prints the grid in physical units together with both axes).
 
 The entry-point inventory is complete: 39 regional entry points are listed and all 35
@@ -4702,11 +4749,10 @@ transcription:
   `0x268a4` saturates cells >= `0x80`, so the value cannot represent degrees (see
   "Rotation-monitor thresholds").
 
-Follow-up worklist for 13 `candidate` maps without semantics:
+Follow-up worklist for 12 `candidate` maps without semantics:
 
-1. Trace changing singleton `0x13D14` before the flat-only components. Classify the
-   result from its complete consumer arithmetic; catalog names and value shapes remain
-   supporting evidence only.
+1. Trace flat singleton `0xD40E` through `FUN_000B7B98`, its output destination,
+   downstream readers, and calibration gates. Flat contents do not establish semantics.
 2. Record a finding in `JK08A.findings.csv` (map semantics, confidence, and units) and,
    when its axis is resolved, in `JK08A.axes.csv`; record the name and category in
    `JK08A.overrides.toml`. `emit_def.py` builds the definition on the next run. Verify

@@ -743,6 +743,34 @@ format = "0.0"
 fine = 0.5
 coarse = 2.0
 
+[table.00013d14]
+name = "Inverse Signed-Surface Coordinate (0x13D14)"
+category = "Internal Calculations"
+order = 115
+format = "0.0"
+fine = 1
+coarse = 10
+
+[axis.00013d14]
+name = "Scaled First-Channel Raw Coordinate"
+format = "0.0"
+fine = 1
+coarse = 10
+
+[axis.00018916]
+name = "Scaled First-Channel Raw Coordinate (Duplicate)"
+format = "0.0"
+fine = 1
+coarse = 10
+
+[table.0000e28e]
+name = "Alternate Inverse Signed Surface - raw s16 (0xE28E)"
+category = "Internal Calculations"
+order = 116
+format = "0"
+fine = 1
+coarse = 256
+
 [table.00012d22]
 name = "Batch Scale Multiplier A - raw u8 (0x12D22)"
 category = "Internal Calculations"
