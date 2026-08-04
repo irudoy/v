@@ -75,6 +75,10 @@ under `defs/`, separately from `reference/`:
 - `JK08A.limiters.md` is the code-grounded arbitration model for the main and
   stationary engine-speed fuel cuts and the separate rotational-speed request
   limiter, including periodic execution order and exact fuel-mask precedence.
+- `JK08A.ignition-output.md` is the exact late-retard software contract from
+  final signed timing state through both APC compare schedulers. It defines the
+  accepted `110..117` command window, secondary-command overflow proof, the
+  diagnostic publication boundary, and the required P0335 fallback-mode gate.
 - The tracked common `JK08A.xml` and `JK08A.xdf` include the five-slot
   map-switching projection under the unchanged `JK08A` identity.
   `../patches/map-switching-layout.toml` owns the

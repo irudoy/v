@@ -12,9 +12,11 @@ publication to `0xFFFF22E0`.
 The operational conditions and ordering are established by executable code.
 External diagnostic names are used only where an exact ROM descriptor or a
 structured Nissan-family diagnostic definition connects the code to that
-name. Two shared status inputs have no direct or computed-address software
-writer in the whole-program p-code census; their upstream physical sources
-remain unresolved.
+name. The two shared prerequisite bits and the direct composite-status seed
+are cleared by normal startup and recovery initialization. A whole-program
+p-code census and the recovered DMAC configuration find no path that can set
+any of them, making the two contributors and the direct seed stock-inert in the
+proven application lifecycle.
 
 ## Exact evaluation and mask order
 
@@ -31,15 +33,15 @@ values are discarded; they only update state consumed by later calls.
 | 4 | `0x0004F324` | stationary engine-speed fuel cut | live |
 | 5 | `0x0004F494` | P1217 engine-overtemperature fuel inhibit | live |
 | 6 | `0x0004F662` | BFS-threshold hysteresis state | stock-inert |
-| 7 | `0x0004F736` | diagnostic record `0x129` plus RPM inhibit | conditional |
+| 7 | `0x0004F736` | dual-bank MAF diagnostic summary plus RPM inhibit | conditional |
 | side effect | `0x0004F758` | low-speed BFS/RPM latch update | return discarded |
 | 8 | `0x0004F9C4` | transition-window, low-speed RPM inhibit | conditional |
 | side effect | `0x0004F7E0` | low-speed RPM exposure accumulator update | return discarded |
 | 9 | `0x0004F958` | sustained low-speed RPM inhibit | live |
-| 10 | `0x000507CE` | composite status/RPM inhibit | conditional |
-| 11 | `0x00050920` | diagnostic-phase RPM inhibit | conditional |
-| 12 | `0x0004FAA0` | shared status byte bit 1 | unresolved source |
-| 13 | `0x0004FAAC` | status-gated engine-running inhibit | unresolved enable source |
+| 10 | `0x000507CE` | composite status/RPM inhibit | conditional; bit-7 seed stock-inert |
+| 11 | `0x00050920` | critical ECM/ETC diagnostic RPM inhibit | conditional |
+| 12 | `0x0004FAA0` | shared status byte bit 1 | stock-inert lifecycle-zero input |
+| 13 | `0x0004FAAC` | status-gated engine-running inhibit | stock-inert lifecycle-zero prerequisite |
 | 14 | `0x00050A60` | CAN-derived requested RPM ceiling | conditional |
 | 15 | `0x00050B3C` | P0011/P0021 intake-valve-timing fault RPM inhibit | conditional |
 
@@ -135,16 +137,37 @@ function. If the bit is externally nonzero, the set-state comparison with zero
 clears it on the next evaluation. The branch is structurally present but
 stock-inert.
 
-### Diagnostic record 0x129 RPM branch
+### Dual-bank MAF diagnostic summary RPM branch
+
+Runtime record `0x129` is an extension summary rather than a ROM-backed DTC
+descriptor. `0x00097EB4` starts both status-byte accumulators at zero, ORs
+byte 1 and byte 2 from these six exact JK08A runtime records, and writes those
+status bytes to `0xFFFF5A94..0xFFFF5A95` through a three-byte block copy. The
+fuel path does not consume byte 0 at `0xFFFF5A93`:
+
+| Runtime index | Descriptor | DTC | Factory-manual title |
+|---:|---:|---|---|
+| `0xBA` | `0x00019C18` | P0101 | MAF SEN/CIRCUIT-B1 |
+| `0xBB` | `0x00019C24` | P0102 | MAF SEN/CIRCUIT-B1 |
+| `0xBC` | `0x00019C30` | P0103 | MAF SEN/CIRCUIT-B1 |
+| `0x07` | `0x000193B4` | P010B | MAF SEN/CIRCUIT-B2 |
+| `0x08` | `0x000193C0` | P010C | MAF SEN/CIRCUIT-B2 |
+| `0x09` | `0x000193CC` | P010D | MAF SEN/CIRCUIT-B2 |
+
+The exact descriptors establish the six DTC identities. The homologous VQ35HR
+factory manual supplies the bank-specific titles. Initializer `0x0007EBEC`
+clears record `0x129` within its `0x157`-record pass; periodic diagnostic
+dispatcher `0x0007BFC4` later invokes the group-summary builder. A complete
+2,315-function p-code pass found the exact consumer and block-copy boundary and
+found no unresolved address candidate. The initialization loop and summary
+builder are the only recovered write paths for this extension record.
 
 `0x0003C3AC` calls `diagnostic_record_byte1_bit7_predicate(0x129)` and writes
-the result to producer `0xFFFF2449.bit7`; the periodic snapshot copier moves it
-to `0xFFFF2448.bit7`. `0x0004F736` returns true when that snapshot bit is set
-and `0xFFFF11B2 >= 0xC0`, or 2400 RPM in the code-proven RPM/12.5 domain.
-
-Record index `0x129` is one beyond the highest exact JK08A DTC descriptor index
-`0x128`. It is therefore retained as an operational runtime-record identifier,
-not assigned a DTC name.
+the ORed MAF-fault result to current state `0xFFFF2449.bit7`; the periodic
+snapshot copier moves it to `0xFFFF2448.bit7`. `0x0004F736` returns true when
+that snapshot bit is set and `0xFFFF11B2 >= 0xC0`, or 2400 RPM in the
+code-proven RPM/12.5 domain. Any of the six MAF records can therefore request
+the full global fuel-inhibit mask at or above 2400 RPM.
 
 ### Transition-window, low-speed RPM branch
 
@@ -192,7 +215,8 @@ global contributor.
 
 `0x000507CE` ORs three independently proven subpaths:
 
-1. Direct seed `0xFFFF41EA.bit7`.
+1. Direct seed `0xFFFF41EA.bit7`, which is lifecycle-zero in the stock
+   application.
 2. `0xFFFF245D.bit6`, `0xFFFF2458.bit5`, and RPM state
    `0xFFFF2489.bit0`, which sets at 1800 RPM and retains through 1600 RPM.
 3. Either `0xFFFF24CE.bit2` or `0xFFFF24D2.bit0`, plus high-RPM state
@@ -204,23 +228,86 @@ Two calls to the diagnostic record-state helper use sentinel index `-1` and
 always return zero. The enclosed `0xFFFF1038` comparison branch is therefore
 unreachable in this executable.
 
-### Diagnostic-phase RPM branch
+Primary startup initializer `0x00027AC0` clears `0xFFFF41EA` inside effective
+span `[0xFFFF261C,0xFFFF4514)`. Conditional clear service `0x0002FC24` and
+recovery loop `0x00034B70` clear it again inside
+`[0xFFFF1000,0xFFFF5CF4)`. A whole-program p-code pass covers all 2,315
+functions without a decompilation failure or unresolved address candidate for
+the byte. Its only runtime writers are `0x0007C166`, `0x00050920`, and
+`0x0007F870`; their masks and whole-byte writes preserve bit 7. Recovered DMAC
+destinations are limited to `0xFFFF86CC..0xFFFF87CB`. The direct seed therefore
+remains zero and cannot activate this contributor in the proven stock
+application lifecycle. The other two subpaths remain conditional and live.
 
-`0x0007D856` increments `0xFFFF4B0E` only while the exact diagnostic phase
-bits in `0xFFFF41EA`, `0xFFFF422E`, and `0xFFFF422F` are active. Otherwise it
-resets the counter.
+### Critical ECM/ETC diagnostic RPM branch
 
-`0x00050920` can set `0xFFFF41EA.bit6` only while `0xFFFF4B0E > 4` and
-`0xFFFF41EA.bit5` is set. The RPM/25 state activates at 2525 RPM, clears at or
-below 2000 RPM, and retains its previous value from 2025 through 2500 RPM.
-The diagnostic phase is code-proven; its factory test name is unresolved.
+`0x0007C166` recomputes `0xFFFF41EA.bit5` as the OR of ten exact diagnostic
+record predicates:
+
+| Runtime index | Descriptor | DTC | Attribute |
+|---:|---:|---|---:|
+| `0x4E` | `0x00019708` | P0605 | `0x2241` |
+| `0x51` | `0x0001972C` | P0605 | `0x2241` |
+| `0x6F` | `0x00019894` | P2119 | `0x2242` |
+| `0x121` | `0x0001A0EC` | P1238 | `0x2242` |
+| `0x70` | `0x000198A0` | P2119 | `0x2242` |
+| `0x122` | `0x0001A0F8` | P1238 | `0x2242` |
+| `0x72` | `0x000198B8` | P0603 | `0x00A0` |
+| `0x73` | `0x000198C4` | P0605 | `0x2260` |
+| `0x77` | `0x000198F4` | P0605 | `0x2261` |
+| `0x79` | `0x0001990C` | P0605 | `0x0081` |
+
+Predicate `0x0007C3B4` requires record byte 1 bit 7 and additionally requires
+either byte 1 bit 5 or descriptor-attribute bit `0x2000`. The exact JK08A
+descriptors identify P0603/P0605 ECM faults and P2119/P1238 ETC actuator faults;
+the homologous factory manual names them ECM BACK UP/CIRCUIT, ECM, ETC ACTR-B1,
+and ETC ACTR-B2 respectively.
+
+`0x000804CE` produces the three qualification latches consumed by
+`0x0007D856`:
+
+```text
+0xFFFF422E.bit7 sets once RPM/12.5 >= 0x20             # 400 RPM
+0xFFFF422F.bit4 sets once raw coolant - selected raw temperature >= 20
+0xFFFF422F.bit5 sets once raw coolant >= 0x78          # 70 deg C under raw-50
+```
+
+The first latch proves that engine-running speed has been reached. The third is
+a coolant warm-up latch. The second compares exact raw coolant snapshot
+`0xFFFF1071` with selected-temperature snapshot `0xFFFF106E`; the selected
+value normally equals coolant and can instead become the application-lifecycle
+zero fallback through selector `0x0003967A`. These bits latch until diagnostic
+reset service `0x00080B54` clears them.
+
+`0x0007D856` resets `0xFFFF4B0E` only when the critical diagnostic aggregate
+bit is clear. While that bit is set, it increments the counter with saturation
+only when all three qualification latches are set; if any latch is clear, the
+counter holds its previous value. `0x00050920` requires the counter to exceed
+stock threshold four and the aggregate bit to remain set. Its RPM/25 state in
+`0xFFFF41EA.bit6` activates at 2525 RPM, clears at or below 2000 RPM, and
+retains its previous value from 2025 through 2500 RPM.
+
+A complete p-code pass over all 2,315 functions found no unresolved address
+candidate for `0xFFFF41EA`, `0xFFFF422E`, or `0xFFFF422F`. Only
+`0x0007C166` changes `0xFFFF41EA.bit5`, and every runtime writer of that byte
+preserves bit 7. The other runtime writers of the qualification bytes preserve
+bits 7, 4, and 5 respectively.
 
 ### Shared status bit branch
 
-`0x0004FAA0` directly returns `0xFFFF418C.bit1`. The whole-program exact and
-computed-address p-code census finds readers but no software writer capable of
-producing this bit. It is retained as a shared status input without an assigned
-physical name.
+`0x0004FAA0` directly returns `0xFFFF418C.bit1`. Primary startup initializer
+`0x00027AC0` clears the byte inside effective span
+`[0xFFFF261C,0xFFFF4514)`. Conditional clear service `0x0002FC24` and recovery
+loop `0x00034B70` clear it again inside `[0xFFFF1000,0xFFFF5CF4)`.
+
+The whole-program p-code census covers all 2,315 functions without a
+decompilation failure. It finds no exact or computed-address store to
+`0xFFFF418C`. The sole unresolved indexed store anchored at `0xFFFF4184` has
+only offsets `0x54` and `0x65`, resolving to `0xFFFF41D8` and `0xFFFF41E9`.
+The recovered DMAC destinations are limited to
+`0xFFFF86CC..0xFFFF87CB`. Consequently bit 1 remains zero and this contributor
+returns false throughout the proven stock application lifecycle. No physical
+name is assigned to the inactive bit.
 
 ### Status-gated engine-running branch
 
@@ -240,8 +327,13 @@ enable condition fails.
 
 `0x0003ECE8` is the exact producer of `0xFFFF2499.bit1`. Direct writers of
 `0xFFFF2494` modify bits 0, 1, 2, 3, 6, and 7 while preserving bit 4. The
-whole-program computed-address census finds no writer for bit 4, so its
-upstream source remains unresolved.
+whole-program computed-address census finds no additional writer capable of
+reaching the byte. Startup initializer `0x00027C50` clears it inside
+`[0xFFFF1000,0xFFFF261C)`, and `0x0002FC24` plus `0x00034B70` clear it again
+inside `[0xFFFF1000,0xFFFF5CF4)`. The recovered DMAC destinations do not
+overlap either span. Bit 4 therefore remains zero in the proven stock
+application lifecycle, the enable conjunction fails, bits 2 and 3 clear, and
+the contributor returns false.
 
 ### CAN-derived requested RPM ceiling
 
@@ -335,13 +427,12 @@ The exact executable establishes all 15 contributors, both side-effect-only
 calls, their stock constants and state transitions, replacement precedence,
 and the final six-bit mask. Remaining boundaries are:
 
-- producer and physical meaning of `0xFFFF418C.bit1`;
-- producer and physical meaning of `0xFFFF2494.bit4`;
-- factory name of the diagnostic phase represented by `0xFFFF41EA.bit5` and
-  `0xFFFF4B0E`;
-- physical source behind runtime record `0x129`;
+- physical mode behind the alternate selected-temperature path used by
+  `0xFFFF422F.bit4`;
 - originating module and bus-level identity of internal CAN key `0x2EE0`;
 - target channel-to-cylinder order and electrical injector behavior.
 
-These unresolved sources do not change the code-proven arbitration or the
-stock liveness classification above.
+Execution outside the analyzed application or an external debug bus master
+could alter internal RAM, but no such configuration path is present in the
+recovered stock lifecycle. The remaining boundaries do not change the
+code-proven arbitration or stock liveness classification above.

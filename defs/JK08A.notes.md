@@ -2493,6 +2493,19 @@ The normal `0x4df82` transform is `ROM8[0x83d5] - ffff11d4`, with
 `ROM8[0x83d5]=110`. The result at `ffff2022` is both the primary APC command and
 the common source for UDS DIDs `0x1107..0x110a`. Function `0x4e080` calculates a
 nonnegative secondary offset from `120 - ffff237a` and an optional ROM subtraction.
+The normal final-coordinate clamp uses signed bounds `50` and `-7` from
+`ROM8[0x821e]` and `ROM8[0x8221]`. A homologous Nissan diagnostic profile defines
+the corresponding DID conversion as `110 - raw`, so normal commands `110..117`
+represent the computed coordinate `0..-7 deg BTDC`. The diagnostic byte is a
+commanded ECM value rather than a physical-angle measurement.
+
+The exact reset-offset producer is also closed. Function `0x4c1e4` bounds
+`ffff1874` to `6..114`, calculates the map-derived candidate `ffff1875`, and writes
+`ffff2406=min(ffff1874,ffff1875)` or diagnostic value `24`. Scheduler `0x20dfe`
+copies the byte at matching offset `0x4a` from the `ffff23bc..ffff2447` current
+block to snapshot `ffff237a`. Stock `ROM8[0x8649]=0`, so `0x4e080` produces an
+offset in `6..120`. A newly selected primary target no greater than `117` therefore
+produces a secondary command no greater than `237`, below the `uint8` boundary.
 
 Capture handler `0x2b768` derives a wrap-corrected event interval and stores its
 unsigned quotient by 12 at `ffff22bc`. Schedulers `0x2a892` and `0x2acba` split the
@@ -2505,6 +2518,15 @@ Firmware structure does not establish the external driver polarity, which compar
 edge corresponds to spark, the physical degree scale, or cylinder-to-pin continuity
 on the target ECU.
 
+Both compare schedulers select alternate behavior while `ffff24c9.bit6` is set.
+Periodic scheduler `0x20dfe` copies this bit from current state `ffff24cf`; function
+`0x99a48` can set it from the P0335 runtime-record pair when the P0340 and P0345
+pairs do not select their companion modes. This is a crank/cam-position diagnostic
+fallback path, not the normal command contract. A late retard-only adapter at the
+final `0x4e198` consumer must pass the stock command through whenever this bit is
+set. On the normal bit-clear path, selecting `max(stock_command,target)` with a
+validated target in `110..117` is the admitted static Rolling RPM Hold contract.
+
 Transient table `0x11f6a` has a separate closed operational role. Function `0x7b650`
 looks it up, scales the result into `ffff1393`, and `0x7b7c0` uses
 `32*ffff1393` with `32*ROM8[0x8383]` hysteresis to maintain `ffff2478.bit6`.
@@ -2514,9 +2536,10 @@ compare is established. Candidate table `0x1202e` writes `ffff1ee0` and `ffff257
 no external readers connect either sink to the command path.
 
 Static code establishes the software command path through both APC compare
-registers. Hardware validation remains required for physical angle units, pulse
-polarity, cylinder outputs, the physical qualifier of `0x147da`, and the source
-semantics of `ffff237e` and `ffff237a`.
+registers, the reset-offset range, and the fail-closed position-diagnostic gate.
+Hardware validation remains required for the actual crank angle, pulse polarity,
+cylinder outputs, the physical qualifier of `0x147da`, and the source semantics of
+`ffff237e`.
 
 
 ### Rate-limited raw-state and paired-output component (accessor FUN_0006205c)

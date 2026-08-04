@@ -46,6 +46,7 @@ addr,name,note
 000259e4,diagnostic_record_byte2_fault_predicate,Test runtime diagnostic record byte 2 bits 5 or 6 with minus-one sentinel support
 00025e20,diagnostic_record_byte1_bit7_predicate,Test runtime diagnostic record byte 1 bit 7 with minus-one sentinel support
 00030c4c,nissan_service_30_output_control,Nissan service 0x30 Output Control handler including IOLID 0x0c Power Balance
+0003c3ac,dual_bank_maf_diagnostic_coordinator,Publish dual-bank MAF diagnostics and record-0x129 summary state
 0004eba2,injector_channel_pulse_builder,Per-channel pulse calculation with aggregate-mask override
 0004ed88,fuel_output_inhibit_coordinator,Aggregate exactly 15 global Boolean conditions with DFCO count Power Balance and ETC masks
 0004f050,vehicle_speed_cut_rpm_gate_update,Update the 4500 and 5000 RPM hysteresis gate for vehicle-speed fuel cut
@@ -53,13 +54,13 @@ addr,name,note
 0004f19c,vehicle_speed_fuel_cut_state_machine,Coarse vehicle-speed fuel-cut state with RPM gate
 0004f494,engine_overtemperature_fuel_inhibit,P1217 engine-overtemperature RPM-gated fuel inhibit
 0004f662,stock_inert_bfs_hysteresis_inhibit,All-zero stock BFS-threshold hysteresis contributor
-0004f736,diagnostic_record_129_rpm_inhibit,Runtime diagnostic record 0x129 RPM-gated fuel inhibit
+0004f736,dual_bank_maf_fault_rpm_inhibit,Dual-bank P0101/P0102/P0103 and P010B/P010C/P010D summary RPM fuel inhibit
 0004f758,low_speed_bfs_rpm_latch_update,Update low-speed BFS-derived RPM eligibility latch with discarded return
 0004f7e0,low_speed_rpm_exposure_accumulator_update,Update sustained low-speed RPM exposure accumulator with discarded return
 0004f958,low_speed_sustained_rpm_inhibit,Sustained low-speed RPM full fuel-inhibit state
 0004f9c4,transition_window_low_speed_rpm_inhibit,Transition-window warm low-speed RPM fuel inhibit
-0004faa0,shared_status_bit1_fuel_inhibit,Direct shared status byte bit 1 fuel-inhibit contributor
-0004faac,status_gated_engine_running_inhibit,Status-gated engine-running fuel-inhibit contributor
+0004faa0,shared_status_bit1_fuel_inhibit,Stock-inert lifecycle-zero shared status bit 1 fuel-inhibit contributor
+0004faac,status_gated_engine_running_inhibit,Stock-inert lifecycle-zero-gated engine-running fuel-inhibit contributor
 0004fb5e,boolean_to_six_channel_mask,Convert Boolean cutoff request to mask 0x3f
 0004fbe2,dfco_cut_request,Edge-sensitive DFCO cut-request evaluator
 0004fe9c,dfco_entry_delay_select,Select two-stage DFCO entry delay
@@ -68,8 +69,8 @@ addr,name,note
 000503e0,dfco_state_machine,Five-state DFCO machine and injector-event release tail
 00050766,rotate_six_channel_mask,Rotate one-hot mask through six channels
 0005079c,count_to_inhibit_mask,Map clamped channel count to six-channel inhibit mask
-000507ce,composite_status_rpm_inhibit,Combine direct low-RPM and high-RPM status-gated fuel-inhibit paths
-00050920,diagnostic_phase_rpm_inhibit,Diagnostic-phase elapsed-count RPM fuel inhibit
+000507ce,composite_status_rpm_inhibit,Combine a lifecycle-zero direct seed with two live status-gated RPM fuel-inhibit paths
+00050920,critical_ecm_etc_fault_rpm_inhibit,Critical P0603/P0605/P2119/P1238 qualified RPM fuel inhibit
 0005096c,etc_actuator_fault_inhibit_mask,Build post-replacement P2119 or P1238 RPM-shaped inhibit mask
 000509a0,etc_fault_staged_rpm_mask,Map RPM/25 to staged six-channel ETC fault mask
 000509ea,etc_fault_low_speed_full_mask,Add a full ETC fault mask under the low-speed status gate
@@ -79,7 +80,15 @@ addr,name,note
 00050a60,can_requested_rpm_ceiling_inhibit,CAN-derived requested RPM ceiling fuel inhibit
 00050b3c,intake_valve_timing_fault_rpm_inhibit,P0011 or P0021 qualified RPM fuel inhibit
 00056fc0,fuel_output_override_word,Produce masked-channel override word ffff2436
-0007d856,diagnostic_phase_counter_update,Update elapsed counter for the fuel-inhibit diagnostic phase
+0007bfc4,diagnostic_periodic_dispatcher,Periodic diagnostic coordinator and group-summary dispatch
+0007c166,critical_ecm_etc_fault_aggregate_update,Update the P0603/P0605/P2119/P1238 aggregate status bit
+0007f870,diagnostic_status_state_update,Update diagnostic status state while preserving ffff41ea bits 5 through 7
+0007c3b4,critical_diagnostic_record_predicate,Test critical runtime-record status and descriptor attribute
+0007d856,critical_diagnostic_qualification_counter_update,Update qualification counter for the critical diagnostic RPM inhibit
+0007ebec,diagnostic_runtime_records_init,Initialize 0x157 runtime diagnostic records including extension summaries
+000804ce,diagnostic_readiness_latches_update,Update engine-running temperature-difference and coolant-warm diagnostic latches
+00080b54,diagnostic_state_reset,Reset runtime diagnostic records and readiness latches
+00097eb4,diagnostic_group_summary_update,Build extension runtime-record summaries including dual-bank MAF record 0x129
 0006efbc,dfco_upstream_mode_update,Update upstream DFCO mode or eligibility bit 5
 0008c3fa,dfco_upstream_aux_gate,Evaluate auxiliary gate for upstream DFCO mode
 000c4ace,can_2ee0_payload_decoder,Decode internal CAN dispatch key 0x2ee0 including requested RPM ceiling byte
@@ -104,8 +113,10 @@ addr,name,note
 0005b7ec,pulse_affine_floor_transform,Apply the saturating affine floor to a compensated pulse word
 00028af8,event_interval_snapshot_a,Measure a wrap-corrected event interval and publish the value shifted right by five
 00028b5c,event_interval_snapshot_b,Measure the second wrap-corrected event interval and publish the value shifted right by five
+00028dc8,apc_command_phase_normalizer,Normalize command decade and remainder across APC position events
 00028e7c,split_u8_by_ten,Split an unsigned byte into quotient and remainder modulo ten
 0002a892,apc_set_compare_scheduler,Convert the primary timing command into an APC GR11A compare event
+0002ab24,apc_set_compare_continuation,Continue normal APC GR11A scheduling across position events
 0002acba,apc_reset_compare_scheduler,Convert the offset timing command into an APC GR11B compare event
 0002b768,capture_interval_update,Normalize the captured engine-event interval and publish its division by twelve
 000493e8,knock_timing_state_coordinator,Update knock and high-detonation timing state and publish the hot-map term
@@ -116,6 +127,7 @@ addr,name,note
 0004afdc,signed_timing_state_accumulator,Combine mode-selected base and correction terms into signed timing state
 0004bdc2,timing_state_compositor,Compose the selected timing state and publish the bounded byte
 0004c136,timing_state_latch,Latch the active timing-state byte for the nonlinear transition controller
+0004c1e4,apc_reset_offset_source_builder,Build the bounded source for the APC reset-edge command offset
 0004d888,periodic_timing_coordinator,Run the ordered periodic timing calculation stages
 0004d99c,event_timing_correction_builder,Build the signed engine-event timing correction from map and state inputs
 0004dbe8,final_timing_coordinate_builder,Apply mode-dependent limits and publish the final timing coordinate
@@ -127,6 +139,7 @@ addr,name,note
 00063f30,nonlinear_transition_controller,Update the bounded Q8 transition state through reciprocal curves
 0007b650,transient_threshold_builder,Scale the transient calibration lookup into the runtime threshold byte
 0007b7c0,transient_hysteresis_state_update,Apply the scaled transient threshold and hysteresis to the state bit
+00099a48,position_diagnostic_apc_mode_update,Update the P0335 P0340 P0345 fallback mode used by APC schedulers
 0004f282,main_rpm_fuel_cut_state_machine,Apply calibrated activation and release thresholds to the main full fuel-cut state
 0004f324,stationary_rpm_fuel_cut_state_machine,Accumulate stationary readiness and apply the low-speed full fuel-cut hysteresis
 0007584e,rotational_speed_request_limiter,Build the calibrated rotational-speed signed request-limit candidate

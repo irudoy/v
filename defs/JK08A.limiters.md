@@ -195,5 +195,6 @@ override/fallback paths through `FUN_0004EBA2`, `FUN_00052034`, and
 Static code therefore establishes a hard six-channel fuel-output path for main and
 stationary RPM cut, and a separate softer signed-request path for `0x0942C`. Hardware
 validation remains required for the physical throttle action, exact `0x0942C` scale,
-external injector-driver behavior, channel-to-cylinder order, and the upstream source
-of the two unresolved shared status bits in the global contributor group.
+external injector-driver behavior, and channel-to-cylinder order. The two shared-status
+prerequisites are lifecycle-zero and stock-inert under the
+recovered startup, runtime, recovery, and DMAC paths.
