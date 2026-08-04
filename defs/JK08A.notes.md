@@ -4471,7 +4471,9 @@ The formal contract is `patches/map-switching-selector.md`.
 manifest, `patches/map_switching_layout.py` validates it against the exact stock ROM,
 and `patches/map_switching_selector.py` is the executable selector and calibration
 transaction model. `patches/map_switching_assembly.py` validates the address, literal,
-ABI, and delay-slot contract of implemented SH source slices. The selector provides
+ABI, and delay-slot contract of implemented SH source slices and independently
+decodes control transfers and PC-relative effective addresses from the locked
+machine words. The selector provides
 five slots. A valid gesture contains one through five `SET -> CANCEL -> SET` pulses
 and commits only on the final SET release. Any unexpected transition, timeout, sixth
 pulse, invalid state, or ASCD enable aborts the gesture and retains the validated
@@ -4510,13 +4512,25 @@ The implementation boundary is statically bounded:
 - `patches/map-switching-adapter-helper.s` owns `0xD2270..0xD229F`, and
   `patches/map-switching-adapters.s` owns `0xD2300..0xD23FF`. Ghidra 12.1.2
   assembles and round-trip decodes 59 instructions and 68 literal bytes. The two raw
-  blobs are locked by SHA-256 in the layout. Ghidra SuperH p-code passes 47/47 cases
-  over 676 executed instructions: all five slots for all six families, indices 5 and
+  blobs are locked by SHA-256 in the layout. The adapter blob is
+  `a938e1334e7850a0c368c50e98dbbdf67bc2589524025659a31d5b5f328c0e6c`.
+  Every adapter loads its stock-wrapper address before dispatch and uses `NOP` in
+  each `BRA` delay slot. This is required because an SH-2E PC-relative move in a
+  delayed branch slot uses the branch destination plus two as its PC basis. Ghidra
+  SuperH p-code passes 47/47 cases over 718 executed instructions: all five slots
+  for all six families, indices 5 and
   255 falling back to map 1, Cold Ignition and Bosch pass-through, unknown fuel-base
   pass-through, exact stock-wrapper destinations, and preservation of `r5..r15`, PR,
   GBR, MACH, and MACL. Comparison instructions may change the caller-clobbered T
   bit; every other SR bit remains unchanged. This path uses no radare2 and creates
   no ROM.
+- The complete machine-word audit covers all 387 final-runtime instructions: 34
+  delayed transfers with encoded `NOP` slots, 43 PC-relative references, 69 direct
+  branch targets, and 20 indirect control transfers. The startup-trampoline and
+  startup-selector-init sources add 13 alternative instruction instances under the
+  same checks. All nine source units rebuild through Ghidra with their locked hashes.
+  No additional delayed-slot instruction or misresolved PC-relative reference is
+  present.
 - `patches/map-switching-startup-wrapper.s` owns `0xD22A0..0xD22FF`, and
   `patches/map-switching-limiter-commit.s` owns `0xD3660..0xD375F`. The latter
   saves and restores exact SR, masks interrupts for every runtime write, fills both
@@ -4607,10 +4621,10 @@ Their locked frame counts are `10, 10`; a zero/zero pair remains the fail-closed
 disabled configuration. The deterministic in-memory composition
 applies all seven blobs, 14 hooks, 32 copies, and eight pointer tables. It changes
 5372 bytes inside the 5880-byte declared write set and has fixture SHA-256
-`499f25ed560bf8e5bc00138e29ceabf740d2f13303eb07604f2e11b537bebb16`.
+`e4ee7822f5bb10e6d884441cf22102e33ccbad3b28e489224df7969658a18c70`.
 It ties all 387 instruction byte pairs and ten code entries to their final
 absolute addresses. `EmulateMapSwitchingComposition.java` independently rebuilds
-that fixture from the exact Ghidra program and passes all 87 scenarios over 4530
+that fixture from the exact Ghidra program and passes all 87 scenarios over 4572
 instructions. Every scenario starts from a fresh complete image, all ten code
 entries execute, real pointer tables and copied calibration bytes are checked,
 the limiter restores exact SR, and the other paths preserve every non-T SR bit.

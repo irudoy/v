@@ -88,6 +88,9 @@ under `defs/`, separately from `reference/`:
   the live graph and verifies both tracked common definition files.
   The seven standalone assembly units pass 87 Ghidra p-code cases: 17 selector,
   47 adapter, 14 startup/limiter, and nine feedback cases.
+  An independent machine-word audit covers all 387 instructions, including 34
+  delayed transfers with encoded `NOP` slots, 43 PC-relative references, 69
+  direct branch targets, and 20 indirect control transfers.
   `../tools/ghidra/EmulateMapSwitchingComposition.java` repeats all 87 cases
   over 4572 instructions from the complete locked fixture, reaches all ten code
   entries at final addresses, and verifies the same SHA-256 and write boundary
