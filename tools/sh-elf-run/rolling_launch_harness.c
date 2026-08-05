@@ -22,6 +22,7 @@
 #define BRAKE_STATUS 0xffff2451U
 #define FUEL_CUT_STATUS 0xffff2497U
 #define IGNITION_OUTPUT 0xffff2022U
+#define APC_MODE_SNAPSHOT 0xffff24c9U
 
 #define PERIODIC_WRAPPER 0x000d3860U
 #define SELECTOR_ARBITER 0x000d3880U
@@ -192,6 +193,7 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
     ram_pointer(BRAKE_STATUS)[0] = 0;
     ram_pointer(FUEL_CUT_STATUS)[0] = 0;
     ram_pointer(IGNITION_OUTPUT)[0] = 0;
+    ram_pointer(APC_MODE_SNAPSHOT)[0] = 0;
     set_configuration(mode, enable_mask);
 }
 
@@ -892,6 +894,20 @@ static int run_ignition_cases(void)
 
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    ram_pointer(APC_MODE_SNAPSHOT)[0] = 0x40;
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    if (!invoke_ignition("ign-apc-fallback", 110, 110))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    ram_pointer(APC_MODE_SNAPSHOT)[0] = 0x20;
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    if (!invoke_ignition("ign-apc-bit-five", 110, 115))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 5);
     if (!invoke_ignition("ign-index-invalid", 110, 110))
         return 0;
@@ -997,13 +1013,13 @@ int main(void)
         return 1;
     if (!run_wrapper_cases())
         return 1;
-    if (case_count != 94U)
-        return fail_value("summary", "case_count", case_count, 94);
+    if (case_count != 96U)
+        return fail_value("summary", "case_count", case_count, 96);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
         "structural=11 gates=24 config=22 activation=5 active=9 "
-        "cooldown=4 ignition=13 wrappers=6 entries=5\n",
+        "cooldown=4 ignition=15 wrappers=6 entries=5\n",
         (unsigned long)case_count);
     return 0;
 }

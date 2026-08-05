@@ -9,7 +9,7 @@ rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd"
-expected_composition_sha256 = "7d4a642c1b19d5dc7267c388750997cf53aeb2bcaee65e4bdd68ed4f3512e2af"
+expected_composition_sha256 = "5361e008e7fd0b944e20e5f76a19c05f6c22fbe528841cca981f4f5e6ec18648"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
@@ -96,9 +96,9 @@ start = 0x000D3EA0
 end = 0x000D3F60
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "058b161ad9fb6c23e5374c1420cff6341fa18d02e116a9d836f7e01039dea1bc"
-instruction_count = 69
-data_bytes = 31
+expected_sha256 = "542aab5999c39903c6614daa4b44ca41a77fe37273ee57dc2c4390e53844311d"
+instruction_count = 73
+data_bytes = 35
 code_regions = ["ignition_adapter"]
 
 [[hook]]

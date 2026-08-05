@@ -241,7 +241,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `../patches/map-switching-payloads.toml` | Store the complete SHA-locked SH-2E assembly-unit spans as hexadecimal data for deterministic patcher use | tracked |
 | `../patches/rolling_launch.py` | Define the independent fail-closed Rolling Launch configuration, gate priority, `IDLE`/`ACTIVE`/`COOLDOWN` transitions, fuel-overlay actions, and retard-only ignition command rule | imported by tests and the composition validator; no ROM access |
 | `../patches/rolling_launch_layout.py` and `rolling-launch-layout.toml` | Lock the exact map-switching base endpoint, erased ROM allocation, dedicated RAM, periodic/selector/startup/ignition hooks, nine UDS DID pointers, default-disabled configuration, and final in-memory SHA-256 | stdout/library validation; no ROM write |
-| `../patches/rolling_launch_assembly.py` and `rolling-launch-payloads.toml` | Audit 751 SH7058S SH-2E instructions across three source units, require 16-bit instruction forms, ABI/literal/delay-slot contracts, and decode every control transfer and PC-relative reference from the SHA-locked Ghidra bytes | stdout; no ROM write |
+| `../patches/rolling_launch_assembly.py` and `rolling-launch-payloads.toml` | Audit 755 SH7058S SH-2E instructions across three source units, including the APC fallback-mode gate, require 16-bit instruction forms, ABI/literal/delay-slot contracts, and decode every control transfer and PC-relative reference from the SHA-locked Ghidra bytes | stdout; no ROM write |
 | `../patches/rolling_launch_compose.py` | Extend only the exact complete map-switching composition with Rolling Launch code, configuration, four hooks, and nine DID pointers through a 1876-byte closed write set; keep the default map mask zero and all checksum fields unchanged | stdout; no output-file option |
 | `../patches/apply_rolling_launch.py` | Accept only the exact checksum-valid complete ten-family map-switching stage-19 endpoint; install the SHA-locked Rolling Launch payload, four hooks, nine DIDs, and the Map 1-only RPM Hold test profile; recalculate all checksum domains and prove preservation outside the Rolling Launch and checksum write sets | derived ROM and `.md5`; non-overwriting |
 | `../patches/jk08a_checksums.py` | Calculate, verify, and recalculate JK03A/JK08A SUM16 and runtime XOR+SUM domains in dependency order | imported by the patcher and tests |
@@ -382,7 +382,7 @@ tools/sh-elf-run/run.sh --verbose
 
 It independently reproduces eight map-switching and three Rolling Launch locked
 payloads with GNU `sh-elf-as`, rebuilds both exact verification compositions,
-executes 116 map-switching and 94 Rolling Launch behavior cases, and requires the
+executes 116 map-switching and 96 Rolling Launch behavior cases, and requires the
 exact failed `AFAC D304` pair at `0xD2314` to stop with signal 4. The complete
 environment and the documented 31-bit simulator RAM relocation are in
 `sh-elf-run/README.md`.

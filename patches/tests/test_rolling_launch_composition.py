@@ -68,10 +68,10 @@ class RollingLaunchCompositionTest(unittest.TestCase):
         audit = rolling_launch_assembly.validate_instruction_semantics(
             self.layout, self.parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 751)
+        self.assertEqual(audit.instructions, 755)
         self.assertEqual(audit.delayed_transfers, 55)
-        self.assertEqual(audit.pc_relative_references, 64)
-        self.assertEqual(audit.direct_branches, 137)
+        self.assertEqual(audit.pc_relative_references, 65)
+        self.assertEqual(audit.direct_branches, 138)
         self.assertEqual(audit.indirect_transfers, 16)
 
     def test_payload_tamper_is_rejected_by_sha_lock(self):
@@ -98,7 +98,7 @@ class RollingLaunchCompositionTest(unittest.TestCase):
         ranges = rolling_launch_compose.composition_write_ranges(self.layout)
         self.assertEqual(sum(item.size for item in ranges), 1876)
         self.assertEqual(self.result.permitted_write_bytes, 1876)
-        self.assertEqual(self.result.changed_bytes, 1677)
+        self.assertEqual(self.result.changed_bytes, 1687)
         for left, right in zip(ranges, ranges[1:]):
             self.assertFalse(left.overlaps(right))
 
@@ -175,15 +175,15 @@ class RollingLaunchCompositionTest(unittest.TestCase):
     def test_source_counts_equal_manifest_totals(self):
         self.assertEqual(
             sum(item.instruction_count for item in self.layout.assembly_units),
-            751,
+            755,
         )
         self.assertEqual(
             sum(item.data_bytes for item in self.layout.assembly_units),
-            158,
+            162,
         )
         self.assertEqual(
             sum(item.instruction_count for item in self.parsed.values()),
-            751,
+            755,
         )
 
 

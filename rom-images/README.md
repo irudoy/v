@@ -269,9 +269,9 @@ candidate brake gate remain disabled.
 
 | File | Size | Source SHA-256 | Output SHA-256 | Status |
 |------|-----:|----------------|----------------|--------|
-| `23710-JK08A/mods/rolling-launch/1JK08A-20260804-map-switching-rolling-launch-rpm-hold-map1-test.bin` | 1,048,576 | `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1` | `f6ab51aeb005b49333656090df2287b7834596f473eb37a869436f5c63eadbf4` | software-verified; hardware untested |
+| `23710-JK08A/mods/rolling-launch/1JK08A-20260804-map-switching-rolling-launch-rpm-hold-map1-test.bin` | 1,048,576 | `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1` | `a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081` | software-verified; hardware untested |
 
-All six checksum references pass. The exact GNU SH-2E gate executes 210
+All six checksum references pass. The exact GNU SH-2E gate executes 212
 combined map-switching and Rolling Launch scenarios. Hardware validation must
 follow map-switching stages 15 through 19 and the staged procedure in
 `../patches/rolling-launch.md`.

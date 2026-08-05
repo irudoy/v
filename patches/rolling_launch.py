@@ -491,13 +491,18 @@ def step(state, inputs, calibration):
     return StepResult(active)
 
 
-def apply_ignition_command(state, calibration, stock_command):
-    """Apply the retard-only adapter rule and update diagnostic state."""
+def apply_ignition_command(
+    state, calibration, stock_command, apc_mode_snapshot=0
+):
+    """Apply the normal-mode retard rule and update diagnostic state."""
     if not 0 <= stock_command <= 0xFF:
         raise ValueError("stock ignition command must fit in uint8")
+    if not 0 <= apc_mode_snapshot <= 0xFF:
+        raise ValueError("APC mode snapshot must fit in uint8")
     effective = stock_command
     if (
-        _state_is_structurally_valid(state)
+        (apc_mode_snapshot & 0x40) == 0
+        and _state_is_structurally_valid(state)
         and state.phase == Phase.ACTIVE
         and state.active_mode_snapshot == Mode.RPM_HOLD_RETARD
         and calibration.is_valid()

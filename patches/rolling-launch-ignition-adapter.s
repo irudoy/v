@@ -4,7 +4,8 @@
 // diagnostic bytes in dedicated RAM. In valid mode 2 ACTIVE state it selects
 // max(stock_command, target_command), writes the effective byte back to the
 // exact stock diagnostic/secondary-edge source, and tail-jumps to 0x2A892.
-// Every inactive or invalid path tail-jumps with r4 unchanged.
+// Every inactive, invalid, or APC fallback-mode path tail-jumps with r4
+// unchanged. The fallback gate uses exact snapshot 0xFFFF24C9.bit6.
 
 .org 0x000D3EA0
 rolling_launch_ignition_adapter:
@@ -16,6 +17,10 @@ mov r4,r0
 mov.b r0,@r2
 add 0x1,r2
 mov.b r0,@r2
+mov.l @(rl_ign_apc_mode_address,pc),r3
+mov.b @r3,r0
+tst 0x40,r0
+bf rl_ign_tail
 mov.b @r1,r0
 cmp/eq 0x1,r0
 bf rl_ign_tail
@@ -80,7 +85,7 @@ mov.l @(rl_ign_stock_consumer,pc),r0
 jmp @r0
 nop
 
-.org 0x000D3F30
+.org 0x000D3F38
 rl_ign_state_address:
 .long 0xFFFF5D40
 rl_ign_config_address:
@@ -90,7 +95,7 @@ rl_ign_output_address:
 rl_ign_stock_consumer:
 .long 0x0002A892
 rl_ign_enable_masks:
-.long 0x000D3F44
+.long 0x000D3F4C
 rl_ign_enable_mask_bytes:
 .byte 0x01,0x02,0x04,0x08,0x10
 .align 2
@@ -98,3 +103,5 @@ rl_ign_magic:
 .word 0x524C
 rl_ign_integrity_markers:
 .long 0xADB3A55A
+rl_ign_apc_mode_address:
+.long 0xFFFF24C9

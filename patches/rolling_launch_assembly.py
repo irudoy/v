@@ -183,6 +183,24 @@ def _validate_ignition_abi(parsed):
         raise ValueError("ignition diagnostic store count differs")
     if texts.count("cmp/hs r2,r4") != 1:
         raise ValueError("ignition max(stock,target) comparison differs")
+    gate = [
+        "mov.l @(rl_ign_apc_mode_address,pc),r3",
+        "mov.b @r3,r0",
+        "tst 0x40,r0",
+        "bf rl_ign_tail",
+    ]
+    gate_start = next(
+        (
+            index
+            for index in range(len(texts) - len(gate) + 1)
+            if texts[index : index + len(gate)] == gate
+        ),
+        None,
+    )
+    if gate_start is None:
+        raise ValueError("ignition adapter lacks APC fallback-mode gate")
+    if gate_start > texts.index("cmp/eq 0x1,r0"):
+        raise ValueError("ignition APC fallback gate follows mode validation")
     registers = set()
     for statement in _instructions(parsed):
         registers.update(common.REGISTER_RE.findall(statement.text.lower()))
@@ -229,8 +247,9 @@ def _expected_long_literals():
             "rl_ign_config_address": 0x000D3F60,
             "rl_ign_output_address": 0xFFFF2022,
             "rl_ign_stock_consumer": 0x0002A892,
-            "rl_ign_enable_masks": 0x000D3F44,
+            "rl_ign_enable_masks": 0x000D3F4C,
             "rl_ign_integrity_markers": 0xADB3A55A,
+            "rl_ign_apc_mode_address": 0xFFFF24C9,
         },
     }
 

@@ -26,11 +26,11 @@ The implementation is bound to:
 - complete map-switching in-memory endpoint SHA-256
   `ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd`;
 - default Rolling Launch in-memory endpoint SHA-256
-  `7d4a642c1b19d5dc7267c388750997cf53aeb2bcaee65e4bdd68ed4f3512e2af`;
+  `5361e008e7fd0b944e20e5f76a19c05f6c22fbe528841cca981f4f5e6ec18648`;
 - exact checksum-valid map-switching stage-19 source SHA-256
   `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1`;
 - Map 1 RPM Hold hardware-test ROM SHA-256
-  `f6ab51aeb005b49333656090df2287b7834596f473eb37a869436f5c63eadbf4`.
+  `a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081`.
 
 ## Runtime contract
 
@@ -112,8 +112,12 @@ word stores. Abort from modes 1 or 2 invokes the existing limiter commit at
 shadow. Mode 0 performs no limiter write.
 
 The ignition adapter replaces the primary consumer literal at `0x4E198`. It
-records stock and effective command bytes, validates active mode, map enable,
-configuration integrity markers, and the per-map target range, then applies:
+records stock and effective command bytes, then reads exact APC mode snapshot
+`0xFFFF24C9`. Bit 6 selects a crank/cam position-diagnostic fallback path in
+both stock compare schedulers, so a set bit immediately tail-calls the stock
+consumer with the unchanged command. A clear bit permits validation of active
+mode, map enable, configuration integrity markers, and the per-map target
+range, followed by:
 
 ```text
 effective_command = max(stock_command, target_command)
@@ -121,8 +125,10 @@ effective_command = max(stock_command, target_command)
 
 The accepted target range is `110..117`. The adapter cannot advance the command
 below the stock value. It writes the effective byte to `0xFFFF2022` and
-tail-calls the displaced stock consumer at `0x2A892`. Physical ignition meaning
-and safe targets require CONSULT3P or bench correlation before enablement.
+tail-calls the displaced stock consumer at `0x2A892`. Other bits, including
+bit 5, do not activate the fail-closed gate. Physical spark angle, output-driver
+polarity, and safe combustion behavior require timing-light and bench
+correlation before enablement.
 
 ## Allocation and hooks
 
@@ -268,7 +274,7 @@ tools/sh-elf-run/run.sh --verbose
 It independently assembles the exact source with GNU `sh-elf-as --isa=sh2e`,
 requires byte identity with all Ghidra payloads, relocates only validated
 high-RAM `.long` literals for the simulator, preserves every new instruction
-byte and control-flow address, and executes 94 Rolling Launch cases in addition
+byte and control-flow address, and executes 96 Rolling Launch cases in addition
 to the existing map-switching gate.
 
 ## Hardware-test image
@@ -281,9 +287,9 @@ rom-images/23710-JK08A/mods/rolling-launch/
 ```
 
 It is derived from the exact checksum-valid stage-19 endpoint and differs from
-that source at 1,695 byte positions. Every change is inside the 1,876-byte
+that source at 1,705 byte positions. Every change is inside the 1,876-byte
 Rolling Launch composition write set or the 20 checksum-byte set; 18 checksum
-bytes change. The final image contains 751 locked Rolling Launch instructions,
+bytes change. The final image contains 755 locked Rolling Launch instructions,
 five entries, nine diagnostics, and valid stored checksum references.
 
 Reproduce and verify it with:
@@ -313,5 +319,5 @@ The hardware sequence is cumulative:
 
 Unexpected CAN loss, selector state, limiter shadow, DTC, fuel cut, RPM rise,
 or failure to return to `COOLDOWN` and then `IDLE` terminates the test. Ignition
-retard remains disabled until the physical APC command polarity and safe range
-are established separately.
+retard remains disabled until timing-light testing confirms the physical APC
+command direction and safe combustion behavior.

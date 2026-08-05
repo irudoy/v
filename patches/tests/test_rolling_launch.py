@@ -228,9 +228,22 @@ class RollingLaunchTest(unittest.TestCase):
 
         _, effective = rl.apply_ignition_command(active, calibration, 117)
         self.assertEqual(effective, 117)
+        _, effective = rl.apply_ignition_command(
+            active, calibration, 110, apc_mode_snapshot=0x40
+        )
+        self.assertEqual(effective, 110)
+        _, effective = rl.apply_ignition_command(
+            active, calibration, 110, apc_mode_snapshot=0x20
+        )
+        self.assertEqual(effective, 115)
         inactive = dataclasses.replace(active, phase=rl.Phase.COOLDOWN)
         _, effective = rl.apply_ignition_command(inactive, calibration, 110)
         self.assertEqual(effective, 110)
+
+        with self.assertRaisesRegex(ValueError, "APC mode snapshot"):
+            rl.apply_ignition_command(
+                active, calibration, 110, apc_mode_snapshot=0x100
+            )
 
 
 if __name__ == "__main__":

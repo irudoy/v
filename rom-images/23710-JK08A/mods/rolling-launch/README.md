@@ -13,8 +13,8 @@ a road-test image.
 
 ROM hashes:
 
-- SHA-256: `f6ab51aeb005b49333656090df2287b7834596f473eb37a869436f5c63eadbf4`;
-- MD5: `705b67c5d7c57bc3baba3c0b2c762dd2`.
+- SHA-256: `a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081`;
+- MD5: `544288a26f96459d4fba24efa7dd661a`.
 
 ## Provenance
 
@@ -46,6 +46,10 @@ rearm_ticks           = 100
 configuration_hex     = 524c0101010000ff010000a0000100100008012c0064737373737300adb3a55a
 ```
 
+The installed ignition adapter checks `0xFFFF24C9.bit6` before all mode and
+target validation. A set bit preserves the stock command for the crank/cam
+position-diagnostic APC fallback path. Retard remains disabled in this profile.
+
 The current 10.24 ms tick is based on the `Pphi=20 MHz` board candidate, so the
 physical timeout and rearm estimates are 3.072 s and 1.024 s. The bounded tick
 counts are exact; the conversion to physical time requires hardware
@@ -54,13 +58,13 @@ measurement.
 ## Verification
 
 - all six stored checksum references match independent recalculation;
-- 1,695 bytes differ from stage 19, all inside the 1,876-byte Rolling Launch
+- 1,705 bytes differ from stage 19, all inside the 1,876-byte Rolling Launch
   write set or the 20 checksum bytes;
 - 18 checksum bytes change;
-- 751 Rolling Launch instructions, five code entries, and nine diagnostic DIDs
+- 755 Rolling Launch instructions, five code entries, and nine diagnostic DIDs
   match the SHA-locked Ghidra payload;
 - independent GNU `sh-elf-as --isa=sh2e` output is byte-identical;
-- GNU simulator 16.3 passes 116 map-switching and 94 Rolling Launch cases.
+- GNU simulator 16.3 passes 116 map-switching and 96 Rolling Launch cases.
 
 Reproduce the final image with `patches/apply_rolling_launch.py`. The full
 runtime contract and mandatory staged hardware procedure are in
