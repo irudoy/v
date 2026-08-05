@@ -4,7 +4,8 @@ This directory is the mandatory independent executable gate for every current
 or future firmware patch that changes instruction bytes. It uses the GNU SH-2E
 assembler, linker, and instruction-set simulator from Debian trixie instead of
 Ghidra p-code. The registered verifiers cover the complete JK08A map-switching
-implementation and its default-disabled Rolling Launch extension.
+implementation, its default-disabled Rolling Launch extension, and the external
+npkern SH7058/SH7059 CAN targets.
 
 Run the complete gate from the repository root:
 
@@ -16,9 +17,10 @@ The first run builds `vq-sh-elf-run:16.3`. Later runs reuse Docker layers. Set
 `VQ_SH_ELF_IMAGE` to select a compatible local image. Set
 `VQ_SH_ELF_SKIP_BUILD=1` only when that image was already built from this
 Dockerfile. Docker's standard `DOCKER_CONTEXT` variable selects a non-default
-local context when required.
+local context when required. The npkern tree defaults to `../../oss/npkern`
+relative to this repository; `VQ_NPKERN_SOURCE` selects another checkout.
 
-The gate performs five independent checks:
+The gate performs six independent checks:
 
 1. GNU `sh-elf-as --isa=sh2e` assembles eight map-switching and three Rolling
    Launch source units. Explicit instruction and data bytes are reconstructed
@@ -47,6 +49,17 @@ The gate performs five independent checks:
 5. A separate ELF places the exact failed Overlay 07 words `AFAC D304` at
    `0xD2314`. GNU simulator 16.3 must stop with signal 4. A control ELF at the
    same addresses replaces only `D304` with `NOP` and must return normally.
+6. `verify_npkern_can.py` builds the exact-address SH7058 and SH7059 CAN kernels
+   in both flash-read-only and explicitly write-enabled configurations. It
+   executes 15 read-only parser cases, 23 write-enabled parser cases, and 16
+   ISO-TP cases from the same relocatable objects used by the production ELFs.
+   Ten additional guards execute the exact SH7058/SH7059 flash-write boundary
+   paths without touching unmodeled flash-controller registers.
+   Every non-relocated byte is required to match between the production and
+   simulator links. Linker-address literals are the only declared relocation.
+   The same verifier builds a deterministic legacy SH7058 K-line image and
+   locks both its binary hash and the unchanged legacy parser source, so the
+   CAN split cannot introduce an unverified K-line firmware change.
 
 GNU simulator cannot map the SH7058S `0xFFFFxxxx` RAM window because its SH
 memory implementation accepts at most a 31-bit address space. The gate first
@@ -55,6 +68,13 @@ then relocates only those validated `.long` data literals to a dedicated
 `0x01000000` test region. Instruction bytes and control-flow addresses remain
 unchanged. This is an implementation-level ECU fixture, not peripheral or
 whole-firmware emulation.
+
+The npkern verifier has an additional explicit limitation. GNU `sh-elf-run`
+does not model HCAN-II, the SH7058/SH7059 flash controller, or the external
+watchdog circuit. The verifier builds and audits those drivers but does not
+execute their register interactions. Its PASS marker therefore includes
+`hardware_ready=NO`; the generated kernels remain ineligible for hardware use
+until passive capture and bench validation close that gap.
 
 ## Adding an instruction-changing patch
 
@@ -78,7 +98,7 @@ exists, the resulting image must not be described as ready for hardware or
 supplied for flashing. Passing this gate does not model ECU peripherals, prove a
 complete reset sequence, or replace bench and engine validation.
 
-A successful run includes all five markers:
+A successful run includes all six primary markers:
 
 ```text
 VQ_SH_ELF_OVERLAYS status=PASS stages=5 stage15_instructions=156 stage16_instructions=156 stage17_instructions=156 stage18_instructions=324 stage19_instructions=414 ...
@@ -86,4 +106,6 @@ VQ_SH_ELF_MAP_SWITCHING status=PASS cases=116 selector=17 adapters=76 limiter=14
 VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=96 structural=11 gates=24 config=22 activation=5 active=9 cooldown=4 ignition=15 wrappers=6 entries=5
 VQ_SH_ELF_ROLLING_VERIFY status=PASS units=3 instructions=755 ... diagnostics=9 ...
 VQ_SH_ELF_VERIFY status=PASS ... hardware_overlay_stages=5 rolling_launch_instructions=755 rolling_launch_cases=96 ... unsafe_signal=4
+NPKERN_LEGACY_BUILD status=PASS target=SH7058_KLINE ...
+NPKERN_CAN_VERIFY status=PASS targets=4 legacy_targets=1 ... flash_guard_cases=10 hardware_ready=NO limitation=HCAN_and_flash_peripherals_not_executed
 ```
