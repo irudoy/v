@@ -18,6 +18,37 @@ COMMON_TABLES = {
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
+    "Rolling Launch Enable Mask (Raw)": "Rolling Launch / Advanced",
+}
+
+DEFAULT_VISIBLE_TABLES = {
+    "Accelerator Pedal High-State Hysteresis (0x8FDC)":
+        "Electronic Throttle Control / Accelerator Pedal / Thresholds",
+    "Stationary Rev Limiter Readiness Threshold (0x911C)":
+        "Limiters / Stationary Rev Limiter",
+    "Intake Cam Timing Conditional Correction": "Variable Valve Timing / Intake Cam",
+    "Knock Sensor Circuit Monitor Surface A (0xABBA)":
+        "Diagnostics / Knock Sensor Monitor",
+    "Knock Sensor Circuit Monitor Surface B (0xABFA)":
+        "Diagnostics / Knock Sensor Monitor",
+    "Intake Cam Timing Main": "Variable Valve Timing / Intake Cam",
+    "Intake Cam Timing Cold": "Variable Valve Timing / Intake Cam",
+    "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
+    "Engine Torque Map": "Transmission / Shifting Performance",
+    "Knock Slice Map - parallel bank (0x10F8E)":
+        "Ignition Timing / Knock Control / Thresholds",
+    "Initial Retard Quantity - unresolved mode (0x1202E)":
+        "Ignition Timing / Transient Correction",
+    "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
+    "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
+    "Stationary Rev Limiter Accumulator Step (0x124D2)":
+        "Limiters / Stationary Rev Limiter",
+    "Injection Pulse Channel Multiplier (0x129C0)": "Fuel Delivery / Main",
+    "Target Throttle Valve Opening Table": "Electronic Throttle Control / Main",
+    "Engine Torque Scaled Correction vs RPM": "Transmission / Shifting Performance",
+    "Engine Torque Base Correction vs RPM": "Transmission / Shifting Performance",
+    "QH0 / Torque Conversion Map Trustful": "Electronic Throttle Control / Main",
+    "Target Throttle Valve Opening Table Trustful": "Electronic Throttle Control / Main",
 }
 
 SLOT_TABLES = {
@@ -33,6 +64,7 @@ SLOT_TABLES = {
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
+    "Rolling Launch Enable": "Rolling Launch / Map Enable",
 }
 
 
@@ -218,6 +250,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for table in self.root.findall("./XDFTABLE")
         }
         expected_tables = dict(COMMON_TABLES)
+        expected_tables.update(DEFAULT_VISIBLE_TABLES)
         expected_tables.update({
             slot_name(slot, name): category
             for slot in range(1, 6)
@@ -293,7 +326,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         self.assertEqual(len(patches), 44)
-        self.assertEqual(len(tables), 69)
+        self.assertEqual(len(tables), 95)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -315,7 +348,23 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for patch in patches
         ))
 
-    def test_research_only_tables_remain_outside_the_working_definition(self):
+    def test_internal_tables_remain_outside_the_working_definition(self):
+        addresses = {
+            table.find("./XDFAXIS[@id='z']/EMBEDDEDDATA").get("mmedaddress")
+            for table in self.root.findall("./XDFTABLE")
+        }
+        self.assertTrue({
+            "0xAB0A",
+            "0xB23A",
+            "0x11F6A",
+            "0x120BE",
+            "0x12196",
+            "0x1219E",
+            "0x121A6",
+            "0x14E52",
+        }.isdisjoint(addresses))
+
+    def test_default_visible_tables_reach_the_working_definition(self):
         addresses = {
             table.find("./XDFAXIS[@id='z']/EMBEDDEDDATA").get("mmedaddress")
             for table in self.root.findall("./XDFTABLE")
@@ -325,7 +374,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "0x911C",
             "0x10F8E",
             "0x124D2",
-        }.isdisjoint(addresses))
+        } <= addresses)
 
     def test_maf_tables_use_reviewed_candidate_voltage_axes(self):
         tables = {

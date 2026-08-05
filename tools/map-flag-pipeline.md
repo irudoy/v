@@ -150,7 +150,8 @@ Invariants:
 - **Every map and flag carries a confidence level and evidence list**; see section 5.
 - **Diagnostic confidence and source applicability remain separate.** A strong
   code association does not make a homologous manual exact for the target ROM.
-- **No active table below `code` is emitted**; `candidate` output is explicitly marked.
+- **No active table below `candidate` is emitted**; `candidate` map and scaling
+  claims are explicitly marked where they appear.
 
 ## 5. Data model (graph schema)
 
@@ -945,13 +946,17 @@ storage, and ingestion are implemented.
 live presentation layer. JK03A remains a graph measurement layer without separate `maps.csv`,
 `overrides.toml`, XML, or XDF.
 
-The presentation layer may define `presentation.default_emit = false` and opt individual
-tables in with `emit = true`. This produces a stable tuner-facing allowlist while preserving
-the complete reverse-engineering catalog in the graph and ledger.
+The presentation layer defaults to `presentation.default_emit = true`. Every map that is not
+explicitly hidden with table-level `emit = false` reaches the definition gate. An explicit
+`emit = true` remains available as a strict assertion: generation stops if that table no longer
+passes the gate. This opt-out policy prevents newly interpreted maps from disappearing behind a
+presentation allowlist while preserving hidden research maps in the graph and ledger.
 
 For JK08A, `[map_switching].enabled = true` expands selected calibration families into
 Map 1 through Map 5 inside the common `JK08A` definition identity. The canonical graph
-catalog remains unchanged at 450 maps. The projected editor model contains 482 maps:
+catalog remains unchanged at 450 maps. Map switching adds 40 noncanonical slot copies, and the
+Rolling Launch projection adds one configuration table, so the projected editor model contains
+491 maps:
 Map 1 reuses each canonical stock address, while Map 2 through Map 5 use the erased flash
 allocations declared in `patches/map-switching-layout.toml`. Those additional slots contain
 `0xFF` and are inactive under stock firmware; the map-switching patch is required before
@@ -1223,10 +1228,12 @@ the current user-facing definition for the exact-code JK03A ROM:
   tuner-definition visibility, human-readable names, `category`, table ordering, editor increments
   (`format`/`fine`/`coarse`), the `romid` block, `<checksum>` parameters, a `mask` for
   independent editing of element bit fields, cosmetic comments, and cell labels for a
-  map without an axis. `presentation.default_emit` defaults to `true` for compatibility;
-  a table-level Boolean `emit` overrides it. JK08A sets the default to `false` and explicitly
-  selects its working calibration set. Hidden tables retain their graph facts and override
-  records and remain visible in the ledger. The manual `direct-row-major` family defines both static axes in
+  map without an axis. `presentation.default_emit` defaults to `true`; a table-level Boolean
+  `emit` overrides it. JK08A uses the default-visible policy and explicitly marks internal,
+  diagnostic-internal, internal-coordinate, and unidentified research tables with
+  `emit = false`. Hidden tables retain their graph facts and override records and remain visible
+  in the ledger. An explicit `emit = true` is a strict gate assertion rather than a requirement
+  for ordinary visibility. The manual `direct-row-major` family defines both static axes in
   this layer: `static_axis_x` has `width` elements and `static_axis_y` has `height`
   elements; geometry and element type remain facts in `findings.csv`. An implicit
   one-dimensional map may define `static_axis` labels that replace the generated raw
@@ -1244,16 +1251,18 @@ the current user-facing definition for the exact-code JK03A ROM:
   conversion with a same-address raw variable: editing one field preserves the
   complementary bits. Records merge on `{rom, addr}`. An override that replaces a fact
   is an error (`static_axis` with a live `:Axis` stops the run), as are an unknown map
-  address and an unnamed visible map that passes the interpretation gate.
-- **Presentation gate**: evaluate only maps selected by the presentation policy for
-  tuner-definition output. Hidden maps are counted separately from interpretation
-  failures and are not required to carry complete editor geometry.
-- **Interpretation gate**: emit selected content that can be interpreted: role `table`, nonempty
-  semantics, and nonempty scaling at `confidence >= candidate`; levels below
-  `candidate` are not emitted. A map without semantics is only an address and shape; a
-  map without scaling is only a grid of raw bytes. Both are already represented in the
-  ledger. The generator lists rejected selected records because silent omission would be
-  read as an incomplete working definition. Ambiguous geometry, such as a branch-selected axis represented by
+  address and an explicit `emit = true` table that fails the definition gate.
+- **Presentation gate**: select every map by default and remove only records with
+  `emit = false` from tuner-definition output. Hidden maps are counted separately from
+  definition failures and are not required to carry complete editor geometry.
+- **Definition gate**: emit selected content that can be interpreted and rendered: role `table`,
+  nonempty semantics, nonempty scaling, `confidence >= candidate`, complete geometry, and a
+  presentation name and category. Levels below `candidate` are not emitted. A map without
+  semantics is only an address and shape; a map without scaling is only a grid of raw bytes.
+  Both are already represented in the
+  ledger. The generator lists rejected default-visible records because silent omission would be
+  read as an incomplete working definition. An explicit `emit = true` failure stops generation.
+  Ambiguous geometry, such as a branch-selected axis represented by
   more than one axis on an edge, closes the gate and moves to Stage 6. A direct
   rectangular map without axis edges passes only as `direct-row-major` and only with a
   complete pair of static axes. A manual one-dimensional `direct-indexed` map passes
@@ -1319,13 +1328,17 @@ shows that `0xE98E` supplies an RPM-interpolated stack row, while `0x8000` is on
 offset-binary bias added to the request before that row is searched. Backtracking alone
 cannot distinguish them.
 
-The canonical working allowlist selects 18 of the 450 catalog maps and adds three
-masked ignition views. The common JK08A projection expands ten selected calibration
-families into 50 Map 1 through Map 5 tables and two masked families into ten slot views.
-The emitted definition therefore contains 58 calibration tables and 11 masked views
-without standalone reference axes. The other 432 canonical maps remain available for
-reverse engineering in the graph and ledger. The catalog contains 364 `code` maps and
-86 `candidate` maps. Semantics are present for 443 maps and `scale_expr` for 405. The
+Of the 450 canonical maps, 38 pass the definition gate and remain visible by default,
+150 internal or unidentified research maps carry an explicit `emit = false`, and 262
+default-visible maps are reported as rejected by the definition gate. The common JK08A
+projection expands ten visible calibration families into 50 Map 1 through Map 5 tables,
+adding 40 slot copies, and adds one Rolling Launch configuration table. Two masked
+ignition families expand into ten slot views; the remaining canonical masked view and
+five per-map Rolling Launch views produce 16 masked views in total. The emitted
+definition therefore contains 79 calibration tables and 16 masked views without
+standalone reference axes. All hidden and rejected canonical maps remain available for
+reverse engineering in the graph and ledger. The catalog contains 365 `code` maps and
+85 `candidate` maps. Semantics are present for 443 maps and `scale_expr` for 405. The
 ledger has seven open `candidate` maps without semantics. `mapkit` also closes
 Stage 5 `:MATCHES`: reading the axes, rather than the catalog, provides match keys such
 as scale family and axis semantics. Cross-ROM homology, the second half of P7, awaits
@@ -1343,9 +1356,9 @@ sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 | No regression against backtracking | sites where backtracking returned an in-ROM value but data flow did not | n/a -> **1, reviewed** (`0x56cd8`: value from an unreachable branch, not a base) | all reviewed |
 | Latent catalog defects | number of `conflict` results (`bt != df` at a site) | not measured -> **14, all reviewed** (6 base conflicts: reference wrong in every case; 3: unreachable branch and stale registers; 5: `mov.w` constant read as 32-bit by the reference). Four more base differences moved out of this class after operand-set expansion (section 6): the mechanisms selected different branches of one selector | all reviewed |
 | Catalog completeness | number of `:Map` nodes against known inventory; 0 maps outside graph | 223 bases in ledger, 0 in graph -> **450 of 450 in graph** across census and manual families; three dynamic call sites create no speculative map | every catalog map in graph; dynamic bases remain explicit |
-| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: the common definition emits 48 `code` maps and 11 masked views; it emits no standalone reference axes | 0 unmarked |
+| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: the common definition emits 72 `code` maps, seven marked `candidate` maps, and 16 masked views; it emits no standalone reference axes | 0 unmarked |
 | Catalog geometry | number of `:Map` nodes without `storagetype`, which prevents emission | 66 of 441, all 2D -> **0**: 2D element type comes from the finisher | 0 |
-| Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **30** of 48; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
+| Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **41** of 79; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
 | Deferred axes | number of `pattern`-level `:Axis` nodes reported only by backtracking with `k5`/`k6=sp` | not measured -> **14 of 230**; `0x8000` is erased flash; none pass emission | 0; Stage 6 resolves them |
 | Axis against core code | number of `:Axis` nodes with `monotonic=false`; reverse linear search cannot read such an array | not measured -> **1 of 230** (`0x119B2`; its map `0x9C5A` is entirely `0xFF`). This caught an axis element declared from the core rather than the wrapper/axis pair: 2 of 22 wrappers and 2 axes had been read as words instead of bytes | 0 |
 | Measured layer | number of `:Map`/`:Axis` nodes without values from the image, meaning shape without contents | not tracked -> **0 of 450 and 230**: the same run that builds the layer reads the image | 0; a read miss stops loading |
@@ -1357,7 +1370,8 @@ sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 | Static completion | reviewed diagnostic and map claims required by the software-only worklist | confidence is capped at `code`; hardware-loop evidence is unavailable | no hardware or `silicon` gate in this milestone |
 
 These values define pipeline effectiveness and regression control. A run that lowers
-resolution or admits a map below `code` into the active definition fails the gate.
+resolution or admits a map below `candidate`, or an unmarked `candidate` claim, into the
+active definition fails the gate.
 
 ### Claim-specific provenance
 
@@ -1413,7 +1427,8 @@ do not automatically downgrade proven table-reading code.
   sources because the loader recreates layer nodes and direct graph edits would not
   survive ingestion.
 - Gate: the active definition emits maps at `candidate` or higher. Every `candidate`
-  map is explicitly marked in its category, units, and comments. Only `silicon`
+  map is marked in its evidence comment, and every candidate scaling claim is marked in
+  its units. Categories remain functional and do not encode confidence. Only `silicon`
   claims may be flashed to an engine. Per `AGENTS.md`, ground truth is in the silicon
   and graph structure is not semantics.
 - Direction: edit CSV sources and overrides -> Ghidra + Memgraph + definition. Changes

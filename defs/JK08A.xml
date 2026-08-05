@@ -8,11 +8,12 @@
      <rom>.overrides.toml.
 
      Analysis and method: defs/JK08A.notes.md. Each table's confidence is recorded in
-     its comment. The working definition contains an explicit tuner-facing calibration
-     set; research and inactive-family maps remain in the canonical ledger. Categories
-     follow the functional organization used by commercial Nissan tuning suites and do
-     not encode confidence. Units ending in [cand] use a multiplier from the A2L catalog
-     or data shape that has not been confirmed by code. The common definition exposes
+     its comment. Maps that pass the definition gate are visible by default. Internal,
+     diagnostic-internal, internal-coordinate, and unidentified research maps carry an
+     explicit emit=false decision and remain in the canonical ledger. Categories follow
+     the functional organization used by commercial Nissan tuning suites and do not encode
+     confidence. Units ending in [cand] use a multiplier from the A2L catalog or data shape
+     that has not been confirmed by code. The common definition exposes
      Map 1 through Map 5 storage from patches/map-switching-layout.toml. Map 2 through
      Map 5 are erased and inactive in stock firmware; they require the project
      map-switching patch before runtime use. -->
@@ -619,6 +620,216 @@
       <state name="Disabled" data="00 00"/>
     </table>
 
+    <!-- 0x08FDC  2 uint16  map [code]
+         accessor 0x47A56; r4 operand: manual
+         scaling x normalized ADC counts
+         The stock activation and release thresholds are 610 and 528 counts. The input is
+         produced from on-chip A/D channels AN10 and AN17 through dual-channel adjustment and
+         minimum selection. Exact JK08A diagnostic paths expose the paired accelerator-pedal
+         sensors as DID 0x120D/0x120E and monitor them through P2122/P2123/P2127/P2128. The
+         operational high-state role is proven; a narrower WOT or kickdown interpretation is not
+         asserted.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Accelerator Pedal High-State Hysteresis (0x8FDC)"
+           category="Electronic Throttle Control / Accelerator Pedal / Thresholds"
+           storagetype="uint16" storageaddress="0x08FDC" sizex="2" endian="big">
+      <scaling units="normalized ADC counts" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="8"/>
+      <table type="Static X Axis" name="Selector" sizex="2">
+        <data>activate</data><data>release</data>
+      </table>
+    </table>
+
+    <!-- 0x0B43A  16x16 uint8  map [code]; entry 0x261B8 (explicit, core 0x26944)
+         accessor 0xBDA64; r4 operand: slice
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12F3E rpm [code]; X Axis 0x12F1E load
+         [candidate]
+         static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
+         indexed_by]
+         The intake-cam target identity is code-proven by its placement in two-channel CVTC
+         dispatcher 000bd170, the coolant target selector, and the consumer that compares target
+         reference ffff2326 with both intake-cam timing channels. The Cylinder Filling axis name
+         and 0.5 degree-per-byte conversion remain catalog candidates. Raw coolant thresholds
+         106 and 131 are exact; the corresponding 56 and 81 degree C values depend on the
+         homologous diagnostic conversion. Result disposition: consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake Cam Timing Main" category="Variable Valve Timing / Intake Cam"
+           storagetype="uint8" storageaddress="0x0B43A" sizex="16" sizey="16" endian="big">
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F1E"
+             sizex="16" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12F3E" sizey="16" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0911C  1 uint16  map [code]
+         accessor 0x4F324; r4 operand: manual
+         scaling x accumulator counts
+         The stock value is 381 accumulator counts. The threshold controls readiness for
+         stationary fuel-cut/restore hysteresis 000085d9/000085da.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Stationary Rev Limiter Readiness Threshold (0x911C)"
+           category="Limiters / Stationary Rev Limiter" storagetype="uint16"
+           storageaddress="0x0911C" sizex="1" endian="big">
+      <scaling units="accumulator counts" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>readiness</data>
+      </table>
+    </table>
+
+    <!-- 0x0B53A  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
+         accessor 0xBDA64; r4 operand: pool
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12ECA rpm [code]; X Axis 0x12EAA load
+         [candidate]
+         static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
+         indexed_by]
+         Code proves the cold intake-cam target role, raw coolant selection, and centered byte
+         representation. The Cylinder Filling axis name, 0.5 degree-per-byte conversion, and
+         engineering coolant temperatures remain source-derived candidates. Result disposition:
+         consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake Cam Timing Cold" category="Variable Valve Timing / Intake Cam"
+           storagetype="uint8" storageaddress="0x0B53A" sizex="8" sizey="8" endian="big">
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12EAA"
+             sizex="8" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12ECA" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AB5A  4x4 uint8  map [code]; entry 0x26084 (explicit, core 0x26944)
+         accessor 0xBDA64; r4 operand: pool
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12F9A rpm [code]; X Axis 0x12F92 load
+         [candidate]
+         static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence:
+         indexed_by]
+         Code proves the conditional intake-cam correction path and centered raw arithmetic. The
+         high-detonation meaning of ffff2466.bit6, the Cylinder Filling axis name, and the 0.5
+         degree-per-byte conversion remain catalog candidates. Result disposition: consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake Cam Timing Conditional Correction"
+           category="Variable Valve Timing / Intake Cam" storagetype="uint8"
+           storageaddress="0x0AB5A" sizex="4" sizey="4" endian="big">
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F92"
+             sizex="4" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12F9A" sizey="4" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x124D2  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x4F324; r4 operand: pool
+         scaling x-128 accumulator counts [code]
+         The lookup coordinate is q=clamp((signed16(ffff11bc)-160)/2,0,255). Input ffff11bc is
+         RPM/12.5, so origin 160 is 2000 RPM and each two-count selector step is 25 RPM. At or
+         below 2000 RPM the stock result is 128 and step zero. In the high-RPM limiter region
+         result 255 gives step 127; exactly three expiries reach inclusive readiness threshold
+         381, or 300 tenth-phase counts. Candidate Pphi=20 MHz converts this to about 3.072
+         seconds.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Stationary Rev Limiter Accumulator Step (0x124D2)"
+           category="Limiters / Stationary Rev Limiter" storagetype="uint8"
+           storageaddress="0x124D2" sizex="16" endian="big">
+      <scaling units="accumulator counts" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
+        <data>0</data><data>16</data><data>32</data><data>48</data>
+        <data>64</data><data>80</data><data>96</data><data>112</data>
+        <data>128</data><data>144</data><data>160</data><data>176</data>
+        <data>192</data><data>208</data><data>224</data><data>240</data>
+      </table>
+    </table>
+
+    <!-- 0x129C0  6 uint8  map [code]
+         accessor 0x4EBA2; r4 operand: manual
+         scaling x/128 ratio [code]
+         static diagnostic context: INJ PULSE-B1 [code, homologous_vq35hr, via map evidence:
+         writes]
+         All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in
+         override mask ffff22e0 bypasses this multiplier and selects word ffff2436. The trace
+         proves channel indexing but does not establish the physical cylinder order;
+         presentation labels remain generic channel numbers.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Injection Pulse Channel Multiplier (0x129C0)"
+           category="Fuel Delivery / Main" storagetype="uint8" storageaddress="0x129C0"
+           sizex="6" endian="big">
+      <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.0000"
+               fineincrement="0.0078125" coarseincrement="0.0625"/>
+      <table type="Static X Axis" name="Channel" sizex="6">
+        <data>1</data><data>2</data><data>3</data><data>4</data>
+        <data>5</data><data>6</data>
+      </table>
+    </table>
+
+    <!-- 0x0ABBA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
+         accessor 0xA52E4; r4 operand: pool
+         scaling x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load [candidate]
+         static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom];
+         DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom]
+         The surface is selected when byte[ffff3427] <= byte[0x8796], where the ROM threshold is
+         95. The physical unit of raw and the direction in which increasing a cell affects the
+         final DTC verdict are unknown.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Knock Sensor Circuit Monitor Surface A (0xABBA)"
+           category="Diagnostics / Knock Sensor Monitor" storagetype="uint8"
+           storageaddress="0x0ABBA" sizex="8" sizey="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="8"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12BEA"
+             sizex="8" endian="big">
+        <scaling units="Base Fuel Schedule (ms) [cand]" expression="x/8" to_byte="x*8"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12BE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0ABFA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
+         accessor 0xA52E4; r4 operand: pool
+         scaling x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load [candidate]
+         static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom];
+         DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom]
+         The surface is selected when byte[ffff3427] > byte[0x8796], where the ROM threshold is
+         95. The physical unit of raw and the direction in which increasing a cell affects the
+         final DTC verdict are unknown.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Knock Sensor Circuit Monitor Surface B (0xABFA)"
+           category="Diagnostics / Knock Sensor Monitor" storagetype="uint8"
+           storageaddress="0x0ABFA" sizex="8" sizey="8" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="8"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12BEA"
+             sizex="8" endian="big">
+        <scaling units="Base Fuel Schedule (ms) [cand]" expression="x/8" to_byte="x*8"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12BE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x1491A  16 uint16  map [code]; entry 0x263F4 (implicit, core 0x26A64)
          accessor 0x8083C; r4 operand: pool
          scaling x/2048 BFS ms [candidate]
@@ -663,6 +874,28 @@
       </table>
     </table>
 
+    <!-- 0x10F8E  16x6 uint16  map [candidate]
+         scaling x*0.0015259 knock strength [candidate]
+         The array is organized as 6 cylinders by 16 engine-speed points. No direct xref to this
+         base was found, so the specific mode and bank activity remain candidate.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Knock Slice Map - parallel bank (0x10F8E)"
+           category="Ignition Timing / Knock Control / Thresholds" storagetype="uint16"
+           storageaddress="0x10F8E" sizex="16" sizey="6" endian="big">
+      <scaling units="knock strength [cand]" expression="x*0.0015259" to_byte="x/0.0015259"
+               format="0.000" fineincrement="0.0015259" coarseincrement="0.015259"/>
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="16">
+        <data>400</data><data>800</data><data>1200</data><data>1600</data>
+        <data>2000</data><data>2400</data><data>2800</data><data>3200</data>
+        <data>3600</data><data>4000</data><data>4400</data><data>4800</data>
+        <data>5200</data><data>5600</data><data>6000</data><data>6400</data>
+      </table>
+      <table type="Static Y Axis" name="Cylinder" sizey="6">
+        <data>1</data><data>2</data><data>3</data><data>4</data>
+        <data>5</data><data>6</data>
+      </table>
+    </table>
+
     <!-- 0x09284  1 uint16  map [code]
          accessor 0x3B75C; r4 operand: manual
          scaling x*1 ms/kg [candidate]
@@ -680,6 +913,44 @@
                coarseincrement="100"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>K-Value</data>
+      </table>
+    </table>
+
+    <!-- 0x1236A  16 uint8  map [candidate]; entry 0x264A0 (explicit, core 0x26944)
+         accessor 0x8152A, 0x81D74; r4 operand: pool
+         scaling x raw; axis 0x1238A rpm [candidate]
+         Input byte[0xFFFF11AE], axis step 8; feeds fuel rather than angle according to K2Y
+         analysis.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Fuel enrichment vs MBT-like axis (0x1236A)"
+           category="Fuelling / Enrichment" storagetype="uint8" storageaddress="0x1236A"
+           sizex="16" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" coarseincrement="4"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x1238A" sizex="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x120F6  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
+         accessor 0x4FE9C; r4 operand: pool
+         scaling x DFCO scheduler counts
+         All 16 cells equal 60. Stock ROM8[0000870c].bit7 is clear, so this table is selected
+         only by the non-stock bit7 branch with ffff2468.bit7 set, warm coolant, and RPM below
+         3000. The timer decrements once per DFCO scheduler event. Its exact period is
+         204800/Pphi seconds; 10.24 ms/count is a board-level candidate pending target clock
+         confirmation. Result disposition: state_timer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Conditional DFCO Entry Delay - scheduler counts (0x120F6)"
+           category="Fuelling / Overrun" storagetype="uint8" storageaddress="0x120F6" sizex="16"
+           endian="big">
+      <scaling units="DFCO scheduler counts" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
+        <data>0</data><data>16</data><data>32</data><data>48</data>
+        <data>64</data><data>80</data><data>96</data><data>112</data>
+        <data>128</data><data>144</data><data>160</data><data>176</data>
+        <data>192</data><data>208</data><data>224</data><data>240</data>
       </table>
     </table>
 
@@ -750,6 +1021,131 @@
       <table type="Static Y Axis" name="Cylinder" sizey="6">
         <data>1</data><data>2</data><data>3</data><data>4</data>
         <data>5</data><data>6</data>
+      </table>
+    </table>
+
+    <!-- 0x0E98E  16x16 uint16  map [candidate]; entry 0x262E0 (explicit, core 0x26984)
+         accessor 0x702C6, 0x73948, 0x753D4, 0x75540, 0x7584E, 0x75C48, 0x7A9FC, 0x7AB18; r4
+         operand: pool, slice
+         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x11D0C rpm [candidate];
+         X Axis 0x14114 load [candidate]
+         All forward consumers subtract 0x8000 from the uint16 result before signed arithmetic.
+         The stock 16x16 contents, RPM axis, and QH0 coordinate table are byte-identical to
+         trustful family 000175c8/00018716/00018ac6. The exact duplicate pair and bidirectional
+         code topology select the A2L primary/trustful concept; the physical units and
+         multiplier require hardware validation. Result disposition: consumer and inverse
+         coordinate source.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="QH0 / Torque Conversion Map"
+           category="Electronic Throttle Control / Main" storagetype="uint16"
+           storageaddress="0x0E98E" sizex="16" sizey="16" endian="big">
+      <scaling units="Requested Torque [Nm] [cand]" expression="x*0.1-3276.8"
+               to_byte="x/0.1+32768" format="0.0" fineincrement="1" coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x14114"
+             sizex="16" endian="big">
+        <scaling units="QH0 Flow Potential [%] [cand]" expression="x*0.00152588"
+                 to_byte="x/0.00152588" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x11D0C" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x175C8  16x16 uint16  map [candidate]; entry 0x26660 (explicit, core 0x26B84)
+         accessor 0x73A44, 0x74728, 0x749BC, 0x7ACB4; r4 operand: pool, slice
+         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x18716 rpm [candidate];
+         X Axis 0x18AC6 load [candidate]
+         Forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The
+         stock contents and both axes are byte-identical to primary family
+         0000e98e/00011d0c/00014114, matching the A2L requirement that primary and trustful maps
+         remain identical. The physical units and multiplier require hardware validation. Result
+         disposition: consumer and inverse coordinate source.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="QH0 / Torque Conversion Map Trustful"
+           category="Electronic Throttle Control / Main" storagetype="uint16"
+           storageaddress="0x175C8" sizex="16" sizey="16" endian="big">
+      <scaling units="Requested Torque [Nm] [cand]" expression="x*0.1-3276.8"
+               to_byte="x/0.1+32768" format="0.0" fineincrement="1" coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x18AC6"
+             sizex="16" endian="big">
+        <scaling units="QH0 Flow Potential [%] [cand]" expression="x*0.00152588"
+                 to_byte="x/0.00152588" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x18716" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x13202  32 uint16  map [candidate]; entry 0x26524 (explicit, core 0x26984)
+         accessor 0x3B520, 0x3E548, 0x3E63C, 0x72C3C, 0x72D32, 0x73948, 0x8152A, 0x81D74; r4
+         operand: pool, slice
+         scaling x*0.0008 Throttle Opening Area [cm^2] [candidate]; axis 0x155A0 raw [candidate]
+         The 32 values are monotonic and byte-identical to trustful table 00018766; axis
+         000155a0 is byte-identical to trustful axis 000190d0. This exact duplicated pair
+         matches the two A2L Target Throttle Valve Opening entries and distinguishes it from the
+         single Throttle Body Opening Area Calibration Table entry. Exact DIDs and preprocessing
+         bind the exposed source path to paired throttle-position feedback. Physical units and
+         scale require hardware validation.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Target Throttle Valve Opening Table"
+           category="Electronic Throttle Control / Main" storagetype="uint16"
+           storageaddress="0x13202" sizex="32" endian="big">
+      <scaling units="Throttle Opening Area [cm^2] [cand]" expression="x*0.0008"
+               to_byte="x/0.0008" format="0.000" fineincrement="0.01" coarseincrement="0.1"/>
+      <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x155A0"
+             sizex="32" endian="big">
+        <scaling units="Throttle Valve Opening [deg] [cand]" expression="x*0.0275"
+                 to_byte="x/0.0275" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x18766  32 uint16  map [candidate]; entry 0x26714 (explicit, core 0x26B84)
+         accessor 0x73040, 0x73824, 0x73A44, 0x7ACB4; r4 operand: pool, slice
+         scaling x*0.0008 Throttle Opening Area [cm^2] [candidate]; axis 0x190D0 raw [candidate]
+         A one-time call at zero stores the baseline in ffff1caa. The two forward results are
+         added with uint16 saturation into ffff1d18; inverse paths divide by two before
+         converting through 000190d0. The stored table is byte-identical to primary 00013202,
+         matching the catalog's primary/trustful pair. Physical units and scale require hardware
+         validation.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Target Throttle Valve Opening Table Trustful"
+           category="Electronic Throttle Control / Main" storagetype="uint16"
+           storageaddress="0x18766" sizex="32" endian="big">
+      <scaling units="Throttle Opening Area [cm^2] [cand]" expression="x*0.0008"
+               to_byte="x/0.0008" format="0.000" fineincrement="0.01" coarseincrement="0.1"/>
+      <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x190D0"
+             sizex="32" endian="big">
+        <scaling units="Throttle Valve Opening [deg] [cand]" expression="x*0.0275"
+                 to_byte="x/0.0275" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x1202E  4 uint8  map [candidate]; entry 0x26358 (implicit, core 0x26A7C)
+         accessor 0x3E1DA; r4 operand: pool
+         scaling x raw
+         Code proves a conditional unsigned 1D-4 lookup: when (RAM ffff2459 & 0x20)==0, the
+         accessor constrains the index to 0..255, interpolates uint8 nodes, and copies the byte
+         result into two RAM regions. All four cells equal 200, so every executed lookup writes
+         200. The catalog match establishes only a candidate for the general family and units,
+         without an address or concept association. Index: x = min(max((uint16_t)r5 - 96, 0),
+         255). Implicit nodes are located at x=0, 64, 128, 192: for x<192, i=x/64 and Q0.16
+         fraction (x-i*64)*1024 are used; for x>=192, element 3 is returned. Result disposition:
+         writes (RAM ffff1ee0 at site 0003e2da; RAM ffff257a at site 0003e2de). Blocking
+         condition: The machine trace ends after writes 0003e2da/ffff1ee0 and 0003e2de/ffff257a:
+         the artifact contains no external readers of either register and no consumer associated
+         with the lookup result. The six shown consumers read ffff4226, which is not a sink for
+         the map result. Therefore, code does not establish physical semantics or distinguish
+         the five operating-mode variants in the catalog.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Initial Retard Quantity - unresolved mode (0x1202E)"
+           category="Ignition Timing / Transient Correction" storagetype="uint8"
+           storageaddress="0x1202E" sizex="4" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="Static X Axis" name="Raw input (step 64)" sizex="4">
+        <data>0</data><data>64</data><data>128</data><data>192</data>
       </table>
     </table>
 
@@ -840,6 +1236,78 @@
                coarseincrement="100"/>
       <table type="Static X Axis" name="Selector" sizex="2">
         <data>fuel cut</data><data>fuel restore</data>
+      </table>
+    </table>
+
+    <!-- 0x10B8E  16x16 uint16  map [code]; entry 0x262A8 (explicit, core 0x26984)
+         accessor 0x65928; r4 operand: pool
+         scaling x*0.1-3276.8 Engine Torque [Nm] [candidate]; Y Axis 0x14B4A rpm [candidate]; X
+         Axis 0x2378C load [candidate]
+         FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated
+         multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08
+         consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map
+         0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The
+         column axis is copied from ROM 0002378c to a stack buffer before interpolation. Its
+         0..0xf000 points decode as 0..150% Cylinder Filling at x*160/65536, and the coordinate
+         formula becomes 100*BFS/scaler. The VQ35HR JK00D homolog uses the byte-identical
+         function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler
+         000095f6; its larger scaler and torque range provide independent family evidence. The
+         physical name and x*0.1 Nm scale match the HR A2L Engine Torque Map and require
+         hardware validation. Result disposition: consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Engine Torque Map" category="Transmission / Shifting Performance"
+           storagetype="uint16" storageaddress="0x10B8E" sizex="16" sizey="16" endian="big">
+      <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1-3276.8" to_byte="x/0.1+32768"
+               format="0.0" fineincrement="1" coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x2378C"
+             sizex="16" endian="big">
+        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.00244140625"
+                 to_byte="x/0.00244140625" format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x14B4A" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x154A0  8 uint16  map [code]; entry 0x264CC (explicit, core 0x26984)
+         accessor 0x65C26; r4 operand: pool
+         scaling x*0.1 Engine Torque [Nm] [candidate]; axis 0x14ABA rpm [code]
+         FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine
+         Torque Map 00010b8e. This continuous path establishes a common internal torque domain.
+         In stock JK08A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows
+         the Engine Torque Map catalog and requires hardware validation. Result disposition:
+         consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Engine Torque Base Correction vs RPM"
+           category="Transmission / Shifting Performance" storagetype="uint16"
+           storageaddress="0x154A0" sizex="8" endian="big">
+      <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
+               fineincrement="1" coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x14ABA" sizex="8" endian="big">
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x14C1A  8 uint16  map [code]; entry 0x264CC (explicit, core 0x26984)
+         accessor 0x658A4; r4 operand: pool
+         scaling x*0.1 Engine Torque [Nm] [candidate]; axis 0x14ABA rpm [code]
+         The direct scratch copy ffff14e4 has no external reader, but the same live lookup
+         result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN
+         00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-
+         binary Engine Torque Map 00010b8e. The continuous consumer path assigns an engine-
+         torque correction role. The physical x*0.1 Nm conversion follows the Engine Torque Map
+         catalog and requires hardware validation. Result disposition: consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Engine Torque Scaled Correction vs RPM"
+           category="Transmission / Shifting Performance" storagetype="uint16"
+           storageaddress="0x14C1A" sizex="8" endian="big">
+      <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
+               fineincrement="1" coarseincrement="10"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x14ABA" sizex="8" endian="big">
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"/>
       </table>
     </table>
 

@@ -45,11 +45,16 @@ def validate():
             presentation, default_emit, address
         ):
             continue
-        why = emit_def.emittable(calibration, axes, presentation)
+        why = emit_def.definition_failure(
+            calibration, axes, presentation
+        )
         if why:
-            raise ValueError(
-                f"projected table {address} fails emission gate: {why}"
-            )
+            if presentation.get("emit") is True:
+                raise ValueError(
+                    f"explicitly visible projected table {address} "
+                    f"fails definition gate: {why}"
+                )
+            continue
         calibrations.append(calibration)
 
     emitted = {

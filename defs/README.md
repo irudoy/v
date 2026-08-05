@@ -95,7 +95,7 @@ under `defs/`, separately from `reference/`:
   slot-specific masked ignition views. `../tools/mapkit/rolling_launch.py`
   projects the validated configuration byte at `0xD3F64` into five independent
   per-map enable controls that preserve neighboring bits. The common output
-  contains 59 calibration tables and 16 masked views. The
+  contains 79 calibration tables and 16 masked views. The
   `../tools/mapkit/validate_map_switching.py` renders the projection against
   the live graph and verifies both tracked common definition files.
   The eight standalone assembly units pass 116 Ghidra p-code cases: 17 selector,
@@ -127,9 +127,11 @@ under `defs/`, separately from `reference/`:
 - The handwritten calibration-layer sources are `JK08A.interp.csv` for
   interpolation-input geometry, `JK08A.findings.csv` for map findings,
   `JK08A.axes.csv` for axis semantics, and `JK08A.overrides.toml` for definition
-  presentation. Its `[presentation]` policy and per-table `emit` fields select
-  the tuner-facing subset without removing research maps from the graph or
-  ledger. `JK08A.diagnostic-bindings.csv` supplies the reviewed diagnostic
+  presentation. Its `[presentation]` policy emits every renderable map by
+  default; per-table `emit = false` records explicitly hide internal and
+  unidentified research maps without removing them from the graph or ledger.
+  Maps with incomplete semantics, scaling, geometry, or presentation metadata are rejected by
+  the definition gate. `JK08A.diagnostic-bindings.csv` supplies the reviewed diagnostic
   bridge. Their contract is `../tools/map-flag-pipeline.md`.
 - Resolver reference censuses are
   `JK08A.map_inventory.{26944,26984,26b84}.csv` from `MapInventory` per kernel,
@@ -204,13 +206,16 @@ This establishes a cross-application exact-code relationship, not map-value
 equivalence. JK00A remains an inventoried binary without a Ghidra export,
 Memgraph layer, or annotation inheritance entry.
 
-The generated JK08A definitions contain a tuner-facing allowlist of 18
-canonical maps and three masked ignition views. Map-switching projection provides
-50 slot-specific calibration tables, for 58 calibration tables and 11 masked
-views in the complete definitions.
+The generated JK08A definitions contain 38 default-visible canonical maps and
+three masked ignition views. Map-switching projection provides 50 slot-specific
+calibration tables, while Rolling Launch adds one configuration table and five
+per-map enable views, for 79 calibration tables and 16 masked views in the
+complete definitions.
 Calibration axes are embedded in their tables; separate editable reference-axis
-views are not emitted. The 432 other catalog maps, including internal
-calculations, remain available in the graph, ledger, and presentation source.
+views are not emitted. Of the 412 other catalog maps, 150 internal or
+unidentified maps carry explicit `emit = false`; 262 fail the definition gate.
+All remain available in the graph, ledger, and
+presentation source.
 All four code-proven DFCO RPM threshold tables are emitted. Reviewed static diagnostic context is included in map
 comments and descriptions without changing map semantics or confidence.
 `JK08A.xml` additionally contains 71 DTC switches and two verified native

@@ -81,15 +81,21 @@ provenance and are not paths in the current `JK08A` layer.
   semantics; the script prints the counters, so this log does not duplicate them.
 - Definitions `JK08A.xml` and `JK08A.xdf` are graph projections from
   `tools/mapkit/emit_def.py` plus presentation layer `JK08A.overrides.toml`: names,
-  visibility, categories, ordering, and editor steps. The working definition is an
-  explicit allowlist of 18 canonical maps and three masked ignition views.
+  visibility, categories, ordering, and editor steps. The presentation policy exposes
+  every map that passes the definition gate by default. The working definition contains
+  38 canonical maps and three canonical masked ignition views; 150 internal or
+  unidentified maps carry explicit `emit = false`, and 262 maps fail the gate.
   Non-emitted research maps remain in the graph and ledger. Calibration
   axes are embedded in their tables rather than emitted as separate editable views.
   Categories use the functional UpRev/EcuTek organization and do not encode
   confidence. A map below `code` is marked `[candidate]` in the generated evidence
   comment, while a scale below `code` receives suffix `[cand]` in its units; address
   and multiplier are separate claims. Manual XML or XDF edits do not survive
-  regeneration.
+  regeneration. Presentation audit places `0x8FDC` under Electronic Throttle Control,
+  `0x1202E` under Ignition Timing, and `0x1236A` under Fuelling. Filter coefficients
+  `0xAB0A`, `0xB23A`, and `0x14E52`, plus transient threshold `0x11F6A`, remain under
+  Internal Calculations with `emit = false` because code does not establish a physical
+  subsystem suitable for tuner-facing classification.
 - Annotated at `code` confidence: `0xA29A` is a Fuel Compensation Map. Its unsigned
   byte is used in fuel calculation as a multiplicative correction; A2L defines scale
   `x*0.78125%` with neutral raw 128 = 100%. `0xB33A` is a centered raw control table:
@@ -2057,8 +2063,9 @@ high state, such as WOT or kickdown, remains unassigned.
 
 The two uint16 cells remain in the graph and ledger as
 `Accelerator Pedal High-State Hysteresis (0x8FDC)` in normalized ADC counts.
-They are research-only and hidden from the working definitions. Adjacent words
-at `0x8FD8` belong to other functions and are excluded.
+They are emitted under `Electronic Throttle Control / Accelerator Pedal / Thresholds`.
+The narrower WOT or kickdown interpretation remains unassigned. Adjacent words at
+`0x8FD8` belong to other functions and are excluded.
 
 
 ### K2Y decel ignition (`mTKADVA`) - no decel-gated branch in timing calculation [CONFIRMED]
@@ -3437,12 +3444,12 @@ the list is higher than where it did not, 2/13 versus 2/31. The cut sorts by asc
 reader count for the linking register, so the list head remains closest to the map
 output.
 
-Reissue chain: 17 new `code` rows enter `findings.csv`; both `table` maps are emitted,
-`0x1491a` and `0x14e52`. Fourteen `threshold` and one `dead` map are non-emittable by
-construction because the gate requires `table` role. The definition grows from 7 to
-9 tables, and `overrides.toml` receives two name/category records. `0x1491a` has a
-catalog scale and is emitted with suffix `[cand]`; `0x14e52` has a scale derived from
-consumer arithmetic and is emitted without the suffix. Axes are unchanged.
+Seventeen `code` rows are present in `findings.csv`. Fourteen `threshold` and one
+`dead` map are non-emittable by construction because the gate requires `table` role.
+`0x1491a` has a catalog scale and is emitted with suffix `[cand]`. `0x14e52` has a
+scale derived from consumer arithmetic, but the filtered physical quantity remains
+unknown; the presentation layer classifies it as Internal Calculations and sets
+`emit = false`. Axes are unchanged.
 
 One finding concerns the manual layer itself. Geometry, family, and accessor do not
 belong in `findings.csv`; the inventory supplies them, and repetition would create a
@@ -4601,9 +4608,10 @@ initialized with identical bytes in the first bench image. Calibration values ar
 edited manually after the identical-map bench gate.
 
 `tools/mapkit/validate_map_switching.py` validates the live 450-map graph and the
-490-map common projection without writing files. The tracked definitions contain
-58 calibration tables and 11 masked views. The switchable subset contains 50
+491-map common projection without writing files. The tracked definitions contain
+79 calibration tables and 16 masked views. The switchable subset contains 50
 calibration tables plus ten ignition bit-7 views, for 60 slot-specific editor
+views. Rolling Launch adds one raw configuration table and five per-map masked
 views. Both formats retain the common `JK08A` identity; no separate map-switching
 definition exists.
 

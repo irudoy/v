@@ -22,6 +22,36 @@ COMMON_TABLES = {
     "Rolling Launch Enable Mask (Raw)": "Rolling Launch / Advanced",
 }
 
+DEFAULT_VISIBLE_TABLES = {
+    "Accelerator Pedal High-State Hysteresis (0x8FDC)":
+        "Electronic Throttle Control / Accelerator Pedal / Thresholds",
+    "Stationary Rev Limiter Readiness Threshold (0x911C)":
+        "Limiters / Stationary Rev Limiter",
+    "Intake Cam Timing Conditional Correction": "Variable Valve Timing / Intake Cam",
+    "Knock Sensor Circuit Monitor Surface A (0xABBA)":
+        "Diagnostics / Knock Sensor Monitor",
+    "Knock Sensor Circuit Monitor Surface B (0xABFA)":
+        "Diagnostics / Knock Sensor Monitor",
+    "Intake Cam Timing Main": "Variable Valve Timing / Intake Cam",
+    "Intake Cam Timing Cold": "Variable Valve Timing / Intake Cam",
+    "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
+    "Engine Torque Map": "Transmission / Shifting Performance",
+    "Knock Slice Map - parallel bank (0x10F8E)":
+        "Ignition Timing / Knock Control / Thresholds",
+    "Initial Retard Quantity - unresolved mode (0x1202E)":
+        "Ignition Timing / Transient Correction",
+    "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
+    "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
+    "Stationary Rev Limiter Accumulator Step (0x124D2)":
+        "Limiters / Stationary Rev Limiter",
+    "Injection Pulse Channel Multiplier (0x129C0)": "Fuel Delivery / Main",
+    "Target Throttle Valve Opening Table": "Electronic Throttle Control / Main",
+    "Engine Torque Scaled Correction vs RPM": "Transmission / Shifting Performance",
+    "Engine Torque Base Correction vs RPM": "Transmission / Shifting Performance",
+    "QH0 / Torque Conversion Map Trustful": "Electronic Throttle Control / Main",
+    "Target Throttle Valve Opening Table Trustful": "Electronic Throttle Control / Main",
+}
+
 SLOT_TABLES = {
     "Fuel Targets": "Fuelling / Fuel Targets",
     "Fuel Compensation Main": "Fuelling / Fuel Compensation",
@@ -81,6 +111,19 @@ class EmitDefStaticAxesTest(unittest.TestCase):
     def test_direct_row_major_map_accepts_two_static_axes(self):
         self.assertIsNone(
             emit_def.emittable(self.map, {}, self.presentation)
+        )
+
+    def test_definition_gate_requires_presentation_metadata(self):
+        presentation = dict(self.presentation)
+        del presentation["category"]
+        self.assertEqual(
+            emit_def.definition_failure(self.map, {}, presentation),
+            "missing presentation name/category",
+        )
+
+    def test_definition_gate_accepts_a_complete_visible_map(self):
+        self.assertIsNone(
+            emit_def.definition_failure(self.map, {}, self.presentation)
         )
 
     def test_direct_row_major_map_rejects_wrong_axis_length(self):
@@ -275,39 +318,33 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "emit must be a boolean"):
             emit_def.table_emit_enabled({"emit": 1}, False, "0000991a")
 
-    def test_jk08a_allowlist_keeps_research_maps_in_the_source(self):
+    def test_jk08a_defaults_visible_and_explicitly_hides_internal_maps(self):
         with open(ROOT / "defs" / "JK08A.overrides.toml", "rb") as source:
             overrides = tomllib.load(source)
         self.assertTrue(emit_def.map_switching_enabled(overrides))
         default = emit_def.presentation_default_emit(overrides)
-        emitted = {
-            address
-            for address, entry in overrides["table"].items()
-            if emit_def.table_emit_enabled(entry, default, address)
+        self.assertTrue(default)
+        hidden_categories = {
+            "Internal Calculations",
+            "Diagnostics / Internal Calculations",
+            "Electronic Throttle Control / Internal Coordinates",
+            "Unidentified Calibrations",
         }
-        self.assertEqual(
-            emitted,
-            {
-                "000085d9",
-                "0000934e",
-                "0000942c",
-                "0000991a",
-                "00009a1a",
-                "00009b1a",
-                "0000a29a",
-                "0000b33a",
-                "0001108e",
-                "000126e4",
-                "00012718",
-                "00012818",
-                "0001298c",
-                "00008a27",
-                "00009284",
-                "000141f4",
-                "00014274",
-                "0001491a",
-            },
-        )
+        explicitly_hidden = {
+            address: entry
+            for address, entry in overrides["table"].items()
+            if entry.get("emit") is False
+        }
+        self.assertEqual(len(explicitly_hidden), 150)
+        self.assertTrue(all(
+            entry.get("category") in hidden_categories
+            for entry in explicitly_hidden.values()
+        ))
+        self.assertTrue(all(
+            entry.get("emit") is False
+            for entry in overrides["table"].values()
+            if entry.get("category") in hidden_categories
+        ))
         self.assertTrue(
             {"000126e4", "0001298c"} <= set(overrides["table"])
         )
@@ -442,7 +479,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             [],
         )
 
-    def test_tracked_xml_exposes_only_the_tuner_facing_inventory(self):
+    def test_tracked_xml_exposes_default_visible_inventory(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         tuner_items = {
             table.get("name"): table
@@ -453,6 +490,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             table.get("category") for table in rom.findall("./table")
         }
         expected = dict(COMMON_TABLES)
+        expected.update(DEFAULT_VISIBLE_TABLES)
         expected.update({
             slot_name(slot, name): category
             for slot in range(1, 6)
@@ -505,7 +543,25 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                 self.assertEqual(scale.get("expression"), "x-64")
                 self.assertEqual(scale.get("to_byte"), "x+64")
 
-    def test_research_only_tables_remain_outside_the_working_definition(self):
+    def test_internal_tables_remain_outside_the_working_definition(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        addresses = {
+            table.get("storageaddress")
+            for table in rom.findall("./table")
+            if table.get("type") != "Switch"
+        }
+        self.assertTrue({
+            "0xAB0A",
+            "0xB23A",
+            "0x11F6A",
+            "0x120BE",
+            "0x12196",
+            "0x1219E",
+            "0x121A6",
+            "0x14E52",
+        }.isdisjoint(addresses))
+
+    def test_default_visible_tables_reach_the_working_definition(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         addresses = {
             table.get("storageaddress")
@@ -517,7 +573,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "0x0911C",
             "0x10F8E",
             "0x124D2",
-        }.isdisjoint(addresses))
+        } <= addresses)
 
     def test_maf_tables_use_reviewed_candidate_voltage_axes(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")

@@ -9,11 +9,12 @@
 # The definition file is not a source for either set, and edits to it do not survive the next
 # run.
 #
-# Definition output has two independent gates. The presentation layer selects maps intended
-# for tuner-facing definitions; the interpretation gate then requires table role, semantics,
-# scaling, confidence, and complete geometry. Maps hidden by presentation remain available in
-# the canonical graph and ledger. The report distinguishes hidden maps from rejected maps so
-# that presentation policy is not mistaken for missing reverse-engineering evidence.
+# Definition output has two independent gates. The presentation layer can explicitly hide maps
+# that are not intended for tuner-facing definitions; every other map reaches the definition
+# gate, which requires table role, semantics, scaling, confidence, and complete geometry. Maps
+# hidden by presentation remain available in the canonical graph and ledger. An explicit
+# emit=true is strict: a selected map that cannot be rendered stops generation. Default-visible
+# maps that lack sufficient evidence are rejected and reported without blocking valid output.
 #
 # Put confidence labels where each assertion appears:
 #   map confidence     -> generated comment above the table;
@@ -824,6 +825,30 @@ def emittable(m, axes, ovr=None):
     return None
 
 
+def definition_failure(m, axes, ovr=None):
+    """Return why a presentation-visible map cannot be rendered, or None."""
+    ovr = ovr or {}
+    why = emittable(m, axes, ovr)
+    if why:
+        return why
+    if not ovr.get("name") or not ovr.get("category"):
+        return "missing presentation name/category"
+    # For a map without an axis, only an override can provide cell labels.
+    if m["dims"] == 1 and not (m["axis_x"] or m["steps"]):
+        if len(ovr.get("static_axis", [])) != m["width"]:
+            return f'a static_axis with {m["width"]} labels is required'
+    elif m["dims"] == 1 and "static_axis" in ovr:
+        if m["axis_x"]:
+            return f'static_axis overlaps graph axis {hexa(m["axis_x"][0])}'
+        if len(ovr["static_axis"]) != m["width"]:
+            return f'static_axis must contain {m["width"]} labels'
+    if m["dims"] == 2 and m["axis_x"] and m["axis_y"]:
+        static_keys = {"static_axis_x", "static_axis_y"} & set(ovr)
+        if static_keys:
+            return "static axis overlaps graph axes: " + ", ".join(sorted(static_keys))
+    return None
+
+
 def main():
     rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
     romraider_path = (
@@ -858,35 +883,13 @@ def main():
         if not table_emit_enabled(o, default_emit, a):
             hidden.append(m)
             continue
-        why = emittable(m, axes, o)
+        why = definition_failure(m, axes, o)
         if why:
-            if m["semantics"] and m["role"] == "table":
-                skipped.append((a, m["semantics"], why))
-            if o:
+            skipped.append((a, m["semantics"] or "unidentified map", why))
+            if o.get("emit") is True:
                 sys.exit(f"[table.{a}]: visible override does not pass the "
-                         f"interpretation gate: {why}")
+                         f"definition gate: {why}")
             continue
-        if not o.get("name") or not o.get("category"):
-            sys.exit(f"map {hexa(a)} ({m['semantics']}) passes the emission gate but has "
-                     f"no name or category; declare [table.{a}] in "
-                     f"{os.path.basename(ovr_path)}")
-        # For a map without an axis, only an override can provide cell labels.
-        if m["dims"] == 1 and not (m["axis_x"] or m["steps"]):
-            if len(o.get("static_axis", [])) != m["width"]:
-                sys.exit(f"[table.{a}]: the map has no graph axis; "
-                         f"static_axis with {m['width']} labels is required")
-        elif m["dims"] == 1 and "static_axis" in o:
-            if m["axis_x"]:
-                sys.exit(f"[table.{a}]: static_axis overlaps graph axis "
-                         f"{hexa(m['axis_x'][0])}; overrides must not replace it")
-            if len(o["static_axis"]) != m["width"]:
-                sys.exit(f"[table.{a}]: static_axis must contain "
-                         f"{m['width']} labels")
-        if m["dims"] == 2 and m["axis_x"] and m["axis_y"]:
-            static_keys = {"static_axis_x", "static_axis_y"} & set(o)
-            if static_keys:
-                sys.exit(f"[table.{a}]: static axis overlaps graph axes: "
-                         + ", ".join(sorted(static_keys)))
         emit.append(m)
     for a in sorted(ovr.get("axisview", {})):
         if a not in axes:
@@ -1038,7 +1041,7 @@ def main():
     print(f"  catalog: {catalog_map_count} maps; "
           f"projected model: {len(maps)} maps; visible: {len(emit)}; "
           f"hidden by presentation: {len(hidden)}; "
-          f"rejected by interpretation gate: {len(skipped)}")
+          f"rejected by definition gate: {len(skipped)}")
     if (
         definition_projection is not None
         and definition_projection.map_switching is not None
@@ -1063,7 +1066,7 @@ def main():
     for a, sem, why in skipped:
         print(f"    {hexa(a)} {sem}: {why}")
     nosem = sum(1 for m in maps.values() if not m["semantics"] and m["role"] == "table")
-    print(f"    {nosem} additional table-role maps lack semantics and remain open ledger work")
+    print(f"    {nosem} table-role maps lack semantics and remain open ledger work")
 
 
 if __name__ == "__main__":

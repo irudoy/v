@@ -10,23 +10,32 @@
     <REGION type="0xFFFFFFFF" startaddress="0x0" size="0x100000" regioncolor="0x0" regionflags="0x0" name="Binary File" desc="Exact JK08A 0x100000-byte ROM image" />
     <CATEGORY index="0x0" name="Diagnostics / DTC / Disable Groups" />
     <CATEGORY index="0x1" name="Diagnostics / DTC / Individual" />
-    <CATEGORY index="0x2" name="Fuelling / Engine Load" />
-    <CATEGORY index="0x3" name="Fuelling / Fuel Compensation" />
-    <CATEGORY index="0x4" name="Fuelling / Fuel Targets" />
-    <CATEGORY index="0x5" name="Fuelling / MAF Scaling" />
-    <CATEGORY index="0x6" name="Fuelling / Overrun" />
-    <CATEGORY index="0x7" name="Ignition Timing / Knock Control" />
-    <CATEGORY index="0x8" name="Ignition Timing / Main" />
-    <CATEGORY index="0x9" name="Limiters / Rev Limit" />
-    <CATEGORY index="0xA" name="Limiters / Stationary Rev Limiter" />
-    <CATEGORY index="0xB" name="NATS / Immobilizer" />
-    <CATEGORY index="0xC" name="Rolling Launch / Advanced" />
-    <CATEGORY index="0xD" name="Rolling Launch / Map Enable" />
+    <CATEGORY index="0x2" name="Diagnostics / Knock Sensor Monitor" />
+    <CATEGORY index="0x3" name="Electronic Throttle Control / Accelerator Pedal / Thresholds" />
+    <CATEGORY index="0x4" name="Electronic Throttle Control / Main" />
+    <CATEGORY index="0x5" name="Fuel Delivery / Main" />
+    <CATEGORY index="0x6" name="Fuelling / Engine Load" />
+    <CATEGORY index="0x7" name="Fuelling / Enrichment" />
+    <CATEGORY index="0x8" name="Fuelling / Fuel Compensation" />
+    <CATEGORY index="0x9" name="Fuelling / Fuel Targets" />
+    <CATEGORY index="0xA" name="Fuelling / MAF Scaling" />
+    <CATEGORY index="0xB" name="Fuelling / Overrun" />
+    <CATEGORY index="0xC" name="Ignition Timing / Knock Control" />
+    <CATEGORY index="0xD" name="Ignition Timing / Knock Control / Thresholds" />
+    <CATEGORY index="0xE" name="Ignition Timing / Main" />
+    <CATEGORY index="0xF" name="Ignition Timing / Transient Correction" />
+    <CATEGORY index="0x10" name="Limiters / Rev Limit" />
+    <CATEGORY index="0x11" name="Limiters / Stationary Rev Limiter" />
+    <CATEGORY index="0x12" name="NATS / Immobilizer" />
+    <CATEGORY index="0x13" name="Rolling Launch / Advanced" />
+    <CATEGORY index="0x14" name="Rolling Launch / Map Enable" />
+    <CATEGORY index="0x15" name="Transmission / Shifting Performance" />
+    <CATEGORY index="0x16" name="Variable Valve Timing / Intake Cam" />
   </XDFHEADER>
   <XDFPATCH uniqueid="0x3B07" flags="0x0">
     <title>Developer Immobilizer</title>
     <description>Exact JK08A only. Bit 0 enables ECM immobilizer enforcement. Vehicle start and operation verified. NATS DTC suppression is independent. Base state: Enabled (Stock). Patched state: Disabled (IMMO OFF).</description>
-    <CATEGORYMEM index="0" category="12" />
+    <CATEGORYMEM index="0" category="19" />
     <XDFPATCHENTRY name="Developer Immobilizer" address="0x8725" datasize="0x1" patchdata="00" basedata="01" />
   </XDFPATCH>
   <XDFPATCH uniqueid="0xA555" flags="0x0">
@@ -386,10 +395,409 @@
     <XDFPATCHENTRY name="P0057 [178] descriptor" address="0x19BB8" datasize="0xC" patchdata="000000000000000000000000" basedata="330404000000005700000000" />
     <XDFPATCHENTRY name="P0057 [178] attribute" address="0x1618C" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
+  <XDFTABLE uniqueid="0x9D3C" flags="0x0">
+    <title>Accelerator Pedal High-State Hysteresis (0x8FDC)</title>
+    <description>Exact JK08A. Address 0x8FDC; 1 rows x 2 columns; uint16; map confidence code. Two-word activation/release hysteresis for a normalized dual-channel accelerator-pedal analog quantity. FUN 00047a56 compares current sample ffff266e with cell 0 when previous-cycle state ffff246d bit 7 is clear and with cell 1 when that state is set, then writes current state ffff246a bit 7. Scheduler 00020dfe copies ffff246a to ffff246d once per cycle. The stock activation and release thresholds are 610 and 528 counts. The input is produced from on-chip A/D channels AN10 and AN17 through dual-channel adjustment and minimum selection. Exact JK08A diagnostic paths expose the paired accelerator-pedal sensors as DID 0x120D/0x120E and monitor them through P2122/P2123/P2127/P2128. The operational high-state role is proven; a narrower WOT or kickdown interpretation is not asserted.</description>
+    <CATEGORYMEM index="0" category="4" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Selector</units>
+      <indexcount>2</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="activate" />
+      <LABEL index="1" value="release" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x8FDC" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="2" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>normalized ADC counts</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x229B" flags="0x0">
+    <title>Intake Cam Timing Main</title>
+    <description>Exact JK08A. Address 0xB43A; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and load-like byte ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares target reference ffff2326 with both intake-cam timing channels. The Cylinder Filling axis name and 0.5 degree-per-byte conversion remain catalog candidates. Raw coolant thresholds 106 and 131 are exact; the corresponding 56 and 81 degree C values depend on the homologous diagnostic conversion. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="23" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12F1E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Cylinder Filling [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12F3E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB43A" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degrees [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-128)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x6B7D" flags="0x0">
+    <title>Stationary Rev Limiter Readiness Threshold (0x911C)</title>
+    <description>Exact JK08A. Address 0x911C; 1 rows x 1 columns; uint16; map confidence code. Calibrated inclusive readiness threshold for stationary rev-limiter accumulator ffff16a6. FUN 0004f324 sets readiness bit 4 of ffff247f when the accumulator is greater than or equal to this scalar and its secondary gate passes. The stock value is 381 accumulator counts. The threshold controls readiness for stationary fuel-cut/restore hysteresis 000085d9/000085da.</description>
+    <CATEGORYMEM index="0" category="18" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Selector</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="readiness" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x911C" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>accumulator counts</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x48AC" flags="0x0">
+    <title>Intake Cam Timing Cold</title>
+    <description>Exact JK08A. Address 0xB53A; 8 rows x 8 columns; uint8; map confidence code. Cold intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and load-like byte ffff102c and writes ffff1c5e. FUN 000bdc66 uses it at raw coolant &lt;=106 and blends it with warm/main target 0000b43a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Code proves the cold intake-cam target role, raw coolant selection, and centered byte representation. The Cylinder Filling axis name, 0.5 degree-per-byte conversion, and engineering coolant temperatures remain source-derived candidates. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="23" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12EAA" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Cylinder Filling [%] [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12ECA" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB53A" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degrees [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-128)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x78F1" flags="0x0">
+    <title>Intake Cam Timing Conditional Correction</title>
+    <description>Exact JK08A. Address 0xAB5A; 4 rows x 4 columns; uint8; map confidence code. Conditional intake-cam target correction. When ffff2466.bit6 is set, FUN 000bda64 calculates clamp_u8(output_0000b43a - output_0000ab5a + 128); when the bit is clear, it bypasses this map. The corrected target is written to ffff1c5c and enters the intake CVTC target path. Code proves the conditional intake-cam correction path and centered raw arithmetic. The high-detonation meaning of ffff2466.bit6, the Cylinder Filling axis name, and the 0.5 degree-per-byte conversion remain catalog candidates. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="23" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12F92" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Cylinder Filling [%] [cand]</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12F9A" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xAB5A" mmedelementsizebits="8" mmedrowcount="4" mmedcolcount="4" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degrees [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-128)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xCF54" flags="0x0">
+    <title>Stationary Rev Limiter Accumulator Step (0x124D2)</title>
+    <description>Exact JK08A. Address 0x124D2; 1 rows x 16 columns; uint8; map confidence code. One-dimensional signed-offset step table for stationary rev-limiter readiness accumulator ffff16a6. Every time timer ffff258a expires, FUN 0004f324 decodes the interpolated byte as x-128, adds it to the accumulator with saturation to 0..65535, and reloads the timer with 100. The lookup coordinate is q=clamp((signed16(ffff11bc)-160)/2,0,255). Input ffff11bc is RPM/12.5, so origin 160 is 2000 RPM and each two-count selector step is 25 RPM. At or below 2000 RPM the stock result is 128 and step zero. In the high-RPM limiter region result 255 gives step 127; exactly three expiries reach inclusive readiness threshold 381, or 300 tenth-phase counts. Candidate Pphi=20 MHz converts this to about 3.072 seconds.</description>
+    <CATEGORYMEM index="0" category="18" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Raw input (step 16)</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="16" />
+      <LABEL index="2" value="32" />
+      <LABEL index="3" value="48" />
+      <LABEL index="4" value="64" />
+      <LABEL index="5" value="80" />
+      <LABEL index="6" value="96" />
+      <LABEL index="7" value="112" />
+      <LABEL index="8" value="128" />
+      <LABEL index="9" value="144" />
+      <LABEL index="10" value="160" />
+      <LABEL index="11" value="176" />
+      <LABEL index="12" value="192" />
+      <LABEL index="13" value="208" />
+      <LABEL index="14" value="224" />
+      <LABEL index="15" value="240" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x124D2" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>accumulator counts</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xABEC" flags="0x0">
+    <title>Injection Pulse Channel Multiplier (0x129C0)</title>
+    <description>Exact JK08A. Address 0x129C0; 1 rows x 6 columns; uint8; map confidence code. Six-channel injection-pulse multiplier indexed directly by channel number 0..5. For a positive calculated pulse, FUN_0004eba2 multiplies by the selected byte, shifts the product right by 7, saturates to uint16, and writes the raw and transformed six-channel output arrays. All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in override mask ffff22e0 bypasses this multiplier and selects word ffff2436. The trace proves channel indexing but does not establish the physical cylinder order; presentation labels remain generic channel numbers. Static diagnostic context: INJ PULSE-B1 [code, homologous_vq35hr, via map evidence: writes].</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Channel</units>
+      <indexcount>6</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="1" />
+      <LABEL index="1" value="2" />
+      <LABEL index="2" value="3" />
+      <LABEL index="3" value="4" />
+      <LABEL index="4" value="5" />
+      <LABEL index="5" value="6" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x129C0" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="6" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>ratio</units>
+      <decimalpl>4</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xB362" flags="0x0">
+    <title>Knock Sensor Circuit Monitor Surface A (0xABBA)</title>
+    <description>Exact JK08A. Address 0xABBA; 8 rows x 8 columns; uint8; map confidence code. Knock Sensor Circuit Monitor Surface A: the first mode surface in the evaluation path for P0327/P0328/P0332/P0333. Output ffff338a scales the monitor metric, participates in accumulation into ffff3334, and reaches diagnostic state byte ffff4204. The surface is selected when byte[ffff3427] &lt;= byte[0x8796], where the ROM threshold is 95. The physical unit of raw and the direction in which increasing a cell affects the final DTC verdict are unknown. Static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom]; DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom].</description>
+    <CATEGORYMEM index="0" category="3" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12BEA" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Base Fuel Schedule (ms) [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X/8">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12BE2" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xABBA" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x7666" flags="0x0">
+    <title>Knock Sensor Circuit Monitor Surface B (0xABFA)</title>
+    <description>Exact JK08A. Address 0xABFA; 8 rows x 8 columns; uint8; map confidence code. Knock Sensor Circuit Monitor Surface B: the second mode surface in the evaluation path for P0327/P0328/P0332/P0333. Output ffff338a scales the monitor metric, participates in accumulation into ffff3334, and reaches diagnostic state byte ffff4204. The surface is selected when byte[ffff3427] &gt; byte[0x8796], where the ROM threshold is 95. The physical unit of raw and the direction in which increasing a cell affects the final DTC verdict are unknown. Static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom]; DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom].</description>
+    <CATEGORYMEM index="0" category="3" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12BEA" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Base Fuel Schedule (ms) [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X/8">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x12BE2" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xABFA" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xAA84" flags="0x0">
     <title>Calculated Load</title>
     <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence code. Sixteen-point Base Fuel Schedule normalization reference for the calculated-load byte. Lookup M by RPM/25 byte ffff11b3 enters q=floor((uint16[ffff1024]&lt;&lt;8)/M); an optional second normalization uses ffff329f, and the result is clamped to 255 and written to ffff413e for J1979 Mode 01 PID 0x04. The exact image closes both wrapper branches: 000263f4 calls the complete uint16 interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell 15 otherwise. Exact DID 0x1208 identifies numerator ffff1024 as current Base Fuel Schedule; the quotient therefore compares it with a same-dimension 100% reference. FUN 0008083c optionally applies floor((q&lt;&lt;7)/uint8[ffff329f]), clamps to 255, and writes ffff413e. FUN 00035856 returns this byte for PID 0x04; standard conversion is 100*A/255. The operational role has code confidence. The raw/2048 ms conversion and static RPM-axis presentation remain candidate and require hardware validation. Static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence: writes].</description>
-    <CATEGORYMEM index="0" category="3" />
+    <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Raw input (step 4096)</units>
@@ -446,7 +854,7 @@
   <XDFTABLE uniqueid="0xE486" flags="0x0">
     <title>MAF Factor</title>
     <description>Exact JK08A. Address 0x8A27; 1 rows x 1 columns; uint8; map confidence code. Unsigned airflow-unit scalar in the primary Base Fuel Schedule calculation. With Q=uint32[ffff1e38], F=ROM8[0x8a27], K=ROM16[0x9284], E=ROM8[0x88fb], and engine-speed count N, FUN 0003b75c forms min(floor(floor(F*K*Q/256)/(E*N)),0x726f9) before the final fixed-point conversion to ffff1e40. Stock F is 109. The A2L MAF Factor entry matches the byte's operational position, representation, and cross-ROM literal-pool signature and distinguishes it from K-Value. Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132 for JK00D. The engineering unit and multiplier remain source-derived pending hardware validation.</description>
-    <CATEGORYMEM index="0" category="6" />
+    <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -485,10 +893,72 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x2B0E" flags="0x0">
+    <title>Knock Slice Map - parallel bank (0x10F8E)</title>
+    <description>Exact JK08A. Address 0x10F8E; 6 rows x 16 columns; uint16; map confidence candidate. Parallel Knock Slice threshold bank: structural counterpart of active per-cylinder knock-threshold map 0x1108e. The array is organized as 6 cylinders by 16 engine-speed points. No direct xref to this base was found, so the specific mode and bank activity remain candidate.</description>
+    <CATEGORYMEM index="0" category="14" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="400" />
+      <LABEL index="1" value="800" />
+      <LABEL index="2" value="1200" />
+      <LABEL index="3" value="1600" />
+      <LABEL index="4" value="2000" />
+      <LABEL index="5" value="2400" />
+      <LABEL index="6" value="2800" />
+      <LABEL index="7" value="3200" />
+      <LABEL index="8" value="3600" />
+      <LABEL index="9" value="4000" />
+      <LABEL index="10" value="4400" />
+      <LABEL index="11" value="4800" />
+      <LABEL index="12" value="5200" />
+      <LABEL index="13" value="5600" />
+      <LABEL index="14" value="6000" />
+      <LABEL index="15" value="6400" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Cylinder</units>
+      <indexcount>6</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="1" />
+      <LABEL index="1" value="2" />
+      <LABEL index="2" value="3" />
+      <LABEL index="3" value="4" />
+      <LABEL index="4" value="5" />
+      <LABEL index="5" value="6" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x10F8E" mmedelementsizebits="16" mmedrowcount="6" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>knock strength [cand]</units>
+      <decimalpl>3</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.0015259">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xAA3A" flags="0x0">
     <title>Base Fuel Schedule K-Value</title>
     <description>Exact JK08A. Address 0x9284; 1 rows x 1 columns; uint16; map confidence code. Base Fuel Schedule K-Value. The primary calculation in FUN 0003b75c multiplies nonnegative MAF aggregate ffff1e38 by this uint16 scalar before fixed-point normalization produces ffff1e40 and, downstream, Base Fuel Schedule DID 0x1208. Exact code establishes the address, uint16 representation, stock value 26806, MAF-to-BFS position, and multiplicative role. UpRev names this calibration K - Fuel Multiplier and states MAF * K = BFS; A2L independently names it K-Value and supplies ms/kg. The engineering unit remains source-derived pending hardware validation. A2L MAF Factor is a separate airflow scalar and is not an alias for this word. Static diagnostic context: CID=1208H_B/FUEL SCHDL [code, nissan_family_candidate, via map evidence: writes].</description>
-    <CATEGORYMEM index="0" category="6" />
+    <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -527,10 +997,109 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xE649" flags="0x0">
+    <title>Fuel enrichment vs MBT-like axis (0x1236A)</title>
+    <description>Exact JK08A. Address 0x1236A; 1 rows x 16 columns; uint8; map confidence candidate. Fuel enrichment vs MBT-like axis Input byte[0xFFFF11AE], axis step 8; feeds fuel rather than angle according to K2Y analysis.</description>
+    <CATEGORYMEM index="0" category="8" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1238A" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1236A" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xC113" flags="0x0">
+    <title>Conditional DFCO Entry Delay - scheduler counts (0x120F6)</title>
+    <description>Exact JK08A. Address 0x120F6; 1 rows x 16 columns; uint8; map confidence code. Conditional stage-1 DFCO entry-delay table. FUN 0004fe9c interpolates it from clamp(max(vehicle-speed snapshot ffff110e - 6,0)*8,0,255), places the result in the high byte of its returned delay word, and FUN 000503e0 loads that byte into countdown timer ffff2571. All 16 cells equal 60. Stock ROM8[0000870c].bit7 is clear, so this table is selected only by the non-stock bit7 branch with ffff2468.bit7 set, warm coolant, and RPM below 3000. The timer decrements once per DFCO scheduler event. Its exact period is 204800/Pphi seconds; 10.24 ms/count is a board-level candidate pending target clock confirmation. Result disposition: state_timer.</description>
+    <CATEGORYMEM index="0" category="12" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Raw input (step 16)</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="16" />
+      <LABEL index="2" value="32" />
+      <LABEL index="3" value="48" />
+      <LABEL index="4" value="64" />
+      <LABEL index="5" value="80" />
+      <LABEL index="6" value="96" />
+      <LABEL index="7" value="112" />
+      <LABEL index="8" value="128" />
+      <LABEL index="9" value="144" />
+      <LABEL index="10" value="160" />
+      <LABEL index="11" value="176" />
+      <LABEL index="12" value="192" />
+      <LABEL index="13" value="208" />
+      <LABEL index="14" value="224" />
+      <LABEL index="15" value="240" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x120F6" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>DFCO scheduler counts</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x5BE9" flags="0x0">
     <title>Ignition Timing Trim Cold</title>
     <description>Exact JK08A. Address 0x991A; 16 rows x 16 columns; uint8; map confidence code. Cold timing-state surface. Coolant-coordinate selection in 0004e1c0 uses it below the cold threshold and blends it with the selected hot surface in the transition band. The low seven bits feed timing state and bit 7 remains a separate control field. This view edits mask 0x7F and preserves the other bits in each cell. The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across the trio. Code proves selection and downstream state flow, but not a direct final-angle or calculated-MBT interpretation. The physical name and scale remain A2L/catalog-supported candidates.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -1596,7 +2165,7 @@
   <XDFTABLE uniqueid="0x1FDE" flags="0x0">
     <title>Knock Control Enable - Cold</title>
     <description>Exact JK08A. Address 0x991A; 16 rows x 16 columns; uint8; map confidence code. Cold timing-state surface. Coolant-coordinate selection in 0004e1c0 uses it below the cold threshold and blends it with the selected hot surface in the transition band. The low seven bits feed timing state and bit 7 remains a separate control field. This view edits mask 0x80 and preserves the other bits in each cell. The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across the trio. Code proves selection and downstream state flow, but not a direct final-angle or calculated-MBT interpretation. The physical name and scale remain A2L/catalog-supported candidates.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -2662,7 +3231,7 @@
   <XDFTABLE uniqueid="0x1E69" flags="0x0">
     <title>Knock Sensitivity</title>
     <description>Exact JK08A. Address 0x1108E; 6 rows x 16 columns; uint16; map confidence code. Knock Slice Map: per-cylinder knock threshold by engine speed. Measured knock strength exceeding the interpolated threshold contributes to increasing the knock count. 00049ffc selects a cylinder row, interpolates 16 uint16 points along axis 0x15340, and stores the threshold for comparison in 0004a238. Value 0xffff is the uint16 upper bound and makes exceeding the threshold practically impossible.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Engine Speed [RPM]</units>
@@ -2721,10 +3290,223 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x94A3" flags="0x0">
+    <title>QH0 / Torque Conversion Map</title>
+    <description>Exact JK08A. Address 0xE98E; 16 rows x 16 columns; uint16; map confidence candidate. Primary QH0/torque conversion surface. Forward lookups convert RPM and a QH0 coordinate into offset-binary requested torque; FUN 00073432 interpolates a complete row at current RPM and reverses the relation to recover the QH0 coordinate from a centered signed request. All forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The stock 16x16 contents, RPM axis, and QH0 coordinate table are byte-identical to trustful family 000175c8/00018716/00018ac6. The exact duplicate pair and bidirectional code topology select the A2L primary/trustful concept; the physical units and multiplier require hardware validation. Result disposition: consumer and inverse coordinate source.</description>
+    <CATEGORYMEM index="0" category="5" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x14114" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>QH0 Flow Potential [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.00152588">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x11D0C" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xE98E" mmedelementsizebits="16" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Requested Torque [Nm] [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.1-3276.8">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x2A88" flags="0x0">
+    <title>QH0 / Torque Conversion Map Trustful</title>
+    <description>Exact JK08A. Address 0x175C8; 16 rows x 16 columns; uint16; map confidence candidate. Trustful QH0/torque conversion surface. Forward lookups convert RPM and a QH0 coordinate into offset-binary requested torque; FUN 00073628 interpolates a complete row at current RPM and reverses the relation to recover the QH0 coordinate from centered request ffff19c6. Forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The stock contents and both axes are byte-identical to primary family 0000e98e/00011d0c/00014114, matching the A2L requirement that primary and trustful maps remain identical. The physical units and multiplier require hardware validation. Result disposition: consumer and inverse coordinate source.</description>
+    <CATEGORYMEM index="0" category="5" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x18AC6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>QH0 Flow Potential [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.00152588">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x18716" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x175C8" mmedelementsizebits="16" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Requested Torque [Nm] [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.1-3276.8">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x4CD3" flags="0x0">
+    <title>Target Throttle Valve Opening Table</title>
+    <description>Exact JK08A. Address 0x13202; 1 rows x 32 columns; uint16; map confidence candidate. Primary target-throttle angle-to-opening-area table. Paired throttle-position paths convert both angle-domain channels through 00013202, average or combine them in the opening-area domain, and use 000155a0 in reverse to recover an angle coordinate. The 32 values are monotonic and byte-identical to trustful table 00018766; axis 000155a0 is byte-identical to trustful axis 000190d0. This exact duplicated pair matches the two A2L Target Throttle Valve Opening entries and distinguishes it from the single Throttle Body Opening Area Calibration Table entry. Exact DIDs and preprocessing bind the exposed source path to paired throttle-position feedback. Physical units and scale require hardware validation.</description>
+    <CATEGORYMEM index="0" category="5" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x155A0" mmedelementsizebits="16" mmedcolcount="32" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Throttle Valve Opening [deg] [cand]</units>
+      <indexcount>32</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.0275">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x13202" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="32" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Throttle Opening Area [cm^2] [cand]</units>
+      <decimalpl>3</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.0008">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x6AA6" flags="0x0">
+    <title>Target Throttle Valve Opening Table Trustful</title>
+    <description>Exact JK08A. Address 0x18766; 1 rows x 32 columns; uint16; map confidence candidate. Trustful throttle-valve angle-to-opening-area table. Forward lookups convert two channel coordinates into additive opening-area values, while inverse consumers use 00018766 as the search axis and return the angle coordinate through 000190d0. A one-time call at zero stores the baseline in ffff1caa. The two forward results are added with uint16 saturation into ffff1d18; inverse paths divide by two before converting through 000190d0. The stored table is byte-identical to primary 00013202, matching the catalog's primary/trustful pair. Physical units and scale require hardware validation.</description>
+    <CATEGORYMEM index="0" category="5" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x190D0" mmedelementsizebits="16" mmedcolcount="32" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Throttle Valve Opening [deg] [cand]</units>
+      <indexcount>32</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.0275">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x18766" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="32" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Throttle Opening Area [cm^2] [cand]</units>
+      <decimalpl>3</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.0008">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x590D" flags="0x0">
+    <title>Initial Retard Quantity - unresolved mode (0x1202E)</title>
+    <description>Exact JK08A. Address 0x1202E; 1 rows x 4 columns; uint8; map confidence candidate. Candidate of the Initial Retard Quantity Table family: initial ignition-retard quantity for transient correction; the specific operating-mode variant is unknown. Code proves a conditional unsigned 1D-4 lookup: when (RAM ffff2459 &amp; 0x20)==0, the accessor constrains the index to 0..255, interpolates uint8 nodes, and copies the byte result into two RAM regions. All four cells equal 200, so every executed lookup writes 200. The catalog match establishes only a candidate for the general family and units, without an address or concept association. Index: x = min(max((uint16_t)r5 - 96, 0), 255). Implicit nodes are located at x=0, 64, 128, 192: for x&lt;192, i=x/64 and Q0.16 fraction (x-i*64)*1024 are used; for x&gt;=192, element 3 is returned. Result disposition: writes (RAM ffff1ee0 at site 0003e2da; RAM ffff257a at site 0003e2de). Blocking condition: The machine trace ends after writes 0003e2da/ffff1ee0 and 0003e2de/ffff257a: the artifact contains no external readers of either register and no consumer associated with the lookup result. The six shown consumers read ffff4226, which is not a sink for the map result. Therefore, code does not establish physical semantics or distinguish the five operating-mode variants in the catalog.</description>
+    <CATEGORYMEM index="0" category="16" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Raw input (step 64)</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="64" />
+      <LABEL index="2" value="128" />
+      <LABEL index="3" value="192" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1202E" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="4" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x95D4" flags="0x0">
     <title>MAF Sensor Scaling Bank 2</title>
     <description>Exact JK08A. Address 0x141F4; 1 rows x 64 columns; uint16; map confidence code. Bank 2 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-2 preprocessed sample ffff1e4a, writes uint16 output B to ffff1056, and copies it to working value ffff105a. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. Static diagnostic context: Mass Airflow Sensor Bank 2 [code, homologous_community].</description>
-    <CATEGORYMEM index="0" category="6" />
+    <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>MAF Sensor Voltage [V, cand]</units>
@@ -2829,7 +3611,7 @@
   <XDFTABLE uniqueid="0x4798" flags="0x0">
     <title>MAF Sensor Scaling Bank 1</title>
     <description>Exact JK08A. Address 0x14274; 1 rows x 64 columns; uint16; map confidence code. Bank 1 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-1 preprocessed sample ffff1e48, writes uint16 output A to ffff1054, and copies it to working value ffff1058. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. Static diagnostic context: Mass Airflow Sensor Bank 1 [code, homologous_community].</description>
-    <CATEGORYMEM index="0" category="6" />
+    <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>MAF Sensor Voltage [V, cand]</units>
@@ -2934,7 +3716,7 @@
   <XDFTABLE uniqueid="0xB53F" flags="0x0">
     <title>Stationary Rev Limiter</title>
     <description>Exact JK08A. Address 0x85D9; 1 rows x 2 columns; uint8; map confidence code. Stationary rev-limiter fuel-cut/restore hysteresis. Entry requires coarse vehicle speed ffff110e to equal zero. With readiness bit 4 of ffff247f set and state bit 5 clear, engine speed ffff11ae reaching cell 0 sets fuel cut. While bit 5 is set, speed below cell 1 restores fueling. FUN 0004ed88 includes the Boolean result in the aggregate fuel-output inhibit path. The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator ffff16a6 to reach ROM16[0000911c]. Exact firmware traces CAN 0x280 vehicle speed through ffff113c, ffff115e, ffff118e, and the scheduler snapshot ffff110e; the required zero value establishes the stationary role. Additional entry gates ffff244f bit 2 and ffff2458 bit 5 remain physically unnamed. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="11" />
+    <CATEGORYMEM index="0" category="18" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -2974,10 +3756,136 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x83D2" flags="0x0">
+    <title>Engine Torque Map</title>
+    <description>Exact JK08A. Address 0x10B8E; 16 rows x 16 columns; uint16; map confidence code. Offset-binary Engine Torque surface. FUN 00065928 indexes rows by current rotational-speed coordinate ffff11b6 and columns by q=min(65535,trunc(u16[ffff1024]*40960/ROM16[00009534])), then writes signed result lookup-32768 to ffff18ca. FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08 consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The column axis is copied from ROM 0002378c to a stack buffer before interpolation. Its 0..0xf000 points decode as 0..150% Cylinder Filling at x*160/65536, and the coordinate formula becomes 100*BFS/scaler. The VQ35HR JK00D homolog uses the byte-identical function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6; its larger scaler and torque range provide independent family evidence. The physical name and x*0.1 Nm scale match the HR A2L Engine Torque Map and require hardware validation. Result disposition: consumer.</description>
+    <CATEGORYMEM index="0" category="22" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x2378C" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Cylinder Filling [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.00244140625">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x14B4A" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x10B8E" mmedelementsizebits="16" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Engine Torque [Nm] [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.1-3276.8">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x6284" flags="0x0">
+    <title>Engine Torque Base Correction vs RPM</title>
+    <description>Exact JK08A. Address 0x154A0; 1 rows x 8 columns; uint16; map confidence code. RPM-indexed unsigned base term in the engine-torque calculation. FUN 00065c26 writes lookup M to ffff18c4 and calculates ffff2408=sat_u16(M-D+C), where D is proportional to current Base Fuel Schedule divided by ROM16[00009534] and C is a calibrated nonnegative correction. FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine Torque Map 00010b8e. This continuous path establishes a common internal torque domain. In stock JK08A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer.</description>
+    <CATEGORYMEM index="0" category="22" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x14ABA" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x154A0" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Engine Torque [Nm] [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.1">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x1E2" flags="0x0">
+    <title>Engine Torque Scaled Correction vs RPM</title>
+    <description>Exact JK08A. Address 0x14C1A; 1 rows x 8 columns; uint16; map confidence code. RPM-indexed unsigned coefficient for a bounded engine-torque correction. FUN 000658a4 multiplies the interpolated value by a nonnegative byte difference, divides by 256, and writes the result to ffff14e2 for the downstream torque-state arithmetic. The direct scratch copy ffff14e4 has no external reader, but the same live lookup result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN 00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-binary Engine Torque Map 00010b8e. The continuous consumer path assigns an engine-torque correction role. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer.</description>
+    <CATEGORYMEM index="0" category="22" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x14ABA" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x14C1A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Engine Torque [Nm] [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.1">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x341E" flags="0x0">
     <title>Map 1 - Fuel Targets</title>
     <description>Exact JK08A. Address 0xB33A; 16 rows x 16 columns; uint8; map confidence code. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Common-definition Map 1 uses the canonical stock storage. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Result disposition: writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] -&gt; 000bfe22/000261b8 -&gt; 00026770/00026944/00026c78/00026740 -&gt; 000bfe28 extu.b. ffff2466[0x40]=0 -&gt; 000bfe2e/000bfe30 -&gt; 000bfe6c -&gt; ffff1c5d. ffff2466[0x40]=1 -&gt; 000bfe4c(0000ab4a, uint8 128..148) -&gt; 000bfe50/000bfe52: this-other -&gt; 000bfe54/000bfe56: +128 -&gt; 000bfe58..000bfe68: clamp 0..255 -&gt; 000bfe6c -&gt; ffff1c5d. For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state. The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical identity remains unverified on JK08A hardware.</description>
-    <CATEGORYMEM index="0" category="5" />
+    <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>load (raw)</units>
@@ -3019,7 +3927,7 @@
   <XDFTABLE uniqueid="0x194D" flags="0x0">
     <title>Map 1 - Fuel Compensation Main</title>
     <description>Exact JK08A. Address 0xA29A; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 1 uses the canonical stock storage. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal.</description>
-    <CATEGORYMEM index="0" category="4" />
+    <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11D4C" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>QH0 Flow Quantity [%] [cand]</units>
@@ -3061,7 +3969,7 @@
   <XDFTABLE uniqueid="0x8F4E" flags="0x0">
     <title>Map 1 - DFCO Hold RPM Threshold</title>
     <description>Exact JK08A. Address 0x126E4; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed held-request RPM threshold in DFCO request evaluator FUN 0004fbe2. Exact stock branch logic selects it after upstream DFCO mode bit 5 is already present in both current snapshot ffff2458 and previous snapshot ffff245a, subject to additional runtime gates. Common-definition Map 1 uses the canonical stock storage. The comparison is strict RPM/25 &gt; threshold. The Nissan A2L registry labels this address as the Bosch-family table, but exact JK08A code interpolates and selects it dynamically in stock operation. It is not an inactive-family calibration. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -3118,7 +4026,7 @@
   <XDFTABLE uniqueid="0x3102" flags="0x0">
     <title>Map 1 - DFCO Entry RPM Threshold</title>
     <description>Exact JK08A. Address 0x12718; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 1 uses the canonical stock storage. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -3175,7 +4083,7 @@
   <XDFTABLE uniqueid="0x763F" flags="0x0">
     <title>Map 1 - DFCO Full Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0x12818; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 1 uses the canonical stock storage. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -3232,7 +4140,7 @@
   <XDFTABLE uniqueid="0x2F3D" flags="0x0">
     <title>Map 1 - DFCO Intermediate Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0x1298C; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed upper/intermediate-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff1778. At low vehicle speed RPM above the lower 00012818 threshold and at or below this threshold returns restore class 2. Common-definition Map 1 uses the canonical stock storage. The Nissan A2L registry labels this address as the Bosch-family restore table, but exact JK08A code always interpolates it and uses it in live classifier branches. It is not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -3289,7 +4197,7 @@
   <XDFTABLE uniqueid="0x24E1" flags="0x0">
     <title>Map 1 - Ignition Timing Trim Main</title>
     <description>Exact JK08A. Address 0x9A1A; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x7F and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -4355,7 +5263,7 @@
   <XDFTABLE uniqueid="0xF883" flags="0x0">
     <title>Map 1 - Knock Control Enable - Main</title>
     <description>Exact JK08A. Address 0x9A1A; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x80 and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -5421,7 +6329,7 @@
   <XDFTABLE uniqueid="0x9AB8" flags="0x0">
     <title>Map 1 - Ignition Timing Trim High Det</title>
     <description>Exact JK08A. Address 0x9B1A; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -6487,7 +7395,7 @@
   <XDFTABLE uniqueid="0x1962" flags="0x0">
     <title>Map 1 - Knock Control Enable - High Det</title>
     <description>Exact JK08A. Address 0x9B1A; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 1 uses the canonical stock storage. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -7553,7 +8461,7 @@
   <XDFTABLE uniqueid="0xEE63" flags="0x0">
     <title>Map 1 - Rev Limit - Fuel Cut</title>
     <description>Exact JK08A. Address 0x934E; 2 rows x 2 columns; uint16; map confidence code. Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation threshold and row 1 is the exclusive release boundary. Stock delay zero makes activation immediate. Active state bit 2 of ffff2497 reaches periodic index-27 coordinator 0004ed88 and contributes full global mask 0x3f. Common-definition Map 1 uses the canonical stock storage. The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in column 1. Activation occurs at RPM &gt;= threshold; equality to the release value retains cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the stock path. The public HR A2L catalog supplies the candidate Normal/Reverse column labels.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>State</units>
@@ -7597,7 +8505,7 @@
   <XDFTABLE uniqueid="0xFA55" flags="0x0">
     <title>Map 1 - Rev Limit - Throttle Cut</title>
     <description>Exact JK08A. Address 0x942C; 1 rows x 1 columns; uint16; map confidence code. Calibrated upper rotational-speed threshold in a signed request-limiter path. FUN 0002c648 initializes ffff1796 from this scalar. FUN 0007584e treats 0xffff as disabled; its speed state starts at min(65535,4*N) and then uses min(65535,N+floor(3*S_previous/4)), converging to 4*N. Stock rate steps are zero, so threshold ffff1796 remains 0x2580. Periodic indices 11, 18, 20, 21, and 22 carry candidate ffff19d8 through signed-minimum arbitration and controller bounds to shared signed airflow/torque-request coordinate ffff19c6. Independent FUN 00077892 uses the scalar as an unsigned cap but has no assigned physical semantics. Common-definition Map 1 uses the canonical stock storage. The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut. The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence pending controlled hardware validation.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -7639,7 +8547,7 @@
   <XDFTABLE uniqueid="0x5823" flags="0x0">
     <title>Map 2 - Fuel Targets</title>
     <description>Exact JK08A. Address 0xD2D00; 16 rows x 16 columns; uint8; map confidence code. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Common-definition Map 2 storage is projected from 0xB33A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Result disposition: writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] -&gt; 000bfe22/000261b8 -&gt; 00026770/00026944/00026c78/00026740 -&gt; 000bfe28 extu.b. ffff2466[0x40]=0 -&gt; 000bfe2e/000bfe30 -&gt; 000bfe6c -&gt; ffff1c5d. ffff2466[0x40]=1 -&gt; 000bfe4c(0000ab4a, uint8 128..148) -&gt; 000bfe50/000bfe52: this-other -&gt; 000bfe54/000bfe56: +128 -&gt; 000bfe58..000bfe68: clamp 0..255 -&gt; 000bfe6c -&gt; ffff1c5d. For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state. The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical identity remains unverified on JK08A hardware.</description>
-    <CATEGORYMEM index="0" category="5" />
+    <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>load (raw)</units>
@@ -7681,7 +8589,7 @@
   <XDFTABLE uniqueid="0xD31D" flags="0x0">
     <title>Map 2 - Fuel Compensation Main</title>
     <description>Exact JK08A. Address 0xD3100; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 2 storage is projected from 0xA29A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal.</description>
-    <CATEGORYMEM index="0" category="4" />
+    <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11D4C" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>QH0 Flow Quantity [%] [cand]</units>
@@ -7723,7 +8631,7 @@
   <XDFTABLE uniqueid="0x6120" flags="0x0">
     <title>Map 2 - DFCO Hold RPM Threshold</title>
     <description>Exact JK08A. Address 0xD3F80; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed held-request RPM threshold in DFCO request evaluator FUN 0004fbe2. Exact stock branch logic selects it after upstream DFCO mode bit 5 is already present in both current snapshot ffff2458 and previous snapshot ffff245a, subject to additional runtime gates. Common-definition Map 2 storage is projected from 0x126E4. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. The Nissan A2L registry labels this address as the Bosch-family table, but exact JK08A code interpolates and selects it dynamically in stock operation. It is not an inactive-family calibration. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -7780,7 +8688,7 @@
   <XDFTABLE uniqueid="0x7693" flags="0x0">
     <title>Map 2 - DFCO Entry RPM Threshold</title>
     <description>Exact JK08A. Address 0xD2400; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 2 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -7837,7 +8745,7 @@
   <XDFTABLE uniqueid="0xB397" flags="0x0">
     <title>Map 2 - DFCO Full Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0xD2440; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 2 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -7894,7 +8802,7 @@
   <XDFTABLE uniqueid="0xE5BF" flags="0x0">
     <title>Map 2 - DFCO Intermediate Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0xD3FC0; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed upper/intermediate-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff1778. At low vehicle speed RPM above the lower 00012818 threshold and at or below this threshold returns restore class 2. Common-definition Map 2 storage is projected from 0x1298C. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The Nissan A2L registry labels this address as the Bosch-family restore table, but exact JK08A code always interpolates it and uses it in live classifier branches. It is not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -7951,7 +8859,7 @@
   <XDFTABLE uniqueid="0x1CA4" flags="0x0">
     <title>Map 2 - Ignition Timing Trim Main</title>
     <description>Exact JK08A. Address 0xD2500; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 2 storage is projected from 0x9A1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -9017,7 +9925,7 @@
   <XDFTABLE uniqueid="0xE24C" flags="0x0">
     <title>Map 2 - Knock Control Enable - Main</title>
     <description>Exact JK08A. Address 0xD2500; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 2 storage is projected from 0x9A1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -10083,7 +10991,7 @@
   <XDFTABLE uniqueid="0xE5C0" flags="0x0">
     <title>Map 2 - Ignition Timing Trim High Det</title>
     <description>Exact JK08A. Address 0xD2900; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 2 storage is projected from 0x9B1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -11149,7 +12057,7 @@
   <XDFTABLE uniqueid="0xE94E" flags="0x0">
     <title>Map 2 - Knock Control Enable - High Det</title>
     <description>Exact JK08A. Address 0xD2900; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 2 storage is projected from 0x9B1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -12215,7 +13123,7 @@
   <XDFTABLE uniqueid="0x7BC1" flags="0x0">
     <title>Map 2 - Rev Limit - Fuel Cut</title>
     <description>Exact JK08A. Address 0xD3500; 2 rows x 2 columns; uint16; map confidence code. Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation threshold and row 1 is the exclusive release boundary. Stock delay zero makes activation immediate. Active state bit 2 of ffff2497 reaches periodic index-27 coordinator 0004ed88 and contributes full global mask 0x3f. Common-definition Map 2 storage is projected from 0x934E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in column 1. Activation occurs at RPM &gt;= threshold; equality to the release value retains cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the stock path. The public HR A2L catalog supplies the candidate Normal/Reverse column labels.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>State</units>
@@ -12259,7 +13167,7 @@
   <XDFTABLE uniqueid="0x1943" flags="0x0">
     <title>Map 2 - Rev Limit - Throttle Cut</title>
     <description>Exact JK08A. Address 0xD3520; 1 rows x 1 columns; uint16; map confidence code. Calibrated upper rotational-speed threshold in a signed request-limiter path. FUN 0002c648 initializes ffff1796 from this scalar. FUN 0007584e treats 0xffff as disabled; its speed state starts at min(65535,4*N) and then uses min(65535,N+floor(3*S_previous/4)), converging to 4*N. Stock rate steps are zero, so threshold ffff1796 remains 0x2580. Periodic indices 11, 18, 20, 21, and 22 carry candidate ffff19d8 through signed-minimum arbitration and controller bounds to shared signed airflow/torque-request coordinate ffff19c6. Independent FUN 00077892 uses the scalar as an unsigned cap but has no assigned physical semantics. Common-definition Map 2 storage is projected from 0x942C. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut. The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence pending controlled hardware validation.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -12301,7 +13209,7 @@
   <XDFTABLE uniqueid="0x3214" flags="0x0">
     <title>Map 3 - Fuel Targets</title>
     <description>Exact JK08A. Address 0xD2E00; 16 rows x 16 columns; uint8; map confidence code. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Common-definition Map 3 storage is projected from 0xB33A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Result disposition: writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] -&gt; 000bfe22/000261b8 -&gt; 00026770/00026944/00026c78/00026740 -&gt; 000bfe28 extu.b. ffff2466[0x40]=0 -&gt; 000bfe2e/000bfe30 -&gt; 000bfe6c -&gt; ffff1c5d. ffff2466[0x40]=1 -&gt; 000bfe4c(0000ab4a, uint8 128..148) -&gt; 000bfe50/000bfe52: this-other -&gt; 000bfe54/000bfe56: +128 -&gt; 000bfe58..000bfe68: clamp 0..255 -&gt; 000bfe6c -&gt; ffff1c5d. For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state. The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical identity remains unverified on JK08A hardware.</description>
-    <CATEGORYMEM index="0" category="5" />
+    <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>load (raw)</units>
@@ -12343,7 +13251,7 @@
   <XDFTABLE uniqueid="0x6D44" flags="0x0">
     <title>Map 3 - Fuel Compensation Main</title>
     <description>Exact JK08A. Address 0xD3200; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 3 storage is projected from 0xA29A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal.</description>
-    <CATEGORYMEM index="0" category="4" />
+    <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11D4C" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>QH0 Flow Quantity [%] [cand]</units>
@@ -12385,7 +13293,7 @@
   <XDFTABLE uniqueid="0x5061" flags="0x0">
     <title>Map 3 - DFCO Hold RPM Threshold</title>
     <description>Exact JK08A. Address 0xD3F90; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed held-request RPM threshold in DFCO request evaluator FUN 0004fbe2. Exact stock branch logic selects it after upstream DFCO mode bit 5 is already present in both current snapshot ffff2458 and previous snapshot ffff245a, subject to additional runtime gates. Common-definition Map 3 storage is projected from 0x126E4. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. The Nissan A2L registry labels this address as the Bosch-family table, but exact JK08A code interpolates and selects it dynamically in stock operation. It is not an inactive-family calibration. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -12442,7 +13350,7 @@
   <XDFTABLE uniqueid="0x47D2" flags="0x0">
     <title>Map 3 - DFCO Entry RPM Threshold</title>
     <description>Exact JK08A. Address 0xD2410; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 3 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -12499,7 +13407,7 @@
   <XDFTABLE uniqueid="0x82D6" flags="0x0">
     <title>Map 3 - DFCO Full Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0xD2450; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 3 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -12556,7 +13464,7 @@
   <XDFTABLE uniqueid="0x7378" flags="0x0">
     <title>Map 3 - DFCO Intermediate Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0xD3FD0; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed upper/intermediate-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff1778. At low vehicle speed RPM above the lower 00012818 threshold and at or below this threshold returns restore class 2. Common-definition Map 3 storage is projected from 0x1298C. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The Nissan A2L registry labels this address as the Bosch-family restore table, but exact JK08A code always interpolates it and uses it in live classifier branches. It is not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -12613,7 +13521,7 @@
   <XDFTABLE uniqueid="0xA2FD" flags="0x0">
     <title>Map 3 - Ignition Timing Trim Main</title>
     <description>Exact JK08A. Address 0xD2600; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 3 storage is projected from 0x9A1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -13679,7 +14587,7 @@
   <XDFTABLE uniqueid="0x81EE" flags="0x0">
     <title>Map 3 - Knock Control Enable - Main</title>
     <description>Exact JK08A. Address 0xD2600; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 3 storage is projected from 0x9A1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -14745,7 +15653,7 @@
   <XDFTABLE uniqueid="0x9AC8" flags="0x0">
     <title>Map 3 - Ignition Timing Trim High Det</title>
     <description>Exact JK08A. Address 0xD2A00; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 3 storage is projected from 0x9B1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -15811,7 +16719,7 @@
   <XDFTABLE uniqueid="0x4BB" flags="0x0">
     <title>Map 3 - Knock Control Enable - High Det</title>
     <description>Exact JK08A. Address 0xD2A00; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 3 storage is projected from 0x9B1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -16877,7 +17785,7 @@
   <XDFTABLE uniqueid="0xF3F3" flags="0x0">
     <title>Map 3 - Rev Limit - Fuel Cut</title>
     <description>Exact JK08A. Address 0xD3508; 2 rows x 2 columns; uint16; map confidence code. Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation threshold and row 1 is the exclusive release boundary. Stock delay zero makes activation immediate. Active state bit 2 of ffff2497 reaches periodic index-27 coordinator 0004ed88 and contributes full global mask 0x3f. Common-definition Map 3 storage is projected from 0x934E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in column 1. Activation occurs at RPM &gt;= threshold; equality to the release value retains cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the stock path. The public HR A2L catalog supplies the candidate Normal/Reverse column labels.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>State</units>
@@ -16921,7 +17829,7 @@
   <XDFTABLE uniqueid="0x786F" flags="0x0">
     <title>Map 3 - Rev Limit - Throttle Cut</title>
     <description>Exact JK08A. Address 0xD3522; 1 rows x 1 columns; uint16; map confidence code. Calibrated upper rotational-speed threshold in a signed request-limiter path. FUN 0002c648 initializes ffff1796 from this scalar. FUN 0007584e treats 0xffff as disabled; its speed state starts at min(65535,4*N) and then uses min(65535,N+floor(3*S_previous/4)), converging to 4*N. Stock rate steps are zero, so threshold ffff1796 remains 0x2580. Periodic indices 11, 18, 20, 21, and 22 carry candidate ffff19d8 through signed-minimum arbitration and controller bounds to shared signed airflow/torque-request coordinate ffff19c6. Independent FUN 00077892 uses the scalar as an unsigned cap but has no assigned physical semantics. Common-definition Map 3 storage is projected from 0x942C. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut. The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence pending controlled hardware validation.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -16963,7 +17871,7 @@
   <XDFTABLE uniqueid="0x8C4D" flags="0x0">
     <title>Map 4 - Fuel Targets</title>
     <description>Exact JK08A. Address 0xD2F00; 16 rows x 16 columns; uint8; map confidence code. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Common-definition Map 4 storage is projected from 0xB33A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Result disposition: writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] -&gt; 000bfe22/000261b8 -&gt; 00026770/00026944/00026c78/00026740 -&gt; 000bfe28 extu.b. ffff2466[0x40]=0 -&gt; 000bfe2e/000bfe30 -&gt; 000bfe6c -&gt; ffff1c5d. ffff2466[0x40]=1 -&gt; 000bfe4c(0000ab4a, uint8 128..148) -&gt; 000bfe50/000bfe52: this-other -&gt; 000bfe54/000bfe56: +128 -&gt; 000bfe58..000bfe68: clamp 0..255 -&gt; 000bfe6c -&gt; ffff1c5d. For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state. The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical identity remains unverified on JK08A hardware.</description>
-    <CATEGORYMEM index="0" category="5" />
+    <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>load (raw)</units>
@@ -17005,7 +17913,7 @@
   <XDFTABLE uniqueid="0x773" flags="0x0">
     <title>Map 4 - Fuel Compensation Main</title>
     <description>Exact JK08A. Address 0xD3300; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 4 storage is projected from 0xA29A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal.</description>
-    <CATEGORYMEM index="0" category="4" />
+    <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11D4C" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>QH0 Flow Quantity [%] [cand]</units>
@@ -17047,7 +17955,7 @@
   <XDFTABLE uniqueid="0x873D" flags="0x0">
     <title>Map 4 - DFCO Hold RPM Threshold</title>
     <description>Exact JK08A. Address 0xD3FA0; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed held-request RPM threshold in DFCO request evaluator FUN 0004fbe2. Exact stock branch logic selects it after upstream DFCO mode bit 5 is already present in both current snapshot ffff2458 and previous snapshot ffff245a, subject to additional runtime gates. Common-definition Map 4 storage is projected from 0x126E4. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. The Nissan A2L registry labels this address as the Bosch-family table, but exact JK08A code interpolates and selects it dynamically in stock operation. It is not an inactive-family calibration. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -17104,7 +18012,7 @@
   <XDFTABLE uniqueid="0x1411" flags="0x0">
     <title>Map 4 - DFCO Entry RPM Threshold</title>
     <description>Exact JK08A. Address 0xD2420; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 4 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -17161,7 +18069,7 @@
   <XDFTABLE uniqueid="0xD115" flags="0x0">
     <title>Map 4 - DFCO Full Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0xD2460; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 4 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -17218,7 +18126,7 @@
   <XDFTABLE uniqueid="0x4239" flags="0x0">
     <title>Map 4 - DFCO Intermediate Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0xD3FE0; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed upper/intermediate-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff1778. At low vehicle speed RPM above the lower 00012818 threshold and at or below this threshold returns restore class 2. Common-definition Map 4 storage is projected from 0x1298C. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The Nissan A2L registry labels this address as the Bosch-family restore table, but exact JK08A code always interpolates it and uses it in live classifier branches. It is not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -17275,7 +18183,7 @@
   <XDFTABLE uniqueid="0xC8CA" flags="0x0">
     <title>Map 4 - Ignition Timing Trim Main</title>
     <description>Exact JK08A. Address 0xD2700; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 4 storage is projected from 0x9A1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -18341,7 +19249,7 @@
   <XDFTABLE uniqueid="0x9F37" flags="0x0">
     <title>Map 4 - Knock Control Enable - Main</title>
     <description>Exact JK08A. Address 0xD2700; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 4 storage is projected from 0x9A1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -19407,7 +20315,7 @@
   <XDFTABLE uniqueid="0x2491" flags="0x0">
     <title>Map 4 - Ignition Timing Trim High Det</title>
     <description>Exact JK08A. Address 0xD2B00; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 4 storage is projected from 0x9B1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -20473,7 +21381,7 @@
   <XDFTABLE uniqueid="0xC5B5" flags="0x0">
     <title>Map 4 - Knock Control Enable - High Det</title>
     <description>Exact JK08A. Address 0xD2B00; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 4 storage is projected from 0x9B1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -21539,7 +22447,7 @@
   <XDFTABLE uniqueid="0x4A80" flags="0x0">
     <title>Map 4 - Rev Limit - Fuel Cut</title>
     <description>Exact JK08A. Address 0xD3510; 2 rows x 2 columns; uint16; map confidence code. Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation threshold and row 1 is the exclusive release boundary. Stock delay zero makes activation immediate. Active state bit 2 of ffff2497 reaches periodic index-27 coordinator 0004ed88 and contributes full global mask 0x3f. Common-definition Map 4 storage is projected from 0x934E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in column 1. Activation occurs at RPM &gt;= threshold; equality to the release value retains cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the stock path. The public HR A2L catalog supplies the candidate Normal/Reverse column labels.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>State</units>
@@ -21583,7 +22491,7 @@
   <XDFTABLE uniqueid="0xDD5A" flags="0x0">
     <title>Map 4 - Rev Limit - Throttle Cut</title>
     <description>Exact JK08A. Address 0xD3524; 1 rows x 1 columns; uint16; map confidence code. Calibrated upper rotational-speed threshold in a signed request-limiter path. FUN 0002c648 initializes ffff1796 from this scalar. FUN 0007584e treats 0xffff as disabled; its speed state starts at min(65535,4*N) and then uses min(65535,N+floor(3*S_previous/4)), converging to 4*N. Stock rate steps are zero, so threshold ffff1796 remains 0x2580. Periodic indices 11, 18, 20, 21, and 22 carry candidate ffff19d8 through signed-minimum arbitration and controller bounds to shared signed airflow/torque-request coordinate ffff19c6. Independent FUN 00077892 uses the scalar as an unsigned cap but has no assigned physical semantics. Common-definition Map 4 storage is projected from 0x942C. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut. The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence pending controlled hardware validation.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -21625,7 +22533,7 @@
   <XDFTABLE uniqueid="0xB92A" flags="0x0">
     <title>Map 5 - Fuel Targets</title>
     <description>Exact JK08A. Address 0xD3000; 16 rows x 16 columns; uint8; map confidence code. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Common-definition Map 5 storage is projected from 0xB33A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40 is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this - map_0000ab4a + 128), otherwise it is passed through directly. Result disposition: writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] -&gt; 000bfe22/000261b8 -&gt; 00026770/00026944/00026c78/00026740 -&gt; 000bfe28 extu.b. ffff2466[0x40]=0 -&gt; 000bfe2e/000bfe30 -&gt; 000bfe6c -&gt; ffff1c5d. ffff2466[0x40]=1 -&gt; 000bfe4c(0000ab4a, uint8 128..148) -&gt; 000bfe50/000bfe52: this-other -&gt; 000bfe54/000bfe56: +128 -&gt; 000bfe58..000bfe68: clamp 0..255 -&gt; 000bfe6c -&gt; ffff1c5d. For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state. The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical identity remains unverified on JK08A hardware.</description>
-    <CATEGORYMEM index="0" category="5" />
+    <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>load (raw)</units>
@@ -21667,7 +22575,7 @@
   <XDFTABLE uniqueid="0x11F6" flags="0x0">
     <title>Map 5 - Fuel Compensation Main</title>
     <description>Exact JK08A. Address 0xD3400; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Common-definition Map 5 storage is projected from 0xA29A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal.</description>
-    <CATEGORYMEM index="0" category="4" />
+    <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11D4C" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>QH0 Flow Quantity [%] [cand]</units>
@@ -21709,7 +22617,7 @@
   <XDFTABLE uniqueid="0xD4FE" flags="0x0">
     <title>Map 5 - DFCO Hold RPM Threshold</title>
     <description>Exact JK08A. Address 0xD3FB0; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed held-request RPM threshold in DFCO request evaluator FUN 0004fbe2. Exact stock branch logic selects it after upstream DFCO mode bit 5 is already present in both current snapshot ffff2458 and previous snapshot ffff245a, subject to additional runtime gates. Common-definition Map 5 storage is projected from 0x126E4. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. The Nissan A2L registry labels this address as the Bosch-family table, but exact JK08A code interpolates and selects it dynamically in stock operation. It is not an inactive-family calibration. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -21766,7 +22674,7 @@
   <XDFTABLE uniqueid="0x2550" flags="0x0">
     <title>Map 5 - DFCO Entry RPM Threshold</title>
     <description>Exact JK08A. Address 0xD2430; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed rising-edge DFCO entry RPM threshold in FUN 0004fbe2. The stock path selects it when current upstream mode ffff2458.bit5 is set and previous snapshot ffff245a.bit5 is clear; coarse vehicle speed ffff110e must be at least ROM8[000085fa]=4. Common-definition Map 5 storage is projected from 0x12718. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The comparison is strict RPM/25 &gt; threshold. Exact JK08A code interpolates both cut tables on every evaluation and selects this one for the rising mode edge. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -21823,7 +22731,7 @@
   <XDFTABLE uniqueid="0xE054" flags="0x0">
     <title>Map 5 - DFCO Full Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0xD2470; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed lower/full-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff16aa. At low vehicle speed RPM at or below this threshold returns restore class 3; common moving branches also use it as the full-restore boundary. Common-definition Map 5 storage is projected from 0x12818. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -21880,7 +22788,7 @@
   <XDFTABLE uniqueid="0x11FA" flags="0x0">
     <title>Map 5 - DFCO Intermediate Restore RPM Threshold</title>
     <description>Exact JK08A. Address 0xD3FF0; 1 rows x 16 columns; uint8; map confidence code. Coolant-indexed upper/intermediate-restore RPM threshold in FUN 00050018. The adjusted result is stored in ffff1778. At low vehicle speed RPM above the lower 00012818 threshold and at or below this threshold returns restore class 2. Common-definition Map 5 storage is projected from 0x1298C. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The Nissan A2L registry labels this address as the Bosch-family restore table, but exact JK08A code always interpolates it and uses it in live classifier branches. It is not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM floor can raise its effective value. Result disposition: inline_comparison. Static diagnostic context: Engine Coolant Temperature [code, homologous_community, via map evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="7" />
+    <CATEGORYMEM index="0" category="12" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Coolant Temperature [deg C]</units>
@@ -21937,7 +22845,7 @@
   <XDFTABLE uniqueid="0x8FF7" flags="0x0">
     <title>Map 5 - Ignition Timing Trim Main</title>
     <description>Exact JK08A. Address 0xD2800; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 5 storage is projected from 0x9A1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -23003,7 +23911,7 @@
   <XDFTABLE uniqueid="0xD159" flags="0x0">
     <title>Map 5 - Knock Control Enable - Main</title>
     <description>Exact JK08A. Address 0xD2800; 16 rows x 16 columns; uint8; map confidence code. High-octane hot timing-state surface. Selector ffff2466 bit 6 chooses it when clear. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 5 storage is projected from 0x9A1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. The code-proven APC path is ffff22fa -&gt; 0004d99c -&gt; ffff12d6 -&gt; 0004dbe8 -&gt; ffff11d4 -&gt; 0004df82. Code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9a76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -24069,7 +24977,7 @@
   <XDFTABLE uniqueid="0x4EA6" flags="0x0">
     <title>Map 5 - Ignition Timing Trim High Det</title>
     <description>Exact JK08A. Address 0xD2C00; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 5 storage is projected from 0x9B1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x7F and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="9" />
+    <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -25135,7 +26043,7 @@
   <XDFTABLE uniqueid="0x49EE" flags="0x0">
     <title>Map 5 - Knock Control Enable - High Det</title>
     <description>Exact JK08A. Address 0xD2C00; 16 rows x 16 columns; uint8; map confidence code. High-detonation hot timing-state surface. Selector ffff2466 bit 6 chooses it when set. Its low-seven-bit result feeds both selected-map state and the signed ffff22fa term consumed by the engine-event timing correction. Common-definition Map 5 storage is projected from 0x9B1A. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. This view edits mask 0x80 and preserves the other bits in each cell. Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the selector for the next pass. A code-proven APC path exists through ffff22fa; code does not prove this surface as a direct final angle. The physical name and scale match homolog EV18A 0x9b76.</description>
-    <CATEGORYMEM index="0" category="8" />
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Cylinder Filling [%] [cand]</units>
@@ -26201,7 +27109,7 @@
   <XDFTABLE uniqueid="0xC2B2" flags="0x0">
     <title>Map 5 - Rev Limit - Fuel Cut</title>
     <description>Exact JK08A. Address 0xD3518; 2 rows x 2 columns; uint16; map confidence code. Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation threshold and row 1 is the exclusive release boundary. Stock delay zero makes activation immediate. Active state bit 2 of ffff2497 reaches periodic index-27 coordinator 0004ed88 and contributes full global mask 0x3f. Common-definition Map 5 storage is projected from 0x934E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in column 1. Activation occurs at RPM &gt;= threshold; equality to the release value retains cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the stock path. The public HR A2L catalog supplies the candidate Normal/Reverse column labels.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>State</units>
@@ -26245,7 +27153,7 @@
   <XDFTABLE uniqueid="0xBC76" flags="0x0">
     <title>Map 5 - Rev Limit - Throttle Cut</title>
     <description>Exact JK08A. Address 0xD3526; 1 rows x 1 columns; uint16; map confidence code. Calibrated upper rotational-speed threshold in a signed request-limiter path. FUN 0002c648 initializes ffff1796 from this scalar. FUN 0007584e treats 0xffff as disabled; its speed state starts at min(65535,4*N) and then uses min(65535,N+floor(3*S_previous/4)), converging to 4*N. Stock rate steps are zero, so threshold ffff1796 remains 0x2580. Periodic indices 11, 18, 20, 21, and 22 carry candidate ffff19d8 through signed-minimum arbitration and controller bounds to shared signed airflow/torque-request coordinate ffff19c6. Independent FUN 00077892 uses the scalar as an unsigned cap but has no assigned physical semantics. Common-definition Map 5 storage is projected from 0x942C. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut. The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence pending controlled hardware validation.</description>
-    <CATEGORYMEM index="0" category="10" />
+    <CATEGORYMEM index="0" category="17" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Selector</units>
@@ -26287,7 +27195,7 @@
   <XDFTABLE uniqueid="0x88B7" flags="0x0">
     <title>Rolling Launch Enable Mask (Raw)</title>
     <description>Exact JK08A. Address 0xD3F64; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch per-map enable mask in the validated runtime configuration record Bits 0 through 4 enable Maps 1 through 5. The runtime rejects any set bit outside mask 0x1F and fails closed.</description>
-    <CATEGORYMEM index="0" category="13" />
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -26329,7 +27237,7 @@
   <XDFTABLE uniqueid="0x457B" flags="0x0">
     <title>Map 1 - Rolling Launch Enable</title>
     <description>Exact JK08A. Address 0xD3F64; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch per-map enable mask in the validated runtime configuration record This view edits mask 0x01 and preserves the other bits in each cell. Bits 0 through 4 enable Maps 1 through 5. The runtime rejects any set bit outside mask 0x1F and fails closed.</description>
-    <CATEGORYMEM index="0" category="14" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -26375,7 +27283,7 @@
   <XDFTABLE uniqueid="0xCA5B" flags="0x0">
     <title>Map 2 - Rolling Launch Enable</title>
     <description>Exact JK08A. Address 0xD3F64; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch per-map enable mask in the validated runtime configuration record This view edits mask 0x02 and preserves the other bits in each cell. Bits 0 through 4 enable Maps 1 through 5. The runtime rejects any set bit outside mask 0x1F and fails closed.</description>
-    <CATEGORYMEM index="0" category="14" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -26421,7 +27329,7 @@
   <XDFTABLE uniqueid="0x28B3" flags="0x0">
     <title>Map 3 - Rolling Launch Enable</title>
     <description>Exact JK08A. Address 0xD3F64; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch per-map enable mask in the validated runtime configuration record This view edits mask 0x04 and preserves the other bits in each cell. Bits 0 through 4 enable Maps 1 through 5. The runtime rejects any set bit outside mask 0x1F and fails closed.</description>
-    <CATEGORYMEM index="0" category="14" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -26467,7 +27375,7 @@
   <XDFTABLE uniqueid="0x31D7" flags="0x0">
     <title>Map 4 - Rolling Launch Enable</title>
     <description>Exact JK08A. Address 0xD3F64; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch per-map enable mask in the validated runtime configuration record This view edits mask 0x08 and preserves the other bits in each cell. Bits 0 through 4 enable Maps 1 through 5. The runtime rejects any set bit outside mask 0x1F and fails closed.</description>
-    <CATEGORYMEM index="0" category="14" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>
@@ -26513,7 +27421,7 @@
   <XDFTABLE uniqueid="0xE2FB" flags="0x0">
     <title>Map 5 - Rolling Launch Enable</title>
     <description>Exact JK08A. Address 0xD3F64; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch per-map enable mask in the validated runtime configuration record This view edits mask 0x10 and preserves the other bits in each cell. Bits 0 through 4 enable Maps 1 through 5. The runtime rejects any set bit outside mask 0x1F and fails closed.</description>
-    <CATEGORYMEM index="0" category="14" />
+    <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Configuration</units>

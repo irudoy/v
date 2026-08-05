@@ -713,12 +713,12 @@ checksums. The split low-7-bit and bit-7 ignition-map views use per-cell address
 variables in invertible conversion equations so an edit preserves the
 complementary field.
 
-JK08A uses an explicit tuner-facing allowlist in the shared presentation layer.
-The common generated XML and XDF contain 58 calibration tables and 11 masked
-views after five-slot expansion; research maps, internal calculations,
-and standalone reference-axis views remain outside the working editor tree
-without being removed from the graph or ledger. All four code-proven DFCO RPM
-threshold tables are emitted and redirected by the map-switching runtime.
+JK08A exposes every map that passes the definition gate by default. The shared
+presentation layer explicitly hides internal and unidentified research maps.
+The common generated XML and XDF contain 79 calibration tables and 16 masked
+views after five-slot and Rolling Launch projection; rejected and hidden maps
+remain in the graph and ledger. All four code-proven DFCO RPM threshold tables
+are emitted and redirected by the map-switching runtime.
 
 Categories in both generated definitions follow a vendor-style functional tree:
 `Fuelling`, `Ignition Timing`, and `Limiters`, with separate `Diagnostics` and
