@@ -2,6 +2,7 @@ from copy import deepcopy
 from pathlib import Path
 import tomllib
 import unittest
+import xml.etree.ElementTree as ET
 
 from patches import rolling_launch_layout
 from tools.mapkit import emit_def, rolling_launch, tunerpro
@@ -51,31 +52,54 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             self.maps, self.overrides, self.layout
         )
 
-    def test_projection_uses_exact_enable_mask_address(self):
+    def test_projection_uses_exact_configuration_addresses(self):
         projection = self.project()
         self.assertEqual(projection.configuration_address, "000d3f60")
         self.assertEqual(projection.enable_mask_address, "000d3f64")
+        self.assertEqual(projection.hysteresis_address, "000d3f70")
         self.assertEqual(projection.table_count, 1)
-        self.assertEqual(projection.masked_view_count, 5)
-        self.assertEqual(projection.editor_view_count, 6)
+        self.assertEqual(projection.masked_view_count, 0)
+        self.assertEqual(projection.bitwise_switch_count, 1)
+        self.assertEqual(projection.enable_bit_count, 5)
+        self.assertEqual(projection.editor_view_count, 2)
 
-    def test_projection_exposes_one_independent_bit_per_map(self):
+    def test_projection_exposes_hysteresis_in_rpm(self):
         projection = self.project()
-        views = [
-            view
-            for view in projection.overrides["masked_view"]
-            if view["source"] == "000d3f64"
+        model = projection.maps[projection.hysteresis_address]
+        presentation = projection.overrides["table"][
+            projection.hysteresis_address
         ]
+        self.assertEqual(model["storagetype"], "uint16")
+        self.assertEqual(model["units"], "RPM")
+        self.assertEqual(model["scale_expr"], "x*12.5")
+        self.assertEqual(model["to_byte"], "x/12.5")
         self.assertEqual(
-            [view["name"] for view in views],
+            presentation["name"], "Rolling Launch RPM Hysteresis"
+        )
+        self.assertEqual(
+            presentation["category"], "Rolling Launch / RPM Hold"
+        )
+
+    def test_projection_exposes_one_bitwise_switch_with_one_bit_per_map(self):
+        projection = self.project()
+        switches = [
+            entry
+            for entry in projection.overrides["bitwise_switch"]
+            if entry["storageaddress"] == "0xD3F64"
+        ]
+        self.assertEqual(len(switches), 1)
+        self.assertNotIn(projection.enable_mask_address, projection.maps)
+        bits = switches[0]["bit"]
+        self.assertEqual(
+            [bit["name"] for bit in bits],
             [
                 f"Map {slot} - Rolling Launch Enable"
                 for slot in range(1, 6)
             ],
         )
         self.assertEqual(
-            [view["mask"] for view in views],
-            ["01", "02", "04", "08", "10"],
+            [bit["position"] for bit in bits],
+            [0, 1, 2, 3, 4],
         )
 
     def test_projection_preserves_source_models(self):
@@ -87,27 +111,71 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertEqual(maps, self.maps)
         self.assertEqual(overrides, self.overrides)
 
-    def test_romraider_and_tunerpro_preserve_neighbor_enable_bits(self):
+    def test_romraider_and_tunerpro_use_native_bitwise_controls(self):
         projection = self.project()
-        model = projection.maps[projection.enable_mask_address]
-        view_overrides = deepcopy(projection.overrides)
-        view_overrides["masked_view"] = [
-            view
-            for view in projection.overrides["masked_view"]
-            if view["source"] == projection.enable_mask_address
-        ]
-        _, grouped = emit_def.masked_views(
-            view_overrides,
-            {projection.enable_mask_address: model},
-        )
-        views = grouped[projection.enable_mask_address]
+        switches = emit_def.bitwise_switches(projection.overrides)
+        self.assertEqual(len(switches), 1)
         romraider = "\n".join(
-            emit_def.masked_view_xml(
-                model, views[3], view_overrides, self.axes, "JK08A"
+            emit_def.bitwise_switch_xml(switches[0], 1)
+        )
+        self.assertIn('type="BitwiseSwitch"', romraider)
+        self.assertIn('name="Rolling Launch Enable by Map"', romraider)
+        self.assertIn('storageaddress="0xD3F64"', romraider)
+        self.assertEqual(romraider.count("<bit "), 5)
+        self.assertIn(
+            '<bit name="Map 4 - Rolling Launch Enable" position="3"/>',
+            romraider,
+        )
+
+        image = bytearray([0xFF] * 0x100000)
+        xdf, stats = tunerpro.render(
+            "JK08A",
+            image,
+            [],
+            self.axes,
+            projection.overrides,
+            {},
+            [],
+            [],
+            switches,
+        )
+        self.assertEqual(stats["calibration_tables"], 0)
+        self.assertEqual(stats["masked_views"], 0)
+        self.assertEqual(stats["bitwise_flags"], 5)
+        root = ET.fromstring(xdf)
+        flags = root.findall("./XDFFLAG")
+        self.assertEqual(len(flags), 5)
+        self.assertEqual(
+            [flag.findtext("./title") for flag in flags],
+            [
+                f"Map {slot} - Rolling Launch Enable"
+                for slot in range(1, 6)
+            ],
+        )
+        self.assertEqual(
+            [flag.findtext("./mask") for flag in flags],
+            ["0x01", "0x02", "0x04", "0x08", "0x10"],
+        )
+        self.assertTrue(all(
+            flag.find("./EMBEDDEDDATA").get("mmedaddress") == "0xD3F64"
+            for flag in flags
+        ))
+
+    def test_romraider_and_tunerpro_render_hysteresis_at_exact_address(self):
+        projection = self.project()
+        model = projection.maps[projection.hysteresis_address]
+        romraider = "\n".join(
+            emit_def.table_xml(
+                model, projection.overrides, self.axes, "JK08A"
             )
         )
-        self.assertIn('storageaddress="0xD3F64"', romraider)
-        self.assertIn('mask="08"', romraider)
+        self.assertIn(
+            'name="Rolling Launch RPM Hysteresis"', romraider
+        )
+        self.assertIn('storageaddress="0xD3F70"', romraider)
+        self.assertIn('units="RPM"', romraider)
+        self.assertIn('expression="x*12.5"', romraider)
+        self.assertIn('to_byte="x/12.5"', romraider)
 
         image = bytearray([0xFF] * 0x100000)
         xdf, stats = tunerpro.render(
@@ -115,15 +183,15 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             image,
             [model],
             self.axes,
-            view_overrides,
-            grouped,
+            projection.overrides,
+            {},
             [],
             [],
         )
         self.assertEqual(stats["calibration_tables"], 1)
-        self.assertEqual(stats["masked_views"], 5)
-        self.assertIn("Map 4 - Rolling Launch Enable", xdf)
-        self.assertIn("(B&amp;247)", xdf)
+        self.assertIn("Rolling Launch RPM Hysteresis", xdf)
+        self.assertIn('mmedaddress="0xD3F70"', xdf)
+        self.assertIn('equation="X*12.5"', xdf)
 
     def test_common_definition_applies_both_projections(self):
         self.assertTrue(emit_def.rolling_launch_enabled(self.overrides))
@@ -132,6 +200,15 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         maps = deepcopy(self.maps)
         maps["000d3f64"] = deepcopy(maps["00001000"])
         maps["000d3f64"]["addr"] = "000d3f64"
+        with self.assertRaisesRegex(ValueError, "collides"):
+            rolling_launch.project_definition_model(
+                maps, self.overrides, self.layout
+            )
+
+    def test_projection_rejects_hysteresis_address_collision(self):
+        maps = deepcopy(self.maps)
+        maps["000d3f70"] = deepcopy(maps["00001000"])
+        maps["000d3f70"]["addr"] = "000d3f70"
         with self.assertRaisesRegex(ValueError, "collides"):
             rolling_launch.project_definition_model(
                 maps, self.overrides, self.layout

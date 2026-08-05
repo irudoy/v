@@ -84,6 +84,13 @@ def validate():
                     layout.rom,
                 )
             )
+    native_bitwise_switches = emit_def.bitwise_switches(
+        projection.overrides
+    )
+    for index, entry in enumerate(native_bitwise_switches, 1):
+        romraider_fragments.extend(
+            emit_def.bitwise_switch_xml(entry, index)
+        )
     romraider_model = "\n".join(romraider_fragments)
 
     native_switches = projection.overrides.get("switch", [])
@@ -99,6 +106,7 @@ def validate():
         views_by_source,
         records,
         native_switches,
+        native_bitwise_switches,
     )
     ET.fromstring(xdf)
 
@@ -136,12 +144,30 @@ def validate():
     launch = projection.rolling_launch
     if launch.enable_mask_address != "000d3f64":
         raise ValueError("Rolling Launch enable mask address differs")
-    if launch.masked_view_count != 5:
-        raise ValueError("runtime does not expose five map-enable controls")
+    if launch.hysteresis_address != "000d3f70":
+        raise ValueError("Rolling Launch hysteresis address differs")
+    if launch.masked_view_count != 0:
+        raise ValueError("Rolling Launch still exposes masked table views")
+    if launch.bitwise_switch_count != 1 or launch.enable_bit_count != 5:
+        raise ValueError(
+            "runtime does not expose one five-bit map-enable switch"
+        )
+    if "Rolling Launch RPM Hysteresis" not in romraider_model:
+        raise ValueError("RomRaider projection lacks Rolling Launch hysteresis")
+    if 'storageaddress="0xD3F70"' not in romraider_model:
+        raise ValueError("RomRaider Rolling Launch hysteresis address differs")
+    if "Rolling Launch RPM Hysteresis" not in xdf:
+        raise ValueError("TunerPro projection lacks Rolling Launch hysteresis")
+    if 'mmedaddress="0xD3F70"' not in xdf:
+        raise ValueError("TunerPro Rolling Launch hysteresis address differs")
+    if romraider_model.count('type="BitwiseSwitch"') != 1:
+        raise ValueError("RomRaider projection lacks one bitwise switch")
+    if romraider_model.count("<bit ") != 5:
+        raise ValueError("RomRaider bitwise switch does not contain five bits")
     for slot in range(1, 6):
         if f"Map {slot} - Rolling Launch Enable" not in romraider_model:
             raise ValueError(
-                f"RomRaider projection lacks Map {slot} Rolling Launch enable"
+                f"RomRaider bitwise switch lacks Map {slot} enable"
             )
         if f"Map {slot} - Rolling Launch Enable" not in xdf:
             raise ValueError(
@@ -193,9 +219,13 @@ def validate():
         "slot_masked_views": projection.slot_masked_view_count,
         "slot_editor_views": projection.slot_editor_view_count,
         "rolling_launch_tables": projection.rolling_launch.table_count,
-        "rolling_launch_map_controls": projection.rolling_launch.masked_view_count,
+        "rolling_launch_bitwise_switches": (
+            projection.rolling_launch.bitwise_switch_count
+        ),
+        "rolling_launch_enable_bits": projection.rolling_launch.enable_bit_count,
         "xdf_tables": xdf_stats["calibration_tables"],
         "xdf_masked_views": xdf_stats["masked_views"],
+        "xdf_bitwise_flags": xdf_stats["bitwise_flags"],
         "common_definition_files": 2,
     }
 

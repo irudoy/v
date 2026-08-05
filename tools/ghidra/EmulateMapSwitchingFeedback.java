@@ -2,7 +2,7 @@
 // wrapper and pulse engine with a deterministic stock-serializer stub.
 //
 // The stub writes 0xA5 to payload byte 5 before every engine invocation. This
-// proves call order and lets the test verify that only bits 0-1 are overridden.
+// proves call order and lets the test verify that only bits 5-6 are overridden.
 // The locked engine contains the pilot 10/10 frame counts. Individual cases
 // modify only these two documented configuration bytes in emulator memory.
 //
@@ -41,7 +41,7 @@ public class EmulateMapSwitchingFeedback extends GhidraScript {
     static final String WRAPPER_SHA =
             "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36";
     static final String ENGINE_SHA =
-            "c3a10706e283bc53c5634730d7ad96a5c49bebd8dc22536f96cfc411ef46a784";
+            "925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f66f";
 
     // mov.l @(0xc5380,pc),r1; mov #-0x5b,r0; mov.b r0,@r1; rts; nop
     // followed by alignment padding and the 0xFFFF3ADA literal.
@@ -89,14 +89,14 @@ public class EmulateMapSwitchingFeedback extends GhidraScript {
                 "two-pulses-2x2", 0x0202,
                 state(0, 0, 0, 0, 2, 1, 0, 0),
                 new int[]{
-                    0xA6, 0xA6, 0xA4, 0xA4,
-                    0xA6, 0xA6, 0xA4, 0xA4,
+                    0xE5, 0xE5, 0x85, 0x85,
+                    0xE5, 0xE5, 0x85, 0x85,
                 },
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "one-pulse-1x1", 0x0101,
                 state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xA6, 0xA4},
+                new int[]{0xE5, 0x85},
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "idle", 0x0202, state(0, 0, 0, 0, 0, 0, 0, 0),

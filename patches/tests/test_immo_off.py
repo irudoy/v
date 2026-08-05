@@ -28,10 +28,8 @@ class ImmoOffPatcherTest(unittest.TestCase):
             with self.subTest(rom=rom):
                 self.assertEqual(
                     patcher.default_output_path(rom),
-                    patcher.ROMDIR
-                    / f"23710-{rom}"
-                    / "mods"
-                    / "immo-off"
+                    patcher.ROOT
+                    / "tmp"
                     / (
                         f"{image_id}-{patcher.MOD_RELEASE_DATE}"
                         "-immo-off.bin"
@@ -47,17 +45,14 @@ class ImmoOffPatcherTest(unittest.TestCase):
         self.assertEqual(patched[0x8725], 0x00)
         self.assertEqual((stock[0x8725] ^ patched[0x8725]).bit_count(), 1)
 
-    def test_tracked_jk08a_artifact_is_exact_output(self):
+    def test_jk08a_output_hash_is_locked_without_a_tracked_artifact(self):
         _path, stock = patcher.load_stock("JK08A", self.registry)
-        expected = patcher.patch_image("JK08A", stock)
-        output = patcher.default_output_path("JK08A")
-        actual = output.read_bytes()
-        self.assertEqual(actual, expected)
+        output = patcher.patch_image("JK08A", stock)
         self.assertEqual(
-            output.with_name(output.name + ".md5").read_text(encoding="ascii"),
-            f"{patcher.md5(expected)} *{output.name}\n",
+            patcher.sha256(output),
+            "de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c",
         )
-        self.assertTrue((output.parent / "README.md").is_file())
+        self.assertEqual(patcher.md5(output), "1ae5f50b6f8697b168285b92ade28b7b")
 
     def test_rejects_non_stock_flag(self):
         _path, stock = patcher.load_stock("JK08A", self.registry)

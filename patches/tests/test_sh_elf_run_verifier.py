@@ -167,7 +167,7 @@ mov #0x5,r1
         self.assertIn("VQ_SH_ELF_OVERLAYS status=PASS", marker)
         self.assertIn("stage15_instructions=156", marker)
         self.assertIn("stage18_instructions=324", marker)
-        self.assertIn("stage19_instructions=414", marker)
+        self.assertIn("stage19_instructions=418", marker)
 
     def test_rolling_launch_composition_lock_matches_verifier(self):
         layout = rolling_launch_layout.load_layout()

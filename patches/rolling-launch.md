@@ -27,27 +27,28 @@ the configured `-5 deg` diagnostic target, but its unconditional ACTIVE-phase
 retard causes an immediate torque collapse and has hardware status
 `FUNCTIONAL_FAIL`. Both custom profiles retain `enable_mask=0x01`; Rolling
 Launch rejection on Maps 2 through 5 is the configured `MAP_DISABLED` result.
-The converted MLG files and evidence table are under
-`tmp/logs-05-08-26/analysis.md`.
+The converted MLG files and evidence table remain local scratch evidence and
+are not tracked build inputs.
 
-The common `defs/JK08A.xml` and `defs/JK08A.xdf` expose five independent
-`Map N - Rolling Launch Enable` controls at configuration byte `0xD3F64`.
-Each control edits one bit of `enable_mask` and preserves the other four bits.
-The raw aggregate mask remains in the advanced category. This lets one runtime
-use any per-map enable combination without rebuilding executable code.
+The common `defs/JK08A.xml` exposes one native `BitwiseSwitch` at configuration
+byte `0xD3F64`, with one checkbox for each of Maps 1 through 5. TunerPro's
+native model represents the same byte as five `XDFFLAG` items. Every control
+edits one bit of `enable_mask` and preserves the other bits. The raw aggregate
+mask is not exposed as a table. This lets one runtime use any per-map enable
+combination without rebuilding executable code.
 
 The implementation is bound to:
 
 - exact stock JK08A SHA-256
   `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`;
 - complete map-switching in-memory endpoint SHA-256
-  `469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0`;
+  `108613e626f883ecca7a5733b739edafaacaee663909bfb115a6e8dda0d64c19`;
 - default Rolling Launch in-memory endpoint SHA-256
-  `da64cbc25399b2ccd09a4c11590ea9a62e8e10b1159d62cc66372d1f1b739dd5`;
+  `9dd4a2bea3ad20eefc3de2708400c4edb37521e04a303eeafa2b934db7444230`;
 - corrected checksum-valid map-switching stage-19 source SHA-256
-  `52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84`;
+  `bcc34d531530e86b74de362df0db6c3c59597fa8095baaa056f6e4ba82ab7386`;
 - corrected Map 1 RPM Hold candidate SHA-256
-  `6e74ae82d22e9d975c64e2002c8ad30dec0f33f8f72b5ecd9906aab7598d480b`;
+  `38c8335ad4cb1b91f8da75beba33c22236aa3b63b519585ca2146bd9f88effdb`;
 - historical checksum-valid map-switching stage-19 source SHA-256
   `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1`;
 - historical Map 1 RPM Hold candidate SHA-256
@@ -316,16 +317,22 @@ to the existing map-switching gate.
 
 ## Hardware-test images
 
-The tracked stage-19-based candidate under
-`rom-images/23710-JK08A/mods/rolling-launch/` contains the superseded `0x00`
-release assumption. The equivalent runtime in custom Overlay 20 has hardware
-status `FUNCTIONAL_FAIL`: startup and identification pass, the first Rolling
-Launch activation works, and the state cannot rearm after CANCEL release.
+The corrected generic feedback engine changes the rejected byte-5 low-bit
+command to mask `0x60`, on value `0x60`, and off value `0x00`. Its GNU SH-2E
+and Ghidra p-code executable gates pass. Target-vehicle meter behavior remains
+untested. Concrete calibration profiles, generated ROMs, checksum sidecars,
+and logs remain local artifacts outside the repository.
 
-The corrected full-ROM upgrade is:
+Historical stage-19 and Overlay 20 candidates contain the superseded `0x00`
+release assumption. The Overlay 20 runtime has hardware status
+`FUNCTIONAL_FAIL`: startup and identification pass, the first Rolling Launch
+activation works, and the state cannot rearm after CANCEL release. Derived
+artifacts are not retained under `rom-images/`.
+
+The historical corrected full-ROM upgrade is identified as:
 
 ```text
-tmp/1JK08A-multimap-1-3-overlay-21-button-release-fix.bin
+1JK08A-multimap-1-3-overlay-21-button-release-fix.bin
 SHA-256 1e6866e96e77fba203166b38f5efcfd83b6bcad609b7e0ada67727cd5fddc0c9
 MD5    cdfbcd5a528fbf785f0e88648506968a
 ```
@@ -338,13 +345,8 @@ The approved calibration changes 114 bytes: 40 cells in the global cold
 ignition-trim table and 74 bytes in Map 1 and Map 3 DFCO families. Twelve
 checksum bytes also change, for 131 changed bytes total. The 32-byte Rolling
 Launch configuration remains identical. All six stored checksum references
-are valid.
-
-Reproduce and verify it with:
-
-```bash
-python3 tmp/build_overlay21_button_release_fix.py
-```
+are valid. Its calibration provenance remains in the local hardware record;
+the historical generated image is not a build input.
 
 The calibration revision changes no executable byte beyond the five existing
 button-release corrections, so it does not require a new instruction gate.
@@ -352,7 +354,7 @@ button-release corrections, so it does not require a new instruction gate.
 The Map 1-only ignition-retard hardware candidate is:
 
 ```text
-tmp/1JK08A-multimap-1-3-overlay-22-rpm-hold-retard.bin
+1JK08A-multimap-1-3-overlay-22-rpm-hold-retard.bin
 SHA-256 21f532b924e24deede30c07bbf7d253bf4c908355bca44c7c863fee592aa2a84
 MD5    0fb23c4801250651c95c1c826868b334
 ```
@@ -362,11 +364,8 @@ at `0xD3F63` from `RPM_HOLD` (`1`) to `RPM_HOLD_RETARD` (`2`). Four stored
 checksum bytes also change, for five changed bytes total. The executable code,
 vehicle calibration, Map 1-only enable mask, `200 RPM` offset, `100 RPM`
 hysteresis, and per-map ignition target command `115` remain identical. All six
-stored checksum references are valid. Reproduce it with:
-
-```bash
-python3 tmp/build_overlay22_rpm_hold_retard.py
-```
+stored checksum references are valid. Its calibration provenance is locked by
+the local hardware record; the historical generated image is not a build input.
 
 Hardware status is `FUNCTIONAL_FAIL`. CONSULT logs contain the exact `-5 deg`
 target during five separate Map 1 CANCEL intervals and normal `14..43 deg`
@@ -376,15 +375,15 @@ injection remains positive in every sampled CANCEL interval. Physical spark
 angle remains subject to timing-light verification, but the command polarity
 and runtime adapter activation are established by the diagnostic trace.
 
-The calibration-independent corrected regression chain is under
-`tmp/hardware-button-release-fix/`. Its stage-19 map-switching endpoint has
-SHA-256
-`52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84`.
+The calibration-independent corrected regression chain is generated by the
+tracked patch tools with prefix `1JK08A-map-switching-safe-v4`. Its stage-19
+map-switching endpoint has SHA-256
+`bcc34d531530e86b74de362df0db6c3c59597fa8095baaa056f6e4ba82ab7386`.
 Applying the locked generic Map 1 RPM Hold profile produces
 `1JK08A-map-switching-safe-v4-20-rolling-launch-rpm-hold-map1.bin` with
 SHA-256
-`6e74ae82d22e9d975c64e2002c8ad30dec0f33f8f72b5ecd9906aab7598d480b`
-and MD5 `d27489f81cacaa7b9604360c06fae93c`. This regression image does not contain
+`38c8335ad4cb1b91f8da75beba33c22236aa3b63b519585ca2146bd9f88effdb`
+and MD5 `1d380c6b996ac8343a908a18ce3745d9`. This regression image does not contain
 the custom calibration of Overlay 21.
 
 The target-vehicle result is:
@@ -397,14 +396,20 @@ The target-vehicle result is:
 4. Maps 2 through 5 reject Rolling Launch because the hardware-test profile is
    intentionally Map 1-only.
 5. Overlay 21 is the safe `RPM_HOLD` baseline without retard. The common defs
-   provide five independent map-enable controls at `0xD3F64`; hardware
-   acceptance uses only parameters available in the current logger.
+   provide one RomRaider map-enable switch with five independent checkboxes at
+   `0xD3F64` and the `Rolling Launch RPM Hysteresis` calibration at `0xD3F70`
+   in 12.5 RPM units. TunerPro uses five native flags for the same bits.
+   Hardware acceptance uses only parameters available in the current logger.
 6. A complete Rolling Launch implementation requires an RPM-conditioned
    ignition controller. Retard must remain stock below the hold band, enter
    only near an actual limiter event, and restore torque through explicit
    hysteresis or staged commands. The controller requires separate engine
    validation before any exhaust-combustion objective is evaluated. Overlay 22
    is not a further dynamic-test candidate.
+7. The next local no-retard hardware candidate first verifies one through five
+   CRUISE indications with the engine stopped and ASCD inactive. The
+   engine-running gate then repeats the established Map 1 RPM Hold and Map 2/
+   Map 3 selection checks.
 
 The remaining gesture risk is the decoded code sequence produced when CANCEL
 is pressed while SET remains held. A CAN capture of that combined gesture must

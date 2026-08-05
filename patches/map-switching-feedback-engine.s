@@ -1,7 +1,7 @@
 // Fail-closed CRUISE-indicator pulse engine for CAN 0x551.
 //
 // The function runs after the exact stock serializer. It changes only bits
-// 0-1 of payload byte 5 while a structurally valid feedback sequence is
+// 5-6 of payload byte 5 while a structurally valid feedback sequence is
 // active. Zero or incomplete frame-count configuration disables feedback,
 // clears its transient state, and preserves the complete stock payload.
 //
@@ -50,11 +50,17 @@ extu.b r0,r1
 
 mov.l @(feedback_status_byte,pc),r4
 mov.b @r4,r0
-and 0xFC,r0
+and 0x9F,r0
 mov r0,r7
-mov #0x2,r0
-sub r6,r0
-shll r0
+mov r6,r0
+cmp/eq 0x1,r0
+bf feedback_status_off
+mov #0x60,r0
+bra feedback_status_merge
+nop
+feedback_status_off:
+mov #0x0,r0
+feedback_status_merge:
 or r7,r0
 mov.b r0,@r4
 

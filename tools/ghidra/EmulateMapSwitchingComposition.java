@@ -84,7 +84,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0";
+            "108613e626f883ecca7a5733b739edafaacaee663909bfb115a6e8dda0d64c19";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -180,7 +180,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36"),
         new UnitSpec(
                 "cruise_feedback_engine", 7, 0x000D3760L, 0x100,
-                "c3a10706e283bc53c5634730d7ad96a5c49bebd8dc22536f96cfc411ef46a784"),
+                "925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f66f"),
     };
 
     static final HookSpec[] HOOKS = {
@@ -417,7 +417,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 + " fixture_sha256=%s cases=%d"
                 + " selector=%d adapters=%d limiter=%d feedback=%d"
                 + " feedback_invocations=%d instructions=%d"
-                + " entries=%d hooks=%d changed_bytes=5630"
+                + " entries=%d hooks=%d changed_bytes=5638"
                 + " permitted_write_bytes=6144",
                 languageId, COMPOSED_SHA, totalCases,
                 selectorCases, adapterCases, limiterCases, feedbackCases,
@@ -489,7 +489,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 changed++;
             }
         }
-        if (changed != 5630 || permittedBytes != 6144) {
+        if (changed != 5638 || permittedBytes != 6144) {
             throw new IllegalStateException(
                     "composition boundary differs: changed=" + changed
                     + " permitted=" + permittedBytes);
@@ -948,14 +948,14 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "two-pulses-2x2", 0x0202,
                 state(0, 0, 0, 0, 2, 1, 0, 0),
                 new int[]{
-                    0xA6, 0xA6, 0xA4, 0xA4,
-                    0xA6, 0xA6, 0xA4, 0xA4,
+                    0xE5, 0xE5, 0x85, 0x85,
+                    0xE5, 0xE5, 0x85, 0x85,
                 },
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "one-pulse-1x1", 0x0101,
                 state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xA6, 0xA4},
+                new int[]{0xE5, 0x85},
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "idle", 0x0202, state(0, 0, 0, 0, 0, 0, 0, 0),
@@ -1203,10 +1203,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         }
         int totalInstructions = selectorInstructions + adapterInstructions
                 + limiterInstructions + feedbackInstructions;
-        if (totalInstructions != 5137) {
+        if (totalInstructions != 5152) {
             throw new IllegalStateException(
                     "instruction total is " + totalInstructions
-                    + ", expected 5137");
+                    + ", expected 5152");
         }
         List<String> missing = new ArrayList<>();
         for (long entry : CODE_ENTRIES) {

@@ -93,22 +93,25 @@ under `defs/`, separately from `reference/`:
   the SR-protected transaction for both direct limiter families,
   `../tools/mapkit/map_switching.py` projects 50 slot tables and ten
   slot-specific masked ignition views. `../tools/mapkit/rolling_launch.py`
-  projects the validated configuration byte at `0xD3F64` into five independent
-  per-map enable controls that preserve neighboring bits. The common output
-  contains 79 calibration tables and 16 masked views. The
+  projects the validated enable-mask byte at `0xD3F64` as one native RomRaider
+  `BitwiseSwitch` with five checkboxes and as five native TunerPro `XDFFLAG`
+  items. It projects the RPM-hysteresis word at `0xD3F70` as one calibration
+  table. The raw mask byte is not exposed as a table. The common output
+  contains 81 calibration tables and 11 masked views. The
   `../tools/mapkit/validate_map_switching.py` renders the projection against
   the live graph and verifies both tracked common definition files.
   The eight standalone assembly units pass 116 Ghidra p-code cases: 17 selector,
   76 adapter, 14 startup/limiter, and nine feedback cases.
-  An independent machine-word audit covers all 414 instructions, including 39
-  delayed transfers with encoded `NOP` slots, 52 PC-relative references, 77
+  An independent machine-word audit covers all 418 instructions, including 40
+  delayed transfers with encoded `NOP` slots, 52 PC-relative references, 79
   direct branch targets, and 21 indirect control transfers.
   `../tools/ghidra/EmulateMapSwitchingComposition.java` repeats all 116 cases
-  over 5137 instructions from the complete locked fixture, reaches all eleven code
+  over 5152 instructions from the complete locked fixture, reaches all eleven code
   entries at final addresses, and verifies the same SHA-256 and write boundary
-  as `../patches/map_switching_compose.py`. Feedback uses state value `2` with
-  locked `10, 10` on/off frame counts; the V36 meter response remains a hardware
-  validation gate. `../patches/apply_map_switching.py` accepts a checksum-valid
+  as `../patches/map_switching_compose.py`. Feedback uses CAN 0x551 byte-5 mask
+  `0x60`, on value `0x60`, and off value `0x00` with locked `10, 10` on/off
+  frame counts; the V36 meter response remains a hardware validation gate.
+  `../patches/apply_map_switching.py` accepts a checksum-valid
   JK08A input with lower-partition calibration/configuration changes, requires
   exact protected code and patch anchors, initializes Map 2 through Map 5 from
   the input Map 1 values, injects the tracked SHA-locked payloads, recalculates
@@ -206,13 +209,23 @@ This establishes a cross-application exact-code relationship, not map-value
 equivalence. JK00A remains an inventoried binary without a Ghidra export,
 Memgraph layer, or annotation inheritance entry.
 
-The generated JK08A definitions contain 38 default-visible canonical maps and
-three masked ignition views. Map-switching projection provides 50 slot-specific
-calibration tables, while Rolling Launch adds one configuration table and five
-per-map enable views, for 79 calibration tables and 16 masked views in the
-complete definitions.
+The generated JK08A definitions contain 40 default-visible canonical maps and
+three masked ignition views. The map-switching projection exposes 50
+slot-specific calibration tables, including the ten canonical Map 1 tables.
+Rolling Launch adds one hysteresis calibration table and one five-checkbox
+RomRaider `BitwiseSwitch`; TunerPro represents the same five enable bits as
+five native `XDFFLAG` items. The complete definitions contain 81 calibration
+tables and 11 masked views. The `Rolling Launch RPM Hysteresis` table edits the
+big-endian `uint16` word at `0xD3F70` in 12.5 RPM units. The runtime accepts
+only a nonzero value below the configured minimum activation RPM and fails
+closed when the complete configuration is invalid.
+The two A/B candidates `0x12196` and `0x1219E` are exposed as Cold Idle and
+Idle Ignition Timing under `Idle Speed Control / Ignition Timing`. Their
+`x-128` conversion is exact; the degree unit and 0..2800 RPM axis are marked as
+A2L-supported candidates. Conditional table `0x121A6` remains hidden because
+stock `ROM8[0x870B].bit0` disables its selection path.
 Calibration axes are embedded in their tables; separate editable reference-axis
-views are not emitted. Of the 412 other catalog maps, 150 internal or
+views are not emitted. Of the 410 other catalog maps, 148 internal or
 unidentified maps carry explicit `emit = false`; 262 fail the definition gate.
 All remain available in the graph, ledger, and
 presentation source.

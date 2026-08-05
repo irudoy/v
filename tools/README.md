@@ -235,7 +235,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
 | `mapkit/emit_def.py` | Project the graph, reviewed static diagnostic context, `defs/<rom>.dtc.csv` DTC registry, and the tuner-facing visibility and presentation policy in `defs/<rom>.overrides.toml` into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
 | `mapkit/map_switching.py` | Clone the ten canonical JK08A calibration families into the five slot addresses from `patches/map-switching-layout.toml`, preserving graph geometry, scaling, axes, masks, and global maps | imported by the common JK08A definition generator and validator |
-| `mapkit/rolling_launch.py` | Project the validated Rolling Launch `enable_mask` byte at `0xD3F64` into one configuration table and five independent per-map masked controls, preserving all neighboring enable bits | imported by the common JK08A definition generator and validator |
+| `mapkit/rolling_launch.py` | Project the validated Rolling Launch `enable_mask` byte at `0xD3F64` into one native RomRaider `BitwiseSwitch` with five checkboxes and five native TunerPro `XDFFLAG` items; project the RPM hysteresis word at `0xD3F70` as a table in 12.5 RPM units | imported by the common JK08A definition generator and validator |
 | `mapkit/validate_map_switching.py` | Validate the five-slot projection against the live graph and exact ROM, verify identical materialized calibration bytes, and require the tracked common `JK08A.xml` and `JK08A.xdf` to match the projection without a separate identity | stdout; no artifact writes |
 | `../patches/map_switching_assembly.py` | Cross-check implemented SH source labels, regions, literal pools, protected registers, control transfers, every delayed slot, and the explicit SH7058S SH-2E instruction subset against the authoritative map-switching layout; independently decode direct and indirect control transfers plus PC-relative effective addresses from SHA-locked machine words | stdout; no ROM write |
 | `../patches/map_switching_compose.py` | Apply all eight SHA-locked blobs, 14 hooks, 40 calibration copies, and ten pointer tables to exact stock by default or an explicitly validated compatible input through the library API; reject every change outside the declared composition write set | stdout; no output-file option |
@@ -390,7 +390,7 @@ environment and the documented 31-bit simulator RAM relocation are in
 
 The same command independently composes full-DFCO Overlays 15 through 19 from
 the GNU-assembled bytes. It requires 156 instruction placements in stages 15
-through 17, 324 in stage 18, and all 414 in stage 19. It locks every hardware
+through 17, 324 in stage 18, and all 418 in stage 19. It locks every hardware
 output hash and proves that stage 19 equals the complete ten-family runtime
 endpoint before the chain is eligible for hardware testing.
 
@@ -527,9 +527,9 @@ declared map-switching reservation, an explicitly selected tuned scalar, and
 stale stack frames below the restored SP; the live scheduler stack remains in
 the comparison.
 
-The eight locked outputs contain 414 instructions and 194 literal bytes.
+The eight locked outputs contain 418 instructions and 194 literal bytes.
 The isolated harness set and the complete-composition harness pass 116/116
-Ghidra p-code cases over 5137 executed instructions: 17 selector, 76 adapter,
+Ghidra p-code cases over 5152 executed instructions: 17 selector, 76 adapter,
 14 startup/limiter, and nine feedback cases. The composition run executes all
 eleven declared code entries against exact final addresses and real
 copied calibration bytes. Only deterministic stock-callee stubs and, in
@@ -541,8 +541,8 @@ bit except the caller-clobbered T bit.
 The global source and machine validator requires an encoded `NOP` after every
 delayed control transfer. This closes the hardware rule missed by p-code: on
 SH-2E, a PC-relative move in such a slot uses the branch destination plus two
-as its PC basis. Across the 414 final-runtime instructions it verifies 39
-delayed transfers, 52 PC-relative references, 77 direct branch targets, and 21
+as its PC basis. Across the 418 final-runtime instructions it verifies 40
+delayed transfers, 52 PC-relative references, 79 direct branch targets, and 21
 indirect control transfers. The two startup gate sources add 13 alternative
 instructions under the same checks. The fixed adapter blob has SHA-256
 `a938e1334e7850a0c368c50e98dbbdf67bc2589524025659a31d5b5f328c0e6c`.
@@ -560,9 +560,10 @@ and commits map 1 after it returns.
 
 The Fuel Cut transaction uses word copies because stock addresses `0x0934E`
 and `0x09356` are not longword-aligned. Feedback frame counts at `0xD3848` are
-locked to `10, 10`. The V36 hardware test rejects state `2` in CAN 0x551 byte
-5 as the selected visual-feedback command: the injected sequence reaches the
-bus without changing the requested indicator. Ghidra uses the
+locked to `10, 10`. The current command uses CAN 0x551 byte-5 mask `0x60`, on
+value `0x60`, and off value `0x00`; the V36 combination-meter response remains
+hardware-untested. The historical low-bit state `2` reaches the bus without
+changing the requested indicator. Ghidra uses the
 `SuperH:BE:32:SH-2A` language, while
 the source validator permits only an explicit 29-mnemonic subset listed for the
 SH7058S SH-2E core in Renesas REJ09B0177 section 2.4.1. radare2 is not part of
@@ -570,9 +571,9 @@ the assembly or verification path. Generated raw blobs and listings are
 regenerable temporary artifacts, while their complete validated spans are
 tracked in `map-switching-payloads.toml`. The in-memory composer produces
 deterministic fixture SHA-256
-`469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0`,
-with 5630 changed bytes inside a 6144-byte declared write set. It retains
-feedback counts `10, 10`, verifies 414 final instruction placements and eleven
+`108613e626f883ecca7a5733b739edafaacaee663909bfb115a6e8dda0d64c19`,
+with 5638 changed bytes inside a 6144-byte declared write set. It retains
+feedback counts `10, 10`, verifies 418 final instruction placements and eleven
 code entries, does not recalculate checksum fields, reports `flashable=false`,
 and cannot write a ROM file. `apply_map_switching.py` is the separate file
 output boundary: it accepts compatible lower-partition calibration changes,
@@ -679,9 +680,11 @@ The patcher produces the same result after validating the exact stock ROM:
 python3 patches/apply_immo_off.py --rom JK08A
 ```
 
-The resulting
-`rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
-differs from stock by one bit. Engine start and operation were confirmed on the vehicle.
+The resulting `1JK08A-20260727-immo-off.bin` differs from stock by one bit.
+Its hardware-tested SHA-256 is
+`de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c`;
+the derived artifact is not retained under `rom-images/`. Engine start and
+operation were confirmed on the vehicle.
 The patcher preserves the one-bit immo-off contract. P1610 and the other DTC
 record changes are controlled only through the definition and require separate
 hardware tests.
@@ -715,10 +718,14 @@ complementary field.
 
 JK08A exposes every map that passes the definition gate by default. The shared
 presentation layer explicitly hides internal and unidentified research maps.
-The common generated XML and XDF contain 79 calibration tables and 16 masked
-views after five-slot and Rolling Launch projection; rejected and hidden maps
-remain in the graph and ledger. All four code-proven DFCO RPM threshold tables
-are emitted and redirected by the map-switching runtime.
+The common generated XML and XDF contain 81 calibration tables and 11 masked
+views after five-slot and Rolling Launch projection. RomRaider also contains
+one five-checkbox Rolling Launch `BitwiseSwitch`; TunerPro contains five native
+flags for the same bits. Rejected and hidden maps remain in the graph and
+ledger. A/B candidates `0x12196` and `0x1219E` are emitted as Cold Idle and Idle
+Ignition Timing with candidate A2L degree/RPM presentation; stock-disabled
+`0x121A6` remains hidden. All four code-proven DFCO RPM threshold tables are
+emitted and redirected by the map-switching runtime.
 
 Categories in both generated definitions follow a vendor-style functional tree:
 `Fuelling`, `Ignition Timing`, and `Limiters`, with separate `Diagnostics` and

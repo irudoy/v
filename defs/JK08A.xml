@@ -620,6 +620,17 @@
       <state name="Disabled" data="00 00"/>
     </table>
 
+    <table type="BitwiseSwitch" name="Rolling Launch Enable by Map"
+           category="Rolling Launch / Map Enable" storageaddress="0xD3F64" storagetype="uint8"
+           endian="big" userlevel="5">
+      <description>Exact JK08A. Each checkbox independently enables Rolling Launch for one map and preserves the other bits. Bits 5 through 7 must remain clear; the runtime rejects the configuration otherwise.</description>
+      <bit name="Map 1 - Rolling Launch Enable" position="0"/>
+      <bit name="Map 2 - Rolling Launch Enable" position="1"/>
+      <bit name="Map 3 - Rolling Launch Enable" position="2"/>
+      <bit name="Map 4 - Rolling Launch Enable" position="3"/>
+      <bit name="Map 5 - Rolling Launch Enable" position="4"/>
+    </table>
+
     <!-- 0x08FDC  2 uint16  map [code]
          accessor 0x47A56; r4 operand: manual
          scaling x normalized ADC counts
@@ -1216,6 +1227,55 @@
         <data>4.16</data><data>4.24</data><data>4.32</data><data>4.4</data>
         <data>4.48</data><data>4.56</data><data>4.64</data><data>4.72</data>
         <data>4.8</data><data>4.88</data><data>4.96</data><data>5.04</data>
+      </table>
+    </table>
+
+    <!-- 0x12196  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
+         accessor 0x4AFDC; r4 operand: pool
+         scaling x-128 Ignition timing (deg) [candidate]
+         The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
+         while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
+         enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
+         homology identifies the table as the Cold Idle Ignition Timing candidate with one
+         degree per centered raw count; code proves the x-128 signed addend but not a direct
+         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
+         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
+         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
+         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
+         ffff1511, write of derived x-128 at site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Cold Idle Ignition Timing (Candidate) (0x12196)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0x12196" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0x1219E  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
+         accessor 0x4AFDC; r4 operand: pool
+         scaling x-128 Ignition timing (deg) [candidate]
+         static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
+         writes]
+         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
+         per centered raw count. The available code trace proves the x-128 signed addend and its
+         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
+         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
+         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
+         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Idle Ignition Timing (Candidate) (0x1219E)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0x1219E" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
     </table>
 
@@ -2846,83 +2906,18 @@
       </table>
     </table>
 
-    <!-- 0xD3F64  1 uint8  map [code]
-         scaling x raw bit mask [code]
-         Bits 0 through 4 enable Maps 1 through 5. The runtime rejects any set bit outside mask
-         0x1F and fails closed.
+    <!-- 0xD3F70  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         The runtime computes Restore = Cut - hysteresis, accepts only 0 < hysteresis_native <
+         min_rpm_native, and rejects the entire configuration otherwise. The default value is 8
+         native counts, or 100 RPM.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Enable Mask (Raw)"
-           category="Rolling Launch / Advanced" storagetype="uint8" storageaddress="0xD3F64"
-           sizex="1" endian="big">
-      <scaling units="raw bit mask" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="1"/>
+    <table type="2D" name="Rolling Launch RPM Hysteresis" category="Rolling Launch / RPM Hold"
+           storagetype="uint16" storageaddress="0xD3F70" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
+               fineincrement="12.5" coarseincrement="100"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Enable mask</data>
-      </table>
-    </table>
-
-    <!-- 0xD3F64  1 uint8  masked view 0x01 [code]
-         Semantics source: Rolling Launch per-map enable mask in the validated runtime
-         configuration record
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Rolling Launch Enable" category="Rolling Launch / Map Enable"
-           storagetype="uint8" storageaddress="0xD3F64" sizex="1" endian="big" mask="01">
-      <scaling units="Enabled (0: Off | 1: On)" expression="x" to_byte="x" format="0"
-               fineincrement="1" coarseincrement="1"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Enable mask</data>
-      </table>
-    </table>
-
-    <!-- 0xD3F64  1 uint8  masked view 0x02 [code]
-         Semantics source: Rolling Launch per-map enable mask in the validated runtime
-         configuration record
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Rolling Launch Enable" category="Rolling Launch / Map Enable"
-           storagetype="uint8" storageaddress="0xD3F64" sizex="1" endian="big" mask="02">
-      <scaling units="Enabled (0: Off | 1: On)" expression="x" to_byte="x" format="0"
-               fineincrement="1" coarseincrement="1"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Enable mask</data>
-      </table>
-    </table>
-
-    <!-- 0xD3F64  1 uint8  masked view 0x04 [code]
-         Semantics source: Rolling Launch per-map enable mask in the validated runtime
-         configuration record
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Rolling Launch Enable" category="Rolling Launch / Map Enable"
-           storagetype="uint8" storageaddress="0xD3F64" sizex="1" endian="big" mask="04">
-      <scaling units="Enabled (0: Off | 1: On)" expression="x" to_byte="x" format="0"
-               fineincrement="1" coarseincrement="1"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Enable mask</data>
-      </table>
-    </table>
-
-    <!-- 0xD3F64  1 uint8  masked view 0x08 [code]
-         Semantics source: Rolling Launch per-map enable mask in the validated runtime
-         configuration record
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Rolling Launch Enable" category="Rolling Launch / Map Enable"
-           storagetype="uint8" storageaddress="0xD3F64" sizex="1" endian="big" mask="08">
-      <scaling units="Enabled (0: Off | 1: On)" expression="x" to_byte="x" format="0"
-               fineincrement="1" coarseincrement="1"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Enable mask</data>
-      </table>
-    </table>
-
-    <!-- 0xD3F64  1 uint8  masked view 0x10 [code]
-         Semantics source: Rolling Launch per-map enable mask in the validated runtime
-         configuration record
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Rolling Launch Enable" category="Rolling Launch / Map Enable"
-           storagetype="uint8" storageaddress="0xD3F64" sizex="1" endian="big" mask="10">
-      <scaling units="Enabled (0: Off | 1: On)" expression="x" to_byte="x" format="0"
-               fineincrement="1" coarseincrement="1"/>
-      <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Enable mask</data>
+        <data>Hysteresis</data>
       </table>
     </table>
   </rom>

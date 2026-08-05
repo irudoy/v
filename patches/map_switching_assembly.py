@@ -880,6 +880,21 @@ def _validate_feedback_engine(parsed, layout):
         raise ValueError(
             f"{parsed.path}: feedback status must have one byte store"
         )
+    clear_mask = (~layout.feedback.status_mask) & 0xFF
+    if texts.count(f"and {clear_mask:#x},r0") != 1:
+        raise ValueError(
+            f"{parsed.path}: feedback status clear mask differs"
+        )
+    if texts.count(
+        f"mov #{layout.feedback.lamp_on_value:#x},r0"
+    ) != 1:
+        raise ValueError(
+            f"{parsed.path}: feedback lamp-on value differs"
+        )
+    if layout.feedback.lamp_off_value != 0:
+        raise ValueError(
+            f"{parsed.path}: feedback lamp-off value must be zero"
+        )
     config_address = parsed.labels.get("feedback_phase_counts")
     statement = parsed.statement_by_address.get(config_address)
     expected = (

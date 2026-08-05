@@ -19,11 +19,6 @@ rom-images/
     <rom-id>-<YYYYMMDD>-stock.bin
     <rom-id>-<YYYYMMDD>-stock.bin.md5
     <other artifacts>
-    mods/
-      <short-desc>/
-        README.md
-        <rom-id>-<YYYYMMDD>-<short-desc>.bin
-        <rom-id>-<YYYYMMDD>-<short-desc>.bin.md5
   README.md
   roms.csv
 ```
@@ -32,13 +27,17 @@ rom-images/
 `1JK08A` or `11ND0A`. The date is:
 
 - the read date for an owned dump;
-- the repository import date for an external stock image;
-- the release date for a modification.
+- the repository import date for an external stock image.
 
-`short-desc` uses lowercase ASCII words separated by hyphens. An MD5 sidecar is
-named `<binary>.md5` and uses GNU format: `<md5> *<filename>`. SHA-256 is the
-primary identifier and is recorded in `roms.csv`, the directory README, and the
-modification README. Empty `mods/` directories are not stored.
+An MD5 sidecar is named `<binary>.md5` and uses GNU format:
+`<md5> *<filename>`. SHA-256 is the primary identifier and is recorded in
+`roms.csv` and the directory README.
+
+Generated JK08A tuning images are not stored under `rom-images`. Concrete tune
+profiles, per-image build recipes, generated ROMs, checksum sidecars, active
+tune identities, and logs remain local artifacts outside the repository. The
+repository records only universal patch, composition, definition, and
+verification contracts for derived JK08A images.
 
 The layout, names, `roms.csv`, and MD5 sidecars are checked with:
 
@@ -226,71 +225,6 @@ modification README.
 Ground truth is in the hardware. A part number and forum thread are orientation
 points; disassembly provides the final cross-check.
 
-## Derived immo-off image
-
-`23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin` is produced from the
-exact stock JK08A image by `../patches/apply_immo_off.py`. It changes only
-`ROM[0x8725].bit0`, from byte `01` to `00`. This is the factory Developer
-Immobilizer flag whose execution path is described in
-`../patches/immo-off-developer-flag.md`.
-
-| File | Size | Change | SHA-256 | Status |
-|------|-----:|--------|---------|--------|
-| `23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin` | 1,048,576 | `0x8725: 01 -> 00` | `de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c` | hardware-verified |
-
-Stored checksum fields match stock; the flasher performs the required correction
-when writing. The patcher test verifies byte-for-byte that the derived file
-differs from stock by exactly one bit.
-
-## Derived ten-family map-switching production image
-
-`23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin`
-is the complete five-slot runtime over the checksum-valid tuned JK08A input.
-It includes per-slot DFCO Hold, Entry, Full Restore, and Intermediate Restore
-tables in addition to the ignition, fuel, and limiter families.
-
-| File | Size | Source SHA-256 | Output SHA-256 | Status |
-|------|-----:|----------------|----------------|--------|
-| `23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin` | 1,048,576 | `1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471` | `0efb43e6cf1feba91bf0beb19120d8f54d996a72650868a5469a0d81ede98da6` | superseded `0x00` release model; startup and identification PASS; functional selection FAIL |
-
-All six checksum references pass. The GNU SH-2E and Ghidra p-code gates each
-execute 116 map-switching scenarios across all 11 implementation entries.
-The hardware overlay chain ends at SHA-256
-`e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1`;
-it differs from this production file only in the accepted PCMFlash
-`0x8080..0x80FF` line variant.
-
-That hardware endpoint uses the superseded `0x00` release model. The corrected
-stage-19 endpoint built from the same exact stage-14 source has SHA-256
-`52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84`
-and hardware status `UNTESTED`.
-
-## Derived Rolling RPM Hold hardware-test image
-
-`23710-JK08A/mods/rolling-launch/1JK08A-20260804-map-switching-rolling-launch-rpm-hold-map1-test.bin`
-extends the exact checksum-valid complete ten-family map-switching stage-19
-endpoint. It enables Rolling RPM Hold only on Map 1. Ignition retard and the
-candidate brake gate remain disabled.
-
-| File | Size | Source SHA-256 | Output SHA-256 | Status |
-|------|-----:|----------------|----------------|--------|
-| `23710-JK08A/mods/rolling-launch/1JK08A-20260804-map-switching-rolling-launch-rpm-hold-map1-test.bin` | 1,048,576 | `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1` | `a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081` | superseded `0x00` release model; equivalent runtime activates once and cannot rearm |
-
-All six checksum references pass. The original GNU SH-2E gate executed 212
-combined scenarios but omitted the target-vehicle neutral code. The corrected
-gate executes 214 combined map-switching and Rolling Launch scenarios. The
-replacement hardware procedure is in `../patches/rolling-launch.md`.
-
-The strict patcher binds the corrected stage-19 endpoint SHA-256
-`52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84`
-to corrected generic Map 1 RPM Hold SHA-256
-`6e74ae82d22e9d975c64e2002c8ad30dec0f33f8f72b5ecd9906aab7598d480b`.
-The custom vehicle candidate is Overlay 21 under `tmp/`. Its target-vehicle
-result confirms repeated Map 1 RPM Hold and Map 2/Map 3 selection. Visual
-feedback fails because the injected CAN 0x551 field reaches the bus without a
-V36 indicator response. Exact JK08A serialization and public G37/370Z states
-identify byte-5 mask `0x60`, on `0x60`, off `0x00` as the next feedback-only
-hardware candidate. Overlay 22 confirms the configured `-5 deg` ignition
-command but has status `FUNCTIONAL_FAIL` because unconditional retard causes
-immediate torque collapse. The common definitions expose five independent
-per-map Rolling Launch enable controls at `0xD3F64`.
+Historical standalone immo-off, map-switching, and Rolling Launch artifacts are
+not retained under `rom-images/`. Their byte contracts, hashes, and hardware
+evidence remain documented under `../patches/`.

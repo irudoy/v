@@ -77,6 +77,12 @@ SWITCH_REQUIRED_FIELDS = (
 )
 SWITCH_SIZE_FIELDS = ("sizex", "sizey")
 SWITCH_STORAGE_BYTES = {"uint8": 1, "uint16": 2, "uint32": 4}
+BITWISE_SWITCH_FIELDS = (
+    "name", "category", "storageaddress", "storagetype", "endian",
+    "userlevel",
+)
+BITWISE_SWITCH_REQUIRED_FIELDS = BITWISE_SWITCH_FIELDS
+BITWISE_SWITCH_STORAGE_BITS = {"uint8": 8, "uint16": 16, "uint32": 32}
 DTC_FIELDS = (
     "index", "dtc", "record_addr", "attribute_addr", "stock_attribute",
     "disabled_attribute", "group", "confidence", "note",
@@ -443,6 +449,141 @@ def switch_xml(entry, index):
         out += wrap("      ", "<state",
                     [f'name="{att(state["name"])}"', f'data="{att(state["data"])}"'],
                     "/>")
+    out.append("    </table>")
+    return out
+
+
+def bitwise_switches(overrides):
+    """Validate and normalize native RomRaider bitwise switches."""
+    entries = overrides.get("bitwise_switch", [])
+    if isinstance(entries, dict):
+        entries = [entries]
+    if not isinstance(entries, list):
+        sys.exit("bitwise_switch must be a table or an array of tables")
+
+    normalized = []
+    for index, entry in enumerate(entries, 1):
+        if not isinstance(entry, dict):
+            sys.exit(f"bitwise_switch #{index} must be a TOML table")
+        unknown = sorted(
+            set(entry) - set(BITWISE_SWITCH_FIELDS) - {"description", "bit"}
+        )
+        if unknown:
+            sys.exit(
+                f"bitwise_switch #{index} contains unknown fields "
+                + ", ".join(unknown)
+            )
+        missing = [
+            key for key in BITWISE_SWITCH_REQUIRED_FIELDS if key not in entry
+        ]
+        if missing:
+            sys.exit(
+                f"bitwise_switch #{index} is missing fields "
+                + ", ".join(missing)
+            )
+        storage_bits = BITWISE_SWITCH_STORAGE_BITS.get(entry["storagetype"])
+        if storage_bits is None:
+            sys.exit(
+                f"bitwise_switch #{index}: unsupported storagetype "
+                f"{entry['storagetype']}"
+            )
+        try:
+            address = int(str(entry["storageaddress"]), 0)
+        except ValueError:
+            sys.exit(
+                f"bitwise_switch #{index}: storageaddress must be hexadecimal"
+            )
+        if address < 0:
+            sys.exit(f"bitwise_switch #{index}: storageaddress is negative")
+
+        bits = entry.get("bit", [])
+        if isinstance(bits, dict):
+            bits = [bits]
+        if not isinstance(bits, list) or not bits:
+            sys.exit(
+                f"bitwise_switch #{index}: bit must be a non-empty array"
+            )
+        normalized_bits = []
+        names = set()
+        positions = set()
+        for bit_index, bit in enumerate(bits, 1):
+            if not isinstance(bit, dict):
+                sys.exit(
+                    f"bitwise_switch #{index}, bit #{bit_index} must be a table"
+                )
+            unknown_bit = sorted(set(bit) - {"name", "position"})
+            if unknown_bit:
+                sys.exit(
+                    f"bitwise_switch #{index}, bit #{bit_index} contains unknown "
+                    "fields " + ", ".join(unknown_bit)
+                )
+            missing_bit = [
+                key for key in ("name", "position") if key not in bit
+            ]
+            if missing_bit:
+                sys.exit(
+                    f"bitwise_switch #{index}, bit #{bit_index} is missing fields "
+                    + ", ".join(missing_bit)
+                )
+            name = str(bit["name"]).strip()
+            try:
+                position = int(bit["position"])
+            except (TypeError, ValueError):
+                sys.exit(
+                    f"bitwise_switch #{index}, bit #{bit_index}: position must "
+                    "be an integer"
+                )
+            if not name:
+                sys.exit(
+                    f"bitwise_switch #{index}, bit #{bit_index}: name is empty"
+                )
+            if name in names:
+                sys.exit(
+                    f"bitwise_switch #{index}: duplicate bit name {name}"
+                )
+            if position in positions:
+                sys.exit(
+                    f"bitwise_switch #{index}: duplicate bit position {position}"
+                )
+            if position < 0 or position >= storage_bits:
+                sys.exit(
+                    f"bitwise_switch #{index}, bit #{bit_index}: position "
+                    f"{position} is outside {entry['storagetype']}"
+                )
+            names.add(name)
+            positions.add(position)
+            normalized_bits.append({"name": name, "position": position})
+
+        normalized_entry = dict(entry)
+        normalized_entry["storageaddress"] = f"0x{address:X}"
+        normalized_entry["bit"] = normalized_bits
+        normalized.append(normalized_entry)
+    return normalized
+
+
+def bitwise_switch_xml(entry, index):
+    """Build one TableBitwiseSwitch containing independent checkboxes."""
+    attrs = ['type="BitwiseSwitch"']
+    for key in BITWISE_SWITCH_FIELDS:
+        value = (
+            presentation.category_name(entry[key])
+            if key == "category"
+            else entry[key]
+        )
+        attrs.append(f'{key}="{att(value)}"')
+    out = wrap("    ", "<table", attrs, ">")
+    if entry.get("description"):
+        out.append(f"      <description>{att(entry['description'])}</description>")
+    for bit in entry["bit"]:
+        out += wrap(
+            "      ",
+            "<bit",
+            [
+                f'name="{att(bit["name"])}"',
+                f'position="{bit["position"]}"',
+            ],
+            "/>",
+        )
     out.append("    </table>")
     return out
 
@@ -908,6 +1049,7 @@ def main():
         sys.exit(f"{os.path.basename(ovr_path)}: switch must be a table "
                  "or an array of tables")
     native_switches = list(native_switches)
+    native_bitwise_switches = bitwise_switches(ovr)
     image = romkit.load(rom)
     records = dtc_records(rom, image=image)
     dtc_entries = dtc_switches(rom, records=records)
@@ -917,6 +1059,8 @@ def main():
     body = []
     for index, entry in enumerate(switches, 1):
         body += switch_xml(entry, index) + [""]
+    for index, entry in enumerate(native_bitwise_switches, 1):
+        body += bitwise_switch_xml(entry, index) + [""]
     for m in sorted(emit, key=lambda m: (ovr["table"][m["addr"]].get("order", 1 << 20),
                                          m["addr"])):
         body += table_xml(m, ovr, axes, rom) + [""]
@@ -1013,6 +1157,7 @@ def main():
         views_by_source,
         records,
         native_switches,
+        native_bitwise_switches,
     )
     with open(tunerpro_path, "w") as f:
         f.write(xdf)
@@ -1020,11 +1165,13 @@ def main():
     print(f"{os.path.relpath(romraider_path)}: {len(emit)} calibration tables, "
           f"{len(dtc_entries)} DTC switches, "
           f"{len(view_entries)} masked views, {len(ovr.get('axisview', {}))} reference axes, "
-          f"{len(switches)} switches")
+          f"{len(switches)} switches, "
+          f"{len(native_bitwise_switches)} bitwise switches")
     print(
         f"{os.path.relpath(tunerpro_path)}: "
         f"{xdf_stats['calibration_tables']} calibration tables, "
         f"{xdf_stats['masked_views']} masked views, "
+        f"{xdf_stats['bitwise_flags']} bitwise flags, "
         f"{xdf_stats['axis_views']} reference axes, "
         f"{xdf_stats['individual_dtc_patches']} individual DTC patches, "
         f"{xdf_stats['group_dtc_patches']} group DTC patches "
@@ -1060,7 +1207,8 @@ def main():
         print(
             "  Rolling Launch definition: "
             f"configuration tables={launch.table_count}; "
-            f"per-map masked views={launch.masked_view_count}; "
+            f"bitwise switches={launch.bitwise_switch_count}; "
+            f"enable bits={launch.enable_bit_count}; "
             f"editor views={launch.editor_view_count}"
         )
     for a, sem, why in skipped:

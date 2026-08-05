@@ -80,10 +80,11 @@ Immo-off may leave NATS DTCs and the security indicator active.
 
 ## JK08A hardware test
 
-The one-bit image
-`rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`
+The one-bit image with SHA-256
+`de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c`
 was tested on 2026-07-27 in a replacement JK00D ECU installed in a V36 Skyline
-250GT with a VQ25HR engine. The engine starts and runs normally.
+250GT with a VQ25HR engine. The engine starts and runs normally. The derived
+artifact is reproducible and is not retained under `rom-images/`.
 
 DTC P1610 remains in the ECM and returns after clearing. It does not block engine
 starting or operation. This hardware result confirms the separation between the
@@ -97,11 +98,10 @@ python3 patches/apply_immo_off.py --rom JK08A
 ```
 
 Output:
-`rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin`.
+`1JK08A-20260727-immo-off.bin` at a caller-selected output path.
 The adjacent MD5 sidecar is
 `1JK08A-20260727-immo-off.bin.md5`. The patcher never overwrites a differing BIN
-or sidecar. On the first canonical-mod release it also creates the directory
-README; an existing README is left unchanged.
+or sidecar. The output directory is not a build input.
 
 Verify without creating a file:
 

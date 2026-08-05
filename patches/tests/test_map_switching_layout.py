@@ -110,8 +110,8 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         self.assertEqual(feedback.payload_start, 0xFFFF3AD5)
         self.assertEqual(feedback.status_byte_index, 5)
         self.assertEqual(feedback.status_byte_address, 0xFFFF3ADA)
-        self.assertEqual(feedback.status_mask, 0x03)
-        self.assertEqual(feedback.lamp_on_value, 0x02)
+        self.assertEqual(feedback.status_mask, 0x60)
+        self.assertEqual(feedback.lamp_on_value, 0x60)
         self.assertEqual(feedback.phase_counts_address, 0x000D3848)
         self.assertEqual(feedback.default_on_frames, 10)
         self.assertEqual(feedback.default_off_frames, 10)
@@ -184,7 +184,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            414,
+            418,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
@@ -239,10 +239,10 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             parsed,
             apply_map_switching.load_payloads(self.layout),
         )
-        self.assertEqual(audit.instructions, 414)
-        self.assertEqual(audit.delayed_transfers, 39)
+        self.assertEqual(audit.instructions, 418)
+        self.assertEqual(audit.delayed_transfers, 40)
         self.assertEqual(audit.pc_relative_references, 52)
-        self.assertEqual(audit.direct_branches, 77)
+        self.assertEqual(audit.direct_branches, 79)
         self.assertEqual(audit.indirect_transfers, 21)
 
     def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):

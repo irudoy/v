@@ -19,7 +19,8 @@ COMMON_TABLES = {
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
-    "Rolling Launch Enable Mask (Raw)": "Rolling Launch / Advanced",
+    "Rolling Launch Enable by Map": "Rolling Launch / Map Enable",
+    "Rolling Launch RPM Hysteresis": "Rolling Launch / RPM Hold",
 }
 
 DEFAULT_VISIBLE_TABLES = {
@@ -41,6 +42,10 @@ DEFAULT_VISIBLE_TABLES = {
     "Initial Retard Quantity - unresolved mode (0x1202E)":
         "Ignition Timing / Transient Correction",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
+    "Cold Idle Ignition Timing (Candidate) (0x12196)":
+        "Idle Speed Control / Ignition Timing",
+    "Idle Ignition Timing (Candidate) (0x1219E)":
+        "Idle Speed Control / Ignition Timing",
     "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
     "Stationary Rev Limiter Accumulator Step (0x124D2)":
         "Limiters / Stationary Rev Limiter",
@@ -65,7 +70,6 @@ SLOT_TABLES = {
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-    "Rolling Launch Enable": "Rolling Launch / Map Enable",
 }
 
 
@@ -335,7 +339,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             for address, entry in overrides["table"].items()
             if entry.get("emit") is False
         }
-        self.assertEqual(len(explicitly_hidden), 150)
+        self.assertEqual(len(explicitly_hidden), 148)
         self.assertTrue(all(
             entry.get("category") in hidden_categories
             for entry in explicitly_hidden.values()
@@ -509,6 +513,32 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             for category in categories
         ))
 
+    def test_tracked_xml_has_one_rolling_launch_bitwise_switch(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        switches = [
+            table
+            for table in rom.findall("./table")
+            if table.get("type") == "BitwiseSwitch"
+        ]
+        self.assertEqual(len(switches), 1)
+        switch = switches[0]
+        self.assertEqual(switch.get("name"), "Rolling Launch Enable by Map")
+        self.assertEqual(switch.get("storageaddress"), "0xD3F64")
+        self.assertEqual(
+            [
+                (bit.get("name"), bit.get("position"))
+                for bit in switch.findall("./bit")
+            ],
+            [
+                (f"Map {slot} - Rolling Launch Enable", str(slot - 1))
+                for slot in range(1, 6)
+            ],
+        )
+        self.assertNotIn(
+            "Rolling Launch Enable Mask (Raw)",
+            {table.get("name") for table in rom.findall("./table")},
+        )
+
     def test_tracked_fuel_targets_use_gasoline_afr_scaling(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
@@ -555,11 +585,47 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "0xB23A",
             "0x11F6A",
             "0x120BE",
-            "0x12196",
-            "0x1219E",
             "0x121A6",
             "0x14E52",
         }.isdisjoint(addresses))
+
+    def test_idle_ignition_candidates_reach_the_working_definition(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        by_address = {
+            table.get("storageaddress"): table
+            for table in rom.findall("./table")
+            if table.get("type") != "Switch"
+        }
+        expected = {
+            "0x12196": "Cold Idle Ignition Timing (Candidate) (0x12196)",
+            "0x1219E": "Idle Ignition Timing (Candidate) (0x1219E)",
+        }
+        for address, name in expected.items():
+            with self.subTest(address=address):
+                table = by_address[address]
+                self.assertEqual(table.get("name"), name)
+                self.assertEqual(
+                    table.get("category"),
+                    "Idle Speed Control / Ignition Timing",
+                )
+                scale = table.find("./scaling")
+                self.assertEqual(
+                    scale.get("units"),
+                    "Ignition timing (deg) [cand]",
+                )
+                self.assertEqual(scale.get("expression"), "x-128")
+                self.assertEqual(scale.get("to_byte"), "x+128")
+                axis = table.find("./table[@type='Static X Axis']")
+                self.assertEqual(
+                    axis.get("name"),
+                    "Engine Speed [RPM] (Candidate)",
+                )
+                self.assertEqual(
+                    [int(cell.text) for cell in axis.findall("./data")],
+                    [0, 400, 800, 1200, 1600, 2000, 2400, 2800],
+                )
+
+        self.assertNotIn("0x121A6", by_address)
 
     def test_default_visible_tables_reach_the_working_definition(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")

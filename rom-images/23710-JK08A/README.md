@@ -8,10 +8,11 @@ Scanmatik-SM2 USB adapter.
 ## Contents
 
 - `1JK08A-20260726-stock.bin` - flash ROM, 1,048,576 bytes (`0x100000`);
-- `1JK08A-20260726-stock.bin.md5` - MD5 sidecar;
-- `mods/immo-off/` - one-bit immo-off modification.
-- `mods/map-switching/` - software-verified ten-family production map-switching image.
-- `mods/rolling-launch/` - software-verified Map 1 Rolling RPM Hold hardware-test image.
+- `1JK08A-20260726-stock.bin.md5` - MD5 sidecar.
+
+Derived tuning images, concrete tune profiles, and per-image build recipes are
+not stored in this directory. Active tune identities, output paths, checksum
+sidecars, and calibration-specific build metadata remain local artifacts.
 
 ROM hashes:
 

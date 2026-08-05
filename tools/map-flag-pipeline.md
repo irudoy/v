@@ -1329,16 +1329,18 @@ offset-binary bias added to the request before that row is searched. Backtrackin
 cannot distinguish them.
 
 Of the 450 canonical maps, 38 pass the definition gate and remain visible by default,
-150 internal or unidentified research maps carry an explicit `emit = false`, and 262
+148 internal or unidentified research maps carry an explicit `emit = false`, and 262
 default-visible maps are reported as rejected by the definition gate. The common JK08A
 projection expands ten visible calibration families into 50 Map 1 through Map 5 tables,
 adding 40 slot copies, and adds one Rolling Launch configuration table. Two masked
-ignition families expand into ten slot views; the remaining canonical masked view and
-five per-map Rolling Launch views produce 16 masked views in total. The emitted
-definition therefore contains 79 calibration tables and 16 masked views without
-standalone reference axes. All hidden and rejected canonical maps remain available for
-reverse engineering in the graph and ledger. The catalog contains 365 `code` maps and
-85 `candidate` maps. Semantics are present for 443 maps and `scale_expr` for 405. The
+ignition families expand into ten slot views; the remaining canonical masked view
+produces 11 masked views in total. Rolling Launch enablement is separate from map
+tables: RomRaider receives one native `BitwiseSwitch` with five checkboxes, while
+TunerPro receives five native `XDFFLAG` items for the same byte. The emitted definition
+therefore contains 81 calibration tables and 11 masked views without standalone
+reference axes. All hidden and rejected canonical maps remain available for reverse
+engineering in the graph and ledger. The catalog contains 365 `code` maps and 85
+`candidate` maps. Semantics are present for 443 maps and `scale_expr` for 405. The
 ledger has seven open `candidate` maps without semantics. `mapkit` also closes
 Stage 5 `:MATCHES`: reading the axes, rather than the catalog, provides match keys such
 as scale family and axis semantics. Cross-ROM homology, the second half of P7, awaits
@@ -1356,7 +1358,7 @@ sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 | No regression against backtracking | sites where backtracking returned an in-ROM value but data flow did not | n/a -> **1, reviewed** (`0x56cd8`: value from an unreachable branch, not a base) | all reviewed |
 | Latent catalog defects | number of `conflict` results (`bt != df` at a site) | not measured -> **14, all reviewed** (6 base conflicts: reference wrong in every case; 3: unreachable branch and stale registers; 5: `mov.w` constant read as 32-bit by the reference). Four more base differences moved out of this class after operand-set expansion (section 6): the mechanisms selected different branches of one selector | all reviewed |
 | Catalog completeness | number of `:Map` nodes against known inventory; 0 maps outside graph | 223 bases in ledger, 0 in graph -> **450 of 450 in graph** across census and manual families; three dynamic call sites create no speculative map | every catalog map in graph; dynamic bases remain explicit |
-| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: the common definition emits 72 `code` maps, seven marked `candidate` maps, and 16 masked views; it emits no standalone reference axes | 0 unmarked |
+| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: the common definition emits 72 `code` maps, seven marked `candidate` maps, and 11 masked views; it emits no standalone reference axes | 0 unmarked |
 | Catalog geometry | number of `:Map` nodes without `storagetype`, which prevents emission | 66 of 441, all 2D -> **0**: 2D element type comes from the finisher | 0 |
 | Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **41** of 79; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
 | Deferred axes | number of `pattern`-level `:Axis` nodes reported only by backtracking with `k5`/`k6=sp` | not measured -> **14 of 230**; `0x8000` is erased flash; none pass emission | 0; Stage 6 resolves them |

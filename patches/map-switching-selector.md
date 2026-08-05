@@ -47,7 +47,7 @@ Eight independent SH assembly units are implemented: the selector host, shared
 fail-closed adapter helper, four legacy lookup adapters, four-family DFCO
 adapter, startup wrapper, atomic limiter transaction, CAN serializer wrapper,
 and feedback pulse engine. Ghidra 12.1.2 assembles and round-trip decodes their
-414 instructions and 194 literal bytes. The source validator restricts all
+418 instructions and 194 literal bytes. The source validator restricts all
 injected code to an explicit 29-mnemonic subset
 mnemonics listed for the SH7058S SH-2E core in Renesas REJ09B0177 section 2.4.1;
 the SH-2A Ghidra profile cannot introduce an unaudited instruction. Global
@@ -59,7 +59,7 @@ startup/limiter, and nine feedback cases. The eight generated raw blobs are
 SHA-256 locked in the layout manifest. Their complete spans are tracked in the
 payload bundle; independently rebuilt raw blobs and listings remain
 regenerable temporary artifacts. The complete-composition harness passes the
-same 116 cases over 5137 instructions, executes all eleven declared code entries,
+same 116 cases over 5152 instructions, executes all eleven declared code entries,
 and verifies the locked fixture SHA-256 and write boundary. The patcher extends
 this pure composition with input compatibility, checksum recalculation,
 non-overwriting file creation, and final preservation checks.
@@ -75,14 +75,16 @@ uses `0x20` for arming and commit and treats `0x00` as invalid. Overlay 21,
 SHA-256
 `1e6866e96e77fba203166b38f5efcfd83b6bcad609b7e0ada67727cd5fddc0c9`,
 contains this correction. Target-vehicle testing confirms functional selection
-of Maps 2 and 3. Driver-visible feedback has status `FAIL`: the injected CAN
-0x551 byte-5 low-bit states are present on the bus, but the V36 combination
-meter does not change the requested indicator. A later Map 2 -> Map 3
-selection proves that the feedback queue drains and does not block the
-selector.
+of Maps 2 and 3. Its byte-5 low-bit feedback command has status `FAIL`: the
+injected states are present on CAN 0x551, but the V36 combination meter does not
+change the requested indicator. A later Map 2 -> Map 3 selection proves that
+the queue drains and does not block the selector. The current feedback engine
+uses the serializer's byte-5 bits 5-6 with mask `0x60`, on value `0x60`, and off
+value `0x00`. Its executable gates pass, while target-vehicle meter behavior
+retains hardware status `UNTESTED`.
 
 The differentiated candidate
-`tmp/1JK08A-20260726-map-sw-tune.bin`, SHA-256
+`1JK08A-20260726-map-sw-tune.bin`, SHA-256
 `d61853b7c1f1b2b29d3ccf2a551be8dacebeef65b82b464d0327fc9b11e93e5d`,
 has a hardware result of FAIL. PCMFlash reported a successful write, but the
 modified ECU did not start the engine and did not identify through PCMFlash.
@@ -134,7 +136,7 @@ gates, which did not cover the SH-2E delay-slot PC rule:
   identical in the working, generated, and differentiated images.
 
 The reset-fixed successor is
-`tmp/1JK08A-20260726-map-sw-tune-fixed-reset.bin`, SHA-256
+`1JK08A-20260726-map-sw-tune-fixed-reset.bin`, SHA-256
 `3e37f03a2ac879714556ab720fa657eb4132d1b22ecdccbb2c4edce631842ced`
 and MD5 `4985aaec122bd62fd9d636346529a953`. It differs from the pre-fix
 candidate at 38 bytes inside the 120-byte upgrade write set: the fallback
@@ -241,8 +243,8 @@ accepts only the known-working tuned base with SHA-256
 `1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471`,
 replaces the complete erased line `[0xD2280,0xD2300)` with 128 zero bytes,
 recalculates all six checksum references, and proves that all 14 runtime hooks
-remain stock. The local output
-`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-marker-only-d2280.bin`
+remain stock. The generated image
+`1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-marker-only-d2280.bin`
 has SHA-256
 `e1fef7ccf862243be7b231b26865c9cd099283993cfe8c73abb9952b1e5358b7`
 and MD5 `ae982b7e05fdd04af51f4136637f60cd`. It differs from its base at all
@@ -277,7 +279,7 @@ round-trip decodes the three physical instructions and four literal bytes. The
 `5e3e791f1a0d302b905db989c9a646440a69fe531921a246a21f3082712eb603`.
 
 The generated image is
-`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-trampoline-d22a0.bin`:
+`1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-trampoline-d22a0.bin`:
 
 - SHA-256:
   `6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55`;
@@ -339,7 +341,7 @@ instructions and eight literal bytes. The payload SHA-256 is
 `906991815705fe9a0b91d3817fab1a59d4664e3f04ad126820d969e47d7f5612`.
 
 The generated image is
-`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-selector-init-d22a0.bin`:
+`1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-selector-init-d22a0.bin`:
 
 - SHA-256:
   `7dcb43b2181c030bde772999b674afb72a8cd196e93a0aae3fecf90069ed62d3`;
@@ -365,7 +367,7 @@ status `PASS_EXACT`. Writing the exact file completed successfully at 12:19:54.
 Identification after the power cycle reported `1JK08A00000` at 12:21:42. The
 complete one-MiB read finished successfully at 12:50:19, and final
 identification reported the same software at 12:51:58. The readback
-`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-selector-init-d22a0_readback.bin`
+`1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-selector-init-d22a0_readback.bin`
 is byte-identical to the input image and has the same SHA-256
 `7dcb43b2181c030bde772999b674afb72a8cd196e93a0aae3fecf90069ed62d3`.
 All six stored checksum references equal their independently calculated
@@ -392,7 +394,7 @@ therefore exercises complete Map 1 fuel-cut and throttle shadows without
 enabling a map-selection path.
 
 The generated image is
-`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-limiter-map1-d3660.bin`:
+`1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-startup-limiter-map1-d3660.bin`:
 
 - SHA-256:
   `1833922fc7d3428ed9f9998a99281d4c02b66c027cc39f7620aa3a79d541964a`;
@@ -443,7 +445,7 @@ for stage 02, and 24 bytes for each hook stage. The actual adjacent changes are
 aggregate limiter endpoint above.
 
 The complete readback
-`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-limiter-overlay-05-throttle-scalar-hook-77bac_readback.bin`
+`1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-limiter-overlay-05-throttle-scalar-hook-77bac_readback.bin`
 is byte-identical to the written Overlay 05 image. Both files have SHA-256
 `1833922fc7d3428ed9f9998a99281d4c02b66c027cc39f7620aa3a79d541964a`
 and MD5 `b3586f278e236499d7e0816bad1a8e46`, and all six stored checksum
@@ -454,7 +456,7 @@ at 14:35:26, post-write identification as `1JK08A00000` at 14:36:01, and
 successful completion of the full read at 15:04:38 on 2026-08-04.
 
 The ordered SHA-256 manifest is
-`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-limiter-overlay.sha256`.
+`1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-limiter-overlay.sha256`.
 `EmulateMapSwitchingLimiterGate.java` executes all five exact images. Stage 01
 is behaviorally identical to the selector-init source at 1688 p-code steps and
 does not reach limiter commit. Stages 02 through 05 reach the commit and finish
@@ -526,11 +528,11 @@ references. The final image equals an independently constructed combined lookup
 endpoint while retaining the successful limiter runtime.
 
 The ordered SHA-256 manifest is
-`tmp/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-overlay-v2-lookup.sha256`.
+`1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-overlay-v2-lookup.sha256`.
 Ghidra 12.1.2 independently rebuilds the 48-byte helper and 256-byte adapter
 spans with their locked SHA-256 values and passes 47/47 legacy-adapter p-code
 cases over 718 instructions. The current complete-composition harness passes
-116 cases over 5137 instructions, and the exact Overlay 06/07 caller gate passes seven cases
+116 cases over 5152 instructions, and the exact Overlay 06/07 caller gate passes seven cases
 over 2333 instructions. RomRaider source commit
 `874325319be98fc487e3875e5b26d25b8869e162` verifies revision-2 stages 06 and 07
 as `ChecksumALT` 2/2 and `ChecksumALT2` 4/4, and recalculation is byte-identical.
@@ -571,17 +573,17 @@ the hardware source.
 | 16 | Shared Hold and Entry hook at `0x4FDD0` | `84796d58bdd3c45ba4c6774f936bedd54109cbee7a60053dcecf0b38c4777e58` | `aeea9d950f02ed177298fa03ca3fb7b1` |
 | 17 | Shared Full and Intermediate Restore hook at `0x50258` | `e89bd22402e416c9178286b554b1d1d054586c49096574d1c88d9bd5e96f9e0d` | `a3bbd6562236859726824bce5311746f` |
 | 18 | Corrected selector host and scheduler hook; boot-only, no map gesture | `f42f2ec56b590c7e82b17a343dc966c7c27c1981dde528815020e7d974d30b8c` | `738b0af89283fac2b47e83c187394326` |
-| 19 | CAN feedback wrapper, pulse engine, and serializer hook; corrected complete runtime | `52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84` | `7f07334311ff0f3add57c95f3730f36e` |
+| 19 | CAN feedback wrapper, pulse engine, and serializer hook; corrected complete runtime | `bcc34d531530e86b74de362df0db6c3c59597fa8095baaa056f6e4ba82ab7386` | `84f42719c82d1d554fdcce31a3367e1d` |
 
-Stages 15 through 19 change `270, 9, 9, 365, 208` bytes from their immediate
+Stages 15 through 19 change `270, 9, 9, 365, 216` bytes from their immediate
 predecessors inside adjacent permitted sets of `284, 24, 24, 384, 408` bytes.
 Every image is one MiB, passes all six checksum references, preserves every
 byte outside its cumulative component and checksum write set, and is locked to
 source SHA-256
 `f0a03f6fef205aa1ac42e4471dd0bad995a7082c35d24bdb639fc342ccdda892`.
-The generated corrected chain and ordered manifest are under
-`tmp/hardware-button-release-fix/` with prefix
-`1JK08A-map-switching-safe-v4`.
+The tracked `build_map_switching_full_dfco_overlays.py` tool defines the
+corrected chain and ordered manifest with prefix
+`1JK08A-map-switching-safe-v4`; generated output has no canonical directory.
 
 The 2026-08-05 hardware run used the superseded stage-18 SHA-256
 `4732168ad4aa0f8b8bf11e0b25b1ae506eed50713c789d3fb4297fafa9c37ac0`
@@ -591,24 +593,16 @@ Startup and identification passed for stages 15 through 19, but vehicle testing
 showed that the selector cannot arm because those images require a nonexistent
 `0x00` released-button code. No stage-19 readback or PCMFlash log accompanies
 that report. The corrected generic stages 18 and 19 remain unflashed. The
-byte-equivalent selector and feedback implementation in custom Overlay 21 has
-target-vehicle evidence: selector input and map commits pass, while the
-selected CAN 0x551 indicator field fails its V36 display-semantic gate.
+selector implementation in custom Overlay 21 has target-vehicle evidence:
+selector input and map commits pass, while its historical low-bit CAN 0x551
+indicator field fails the V36 display-semantic gate. The current bits 5-6
+feedback engine passes the software gates and remains hardware-untested.
+Concrete tune profiles, per-image build recipes, generated ROMs, checksum
+sidecars, and logs remain local artifacts outside the repository.
 
-The production composition is
-`rom-images/23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin`.
-Its checksum-valid tuned input has SHA-256
-`1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471`;
-the output has SHA-256
-`0efb43e6cf1feba91bf0beb19120d8f54d996a72650868a5469a0d81ede98da6`
-and MD5 `693917aad583784b082f0cec77bad4cc`. It differs from stage 19 at
-exactly the 128 bytes in `[0x8080, 0x8100)`: the production input retains
-`0xEE`, while the PCMFlash readback-derived hardware chain retains the accepted
-zero-filled line. No checksum field differs.
-
-The complete instruction audit covers all 414 final-runtime instructions. It
-independently verifies 39 delayed transfers and their encoded `NOP` slots, 52
-PC-relative references and their effective literal addresses, 77 direct branch
+The complete instruction audit covers all 418 final-runtime instructions. It
+independently verifies 40 delayed transfers and their encoded `NOP` slots, 52
+PC-relative references and their effective literal addresses, 79 direct branch
 targets, and 21 indirect control-transfer encodings. The startup-trampoline and
 startup-selector-init gate sources add 13 alternative instruction instances,
 three delayed transfers, and three PC-relative references under the same gate.
@@ -1188,11 +1182,11 @@ is compared byte-for-byte with the declared write set.
 The locked exact-stock fixture produces:
 
 ```text
-in_memory_sha256=469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0
-changed_bytes=5630
+in_memory_sha256=108613e626f883ecca7a5733b739edafaacaee663909bfb115a6e8dda0d64c19
+changed_bytes=5638
 permitted_write_bytes=6144
 feedback_frame_counts=10,10
-instruction_placements=414
+instruction_placements=418
 code_entries=11
 ```
 
@@ -1211,7 +1205,7 @@ Each scenario receives a fresh emulator loaded with the complete fixture.
 Deterministic stubs replace only the three stock callees outside the injected
 implementation; feedback cases may additionally replace only the two
 frame-count bytes. The harness executes the same 17 selector, 76 adapter, 14
-startup/limiter, and nine feedback scenarios over 5137 instructions. It
+startup/limiter, and nine feedback scenarios over 5152 instructions. It
 reaches all eleven declared code entries, checks real copied calibration bytes,
 verifies exact limiter SR restoration, and permits only the caller-clobbered T
 bit to differ on comparison-heavy adapter, selector, and feedback paths.
@@ -1390,22 +1384,22 @@ FUN_000C5372
 The serializer reads `RAM8[0xFFFF40D0] & 7`, shifts it left by four, clears
 payload mask `0x70`, and writes the three-bit state into byte-5 bits 4..6. It
 constructs byte-5 bits 0..1 independently from `0xFFFF4185`, `0xFFFF2451`, and
-`0xFFFF417F`. The current feedback engine therefore targets a different
-subfield when it changes mask `0x03`.
+`0xFFFF417F`. The current feedback engine changes only bits 5-6 with mask
+`0x60`, leaving bit 4 and both independently constructed low bits intact.
 
 Public G37/370Z captures report complete byte-5 values `0x02` for MAIN OFF,
 `0x62` for MAIN ON, and `0x42` for SET/engaged. They map exactly to internal
 serializer states `0`, `6`, and `4` in bits 4..6. The target-vehicle failure is
-consistent with the current low-bit override: its injected `2/0` sequence is
+consistent with the historical low-bit override: its injected `2/0` sequence is
 present on the bus, but no requested indicator changes. Successful later
 selection of Map 3 proves that the wrapper still advances and completes the
 queued Map 2 feedback sequence.
 
-The next hardware candidate remains on CAN 0x551 byte 5 and changes only mask
-`0x60`: on value `0x60`, off value `0x00`. With ASCD inactive, the stock-first
-wrapper then produces `0x62` and `0x02` while preserving bits 0..4 and 7. This
-mapping is code-grounded and supported by public vehicle captures, but it
-retains hardware-test status until the V36 combination meter confirms it.
+The current feedback contract remains on CAN 0x551 byte 5 and changes only mask
+`0x60`: on value `0x60`, off value `0x00`. With ASCD inactive, the
+stock-first wrapper produces `0x62` and `0x02` while preserving bits 0..4 and
+7. This mapping is code-grounded and supported by public vehicle captures, but
+it retains hardware-test status until the V36 combination meter confirms it.
 
 Literal `0xC3FA4` has one Ghidra reference, from `0xC3F3A` in
 `FUN_000C3ED2`. The manifest redirects it from `0x000C5372` to
@@ -1422,12 +1416,12 @@ Those registers remain unchanged across the wrapper, and no serializer return
 value is consumed.
 
 ```text
-0xFFFF3ADA.bits0..1 = 2  for candidate pulse on
-0xFFFF3ADA.bits0..1 = 0  for candidate pulse off
+0xFFFF3ADA.bits5..6 = 3  for candidate pulse on
+0xFFFF3ADA.bits5..6 = 0  for candidate pulse off
 ```
 
-This is the installed, hardware-rejected pilot contract. All upper six bits and
-all other payload bytes retain the stock serializer result. The wrapper
+All other byte-5 bits and all other payload bytes retain the stock serializer
+result. The wrapper
 advances the pulse engine once per frame 0x551
 serialization. `map_switching_selector.py` expresses the on and off durations
 as counts of serializer invocations. The pilot locks both phases to ten frames;
@@ -1441,7 +1435,7 @@ Their locked SHA-256 values are:
 
 ```text
 b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36
-c3a10706e283bc53c5634730d7ad96a5c49bebd8dc22536f96cfc411ef46a784
+925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f66f
 ```
 
 The engine stores its two uint8 configuration bytes at `0xD3848`: on-frame
@@ -1455,7 +1449,7 @@ writes `0xA5` to byte 5 before every engine invocation. Nine cases and 17
 invocations verify disabled behavior, 1x1 and 2x2 frame sequences, invalid
 phase/count state, incomplete configuration, preservation of payload bytes
 0-4 and 6-7, upper-bit preservation in byte 5, protected registers, and stack
-balance. All cases pass over 841 executed instructions.
+balance. All cases pass over 856 executed instructions.
 
 ## Checksum impact
 
@@ -1540,12 +1534,14 @@ verifies the recalculated output before writing it.
    the layout.
 10. The target switch assembly passes the raw ladder sequence
    `SET -> CANCEL -> SET` and commits Maps 2 and 3.
-11. CAN 0x551 byte 5 state `2` has hardware status `FAIL` for V36 visual
-   feedback. The injected state reaches the bus, but the requested indicator
-   remains unchanged.
-12. Build a feedback-only candidate that changes the installed field to CAN
-   0x551 byte-5 mask `0x60`, on `0x60`, and off `0x00`. Confirm one through
-   five CRUISE indications with the engine stopped and ASCD inactive.
+11. Treat the historical CAN 0x551 byte-5 low-bit state `2` as rejected. Its
+   injected state reaches the bus, but the requested indicator remains
+   unchanged.
+12. Compose a local hardware candidate at a caller-selected path, retain its
+   SHA-256 and MD5 with the local test record, write that candidate, and confirm
+   one through five CRUISE indications with the engine stopped and ASCD
+   inactive. The installed field uses byte-5 mask `0x60`, on `0x60`, and off
+   `0x00`.
 13. Confirm reset Map 1 by the selected calibration behavior after an ignition
    cycle; no custom diagnostic request is part of this procedure.
 14. Measure the extended startup clear and commit critical-section latency.

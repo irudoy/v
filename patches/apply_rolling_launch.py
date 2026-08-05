@@ -35,10 +35,10 @@ from patches import rolling_launch_layout as rolling_layout_model
 ROM_SIZE = 0x100000
 PROFILE_NAME = "rpm-hold-map1-test"
 LOCKED_MAP_SWITCHING_SOURCE_SHA256 = (
-    "52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84"
+    "bcc34d531530e86b74de362df0db6c3c59597fa8095baaa056f6e4ba82ab7386"
 )
 LOCKED_PROFILE_OUTPUT_SHA256 = (
-    "6e74ae82d22e9d975c64e2002c8ad30dec0f33f8f72b5ecd9906aab7598d480b"
+    "38c8335ad4cb1b91f8da75beba33c22236aa3b63b519585ca2146bd9f88effdb"
 )
 HISTORICAL_MAP_SWITCHING_SOURCE_SHA256 = (
     "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"

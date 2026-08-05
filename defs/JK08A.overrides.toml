@@ -19,8 +19,9 @@ default_emit = true
 enabled = true
 
 [rolling_launch]
-# Five independent masked controls edit bits 0 through 4 of the validated
-# Rolling Launch enable_mask byte. They preserve every other map-enable bit.
+# A direct table exposes the validated RPM hysteresis word. Five independent
+# masked controls edit bits 0 through 4 of the enable_mask byte and preserve
+# every other map-enable bit.
 enabled = true
 
 [rom]
@@ -1212,22 +1213,26 @@ fine = 1
 coarse = 16
 
 [table.00012196]
-name = "Signed Additive Term A (x-128) (0x12196)"
-category = "Internal Calculations"
-emit = false
+name = "Cold Idle Ignition Timing (Candidate) (0x12196)"
+category = "Idle Speed Control / Ignition Timing"
+emit = true
 order = 155
 format = "0"
 fine = 1
-coarse = 16
+coarse = 4
+static_axis_name = "Engine Speed [RPM] (Candidate)"
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 
 [table.0001219e]
-name = "Signed Additive Term B (x-128) (0x1219E)"
-category = "Internal Calculations"
-emit = false
+name = "Idle Ignition Timing (Candidate) (0x1219E)"
+category = "Idle Speed Control / Ignition Timing"
+emit = true
 order = 156
 format = "0"
 fine = 1
-coarse = 16
+coarse = 4
+static_axis_name = "Engine Speed [RPM] (Candidate)"
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 
 [table.000121a6]
 name = "Conditional Signed Additive Term C (x-128) (0x121A6)"

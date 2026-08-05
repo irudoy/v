@@ -2482,6 +2482,14 @@ u8(ffff1349) - 128)` at `ffff23ee`. The alternate branch of `0x4bdc2` carries
 `ffff1513` from `ffff2404`; `0x4e112` only moves it one count toward zero, and no
 reference connects `ffff1513` directly to `ffff11d4` or an APC compare.
 
+The working definitions expose `0x12196` as Cold Idle Ignition Timing and
+`0x1219E` as Idle Ignition Timing for A/B validation. Both use candidate A2L
+physical presentation: `x-128` degrees over a 0, 400, ..., 2800 RPM axis. The
+centered `x-128` arithmetic and timing-state consumption are code-proven; the
+degree unit, RPM identity of `ffff11b2`, and physical mode names remain
+candidate claims. Table `0x121A6` remains hidden. Its selection requires
+`ROM8[0x870B].bit0 != 0`, while stock JK08A stores `0x46` with bit 0 clear.
+
 Engine-event scheduler `0x208f8` invokes table index 4, `0x4e162`. Its exact order is
 `0x4e112 -> 0x4e0c2 -> 0x4d99c -> 0x4dbe8 -> 0x4df82 -> 0x4e080`.
 Function `0x4d99c` combines map/state terms and conditional map `0x147da` into
@@ -4073,10 +4081,11 @@ All 30 maps in the batch are included in `findings.csv`:
   `ffff1ee0`/`ffff257a`. Independent exact-JK08A analysis promotes `0x141F4` and
   `0x14274` to code-confidence bank-2 and bank-1 MAF transfer curves through the
   AN15/AN4 and DID `0x1205`/`0x1204` paths;
-- nine Map scale claims at `code`: `x/100` for `0x12522`/`0x12526`, `x/65536` for
+- seven Map scale claims at `code`: `x/100` for `0x12522`/`0x12526`, `x/65536` for
   `0x153B0`/`0x153B8`, `x/256` for `0x11E56`, `x/2048` for `0x12126`, `x/128` for
-  `0x1212E`, and `x-128` for `0x12196`/`0x1219E`. The other 21 maps use raw identity;
-  there are no Axis claims;
+  `0x1212E`. Candidate A2L degree scales use `x-128` for `0x12196`/`0x1219E`;
+  code independently proves their centered arithmetic. The other 21 maps use
+  raw identity; there are no Axis claims;
 - four maps have the `threshold` role and are not emitted to XML: `0x11C6D`, `0x11F0A`,
   `0x12032`, and `0x12086`. The other 26 have the `table` role.
 
@@ -4388,9 +4397,10 @@ Developer Immobilizer flag.
 Bit 0 is read by functions `0xA3F96`, `0xBBC88`, `0xBC82E`, and `0xBC9E4`. When it is
 zero, `0xBC82E` clears `0xFFFF55E4.bit2`, after which `0xBC9E4` clears motor-inhibit
 bit `0xFFFF4198.bit1`. Native checksum handlers run in `alt` -> `alt2` order: selftest B,
-then selftest A and SUM16. Derived image
-`rom-images/23710-JK08A/mods/immo-off/1JK08A-20260727-immo-off.bin` differs from stock
-by one bit. On-vehicle validation confirms engine start and normal operation; P1610
+then selftest A and SUM16. The hardware-tested derived bytes have SHA-256
+`de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c`
+and differ from stock by one bit; the artifact is not retained under `rom-images/`.
+On-vehicle validation confirms engine start and normal operation; P1610
 persists after clearing and does not affect engine operation.
 
 The 36 entries in `JK08A.dtc.csv` generate 71 native `TableSwitch` controls under one
@@ -4563,8 +4573,8 @@ The implementation boundary is statically bounded:
   stock wrapper `0x26388`. Its 27 instructions and 36 literal bytes have locked
   SHA-256 `2a5a65671e077400b753cb7fabb15c0520ddd7e96be8234e44297b6cd7052ba7`.
   The complete adapter harness passes 76 cases over 1286 executed instructions.
-- The complete machine-word audit covers all 414 final-runtime instructions: 39
-  delayed transfers with encoded `NOP` slots, 52 PC-relative references, 77 direct
+- The complete machine-word audit covers all 418 final-runtime instructions: 40
+  delayed transfers with encoded `NOP` slots, 52 PC-relative references, 79 direct
   branch targets, and 21 indirect control transfers. The startup-trampoline and
   startup-selector-init sources add 13 alternative instruction instances under the
   same checks. All ten source units rebuild through Ghidra with their locked hashes.
@@ -4594,9 +4604,9 @@ The implementation boundary is statically bounded:
   mailbox 3 with DLC 8 and standard ID `0x551`. `FUN_000C3ED2` dispatches that
   record through the unique literal at `0xC3FA4`, whose stock target is serializer
   `FUN_000C5372`. The serializer writes payload bytes to
-  `0xFFFF3AD5..0xFFFF3ADC`; byte 5 at `0xFFFF3ADA` contains the low two-bit ASCD
-  status state. The hook target `0xD35E0` calls the stock serializer first and may
-  replace only those two bits while visual feedback is active.
+  `0xFFFF3AD5..0xFFFF3ADC`; byte 5 at `0xFFFF3ADA` carries its ASCD state in bits
+  4-6. The hook target `0xD35E0` calls the stock serializer first and may replace
+  only bits 5-6 while visual feedback is active.
 
 Map slots have numeric identities only. No firmware or definition artifact assigns
 driving-profile semantics to maps 2-5. `tools/mapkit/map_switching.py` projects the
@@ -4609,11 +4619,16 @@ edited manually after the identical-map bench gate.
 
 `tools/mapkit/validate_map_switching.py` validates the live 450-map graph and the
 491-map common projection without writing files. The tracked definitions contain
-79 calibration tables and 16 masked views. The switchable subset contains 50
+81 calibration tables and 11 masked views. The switchable subset contains 50
 calibration tables plus ten ignition bit-7 views, for 60 slot-specific editor
-views. Rolling Launch adds one raw configuration table and five per-map masked
-views. Both formats retain the common `JK08A` identity; no separate map-switching
-definition exists.
+views. Rolling Launch adds `Rolling Launch RPM Hysteresis` at `0xD3F70` plus one
+native RomRaider `BitwiseSwitch` at `0xD3F64` with five per-map checkboxes.
+TunerPro represents the same byte as five native `XDFFLAG` items. The raw
+enable-mask byte is not exposed as a table. The hysteresis is a big-endian
+`uint16` with code-established `x*12.5 RPM` scaling. Its default raw value 8 is
+100 RPM; the runtime requires `0 < hysteresis_native < min_rpm_native` and fails
+closed on an invalid complete configuration. Both formats retain the common
+`JK08A` identity; no separate map-switching definition exists.
 
 In a stock image, Map 2 through Map 5 expose erased `0xFF` allocations that runtime
 code does not reference. Their presence in the common definition does not imply
@@ -4660,15 +4675,15 @@ families. The selector host is also assembled and SHA-locked. Its 17 Ghidra p-co
 cases cover the state machine, commits, aborts, feedback blocking, diagnostic
 mirror, invalid-index recovery, and protected registers. The CAN feedback wrapper
 and leaf pulse engine are assembled and SHA-locked. Nine p-code cases cover 17
-serializer invocations and preserve every payload field except byte 5 bits 0-1.
+serializer invocations and preserve every payload field except byte 5 bits 5-6.
 Their locked frame counts are `10, 10`; a zero/zero pair remains the fail-closed
 disabled configuration. The deterministic in-memory composition
 applies all eight blobs, 14 hooks, 40 copies, and ten pointer tables. It changes
-5630 bytes inside the 6144-byte declared write set and has fixture SHA-256
-`469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0`.
-It ties all 414 instruction byte pairs and eleven code entries to their final
+5638 bytes inside the 6144-byte declared write set and has fixture SHA-256
+`108613e626f883ecca7a5733b739edafaacaee663909bfb115a6e8dda0d64c19`.
+It ties all 418 instruction byte pairs and eleven code entries to their final
 absolute addresses. `EmulateMapSwitchingComposition.java` independently rebuilds
-that fixture from the exact Ghidra program and passes all 116 scenarios over 5137
+that fixture from the exact Ghidra program and passes all 116 scenarios over 5152
 instructions. Every scenario starts from a fresh complete image, all eleven code
 entries execute, real pointer tables and copied calibration bytes are checked,
 the limiter restores exact SR, and the other paths preserve every non-T SR bit.
@@ -4701,17 +4716,20 @@ flashing cruise-control light, but this contract does not claim UpRev's internal
 implementation.
 
 The factory manual establishes the ECM ASCD-status CAN signal as the physical route to
-the combination meter CRUISE indicator. The installed pilot changes byte-5 low bits
-`0x03` and has target-vehicle status `FAIL`: its injected `2/0` sequence reaches the
-bus without changing the requested indicator. Exact `FUN_000C5372` instead reads
+the combination meter CRUISE indicator. The historical low-bit pilot uses byte-5
+mask `0x03` and has target-vehicle status `FAIL`: its injected `2/0` sequence reaches
+the bus without changing the requested indicator. Exact `FUN_000C5372` reads
 `RAM8[0xFFFF40D0] & 7`, shifts it left by four, clears mask `0x70`, and writes the
 state into `0xFFFF3ADA.bits4..6`. Public G37/370Z captures give complete byte values
 `0x02` for MAIN OFF, `0x62` for MAIN ON, and `0x42` for SET/engaged, matching internal
-states 0, 6, and 4. The next candidate retains frame 0x551 and the stock-first wrapper,
-but uses mask `0x60`, on value `0x60`, and off value `0x00`. Successful Map 2 -> Map 3
-selection establishes that the existing queue completes. The new field mapping remains
-a hardware-test candidate until the V36 meter confirms it. The patcher creates derived
-map-switching images; no derived image is versioned in `rom-images/`.
+states 0, 6, and 4. The current feedback contract retains frame 0x551 and the
+stock-first wrapper, but uses mask `0x60`, on value `0x60`, and off value
+`0x00`. Successful
+Map 2 -> Map 3 selection establishes that the existing queue completes. The new
+field mapping passes the executable software gates and remains a hardware-test
+candidate until the V36 meter confirms it. Concrete tune profiles, per-image
+composition recipes, generated ROMs, checksum sidecars, and logs remain local
+artifacts outside the repository.
 
 ## Current/prior-cycle coefficient surface - `0x0C78E`
 
@@ -5097,15 +5115,15 @@ assembles all eight payloads and executes the same 116 behavior cases. The
 file-writing patcher, checksum recalculation, overlay hash chain, and byte
 preservation checks pass their positive and negative tests.
 
-The target-vehicle selector passes Maps 2 and 3 with the corrected `0x20` release
-code. The next feedback gate is an isolated CAN 0x551 byte-5 candidate using mask
-`0x60`, on value `0x60`, and off value `0x00`. With the vehicle stationary, engine
-stopped, and ASCD inactive, verify visible `10,10` pulse timing and one through five
-indications without changing stock ASCD state. Confirm reset Map 1 from calibration
-behavior after an ignition cycle, measure startup and critical-section timing, and
-verify unchanged engine behavior across the five slots. Custom diagnostic DIDs are
-not part of the hardware procedure because the current logging client cannot request
-them.
+The target-vehicle selector passes Maps 2 and 3 with the corrected `0x20`
+release code. The next local hardware gate uses CAN 0x551 byte-5 mask `0x60`,
+on value `0x60`, and off value `0x00`. With the vehicle stationary, engine
+stopped, and ASCD inactive, verify visible `10,10` pulse timing and one through
+five indications without changing stock ASCD state. Confirm reset Map 1 from
+calibration behavior after an ignition cycle, measure startup and
+critical-section timing, and verify unchanged engine behavior across the five
+slots. Custom diagnostic DIDs are not part of the hardware procedure because
+the current logging client cannot request them.
 
 The static reverse-engineering priority remains fuel, ignition, and cutoffs;
 additional logs are not a prerequisite for the current static track.

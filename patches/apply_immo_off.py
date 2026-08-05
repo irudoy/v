@@ -49,12 +49,8 @@ def md5(data):
 
 
 def default_output_path(rom):
-    return (
-        ROMDIR
-        / f"23710-{rom}"
-        / "mods"
-        / "immo-off"
-        / f"{IMAGE_IDS[rom]}-{MOD_RELEASE_DATE}-immo-off.bin"
+    return ROOT / "tmp" / (
+        f"{IMAGE_IDS[rom]}-{MOD_RELEASE_DATE}-immo-off.bin"
     )
 
 
@@ -192,12 +188,9 @@ def main(argv=None):
     if args.verify_only:
         return 0
 
-    canonical_output = args.out is None
     output = args.out or default_output_path(args.rom)
     created = write_output(output, image)
     write_md5_sidecar(output, image)
-    if canonical_output:
-        write_mod_readme(output, args.rom, source_path, image)
     print(f"output: {output} ({'created' if created else 'already exact'})")
     print(f"md5: {md5(image)}")
     return 0

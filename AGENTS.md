@@ -129,12 +129,16 @@ Read-only work and responses without local changes do not trigger a backup.
   forum (SH7058 USDM / SH7059 JDM); the cross-application exact-code family
   comprising VQ35HR `JK00A` plus VQ25HR donor `JK03A`, owned pre-write baseline
   `JK03B`, and owned target `JK08A`; the owned VQ35HR-class bench baselines
-  `JK00C` and `JK00D`, which use different code bases; and derived image
-  `1JK08A-20260727-immo-off.bin`.
-  Each part number has its own
-  `23710-XXXXX` directory; modifications live under `mods/<short-desc>/`. These
-  files are versioned. The `rom-images/README.md` manifest records SHA-256,
-  part number, identification, and provenance. A dump is identified by SHA-256.
+  `JK00C` and `JK00D`, which use different code bases. Each part number has its
+  own `23710-XXXXX` directory. Stock and owned-read artifacts are versioned.
+  Concrete tuned images, per-image calibration profiles and build recipes,
+  active tune identities, logs, and test outputs are not versioned. Their local
+  storage location is not part of the project contract. Historical hardware
+  results may retain immutable digests as mechanism evidence. Universal
+  patchers, composers, definitions, and verification mechanisms remain
+  versioned. The `rom-images/README.md` manifest records
+  SHA-256, part number, identification, and provenance. A dump is identified by
+  SHA-256.
 - `refs/` - external datasheets and manuals (Renesas SH7059 hardware manual,
   PCMflash module list, Bosch LSU 4.9, NERS, MoTeC M150, UpRev), the complete
   2007 Infiniti G35 Sedan factory ESM with 56 PDFs under
@@ -168,10 +172,11 @@ Read-only work and responses without local changes do not trigger a backup.
   `tests/test_immo_off.py`), the ROM-library layout test
   (`tests/test_rom_images_layout.py`), and the ROM checksum specification
   (`rom-selftest-checksum.md`, covering SUM16, runtime self-test domains, and
-  recalculation order). The derived image is under
-  `rom-images/23710-JK08A/mods/immo-off/`. Ghidra exports and the Ghidra project
-  are regenerable and remain outside the repository under
-  `~/tools/ghidra-projects/`.
+  recalculation order). Universal map-switching and Rolling Launch patchers,
+  composers, payload manifests, and executable verification tests are tracked
+  here. Concrete tuned-image recipes and derived image bytes are not stored in
+  the repository. Ghidra exports and the Ghidra project are regenerable and
+  remain outside the repository under `~/tools/ghidra-projects/`.
 
 ## Conventions
 

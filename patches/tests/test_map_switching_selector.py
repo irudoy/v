@@ -316,7 +316,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             on_ticks=1,
             off_ticks=1,
         )
-        self.assertEqual(status, 0xFE)
+        self.assertEqual(status, 0xFD)
         self.assertEqual(state.phase, selector.FeedbackPhase.OFF)
 
         state, status = selector.advance_visual_feedback(
@@ -325,7 +325,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             on_ticks=1,
             off_ticks=1,
         )
-        self.assertEqual(status, 0xFC)
+        self.assertEqual(status, 0x9D)
         self.assertEqual(state, selector.FeedbackState())
 
     def test_visual_feedback_counts_serializer_invocations(self):
@@ -339,7 +339,10 @@ class MapSwitchingSelectorTest(unittest.TestCase):
                 off_ticks=2,
             )
             outputs.append(status & selector.FEEDBACK_STATUS_MASK)
-        self.assertEqual(outputs, [2, 2, 0, 0, 2, 2, 0, 0])
+        self.assertEqual(
+            outputs,
+            [0x60, 0x60, 0, 0, 0x60, 0x60, 0, 0],
+        )
         self.assertEqual(state, selector.FeedbackState())
 
     def test_idle_or_corrupt_visual_feedback_preserves_stock_status(self):
@@ -386,7 +389,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
         state, status = selector.advance_configured_visual_feedback(
             state, 0xA5
         )
-        self.assertEqual(status, 0xA6)
+        self.assertEqual(status, 0xE5)
         self.assertEqual(
             state,
             selector.FeedbackState(
@@ -407,7 +410,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
                 off_ticks=2,
             )
             outputs.append(status)
-        self.assertEqual(outputs, [0xA6, 0xA6, 0xA4, 0xA4])
+        self.assertEqual(outputs, [0xE5, 0xE5, 0x85, 0x85])
         self.assertEqual(state, selector.FeedbackState())
 
 

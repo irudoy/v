@@ -217,6 +217,57 @@ def switch_patches(switches):
     return patches
 
 
+def bitwise_flags(switches):
+    """Project logical bitwise switches to native TunerPro flag items."""
+    flags = []
+    for switch_index, entry in enumerate(switches, 1):
+        storage_bits = STORAGE_BITS.get(entry.get("storagetype"))
+        if storage_bits is None:
+            sys.exit(
+                f"bitwise_switch #{switch_index}: unsupported storagetype "
+                f"for TunerPro"
+            )
+        try:
+            address = int(str(entry["storageaddress"]), 0)
+        except (KeyError, ValueError):
+            sys.exit(
+                f"bitwise_switch #{switch_index}: invalid storageaddress"
+            )
+        bits = entry.get("bit", [])
+        if not bits:
+            sys.exit(f"bitwise_switch #{switch_index}: no bits declared")
+        for bit_index, bit in enumerate(bits, 1):
+            try:
+                position = int(bit["position"])
+                name = str(bit["name"])
+            except (KeyError, TypeError, ValueError):
+                sys.exit(
+                    f"bitwise_switch #{switch_index}, bit #{bit_index}: "
+                    "invalid name or position"
+                )
+            if position < 0 or position >= storage_bits:
+                sys.exit(
+                    f"bitwise_switch #{switch_index}, bit #{bit_index}: "
+                    f"position {position} is outside uint{storage_bits}"
+                )
+            flags.append({
+                "key": (
+                    f"bitwise-switch:{entry['name']}:"
+                    f"{entry['storageaddress']}:{position}"
+                ),
+                "title": name,
+                "description": (
+                    f"{entry.get('description', '')} This flag controls "
+                    f"{name} at bit {position}."
+                ).strip(),
+                "category": entry["category"],
+                "address": address,
+                "storage_bits": storage_bits,
+                "mask": 1 << position,
+            })
+    return flags
+
+
 def add_math(parent, expression, variables=("X",), **attributes):
     math = node(
         parent, "MATH", equation=normalized_expression(expression), **attributes
@@ -567,6 +618,30 @@ def add_patch(root, ids, categories, patch):
         )
 
 
+def add_flag(root, ids, categories, flag):
+    element = node(
+        root, "XDFFLAG",
+        uniqueid=ids.get(flag["key"]),
+        flags="0x0",
+    )
+    node(element, "title", flag["title"])
+    node(element, "description", flag["description"])
+    node(
+        element, "CATEGORYMEM", index=0,
+        category=categories[category_name(flag["category"])],
+    )
+    node(
+        element,
+        "EMBEDDEDDATA",
+        mmedaddress=xdf_address(flag["address"]),
+        mmedelementsizebits=flag["storage_bits"],
+        mmedmajorstridebits=0,
+        mmedminorstridebits=0,
+    )
+    digits = max(2, flag["storage_bits"] // 4)
+    node(element, "mask", f"0x{flag['mask']:0{digits}X}")
+
+
 def render(
     rom,
     image,
@@ -576,15 +651,20 @@ def render(
     views_by_source,
     dtc_records,
     switches,
+    bitwise_switches=(),
 ):
     """Render a complete TunerPro XDF and return it with emission statistics."""
     individual_patches, group_patches = dtc_patches(rom, dtc_records)
     other_patches = switch_patches(switches)
     patches = other_patches + individual_patches + group_patches
+    xdf_flags = bitwise_flags(bitwise_switches)
 
     categories_in_use = {
         category_name(patch["category"]) for patch in patches
     }
+    categories_in_use.update(
+        category_name(flag["category"]) for flag in xdf_flags
+    )
     for calibration in calibrations:
         presentation = overrides["table"][calibration["addr"]]
         categories_in_use.add(category_name(presentation["category"]))
@@ -650,6 +730,8 @@ def render(
     ids = IdAllocator()
     for patch in patches:
         add_patch(root, ids, categories, patch)
+    for flag in xdf_flags:
+        add_flag(root, ids, categories, flag)
 
     ordered_calibrations = sorted(
         calibrations,
@@ -698,6 +780,7 @@ def render(
     stats = {
         "calibration_tables": len(calibrations),
         "masked_views": sum(len(views) for views in views_by_source.values()),
+        "bitwise_flags": len(xdf_flags),
         "axis_views": len(ordered_axis_views),
         "other_patches": len(other_patches),
         "individual_dtc_patches": len(individual_patches),

@@ -18,7 +18,7 @@ COMMON_TABLES = {
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
-    "Rolling Launch Enable Mask (Raw)": "Rolling Launch / Advanced",
+    "Rolling Launch RPM Hysteresis": "Rolling Launch / RPM Hold",
 }
 
 DEFAULT_VISIBLE_TABLES = {
@@ -40,6 +40,10 @@ DEFAULT_VISIBLE_TABLES = {
     "Initial Retard Quantity - unresolved mode (0x1202E)":
         "Ignition Timing / Transient Correction",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
+    "Cold Idle Ignition Timing (Candidate) (0x12196)":
+        "Idle Speed Control / Ignition Timing",
+    "Idle Ignition Timing (Candidate) (0x1219E)":
+        "Idle Speed Control / Ignition Timing",
     "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
     "Stationary Rev Limiter Accumulator Step (0x124D2)":
         "Limiters / Stationary Rev Limiter",
@@ -64,7 +68,6 @@ SLOT_TABLES = {
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-    "Rolling Launch Enable": "Rolling Launch / Map Enable",
 }
 
 
@@ -249,6 +252,10 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             table.findtext("./title"): table
             for table in self.root.findall("./XDFTABLE")
         }
+        flags = {
+            flag.findtext("./title"): flag
+            for flag in self.root.findall("./XDFFLAG")
+        }
         expected_tables = dict(COMMON_TABLES)
         expected_tables.update(DEFAULT_VISIBLE_TABLES)
         expected_tables.update({
@@ -260,6 +267,16 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         for title, category in expected_tables.items():
             with self.subTest(title=title):
                 self.assertEqual(self.item_category(tables[title]), category)
+
+        expected_flags = {
+            f"Map {slot} - Rolling Launch Enable":
+                "Rolling Launch / Map Enable"
+            for slot in range(1, 6)
+        }
+        self.assertEqual(set(flags), set(expected_flags))
+        for title, category in expected_flags.items():
+            with self.subTest(title=title):
+                self.assertEqual(self.item_category(flags[title]), category)
 
         expected_patches = {
             "Developer Immobilizer": "NATS / Immobilizer",
@@ -288,6 +305,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             set(self.categories.values()),
             set(expected_tables.values())
             | set(expected_patches.values())
+            | set(expected_flags.values())
             | {
                 tunerpro.DTC_INDIVIDUAL_CATEGORY,
                 tunerpro.DTC_GROUP_CATEGORY,
@@ -325,8 +343,10 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
     def test_xdf_has_expected_tables_patches_and_no_checksum(self):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
+        flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 44)
-        self.assertEqual(len(tables), 95)
+        self.assertEqual(len(tables), 92)
+        self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
         individual = [
@@ -348,6 +368,30 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for patch in patches
         ))
 
+    def test_rolling_launch_uses_native_flags_without_raw_mask_table(self):
+        flags = {
+            flag.findtext("./title"): flag
+            for flag in self.root.findall("./XDFFLAG")
+        }
+        self.assertEqual(
+            [flags[f"Map {slot} - Rolling Launch Enable"].findtext("./mask")
+             for slot in range(1, 6)],
+            ["0x01", "0x02", "0x04", "0x08", "0x10"],
+        )
+        self.assertTrue(all(
+            flags[f"Map {slot} - Rolling Launch Enable"]
+            .find("./EMBEDDEDDATA")
+            .get("mmedaddress") == "0xD3F64"
+            for slot in range(1, 6)
+        ))
+        self.assertNotIn(
+            "Rolling Launch Enable Mask (Raw)",
+            {
+                table.findtext("./title")
+                for table in self.root.findall("./XDFTABLE")
+            },
+        )
+
     def test_internal_tables_remain_outside_the_working_definition(self):
         addresses = {
             table.find("./XDFAXIS[@id='z']/EMBEDDEDDATA").get("mmedaddress")
@@ -358,11 +402,45 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "0xB23A",
             "0x11F6A",
             "0x120BE",
-            "0x12196",
-            "0x1219E",
             "0x121A6",
             "0x14E52",
         }.isdisjoint(addresses))
+
+    def test_idle_ignition_candidates_reach_the_working_definition(self):
+        by_address = {
+            table.find("./XDFAXIS[@id='z']/EMBEDDEDDATA").get("mmedaddress"):
+                table
+            for table in self.root.findall("./XDFTABLE")
+        }
+        expected = {
+            "0x12196": "Cold Idle Ignition Timing (Candidate) (0x12196)",
+            "0x1219E": "Idle Ignition Timing (Candidate) (0x1219E)",
+        }
+        for address, title in expected.items():
+            with self.subTest(address=address):
+                table = by_address[address]
+                self.assertEqual(table.findtext("./title"), title)
+                self.assertEqual(
+                    self.item_category(table),
+                    "Idle Speed Control / Ignition Timing",
+                )
+                axis = table.find("./XDFAXIS[@id='z']")
+                self.assertEqual(
+                    axis.findtext("./units"),
+                    "Ignition timing (deg) [cand]",
+                )
+                self.assertEqual(axis.find("./MATH").get("equation"), "X-128")
+                x_axis = table.find("./XDFAXIS[@id='x']")
+                self.assertEqual(
+                    x_axis.findtext("./units"),
+                    "Engine Speed [RPM] (Candidate)",
+                )
+                self.assertEqual(
+                    [int(label.get("value")) for label in x_axis.findall("./LABEL")],
+                    [0, 400, 800, 1200, 1600, 2000, 2400, 2800],
+                )
+
+        self.assertNotIn("0x121A6", by_address)
 
     def test_default_visible_tables_reach_the_working_definition(self):
         addresses = {

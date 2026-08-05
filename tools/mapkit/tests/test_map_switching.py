@@ -389,13 +389,15 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         self.assertIsNotNone(projection.map_switching)
         self.assertIsNotNone(projection.rolling_launch)
         self.assertEqual(projection.slot_editor_view_count, 60)
-        self.assertIn("000d3f64", maps)
-        launch_views = [
-            view
-            for view in overrides["masked_view"]
-            if view["source"] == "000d3f64"
+        self.assertNotIn("000d3f64", maps)
+        self.assertIn("000d3f70", maps)
+        launch_switches = [
+            entry
+            for entry in overrides["bitwise_switch"]
+            if entry["storageaddress"] == "0xD3F64"
         ]
-        self.assertEqual(len(launch_views), 5)
+        self.assertEqual(len(launch_switches), 1)
+        self.assertEqual(len(launch_switches[0]["bit"]), 5)
         self.assertEqual(maps, projection.maps)
         self.assertEqual(overrides, projection.overrides)
 

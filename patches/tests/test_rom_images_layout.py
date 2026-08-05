@@ -18,6 +18,8 @@ class RomImagesLayoutTest(unittest.TestCase):
         allowed_files = {"README.md", "roms.csv"}
         for path in ROMDIR.iterdir():
             with self.subTest(path=path.name):
+                if path.name == ".DS_Store":
+                    continue
                 if path.is_dir():
                     self.assertRegex(path.name, rf"^{PART_RE.pattern}$")
                 else:

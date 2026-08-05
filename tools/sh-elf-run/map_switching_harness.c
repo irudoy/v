@@ -216,9 +216,9 @@ static const struct selector_case selector_cases[] = {
 
 static const uint8_t disabled_statuses[] = {0xa5};
 static const uint8_t two_pulse_statuses[] = {
-    0xa6, 0xa6, 0xa4, 0xa4, 0xa6, 0xa6, 0xa4, 0xa4,
+    0xe5, 0xe5, 0x85, 0x85, 0xe5, 0xe5, 0x85, 0x85,
 };
-static const uint8_t one_pulse_statuses[] = {0xa6, 0xa4};
+static const uint8_t one_pulse_statuses[] = {0xe5, 0x85};
 static const uint8_t idle_statuses[] = {0xa5};
 
 static const struct feedback_case feedback_cases[] = {
