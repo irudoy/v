@@ -12,25 +12,52 @@ mask is zero and its composer never writes a ROM. A separate strict patcher
 produces one locked hardware-test profile. That profile enables mode 1 only for
 Map 1, leaves ignition retard and the unverified brake gate disabled,
 recalculates all six checksum references, and refuses any input other than the
-exact complete ten-family map-switching stage-19 endpoint.
+exact corrected complete ten-family map-switching stage-19 endpoint.
 
-The resulting complete ROM is software-verified and eligible for the staged
-bench and engine test sequence below. It is not hardware-validated and is not a
-road-test image. Map-switching stages 15 through 19 remain mandatory isolation
-gates before Rolling RPM Hold activation.
+The vehicle-tested custom Overlay 20 passes application startup and PCMFlash
+identification and activates RPM hold once, but it cannot rearm after CANCEL is
+released. Map switching in the same image does not arm. CAN frame `0x239`, byte
+4 counted from one, reports `0x20` with all buttons released, while both
+runtimes treated `0x00` as released. The current implementation uses `0x20` for
+release and rearm and treats `0x00` as invalid.
+
+Corrected Overlay 21 passes the target-vehicle selector and repeated Map 1 RPM
+Hold checks. Overlay 22 confirms that the primary ignition adapter can publish
+the configured `-5 deg` diagnostic target, but its unconditional ACTIVE-phase
+retard causes an immediate torque collapse and has hardware status
+`FUNCTIONAL_FAIL`. Both custom profiles retain `enable_mask=0x01`; Rolling
+Launch rejection on Maps 2 through 5 is the configured `MAP_DISABLED` result.
+The converted MLG files and evidence table are under
+`tmp/logs-05-08-26/analysis.md`.
+
+The common `defs/JK08A.xml` and `defs/JK08A.xdf` expose five independent
+`Map N - Rolling Launch Enable` controls at configuration byte `0xD3F64`.
+Each control edits one bit of `enable_mask` and preserves the other four bits.
+The raw aggregate mask remains in the advanced category. This lets one runtime
+use any per-map enable combination without rebuilding executable code.
 
 The implementation is bound to:
 
 - exact stock JK08A SHA-256
   `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`;
 - complete map-switching in-memory endpoint SHA-256
-  `ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd`;
+  `469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0`;
 - default Rolling Launch in-memory endpoint SHA-256
-  `5361e008e7fd0b944e20e5f76a19c05f6c22fbe528841cca981f4f5e6ec18648`;
-- exact checksum-valid map-switching stage-19 source SHA-256
+  `da64cbc25399b2ccd09a4c11590ea9a62e8e10b1159d62cc66372d1f1b739dd5`;
+- corrected checksum-valid map-switching stage-19 source SHA-256
+  `52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84`;
+- corrected Map 1 RPM Hold candidate SHA-256
+  `6e74ae82d22e9d975c64e2002c8ad30dec0f33f8f72b5ecd9906aab7598d480b`;
+- historical checksum-valid map-switching stage-19 source SHA-256
   `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1`;
-- Map 1 RPM Hold hardware-test ROM SHA-256
-  `a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081`.
+- historical Map 1 RPM Hold candidate SHA-256
+  `a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081`;
+- vehicle-tested custom Overlay 20 SHA-256
+  `0b07f7b7dc49eaaf27bc26c859befcdf13d817b924cf0bc41748ccb47cfcc796`;
+- corrected custom Overlay 21 SHA-256
+  `1e6866e96e77fba203166b38f5efcfd83b6bcad609b7e0ada67727cd5fddc0c9`;
+- Map 1 retard-only Overlay 22 SHA-256
+  `21f532b924e24deede30c07bbf7d253bf4c908355bca44c7c863fee592aa2a84`.
 
 ## Runtime contract
 
@@ -51,8 +78,11 @@ The state machine is:
 ```text
 IDLE --all gates pass--> ACTIVE --abort/release/timeout--> COOLDOWN
   ^                                                        |
-  +---------------- released for rearm_ticks --------------+
+  +-------------- code 0x20 for rearm_ticks ---------------+
 ```
+
+`0x20` is the released/all-buttons-off code. `0x00` is fail-closed: it cannot
+activate Rolling Launch and does not advance the cooldown rearm counter.
 
 Any phase value outside `0..2`, invalid snapshot, or impossible timer state
 uses corrupt-state recovery. Recovery restores Map 1 through the existing
@@ -82,7 +112,7 @@ priority:
 `SET` remains reserved for map switching. While Rolling Launch is `ACTIVE` or
 `COOLDOWN`, the selector arbiter bypasses the map selector and tail-calls the
 displaced stock ASCD host. An `ACTIVE` transition to `SET` aborts with
-`MAP_REQUEST`; release aborts with `BUTTON_RELEASED`.
+`MAP_REQUEST`; release code `0x20` aborts with `BUTTON_RELEASED`.
 
 ### Modes
 
@@ -230,6 +260,12 @@ Unused entries in the exact high-`0x12` UDS DID table expose nine live pairs:
 | `0x1228` | Restore threshold |
 | `0x1229` | stock and effective ignition commands |
 
+These DIDs document the internal runtime state and remain covered by static and
+executable tests. The current PCMFlash/CONSULT logging workflow has no client
+path for requesting them, so they are not required by the hardware acceptance
+procedure. Vehicle testing uses available CONSULT parameters, CAN capture, and
+direct behavior.
+
 The abort reason values are `0` none, `1` invalid configuration, `2` invalid
 map index, `3` disabled map, `4` selector busy, `5` feedback busy, `6` ASCD
 active, `7` button released, `8` invalid button, `9` speed low, `10` RPM low,
@@ -244,9 +280,10 @@ map request, `16` corrupt state, `17` map changed, and `18` mode changed.
 - `rolling_launch_layout.py`, `rolling_launch_assembly.py`, and
   `rolling_launch_compose.py` validate and compose the fail-closed fixture only
   in memory.
-- `apply_rolling_launch.py` accepts only the locked stage-19 source, applies the
-  Map 1 RPM Hold profile through the same closed write set, recalculates every
-  checksum domain, and creates a non-overwriting ROM plus MD5 sidecar.
+- `apply_rolling_launch.py` accepts only the corrected locked stage-19 source,
+  applies the Map 1 RPM Hold profile through the same closed write set,
+  recalculates every checksum domain, and creates a non-overwriting ROM plus
+  MD5 sidecar.
 - `rolling-launch-wrappers.s`, `rolling-launch-engine.s`, and
   `rolling-launch-ignition-adapter.s` are the SH-2E implementation.
 - `tools/sh-elf-run/verify_rolling_launch.py` and
@@ -274,50 +311,102 @@ tools/sh-elf-run/run.sh --verbose
 It independently assembles the exact source with GNU `sh-elf-as --isa=sh2e`,
 requires byte identity with all Ghidra payloads, relocates only validated
 high-RAM `.long` literals for the simulator, preserves every new instruction
-byte and control-flow address, and executes 96 Rolling Launch cases in addition
+byte and control-flow address, and executes 98 Rolling Launch cases in addition
 to the existing map-switching gate.
 
-## Hardware-test image
+## Hardware-test images
 
-The tracked candidate is:
+The tracked stage-19-based candidate under
+`rom-images/23710-JK08A/mods/rolling-launch/` contains the superseded `0x00`
+release assumption. The equivalent runtime in custom Overlay 20 has hardware
+status `FUNCTIONAL_FAIL`: startup and identification pass, the first Rolling
+Launch activation works, and the state cannot rearm after CANCEL release.
+
+The corrected full-ROM upgrade is:
 
 ```text
-rom-images/23710-JK08A/mods/rolling-launch/
-  1JK08A-20260804-map-switching-rolling-launch-rpm-hold-map1-test.bin
+tmp/1JK08A-multimap-1-3-overlay-21-button-release-fix.bin
+SHA-256 1e6866e96e77fba203166b38f5efcfd83b6bcad609b7e0ada67727cd5fddc0c9
+MD5    cdfbcd5a528fbf785f0e88648506968a
 ```
 
-It is derived from the exact checksum-valid stage-19 endpoint and differs from
-that source at 1,705 byte positions. Every change is inside the 1,876-byte
-Rolling Launch composition write set or the 20 checksum-byte set; 18 checksum
-bytes change. The final image contains 755 locked Rolling Launch instructions,
-five entries, nine diagnostics, and valid stored checksum references.
+It is derived only from exact Overlay 20 SHA-256
+`0b07f7b7dc49eaaf27bc26c859befcdf13d817b924cf0bc41748ccb47cfcc796`.
+Five executable bytes change: two selector compare immediates, one Rolling
+Launch release immediate, and the two-byte cooldown comparison instruction.
+The approved calibration changes 114 bytes: 40 cells in the global cold
+ignition-trim table and 74 bytes in Map 1 and Map 3 DFCO families. Twelve
+checksum bytes also change, for 131 changed bytes total. The 32-byte Rolling
+Launch configuration remains identical. All six stored checksum references
+are valid.
 
 Reproduce and verify it with:
 
 ```bash
-python3 patches/apply_rolling_launch.py \
-  tmp/hardware-full-dfco/\
-1JK08A-map-switching-safe-v3-19-can-feedback-full-runtime.bin \
-  --output rom-images/23710-JK08A/mods/rolling-launch/\
-1JK08A-20260804-map-switching-rolling-launch-rpm-hold-map1-test.bin
-tools/sh-elf-run/run.sh --verbose
+python3 tmp/build_overlay21_button_release_fix.py
 ```
 
-The hardware sequence is cumulative:
+The calibration revision changes no executable byte beyond the five existing
+button-release corrections, so it does not require a new instruction gate.
 
-1. Write and validate stage 15 with inactive full-DFCO code and storage.
-2. Write and validate stages 16 and 17, activating the two shared DFCO hooks
-   independently.
-3. Write and validate selector stage 18 without any selection gesture.
-4. Write and validate stage 19, including Map 1-5 selection and feedback.
-5. Write the Rolling RPM Hold candidate to the same known-good recoverable ECU.
-6. Confirm identification, reset to Map 1, all nine engineering DIDs, and
-   inactive pass-through behavior before enabling engine output.
-7. Perform the first active test on a dynamometer with a warmed engine, a fixed
-   transmission gear, independent RPM observation, and immediate button-release
-   abort. Road activation is not the first dynamic test.
+The Map 1-only ignition-retard hardware candidate is:
 
-Unexpected CAN loss, selector state, limiter shadow, DTC, fuel cut, RPM rise,
-or failure to return to `COOLDOWN` and then `IDLE` terminates the test. Ignition
-retard remains disabled until timing-light testing confirms the physical APC
-command direction and safe combustion behavior.
+```text
+tmp/1JK08A-multimap-1-3-overlay-22-rpm-hold-retard.bin
+SHA-256 21f532b924e24deede30c07bbf7d253bf4c908355bca44c7c863fee592aa2a84
+MD5    0fb23c4801250651c95c1c826868b334
+```
+
+It is derived only from exact Overlay 21 and changes the configuration mode
+at `0xD3F63` from `RPM_HOLD` (`1`) to `RPM_HOLD_RETARD` (`2`). Four stored
+checksum bytes also change, for five changed bytes total. The executable code,
+vehicle calibration, Map 1-only enable mask, `200 RPM` offset, `100 RPM`
+hysteresis, and per-map ignition target command `115` remain identical. All six
+stored checksum references are valid. Reproduce it with:
+
+```bash
+python3 tmp/build_overlay22_rpm_hold_retard.py
+```
+
+Hardware status is `FUNCTIONAL_FAIL`. CONSULT logs contain the exact `-5 deg`
+target during five separate Map 1 CANCEL intervals and normal `14..43 deg`
+timing during Map 2 and Map 3 attempts. The immediate retard removes engine
+torque before the engine can establish a stable temporary limiter cycle. Base
+injection remains positive in every sampled CANCEL interval. Physical spark
+angle remains subject to timing-light verification, but the command polarity
+and runtime adapter activation are established by the diagnostic trace.
+
+The calibration-independent corrected regression chain is under
+`tmp/hardware-button-release-fix/`. Its stage-19 map-switching endpoint has
+SHA-256
+`52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84`.
+Applying the locked generic Map 1 RPM Hold profile produces
+`1JK08A-map-switching-safe-v4-20-rolling-launch-rpm-hold-map1.bin` with
+SHA-256
+`6e74ae82d22e9d975c64e2002c8ad30dec0f33f8f72b5ecd9906aab7598d480b`
+and MD5 `d27489f81cacaa7b9604360c06fae93c`. This regression image does not contain
+the custom calibration of Overlay 21.
+
+The target-vehicle result is:
+
+1. Overlay 21 and Overlay 22 pass PCMFlash identification and application
+   startup.
+2. Map selection reaches Maps 2 and 3 through the corrected
+   `SET -> CANCEL -> SET` sequence.
+3. Map 1 RPM Hold rearms and activates repeatedly after release code `0x20`.
+4. Maps 2 through 5 reject Rolling Launch because the hardware-test profile is
+   intentionally Map 1-only.
+5. Overlay 21 is the safe `RPM_HOLD` baseline without retard. The common defs
+   provide five independent map-enable controls at `0xD3F64`; hardware
+   acceptance uses only parameters available in the current logger.
+6. A complete Rolling Launch implementation requires an RPM-conditioned
+   ignition controller. Retard must remain stock below the hold band, enter
+   only near an actual limiter event, and restore torque through explicit
+   hysteresis or staged commands. The controller requires separate engine
+   validation before any exhaust-combustion objective is evaluated. Overlay 22
+   is not a further dynamic-test candidate.
+
+The remaining gesture risk is the decoded code sequence produced when CANCEL
+is pressed while SET remains held. A CAN capture of that combined gesture must
+show a usable `SET -> CANCEL -> SET` transition before the selector result is
+treated as functionally closed.

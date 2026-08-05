@@ -103,9 +103,9 @@ A successful run includes all six primary markers:
 ```text
 VQ_SH_ELF_OVERLAYS status=PASS stages=5 stage15_instructions=156 stage16_instructions=156 stage17_instructions=156 stage18_instructions=324 stage19_instructions=414 ...
 VQ_SH_ELF_MAP_SWITCHING status=PASS cases=116 selector=17 adapters=76 limiter=14 feedback=9 feedback_invocations=17 entries=11
-VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=96 structural=11 gates=24 config=22 activation=5 active=9 cooldown=4 ignition=15 wrappers=6 entries=5
+VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=98 structural=11 gates=25 config=22 activation=5 active=9 cooldown=5 ignition=15 wrappers=6 entries=5
 VQ_SH_ELF_ROLLING_VERIFY status=PASS units=3 instructions=755 ... diagnostics=9 ...
-VQ_SH_ELF_VERIFY status=PASS ... hardware_overlay_stages=5 rolling_launch_instructions=755 rolling_launch_cases=96 ... unsafe_signal=4
+VQ_SH_ELF_VERIFY status=PASS ... hardware_overlay_stages=5 rolling_launch_instructions=755 rolling_launch_cases=98 ... unsafe_signal=4
 NPKERN_LEGACY_BUILD status=PASS target=SH7058_KLINE ...
 NPKERN_CAN_VERIFY status=PASS targets=4 legacy_targets=1 ... flash_guard_cases=10 hardware_ready=NO limitation=HCAN_and_flash_peripherals_not_executed
 ```

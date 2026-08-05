@@ -84,7 +84,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd";
+            "469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -159,7 +159,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final UnitSpec[] UNITS = {
         new UnitSpec(
                 "selector_host", 0, 0x000D2108L, 0x168,
-                "7cc557156f89d764b4e2a224bfc2159fe78e4e519e8645692b9783abbb49472e"),
+                "ebc0fb3e4ccd177e47c4420b90fb49a360e00f3bedceca11b3cdf2a4590e6e4c"),
         new UnitSpec(
                 "adapter_select_helper", 1, 0x000D2270L, 0x30,
                 "40cea0183a38d189808b7637ea47cb594d8cb56ee615efb246c714da5f499a34"),
@@ -767,10 +767,11 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         SelectorCase[] tests = {
             selectorTest(
                     "idle", state(0, 0, 0, 0, 0, 0, 0, 0),
-                    0, 0, 0, state(0, 0, 0, 0, 0, 0, 0, 0)),
+                    0x20, 0x20, 0,
+                    state(0, 0, 0, 0, 0, 0, 0, 0)),
             selectorTest(
                     "arm", state(0, 0, 0, 0, 0, 0, 0, 0),
-                    0, 8, 0, state(0, 1, 0, 1, 0, 0, 0, 0)),
+                    0x20, 8, 0, state(0, 1, 0, 1, 0, 0, 0, 0)),
             selectorTest(
                     "set-held", state(1, 1, 2, 7, 0, 0, 0, 0),
                     8, 8, 0, state(1, 1, 2, 8, 0, 0, 0, 0)),
@@ -785,10 +786,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     2, 8, 0, state(2, 1, 4, 10, 0, 0, 0, 0)),
             selectorTest(
                     "commit-map-1", state(3, 1, 1, 9, 0, 0, 0, 0),
-                    8, 0, 0, state(0, 0, 0, 0, 1, 1, 0, 0)),
+                    8, 0x20, 0, state(0, 0, 0, 0, 1, 1, 0, 0)),
             selectorTest(
                     "commit-map-5", state(1, 1, 5, 9, 0, 0, 0, 0),
-                    8, 0, 0, state(4, 0, 0, 0, 5, 1, 0, 0)),
+                    8, 0x20, 0, state(4, 0, 0, 0, 5, 1, 0, 0)),
             selectorTest(
                     "release-zero-abort",
                     state(3, 1, 0, 9, 0, 0, 0, 0),
@@ -1202,10 +1203,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         }
         int totalInstructions = selectorInstructions + adapterInstructions
                 + limiterInstructions + feedbackInstructions;
-        if (totalInstructions != 5140) {
+        if (totalInstructions != 5137) {
             throw new IllegalStateException(
                     "instruction total is " + totalInstructions
-                    + ", expected 5140");
+                    + ", expected 5137");
         }
         List<String> missing = new ArrayList<>();
         for (long entry : CODE_ENTRIES) {

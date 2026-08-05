@@ -28,6 +28,10 @@ def validate():
     )
     if projection is None:
         raise ValueError("common JK08A definition disables map switching")
+    if projection.map_switching is None:
+        raise ValueError("common JK08A definition disables map switching")
+    if projection.rolling_launch is None:
+        raise ValueError("common JK08A definition disables Rolling Launch controls")
 
     default_emit = emit_def.presentation_default_emit(
         projection.overrides
@@ -124,6 +128,20 @@ def validate():
         raise ValueError(
             "runtime does not expose 60 slot-specific editor views"
         )
+    launch = projection.rolling_launch
+    if launch.enable_mask_address != "000d3f64":
+        raise ValueError("Rolling Launch enable mask address differs")
+    if launch.masked_view_count != 5:
+        raise ValueError("runtime does not expose five map-enable controls")
+    for slot in range(1, 6):
+        if f"Map {slot} - Rolling Launch Enable" not in romraider_model:
+            raise ValueError(
+                f"RomRaider projection lacks Map {slot} Rolling Launch enable"
+            )
+        if f"Map {slot} - Rolling Launch Enable" not in xdf:
+            raise ValueError(
+                f"TunerPro projection lacks Map {slot} Rolling Launch enable"
+            )
 
     xml_path = ROOT / "defs" / f"{layout.rom}.xml"
     xdf_path = ROOT / "defs" / f"{layout.rom}.xdf"
@@ -169,6 +187,8 @@ def validate():
         "slot_tables": projection.slot_table_count,
         "slot_masked_views": projection.slot_masked_view_count,
         "slot_editor_views": projection.slot_editor_view_count,
+        "rolling_launch_tables": projection.rolling_launch.table_count,
+        "rolling_launch_map_controls": projection.rolling_launch.masked_view_count,
         "xdf_tables": xdf_stats["calibration_tables"],
         "xdf_masked_views": xdf_stats["masked_views"],
         "common_definition_files": 2,

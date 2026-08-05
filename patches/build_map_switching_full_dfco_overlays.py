@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the final cumulative JK08A full-DFCO hardware overlays.
+"""Build the corrected cumulative JK08A full-DFCO hardware overlays.
 
 Every output is a complete one-MiB ROM suitable for a normal PCMFlash write.
 The chain starts from the exact successful revision-2 lookup Overlay 14
@@ -8,7 +8,8 @@ readback. Stage 15 installs the inactive four-family DFCO adapter and Map
 the shared cut and restore hooks independently. Stage 18 installs the selector
 host while keeping the CAN serializer stock; no selection gesture is permitted
 because queued feedback could not drain. Stage 19 installs the CAN feedback
-runtime and produces the complete ten-family endpoint.
+runtime and produces the complete ten-family endpoint. The selector uses the
+target-vehicle 0x20 released-button code.
 """
 
 from __future__ import annotations
@@ -35,6 +36,13 @@ HARDWARE_SOURCE_SHA256 = (
     "f0a03f6fef205aa1ac42e4471dd0bad995a7082c35d24bdb639fc342ccdda892"
 )
 EXPECTED_OUTPUT_SHA256 = (
+    "5b7816f7be70e12f1312dbff9727df9a5677192811515ce8f6b66d1793bea7f2",
+    "84796d58bdd3c45ba4c6774f936bedd54109cbee7a60053dcecf0b38c4777e58",
+    "e89bd22402e416c9178286b554b1d1d054586c49096574d1c88d9bd5e96f9e0d",
+    "f42f2ec56b590c7e82b17a343dc966c7c27c1981dde528815020e7d974d30b8c",
+    "52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84",
+)
+HISTORICAL_OUTPUT_SHA256 = (
     "5b7816f7be70e12f1312dbff9727df9a5677192811515ce8f6b66d1793bea7f2",
     "84796d58bdd3c45ba4c6774f936bedd54109cbee7a60053dcecf0b38c4777e58",
     "e89bd22402e416c9178286b554b1d1d054586c49096574d1c88d9bd5e96f9e0d",
@@ -189,7 +197,7 @@ def default_output_prefix(source):
         stem = stem[: -len("_readback")]
     if stem.endswith(SOURCE_STEM_SUFFIX):
         stem = stem[: -len(SOURCE_STEM_SUFFIX)]
-    return source.with_name(f"{stem}-map-switching-safe-v3")
+    return source.with_name(f"{stem}-map-switching-safe-v4")
 
 
 def output_paths(prefix):

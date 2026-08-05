@@ -118,7 +118,7 @@ nop
 
 host_phase_idle:
 mov r7,r0
-cmp/eq 0x0,r0
+cmp/eq 0x20,r0
 bf host_mirror
 mov r4,r0
 cmp/eq 0x8,r0
@@ -139,7 +139,7 @@ cmp/eq 0x8,r0
 bt host_mirror
 cmp/eq 0x2,r0
 bt host_set_to_cancel
-cmp/eq 0x0,r0
+cmp/eq 0x20,r0
 bf host_abort_selector
 mov r2,r0
 cmp/eq 0x0,r0

@@ -36,7 +36,7 @@ from patches import map_switching_layout as layout_model
 TOOL_DIR = Path(__file__).resolve().parent
 EXPECTED_SIMULATOR_VERSION = "16.3"
 EXPECTED_COMPOSITION_SHA256 = (
-    "ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd"
+    "469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0"
 )
 EXPECTED_COMPOSITION_CHANGED_BYTES = 5630
 EXPECTED_COMPOSITION_WRITE_BYTES = 6144

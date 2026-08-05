@@ -28,14 +28,14 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "5361e008e7fd0b944e20e5f76a19c05f6c22fbe528841cca981f4f5e6ec18648"
+    "da64cbc25399b2ccd09a4c11590ea9a62e8e10b1159d62cc66372d1f1b739dd5"
 )
 EXPECTED_COMPOSITION_CHANGED_BYTES = 1687
 EXPECTED_COMPOSITION_WRITE_BYTES = 1876
 EXPECTED_INSTRUCTION_COUNT = 755
 EXPECTED_CODE_ENTRY_COUNT = 5
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 96
+EXPECTED_DYNAMIC_CASES = 98
 RETURN_STUB = bytes.fromhex("000b0009")
 
 
@@ -224,9 +224,9 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=180,
     )
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=96 "
-        "structural=11 gates=24 config=22 activation=5 active=9 "
-        "cooldown=4 ignition=15 wrappers=6 entries=5"
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=98 "
+        "structural=11 gates=25 config=22 activation=5 active=9 "
+        "cooldown=5 ignition=15 wrappers=6 entries=5"
     )
     if marker not in result.stdout:
         raise VerificationError(

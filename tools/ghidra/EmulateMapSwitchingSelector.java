@@ -40,7 +40,7 @@ public class EmulateMapSwitchingSelector extends GhidraScript {
     static final long STACK_TOP = 0xFFFF7F00L;
 
     static final String HOST_SHA =
-            "7cc557156f89d764b4e2a224bfc2159fe78e4e519e8645692b9783abbb49472e";
+            "ebc0fb3e4ccd177e47c4420b90fb49a360e00f3bedceca11b3cdf2a4590e6e4c";
     static final String COMMIT_SHA =
             "e1e296e0d2f1dccef21982f14f4e3e1aebdc39fba6b68ae8b3e2ecbc16d5a5aa";
 
@@ -84,9 +84,10 @@ public class EmulateMapSwitchingSelector extends GhidraScript {
 
         TestCase[] tests = {
             test("idle", state(0, 0, 0, 0, 0, 0, 0, 0),
-                    0, 0, 0, state(0, 0, 0, 0, 0, 0, 0, 0)),
+                    0x20, 0x20, 0,
+                    state(0, 0, 0, 0, 0, 0, 0, 0)),
             test("arm", state(0, 0, 0, 0, 0, 0, 0, 0),
-                    0, 8, 0, state(0, 1, 0, 1, 0, 0, 0, 0)),
+                    0x20, 8, 0, state(0, 1, 0, 1, 0, 0, 0, 0)),
             test("set-held", state(1, 1, 2, 7, 0, 0, 0, 0),
                     8, 8, 0, state(1, 1, 2, 8, 0, 0, 0, 0)),
             test("set-to-cancel", state(1, 1, 2, 7, 0, 0, 0, 0),
@@ -96,9 +97,9 @@ public class EmulateMapSwitchingSelector extends GhidraScript {
             test("cancel-to-set", state(2, 2, 3, 9, 0, 0, 0, 0),
                     2, 8, 0, state(2, 1, 4, 10, 0, 0, 0, 0)),
             test("commit-map-1", state(3, 1, 1, 9, 0, 0, 0, 0),
-                    8, 0, 0, state(0, 0, 0, 0, 1, 1, 0, 0)),
+                    8, 0x20, 0, state(0, 0, 0, 0, 1, 1, 0, 0)),
             test("commit-map-5", state(1, 1, 5, 9, 0, 0, 0, 0),
-                    8, 0, 0, state(4, 0, 0, 0, 5, 1, 0, 0)),
+                    8, 0x20, 0, state(4, 0, 0, 0, 5, 1, 0, 0)),
             test("release-zero-abort", state(3, 1, 0, 9, 0, 0, 0, 0),
                     8, 0, 0, state(3, 0, 0, 0, 0, 0, 0, 0)),
             test("sixth-pulse-abort", state(2, 2, 5, 9, 0, 0, 0, 0),

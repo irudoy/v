@@ -88,9 +88,17 @@ class MapSwitchingSelectorTest(unittest.TestCase):
         state = step(state, selector.SET_COAST, selector.RESUME_ACCEL)
         self.assertEqual(state, selector.SelectorState(active_index=1))
 
-    def test_main_button_aborts_an_armed_gesture(self):
+    def test_zero_code_aborts_an_armed_gesture(self):
         state = self.arm(selector.SelectorState(active_index=1))
-        state = step(state, selector.SET_COAST, selector.MAIN)
+        state = step(state, selector.SET_COAST, selector.INVALID_ZERO)
+        self.assertEqual(state, selector.SelectorState(active_index=1))
+
+    def test_zero_to_set_does_not_arm(self):
+        state = step(
+            selector.SelectorState(active_index=1),
+            selector.INVALID_ZERO,
+            selector.SET_COAST,
+        )
         self.assertEqual(state, selector.SelectorState(active_index=1))
 
     def test_ascd_enable_aborts_an_armed_gesture(self):

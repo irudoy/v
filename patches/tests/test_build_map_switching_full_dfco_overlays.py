@@ -92,8 +92,15 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
             len(overlays.EXPECTED_OUTPUT_SHA256),
             len(overlays.OVERLAY_SPECS),
         )
+        self.assertEqual(
+            len(overlays.HISTORICAL_OUTPUT_SHA256),
+            len(overlays.OVERLAY_SPECS),
+        )
         self.assertEqual(len(set(overlays.EXPECTED_OUTPUT_SHA256)), 5)
-        for digest in overlays.EXPECTED_OUTPUT_SHA256:
+        for digest in (
+            *overlays.EXPECTED_OUTPUT_SHA256,
+            *overlays.HISTORICAL_OUTPUT_SHA256,
+        ):
             self.assertEqual(len(digest), 64)
             int(digest, 16)
 
@@ -289,16 +296,16 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
         )
         prefix = overlays.default_output_prefix(source)
         self.assertEqual(
-            prefix, Path("/tmp/example-map-switching-safe-v3")
+            prefix, Path("/tmp/example-map-switching-safe-v4")
         )
         self.assertEqual(
             tuple(path.name for path in overlays.output_paths(prefix)),
             (
-                "example-map-switching-safe-v3-15-full-dfco-payload-map1.bin",
-                "example-map-switching-safe-v3-16-dfco-hold-entry-hook-4fdd0.bin",
-                "example-map-switching-safe-v3-17-dfco-full-intermediate-restore-hook-50258.bin",
-                "example-map-switching-safe-v3-18-selector-host-boot-only-no-map-gesture.bin",
-                "example-map-switching-safe-v3-19-can-feedback-full-runtime.bin",
+                "example-map-switching-safe-v4-15-full-dfco-payload-map1.bin",
+                "example-map-switching-safe-v4-16-dfco-hold-entry-hook-4fdd0.bin",
+                "example-map-switching-safe-v4-17-dfco-full-intermediate-restore-hook-50258.bin",
+                "example-map-switching-safe-v4-18-selector-host-boot-only-no-map-gesture.bin",
+                "example-map-switching-safe-v4-19-can-feedback-full-runtime.bin",
             ),
         )
 

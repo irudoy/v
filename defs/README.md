@@ -92,7 +92,10 @@ under `defs/`, separately from `reference/`:
   `../patches/map-switching-limiter-commit.s` implement startup refresh and
   the SR-protected transaction for both direct limiter families,
   `../tools/mapkit/map_switching.py` projects 50 slot tables and ten
-  slot-specific masked ignition views, and
+  slot-specific masked ignition views. `../tools/mapkit/rolling_launch.py`
+  projects the validated configuration byte at `0xD3F64` into five independent
+  per-map enable controls that preserve neighboring bits. The common output
+  contains 59 calibration tables and 16 masked views. The
   `../tools/mapkit/validate_map_switching.py` renders the projection against
   the live graph and verifies both tracked common definition files.
   The eight standalone assembly units pass 116 Ghidra p-code cases: 17 selector,
@@ -101,7 +104,7 @@ under `defs/`, separately from `reference/`:
   delayed transfers with encoded `NOP` slots, 52 PC-relative references, 77
   direct branch targets, and 21 indirect control transfers.
   `../tools/ghidra/EmulateMapSwitchingComposition.java` repeats all 116 cases
-  over 5140 instructions from the complete locked fixture, reaches all eleven code
+  over 5137 instructions from the complete locked fixture, reaches all eleven code
   entries at final addresses, and verifies the same SHA-256 and write boundary
   as `../patches/map_switching_compose.py`. Feedback uses state value `2` with
   locked `10, 10` on/off frame counts; the V36 meter response remains a hardware

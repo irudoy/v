@@ -40,6 +40,11 @@
 #define MODE_RPM_HOLD 1U
 #define MODE_RPM_HOLD_RETARD 2U
 
+#define BUTTON_ZERO 0x00U
+#define BUTTON_CANCEL 0x02U
+#define BUTTON_SET 0x08U
+#define BUTTON_RELEASED 0x20U
+
 #define REASON_NONE 0U
 #define REASON_CONFIG_INVALID 1U
 #define REASON_MAP_INDEX_INVALID 2U
@@ -183,8 +188,8 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
     fill_bytes(ram_pointer(FUEL_SHADOW), 12, 0xa5);
     fill_bytes(ram_pointer(THROTTLE_SHADOW), 28, 0xa5);
     fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
-    ram_pointer(BUTTON_CODE)[0] = 0x02;
-    ram_pointer(BUTTON_CODE)[1] = 0x02;
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_CANCEL;
+    ram_pointer(BUTTON_CODE)[1] = BUTTON_CANCEL;
     ram_pointer(ASCD_STATUS)[0] = 0;
     ram_pointer(SPEED)[0] = 20;
     write_u16(ram_pointer(RPM), 300);
@@ -320,6 +325,7 @@ enum gate_mutation {
     GATE_FEEDBACK_RESERVED,
     GATE_ASCD,
     GATE_BUTTON_RELEASED,
+    GATE_BUTTON_ZERO,
     GATE_BUTTON_SET,
     GATE_SPEED_LOW,
     GATE_SPEED_EXACT,
@@ -354,6 +360,7 @@ static const struct gate_case gate_cases[] = {
     {"gate-feedback-reserved", GATE_FEEDBACK_RESERVED, REASON_FEEDBACK_BUSY, 0},
     {"gate-ascd", GATE_ASCD, REASON_ASCD_ACTIVE, 0},
     {"gate-button-released", GATE_BUTTON_RELEASED, REASON_BUTTON_INVALID, 0},
+    {"gate-button-zero", GATE_BUTTON_ZERO, REASON_BUTTON_INVALID, 0},
     {"gate-button-set", GATE_BUTTON_SET, REASON_BUTTON_INVALID, 0},
     {"gate-speed-low", GATE_SPEED_LOW, REASON_SPEED_LOW, 0},
     {"gate-speed-exact", GATE_SPEED_EXACT, REASON_NONE, 1},
@@ -406,10 +413,13 @@ static void apply_gate_mutation(enum gate_mutation mutation)
         ram_pointer(ASCD_STATUS)[0] = 0x80;
         break;
     case GATE_BUTTON_RELEASED:
-        ram_pointer(BUTTON_CODE)[0] = 0;
+        ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
+        break;
+    case GATE_BUTTON_ZERO:
+        ram_pointer(BUTTON_CODE)[0] = BUTTON_ZERO;
         break;
     case GATE_BUTTON_SET:
-        ram_pointer(BUTTON_CODE)[0] = 8;
+        ram_pointer(BUTTON_CODE)[0] = BUTTON_SET;
         break;
     case GATE_SPEED_LOW:
         config[8] = 10;
@@ -719,7 +729,7 @@ static int run_active_cases(void)
     count_case();
     if (!activate(MODE_RPM_HOLD, 0x01))
         return fail_value("active-map-request", "setup", 0, 1);
-    ram_pointer(BUTTON_CODE)[0] = 8;
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_SET;
     run_engine();
     if (!expect_phase_reason(
             "active-map-request", PHASE_COOLDOWN, REASON_MAP_REQUEST))
@@ -728,7 +738,7 @@ static int run_active_cases(void)
     count_case();
     if (!activate(MODE_RPM_HOLD, 0x01))
         return fail_value("active-release", "setup", 0, 1);
-    ram_pointer(BUTTON_CODE)[0] = 0;
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
     run_engine();
     if (!expect_phase_reason(
             "active-release", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
@@ -758,7 +768,7 @@ static int run_active_cases(void)
     count_case();
     if (!activate(MODE_OBSERVE, 0x01))
         return fail_value("active-observe-release", "setup", 0, 1);
-    ram_pointer(BUTTON_CODE)[0] = 0;
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
     run_engine();
     if (!expect_phase_reason(
             "active-observe-release", PHASE_COOLDOWN,
@@ -809,7 +819,7 @@ static int run_cooldown_cases(void)
     count_case();
     reset_case(MODE_RPM_HOLD, 0x01);
     set_cooldown(0);
-    ram_pointer(BUTTON_CODE)[0] = 0;
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
     run_engine();
     if (read_u16(ram_pointer(RL_STATE) + 8) != 1)
         return fail_value("cooldown-increment", "rearm", read_u16(ram_pointer(RL_STATE) + 8), 1);
@@ -817,7 +827,7 @@ static int run_cooldown_cases(void)
     count_case();
     reset_case(MODE_RPM_HOLD, 0x01);
     set_cooldown(2);
-    ram_pointer(BUTTON_CODE)[0] = 0;
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;
     run_engine();
     state = ram_pointer(RL_STATE);
     if (!expect_phase_reason(
@@ -825,6 +835,25 @@ static int run_cooldown_cases(void)
         return 0;
     if (state[5] != MODE_OBSERVE || read_u16(state + 8) != 0)
         return fail_value("cooldown-complete", "reset", state[5], 0);
+
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_CANCEL;
+    run_engine();
+    if (!expect_phase_reason(
+            "cooldown-complete", PHASE_ACTIVE, REASON_NONE))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD, 0x01);
+    set_cooldown(2);
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_ZERO;
+    run_engine();
+    state = ram_pointer(RL_STATE);
+    if (!expect_phase_reason(
+            "cooldown-zero", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
+        return 0;
+    if (read_u16(state + 8) != 0)
+        return fail_value(
+            "cooldown-zero", "rearm", read_u16(state + 8), 0);
     return 1;
 }
 
@@ -956,8 +985,8 @@ static int run_wrapper_cases(void)
     count_case();
     reset_case(MODE_OBSERVE, 0x01);
     selector = ram_pointer(SELECTOR_STATE);
-    ram_pointer(BUTTON_CODE)[0] = 8;
-    ram_pointer(BUTTON_CODE)[1] = 0;
+    ram_pointer(BUTTON_CODE)[0] = BUTTON_SET;
+    ram_pointer(BUTTON_CODE)[1] = BUTTON_RELEASED;
     (void)invoke_r4(SELECTOR_ARBITER, 0);
     if (selector[1] != 1 || selector[3] != 1)
         return fail_value("wrapper-selector-idle", "selector_phase", selector[1], 1);
@@ -979,8 +1008,8 @@ static int run_wrapper_cases(void)
         for (size_t byte = 0; byte < sizeof(before); ++byte)
             before[byte] = selector[byte];
         ram_pointer(RL_STATE)[0] = (uint8_t)index;
-        ram_pointer(BUTTON_CODE)[0] = 8;
-        ram_pointer(BUTTON_CODE)[1] = 0;
+        ram_pointer(BUTTON_CODE)[0] = BUTTON_SET;
+        ram_pointer(BUTTON_CODE)[1] = BUTTON_RELEASED;
         (void)invoke_r4(SELECTOR_ARBITER, 0);
         if (!fail_bytes(name, "selector", selector, before, sizeof(before)))
             return 0;
@@ -1013,13 +1042,13 @@ int main(void)
         return 1;
     if (!run_wrapper_cases())
         return 1;
-    if (case_count != 96U)
-        return fail_value("summary", "case_count", case_count, 96);
+    if (case_count != 98U)
+        return fail_value("summary", "case_count", case_count, 98);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=24 config=22 activation=5 active=9 "
-        "cooldown=4 ignition=15 wrappers=6 entries=5\n",
+        "structural=11 gates=25 config=22 activation=5 active=9 "
+        "cooldown=5 ignition=15 wrappers=6 entries=5\n",
         (unsigned long)case_count);
     return 0;
 }

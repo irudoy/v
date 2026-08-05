@@ -12,11 +12,11 @@ from enum import IntEnum
 from patches.map_switching_layout import load_layout
 
 
-RELEASED = 0x00
+RELEASED = 0x20
 CANCEL = 0x02
 SET_COAST = 0x08
 RESUME_ACCEL = 0x10
-MAIN = 0x20
+INVALID_ZERO = 0x00
 
 LAYOUT = load_layout()
 FAMILIES = LAYOUT.family_by_key

@@ -4,9 +4,9 @@
 The production profile is deliberately narrow: mode 1 (RPM hold), Map 1 only,
 no brake gate, and no ignition retard. The input must be the exact complete
 ten-family map-switching stage-19 endpoint derived from the hardware-readback
-lookup stage. Machine payloads, hooks, diagnostics, configuration, checksums,
-and the
-closed write set are all revalidated before an output can be written.
+lookup stage and using the target-vehicle 0x20 released-button code. Machine
+payloads, hooks, diagnostics, configuration, checksums, and the closed write
+set are all revalidated before an output can be written.
 """
 
 from __future__ import annotations
@@ -35,9 +35,15 @@ from patches import rolling_launch_layout as rolling_layout_model
 ROM_SIZE = 0x100000
 PROFILE_NAME = "rpm-hold-map1-test"
 LOCKED_MAP_SWITCHING_SOURCE_SHA256 = (
-    "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
+    "52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84"
 )
 LOCKED_PROFILE_OUTPUT_SHA256 = (
+    "6e74ae82d22e9d975c64e2002c8ad30dec0f33f8f72b5ecd9906aab7598d480b"
+)
+HISTORICAL_MAP_SWITCHING_SOURCE_SHA256 = (
+    "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
+)
+HISTORICAL_PROFILE_OUTPUT_SHA256 = (
     "a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081"
 )
 PROFILE_CALIBRATION = rolling_launch.Calibration(

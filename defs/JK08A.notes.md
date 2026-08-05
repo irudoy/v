@@ -4465,11 +4465,14 @@ commercial product.
 - `FUN_000CF020` copies the prior stable code from `0xFFFF2A85` to `0xFFFF2A86`, then
   accepts a replacement only when five consecutive decoded samples
   `0xFFFF2701..0xFFFF2705` are equal.
-- The stable one-hot codes are `0x00` released, `0x02` CANCEL, `0x08` SET/COAST,
-  `0x10` RESUME/ACCEL, and `0x20` MAIN-button pulse. DID 0x130D independently exposes
-  SET, RESUME, and CANCEL as output bits 3, 2, and 1. `FUN_000913D0` reads the same
-  stable byte for exact DTC P1564 and masks codes `0x02`, `0x08`, and `0x10` with
-  `0x1A`.
+- The stable one-hot codes are `0x02` CANCEL, `0x08` SET/COAST, `0x10`
+  RESUME/ACCEL, and `0x20` released/all buttons off. `0x00` is not observed in
+  the target-vehicle capture and is treated as invalid by the injected selector.
+  CAN frame `0x239`, byte 4 counted from one, confirms these four vehicle states.
+  DID 0x130D independently exposes SET, RESUME, and CANCEL as output bits 3, 2,
+  and 1. `FUN_000913D0` reads the same stable byte for exact DTC P1564 and masks
+  codes `0x02`, `0x08`, and `0x10` with `0x1A`. The MAIN/ASCD on state is
+  represented separately by `0xFFFF41AE.bit7`.
 - `FUN_000CF020` also packs DID 0x130E. Code establishes its source bits; homologous
   factory and measured diagnostics identify output bit 5 as SET LAMP and bit 2 as
   CRUISE LAMP.
@@ -4654,10 +4657,10 @@ Their locked frame counts are `10, 10`; a zero/zero pair remains the fail-closed
 disabled configuration. The deterministic in-memory composition
 applies all eight blobs, 14 hooks, 40 copies, and ten pointer tables. It changes
 5630 bytes inside the 6144-byte declared write set and has fixture SHA-256
-`ee274610baedd42a46f555589fbc10206d66cc912662cef8eebef219a353b6cd`.
+`469cbc79fb78477a1ac0dd8ddcc4683e92f410ccf55dfd6c8b978fd8967f72c0`.
 It ties all 414 instruction byte pairs and eleven code entries to their final
 absolute addresses. `EmulateMapSwitchingComposition.java` independently rebuilds
-that fixture from the exact Ghidra program and passes all 116 scenarios over 5140
+that fixture from the exact Ghidra program and passes all 116 scenarios over 5137
 instructions. Every scenario starts from a fresh complete image, all eleven code
 entries execute, real pointer tables and copied calibration bytes are checked,
 the limiter restores exact SR, and the other paths preserve every non-T SR bit.
@@ -4690,15 +4693,17 @@ flashing cruise-control light, but this contract does not claim UpRev's internal
 implementation.
 
 The factory manual establishes the ECM ASCD-status CAN signal as the physical route to
-the combination meter CRUISE indicator. A homologous Z34 community decoder maps CAN
-0x551 byte 5 value `2` to active cruise status. The byte and value align with the
-exact JK08A serializer, but V36 applicability remains candidate evidence until a
-target-vehicle test confirms the lamp response. Feedback advances once per 0x551
-serialization, preserves the upper six bits of byte 5 and every other payload byte,
-and does not modify `0xFFFF41AE`, `0xFFFF4252`, or another stock ASCD control state.
-The pilot uses ten on frames and ten off frames. Their wall-clock duration depends
-on the target's actual 0x551 period. The patcher creates derived map-switching
-images; no derived image is versioned in `rom-images/`.
+the combination meter CRUISE indicator. The installed pilot changes byte-5 low bits
+`0x03` and has target-vehicle status `FAIL`: its injected `2/0` sequence reaches the
+bus without changing the requested indicator. Exact `FUN_000C5372` instead reads
+`RAM8[0xFFFF40D0] & 7`, shifts it left by four, clears mask `0x70`, and writes the
+state into `0xFFFF3ADA.bits4..6`. Public G37/370Z captures give complete byte values
+`0x02` for MAIN OFF, `0x62` for MAIN ON, and `0x42` for SET/engaged, matching internal
+states 0, 6, and 4. The next candidate retains frame 0x551 and the stock-first wrapper,
+but uses mask `0x60`, on value `0x60`, and off value `0x00`. Successful Map 2 -> Map 3
+selection establishes that the existing queue completes. The new field mapping remains
+a hardware-test candidate until the V36 meter confirms it. The patcher creates derived
+map-switching images; no derived image is versioned in `rom-images/`.
 
 ## Current/prior-cycle coefficient surface - `0x0C78E`
 
@@ -5084,14 +5089,15 @@ assembles all eight payloads and executes the same 116 behavior cases. The
 file-writing patcher, checksum recalculation, overlay hash chain, and byte
 preservation checks pass their positive and negative tests.
 
-The next gate is the first functional target-vehicle test on the already
-installed stage 19 with byte-identical maps. With the vehicle stationary and
-engine stopped, verify the steering-switch ladder, CAN 0x551 byte 5 state `2`,
-visible `10, 10` pulse timing,
-and one through five indications without changing stock ASCD state. Then confirm
-reset Map 1, raw DID 0x130E bit 7, startup and critical-section timing, and
-unchanged engine behavior while selecting all five identical maps. A separate
-stock-period capture is not a prerequisite for this first test.
+The target-vehicle selector passes Maps 2 and 3 with the corrected `0x20` release
+code. The next feedback gate is an isolated CAN 0x551 byte-5 candidate using mask
+`0x60`, on value `0x60`, and off value `0x00`. With the vehicle stationary, engine
+stopped, and ASCD inactive, verify visible `10,10` pulse timing and one through five
+indications without changing stock ASCD state. Confirm reset Map 1 from calibration
+behavior after an ignition cycle, measure startup and critical-section timing, and
+verify unchanged engine behavior across the five slots. Custom diagnostic DIDs are
+not part of the hardware procedure because the current logging client cannot request
+them.
 
 The static reverse-engineering priority remains fuel, ignition, and cutoffs;
 additional logs are not a prerequisite for the current static track.

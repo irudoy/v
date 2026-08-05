@@ -64,12 +64,14 @@ class ApplyRollingLaunchTest(unittest.TestCase):
         self.assertEqual(calibration.run_timeout_ticks, 300)
         self.assertEqual(calibration.rearm_ticks, 100)
 
-    def test_locked_hardware_hashes_are_well_formed_and_distinct(self):
+    def test_hardware_hashes_are_well_formed_and_distinct(self):
         digests = {
             patcher.LOCKED_MAP_SWITCHING_SOURCE_SHA256,
             patcher.LOCKED_PROFILE_OUTPUT_SHA256,
+            patcher.HISTORICAL_MAP_SWITCHING_SOURCE_SHA256,
+            patcher.HISTORICAL_PROFILE_OUTPUT_SHA256,
         }
-        self.assertEqual(len(digests), 2)
+        self.assertEqual(len(digests), 4)
         for digest in digests:
             self.assertEqual(len(digest), 64)
             int(digest, 16)

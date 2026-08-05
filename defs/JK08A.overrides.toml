@@ -18,6 +18,11 @@ default_emit = false
 # runtime-active only when the map-switching patch is present.
 enabled = true
 
+[rolling_launch]
+# Five independent masked controls edit bits 0 through 4 of the validated
+# Rolling Launch enable_mask byte. They preserve every other map-enable bit.
+enabled = true
+
 [rom]
 xmlid = "JK08A"
 internalidaddress = "8205"

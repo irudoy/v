@@ -1,8 +1,11 @@
-# 1JK08A Rolling RPM Hold hardware-test image
+# 1JK08A Rolling RPM Hold superseded hardware-test image
 
-This directory contains the software-verified JK08A Rolling RPM Hold candidate
-for staged bench and engine validation. It is not hardware-validated and is not
-a road-test image.
+This directory contains the original JK08A Rolling RPM Hold candidate. Its
+runtime treats steering-switch code `0x00` as released. Target-vehicle CAN
+frame `0x239`, byte 4, reports `0x20` with all buttons released. A vehicle test
+of the byte-identical runtime in the custom Overlay 20 passes startup and first
+activation but cannot rearm. This image is retained for provenance and is not a
+hardware-test or road-test candidate.
 
 ## Contents
 
@@ -64,8 +67,26 @@ measurement.
 - 755 Rolling Launch instructions, five code entries, and nine diagnostic DIDs
   match the SHA-locked Ghidra payload;
 - independent GNU `sh-elf-as --isa=sh2e` output is byte-identical;
-- GNU simulator 16.3 passes 116 map-switching and 96 Rolling Launch cases.
+- the original GNU simulator gate passed 116 map-switching and 96 Rolling
+  Launch cases but did not exercise the target-vehicle `0x20` release code.
 
-Reproduce the final image with `patches/apply_rolling_launch.py`. The full
-runtime contract and mandatory staged hardware procedure are in
-`patches/rolling-launch.md`.
+The corrected runtime gate passes 116 map-switching and 98 Rolling Launch
+cases. The checksum-valid Overlay 20 upgrade is
+`tmp/1JK08A-multimap-1-3-overlay-21-button-release-fix.bin`, documented in
+`patches/rolling-launch.md`. Target-vehicle testing confirms repeated Map 1
+RPM Hold activation after `0x20` release. Overlay 22 changes only the mode to
+`RPM_HOLD_RETARD`; CONSULT logs confirm its configured `-5 deg` command and
+also show an immediate torque collapse. Overlay 22 is not a further dynamic
+test candidate.
+
+The common `defs/JK08A.xml` and `defs/JK08A.xdf` expose five independent
+per-map Rolling Launch enable controls at configuration byte `0xD3F64`. Each
+masked control preserves the other four map bits. The custom diagnostic DIDs
+remain internal verification points; the current vehicle logger cannot request
+them and the hardware procedure does not depend on them.
+
+The current strict patcher accepts corrected map-switching stage-19 SHA-256
+`52568ec1006df01c2524afe505a4ed9c8b00aa15bf5ea2a946d74107bbd97b84`
+and produces corrected generic Map 1 RPM Hold SHA-256
+`6e74ae82d22e9d975c64e2002c8ad30dec0f33f8f72b5ecd9906aab7598d480b`.
+Those hashes are separate from this retained historical artifact.

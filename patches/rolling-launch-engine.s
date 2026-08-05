@@ -178,7 +178,7 @@ mov.b r0,@(0x1,r5)
 bra rl_abort_active
 nop
 rl_active_check_release:
-cmp/eq 0x0,r0
+cmp/eq 0x20,r0
 bf rl_abort_active
 mov #0x7,r0
 mov.b r0,@(0x1,r5)
@@ -259,7 +259,7 @@ tst r0,r0
 bt rl_cooldown_config_invalid
 mov.l @(rl_button_address,pc),r4
 mov.b @r4,r0
-tst r0,r0
+cmp/eq 0x20,r0
 bf rl_cooldown_reset_rearm
 mov.l @(rl_state_address,pc),r5
 mov.w @(0x8,r5),r0

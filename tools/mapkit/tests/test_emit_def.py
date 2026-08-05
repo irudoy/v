@@ -19,6 +19,7 @@ COMMON_TABLES = {
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
+    "Rolling Launch Enable Mask (Raw)": "Rolling Launch / Advanced",
 }
 
 SLOT_TABLES = {
@@ -34,6 +35,7 @@ SLOT_TABLES = {
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
+    "Rolling Launch Enable": "Rolling Launch / Map Enable",
 }
 
 

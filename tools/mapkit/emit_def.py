@@ -36,6 +36,7 @@
 # uv run --no-project --with neo4j python tools/mapkit/emit_def.py \
 #   [<rom>] [<romraider-out>] [<tunerpro-out>]
 import csv
+from dataclasses import dataclass
 import html
 import os
 import sys
@@ -50,11 +51,11 @@ DEFS = os.path.join(ROOT, "defs")
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 if __package__:
-    from . import map_switching, presentation, rom as romkit, tunerpro
+    from . import map_switching, presentation, rolling_launch, rom as romkit, tunerpro
     from tools import diagnostic_context
 else:
     sys.path.insert(0, os.path.dirname(HERE))
-    from mapkit import map_switching, presentation, rom as romkit, tunerpro
+    from mapkit import map_switching, presentation, rolling_launch, rom as romkit, tunerpro
     import diagnostic_context
 
 LEVELS = ("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
@@ -88,6 +89,7 @@ MASKED_VIEW_FIELDS = (
 )
 PRESENTATION_FIELDS = ("default_emit",)
 MAP_SWITCHING_FIELDS = ("enabled",)
+ROLLING_LAUNCH_FIELDS = ("enabled",)
 # Axis name derived from its semantics. Several maps can share an axis, so define its name
 # once here rather than per map; [axis.<addr>] in overrides handles a special case.
 AXIS_NAMES = {"rpm": "Engine Speed [RPM]", "load": "Engine Load",
@@ -695,19 +697,92 @@ def map_switching_enabled(overrides):
     return enabled
 
 
+def rolling_launch_enabled(overrides):
+    """Return whether the common definition includes Rolling Launch controls."""
+    config = overrides.get("rolling_launch")
+    if config is None:
+        return False
+    if not isinstance(config, dict):
+        sys.exit("rolling_launch must be a TOML table")
+    unknown = sorted(set(config) - set(ROLLING_LAUNCH_FIELDS))
+    if unknown:
+        sys.exit(
+            "rolling_launch contains unknown fields "
+            + ", ".join(unknown)
+        )
+    enabled = config.get("enabled", False)
+    if not isinstance(enabled, bool):
+        sys.exit("rolling_launch.enabled must be a boolean")
+    return enabled
+
+
+@dataclass(frozen=True)
+class AppliedDefinitionProjections:
+    maps: dict
+    overrides: dict
+    map_switching: object | None
+    rolling_launch: object | None
+
+    @property
+    def slot_table_count(self):
+        return self.map_switching.slot_table_count if self.map_switching else 0
+
+    @property
+    def slot_masked_view_count(self):
+        return (
+            self.map_switching.slot_masked_view_count
+            if self.map_switching else 0
+        )
+
+    @property
+    def slot_editor_view_count(self):
+        return (
+            self.map_switching.slot_editor_view_count
+            if self.map_switching else 0
+        )
+
+
 def apply_definition_projections(rom, maps, overrides):
     """Apply optional derived layouts inside the common ROM definition."""
-    if not map_switching_enabled(overrides):
+    switching_enabled = map_switching_enabled(overrides)
+    launch_enabled = rolling_launch_enabled(overrides)
+    if not switching_enabled and not launch_enabled:
         return maps, overrides, None
-    layout = map_switching.load_layout()
-    if layout.rom != rom:
-        sys.exit(
-            f"map-switching layout targets {layout.rom}, not {rom}"
+
+    launch_projection = None
+    if launch_enabled:
+        launch_layout = rolling_launch.load_layout()
+        if launch_layout.rom != rom:
+            sys.exit(
+                f"Rolling Launch layout targets {launch_layout.rom}, not {rom}"
+            )
+        launch_projection = rolling_launch.project_definition_model(
+            maps, overrides, launch_layout
         )
-    projection = map_switching.project_definition_model(
-        maps, overrides, layout
+        maps, overrides = launch_projection.maps, launch_projection.overrides
+
+    switching_projection = None
+    if switching_enabled:
+        switching_layout = map_switching.load_layout()
+        if switching_layout.rom != rom:
+            sys.exit(
+                f"map-switching layout targets {switching_layout.rom}, not {rom}"
+            )
+        switching_projection = map_switching.project_definition_model(
+            maps, overrides, switching_layout
+        )
+        maps, overrides = (
+            switching_projection.maps,
+            switching_projection.overrides,
+        )
+
+    projection = AppliedDefinitionProjections(
+        maps=maps,
+        overrides=overrides,
+        map_switching=switching_projection,
+        rolling_launch=launch_projection,
     )
-    return projection.maps, projection.overrides, projection
+    return maps, overrides, projection
 
 
 def emittable(m, axes, ovr=None):
@@ -766,7 +841,7 @@ def main():
 
     maps, axes = fetch(rom)
     catalog_map_count = len(maps)
-    maps, ovr, switching_projection = apply_definition_projections(
+    maps, ovr, definition_projection = apply_definition_projections(
         rom, maps, ovr
     )
     table_overrides = ovr.get("table", {})
@@ -870,9 +945,19 @@ def main():
     if dtc_entries:
         sources.append(f"defs/{rom}.dtc.csv (DTC)")
     sources.append(f"defs/{rom}.overrides.toml (presentation)")
-    if switching_projection is not None:
+    if (
+        definition_projection is not None
+        and definition_projection.map_switching is not None
+    ):
         sources.append(
             "patches/map-switching-layout.toml (common map-switching slots)"
+        )
+    if (
+        definition_projection is not None
+        and definition_projection.rolling_launch is not None
+    ):
+        sources.append(
+            "patches/rolling-launch-layout.toml (Rolling Launch controls)"
         )
     head = [comment([f"RomRaider definition for {rom}. Generated by tools/mapkit/emit_def.py from "
                      + ", ".join(sources) + ".",
@@ -954,12 +1039,26 @@ def main():
           f"projected model: {len(maps)} maps; visible: {len(emit)}; "
           f"hidden by presentation: {len(hidden)}; "
           f"rejected by interpretation gate: {len(skipped)}")
-    if switching_projection is not None:
+    if (
+        definition_projection is not None
+        and definition_projection.map_switching is not None
+    ):
         print(
             "  common map-switching definition: "
-            f"slot tables={switching_projection.slot_table_count}; "
-            f"slot masked views={switching_projection.slot_masked_view_count}; "
-            f"slot editor views={switching_projection.slot_editor_view_count}"
+            f"slot tables={definition_projection.slot_table_count}; "
+            f"slot masked views={definition_projection.slot_masked_view_count}; "
+            f"slot editor views={definition_projection.slot_editor_view_count}"
+        )
+    if (
+        definition_projection is not None
+        and definition_projection.rolling_launch is not None
+    ):
+        launch = definition_projection.rolling_launch
+        print(
+            "  Rolling Launch definition: "
+            f"configuration tables={launch.table_count}; "
+            f"per-map masked views={launch.masked_view_count}; "
+            f"editor views={launch.editor_view_count}"
         )
     for a, sem, why in skipped:
         print(f"    {hexa(a)} {sem}: {why}")

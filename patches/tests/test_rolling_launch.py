@@ -181,6 +181,22 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertEqual(state.phase, rl.Phase.IDLE)
         self.assertEqual(state.rearm_ticks, 0)
 
+        active_again = rl.step(state, self.inputs, self.calibration).state
+        self.assertEqual(active_again.phase, rl.Phase.ACTIVE)
+
+    def test_zero_code_does_not_advance_cooldown_rearm(self):
+        active = rl.step(
+            rl.RuntimeState(), self.inputs, self.calibration
+        ).state
+        released = dataclasses.replace(
+            self.inputs, button=rl.BUTTON_RELEASED
+        )
+        cooldown = rl.step(active, released, self.calibration).state
+        unknown = dataclasses.replace(self.inputs, button=0x00)
+        state = rl.step(cooldown, unknown, self.calibration).state
+        self.assertEqual(state.phase, rl.Phase.COOLDOWN)
+        self.assertEqual(state.rearm_ticks, 0)
+
     def test_corrupt_state_restores_map_1(self):
         state = dataclasses.replace(rl.RuntimeState(), phase=9)
         result = rl.step(state, self.inputs, self.calibration)

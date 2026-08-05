@@ -386,7 +386,16 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             "JK08A", self.maps, self.overrides
         )
         self.assertIsNotNone(projection)
+        self.assertIsNotNone(projection.map_switching)
+        self.assertIsNotNone(projection.rolling_launch)
         self.assertEqual(projection.slot_editor_view_count, 60)
+        self.assertIn("000d3f64", maps)
+        launch_views = [
+            view
+            for view in overrides["masked_view"]
+            if view["source"] == "000d3f64"
+        ]
+        self.assertEqual(len(launch_views), 5)
         self.assertEqual(maps, projection.maps)
         self.assertEqual(overrides, projection.overrides)
 
