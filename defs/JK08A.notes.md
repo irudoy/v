@@ -5071,11 +5071,12 @@ items.
 ## Next step
 
 The corrected revision-2 lookup chain through stage 14 has hardware status
-`PASS_EXACT`. The pending hardware gate is the five-image full-DFCO chain from
-that exact readback. Stages 15 through 17 install and activate complete per-slot
-DFCO handling while selector execution remains absent. Stage 18 activates the
-selector host as a boot-only gate and forbids a map-selection gesture. Stage 19
-activates CAN feedback and is the complete ten-family runtime endpoint.
+`PASS_EXACT`. The five-image full-DFCO chain from that exact readback has
+operator-reported hardware status `PASS` for stages 15 through 19 on
+2026-08-05. Stage 18 passed as a boot-only selector-host gate without a
+map-selection gesture. Stage 19 activates CAN feedback and is the complete
+ten-family runtime endpoint. No final readback accompanies the report, so the
+endpoint does not have status `PASS_EXACT`.
 
 The locked `10, 10` composition passes disassembly plus 17 selector, 76 adapter,
 14 startup/limiter, and nine feedback p-code cases. GNU `sh-elf-run` independently
@@ -5083,9 +5084,10 @@ assembles all eight payloads and executes the same 116 behavior cases. The
 file-writing patcher, checksum recalculation, overlay hash chain, and byte
 preservation checks pass their positive and negative tests.
 
-After stages 15 through 19 pass, the first functional target-vehicle test uses
-byte-identical maps. With the vehicle stationary and engine stopped, verify the
-steering-switch ladder, CAN 0x551 byte 5 state `2`, visible `10, 10` pulse timing,
+The next gate is the first functional target-vehicle test on the already
+installed stage 19 with byte-identical maps. With the vehicle stationary and
+engine stopped, verify the steering-switch ladder, CAN 0x551 byte 5 state `2`,
+visible `10, 10` pulse timing,
 and one through five indications without changing stock ASCD state. Then confirm
 reset Map 1, raw DID 0x130E bit 7, startup and critical-section timing, and
 unchanged engine behavior while selecting all five identical maps. A separate

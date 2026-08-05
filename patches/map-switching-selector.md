@@ -565,6 +565,13 @@ source SHA-256
 Their ordered manifest is
 `tmp/hardware-full-dfco/1JK08A-map-switching-safe-v3-full-dfco.sha256`.
 
+The 2026-08-05 hardware run completed stages 15 through 19 in order with
+operator-reported status `PASS` for every stage. No stage-19 readback or
+PCMFlash log accompanies that report, so neither stage 19 nor the complete
+chain has status `PASS_EXACT`. The complete ten-family runtime has passed its
+boot and identification gates; selector input, CAN feedback, reset behavior,
+and engine behavior remain separate functional gates.
+
 The production composition is
 `rom-images/23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin`.
 Its checksum-valid tuned input has SHA-256
@@ -1477,8 +1484,11 @@ verifies the recalculated output before writing it.
    the ASCD selector buttons. This stage is a boot-only selector-host gate; a
    completed selection would queue feedback that cannot drain while the CAN
    serializer remains stock. Then write stage 19, power cycle, confirm
-   identification, and obtain the complete readback before functional map
-   selection. Stage 19 adds CAN feedback and is the complete runtime endpoint.
+   identification, and optionally obtain a complete readback before functional
+   map selection. Stage 19 adds CAN feedback and is the complete runtime endpoint.
+   The 2026-08-05 run reports `PASS` for stages 15 through 19. A complete
+   readback remains optional evidence for upgrading the final endpoint to
+   `PASS_EXACT`; it is not required to begin the non-running functional test.
 8. Patch a checksum-valid compatible input with `apply_map_switching.py` and
    retain the reported input/output SHA-256 values and MD5 sidecar.
 9. Verify that Map 2 through Map 5 equal the input Map 1 in all ten families,

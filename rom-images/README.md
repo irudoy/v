@@ -251,7 +251,7 @@ tables in addition to the ignition, fuel, and limiter families.
 
 | File | Size | Source SHA-256 | Output SHA-256 | Status |
 |------|-----:|----------------|----------------|--------|
-| `23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin` | 1,048,576 | `1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471` | `0efb43e6cf1feba91bf0beb19120d8f54d996a72650868a5469a0d81ede98da6` | software-verified; hardware stages pending |
+| `23710-JK08A/mods/map-switching/1JK08A-20260726-immo-e2-pops-fuel-throttle-ofc-v2-map-switching-full-dfco-v3.bin` | 1,048,576 | `1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471` | `0efb43e6cf1feba91bf0beb19120d8f54d996a72650868a5469a0d81ede98da6` | software-verified; overlay stages 15-19 PASS; production file unflashed |
 
 All six checksum references pass. The GNU SH-2E and Ghidra p-code gates each
 execute 116 map-switching scenarios across all 11 implementation entries.

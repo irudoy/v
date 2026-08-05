@@ -12,7 +12,9 @@ checksum-valid tuned JK08A input.
 | Output MD5 | `693917aad583784b082f0cec77bad4cc` |
 | Checksum references | all six valid |
 | Software verification | PASS |
-| Hardware verification | pending stages 15 through 19 |
+| Hardware overlay chain | PASS for stages 15 through 19 on 2026-08-05 |
+| Functional map selection | pending |
+| Production-image write | not performed |
 
 The runtime switches ten calibration families per slot: DFCO Hold, Entry,
 Full Restore, and Intermediate Restore thresholds; two ignition trim tables;
@@ -47,6 +49,11 @@ feedback cannot drain while the serializer hook remains stock. Functional
 selection starts only after stage 19. Every file is one MiB, passes all six
 checksum references, has an MD5 sidecar, and is listed in the ordered manifest
 `1JK08A-map-switching-safe-v3-full-dfco.sha256` in the same directory.
+
+The 2026-08-05 hardware run reports `PASS` for every stage from 15 through 19.
+No final readback accompanies the report, so the endpoint is not classified as
+`PASS_EXACT`. The production file itself remains unflashed; its runtime is
+byte-identical to stage 19 outside the accepted `0x8080..0x80FF` line variant.
 
 The mandatory GNU SH-2E gate independently reproduces all eight Ghidra blobs,
 audits 414 instructions, executes 116 map-switching cases, and verifies the
