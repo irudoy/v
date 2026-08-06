@@ -14,7 +14,7 @@ byte_order = "big"
 free_rom_start = 0x000D2108
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D2108
-claimed_rom_end = 0x000D4000
+claimed_rom_end = 0x000D40C0
 
 [ram]
 reservation_start = 0xFFFF5D00
@@ -47,8 +47,10 @@ status_mask = 0x60
 lamp_on_value = 0x60
 lamp_off_value = 0x00
 phase_counts_address = 0x000D3848
-default_on_frames = 10
-default_off_frames = 10
+payload_on_frames = 10
+payload_off_frames = 10
+default_on_frames = 15
+default_off_frames = 15
 encoding_evidence = "homologous_community_aligned_with_exact_serializer"
 
 [[code_region]]
@@ -116,6 +118,12 @@ key = "cruise_feedback_engine"
 start = 0x000D3760
 end = 0x000D3860
 entry = 0x000D3760
+
+[[code_region]]
+key = "idle_ignition_adapter"
+start = 0x000D4000
+end = 0x000D4040
+entry = 0x000D4000
 
 [[assembly_unit]]
 key = "selector_host"
@@ -217,6 +225,18 @@ expected_sha256 = "925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f
 instruction_count = 84
 data_bytes = 10
 code_regions = ["cruise_feedback_engine"]
+
+[[assembly_unit]]
+key = "idle_ignition_adapter"
+source = "map-switching-idle-ignition-adapter.s"
+start = 0x000D4000
+end = 0x000D4040
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4f35"
+instruction_count = 17
+data_bytes = 24
+code_regions = ["idle_ignition_adapter"]
 
 [[anchor]]
 key = "startup_clear_start_stock"
@@ -337,6 +357,14 @@ stock = 0x000C5372
 replacement = 0x000D35E0
 purpose = "Call the stock CAN 0x551 serializer and then override only its cruise-status field while feedback is active."
 
+[[hook]]
+key = "idle_ignition_lookup"
+address = 0x0004B224
+width = 4
+stock = 0x00026370
+replacement = 0x000D4000
+purpose = "Route the shared implicit-axis calls in the timing-state accumulator through a base-selecting idle-ignition adapter."
+
 [[family]]
 key = "over_run_fuel_hold"
 group = "overrun"
@@ -420,6 +448,34 @@ adapter = "ignition_adapter"
 copy_alignment = 256
 copies = [0x000D2900, 0x000D2A00, 0x000D2B00, 0x000D2C00]
 pointer_table = 0x000D357C
+
+[[family]]
+key = "cold_idle_ignition_timing"
+group = "idle_ignition"
+name = "Cold Idle Ignition Timing (Candidate) (0x12196)"
+canonical_address = 0x00012196
+width = 8
+height = 1
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "idle_ignition_adapter"
+copy_alignment = 8
+copies = [0x000D4080, 0x000D4088, 0x000D4090, 0x000D4098]
+pointer_table = 0x000D4040
+
+[[family]]
+key = "idle_ignition_timing"
+group = "idle_ignition"
+name = "Idle Ignition Timing (Candidate) (0x1219E)"
+canonical_address = 0x0001219E
+width = 8
+height = 1
+storage_type = "uint8"
+access_kind = "adapter"
+adapter = "idle_ignition_adapter"
+copy_alignment = 8
+copies = [0x000D40A0, 0x000D40A8, 0x000D40B0, 0x000D40B8]
+pointer_table = 0x000D4054
 
 [[family]]
 key = "fuel_targets"

@@ -1,14 +1,15 @@
 // EmulateMapSwitchingAdapters.java - execute the assembled exact-JK08A lookup
 // adapters in Ghidra's SuperH p-code emulator.
 //
-// The test loads only the three raw assembly units and synthetic selector and
+// The test loads only the four raw assembly units and synthetic selector and
 // pointer-table state. It stops when each adapter reaches its exact stock
 // wrapper. It does not execute stock firmware, patch the current program, or
 // write a ROM.
 //
 // Usage (headless):
 //   -postScript EmulateMapSwitchingAdapters.java \
-//       <adapter-helper-blob> <lookup-adapters-blob> <full-dfco-adapter-blob>
+//       <adapter-helper-blob> <lookup-adapters-blob> <full-dfco-adapter-blob> \
+//       <idle-ignition-adapter-blob>
 //@category VQ
 import ghidra.app.script.GhidraScript;
 import ghidra.pcode.emu.PcodeEmulator;
@@ -32,6 +33,7 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
     static final long HELPER_BASE = 0x000D2270L;
     static final long ADAPTER_BASE = 0x000D2300L;
     static final long FULL_DFCO_ADAPTER_BASE = 0x000D2480L;
+    static final long IDLE_IGNITION_ADAPTER_BASE = 0x000D4000L;
     static final long SELECTOR_ADDRESS = 0xFFFF5D00L;
     static final String HELPER_SHA =
             "40cea0183a38d189808b7637ea47cb594d8cb56ee615efb246c714da5f499a34";
@@ -39,6 +41,8 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
             "a938e1334e7850a0c368c50e98dbbdf67bc2589524025659a31d5b5f328c0e6c";
     static final String FULL_DFCO_ADAPTER_SHA =
             "2a5a65671e077400b753cb7fabb15c0520ddd7e96be8234e44297b6cd7052ba7";
+    static final String IDLE_IGNITION_ADAPTER_SHA =
+            "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4f35";
 
     static class Vector {
         final String name;
@@ -137,6 +141,16 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
                 0x000D23C0L, 0x000261B8L, 0x0000B33AL, 0x000D3590L,
                 0x0000B33AL, 0x000D2D00L, 0x000D2E00L,
                 0x000D2F00L, 0x000D3000L),
+        new Vector(
+                "cold_idle_ignition_timing",
+                0x000D4000L, 0x00026370L, 0x00012196L, 0x000D4040L,
+                0x00012196L, 0x000D4080L, 0x000D4088L,
+                0x000D4090L, 0x000D4098L),
+        new Vector(
+                "idle_ignition_timing",
+                0x000D4000L, 0x00026370L, 0x0001219EL, 0x000D4054L,
+                0x0001219EL, 0x000D40A0L, 0x000D40A8L,
+                0x000D40B0L, 0x000D40B8L),
     };
 
     final PassThrough[] passThroughs = {
@@ -158,11 +172,15 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
         new PassThrough(
                 "fuel_targets_unknown",
                 0x000D23C0L, 0x000261B8L, 0x0000B33BL),
+        new PassThrough(
+                "idle_ignition_hidden",
+                0x000D4000L, 0x00026370L, 0x000121A6L),
     };
 
     byte[] helper;
     byte[] adapters;
     byte[] fullDfcoAdapter;
+    byte[] idleIgnitionAdapter;
     Language language;
     AddressSpace space;
     int cases;
@@ -171,10 +189,11 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
     @Override
     public void run() throws Exception {
         String[] args = getScriptArgs();
-        if (args.length != 3) {
+        if (args.length != 4) {
             throw new IllegalArgumentException(
                     "need: <adapter-helper-blob> <lookup-adapters-blob> "
-                    + "<full-dfco-adapter-blob>");
+                    + "<full-dfco-adapter-blob> "
+                    + "<idle-ignition-adapter-blob>");
         }
         language = currentProgram.getLanguage();
         String languageId = language.getLanguageID().toString();
@@ -190,6 +209,9 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
         fullDfcoAdapter = readLocked(
                 Path.of(args[2]), 0x60, FULL_DFCO_ADAPTER_SHA,
                 "full DFCO adapter");
+        idleIgnitionAdapter = readLocked(
+                Path.of(args[3]), 0x40, IDLE_IGNITION_ADAPTER_SHA,
+                "idle ignition adapter");
 
         for (Vector vector : vectors) {
             for (int index = 0; index < 5; index++) {
@@ -243,6 +265,9 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
         setMemory(shared, HELPER_BASE, helper);
         setMemory(shared, ADAPTER_BASE, adapters);
         setMemory(shared, FULL_DFCO_ADAPTER_BASE, fullDfcoAdapter);
+        setMemory(
+                shared, IDLE_IGNITION_ADAPTER_BASE,
+                idleIgnitionAdapter);
         for (Vector vector : vectors) {
             setMemory(
                     shared, vector.pointerTable, encodeLongs(vector.slotBases));

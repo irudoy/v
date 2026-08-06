@@ -1,8 +1,8 @@
 // EmulateMapSwitchingComposition.java - execute every exact-JK08A
 // map-switching p-code case from one deterministic in-memory composition.
 //
-// The fixture begins with the exact 1 MiB stock program, applies all eight
-// SHA-locked blobs, 14 hook literals, 40 calibration copies, and ten pointer
+// The fixture begins with the exact 1 MiB stock program, applies all nine
+// SHA-locked blobs, 15 hook literals, 48 calibration copies, and twelve pointer
 // tables, and verifies the same SHA-256 and write boundary as the Python
 // composer. Every test case receives a fresh emulator state loaded from those
 // complete bytes.
@@ -17,7 +17,8 @@
 //       <selector-host-blob> <adapter-helper-blob> <lookup-adapters-blob> \
 //       <full-dfco-adapter-blob> <startup-wrapper-blob> \
 //       <limiter-commit-blob> \
-//       <feedback-wrapper-blob> <feedback-engine-blob>
+//       <feedback-wrapper-blob> <feedback-engine-blob> \
+//       <idle-ignition-adapter-blob>
 //@category VQ
 import ghidra.app.script.GhidraScript;
 import ghidra.pcode.emu.PcodeEmulator;
@@ -42,7 +43,7 @@ import java.util.Set;
 public class EmulateMapSwitchingComposition extends GhidraScript {
 
     static final int ROM_SIZE = 0x00100000;
-    static final long RETURN_ADDRESS = 0x000D4000L;
+    static final long RETURN_ADDRESS = 0x000D4100L;
     static final long STACK_TOP = 0xFFFF7F00L;
     static final long ENTRY_SR = 0x000000A1L;
 
@@ -57,6 +58,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final long FEEDBACK_WRAPPER = 0x000D35E0L;
     static final long LIMITER_COMMIT = 0x000D3660L;
     static final long FEEDBACK_ENGINE = 0x000D3760L;
+    static final long IDLE_IGNITION_ADAPTER = 0x000D4000L;
 
     static final long STOCK_SELECTOR_HOST = 0x000D09D8L;
     static final long STOCK_INITIALIZER = 0x0002C648L;
@@ -84,7 +86,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "108613e626f883ecca7a5733b739edafaacaee663909bfb115a6e8dda0d64c19";
+            "b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -181,6 +183,9 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         new UnitSpec(
                 "cruise_feedback_engine", 7, 0x000D3760L, 0x100,
                 "925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f66f"),
+        new UnitSpec(
+                "idle_ignition_adapter", 8, 0x000D4000L, 0x40,
+                "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4f35"),
     };
 
     static final HookSpec[] HOOKS = {
@@ -226,6 +231,9 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         new HookSpec(
                 "cruise_feedback_serializer", 0x000C3FA4L,
                 0x000C5372L, 0x000D35E0L),
+        new HookSpec(
+                "idle_ignition_lookup", 0x0004B224L,
+                0x00026370L, 0x000D4000L),
     };
 
     static final FamilySpec[] FAMILIES = {
@@ -267,6 +275,20 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 new long[]{
                     0x000D2900L, 0x000D2A00L,
                     0x000D2B00L, 0x000D2C00L,
+                }),
+        new FamilySpec(
+                "cold_idle_ignition_timing", 0x00012196L, 8,
+                0x000D4040L,
+                new long[]{
+                    0x000D4080L, 0x000D4088L,
+                    0x000D4090L, 0x000D4098L,
+                }),
+        new FamilySpec(
+                "idle_ignition_timing", 0x0001219EL, 8,
+                0x000D4054L,
+                new long[]{
+                    0x000D40A0L, 0x000D40A8L,
+                    0x000D40B0L, 0x000D40B8L,
                 }),
         new FamilySpec(
                 "fuel_targets", 0x0000B33AL, 256, 0x000D3590L,
@@ -321,6 +343,12 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 FUEL_COMP_ADAPTER, 0x000261F0L),
         new AdapterSpec(
                 "fuel_targets", FUEL_TARGET_ADAPTER, 0x000261B8L),
+        new AdapterSpec(
+                "cold_idle_ignition_timing",
+                IDLE_IGNITION_ADAPTER, 0x00026370L),
+        new AdapterSpec(
+                "idle_ignition_timing",
+                IDLE_IGNITION_ADAPTER, 0x00026370L),
     };
 
     static final PassThrough[] PASS_THROUGHS = {
@@ -342,6 +370,9 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         new PassThrough(
                 "fuel_targets_unknown",
                 FUEL_TARGET_ADAPTER, 0x000261B8L, 0x0000B33BL),
+        new PassThrough(
+                "idle_ignition_hidden",
+                IDLE_IGNITION_ADAPTER, 0x00026370L, 0x000121A6L),
     };
 
     static final long[] CODE_ENTRIES = {
@@ -356,6 +387,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         FEEDBACK_WRAPPER,
         LIMITER_COMMIT,
         FEEDBACK_ENGINE,
+        IDLE_IGNITION_ADAPTER,
     };
 
     static final long[][] CHECKSUM_FIELDS = {
@@ -389,9 +421,9 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         String[] args = getScriptArgs();
         if (args.length != UNITS.length) {
             throw new IllegalArgumentException(
-                    "need eight blobs in manifest order: selector, helper, "
+                    "need nine blobs in manifest order: selector, helper, "
                     + "adapters, full DFCO, startup, limiter, feedback wrapper, "
-                    + "feedback engine");
+                    + "feedback engine, idle ignition adapter");
         }
         language = currentProgram.getLanguage();
         String languageId = language.getLanguageID().toString();
@@ -417,8 +449,8 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 + " fixture_sha256=%s cases=%d"
                 + " selector=%d adapters=%d limiter=%d feedback=%d"
                 + " feedback_invocations=%d instructions=%d"
-                + " entries=%d hooks=%d changed_bytes=5638"
-                + " permitted_write_bytes=6144",
+                + " entries=%d hooks=%d changed_bytes=5803"
+                + " permitted_write_bytes=6316",
                 languageId, COMPOSED_SHA, totalCases,
                 selectorCases, adapterCases, limiterCases, feedbackCases,
                 feedbackInvocations, totalInstructions,
@@ -473,6 +505,8 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     compositeRom, permitted, unit.start(), blob,
                     "assembly." + unit.key());
         }
+        compositeRom[(int) CONFIG_ADDRESS] = 15;
+        compositeRom[(int) CONFIG_ADDRESS + 1] = 15;
 
         int changed = 0;
         int permittedBytes = 0;
@@ -489,7 +523,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 changed++;
             }
         }
-        if (changed != 5638 || permittedBytes != 6144) {
+        if (changed != 5803 || permittedBytes != 6316) {
             throw new IllegalStateException(
                     "composition boundary differs: changed=" + changed
                     + " permitted=" + permittedBytes);
@@ -501,10 +535,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     + ", expected " + COMPOSED_SHA);
         }
         if (
-                compositeRom[(int) CONFIG_ADDRESS] != 10
-                || compositeRom[(int) CONFIG_ADDRESS + 1] != 10) {
+                compositeRom[(int) CONFIG_ADDRESS] != 15
+                || compositeRom[(int) CONFIG_ADDRESS + 1] != 15) {
             throw new IllegalStateException(
-                    "locked feedback frame counts are not 10/10");
+                    "locked feedback frame counts are not 15/15");
         }
         for (long[] field : CHECKSUM_FIELDS) {
             byte[] stock = slice(stockRom, field[0], (int) field[1]);
@@ -1190,7 +1224,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     void verifyTotals() {
         if (
                 selectorCases != 17
-                || adapterCases != 76
+                || adapterCases != 91
                 || limiterCases != 14
                 || feedbackCases != 9
                 || feedbackInvocations != 17) {
@@ -1203,10 +1237,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         }
         int totalInstructions = selectorInstructions + adapterInstructions
                 + limiterInstructions + feedbackInstructions;
-        if (totalInstructions != 5152) {
+        if (totalInstructions != 5409) {
             throw new IllegalStateException(
                     "instruction total is " + totalInstructions
-                    + ", expected 5152");
+                    + ", expected 5409");
         }
         List<String> missing = new ArrayList<>();
         for (long entry : CODE_ENTRIES) {

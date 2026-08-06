@@ -82,35 +82,39 @@ under `defs/`, separately from `reference/`:
 - The tracked common `JK08A.xml` and `JK08A.xdf` include the five-slot
   map-switching projection under the unchanged `JK08A` identity.
   `../patches/map-switching-layout.toml` owns the
-  ten-family ROM/RAM layout and the exact CAN 0x551 feedback boundary,
+  twelve-family ROM/RAM layout and the exact CAN 0x551 feedback boundary,
   `../patches/map-switching-adapter-helper.s` and
   `../patches/map-switching-adapters.s` implement the Ghidra-assembled
   fail-closed accessors for the legacy adapter families,
   `../patches/map-switching-full-dfco-adapter.s` implements the shared
   four-family DFCO accessor,
+  `../patches/map-switching-idle-ignition-adapter.s` implements the shared
+  two-family idle-ignition accessor,
   `../patches/map-switching-startup-wrapper.s` and
   `../patches/map-switching-limiter-commit.s` implement startup refresh and
   the SR-protected transaction for both direct limiter families,
-  `../tools/mapkit/map_switching.py` projects 50 slot tables and ten
+  `../tools/mapkit/map_switching.py` projects 60 slot tables and ten
   slot-specific masked ignition views. `../tools/mapkit/rolling_launch.py`
   projects the validated enable-mask byte at `0xD3F64` as one native RomRaider
   `BitwiseSwitch` with five checkboxes and as five native TunerPro `XDFFLAG`
   items. It projects the RPM-hysteresis word at `0xD3F70` as one calibration
   table. The raw mask byte is not exposed as a table. The common output
-  contains 81 calibration tables and 11 masked views. The
+  contains 89 calibration tables and 11 masked views. The
   `../tools/mapkit/validate_map_switching.py` renders the projection against
   the live graph and verifies both tracked common definition files.
-  The eight standalone assembly units pass 116 Ghidra p-code cases: 17 selector,
-  76 adapter, 14 startup/limiter, and nine feedback cases.
-  An independent machine-word audit covers all 418 instructions, including 40
-  delayed transfers with encoded `NOP` slots, 52 PC-relative references, 79
-  direct branch targets, and 21 indirect control transfers.
-  `../tools/ghidra/EmulateMapSwitchingComposition.java` repeats all 116 cases
-  over 5152 instructions from the complete locked fixture, reaches all eleven code
+  The nine standalone assembly units pass 131 Ghidra p-code cases: 17 selector,
+  91 adapter, 14 startup/limiter, and nine feedback cases.
+  An independent machine-word audit covers all 435 instructions, including 43
+  delayed transfers with encoded `NOP` slots, 59 PC-relative references, 81
+  direct branch targets, and 24 indirect control transfers.
+  `../tools/ghidra/EmulateMapSwitchingComposition.java` repeats all 131 cases
+  over 5409 instructions from the complete locked fixture, reaches all twelve code
   entries at final addresses, and verifies the same SHA-256 and write boundary
   as `../patches/map_switching_compose.py`. Feedback uses CAN 0x551 byte-5 mask
-  `0x60`, on value `0x60`, and off value `0x00` with locked `10, 10` on/off
-  frame counts; the V36 meter response remains a hardware validation gate.
+  `0x60`, on value `0x60`, and off value `0x00`. The hardware-tested payload
+  retains `10, 10` on/off frame counts. The current complete composition uses
+  `15, 15`; hardware confirms the correct V36 meter pulse count and identifies
+  the 10/10 timing as visually too fast.
   `../patches/apply_map_switching.py` accepts a checksum-valid
   JK08A input with lower-partition calibration/configuration changes, requires
   exact protected code and patch anchors, initializes Map 2 through Map 5 from

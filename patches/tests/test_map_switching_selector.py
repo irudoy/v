@@ -212,13 +212,13 @@ class MapSwitchingSelectorTest(unittest.TestCase):
                 ]
                 self.assertEqual(actual, list(expected_bases))
 
-    def test_accessor_exposes_all_eight_adapter_backed_families(self):
+    def test_accessor_exposes_all_ten_adapter_backed_families(self):
         adapter_families = [
             family
             for family in selector.LAYOUT.families
             if family.access_kind == "adapter"
         ]
-        self.assertEqual(len(adapter_families), 8)
+        self.assertEqual(len(adapter_families), 10)
         for family in adapter_families:
             with self.subTest(family=family.key):
                 self.assertEqual(

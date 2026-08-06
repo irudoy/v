@@ -586,6 +586,18 @@ def _expected_long_literals(layout):
         "fuel_targets_stock_wrapper":
             _hook_stock_for_adapter(layout, "fuel_targets_adapter"),
         "fuel_targets_pointers": family["fuel_targets"].pointer_table,
+        "cold_idle_ignition_base":
+            family["cold_idle_ignition_timing"].canonical_address,
+        "idle_ignition_base":
+            family["idle_ignition_timing"].canonical_address,
+        "idle_ignition_stock_wrapper":
+            _hook_stock_for_adapter(layout, "idle_ignition_adapter"),
+        "map_switching_selector":
+            code["adapter_select_helper"].entry,
+        "cold_idle_ignition_pointers":
+            family["cold_idle_ignition_timing"].pointer_table,
+        "idle_ignition_pointers":
+            family["idle_ignition_timing"].pointer_table,
         "fuel_cut_pointer_table": fuel_cut.pointer_table,
         "fuel_cut_shadow": fuel_cut.shadow_start,
         "fuel_cut_stock_tail":
@@ -619,7 +631,9 @@ def _long_literals(parsed):
     return literals
 
 
-def _validate_registers_and_control_flow(parsed, helper_entry):
+def _validate_registers_and_control_flow(
+    parsed, helper_entry, *, allowed_jump_registers=("r3",)
+):
     instructions = [
         item for item in parsed.statements if item.kind == "instruction"
     ]
@@ -656,10 +670,12 @@ def _validate_registers_and_control_flow(parsed, helper_entry):
                     "BRA delay slot is not NOP"
                 )
         elif mnemonic == "jmp":
-            if text != "jmp @r3":
+            if text not in {
+                f"jmp @{register}" for register in allowed_jump_registers
+            }:
                 raise ValueError(
                     f"{parsed.path}:{statement.line_number}: "
-                    "tail jump does not use r3"
+                    "tail jump uses an unapproved register"
                 )
             if index + 1 >= len(instructions) or (
                 instructions[index + 1].text.lower() != "nop"
@@ -898,8 +914,8 @@ def _validate_feedback_engine(parsed, layout):
     config_address = parsed.labels.get("feedback_phase_counts")
     statement = parsed.statement_by_address.get(config_address)
     expected = (
-        layout.feedback.default_on_frames << 8
-        | layout.feedback.default_off_frames
+        layout.feedback.payload_on_frames << 8
+        | layout.feedback.payload_off_frames
     )
     if (
         config_address != layout.feedback.phase_counts_address
@@ -954,10 +970,16 @@ def validate_assembly_sources(layout=None):
             "adapter_select_helper",
             "lookup_adapters",
             "full_dfco_adapter",
+            "idle_ignition_adapter",
         }:
             _validate_registers_and_control_flow(
                 parsed,
                 layout.code_region_by_key["adapter_select_helper"].entry,
+                allowed_jump_registers=(
+                    ("r0", "r3")
+                    if unit.key == "idle_ignition_adapter"
+                    else ("r3",)
+                ),
             )
         elif unit.key == "limiter_commit":
             _validate_limiter_commit(parsed)

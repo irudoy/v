@@ -183,7 +183,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `ghidra/AuditFreeRegion.java` | Verify that an inclusive ROM interval contains one fill byte value and no Ghidra instructions, defined data, function bodies, or inbound references. Arguments: `<lo> <hi> [fill]` | stdout with `status=PASS` or `status=FAIL`; a failed audit also raises a script error |
 | `ghidra/AssembleSh2.java` | Assemble a bounded label-aware SH source slice through Ghidra's stand-alone `AssemblyBuffer`, round-trip decode every 16-bit instruction, fill unused bytes, and refuse to overwrite a different output. Arguments: `<source> <output> <base> <end> [fill] [listing]` | raw blob and optional listing outside Git |
 | `ghidra/EmulateMapSwitchingSelector.java` | Execute the SHA-locked selector host with the limiter commit; verify state transitions, commits, aborts, feedback blocking, diagnostic mirroring, invalid-index recovery, and protected registers. Arguments: `<selector_blob> <commit_blob>` | stdout with `VQ_SELECTOR_EMU status=PASS` |
-| `ghidra/EmulateMapSwitchingAdapters.java` | Execute the three SHA-locked JK08A adapter blobs in Ghidra's SuperH p-code emulator; verify all ten five-slot families, invalid-index fallback, unrecognized-base pass-through, exact stock-wrapper destinations, and protected-register preservation. Arguments: `<helper_blob> <adapters_blob> <full_dfco_blob>` | stdout with `VQ_ADAPTER_EMU status=PASS` |
+| `ghidra/EmulateMapSwitchingAdapters.java` | Execute the four SHA-locked JK08A adapter blobs in Ghidra's SuperH p-code emulator; verify all twelve five-slot families, invalid-index fallback, unrecognized-base pass-through, exact stock-wrapper destinations, and protected-register preservation. Arguments: `<helper_blob> <adapters_blob> <full_dfco_blob> <idle_ignition_blob>` | stdout with `VQ_ADAPTER_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingLimiter.java` | Execute the SHA-locked startup and limiter-commit blobs using exact stock limiter containers, synthetic slot values, and RAM sentinels; verify normalized indices, complete shadows, publication, runtime scalar, SR restoration, return ABI, and write boundaries. Arguments: `<startup_blob> <commit_blob>` | stdout with `VQ_LIMITER_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingBoot.java` | Execute a complete patched ROM from the stock startup thunk through the injected wrapper, the full 1906-byte stock initializer body, the injected fuel-compensation adapter, the stock lookup wrapper, and the limiter commit. Unchanged direct callees of the initializer are deterministic return-zero stubs. The harness verifies stack and callee-saved registers, invalid-index normalization, both limiter shadows, and the stock runtime scalar. Argument: `<patched_rom>` | stdout with `VQ_BOOT_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingTrampoline.java` | Differentially execute the stock startup thunk through the successful marker readback and minimal startup-trampoline gate. Both runs execute the complete stock initializer with identical deterministic direct-callee stubs. The harness requires entry through `0xD22A0`, the tail jump to `0x2C648`, the original return address, identical complete RAM and register state, and the expected two-step p-code delta for three physical instructions including the jump delay slot. Arguments: `<baseline_rom> <gate_rom>` | stdout with `VQ_TRAMPOLINE_EMU status=PASS` |
@@ -192,7 +192,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `ghidra/EmulateMapSwitchingLookupGate.java` | Differentially execute exact lookup Overlay 06 and 07 through both calls in the complete DFCO cut caller, stock wrapper, interpolation kernel, and real epilogue for seven selector values. It checks adapter/helper coverage, return value, protected registers, SR, and complete RAM. Ghidra does not model the SH-2E branch-destination PC basis for a PC-relative load in a delayed branch slot, so `map_switching_assembly.py` separately requires an encoded `NOP` after every delayed transfer in every unit. Arguments: `<overlay_06> <overlay_07>` | stdout with `VQ_LOOKUP_GATE_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingReset.java` | Differentially execute a working ROM, generated map-switching ROM, and optional tuned ROM from the exact TRAPA handler through the real startup thunk and one complete scheduler-loop iteration. It checks that nine retained selector values all initialize map 1, plus thunk ABI, scheduler checkpoint state, exact limiter outputs, stack floor, and all RAM outside the declared reservation, selected runtime scalar, and stale stack frames below the restored SP. The live scheduler stack remains compared. Arguments: `<working_rom> <patched_rom> [tuned_rom]` | stdout with `VQ_RESET_EMU status=PASS` |
 | `ghidra/EmulateMapSwitchingFeedback.java` | Execute the SHA-locked CAN wrapper and pulse engine with a deterministic serializer stub; verify fail-closed configuration, pulse timing, payload preservation, protected registers, and stack balance. Arguments: `<wrapper_blob> <engine_blob>` | stdout with `VQ_FEEDBACK_EMU status=PASS` |
-| `ghidra/EmulateMapSwitchingComposition.java` | Build the exact one-MiB composition from the stock Ghidra program, eight SHA-locked blobs, 14 hooks, 40 copies, and ten pointer tables, then execute all 116 p-code cases from fresh complete-image states. It verifies the fixture hash, write boundary, checksum-field preservation, all eleven code entries, limiter SR restoration, and preservation of every non-T SR bit on caller-clobbered paths. Arguments: the eight blobs in manifest order | stdout with `VQ_COMPOSITION_EMU status=PASS` |
+| `ghidra/EmulateMapSwitchingComposition.java` | Build the exact one-MiB composition from the stock Ghidra program, nine SHA-locked blobs, 15 hooks, 48 copies, and twelve pointer tables, then execute all 131 p-code cases from fresh complete-image states. It verifies the fixture hash, write boundary, checksum-field preservation, all twelve code entries, limiter SR restoration, and preservation of every non-T SR bit on caller-clobbered paths. Arguments: the nine blobs in manifest order | stdout with `VQ_COMPOSITION_EMU status=PASS` |
 | `ghidra/DecompileFuncs.java` | C pseudocode for specified functions | `decomp_<addr>.c` |
 | `ghidra/ScanImmoAnchors.java` | Scan immo DTC constants P1610-P1615 and B2193, plus DTC-table clusters | `immo_anchors.csv`, `immo_tables.csv` |
 | `ghidra/FindTableRefs.java` | Identify users of a ROM address range or table base through direct and literal-pool references | `table_refs.csv` |
@@ -234,17 +234,17 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `sweep/agent_workflow.py` | Local CLI for building Analyze/Verify/Score batches, validating agent-produced result bundles, and assembling or revalidating provider-neutral agent-run archives | JSON outside git |
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
 | `mapkit/emit_def.py` | Project the graph, reviewed static diagnostic context, `defs/<rom>.dtc.csv` DTC registry, and the tuner-facing visibility and presentation policy in `defs/<rom>.overrides.toml` into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
-| `mapkit/map_switching.py` | Clone the ten canonical JK08A calibration families into the five slot addresses from `patches/map-switching-layout.toml`, preserving graph geometry, scaling, axes, masks, and global maps | imported by the common JK08A definition generator and validator |
+| `mapkit/map_switching.py` | Clone the twelve canonical JK08A calibration families into the five slot addresses from `patches/map-switching-layout.toml`, preserving graph geometry, scaling, axes, masks, and global maps | imported by the common JK08A definition generator and validator |
 | `mapkit/rolling_launch.py` | Project the validated Rolling Launch `enable_mask` byte at `0xD3F64` into one native RomRaider `BitwiseSwitch` with five checkboxes and five native TunerPro `XDFFLAG` items; project the RPM hysteresis word at `0xD3F70` as a table in 12.5 RPM units | imported by the common JK08A definition generator and validator |
 | `mapkit/validate_map_switching.py` | Validate the five-slot projection against the live graph and exact ROM, verify identical materialized calibration bytes, and require the tracked common `JK08A.xml` and `JK08A.xdf` to match the projection without a separate identity | stdout; no artifact writes |
 | `../patches/map_switching_assembly.py` | Cross-check implemented SH source labels, regions, literal pools, protected registers, control transfers, every delayed slot, and the explicit SH7058S SH-2E instruction subset against the authoritative map-switching layout; independently decode direct and indirect control transfers plus PC-relative effective addresses from SHA-locked machine words | stdout; no ROM write |
-| `../patches/map_switching_compose.py` | Apply all eight SHA-locked blobs, 14 hooks, 40 calibration copies, and ten pointer tables to exact stock by default or an explicitly validated compatible input through the library API; reject every change outside the declared composition write set | stdout; no output-file option |
+| `../patches/map_switching_compose.py` | Apply all nine SHA-locked blobs, 15 hooks, 48 calibration copies, and twelve pointer tables to exact stock by default or an explicitly validated compatible input through the library API; reject every change outside the declared composition write set | stdout; no output-file option |
 | `../patches/map-switching-payloads.toml` | Store the complete SHA-locked SH-2E assembly-unit spans as hexadecimal data for deterministic patcher use | tracked |
 | `../patches/rolling_launch.py` | Define the independent fail-closed Rolling Launch configuration, gate priority, `IDLE`/`ACTIVE`/`COOLDOWN` transitions, fuel-overlay actions, and retard-only ignition command rule | imported by tests and the composition validator; no ROM access |
 | `../patches/rolling_launch_layout.py` and `rolling-launch-layout.toml` | Lock the exact map-switching base endpoint, erased ROM allocation, dedicated RAM, periodic/selector/startup/ignition hooks, nine UDS DID pointers, default-disabled configuration, and final in-memory SHA-256 | stdout/library validation; no ROM write |
 | `../patches/rolling_launch_assembly.py` and `rolling-launch-payloads.toml` | Audit 755 SH7058S SH-2E instructions across three source units, including the APC fallback-mode gate, require 16-bit instruction forms, ABI/literal/delay-slot contracts, and decode every control transfer and PC-relative reference from the SHA-locked Ghidra bytes | stdout; no ROM write |
 | `../patches/rolling_launch_compose.py` | Extend only the exact complete map-switching composition with Rolling Launch code, configuration, four hooks, and nine DID pointers through a 1876-byte closed write set; keep the default map mask zero and all checksum fields unchanged | stdout; no output-file option |
-| `../patches/apply_rolling_launch.py` | Accept only the exact corrected checksum-valid complete ten-family map-switching stage-19 endpoint using target-vehicle release code `0x20`; install the SHA-locked Rolling Launch payload, four hooks, nine DIDs, and the Map 1-only RPM Hold test profile; recalculate all checksum domains and prove preservation outside the Rolling Launch and checksum write sets | derived ROM and `.md5`; non-overwriting |
+| `../patches/apply_rolling_launch.py` | Accept only the exact corrected checksum-valid complete twelve-family map-switching stage-20 endpoint using target-vehicle release code `0x20`; install the SHA-locked Rolling Launch payload, four hooks, nine DIDs, and the Map 1-only RPM Hold test profile; recalculate all checksum domains and prove preservation outside the Rolling Launch and checksum write sets | derived ROM and `.md5`; non-overwriting |
 | `../patches/jk08a_checksums.py` | Calculate, verify, and recalculate JK03A/JK08A SUM16 and runtime XOR+SUM domains in dependency order | imported by the patcher and tests |
 | `../patches/upgrade_map_switching_reset.py` | Upgrade only the complete pre-fix map-switching runtime with an exact protected upper partition outside declared map-switching and checksum storage: restore the stock fallback zero-fill anchor, install the fixed startup wrapper, recalculate checksums, and preserve every calibration byte | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/build_map_switching_marker.py` | Build the first incident-isolation gate from the SHA-locked known-working JK08A tuned ROM: zero-fill only the complete 128-byte line at `0xD2280`, retain all runtime hooks at stock values, recalculate checksums, and prove the exact write boundary | ROM plus MD5 sidecar; non-overwriting |
@@ -253,7 +253,7 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `../patches/build_map_switching_limiter.py` | Build the aggregate limiter endpoint from the SHA-locked successful selector-init readback: install the final startup wrapper, atomic limiter commit, two Map 1-equivalent limiter families, two pointer tables, and three direct shadow hooks; omit lookup adapters, selector host, and CAN feedback. This image is the equivalence target for overlay stage 05, not the first limiter hardware write | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/build_map_switching_limiter_overlays.py` | Decompose the aggregate limiter gate into five cumulative complete-ROM overlays: inactive payload and storage, startup commit, fuel hook, throttle-cluster hook, and throttle-scalar hook. Lock the exact source and every output SHA-256, recalculate all checksums per stage, prove each adjacent write boundary, and emit ordered outputs, MD5 sidecars, and a SHA-256 manifest | five ROMs, five MD5 sidecars, and ordered SHA-256 manifest; non-overwriting |
 | `../patches/build_map_switching_lookup_overlays.py` | Continue from the exact successful limiter Overlay 05 with nine cumulative complete-ROM overlays: inactive lookup code and Map 1-equivalent storage, followed by eight lookup hooks activated one at a time with the startup-time `0x2CF1C` literal last. Lock every output SHA-256, recalculate all checksums, retain selector host and CAN feedback as absent, and prove each adjacent write boundary | nine ROMs, nine MD5 sidecars, and ordered SHA-256 manifest; non-overwriting |
-| `../patches/build_map_switching_full_dfco_overlays.py` | Continue from the exact successful lookup Overlay 14 readback with five cumulative complete-ROM overlays. Stages 15 through 17 install and activate the four-family full-DFCO adapter and Map 1-equivalent storage. Stage 18 installs the corrected selector host using target-vehicle release code `0x20` as a boot-only gate with selection gestures forbidden. Stage 19 installs CAN feedback and equals the corrected complete ten-family runtime endpoint. Lock the source and every output SHA-256 value, recalculate all checksum domains, and prove each adjacent write boundary | five ROMs, five MD5 sidecars, and ordered SHA-256 manifest; non-overwriting |
+| `../patches/build_map_switching_full_dfco_overlays.py` | Continue from the exact successful lookup Overlay 14 readback with six cumulative complete-ROM overlays. Stages 15 through 17 install and activate the four-family full-DFCO adapter and Map 1-equivalent storage. Stage 18 installs the corrected selector host using target-vehicle release code `0x20` as a boot-only gate with selection gestures forbidden. Stage 19 installs the hardware-tested 10/10-frame CAN feedback runtime. Stage 20 adds the two idle-ignition families and changes feedback timing to 15/15 frames, producing the complete twelve-family endpoint. Lock the source and every output SHA-256 value, recalculate all checksum domains, and prove each adjacent write boundary | six ROMs, six MD5 sidecars, and ordered SHA-256 manifest; non-overwriting |
 | `../patches/apply_map_switching.py` | Validate a checksum-valid JK08A input against the exact identity, anchors, erased allocation, and protected upper ROM; initialize alternate maps from input Map 1, install the tracked runtime, recalculate checksums, prove input-byte preservation, and create a non-overwriting ROM plus MD5 sidecar | derived ROM and `.md5` |
 | `mapkit/presentation.py` | Normalize functional categories shared by the RomRaider and TunerPro projections without encoding confidence in the category name | imported by both renderers |
 | `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 36 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
@@ -381,18 +381,18 @@ failure:
 tools/sh-elf-run/run.sh --verbose
 ```
 
-It independently reproduces eight map-switching and three Rolling Launch locked
+It independently reproduces nine map-switching and three Rolling Launch locked
 payloads with GNU `sh-elf-as`, rebuilds both exact verification compositions,
-executes 116 map-switching and 98 Rolling Launch behavior cases, and requires the
+executes 131 map-switching and 98 Rolling Launch behavior cases, and requires the
 exact failed `AFAC D304` pair at `0xD2314` to stop with signal 4. The complete
 environment and the documented 31-bit simulator RAM relocation are in
 `sh-elf-run/README.md`.
 
-The same command independently composes full-DFCO Overlays 15 through 19 from
+The same command independently composes full-DFCO Overlays 15 through 20 from
 the GNU-assembled bytes. It requires 156 instruction placements in stages 15
-through 17, 324 in stage 18, and all 418 in stage 19. It locks every hardware
-output hash and proves that stage 19 equals the complete ten-family runtime
-endpoint before the chain is eligible for hardware testing.
+through 17, 324 in stage 18, 418 in stage 19, and all 435 in stage 20. It locks
+every output hash and proves that stage 20 equals the complete twelve-family
+runtime endpoint before the chain is eligible for hardware testing.
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
@@ -448,10 +448,16 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
     /private/tmp/jk08a-map-switching-feedback-engine.bin \
     D3760 D3860 FF \
     /private/tmp/jk08a-map-switching-feedback-engine.lst \
+  -postScript AssembleSh2.java \
+    patches/map-switching-idle-ignition-adapter.s \
+    /private/tmp/jk08a-map-switching-idle-ignition-adapter.bin \
+    D4000 D4040 FF \
+    /private/tmp/jk08a-map-switching-idle-ignition-adapter.lst \
   -postScript EmulateMapSwitchingAdapters.java \
     /private/tmp/jk08a-map-switching-adapter-helper.bin \
     /private/tmp/jk08a-map-switching-adapters.bin \
     /private/tmp/jk08a-map-switching-full-dfco-adapter.bin \
+    /private/tmp/jk08a-map-switching-idle-ignition-adapter.bin \
   -postScript EmulateMapSwitchingLimiter.java \
     /private/tmp/jk08a-map-switching-startup-wrapper.bin \
     /private/tmp/jk08a-map-switching-limiter-commit.bin \
@@ -470,6 +476,7 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
     /private/tmp/jk08a-map-switching-limiter-commit.bin \
     /private/tmp/jk08a-map-switching-feedback-wrapper.bin \
     /private/tmp/jk08a-map-switching-feedback-engine.bin \
+    /private/tmp/jk08a-map-switching-idle-ignition-adapter.bin \
   -postScript EmulateMapSwitchingBoot.java \
     PATCHED-ROM.bin \
   -postScript EmulateMapSwitchingLimiterGate.java \
@@ -487,7 +494,8 @@ python3 patches/map_switching_assembly.py \
   --blob startup_wrapper=/private/tmp/jk08a-map-switching-startup-wrapper.bin \
   --blob limiter_commit=/private/tmp/jk08a-map-switching-limiter-commit.bin \
   --blob cruise_feedback_wrapper=/private/tmp/jk08a-map-switching-feedback-wrapper.bin \
-  --blob cruise_feedback_engine=/private/tmp/jk08a-map-switching-feedback-engine.bin
+  --blob cruise_feedback_engine=/private/tmp/jk08a-map-switching-feedback-engine.bin \
+  --blob idle_ignition_adapter=/private/tmp/jk08a-map-switching-idle-ignition-adapter.bin
 python3 patches/map_switching_compose.py \
   --blob selector_host=/private/tmp/jk08a-map-switching-selector-host.bin \
   --blob adapter_select_helper=/private/tmp/jk08a-map-switching-adapter-helper.bin \
@@ -527,11 +535,11 @@ declared map-switching reservation, an explicitly selected tuned scalar, and
 stale stack frames below the restored SP; the live scheduler stack remains in
 the comparison.
 
-The eight locked outputs contain 418 instructions and 194 literal bytes.
-The isolated harness set and the complete-composition harness pass 116/116
-Ghidra p-code cases over 5152 executed instructions: 17 selector, 76 adapter,
+The nine locked outputs contain 435 instructions and 218 literal bytes.
+The isolated harness set and the complete-composition harness pass 131/131
+Ghidra p-code cases over 5409 executed instructions: 17 selector, 91 adapter,
 14 startup/limiter, and nine feedback cases. The composition run executes all
-eleven declared code entries against exact final addresses and real
+twelve declared code entries against exact final addresses and real
 copied calibration bytes. Only deterministic stock-callee stubs and, in
 feedback tests, the two documented frame-count bytes differ between a test
 state and the validated complete fixture. The limiter transaction restores the
@@ -541,8 +549,8 @@ bit except the caller-clobbered T bit.
 The global source and machine validator requires an encoded `NOP` after every
 delayed control transfer. This closes the hardware rule missed by p-code: on
 SH-2E, a PC-relative move in such a slot uses the branch destination plus two
-as its PC basis. Across the 418 final-runtime instructions it verifies 40
-delayed transfers, 52 PC-relative references, 79 direct branch targets, and 21
+as its PC basis. Across the 435 final-runtime instructions it verifies 43
+delayed transfers, 59 PC-relative references, 81 direct branch targets, and 24
 indirect control transfers. The two startup gate sources add 13 alternative
 instructions under the same checks. The fixed adapter blob has SHA-256
 `a938e1334e7850a0c368c50e98dbbdf67bc2589524025659a31d5b5f328c0e6c`.
@@ -559,10 +567,13 @@ anchor, while the startup wrapper publishes map 1 before the stock initializer
 and commits map 1 after it returns.
 
 The Fuel Cut transaction uses word copies because stock addresses `0x0934E`
-and `0x09356` are not longword-aligned. Feedback frame counts at `0xD3848` are
-locked to `10, 10`. The current command uses CAN 0x551 byte-5 mask `0x60`, on
-value `0x60`, and off value `0x00`; the V36 combination-meter response remains
-hardware-untested. The historical low-bit state `2` reaches the bus without
+and `0x09356` are not longword-aligned. The hardware-tested feedback payload
+retains `10, 10` frame counts, while the complete stage-20 composition overrides
+the bytes at `0xD3848` with `15, 15`. The current command uses CAN 0x551 byte-5
+mask `0x60`, on value `0x60`, and off value `0x00`. Hardware testing confirms
+that the V36 combination meter shows the selected map with the correct pulse
+count; the 10/10 timing is visually too fast. The historical low-bit state `2`
+reaches the bus without
 changing the requested indicator. Ghidra uses the
 `SuperH:BE:32:SH-2A` language, while
 the source validator permits only an explicit 29-mnemonic subset listed for the
@@ -571,14 +582,14 @@ the assembly or verification path. Generated raw blobs and listings are
 regenerable temporary artifacts, while their complete validated spans are
 tracked in `map-switching-payloads.toml`. The in-memory composer produces
 deterministic fixture SHA-256
-`108613e626f883ecca7a5733b739edafaacaee663909bfb115a6e8dda0d64c19`,
-with 5638 changed bytes inside a 6144-byte declared write set. It retains
-feedback counts `10, 10`, verifies 418 final instruction placements and eleven
+`b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56`,
+with 5803 changed bytes inside a 6316-byte declared write set. It installs
+feedback counts `15, 15`, verifies 435 final instruction placements and twelve
 code entries, does not recalculate checksum fields, reports `flashable=false`,
 and cannot write a ROM file. `apply_map_switching.py` is the separate file
 output boundary: it accepts compatible lower-partition calibration changes,
 uses the tracked payloads, recalculates all checksum domains, permits changes
-only within the 6144 composition bytes and 20 checksum-reference bytes, and
+only within the 6316 composition bytes and 20 checksum-reference bytes, and
 creates an MD5 sidecar.
 
 `upgrade_map_switching_reset.py` accepts only a complete pre-fix map-switching
@@ -651,10 +662,12 @@ Stage 15 installs the inactive four-family DFCO adapter, Map 1-equivalent Hold
 and Intermediate Restore copies, and their pointer tables. Stages 16 and 17
 activate shared literals `0x4FDD0` and `0x50258` independently. Stage 18
 installs the selector host as a boot-only gate with map-selection gestures
-forbidden. Stage 19 installs CAN feedback and equals the complete ten-family
-runtime endpoint. The five exact output SHA-256 values are locked, every image
-passes all six checksum references, and the adjacent permitted sets are 284,
-24, 24, 384, and 408 bytes including checksum-reference fields.
+forbidden. Stage 19 installs the hardware-tested CAN feedback runtime with
+10/10-frame timing. Stage 20 installs the shared idle-ignition adapter, two
+five-slot calibration families, and 15/15-frame timing, and equals the complete
+twelve-family runtime endpoint. The six exact output SHA-256 values are locked,
+every image passes all six checksum references, and the adjacent permitted sets
+are 284, 24, 24, 384, 408, and 194 bytes including checksum-reference fields.
 
 ### RomRaider and TunerPro: NATS and DTC controls
 

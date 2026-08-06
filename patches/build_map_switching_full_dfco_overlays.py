@@ -7,9 +7,10 @@ readback. Stage 15 installs the inactive four-family DFCO adapter and Map
 1-equivalent Hold and Intermediate Restore storage. Stages 16 and 17 activate
 the shared cut and restore hooks independently. Stage 18 installs the selector
 host while keeping the CAN serializer stock; no selection gesture is permitted
-because queued feedback could not drain. Stage 19 installs the CAN feedback
-runtime and produces the complete ten-family endpoint. The selector uses the
-target-vehicle 0x20 released-button code.
+because queued feedback could not drain. Stage 19 installs the hardware-tested
+CAN feedback runtime and retains its 10/10 frame timing. Stage 20 adds the two
+idle-ignition families and changes the feedback timing to the current 15/15
+default. The selector uses the target-vehicle 0x20 released-button code.
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ from patches import apply_map_switching as runtime
 from patches import build_map_switching_limiter as limiter_gate
 from patches import build_map_switching_lookup_overlays as lookup_overlays
 from patches import jk08a_checksums as checksums
+from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
 
 
@@ -41,6 +43,7 @@ EXPECTED_OUTPUT_SHA256 = (
     "e89bd22402e416c9178286b554b1d1d054586c49096574d1c88d9bd5e96f9e0d",
     "f42f2ec56b590c7e82b17a343dc966c7c27c1981dde528815020e7d974d30b8c",
     "bcc34d531530e86b74de362df0db6c3c59597fa8095baaa056f6e4ba82ab7386",
+    "8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d",
 )
 HISTORICAL_OUTPUT_SHA256 = (
     "5b7816f7be70e12f1312dbff9727df9a5677192811515ce8f6b66d1793bea7f2",
@@ -79,6 +82,12 @@ FEEDBACK_UNIT_KEYS = (
     "cruise_feedback_engine",
 )
 FEEDBACK_HOOK_KEYS = ("cruise_feedback_serializer",)
+IDLE_IGNITION_UNIT_KEYS = ("idle_ignition_adapter",)
+IDLE_IGNITION_FAMILY_KEYS = (
+    "cold_idle_ignition_timing",
+    "idle_ignition_timing",
+)
+IDLE_IGNITION_HOOK_KEYS = ("idle_ignition_lookup",)
 
 
 class FullDfcoOverlayError(ValueError):
@@ -97,6 +106,7 @@ class OverlaySpec:
     active_hook_keys: frozenset[str]
     full_dfco_hook_keys: frozenset[str]
     functional_selection_allowed: bool
+    default_feedback_counts: bool
 
 
 OVERLAY_SPECS = (
@@ -111,6 +121,7 @@ OVERLAY_SPECS = (
         active_hook_keys=BASE_HOOK_KEYS,
         full_dfco_hook_keys=frozenset(),
         functional_selection_allowed=False,
+        default_feedback_counts=False,
     ),
     OverlaySpec(
         sequence=16,
@@ -123,6 +134,7 @@ OVERLAY_SPECS = (
         active_hook_keys=BASE_HOOK_KEYS,
         full_dfco_hook_keys=frozenset(FULL_DFCO_HOOK_KEYS[:1]),
         functional_selection_allowed=False,
+        default_feedback_counts=False,
     ),
     OverlaySpec(
         sequence=17,
@@ -135,6 +147,7 @@ OVERLAY_SPECS = (
         active_hook_keys=BASE_HOOK_KEYS,
         full_dfco_hook_keys=frozenset(FULL_DFCO_HOOK_KEYS),
         functional_selection_allowed=False,
+        default_feedback_counts=False,
     ),
     OverlaySpec(
         sequence=18,
@@ -151,6 +164,7 @@ OVERLAY_SPECS = (
         active_hook_keys=BASE_HOOK_KEYS | set(SELECTOR_HOOK_KEYS),
         full_dfco_hook_keys=frozenset(FULL_DFCO_HOOK_KEYS),
         functional_selection_allowed=False,
+        default_feedback_counts=False,
     ),
     OverlaySpec(
         sequence=19,
@@ -172,6 +186,31 @@ OVERLAY_SPECS = (
         ),
         full_dfco_hook_keys=frozenset(FULL_DFCO_HOOK_KEYS),
         functional_selection_allowed=True,
+        default_feedback_counts=False,
+    ),
+    OverlaySpec(
+        sequence=20,
+        key="idle_ignition_and_feedback_timing",
+        filename_suffix="idle-ignition-feedback-15x15",
+        unit_keys=IDLE_IGNITION_UNIT_KEYS,
+        hook_keys=IDLE_IGNITION_HOOK_KEYS,
+        storage_family_keys=IDLE_IGNITION_FAMILY_KEYS,
+        active_unit_keys=(
+            BASE_UNIT_KEYS
+            | set(FULL_DFCO_UNIT_KEYS)
+            | set(SELECTOR_UNIT_KEYS)
+            | set(FEEDBACK_UNIT_KEYS)
+            | set(IDLE_IGNITION_UNIT_KEYS)
+        ),
+        active_hook_keys=(
+            BASE_HOOK_KEYS
+            | set(SELECTOR_HOOK_KEYS)
+            | set(FEEDBACK_HOOK_KEYS)
+            | set(IDLE_IGNITION_HOOK_KEYS)
+        ),
+        full_dfco_hook_keys=frozenset(FULL_DFCO_HOOK_KEYS),
+        functional_selection_allowed=True,
+        default_feedback_counts=True,
     ),
 )
 
@@ -197,7 +236,7 @@ def default_output_prefix(source):
         stem = stem[: -len("_readback")]
     if stem.endswith(SOURCE_STEM_SUFFIX):
         stem = stem[: -len(SOURCE_STEM_SUFFIX)]
-    return source.with_name(f"{stem}-map-switching-safe-v4")
+    return source.with_name(f"{stem}-map-switching-safe-v5")
 
 
 def output_paths(prefix):
@@ -267,15 +306,25 @@ def _family_storage_offsets(layout, keys):
 
 
 def _component_offsets(layout, spec):
-    return (
+    offsets = (
         _unit_offsets(layout, spec.unit_keys)
         | _hook_offsets(layout, spec.hook_keys)
         | _family_storage_offsets(layout, spec.storage_family_keys)
     )
+    if spec.default_feedback_counts:
+        start = layout.feedback.phase_counts_address
+        offsets.update(range(start, start + 2))
+    return offsets
 
 
 def _require_unit_state(
-    layout, data, payloads, active_unit_keys, context
+    layout,
+    data,
+    payloads,
+    active_unit_keys,
+    context,
+    *,
+    default_feedback_counts=False,
 ):
     active_unit_keys = set(active_unit_keys)
     known = set(layout.assembly_unit_by_key)
@@ -285,11 +334,14 @@ def _require_unit_state(
         )
     for unit in layout.assembly_units:
         actual = data[unit.span.start : unit.span.end]
-        expected = (
-            payloads[unit.key]
-            if unit.key in active_unit_keys
-            else bytes([unit.fill]) * unit.span.size
-        )
+        if unit.key not in active_unit_keys:
+            expected = bytes([unit.fill]) * unit.span.size
+        elif default_feedback_counts:
+            expected = composer.endpoint_unit_bytes(
+                layout, payloads, unit
+            )
+        else:
+            expected = payloads[unit.key]
         if actual != expected:
             raise FullDfcoOverlayError(
                 f"{context}: assembly unit {unit.key} differs"
@@ -339,8 +391,9 @@ def _full_dfco_families(layout):
     return tuple(layout.family_by_key[key] for key in FULL_DFCO_FAMILY_KEYS)
 
 
-def _materialize_full_dfco_storage(layout, source, patched):
-    for family in _full_dfco_families(layout):
+def _materialize_family_storage(layout, source, patched, family_keys):
+    for key in family_keys:
+        family = layout.family_by_key[key]
         map_1 = source[
             family.canonical_address :
             family.canonical_address + family.byte_length
@@ -355,8 +408,17 @@ def _materialize_full_dfco_storage(layout, source, patched):
         patched[start : start + len(pointers)] = pointers
 
 
-def _require_full_dfco_storage(layout, source, data, context):
-    for family in _full_dfco_families(layout):
+def _materialize_full_dfco_storage(layout, source, patched):
+    _materialize_family_storage(
+        layout, source, patched, FULL_DFCO_FAMILY_KEYS
+    )
+
+
+def _require_family_storage(
+    layout, source, data, context, family_keys
+):
+    for key in family_keys:
+        family = layout.family_by_key[key]
         map_1 = source[
             family.canonical_address :
             family.canonical_address + family.byte_length
@@ -379,8 +441,20 @@ def _require_full_dfco_storage(layout, source, data, context):
             )
 
 
+def _require_full_dfco_storage(layout, source, data, context):
+    _require_family_storage(
+        layout, source, data, context, FULL_DFCO_FAMILY_KEYS
+    )
+
+
 def _require_storage(
-    layout, source, data, context, *, require_full_dfco
+    layout,
+    source,
+    data,
+    context,
+    *,
+    require_full_dfco,
+    require_idle_ignition=False,
 ):
     try:
         limiter_gate._require_limiter_storage(layout, source, data)
@@ -394,6 +468,14 @@ def _require_storage(
         raise FullDfcoOverlayError(str(error)) from error
     if require_full_dfco:
         _require_full_dfco_storage(layout, source, data, context)
+    if require_idle_ignition:
+        _require_family_storage(
+            layout,
+            source,
+            data,
+            context,
+            IDLE_IGNITION_FAMILY_KEYS,
+        )
 
 
 def _require_source_contract(layout, source, payloads, source_name):
@@ -445,7 +527,12 @@ def _apply_component(layout, current, payloads, spec):
             hook.replacement.to_bytes(hook.width, layout.byte_order)
         )
     if spec.storage_family_keys:
-        _materialize_full_dfco_storage(layout, current, patched)
+        _materialize_family_storage(
+            layout, current, patched, spec.storage_family_keys
+        )
+    if spec.default_feedback_counts:
+        start = layout.feedback.phase_counts_address
+        patched[start : start + 2] = layout.feedback.counts_bytes()
     return bytes(checksums.recalculate(patched))
 
 
@@ -474,7 +561,12 @@ def _require_stage_contract(
             f"{context}: reset-selector line differs"
         )
     _require_unit_state(
-        layout, data, payloads, spec.active_unit_keys, context
+        layout,
+        data,
+        payloads,
+        spec.active_unit_keys,
+        context,
+        default_feedback_counts=spec.default_feedback_counts,
     )
     _require_hook_state(
         layout,
@@ -489,6 +581,7 @@ def _require_stage_contract(
         data,
         context,
         require_full_dfco=True,
+        require_idle_ignition=spec.sequence >= 20,
     )
 
     changed_from_source = {
@@ -513,19 +606,26 @@ def _build_final_endpoint(layout, source, payloads):
         *FULL_DFCO_UNIT_KEYS,
         *SELECTOR_UNIT_KEYS,
         *FEEDBACK_UNIT_KEYS,
+        *IDLE_IGNITION_UNIT_KEYS,
     ):
         unit = layout.assembly_unit_by_key[key]
         patched[unit.span.start : unit.span.end] = payloads[key]
     _materialize_full_dfco_storage(layout, source, patched)
+    _materialize_family_storage(
+        layout, source, patched, IDLE_IGNITION_FAMILY_KEYS
+    )
     for key in (
         *FULL_DFCO_HOOK_KEYS,
         *SELECTOR_HOOK_KEYS,
         *FEEDBACK_HOOK_KEYS,
+        *IDLE_IGNITION_HOOK_KEYS,
     ):
         hook = _hook_by_key(layout, key)
         patched[hook.address : hook.address + hook.width] = (
             hook.replacement.to_bytes(hook.width, layout.byte_order)
         )
+    start = layout.feedback.phase_counts_address
+    patched[start : start + 2] = layout.feedback.counts_bytes()
     return bytes(checksums.recalculate(patched))
 
 

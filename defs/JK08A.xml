@@ -1230,55 +1230,6 @@
       </table>
     </table>
 
-    <!-- 0x12196  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
-         accessor 0x4AFDC; r4 operand: pool
-         scaling x-128 Ignition timing (deg) [candidate]
-         The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
-         while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
-         enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
-         homology identifies the table as the Cold Idle Ignition Timing candidate with one
-         degree per centered raw count; code proves the x-128 signed addend but not a direct
-         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
-         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
-         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
-         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
-         ffff1511, write of derived x-128 at site 0004b0d0).
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Cold Idle Ignition Timing (Candidate) (0x12196)"
-           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
-           storageaddress="0x12196" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
-        <data>0</data><data>400</data><data>800</data><data>1200</data>
-        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
-      </table>
-    </table>
-
-    <!-- 0x1219E  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
-         accessor 0x4AFDC; r4 operand: pool
-         scaling x-128 Ignition timing (deg) [candidate]
-         static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
-         writes]
-         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
-         per centered raw count. The available code trace proves the x-128 signed addend and its
-         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
-         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
-         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
-         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0).
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Idle Ignition Timing (Candidate) (0x1219E)"
-           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
-           storageaddress="0x1219E" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
-        <data>0</data><data>400</data><data>800</data><data>1200</data>
-        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
-      </table>
-    </table>
-
     <!-- 0x085D9  2 uint8  map [code]
          accessor 0x4F324; r4 operand: manual
          scaling x*50 RPM [code]
@@ -1625,6 +1576,59 @@
       </table>
     </table>
 
+    <!-- 0x12196  8 uint8  common-definition Map 1 storage projected from 0x12196 [code]
+         Map 1 uses canonical stock storage
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
+         while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
+         enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
+         homology identifies the table as the Cold Idle Ignition Timing candidate with one
+         degree per centered raw count; code proves the x-128 signed addend but not a direct
+         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
+         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
+         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
+         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
+         ffff1511, write of derived x-128 at site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 1 - Cold Idle Ignition Timing (Candidate) (0x12196)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0x12196" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0x1219E  8 uint8  common-definition Map 1 storage projected from 0x1219E [code]
+         Map 1 uses canonical stock storage
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
+         writes]
+         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
+         per centered raw count. The available code trace proves the x-128 signed addend and its
+         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
+         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
+         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
+         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 1 - Idle Ignition Timing (Candidate) (0x1219E)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0x1219E" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
     <!-- 0x0934E  2x2 uint16  common-definition Map 1 storage projected from 0x0934E [code]
          Map 1 uses canonical stock storage
          canonical accessor 0x4F282; r4 operand: manual
@@ -1929,6 +1933,61 @@
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0xD4080  8 uint8  common-definition Map 2 storage projected from 0x12196 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
+         while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
+         enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
+         homology identifies the table as the Cold Idle Ignition Timing candidate with one
+         degree per centered raw count; code proves the x-128 signed addend but not a direct
+         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
+         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
+         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
+         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
+         ffff1511, write of derived x-128 at site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 2 - Cold Idle Ignition Timing (Candidate) (0x12196)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0xD4080" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0xD40A0  8 uint8  common-definition Map 2 storage projected from 0x1219E [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
+         writes]
+         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
+         per centered raw count. The available code trace proves the x-128 signed addend and its
+         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
+         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
+         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
+         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 2 - Idle Ignition Timing (Candidate) (0x1219E)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0xD40A0" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
     </table>
 
@@ -2241,6 +2300,61 @@
       </table>
     </table>
 
+    <!-- 0xD4088  8 uint8  common-definition Map 3 storage projected from 0x12196 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
+         while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
+         enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
+         homology identifies the table as the Cold Idle Ignition Timing candidate with one
+         degree per centered raw count; code proves the x-128 signed addend but not a direct
+         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
+         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
+         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
+         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
+         ffff1511, write of derived x-128 at site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 3 - Cold Idle Ignition Timing (Candidate) (0x12196)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0xD4088" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0xD40A8  8 uint8  common-definition Map 3 storage projected from 0x1219E [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
+         writes]
+         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
+         per centered raw count. The available code trace proves the x-128 signed addend and its
+         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
+         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
+         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
+         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 3 - Idle Ignition Timing (Candidate) (0x1219E)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0xD40A8" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
     <!-- 0xD3508  2x2 uint16  common-definition Map 3 storage projected from 0x0934E [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -2550,6 +2664,61 @@
       </table>
     </table>
 
+    <!-- 0xD4090  8 uint8  common-definition Map 4 storage projected from 0x12196 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
+         while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
+         enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
+         homology identifies the table as the Cold Idle Ignition Timing candidate with one
+         degree per centered raw count; code proves the x-128 signed addend but not a direct
+         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
+         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
+         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
+         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
+         ffff1511, write of derived x-128 at site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 4 - Cold Idle Ignition Timing (Candidate) (0x12196)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0xD4090" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0xD40B0  8 uint8  common-definition Map 4 storage projected from 0x1219E [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
+         writes]
+         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
+         per centered raw count. The available code trace proves the x-128 signed addend and its
+         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
+         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
+         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
+         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 4 - Idle Ignition Timing (Candidate) (0x1219E)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0xD40B0" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
     <!-- 0xD3510  2x2 uint16  common-definition Map 4 storage projected from 0x0934E [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -2856,6 +3025,61 @@
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x11ECE" sizey="16" endian="big">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0xD4098  8 uint8  common-definition Map 5 storage projected from 0x12196 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
+         while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
+         enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
+         homology identifies the table as the Cold Idle Ignition Timing candidate with one
+         degree per centered raw count; code proves the x-128 signed addend but not a direct
+         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
+         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
+         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
+         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
+         ffff1511, write of derived x-128 at site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 5 - Cold Idle Ignition Timing (Candidate) (0x12196)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0xD4098" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0xD40B8  8 uint8  common-definition Map 5 storage projected from 0x1219E [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x4AFDC; r4 operand: pool
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Ignition timing (deg) [candidate]
+         static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
+         writes]
+         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
+         per centered raw count. The available code trace proves the x-128 signed addend and its
+         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
+         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
+         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
+         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 5 - Idle Ignition Timing (Candidate) (0x1219E)"
+           category="Idle Speed Control / Ignition Timing" storagetype="uint8"
+           storageaddress="0xD40B8" sizex="8" endian="big">
+      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
+               format="0" fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
     </table>
 

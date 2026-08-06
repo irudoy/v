@@ -111,7 +111,7 @@ mov #0x5,r1
 
         count = VERIFIER.install_stock_return_stubs(fixture, layout)
 
-        self.assertEqual(count, 7)
+        self.assertEqual(count, 8)
         targets = {
             hook.stock
             for hook in layout.hooks
@@ -127,6 +127,7 @@ mov #0x5,r1
                 "fuel_compensation_lookup_2c648",
                 "fuel_compensation_lookup_3be3c",
                 "fuel_targets_lookup",
+                "idle_ignition_lookup",
                 "cruise_feedback_serializer",
             }
         }
@@ -155,19 +156,38 @@ mov #0x5,r1
 
         self.assertEqual(
             tuple(result.spec.sequence for result in results),
-            (15, 16, 17, 18, 19),
+            (15, 16, 17, 18, 19, 20),
         )
         self.assertFalse(
             any(
                 result.spec.functional_selection_allowed
-                for result in results[:-1]
+                for result in results[:4]
             )
         )
-        self.assertTrue(results[-1].spec.functional_selection_allowed)
+        self.assertTrue(
+            all(
+                result.spec.functional_selection_allowed
+                for result in results[4:]
+            )
+        )
         self.assertIn("VQ_SH_ELF_OVERLAYS status=PASS", marker)
         self.assertIn("stage15_instructions=156", marker)
         self.assertIn("stage18_instructions=324", marker)
         self.assertIn("stage19_instructions=418", marker)
+        self.assertIn("stage20_instructions=435", marker)
+
+    def test_runner_pins_docker_desktop_without_changing_user_context(self):
+        source = (
+            ROOT / "tools/sh-elf-run/run.sh"
+        ).read_text(encoding="utf-8")
+        context = source.index("DOCKER_CONTEXT=desktop-linux")
+        export = source.index("export DOCKER_CONTEXT")
+        unset = source.index("unset DOCKER_HOST")
+        first_docker = source.index("docker build")
+        self.assertLess(context, export)
+        self.assertLess(export, unset)
+        self.assertLess(unset, first_docker)
+        self.assertNotIn("docker context use", source)
 
     def test_rolling_launch_composition_lock_matches_verifier(self):
         layout = rolling_launch_layout.load_layout()

@@ -37,7 +37,7 @@ def calibration(family):
         axis_x = []
         axis_y = []
         steps = []
-    elif family.group == "overrun":
+    elif family.group in {"overrun", "idle_ignition"}:
         access_family = "implicit"
         axis_x = []
         axis_y = []
@@ -110,12 +110,12 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             self.maps, self.overrides, self.layout
         )
 
-    def test_projection_contains_fifty_tables_and_sixty_slot_views(self):
+    def test_projection_contains_sixty_tables_and_seventy_slot_views(self):
         projection = self.project()
-        self.assertEqual(projection.slot_table_count, 50)
+        self.assertEqual(projection.slot_table_count, 60)
         self.assertEqual(projection.slot_masked_view_count, 10)
-        self.assertEqual(projection.slot_editor_view_count, 60)
-        self.assertEqual(len(projection.switchable_addresses), 50)
+        self.assertEqual(projection.slot_editor_view_count, 70)
+        self.assertEqual(len(projection.switchable_addresses), 60)
 
     def test_projection_uses_manifest_addresses_names_and_categories(self):
         projection = self.project()
@@ -371,7 +371,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             [],
             [],
         )
-        self.assertEqual(stats["calibration_tables"], 51)
+        self.assertEqual(stats["calibration_tables"], 61)
         self.assertEqual(stats["masked_views"], 11)
         self.assertIn("<title>Map 5 - Fuel Targets</title>", xdf)
         self.assertIn('mmedaddress="0xD3000"', xdf)
@@ -388,7 +388,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         self.assertIsNotNone(projection)
         self.assertIsNotNone(projection.map_switching)
         self.assertIsNotNone(projection.rolling_launch)
-        self.assertEqual(projection.slot_editor_view_count, 60)
+        self.assertEqual(projection.slot_editor_view_count, 70)
         self.assertNotIn("000d3f64", maps)
         self.assertIn("000d3f70", maps)
         launch_switches = [

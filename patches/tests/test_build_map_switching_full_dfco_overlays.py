@@ -80,11 +80,11 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
             expected_output_sha256=None,
         )
 
-    def test_chain_has_five_ordered_stages(self):
-        self.assertEqual(len(self.results), 5)
+    def test_chain_has_six_ordered_stages(self):
+        self.assertEqual(len(self.results), 6)
         self.assertEqual(
             tuple(result.spec.sequence for result in self.results),
-            (15, 16, 17, 18, 19),
+            (15, 16, 17, 18, 19, 20),
         )
 
     def test_hardware_hash_contract_has_one_entry_per_stage(self):
@@ -92,11 +92,8 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
             len(overlays.EXPECTED_OUTPUT_SHA256),
             len(overlays.OVERLAY_SPECS),
         )
-        self.assertEqual(
-            len(overlays.HISTORICAL_OUTPUT_SHA256),
-            len(overlays.OVERLAY_SPECS),
-        )
-        self.assertEqual(len(set(overlays.EXPECTED_OUTPUT_SHA256)), 5)
+        self.assertEqual(len(overlays.HISTORICAL_OUTPUT_SHA256), 5)
+        self.assertEqual(len(set(overlays.EXPECTED_OUTPUT_SHA256)), 6)
         for digest in (
             *overlays.EXPECTED_OUTPUT_SHA256,
             *overlays.HISTORICAL_OUTPUT_SHA256,
@@ -124,7 +121,7 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
     def test_stage_15_installs_only_inactive_full_dfco_component(self):
         stage = self.results[0]
         self.assertFalse(stage.spec.functional_selection_allowed)
-        self._assert_unit_state(stage.data, stage.spec.active_unit_keys)
+        self._assert_unit_state(stage.data, stage.spec)
         self._assert_hook_state(stage.data, stage.spec)
         overlays._require_full_dfco_storage(
             self.layout, self.source, stage.data, "test stage 15"
@@ -135,14 +132,14 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
             with self.subTest(stage=stage.spec.sequence):
                 self.assertFalse(stage.spec.functional_selection_allowed)
                 self._assert_unit_state(
-                    stage.data, stage.spec.active_unit_keys
+                    stage.data, stage.spec
                 )
                 self._assert_hook_state(stage.data, stage.spec)
 
     def test_stage_18_is_selector_boot_only_gate(self):
         stage = self.results[3]
         self.assertFalse(stage.spec.functional_selection_allowed)
-        self._assert_unit_state(stage.data, stage.spec.active_unit_keys)
+        self._assert_unit_state(stage.data, stage.spec)
         self._assert_hook_state(stage.data, stage.spec)
         for key in overlays.FEEDBACK_UNIT_KEYS:
             unit = self.layout.assembly_unit_by_key[key]
@@ -151,10 +148,20 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
                 self.source[unit.span.start : unit.span.end],
             )
 
-    def test_stage_19_is_complete_runtime_endpoint(self):
+    def test_stage_19_retains_hardware_tested_feedback_timing(self):
         stage = self.results[4]
         self.assertTrue(stage.spec.functional_selection_allowed)
-        self._assert_unit_state(stage.data, stage.spec.active_unit_keys)
+        self._assert_unit_state(stage.data, stage.spec)
+        self._assert_hook_state(stage.data, stage.spec)
+        start = self.layout.feedback.phase_counts_address
+        self.assertEqual(
+            stage.data[start : start + 2], b"\x0a\x0a"
+        )
+
+    def test_stage_20_is_complete_runtime_endpoint(self):
+        stage = self.results[5]
+        self.assertTrue(stage.spec.functional_selection_allowed)
+        self._assert_unit_state(stage.data, stage.spec)
         self._assert_hook_state(stage.data, stage.spec)
         self.assertEqual(
             stage.data,
@@ -163,14 +170,14 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
             ),
         )
 
-    def test_stage_19_matches_direct_patch_except_pcmflash_line(self):
+    def test_stage_20_matches_direct_patch_except_pcmflash_line(self):
         direct = runtime.patch_image(
             STOCK.read_bytes(),
             layout=self.layout,
             blobs=self.payloads,
             source_name=str(STOCK),
         ).data
-        stage = self.results[4].data
+        stage = self.results[5].data
         differences = {
             offset
             for offset, (left, right) in enumerate(zip(direct, stage))
@@ -207,6 +214,7 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
                     result.data,
                     f"test stage {result.spec.sequence}",
                     require_full_dfco=True,
+                    require_idle_ignition=result.spec.sequence >= 20,
                 )
 
     def test_each_stage_changes_only_its_component_and_checksums(self):
@@ -242,7 +250,7 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
             previous = result.data
         self.assertEqual(
             tuple(result.permitted_write_bytes for result in self.results),
-            (284, 24, 24, 384, 408),
+            (284, 24, 24, 384, 408, 194),
         )
 
     def test_wrong_source_is_rejected(self):
@@ -296,16 +304,17 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
         )
         prefix = overlays.default_output_prefix(source)
         self.assertEqual(
-            prefix, Path("/tmp/example-map-switching-safe-v4")
+            prefix, Path("/tmp/example-map-switching-safe-v5")
         )
         self.assertEqual(
             tuple(path.name for path in overlays.output_paths(prefix)),
             (
-                "example-map-switching-safe-v4-15-full-dfco-payload-map1.bin",
-                "example-map-switching-safe-v4-16-dfco-hold-entry-hook-4fdd0.bin",
-                "example-map-switching-safe-v4-17-dfco-full-intermediate-restore-hook-50258.bin",
-                "example-map-switching-safe-v4-18-selector-host-boot-only-no-map-gesture.bin",
-                "example-map-switching-safe-v4-19-can-feedback-full-runtime.bin",
+                "example-map-switching-safe-v5-15-full-dfco-payload-map1.bin",
+                "example-map-switching-safe-v5-16-dfco-hold-entry-hook-4fdd0.bin",
+                "example-map-switching-safe-v5-17-dfco-full-intermediate-restore-hook-50258.bin",
+                "example-map-switching-safe-v5-18-selector-host-boot-only-no-map-gesture.bin",
+                "example-map-switching-safe-v5-19-can-feedback-full-runtime.bin",
+                "example-map-switching-safe-v5-20-idle-ignition-feedback-15x15.bin",
             ),
         )
 
@@ -315,7 +324,7 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
             paths, manifest, created = overlays.write_overlays(
                 prefix, self.results
             )
-            self.assertEqual(created, 11)
+            self.assertEqual(created, 13)
             for result, path in zip(self.results, paths):
                 self.assertEqual(path.read_bytes(), result.data)
                 self.assertEqual(
@@ -345,14 +354,17 @@ class BuildMapSwitchingFullDfcoOverlaysTest(unittest.TestCase):
                 overlays.write_overlays(prefix, self.results)
             self.assertFalse(overlays.output_paths(prefix)[1].exists())
 
-    def _assert_unit_state(self, image, active_keys):
-        active_keys = set(active_keys)
+    def _assert_unit_state(self, image, spec):
+        active_keys = set(spec.active_unit_keys)
         for unit in self.layout.assembly_units:
-            expected = (
-                self.payloads[unit.key]
-                if unit.key in active_keys
-                else bytes([unit.fill]) * unit.span.size
-            )
+            if unit.key not in active_keys:
+                expected = bytes([unit.fill]) * unit.span.size
+            elif spec.default_feedback_counts:
+                expected = overlays.composer.endpoint_unit_bytes(
+                    self.layout, self.payloads, unit
+                )
+            else:
+                expected = self.payloads[unit.key]
             self.assertEqual(
                 image[unit.span.start : unit.span.end], expected
             )

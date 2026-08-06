@@ -93,6 +93,8 @@ class ApplyMapSwitchingTest(unittest.TestCase):
             0x12718,
             0x12818,
             0x1298C,
+            0x12196,
+            0x1219E,
         ):
             with self.subTest(offset=offset):
                 self.assertEqual(
@@ -125,7 +127,7 @@ class ApplyMapSwitchingTest(unittest.TestCase):
                 )
                 self.assertEqual(actual, hook.replacement)
         start = self.layout.feedback.phase_counts_address
-        self.assertEqual(self.result.data[start : start + 2], b"\x0a\x0a")
+        self.assertEqual(self.result.data[start : start + 2], b"\x0f\x0f")
 
     def test_invalid_input_checksum_is_rejected(self):
         corrupt = bytearray(self.tuned)

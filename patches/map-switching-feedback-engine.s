@@ -9,8 +9,9 @@
 //   byte 0 - on-frame count
 //   byte 1 - off-frame count
 //
-// The pilot uses ten on frames followed by ten off frames. The function is a
-// leaf and uses caller-saved r0..r7.
+// The locked payload retains the hardware-tested ten-frame baseline. Complete
+// compositions override the two data bytes with the manifest defaults after
+// installing this unit. The function is a leaf and uses caller-saved r0..r7.
 
 .org 0x000D3760
 cruise_feedback_engine:

@@ -20,7 +20,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         self.assertEqual(self.layout.schema_version, 2)
         self.assertEqual(self.layout.rom, "JK08A")
         self.assertEqual(self.layout.slot_count, 5)
-        self.assertEqual(len(self.layout.families), 10)
+        self.assertEqual(len(self.layout.families), 12)
         self.assertEqual(
             self.layout.source_sha256,
             "ab60f18793fb121e4f55f626246117a6c"
@@ -113,8 +113,10 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         self.assertEqual(feedback.status_mask, 0x60)
         self.assertEqual(feedback.lamp_on_value, 0x60)
         self.assertEqual(feedback.phase_counts_address, 0x000D3848)
-        self.assertEqual(feedback.default_on_frames, 10)
-        self.assertEqual(feedback.default_off_frames, 10)
+        self.assertEqual(feedback.payload_on_frames, 10)
+        self.assertEqual(feedback.payload_off_frames, 10)
+        self.assertEqual(feedback.default_on_frames, 15)
+        self.assertEqual(feedback.default_off_frames, 15)
 
     def test_all_slot_copies_and_pointer_tables_share_one_manifest(self):
         materialized = layout_model.materialize_calibration_copies(
@@ -161,6 +163,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "limiter_commit",
                 "cruise_feedback_wrapper",
                 "cruise_feedback_engine",
+                "idle_ignition_adapter",
             },
         )
         self.assertEqual(
@@ -177,6 +180,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "limiter_commit",
                 "cruise_feedback_wrapper",
                 "cruise_feedback_engine",
+                "idle_ignition_adapter",
             },
         )
         self.assertEqual(
@@ -184,7 +188,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            418,
+            435,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
@@ -239,11 +243,11 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             parsed,
             apply_map_switching.load_payloads(self.layout),
         )
-        self.assertEqual(audit.instructions, 418)
-        self.assertEqual(audit.delayed_transfers, 40)
-        self.assertEqual(audit.pc_relative_references, 52)
-        self.assertEqual(audit.direct_branches, 79)
-        self.assertEqual(audit.indirect_transfers, 21)
+        self.assertEqual(audit.instructions, 435)
+        self.assertEqual(audit.delayed_transfers, 43)
+        self.assertEqual(audit.pc_relative_references, 59)
+        self.assertEqual(audit.direct_branches, 81)
+        self.assertEqual(audit.indirect_transfers, 24)
 
     def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):
         parsed = map_switching_assembly.ParsedSource(

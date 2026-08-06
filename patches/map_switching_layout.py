@@ -160,9 +160,20 @@ class FeedbackLayout:
     lamp_on_value: int
     lamp_off_value: int
     phase_counts_address: int
+    payload_on_frames: int
+    payload_off_frames: int
     default_on_frames: int
     default_off_frames: int
     encoding_evidence: str
+
+    def counts_bytes(self, *, payload=False):
+        on_frames = (
+            self.payload_on_frames if payload else self.default_on_frames
+        )
+        off_frames = (
+            self.payload_off_frames if payload else self.default_off_frames
+        )
+        return bytes((on_frames, off_frames))
 
 
 @dataclass(frozen=True)
@@ -361,6 +372,8 @@ def load_layout(path=DEFAULT_MANIFEST):
             "lamp_on_value",
             "lamp_off_value",
             "phase_counts_address",
+            "payload_on_frames",
+            "payload_off_frames",
             "default_on_frames",
             "default_off_frames",
             "encoding_evidence",
@@ -533,8 +546,10 @@ def validate_structure(layout):
         raise ValueError("source_sha256 is not hexadecimal") from error
     if not layout.free_rom.contains(layout.claimed_rom):
         raise ValueError("claimed ROM range is outside the audited free region")
-    if len(layout.families) != 10:
-        raise ValueError("the production contract requires ten calibration families")
+    if len(layout.families) != 12:
+        raise ValueError(
+            "the production contract requires twelve calibration families"
+        )
     required_family_keys = {
         "over_run_fuel_hold",
         "over_run_fuel_cut",
@@ -542,6 +557,8 @@ def validate_structure(layout):
         "over_run_fuel_intermediate_restore",
         "ignition_timing_trim_main",
         "ignition_timing_trim_high_det",
+        "cold_idle_ignition_timing",
+        "idle_ignition_timing",
         "fuel_targets",
         "fuel_compensation_main",
         "rev_limit_fuel_cut",
@@ -810,17 +827,30 @@ def validate_structure(layout):
         )
     if not feedback.encoding_evidence:
         raise ValueError("feedback encoding evidence must be declared")
-    if not (
-        0 <= feedback.default_on_frames <= 0xFF
-        and 0 <= feedback.default_off_frames <= 0xFF
+    for label, on_frames, off_frames in (
+        (
+            "payload",
+            feedback.payload_on_frames,
+            feedback.payload_off_frames,
+        ),
+        (
+            "default",
+            feedback.default_on_frames,
+            feedback.default_off_frames,
+        ),
     ):
-        raise ValueError("feedback frame counts must fit in uint8")
-    if (feedback.default_on_frames == 0) != (
-        feedback.default_off_frames == 0
-    ):
-        raise ValueError(
-            "feedback frame counts must both be zero or both be nonzero"
-        )
+        if not (
+            0 <= on_frames <= 0xFF
+            and 0 <= off_frames <= 0xFF
+        ):
+            raise ValueError(
+                f"feedback {label} frame counts must fit in uint8"
+            )
+        if (on_frames == 0) != (off_frames == 0):
+            raise ValueError(
+                f"feedback {label} frame counts must both be zero or "
+                "both be nonzero"
+            )
 
     for anchor in layout.anchors:
         if anchor.width not in {1, 2, 4}:
@@ -916,9 +946,9 @@ def validate_structure(layout):
     shadow_count = sum(
         family.access_kind == "ram_shadow" for family in layout.families
     )
-    if (adapter_count, shadow_count) != (8, 2):
+    if (adapter_count, shadow_count) != (10, 2):
         raise ValueError(
-            "production access split must contain eight adapters and two "
+            "production access split must contain ten adapters and two "
             "RAM shadows"
         )
 
@@ -931,6 +961,7 @@ def validate_structure(layout):
         "ignition_adapter",
         "fuel_compensation_adapter",
         "fuel_targets_adapter",
+        "idle_ignition_adapter",
         "limiter_commit",
         "cruise_feedback_wrapper",
         "cruise_feedback_engine",

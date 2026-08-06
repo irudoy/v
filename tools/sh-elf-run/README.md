@@ -16,30 +16,33 @@ tools/sh-elf-run/run.sh --verbose
 The first run builds `vq-sh-elf-run:16.3`. Later runs reuse Docker layers. Set
 `VQ_SH_ELF_IMAGE` to select a compatible local image. Set
 `VQ_SH_ELF_SKIP_BUILD=1` only when that image was already built from this
-Dockerfile. Docker's standard `DOCKER_CONTEXT` variable selects a non-default
-local context when required. The npkern tree defaults to `../../oss/npkern`
-relative to this repository; `VQ_NPKERN_SOURCE` selects another checkout.
+Dockerfile. The runner exports `DOCKER_CONTEXT=desktop-linux` and removes
+`DOCKER_HOST`, so it does not depend on or change the caller's active Docker
+context. The npkern tree defaults to `../../oss/npkern` relative to this
+repository; `VQ_NPKERN_SOURCE` selects another checkout.
 
 The gate performs six independent checks:
 
-1. GNU `sh-elf-as --isa=sh2e` assembles eight map-switching and three Rolling
+1. GNU `sh-elf-as --isa=sh2e` assembles nine map-switching and three Rolling
    Launch source units. Explicit instruction and data bytes are reconstructed
    over each declared `0xFF` envelope and must be byte-identical to the
    SHA-locked Ghidra payloads.
 2. Those independent bytes build two exact non-flashable one-MiB compositions.
-   Map switching locks 418 instruction placements and eleven entries. Rolling
+   Map switching locks 435 instruction placements and twelve entries. Rolling
    Launch extends only that exact endpoint and locks another 755 instruction
    placements, five entries, nine diagnostic pointers, and a 1876-byte write
    set before any simulator-only transformation.
-3. The GNU-assembled bytes build the final five cumulative hardware-overlay
+3. The GNU-assembled bytes build the final six cumulative hardware-overlay
    compositions independently of the tracked payload bundle. Stages 15 through
    17 each contain 156 instruction placements while the full-DFCO payload and
    hooks are introduced. Stage 18 contains 324 instruction placements with the
-   selector host active but CAN feedback absent. Stage 19 contains all 418
-   instruction placements and must equal the independently composed complete
-   ten-family runtime endpoint. The exact hardware-output hashes are locked by
-   the overlay builder.
-4. `sh-elf-run` executes 214 behavior cases. Map switching retains its 116
+   selector host active but CAN feedback absent. Stage 19 contains 418
+   instruction placements and retains the hardware-tested 10/10-frame CAN
+   feedback timing. Stage 20 contains all 435 instruction placements, adds the
+   two idle-ignition families, changes the timing to 15/15 frames, and must equal
+   the independently composed complete twelve-family runtime endpoint. The exact
+   hardware-output hashes are locked by the overlay builder.
+4. `sh-elf-run` executes 229 behavior cases. Map switching retains its 131
    adapter, limiter/startup, selector, and feedback cases. Rolling Launch adds
    98 structural, gate, configuration, activation, active-state, cooldown,
    ignition, and wrapper cases. Every declared implementation entry executes.
@@ -101,11 +104,11 @@ complete reset sequence, or replace bench and engine validation.
 A successful run includes all six primary markers:
 
 ```text
-VQ_SH_ELF_OVERLAYS status=PASS stages=5 stage15_instructions=156 stage16_instructions=156 stage17_instructions=156 stage18_instructions=324 stage19_instructions=418 ...
-VQ_SH_ELF_MAP_SWITCHING status=PASS cases=116 selector=17 adapters=76 limiter=14 feedback=9 feedback_invocations=17 entries=11
+VQ_SH_ELF_OVERLAYS status=PASS stages=6 stage15_instructions=156 stage16_instructions=156 stage17_instructions=156 stage18_instructions=324 stage19_instructions=418 stage20_instructions=435 ...
+VQ_SH_ELF_MAP_SWITCHING status=PASS cases=131 selector=17 adapters=91 limiter=14 feedback=9 feedback_invocations=17 entries=12
 VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=98 structural=11 gates=25 config=22 activation=5 active=9 cooldown=5 ignition=15 wrappers=6 entries=5
 VQ_SH_ELF_ROLLING_VERIFY status=PASS units=3 instructions=755 ... diagnostics=9 ...
-VQ_SH_ELF_VERIFY status=PASS ... hardware_overlay_stages=5 rolling_launch_instructions=755 rolling_launch_cases=98 ... unsafe_signal=4
+VQ_SH_ELF_VERIFY status=PASS ... hardware_overlay_stages=6 rolling_launch_instructions=755 rolling_launch_cases=98 ... unsafe_signal=4
 NPKERN_LEGACY_BUILD status=PASS target=SH7058_KLINE ...
 NPKERN_CAN_VERIFY status=PASS targets=4 legacy_targets=1 ... flash_guard_cases=10 hardware_ready=NO limitation=HCAN_and_flash_peripherals_not_executed
 ```

@@ -23,7 +23,9 @@ class MapSwitchingCompositionTest(unittest.TestCase):
             with self.subTest(unit=unit.key):
                 self.assertEqual(
                     result.data[unit.span.start : unit.span.end],
-                    self.blobs[unit.key],
+                    composer.endpoint_unit_bytes(
+                        self.layout, self.blobs, unit
+                    ),
                 )
         for hook in self.layout.hooks:
             with self.subTest(hook=hook.key):
@@ -84,14 +86,14 @@ class MapSwitchingCompositionTest(unittest.TestCase):
         self.assertLessEqual(changed, permitted)
         self.assertEqual(result.changed_bytes, len(changed))
         self.assertEqual(result.permitted_write_bytes, len(permitted))
-        self.assertEqual(result.instruction_count, 418)
-        self.assertEqual(result.code_entry_count, 11)
+        self.assertEqual(result.instruction_count, 435)
+        self.assertEqual(result.code_entry_count, 12)
         self.assertFalse(result.checksums_recalculated)
 
-    def test_locked_feedback_counts_are_present_in_composition(self):
+    def test_current_feedback_counts_are_present_in_composition(self):
         result = composer.compose(self.layout, self.image, self.blobs)
         start = self.layout.feedback.phase_counts_address
-        self.assertEqual(result.data[start : start + 2], b"\x0a\x0a")
+        self.assertEqual(result.data[start : start + 2], b"\x0f\x0f")
 
     def test_composition_requires_the_exact_blob_set(self):
         missing = dict(self.blobs)

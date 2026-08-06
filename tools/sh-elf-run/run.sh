@@ -6,6 +6,12 @@ repo_root=$(CDPATH= cd -- "$tool_dir/../.." && pwd)
 image_name=${VQ_SH_ELF_IMAGE:-vq-sh-elf-run:16.3}
 npkern_source=${VQ_NPKERN_SOURCE:-$repo_root/../../oss/npkern}
 
+# Keep the gate in the same Docker Desktop environment as the project
+# Memgraph stack, independent of the caller's active Docker context.
+DOCKER_CONTEXT=desktop-linux
+export DOCKER_CONTEXT
+unset DOCKER_HOST
+
 if [ ! -d "$npkern_source" ]; then
     echo "npkern source directory is missing: $npkern_source" >&2
     exit 1

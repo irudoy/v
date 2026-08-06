@@ -42,10 +42,6 @@ DEFAULT_VISIBLE_TABLES = {
     "Initial Retard Quantity - unresolved mode (0x1202E)":
         "Ignition Timing / Transient Correction",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
-    "Cold Idle Ignition Timing (Candidate) (0x12196)":
-        "Idle Speed Control / Ignition Timing",
-    "Idle Ignition Timing (Candidate) (0x1219E)":
-        "Idle Speed Control / Ignition Timing",
     "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
     "Stationary Rev Limiter Accumulator Step (0x124D2)":
         "Limiters / Stationary Rev Limiter",
@@ -70,6 +66,10 @@ SLOT_TABLES = {
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
+    "Cold Idle Ignition Timing (Candidate) (0x12196)":
+        "Idle Speed Control / Ignition Timing",
+    "Idle Ignition Timing (Candidate) (0x1219E)":
+        "Idle Speed Control / Ignition Timing",
 }
 
 
@@ -597,8 +597,12 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             if table.get("type") != "Switch"
         }
         expected = {
-            "0x12196": "Cold Idle Ignition Timing (Candidate) (0x12196)",
-            "0x1219E": "Idle Ignition Timing (Candidate) (0x1219E)",
+            "0x12196": slot_name(
+                1, "Cold Idle Ignition Timing (Candidate) (0x12196)"
+            ),
+            "0x1219E": slot_name(
+                1, "Idle Ignition Timing (Candidate) (0x1219E)"
+            ),
         }
         for address, name in expected.items():
             with self.subTest(address=address):

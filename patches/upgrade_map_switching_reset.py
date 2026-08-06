@@ -118,7 +118,8 @@ def _require_runtime(layout, blobs, data, old_startup):
         if unit.key == startup.key:
             continue
         actual = data[unit.span.start : unit.span.end]
-        if actual != blobs[unit.key]:
+        expected = composer.endpoint_unit_bytes(layout, blobs, unit)
+        if actual != expected:
             raise UpgradeError(
                 f"{unit.key} does not match the tracked runtime payload"
             )

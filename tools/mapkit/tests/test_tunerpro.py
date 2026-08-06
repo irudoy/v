@@ -40,10 +40,6 @@ DEFAULT_VISIBLE_TABLES = {
     "Initial Retard Quantity - unresolved mode (0x1202E)":
         "Ignition Timing / Transient Correction",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
-    "Cold Idle Ignition Timing (Candidate) (0x12196)":
-        "Idle Speed Control / Ignition Timing",
-    "Idle Ignition Timing (Candidate) (0x1219E)":
-        "Idle Speed Control / Ignition Timing",
     "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
     "Stationary Rev Limiter Accumulator Step (0x124D2)":
         "Limiters / Stationary Rev Limiter",
@@ -68,6 +64,10 @@ SLOT_TABLES = {
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
+    "Cold Idle Ignition Timing (Candidate) (0x12196)":
+        "Idle Speed Control / Ignition Timing",
+    "Idle Ignition Timing (Candidate) (0x1219E)":
+        "Idle Speed Control / Ignition Timing",
 }
 
 
@@ -345,7 +345,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 44)
-        self.assertEqual(len(tables), 92)
+        self.assertEqual(len(tables), 100)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
@@ -413,8 +413,12 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for table in self.root.findall("./XDFTABLE")
         }
         expected = {
-            "0x12196": "Cold Idle Ignition Timing (Candidate) (0x12196)",
-            "0x1219E": "Idle Ignition Timing (Candidate) (0x1219E)",
+            "0x12196": slot_name(
+                1, "Cold Idle Ignition Timing (Candidate) (0x12196)"
+            ),
+            "0x1219E": slot_name(
+                1, "Idle Ignition Timing (Candidate) (0x1219E)"
+            ),
         }
         for address, title in expected.items():
             with self.subTest(address=address):

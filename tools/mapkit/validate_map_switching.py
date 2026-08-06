@@ -137,9 +137,9 @@ def validate():
         )
     if "Map 5 - Fuel Targets" not in xdf:
         raise ValueError("TunerPro projection lacks Map 5 Fuel Targets")
-    if projection.slot_editor_view_count != 60:
+    if projection.slot_editor_view_count != 70:
         raise ValueError(
-            "runtime does not expose 60 slot-specific editor views"
+            "runtime does not expose 70 slot-specific editor views"
         )
     launch = projection.rolling_launch
     if launch.enable_mask_address != "000d3f64":

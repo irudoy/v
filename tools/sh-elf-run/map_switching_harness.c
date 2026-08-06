@@ -28,6 +28,7 @@
 #define FEEDBACK_WRAPPER 0x000d35e0U
 #define LIMITER_COMMIT 0x000d3660U
 #define FEEDBACK_COUNTS 0x000d3848U
+#define IDLE_IGNITION_ADAPTER 0x000d4000U
 
 #define FUEL_STOCK 0x0000934eU
 #define THROTTLE_STOCK 0x00009424U
@@ -122,6 +123,18 @@ static const struct family adapter_families[] = {
         {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
          0x000d3000U},
     },
+    {
+        "cold_idle_ignition_timing", IDLE_IGNITION_ADAPTER,
+        0x00012196U, 8U,
+        {0x00012196U, 0x000d4080U, 0x000d4088U, 0x000d4090U,
+         0x000d4098U},
+    },
+    {
+        "idle_ignition_timing", IDLE_IGNITION_ADAPTER, 0x0001219eU,
+        8U,
+        {0x0001219eU, 0x000d40a0U, 0x000d40a8U, 0x000d40b0U,
+         0x000d40b8U},
+    },
 };
 
 static const struct pass_through pass_throughs[] = {
@@ -131,6 +144,7 @@ static const struct pass_through pass_throughs[] = {
     {"ignition_cold", IGNITION_ADAPTER, 0x0000991aU},
     {"fuel_compensation_unknown", FUEL_COMP_ADAPTER, 0x0000a29bU},
     {"fuel_targets_unknown", FUEL_TARGET_ADAPTER, 0x0000b33bU},
+    {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
 };
 
 static const uint32_t fuel_slots[] = {
@@ -633,16 +647,16 @@ int main(void)
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
-    if (total_cases != 116U)
-        return fail_value("summary", "case_count", total_cases, 116);
+    if (total_cases != 131U)
+        return fail_value("summary", "case_count", total_cases, 131);
     if (feedback_invocations != 17U)
         return fail_value(
             "summary", "feedback_invocations", feedback_invocations, 17);
 
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
-        "adapters=76 limiter=14 feedback=9 feedback_invocations=%lu "
-        "entries=11\n",
+        "adapters=91 limiter=14 feedback=9 feedback_invocations=%lu "
+        "entries=12\n",
         (unsigned long)total_cases, (unsigned long)feedback_invocations);
     return 0;
 }

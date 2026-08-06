@@ -43,7 +43,7 @@ class Composition:
 
 
 def build_base_composition():
-    """Build the exact complete ten-family map-switching endpoint."""
+    """Build the exact complete twelve-family map-switching endpoint."""
     layout = map_switching_layout.load_layout()
     payloads = apply_map_switching.load_payloads(layout)
     return map_switching_compose.compose(layout=layout, blobs=payloads)

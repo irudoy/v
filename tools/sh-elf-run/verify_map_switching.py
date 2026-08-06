@@ -36,14 +36,14 @@ from patches import map_switching_layout as layout_model
 TOOL_DIR = Path(__file__).resolve().parent
 EXPECTED_SIMULATOR_VERSION = "16.3"
 EXPECTED_COMPOSITION_SHA256 = (
-    "108613e626f883ecca7a5733b739edafaacaee663909bfb115a6e8dda0d64c19"
+    "b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 5638
-EXPECTED_COMPOSITION_WRITE_BYTES = 6144
-EXPECTED_INSTRUCTION_COUNT = 418
-EXPECTED_CODE_ENTRY_COUNT = 11
-EXPECTED_DYNAMIC_CASES = 116
-EXPECTED_OVERLAY_INSTRUCTION_COUNTS = (156, 156, 156, 324, 418)
+EXPECTED_COMPOSITION_CHANGED_BYTES = 5803
+EXPECTED_COMPOSITION_WRITE_BYTES = 6316
+EXPECTED_INSTRUCTION_COUNT = 435
+EXPECTED_CODE_ENTRY_COUNT = 12
+EXPECTED_DYNAMIC_CASES = 131
+EXPECTED_OVERLAY_INSTRUCTION_COUNTS = (156, 156, 156, 324, 418, 435)
 TEST_RAM_BASE = 0x01000000
 HIGH_RAM_BASE = 0xFFFF0000
 ROM_SIZE = 0x00100000
@@ -245,6 +245,7 @@ def require_full_dfco_overlay_chain(layout, composition, blobs):
         *full_dfco_overlays.FULL_DFCO_UNIT_KEYS,
         *full_dfco_overlays.SELECTOR_UNIT_KEYS,
         *full_dfco_overlays.FEEDBACK_UNIT_KEYS,
+        *full_dfco_overlays.IDLE_IGNITION_UNIT_KEYS,
     ):
         unit = layout.assembly_unit_by_key[key]
         source[unit.span.start : unit.span.end] = (
@@ -254,6 +255,7 @@ def require_full_dfco_overlay_chain(layout, composition, blobs):
         *full_dfco_overlays.FULL_DFCO_HOOK_KEYS,
         *full_dfco_overlays.SELECTOR_HOOK_KEYS,
         *full_dfco_overlays.FEEDBACK_HOOK_KEYS,
+        *full_dfco_overlays.IDLE_IGNITION_HOOK_KEYS,
     ):
         hook = full_dfco_overlays._hook_by_key(layout, key)
         value = (
@@ -266,6 +268,16 @@ def require_full_dfco_overlay_chain(layout, composition, blobs):
             hook.width, layout.byte_order
         )
     for family in full_dfco_overlays._full_dfco_families(layout):
+        for address in family.copies:
+            source[address : address + family.byte_length] = bytes(
+                [0xFF]
+            ) * family.byte_length
+        source[
+            family.pointer_table :
+            family.pointer_table + layout.pointer_table_size
+        ] = bytes([0xFF]) * layout.pointer_table_size
+    for key in full_dfco_overlays.IDLE_IGNITION_FAMILY_KEYS:
+        family = layout.family_by_key[key]
         for address in family.copies:
             source[address : address + family.byte_length] = bytes(
                 [0xFF]
@@ -305,14 +317,16 @@ def require_full_dfco_overlay_chain(layout, composition, blobs):
         )
     if tuple(
         result.spec.sequence for result in results
-    ) != (15, 16, 17, 18, 19):
+    ) != (15, 16, 17, 18, 19, 20):
         raise VerificationError("full-DFCO overlay order differs")
     if any(
-        result.spec.functional_selection_allowed for result in results[:-1]
+        result.spec.functional_selection_allowed for result in results[:4]
     ):
-        raise VerificationError("pre-final overlay is marked functional")
-    if not results[-1].spec.functional_selection_allowed:
-        raise VerificationError("stage 19 is not marked functional")
+        raise VerificationError("pre-feedback overlay is marked functional")
+    if not all(
+        result.spec.functional_selection_allowed for result in results[4:]
+    ):
+        raise VerificationError("stage 19 or stage 20 is not functional")
 
     expected_final = bytearray(composition.data)
     expected_final[
@@ -322,7 +336,7 @@ def require_full_dfco_overlay_chain(layout, composition, blobs):
     expected_final = checksums.recalculate(expected_final)
     if results[-1].data != expected_final:
         raise VerificationError(
-            "stage 19 differs from the independently composed full runtime"
+            "stage 20 differs from the independently composed full runtime"
         )
 
     hardware_hashes = full_dfco_overlays.EXPECTED_OUTPUT_SHA256
@@ -402,6 +416,7 @@ def install_stock_return_stubs(fixture, layout):
         "fuel_compensation_lookup_2c648",
         "fuel_compensation_lookup_3be3c",
         "fuel_targets_lookup",
+        "idle_ignition_lookup",
         "cruise_feedback_serializer",
     }
     hooks = {hook.key: hook for hook in layout.hooks}
@@ -451,7 +466,7 @@ def build_rom_object(fixture, build_dir):
 
 
 def build_and_run_dynamic_harness(fixture, build_dir):
-    """Execute all 87 map-switching behavior cases in the GNU simulator."""
+    """Execute all map-switching behavior cases in the GNU simulator."""
     rom_object = build_rom_object(fixture, build_dir)
     invoke_object = build_dir / "invoke.o"
     harness_elf = build_dir / "map-switching-harness.elf"
@@ -494,9 +509,9 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=120,
     )
     marker = (
-        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=116 selector=17 "
-        "adapters=76 limiter=14 feedback=9 feedback_invocations=17 "
-        "entries=11"
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=131 selector=17 "
+        "adapters=91 limiter=14 feedback=9 feedback_invocations=17 "
+        "entries=12"
     )
     if marker not in result.stdout:
         raise VerificationError(

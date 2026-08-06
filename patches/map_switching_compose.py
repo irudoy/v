@@ -126,6 +126,17 @@ def _build_expected(layout, image, blobs, source_policy):
         )
     for unit in layout.assembly_units:
         data[unit.span.start : unit.span.end] = blobs[unit.key]
+    start = layout.feedback.phase_counts_address
+    data[start : start + 2] = layout.feedback.counts_bytes()
+    return bytes(data)
+
+
+def endpoint_unit_bytes(layout, blobs, unit):
+    """Return one unit as installed in a complete current composition."""
+    data = bytearray(blobs[unit.key])
+    if unit.key == "cruise_feedback_engine":
+        offset = layout.feedback.phase_counts_address - unit.span.start
+        data[offset : offset + 2] = layout.feedback.counts_bytes()
     return bytes(data)
 
 
@@ -213,10 +224,7 @@ def _validate_composed_contract(
             f"expected {expected[first]:#04x}"
         )
 
-    counts = (
-        layout.feedback.default_on_frames << 8
-        | layout.feedback.default_off_frames
-    ).to_bytes(2, layout.byte_order)
+    counts = layout.feedback.counts_bytes()
     start = layout.feedback.phase_counts_address
     if composed[start : start + 2] != counts:
         raise ValueError("composed feedback frame counts differ from layout")

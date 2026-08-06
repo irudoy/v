@@ -3749,104 +3749,6 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xEABF" flags="0x0">
-    <title>Cold Idle Ignition Timing (Candidate) (0x12196)</title>
-    <description>Exact JK08A. Address 0x12196; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table with an implicit uniform axis over ffff11b2. The interpolated result encodes signed raw addend x-128 and is used in the accessor's saturating signed-byte composition. The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline, while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511 enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L homology identifies the table as the Cold Idle Ignition Timing candidate with one degree per centered raw count; code proves the x-128 signed addend but not a direct final crank-relative angle. Numeric round trip over the actual range: 128 -&gt; 0 -&gt; 128; 145 -&gt; 17 -&gt; 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u &gt;= 224, y7 is selected. For u &lt; 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write of derived x-128 at site 0004b0d0).</description>
-    <CATEGORYMEM index="0" category="13" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Engine Speed [RPM] (Candidate)</units>
-      <indexcount>8</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <LABEL index="1" value="400" />
-      <LABEL index="2" value="800" />
-      <LABEL index="3" value="1200" />
-      <LABEL index="4" value="1600" />
-      <LABEL index="5" value="2000" />
-      <LABEL index="6" value="2400" />
-      <LABEL index="7" value="2800" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x12196" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Ignition timing (deg) [cand]</units>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X-128">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
-  <XDFTABLE uniqueid="0xEAF1" flags="0x0">
-    <title>Idle Ignition Timing (Candidate) (0x1219E)</title>
-    <description>Exact JK08A. Address 0x1219E; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected 1D table of an additive term for a signed byte accumulator. Interpolated byte 128..160 is converted to 0..32, stored in ffff1511, and then enters saturating sums as a signed byte to form ffff1513 and ffff23ee. A2L homology identifies the table as the Idle Ignition Timing candidate with one degree per centered raw count. The available code trace proves the x-128 signed addend and its timing-state consumers but not a direct final crank-relative angle. Numeric scale round trip: 128 -&gt; 0 -&gt; 128; 160 -&gt; 32 -&gt; 160. Index: Implicit eight-point axis over uint8 ffff11b2: for q&lt;224, index i=q&gt;&gt;5 and the low 5 bits define a Q0.16 fraction between cells i and i+1; for q&gt;=224, cell 7 is selected. Result disposition: writes (RAM ffff1511, site 0004b0d0). Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
-    <CATEGORYMEM index="0" category="13" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Engine Speed [RPM] (Candidate)</units>
-      <indexcount>8</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <LABEL index="1" value="400" />
-      <LABEL index="2" value="800" />
-      <LABEL index="3" value="1200" />
-      <LABEL index="4" value="1600" />
-      <LABEL index="5" value="2000" />
-      <LABEL index="6" value="2400" />
-      <LABEL index="7" value="2800" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1219E" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Ignition timing (deg) [cand]</units>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X-128">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0xB53F" flags="0x0">
     <title>Stationary Rev Limiter</title>
     <description>Exact JK08A. Address 0x85D9; 1 rows x 2 columns; uint8; map confidence code. Stationary rev-limiter fuel-cut/restore hysteresis. Entry requires coarse vehicle speed ffff110e to equal zero. With readiness bit 4 of ffff247f set and state bit 5 clear, engine speed ffff11ae reaching cell 0 sets fuel cut. While bit 5 is set, speed below cell 1 restores fueling. FUN 0004ed88 includes the Boolean result in the aggregate fuel-output inhibit path. The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator ffff16a6 to reach ROM16[0000911c]. Exact firmware traces CAN 0x280 vehicle speed through ffff113c, ffff115e, ffff118e, and the scheduler snapshot ffff110e; the required zero value establishes the stationary role. Additional entry gates ffff244f bit 2 and ffff2458 bit 5 remain physically unnamed. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
@@ -8592,6 +8494,104 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xEABF" flags="0x0">
+    <title>Map 1 - Cold Idle Ignition Timing (Candidate) (0x12196)</title>
+    <description>Exact JK08A. Address 0x12196; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table with an implicit uniform axis over ffff11b2. The interpolated result encodes signed raw addend x-128 and is used in the accessor's saturating signed-byte composition. Common-definition Map 1 uses the canonical stock storage. The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline, while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511 enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L homology identifies the table as the Cold Idle Ignition Timing candidate with one degree per centered raw count; code proves the x-128 signed addend but not a direct final crank-relative angle. Numeric round trip over the actual range: 128 -&gt; 0 -&gt; 128; 145 -&gt; 17 -&gt; 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u &gt;= 224, y7 is selected. For u &lt; 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write of derived x-128 at site 0004b0d0).</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x12196" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xEAF1" flags="0x0">
+    <title>Map 1 - Idle Ignition Timing (Candidate) (0x1219E)</title>
+    <description>Exact JK08A. Address 0x1219E; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected 1D table of an additive term for a signed byte accumulator. Interpolated byte 128..160 is converted to 0..32, stored in ffff1511, and then enters saturating sums as a signed byte to form ffff1513 and ffff23ee. Common-definition Map 1 uses the canonical stock storage. A2L homology identifies the table as the Idle Ignition Timing candidate with one degree per centered raw count. The available code trace proves the x-128 signed addend and its timing-state consumers but not a direct final crank-relative angle. Numeric scale round trip: 128 -&gt; 0 -&gt; 128; 160 -&gt; 32 -&gt; 160. Index: Implicit eight-point axis over uint8 ffff11b2: for q&lt;224, index i=q&gt;&gt;5 and the low 5 bits define a Q0.16 fraction between cells i and i+1; for q&gt;=224, cell 7 is selected. Result disposition: writes (RAM ffff1511, site 0004b0d0). Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1219E" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xEE63" flags="0x0">
     <title>Map 1 - Rev Limit - Fuel Cut</title>
     <description>Exact JK08A. Address 0x934E; 2 rows x 2 columns; uint16; map confidence code. Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation threshold and row 1 is the exclusive release boundary. Stock delay zero makes activation immediate. Active state bit 2 of ffff2497 reaches periodic index-27 coordinator 0004ed88 and contributes full global mask 0x3f. Common-definition Map 1 uses the canonical stock storage. The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in column 1. Activation occurs at RPM &gt;= threshold; equality to the release value retains cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the stock path. The public HR A2L catalog supplies the candidate Normal/Reverse column labels.</description>
@@ -13251,6 +13251,104 @@
       <MATH row="16" col="16" equation="(((X-(B&amp;127))/128))">
         <VAR id="X" />
         <VAR id="B" type="address" address="0xD29FF" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xB9B" flags="0x0">
+    <title>Map 2 - Cold Idle Ignition Timing (Candidate) (0x12196)</title>
+    <description>Exact JK08A. Address 0xD4080; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table with an implicit uniform axis over ffff11b2. The interpolated result encodes signed raw addend x-128 and is used in the accessor's saturating signed-byte composition. Common-definition Map 2 storage is projected from 0x12196. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline, while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511 enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L homology identifies the table as the Cold Idle Ignition Timing candidate with one degree per centered raw count; code proves the x-128 signed addend but not a direct final crank-relative angle. Numeric round trip over the actual range: 128 -&gt; 0 -&gt; 128; 145 -&gt; 17 -&gt; 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u &gt;= 224, y7 is selected. For u &lt; 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write of derived x-128 at site 0004b0d0).</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD4080" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xED86" flags="0x0">
+    <title>Map 2 - Idle Ignition Timing (Candidate) (0x1219E)</title>
+    <description>Exact JK08A. Address 0xD40A0; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected 1D table of an additive term for a signed byte accumulator. Interpolated byte 128..160 is converted to 0..32, stored in ffff1511, and then enters saturating sums as a signed byte to form ffff1513 and ffff23ee. Common-definition Map 2 storage is projected from 0x1219E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. A2L homology identifies the table as the Idle Ignition Timing candidate with one degree per centered raw count. The available code trace proves the x-128 signed addend and its timing-state consumers but not a direct final crank-relative angle. Numeric scale round trip: 128 -&gt; 0 -&gt; 128; 160 -&gt; 32 -&gt; 160. Index: Implicit eight-point axis over uint8 ffff11b2: for q&lt;224, index i=q&gt;&gt;5 and the low 5 bits define a Q0.16 fraction between cells i and i+1; for q&gt;=224, cell 7 is selected. Result disposition: writes (RAM ffff1511, site 0004b0d0). Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD40A0" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
@@ -17916,6 +18014,104 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x83A9" flags="0x0">
+    <title>Map 3 - Cold Idle Ignition Timing (Candidate) (0x12196)</title>
+    <description>Exact JK08A. Address 0xD4088; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table with an implicit uniform axis over ffff11b2. The interpolated result encodes signed raw addend x-128 and is used in the accessor's saturating signed-byte composition. Common-definition Map 3 storage is projected from 0x12196. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline, while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511 enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L homology identifies the table as the Cold Idle Ignition Timing candidate with one degree per centered raw count; code proves the x-128 signed addend but not a direct final crank-relative angle. Numeric round trip over the actual range: 128 -&gt; 0 -&gt; 128; 145 -&gt; 17 -&gt; 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u &gt;= 224, y7 is selected. For u &lt; 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write of derived x-128 at site 0004b0d0).</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD4088" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x65B4" flags="0x0">
+    <title>Map 3 - Idle Ignition Timing (Candidate) (0x1219E)</title>
+    <description>Exact JK08A. Address 0xD40A8; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected 1D table of an additive term for a signed byte accumulator. Interpolated byte 128..160 is converted to 0..32, stored in ffff1511, and then enters saturating sums as a signed byte to form ffff1513 and ffff23ee. Common-definition Map 3 storage is projected from 0x1219E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. A2L homology identifies the table as the Idle Ignition Timing candidate with one degree per centered raw count. The available code trace proves the x-128 signed addend and its timing-state consumers but not a direct final crank-relative angle. Numeric scale round trip: 128 -&gt; 0 -&gt; 128; 160 -&gt; 32 -&gt; 160. Index: Implicit eight-point axis over uint8 ffff11b2: for q&lt;224, index i=q&gt;&gt;5 and the low 5 bits define a Q0.16 fraction between cells i and i+1; for q&gt;=224, cell 7 is selected. Result disposition: writes (RAM ffff1511, site 0004b0d0). Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD40A8" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xF3F3" flags="0x0">
     <title>Map 3 - Rev Limit - Fuel Cut</title>
     <description>Exact JK08A. Address 0xD3508; 2 rows x 2 columns; uint16; map confidence code. Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation threshold and row 1 is the exclusive release boundary. Stock delay zero makes activation immediate. Active state bit 2 of ffff2497 reaches periodic index-27 coordinator 0004ed88 and contributes full global mask 0x3f. Common-definition Map 3 storage is projected from 0x934E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in column 1. Activation occurs at RPM &gt;= threshold; equality to the release value retains cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the stock path. The public HR A2L catalog supplies the candidate Normal/Reverse column labels.</description>
@@ -22578,6 +22774,104 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x3ADA" flags="0x0">
+    <title>Map 4 - Cold Idle Ignition Timing (Candidate) (0x12196)</title>
+    <description>Exact JK08A. Address 0xD4090; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table with an implicit uniform axis over ffff11b2. The interpolated result encodes signed raw addend x-128 and is used in the accessor's saturating signed-byte composition. Common-definition Map 4 storage is projected from 0x12196. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline, while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511 enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L homology identifies the table as the Cold Idle Ignition Timing candidate with one degree per centered raw count; code proves the x-128 signed addend but not a direct final crank-relative angle. Numeric round trip over the actual range: 128 -&gt; 0 -&gt; 128; 145 -&gt; 17 -&gt; 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u &gt;= 224, y7 is selected. For u &lt; 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write of derived x-128 at site 0004b0d0).</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD4090" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xBE45" flags="0x0">
+    <title>Map 4 - Idle Ignition Timing (Candidate) (0x1219E)</title>
+    <description>Exact JK08A. Address 0xD40B0; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected 1D table of an additive term for a signed byte accumulator. Interpolated byte 128..160 is converted to 0..32, stored in ffff1511, and then enters saturating sums as a signed byte to form ffff1513 and ffff23ee. Common-definition Map 4 storage is projected from 0x1219E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. A2L homology identifies the table as the Idle Ignition Timing candidate with one degree per centered raw count. The available code trace proves the x-128 signed addend and its timing-state consumers but not a direct final crank-relative angle. Numeric scale round trip: 128 -&gt; 0 -&gt; 128; 160 -&gt; 32 -&gt; 160. Index: Implicit eight-point axis over uint8 ffff11b2: for q&lt;224, index i=q&gt;&gt;5 and the low 5 bits define a Q0.16 fraction between cells i and i+1; for q&gt;=224, cell 7 is selected. Result disposition: writes (RAM ffff1511, site 0004b0d0). Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD40B0" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x4A80" flags="0x0">
     <title>Map 4 - Rev Limit - Fuel Cut</title>
     <description>Exact JK08A. Address 0xD3510; 2 rows x 2 columns; uint16; map confidence code. Engine-speed fuel-cut hysteresis table consumed directly by FUN 0004f282. Bit 4 of ffff2468 selects column 0 or 1; row 0 is the inclusive activation threshold and row 1 is the exclusive release boundary. Stock delay zero makes activation immediate. Active state bit 2 of ffff2497 reaches periodic index-27 coordinator 0004ed88 and contributes full global mask 0x3f. Common-definition Map 4 storage is projected from 0x934E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The active stock 2x2 cells decode to 7650/7450 RPM in column 0 and 7450/4600 RPM in column 1. Activation occurs at RPM &gt;= threshold; equality to the release value retains cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words 00009356/00009358 outside the stock path. The public HR A2L catalog supplies the candidate Normal/Reverse column labels.</description>
@@ -27237,6 +27531,104 @@
       <MATH row="16" col="16" equation="(((X-(B&amp;127))/128))">
         <VAR id="X" />
         <VAR id="B" type="address" address="0xD2CFF" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xB2E8" flags="0x0">
+    <title>Map 5 - Cold Idle Ignition Timing (Candidate) (0x12196)</title>
+    <description>Exact JK08A. Address 0xD4098; 1 rows x 8 columns; uint8; map confidence code. Eight-point uint8 table with an implicit uniform axis over ffff11b2. The interpolated result encodes signed raw addend x-128 and is used in the accessor's saturating signed-byte composition. Common-definition Map 5 storage is projected from 0x12196. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline, while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511 enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L homology identifies the table as the Cold Idle Ignition Timing candidate with one degree per centered raw count; code proves the x-128 signed addend but not a direct final crank-relative angle. Numeric round trip over the actual range: 128 -&gt; 0 -&gt; 128; 145 -&gt; 17 -&gt; 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u &gt;= 224, y7 is selected. For u &lt; 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write of derived x-128 at site 0004b0d0).</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD4098" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x3677" flags="0x0">
+    <title>Map 5 - Idle Ignition Timing (Candidate) (0x1219E)</title>
+    <description>Exact JK08A. Address 0xD40B8; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected 1D table of an additive term for a signed byte accumulator. Interpolated byte 128..160 is converted to 0..32, stored in ffff1511, and then enters saturating sums as a signed byte to form ffff1513 and ffff23ee. Common-definition Map 5 storage is projected from 0x1219E. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. A2L homology identifies the table as the Idle Ignition Timing candidate with one degree per centered raw count. The available code trace proves the x-128 signed addend and its timing-state consumers but not a direct final crank-relative angle. Numeric scale round trip: 128 -&gt; 0 -&gt; 128; 160 -&gt; 32 -&gt; 160. Index: Implicit eight-point axis over uint8 ffff11b2: for q&lt;224, index i=q&gt;&gt;5 and the low 5 bits define a Q0.16 fraction between cells i and i+1; for q&gt;=224, cell 7 is selected. Result disposition: writes (RAM ffff1511, site 0004b0d0). Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD40B8" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Ignition timing (deg) [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>

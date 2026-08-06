@@ -3,7 +3,7 @@
 
 The production profile is deliberately narrow: mode 1 (RPM hold), Map 1 only,
 no brake gate, and no ignition retard. The input must be the exact complete
-ten-family map-switching stage-19 endpoint derived from the hardware-readback
+twelve-family map-switching stage-20 endpoint derived from the hardware-readback
 lookup stage and using the target-vehicle 0x20 released-button code. Machine
 payloads, hooks, diagnostics, configuration, checksums, and the closed write
 set are all revalidated before an output can be written.
@@ -26,6 +26,7 @@ if str(ROOT) not in sys.path:
 from patches import apply_map_switching as map_runtime
 from patches import jk08a_checksums as checksums
 from patches import map_switching_layout as map_layout_model
+from patches import map_switching_compose as map_composer
 from patches import rolling_launch
 from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
@@ -35,10 +36,10 @@ from patches import rolling_launch_layout as rolling_layout_model
 ROM_SIZE = 0x100000
 PROFILE_NAME = "rpm-hold-map1-test"
 LOCKED_MAP_SWITCHING_SOURCE_SHA256 = (
-    "bcc34d531530e86b74de362df0db6c3c59597fa8095baaa056f6e4ba82ab7386"
+    "8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d"
 )
 LOCKED_PROFILE_OUTPUT_SHA256 = (
-    "38c8335ad4cb1b91f8da75beba33c22236aa3b63b519585ca2146bd9f88effdb"
+    "c19207c4ad4c7494be6119db423a2eb927e2fe2f14695dc1dd2ff7309ce9d345"
 )
 HISTORICAL_MAP_SWITCHING_SOURCE_SHA256 = (
     "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
@@ -96,7 +97,10 @@ def _require_map_switching_endpoint(
 ):
     for unit in layout.assembly_units:
         actual = source[unit.span.start : unit.span.end]
-        if actual != payloads[unit.key]:
+        expected = map_composer.endpoint_unit_bytes(
+            layout, payloads, unit
+        )
+        if actual != expected:
             raise PatchError(
                 f"{context}: map-switching unit {unit.key} differs"
             )
@@ -330,7 +334,7 @@ def _format_checksums(values):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "input", type=Path, help="exact complete map-switching stage-19 ROM"
+        "input", type=Path, help="exact complete map-switching stage-20 ROM"
     )
     parser.add_argument(
         "--output", type=Path, help="output path; defaults beside INPUT"
