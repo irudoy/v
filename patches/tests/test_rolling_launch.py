@@ -42,12 +42,11 @@ class RollingLaunchTest(unittest.TestCase):
             {"schema_version": 2},
             {"mode": 3},
             {"enable_mask": 0x20},
-            {"options": 2},
+            {"options": 1},
             {"coolant_min": 221, "coolant_max": 220},
             {"min_speed": 0},
             {"speed_padding": 1},
             {"min_rpm_native": 0},
-            {"min_pedal": 0},
             {"rpm_offset_native": 0},
             {"hysteresis_native": 200},
             {"run_timeout_ticks": 0},
@@ -209,21 +208,12 @@ class RollingLaunchTest(unittest.TestCase):
         )
         self.assertEqual(result.limiter_index, 0)
 
-    def test_brake_gate_is_opt_in(self):
-        braking = dataclasses.replace(self.inputs, brake_status=0x80)
-        result = rl.step(
-            rl.RuntimeState(), braking, self.calibration
-        )
+    def test_zero_minimum_pedal_disables_the_pedal_requirement(self):
+        calibration = dataclasses.replace(self.calibration, min_pedal=0)
+        inputs = dataclasses.replace(self.inputs, pedal=0)
+        result = rl.step(rl.RuntimeState(), inputs, calibration)
         self.assertEqual(result.state.phase, rl.Phase.ACTIVE)
-
-        calibration = dataclasses.replace(
-            self.calibration, options=rl.Option.BRAKE_GATE
-        )
-        result = rl.step(rl.RuntimeState(), braking, calibration)
-        self.assertEqual(result.state.phase, rl.Phase.IDLE)
-        self.assertEqual(
-            result.state.abort_reason, rl.AbortReason.BRAKE_ACTIVE
-        )
+        self.assertTrue(result.state.flags & rl.Flag.PEDAL_OK)
 
     def test_ignition_adapter_can_only_add_retard(self):
         calibration = dataclasses.replace(

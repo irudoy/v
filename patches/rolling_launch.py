@@ -25,7 +25,6 @@ BUTTON_RELEASED = 0x20
 BUTTON_CANCEL = 0x02
 BUTTON_SET = 0x08
 ASCD_ACTIVE_MASK = 0x80
-BRAKE_CANDIDATE_MASK = 0x80
 FUEL_CUT_ACTIVE_MASK = 0x04
 
 
@@ -42,7 +41,7 @@ class Mode(IntEnum):
 
 
 class Option(IntFlag):
-    BRAKE_GATE = 1 << 0
+    NONE = 0
 
 
 class Flag(IntFlag):
@@ -56,7 +55,6 @@ class Flag(IntFlag):
     RPM_OK = 1 << 7
     PEDAL_OK = 1 << 8
     COOLANT_OK = 1 << 9
-    BRAKE_OK = 1 << 10
     TIMER_OK = 1 << 11
     ACTIVE = 1 << 12
     FUEL_CUT = 1 << 13
@@ -78,7 +76,7 @@ class AbortReason(IntEnum):
     RPM_LOW = 10
     PEDAL_LOW = 11
     COOLANT_OUTSIDE = 12
-    BRAKE_ACTIVE = 13
+    RESERVED_13 = 13
     TIMEOUT = 14
     MAP_REQUEST = 15
     STATE_CORRUPT = 16
@@ -97,7 +95,7 @@ class LimiterAction(IntEnum):
 class Calibration:
     mode: Mode = Mode.OBSERVE
     enable_mask: int = 0
-    options: Option = Option(0)
+    options: Option = Option.NONE
     coolant_min: int = 0
     coolant_max: int = 0xFF
     min_speed: int = 1
@@ -126,12 +124,12 @@ class Calibration:
             self.schema_version == CONFIG_SCHEMA_VERSION,
             mode in Mode,
             0 <= self.enable_mask <= 0x1F,
-            int(options) & ~int(Option.BRAKE_GATE) == 0,
+            options == Option.NONE,
             0 <= self.coolant_min <= self.coolant_max <= 0xFF,
             0 < self.min_speed <= 0xFF,
             self.speed_padding == 0,
             0 < self.min_rpm_native <= 0xFFFF,
-            0 < self.min_pedal <= 0xFFFF,
+            0 <= self.min_pedal <= 0xFFFF,
             0 < self.rpm_offset_native <= 0xFFFF,
             0 < self.hysteresis_native < self.min_rpm_native,
             0 < self.run_timeout_ticks <= 0x7FFF,
@@ -223,7 +221,6 @@ class Inputs:
     rpm_native: int = 0
     pedal: int = 0
     coolant: int = 0
-    brake_status: int = 0
     fuel_cut_status: int = 0
 
 
@@ -323,11 +320,6 @@ def evaluate_gates(inputs, calibration):
         Flag.COOLANT_OK,
         AbortReason.COOLANT_OUTSIDE,
     )
-    brake_ok = valid and (
-        not calibration.options & Option.BRAKE_GATE
-        or not inputs.brake_status & BRAKE_CANDIDATE_MASK
-    )
-    gate(brake_ok, Flag.BRAKE_OK, AbortReason.BRAKE_ACTIVE)
     gate(valid, Flag.TIMER_OK, AbortReason.CONFIG_INVALID)
     return flags, reason
 

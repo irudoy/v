@@ -39,7 +39,7 @@ LOCKED_MAP_SWITCHING_SOURCE_SHA256 = (
     "8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d"
 )
 LOCKED_PROFILE_OUTPUT_SHA256 = (
-    "c19207c4ad4c7494be6119db423a2eb927e2fe2f14695dc1dd2ff7309ce9d345"
+    "01555a7bdd21306881e177d4407bed1f2123d730cac5d7857554ec189bb5db3d"
 )
 HISTORICAL_MAP_SWITCHING_SOURCE_SHA256 = (
     "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
@@ -385,7 +385,7 @@ def main(argv=None):
         f"entries={result.code_entry_count} "
         f"diagnostics={result.diagnostic_count}"
     )
-    print("ignition_retard=false brake_gate=false map1_only=true checksums=PASS")
+    print("ignition_retard=false brake_gate=absent map1_only=true checksums=PASS")
 
     if args.verify_only:
         print("no ROM file was written")

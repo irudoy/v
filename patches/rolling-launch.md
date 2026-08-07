@@ -10,9 +10,15 @@ enrichment, spark cut, or throttle intervention.
 The tracked in-memory fixture remains valid and fail-closed: its map enable
 mask is zero and its composer never writes a ROM. A separate strict patcher
 produces one locked hardware-test profile. That profile enables mode 1 only for
-Map 1, leaves ignition retard and the unverified brake gate disabled,
-recalculates all six checksum references, and refuses any input other than the
-exact corrected complete twelve-family map-switching stage-20 endpoint.
+Map 1, requires a nonzero accelerator-pedal signal, leaves ignition retard
+disabled, contains no brake gate, recalculates all six checksum references,
+and refuses any input other than the exact corrected complete twelve-family
+map-switching stage-20 endpoint.
+
+The brake-status read and brake gate are absent from the current executable.
+This runtime revision has software status `PASS` and hardware status `UNTESTED`;
+the earlier vehicle results below remain evidence for their exact historical
+images and do not validate the changed instruction bytes.
 
 The vehicle-tested custom Overlay 20 passes application startup and PCMFlash
 identification and activates RPM hold once, but it cannot rearm after CANCEL is
@@ -38,12 +44,15 @@ load conditions. A future Rolling Launch retard phase must remain stock below
 the hold band and may apply a late command only during a fuel-present recovery
 phase near an actual limiter transition.
 
-The common `defs/JK08A.xml` exposes one native `BitwiseSwitch` at configuration
-byte `0xD3F64`, with one checkbox for each of Maps 1 through 5. TunerPro's
-native model represents the same byte as five `XDFFLAG` items. Every control
+The common `defs/JK08A.xml` and `defs/JK08A.xdf` expose minimum coolant
+temperature, minimum vehicle speed, minimum engine speed, RPM offset, and RPM
+hysteresis as calibration tables. A native switch at `0xD3F6C` enables or
+disables the accelerator-pedal requirement by writing `min_pedal=1` or
+`min_pedal=0`. RomRaider also exposes one native `BitwiseSwitch` at
+configuration byte `0xD3F64`, with one checkbox for each of Maps 1 through 5.
+TunerPro represents the same byte as five `XDFFLAG` items. Every per-map control
 edits one bit of `enable_mask` and preserves the other bits. The raw aggregate
-mask is not exposed as a table. This lets one runtime use any per-map enable
-combination without rebuilding executable code.
+mask and raw pedal threshold are not exposed as tables.
 
 The implementation is bound to:
 
@@ -52,10 +61,12 @@ The implementation is bound to:
 - complete map-switching in-memory endpoint SHA-256
   `b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56`;
 - default Rolling Launch in-memory endpoint SHA-256
-  `df5897cd2e152b1b6af166af657b7beccf0725f568151288ade470188cceda61`;
+  `55eb17589b0195c2b61c0440c47fdcde66419825d51e11d54fbf7db5dc333e6c`;
 - corrected checksum-valid map-switching stage-20 source SHA-256
   `8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d`;
 - corrected Map 1 RPM Hold candidate SHA-256
+  `01555a7bdd21306881e177d4407bed1f2123d730cac5d7857554ec189bb5db3d`;
+- historical brake-gated Map 1 RPM Hold candidate SHA-256
   `c19207c4ad4c7494be6119db423a2eb927e2fe2f14695dc1dd2ff7309ce9d345`;
 - historical checksum-valid map-switching stage-19 source SHA-256
   `e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1`;
@@ -113,10 +124,10 @@ priority:
 7. stable cruise button code is `CANCEL` (`0x02`);
 8. vehicle speed meets its minimum;
 9. native RPM meets its minimum;
-10. accelerator pedal meets its minimum;
+10. accelerator pedal meets its minimum; `min_pedal=0` makes this condition
+    unconditional;
 11. coolant lies inside the inclusive window;
-12. optional brake candidate gate passes;
-13. timeout configuration is valid.
+12. timeout configuration is valid.
 
 `SET` remains reserved for map switching. While Rolling Launch is `ACTIVE` or
 `COOLDOWN`, the selector arbiter bypasses the map selector and tail-calls the
@@ -199,13 +210,13 @@ All multi-byte values are big-endian.
 | `0x02` | 1 | schema | `1` |
 | `0x03` | 1 | mode | `0..2` |
 | `0x04` | 1 | map enable mask | bits `0..4` only |
-| `0x05` | 1 | options | bit 0 is the brake candidate gate |
+| `0x05` | 1 | reserved options | zero |
 | `0x06` | 1 | coolant minimum | `<=` maximum |
 | `0x07` | 1 | coolant maximum | `>=` minimum |
 | `0x08` | 1 | minimum speed | nonzero |
 | `0x09` | 1 | padding | zero |
 | `0x0A` | 2 | minimum native RPM | nonzero |
-| `0x0C` | 2 | minimum pedal | nonzero |
+| `0x0C` | 2 | minimum pedal | `0..0xFFFF`; zero disables the requirement |
 | `0x0E` | 2 | native RPM offset | nonzero |
 | `0x10` | 2 | native hysteresis | `0 < value < minimum RPM` |
 | `0x12` | 2 | run timeout ticks | `1..0x7FFF` |
@@ -223,7 +234,9 @@ The tracked default is:
 
 It selects `OBSERVE`, enables no map, uses native minimum RPM `160`
 (`2000 RPM`), offset `16` (`200 RPM`), hysteresis `8` (`100 RPM`), timeout
-`300` ticks, rearm `100` ticks, and target command `115` for every map.
+`300` ticks, rearm `100` ticks, and target command `115` for every map. Its
+minimum coolant value is raw `0` (`-40 deg C`), minimum speed is raw `1`
+(`2 km/h [cand]`), and `min_pedal=1` enables the pedal requirement.
 
 The locked hardware-test profile is:
 
@@ -278,7 +291,7 @@ direct behavior.
 The abort reason values are `0` none, `1` invalid configuration, `2` invalid
 map index, `3` disabled map, `4` selector busy, `5` feedback busy, `6` ASCD
 active, `7` button released, `8` invalid button, `9` speed low, `10` RPM low,
-`11` pedal low, `12` coolant outside, `13` brake active, `14` timeout, `15`
+`11` pedal low, `12` coolant outside, `13` reserved, `14` timeout, `15`
 map request, `16` corrupt state, `17` map changed, and `18` mode changed.
 
 ## Artifacts and verification
@@ -391,8 +404,8 @@ tracked patch tools with prefix `1JK08A-map-switching-safe-v5`. Its stage-20
 map-switching endpoint has SHA-256
 `8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d`.
 Applying the locked generic Map 1 RPM Hold profile produces SHA-256
-`c19207c4ad4c7494be6119db423a2eb927e2fe2f14695dc1dd2ff7309ce9d345`
-and MD5 `8ff9693865ea625fab70cebceb7a4bb3`. This regression image does not contain
+`01555a7bdd21306881e177d4407bed1f2123d730cac5d7857554ec189bb5db3d`
+and MD5 `957414243a7c50ba430657ec028863cb`. This regression image does not contain
 the custom calibration of Overlay 21.
 
 The target-vehicle result is:
@@ -405,10 +418,10 @@ The target-vehicle result is:
 4. Maps 2 through 5 reject Rolling Launch because the hardware-test profile is
    intentionally Map 1-only.
 5. Overlay 21 is the safe `RPM_HOLD` baseline without retard. The common defs
-   provide one RomRaider map-enable switch with five independent checkboxes at
-   `0xD3F64` and the `Rolling Launch RPM Hysteresis` calibration at `0xD3F70`
-   in 12.5 RPM units. TunerPro uses five native flags for the same bits.
-   Hardware acceptance uses only parameters available in the current logger.
+   provide minimum coolant temperature, minimum vehicle speed, minimum engine
+   speed, RPM offset, RPM hysteresis, the pedal-requirement switch, and five
+   independent per-map enable controls. Hardware acceptance uses only
+   parameters available in the current logger.
 6. A complete Rolling Launch implementation requires an RPM-conditioned
    ignition controller. Retard must remain stock below the hold band, enter
    only near an actual limiter event, and restore torque through explicit

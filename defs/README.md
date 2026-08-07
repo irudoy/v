@@ -95,11 +95,12 @@ under `defs/`, separately from `reference/`:
   the SR-protected transaction for both direct limiter families,
   `../tools/mapkit/map_switching.py` projects 60 slot tables and ten
   slot-specific masked ignition views. `../tools/mapkit/rolling_launch.py`
-  projects the validated enable-mask byte at `0xD3F64` as one native RomRaider
-  `BitwiseSwitch` with five checkboxes and as five native TunerPro `XDFFLAG`
-  items. It projects the RPM-hysteresis word at `0xD3F70` as one calibration
-  table. The raw mask byte is not exposed as a table. The common output
-  contains 89 calibration tables and 11 masked views. The
+  projects five scalar configuration tables, one native pedal-requirement
+  switch, and the validated enable-mask byte at `0xD3F64` as one native
+  RomRaider `BitwiseSwitch` with five checkboxes and as five native TunerPro
+  `XDFFLAG` items. The raw mask and pedal-threshold fields are not exposed as
+  tables. The common output contains 93 calibration tables and 11 masked views.
+  The
   `../tools/mapkit/validate_map_switching.py` renders the projection against
   the live graph and verifies both tracked common definition files.
   The nine standalone assembly units pass 131 Ghidra p-code cases: 17 selector,
@@ -214,15 +215,18 @@ equivalence. JK00A remains an inventoried binary without a Ghidra export,
 Memgraph layer, or annotation inheritance entry.
 
 The generated JK08A definitions contain 40 default-visible canonical maps and
-three masked ignition views. The map-switching projection exposes 50
-slot-specific calibration tables, including the ten canonical Map 1 tables.
-Rolling Launch adds one hysteresis calibration table and one five-checkbox
+three masked ignition views. The map-switching projection exposes 60
+slot-specific calibration tables, including the twelve canonical Map 1 tables.
+Rolling Launch adds five scalar tables for minimum coolant temperature, minimum
+vehicle speed, minimum engine speed, RPM offset, and RPM hysteresis. It also
+adds a native accelerator-pedal requirement switch and one five-checkbox
 RomRaider `BitwiseSwitch`; TunerPro represents the same five enable bits as
-five native `XDFFLAG` items. The complete definitions contain 81 calibration
-tables and 11 masked views. The `Rolling Launch RPM Hysteresis` table edits the
-big-endian `uint16` word at `0xD3F70` in 12.5 RPM units. The runtime accepts
-only a nonzero value below the configured minimum activation RPM and fails
-closed when the complete configuration is invalid.
+five native `XDFFLAG` items. The complete definitions contain 93 calibration
+tables and 11 masked views. The RPM values use code-established 12.5 RPM units;
+coolant uses code-established `x*0.625-40 deg C`; vehicle speed uses candidate
+`x*2 km/h`; and the pedal switch writes `min_pedal=1` or `min_pedal=0`. A zero
+minimum pedal disables that gate. The runtime fails closed when the complete
+configuration is invalid.
 The two A/B candidates `0x12196` and `0x1219E` are exposed as Cold Idle and
 Idle Ignition Timing under `Idle Speed Control / Ignition Timing`. Their
 `x-128` conversion is exact; the degree unit and 0..2800 RPM axis are marked as

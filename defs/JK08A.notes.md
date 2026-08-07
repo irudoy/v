@@ -4624,17 +4624,21 @@ initialized with identical bytes in the first bench image. Calibration values ar
 edited manually after the identical-map bench gate.
 
 `tools/mapkit/validate_map_switching.py` validates the live 450-map graph and the
-499-map common projection without writing files. The tracked definitions contain
-89 calibration tables and 11 masked views. The switchable subset contains 60
+503-map common projection without writing files. The tracked definitions contain
+93 calibration tables and 11 masked views. The switchable subset contains 60
 calibration tables plus ten ignition bit-7 views, for 70 slot-specific editor
-views. Rolling Launch adds `Rolling Launch RPM Hysteresis` at `0xD3F70` plus one
-native RomRaider `BitwiseSwitch` at `0xD3F64` with five per-map checkboxes.
-TunerPro represents the same byte as five native `XDFFLAG` items. The raw
-enable-mask byte is not exposed as a table. The hysteresis is a big-endian
-`uint16` with code-established `x*12.5 RPM` scaling. Its default raw value 8 is
-100 RPM; the runtime requires `0 < hysteresis_native < min_rpm_native` and fails
-closed on an invalid complete configuration. Both formats retain the common
-`JK08A` identity; no separate map-switching definition exists.
+views. Rolling Launch adds five scalar configuration tables: minimum coolant
+temperature at `0xD3F66`, minimum vehicle speed at `0xD3F68`, minimum engine
+speed at `0xD3F6A`, RPM offset at `0xD3F6E`, and RPM hysteresis at `0xD3F70`.
+It also adds a native pedal-requirement switch at `0xD3F6C` and one native
+RomRaider `BitwiseSwitch` at `0xD3F64` with five per-map checkboxes. TunerPro
+represents the same byte as five native `XDFFLAG` items. The raw enable-mask and
+pedal-threshold fields are not exposed as tables. Engine-speed values use
+code-established `x*12.5 RPM` scaling, coolant uses code-established
+`x*0.625-40 deg C`, and vehicle speed uses candidate `x*2 km/h`. The pedal
+switch writes `min_pedal=1` for enabled and `min_pedal=0` for disabled. The
+runtime fails closed on an invalid complete configuration. Both formats retain
+the common `JK08A` identity; no separate map-switching definition exists.
 
 In a stock image, Map 2 through Map 5 expose erased `0xFF` allocations that runtime
 code does not reference. Their presence in the common definition does not imply

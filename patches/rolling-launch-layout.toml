@@ -9,7 +9,7 @@ rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56"
-expected_composition_sha256 = "df5897cd2e152b1b6af166af657b7beccf0725f568151288ade470188cceda61"
+expected_composition_sha256 = "55eb17589b0195c2b61c0440c47fdcde66419825d51e11d54fbf7db5dc333e6c"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
@@ -84,9 +84,9 @@ start = 0x000D38E4
 end = 0x000D3EA0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "7a1e1acedccfbe24e301c0ffd28896cb411f203863a839379a75ce10919745d9"
-instruction_count = 648
-data_bytes = 99
+expected_sha256 = "599c859dffe2f2b88eefa0c2add63ceecf3232a08625b1acc2481bd9c4658673"
+instruction_count = 623
+data_bytes = 95
 code_regions = ["engine"]
 
 [[assembly_unit]]

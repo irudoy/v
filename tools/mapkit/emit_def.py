@@ -1207,6 +1207,7 @@ def main():
         print(
             "  Rolling Launch definition: "
             f"configuration tables={launch.table_count}; "
+            f"switches={launch.switch_count}; "
             f"bitwise switches={launch.bitwise_switch_count}; "
             f"enable bits={launch.enable_bit_count}; "
             f"editor views={launch.editor_view_count}"

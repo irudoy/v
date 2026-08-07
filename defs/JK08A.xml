@@ -53,6 +53,14 @@
       <state name="Disabled (IMMO OFF)" data="00"/>
     </table>
 
+    <table type="Switch" name="Rolling Launch Require Accelerator Pedal"
+           category="Rolling Launch / Activation" storageaddress="0xD3F6C" storagetype="uint8"
+           sizey="2" endian="big" userlevel="5">
+      <description>Exact JK08A. Enabled writes min_pedal=1 and requires a nonzero normalized accelerator-pedal signal for activation. Disabled writes min_pedal=0, which makes the pedal gate unconditional. The signal is not presented as a calibrated pedal percentage.</description>
+      <state name="Enabled" data="00 01"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
     <table type="Switch" name="DTC P0306 [index 10] - 1/2 Descriptor"
            category="Diagnostics / DTC" storageaddress="0x193D8" storagetype="uint8" sizey="12"
            endian="big" userlevel="5">
@@ -3127,6 +3135,67 @@
                fineincrement="50" coarseincrement="250"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>throttle cut</data>
+      </table>
+    </table>
+
+    <!-- 0xD3F66  1 uint8  map [code]
+         scaling x*0.625-40 deg C [code]
+         The runtime compares the normalized coolant index at 0xFFFF1077 against this inclusive
+         minimum. The index maps 0, 16, ..., 240 to -40, -30, ..., 110 deg C; 255 is the
+         saturated hot endpoint.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Minimum Coolant Temperature"
+           category="Rolling Launch / Activation" storagetype="uint8" storageaddress="0xD3F66"
+           sizex="1" endian="big">
+      <scaling units="deg C" expression="x*0.625-40" to_byte="(x+40)/0.625" format="0.0"
+               fineincrement="0.625" coarseincrement="10"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Minimum coolant temperature</data>
+      </table>
+    </table>
+
+    <!-- 0xD3F68  1 uint8  map [code]
+         scaling x*2 km/h [candidate]
+         The exact firmware chain produces the byte at 0xFFFF110E. Its approximately 2 km/h per
+         count physical scale depends on homologous observed CAN 0x280 data; zero-speed
+         semantics are exact.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Minimum Vehicle Speed"
+           category="Rolling Launch / Activation" storagetype="uint8" storageaddress="0xD3F68"
+           sizex="1" endian="big">
+      <scaling units="km/h [cand]" expression="x*2" to_byte="x/2" format="0.0" fineincrement="2"
+               coarseincrement="10"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Minimum vehicle speed</data>
+      </table>
+    </table>
+
+    <!-- 0xD3F6A  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         The runtime compares the native RPM/12.5 word at 0xFFFF11BC against this inclusive
+         minimum.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Minimum Engine Speed"
+           category="Rolling Launch / Activation" storagetype="uint16" storageaddress="0xD3F6A"
+           sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
+               fineincrement="12.5" coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Minimum engine speed</data>
+      </table>
+    </table>
+
+    <!-- 0xD3F6E  1 uint16  map [code]
+         scaling x*12.5 RPM [code]
+         The runtime computes Cut = saturate_u16(captured_rpm + rpm_offset). The value must be
+         nonzero.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch RPM Offset" category="Rolling Launch / RPM Hold"
+           storagetype="uint16" storageaddress="0xD3F6E" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
+               fineincrement="12.5" coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>RPM offset</data>
       </table>
     </table>
 

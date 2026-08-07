@@ -18,6 +18,10 @@ COMMON_TABLES = {
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
+    "Rolling Launch Minimum Coolant Temperature": "Rolling Launch / Activation",
+    "Rolling Launch Minimum Vehicle Speed": "Rolling Launch / Activation",
+    "Rolling Launch Minimum Engine Speed": "Rolling Launch / Activation",
+    "Rolling Launch RPM Offset": "Rolling Launch / RPM Hold",
     "Rolling Launch RPM Hysteresis": "Rolling Launch / RPM Hold",
 }
 
@@ -280,6 +284,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
 
         expected_patches = {
             "Developer Immobilizer": "NATS / Immobilizer",
+            "Rolling Launch Require Accelerator Pedal":
+                "Rolling Launch / Activation",
         }
         for title, category in expected_patches.items():
             with self.subTest(title=title):
@@ -344,8 +350,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
-        self.assertEqual(len(patches), 44)
-        self.assertEqual(len(tables), 100)
+        self.assertEqual(len(patches), 45)
+        self.assertEqual(len(tables), 104)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
@@ -570,6 +576,16 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                     basedata = bytes.fromhex(entry.get("basedata"))
                     patchdata = bytes.fromhex(entry.get("patchdata"))
                     self.assertEqual(int(entry.get("datasize"), 16), len(patchdata))
+                    if patch.findtext("./title") == (
+                        "Rolling Launch Require Accelerator Pedal"
+                    ):
+                        # Rolling Launch occupies erased stock space, so this
+                        # reversible control is based on the validated runtime
+                        # profile instead of the unpatched ROM bytes.
+                        self.assertEqual(address, 0xD3F6C)
+                        self.assertEqual(basedata, b"\x00\x01")
+                        self.assertEqual(patchdata, b"\x00\x00")
+                        continue
                     self.assertEqual(
                         self.image.data[address:address + len(basedata)],
                         basedata,

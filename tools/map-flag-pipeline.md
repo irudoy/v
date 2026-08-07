@@ -954,9 +954,9 @@ presentation allowlist while preserving hidden research maps in the graph and le
 
 For JK08A, `[map_switching].enabled = true` expands selected calibration families into
 Map 1 through Map 5 inside the common `JK08A` definition identity. The canonical graph
-catalog remains unchanged at 450 maps. Map switching adds 40 noncanonical slot copies, and the
-Rolling Launch projection adds one configuration table, so the projected editor model contains
-491 maps:
+catalog remains unchanged at 450 maps. Map switching adds 48 noncanonical slot copies, and the
+Rolling Launch projection adds five configuration tables, so the projected editor model contains
+503 maps:
 Map 1 reuses each canonical stock address, while Map 2 through Map 5 use the erased flash
 allocations declared in `patches/map-switching-layout.toml`. Those additional slots contain
 `0xFF` and are inactive under stock firmware; the map-switching patch is required before
@@ -1328,16 +1328,17 @@ shows that `0xE98E` supplies an RPM-interpolated stack row, while `0x8000` is on
 offset-binary bias added to the request before that row is searched. Backtracking alone
 cannot distinguish them.
 
-Of the 450 canonical maps, 38 pass the definition gate and remain visible by default,
+Of the 450 canonical maps, 40 pass the definition gate and remain visible by default,
 148 internal or unidentified research maps carry an explicit `emit = false`, and 262
 default-visible maps are reported as rejected by the definition gate. The common JK08A
-projection expands ten visible calibration families into 50 Map 1 through Map 5 tables,
-adding 40 slot copies, and adds one Rolling Launch configuration table. Two masked
+projection expands twelve visible calibration families into 60 Map 1 through Map 5 tables,
+adding 48 slot copies, and adds five Rolling Launch configuration tables. Two masked
 ignition families expand into ten slot views; the remaining canonical masked view
-produces 11 masked views in total. Rolling Launch enablement is separate from map
-tables: RomRaider receives one native `BitwiseSwitch` with five checkboxes, while
-TunerPro receives five native `XDFFLAG` items for the same byte. The emitted definition
-therefore contains 81 calibration tables and 11 masked views without standalone
+produces 11 masked views in total. Rolling Launch also contributes one pedal-requirement
+switch. Per-map enablement is separate from map tables: RomRaider receives one native
+`BitwiseSwitch` with five checkboxes, while TunerPro receives five native `XDFFLAG`
+items for the same byte. The emitted definition therefore contains 93 calibration
+tables and 11 masked views without standalone
 reference axes. All hidden and rejected canonical maps remain available for reverse
 engineering in the graph and ledger. The catalog contains 365 `code` maps and 85
 `candidate` maps. Semantics are present for 443 maps and `scale_expr` for 405. The
@@ -1358,9 +1359,9 @@ sites, 61 without `r4`, for **492/553 = 89%** resolution. Target gates:
 | No regression against backtracking | sites where backtracking returned an in-ROM value but data flow did not | n/a -> **1, reviewed** (`0x56cd8`: value from an unreachable branch, not a base) | all reviewed |
 | Latent catalog defects | number of `conflict` results (`bt != df` at a site) | not measured -> **14, all reviewed** (6 base conflicts: reference wrong in every case; 3: unreachable branch and stale registers; 5: `mov.w` constant read as 32-bit by the reference). Four more base differences moved out of this class after operand-set expansion (section 6): the mechanisms selected different branches of one selector | all reviewed |
 | Catalog completeness | number of `:Map` nodes against known inventory; 0 maps outside graph | 223 bases in ledger, 0 in graph -> **450 of 450 in graph** across census and manual families; three dynamic call sites create no speculative map | every catalog map in graph; dynamic bases remain explicit |
-| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: the common definition emits 72 `code` maps, seven marked `candidate` maps, and 11 masked views; it emits no standalone reference axes | 0 unmarked |
+| Definition gate | number of emitted maps below `code` without explicit `[candidate]` evidence comment | not tracked -> **0**: the common definition emits 86 `code` maps, seven marked `candidate` maps, and 11 masked views; it emits no standalone reference axes | 0 unmarked |
 | Catalog geometry | number of `:Map` nodes without `storagetype`, which prevents emission | 66 of 441, all 2D -> **0**: 2D element type comes from the finisher | 0 |
-| Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **41** of 79; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
+| Definition readability | number of emitted maps whose scale is below `code` | not tracked -> **52** of 93; candidate scale remains visibly marked | traces remove `[cand]` without inventing scale |
 | Deferred axes | number of `pattern`-level `:Axis` nodes reported only by backtracking with `k5`/`k6=sp` | not measured -> **14 of 230**; `0x8000` is erased flash; none pass emission | 0; Stage 6 resolves them |
 | Axis against core code | number of `:Axis` nodes with `monotonic=false`; reverse linear search cannot read such an array | not measured -> **1 of 230** (`0x119B2`; its map `0x9C5A` is entirely `0xFF`). This caught an axis element declared from the core rather than the wrapper/axis pair: 2 of 22 wrappers and 2 axes had been read as words instead of bytes | 0 |
 | Measured layer | number of `:Map`/`:Axis` nodes without values from the image, meaning shape without contents | not tracked -> **0 of 450 and 230**: the same run that builds the layer reads the image | 0; a read miss stops loading |

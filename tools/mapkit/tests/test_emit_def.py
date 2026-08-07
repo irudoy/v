@@ -20,6 +20,11 @@ COMMON_TABLES = {
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
     "Rolling Launch Enable by Map": "Rolling Launch / Map Enable",
+    "Rolling Launch Require Accelerator Pedal": "Rolling Launch / Activation",
+    "Rolling Launch Minimum Coolant Temperature": "Rolling Launch / Activation",
+    "Rolling Launch Minimum Vehicle Speed": "Rolling Launch / Activation",
+    "Rolling Launch Minimum Engine Speed": "Rolling Launch / Activation",
+    "Rolling Launch RPM Offset": "Rolling Launch / RPM Hold",
     "Rolling Launch RPM Hysteresis": "Rolling Launch / RPM Hold",
 }
 
@@ -461,7 +466,13 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         }
         self.assertEqual(set(actual), set(expected))
         self.assertEqual(len(actual), 71)
-        self.assertEqual(set(switches) - set(actual), {"Developer Immobilizer"})
+        self.assertEqual(
+            set(switches) - set(actual),
+            {
+                "Developer Immobilizer",
+                "Rolling Launch Require Accelerator Pedal",
+            },
+        )
         for name, entry in expected.items():
             node = actual[name]
             self.assertEqual(node.get("storageaddress"), entry["storageaddress"])
@@ -537,6 +548,28 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertNotIn(
             "Rolling Launch Enable Mask (Raw)",
             {table.get("name") for table in rom.findall("./table")},
+        )
+
+    def test_tracked_xml_has_rolling_launch_activation_controls(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        by_name = {
+            table.get("name"): table for table in rom.findall("./table")
+        }
+        expected = {
+            "Rolling Launch Minimum Coolant Temperature": "0xD3F66",
+            "Rolling Launch Minimum Vehicle Speed": "0xD3F68",
+            "Rolling Launch Minimum Engine Speed": "0xD3F6A",
+            "Rolling Launch Require Accelerator Pedal": "0xD3F6C",
+            "Rolling Launch RPM Offset": "0xD3F6E",
+        }
+        for name, address in expected.items():
+            with self.subTest(name=name):
+                self.assertEqual(by_name[name].get("storageaddress"), address)
+        pedal = by_name["Rolling Launch Require Accelerator Pedal"]
+        self.assertEqual(pedal.get("type"), "Switch")
+        self.assertEqual(
+            [state.get("data") for state in pedal.findall("./state")],
+            ["00 01", "00 00"],
         )
 
     def test_tracked_fuel_targets_use_gasoline_afr_scaling(self):

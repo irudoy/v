@@ -570,37 +570,13 @@ bf rl_gate_coolant_fail
 mov.b @(0x2,r5),r0
 or 0x02,r0
 mov.b r0,@(0x2,r5)
-bra rl_gate_brake
+bra rl_gate_timer
 nop
 rl_gate_coolant_fail:
 mov.b @(0x1,r5),r0
 tst r0,r0
-bf rl_gate_brake
-mov #0xC,r0
-mov.b r0,@(0x1,r5)
-
-rl_gate_brake:
-tst r7,r7
-bt rl_gate_brake_fail
-mov.l @(rl_gate_config_address,pc),r4
-mov.b @(0x5,r4),r0
-tst 0x01,r0
-bt rl_gate_brake_ok
-mov.l @(rl_gate_brake_address,pc),r4
-mov.b @r4,r0
-tst 0x80,r0
-bf rl_gate_brake_fail
-rl_gate_brake_ok:
-mov.b @(0x2,r5),r0
-or 0x04,r0
-mov.b r0,@(0x2,r5)
-bra rl_gate_timer
-nop
-rl_gate_brake_fail:
-mov.b @(0x1,r5),r0
-tst r0,r0
 bf rl_gate_timer
-mov #0xD,r0
+mov #0xC,r0
 mov.b r0,@(0x1,r5)
 
 rl_gate_timer:
@@ -623,7 +599,7 @@ rl_gate_state_address:
 rl_gate_selector_address:
 .long 0xFFFF5D00
 rl_gate_map_enable_masks:
-.long 0x000D3D1C
+.long 0x000D3D18
 rl_gate_config_address:
 .long 0x000D3F60
 rl_gate_ascd_address:
@@ -638,8 +614,6 @@ rl_gate_pedal_address:
 .long 0xFFFF2672
 rl_gate_coolant_address:
 .long 0xFFFF1077
-rl_gate_brake_address:
-.long 0xFFFF2451
 rl_gate_map_enable_mask_bytes:
 .byte 0x01,0x02,0x04,0x08,0x10
 
@@ -666,7 +640,6 @@ and 0xE0,r0
 tst r0,r0
 bf rl_config_invalid
 mov.b @(0x5,r3),r0
-and 0xFE,r0
 tst r0,r0
 bf rl_config_invalid
 mov.b @(0x6,r3),r0
@@ -686,10 +659,6 @@ mov.w @(0xA,r3),r0
 mov r0,r2
 extu.w r2,r2
 tst r2,r2
-bt rl_config_invalid
-mov.w @(0xC,r3),r0
-extu.w r0,r0
-tst r0,r0
 bt rl_config_invalid
 mov.w @(0xE,r3),r0
 extu.w r0,r0

@@ -19,7 +19,7 @@
 #define RPM 0xffff11bcU
 #define PEDAL 0xffff2672U
 #define COOLANT 0xffff1077U
-#define BRAKE_STATUS 0xffff2451U
+#define FORMER_BRAKE_STATUS 0xffff2451U
 #define FUEL_CUT_STATUS 0xffff2497U
 #define IGNITION_OUTPUT 0xffff2022U
 #define APC_MODE_SNAPSHOT 0xffff24c9U
@@ -58,7 +58,6 @@
 #define REASON_RPM_LOW 10U
 #define REASON_PEDAL_LOW 11U
 #define REASON_COOLANT_OUTSIDE 12U
-#define REASON_BRAKE_ACTIVE 13U
 #define REASON_TIMEOUT 14U
 #define REASON_MAP_REQUEST 15U
 #define REASON_STATE_CORRUPT 16U
@@ -66,10 +65,10 @@
 #define REASON_MODE_CHANGED 18U
 
 #define FLAG_TIMER_OK 0x0800U
-#define FLAGS_OBSERVE_ACTIVE 0x1fffU
-#define FLAGS_RPM_ACTIVE 0x5fffU
-#define FLAGS_RPM_FUEL_CUT_ACTIVE 0x7fffU
-#define FLAGS_RETARD_ACTIVE 0xdfffU
+#define FLAGS_OBSERVE_ACTIVE 0x1bffU
+#define FLAGS_RPM_ACTIVE 0x5bffU
+#define FLAGS_RPM_FUEL_CUT_ACTIVE 0x7bffU
+#define FLAGS_RETARD_ACTIVE 0xdbffU
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 
@@ -195,7 +194,7 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
     write_u16(ram_pointer(RPM), 300);
     write_u16(ram_pointer(PEDAL), 2000);
     ram_pointer(COOLANT)[0] = 100;
-    ram_pointer(BRAKE_STATUS)[0] = 0;
+    ram_pointer(FORMER_BRAKE_STATUS)[0] = 0;
     ram_pointer(FUEL_CUT_STATUS)[0] = 0;
     ram_pointer(IGNITION_OUTPUT)[0] = 0;
     ram_pointer(APC_MODE_SNAPSHOT)[0] = 0;
@@ -333,12 +332,12 @@ enum gate_mutation {
     GATE_RPM_EXACT,
     GATE_PEDAL_LOW,
     GATE_PEDAL_EXACT,
+    GATE_PEDAL_DISABLED,
     GATE_COOLANT_LOW,
     GATE_COOLANT_HIGH,
     GATE_COOLANT_MIN,
     GATE_COOLANT_MAX,
-    GATE_BRAKE_BLOCKED,
-    GATE_BRAKE_IGNORED,
+    GATE_FORMER_BRAKE_SIGNAL,
 };
 
 struct gate_case {
@@ -368,12 +367,12 @@ static const struct gate_case gate_cases[] = {
     {"gate-rpm-exact", GATE_RPM_EXACT, REASON_NONE, 1},
     {"gate-pedal-low", GATE_PEDAL_LOW, REASON_PEDAL_LOW, 0},
     {"gate-pedal-exact", GATE_PEDAL_EXACT, REASON_NONE, 1},
+    {"gate-pedal-disabled", GATE_PEDAL_DISABLED, REASON_NONE, 1},
     {"gate-coolant-low", GATE_COOLANT_LOW, REASON_COOLANT_OUTSIDE, 0},
     {"gate-coolant-high", GATE_COOLANT_HIGH, REASON_COOLANT_OUTSIDE, 0},
     {"gate-coolant-min", GATE_COOLANT_MIN, REASON_NONE, 1},
     {"gate-coolant-max", GATE_COOLANT_MAX, REASON_NONE, 1},
-    {"gate-brake-blocked", GATE_BRAKE_BLOCKED, REASON_BRAKE_ACTIVE, 0},
-    {"gate-brake-ignored", GATE_BRAKE_IGNORED, REASON_NONE, 1},
+    {"gate-former-brake-signal", GATE_FORMER_BRAKE_SIGNAL, REASON_NONE, 1},
 };
 
 static void apply_gate_mutation(enum gate_mutation mutation)
@@ -445,6 +444,10 @@ static void apply_gate_mutation(enum gate_mutation mutation)
         write_u16(config + 12, 100);
         write_u16(ram_pointer(PEDAL), 100);
         break;
+    case GATE_PEDAL_DISABLED:
+        write_u16(config + 12, 0);
+        write_u16(ram_pointer(PEDAL), 0);
+        break;
     case GATE_COOLANT_LOW:
         config[6] = 10;
         config[7] = 200;
@@ -465,13 +468,8 @@ static void apply_gate_mutation(enum gate_mutation mutation)
         config[7] = 200;
         ram_pointer(COOLANT)[0] = 200;
         break;
-    case GATE_BRAKE_BLOCKED:
-        config[5] = 1;
-        ram_pointer(BRAKE_STATUS)[0] = 0x80;
-        break;
-    case GATE_BRAKE_IGNORED:
-        config[5] = 0;
-        ram_pointer(BRAKE_STATUS)[0] = 0x80;
+    case GATE_FORMER_BRAKE_SIGNAL:
+        ram_pointer(FORMER_BRAKE_STATUS)[0] = 0x80;
         break;
     }
 }
@@ -512,12 +510,12 @@ static const struct config_case config_cases[] = {
     {"config-schema", 2, 1, 2},
     {"config-mode", 3, 1, 3},
     {"config-enable-mask", 4, 1, 0x20},
-    {"config-options", 5, 1, 2},
+    {"config-options-low", 5, 1, 1},
+    {"config-options-high", 5, 1, 0x80},
     {"config-coolant-order", 6, 2, 0xff00},
     {"config-speed-zero", 8, 1, 0},
     {"config-speed-padding", 9, 1, 1},
     {"config-rpm-zero", 10, 2, 0},
-    {"config-pedal-zero", 12, 2, 0},
     {"config-offset-zero", 14, 2, 0},
     {"config-hysteresis-zero", 16, 2, 0},
     {"config-hysteresis-range", 16, 2, 100},

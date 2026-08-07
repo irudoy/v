@@ -169,6 +169,11 @@ def _validate_engine_abi(parsed):
     }
     if not required <= set(parsed.labels):
         raise ValueError("engine state-machine label set is incomplete")
+    mask_pointer = common._long_literals(parsed).get(
+        "rl_gate_map_enable_masks"
+    )
+    if mask_pointer != parsed.labels.get("rl_gate_map_enable_mask_bytes"):
+        raise ValueError("map-enable mask literal does not point to its table")
 
 
 def _validate_ignition_abi(parsed):
@@ -228,7 +233,7 @@ def _expected_long_literals():
             "rl_button_address": 0xFFFF2A85,
             "rl_gate_state_address": 0xFFFF5D40,
             "rl_gate_selector_address": 0xFFFF5D00,
-            "rl_gate_map_enable_masks": 0x000D3D1C,
+            "rl_gate_map_enable_masks": 0x000D3D18,
             "rl_gate_config_address": 0x000D3F60,
             "rl_gate_ascd_address": 0xFFFF41AE,
             "rl_gate_button_address": 0xFFFF2A85,
@@ -236,7 +241,6 @@ def _expected_long_literals():
             "rl_gate_rpm_address": 0xFFFF11BC,
             "rl_gate_pedal_address": 0xFFFF2672,
             "rl_gate_coolant_address": 0xFFFF1077,
-            "rl_gate_brake_address": 0xFFFF2451,
             "rl_helper_config_address": 0x000D3F60,
             "rl_helper_state_address": 0xFFFF5D40,
             "rl_helper_fuel_shadow_address": 0xFFFF5D10,

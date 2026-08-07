@@ -91,11 +91,12 @@ def validate():
         romraider_fragments.extend(
             emit_def.bitwise_switch_xml(entry, index)
         )
-    romraider_model = "\n".join(romraider_fragments)
-
     native_switches = projection.overrides.get("switch", [])
     if isinstance(native_switches, dict):
         native_switches = [native_switches]
+    for index, entry in enumerate(native_switches, 1):
+        romraider_fragments.extend(emit_def.switch_xml(entry, index))
+    romraider_model = "\n".join(romraider_fragments)
     records = emit_def.dtc_records(layout.rom, image=image)
     xdf, xdf_stats = tunerpro.render(
         layout.rom,
@@ -146,8 +147,22 @@ def validate():
         raise ValueError("Rolling Launch enable mask address differs")
     if launch.hysteresis_address != "000d3f70":
         raise ValueError("Rolling Launch hysteresis address differs")
+    expected_controls = {
+        "coolant_min_address": "000d3f66",
+        "min_speed_address": "000d3f68",
+        "min_rpm_address": "000d3f6a",
+        "pedal_requirement_address": "000d3f6c",
+        "rpm_offset_address": "000d3f6e",
+    }
+    for field, expected in expected_controls.items():
+        if getattr(launch, field) != expected:
+            raise ValueError(f"Rolling Launch {field} differs")
     if launch.masked_view_count != 0:
         raise ValueError("Rolling Launch still exposes masked table views")
+    if launch.table_count != 5 or launch.switch_count != 1:
+        raise ValueError(
+            "runtime does not expose five calibration tables and one pedal switch"
+        )
     if launch.bitwise_switch_count != 1 or launch.enable_bit_count != 5:
         raise ValueError(
             "runtime does not expose one five-bit map-enable switch"
@@ -160,6 +175,23 @@ def validate():
         raise ValueError("TunerPro projection lacks Rolling Launch hysteresis")
     if 'mmedaddress="0xD3F70"' not in xdf:
         raise ValueError("TunerPro Rolling Launch hysteresis address differs")
+    controls = {
+        "Rolling Launch Minimum Coolant Temperature": "0xD3F66",
+        "Rolling Launch Minimum Vehicle Speed": "0xD3F68",
+        "Rolling Launch Minimum Engine Speed": "0xD3F6A",
+        "Rolling Launch RPM Offset": "0xD3F6E",
+    }
+    for name, address in controls.items():
+        if name not in romraider_model or address not in romraider_model:
+            raise ValueError(f"RomRaider projection lacks {name}")
+        if name not in xdf or address not in xdf:
+            raise ValueError(f"TunerPro projection lacks {name}")
+    if "Rolling Launch Require Accelerator Pedal" not in romraider_model:
+        raise ValueError("RomRaider projection lacks the pedal switch")
+    if 'storageaddress="0xD3F6C"' not in romraider_model:
+        raise ValueError("RomRaider pedal-switch address differs")
+    if "Rolling Launch Require Accelerator Pedal" not in xdf:
+        raise ValueError("TunerPro projection lacks the pedal switch")
     if romraider_model.count('type="BitwiseSwitch"') != 1:
         raise ValueError("RomRaider projection lacks one bitwise switch")
     if romraider_model.count("<bit ") != 5:
@@ -219,6 +251,7 @@ def validate():
         "slot_masked_views": projection.slot_masked_view_count,
         "slot_editor_views": projection.slot_editor_view_count,
         "rolling_launch_tables": projection.rolling_launch.table_count,
+        "rolling_launch_switches": projection.rolling_launch.switch_count,
         "rolling_launch_bitwise_switches": (
             projection.rolling_launch.bitwise_switch_count
         ),
