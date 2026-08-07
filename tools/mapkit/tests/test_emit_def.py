@@ -24,6 +24,7 @@ COMMON_TABLES = {
     "Rolling Launch Minimum Coolant Temperature": "Rolling Launch / Activation",
     "Rolling Launch Minimum Vehicle Speed": "Rolling Launch / Activation",
     "Rolling Launch Minimum Engine Speed": "Rolling Launch / Activation",
+    "Rolling Launch Retard Ramp Width": "Rolling Launch / Ignition Retard",
     "Rolling Launch RPM Offset": "Rolling Launch / RPM Hold",
     "Rolling Launch RPM Hysteresis": "Rolling Launch / RPM Hold",
 }
@@ -558,6 +559,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         expected = {
             "Rolling Launch Minimum Coolant Temperature": "0xD3F66",
             "Rolling Launch Minimum Vehicle Speed": "0xD3F68",
+            "Rolling Launch Retard Ramp Width": "0xD3F69",
             "Rolling Launch Minimum Engine Speed": "0xD3F6A",
             "Rolling Launch Require Accelerator Pedal": "0xD3F6C",
             "Rolling Launch RPM Offset": "0xD3F6E",

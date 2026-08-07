@@ -17,7 +17,8 @@
 //
 // One tick is one exact periodic scheduler pass, or 204800/Pphi seconds.
 // The default calibration enables no map slot. Modes are 0 observe, 1 RPM
-// hold, and 2 RPM hold plus retard. Only modes 1 and 2 write the fuel shadow.
+// hold, and 2 RPM hold plus band-limited retard. Only modes 1 and 2 write the
+// fuel shadow.
 
 .org 0x000D38E4
 rolling_launch_engine:
@@ -629,7 +630,7 @@ extu.w r1,r1
 cmp/eq r1,r0
 bf rl_config_invalid
 mov.b @(0x2,r3),r0
-cmp/eq 0x1,r0
+cmp/eq 0x2,r0
 bf rl_config_invalid
 mov.b @(0x3,r3),r0
 mov #0x3,r1
@@ -653,16 +654,19 @@ mov.b @(0x8,r3),r0
 tst r0,r0
 bt rl_config_invalid
 mov.b @(0x9,r3),r0
-tst r0,r0
-bf rl_config_invalid
+mov r0,r1
+extu.b r1,r1
+tst r1,r1
+bt rl_config_invalid
 mov.w @(0xA,r3),r0
 mov r0,r2
 extu.w r2,r2
 tst r2,r2
 bt rl_config_invalid
 mov.w @(0xE,r3),r0
-extu.w r0,r0
-tst r0,r0
+mov r0,r4
+extu.w r4,r4
+tst r4,r4
 bt rl_config_invalid
 mov.w @(0x10,r3),r0
 extu.w r0,r0
@@ -670,6 +674,10 @@ tst r0,r0
 bt rl_config_invalid
 cmp/hs r2,r0
 bt rl_config_invalid
+cmp/hs r1,r0
+bt rl_config_invalid
+cmp/hs r1,r4
+bf rl_config_invalid
 mov.w @(0x12,r3),r0
 extu.w r0,r0
 tst r0,r0
@@ -725,6 +733,7 @@ nop
 
 // Atomically replace only the first eight bytes of the existing 12-byte fuel
 // shadow. Both columns receive the same captured Cut and Restore thresholds.
+.org 0x000D3E04
 rl_apply_fuel_overlay:
 stc sr,r7
 mov r7,r0
@@ -752,6 +761,7 @@ rts
 nop
 
 // Publish active/output flags and the current stock fuel-cut state.
+.org 0x000D3E34
 rl_publish_active_flags:
 mov.l @(rl_helper_state_address,pc),r5
 mov.b @(0x2,r5),r0

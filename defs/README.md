@@ -95,11 +95,12 @@ under `defs/`, separately from `reference/`:
   the SR-protected transaction for both direct limiter families,
   `../tools/mapkit/map_switching.py` projects 60 slot tables and ten
   slot-specific masked ignition views. `../tools/mapkit/rolling_launch.py`
-  projects five scalar configuration tables, one native pedal-requirement
+  projects six scalar configuration tables, including the bounded-retard ramp
+  width, one native pedal-requirement
   switch, and the validated enable-mask byte at `0xD3F64` as one native
   RomRaider `BitwiseSwitch` with five checkboxes and as five native TunerPro
   `XDFFLAG` items. The raw mask and pedal-threshold fields are not exposed as
-  tables. The common output contains 93 calibration tables and 11 masked views.
+  tables. The common output contains 94 calibration tables and 11 masked views.
   The
   `../tools/mapkit/validate_map_switching.py` renders the projection against
   the live graph and verifies both tracked common definition files.
@@ -121,6 +122,12 @@ under `defs/`, separately from `reference/`:
   exact protected code and patch anchors, initializes Map 2 through Map 5 from
   the input Map 1 values, injects the tracked SHA-locked payloads, recalculates
   all checksum domains, and writes a non-overwriting ROM plus MD5 sidecar.
+  `../patches/build_rom.py` is the production complete-ROM entry point. It
+  auto-detects JK08A or accepts `--rom JK08A`, runs the map-switching and Rolling
+  Launch stages, preserves established Map 2 through Map 5 bytes during a
+  recognized runtime migration, and preserves every definition-controlled byte
+  outside the combined component write set. The Developer Immobilizer control
+  remains a definition edit and has no standalone patcher.
   `../patches/upgrade_map_switching_reset.py` accepts only the complete pre-fix
   runtime with an exact protected upper partition outside declared
   map-switching and checksum storage,
@@ -217,11 +224,11 @@ Memgraph layer, or annotation inheritance entry.
 The generated JK08A definitions contain 40 default-visible canonical maps and
 three masked ignition views. The map-switching projection exposes 60
 slot-specific calibration tables, including the twelve canonical Map 1 tables.
-Rolling Launch adds five scalar tables for minimum coolant temperature, minimum
-vehicle speed, minimum engine speed, RPM offset, and RPM hysteresis. It also
-adds a native accelerator-pedal requirement switch and one five-checkbox
+Rolling Launch adds six scalar tables for minimum coolant temperature, minimum
+vehicle speed, minimum engine speed, bounded-retard ramp width, RPM offset, and
+RPM hysteresis. It also adds a native accelerator-pedal requirement switch and one five-checkbox
 RomRaider `BitwiseSwitch`; TunerPro represents the same five enable bits as
-five native `XDFFLAG` items. The complete definitions contain 93 calibration
+five native `XDFFLAG` items. The complete definitions contain 94 calibration
 tables and 11 masked views. The RPM values use code-established 12.5 RPM units;
 coolant uses code-established `x*0.625-40 deg C`; vehicle speed uses candidate
 `x*2 km/h`; and the pedal switch writes `min_pedal=1` or `min_pedal=0`. A zero

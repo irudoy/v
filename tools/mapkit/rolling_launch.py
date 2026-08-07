@@ -1,9 +1,10 @@
 """Definition projection for the JK08A Rolling Launch configuration.
 
 The runtime stores its tuner-facing activation thresholds, RPM hold values,
-pedal requirement, and one enable bit per map in a validated 32-byte record.
-This module projects those fields into the common JK08A RomRaider and TunerPro
-models. It does not write definitions or ROM images.
+bounded-retard ramp width, pedal requirement, and one enable bit per map in a
+validated 32-byte record. This module projects those fields into the common
+JK08A RomRaider and TunerPro models. It does not write definitions or ROM
+images.
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ class DefinitionProjection:
     enable_mask_address: str
     coolant_min_address: str
     min_speed_address: str
+    retard_ramp_address: str
     min_rpm_address: str
     pedal_requirement_address: str
     rpm_offset_address: str
@@ -168,6 +170,7 @@ def _scalar_presentation(
 def _configuration_tables(configuration_address):
     coolant_min = configuration_address + 0x06
     min_speed = configuration_address + 0x08
+    retard_ramp = configuration_address + 0x09
     min_rpm = configuration_address + 0x0A
     rpm_offset = configuration_address + 0x0E
     hysteresis = configuration_address + 0x10
@@ -228,6 +231,36 @@ def _configuration_tables(configuration_address):
                 "Minimum vehicle speed",
                 fine=2,
                 coarse=10,
+            ),
+        ),
+        (
+            retard_ramp,
+            _scalar_model(
+                retard_ramp,
+                storagetype="uint8",
+                semantics=(
+                    "Rolling Launch ignition-retard ramp width below the "
+                    "captured fuel-cut threshold"
+                ),
+                units="RPM",
+                scale_expr="x*12.5",
+                to_byte="x/12.5",
+                scale_conf="code",
+                note=(
+                    "Mode 2 keeps the stock ignition command at or below "
+                    "max(captured_rpm, Cut - retard_ramp), blends linearly "
+                    "toward the per-map late-command cap inside the band, "
+                    "and applies the cap at Cut. The validated record "
+                    "requires hysteresis < retard_ramp <= rpm_offset."
+                ),
+            ),
+            _scalar_presentation(
+                "Rolling Launch Retard Ramp Width",
+                "Rolling Launch / Ignition Retard",
+                900035,
+                "Retard ramp width",
+                fine=12.5,
+                coarse=100,
             ),
         ),
         (
@@ -299,9 +332,10 @@ def _configuration_tables(configuration_address):
                 scale_conf="code",
                 note=(
                     "The runtime computes Restore = Cut - hysteresis, accepts "
-                    "only 0 < hysteresis_native < min_rpm_native, and rejects "
-                    "the entire configuration otherwise. The default value is "
-                    "8 native counts, or 100 RPM."
+                    "only 0 < hysteresis_native < min_rpm_native and "
+                    "hysteresis_native < retard_ramp_native, and rejects the "
+                    "entire configuration otherwise. The default value is 8 "
+                    "native counts, or 100 RPM."
                 ),
             ),
             _scalar_presentation(
@@ -384,6 +418,7 @@ def project_definition_model(maps, overrides, layout=None):
         enable_mask_address=address_key(enable_mask_address),
         coolant_min_address=address_key(configuration_address + 0x06),
         min_speed_address=address_key(configuration_address + 0x08),
+        retard_ramp_address=address_key(configuration_address + 0x09),
         min_rpm_address=address_key(configuration_address + 0x0A),
         pedal_requirement_address=address_key(pedal_requirement_address),
         rpm_offset_address=address_key(configuration_address + 0x0E),
@@ -407,6 +442,7 @@ def validate_projection(projection, source_maps, source_overrides, layout=None):
         "enable_mask_address": configuration_address + 0x04,
         "coolant_min_address": configuration_address + 0x06,
         "min_speed_address": configuration_address + 0x08,
+        "retard_ramp_address": configuration_address + 0x09,
         "min_rpm_address": configuration_address + 0x0A,
         "pedal_requirement_address": configuration_address + 0x0C,
         "rpm_offset_address": configuration_address + 0x0E,
@@ -415,9 +451,9 @@ def validate_projection(projection, source_maps, source_overrides, layout=None):
     for field, address in expected_addresses.items():
         if getattr(projection, field) != address_key(address):
             raise ValueError(f"Rolling Launch {field} differs")
-    if projection.table_count != 5:
+    if projection.table_count != 6:
         raise ValueError(
-            "Rolling Launch projection must contain five calibration tables"
+            "Rolling Launch projection must contain six calibration tables"
         )
     if projection.masked_view_count != 0:
         raise ValueError("Rolling Launch projection must not contain masked views")

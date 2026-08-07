@@ -29,6 +29,7 @@
 #define STARTUP_WRAPPER 0x000d38a0U
 #define RL_ENGINE 0x000d38e4U
 #define IGNITION_ADAPTER 0x000d3ea0U
+#define IGNITION_CONTROLLER 0x000d40c0U
 
 #define FUEL_STOCK 0x0000934eU
 
@@ -75,8 +76,8 @@ extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 static size_t case_count;
 
 static const uint8_t valid_configuration[32] = {
-    0x52, 0x4c, 0x01, 0x00, 0x01, 0x00, 0x00, 0xff,
-    0x01, 0x00, 0x00, 0x64, 0x00, 0x01, 0x00, 0x10,
+    0x52, 0x4c, 0x02, 0x00, 0x01, 0x00, 0x00, 0xff,
+    0x01, 0x10, 0x00, 0x64, 0x00, 0x01, 0x00, 0x10,
     0x00, 0x08, 0x00, 0x04, 0x00, 0x03, 0x73, 0x73,
     0x73, 0x73, 0x73, 0x00, 0xad, 0xb3, 0xa5, 0x5a,
 };
@@ -507,14 +508,16 @@ struct config_case {
 
 static const struct config_case config_cases[] = {
     {"config-magic", 0, 2, 0},
-    {"config-schema", 2, 1, 2},
+    {"config-schema", 2, 1, 1},
     {"config-mode", 3, 1, 3},
     {"config-enable-mask", 4, 1, 0x20},
     {"config-options-low", 5, 1, 1},
     {"config-options-high", 5, 1, 0x80},
     {"config-coolant-order", 6, 2, 0xff00},
     {"config-speed-zero", 8, 1, 0},
-    {"config-speed-padding", 9, 1, 1},
+    {"config-retard-ramp-zero", 9, 1, 0},
+    {"config-retard-ramp-hysteresis", 9, 1, 8},
+    {"config-retard-ramp-offset", 9, 1, 17},
     {"config-rpm-zero", 10, 2, 0},
     {"config-offset-zero", 14, 2, 0},
     {"config-hysteresis-zero", 16, 2, 0},
@@ -856,11 +859,12 @@ static int run_cooldown_cases(void)
 }
 
 static int invoke_ignition(
-    const char *name, uint8_t stock, uint8_t expected)
+    const char *name, uint8_t stock, uint16_t rpm, uint8_t expected)
 {
     volatile uint8_t *state = ram_pointer(RL_STATE);
     uint32_t returned;
 
+    write_u16(ram_pointer(RPM), rpm);
     ram_pointer(IGNITION_OUTPUT)[0] = stock;
     returned = invoke_r4(IGNITION_ADAPTER, stock);
     if (returned != expected)
@@ -880,16 +884,20 @@ static void set_ignition_state(uint8_t phase, uint8_t mode, uint8_t map)
     state[0] = phase;
     state[4] = map;
     state[5] = mode;
+    write_u16(state + 10, 300);
+    write_u16(state + 12, 316);
+    write_u16(state + 14, 308);
 }
 
 static int run_ignition_cases(void)
 {
     static const struct config_case invalid[] = {
         {"ign-magic", 0, 2, 0},
-        {"ign-schema", 2, 1, 2},
+        {"ign-schema", 2, 1, 1},
         {"ign-config-mode", 3, 1, MODE_RPM_HOLD},
         {"ign-disabled", 4, 1, 0},
         {"ign-markers", 28, 4, 0},
+        {"ign-ramp-zero", 9, 1, 0},
         {"ign-target-low", 22, 1, 109},
         {"ign-target-high", 22, 1, 118},
     };
@@ -898,45 +906,81 @@ static int run_ignition_cases(void)
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_IDLE, MODE_OBSERVE, 0);
-    if (!invoke_ignition("ign-inactive", 110, 110))
+    if (!invoke_ignition("ign-inactive", 110, 316, 110))
         return 0;
 
     count_case();
     reset_case(MODE_RPM_HOLD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD, 0);
-    if (!invoke_ignition("ign-wrong-mode", 110, 110))
+    if (!invoke_ignition("ign-wrong-mode", 110, 316, 110))
         return 0;
 
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
-    if (!invoke_ignition("ign-target-max", 110, 115))
+    if (!invoke_ignition("ign-band-start", 110, 300, 110))
         return 0;
 
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
-    if (!invoke_ignition("ign-stock-max", 117, 117))
+    if (!invoke_ignition("ign-band-quarter", 110, 304, 111))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    if (!invoke_ignition("ign-band-restore", 110, 308, 112))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    if (!invoke_ignition("ign-band-three-quarter", 110, 312, 113))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    if (!invoke_ignition("ign-band-near-cut", 110, 315, 114))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    if (!invoke_ignition("ign-band-cut", 110, 316, 115))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    if (!invoke_ignition("ign-band-above", 110, 320, 115))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    if (!invoke_ignition("ign-stock-max", 117, 316, 117))
         return 0;
 
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     ram_pointer(APC_MODE_SNAPSHOT)[0] = 0x40;
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
-    if (!invoke_ignition("ign-apc-fallback", 110, 110))
+    if (!invoke_ignition("ign-apc-fallback", 110, 316, 110))
         return 0;
 
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     ram_pointer(APC_MODE_SNAPSHOT)[0] = 0x20;
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
-    if (!invoke_ignition("ign-apc-bit-five", 110, 115))
+    if (!invoke_ignition("ign-apc-bit-five", 110, 316, 115))
         return 0;
 
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 5);
-    if (!invoke_ignition("ign-index-invalid", 110, 110))
+    if (!invoke_ignition("ign-index-invalid", 110, 316, 110))
         return 0;
 
     count_case();
@@ -947,7 +991,23 @@ static int run_ignition_cases(void)
     rom_pointer(RL_CONFIG)[25] = 113;
     rom_pointer(RL_CONFIG)[26] = 114;
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 4);
-    if (!invoke_ignition("ign-map-five-target", 110, 114))
+    if (!invoke_ignition("ign-map-five-target", 110, 316, 114))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    write_u16(ram_pointer(RL_STATE) + 10, 316);
+    write_u16(ram_pointer(RL_STATE) + 12, 316);
+    if (!invoke_ignition("ign-zero-width", 110, 316, 110))
+        return 0;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
+    write_u16(ram_pointer(RL_STATE) + 10, 0xfff8);
+    write_u16(ram_pointer(RL_STATE) + 12, 0xffff);
+    if (!invoke_ignition("ign-saturated-band", 110, 0xfffc, 112))
         return 0;
 
     for (index = 0; index < ARRAY_SIZE(invalid); ++index) {
@@ -955,7 +1015,7 @@ static int run_ignition_cases(void)
         reset_case(MODE_RPM_HOLD_RETARD, 0x01);
         set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
         apply_config_value(&invalid[index]);
-        if (!invoke_ignition(invalid[index].name, 110, 110))
+        if (!invoke_ignition(invalid[index].name, 110, 316, 110))
             return 0;
     }
     return 1;
@@ -1040,13 +1100,13 @@ int main(void)
         return 1;
     if (!run_wrapper_cases())
         return 1;
-    if (case_count != 98U)
-        return fail_value("summary", "case_count", case_count, 98);
+    if (case_count != 109U)
+        return fail_value("summary", "case_count", case_count, 109);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=25 config=22 activation=5 active=9 "
-        "cooldown=5 ignition=15 wrappers=6 entries=5\n",
+        "structural=11 gates=25 config=24 activation=5 active=9 "
+        "cooldown=5 ignition=24 wrappers=6 entries=6\n",
         (unsigned long)case_count);
     return 0;
 }

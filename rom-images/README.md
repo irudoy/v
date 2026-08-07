@@ -225,6 +225,6 @@ modification README.
 Ground truth is in the hardware. A part number and forum thread are orientation
 points; disassembly provides the final cross-check.
 
-Historical standalone immo-off, map-switching, and Rolling Launch artifacts are
-not retained under `rom-images/`. Their byte contracts, hashes, and hardware
-evidence remain documented under `../patches/`.
+Historical Developer Immobilizer validation, map-switching, and Rolling Launch
+artifacts are not retained under `rom-images/`. Their byte contracts, hashes,
+and hardware evidence remain documented under `../patches/`.

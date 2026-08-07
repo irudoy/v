@@ -19,9 +19,10 @@ default_emit = true
 enabled = true
 
 [rolling_launch]
-# A direct table exposes the validated RPM hysteresis word. Five independent
-# masked controls edit bits 0 through 4 of the enable_mask byte and preserve
-# every other map-enable bit.
+# Direct tables expose the validated activation thresholds, bounded-retard ramp
+# width, RPM offset, and RPM hysteresis. Five independent masked controls edit
+# bits 0 through 4 of the enable_mask byte and preserve every other map-enable
+# bit.
 enabled = true
 
 [rom]

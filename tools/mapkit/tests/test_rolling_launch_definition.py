@@ -58,16 +58,17 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertEqual(projection.enable_mask_address, "000d3f64")
         self.assertEqual(projection.coolant_min_address, "000d3f66")
         self.assertEqual(projection.min_speed_address, "000d3f68")
+        self.assertEqual(projection.retard_ramp_address, "000d3f69")
         self.assertEqual(projection.min_rpm_address, "000d3f6a")
         self.assertEqual(projection.pedal_requirement_address, "000d3f6c")
         self.assertEqual(projection.rpm_offset_address, "000d3f6e")
         self.assertEqual(projection.hysteresis_address, "000d3f70")
-        self.assertEqual(projection.table_count, 5)
+        self.assertEqual(projection.table_count, 6)
         self.assertEqual(projection.masked_view_count, 0)
         self.assertEqual(projection.switch_count, 1)
         self.assertEqual(projection.bitwise_switch_count, 1)
         self.assertEqual(projection.enable_bit_count, 5)
-        self.assertEqual(projection.editor_view_count, 7)
+        self.assertEqual(projection.editor_view_count, 8)
 
     def test_projection_exposes_activation_and_rpm_controls(self):
         projection = self.project()
@@ -83,6 +84,12 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
                 "km/h",
                 "x*2",
                 "Rolling Launch Minimum Vehicle Speed",
+            ),
+            projection.retard_ramp_address: (
+                "uint8",
+                "RPM",
+                "x*12.5",
+                "Rolling Launch Retard Ramp Width",
             ),
             projection.min_rpm_address: (
                 "uint16",
@@ -277,6 +284,37 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertEqual(stats["calibration_tables"], 1)
         self.assertIn("Rolling Launch RPM Hysteresis", xdf)
         self.assertIn('mmedaddress="0xD3F70"', xdf)
+        self.assertIn('equation="X*12.5"', xdf)
+
+    def test_romraider_and_tunerpro_render_retard_ramp_at_exact_address(self):
+        projection = self.project()
+        model = projection.maps[projection.retard_ramp_address]
+        romraider = "\n".join(
+            emit_def.table_xml(
+                model, projection.overrides, self.axes, "JK08A"
+            )
+        )
+        self.assertIn(
+            'name="Rolling Launch Retard Ramp Width"', romraider
+        )
+        self.assertIn('storageaddress="0xD3F69"', romraider)
+        self.assertIn('units="RPM"', romraider)
+        self.assertIn('expression="x*12.5"', romraider)
+
+        image = bytearray([0xFF] * 0x100000)
+        xdf, stats = tunerpro.render(
+            "JK08A",
+            image,
+            [model],
+            self.axes,
+            projection.overrides,
+            {},
+            [],
+            [],
+        )
+        self.assertEqual(stats["calibration_tables"], 1)
+        self.assertIn("Rolling Launch Retard Ramp Width", xdf)
+        self.assertIn('mmedaddress="0xD3F69"', xdf)
         self.assertIn('equation="X*12.5"', xdf)
 
     def test_common_definition_applies_both_projections(self):

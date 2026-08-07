@@ -25,6 +25,7 @@ SOURCE_LABELS = {
     "startup_wrapper": "rolling_launch_startup_wrapper",
     "engine": "rolling_launch_engine",
     "ignition_adapter": "rolling_launch_ignition_adapter",
+    "ignition_controller": "rolling_launch_ignition_controller",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
@@ -182,8 +183,10 @@ def _validate_ignition_abi(parsed):
         raise ValueError("ignition adapter must be one tail-call leaf")
     if texts[-2:] != ["jmp @r0", "nop"]:
         raise ValueError("ignition adapter lacks stock tail jump")
-    if texts.count("mov.b r0,@r1") != 2:
-        raise ValueError("ignition output/effective store count differs")
+    if texts.count("jmp @r0") != 2:
+        raise ValueError("ignition adapter dispatch count differs")
+    if texts.count("mov.b r0,@r1") != 0:
+        raise ValueError("ignition adapter writes an output directly")
     if texts.count("mov.b r0,@r2") != 2:
         raise ValueError("ignition diagnostic store count differs")
     if texts.count("cmp/hs r2,r4") != 1:
@@ -211,6 +214,37 @@ def _validate_ignition_abi(parsed):
         registers.update(common.REGISTER_RE.findall(statement.text.lower()))
     if not registers <= {"r0", "r1", "r2", "r3", "r4"}:
         raise ValueError("ignition adapter clobbers an undeclared register")
+
+
+def _validate_ignition_controller_abi(parsed):
+    texts = _texts(parsed)
+    if texts[:1] != ["sts.l pr,@-r15"]:
+        raise ValueError("ignition controller does not save PR")
+    if texts[-2:] != ["jmp @r0", "nop"]:
+        raise ValueError("ignition controller lacks stock tail jump")
+    if texts.count("jsr @r3") != 1:
+        raise ValueError("ignition controller divider call count differs")
+    divider = texts.index("jsr @r3")
+    if texts[divider + 1] != "nop":
+        raise ValueError("ignition controller divider delay slot differs")
+    if texts.count("mulu.w r2,r1") != 1 or texts.count("sts macl,r1") != 1:
+        raise ValueError("ignition controller blend arithmetic differs")
+    if texts.count("mov.l r3,@-r15") != 1:
+        raise ValueError("ignition controller does not save Cut")
+    if texts.count("mov.l @r15+,r0") != 1:
+        raise ValueError("ignition controller does not discard saved Cut")
+    if texts.count("lds.l @r15+,pr") != 1:
+        raise ValueError("ignition controller does not restore PR")
+    if texts.count("mov.b r0,@r1") != 2:
+        raise ValueError("ignition controller output store count differs")
+    if texts.count("add r0,r4") != 1 or texts.count("add r2,r4") != 1:
+        raise ValueError("ignition controller bounded command paths differ")
+    registers = set()
+    for statement in _instructions(parsed):
+        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
+    allowed = {"r0", "r1", "r2", "r3", "r4", "r15", "pr", "macl"}
+    if not registers <= allowed:
+        raise ValueError("ignition controller clobbers an undeclared register")
 
 
 def _expected_long_literals():
@@ -249,11 +283,19 @@ def _expected_long_literals():
         "ignition_adapter": {
             "rl_ign_state_address": 0xFFFF5D40,
             "rl_ign_config_address": 0x000D3F60,
-            "rl_ign_output_address": 0xFFFF2022,
             "rl_ign_stock_consumer": 0x0002A892,
+            "rl_ign_controller_entry": 0x000D40C0,
             "rl_ign_enable_masks": 0x000D3F4C,
             "rl_ign_integrity_markers": 0xADB3A55A,
             "rl_ign_apc_mode_address": 0xFFFF24C9,
+        },
+        "ignition_controller": {
+            "rl_ctrl_state_address": 0xFFFF5D40,
+            "rl_ctrl_config_address": 0x000D3F60,
+            "rl_ctrl_rpm_address": 0xFFFF11BC,
+            "rl_ctrl_unsigned_divide": 0x00021CE0,
+            "rl_ctrl_output_address": 0xFFFF2022,
+            "rl_ctrl_stock_consumer": 0x0002A892,
         },
     }
 
@@ -295,6 +337,8 @@ def validate_assembly_sources(layout=None):
             _validate_engine_abi(parsed)
         elif unit.key == "ignition_adapter":
             _validate_ignition_abi(parsed)
+        elif unit.key == "ignition_controller":
+            _validate_ignition_controller_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     return parsed_by_unit

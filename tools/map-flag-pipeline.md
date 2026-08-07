@@ -955,8 +955,8 @@ presentation allowlist while preserving hidden research maps in the graph and le
 For JK08A, `[map_switching].enabled = true` expands selected calibration families into
 Map 1 through Map 5 inside the common `JK08A` definition identity. The canonical graph
 catalog remains unchanged at 450 maps. Map switching adds 48 noncanonical slot copies, and the
-Rolling Launch projection adds five configuration tables, so the projected editor model contains
-503 maps:
+Rolling Launch projection adds six configuration tables, so the projected editor model contains
+504 maps:
 Map 1 reuses each canonical stock address, while Map 2 through Map 5 use the erased flash
 allocations declared in `patches/map-switching-layout.toml`. Those additional slots contain
 `0xFF` and are inactive under stock firmware; the map-switching patch is required before
@@ -1332,12 +1332,12 @@ Of the 450 canonical maps, 40 pass the definition gate and remain visible by def
 148 internal or unidentified research maps carry an explicit `emit = false`, and 262
 default-visible maps are reported as rejected by the definition gate. The common JK08A
 projection expands twelve visible calibration families into 60 Map 1 through Map 5 tables,
-adding 48 slot copies, and adds five Rolling Launch configuration tables. Two masked
+adding 48 slot copies, and adds six Rolling Launch configuration tables. Two masked
 ignition families expand into ten slot views; the remaining canonical masked view
 produces 11 masked views in total. Rolling Launch also contributes one pedal-requirement
 switch. Per-map enablement is separate from map tables: RomRaider receives one native
 `BitwiseSwitch` with five checkboxes, while TunerPro receives five native `XDFFLAG`
-items for the same byte. The emitted definition therefore contains 93 calibration
+items for the same byte. The emitted definition therefore contains 94 calibration
 tables and 11 masked views without standalone
 reference axes. All hidden and rejected canonical maps remain available for reverse
 engineering in the graph and ledger. The catalog contains 365 `code` maps and 85

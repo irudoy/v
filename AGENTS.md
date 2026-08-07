@@ -167,15 +167,17 @@ Read-only work and responses without local changes do not trigger a backup.
   inheritance entries.
   `defs/reference/` contains submodules with public RomRaider Nissan definitions
   (Pytrex and a33b); their manifest and relevance are in `defs/README.md`.
-- `patches/` - the immo-off specification and patcher
-  (`immo-off-developer-flag.md`, `apply_immo_off.py`,
-  `tests/test_immo_off.py`), the ROM-library layout test
+- `patches/` - the unified production ROM builder (`build_rom.py` and
+  `rom-builder.md`), the Developer Immobilizer execution-path specification
+  (`immo-off-developer-flag.md`), the ROM-library layout test
   (`tests/test_rom_images_layout.py`), and the ROM checksum specification
   (`rom-selftest-checksum.md`, covering SUM16, runtime self-test domains, and
-  recalculation order). Universal map-switching and Rolling Launch patchers,
-  composers, payload manifests, and executable verification tests are tracked
-  here. Concrete tuned-image recipes and derived image bytes are not stored in
-  the repository. Ghidra exports and the Ghidra project are regenerable and
+  recalculation order). Universal map-switching and Rolling Launch stage
+  patchers, composers, payload manifests, and executable verification tests are
+  tracked here. Historical overlay builders are diagnostic hardware-isolation
+  tools and are not part of the production builder. Concrete tuned-image
+  recipes, local calibration profiles, and derived image bytes are not stored
+  in the repository. Ghidra exports and the Ghidra project are regenerable and
   remain outside the repository under `~/tools/ghidra-projects/`.
 
 ## Conventions

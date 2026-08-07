@@ -64,6 +64,7 @@ class Layout:
     expected_composition_sha256: str
     free_rom: common.AddressRange
     claimed_rom: common.AddressRange
+    claimed_rom_extensions: tuple[common.AddressRange, ...]
     configuration: common.AddressRange
     default_configuration: bytes
     scheduler: SchedulerLayout
@@ -96,6 +97,10 @@ class Layout:
     @property
     def assembled_data_bytes(self):
         return sum(unit.data_bytes for unit in self.assembly_units)
+
+    @property
+    def claimed_rom_ranges(self):
+        return (self.claimed_rom,) + self.claimed_rom_extensions
 
 
 def _require_keys(table, keys, context):
@@ -140,6 +145,7 @@ def load_layout(path=DEFAULT_MANIFEST):
             "free_rom_end",
             "claimed_rom_start",
             "claimed_rom_end",
+            "claimed_rom_extension",
             "configuration_address",
             "configuration_size",
             "default_configuration",
@@ -264,6 +270,19 @@ def load_layout(path=DEFAULT_MANIFEST):
         )
         diagnostics.append(Diagnostic(**item))
 
+    claimed_rom_extensions = []
+    for index, item in enumerate(raw["claimed_rom_extension"]):
+        _require_keys(
+            item,
+            ("start", "end"),
+            f"claimed_rom_extension[{index}]",
+        )
+        claimed_rom_extensions.append(common.AddressRange(
+            item["start"],
+            item["end"],
+            f"claimed_rom_extension[{index}]",
+        ))
+
     try:
         default_configuration = bytes.fromhex(raw["default_configuration"])
     except (TypeError, ValueError) as error:
@@ -282,6 +301,7 @@ def load_layout(path=DEFAULT_MANIFEST):
         claimed_rom=common.AddressRange(
             raw["claimed_rom_start"], raw["claimed_rom_end"], "claimed_rom"
         ),
+        claimed_rom_extensions=tuple(claimed_rom_extensions),
         configuration=common.AddressRange(
             raw["configuration_address"],
             raw["configuration_address"] + raw["configuration_size"],
@@ -301,7 +321,7 @@ def load_layout(path=DEFAULT_MANIFEST):
 
 def validate_structure(layout):
     """Validate every manifest invariant that does not need ROM bytes."""
-    if layout.schema_version != 1:
+    if layout.schema_version != 2:
         raise ValueError(
             f"unsupported Rolling Launch layout schema {layout.schema_version}"
         )
@@ -315,14 +335,20 @@ def validate_structure(layout):
         layout.expected_composition_sha256,
         "expected_composition_sha256",
     )
-    if not layout.free_rom.contains(layout.claimed_rom):
-        raise ValueError("claimed ROM lies outside the audited free region")
-    if not layout.claimed_rom.contains(layout.configuration):
+    claimed_ranges = sorted(
+        layout.claimed_rom_ranges,
+        key=lambda item: (item.start, item.end),
+    )
+    for span in claimed_ranges:
+        if not layout.free_rom.contains(span):
+            raise ValueError("claimed ROM lies outside the audited free region")
+    for left, right in zip(claimed_ranges, claimed_ranges[1:]):
+        if left.overlaps(right):
+            raise ValueError("claimed ROM ranges overlap")
+    if not any(span.contains(layout.configuration) for span in claimed_ranges):
         raise ValueError("configuration lies outside claimed ROM")
     if layout.configuration.size != contract.CONFIG_SIZE:
         raise ValueError("configuration size differs from the runtime contract")
-    if layout.configuration.end != layout.claimed_rom.end:
-        raise ValueError("configuration must terminate the claimed ROM range")
     if layout.default_configuration != contract.Calibration().to_bytes():
         raise ValueError("default configuration differs from the reference model")
     calibration = contract.Calibration.from_bytes(layout.default_configuration)
@@ -366,7 +392,7 @@ def validate_structure(layout):
 
     code = layout.code_region_by_key
     for region in layout.code_regions:
-        if not layout.claimed_rom.contains(region.span):
+        if not any(span.contains(region.span) for span in claimed_ranges):
             raise ValueError(f"{region.key}: code lies outside claimed ROM")
         if not region.span.start <= region.entry < region.span.end:
             raise ValueError(f"{region.key}: entry lies outside its region")
@@ -374,7 +400,7 @@ def validate_structure(layout):
     owned = set()
     unit_spans = []
     for unit in layout.assembly_units:
-        if not layout.claimed_rom.contains(unit.span):
+        if not any(span.contains(unit.span) for span in claimed_ranges):
             raise ValueError(f"{unit.key}: assembly lies outside claimed ROM")
         if Path(unit.source).name != unit.source or not unit.source.endswith(".s"):
             raise ValueError(f"{unit.key}: source must be one local .s file")
@@ -402,15 +428,21 @@ def validate_structure(layout):
         unit_spans.append(unit.span)
     if owned != set(code):
         raise ValueError("not every code region has one assembly owner")
-    unit_spans.sort(key=lambda item: item.start)
-    for left, right in zip(unit_spans, unit_spans[1:]):
-        if left.end != right.start:
-            raise ValueError("assembly units do not form one contiguous runtime")
-    if (
-        unit_spans[0].start != layout.claimed_rom.start
-        or unit_spans[-1].end != layout.configuration.start
-    ):
-        raise ValueError("runtime and configuration do not fill claimed ROM")
+    occupied_spans = sorted(
+        unit_spans + [layout.configuration],
+        key=lambda item: (item.start, item.end),
+    )
+    occupied_groups = []
+    for span in occupied_spans:
+        if occupied_groups and occupied_groups[-1][1] == span.start:
+            occupied_groups[-1] = (occupied_groups[-1][0], span.end)
+        else:
+            occupied_groups.append((span.start, span.end))
+    expected_groups = [(span.start, span.end) for span in claimed_ranges]
+    if occupied_groups != expected_groups:
+        raise ValueError(
+            "runtime and configuration do not partition claimed ROM ranges"
+        )
 
     required_hooks = {
         "periodic_scheduler_index_0": (0x21970, 0xA9554, 0xD3860),
@@ -492,9 +524,12 @@ def validate_base_composition(layout, data):
         )
         if actual != item.stock:
             raise ValueError(f"DID {item.did:#06x}: base pointer is {actual:#x}")
-    erased = bytes([0xFF]) * layout.claimed_rom.size
-    if data[layout.claimed_rom.start : layout.claimed_rom.end] != erased:
-        raise ValueError("Rolling Launch claimed ROM is not erased in the base")
+    for span in layout.claimed_rom_ranges:
+        erased = bytes([0xFF]) * span.size
+        if data[span.start : span.end] != erased:
+            raise ValueError(
+                f"Rolling Launch claimed ROM {span.key} is not erased in the base"
+            )
     return data
 
 

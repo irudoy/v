@@ -3185,6 +3185,23 @@
       </table>
     </table>
 
+    <!-- 0xD3F69  1 uint8  map [code]
+         scaling x*12.5 RPM [code]
+         Mode 2 keeps the stock ignition command at or below max(captured_rpm, Cut -
+         retard_ramp), blends linearly toward the per-map late-command cap inside the band, and
+         applies the cap at Cut. The validated record requires hysteresis < retard_ramp <=
+         rpm_offset.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Retard Ramp Width"
+           category="Rolling Launch / Ignition Retard" storagetype="uint8"
+           storageaddress="0xD3F69" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
+               fineincrement="12.5" coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Retard ramp width</data>
+      </table>
+    </table>
+
     <!-- 0xD3F6E  1 uint16  map [code]
          scaling x*12.5 RPM [code]
          The runtime computes Cut = saturate_u16(captured_rpm + rpm_offset). The value must be
@@ -3202,8 +3219,8 @@
     <!-- 0xD3F70  1 uint16  map [code]
          scaling x*12.5 RPM [code]
          The runtime computes Restore = Cut - hysteresis, accepts only 0 < hysteresis_native <
-         min_rpm_native, and rejects the entire configuration otherwise. The default value is 8
-         native counts, or 100 RPM.
+         min_rpm_native and hysteresis_native < retard_ramp_native, and rejects the entire
+         configuration otherwise. The default value is 8 native counts, or 100 RPM.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch RPM Hysteresis" category="Rolling Launch / RPM Hold"
            storagetype="uint16" storageaddress="0xD3F70" sizex="1" endian="big">

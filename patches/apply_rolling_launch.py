@@ -39,7 +39,7 @@ LOCKED_MAP_SWITCHING_SOURCE_SHA256 = (
     "8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d"
 )
 LOCKED_PROFILE_OUTPUT_SHA256 = (
-    "01555a7bdd21306881e177d4407bed1f2123d730cac5d7857554ec189bb5db3d"
+    "21ff554586e347a38737c2b15d432fb41b12c334e4d3cbcaa800a6a80968c9b1"
 )
 HISTORICAL_MAP_SWITCHING_SOURCE_SHA256 = (
     "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
@@ -117,10 +117,14 @@ def _require_map_switching_endpoint(
 
 
 def _require_rolling_base(source, layout, context):
-    erased = bytes([0xFF]) * layout.claimed_rom.size
-    actual = source[layout.claimed_rom.start : layout.claimed_rom.end]
-    if actual != erased:
-        raise PatchError(f"{context}: Rolling Launch ROM allocation is occupied")
+    for span in layout.claimed_rom_ranges:
+        erased = bytes([0xFF]) * span.size
+        actual = source[span.start : span.end]
+        if actual != erased:
+            raise PatchError(
+                f"{context}: Rolling Launch ROM allocation is occupied "
+                f"({span.key})"
+            )
     for hook in layout.hooks:
         value = _read_integer(
             source, hook.address, hook.width, layout.byte_order
@@ -365,6 +369,7 @@ def main(argv=None):
     )
     print(
         f"mode={int(calibration.mode)} enable_mask={calibration.enable_mask:#04x} "
+        f"retard_ramp_native={calibration.retard_ramp_native} "
         f"rpm_offset_native={calibration.rpm_offset_native} "
         f"hysteresis_native={calibration.hysteresis_native} "
         f"run_timeout_ticks={calibration.run_timeout_ticks} "

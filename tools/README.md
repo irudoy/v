@@ -235,26 +235,27 @@ PyGhidra dependency, and loaders in `memgraph/` over the `neo4j` Bolt driver. Ru
 | `mapkit/rom.py` | Image library: validate the `rom-images/roms.csv` registry and SHA-256, read arrays, and measure them. Used by `load_maps.py` and package scripts | tracked |
 | `mapkit/emit_def.py` | Project the graph, reviewed static diagnostic context, `defs/<rom>.dtc.csv` DTC registry, and the tuner-facing visibility and presentation policy in `defs/<rom>.overrides.toml` into RomRaider `defs/<rom>.xml` and TunerPro `defs/<rom>.xdf`; contract in section 9 of `map-flag-pipeline.md` | tracked as P5 is committed |
 | `mapkit/map_switching.py` | Clone the twelve canonical JK08A calibration families into the five slot addresses from `patches/map-switching-layout.toml`, preserving graph geometry, scaling, axes, masks, and global maps | imported by the common JK08A definition generator and validator |
-| `mapkit/rolling_launch.py` | Project minimum coolant temperature, minimum vehicle speed, minimum engine speed, RPM offset, and RPM hysteresis from the validated Rolling Launch configuration as scalar tables; project `min_pedal` as a native enabled/disabled switch; project `enable_mask` as five independent per-map controls | imported by the common JK08A definition generator and validator |
+| `mapkit/rolling_launch.py` | Project minimum coolant temperature, minimum vehicle speed, minimum engine speed, bounded-retard ramp width, RPM offset, and RPM hysteresis from the validated Rolling Launch configuration as scalar tables; project `min_pedal` as a native enabled/disabled switch; project `enable_mask` as five independent per-map controls | imported by the common JK08A definition generator and validator |
 | `mapkit/validate_map_switching.py` | Validate the five-slot projection against the live graph and exact ROM, verify identical materialized calibration bytes, and require the tracked common `JK08A.xml` and `JK08A.xdf` to match the projection without a separate identity | stdout; no artifact writes |
+| `../patches/build_rom.py` | Production ROM entry point: detect the series from immutable image bytes or accept `--rom`, dispatch to the registered handler, install every current component from SHA-locked payloads, preserve existing alternate-map calibration during migration, apply a strict local Rolling Launch profile, recalculate checksums, and emit a ROM, SHA-256, MD5, and JSON manifest | complete non-overwriting artifact set; JK08A currently registered |
 | `../patches/map_switching_assembly.py` | Cross-check implemented SH source labels, regions, literal pools, protected registers, control transfers, every delayed slot, and the explicit SH7058S SH-2E instruction subset against the authoritative map-switching layout; independently decode direct and indirect control transfers plus PC-relative effective addresses from SHA-locked machine words | stdout; no ROM write |
 | `../patches/map_switching_compose.py` | Apply all nine SHA-locked blobs, 15 hooks, 48 calibration copies, and twelve pointer tables to exact stock by default or an explicitly validated compatible input through the library API; reject every change outside the declared composition write set | stdout; no output-file option |
 | `../patches/map-switching-payloads.toml` | Store the complete SHA-locked SH-2E assembly-unit spans as hexadecimal data for deterministic patcher use | tracked |
 | `../patches/rolling_launch.py` | Define the independent fail-closed Rolling Launch configuration, gate priority, `IDLE`/`ACTIVE`/`COOLDOWN` transitions, fuel-overlay actions, and retard-only ignition command rule | imported by tests and the composition validator; no ROM access |
 | `../patches/rolling_launch_layout.py` and `rolling-launch-layout.toml` | Lock the exact map-switching base endpoint, erased ROM allocation, dedicated RAM, periodic/selector/startup/ignition hooks, nine UDS DID pointers, default-disabled configuration, and final in-memory SHA-256 | stdout/library validation; no ROM write |
-| `../patches/rolling_launch_assembly.py` and `rolling-launch-payloads.toml` | Audit 730 SH7058S SH-2E instructions across three source units, including the APC fallback-mode gate, require 16-bit instruction forms, ABI/literal/delay-slot contracts, and decode every control transfer and PC-relative reference from the SHA-locked Ghidra bytes | stdout; no ROM write |
-| `../patches/rolling_launch_compose.py` | Extend only the exact complete map-switching composition with Rolling Launch code, configuration, four hooks, and nine DID pointers through a 1876-byte closed write set; keep the default map mask zero and all checksum fields unchanged | stdout; no output-file option |
-| `../patches/apply_rolling_launch.py` | Accept only the exact corrected checksum-valid complete twelve-family map-switching stage-20 endpoint using target-vehicle release code `0x20`; install the SHA-locked Rolling Launch payload, four hooks, nine DIDs, and the Map 1-only RPM Hold test profile; recalculate all checksum domains and prove preservation outside the Rolling Launch and checksum write sets | derived ROM and `.md5`; non-overwriting |
+| `../patches/rolling_launch_assembly.py` and `rolling-launch-payloads.toml` | Audit 785 SH7058S SH-2E instructions across four source units, including the APC fallback-mode gate and bounded-retard controller, require 16-bit instruction forms, ABI/literal/delay-slot contracts, and decode every control transfer and PC-relative reference from the SHA-locked Ghidra bytes | stdout; no ROM write |
+| `../patches/rolling_launch_compose.py` | Extend only the exact complete map-switching composition with Rolling Launch code, configuration, four hooks, and nine DID pointers through a 2004-byte closed write set; keep the default map mask zero and all checksum fields unchanged | stdout; no output-file option |
+| `../patches/apply_rolling_launch.py` | JK08A Rolling Launch stage library and diagnostic CLI: accept a complete current map-switching endpoint, install the SHA-locked payload, four hooks, nine DIDs, and a validated calibration, then prove its component write boundary | intermediate derived ROM for isolated validation; not the production entry point |
 | `../patches/jk08a_checksums.py` | Calculate, verify, and recalculate JK03A/JK08A SUM16 and runtime XOR+SUM domains in dependency order | imported by the patcher and tests |
 | `../patches/upgrade_map_switching_reset.py` | Upgrade only the complete pre-fix map-switching runtime with an exact protected upper partition outside declared map-switching and checksum storage: restore the stock fallback zero-fill anchor, install the fixed startup wrapper, recalculate checksums, and preserve every calibration byte | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/build_map_switching_marker.py` | Build the first incident-isolation gate from the SHA-locked known-working JK08A tuned ROM: zero-fill only the complete 128-byte line at `0xD2280`, retain all runtime hooks at stock values, recalculate checksums, and prove the exact write boundary | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/build_map_switching_trampoline.py` | Build the second incident-isolation gate from the SHA-locked successful marker readback: replace only startup pointer `0x27D28`, install the transparent 12-byte tail jump at `0xD22A0`, retain the other 13 hooks and zero marker-line remainder, and recalculate checksums | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/build_map_switching_selector_init.py` | Build the third incident-isolation gate from the SHA-locked successful trampoline readback: preserve the startup hook, replace the transparent tail with a 28-byte wrapper that writes Map 1 only to `0xFFFF5D00`, retain the other 13 hooks, omit every other runtime feature, and recalculate checksums | ROM plus MD5 sidecar; non-overwriting |
 | `../patches/build_map_switching_limiter.py` | Build the aggregate limiter endpoint from the SHA-locked successful selector-init readback: install the final startup wrapper, atomic limiter commit, two Map 1-equivalent limiter families, two pointer tables, and three direct shadow hooks; omit lookup adapters, selector host, and CAN feedback. This image is the equivalence target for overlay stage 05, not the first limiter hardware write | ROM plus MD5 sidecar; non-overwriting |
-| `../patches/build_map_switching_limiter_overlays.py` | Decompose the aggregate limiter gate into five cumulative complete-ROM overlays: inactive payload and storage, startup commit, fuel hook, throttle-cluster hook, and throttle-scalar hook. Lock the exact source and every output SHA-256, recalculate all checksums per stage, prove each adjacent write boundary, and emit ordered outputs, MD5 sidecars, and a SHA-256 manifest | five ROMs, five MD5 sidecars, and ordered SHA-256 manifest; non-overwriting |
-| `../patches/build_map_switching_lookup_overlays.py` | Continue from the exact successful limiter Overlay 05 with nine cumulative complete-ROM overlays: inactive lookup code and Map 1-equivalent storage, followed by eight lookup hooks activated one at a time with the startup-time `0x2CF1C` literal last. Lock every output SHA-256, recalculate all checksums, retain selector host and CAN feedback as absent, and prove each adjacent write boundary | nine ROMs, nine MD5 sidecars, and ordered SHA-256 manifest; non-overwriting |
-| `../patches/build_map_switching_full_dfco_overlays.py` | Continue from the exact successful lookup Overlay 14 readback with six cumulative complete-ROM overlays. Stages 15 through 17 install and activate the four-family full-DFCO adapter and Map 1-equivalent storage. Stage 18 installs the corrected selector host using target-vehicle release code `0x20` as a boot-only gate with selection gestures forbidden. Stage 19 installs the hardware-tested 10/10-frame CAN feedback runtime. Stage 20 adds the two idle-ignition families and changes feedback timing to 15/15 frames, producing the complete twelve-family endpoint. Lock the source and every output SHA-256 value, recalculate all checksum domains, and prove each adjacent write boundary | six ROMs, six MD5 sidecars, and ordered SHA-256 manifest; non-overwriting |
-| `../patches/apply_map_switching.py` | Validate a checksum-valid JK08A input against the exact identity, anchors, erased allocation, and protected upper ROM; initialize alternate maps from input Map 1, install the tracked runtime, recalculate checksums, prove input-byte preservation, and create a non-overwriting ROM plus MD5 sidecar | derived ROM and `.md5` |
+| `../patches/build_map_switching_limiter_overlays.py` | Historical/debug hardware-isolation tool: decompose the aggregate limiter gate into five cumulative complete-ROM overlays with locked adjacent write boundaries | five diagnostic ROMs plus sidecars and manifest; not used by `build_rom.py` |
+| `../patches/build_map_switching_lookup_overlays.py` | Historical/debug hardware-isolation tool: continue from limiter Overlay 05 with inactive lookup storage followed by eight independently activated lookup hooks | nine diagnostic ROMs plus sidecars and manifest; not used by `build_rom.py` |
+| `../patches/build_map_switching_full_dfco_overlays.py` | Historical/debug hardware-isolation tool: continue from lookup Overlay 14 through full DFCO, selector, feedback, and idle-ignition gates | six diagnostic ROMs plus sidecars and manifest; not used by `build_rom.py` |
+| `../patches/apply_map_switching.py` | JK08A map-switching stage library and diagnostic CLI: validate a compatible base, initialize alternate maps from Map 1, install the tracked runtime, recalculate checksums, and prove its component write boundary | intermediate derived ROM for isolated validation; not the production entry point |
 | `mapkit/presentation.py` | Normalize functional categories shared by the RomRaider and TunerPro projections without encoding confidence in the category name | imported by both renderers |
 | `mapkit/tunerpro.py` | Render XDF 1.70 tables, preserving conversions for split bit fields, reversible two-state patches, 36 individual DTC patches, and group DTC patches from the shared definition model | imported by `emit_def.py` |
 | `mapkit/show.py` | Display a map or axis in physical units: the graph supplies shape, axes, and scale, while the image supplies values. Arguments: `[<rom>] <addr>...` | stdout |
@@ -381,9 +382,9 @@ failure:
 tools/sh-elf-run/run.sh --verbose
 ```
 
-It independently reproduces nine map-switching and three Rolling Launch locked
+It independently reproduces nine map-switching and four Rolling Launch locked
 payloads with GNU `sh-elf-as`, rebuilds both exact verification compositions,
-executes 131 map-switching and 98 Rolling Launch behavior cases, and requires the
+executes 131 map-switching and 109 Rolling Launch behavior cases, and requires the
 exact failed `AFAC D304` pair at `0xD2314` to stop with signal 4. The complete
 environment and the documented 31-bit simulator RAM relocation are in
 `sh-elf-run/README.md`.
@@ -505,6 +506,11 @@ python3 patches/map_switching_compose.py \
   --blob limiter_commit=/private/tmp/jk08a-map-switching-limiter-commit.bin \
   --blob cruise_feedback_wrapper=/private/tmp/jk08a-map-switching-feedback-wrapper.bin \
   --blob cruise_feedback_engine=/private/tmp/jk08a-map-switching-feedback-engine.bin
+python3 patches/build_rom.py INPUT.bin \
+  --output OUTPUT-complete.bin
+python3 patches/build_rom.py INPUT.bin \
+  --rom JK08A --profile LOCAL-PROFILE.toml \
+  --output OUTPUT-complete.bin
 python3 patches/apply_map_switching.py INPUT.bin \
   --output OUTPUT-map-switching.bin
 python3 patches/build_map_switching_marker.py WORKING-ROM.bin \
@@ -586,11 +592,21 @@ deterministic fixture SHA-256
 with 5803 changed bytes inside a 6316-byte declared write set. It installs
 feedback counts `15, 15`, verifies 435 final instruction placements and twelve
 code entries, does not recalculate checksum fields, reports `flashable=false`,
-and cannot write a ROM file. `apply_map_switching.py` is the separate file
-output boundary: it accepts compatible lower-partition calibration changes,
-uses the tracked payloads, recalculates all checksum domains, permits changes
-only within the 6316 composition bytes and 20 checksum-reference bytes, and
-creates an MD5 sidecar.
+and cannot write a ROM file. `apply_map_switching.py` remains the isolated
+map-switching stage boundary: it accepts compatible lower-partition calibration
+changes, uses the tracked payloads, recalculates all checksum domains, permits
+changes only within the 6316 composition bytes and 20 checksum-reference bytes,
+and creates an MD5 sidecar.
+
+`build_rom.py` is the production file boundary. It defaults to immutable-byte
+series detection and also accepts `--rom JK08A`. The JK08A handler accepts a
+compatible base or a recognized complete runtime, applies the current
+map-switching and Rolling Launch stages without importing any historical
+overlay builder, preserves existing Map 2 through Map 5 bytes during migration,
+and verifies the union of both component write sets. A strict local TOML profile
+selects Rolling Launch calibration independently. The non-overwriting output is
+accompanied by SHA-256, MD5, and JSON-manifest files. The complete contract and
+profile schema are in `../patches/rom-builder.md`.
 
 `upgrade_map_switching_reset.py` accepts only a complete pre-fix map-switching
 image with the locked old startup wrapper, the old `0x29CC=0xFFFF5D00` literal,
@@ -687,20 +703,15 @@ Native checksum handlers run in this order:
 1. `alt` recalculates runtime self-test B.
 2. `alt2` recalculates runtime self-test A and both SUM16 checksums.
 
-The patcher produces the same result after validating the exact stock ROM:
-
-```bash
-python3 patches/apply_immo_off.py --rom JK08A
-```
-
-The resulting `1JK08A-20260727-immo-off.bin` differs from stock by one bit.
+Applying the Developer Immobilizer control through the exact JK08A definition
+produces the same one-bit change. The hardware-tested
+`1JK08A-20260727-immo-off.bin` differs from stock by one bit.
 Its hardware-tested SHA-256 is
 `de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c`;
 the derived artifact is not retained under `rom-images/`. Engine start and
 operation were confirmed on the vehicle.
-The patcher preserves the one-bit immo-off contract. P1610 and the other DTC
-record changes are controlled only through the definition and require separate
-hardware tests.
+P1610 and the other DTC record changes are independent definition controls and
+require separate hardware tests.
 
 The same generator writes `defs/JK08A.xdf` for TunerPro. Each of the 36 DTC
 records is one atomic `XDFPATCH`: 35 patches contain a descriptor entry and an
@@ -731,9 +742,9 @@ complementary field.
 
 JK08A exposes every map that passes the definition gate by default. The shared
 presentation layer explicitly hides internal and unidentified research maps.
-The common generated XML and XDF contain 93 calibration tables and 11 masked
+The common generated XML and XDF contain 94 calibration tables and 11 masked
 views after five-slot and Rolling Launch projection. Rolling Launch contributes
-five scalar tables and one pedal-requirement switch. RomRaider also contains
+six scalar tables and one pedal-requirement switch. RomRaider also contains
 one five-checkbox Rolling Launch `BitwiseSwitch`; TunerPro contains five native
 flags for the same bits. Rejected and hidden maps remain in the graph and
 ledger. A/B candidates `0x12196` and `0x1219E` are emitted as Cold Idle and Idle

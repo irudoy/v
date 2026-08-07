@@ -4,12 +4,14 @@ JK00A, JK03A, JK03B, and JK08A images are 1 MiB, big-endian, and based at
 `0x0`. They share a checksum layout consisting of two SUM16 checks and two
 runtime self-test XOR+SUM domains.
 
-`apply_immo_off.py` changes only `ROM[0x8725].bit0` and leaves stored checksum
-fields equal to stock. The flasher corrects checksums when writing. The layout
-below supports code analysis and independent verification of ROM content.
+The Developer Immobilizer control in the JK08A definitions changes only
+`ROM[0x8725].bit0`. The historical one-bit validation image retained stock
+checksum fields, and the flasher corrected them while writing. The layout below
+supports code analysis and independent verification of ROM content.
 `jk08a_checksums.py` implements the complete layout, and
-`apply_map_switching.py` requires a valid input and writes a recalculated,
-self-consistent output.
+`build_rom.py` requires a valid input and writes a recalculated,
+self-consistent complete output. Component-stage tools use the same module and
+dependency order.
 
 ## SUM16
 
@@ -59,9 +61,9 @@ end of SUM16 A, so steps 3 and 4 are independent.
 
 `jk08a_checksums.py` verifies stored values against independently calculated
 values, reports every mismatched field, and recalculates in the order above.
-Its output is verified again before return. The map-switching patcher permits
-final byte changes only inside its declared composition ranges and these six
-checksum fields.
+Its output is verified again before return. The unified builder permits final
+byte changes only inside the union of the map-switching and Rolling Launch
+composition ranges and these six checksum fields.
 
 ## RomRaider
 

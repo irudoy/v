@@ -17,7 +17,7 @@ import struct
 CONFIG_MAGIC = 0x524C
 CONFIG_MAGIC_INVERSE = CONFIG_MAGIC ^ 0xFFFF
 CONFIG_END_MARKER = 0xA55A
-CONFIG_SCHEMA_VERSION = 1
+CONFIG_SCHEMA_VERSION = 2
 CONFIG_SIZE = 32
 SLOT_COUNT = 5
 
@@ -99,7 +99,7 @@ class Calibration:
     coolant_min: int = 0
     coolant_max: int = 0xFF
     min_speed: int = 1
-    speed_padding: int = 0
+    retard_ramp_native: int = 16
     min_rpm_native: int = 160
     min_pedal: int = 1
     rpm_offset_native: int = 16
@@ -127,11 +127,13 @@ class Calibration:
             options == Option.NONE,
             0 <= self.coolant_min <= self.coolant_max <= 0xFF,
             0 < self.min_speed <= 0xFF,
-            self.speed_padding == 0,
+            0 < self.retard_ramp_native <= 0xFF,
             0 < self.min_rpm_native <= 0xFFFF,
             0 <= self.min_pedal <= 0xFFFF,
             0 < self.rpm_offset_native <= 0xFFFF,
             0 < self.hysteresis_native < self.min_rpm_native,
+            self.hysteresis_native < self.retard_ramp_native,
+            self.retard_ramp_native <= self.rpm_offset_native,
             0 < self.run_timeout_ticks <= 0x7FFF,
             0 < self.rearm_ticks <= 0x7FFF,
             len(self.target_commands) == SLOT_COUNT,
@@ -159,7 +161,7 @@ class Calibration:
             self.coolant_min,
             self.coolant_max,
             self.min_speed,
-            self.speed_padding,
+            self.retard_ramp_native,
             self.min_rpm_native,
             self.min_pedal,
             self.rpm_offset_native,
@@ -191,7 +193,7 @@ class Calibration:
             coolant_min=values[5],
             coolant_max=values[6],
             min_speed=values[7],
-            speed_padding=values[8],
+            retard_ramp_native=values[8],
             min_rpm_native=values[9],
             min_pedal=values[10],
             rpm_offset_native=values[11],
@@ -484,11 +486,13 @@ def step(state, inputs, calibration):
 
 
 def apply_ignition_command(
-    state, calibration, stock_command, apc_mode_snapshot=0
+    state, calibration, stock_command, rpm_native, apc_mode_snapshot=0
 ):
-    """Apply the normal-mode retard rule and update diagnostic state."""
+    """Apply the normal-mode band-limited retard rule."""
     if not 0 <= stock_command <= 0xFF:
         raise ValueError("stock ignition command must fit in uint8")
+    if not 0 <= rpm_native <= 0xFFFF:
+        raise ValueError("native RPM must fit in uint16")
     if not 0 <= apc_mode_snapshot <= 0xFF:
         raise ValueError("APC mode snapshot must fit in uint8")
     effective = stock_command
@@ -501,10 +505,22 @@ def apply_ignition_command(
         and Mode(calibration.mode) == Mode.RPM_HOLD_RETARD
         and calibration.enabled_for(state.active_index_snapshot)
     ):
-        effective = max(
-            stock_command,
-            calibration.target_commands[state.active_index_snapshot],
-        )
+        target = calibration.target_commands[state.active_index_snapshot]
+        if stock_command < target:
+            cut = state.cut_rpm_native
+            start = max(
+                state.captured_rpm_native,
+                cut - calibration.retard_ramp_native,
+            )
+            if rpm_native >= cut and cut > start:
+                effective = target
+            elif start < rpm_native < cut:
+                command_span = target - stock_command
+                rpm_span = cut - start
+                progress = rpm_native - start
+                effective = stock_command + (
+                    command_span * progress // rpm_span
+                )
     return replace(
         state,
         stock_ign_command=stock_command,

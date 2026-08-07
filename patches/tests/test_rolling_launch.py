@@ -39,13 +39,15 @@ class RollingLaunchTest(unittest.TestCase):
     def test_configuration_rejects_each_integrity_and_range_failure(self):
         invalid = (
             {"magic": 0},
-            {"schema_version": 2},
+            {"schema_version": 1},
             {"mode": 3},
             {"enable_mask": 0x20},
             {"options": 1},
             {"coolant_min": 221, "coolant_max": 220},
             {"min_speed": 0},
-            {"speed_padding": 1},
+            {"retard_ramp_native": 0},
+            {"retard_ramp_native": 8},
+            {"retard_ramp_native": 17},
             {"min_rpm_native": 0},
             {"rpm_offset_native": 0},
             {"hysteresis_native": 200},
@@ -225,31 +227,58 @@ class RollingLaunchTest(unittest.TestCase):
             rl.RuntimeState(), self.inputs, calibration
         ).state
 
+        _, effective = rl.apply_ignition_command(
+            active, calibration, 110, 300
+        )
+        self.assertEqual(effective, 110)
+        _, effective = rl.apply_ignition_command(
+            active, calibration, 110, 304
+        )
+        self.assertEqual(effective, 111)
+        _, effective = rl.apply_ignition_command(
+            active, calibration, 110, 308
+        )
+        self.assertEqual(effective, 112)
+        _, effective = rl.apply_ignition_command(
+            active, calibration, 110, 312
+        )
+        self.assertEqual(effective, 113)
+        _, effective = rl.apply_ignition_command(
+            active, calibration, 110, 315
+        )
+        self.assertEqual(effective, 114)
+
         state, effective = rl.apply_ignition_command(
-            active, calibration, 110
+            active, calibration, 110, 316
         )
         self.assertEqual(effective, 115)
         self.assertEqual(state.stock_ign_command, 110)
         self.assertEqual(state.effective_ign_command, 115)
 
-        _, effective = rl.apply_ignition_command(active, calibration, 117)
+        _, effective = rl.apply_ignition_command(
+            active, calibration, 117, 316
+        )
         self.assertEqual(effective, 117)
         _, effective = rl.apply_ignition_command(
-            active, calibration, 110, apc_mode_snapshot=0x40
+            active, calibration, 110, 316, apc_mode_snapshot=0x40
         )
         self.assertEqual(effective, 110)
         _, effective = rl.apply_ignition_command(
-            active, calibration, 110, apc_mode_snapshot=0x20
+            active, calibration, 110, 316, apc_mode_snapshot=0x20
         )
         self.assertEqual(effective, 115)
         inactive = dataclasses.replace(active, phase=rl.Phase.COOLDOWN)
-        _, effective = rl.apply_ignition_command(inactive, calibration, 110)
+        _, effective = rl.apply_ignition_command(
+            inactive, calibration, 110, 316
+        )
         self.assertEqual(effective, 110)
 
         with self.assertRaisesRegex(ValueError, "APC mode snapshot"):
             rl.apply_ignition_command(
-                active, calibration, 110, apc_mode_snapshot=0x100
+                active, calibration, 110, 316, apc_mode_snapshot=0x100
             )
+        with self.assertRaisesRegex(ValueError, "native RPM"):
+            rl.apply_ignition_command(active, calibration, 110, 0x10000)
 
 
 if __name__ == "__main__":

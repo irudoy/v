@@ -4376,8 +4376,9 @@ without breaking the cycles.
 Strict ingest and exact audit pass: `missing=0`, `extra=0`, `duplicate_expected=0`,
 `duplicate_actual=0`, `unresolved=0`, zero claims with effective confidence below
 declared confidence, zero ungrounded claims, 44 cyclic SCCs, and zero ungrounded SCCs.
-The test suites contain 105 sweep tests, 54 Memgraph tests, 10 mapkit/DTC tests, 8
-immo-off tests, and 5 ROM-layout tests; all 182 pass.
+The maintained test suites cover graph ingest, definition generation, patch
+mechanisms, and ROM-layout invariants. Developer Immobilizer is covered by the
+generated-definition tests.
 
 Two consecutive generations emit 145 maps, two supporting axes, and two NATS
 `TableSwitch` entries: 121 maps at `code`, 24 at `candidate`, and 17 maps with a scale
@@ -4624,12 +4625,13 @@ initialized with identical bytes in the first bench image. Calibration values ar
 edited manually after the identical-map bench gate.
 
 `tools/mapkit/validate_map_switching.py` validates the live 450-map graph and the
-503-map common projection without writing files. The tracked definitions contain
-93 calibration tables and 11 masked views. The switchable subset contains 60
+504-map common projection without writing files. The tracked definitions contain
+94 calibration tables and 11 masked views. The switchable subset contains 60
 calibration tables plus ten ignition bit-7 views, for 70 slot-specific editor
-views. Rolling Launch adds five scalar configuration tables: minimum coolant
-temperature at `0xD3F66`, minimum vehicle speed at `0xD3F68`, minimum engine
-speed at `0xD3F6A`, RPM offset at `0xD3F6E`, and RPM hysteresis at `0xD3F70`.
+views. Rolling Launch adds six scalar configuration tables: minimum coolant
+temperature at `0xD3F66`, minimum vehicle speed at `0xD3F68`, bounded-retard
+ramp width at `0xD3F69`, minimum engine speed at `0xD3F6A`, RPM offset at
+`0xD3F6E`, and RPM hysteresis at `0xD3F70`.
 It also adds a native pedal-requirement switch at `0xD3F6C` and one native
 RomRaider `BitwiseSwitch` at `0xD3F64` with five per-map checkboxes. TunerPro
 represents the same byte as five native `XDFFLAG` items. The raw enable-mask and
@@ -4704,12 +4706,14 @@ The composer exposes no output-file operation, leaves stored checksums unchanged
 and reports `flashable=false`.
 
 `map-switching-payloads.toml` tracks the complete SHA-locked machine-code spans.
-`apply_map_switching.py` accepts checksum-valid JK08A inputs with lower-partition
-calibration/configuration changes while requiring the exact protected upper ROM,
-identity, anchors, and erased allocation. It initializes maps 2-5 from the input
-Map 1 values, installs the runtime, recalculates all checksum domains through
-`jk08a_checksums.py`, proves byte preservation outside the composition and checksum
-fields, and creates a non-overwriting ROM plus MD5 sidecar.
+`apply_map_switching.py` is the isolated map-switching stage library and file
+boundary. `build_rom.py` is the production complete-ROM boundary: it detects
+JK08A from immutable identity bytes or accepts the explicit series, applies the
+map-switching and Rolling Launch payloads, preserves established maps 2-5 while
+migrating a recognized complete runtime, applies a strict local Rolling Launch
+profile, and recalculates all checksum domains through `jk08a_checksums.py`. It
+proves byte preservation outside the combined component and checksum fields and
+creates a non-overwriting ROM, digest sidecars, and JSON manifest.
 
 `upgrade_map_switching_reset.py` accepts only the complete pre-fix runtime with
 the locked old startup wrapper, the old `0x29CC=0xFFFF5D00` literal, all other

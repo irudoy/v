@@ -28,14 +28,14 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "55eb17589b0195c2b61c0440c47fdcde66419825d51e11d54fbf7db5dc333e6c"
+    "f71a7adf357a9b7e048045a5f1d5dfff5f888fe6387873aa9e18bb37d119e249"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 1635
-EXPECTED_COMPOSITION_WRITE_BYTES = 1876
-EXPECTED_INSTRUCTION_COUNT = 730
-EXPECTED_CODE_ENTRY_COUNT = 5
+EXPECTED_COMPOSITION_CHANGED_BYTES = 1765
+EXPECTED_COMPOSITION_WRITE_BYTES = 2004
+EXPECTED_INSTRUCTION_COUNT = 785
+EXPECTED_CODE_ENTRY_COUNT = 6
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 98
+EXPECTED_DYNAMIC_CASES = 109
 RETURN_STUB = bytes.fromhex("000b0009")
 
 
@@ -183,7 +183,7 @@ def build_rom_object(fixture, build_dir):
 
 
 def build_and_run_dynamic_harness(fixture, build_dir):
-    """Execute 96 state, gate, output, and wrapper behavior cases."""
+    """Execute state, gate, output, and wrapper behavior cases."""
     rom_object = build_rom_object(fixture, build_dir)
     invoke_object = build_dir / "rolling-launch-invoke.o"
     harness_elf = build_dir / "rolling-launch-harness.elf"
@@ -224,9 +224,9 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=180,
     )
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=98 "
-        "structural=11 gates=25 config=22 activation=5 active=9 "
-        "cooldown=5 ignition=15 wrappers=6 entries=5"
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=109 "
+        "structural=11 gates=25 config=24 activation=5 active=9 "
+        "cooldown=5 ignition=24 wrappers=6 entries=6"
     )
     if marker not in result.stdout:
         raise VerificationError(

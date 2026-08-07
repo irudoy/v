@@ -150,6 +150,7 @@ def validate():
     expected_controls = {
         "coolant_min_address": "000d3f66",
         "min_speed_address": "000d3f68",
+        "retard_ramp_address": "000d3f69",
         "min_rpm_address": "000d3f6a",
         "pedal_requirement_address": "000d3f6c",
         "rpm_offset_address": "000d3f6e",
@@ -159,9 +160,9 @@ def validate():
             raise ValueError(f"Rolling Launch {field} differs")
     if launch.masked_view_count != 0:
         raise ValueError("Rolling Launch still exposes masked table views")
-    if launch.table_count != 5 or launch.switch_count != 1:
+    if launch.table_count != 6 or launch.switch_count != 1:
         raise ValueError(
-            "runtime does not expose five calibration tables and one pedal switch"
+            "runtime does not expose six calibration tables and one pedal switch"
         )
     if launch.bitwise_switch_count != 1 or launch.enable_bit_count != 5:
         raise ValueError(
@@ -179,6 +180,7 @@ def validate():
         "Rolling Launch Minimum Coolant Temperature": "0xD3F66",
         "Rolling Launch Minimum Vehicle Speed": "0xD3F68",
         "Rolling Launch Minimum Engine Speed": "0xD3F6A",
+        "Rolling Launch Retard Ramp Width": "0xD3F69",
         "Rolling Launch RPM Offset": "0xD3F6E",
     }
     for name, address in controls.items():

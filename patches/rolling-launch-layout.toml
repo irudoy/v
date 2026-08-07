@@ -4,19 +4,23 @@
 # a verification fixture only: checksum fields are not recalculated and no
 # output-file operation is exposed.
 
-schema_version = 1
+schema_version = 2
 rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56"
-expected_composition_sha256 = "55eb17589b0195c2b61c0440c47fdcde66419825d51e11d54fbf7db5dc333e6c"
+expected_composition_sha256 = "f71a7adf357a9b7e048045a5f1d5dfff5f888fe6387873aa9e18bb37d119e249"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
 claimed_rom_end = 0x000D3F80
 configuration_address = 0x000D3F60
 configuration_size = 32
-default_configuration = "524c0100000000ff010000a0000100100008012c0064737373737300adb3a55a"
+default_configuration = "524c0200000000ff011000a0000100100008012c0064737373737300adb3a55a"
+
+[[claimed_rom_extension]]
+start = 0x000D40C0
+end = 0x000D4140
 
 [scheduler]
 table_address = 0x00021970
@@ -65,6 +69,12 @@ start = 0x000D3EA0
 end = 0x000D3F60
 entry = 0x000D3EA0
 
+[[code_region]]
+key = "ignition_controller"
+start = 0x000D40C0
+end = 0x000D4140
+entry = 0x000D40C0
+
 [[assembly_unit]]
 key = "wrappers"
 source = "rolling-launch-wrappers.s"
@@ -84,8 +94,8 @@ start = 0x000D38E4
 end = 0x000D3EA0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "599c859dffe2f2b88eefa0c2add63ceecf3232a08625b1acc2481bd9c4658673"
-instruction_count = 623
+expected_sha256 = "6fbe61494983b09c45565b02409f1d768c1633cbe3c088d6e378d10c0ed9d3c6"
+instruction_count = 630
 data_bytes = 95
 code_regions = ["engine"]
 
@@ -96,10 +106,22 @@ start = 0x000D3EA0
 end = 0x000D3F60
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "542aab5999c39903c6614daa4b44ca41a77fe37273ee57dc2c4390e53844311d"
-instruction_count = 73
+expected_sha256 = "82452974b158d34cc8d7c69b990f327428ff01f92e047c6a15cb2f9251e90952"
+instruction_count = 72
 data_bytes = 35
 code_regions = ["ignition_adapter"]
+
+[[assembly_unit]]
+key = "ignition_controller"
+source = "rolling-launch-ignition-controller.s"
+start = 0x000D40C0
+end = 0x000D4140
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "465b6e90325fa6aecffa94eeffa40b9c7b65f5095ed4bf768e52ee55f1407e3c"
+instruction_count = 49
+data_bytes = 24
+code_regions = ["ignition_controller"]
 
 [[hook]]
 key = "periodic_scheduler_index_0"

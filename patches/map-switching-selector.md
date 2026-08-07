@@ -33,10 +33,12 @@ every control transfer and PC-relative reference from the locked machine word.
 calibration copies, pointer tables, and hooks to an in-memory image without
 exposing an output-file operation. `map-switching-payloads.toml` stores the
 nine validated machine-code spans as hexadecimal data.
-`apply_map_switching.py` is the output boundary: it validates the input and
-payloads, invokes the compatible-input composition, recalculates every JK08A
-checksum domain, proves byte preservation outside the declared write set, and
-creates a ROM plus MD5 sidecar without overwriting a different file.
+`apply_map_switching.py` is the isolated map-switching output boundary: it
+validates the input and payloads, invokes the compatible-input composition,
+recalculates every JK08A checksum domain, proves byte preservation outside the
+declared write set, and creates a ROM plus MD5 sidecar without overwriting a
+different file. `build_rom.py` is the production complete-ROM boundary and
+continues from this stage through every registered runtime.
 `tools/ghidra/EmulateMapSwitchingComposition.java` independently reconstructs
 the same complete fixture from the exact Ghidra program and executes every
 machine-code scenario against final composed addresses.
@@ -915,7 +917,7 @@ The eight-byte record at `0xFFF80..0xFFF87` is preserved:
 ```
 
 Bytes after that record are not claimed as free space. The manifest claims the
-half-open interval `[0xD2108, 0xD4000)`:
+half-open interval `[0xD2108, 0xD40C0)`:
 
 | ROM range | Purpose |
 |---|---|
@@ -945,15 +947,22 @@ half-open interval `[0xD2108, 0xD4000)`:
 | `0xD3860..0xD3F7F` | unallocated by map switching; available to a separately validated extension |
 | `0xD3F80..0xD3FBF` | DFCO Hold copies |
 | `0xD3FC0..0xD3FFF` | DFCO Intermediate Restore copies |
-| `0xD4000..0xE1C29` | unallocated within the conservative free region |
+| `0xD4000..0xD403F` | idle-ignition lookup adapter |
+| `0xD4040..0xD4067` | Cold Idle and Idle Ignition five-entry pointer tables |
+| `0xD4068..0xD407F` | alignment reserve |
+| `0xD4080..0xD409F` | Cold Idle Ignition Timing copies |
+| `0xD40A0..0xD40BF` | Idle Ignition Timing copies |
+| `0xD40C0..0xD413F` | Rolling Launch ignition-band controller extension |
+| `0xD4140..0xE1C29` | unallocated within the conservative free region |
 | `0xE1C2A..0xFFF7F` | fill tail, not allocated by this contract |
 
 Code ranges are fixed envelopes; assembly must fit each entry without changing
 the calibration or pointer-table addresses. Unused bytes remain `0xFF`.
 
-`AuditFreeRegion.java D2108 D3FFF FF` is the reproducible gate for the claimed
-allocation interval. `AuditFreeRegion.java D2108 E1C29 FF` additionally checks
-the remaining conservative region. Both runs require `status=PASS` with zero
+`AuditFreeRegion.java D2108 D40BF FF` is the reproducible gate for the
+map-switching claimed allocation interval. `AuditFreeRegion.java D2108 E1C29 FF`
+additionally checks the conservative region that contains the separately claimed
+Rolling Launch extension. Both runs require `status=PASS` with zero
 bad bytes, instructions, data objects, functions, and references.
 
 ## Verified calibration accessors
@@ -1229,13 +1238,13 @@ complete blob-set enforcement, hash rejection, hooks, copies, pointer tables,
 locked feedback counts, rejection of an out-of-contract byte, and static
 agreement between the Ghidra harness and the authoritative layout manifest.
 
-`apply_map_switching.py` owns file creation. Its compatible-input gate permits
-changes only below `0x20000`, while requiring the exact calibration identity,
-hook anchors, CAN serializer anchors, erased allocation, and complete protected
-upper partition. It also requires a self-consistent input checksum state. The
-The patcher initializes all 48 alternate-map copies from the input Map 1 values,
-installs the twelve pointer tables, 15 hooks, and nine tracked payloads, then
-recalculates checksums in this order:
+`apply_map_switching.py` owns isolated map-switching stage file creation. Its
+compatible-input gate permits changes only below `0x20000`, while requiring the
+exact calibration identity, hook anchors, CAN serializer anchors, erased
+allocation, complete protected upper partition, and self-consistent input
+checksums. The stage initializes all 48 alternate-map copies from the input Map
+1 values, installs the twelve pointer tables, 15 hooks, and nine tracked
+payloads, then recalculates checksums in this order:
 
 ```text
 self-test B -> self-test A -> SUM16 A -> SUM16 B
@@ -1249,6 +1258,13 @@ cover compatible calibration changes, exact preservation,
 slot initialization, payload locks, checksum recalculation, wrong identity,
 changed code or anchors, occupied storage, repeat application, and
 non-overwriting output behavior.
+
+`build_rom.py` is the production ROM entry point. It invokes this stage through
+its library API, restores existing Map 2 through Map 5 bytes when migrating a
+recognized complete runtime, then applies Rolling Launch and verifies the union
+of both component write sets. Series selection defaults to immutable-byte
+auto-detection and also accepts explicit `--rom JK08A`; the complete contract is
+in `rom-builder.md`.
 
 `upgrade_map_switching_reset.py` accepts only the complete pre-fix runtime. It
 requires the old `0x29CC` value and startup-wrapper SHA-256, every other tracked
@@ -1489,8 +1505,8 @@ self-test B -> self-test A -> SUM16 A -> SUM16 B
 ```
 
 `jk08a_checksums.py` implements this order and independently verifies all six
-stored references. `apply_map_switching.py` refuses an inconsistent input and
-verifies the recalculated output before writing it.
+stored references. Both the isolated stage and `build_rom.py` refuse an
+inconsistent input and verify the recalculated output before writing it.
 
 ## Validation gates before an engine test
 
@@ -1543,8 +1559,10 @@ verifies the recalculated output before writing it.
    The 2026-08-05 run reports `PASS` for stages 15 through 19. A complete
    readback remains optional evidence for upgrading the final endpoint to
    `PASS_EXACT`; it is not required to begin the non-running functional test.
-8. Patch a checksum-valid compatible input with `apply_map_switching.py` and
-   retain the reported input/output SHA-256 values and MD5 sidecar.
+8. Build a checksum-valid compatible input with `build_rom.py`, retain the
+   reported input/output SHA-256 values, both digest sidecars, and the JSON
+   manifest. Use `apply_map_switching.py` only when an isolated map-switching
+   stage artifact is required for diagnosis.
 9. Verify that Map 2 through Map 5 equal the input Map 1 in all twelve families,
    all checksum domains pass, and the common `JK08A` XML/XDF projection matches
    the layout.

@@ -61,6 +61,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
         self.assertEqual(calibration.options, rolling_launch.Option(0))
         self.assertEqual(calibration.rpm_offset_native, 16)
         self.assertEqual(calibration.hysteresis_native, 8)
+        self.assertEqual(calibration.retard_ramp_native, 16)
         self.assertEqual(calibration.run_timeout_ticks, 300)
         self.assertEqual(calibration.rearm_ticks, 100)
 
@@ -166,11 +167,15 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             self.patch(corrupt)
 
     def test_occupied_rolling_rom_is_rejected(self):
-        corrupt = bytearray(self.source)
-        corrupt[self.rolling_layout.claimed_rom.start] = 0
-        corrupt = bytes(checksums.recalculate(corrupt))
-        with self.assertRaisesRegex(patcher.PatchError, "allocation is occupied"):
-            self.patch(corrupt)
+        for span in self.rolling_layout.claimed_rom_ranges:
+            with self.subTest(span=span.key):
+                corrupt = bytearray(self.source)
+                corrupt[span.start] = 0
+                corrupt = bytes(checksums.recalculate(corrupt))
+                with self.assertRaisesRegex(
+                    patcher.PatchError, "allocation is occupied"
+                ):
+                    self.patch(corrupt)
 
     def test_occupied_diagnostic_pointer_is_rejected(self):
         corrupt = bytearray(self.source)
@@ -228,7 +233,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             self.result.instruction_count,
             self.rolling_layout.assembled_instruction_count,
         )
-        self.assertEqual(self.result.code_entry_count, 5)
+        self.assertEqual(self.result.code_entry_count, 6)
         self.assertEqual(
             self.result.diagnostic_count,
             len(self.rolling_layout.diagnostics),

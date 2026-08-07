@@ -1,4 +1,4 @@
-# SHA-locked SH-2E payloads for apply_map_switching.py.
+# SHA-locked SH-2E payloads for build_rom.py and the isolated stage tools.
 #
 # Each value is a complete raw assembly-unit span including 0xFF fill. The
 # authoritative addresses, lengths, and SHA-256 values remain in

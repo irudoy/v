@@ -4,8 +4,11 @@
 
 Rolling Launch is an exact-JK08A extension of the complete five-slot
 map-switching runtime. It implements a rolling RPM hold with an optional
-retard-only ignition command. It does not implement turbo anti-lag, fuel
-enrichment, spark cut, or throttle intervention.
+RPM-conditioned, retard-only ignition command. Mode 2 leaves the stock command
+unchanged below a configurable band, blends toward the per-map late-command
+cap inside that band, and applies the cap at the fuel Cut threshold. It does
+not implement turbo anti-lag, fuel enrichment, spark cut, or throttle
+intervention.
 
 The tracked in-memory fixture remains valid and fail-closed: its map enable
 mask is zero and its composer never writes a ROM. A separate strict patcher
@@ -40,19 +43,21 @@ A separate 2026-08-06 vehicle test confirms that late values in idle-ignition
 tables `0x12196` and `0x1219E` produce lift-off exhaust events without holding
 the accelerator. This establishes a useful retard calibration reference, not a
 Rolling Launch control rule: those tables run under different stock state and
-load conditions. A future Rolling Launch retard phase must remain stock below
-the hold band and may apply a late command only during a fuel-present recovery
-phase near an actual limiter transition.
+load conditions. The current Rolling Launch controller uses that constraint:
+it remains stock below the hold band and bounds retard by current RPM near the
+actual fuel limiter transition. The new controller has software status `PASS`
+and hardware status `UNTESTED`.
 
 The common `defs/JK08A.xml` and `defs/JK08A.xdf` expose minimum coolant
 temperature, minimum vehicle speed, minimum engine speed, RPM offset, and RPM
-hysteresis as calibration tables. A native switch at `0xD3F6C` enables or
-disables the accelerator-pedal requirement by writing `min_pedal=1` or
-`min_pedal=0`. RomRaider also exposes one native `BitwiseSwitch` at
-configuration byte `0xD3F64`, with one checkbox for each of Maps 1 through 5.
-TunerPro represents the same byte as five `XDFFLAG` items. Every per-map control
-edits one bit of `enable_mask` and preserves the other bits. The raw aggregate
-mask and raw pedal threshold are not exposed as tables.
+hysteresis as calibration tables. A separate Retard Ramp Width table at
+`0xD3F69` controls the ignition band in `12.5 RPM` units. A native switch at
+`0xD3F6C` enables or disables the accelerator-pedal requirement by writing
+`min_pedal=1` or `min_pedal=0`. RomRaider also exposes one native
+`BitwiseSwitch` at configuration byte `0xD3F64`, with one checkbox for each of
+Maps 1 through 5. TunerPro represents the same byte as five `XDFFLAG` items.
+Every per-map control edits one bit of `enable_mask` and preserves the other
+bits. The raw aggregate mask and raw pedal threshold are not exposed as tables.
 
 The implementation is bound to:
 
@@ -61,10 +66,12 @@ The implementation is bound to:
 - complete map-switching in-memory endpoint SHA-256
   `b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56`;
 - default Rolling Launch in-memory endpoint SHA-256
-  `55eb17589b0195c2b61c0440c47fdcde66419825d51e11d54fbf7db5dc333e6c`;
+  `f71a7adf357a9b7e048045a5f1d5dfff5f888fe6387873aa9e18bb37d119e249`;
 - corrected checksum-valid map-switching stage-20 source SHA-256
   `8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d`;
-- corrected Map 1 RPM Hold candidate SHA-256
+- current Map 1 RPM Hold candidate SHA-256
+  `21ff554586e347a38737c2b15d432fb41b12c334e4d3cbcaa800a6a80968c9b1`;
+- previous pre-band-controller Map 1 RPM Hold candidate SHA-256
   `01555a7bdd21306881e177d4407bed1f2123d730cac5d7857554ec189bb5db3d`;
 - historical brake-gated Map 1 RPM Hold candidate SHA-256
   `c19207c4ad4c7494be6119db423a2eb927e2fe2f14695dc1dd2ff7309ce9d345`;
@@ -140,7 +147,7 @@ displaced stock ASCD host. An `ACTIVE` transition to `SET` aborts with
 | ---: | --- | --- | --- |
 | 0 | `OBSERVE` | none | none |
 | 1 | `RPM_HOLD` | temporary Cut/Restore overlay | none |
-| 2 | `RPM_HOLD_RETARD` | temporary Cut/Restore overlay | retard-only maximum |
+| 2 | `RPM_HOLD_RETARD` | temporary Cut/Restore overlay | bounded linear ramp near Cut |
 
 On activation, the engine captures native `uint16` RPM at `0xFFFF11BC`:
 
@@ -167,18 +174,37 @@ records stock and effective command bytes, then reads exact APC mode snapshot
 both stock compare schedulers, so a set bit immediately tail-calls the stock
 consumer with the unchanged command. A clear bit permits validation of active
 mode, map enable, configuration integrity markers, and the per-map target
-range, followed by:
+range. The controller derives:
 
 ```text
-effective_command = max(stock_command, target_command)
+band_start = max(captured_rpm, Cut - retard_ramp)
+
+rpm <= band_start:
+    effective = stock
+
+band_start < rpm < Cut:
+    effective = stock
+              + floor((target - stock) * (rpm - band_start)
+                      / (Cut - band_start))
+
+rpm >= Cut:
+    effective = target
 ```
 
-The accepted target range is `110..117`. The adapter cannot advance the command
-below the stock value. It writes the effective byte to `0xFFFF2022` and
-tail-calls the displaced stock consumer at `0x2A892`. Other bits, including
-bit 5, do not activate the fail-closed gate. Physical spark angle, output-driver
-polarity, and safe combustion behavior require timing-light and bench
-correlation before enablement.
+The formula is evaluated from current RPM on every primary command call while
+mode 2 is `ACTIVE`; it is not latched only after a fuel-cut event. It therefore
+applies on both the rising and falling path through the band. With the default
+`200 RPM` ramp and `100 RPM` hysteresis, Restore lies at the midpoint and
+retains half of the requested command delta before the blend fades to stock at
+the captured RPM. Fuel cut remains the hard limiter boundary.
+
+The accepted target range is `110..117`. If the stock command is already equal
+to or later than the target, the adapter leaves it unchanged, so the runtime
+cannot introduce advance. It writes an altered effective byte to `0xFFFF2022`
+and tail-calls the displaced stock consumer at `0x2A892`. Other bits, including
+bit 5, do not activate the fail-closed gate. Physical spark angle,
+output-driver polarity, and safe combustion behavior require timing-light and
+engine correlation before mode 2 is enabled on hardware.
 
 ## Allocation and hooks
 
@@ -188,6 +214,7 @@ correlation before enablement.
 | State engine and helpers | `0xD38E4..0xD3EA0` |
 | Ignition adapter | `0xD3EA0..0xD3F60` |
 | Configuration record | `0xD3F60..0xD3F80` |
+| Ignition band controller | `0xD40C0..0xD4140` |
 | Dedicated state RAM | `0xFFFF5D40..0xFFFF5D54` |
 | Shared fuel shadow | `0xFFFF5D10..0xFFFF5D1C` |
 | Periodic table hook | `0x21970`: `0xA9554` -> `0xD3860` |
@@ -195,10 +222,11 @@ correlation before enablement.
 | Startup hook | `0x27D28`: `0xD22A0` -> `0xD38A0` |
 | Ignition command hook | `0x4E198`: `0x2A892` -> `0xD3EA0` |
 
-The ROM allocation is inside the Ghidra-audited erased region ending at
-`0xE1C2A`. The state allocation is disjoint from map-switching RAM
-`0xFFFF5D00..0xFFFF5D3C` and inside the wider no-xref RAM interval ending at
-`0xFFFF7000`.
+Both ROM allocations are inside the Ghidra-audited erased region ending at
+`0xE1C2A`. They are intentionally disjoint because map-switching DFCO storage
+and the idle-ignition runtime occupy `0xD3F80..0xD40C0`. The state allocation
+is disjoint from map-switching RAM `0xFFFF5D00..0xFFFF5D3C` and inside the
+wider no-xref RAM interval ending at `0xFFFF7000`.
 
 ## Configuration record
 
@@ -207,14 +235,14 @@ All multi-byte values are big-endian.
 | Offset | Size | Field | Validation |
 | ---: | ---: | --- | --- |
 | `0x00` | 2 | magic | `0x524C` |
-| `0x02` | 1 | schema | `1` |
+| `0x02` | 1 | schema | `2` |
 | `0x03` | 1 | mode | `0..2` |
 | `0x04` | 1 | map enable mask | bits `0..4` only |
 | `0x05` | 1 | reserved options | zero |
 | `0x06` | 1 | coolant minimum | `<=` maximum |
 | `0x07` | 1 | coolant maximum | `>=` minimum |
 | `0x08` | 1 | minimum speed | nonzero |
-| `0x09` | 1 | padding | zero |
+| `0x09` | 1 | native retard ramp width | `0 < value <= 255`; `hysteresis < value <= rpm_offset` |
 | `0x0A` | 2 | minimum native RPM | nonzero |
 | `0x0C` | 2 | minimum pedal | `0..0xFFFF`; zero disables the requirement |
 | `0x0E` | 2 | native RPM offset | nonzero |
@@ -229,19 +257,20 @@ All multi-byte values are big-endian.
 The tracked default is:
 
 ```text
-524c0100000000ff010000a0000100100008012c0064737373737300adb3a55a
+524c0200000000ff011000a0000100100008012c0064737373737300adb3a55a
 ```
 
 It selects `OBSERVE`, enables no map, uses native minimum RPM `160`
-(`2000 RPM`), offset `16` (`200 RPM`), hysteresis `8` (`100 RPM`), timeout
-`300` ticks, rearm `100` ticks, and target command `115` for every map. Its
-minimum coolant value is raw `0` (`-40 deg C`), minimum speed is raw `1`
-(`2 km/h [cand]`), and `min_pedal=1` enables the pedal requirement.
+(`2000 RPM`), retard ramp `16` (`200 RPM`), offset `16` (`200 RPM`),
+hysteresis `8` (`100 RPM`), timeout `300` ticks, rearm `100` ticks, and target
+command `115` for every map. Its minimum coolant value is raw `0`
+(`-40 deg C`), minimum speed is raw `1` (`2 km/h [cand]`), and
+`min_pedal=1` enables the pedal requirement.
 
 The locked hardware-test profile is:
 
 ```text
-524c0101010000ff010000a0000100100008012c0064737373737300adb3a55a
+524c0201010000ff011000a0000100100008012c0064737373737300adb3a55a
 ```
 
 It changes only mode to `RPM_HOLD` and the enable mask to Map 1. With the
@@ -302,12 +331,17 @@ map request, `16` corrupt state, `17` map changed, and `18` mode changed.
 - `rolling_launch_layout.py`, `rolling_launch_assembly.py`, and
   `rolling_launch_compose.py` validate and compose the fail-closed fixture only
   in memory.
-- `apply_rolling_launch.py` accepts only the corrected locked stage-20 source,
-  applies the Map 1 RPM Hold profile through the same closed write set,
-  recalculates every checksum domain, and creates a non-overwriting ROM plus
-  MD5 sidecar.
-- `rolling-launch-wrappers.s`, `rolling-launch-engine.s`, and
-  `rolling-launch-ignition-adapter.s` are the SH-2E implementation.
+- `apply_rolling_launch.py` is the isolated JK08A stage library and diagnostic
+  CLI. It accepts a complete map-switching source, applies one validated
+  configuration through the same closed write set, and recalculates every
+  checksum domain.
+- `build_rom.py` is the production file entry point. It auto-detects JK08A or
+  accepts `--rom JK08A`, applies map switching and Rolling Launch directly from
+  their tracked payloads, accepts the separate strict local profile described
+  in `rom-builder.md`, and emits the complete digest and manifest artifact set.
+- `rolling-launch-wrappers.s`, `rolling-launch-engine.s`,
+  `rolling-launch-ignition-adapter.s`, and
+  `rolling-launch-ignition-controller.s` are the SH-2E implementation.
 - `tools/sh-elf-run/verify_rolling_launch.py` and
   `rolling_launch_harness.c` provide independent GNU assembly and executable
   behavior checks.
@@ -318,6 +352,7 @@ Host checks:
 python3 patches/rolling_launch_assembly.py
 python3 patches/rolling_launch_compose.py
 python3 -m unittest \
+  patches.tests.test_build_rom \
   patches.tests.test_apply_rolling_launch \
   patches.tests.test_rolling_launch \
   patches.tests.test_rolling_launch_composition \
@@ -333,7 +368,7 @@ tools/sh-elf-run/run.sh --verbose
 It independently assembles the exact source with GNU `sh-elf-as --isa=sh2e`,
 requires byte identity with all Ghidra payloads, relocates only validated
 high-RAM `.long` literals for the simulator, preserves every new instruction
-byte and control-flow address, and executes 98 Rolling Launch cases in addition
+byte and control-flow address, and executes 109 Rolling Launch cases in addition
 to the existing map-switching gate.
 
 ## Hardware-test images
@@ -404,8 +439,8 @@ tracked patch tools with prefix `1JK08A-map-switching-safe-v5`. Its stage-20
 map-switching endpoint has SHA-256
 `8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d`.
 Applying the locked generic Map 1 RPM Hold profile produces SHA-256
-`01555a7bdd21306881e177d4407bed1f2123d730cac5d7857554ec189bb5db3d`
-and MD5 `957414243a7c50ba430657ec028863cb`. This regression image does not contain
+`21ff554586e347a38737c2b15d432fb41b12c334e4d3cbcaa800a6a80968c9b1`
+and MD5 `ae4d8bc39af82ed05bf3c2673ea76c8d`. This regression image does not contain
 the custom calibration of Overlay 21.
 
 The target-vehicle result is:
@@ -422,16 +457,15 @@ The target-vehicle result is:
    speed, RPM offset, RPM hysteresis, the pedal-requirement switch, and five
    independent per-map enable controls. Hardware acceptance uses only
    parameters available in the current logger.
-6. A complete Rolling Launch implementation requires an RPM-conditioned
-   ignition controller. Retard must remain stock below the hold band, enter
-   only near an actual limiter event, and restore torque through explicit
-   hysteresis or staged commands. The controller requires separate engine
-   validation before any exhaust-combustion objective is evaluated. Overlay 22
-   is not a further dynamic-test candidate.
+6. Mode 2 uses the RPM-conditioned bounded-retard controller. The controller
+   remains stock below the configured band, reaches the per-map target at Cut,
+   retains a bounded fraction at Restore, and fades to stock below the band.
+   It requires separate engine validation before any exhaust-combustion
+   objective is evaluated. Overlay 22 is not a further dynamic-test candidate.
 7. The one-through-five CRUISE indication encoding and count pass in the
-   integrated vehicle image. The next local no-retard candidate verifies the
-   revised 15/15-frame duration, then repeats the established Map 1 RPM Hold
-   and Map 2/Map 3 selection checks.
+   integrated vehicle image. Hardware validation starts with the locked mode 1
+   no-retard profile for the changed runtime, then enables mode 2 separately
+   with conservative ramp and target values.
 
 The remaining gesture risk is the decoded code sequence produced when CANCEL
 is pressed while SET remains held. A CAN capture of that combined gesture must

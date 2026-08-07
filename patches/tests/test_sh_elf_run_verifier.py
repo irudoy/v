@@ -199,7 +199,7 @@ mov #0x5,r1
             result.sha256,
             ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 730)
+        self.assertEqual(result.instruction_count, 785)
         self.assertEqual(result.diagnostic_count, 9)
 
     def test_rolling_stock_stubs_come_from_both_manifests(self):
@@ -261,7 +261,7 @@ mov #0x5,r1
         self.assertIn("verify_rolling_launch.verify", source)
         self.assertIn("rolling_launch_cases", source)
         self.assertIn("cases=%lu", harness)
-        self.assertIn("entries=5", harness)
+        self.assertIn("entries=6", harness)
 
 
 if __name__ == "__main__":

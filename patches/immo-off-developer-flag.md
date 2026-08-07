@@ -14,7 +14,7 @@ ROM[0x00008725]: 0x01 -> 0x00
 
 One bit changes. The flasher corrects checksums while writing.
 
-## Supported ROMs
+## Verified ROM sites
 
 | ROM | Offset | Stock | Immo-off | Basis |
 |-----|-------:|------:|---------:|-------|
@@ -24,9 +24,10 @@ One bit changes. The flasher corrects checksums while writing.
 | JK78C | `0x861C` | `0x01` | `0x00` | homologous configuration block |
 | 1ND0A / 1ND3B | `0x8668` | `0x01` | `0x00` | homologous configuration block and state machine |
 
-The patcher verifies the SHA-256 of the exact stock ROM from
-`rom-images/roms.csv` and the original byte value. An offset is not transferred
-directly between independent builds.
+Each site is bound to its independently analyzed ROM. An offset is not
+transferred directly between independent builds. The live JK08A definitions
+expose the exact `0x8725` control; the other sites remain reverse-engineering
+evidence until their own definitions are produced.
 
 ## JK03A / JK08A execution path
 
@@ -91,20 +92,10 @@ starting or operation. This hardware result confirms the separation between the
 Developer Immobilizer actuator flag and the adjacent diagnostic path. The full
 P0 `read -> patch -> write` cycle is complete.
 
-## Usage
+## Definition control
 
-```bash
-python3 patches/apply_immo_off.py --rom JK08A
-```
-
-Output:
-`1JK08A-20260727-immo-off.bin` at a caller-selected output path.
-The adjacent MD5 sidecar is
-`1JK08A-20260727-immo-off.bin.md5`. The patcher never overwrites a differing BIN
-or sidecar. The output directory is not a build input.
-
-Verify without creating a file:
-
-```bash
-python3 patches/apply_immo_off.py --rom JK08A --verify-only
-```
+`defs/JK08A.xml` exposes Developer Immobilizer as a reversible RomRaider
+switch. `defs/JK08A.xdf` exposes the same byte as a one-entry TunerPro patch
+with exact stock `basedata`. Both controls use `01` for the stock state and
+`00` for immo-off. Checksum correction remains part of the editor and flashing
+workflow.
