@@ -15,7 +15,7 @@ the shared manifest, and the machine-readable registry:
 ```text
 rom-images/
   23710-XXXXX/
-    README.md
+    README.md                 # only when the directory has additional evidence
     <rom-id>-<YYYYMMDD>-stock.bin
     <rom-id>-<YYYYMMDD>-stock.bin.md5
     <other artifacts>
@@ -31,7 +31,8 @@ rom-images/
 
 An MD5 sidecar is named `<binary>.md5` and uses GNU format:
 `<md5> *<filename>`. SHA-256 is the primary identifier and is recorded in
-`roms.csv` and the directory README.
+`roms.csv`; a directory README is present only for additional package,
+provenance, hardware, or comparison evidence.
 
 Generated JK08A tuning images are not stored under `rom-images`. Concrete tune
 profiles, per-image build recipes, generated ROMs, checksum sidecars, active
@@ -54,9 +55,7 @@ cross-application exact-code family. JK00A is for the **VQ35HR** PV36 Skyline
 is a forum package containing `ROM + external SPI EEPROM`; the other three are
 owned reads without EEPROM dumps. `JK00C` and `JK00D` (1.0 MiB, SH7058) are
 owned ROMs from physical **VQ35HR**-class bench ECUs and use code bases distinct
-from both the shared `7MFKAVN86` family and each other. Documentation for the
-physical ECUs and the project is in the Russian-language Obsidian project
-`🎛️ Electronics/VQ HR ECU Tuning`; see `../AGENTS.md`.
+from both the shared `7MFKAVN86` family and each other.
 
 The MCU core is **SH-2E** (SH-2 plus a single-precision FPU), as confirmed by the
 Renesas datasheet
@@ -86,8 +85,8 @@ to the parts.nissanusa catalog.
 synchronization/adaptation). The MCU (`SH705822N`), software (`7MFKAVN86`), and
 calibration (`1JK03A00000`) identify themselves through strings in the image.
 The immobilizer path is analyzed in
-`../patches/immo-off-developer-flag.md`. The directory README contains the full
-package inventory and hashes.
+`../patches/immo-off-developer-flag.md`. The directory README records the
+package relationship.
 
 `JK08A` is an owned read from the target V36 Skyline 250GT ECU dated 2026-07-26.
 It was read with PCMFlash 1.2.0, module 18, through Scanmatik-SM2 USB. The ROM
@@ -97,7 +96,7 @@ contains `1JK08A00000`, `7MFKAVN86`, and `SH705822N`. It differs from JK03A at
 byte-identical. The executable code and Developer Immobilizer flag at `0x8725`
 are an exact match; calibration/configuration data is not identical. The package
 does not contain an EEPROM read or PCMFlash screenshot. The directory README
-contains the complete local identification.
+records target-specific comparison evidence.
 
 `JK00A` is an owned read dated 2026-08-04. PCMFlash identification and ROM
 strings record calibration `1JK00A00000`, software `7MFKAVN86`, and type
@@ -106,8 +105,8 @@ lot `7515`. Public exact-part listings associate it with the automatic JDM PV36
 Skyline 350GT and VQ35HR. Its known executable ranges are byte-identical to the
 VQ25HR JK03A, JK03B, and JK08A images despite the different engine application.
 JK00A differs from those images at 9,125, 9,118, and 9,163 byte positions,
-respectively, all within `0x008200..0x0191ad`. The directory README contains
-the complete identification and confidence boundary.
+respectively, all within `0x008200..0x0191ad`. The directory README records
+the original read identity and confidence boundary.
 
 `JK03B` is an owned pre-write read dated 2026-08-04. PCMFlash identification
 and ROM strings record calibration `1JK03B00000`, software `7MFKAVN86`, and
@@ -154,9 +153,9 @@ and SHA-256. It is machine-readable. Stage 4 of the map pipeline resolves the
 image by label and verifies its hash before reading values
 (`../tools/mapkit/rom.py`), so dump identification is a run precondition rather
 than human-only reference data. The label is empty for an image that is not
-represented in the graph, such as an EEPROM. Derived images are excluded from
-the stock-source registry; their hashes are recorded in the relevant
-modification README.
+  represented in the graph, such as an EEPROM. Derived images are excluded from
+  the stock-source registry; immutable hardware-tested identities are recorded
+  in `../patches/hardware-results.toml`.
 
 ### Provenance and confidence
 

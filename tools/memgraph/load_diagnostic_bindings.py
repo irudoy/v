@@ -11,7 +11,7 @@ This loader owns only :DiagnosticBinding nodes and their outgoing relationships.
 It must run after the global diagnostic corpus and after load_code.py.
 
 Invocation:
-  uv run --no-project --with neo4j python \
+  uv run python \
       tools/memgraph/load_diagnostic_bindings.py [rom]
 """
 

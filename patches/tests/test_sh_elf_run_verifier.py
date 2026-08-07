@@ -3,9 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace
 import unittest
 
-from patches import apply_map_switching as runtime
 from patches import map_switching_assembly as assembly_model
-from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
 from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
@@ -145,49 +143,46 @@ mov #0x5,r1
         self.assertEqual(VERIFIER.INCIDENT_UNSAFE_SLOT_WORD, 0xD304)
         self.assertEqual(VERIFIER.INCIDENT_SAFE_SLOT_WORD, 0x0009)
 
-    def test_full_dfco_overlays_use_locked_instruction_bytes(self):
-        layout = layout_model.load_layout()
-        blobs = runtime.load_payloads(layout)
-        composition = composer.compose(layout=layout, blobs=blobs)
-
-        results, marker = VERIFIER.require_full_dfco_overlay_chain(
-            layout, composition, blobs
-        )
-
-        self.assertEqual(
-            tuple(result.spec.sequence for result in results),
-            (15, 16, 17, 18, 19, 20),
-        )
-        self.assertFalse(
-            any(
-                result.spec.functional_selection_allowed
-                for result in results[:4]
-            )
-        )
-        self.assertTrue(
-            all(
-                result.spec.functional_selection_allowed
-                for result in results[4:]
-            )
-        )
-        self.assertIn("VQ_SH_ELF_OVERLAYS status=PASS", marker)
-        self.assertIn("stage15_instructions=156", marker)
-        self.assertIn("stage18_instructions=324", marker)
-        self.assertIn("stage19_instructions=418", marker)
-        self.assertIn("stage20_instructions=435", marker)
+    def test_verifier_uses_only_the_current_composer(self):
+        source = MODULE_PATH.read_text(encoding="utf-8")
+        self.assertNotIn("build_map_switching_", source)
+        self.assertIn("map_switching_compose as composer", source)
+        self.assertIn("require_composition(layout, blobs)", source)
 
     def test_runner_pins_docker_desktop_without_changing_user_context(self):
-        source = (
+        main_source = (
             ROOT / "tools/sh-elf-run/run.sh"
         ).read_text(encoding="utf-8")
-        context = source.index("DOCKER_CONTEXT=desktop-linux")
-        export = source.index("export DOCKER_CONTEXT")
-        unset = source.index("unset DOCKER_HOST")
-        first_docker = source.index("docker build")
-        self.assertLess(context, export)
-        self.assertLess(export, unset)
-        self.assertLess(unset, first_docker)
-        self.assertNotIn("docker context use", source)
+        external_source = (
+            ROOT / "tools/sh-elf-run/run-npkern.sh"
+        ).read_text(encoding="utf-8")
+        for source in (main_source, external_source):
+            with self.subTest(source=source.splitlines()[0]):
+                context = source.index("DOCKER_CONTEXT=desktop-linux")
+                export = source.index("export DOCKER_CONTEXT")
+                unset = source.index("unset DOCKER_HOST")
+                first_docker = source.index("docker build")
+                self.assertLess(context, export)
+                self.assertLess(export, unset)
+                self.assertLess(unset, first_docker)
+                self.assertNotIn("docker context use", source)
+
+    def test_npkern_is_an_explicit_revision_locked_external_gate(self):
+        main_source = (
+            ROOT / "tools/sh-elf-run/run.sh"
+        ).read_text(encoding="utf-8")
+        external_source = (
+            ROOT / "tools/sh-elf-run/run-npkern.sh"
+        ).read_text(encoding="utf-8")
+        self.assertIn("--with-npkern", main_source)
+        self.assertIn("status=SKIP reason=not_requested", main_source)
+        self.assertIn(
+            "d364011963c1da59a907ca291e1c0602977e9fd0",
+            external_source,
+        )
+        self.assertIn("revision_mismatch", external_source)
+        self.assertIn("source_dirty", external_source)
+        self.assertIn("status=SKIP reason=source_missing", external_source)
 
     def test_rolling_launch_composition_lock_matches_verifier(self):
         layout = rolling_launch_layout.load_layout()

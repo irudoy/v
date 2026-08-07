@@ -38,9 +38,8 @@ public class DumpListing extends GhidraScript {
                 if (prev == null) break;
                 cur = prev;
             }
-            // Name the file from the parsed address rather than argument text.
-            // build_artifacts.py obtains an eight-digit graph address, so
-            // "26a80" and "00026a80" differ only in invocation spelling.
+            // Name the file from the parsed address rather than argument text,
+            // so "26a80" and "00026a80" differ only in invocation spelling.
             String name = String.format("listing_%08x.txt", target.getOffset() & 0xFFFFFFFFL);
             PrintWriter w = new PrintWriter(new FileWriter(new File(outDir, name)));
             for (int k = 0; k < 56 && cur != null; k++) {

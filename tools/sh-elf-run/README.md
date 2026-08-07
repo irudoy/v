@@ -1,114 +1,117 @@
 # GNU SH-ELF firmware instruction verification
 
-This directory is the mandatory independent executable gate for every current
-or future firmware patch that changes instruction bytes. It uses the GNU SH-2E
-assembler, linker, and instruction-set simulator from Debian trixie instead of
-Ghidra p-code. The registered verifiers cover the complete JK08A map-switching
-implementation, its default-disabled Rolling Launch extension, and the external
-npkern SH7058/SH7059 CAN targets.
+This directory is the mandatory independent executable gate for every firmware
+patch that changes instruction bytes. It uses the GNU SH-2E assembler, linker,
+and instruction-set simulator in a pinned Debian container rather than Ghidra
+p-code.
 
-Run the complete gate from the repository root:
+The default gate is fully repository-contained. Verification of the separate
+npkern project is optional, external, and revision-locked.
+
+## Repository-contained gate
+
+Run the complete current JK08A gate from the repository root:
 
 ```bash
 tools/sh-elf-run/run.sh --verbose
 ```
 
-The first run builds `vq-sh-elf-run:16.3`. Later runs reuse Docker layers. Set
-`VQ_SH_ELF_IMAGE` to select a compatible local image. Set
-`VQ_SH_ELF_SKIP_BUILD=1` only when that image was already built from this
-Dockerfile. The runner exports `DOCKER_CONTEXT=desktop-linux` and removes
-`DOCKER_HOST`, so it does not depend on or change the caller's active Docker
-context. The npkern tree defaults to `../../oss/npkern` relative to this
-repository; `VQ_NPKERN_SOURCE` selects another checkout.
+The first run builds the image defined by `Dockerfile`; later runs reuse Docker
+layers. The runner selects the `desktop-linux` Docker context without changing
+the caller's configured context.
 
-The gate performs six independent checks:
+`VQ_SH_ELF_IMAGE` selects another compatible local image name.
+`VQ_SH_ELF_SKIP_BUILD=1` skips the image build only when that image was already
+built from the current Dockerfile.
 
-1. GNU `sh-elf-as --isa=sh2e` assembles nine map-switching and four Rolling
-   Launch source units. Explicit instruction and data bytes are reconstructed
-   over each declared `0xFF` envelope and must be byte-identical to the
-   SHA-locked Ghidra payloads.
-2. Those independent bytes build two exact non-flashable one-MiB compositions.
-   Map switching locks 435 instruction placements and twelve entries. Rolling
-   Launch extends only that exact endpoint and locks another 785 instruction
-   placements, six entries, nine diagnostic pointers, and a 2004-byte write
-   set before any simulator-only transformation.
-3. The GNU-assembled bytes build the final six cumulative hardware-overlay
-   compositions independently of the tracked payload bundle. Stages 15 through
-   17 each contain 156 instruction placements while the full-DFCO payload and
-   hooks are introduced. Stage 18 contains 324 instruction placements with the
-   selector host active but CAN feedback absent. Stage 19 contains 418
-   instruction placements and retains the hardware-tested 10/10-frame CAN
-   feedback timing. Stage 20 contains all 435 instruction placements, adds the
-   two idle-ignition families, changes the timing to 15/15 frames, and must equal
-   the independently composed complete twelve-family runtime endpoint. The exact
-   hardware-output hashes are locked by the overlay builder.
-4. `sh-elf-run` executes 240 behavior cases. Map switching retains its 131
-   adapter, limiter/startup, selector, and feedback cases. Rolling Launch adds
-   109 structural, gate, configuration, activation, active-state, cooldown,
-   ignition, and wrapper cases. Every declared implementation entry executes.
-   Map copies receive distinct simulator-only values so a wrong slot cannot
-   pass merely because all initial copies equal Map 1. Only documented stock
-   callees outside the implementations are replaced with `RTS/NOP` stubs.
-5. A separate ELF places the exact failed Overlay 07 words `AFAC D304` at
-   `0xD2314`. GNU simulator 16.3 must stop with signal 4. A control ELF at the
-   same addresses replaces only `D304` with `NOP` and must return normally.
-6. `verify_npkern_can.py` builds the exact-address SH7058 and SH7059 CAN kernels
-   in both flash-read-only and explicitly write-enabled configurations. It
-   executes 15 read-only parser cases, 23 write-enabled parser cases, and 16
-   ISO-TP cases from the same relocatable objects used by the production ELFs.
-   Ten additional guards execute the exact SH7058/SH7059 flash-write boundary
-   paths without touching unmodeled flash-controller registers.
-   Every non-relocated byte is required to match between the production and
-   simulator links. Linker-address literals are the only declared relocation.
-   The same verifier builds a deterministic legacy SH7058 K-line image and
-   locks both its binary hash and the unchanged legacy parser source, so the
-   CAN split cannot introduce an unverified K-line firmware change.
+The gate performs these checks:
 
-GNU simulator cannot map the SH7058S `0xFFFFxxxx` RAM window because its SH
-memory implementation accepts at most a 31-bit address space. The gate first
-proves the original high-address literal bytes against the tracked payloads,
-then relocates only those validated `.long` data literals to a dedicated
-`0x01000000` test region. Instruction bytes and control-flow addresses remain
-unchanged. This is an implementation-level ECU fixture, not peripheral or
-whole-firmware emulation.
+1. Assemble every current map-switching and Rolling Launch source unit with GNU
+   `sh-elf-as --isa=sh2e`.
+2. Reconstruct each fill-aware ROM envelope and require byte identity with the
+   corresponding SHA-locked payload in the tracked manifest.
+3. Independently compose the current non-flashable one-MiB map-switching and
+   Rolling Launch fixtures and enforce their declared write sets, entries,
+   hooks, pointers, and instruction audit.
+4. Execute every declared map-switching selector, adapter, limiter, startup,
+   feedback, and Rolling Launch behavior case with distinct fixture values that
+   expose wrong slots or addresses.
+5. Apply only the documented simulator transformations after exact byte
+   identity succeeds: high-RAM data-literal relocation and explicit return
+   stubs for unchanged stock callees outside the implementation under test.
+6. Execute the exact unsafe delayed-branch incident words at their ROM addresses
+   and require an illegal-instruction stop, while a control fixture that changes
+   only the delay-slot word returns normally.
 
-The npkern verifier has an additional explicit limitation. GNU `sh-elf-run`
-does not model HCAN-II, the SH7058/SH7059 flash controller, or the external
-watchdog circuit. The verifier builds and audits those drivers but does not
-execute their register interactions. Its PASS marker therefore includes
-`hardware_ready=NO`; the generated kernels remain ineligible for hardware use
-until passive capture and bench validation close that gap.
+A successful run prints `VQ_SH_ELF_MAP_SWITCHING`,
+`VQ_SH_ELF_ROLLING_LAUNCH`, `VQ_SH_ELF_ROLLING_VERIFY`, and
+`VQ_SH_ELF_VERIFY` markers with `status=PASS`. The markers calculate current
+instruction, case, branch, relocation, and composition values at runtime; this
+document does not duplicate them.
+
+## External npkern gate
+
+Run the external gate separately:
+
+```bash
+tools/sh-elf-run/run-npkern.sh --verbose
+```
+
+Or request it after the repository-contained gate:
+
+```bash
+tools/sh-elf-run/run.sh --with-npkern --verbose
+```
+
+The default checkout is `../../oss/npkern` relative to this repository.
+`VQ_NPKERN_SOURCE` may point to another checkout, but `run-npkern.sh` requires
+that path to be the Git root, at the exact revision embedded in the script, and
+completely clean. It does not fetch, clone, select a mirror, or modify the
+external project.
+
+If the checkout is absent, the external command reports `status=SKIP` and
+`hardware_ready=NO`. A wrong revision, nested Git root, or dirty tree is a hard
+failure. The repository-contained gate remains independent of npkern
+availability.
+
+The npkern verifier builds exact-address SH7058 and SH7059 CAN targets in
+read-only and explicitly write-enabled configurations, executes parser,
+ISO-TP, and flash-boundary fixtures, checks production-to-simulator byte
+identity outside declared relocation literals, and verifies the unchanged
+legacy SH7058 K-line target.
+
+## Simulator boundaries
+
+GNU `sh-elf-run` cannot map the SH7058S `0xFFFFxxxx` RAM window. The gate first
+proves the original literal bytes, then relocates only those validated data
+literals to test RAM. Instruction bytes and control-flow addresses remain
+unchanged.
+
+The simulator does not model HCAN-II, the SH7058/SH7059 flash controller, or the
+external watchdog. The npkern marker therefore remains
+`hardware_ready=NO`. Repository firmware fixtures also do not emulate the full
+ECU, power sequencing, analog inputs, or engine.
+
+Passing this gate proves a bounded software execution contract. It does not
+make an image eligible for flashing without static review and the project's
+bench, readback, and engine validation gates.
 
 ## Adding an instruction-changing patch
 
-The change that introduces a patch must also extend this gate. The verifier for
-that patch must:
+The same change that introduces a patch must extend this gate. Its verifier
+must:
 
-1. Independently assemble the source or reconstruct the declared raw machine
-   words, then prove byte identity with the instructions emitted into the ROM.
-2. Execute every changed entry and reachable branch outcome, including all
-   delay slots, call/return paths, failure paths, and relevant boundary inputs.
-3. Use distinct fixture values wherever equal production defaults could conceal
-   an incorrect address, slot, width, or branch selection.
-4. Declare every simulator-only relocation and stock-function stub, apply them
-   only after byte identity is established, and leave the tested instruction
-   bytes and control-flow addresses unchanged.
-5. Add deterministic host-side tests for the verifier and make the top-level
-   `tools/sh-elf-run/run.sh` command execute the new check.
+1. Independently assemble the source or reconstruct declared raw words and
+   prove identity with the exact instructions emitted into the ROM.
+2. Execute every changed entry and reachable branch outcome, including delay
+   slots, call/return paths, failure paths, and relevant boundary inputs.
+3. Use distinct fixture values where equal production defaults could conceal a
+   wrong address, slot, width, or branch.
+4. Declare simulator-only relocations and stock-function stubs, apply them only
+   after byte identity, and leave instructions and control-flow addresses under
+   test unchanged.
+5. Add deterministic host-side tests and make `run.sh` execute the new
+   repository-contained check.
 
 A simulator limitation is not a waiver. Until an equivalent executable check
-exists, the resulting image must not be described as ready for hardware or
-supplied for flashing. Passing this gate does not model ECU peripherals, prove a
-complete reset sequence, or replace bench and engine validation.
-
-A successful run includes all six primary markers:
-
-```text
-VQ_SH_ELF_OVERLAYS status=PASS stages=6 stage15_instructions=156 stage16_instructions=156 stage17_instructions=156 stage18_instructions=324 stage19_instructions=418 stage20_instructions=435 ...
-VQ_SH_ELF_MAP_SWITCHING status=PASS cases=131 selector=17 adapters=91 limiter=14 feedback=9 feedback_invocations=17 entries=12
-VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=109 structural=11 gates=25 config=24 activation=5 active=9 cooldown=5 ignition=24 wrappers=6 entries=6
-VQ_SH_ELF_ROLLING_VERIFY status=PASS units=4 instructions=785 ... diagnostics=9 ...
-VQ_SH_ELF_VERIFY status=PASS ... hardware_overlay_stages=6 rolling_launch_instructions=785 rolling_launch_cases=109 ... unsafe_signal=4
-NPKERN_LEGACY_BUILD status=PASS target=SH7058_KLINE ...
-NPKERN_CAN_VERIFY status=PASS targets=4 legacy_targets=1 ... flash_guard_cases=10 hardware_ready=NO limitation=HCAN_and_flash_peripherals_not_executed
-```
+exists, the image remains ineligible for hardware testing.

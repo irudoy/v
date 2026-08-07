@@ -30,7 +30,7 @@ from catalog import (
 DATASET_ID = "nissan-esm-2007-g35-sedan-v1"
 VEHICLE_ID = "infiniti-g35-sedan-2007-usdm-vq35hr"
 DEFAULT_OUTPUT = REFS / "nissan-esm-2007-g35-sedan"
-EXPECTED_DOCUMENTS = 56
+EXPECTED_DOCUMENTS = 29
 
 DOCUMENT_FIELDS = (
     "id",

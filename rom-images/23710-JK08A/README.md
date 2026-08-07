@@ -1,58 +1,17 @@
-# 23710-JK08A - stock ROM
+# 23710-JK08A target evidence
 
-Owned dump from the physical `23710-JK08A` target ECU in a V36 Skyline 250GT,
-read on 2026-07-26 with PCMFlash 1.2.0, module 18
-`Nissan: EFI SH705822N, SH705828N (Hitachi SH7058/1MB)`, through a
-Scanmatik-SM2 USB adapter.
+This is the owned stock read from the physical V36 Skyline 250GT target ECU,
+made on 2026-07-26 with PCMFlash 1.2.0 module 18 through Scanmatik-SM2 USB.
+The PCMFlash MD5 agrees with the stored sidecar. No identification screenshot
+or external EEPROM read is part of the package.
 
-## Contents
+Donor JK03A uses the same MCU class and software ID. The images differ only in
+calibration/configuration regions; known executable ranges are byte-identical.
+The delta includes the ROM identity, checksum fields, four unnamed candidate
+curves, and diagnostic descriptors. The live JK08A definition excludes those
+four candidates; all other exposed table and axis bytes are identical to the
+donor projection.
 
-- `1JK08A-20260726-stock.bin` - flash ROM, 1,048,576 bytes (`0x100000`);
-- `1JK08A-20260726-stock.bin.md5` - MD5 sidecar.
-
-Derived tuning images, concrete tune profiles, and per-image build recipes are
-not stored in this directory. Active tune identities, output paths, checksum
-sidecars, and calibration-specific build metadata remain local artifacts.
-
-ROM hashes:
-
-- SHA-256: `ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`;
-- MD5: `db4eeb16e6385afcb69e70955147c483`.
-
-The MD5 matches the value produced by PCMFlash during the read. The package does
-not include a PCMFlash identification screenshot.
-
-## Identification
-
-PCMFlash data agrees with strings inside the image:
-
-| Field | Value | ROM offset |
-|-------|-------|-----------:|
-| ECM part # | `23710-JK08A` | PCMFlash identification |
-| Calibration | `1JK08A00000` | `0x8204` |
-| Main number / software ID | `7MFKAVN86` | `0x6f09`, `0x2259c` |
-| EFI / MCU class | `SH705822N` | `0x50c6` |
-| Protocol | Hitachi CAN | PCMFlash module profile |
-
-The package contains only the main flash ROM. The absence of an EEPROM file does
-not establish that the board has no external EEPROM; its presence and contents
-remain a separate task.
-
-## Comparison with JK03A
-
-Donor `JK03A` has the same size, MCU, and `7MFKAVN86` software ID. The images
-differ at 121 byte positions in 58 contiguous ranges, all within
-`0x008200..0x0190c9`. These regions are byte-identical:
-
-- `0x000000..0x0081ff`, SHA-256
-  `d3b00d4ea983f0eaaa2085af4c79f087c8a6256379b11e5f962eefd121a4c902`;
-- `0x020000..0x0fffff`, SHA-256
-  `34726ad5cf8a81b632502102887273dad7c45e4e0a4f380163d251b386bb4c9e`.
-
-The delta includes the ROM ID, checksum, four known 1D-16 `uint16` curves at
-`0x15360`, `0x15380`, `0x19090`, and `0x190b0`, diagnostic descriptors, and
-other configuration/calibration data. The separate JK08A Memgraph layer reuses
-the common structure of the exact-code pair but measures values from this image.
-The working `defs/JK08A.xml` and `defs/JK08A.xdf` do not expose the four
-differing unnamed candidate curves; every other exposed table and axis is
-byte-identical to the donor.
+Identity and stock hashes are authoritative in `../roms.csv` and
+`../README.md`. Current definition evidence is under `../../defs/`; derived
+image outcomes are in `../../patches/hardware-results.toml`.

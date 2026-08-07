@@ -1232,8 +1232,7 @@ def main() -> int:
     except ImportError:
         print(
             "neo4j package is required; run with "
-            "`uv run --no-project --with neo4j python "
-            "tools/memgraph/ingest_diagnostics.py`",
+            "`uv run python tools/memgraph/ingest_diagnostics.py`",
             file=sys.stderr,
         )
         return 1

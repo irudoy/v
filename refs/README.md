@@ -2,8 +2,7 @@
 
 Local copies of primary sources for the **VQ HR ECU** project; see
 `../AGENTS.md`. Original PDFs and their MarkItDown conversions (`*.md`) are
-versioned together with this manifest. Obsidian notes refer to these files as
-`refs/<name>.md` or `.pdf`.
+versioned together with this manifest.
 
 Project-authored manifests and mirror wrappers are in English. Original
 primary-source documents preserve the source language; Markdown conversions
@@ -97,8 +96,8 @@ whose numeric values can be searched directly in a dump.
   `Custom Maps`, `Failsafe`, CAN I/O, and `Valet Mode`.
 
 `Map Switching` and `Limiters` describe mechanics represented in the pipeline as
-`:Flag {role:'selector'}` and `threshold`; see Stage 6 in
-`tools/map-flag-pipeline.md`.
+`:Flag {role:'selector'}` and `threshold`; see the current analysis stages in
+`tools/map-analysis-pipeline.md`.
 
 ## Machine-readable vendor dictionaries
 
@@ -119,23 +118,26 @@ transcriptions rather than the generated file.
 
 ## Nissan factory ESM stored locally
 
-The complete 2007 Infiniti G35 Sedan factory service manual is stored under
-`nissan-esm-2007-g35-sedan/` as 56 original PDFs. It supports precise
-identification of node mechanics and logic through factory circuit diagrams,
+A scoped subset of the 2007 Infiniti G35 Sedan factory service manual is stored
+under `nissan-esm-2007-g35-sedan/` as 29 original PDFs. It supports precise
+identification of ECU mechanics and logic through factory circuit diagrams,
 connector pinouts, diagnostic procedures, and system-operation descriptions.
+The retention boundary and recovery path for omitted manual modules are
+documented in `nissan-esm-2007-g35-sedan/README.md`.
 
 The machine-readable diagnostic projection is stored separately under
 `diagnostics/nissan-esm-2007-g35-sedan/`. Its scope, provenance contract, source
 revision, and completeness boundary are documented in `diagnostics/README.md`.
 
-- **Nissan ESM - 2007 Infiniti G35 Sedan (V36), VQ35HR engine.** Complete factory
-  service manual with 56 PDFs across all systems. Because the 2007 G35 Sedan
-  uses VQ35HR, its ECM section is a reference for the homologous NATS
-  architecture in the HR firmware under study, including VQ37VHR `1ND*`.
+- **Nissan ESM - 2007 Infiniti G35 Sedan (V36), VQ35HR engine.** The retained
+  factory-manual subset contains 29 PDFs selected for diagnostic, electrical,
+  and firmware evidence. Because the 2007 G35 Sedan uses VQ35HR, its ECM section
+  is a reference for the homologous NATS architecture in the HR firmware under
+  study, including VQ37VHR `1ND*`.
   Repository path: `refs/nissan-esm-2007-g35-sedan/`.
 
-  Original source path:
-  `~/Library/Mobile Documents/com~apple~CloudDocs/Auto/Nissan/V36/scheme/2007_G35_Sedan/`
+  The omitted modules remain recoverable from Git history or the complete
+  official 2007 Infiniti G35 Sedan ESM distribution.
 
   Relevant sections:
 

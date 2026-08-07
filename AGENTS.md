@@ -1,190 +1,75 @@
-# VQ HR ECU Tuning - AGENTS.md
+# VQ HR ECU Tuning - agent rules
 
-Reverse engineering and tuning of CAN ECUs for Nissan/Infiniti HR-series engines
-(Hitachi ECU, Renesas SH7058 / SH7059 MCU, SH-2E core):
+This repository reverse engineers and verifies Hitachi CAN ECUs for VQ25HR,
+VQ35HR, and VQ37VHR engines on Renesas SH7058/SH7059 SH-2E MCUs. The active
+target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
 
-- **VQ37VHR** - VVEL + dual CVTC;
-- **VQ35HR**, **VQ25HR** - dual CVTC, without VVEL.
+## Workspace boundary
 
-The test platform is an available **V36 Skyline 250GT** with a VQ25HR engine and a
-`23710-JK08A` ECU. Its flash ROM was read with PCMFlash. The executable code is
-byte-identical to the donor `JK03A`, while calibration and configuration differ
-(`rom-images/README.md`). Reflashing uses **SM2PRO** over J2534 in bench/boot mode.
-Factory diagnostics use **CONSULT-III Plus** through **Nissan VCI WiFi**.
+- Repository artifacts are technical and machine-oriented. Write all
+  repository documentation, annotations, comments, messages, and generated
+  human-readable text in English.
+- Planning and human project knowledge live in the Russian-language Obsidian
+  vault at
+  `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/🎛️ Electronics/VQ HR ECU Tuning`.
+- The vault entry point is `VQ HR ECU Tuning`.
+- Do not mention the private vault or its path in public repository content;
+  this file is the only repository location for that path.
+- After every task, update the vault in Russian when the result changes the
+  plan, current status, a decision, an open question, or durable knowledge.
+- Stock ROMs, structured evidence, assembly, patch mechanisms, definitions,
+  generators, and verification belong in Git.
+- Concrete tuned images, per-image profiles and recipes, active tune identities,
+  logs, and generated test outputs must not be committed.
 
-## Two-workspace model
+## Evidence and safety
 
-1. **Git repository** (this directory) - technical, machine-oriented, and binary
-   artifacts: ROM dumps, disassembly exports, definition files (XDF / RomRaider),
-   checksum scripts (nissutils), Ghidra/Memgraph tooling, and data logs. All
-   repository documentation, annotations, comments, messages, and generated
-   human-readable text are written in English.
-2. **Obsidian vault** - human-oriented documents: plan, roadmap, progress,
-   knowledge base, decisions, and open questions. It is the **source of truth for
-   planning and project knowledge** and continues to be maintained in Russian. It
-   is synchronized through iCloud and available from a phone.
-   - Path: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/🎛️ Electronics/VQ HR ECU Tuning`
-   - Entry point (MOC): **`VQ HR ECU Tuning`**.
+- Ground truth is in the silicon. Graph structure is not semantics.
+- Treat Memgraph as a reproducible derived query index. Durable claims belong
+  in tracked CSV, TOML, assembly, or narrow specifications.
+- Verify claims that affect hardware with CONSULT-III Plus live data or a bench
+  before flashing; validate final behavior in the engine when applicable.
+- Every patch that adds, removes, replaces, or redirects executable
+  instructions must extend and pass `tools/sh-elf-run/`.
+- The executable gate must bind exact ROM instruction bytes to an independently
+  assembled or reconstructed SH-2E fixture and execute all changed entries,
+  branch outcomes, delay slots, call/return paths, and relevant boundaries.
+- Document simulator-only relocations and stock-function stubs. They must not
+  alter the instruction bytes under test.
+- A simulator limitation leaves an image ineligible for hardware testing until
+  equivalent executable coverage exists.
+- Software gates complement static auditing and hardware validation; they do
+  not replace either.
 
-Planning and knowledge belong in the vault; dumps and scripts belong in the
-repository. After every task, the agent checks whether the result changes the
-project plan, progress, decisions, open questions, or knowledge base. If it does,
-the corresponding vault notes are updated in Russian as the final task step.
+## Authorized project operations
 
-## Actions allowed without confirmation
-
-Within the **VQ HR ECU Tuning** project, the following actions are allowed without
-showing parameters in advance or obtaining separate user confirmation:
-
-- any changes to the project Memgraph database, including creating, changing, or
-  deleting data, indexes, constraints, and other database objects;
-- any changes within the project directory in the Obsidian vault at the path
-  above, including creating, changing, moving, or deleting notes, directories,
-  and attachments;
-- creating and updating project-data backups in external storage systems,
-  including SMB/NAS, as well as connecting the storage, transferring the data,
-  and running the standard backup scripts required for that purpose.
-
-This permission applies only to this project's data and its backups. It does not
-cover `git push`, publication, sending messages, or other external-system changes
-that are not project-data backups.
-
-## Reverse-engineering stack
-
-The canonical path is headless:
-
-```text
-Ghidra (decompilation + call/xref/data-flow export, Java GhidraScript)
-  -> Memgraph (structure graph, homology, persistent project memory)
-  -> LLM agent (operating on the graph and headless artifacts)
-```
-
-The pipeline does not depend on a GUI and runs autonomously or in batch mode.
-
-The local arm64 deployment uses Ghidra 12.1.2 with JDK 21 and native components,
-plus Memgraph MAGE with Louvain/Leiden. The agent reads the graph through the
-project-scoped, read-only `mcp-memgraph` stdio MCP server. This server is
-headless-native and therefore part of the canonical path; loaders remain
-responsible for graph writes. GhydraMCP, consisting of the plugin and the
-`ghydra` stdio bridge in Claude Code, is an optional interactive accelerator for
-live reverse-engineering sessions. It requires an open Ghidra GUI and is outside
-the critical path. Versions, ports, startup commands, and roles are documented in
-`tools/README.md` and `tools/map-flag-pipeline.md`.
-
-Verification discipline: **ground truth is in the silicon.** Graph structure is
-not semantics. Every technical claim must be verified on hardware with
-CONSULT3P live data or a bench before flashing; the final result is validated in
-the engine.
-
-Every current or future firmware patch that adds, removes, replaces, or
-redirects executable instructions must extend the executable verification gate
-under `tools/sh-elf-run/` and pass it before an image is described as ready for
-hardware or supplied for flashing. This requirement is not specific to map
-switching. The gate must bind the exact instruction bytes emitted into the ROM
-to an independently assembled or reconstructed SH-2E fixture and execute all
-changed entries, branch outcomes, delay slots, call/return paths, and relevant
-boundary cases. Simulator-only relocations and stock-function stubs must be
-explicit, documented, and must not alter the instructions under test. If the
-simulator cannot represent behavior required by a patch, the limitation must be
-documented and the image remains ineligible for hardware testing until an
-equivalent executable check is available. This software gate complements, but
-does not replace, static instruction auditing and hardware validation.
+- Tracked Memgraph loaders and migrations may change project graph data or
+  schema when required by the task. Do not make ad hoc durable graph mutations.
+- The tracked Memgraph backup tool may connect to the configured SMB/NAS and
+  create project-data backups without separate confirmation.
+- These permissions do not cover `git push`, publication, messages, PRs,
+  deployment, or unrelated external systems.
+- Do not push unless the user explicitly requests it.
 
 ## Memgraph backup
 
-Memgraph backup is a separate final step in the agent workflow. No operating
-system scheduler is used. After a task that changes project files or the graph,
-the agent checks whether a backup is due:
+- Check backup status only after a task changes Memgraph data or graph schema:
 
-```bash
-python3 tools/memgraph/backup.py --status
-```
+  `python3 tools/memgraph/backup.py --status`
 
-If `due=true`, the agent performs one run without separate confirmation:
+- If the result says `due=true`, run:
 
-```bash
-python3 tools/memgraph/backup.py --if-due
-```
+  `python3 tools/memgraph/backup.py --if-due`
 
-An explicit user request for an immediate backup permits one forced run:
+- Use `--force` only for an explicit user request for an immediate backup.
+- Do not run an automatic backup check for source, documentation, or other
+  local file changes that leave the graph unchanged.
 
-```bash
-python3 tools/memgraph/backup.py --force
-```
+## Working conventions
 
-Forced mode bypasses only the local and remote 24-hour interval checks. Locking,
-SMB mount validation, dump validation, hashes, and atomic publication remain mandatory.
-Agents do not use forced mode for the automatic final backup check.
-
-The script mounts the SMB share from the gitignored
-`tools/memgraph/backup.local.toml`, verifies that the destination is an SMB
-mount, and `--if-due` does not create a backup more often than once every 24
-hours. A backup contains a gzip-compressed `DUMP DATABASE`, a native snapshot, a
-manifest, and SHA-256 hashes. Intermediate data is written directly to the NAS.
-Read-only work and responses without local changes do not trigger a backup.
-
-## Repository map
-
-- `rom-images/` - ROM dumps (`*.bin`): a VQ37VHR homolog pair from the RomRaider
-  forum (SH7058 USDM / SH7059 JDM); the cross-application exact-code family
-  comprising VQ35HR `JK00A` plus VQ25HR donor `JK03A`, owned pre-write baseline
-  `JK03B`, and owned target `JK08A`; the owned VQ35HR-class bench baselines
-  `JK00C` and `JK00D`, which use different code bases. Each part number has its
-  own `23710-XXXXX` directory. Stock and owned-read artifacts are versioned.
-  Concrete tuned images, per-image calibration profiles and build recipes,
-  active tune identities, logs, and test outputs are not versioned. Their local
-  storage location is not part of the project contract. Historical hardware
-  results may retain immutable digests as mechanism evidence. Universal
-  patchers, composers, definitions, and verification mechanisms remain
-  versioned. The `rom-images/README.md` manifest records
-  SHA-256, part number, identification, and provenance. A dump is identified by
-  SHA-256.
-- `refs/` - external datasheets and manuals (Renesas SH7059 hardware manual,
-  PCMflash module list, Bosch LSU 4.9, NERS, MoTeC M150, UpRev), the complete
-  2007 Infiniti G35 Sedan factory ESM with 56 PDFs under
-  `refs/nissan-esm-2007-g35-sedan/`, plus the NissanECU RE wiki mirror under
-  `refs/nissanecu-wiki/`. The machine-readable ESM projection is stored
-  separately under `refs/diagnostics/nissan-esm-2007-g35-sedan/`. Original PDFs,
-  MarkItDown conversions (`*.md`), and `refs/README.md` are versioned.
-- `tools/` - reverse-engineering infrastructure: `ghidra/` contains Java
-  extractors, `headless-analyze.sh`, and `symbols.csv`; `memgraph/` contains the
-  Memgraph MAGE `docker-compose.yml` and `load_*.py` loaders;
-  `maps/build_tracker.py` builds the ledger; `mapkit/emit_def.py` generates the
-  RomRaider XML and TunerPro XDF definitions; `pin-tracer/` records manually
-  observed ECM-terminal-to-MCU routes. Reviewed pin-tracer JSON connects ESM
-  signal semantics to peripheral-register and firmware xref analysis, but
-  physical continuity alone does not prove map semantics. `map-flag-pipeline.md`
-  specifies the map pipeline, and `README.md` records versions, ports, and
-  commands. Ghidra, GhydraMCP, and Ghidra projects remain outside Git.
-- `AGENTS.md` - this file.
-- `.gitignore` - ignores operating-system debris, scratch data, and regenerable
-  Ghidra/Memgraph caches. Content artifacts such as ROMs, datasheets,
-  definitions, and mirrors are versioned.
-- `defs/` - table definitions. `JK08A.*` is the only live annotation set for the
-  exact-code family. `rom-inheritance.toml` projects it onto a separate JK03A
-  measurement layer without copying source CSV, ledger, or XML files. JK00A and
-  JK03B remain inventoried binaries without exports, graph layers, or annotation
-  inheritance entries.
-  `defs/reference/` contains submodules with public RomRaider Nissan definitions
-  (Pytrex and a33b); their manifest and relevance are in `defs/README.md`.
-- `patches/` - the unified production ROM builder (`build_rom.py` and
-  `rom-builder.md`), the Developer Immobilizer execution-path specification
-  (`immo-off-developer-flag.md`), the ROM-library layout test
-  (`tests/test_rom_images_layout.py`), and the ROM checksum specification
-  (`rom-selftest-checksum.md`, covering SUM16, runtime self-test domains, and
-  recalculation order). Universal map-switching and Rolling Launch stage
-  patchers, composers, payload manifests, and executable verification tests are
-  tracked here. Historical overlay builders are diagnostic hardware-isolation
-  tools and are not part of the production builder. Concrete tuned-image
-  recipes, local calibration profiles, and derived image bytes are not stored
-  in the repository. Ghidra exports and the Ghidra project are regenerable and
-  remain outside the repository under `~/tools/ghidra-projects/`.
-
-## Conventions
-
-- Repository language: English, with technical precision and no invented facts.
-  Terms that are more precise in their original form remain untranslated.
-- Obsidian vault language: Russian.
-- Text describes the current state declaratively rather than narrating the work
-  that produced it.
-- Do not push without an explicit user request.
+- Read `README.md` and the narrow README beside the subsystem being changed.
+- Preserve user changes and unrelated dirty worktree content.
+- Generated XML, XDF, ledgers, and diagnostic projections are outputs; edit
+  their declared sources and regenerate them.
+- Keep text declarative and current. Git and the vault journal retain history.
+- `CLAUDE.md` is a symbolic link to this file and must remain one.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# Load vendor vocabularies (Stage 5, sections 5 and 7 of tools/map-flag-pipeline.md) into
+# Load the vendor vocabularies described in tools/map-analysis-pipeline.md into
 # Memgraph. :VendorEntry (name catalog) and :VendorFact (anchor facts) nodes form a
-# ROM-independent HR-family layer alongside :A2LEntry (P7).
+# ROM-independent HR-family layer alongside :A2LEntry.
 #
 # Sources are refs/vendor/catalog.csv and refs/vendor/facts.csv, consolidated ProECU
 # (EcuTek) and UpRev vocabularies. refs/vendor/README.md defines the method and annotation
@@ -36,7 +36,7 @@
 # code absent from stock, and two remain unresolved. Matching a stock map to a patch entry
 # would be wrong rather than merely weak evidence.
 #
-# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_vendor.py [family]
+# Invocation: uv run python tools/memgraph/load_vendor.py [family]
 # Default family: HR.
 import csv
 import os

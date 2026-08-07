@@ -25,12 +25,13 @@ class RomImagesLayoutTest(unittest.TestCase):
                 else:
                     self.assertIn(path.name, allowed_files)
 
-    def test_every_part_has_readme(self):
-        parts = [path for path in ROMDIR.iterdir() if path.is_dir()]
-        self.assertTrue(parts)
-        for part in parts:
-            with self.subTest(part=part.name):
-                self.assertTrue((part / "README.md").is_file())
+    def test_part_readmes_are_optional_evidence_files(self):
+        readmes = list(ROMDIR.glob("23710-*/README.md"))
+        self.assertTrue(readmes)
+        for readme in readmes:
+            with self.subTest(readme=readme.relative_to(ROMDIR)):
+                self.assertTrue(readme.parent.name.startswith("23710-"))
+                self.assertGreater(len(readme.read_text(encoding="utf-8")), 0)
 
     def test_all_binaries_have_canonical_name_and_exact_md5_sidecar(self):
         binaries = list(ROMDIR.glob("23710-*/*.bin"))

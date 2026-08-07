@@ -1,5 +1,5 @@
 // ResolveAccessors.java - differential operand resolution for map accessors
-// (section 6 of tools/map-flag-pipeline.md).
+// (tools/map-analysis-pipeline.md).
 //
 // The site set matches the MapInventory census (slots containing a kernel value ->
 // wrappers that reference a slot -> call references to a wrapper entry), so the mechanisms

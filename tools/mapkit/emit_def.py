@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-# Definition generator (Stage 8, section 9 of tools/map-flag-pipeline.md):
+# Definition generator contract: tools/map-analysis-pipeline.md.
 # Memgraph (facts) + defs/<rom>.dtc.csv (DTC) + defs/<rom>.overrides.toml (presentation)
 # -> defs/<rom>.xml (RomRaider) + defs/<rom>.xdf (TunerPro).
 #
-# Source separation is the reason this step exists (P5). Declare each fact once: address,
+# Declare each fact once: address,
 # shape, element, axes, scaling, and confidence live in the graph, populated by the resolver
 # census and the manual layer; name, category, order, and editor increments live in overrides.
 # The definition file is not a source for either set, and edits to it do not survive the next
@@ -34,7 +34,7 @@
 # graph facts.
 #
 # Invocation:
-# uv run --no-project --with neo4j python tools/mapkit/emit_def.py \
+# uv run python tools/mapkit/emit_def.py \
 #   [<rom>] [<romraider-out>] [<tunerpro-out>]
 import csv
 from dataclasses import dataclass

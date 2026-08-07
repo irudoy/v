@@ -1130,7 +1130,7 @@ def main() -> int:
     except ImportError:
         print(
             "neo4j package is required; run with "
-            "`uv run --no-project --with neo4j python tools/diagnostics/query.py`",
+            "`uv run python tools/diagnostics/query.py`",
             file=sys.stderr,
         )
         return 1

@@ -4,8 +4,8 @@
 The CLI detects the ROM series from immutable image bytes by default or accepts
 an explicit ``--rom`` selector.  Only JK08A is currently registered.  Its
 handler installs the current map-switching and Rolling Launch runtimes directly
-from their SHA-locked payload bundles; historical overlay builders are not part
-of this production path.
+from their SHA-locked payload bundles through the current layout and composer
+contracts.
 
 Compatible unpatched inputs retain their lower calibration and configuration.
 A complete current or historical JK08A composition may also be rebuilt: all

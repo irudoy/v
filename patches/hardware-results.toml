@@ -1,0 +1,249 @@
+schema_version = 1
+rom = "JK08A"
+purpose = "Immutable derived-image identities and hardware outcomes; not a build recipe"
+
+[immo.developer_flag]
+source_rom = "JK08A"
+output_sha256 = "de7f99cfb592d1cd1d83706f08cbea99ad0aef8602090d009cb37e9d37080d8c"
+software_status = "pass"
+hardware_status = "pass"
+tested_on = "2026-07-27"
+target_ecu = "23710-JK00D"
+result = "engine starts and runs while P1610 remains diagnostic-only"
+
+[immo.e2_pops]
+source_rom = "JK08A"
+output_sha256 = "08e74c06bc4aee9948348f3622635a775cfbfbe9407af32718a7ae279594dadd"
+software_status = "pass"
+hardware_status = "pass"
+tested_on = "2026-07-30"
+target_ecu = "23710-JK00D"
+result = "pops operate with stock knock monitoring and the selected E2 and NATS DTC set"
+
+[map_switching.marker]
+source_sha256 = "1bf9978ba1d870216bd85ff69aed25243a77f186231718dcfffd9bb411529471"
+image_sha256 = "e1fef7ccf862243be7b231b26865c9cd099283993cfe8c73abb9952b1e5358b7"
+image_md5 = "ae982b7e05fdd04af51f4136637f60cd"
+readback_sha256 = "d5cb0000f77c8c1112d912474cbb471f78051805027e3358fbedc28cf1bf58b3"
+readback_md5 = "a67639252e1899dc66a6a2eb4a02ef8a"
+status = "pass_with_0x8080_variant"
+tested_on = "2026-08-04"
+
+[map_switching.startup_trampoline]
+source_sha256 = "d5cb0000f77c8c1112d912474cbb471f78051805027e3358fbedc28cf1bf58b3"
+image_sha256 = "6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55"
+image_md5 = "8598014aa80faa4fff4faccba6cae17d"
+readback_sha256 = "6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55"
+payload_sha256 = "5e3e791f1a0d302b905db989c9a646440a69fe531921a246a21f3082712eb603"
+status = "pass_exact"
+tested_on = "2026-08-04"
+
+[map_switching.startup_selector_init]
+source_sha256 = "6b1df699f614151a7ddd09595671de021b7131d5524b16d1f27a9fed888abc55"
+image_sha256 = "7dcb43b2181c030bde772999b674afb72a8cd196e93a0aae3fecf90069ed62d3"
+image_md5 = "f9d6e71af479a7169368d675e5a314cc"
+readback_sha256 = "7dcb43b2181c030bde772999b674afb72a8cd196e93a0aae3fecf90069ed62d3"
+payload_sha256 = "906991815705fe9a0b91d3817fab1a59d4664e3f04ad126820d969e47d7f5612"
+status = "pass_exact"
+tested_on = "2026-08-04"
+
+[[map_switching.stages]]
+chain = "limiter"
+sequence = 1
+component = "inactive limiter payload, Map 1 copies, and pointer tables"
+sha256 = "9bb1704f93a6050593abbf30b450cc1b75bc4d141ed4455b7528148de69f56c4"
+md5 = "0b945f8909358e704039cc15386b14df"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "limiter"
+sequence = 2
+component = "startup wrapper and limiter commit"
+sha256 = "135512525ed64b7728348a2b8859e9a7b607f931f57f6a7951e0d2d7dc847da5"
+md5 = "58e187733c04e5dc42417c0edc7ce408"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "limiter"
+sequence = 3
+component = "fuel-cut shadow hook"
+sha256 = "22f824be2e9ca941b42760de27accc7cd1c7365e23a0b19eda29387fd1dd196c"
+md5 = "f21f4c62933aa1ce5d4d0ce7f37f0505"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "limiter"
+sequence = 4
+component = "throttle-cluster shadow hook"
+sha256 = "3aa4bce11eb9030dc688c04744170e8aee61b1b9f8e3dd99a57a4d5ca1f626db"
+md5 = "bc1df55ec410d0c2053c5cd1021a016a"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "limiter"
+sequence = 5
+component = "throttle-scalar shadow hook and complete limiter endpoint"
+sha256 = "1833922fc7d3428ed9f9998a99281d4c02b66c027cc39f7620aa3a79d541964a"
+md5 = "b3586f278e236499d7e0816bad1a8e46"
+status = "pass_exact"
+readback_sha256 = "1833922fc7d3428ed9f9998a99281d4c02b66c027cc39f7620aa3a79d541964a"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 6
+component = "inactive lookup payload, Map 1 copies, and pointer tables"
+sha256 = "990c7aff5dc62f33682900ff93b30b4888bd7171147689b1d43c58c13452d59f"
+md5 = "19117705b5efa7ed53900af0c989c2c9"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 7
+component = "DFCO Entry lookup hook"
+sha256 = "95049dca436d74375954bf2e8586525573f9c7b864636144e9b5195130a8a6ba"
+md5 = "619311f5941d5a570531c088a53bdcb8"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 8
+component = "DFCO Full Restore lookup hook"
+sha256 = "50d6b59b1a236bf141eba2c5f74687fd440962510aa13e49a7414e42c1324e7b"
+md5 = "13fadaf3fc0fa5e8678ae044b03e450e"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 9
+component = "ignition lookup hook at 0x496C0"
+sha256 = "b2941317c94f130833e350065980e96d44e1b60eef7c9e2ca6ce88b4b002bb89"
+md5 = "168dfe3a155782a9960f72b9febc0e36"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 10
+component = "ignition lookup hook at 0x4E474"
+sha256 = "bc93046ef2d22cbe5f109c32745774e707e5246eb2e6b80b7cea44b1d5bd202a"
+md5 = "94e77e558c21d8f42c33994bdd12034a"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 11
+component = "ignition lookup hook at 0x4E58C"
+sha256 = "7dae4b294a7833753ef3c3d4b64a61ba417a66bb894209bcabaf315b48f9b0ca"
+md5 = "bc26a7aa8ad807d8b3ba8eeb5192c7bb"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 12
+component = "fuel compensation lookup hook at 0x3C388"
+sha256 = "dc7dadadcc679eca88f07093967080051dc00994bbb7085b231596b040df475e"
+md5 = "1ab39d163f242b18ebcbe6168eb37e1a"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 13
+component = "fuel targets lookup hook at 0xC0020"
+sha256 = "80aa12d99145d1e51861c885f78485075e135b1cd218654d4abb7a5871c2837e"
+md5 = "da8483cbe57a3672f3444b98b19fdbbc"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "lookup_revision_2"
+sequence = 14
+component = "startup fuel compensation lookup hook at 0x2CF1C"
+sha256 = "f0a03f6fef205aa1ac42e4471dd0bad995a7082c35d24bdb639fc342ccdda892"
+md5 = "f1865bc339166c90151d7a32f7f4e136"
+status = "pass_exact"
+readback_sha256 = "f0a03f6fef205aa1ac42e4471dd0bad995a7082c35d24bdb639fc342ccdda892"
+
+[[map_switching.stages]]
+chain = "full_runtime"
+sequence = 15
+component = "inactive full-DFCO payload and Map 1 storage"
+sha256 = "5b7816f7be70e12f1312dbff9727df9a5677192811515ce8f6b66d1793bea7f2"
+md5 = "c26b83085b76befe0ace9aaa7f99e0b6"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "full_runtime"
+sequence = 16
+component = "DFCO Hold and Entry hook"
+sha256 = "84796d58bdd3c45ba4c6774f936bedd54109cbee7a60053dcecf0b38c4777e58"
+md5 = "aeea9d950f02ed177298fa03ca3fb7b1"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "full_runtime"
+sequence = 17
+component = "DFCO Full and Intermediate Restore hook"
+sha256 = "e89bd22402e416c9178286b554b1d1d054586c49096574d1c88d9bd5e96f9e0d"
+md5 = "a3bbd6562236859726824bce5311746f"
+status = "pass"
+
+[[map_switching.stages]]
+chain = "full_runtime"
+sequence = 18
+component = "selector host with target-vehicle release code"
+sha256 = "f42f2ec56b590c7e82b17a343dc966c7c27c1981dde528815020e7d974d30b8c"
+md5 = "738b0af89283fac2b47e83c187394326"
+status = "software_only"
+
+[[map_switching.stages]]
+chain = "full_runtime"
+sequence = 19
+component = "CAN feedback with target-vehicle release code"
+sha256 = "bcc34d531530e86b74de362df0db6c3c59597fa8095baaa056f6e4ba82ab7386"
+md5 = "84f42719c82d1d554fdcce31a3367e1d"
+status = "software_only"
+
+[[map_switching.stages]]
+chain = "full_runtime"
+sequence = 20
+component = "idle ignition and 15/15-frame feedback endpoint"
+sha256 = "8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d"
+md5 = "723e6b60d3a39ff8749072eaecd72af3"
+status = "software_only"
+use = "rolling_launch_base"
+
+[[map_switching.incidents]]
+id = "lookup_revision_1_stage_7_delay_slot"
+source_stage = 5
+inactive_sha256 = "4973ad83818d800325401bf49377a4074002b0f056ba1b9274ce25f9cfaf9a2d"
+activated_sha256 = "7e766b957454f7b22524528fd9e922060cac587d2f46a4fdb5f96e1db758e5ea"
+payload_sha256 = "1e3b12d0c436fca39d092a7a06e875b12c75fd8a8d000c90a402a27e088b068a"
+log_sha256 = "431e66fc1d76686c7e8635c7c56a3535dadaa754c718000706818852759165e8"
+status = "fail_boot"
+cause = "PC-relative MOV.L in a BRA delay slot used the branch destination PC basis"
+
+[[map_switching.incidents]]
+id = "superseded_release_code"
+stage_18_sha256 = "4732168ad4aa0f8b8bf11e0b25b1ae506eed50713c789d3fb4297fafa9c37ac0"
+stage_19_sha256 = "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
+status = "functional_fail"
+cause = "0x00 release assumption does not match the target vehicle"
+
+[rolling_launch.current_map1_rpm_hold]
+source_sha256 = "8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d"
+output_sha256 = "21ff554586e347a38737c2b15d432fb41b12c334e4d3cbcaa800a6a80968c9b1"
+output_md5 = "ae4d8bc39af82ed05bf3c2673ea76c8d"
+software_status = "pass"
+hardware_status = "untested"
+
+[rolling_launch.historical_map1_rpm_hold]
+source_sha256 = "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
+output_sha256 = "a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081"
+hardware_status = "functional_fail"
+cause = "runtime cannot rearm after CANCEL release"
+
+[rolling_launch.vehicle_overlays]
+overlay_20_sha256 = "0b07f7b7dc49eaaf27bc26c859befcdf13d817b924cf0bc41748ccb47cfcc796"
+overlay_20_status = "functional_fail"
+overlay_21_sha256 = "1e6866e96e77fba203166b38f5efcfd83b6bcad609b7e0ada67727cd5fddc0c9"
+overlay_21_status = "pass"
+overlay_22_sha256 = "21f532b924e24deede30c07bbf7d253bf4c908355bca44c7c863fee592aa2a84"
+overlay_22_status = "functional_fail"

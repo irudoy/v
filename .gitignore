@@ -19,19 +19,7 @@ tmp/
 # ── Python ─────────────────────────────────────────────────────
 # Interpreter bytecode cache; recreated on import.
 __pycache__/
-
-# ── Project-scoped Claude definitions ───────────────────────────
-# The global excludesfile hides .claude/*; these definitions are part of the
-# reproducible A/B execution contract and are versioned in the project.
-!.claude/
-!.claude/agents/
-.claude/agents/*
-!.claude/agents/vq-ab-blind-worker.md
-!.claude/workflows/
-.claude/workflows/*
-!.claude/workflows/vq-caller-prep.js
-!.claude/workflows/vq-caller-run.js
-!.claude/workflows/vq-caller-score.js
+.venv/
 
 # Regenerable reverse-engineering tool caches
 # Large working data can be recreated from source and is not versioned:

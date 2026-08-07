@@ -5,7 +5,7 @@
 # regions and names come from the Renesas datasheet. Finally, prints immo candidates
 # (CAN/SCI communication functions and RXPR readers).
 #
-# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_xrefs.py \
+# Invocation: uv run python tools/memgraph/load_xrefs.py \
 #           <export_dir> <rom_label>
 import csv
 import os

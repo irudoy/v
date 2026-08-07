@@ -13,8 +13,6 @@ SH705x hardware.
   contributors.
 - Retrieved: **2026-07-15**.
 
-The related project annotations are maintained in Russian Obsidian notes.
-
 ## P0 material: immobilizer, seed-key, and nonvolatile data
 
 - `Firmware_re.md` (46 KB) - firmware structure: IVT and power-on reset,

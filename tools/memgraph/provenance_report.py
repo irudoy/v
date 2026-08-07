@@ -2,10 +2,10 @@
 """Read-only audit of weakest links and reverse impact in Memgraph.
 
 Invocation:
-  uv run --no-project --with neo4j python tools/memgraph/provenance_report.py audit JK08A
-  uv run --no-project --with neo4j python tools/memgraph/provenance_report.py \
+  uv run python tools/memgraph/provenance_report.py audit JK08A
+  uv run python tools/memgraph/provenance_report.py \
       weakest JK08A Func 00021ce0 confidence
-  uv run --no-project --with neo4j python tools/memgraph/provenance_report.py \
+  uv run python tools/memgraph/provenance_report.py \
       impact JK08A Map 0001495a structural
 """
 import argparse

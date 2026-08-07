@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-# Load the calibration layer (Stage 3, sections 5 and 7 of tools/map-flag-pipeline.md)
+# Load the calibration layer described in tools/map-analysis-pipeline.md
 # into Memgraph: :Interp/:Map/:Axis nodes and
 # :ACCESSES/:VIA/:KERNEL/:AXIS_X/:AXIS_Y relationships. Adds what :CALLS does not
 # contain: call operands identifying which table and axes an accessor passes in r4/r5/r6
-# (P2).
+# at indirect interpolation callsites.
 #
 # Four sources each own a distinct part:
 #   defs/<source>.interp.csv - interpolation-entry registry: each row is an entry with
-#                              geometry recovered from its code (Stage 2);
+#                              geometry recovered from its code;
 #   accessors.<kernel>.csv   - resolver censuses (ResolveAccessors.java): sites and operands
-#                              recovered by decompiler data flow (Stage 3);
+#                              recovered by decompiler data flow;
 #   defs/<source>.findings.csv - manual map layer: facts established by a person that the
 #                                census cannot provide (semantics, units, confidence, role);
 #   defs/<source>.axes.csv   - manual axis layer: axis semantics and units.
@@ -90,7 +90,7 @@
 # The census layer has candidate confidence (section 5): the resolver supplied operands but
 # did not trace semantics. Only a trace can promote it, through the manual layer.
 #
-# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_maps.py \
+# Invocation: uv run python tools/memgraph/load_maps.py \
 #           <export_dir> <rom_label> [<registry.csv>] [<findings.csv>] [<axes.csv>]
 # Defaults: export_dir = ~/tools/ghidra-projects/export-JK08A-exact, rom = JK08A.
 # defs/rom-inheritance.toml resolves structural and manual-layer paths.

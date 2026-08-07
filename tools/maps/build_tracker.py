@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Canonical-ROM map ledger projected from the graph catalog.
 
-The graph is the system of record. load_maps.py stores maps, interpolation
-wrappers, axes, and accessors from Stage 3 resolver censuses and the handwritten
-layer. The ledger is a readable projection of this catalog: a reviewable
+The graph is a reproducible projection of tracked sources and exact image
+measurements. load_maps.py stores maps, interpolation wrappers, axes, and
+accessors from resolver censuses and the reviewed source layer. The ledger is a readable projection of this catalog: a reviewable
 reverse-engineering worklist visible in diffs. Do not edit it directly. Geometry
 and findings live in the canonical source resolved by
 defs/rom-inheritance.toml; this script only renders the graph.
@@ -12,11 +12,11 @@ Open work consists of candidate rows with empty semantics. There is no separate
 status column because it would merely render confidence, role, and semantics,
 duplicating adjacent facts and creating another source of divergence.
 
-The vals column is the cell range measured from the image in Stage 4. It
+The vals column is the cell range measured from the exact image. It
 partitions open work: an all-zero or all-0xFF table requires different analysis
 from a populated surface.
 
-Usage: uv run --no-project --with neo4j python tools/maps/build_tracker.py \
+Usage: uv run python tools/maps/build_tracker.py \
           [<rom>] [<output.csv>]
 """
 import csv

@@ -8,8 +8,8 @@ creates one ROM with digest sidecars and a machine-readable manifest.
 JK08A is the only registered series. The command has two selection modes:
 
 ```bash
-python3 patches/build_rom.py INPUT.bin --output OUTPUT.bin
-python3 patches/build_rom.py INPUT.bin --rom JK08A --output OUTPUT.bin
+uv run python patches/build_rom.py INPUT.bin --output OUTPUT.bin
+uv run python patches/build_rom.py INPUT.bin --rom JK08A --output OUTPUT.bin
 ```
 
 The default `--rom auto` mode identifies JK08A from the one-MiB image size and
@@ -22,7 +22,7 @@ Use `--verify-only` to run the complete in-memory composition and verification
 without creating files:
 
 ```bash
-python3 patches/build_rom.py INPUT.bin --verify-only
+uv run python patches/build_rom.py INPUT.bin --verify-only
 ```
 
 ## JK08A pipeline
@@ -52,9 +52,9 @@ The JK08A handler performs these operations in one invocation:
 
 The builder preserves calibration and configuration outside its declared
 ranges, including the Developer Immobilizer bit edited through `defs/JK08A.xml`
-or `defs/JK08A.xdf`. It does not call an Immobilizer patcher. Historical
-`build_map_switching_*_overlays.py` tools are hardware-isolation/debug tools and
-are not imported by the production path.
+or `defs/JK08A.xdf`. It does not call an Immobilizer patcher. Historical image
+identities and hardware outcomes are retained in `hardware-results.toml`; the
+production path imports only the current composition modules.
 
 ## Rolling Launch profile
 
@@ -87,7 +87,7 @@ target_commands = [115, 114, 113, 112, 111]
 Run it with:
 
 ```bash
-python3 patches/build_rom.py INPUT.bin \
+uv run python patches/build_rom.py INPUT.bin \
   --profile LOCAL-PROFILE.toml \
   --output OUTPUT.bin
 ```

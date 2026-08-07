@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# Code-understanding layer and claim provenance (sections 5 and 11 of
-# tools/map-flag-pipeline.md). defs/rom-inheritance.toml resolves sources of truth.
+# Code-understanding layer and claim provenance. The contract is in
+# tools/map-analysis-pipeline.md; defs/rom-inheritance.toml resolves canonical sources.
 # Canonical JK08A holds the only live funcs/vars/findings/axes set; exact-code ROMs inherit
 # it. Memgraph nodes and :RESTS_ON relationships are projections and are rebuilt completely.
 #
 # This loader must run after load_graph.py, load_xrefs.py, and load_maps.py. Each owns its
 # nodes and recreates them with DETACH DELETE.
 #
-# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_code.py [rom]
+# Invocation: uv run python tools/memgraph/load_code.py [rom]
 # Default ROM: JK08A.
 import csv
 import os

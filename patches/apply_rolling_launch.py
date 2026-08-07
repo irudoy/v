@@ -17,6 +17,7 @@ import hashlib
 from itertools import chain
 from pathlib import Path
 import sys
+import tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,18 +36,42 @@ from patches import rolling_launch_layout as rolling_layout_model
 
 ROM_SIZE = 0x100000
 PROFILE_NAME = "rpm-hold-map1-test"
-LOCKED_MAP_SWITCHING_SOURCE_SHA256 = (
-    "8c604b3c6760fdea02a76f724b3daa09e7a799eab4204e0cec991f45d51e8a2d"
-)
-LOCKED_PROFILE_OUTPUT_SHA256 = (
-    "21ff554586e347a38737c2b15d432fb41b12c334e4d3cbcaa800a6a80968c9b1"
-)
-HISTORICAL_MAP_SWITCHING_SOURCE_SHA256 = (
-    "e2fb90d5d9f2ba23c09cb55ee77732175ae0753aabe77f8e7363a84554218ea1"
-)
-HISTORICAL_PROFILE_OUTPUT_SHA256 = (
-    "a1b4c674e77adeb629d330a8ffd264dde4484d20946248a36ec5c7f3f9f4d081"
-)
+HARDWARE_RESULTS_PATH = Path(__file__).with_name("hardware-results.toml")
+
+
+def _load_result_digests():
+    try:
+        data = tomllib.loads(HARDWARE_RESULTS_PATH.read_text(encoding="utf-8"))
+        current = data["rolling_launch"]["current_map1_rpm_hold"]
+        historical = data["rolling_launch"]["historical_map1_rpm_hold"]
+        values = (
+            current["source_sha256"],
+            current["output_sha256"],
+            historical["source_sha256"],
+            historical["output_sha256"],
+        )
+    except (OSError, KeyError, tomllib.TOMLDecodeError) as error:
+        raise RuntimeError(
+            f"cannot load {HARDWARE_RESULTS_PATH}: {error}"
+        ) from error
+    if any(
+        not isinstance(value, str)
+        or len(value) != 64
+        or any(character not in "0123456789abcdef" for character in value)
+        for value in values
+    ):
+        raise RuntimeError(
+            f"{HARDWARE_RESULTS_PATH}: invalid SHA-256 result identity"
+        )
+    return values
+
+
+(
+    LOCKED_MAP_SWITCHING_SOURCE_SHA256,
+    LOCKED_PROFILE_OUTPUT_SHA256,
+    HISTORICAL_MAP_SWITCHING_SOURCE_SHA256,
+    HISTORICAL_PROFILE_OUTPUT_SHA256,
+) = _load_result_digests()
 PROFILE_CALIBRATION = rolling_launch.Calibration(
     mode=rolling_launch.Mode.RPM_HOLD,
     enable_mask=0x01,

@@ -11,7 +11,7 @@
 # multipliers have candidate confidence, and replacing bytes with them would
 # present an inference as a measurement.
 #
-# Usage: uv run --no-project --with neo4j python tools/mapkit/show.py [<rom>] <addr>...
+# Usage: uv run python tools/mapkit/show.py [<rom>] <addr>...
 import os
 import sys
 

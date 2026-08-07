@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# ROM image support: dump registry, calibration-array reads, and measurement
-# (Stage 4, section 7 of tools/map-flag-pipeline.md). This is a library rather
+# ROM image support: dump registry, calibration-array reads, and measurement.
+# The contract is in tools/map-analysis-pipeline.md. This is a library rather
 # than a script. load_maps.py uses it to characterize the layer in the same run
 # that creates nodes, and show.py/ptrscan.py use it for inspection.
 #

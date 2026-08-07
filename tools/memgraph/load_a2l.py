@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# Load the A2L catalog (Stage 5, sections 5 and 7 of tools/map-flag-pipeline.md) into
-# Memgraph. :A2LEntry nodes are the ROM-independent reference for the HR family (P7).
+# Load the A2L catalog described in tools/map-analysis-pipeline.md into
+# Memgraph. :A2LEntry nodes are the ROM-independent reference for the HR family.
 #
 # Source: defs/reference/Pytrex-NissanDefinitions/Nissan Definitions/A2L.xml, the base
 # RomRaider definition containing names, categories, geometry, scaling, and descriptions.
@@ -50,7 +50,7 @@
 # Annotate only maps and scalars. Stage 6 handles flags (Options//Flags, DTC, Supmask) under
 # its own model: vendors represent them as bits within a switch rather than maps.
 #
-# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_a2l.py [a2l_xml] [family]
+# Invocation: uv run python tools/memgraph/load_a2l.py [a2l_xml] [family]
 # Defaults: xml = defs/reference/.../A2L.xml, family = HR.
 import csv
 import os

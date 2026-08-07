@@ -6,7 +6,7 @@ Node-owner order is fixed:
   -> load_diagnostic_bindings.py -> audit
 
 Invocation:
-  uv run --no-project --with neo4j python tools/memgraph/ingest.py JK08A
+  uv run python tools/memgraph/ingest.py JK08A
 """
 import argparse
 import csv
@@ -34,7 +34,7 @@ EXPORT_HEADERS = {
 }
 BOOL_VALUES = frozenset({"true", "false"})
 XREF_KINDS = frozenset({"R", "W", "D", "L", "?"})
-STABLE_PYTHON = ["uv", "run", "--no-project", "--with", "neo4j", "python"]
+STABLE_PYTHON = ["uv", "run", "python"]
 
 
 class IngestError(ProvenanceError):

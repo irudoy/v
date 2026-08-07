@@ -58,8 +58,14 @@ class ExportValidationTest(unittest.TestCase):
 
     def test_dry_run_command_uses_stable_uv_prefix(self):
         shown = ingest.display_command(["/tmp/uv-python", "/repo/load.py", "JK03A"])
-        self.assertEqual(shown[:6], ingest.STABLE_PYTHON)
-        self.assertEqual(shown[6:], ["/repo/load.py", "JK03A"])
+        self.assertEqual(
+            shown[: len(ingest.STABLE_PYTHON)],
+            ingest.STABLE_PYTHON,
+        )
+        self.assertEqual(
+            shown[len(ingest.STABLE_PYTHON):],
+            ["/repo/load.py", "JK03A"],
+        )
 
     def test_binding_loader_runs_after_code_and_before_audit(self):
         paths = {

@@ -1,5 +1,5 @@
-// RecoverFuncs.java - define functions for code left outside function bodies (Stage 0,
-// section 7 of tools/map-flag-pipeline.md).
+// RecoverFuncs.java - define functions for code left outside function bodies.
+// The current export contract is in tools/map-analysis-pipeline.md.
 //
 // Auto-analysis creates a function for a region that has a direct call reference. Code
 // reachable only indirectly (jsr @rN through a pool slot) or through a pointer dispatcher

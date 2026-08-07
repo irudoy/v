@@ -38,7 +38,7 @@ class EsmCatalogTest(unittest.TestCase):
         ecm_codes = {
             row["code"] for row in definitions if row["ecu_id"].endswith(":ecm")
         }
-        self.assertEqual(56, len(documents))
+        self.assertEqual(29, len(documents))
         self.assertEqual(1635, len(definitions))
         self.assertEqual(169, len(ecm_codes))
         self.assertNotIn("P0000", ecm_codes)

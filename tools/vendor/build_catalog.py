@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 # Combines two vendor-dictionary transcriptions, refs/vendor/proecu-maps.csv (ProECU/EcuTek)
 # and refs/vendor/uprev-maps.csv (UpRev), into refs/vendor/catalog.csv, the input to
-# load_vendor.py (Stage 5 in tools/map-flag-pipeline.md). See refs/vendor/README.md for the
+# load_vendor.py as described in tools/map-analysis-pipeline.md. See
+# refs/vendor/README.md for the
 # transcription and annotation method.
 #
 # The catalog is generated and the transcriptions are handwritten. Edit the transcriptions,
 # not the catalog: catalog.csv contains derived columns (origin, concept), and editing it
-# would silently diverge from the dictionaries, exactly the failure class prevented by P5.
+# would silently diverge from the dictionaries.
 #
 # Names are neither normalized nor rewritten. Source capitalization and typos are preserved,
 # including ProECU's own uncertainty markers (`Idle Target #1a - ??`, `Sensor Multiplier Unk`).
 # A name is the only information available from a ProECU tree screenshot, so it is a quotation.
 # All analysis goes into separate columns and no entry is discarded.
 #
-# Run: python3 tools/vendor/build_catalog.py
+# Run: uv run python tools/vendor/build_catalog.py
 import csv
 import os
 

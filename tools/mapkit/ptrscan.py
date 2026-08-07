@@ -17,7 +17,7 @@
 # image contains thousands of 16-bit words in many ranges. Results are candidates;
 # disassembly at each site decides (tools/ghidra/DumpListing.java).
 #
-# Usage: uv run --no-project python tools/mapkit/ptrscan.py [<rom>] <addr> [<addr_hi>]
+# Usage: uv run python tools/mapkit/ptrscan.py [<rom>] <addr> [<addr_hi>]
 import os
 import sys
 

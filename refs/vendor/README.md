@@ -1,7 +1,7 @@
 # refs/vendor - vendor catalogs and anchor facts
 
 Machine-readable dictionaries and facts from tuning-software vendors for the **HR**
-architecture, used as evidence by the map pipeline (`tools/map-flag-pipeline.md`). Three
+architecture, used as evidence by the map pipeline (`tools/map-analysis-pipeline.md`). Three
 independent dictionaries describe the same hardware. They triangulate one another rather
 than duplicate the same information:
 

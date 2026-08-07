@@ -1,5 +1,5 @@
-// ScanFlags.java – detect flags from an identified map or guard function (Stage 6,
-// section 7 of tools/map-flag-pipeline.md). Replaces manual flag tracing.
+// ScanFlags.java - detect flags from an identified map or guard function.
+// The current control-trace contract is in tools/map-analysis-pipeline.md.
 //
 // MECHANICS. HR calibration flags use gbr addressing. The sequence is "load - test bit -
 // branch":

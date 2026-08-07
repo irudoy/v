@@ -5,7 +5,7 @@
 # (:Func)-[:CALLS]->(:Func). Repeated runs for the same ROM are idempotent because its
 # nodes are recreated.
 #
-# Invocation: uv run --no-project --with neo4j python tools/memgraph/load_graph.py \
+# Invocation: uv run python tools/memgraph/load_graph.py \
 #           <export_dir> <rom_label>
 # Defaults: export_dir = ~/tools/ghidra-projects/export-1ND0A, rom = 1ND0A.
 import csv

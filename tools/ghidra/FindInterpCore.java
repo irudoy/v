@@ -1,5 +1,5 @@
-// FindInterpCore.java – detect interpolation cores and their wrappers by scanning data
-// (Stage 1, section 7 of tools/map-flag-pipeline.md). Replaces a manual "find 0x26944".
+// FindInterpCore.java - detect interpolation cores and their wrappers by scanning data.
+// The current discovery contract is in tools/map-analysis-pipeline.md.
 //
 // SIGNATURE: a slot plus TWO levels of indirection. The core address is stored in ROM as a
 // 4-byte word (a literal-pool constant); an entry loads it with mov.l @(disp,pc),rN and
