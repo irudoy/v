@@ -64,7 +64,7 @@ disabled. A separate local TOML file selects all Rolling Launch calibration,
 including the bounded-retard mode:
 
 ```toml
-schema_version = 1
+schema_version = 2
 rom = "JK08A"
 name = "rpm-hold-retard-maps-1-3"
 
@@ -78,7 +78,9 @@ retard_ramp_native = 12
 min_rpm_native = 160
 min_pedal = 3
 rpm_offset_native = 16
-hysteresis_native = 8
+min_hysteresis_native = 4
+max_hysteresis_native = 12
+hysteresis_ratio_tenths = 20
 run_timeout_ticks = 300
 rearm_ticks = 100
 target_commands = [115, 114, 113, 112, 111]
@@ -96,6 +98,13 @@ The accepted mode names are `observe`, `rpm_hold`, and `rpm_hold_retard`.
 `enabled_maps` uses one-based map numbers. Every field is mandatory, unknown
 fields are rejected, the profile ROM must equal the selected ROM, and the
 resulting 32-byte configuration must pass the independent fail-closed model.
+`min_speed = 0` disables the vehicle-speed activation gate, and
+`min_pedal = 0` disables the pedal-position activation gate.
+`hysteresis_ratio_tenths = 20` means 2.0 percent of captured RPM. The runtime
+rounds that proportional value and clamps it between the configured native-RPM
+minimum and maximum. The effective ignition-retard ramp is at least the
+configured minimum, at least twice the effective hysteresis, and no wider than
+the RPM offset.
 Concrete profiles remain local and are not versioned.
 
 ## Output contract

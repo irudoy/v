@@ -17,7 +17,7 @@ tools/sh-elf-run/run.sh --verbose
 ```
 
 The first run builds the image defined by `Dockerfile`; later runs reuse Docker
-layers. The runner selects the `desktop-linux` Docker context without changing
+layers. The runner selects the `default` Docker context without changing
 the caller's configured context.
 
 `VQ_SH_ELF_IMAGE` selects another compatible local image name.

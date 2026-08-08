@@ -1,10 +1,10 @@
 """Definition projection for the JK08A Rolling Launch configuration.
 
 The runtime stores its tuner-facing activation thresholds, RPM hold values,
-bounded-retard ramp width, pedal requirement, and one enable bit per map in a
-validated 32-byte record. This module projects those fields into the common
-JK08A RomRaider and TunerPro models. It does not write definitions or ROM
-images.
+bounded-retard ramp width, adaptive hysteresis controls, pedal requirement,
+and one enable bit per map in a validated 32-byte record. This module projects
+those fields into the common JK08A RomRaider and TunerPro models. It does not
+write definitions or ROM images.
 """
 
 from __future__ import annotations
@@ -28,7 +28,9 @@ class DefinitionProjection:
     min_rpm_address: str
     pedal_requirement_address: str
     rpm_offset_address: str
-    hysteresis_address: str
+    min_hysteresis_address: str
+    max_hysteresis_address: str
+    hysteresis_ratio_address: str
     table_count: int
     masked_view_count: int
     switch_count: int
@@ -173,7 +175,9 @@ def _configuration_tables(configuration_address):
     retard_ramp = configuration_address + 0x09
     min_rpm = configuration_address + 0x0A
     rpm_offset = configuration_address + 0x0E
-    hysteresis = configuration_address + 0x10
+    min_hysteresis = configuration_address + 0x10
+    max_hysteresis = configuration_address + 0x11
+    hysteresis_ratio = configuration_address + 0x1B
     return (
         (
             coolant_min,
@@ -211,7 +215,7 @@ def _configuration_tables(configuration_address):
                 storagetype="uint8",
                 semantics=(
                     "Minimum coarse vehicle speed required for Rolling "
-                    "Launch activation"
+                    "Launch activation; zero disables the speed gate"
                 ),
                 units="km/h",
                 scale_expr="x*2",
@@ -221,7 +225,7 @@ def _configuration_tables(configuration_address):
                     "The exact firmware chain produces the byte at "
                     "0xFFFF110E. Its approximately 2 km/h per count physical "
                     "scale depends on homologous observed CAN 0x280 data; "
-                    "zero-speed semantics are exact."
+                    "zero disables this activation gate."
                 ),
             ),
             _scalar_presentation(
@@ -239,26 +243,27 @@ def _configuration_tables(configuration_address):
                 retard_ramp,
                 storagetype="uint8",
                 semantics=(
-                    "Rolling Launch ignition-retard ramp width below the "
-                    "captured fuel-cut threshold"
+                    "Minimum Rolling Launch ignition-retard ramp width below "
+                    "the captured fuel-cut threshold"
                 ),
                 units="RPM",
                 scale_expr="x*12.5",
                 to_byte="x/12.5",
                 scale_conf="code",
                 note=(
-                    "Mode 2 keeps the stock ignition command at or below "
-                    "max(captured_rpm, Cut - retard_ramp), blends linearly "
-                    "toward the per-map late-command cap inside the band, "
-                    "and applies the cap at Cut. The validated record "
-                    "requires hysteresis < retard_ramp <= rpm_offset."
+                    "At activation, the runtime computes effective_ramp = "
+                    "min(rpm_offset, max(configured_minimum, "
+                    "2*effective_hysteresis)). Mode 2 keeps the stock command "
+                    "at or below max(captured_rpm, Cut - effective_ramp), "
+                    "blends toward the per-map late-command cap inside the "
+                    "band, and applies the cap at Cut."
                 ),
             ),
             _scalar_presentation(
-                "Rolling Launch Retard Ramp Width",
+                "Rolling Launch Minimum Retard Ramp Width",
                 "Rolling Launch / Ignition Retard",
                 900035,
-                "Retard ramp width",
+                "Minimum retard ramp width",
                 fine=12.5,
                 coarse=100,
             ),
@@ -318,33 +323,87 @@ def _configuration_tables(configuration_address):
             ),
         ),
         (
-            hysteresis,
+            min_hysteresis,
             _scalar_model(
-                hysteresis,
-                storagetype="uint16",
+                min_hysteresis,
+                storagetype="uint8",
                 semantics=(
-                    "Rolling Launch fuel-cut restore hysteresis in the "
-                    "validated runtime configuration record"
+                    "Minimum adaptive Rolling Launch fuel-cut restore "
+                    "hysteresis"
                 ),
                 units="RPM",
                 scale_expr="x*12.5",
                 to_byte="x/12.5",
                 scale_conf="code",
                 note=(
-                    "The runtime computes Restore = Cut - hysteresis, accepts "
-                    "only 0 < hysteresis_native < min_rpm_native and "
-                    "hysteresis_native < retard_ramp_native, and rejects the "
-                    "entire configuration otherwise. The default value is 8 "
-                    "native counts, or 100 RPM."
+                    "At activation, the proportional hysteresis is clamped "
+                    "to this inclusive lower endpoint. The runtime then "
+                    "computes Restore = Cut - effective_hysteresis."
                 ),
             ),
             _scalar_presentation(
-                "Rolling Launch RPM Hysteresis",
+                "Rolling Launch Minimum RPM Hysteresis",
                 "Rolling Launch / RPM Hold",
                 900050,
-                "Hysteresis",
+                "Minimum hysteresis",
                 fine=12.5,
                 coarse=100,
+            ),
+        ),
+        (
+            max_hysteresis,
+            _scalar_model(
+                max_hysteresis,
+                storagetype="uint8",
+                semantics=(
+                    "Maximum adaptive Rolling Launch fuel-cut restore "
+                    "hysteresis"
+                ),
+                units="RPM",
+                scale_expr="x*12.5",
+                to_byte="x/12.5",
+                scale_conf="code",
+                note=(
+                    "At activation, the proportional hysteresis is clamped "
+                    "to this inclusive upper endpoint. The endpoint must be "
+                    "below the configured RPM offset."
+                ),
+            ),
+            _scalar_presentation(
+                "Rolling Launch Maximum RPM Hysteresis",
+                "Rolling Launch / RPM Hold",
+                900051,
+                "Maximum hysteresis",
+                fine=12.5,
+                coarse=100,
+            ),
+        ),
+        (
+            hysteresis_ratio,
+            _scalar_model(
+                hysteresis_ratio,
+                storagetype="uint8",
+                semantics=(
+                    "Captured-RPM ratio (%) used for adaptive Rolling "
+                    "Launch hysteresis"
+                ),
+                units="%",
+                scale_expr="x/10",
+                to_byte="x*10",
+                scale_conf="code",
+                note=(
+                    "The runtime rounds captured_rpm * ratio / 100 to native "
+                    "RPM units once at activation, then clamps the result "
+                    "between the configured minimum and maximum hysteresis."
+                ),
+            ),
+            _scalar_presentation(
+                "Rolling Launch RPM Hysteresis Ratio (%)",
+                "Rolling Launch / RPM Hold",
+                900052,
+                "Hysteresis ratio (%)",
+                fine=0.1,
+                coarse=0.5,
             ),
         ),
     )
@@ -422,7 +481,9 @@ def project_definition_model(maps, overrides, layout=None):
         min_rpm_address=address_key(configuration_address + 0x0A),
         pedal_requirement_address=address_key(pedal_requirement_address),
         rpm_offset_address=address_key(configuration_address + 0x0E),
-        hysteresis_address=address_key(configuration_address + 0x10),
+        min_hysteresis_address=address_key(configuration_address + 0x10),
+        max_hysteresis_address=address_key(configuration_address + 0x11),
+        hysteresis_ratio_address=address_key(configuration_address + 0x1B),
         table_count=len(tables),
         masked_view_count=0,
         switch_count=1,
@@ -446,14 +507,16 @@ def validate_projection(projection, source_maps, source_overrides, layout=None):
         "min_rpm_address": configuration_address + 0x0A,
         "pedal_requirement_address": configuration_address + 0x0C,
         "rpm_offset_address": configuration_address + 0x0E,
-        "hysteresis_address": configuration_address + 0x10,
+        "min_hysteresis_address": configuration_address + 0x10,
+        "max_hysteresis_address": configuration_address + 0x11,
+        "hysteresis_ratio_address": configuration_address + 0x1B,
     }
     for field, address in expected_addresses.items():
         if getattr(projection, field) != address_key(address):
             raise ValueError(f"Rolling Launch {field} differs")
-    if projection.table_count != 6:
+    if projection.table_count != 8:
         raise ValueError(
-            "Rolling Launch projection must contain six calibration tables"
+            "Rolling Launch projection must contain eight calibration tables"
         )
     if projection.masked_view_count != 0:
         raise ValueError("Rolling Launch projection must not contain masked views")

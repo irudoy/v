@@ -18,8 +18,8 @@ derived ROM bytes, and active tune identities remain local and unversioned.
 ## Status and scope
 
 The current endpoint is software-verified and requires controlled hardware
-validation before flashing. The current visual-feedback timing is 15 serializer
-invocations ON followed by 15 invocations OFF for each pulse. Hardware status is
+validation before flashing. The current visual-feedback timing is 30 serializer
+invocations ON followed by 30 invocations OFF for each pulse. Hardware status is
 read only from `hardware-results.toml`; successful results from earlier
 compositions do not qualify the current endpoint.
 
@@ -143,7 +143,7 @@ empty. Invalid feedback state clears the queue and preserves the stock frame.
 A zero/zero phase-count configuration disables feedback; a partially zero
 configuration is invalid.
 
-The current layout default is 15 ON invocations and 15 OFF invocations. Wall
+The current layout default is 30 ON invocations and 30 OFF invocations. Wall
 time depends on the target serializer period and must be measured on hardware.
 
 ## Diagnostic mirror

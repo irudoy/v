@@ -53,7 +53,7 @@ Activation requires every gate to pass in this order:
 5. Visual-feedback pulse, phase, tick, and reserved fields are idle.
 6. Stock ASCD is inactive.
 7. The stable button is CANCEL.
-8. Vehicle speed meets the configured minimum.
+8. Vehicle speed meets the configured minimum; zero disables this gate.
 9. Engine speed meets the configured minimum.
 10. Pedal position meets the configured minimum; zero disables this gate.
 11. Coolant temperature is inside the configured range.
@@ -79,6 +79,12 @@ On activation, the runtime captures native RPM and derives:
 
 ```text
 cut = captured + offset
+proportional_hysteresis = round(captured * hysteresis_ratio / 100)
+hysteresis = clamp(
+    proportional_hysteresis,
+    minimum_hysteresis,
+    maximum_hysteresis,
+)
 restore = cut - hysteresis
 ```
 
@@ -93,7 +99,11 @@ the fail-closed source.
 `rpm_hold_retard` computes a band below the temporary cut point:
 
 ```text
-band_start = max(captured, cut - retard_ramp)
+effective_retard_ramp = min(
+    offset,
+    max(minimum_retard_ramp, 2 * hysteresis),
+)
+band_start = max(captured, cut - effective_retard_ramp)
 ```
 
 At or below `band_start`, the stock ignition command is preserved. Between
@@ -117,17 +127,19 @@ The strict 32-byte record contains:
 | Field | Contract |
 | --- | --- |
 | magic, inverse, end marker | fixed integrity sentinels |
-| schema | version 2 |
+| schema | version 3 |
 | mode | observe, RPM hold, or RPM hold plus retard |
 | enable mask | one bit per map, unused bits clear |
-| options and reserved | zero |
+| options | zero |
 | coolant minimum/maximum | ordered byte range |
-| minimum speed | nonzero byte |
+| minimum speed | byte; zero disables the gate |
 | minimum RPM | nonzero native value |
 | minimum pedal | native value; zero disables the gate |
 | RPM offset | nonzero native value |
-| hysteresis | positive and below minimum RPM |
-| retard ramp | positive, above hysteresis, and no larger than RPM offset |
+| minimum hysteresis | positive native value |
+| maximum hysteresis | at least the minimum and below the RPM offset |
+| hysteresis ratio | positive percentage stored in tenths of one percent |
+| minimum retard ramp | positive and no larger than the RPM offset |
 | run timeout and rearm | positive bounded tick counts |
 | target commands | one validated byte for each map |
 
@@ -151,6 +163,7 @@ JK08A source annotations and layouts.
 | `0x000D3EA0..0x000D3F5F` | ignition adapter |
 | `0x000D3F60..0x000D3F7F` | configuration record |
 | `0x000D40C0..0x000D413F` | bounded ignition controller |
+| `0x000D4140..0x000D41DF` | adaptive threshold helper |
 | `0xFFFF5D40..0xFFFF5D53` | runtime state |
 
 The composition replaces four declared call targets:
@@ -166,8 +179,8 @@ hook bytes are authoritative only in `rolling-launch-layout.toml`.
 ## State and diagnostics
 
 The 20-byte state records phase, abort reason, flags, map/mode snapshots, run
-and rearm timers, captured RPM, cut RPM, restore RPM, and the observed stock
-ignition command.
+and rearm timers, captured RPM, cut RPM, restore RPM, the observed stock and
+effective ignition commands, and the captured retard-band start.
 
 Raw engineering DIDs expose nine two-byte views:
 

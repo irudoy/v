@@ -62,13 +62,15 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertEqual(projection.min_rpm_address, "000d3f6a")
         self.assertEqual(projection.pedal_requirement_address, "000d3f6c")
         self.assertEqual(projection.rpm_offset_address, "000d3f6e")
-        self.assertEqual(projection.hysteresis_address, "000d3f70")
-        self.assertEqual(projection.table_count, 6)
+        self.assertEqual(projection.min_hysteresis_address, "000d3f70")
+        self.assertEqual(projection.max_hysteresis_address, "000d3f71")
+        self.assertEqual(projection.hysteresis_ratio_address, "000d3f7b")
+        self.assertEqual(projection.table_count, 8)
         self.assertEqual(projection.masked_view_count, 0)
         self.assertEqual(projection.switch_count, 1)
         self.assertEqual(projection.bitwise_switch_count, 1)
         self.assertEqual(projection.enable_bit_count, 5)
-        self.assertEqual(projection.editor_view_count, 8)
+        self.assertEqual(projection.editor_view_count, 10)
 
     def test_projection_exposes_activation_and_rpm_controls(self):
         projection = self.project()
@@ -89,7 +91,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
                 "uint8",
                 "RPM",
                 "x*12.5",
-                "Rolling Launch Retard Ramp Width",
+                "Rolling Launch Minimum Retard Ramp Width",
             ),
             projection.min_rpm_address: (
                 "uint16",
@@ -113,22 +115,34 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
                 self.assertEqual(model["scale_expr"], values[2])
                 self.assertEqual(presentation["name"], values[3])
 
-    def test_projection_exposes_hysteresis_in_rpm(self):
+    def test_projection_exposes_adaptive_hysteresis_controls(self):
         projection = self.project()
-        model = projection.maps[projection.hysteresis_address]
-        presentation = projection.overrides["table"][
-            projection.hysteresis_address
-        ]
-        self.assertEqual(model["storagetype"], "uint16")
-        self.assertEqual(model["units"], "RPM")
-        self.assertEqual(model["scale_expr"], "x*12.5")
-        self.assertEqual(model["to_byte"], "x/12.5")
-        self.assertEqual(
-            presentation["name"], "Rolling Launch RPM Hysteresis"
-        )
-        self.assertEqual(
-            presentation["category"], "Rolling Launch / RPM Hold"
-        )
+        expected = {
+            projection.min_hysteresis_address: (
+                "RPM", "x*12.5", "x/12.5",
+                "Rolling Launch Minimum RPM Hysteresis",
+            ),
+            projection.max_hysteresis_address: (
+                "RPM", "x*12.5", "x/12.5",
+                "Rolling Launch Maximum RPM Hysteresis",
+            ),
+            projection.hysteresis_ratio_address: (
+                "%", "x/10", "x*10",
+                "Rolling Launch RPM Hysteresis Ratio (%)",
+            ),
+        }
+        for address, values in expected.items():
+            with self.subTest(address=address):
+                model = projection.maps[address]
+                presentation = projection.overrides["table"][address]
+                self.assertEqual(model["storagetype"], "uint8")
+                self.assertEqual(model["units"], values[0])
+                self.assertEqual(model["scale_expr"], values[1])
+                self.assertEqual(model["to_byte"], values[2])
+                self.assertEqual(presentation["name"], values[3])
+                self.assertEqual(
+                    presentation["category"], "Rolling Launch / RPM Hold"
+                )
 
     def test_projection_exposes_one_bitwise_switch_with_one_bit_per_map(self):
         projection = self.project()
@@ -254,37 +268,55 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertEqual(entry.get("basedata"), "0001")
         self.assertEqual(entry.get("patchdata"), "0000")
 
-    def test_romraider_and_tunerpro_render_hysteresis_at_exact_address(self):
+    def test_romraider_and_tunerpro_render_adaptive_hysteresis_controls(self):
         projection = self.project()
-        model = projection.maps[projection.hysteresis_address]
+        models = [
+            projection.maps[projection.min_hysteresis_address],
+            projection.maps[projection.max_hysteresis_address],
+            projection.maps[projection.hysteresis_ratio_address],
+        ]
         romraider = "\n".join(
-            emit_def.table_xml(
+            line
+            for model in models
+            for line in emit_def.table_xml(
                 model, projection.overrides, self.axes, "JK08A"
             )
         )
+        self.assertIn('name="Rolling Launch Minimum RPM Hysteresis"', romraider)
+        self.assertIn('name="Rolling Launch Maximum RPM Hysteresis"', romraider)
         self.assertIn(
-            'name="Rolling Launch RPM Hysteresis"', romraider
+            'name="Rolling Launch RPM Hysteresis Ratio (%)"', romraider
         )
         self.assertIn('storageaddress="0xD3F70"', romraider)
+        self.assertIn('storageaddress="0xD3F71"', romraider)
+        self.assertIn('storageaddress="0xD3F7B"', romraider)
         self.assertIn('units="RPM"', romraider)
         self.assertIn('expression="x*12.5"', romraider)
         self.assertIn('to_byte="x/12.5"', romraider)
+        self.assertIn('units="%"', romraider)
+        self.assertIn('expression="x/10"', romraider)
+        self.assertIn('to_byte="x*10"', romraider)
 
         image = bytearray([0xFF] * 0x100000)
         xdf, stats = tunerpro.render(
             "JK08A",
             image,
-            [model],
+            models,
             self.axes,
             projection.overrides,
             {},
             [],
             [],
         )
-        self.assertEqual(stats["calibration_tables"], 1)
-        self.assertIn("Rolling Launch RPM Hysteresis", xdf)
+        self.assertEqual(stats["calibration_tables"], 3)
+        self.assertIn("Rolling Launch Minimum RPM Hysteresis", xdf)
+        self.assertIn("Rolling Launch Maximum RPM Hysteresis", xdf)
+        self.assertIn("Rolling Launch RPM Hysteresis Ratio (%)", xdf)
         self.assertIn('mmedaddress="0xD3F70"', xdf)
+        self.assertIn('mmedaddress="0xD3F71"', xdf)
+        self.assertIn('mmedaddress="0xD3F7B"', xdf)
         self.assertIn('equation="X*12.5"', xdf)
+        self.assertIn('equation="X/10"', xdf)
 
     def test_romraider_and_tunerpro_render_retard_ramp_at_exact_address(self):
         projection = self.project()
@@ -295,7 +327,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             )
         )
         self.assertIn(
-            'name="Rolling Launch Retard Ramp Width"', romraider
+            'name="Rolling Launch Minimum Retard Ramp Width"', romraider
         )
         self.assertIn('storageaddress="0xD3F69"', romraider)
         self.assertIn('units="RPM"', romraider)
@@ -313,7 +345,7 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
             [],
         )
         self.assertEqual(stats["calibration_tables"], 1)
-        self.assertIn("Rolling Launch Retard Ramp Width", xdf)
+        self.assertIn("Rolling Launch Minimum Retard Ramp Width", xdf)
         self.assertIn('mmedaddress="0xD3F69"', xdf)
         self.assertIn('equation="X*12.5"', xdf)
 

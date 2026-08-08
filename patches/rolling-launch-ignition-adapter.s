@@ -41,7 +41,7 @@ extu.w r2,r2
 cmp/eq r2,r0
 bf rl_ign_tail
 mov.b @(0x2,r1),r0
-cmp/eq 0x2,r0
+cmp/eq 0x3,r0
 bf rl_ign_tail
 mov.b @(0x3,r1),r0
 cmp/eq 0x2,r0

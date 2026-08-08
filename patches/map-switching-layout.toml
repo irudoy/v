@@ -49,8 +49,8 @@ lamp_off_value = 0x00
 phase_counts_address = 0x000D3848
 payload_on_frames = 10
 payload_off_frames = 10
-default_on_frames = 15
-default_off_frames = 15
+default_on_frames = 30
+default_off_frames = 30
 encoding_evidence = "homologous_community_aligned_with_exact_serializer"
 
 [[code_region]]

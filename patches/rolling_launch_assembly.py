@@ -26,6 +26,7 @@ SOURCE_LABELS = {
     "engine": "rolling_launch_engine",
     "ignition_adapter": "rolling_launch_ignition_adapter",
     "ignition_controller": "rolling_launch_ignition_controller",
+    "threshold_helper": "rolling_launch_threshold_helper",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
@@ -140,10 +141,31 @@ def _validate_engine_abi(parsed):
         raise ValueError("Rolling Launch engine does not save PR")
     if texts.count("lds.l @r15+,pr") != 2:
         raise ValueError("engine and gate helper must each restore PR")
-    if texts.count("jsr @r0") != 2:
-        raise ValueError("engine must have two limiter-commit call sites")
+    if texts.count("jsr @r0") != 3:
+        raise ValueError(
+            "engine must have two limiter commits and one threshold call"
+        )
     if texts.count("stc sr,r7") != 1 or texts.count("ldc r7,sr") != 1:
         raise ValueError("fuel overlay does not preserve SR exactly once")
+    validator = [
+        item.text.lower()
+        for item in _instructions(parsed)
+        if parsed.labels["rl_validate_config"]
+        <= item.address
+        < parsed.labels["rl_apply_fuel_overlay"]
+    ]
+    if "mov.b @(0x8,r3),r0" in validator:
+        raise ValueError("configuration validation rejects minimum speed zero")
+    threshold_call = [
+        "mov.l @(rl_threshold_helper_entry,pc),r0",
+        "jsr @r0",
+        "nop",
+    ]
+    if not any(
+        texts[index : index + len(threshold_call)] == threshold_call
+        for index in range(len(texts) - len(threshold_call) + 1)
+    ):
+        raise ValueError("engine threshold-helper call differs")
     try:
         mask = texts.index("ldc r0,sr")
         restore = texts.index("ldc r7,sr")
@@ -247,6 +269,31 @@ def _validate_ignition_controller_abi(parsed):
         raise ValueError("ignition controller clobbers an undeclared register")
 
 
+def _validate_threshold_helper_abi(parsed):
+    texts = _texts(parsed)
+    if texts[:1] != ["sts.l pr,@-r15"]:
+        raise ValueError("threshold helper does not save PR")
+    if texts[-3:] != ["lds.l @r15+,pr", "rts", "nop"]:
+        raise ValueError("threshold helper does not restore PR")
+    if texts.count("jsr @r3") != 1:
+        raise ValueError("threshold helper divider call count differs")
+    divider = texts.index("jsr @r3")
+    if texts[divider + 1] != "nop":
+        raise ValueError("threshold helper divider delay slot differs")
+    if texts.count("mulu.w r3,r2") != 1 or texts.count("sts macl,r1") != 1:
+        raise ValueError("threshold helper ratio arithmetic differs")
+    if texts.count("mov.w r0,@(0xe,r5)") != 1:
+        raise ValueError("threshold helper Restore store differs")
+    if texts.count("mov.w r0,@(0x12,r5)") != 1:
+        raise ValueError("threshold helper retard-band store differs")
+    registers = set()
+    for statement in _instructions(parsed):
+        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
+    allowed = {"r0", "r1", "r2", "r3", "r4", "r5", "r15", "pr", "macl"}
+    if not registers <= allowed:
+        raise ValueError("threshold helper clobbers an undeclared register")
+
+
 def _expected_long_literals():
     return {
         "wrappers": {
@@ -265,6 +312,7 @@ def _expected_long_literals():
             "rl_rpm_address": 0xFFFF11BC,
             "rl_limiter_commit": 0x000D3660,
             "rl_button_address": 0xFFFF2A85,
+            "rl_threshold_helper_entry": 0x000D4140,
             "rl_gate_state_address": 0xFFFF5D40,
             "rl_gate_selector_address": 0xFFFF5D00,
             "rl_gate_map_enable_masks": 0x000D3D18,
@@ -291,11 +339,15 @@ def _expected_long_literals():
         },
         "ignition_controller": {
             "rl_ctrl_state_address": 0xFFFF5D40,
-            "rl_ctrl_config_address": 0x000D3F60,
             "rl_ctrl_rpm_address": 0xFFFF11BC,
             "rl_ctrl_unsigned_divide": 0x00021CE0,
             "rl_ctrl_output_address": 0xFFFF2022,
             "rl_ctrl_stock_consumer": 0x0002A892,
+        },
+        "threshold_helper": {
+            "rl_threshold_config_address": 0x000D3F60,
+            "rl_threshold_state_address": 0xFFFF5D40,
+            "rl_threshold_unsigned_divide": 0x00021CE0,
         },
     }
 
@@ -339,6 +391,8 @@ def validate_assembly_sources(layout=None):
             _validate_ignition_abi(parsed)
         elif unit.key == "ignition_controller":
             _validate_ignition_controller_abi(parsed)
+        elif unit.key == "threshold_helper":
+            _validate_threshold_helper_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     return parsed_by_unit

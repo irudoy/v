@@ -115,8 +115,8 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         self.assertEqual(feedback.phase_counts_address, 0x000D3848)
         self.assertEqual(feedback.payload_on_frames, 10)
         self.assertEqual(feedback.payload_off_frames, 10)
-        self.assertEqual(feedback.default_on_frames, 15)
-        self.assertEqual(feedback.default_off_frames, 15)
+        self.assertEqual(feedback.default_on_frames, 30)
+        self.assertEqual(feedback.default_off_frames, 30)
 
     def test_all_slot_copies_and_pointer_tables_share_one_manifest(self):
         materialized = layout_model.materialize_calibration_copies(

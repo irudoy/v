@@ -86,7 +86,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56";
+            "8636734cd0a56f94609690ac684a748a43c2056336ea458becaad1f7ddb05c30";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -505,8 +505,8 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     compositeRom, permitted, unit.start(), blob,
                     "assembly." + unit.key());
         }
-        compositeRom[(int) CONFIG_ADDRESS] = 15;
-        compositeRom[(int) CONFIG_ADDRESS + 1] = 15;
+        compositeRom[(int) CONFIG_ADDRESS] = 30;
+        compositeRom[(int) CONFIG_ADDRESS + 1] = 30;
 
         int changed = 0;
         int permittedBytes = 0;
@@ -535,10 +535,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     + ", expected " + COMPOSED_SHA);
         }
         if (
-                compositeRom[(int) CONFIG_ADDRESS] != 15
-                || compositeRom[(int) CONFIG_ADDRESS + 1] != 15) {
+                compositeRom[(int) CONFIG_ADDRESS] != 30
+                || compositeRom[(int) CONFIG_ADDRESS + 1] != 30) {
             throw new IllegalStateException(
-                    "locked feedback frame counts are not 15/15");
+                    "locked feedback frame counts are not 30/30");
         }
         for (long[] field : CHECKSUM_FIELDS) {
             byte[] stock = slice(stockRom, field[0], (int) field[1]);

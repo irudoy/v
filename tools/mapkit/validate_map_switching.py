@@ -145,8 +145,14 @@ def validate():
     launch = projection.rolling_launch
     if launch.enable_mask_address != "000d3f64":
         raise ValueError("Rolling Launch enable mask address differs")
-    if launch.hysteresis_address != "000d3f70":
-        raise ValueError("Rolling Launch hysteresis address differs")
+    expected_hysteresis_controls = {
+        "min_hysteresis_address": "000d3f70",
+        "max_hysteresis_address": "000d3f71",
+        "hysteresis_ratio_address": "000d3f7b",
+    }
+    for field, expected in expected_hysteresis_controls.items():
+        if getattr(launch, field) != expected:
+            raise ValueError(f"Rolling Launch {field} differs")
     expected_controls = {
         "coolant_min_address": "000d3f66",
         "min_speed_address": "000d3f68",
@@ -160,27 +166,36 @@ def validate():
             raise ValueError(f"Rolling Launch {field} differs")
     if launch.masked_view_count != 0:
         raise ValueError("Rolling Launch still exposes masked table views")
-    if launch.table_count != 6 or launch.switch_count != 1:
+    if launch.table_count != 8 or launch.switch_count != 1:
         raise ValueError(
-            "runtime does not expose six calibration tables and one pedal switch"
+            "runtime does not expose eight calibration tables and one pedal "
+            "switch"
         )
     if launch.bitwise_switch_count != 1 or launch.enable_bit_count != 5:
         raise ValueError(
             "runtime does not expose one five-bit map-enable switch"
         )
-    if "Rolling Launch RPM Hysteresis" not in romraider_model:
-        raise ValueError("RomRaider projection lacks Rolling Launch hysteresis")
+    if "Rolling Launch Minimum RPM Hysteresis" not in romraider_model:
+        raise ValueError("RomRaider projection lacks minimum hysteresis")
     if 'storageaddress="0xD3F70"' not in romraider_model:
-        raise ValueError("RomRaider Rolling Launch hysteresis address differs")
-    if "Rolling Launch RPM Hysteresis" not in xdf:
-        raise ValueError("TunerPro projection lacks Rolling Launch hysteresis")
+        raise ValueError("RomRaider minimum hysteresis address differs")
+    if "Rolling Launch Maximum RPM Hysteresis" not in xdf:
+        raise ValueError("TunerPro projection lacks maximum hysteresis")
+    if 'mmedaddress="0xD3F71"' not in xdf:
+        raise ValueError("TunerPro maximum hysteresis address differs")
+    if "Rolling Launch RPM Hysteresis Ratio (%)" not in xdf:
+        raise ValueError("TunerPro projection lacks hysteresis ratio")
+    if 'mmedaddress="0xD3F7B"' not in xdf:
+        raise ValueError("TunerPro hysteresis ratio address differs")
+    if "Rolling Launch Minimum RPM Hysteresis" not in xdf:
+        raise ValueError("TunerPro projection lacks minimum hysteresis")
     if 'mmedaddress="0xD3F70"' not in xdf:
-        raise ValueError("TunerPro Rolling Launch hysteresis address differs")
+        raise ValueError("TunerPro minimum hysteresis address differs")
     controls = {
         "Rolling Launch Minimum Coolant Temperature": "0xD3F66",
         "Rolling Launch Minimum Vehicle Speed": "0xD3F68",
         "Rolling Launch Minimum Engine Speed": "0xD3F6A",
-        "Rolling Launch Retard Ramp Width": "0xD3F69",
+        "Rolling Launch Minimum Retard Ramp Width": "0xD3F69",
         "Rolling Launch RPM Offset": "0xD3F6E",
     }
     for name, address in controls.items():

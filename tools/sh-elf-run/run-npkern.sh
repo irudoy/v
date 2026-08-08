@@ -7,7 +7,7 @@ image_name=${VQ_SH_ELF_IMAGE:-vq-sh-elf-run:16.3}
 npkern_source=${VQ_NPKERN_SOURCE:-$repo_root/../../oss/npkern}
 expected_revision=d364011963c1da59a907ca291e1c0602977e9fd0
 
-DOCKER_CONTEXT=desktop-linux
+DOCKER_CONTEXT=default
 export DOCKER_CONTEXT
 unset DOCKER_HOST
 

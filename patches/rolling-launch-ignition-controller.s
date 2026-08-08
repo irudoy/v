@@ -1,8 +1,8 @@
 // RPM-band ignition controller for exact JK08A Rolling Launch.
 //
 // Input r4 is the stock uint8 command and r2 is the validated per-map late
-// command cap, with r4 < r2. The controller derives the lower ramp boundary as
-// max(captured_rpm, cut_rpm - retard_ramp_native). It leaves the stock command
+// command cap, with r4 < r2. The controller reads the lower ramp boundary
+// captured by the adaptive-threshold helper. It leaves the stock command
 // unchanged at or below that boundary, linearly blends toward the cap inside
 // the band, and applies the cap at or above Cut. The exact stock unsigned
 // divider at 0x21CE0 receives r0=divisor and r1=dividend. It preserves r2/r3;
@@ -16,18 +16,10 @@ mov.l @(rl_ctrl_state_address,pc),r1
 mov.w @(0xC,r1),r0
 extu.w r0,r3
 mov.l r3,@-r15
-mov.w @(0xA,r1),r0
-extu.w r0,r1
-mov.l @(rl_ctrl_config_address,pc),r0
-mov.b @(0x9,r0),r0
-extu.b r0,r0
-tst r0,r0
+mov.w @(0x12,r1),r0
+extu.w r0,r3
+tst r3,r3
 bt rl_ctrl_tail
-sub r0,r3
-cmp/hs r1,r3
-bt rl_ctrl_start_ready
-mov r1,r3
-rl_ctrl_start_ready:
 mov.l @(rl_ctrl_rpm_address,pc),r1
 mov.w @r1,r0
 extu.w r0,r1
@@ -67,8 +59,6 @@ nop
 .org 0x000D4124
 rl_ctrl_state_address:
 .long 0xFFFF5D40
-rl_ctrl_config_address:
-.long 0x000D3F60
 rl_ctrl_rpm_address:
 .long 0xFFFF11BC
 rl_ctrl_unsigned_divide:

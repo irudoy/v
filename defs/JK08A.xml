@@ -3157,8 +3157,8 @@
     <!-- 0xD3F68  1 uint8  map [code]
          scaling x*2 km/h [candidate]
          The exact firmware chain produces the byte at 0xFFFF110E. Its approximately 2 km/h per
-         count physical scale depends on homologous observed CAN 0x280 data; zero-speed
-         semantics are exact.
+         count physical scale depends on homologous observed CAN 0x280 data; zero disables this
+         activation gate.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Rolling Launch Minimum Vehicle Speed"
            category="Rolling Launch / Activation" storagetype="uint8" storageaddress="0xD3F68"
@@ -3187,18 +3187,18 @@
 
     <!-- 0xD3F69  1 uint8  map [code]
          scaling x*12.5 RPM [code]
-         Mode 2 keeps the stock ignition command at or below max(captured_rpm, Cut -
-         retard_ramp), blends linearly toward the per-map late-command cap inside the band, and
-         applies the cap at Cut. The validated record requires hysteresis < retard_ramp <=
-         rpm_offset.
+         At activation, the runtime computes effective_ramp = min(rpm_offset,
+         max(configured_minimum, 2*effective_hysteresis)). Mode 2 keeps the stock command at or
+         below max(captured_rpm, Cut - effective_ramp), blends toward the per-map late-command
+         cap inside the band, and applies the cap at Cut.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch Retard Ramp Width"
+    <table type="2D" name="Rolling Launch Minimum Retard Ramp Width"
            category="Rolling Launch / Ignition Retard" storagetype="uint8"
            storageaddress="0xD3F69" sizex="1" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="100"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Retard ramp width</data>
+        <data>Minimum retard ramp width</data>
       </table>
     </table>
 
@@ -3216,18 +3216,48 @@
       </table>
     </table>
 
-    <!-- 0xD3F70  1 uint16  map [code]
+    <!-- 0xD3F70  1 uint8  map [code]
          scaling x*12.5 RPM [code]
-         The runtime computes Restore = Cut - hysteresis, accepts only 0 < hysteresis_native <
-         min_rpm_native and hysteresis_native < retard_ramp_native, and rejects the entire
-         configuration otherwise. The default value is 8 native counts, or 100 RPM.
+         At activation, the proportional hysteresis is clamped to this inclusive lower endpoint.
+         The runtime then computes Restore = Cut - effective_hysteresis.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Rolling Launch RPM Hysteresis" category="Rolling Launch / RPM Hold"
-           storagetype="uint16" storageaddress="0xD3F70" sizex="1" endian="big">
+    <table type="2D" name="Rolling Launch Minimum RPM Hysteresis"
+           category="Rolling Launch / RPM Hold" storagetype="uint8" storageaddress="0xD3F70"
+           sizex="1" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="100"/>
       <table type="Static X Axis" name="Configuration" sizex="1">
-        <data>Hysteresis</data>
+        <data>Minimum hysteresis</data>
+      </table>
+    </table>
+
+    <!-- 0xD3F71  1 uint8  map [code]
+         scaling x*12.5 RPM [code]
+         At activation, the proportional hysteresis is clamped to this inclusive upper endpoint.
+         The endpoint must be below the configured RPM offset.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch Maximum RPM Hysteresis"
+           category="Rolling Launch / RPM Hold" storagetype="uint8" storageaddress="0xD3F71"
+           sizex="1" endian="big">
+      <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
+               fineincrement="12.5" coarseincrement="100"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Maximum hysteresis</data>
+      </table>
+    </table>
+
+    <!-- 0xD3F7B  1 uint8  map [code]
+         scaling x/10 % [code]
+         The runtime rounds captured_rpm * ratio / 100 to native RPM units once at activation,
+         then clamps the result between the configured minimum and maximum hysteresis.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Rolling Launch RPM Hysteresis Ratio (%)"
+           category="Rolling Launch / RPM Hold" storagetype="uint8" storageaddress="0xD3F7B"
+           sizex="1" endian="big">
+      <scaling units="%" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1"
+               coarseincrement="0.5"/>
+      <table type="Static X Axis" name="Configuration" sizex="1">
+        <data>Hysteresis ratio (%)</data>
       </table>
     </table>
   </rom>

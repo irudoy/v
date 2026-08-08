@@ -11,9 +11,9 @@ if [ "${1:-}" = "--with-npkern" ]; then
     shift
 fi
 
-# Keep the gate in the same Docker Desktop environment as the project
-# Memgraph stack, independent of the caller's active Docker context.
-DOCKER_CONTEXT=desktop-linux
+# Use the standard local Docker context independently of the caller's active
+# context.
+DOCKER_CONTEXT=default
 export DOCKER_CONTEXT
 unset DOCKER_HOST
 

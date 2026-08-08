@@ -13,7 +13,7 @@
 //   +0x0E u16 temporary Restore threshold
 //   +0x10 u8  stock ignition command
 //   +0x11 u8  effective ignition command
-//   +0x12 u16 reserved, kept zero by startup and corrupt recovery
+//   +0x12 u16 captured ignition-retard band start
 //
 // One tick is one exact periodic scheduler pass, or 204800/Pphi seconds.
 // The default calibration enables no map slot. Modes are 0 observe, 1 RPM
@@ -101,12 +101,9 @@ mov r3,r2
 rl_cut_not_saturated:
 mov r2,r0
 mov.w r0,@(0xC,r5)
-mov.w @(0x10,r4),r0
-mov r0,r3
-extu.w r3,r3
-sub r3,r2
-mov r2,r0
-mov.w r0,@(0xE,r5)
+mov.l @(rl_threshold_helper_entry,pc),r0
+jsr @r0
+nop
 mov.b @(0x5,r5),r0
 cmp/eq 0x0,r0
 bt rl_activate_publish
@@ -346,6 +343,8 @@ rl_limiter_commit:
 .long 0x000D3660
 rl_button_address:
 .long 0xFFFF2A85
+rl_threshold_helper_entry:
+.long 0x000D4140
 rl_u16_8000:
 .word 0x8000
 
@@ -630,7 +629,7 @@ extu.w r1,r1
 cmp/eq r1,r0
 bf rl_config_invalid
 mov.b @(0x2,r3),r0
-cmp/eq 0x2,r0
+cmp/eq 0x3,r0
 bf rl_config_invalid
 mov.b @(0x3,r3),r0
 mov #0x3,r1
@@ -650,12 +649,8 @@ mov.b @(0x7,r3),r0
 extu.b r0,r0
 cmp/hs r2,r0
 bf rl_config_invalid
-mov.b @(0x8,r3),r0
-tst r0,r0
-bt rl_config_invalid
 mov.b @(0x9,r3),r0
-mov r0,r1
-extu.b r1,r1
+extu.b r0,r1
 tst r1,r1
 bt rl_config_invalid
 mov.w @(0xA,r3),r0
@@ -668,16 +663,20 @@ mov r0,r4
 extu.w r4,r4
 tst r4,r4
 bt rl_config_invalid
-mov.w @(0x10,r3),r0
-extu.w r0,r0
-tst r0,r0
-bt rl_config_invalid
-cmp/hs r2,r0
-bt rl_config_invalid
-cmp/hs r1,r0
-bt rl_config_invalid
 cmp/hs r1,r4
 bf rl_config_invalid
+mov r3,r2
+add 0x10,r2
+mov.b @r2+,r0
+extu.b r0,r1
+tst r1,r1
+bt rl_config_invalid
+mov.b @r2,r0
+extu.b r0,r2
+cmp/hs r1,r2
+bf rl_config_invalid
+cmp/hs r4,r2
+bt rl_config_invalid
 mov.w @(0x12,r3),r0
 extu.w r0,r0
 tst r0,r0
@@ -708,7 +707,7 @@ dt r2
 bf rl_config_target_loop
 mov.b @r4,r0
 tst r0,r0
-bf rl_config_invalid
+bt rl_config_invalid
 add 0x1,r4
 mov.w @r4,r0
 extu.w r0,r0

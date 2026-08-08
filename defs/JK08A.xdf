@@ -27770,7 +27770,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xC49C" flags="0x0">
     <title>Rolling Launch Minimum Vehicle Speed</title>
-    <description>Exact JK08A. Address 0xD3F68; 1 rows x 1 columns; uint8; map confidence code. Minimum coarse vehicle speed required for Rolling Launch activation The exact firmware chain produces the byte at 0xFFFF110E. Its approximately 2 km/h per count physical scale depends on homologous observed CAN 0x280 data; zero-speed semantics are exact.</description>
+    <description>Exact JK08A. Address 0xD3F68; 1 rows x 1 columns; uint8; map confidence code. Minimum coarse vehicle speed required for Rolling Launch activation; zero disables the speed gate The exact firmware chain produces the byte at 0xFFFF110E. Its approximately 2 km/h per count physical scale depends on homologous observed CAN 0x280 data; zero disables this activation gate.</description>
     <CATEGORYMEM index="0" category="21" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -27853,8 +27853,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xF40A" flags="0x0">
-    <title>Rolling Launch Retard Ramp Width</title>
-    <description>Exact JK08A. Address 0xD3F69; 1 rows x 1 columns; uint8; map confidence code. Rolling Launch ignition-retard ramp width below the captured fuel-cut threshold Mode 2 keeps the stock ignition command at or below max(captured_rpm, Cut - retard_ramp), blends linearly toward the per-map late-command cap inside the band, and applies the cap at Cut. The validated record requires hysteresis &lt; retard_ramp &lt;= rpm_offset.</description>
+    <title>Rolling Launch Minimum Retard Ramp Width</title>
+    <description>Exact JK08A. Address 0xD3F69; 1 rows x 1 columns; uint8; map confidence code. Minimum Rolling Launch ignition-retard ramp width below the captured fuel-cut threshold At activation, the runtime computes effective_ramp = min(rpm_offset, max(configured_minimum, 2*effective_hysteresis)). Mode 2 keeps the stock command at or below max(captured_rpm, Cut - effective_ramp), blends toward the per-map late-command cap inside the band, and applies the cap at Cut.</description>
     <CATEGORYMEM index="0" category="22" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -27865,7 +27865,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="Retard ramp width" />
+      <LABEL index="0" value="Minimum retard ramp width" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -27937,8 +27937,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x7DEF" flags="0x0">
-    <title>Rolling Launch RPM Hysteresis</title>
-    <description>Exact JK08A. Address 0xD3F70; 1 rows x 1 columns; uint16; map confidence code. Rolling Launch fuel-cut restore hysteresis in the validated runtime configuration record The runtime computes Restore = Cut - hysteresis, accepts only 0 &lt; hysteresis_native &lt; min_rpm_native and hysteresis_native &lt; retard_ramp_native, and rejects the entire configuration otherwise. The default value is 8 native counts, or 100 RPM.</description>
+    <title>Rolling Launch Minimum RPM Hysteresis</title>
+    <description>Exact JK08A. Address 0xD3F70; 1 rows x 1 columns; uint8; map confidence code. Minimum adaptive Rolling Launch fuel-cut restore hysteresis At activation, the proportional hysteresis is clamped to this inclusive lower endpoint. The runtime then computes Restore = Cut - effective_hysteresis.</description>
     <CATEGORYMEM index="0" category="24" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -27949,7 +27949,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="Hysteresis" />
+      <LABEL index="0" value="Minimum hysteresis" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -27969,11 +27969,95 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0xD3F70" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <EMBEDDEDDATA mmedaddress="0xD3F70" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>RPM</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x4D79" flags="0x0">
+    <title>Rolling Launch Maximum RPM Hysteresis</title>
+    <description>Exact JK08A. Address 0xD3F71; 1 rows x 1 columns; uint8; map confidence code. Maximum adaptive Rolling Launch fuel-cut restore hysteresis At activation, the proportional hysteresis is clamped to this inclusive upper endpoint. The endpoint must be below the configured RPM offset.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Maximum hysteresis" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD3F71" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*12.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x4D37" flags="0x0">
+    <title>Rolling Launch RPM Hysteresis Ratio (%)</title>
+    <description>Exact JK08A. Address 0xD3F7B; 1 rows x 1 columns; uint8; map confidence code. Captured-RPM ratio (%) used for adaptive Rolling Launch hysteresis The runtime rounds captured_rpm * ratio / 100 to native RPM units once at activation, then clamps the result between the configured minimum and maximum hysteresis.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Configuration</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Hysteresis ratio (%)" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xD3F7B" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>%</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/10">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

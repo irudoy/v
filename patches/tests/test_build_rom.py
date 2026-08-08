@@ -32,7 +32,9 @@ def profile_text(**overrides):
         "min_rpm_native": "160",
         "min_pedal": "3",
         "rpm_offset_native": "16",
-        "hysteresis_native": "8",
+        "min_hysteresis_native": "4",
+        "max_hysteresis_native": "12",
+        "hysteresis_ratio_tenths": "20",
         "run_timeout_ticks": "300",
         "rearm_ticks": "100",
         "target_commands": "[115, 114, 113, 112, 111]",
@@ -40,7 +42,7 @@ def profile_text(**overrides):
     values.update(overrides)
     body = "\n".join(f"{key} = {value}" for key, value in values.items())
     return (
-        "schema_version = 1\n"
+        "schema_version = 2\n"
         'rom = "JK08A"\n'
         'name = "mode-2-test"\n\n'
         "[rolling_launch]\n"
@@ -232,7 +234,7 @@ class BuildRomTest(unittest.TestCase):
         cases["partial-did"] = partial_did
 
         invalid_configuration = bytearray(self.base_result.data)
-        invalid_configuration[layout.configuration.start + 8] = 0
+        invalid_configuration[layout.configuration.start + 9] = 0
         cases["framed-invalid-configuration"] = invalid_configuration
 
         mixed_schema = bytearray(self.base_result.data)
@@ -295,6 +297,19 @@ class BuildRomTest(unittest.TestCase):
             result.configuration, profile.calibration.to_bytes()
         )
 
+    def test_profile_accepts_zero_minimum_speed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "profile.toml"
+            path.write_text(
+                profile_text(min_speed="0"), encoding="utf-8"
+            )
+            profile = build_rom.load_profile(path)
+        self.assertEqual(profile.calibration.min_speed, 0)
+        result = build_rom.build_image(self.stock, profile=profile)
+        self.assertEqual(
+            result.configuration, profile.calibration.to_bytes()
+        )
+
     def test_profile_rom_must_match_selected_series(self):
         profile = replace(build_rom.builtin_profile(), rom="JK03A")
         with self.assertRaisesRegex(build_rom.BuildError, "does not match"):
@@ -311,7 +326,7 @@ class BuildRomTest(unittest.TestCase):
 
             invalid = Path(directory) / "invalid.toml"
             invalid.write_text(
-                profile_text(hysteresis_native="12"), encoding="utf-8"
+                profile_text(max_hysteresis_native="16"), encoding="utf-8"
             )
             with self.assertRaisesRegex(
                 build_rom.BuildError, "calibration is invalid"

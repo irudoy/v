@@ -17,7 +17,7 @@ import struct
 CONFIG_MAGIC = 0x524C
 CONFIG_MAGIC_INVERSE = CONFIG_MAGIC ^ 0xFFFF
 CONFIG_END_MARKER = 0xA55A
-CONFIG_SCHEMA_VERSION = 2
+CONFIG_SCHEMA_VERSION = 3
 CONFIG_SIZE = 32
 SLOT_COUNT = 5
 
@@ -103,13 +103,14 @@ class Calibration:
     min_rpm_native: int = 160
     min_pedal: int = 1
     rpm_offset_native: int = 16
-    hysteresis_native: int = 8
+    min_hysteresis_native: int = 4
+    max_hysteresis_native: int = 12
     run_timeout_ticks: int = 300
     rearm_ticks: int = 100
     target_commands: tuple[int, ...] = (115, 115, 115, 115, 115)
+    hysteresis_ratio_tenths: int = 20
     magic: int = CONFIG_MAGIC
     schema_version: int = CONFIG_SCHEMA_VERSION
-    reserved: int = 0
     magic_inverse: int = CONFIG_MAGIC_INVERSE
     end_marker: int = CONFIG_END_MARKER
 
@@ -126,19 +127,20 @@ class Calibration:
             0 <= self.enable_mask <= 0x1F,
             options == Option.NONE,
             0 <= self.coolant_min <= self.coolant_max <= 0xFF,
-            0 < self.min_speed <= 0xFF,
+            0 <= self.min_speed <= 0xFF,
             0 < self.retard_ramp_native <= 0xFF,
             0 < self.min_rpm_native <= 0xFFFF,
             0 <= self.min_pedal <= 0xFFFF,
             0 < self.rpm_offset_native <= 0xFFFF,
-            0 < self.hysteresis_native < self.min_rpm_native,
-            self.hysteresis_native < self.retard_ramp_native,
+            0 < self.min_hysteresis_native
+            <= self.max_hysteresis_native <= 0xFF,
+            self.max_hysteresis_native < self.rpm_offset_native,
             self.retard_ramp_native <= self.rpm_offset_native,
             0 < self.run_timeout_ticks <= 0x7FFF,
             0 < self.rearm_ticks <= 0x7FFF,
             len(self.target_commands) == SLOT_COUNT,
             all(110 <= value <= 117 for value in self.target_commands),
-            self.reserved == 0,
+            0 < self.hysteresis_ratio_tenths <= 0xFF,
             self.magic_inverse == CONFIG_MAGIC_INVERSE,
             self.end_marker == CONFIG_END_MARKER,
         ))
@@ -152,7 +154,7 @@ class Calibration:
         if len(self.target_commands) != SLOT_COUNT:
             raise ValueError("target command table must contain five bytes")
         data = struct.pack(
-            ">H8B6H5sBHH",
+            ">H8B3H2B2H5sBHH",
             self.magic,
             self.schema_version,
             int(self.mode),
@@ -165,11 +167,12 @@ class Calibration:
             self.min_rpm_native,
             self.min_pedal,
             self.rpm_offset_native,
-            self.hysteresis_native,
+            self.min_hysteresis_native,
+            self.max_hysteresis_native,
             self.run_timeout_ticks,
             self.rearm_ticks,
             bytes(self.target_commands),
-            self.reserved,
+            self.hysteresis_ratio_tenths,
             self.magic_inverse,
             self.end_marker,
         )
@@ -183,7 +186,7 @@ class Calibration:
             raise ValueError(
                 f"configuration is {len(data)} bytes, expected {CONFIG_SIZE}"
             )
-        values = struct.unpack(">H8B6H5sBHH", data)
+        values = struct.unpack(">H8B3H2B2H5sBHH", data)
         return cls(
             magic=values[0],
             schema_version=values[1],
@@ -197,13 +200,14 @@ class Calibration:
             min_rpm_native=values[9],
             min_pedal=values[10],
             rpm_offset_native=values[11],
-            hysteresis_native=values[12],
-            run_timeout_ticks=values[13],
-            rearm_ticks=values[14],
-            target_commands=tuple(values[15]),
-            reserved=values[16],
-            magic_inverse=values[17],
-            end_marker=values[18],
+            min_hysteresis_native=values[12],
+            max_hysteresis_native=values[13],
+            run_timeout_ticks=values[14],
+            rearm_ticks=values[15],
+            target_commands=tuple(values[16]),
+            hysteresis_ratio_tenths=values[17],
+            magic_inverse=values[18],
+            end_marker=values[19],
         )
 
 
@@ -240,6 +244,7 @@ class RuntimeState:
     restore_rpm_native: int = 0
     stock_ign_command: int = 0
     effective_ign_command: int = 0
+    retard_band_start_native: int = 0
 
 
 @dataclass(frozen=True)
@@ -300,7 +305,11 @@ def evaluate_gates(inputs, calibration):
         AbortReason.BUTTON_INVALID,
     )
     gate(
-        valid and inputs.speed >= calibration.min_speed,
+        valid
+        and (
+            calibration.min_speed == 0
+            or inputs.speed >= calibration.min_speed
+        ),
         Flag.SPEED_OK,
         AbortReason.SPEED_LOW,
     )
@@ -351,6 +360,7 @@ def _state_is_structurally_valid(state):
         state.captured_rpm_native,
         state.cut_rpm_native,
         state.restore_rpm_native,
+        state.retard_band_start_native,
     )):
         return False
     if not all(0 <= value <= 0xFF for value in (
@@ -439,7 +449,22 @@ def step(state, inputs, calibration):
         if reason != AbortReason.NONE:
             return StepResult(idle)
         cut = min(0xFFFF, inputs.rpm_native + calibration.rpm_offset_native)
-        restore = max(0, cut - calibration.hysteresis_native)
+        proportional_hysteresis = (
+            inputs.rpm_native * calibration.hysteresis_ratio_tenths + 500
+        ) // 1000
+        hysteresis = min(
+            calibration.max_hysteresis_native,
+            max(
+                calibration.min_hysteresis_native,
+                proportional_hysteresis,
+            ),
+        )
+        restore = cut - hysteresis
+        retard_ramp = min(
+            calibration.rpm_offset_native,
+            max(calibration.retard_ramp_native, 2 * hysteresis),
+        )
+        retard_band_start = max(inputs.rpm_native, cut - retard_ramp)
         active = replace(
             idle,
             phase=Phase.ACTIVE,
@@ -449,6 +474,7 @@ def step(state, inputs, calibration):
             captured_rpm_native=inputs.rpm_native,
             cut_rpm_native=cut,
             restore_rpm_native=restore,
+            retard_band_start_native=retard_band_start,
         )
         active = replace(active, flags=_active_flags(flags, active, inputs))
         action = (
@@ -508,10 +534,7 @@ def apply_ignition_command(
         target = calibration.target_commands[state.active_index_snapshot]
         if stock_command < target:
             cut = state.cut_rpm_native
-            start = max(
-                state.captured_rpm_native,
-                cut - calibration.retard_ramp_native,
-            )
+            start = state.retard_band_start_native
             if rpm_native >= cut and cut > start:
                 effective = target
             elif start < rpm_native < cut:

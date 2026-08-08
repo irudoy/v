@@ -60,7 +60,9 @@ class ApplyRollingLaunchTest(unittest.TestCase):
         self.assertEqual(calibration.enable_mask, 0x01)
         self.assertEqual(calibration.options, rolling_launch.Option(0))
         self.assertEqual(calibration.rpm_offset_native, 16)
-        self.assertEqual(calibration.hysteresis_native, 8)
+        self.assertEqual(calibration.min_hysteresis_native, 4)
+        self.assertEqual(calibration.max_hysteresis_native, 12)
+        self.assertEqual(calibration.hysteresis_ratio_tenths, 20)
         self.assertEqual(calibration.retard_ramp_native, 16)
         self.assertEqual(calibration.run_timeout_ticks, 300)
         self.assertEqual(calibration.rearm_ticks, 100)
@@ -233,7 +235,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             self.result.instruction_count,
             self.rolling_layout.assembled_instruction_count,
         )
-        self.assertEqual(self.result.code_entry_count, 6)
+        self.assertEqual(self.result.code_entry_count, 7)
         self.assertEqual(
             self.result.diagnostic_count,
             len(self.rolling_layout.diagnostics),

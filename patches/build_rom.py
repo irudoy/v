@@ -22,6 +22,7 @@ import hashlib
 from itertools import chain
 import json
 from pathlib import Path
+import struct
 import sys
 import tomllib
 
@@ -44,7 +45,7 @@ from tools.mapkit import rom as romkit
 
 AUTO_ROM = "auto"
 SUPPORTED_ROMS = ("JK08A",)
-PROFILE_SCHEMA_VERSION = 1
+PROFILE_SCHEMA_VERSION = 2
 MANIFEST_SCHEMA_VERSION = 1
 TOOL_NAME = "patches/build_rom.py"
 
@@ -62,7 +63,9 @@ ROLLING_PROFILE_KEYS = frozenset(
         "min_rpm_native",
         "min_pedal",
         "rpm_offset_native",
-        "hysteresis_native",
+        "min_hysteresis_native",
+        "max_hysteresis_native",
+        "hysteresis_ratio_tenths",
         "run_timeout_ticks",
         "rearm_ticks",
         "target_commands",
@@ -95,10 +98,9 @@ class RollingEndpointSignature:
     unit_sha256: tuple[tuple[str, str], ...]
 
 
-# Exact code fingerprints from the tracked schema-1 runtime immediately before
-# the schema-2 bounded-retard controller. The final entry is the erased
-# controller-extension span. Configuration bytes remain calibration-specific
-# and are validated separately against the schema-1 runtime contract.
+# Exact code fingerprints for registered Rolling Launch endpoints that the
+# current builder can migrate. Configuration bytes remain calibration-specific
+# and are validated against the applicable record contract.
 HISTORICAL_ROLLING_ENDPOINTS = (
     RollingEndpointSignature(
         key="schema-1-bandless",
@@ -120,9 +122,67 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "ignition_controller",
                 "e9175db65a9789096ca9cb5524d3abc2107df03e3c9ba3af1aca628f9c5d3bd2",
             ),
+            (
+                "threshold_helper",
+                "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
+            ),
+        ),
+    ),
+    RollingEndpointSignature(
+        key="schema-2-speed-required",
+        configuration_schema_version=2,
+        unit_sha256=(
+            (
+                "wrappers",
+                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
+            ),
+            (
+                "engine",
+                "6fbe61494983b09c45565b02409f1d768c1633cbe3c088d6e378d10c0ed9d3c6",
+            ),
+            (
+                "ignition_adapter",
+                "82452974b158d34cc8d7c69b990f327428ff01f92e047c6a15cb2f9251e90952",
+            ),
+            (
+                "ignition_controller",
+                "465b6e90325fa6aecffa94eeffa40b9c7b65f5095ed4bf768e52ee55f1407e3c",
+            ),
+            (
+                "threshold_helper",
+                "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
+            ),
+        ),
+    ),
+    RollingEndpointSignature(
+        key="schema-2-zero-speed",
+        configuration_schema_version=2,
+        unit_sha256=(
+            (
+                "wrappers",
+                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
+            ),
+            (
+                "engine",
+                "e7e940b866526ea9feeab044f072fdee1ce157de600dd61482fbbe2905203661",
+            ),
+            (
+                "ignition_adapter",
+                "82452974b158d34cc8d7c69b990f327428ff01f92e047c6a15cb2f9251e90952",
+            ),
+            (
+                "ignition_controller",
+                "465b6e90325fa6aecffa94eeffa40b9c7b65f5095ed4bf768e52ee55f1407e3c",
+            ),
+            (
+                "threshold_helper",
+                "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
+            ),
         ),
     ),
 )
+
+HISTORICAL_FEEDBACK_FRAME_COUNTS = ((10, 10), (15, 15))
 
 
 @dataclass(frozen=True)
@@ -257,8 +317,15 @@ def load_profile(path):
         rpm_offset_native=_require_integer(
             values["rpm_offset_native"], "rpm_offset_native"
         ),
-        hysteresis_native=_require_integer(
-            values["hysteresis_native"], "hysteresis_native"
+        min_hysteresis_native=_require_integer(
+            values["min_hysteresis_native"], "min_hysteresis_native"
+        ),
+        max_hysteresis_native=_require_integer(
+            values["max_hysteresis_native"], "max_hysteresis_native"
+        ),
+        hysteresis_ratio_tenths=_require_integer(
+            values["hysteresis_ratio_tenths"],
+            "hysteresis_ratio_tenths",
         ),
         run_timeout_ticks=_require_integer(
             values["run_timeout_ticks"], "run_timeout_ticks"
@@ -317,35 +384,41 @@ def _expected_pointer_table(layout, family):
 
 
 def _historical_configuration_is_valid(configuration, schema_version):
-    if schema_version != 1:
+    if schema_version not in (1, 2):
         raise BuildError(
             "internal historical Rolling Launch schema is unsupported"
         )
     try:
-        calibration = rolling_launch.Calibration.from_bytes(configuration)
-        rolling_launch.Mode(calibration.mode)
-        options = rolling_launch.Option(calibration.options)
-    except (TypeError, ValueError):
+        values = struct.unpack(">H8B6H5sBHH", bytes(configuration))
+        rolling_launch.Mode(values[2])
+        options = rolling_launch.Option(values[4])
+    except (TypeError, ValueError, struct.error):
         return False
-    return all((
-        calibration.magic == rolling_launch.CONFIG_MAGIC,
-        calibration.schema_version == schema_version,
-        0 <= calibration.enable_mask <= 0x1F,
+    common = all((
+        values[0] == rolling_launch.CONFIG_MAGIC,
+        values[1] == schema_version,
+        0 <= values[3] <= 0x1F,
         options == rolling_launch.Option.NONE,
-        0 <= calibration.coolant_min <= calibration.coolant_max <= 0xFF,
-        0 < calibration.min_speed <= 0xFF,
-        calibration.retard_ramp_native == 0,
-        0 < calibration.min_rpm_native <= 0xFFFF,
-        0 <= calibration.min_pedal <= 0xFFFF,
-        0 < calibration.rpm_offset_native <= 0xFFFF,
-        0 < calibration.hysteresis_native < calibration.min_rpm_native,
-        0 < calibration.run_timeout_ticks <= 0x7FFF,
-        0 < calibration.rearm_ticks <= 0x7FFF,
-        len(calibration.target_commands) == rolling_launch.SLOT_COUNT,
-        all(110 <= value <= 117 for value in calibration.target_commands),
-        calibration.reserved == 0,
-        calibration.magic_inverse == rolling_launch.CONFIG_MAGIC_INVERSE,
-        calibration.end_marker == rolling_launch.CONFIG_END_MARKER,
+        0 <= values[5] <= values[6] <= 0xFF,
+        0 < values[9] <= 0xFFFF,
+        0 <= values[10] <= 0xFFFF,
+        0 < values[11] <= 0xFFFF,
+        0 < values[12] < values[9],
+        0 < values[13] <= 0x7FFF,
+        0 < values[14] <= 0x7FFF,
+        len(values[15]) == rolling_launch.SLOT_COUNT,
+        all(110 <= value <= 117 for value in values[15]),
+        values[16] == 0,
+        values[17] == rolling_launch.CONFIG_MAGIC_INVERSE,
+        values[18] == rolling_launch.CONFIG_END_MARKER,
+    ))
+    if schema_version == 1:
+        return common and 0 < values[7] <= 0xFF and values[8] == 0
+    return all((
+        common,
+        0 <= values[7] <= 0xFF,
+        0 < values[8] <= 0xFF,
+        values[12] < values[8] <= values[11],
     ))
 
 
@@ -460,6 +533,19 @@ def _require_complete_map_endpoint(
             map_layout, map_payloads, unit
         )
         actual = source[unit.span.start : unit.span.end]
+        if actual != expected and unit.key == "cruise_feedback_engine":
+            offset = (
+                map_layout.feedback.phase_counts_address - unit.span.start
+            )
+            historical = []
+            for on_frames, off_frames in HISTORICAL_FEEDBACK_FRAME_COUNTS:
+                candidate = bytearray(expected)
+                candidate[offset : offset + 2] = bytes(
+                    (on_frames, off_frames)
+                )
+                historical.append(bytes(candidate))
+            if actual in historical:
+                continue
         if actual != expected:
             raise BuildError(
                 f"{context}: partial or unknown patch state; "

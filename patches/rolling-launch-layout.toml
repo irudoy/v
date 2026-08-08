@@ -8,19 +8,19 @@ schema_version = 2
 rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
-base_composition_sha256 = "b8174722d155ba18937307e103a629ffe10540cb142d7a2c4c433f466d5bff56"
-expected_composition_sha256 = "f71a7adf357a9b7e048045a5f1d5dfff5f888fe6387873aa9e18bb37d119e249"
+base_composition_sha256 = "8636734cd0a56f94609690ac684a748a43c2056336ea458becaad1f7ddb05c30"
+expected_composition_sha256 = "834a0cee0d2661d37ede1c99947e138e9a8c5feb31572fe34e575e0c984d805d"
 free_rom_start = 0x000D3860
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D3860
 claimed_rom_end = 0x000D3F80
 configuration_address = 0x000D3F60
 configuration_size = 32
-default_configuration = "524c0200000000ff011000a0000100100008012c0064737373737300adb3a55a"
+default_configuration = "524c0300000000ff011000a000010010040c012c0064737373737314adb3a55a"
 
 [[claimed_rom_extension]]
 start = 0x000D40C0
-end = 0x000D4140
+end = 0x000D41E0
 
 [scheduler]
 table_address = 0x00021970
@@ -75,6 +75,12 @@ start = 0x000D40C0
 end = 0x000D4140
 entry = 0x000D40C0
 
+[[code_region]]
+key = "threshold_helper"
+start = 0x000D4140
+end = 0x000D41E0
+entry = 0x000D4140
+
 [[assembly_unit]]
 key = "wrappers"
 source = "rolling-launch-wrappers.s"
@@ -94,9 +100,9 @@ start = 0x000D38E4
 end = 0x000D3EA0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "6fbe61494983b09c45565b02409f1d768c1633cbe3c088d6e378d10c0ed9d3c6"
-instruction_count = 630
-data_bytes = 95
+expected_sha256 = "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729"
+instruction_count = 627
+data_bytes = 99
 code_regions = ["engine"]
 
 [[assembly_unit]]
@@ -106,7 +112,7 @@ start = 0x000D3EA0
 end = 0x000D3F60
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "82452974b158d34cc8d7c69b990f327428ff01f92e047c6a15cb2f9251e90952"
+expected_sha256 = "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b"
 instruction_count = 72
 data_bytes = 35
 code_regions = ["ignition_adapter"]
@@ -118,10 +124,22 @@ start = 0x000D40C0
 end = 0x000D4140
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "465b6e90325fa6aecffa94eeffa40b9c7b65f5095ed4bf768e52ee55f1407e3c"
-instruction_count = 49
-data_bytes = 24
+expected_sha256 = "ebb3cbeb3464ac3f53c6e8738a9b4f1fe729965fa7e24bccc0a5d790038b57f7"
+instruction_count = 42
+data_bytes = 20
 code_regions = ["ignition_controller"]
+
+[[assembly_unit]]
+key = "threshold_helper"
+source = "rolling-launch-threshold-helper.s"
+start = 0x000D4140
+end = 0x000D41E0
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7"
+instruction_count = 62
+data_bytes = 16
+code_regions = ["threshold_helper"]
 
 [[hook]]
 key = "periodic_scheduler_index_0"

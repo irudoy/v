@@ -15,7 +15,9 @@ class RollingLaunchTest(unittest.TestCase):
             min_rpm_native=200,
             min_pedal=1000,
             rpm_offset_native=16,
-            hysteresis_native=8,
+            min_hysteresis_native=4,
+            max_hysteresis_native=12,
+            hysteresis_ratio_tenths=20,
             run_timeout_ticks=4,
             rearm_ticks=3,
         )
@@ -44,17 +46,21 @@ class RollingLaunchTest(unittest.TestCase):
             {"enable_mask": 0x20},
             {"options": 1},
             {"coolant_min": 221, "coolant_max": 220},
-            {"min_speed": 0},
+            {"min_speed": -1},
+            {"min_speed": 0x100},
             {"retard_ramp_native": 0},
-            {"retard_ramp_native": 8},
             {"retard_ramp_native": 17},
             {"min_rpm_native": 0},
             {"rpm_offset_native": 0},
-            {"hysteresis_native": 200},
+            {"min_hysteresis_native": 0},
+            {"min_hysteresis_native": 13},
+            {"max_hysteresis_native": 16},
+            {"max_hysteresis_native": 0x100},
+            {"hysteresis_ratio_tenths": 0},
+            {"hysteresis_ratio_tenths": 0x100},
             {"run_timeout_ticks": 0},
             {"rearm_ticks": 0},
             {"target_commands": (109,) * 5},
-            {"reserved": 1},
             {"magic_inverse": 0},
             {"end_marker": 0},
         )
@@ -100,7 +106,8 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertEqual(result.state.phase, rl.Phase.ACTIVE)
         self.assertEqual(result.state.captured_rpm_native, 300)
         self.assertEqual(result.state.cut_rpm_native, 316)
-        self.assertEqual(result.state.restore_rpm_native, 308)
+        self.assertEqual(result.state.restore_rpm_native, 310)
+        self.assertEqual(result.state.retard_band_start_native, 300)
         self.assertEqual(
             result.limiter_action, rl.LimiterAction.APPLY_OVERLAY
         )
@@ -128,7 +135,34 @@ class RollingLaunchTest(unittest.TestCase):
             rl.RuntimeState(), saturated_inputs, calibration
         )
         self.assertEqual(saturated.state.cut_rpm_native, 0xFFFF)
-        self.assertEqual(saturated.state.restore_rpm_native, 0xFFF7)
+        self.assertEqual(saturated.state.restore_rpm_native, 0xFFF3)
+        self.assertEqual(
+            saturated.state.retard_band_start_native, 0xFFF8
+        )
+
+    def test_adaptive_hysteresis_and_retard_ramp_use_min_ratio_and_max(self):
+        calibration = dataclasses.replace(
+            self.calibration,
+            min_rpm_native=1,
+            retard_ramp_native=8,
+        )
+        cases = (
+            (160, 176, 172, 168),
+            (400, 416, 408, 400),
+            (560, 576, 565, 560),
+            (600, 616, 604, 600),
+        )
+        for captured, cut, restore, band_start in cases:
+            with self.subTest(captured=captured):
+                inputs = dataclasses.replace(
+                    self.inputs, rpm_native=captured
+                )
+                result = rl.step(rl.RuntimeState(), inputs, calibration)
+                self.assertEqual(result.state.cut_rpm_native, cut)
+                self.assertEqual(result.state.restore_rpm_native, restore)
+                self.assertEqual(
+                    result.state.retard_band_start_native, band_start
+                )
 
     def test_active_aborts_cover_map_request_change_and_timeout(self):
         active = rl.step(
@@ -216,6 +250,13 @@ class RollingLaunchTest(unittest.TestCase):
         result = rl.step(rl.RuntimeState(), inputs, calibration)
         self.assertEqual(result.state.phase, rl.Phase.ACTIVE)
         self.assertTrue(result.state.flags & rl.Flag.PEDAL_OK)
+
+    def test_zero_minimum_speed_disables_the_speed_requirement(self):
+        calibration = dataclasses.replace(self.calibration, min_speed=0)
+        inputs = dataclasses.replace(self.inputs, speed=0)
+        result = rl.step(rl.RuntimeState(), inputs, calibration)
+        self.assertEqual(result.state.phase, rl.Phase.ACTIVE)
+        self.assertTrue(result.state.flags & rl.Flag.SPEED_OK)
 
     def test_ignition_adapter_can_only_add_retard(self):
         calibration = dataclasses.replace(

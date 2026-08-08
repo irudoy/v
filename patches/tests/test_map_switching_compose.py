@@ -93,7 +93,7 @@ class MapSwitchingCompositionTest(unittest.TestCase):
     def test_current_feedback_counts_are_present_in_composition(self):
         result = composer.compose(self.layout, self.image, self.blobs)
         start = self.layout.feedback.phase_counts_address
-        self.assertEqual(result.data[start : start + 2], b"\x0f\x0f")
+        self.assertEqual(result.data[start : start + 2], b"\x1e\x1e")
 
     def test_composition_requires_the_exact_blob_set(self):
         missing = dict(self.blobs)

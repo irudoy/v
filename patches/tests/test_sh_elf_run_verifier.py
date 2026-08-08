@@ -149,7 +149,7 @@ mov #0x5,r1
         self.assertIn("map_switching_compose as composer", source)
         self.assertIn("require_composition(layout, blobs)", source)
 
-    def test_runner_pins_docker_desktop_without_changing_user_context(self):
+    def test_runner_pins_default_without_changing_user_context(self):
         main_source = (
             ROOT / "tools/sh-elf-run/run.sh"
         ).read_text(encoding="utf-8")
@@ -158,7 +158,7 @@ mov #0x5,r1
         ).read_text(encoding="utf-8")
         for source in (main_source, external_source):
             with self.subTest(source=source.splitlines()[0]):
-                context = source.index("DOCKER_CONTEXT=desktop-linux")
+                context = source.index("DOCKER_CONTEXT=default")
                 export = source.index("export DOCKER_CONTEXT")
                 unset = source.index("unset DOCKER_HOST")
                 first_docker = source.index("docker build")
@@ -194,7 +194,7 @@ mov #0x5,r1
             result.sha256,
             ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 785)
+        self.assertEqual(result.instruction_count, 837)
         self.assertEqual(result.diagnostic_count, 9)
 
     def test_rolling_stock_stubs_come_from_both_manifests(self):
@@ -256,7 +256,7 @@ mov #0x5,r1
         self.assertIn("verify_rolling_launch.verify", source)
         self.assertIn("rolling_launch_cases", source)
         self.assertIn("cases=%lu", harness)
-        self.assertIn("entries=6", harness)
+        self.assertIn("entries=7", harness)
 
 
 if __name__ == "__main__":

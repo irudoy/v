@@ -21,9 +21,11 @@ COMMON_TABLES = {
     "Rolling Launch Minimum Coolant Temperature": "Rolling Launch / Activation",
     "Rolling Launch Minimum Vehicle Speed": "Rolling Launch / Activation",
     "Rolling Launch Minimum Engine Speed": "Rolling Launch / Activation",
-    "Rolling Launch Retard Ramp Width": "Rolling Launch / Ignition Retard",
+    "Rolling Launch Minimum Retard Ramp Width": "Rolling Launch / Ignition Retard",
     "Rolling Launch RPM Offset": "Rolling Launch / RPM Hold",
-    "Rolling Launch RPM Hysteresis": "Rolling Launch / RPM Hold",
+    "Rolling Launch Minimum RPM Hysteresis": "Rolling Launch / RPM Hold",
+    "Rolling Launch Maximum RPM Hysteresis": "Rolling Launch / RPM Hold",
+    "Rolling Launch RPM Hysteresis Ratio (%)": "Rolling Launch / RPM Hold",
 }
 
 DEFAULT_VISIBLE_TABLES = {
@@ -352,7 +354,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 45)
-        self.assertEqual(len(tables), 105)
+        self.assertEqual(len(tables), 107)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 

@@ -30,6 +30,7 @@
 #define RL_ENGINE 0x000d38e4U
 #define IGNITION_ADAPTER 0x000d3ea0U
 #define IGNITION_CONTROLLER 0x000d40c0U
+#define THRESHOLD_HELPER 0x000d4140U
 
 #define FUEL_STOCK 0x0000934eU
 
@@ -76,10 +77,10 @@ extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 static size_t case_count;
 
 static const uint8_t valid_configuration[32] = {
-    0x52, 0x4c, 0x02, 0x00, 0x01, 0x00, 0x00, 0xff,
+    0x52, 0x4c, 0x03, 0x00, 0x01, 0x00, 0x00, 0xff,
     0x01, 0x10, 0x00, 0x64, 0x00, 0x01, 0x00, 0x10,
-    0x00, 0x08, 0x00, 0x04, 0x00, 0x03, 0x73, 0x73,
-    0x73, 0x73, 0x73, 0x00, 0xad, 0xb3, 0xa5, 0x5a,
+    0x04, 0x0c, 0x00, 0x04, 0x00, 0x03, 0x73, 0x73,
+    0x73, 0x73, 0x73, 0x14, 0xad, 0xb3, 0xa5, 0x5a,
 };
 
 static const uint32_t fuel_slots[5] = {
@@ -329,6 +330,7 @@ enum gate_mutation {
     GATE_BUTTON_SET,
     GATE_SPEED_LOW,
     GATE_SPEED_EXACT,
+    GATE_SPEED_DISABLED,
     GATE_RPM_LOW,
     GATE_RPM_EXACT,
     GATE_PEDAL_LOW,
@@ -364,6 +366,7 @@ static const struct gate_case gate_cases[] = {
     {"gate-button-set", GATE_BUTTON_SET, REASON_BUTTON_INVALID, 0},
     {"gate-speed-low", GATE_SPEED_LOW, REASON_SPEED_LOW, 0},
     {"gate-speed-exact", GATE_SPEED_EXACT, REASON_NONE, 1},
+    {"gate-speed-disabled", GATE_SPEED_DISABLED, REASON_NONE, 1},
     {"gate-rpm-low", GATE_RPM_LOW, REASON_RPM_LOW, 0},
     {"gate-rpm-exact", GATE_RPM_EXACT, REASON_NONE, 1},
     {"gate-pedal-low", GATE_PEDAL_LOW, REASON_PEDAL_LOW, 0},
@@ -428,6 +431,10 @@ static void apply_gate_mutation(enum gate_mutation mutation)
     case GATE_SPEED_EXACT:
         config[8] = 10;
         ram_pointer(SPEED)[0] = 10;
+        break;
+    case GATE_SPEED_DISABLED:
+        config[8] = 0;
+        ram_pointer(SPEED)[0] = 0;
         break;
     case GATE_RPM_LOW:
         write_u16(config + 10, 200);
@@ -514,21 +521,21 @@ static const struct config_case config_cases[] = {
     {"config-options-low", 5, 1, 1},
     {"config-options-high", 5, 1, 0x80},
     {"config-coolant-order", 6, 2, 0xff00},
-    {"config-speed-zero", 8, 1, 0},
     {"config-retard-ramp-zero", 9, 1, 0},
-    {"config-retard-ramp-hysteresis", 9, 1, 8},
     {"config-retard-ramp-offset", 9, 1, 17},
     {"config-rpm-zero", 10, 2, 0},
     {"config-offset-zero", 14, 2, 0},
-    {"config-hysteresis-zero", 16, 2, 0},
-    {"config-hysteresis-range", 16, 2, 100},
+    {"config-min-hysteresis-zero", 16, 1, 0},
+    {"config-min-hysteresis-above-max", 16, 1, 13},
+    {"config-max-hysteresis-below-min", 17, 1, 3},
+    {"config-max-hysteresis-at-offset", 17, 1, 16},
     {"config-timeout-zero", 18, 2, 0},
     {"config-timeout-range", 18, 2, 0x8000},
     {"config-rearm-zero", 20, 2, 0},
     {"config-rearm-range", 20, 2, 0x8000},
     {"config-target-low", 22, 1, 109},
     {"config-target-high", 22, 1, 118},
-    {"config-reserved", 27, 1, 1},
+    {"config-hysteresis-ratio-zero", 27, 1, 0},
     {"config-inverse", 28, 2, 0},
     {"config-end", 30, 2, 0},
 };
@@ -595,6 +602,7 @@ static int verify_active_state(
     uint16_t captured,
     uint16_t cut,
     uint16_t restore,
+    uint16_t retard_band_start,
     uint16_t flags)
 {
     volatile uint8_t *state = ram_pointer(RL_STATE);
@@ -611,7 +619,54 @@ static int verify_active_state(
         return fail_value(name, "cut", read_u16(state + 12), cut);
     if (read_u16(state + 14) != restore)
         return fail_value(name, "restore", read_u16(state + 14), restore);
+    if (read_u16(state + 18) != retard_band_start)
+        return fail_value(
+            name, "retard_band_start", read_u16(state + 18),
+            retard_band_start);
     return verify_state_guards(name);
+}
+
+static int run_threshold_helper_case(
+    const char *name,
+    uint16_t captured,
+    uint16_t cut,
+    uint16_t expected_restore,
+    uint16_t expected_band_start)
+{
+    volatile uint8_t *state;
+
+    count_case();
+    reset_case(MODE_RPM_HOLD_RETARD, 0x01);
+    rom_pointer(RL_CONFIG)[9] = 8;
+    state = ram_pointer(RL_STATE);
+    write_u16(state + 10, captured);
+    write_u16(state + 12, cut);
+    (void)invoke_r4(THRESHOLD_HELPER, 0);
+    if (read_u16(state + 14) != expected_restore)
+        return fail_value(
+            name, "restore", read_u16(state + 14), expected_restore);
+    if (read_u16(state + 18) != expected_band_start)
+        return fail_value(
+            name, "retard_band_start", read_u16(state + 18),
+            expected_band_start);
+    return verify_state_guards(name);
+}
+
+static int run_threshold_helper_cases(void)
+{
+    if (!run_threshold_helper_case(
+            "threshold-minimum", 160, 176, 172, 168))
+        return 0;
+    if (!run_threshold_helper_case(
+            "threshold-proportional", 400, 416, 408, 400))
+        return 0;
+    if (!run_threshold_helper_case(
+            "threshold-maximum", 600, 616, 604, 600))
+        return 0;
+    if (!run_threshold_helper_case(
+            "threshold-saturated", 0xfff8, 0xffff, 0xfff3, 0xfff8))
+        return 0;
+    return 1;
 }
 
 static int run_activation_cases(void)
@@ -622,7 +677,7 @@ static int run_activation_cases(void)
     reset_case(MODE_OBSERVE, 0x01);
     run_engine();
     if (!verify_active_state(
-            "activate-observe", MODE_OBSERVE, 300, 316, 308,
+            "activate-observe", MODE_OBSERVE, 300, 316, 310, 300,
             FLAGS_OBSERVE_ACTIVE))
         return 0;
     if (
@@ -635,10 +690,10 @@ static int run_activation_cases(void)
     reset_case(MODE_RPM_HOLD, 0x01);
     run_engine();
     if (!verify_active_state(
-            "activate-rpm", MODE_RPM_HOLD, 300, 316, 308,
+            "activate-rpm", MODE_RPM_HOLD, 300, 316, 310, 300,
             FLAGS_RPM_ACTIVE))
         return 0;
-    if (!verify_overlay("activate-rpm", 316, 308))
+    if (!verify_overlay("activate-rpm", 316, 310))
         return 0;
 
     count_case();
@@ -647,16 +702,16 @@ static int run_activation_cases(void)
     run_engine();
     if (!verify_active_state(
             "activate-saturated", MODE_RPM_HOLD, 0xfff8, 0xffff,
-            0xfff7, FLAGS_RPM_ACTIVE))
+            0xfff3, 0xfff8, FLAGS_RPM_ACTIVE))
         return 0;
-    if (!verify_overlay("activate-saturated", 0xffff, 0xfff7))
+    if (!verify_overlay("activate-saturated", 0xffff, 0xfff3))
         return 0;
 
     count_case();
     reset_case(MODE_RPM_HOLD_RETARD, 0x01);
     run_engine();
     if (!verify_active_state(
-            "activate-retard", MODE_RPM_HOLD_RETARD, 300, 316, 308,
+            "activate-retard", MODE_RPM_HOLD_RETARD, 300, 316, 310, 300,
             FLAGS_RETARD_ACTIVE))
         return 0;
 
@@ -886,7 +941,8 @@ static void set_ignition_state(uint8_t phase, uint8_t mode, uint8_t map)
     state[5] = mode;
     write_u16(state + 10, 300);
     write_u16(state + 12, 316);
-    write_u16(state + 14, 308);
+    write_u16(state + 14, 310);
+    write_u16(state + 18, 300);
 }
 
 static int run_ignition_cases(void)
@@ -999,6 +1055,7 @@ static int run_ignition_cases(void)
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
     write_u16(ram_pointer(RL_STATE) + 10, 316);
     write_u16(ram_pointer(RL_STATE) + 12, 316);
+    write_u16(ram_pointer(RL_STATE) + 18, 316);
     if (!invoke_ignition("ign-zero-width", 110, 316, 110))
         return 0;
 
@@ -1007,6 +1064,7 @@ static int run_ignition_cases(void)
     set_ignition_state(PHASE_ACTIVE, MODE_RPM_HOLD_RETARD, 0);
     write_u16(ram_pointer(RL_STATE) + 10, 0xfff8);
     write_u16(ram_pointer(RL_STATE) + 12, 0xffff);
+    write_u16(ram_pointer(RL_STATE) + 18, 0xfff8);
     if (!invoke_ignition("ign-saturated-band", 110, 0xfffc, 112))
         return 0;
 
@@ -1090,6 +1148,8 @@ int main(void)
         return 1;
     if (!run_config_cases())
         return 1;
+    if (!run_threshold_helper_cases())
+        return 1;
     if (!run_activation_cases())
         return 1;
     if (!run_active_cases())
@@ -1100,13 +1160,13 @@ int main(void)
         return 1;
     if (!run_wrapper_cases())
         return 1;
-    if (case_count != 109U)
-        return fail_value("summary", "case_count", case_count, 109);
+    if (case_count != 114U)
+        return fail_value("summary", "case_count", case_count, 114);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
-        "structural=11 gates=25 config=24 activation=5 active=9 "
-        "cooldown=5 ignition=24 wrappers=6 entries=6\n",
+        "structural=11 gates=26 config=24 threshold=4 activation=5 "
+        "active=9 cooldown=5 ignition=24 wrappers=6 entries=7\n",
         (unsigned long)case_count);
     return 0;
 }
