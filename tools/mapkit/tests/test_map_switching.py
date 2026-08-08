@@ -326,7 +326,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         )
         self.assertIn('name="Map 3 - Ignition Timing Trim Main"', xml)
         self.assertIn(
-            'category="Ignition Timing / Main"',
+            'category="Ignition Timing//Main"',
             xml,
         )
         self.assertIn('storageaddress="0xD2600"', xml)

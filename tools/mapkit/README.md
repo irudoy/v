@@ -96,6 +96,9 @@ Ghidra inspection tools documented in `../ghidra/README.md`.
 - A static axis cannot overlap a recovered graph axis.
 - ROM identity and every addressed stock value are validated before emission.
 - XML and XDF are rendered from the same in-memory model in one invocation.
+- Canonical category paths use ` / ` internally. RomRaider XML renders those
+  paths with its `//` hierarchy separator, while TunerPro retains flat category
+  names.
 - Map slots remain in their canonical functional categories and use the slot
   number in the editor name; no separate ROM identity is created.
 - Hidden or unresolved maps remain in the graph and ledger unless their source

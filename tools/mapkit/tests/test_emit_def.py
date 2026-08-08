@@ -3,10 +3,15 @@ import tomllib
 import unittest
 import xml.etree.ElementTree as ET
 
-from tools.mapkit import emit_def
+from tools.mapkit import emit_def, presentation
 
 
 ROOT = Path(__file__).resolve().parents[3]
+ROMRAIDER_DTC_CATEGORY = "Diagnostics//DTC"
+
+
+def romraider_category(category):
+    return category.replace(" / ", "//")
 
 COMMON_TABLES = {
     "Developer Immobilizer": "NATS / Immobilizer",
@@ -256,7 +261,7 @@ class EmitDefStaticAxesTest(unittest.TestCase):
             emit_def.table_xml(self.map, overrides, {}, "JK08A")
         )
         self.assertIn(
-            'category="Ignition Timing / Knock Control"',
+            'category="Ignition Timing//Knock Control"',
             xml,
         )
         self.assertNotIn("(traced)", xml)
@@ -311,6 +316,22 @@ class EmitDefStaticAxesTest(unittest.TestCase):
 
 
 class DefinitionPresentationPolicyTest(unittest.TestCase):
+    def test_romraider_category_uses_hierarchy_separator(self):
+        category = "Ignition Timing / Knock Control / Thresholds"
+        self.assertEqual(presentation.category_name(category), category)
+        self.assertEqual(
+            presentation.romraider_category_name(category),
+            "Ignition Timing//Knock Control//Thresholds",
+        )
+
+    def test_romraider_category_removes_confidence_suffixes(self):
+        self.assertEqual(
+            presentation.romraider_category_name(
+                "Ignition Timing / Main (traced) (candidate)"
+            ),
+            "Ignition Timing//Main",
+        )
+
     def test_definitions_remain_opt_out_without_a_presentation_policy(self):
         self.assertTrue(emit_def.presentation_default_emit({}))
         self.assertTrue(emit_def.table_emit_enabled({}, True))
@@ -465,7 +486,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         }
         actual = {
             name: table for name, table in switches.items()
-            if table.get("category") == "Diagnostics / DTC"
+            if table.get("category") == ROMRAIDER_DTC_CATEGORY
         }
         self.assertEqual(set(actual), set(expected))
         self.assertEqual(len(actual), 71)
@@ -492,7 +513,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             [
                 table.get("name") for table in rom.findall("./table")
                 if table.get("type") == "3D"
-                and table.get("category") == "Diagnostics / DTC"
+                and table.get("category") == ROMRAIDER_DTC_CATEGORY
             ],
             [],
         )
@@ -502,7 +523,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         tuner_items = {
             table.get("name"): table
             for table in rom.findall("./table")
-            if table.get("category") != "Diagnostics / DTC"
+            if table.get("category") != ROMRAIDER_DTC_CATEGORY
         }
         categories = {
             table.get("category") for table in rom.findall("./table")
@@ -517,10 +538,14 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertEqual(set(tuner_items), set(expected))
         for name, category in expected.items():
             with self.subTest(name=name):
-                self.assertEqual(tuner_items[name].get("category"), category)
+                self.assertEqual(
+                    tuner_items[name].get("category"),
+                    romraider_category(category),
+                )
         self.assertEqual(
             categories,
-            set(expected.values()) | {"Diagnostics / DTC"},
+            {romraider_category(value) for value in expected.values()}
+            | {ROMRAIDER_DTC_CATEGORY},
         )
         self.assertTrue(all(
             "(candidate)" not in category and "(traced)" not in category
@@ -650,7 +675,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                 self.assertEqual(table.get("name"), name)
                 self.assertEqual(
                     table.get("category"),
-                    "Idle Speed Control / Ignition Timing",
+                    "Idle Speed Control//Ignition Timing",
                 )
                 scale = table.find("./scaling")
                 self.assertEqual(

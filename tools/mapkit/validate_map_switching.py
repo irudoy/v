@@ -12,7 +12,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import map_switching_layout
-from tools.mapkit import emit_def, tunerpro
+from tools.mapkit import emit_def, presentation as presentation_policy, tunerpro
 
 
 def validate():
@@ -130,9 +130,9 @@ def validate():
 
     if 'name="Map 5 - Fuel Targets"' not in romraider_model:
         raise ValueError("RomRaider projection lacks Map 5 Fuel Targets")
-    if 'category="Fuelling / Fuel Targets"' not in romraider_model:
+    if 'category="Fuelling//Fuel Targets"' not in romraider_model:
         raise ValueError("RomRaider projection lacks the canonical fuel group")
-    if "Map Switching /" in romraider_model:
+    if "Map Switching//" in romraider_model:
         raise ValueError(
             "RomRaider projection creates a separate map-switching group"
         )
@@ -248,7 +248,11 @@ def validate():
             key = f"{address:08x}"
             name = projection.overrides["table"][key]["name"]
             category = projection.overrides["table"][key]["category"]
-            expected = (name, emit_def.hexa(address), category)
+            expected = (
+                name,
+                emit_def.hexa(address),
+                presentation_policy.romraider_category_name(category),
+            )
             if expected not in xml_tables:
                 raise ValueError(
                     f"common RomRaider definition lacks {name} at "

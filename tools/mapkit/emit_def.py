@@ -418,7 +418,7 @@ def switch_xml(entry, index):
         if key not in entry:
             continue
         value = (
-            presentation.category_name(entry[key])
+            presentation.romraider_category_name(entry[key])
             if key == "category"
             else entry[key]
         )
@@ -566,7 +566,7 @@ def bitwise_switch_xml(entry, index):
     attrs = ['type="BitwiseSwitch"']
     for key in BITWISE_SWITCH_FIELDS:
         value = (
-            presentation.category_name(entry[key])
+            presentation.romraider_category_name(entry[key])
             if key == "category"
             else entry[key]
         )
@@ -682,7 +682,7 @@ def table_axes_xml(m, o, ovr, axes):
 
 def table_xml(m, ovr, axes, rom):
     o = ovr["table"][m["addr"]]
-    cat = presentation.category_name(o["category"])
+    cat = presentation.romraider_category_name(o["category"])
     dims = "3D" if m["dims"] == 2 else "2D"
     # RomRaider shape: sizex is columns (r6 axis), while sizey is rows (r5 axis).
     # A one-dimensional map has one axis whose length is sizex.
@@ -742,7 +742,7 @@ def masked_view_xml(m, view, ovr, axes, rom):
     attrs = [
         f'type="{dims}"',
         f'name="{att(view["name"])}"',
-        f'category="{att(presentation.category_name(view["category"]))}"',
+        f'category="{att(presentation.romraider_category_name(view["category"]))}"',
         f'storagetype="{att(m["storagetype"])}"',
         f'storageaddress="{hexa(m["addr"])}"',
     ] + size + ['endian="big"', f'mask="{att(view["mask"])}"']
@@ -1069,7 +1069,7 @@ def main():
     for a in sorted(ovr.get("axisview", {}),
                     key=lambda a: (ovr["axisview"][a].get("order", 1 << 20), a)):
         o, x = ovr["axisview"][a], axes[a]
-        category = presentation.category_name(o["category"])
+        category = presentation.romraider_category_name(o["category"])
         body += [comment([f'{hexa(a)}  axis with {x["len"]} points {x["storagetype"]}, '
                           f'{x["kind"]}' + (f' [{x["scale_conf"]}]'
                                             if x["scale_conf"] else ""),
