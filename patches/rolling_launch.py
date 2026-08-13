@@ -26,6 +26,10 @@ BUTTON_CANCEL = 0x02
 BUTTON_SET = 0x08
 ASCD_ACTIVE_MASK = 0x80
 FUEL_CUT_ACTIVE_MASK = 0x04
+ASCD_FEEDBACK_MASK = 0x70
+ASCD_FEEDBACK_OFF = 0x00
+ASCD_FEEDBACK_CRUISE = 0x60
+ASCD_FEEDBACK_CRUISE_SET = 0x70
 
 
 class Phase(IntEnum):
@@ -344,6 +348,41 @@ def _active_flags(flags, state, inputs):
     if inputs.fuel_cut_status & FUEL_CUT_ACTIVE_MASK:
         result |= Flag.FUEL_CUT
     return result
+
+
+def apply_dashboard_feedback(
+    state,
+    serialized_status,
+    *,
+    map_feedback_active=False,
+):
+    """Apply the Rolling Launch ASCD field after map feedback.
+
+    A nonzero map-feedback state has strict priority. Normal IDLE and corrupt
+    Rolling Launch phases preserve the serializer result. A failed activation
+    attempt is visible only while CANCEL remains held.
+    """
+    if not 0 <= serialized_status <= 0xFF:
+        raise ValueError("serialized ASCD status must fit in one byte")
+    if map_feedback_active:
+        return serialized_status
+    try:
+        phase = Phase(state.phase)
+    except ValueError:
+        return serialized_status
+
+    if phase == Phase.ACTIVE:
+        value = ASCD_FEEDBACK_CRUISE_SET
+    elif phase == Phase.COOLDOWN:
+        value = ASCD_FEEDBACK_OFF
+    elif (
+        state.abort_reason != AbortReason.NONE
+        and state.flags & Flag.BUTTON_HELD
+    ):
+        value = ASCD_FEEDBACK_CRUISE
+    else:
+        return serialized_status
+    return (serialized_status & ~ASCD_FEEDBACK_MASK) | value
 
 
 def _state_is_structurally_valid(state):

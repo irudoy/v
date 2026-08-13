@@ -308,7 +308,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             1,
         )
 
-    def test_visual_feedback_overrides_only_the_status_mask(self):
+    def test_visual_feedback_replaces_complete_ascd_state(self):
         state = selector.queue_visual_feedback(0)
         state, status = selector.advance_visual_feedback(
             state,
@@ -316,7 +316,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             on_ticks=1,
             off_ticks=1,
         )
-        self.assertEqual(status, 0xFD)
+        self.assertEqual(status, 0xED)
         self.assertEqual(state.phase, selector.FeedbackPhase.OFF)
 
         state, status = selector.advance_visual_feedback(
@@ -325,7 +325,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             on_ticks=1,
             off_ticks=1,
         )
-        self.assertEqual(status, 0x9D)
+        self.assertEqual(status, 0x8D)
         self.assertEqual(state, selector.FeedbackState())
 
     def test_visual_feedback_counts_serializer_invocations(self):
@@ -360,12 +360,12 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             with self.subTest(state=state):
                 next_state, status = selector.advance_visual_feedback(
                     state,
-                    0xA5,
+                    0xB5,
                     on_ticks=1,
                     off_ticks=1,
                 )
                 self.assertEqual(next_state, selector.FeedbackState())
-                self.assertEqual(status, 0xA5)
+                self.assertEqual(status, 0xB5)
 
     def test_visual_feedback_rejects_invalid_phase_lengths(self):
         with self.assertRaisesRegex(ValueError, "phase lengths"):
@@ -379,15 +379,15 @@ class MapSwitchingSelectorTest(unittest.TestCase):
     def test_zero_feedback_config_is_fail_closed(self):
         state = selector.queue_visual_feedback(4)
         state, status = selector.advance_configured_visual_feedback(
-            state, 0xA5, on_ticks=0, off_ticks=0
+            state, 0xB5, on_ticks=0, off_ticks=0
         )
         self.assertEqual(state, selector.FeedbackState())
-        self.assertEqual(status, 0xA5)
+        self.assertEqual(status, 0xB5)
 
     def test_locked_feedback_config_uses_pilot_10x10_counts(self):
         state = selector.queue_visual_feedback(4)
         state, status = selector.advance_configured_visual_feedback(
-            state, 0xA5
+            state, 0xB5
         )
         self.assertEqual(status, 0xE5)
         self.assertEqual(
@@ -405,7 +405,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
         for _ in range(4):
             state, status = selector.advance_configured_visual_feedback(
                 state,
-                0xA5,
+                0xB5,
                 on_ticks=2,
                 off_ticks=2,
             )

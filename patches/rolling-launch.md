@@ -67,6 +67,27 @@ While Rolling Launch is `ACTIVE` or `COOLDOWN`, the selector arbiter bypasses
 the custom map selector and calls the displaced stock ASCD host. This prevents
 both runtimes from modifying shared state during one gesture.
 
+## Dashboard indication
+
+The dashboard arbiter calls the complete map-feedback wrapper first. A nonzero
+map-feedback state owns that serialized frame, including the final OFF phase;
+Rolling Launch does not replace an active map-selection pulse. When map
+feedback was idle before the call, Rolling Launch replaces the complete
+three-bit ASCD field in bits 4..6 of byte 5 in CAN frame `0x551`:
+
+| Runtime state | Dashboard field |
+| --- | --- |
+| normal `IDLE` | preserve the stock serializer result |
+| failed activation while CANCEL remains held | CRUISE on, SET off (`0x60`) |
+| `ACTIVE` | CRUISE on, SET on (`0x70`) |
+| `COOLDOWN` | CRUISE off, SET off (`0x00`) |
+| corrupt phase | preserve the stock serializer result |
+
+A failed attempt requires both a nonzero abort reason and the published
+`BUTTON_HELD` gate flag. Releasing CANCEL removes the failure indication on the
+next evaluated state. The indication is level-based and does not change the
+30/30 map-feedback pulse timing.
+
 ## Modes
 
 | Mode | Fuel limiter | Ignition |
@@ -164,17 +185,22 @@ JK08A source annotations and layouts.
 | `0x000D3F60..0x000D3F7F` | configuration record |
 | `0x000D40C0..0x000D413F` | bounded ignition controller |
 | `0x000D4140..0x000D41DF` | adaptive threshold helper |
+| `0x000D41E0..0x000D427F` | dashboard feedback arbiter |
 | `0xFFFF5D40..0xFFFF5D53` | runtime state |
 
-The composition replaces four declared call targets:
+The composition replaces five declared call targets:
 
 - periodic scheduler index 0 at `0x00021970`;
 - map-selector host at `0x000CE8DC`;
 - startup state initialization at `0x00027D28`;
-- primary ignition-command consumer at `0x0004E198`.
+- primary ignition-command consumer at `0x0004E198`;
+- dashboard feedback call at `0x000C3FA4`.
 
-Every wrapper calls its displaced stock function where required. Allocation and
-hook bytes are authoritative only in `rolling-launch-layout.toml`.
+The dashboard hook redirects the existing map-feedback wrapper call to the
+Rolling Launch arbiter. The arbiter invokes that wrapper before applying its
+own state. Every wrapper calls its displaced function where required.
+Allocation and hook bytes are authoritative only in
+`rolling-launch-layout.toml`.
 
 ## State and diagnostics
 
@@ -218,6 +244,7 @@ The implementation inventory is:
 | --- | --- |
 | `rolling-launch-layout.toml` | allocation, hooks, diagnostics, and defaults |
 | `rolling-launch-payloads.toml` | exact assembled payloads |
+| `rolling-launch-feedback.s` | dashboard feedback arbitration |
 | `rolling_launch.py` | independent fail-closed model |
 | `rolling_launch_layout.py` | structural validation |
 | `rolling_launch_assembly.py` | payload and source-byte validation |
@@ -250,6 +277,7 @@ A candidate is software-valid only when all applicable checks pass:
 Software verification does not authorize flashing. The first hardware gate is
 a stationary, controlled `rpm_hold` test with retard disabled. It must confirm
 activation, captured and cut RPM behavior, timeout, release, cooldown, rearm,
-map isolation, normal ASCD behavior, and subsequent map selection. Retard mode
-requires a separate controlled test after physical timing correlation and must
-remain within the verified interpolation band.
+map isolation, all dashboard indication states, map-pulse priority, normal ASCD
+behavior, and subsequent map selection. Retard mode requires a separate
+controlled test after physical timing correlation and must remain within the
+verified interpolation band.

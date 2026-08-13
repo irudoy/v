@@ -449,6 +449,7 @@ def validate_structure(layout):
         "selector_arbitration": (0xCE8DC, 0xD2108, 0xD3880),
         "startup_state_clear": (0x27D28, 0xD22A0, 0xD38A0),
         "primary_ignition_command": (0x4E198, 0x2A892, 0xD3EA0),
+        "feedback_arbitration": (0xC3FA4, 0xD35E0, 0xD41E0),
     }
     if set(layout.hook_by_key) != set(required_hooks):
         raise ValueError("Rolling Launch hook set differs")

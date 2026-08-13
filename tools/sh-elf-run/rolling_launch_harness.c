@@ -23,6 +23,7 @@
 #define FUEL_CUT_STATUS 0xffff2497U
 #define IGNITION_OUTPUT 0xffff2022U
 #define APC_MODE_SNAPSHOT 0xffff24c9U
+#define PAYLOAD 0xffff3ad5U
 
 #define PERIODIC_WRAPPER 0x000d3860U
 #define SELECTOR_ARBITER 0x000d3880U
@@ -31,6 +32,8 @@
 #define IGNITION_ADAPTER 0x000d3ea0U
 #define IGNITION_CONTROLLER 0x000d40c0U
 #define THRESHOLD_HELPER 0x000d4140U
+#define FEEDBACK_ARBITER 0x000d41e0U
+#define FEEDBACK_COUNTS 0x000d3848U
 
 #define FUEL_STOCK 0x0000934eU
 
@@ -67,6 +70,7 @@
 #define REASON_MODE_CHANGED 18U
 
 #define FLAG_TIMER_OK 0x0800U
+#define FLAG_BUTTON_HELD 0x0020U
 #define FLAGS_OBSERVE_ACTIVE 0x1bffU
 #define FLAGS_RPM_ACTIVE 0x5bffU
 #define FLAGS_RPM_FUEL_CUT_ACTIVE 0x7bffU
@@ -81,6 +85,10 @@ static const uint8_t valid_configuration[32] = {
     0x01, 0x10, 0x00, 0x64, 0x00, 0x01, 0x00, 0x10,
     0x04, 0x0c, 0x00, 0x04, 0x00, 0x03, 0x73, 0x73,
     0x73, 0x73, 0x73, 0x14, 0xad, 0xb3, 0xa5, 0x5a,
+};
+
+static const uint8_t payload_seed[8] = {
+    0x11, 0x22, 0x33, 0x44, 0x55, 0xb5, 0x77, 0x88,
 };
 
 static const uint32_t fuel_slots[5] = {
@@ -200,6 +208,7 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
     ram_pointer(FUEL_CUT_STATUS)[0] = 0;
     ram_pointer(IGNITION_OUTPUT)[0] = 0;
     ram_pointer(APC_MODE_SNAPSHOT)[0] = 0;
+    write_bytes(ram_pointer(PAYLOAD), payload_seed, sizeof(payload_seed));
     set_configuration(mode, enable_mask);
 }
 
@@ -1079,6 +1088,101 @@ static int run_ignition_cases(void)
     return 1;
 }
 
+struct feedback_case {
+    const char *name;
+    uint8_t phase;
+    uint8_t reason;
+    uint16_t flags;
+    uint8_t initial_map_feedback[4];
+    uint8_t expected_status;
+    uint8_t expected_map_feedback[4];
+};
+
+static const struct feedback_case feedback_cases[] = {
+    {
+        "feedback-idle-released", PHASE_IDLE, REASON_RPM_LOW, 0,
+        {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
+    },
+    {
+        "feedback-failed-held", PHASE_IDLE, REASON_RPM_LOW,
+        FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xe5, {0, 0, 0, 0},
+    },
+    {
+        "feedback-active", PHASE_ACTIVE, REASON_NONE,
+        FLAGS_OBSERVE_ACTIVE, {0, 0, 0, 0}, 0xf5, {0, 0, 0, 0},
+    },
+    {
+        "feedback-cooldown", PHASE_COOLDOWN, REASON_TIMEOUT, 0,
+        {0, 0, 0, 0}, 0x85, {0, 0, 0, 0},
+    },
+    {
+        "feedback-corrupt", 3, REASON_STATE_CORRUPT, 0,
+        {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
+    },
+    {
+        "feedback-map-on-priority", PHASE_ACTIVE, REASON_NONE,
+        FLAGS_OBSERVE_ACTIVE, {1, 1, 0, 0}, 0xe5, {1, 2, 0, 0},
+    },
+    {
+        "feedback-map-off-priority", PHASE_ACTIVE, REASON_NONE,
+        FLAGS_OBSERVE_ACTIVE, {1, 2, 0, 0}, 0x85, {0, 0, 0, 0},
+    },
+};
+
+static int run_feedback_cases(void)
+{
+    size_t case_index;
+
+    for (case_index = 0; case_index < ARRAY_SIZE(feedback_cases);
+         ++case_index) {
+        const struct feedback_case *test = &feedback_cases[case_index];
+        volatile uint8_t *selector;
+        volatile uint8_t *state;
+        size_t index;
+
+        count_case();
+        reset_case(MODE_OBSERVE, 0x01);
+        selector = ram_pointer(SELECTOR_STATE);
+        state = ram_pointer(RL_STATE);
+        state[0] = test->phase;
+        state[1] = test->reason;
+        write_u16(state + 2, test->flags);
+        write_bytes(
+            selector + 4, test->initial_map_feedback,
+            sizeof(test->initial_map_feedback));
+        rom_pointer(FEEDBACK_COUNTS)[0] = 1;
+        rom_pointer(FEEDBACK_COUNTS)[1] = 1;
+
+        (void)invoke_r4(FEEDBACK_ARBITER, 0);
+
+        for (index = 0; index < sizeof(payload_seed); ++index) {
+            uint8_t expected = index == 5
+                ? test->expected_status
+                : payload_seed[index];
+            if (ram_pointer(PAYLOAD)[index] != expected)
+                return fail_value(
+                    test->name, "payload",
+                    ram_pointer(PAYLOAD)[index], expected);
+        }
+        if (!fail_bytes(
+                test->name, "map_feedback", selector + 4,
+                test->expected_map_feedback,
+                sizeof(test->expected_map_feedback)))
+            return 0;
+        if (
+            state[0] != test->phase
+            || state[1] != test->reason
+            || read_u16(state + 2) != test->flags
+        )
+            return fail_value(
+                test->name, "rolling_state", read_u16(state + 2),
+                test->flags);
+        if (!verify_state_guards(test->name))
+            return 0;
+    }
+    return 1;
+}
+
 static int run_wrapper_cases(void)
 {
     volatile uint8_t *selector;
@@ -1160,13 +1264,16 @@ int main(void)
         return 1;
     if (!run_wrapper_cases())
         return 1;
-    if (case_count != 114U)
-        return fail_value("summary", "case_count", case_count, 114);
+    if (!run_feedback_cases())
+        return 1;
+    if (case_count != 121U)
+        return fail_value("summary", "case_count", case_count, 121);
 
     printf(
         "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
         "structural=11 gates=26 config=24 threshold=4 activation=5 "
-        "active=9 cooldown=5 ignition=24 wrappers=6 entries=7\n",
+        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
+        "entries=8\n",
         (unsigned long)case_count);
     return 0;
 }

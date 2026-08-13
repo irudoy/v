@@ -85,6 +85,39 @@ class RollingLaunchTest(unittest.TestCase):
         self.assertFalse(flags & rl.Flag.BUTTON_HELD)
         self.assertFalse(flags & rl.Flag.SPEED_OK)
 
+    def test_dashboard_feedback_reports_attempt_active_and_cooldown(self):
+        failed = rl.RuntimeState(
+            abort_reason=rl.AbortReason.RPM_LOW,
+            flags=rl.Flag.BUTTON_HELD,
+        )
+        active = rl.RuntimeState(phase=rl.Phase.ACTIVE)
+        cooldown = rl.RuntimeState(phase=rl.Phase.COOLDOWN)
+
+        self.assertEqual(rl.apply_dashboard_feedback(failed, 0xB5), 0xE5)
+        self.assertEqual(rl.apply_dashboard_feedback(active, 0xB5), 0xF5)
+        self.assertEqual(
+            rl.apply_dashboard_feedback(cooldown, 0xB5), 0x85
+        )
+
+    def test_dashboard_feedback_preserves_idle_corrupt_and_map_pulse(self):
+        normal = rl.RuntimeState(
+            abort_reason=rl.AbortReason.BUTTON_INVALID,
+        )
+        corrupt = dataclasses.replace(normal, phase=9)
+        active = rl.RuntimeState(phase=rl.Phase.ACTIVE)
+
+        self.assertEqual(rl.apply_dashboard_feedback(normal, 0xB5), 0xB5)
+        self.assertEqual(rl.apply_dashboard_feedback(corrupt, 0xB5), 0xB5)
+        self.assertEqual(
+            rl.apply_dashboard_feedback(
+                active, 0xE5, map_feedback_active=True
+            ),
+            0xE5,
+        )
+
+        with self.assertRaisesRegex(ValueError, "serialized ASCD status"):
+            rl.apply_dashboard_feedback(active, 0x100)
+
     def test_observe_mode_transitions_without_limiter_writes(self):
         calibration = dataclasses.replace(
             self.calibration, mode=rl.Mode.OBSERVE

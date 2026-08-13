@@ -86,16 +86,16 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "8636734cd0a56f94609690ac684a748a43c2056336ea458becaad1f7ddb05c30";
+            "7eb703d38eef2ab51cd4a2b2b28a7a80e24d475debc1b8ddf69b6ccd7e96b222";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
     };
 
-    // mov.l @(0xc5380,pc),r1; mov #-0x5b,r0; mov.b r0,@r1; rts; nop
+    // mov.l @(0xc5380,pc),r1; mov #-0x4b,r0; mov.b r0,@r1; rts; nop
     // followed by alignment padding and the 0xFFFF3ADA literal.
     static final byte[] SERIALIZER_STUB = {
-        (byte) 0xD1, 0x03, (byte) 0xE0, (byte) 0xA5,
+        (byte) 0xD1, 0x03, (byte) 0xE0, (byte) 0xB5,
         0x21, 0x00, 0x00, 0x0B, 0x00, 0x09,
         0x00, 0x09, 0x00, 0x09,
         (byte) 0xFF, (byte) 0xFF, 0x3A, (byte) 0xDA,
@@ -182,7 +182,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36"),
         new UnitSpec(
                 "cruise_feedback_engine", 7, 0x000D3760L, 0x100,
-                "925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f66f"),
+                "0e0501f3d91e18a17c6a9bf7c4ebd187809c094fbf701f9d2864fd4792f9b32e"),
         new UnitSpec(
                 "idle_ignition_adapter", 8, 0x000D4000L, 0x40,
                 "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4f35"),
@@ -977,7 +977,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     void runFeedbackCases() throws Exception {
         runFeedbackSequence(
                 "disabled", 0, state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "two-pulses-2x2", 0x0202,
                 state(0, 0, 0, 0, 2, 1, 0, 0),
@@ -993,27 +993,27 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "idle", 0x0202, state(0, 0, 0, 0, 0, 0, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "corrupt-pulses", 0x0202,
                 state(0, 0, 0, 0, 6, 1, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "corrupt-phase", 0x0202,
                 state(0, 0, 0, 0, 1, 3, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "corrupt-idle", 0x0202,
                 state(0, 0, 0, 0, 0, 0, 1, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "missing-off-count", 0x0200,
                 state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "missing-on-count", 0x0002,
                 state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
     }
 
     void runFeedbackSequence(

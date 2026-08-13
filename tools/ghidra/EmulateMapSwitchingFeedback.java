@@ -1,8 +1,9 @@
 // EmulateMapSwitchingFeedback.java - execute the locked CAN 0x551 feedback
 // wrapper and pulse engine with a deterministic stock-serializer stub.
 //
-// The stub writes 0xA5 to payload byte 5 before every engine invocation. This
-// proves call order and lets the test verify that only bits 5-6 are overridden.
+// The stub writes 0xB5 to payload byte 5 before every engine invocation. This
+// proves call order and lets the test verify that all ASCD state bits 4-6 are
+// replaced while the remaining payload bits are preserved.
 // The locked engine contains the pilot 10/10 frame counts. Individual cases
 // modify only these two documented configuration bytes in emulator memory.
 //
@@ -41,12 +42,12 @@ public class EmulateMapSwitchingFeedback extends GhidraScript {
     static final String WRAPPER_SHA =
             "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36";
     static final String ENGINE_SHA =
-            "925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f66f";
+            "0e0501f3d91e18a17c6a9bf7c4ebd187809c094fbf701f9d2864fd4792f9b32e";
 
-    // mov.l @(0xc5380,pc),r1; mov #-0x5b,r0; mov.b r0,@r1; rts; nop
+    // mov.l @(0xc5380,pc),r1; mov #-0x4b,r0; mov.b r0,@r1; rts; nop
     // followed by alignment padding and the 0xFFFF3ADA literal.
     static final byte[] SERIALIZER_STUB = {
-        (byte) 0xD1, 0x03, (byte) 0xE0, (byte) 0xA5,
+        (byte) 0xD1, 0x03, (byte) 0xE0, (byte) 0xB5,
         0x21, 0x00, 0x00, 0x0B, 0x00, 0x09,
         0x00, 0x09, 0x00, 0x09,
         (byte) 0xFF, (byte) 0xFF, 0x3A, (byte) 0xDA,
@@ -84,7 +85,7 @@ public class EmulateMapSwitchingFeedback extends GhidraScript {
 
         runSequence(
                 "disabled", 0, state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "two-pulses-2x2", 0x0202,
                 state(0, 0, 0, 0, 2, 1, 0, 0),
@@ -100,27 +101,27 @@ public class EmulateMapSwitchingFeedback extends GhidraScript {
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "idle", 0x0202, state(0, 0, 0, 0, 0, 0, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "corrupt-pulses", 0x0202,
                 state(0, 0, 0, 0, 6, 1, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "corrupt-phase", 0x0202,
                 state(0, 0, 0, 0, 1, 3, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "corrupt-idle", 0x0202,
                 state(0, 0, 0, 0, 0, 0, 1, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "missing-off-count", 0x0200,
                 state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "missing-on-count", 0x0002,
                 state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xA5}, state(0, 0, 0, 0, 0, 0, 0, 0));
+                new int[]{0xB5}, state(0, 0, 0, 0, 0, 0, 0, 0));
 
         println(String.format(
                 "VQ_FEEDBACK_EMU status=PASS language=%s cases=%d"

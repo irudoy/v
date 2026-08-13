@@ -130,21 +130,27 @@ unchanged.
 ## Visual feedback
 
 The feedback wrapper calls the stock CAN serializer first. While a valid pulse
-sequence is active, it changes only bits 5 and 6 of byte 5 in CAN frame `0x551`:
+sequence is active, it replaces the complete three-bit ASCD state in bits 4..6
+of byte 5 in CAN frame `0x551`:
 
 | State | Masked value |
 | --- | --- |
-| lamp ON | `0x60` |
-| lamp OFF | `0x00` |
+| CRUISE on, SET off | `6` (`0x60`) |
+| CRUISE off, SET off | `0` (`0x00`) |
 
-All other payload bits remain the stock serializer result. The pulse count is
-the selected one-based map number. Selector input is blocked until the queue is
-empty. Invalid feedback state clears the queue and preserves the stock frame.
-A zero/zero phase-count configuration disables feedback; a partially zero
-configuration is invalid.
+All bits outside this field remain the stock serializer result. Replacing all
+three state bits prevents the serializer's low ASCD bit from adding SET during
+an active CRUISE-only pulse. The pulse count is the selected one-based map
+number. Selector input is blocked until the queue is empty. Invalid feedback
+state clears the queue and preserves the stock frame. A zero/zero phase-count
+configuration disables feedback; a partially zero configuration is invalid.
 
 The current layout default is 30 ON invocations and 30 OFF invocations. Wall
 time depends on the target serializer period and must be measured on hardware.
+In the combined runtime, a Rolling Launch dashboard arbiter runs after this
+wrapper only when the pre-call feedback state is idle. A queued map pulse has
+strict priority over Rolling Launch indication for the complete serialized
+frame.
 
 ## Diagnostic mirror
 

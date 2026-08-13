@@ -551,9 +551,9 @@ def advance_visual_feedback(
     """Advance feedback once per stock CAN 0x551 serializer invocation.
 
     Returns ``(next_state, outgoing_status_byte)``. The exact serializer runs
-    first; active feedback replaces only its byte-5 low two-bit state. Phase
-    durations are caller-supplied counts of frame serializations because their
-    wall-clock period remains a bench measurement.
+    first; active feedback replaces its complete byte-5 three-bit ASCD state.
+    Phase durations are caller-supplied counts of frame serializations because
+    their wall-clock period remains a bench measurement.
     """
     if not 1 <= on_ticks <= 0xFF or not 1 <= off_ticks <= 0xFF:
         raise ValueError("feedback phase lengths must be 1..255 ticks")

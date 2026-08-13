@@ -27,6 +27,7 @@ SOURCE_LABELS = {
     "ignition_adapter": "rolling_launch_ignition_adapter",
     "ignition_controller": "rolling_launch_ignition_controller",
     "threshold_helper": "rolling_launch_threshold_helper",
+    "feedback_arbiter": "rolling_launch_feedback_arbiter",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr"}
 DISPLACEMENT_LOAD = re.compile(
@@ -294,6 +295,56 @@ def _validate_threshold_helper_abi(parsed):
         raise ValueError("threshold helper clobbers an undeclared register")
 
 
+def _validate_feedback_arbiter_abi(parsed):
+    texts = _texts(parsed)
+    prefix = [
+        "sts.l pr,@-r15",
+        "mov.l @(rl_feedback_selector_state,pc),r1",
+        "add 0x4,r1",
+        "mov.l @r1,r0",
+        "mov.l r0,@-r15",
+        "mov.l @(rl_feedback_base_wrapper,pc),r0",
+        "jsr @r0",
+        "nop",
+        "mov.l @r15+,r0",
+        "tst r0,r0",
+        "bf rl_feedback_return",
+    ]
+    if texts[:len(prefix)] != prefix:
+        raise ValueError("feedback arbiter map-priority prefix differs")
+    if texts[-3:] != ["lds.l @r15+,pr", "rts", "nop"]:
+        raise ValueError("feedback arbiter does not restore PR")
+    if texts.count("jsr @r0") != 1:
+        raise ValueError("feedback arbiter base-wrapper call count differs")
+    required = {
+        "mov #0x0,r2",
+        "mov #0x60,r2",
+        "mov #0x70,r2",
+        "tst 0x20,r0",
+        "and 0x8f,r0",
+        "or r2,r0",
+        "mov.b r0,@r1",
+    }
+    if not required <= set(texts):
+        raise ValueError("feedback arbiter ASCD state contract differs")
+    if texts.count("mov.b r0,@r1") != 1:
+        raise ValueError("feedback arbiter status store count differs")
+    labels = {
+        "rl_feedback_active",
+        "rl_feedback_idle",
+        "rl_feedback_apply",
+        "rl_feedback_return",
+    }
+    if not labels <= set(parsed.labels):
+        raise ValueError("feedback arbiter label set is incomplete")
+    registers = set()
+    for statement in _instructions(parsed):
+        registers.update(common.REGISTER_RE.findall(statement.text.lower()))
+    allowed = {"r0", "r1", "r2", "r15", "pr"}
+    if not registers <= allowed:
+        raise ValueError("feedback arbiter clobbers an undeclared register")
+
+
 def _expected_long_literals():
     return {
         "wrappers": {
@@ -349,6 +400,12 @@ def _expected_long_literals():
             "rl_threshold_state_address": 0xFFFF5D40,
             "rl_threshold_unsigned_divide": 0x00021CE0,
         },
+        "feedback_arbiter": {
+            "rl_feedback_base_wrapper": 0x000D35E0,
+            "rl_feedback_selector_state": 0xFFFF5D00,
+            "rl_feedback_state": 0xFFFF5D40,
+            "rl_feedback_status_byte": 0xFFFF3ADA,
+        },
     }
 
 
@@ -393,6 +450,8 @@ def validate_assembly_sources(layout=None):
             _validate_ignition_controller_abi(parsed)
         elif unit.key == "threshold_helper":
             _validate_threshold_helper_abi(parsed)
+        elif unit.key == "feedback_arbiter":
+            _validate_feedback_arbiter_abi(parsed)
         else:
             raise ValueError(f"{unit.key}: no ABI validator is registered")
     return parsed_by_unit

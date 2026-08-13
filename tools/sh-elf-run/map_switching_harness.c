@@ -228,12 +228,12 @@ static const struct selector_case selector_cases[] = {
     },
 };
 
-static const uint8_t disabled_statuses[] = {0xa5};
+static const uint8_t disabled_statuses[] = {0xb5};
 static const uint8_t two_pulse_statuses[] = {
     0xe5, 0xe5, 0x85, 0x85, 0xe5, 0xe5, 0x85, 0x85,
 };
 static const uint8_t one_pulse_statuses[] = {0xe5, 0x85};
-static const uint8_t idle_statuses[] = {0xa5};
+static const uint8_t idle_statuses[] = {0xb5};
 
 static const struct feedback_case feedback_cases[] = {
     {
@@ -284,7 +284,7 @@ static const struct feedback_case feedback_cases[] = {
 };
 
 static const uint8_t payload_seed[] = {
-    0x11, 0x22, 0x33, 0x44, 0x55, 0xa5, 0x77, 0x88,
+    0x11, 0x22, 0x33, 0x44, 0x55, 0xb5, 0x77, 0x88,
 };
 
 static volatile uint8_t *ram_pointer(uint32_t original)

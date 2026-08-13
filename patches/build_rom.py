@@ -96,6 +96,19 @@ class RollingEndpointSignature:
     key: str
     configuration_schema_version: int
     unit_sha256: tuple[tuple[str, str], ...]
+    hook_values: tuple[tuple[str, int], ...]
+
+
+PRE_FEEDBACK_ROLLING_HOOK_VALUES = (
+    ("periodic_scheduler_index_0", 0x000D3860),
+    ("selector_arbitration", 0x000D3880),
+    ("startup_state_clear", 0x000D38A0),
+    ("primary_ignition_command", 0x000D3EA0),
+    ("feedback_arbitration", 0x000D35E0),
+)
+ERASED_FEEDBACK_ARBITER_SHA256 = (
+    "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539"
+)
 
 
 # Exact code fingerprints for registered Rolling Launch endpoints that the
@@ -126,7 +139,9 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "threshold_helper",
                 "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
             ),
+            ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
         ),
+        hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
     RollingEndpointSignature(
         key="schema-2-speed-required",
@@ -152,7 +167,9 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "threshold_helper",
                 "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
             ),
+            ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
         ),
+        hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
     RollingEndpointSignature(
         key="schema-2-zero-speed",
@@ -178,11 +195,48 @@ HISTORICAL_ROLLING_ENDPOINTS = (
                 "threshold_helper",
                 "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539",
             ),
+            ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
         ),
+        hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
+    ),
+    RollingEndpointSignature(
+        key="schema-3-pre-feedback-indicators",
+        configuration_schema_version=3,
+        unit_sha256=(
+            (
+                "wrappers",
+                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
+            ),
+            (
+                "engine",
+                "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729",
+            ),
+            (
+                "ignition_adapter",
+                "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b",
+            ),
+            (
+                "ignition_controller",
+                "ebb3cbeb3464ac3f53c6e8738a9b4f1fe729965fa7e24bccc0a5d790038b57f7",
+            ),
+            (
+                "threshold_helper",
+                "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7",
+            ),
+            ("feedback_arbiter", ERASED_FEEDBACK_ARBITER_SHA256),
+        ),
+        hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
 )
 
 HISTORICAL_FEEDBACK_FRAME_COUNTS = ((10, 10), (15, 15))
+HISTORICAL_FEEDBACK_ENGINE_SHA256 = frozenset(
+    {
+        "925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f66f",
+        "22c9c42f228cd827610a7e5ef848942e219e0461cbd2c9ba362ca8817130435f",
+        "22c69075abb5f0c48207eb3c14a8c538f0fc17cf14f79951d55799186fc1a448",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -384,6 +438,13 @@ def _expected_pointer_table(layout, family):
 
 
 def _historical_configuration_is_valid(configuration, schema_version):
+    if schema_version == rolling_launch.CONFIG_SCHEMA_VERSION:
+        try:
+            return rolling_launch.Calibration.from_bytes(
+                configuration
+            ).is_valid()
+        except (TypeError, ValueError):
+            return False
     if schema_version not in (1, 2):
         raise BuildError(
             "internal historical Rolling Launch schema is unsupported"
@@ -485,11 +546,13 @@ def _require_coherent_rolling_endpoint(
         if current_units and current_configuration:
             return "current"
 
+    if dids_current:
         actual_hashes = {
             key: sha256(value) for key, value in unit_bytes.items()
         }
         for endpoint in HISTORICAL_ROLLING_ENDPOINTS:
             expected_hashes = dict(endpoint.unit_sha256)
+            expected_hooks = dict(endpoint.hook_values)
             if (
                 len(expected_hashes) != len(endpoint.unit_sha256)
                 or set(expected_hashes) != expected_units
@@ -501,6 +564,13 @@ def _require_coherent_rolling_endpoint(
                     )
                     for digest in expected_hashes.values()
                 )
+                or len(expected_hooks) != len(endpoint.hook_values)
+                or set(expected_hooks) != set(layout.hook_by_key)
+                or any(
+                    expected_hooks[hook.key]
+                    not in (hook.stock, hook.replacement)
+                    for hook in layout.hooks
+                )
             ):
                 raise BuildError(
                     f"internal historical Rolling Launch endpoint "
@@ -508,6 +578,7 @@ def _require_coherent_rolling_endpoint(
                 )
             if (
                 actual_hashes == expected_hashes
+                and hook_values == expected_hooks
                 and _historical_configuration_is_valid(
                     configuration, endpoint.configuration_schema_version
                 )
@@ -544,7 +615,10 @@ def _require_complete_map_endpoint(
                     (on_frames, off_frames)
                 )
                 historical.append(bytes(candidate))
-            if actual in historical:
+            if (
+                actual in historical
+                or sha256(actual) in HISTORICAL_FEEDBACK_ENGINE_SHA256
+            ):
                 continue
         if actual != expected:
             raise BuildError(

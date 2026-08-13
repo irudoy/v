@@ -37,8 +37,10 @@ The gate performs these checks:
    feedback, and Rolling Launch behavior case with distinct fixture values that
    expose wrong slots or addresses.
 5. Apply only the documented simulator transformations after exact byte
-   identity succeeds: high-RAM data-literal relocation and explicit return
-   stubs for unchanged stock callees outside the implementation under test.
+   identity succeeds: high-RAM data-literal relocation and explicit stubs for
+   unchanged stock callees outside the implementation under test. The Rolling
+   Launch fixture uses a deterministic stock-serializer stub to seed the CAN
+   payload before executing both feedback layers.
 6. Execute the exact unsafe delayed-branch incident words at their ROM addresses
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.

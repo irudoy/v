@@ -28,15 +28,18 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "834a0cee0d2661d37ede1c99947e138e9a8c5feb31572fe34e575e0c984d805d"
+    "d15c8c3c3e0a9232218612f2a914e328ec9f63041d50e6a8b763262fd00f554c"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 1883
-EXPECTED_COMPOSITION_WRITE_BYTES = 2164
-EXPECTED_INSTRUCTION_COUNT = 837
-EXPECTED_CODE_ENTRY_COUNT = 7
+EXPECTED_COMPOSITION_CHANGED_BYTES = 1976
+EXPECTED_COMPOSITION_WRITE_BYTES = 2328
+EXPECTED_INSTRUCTION_COUNT = 878
+EXPECTED_CODE_ENTRY_COUNT = 8
 EXPECTED_DIAGNOSTIC_COUNT = 9
-EXPECTED_DYNAMIC_CASES = 114
+EXPECTED_DYNAMIC_CASES = 121
 RETURN_STUB = bytes.fromhex("000b0009")
+FEEDBACK_SERIALIZER_STUB = bytes.fromhex(
+    "d103e0b52100000b00090009000901003ada"
+)
 
 
 class VerificationError(RuntimeError):
@@ -106,7 +109,7 @@ def require_composition(layout, blobs):
 
 
 def install_stock_return_stubs(fixture, base_layout, rolling_layout):
-    """Stub only external stock callees reached by Rolling Launch tests."""
+    """Stub external stock callees reached by Rolling Launch tests."""
     base_hooks = {hook.key: hook for hook in base_layout.hooks}
     rolling_hooks = rolling_layout.hook_by_key
     targets = {
@@ -122,7 +125,15 @@ def install_stock_return_stubs(fixture, base_layout, rolling_layout):
         )
     for address in targets:
         fixture[address : address + len(RETURN_STUB)] = RETURN_STUB
-    return len(targets)
+    serializer = base_hooks["cruise_feedback_serializer"].stock
+    if serializer != 0x000C5372:
+        raise VerificationError(
+            f"feedback serializer target differs: {serializer:#x}"
+        )
+    fixture[
+        serializer : serializer + len(FEEDBACK_SERIALIZER_STUB)
+    ] = FEEDBACK_SERIALIZER_STUB
+    return len(targets) + 1
 
 
 def build_dynamic_fixture(
@@ -224,9 +235,9 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=180,
     )
     marker = (
-        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=114 "
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=121 "
         "structural=11 gates=26 config=24 threshold=4 activation=5 "
-        "active=9 cooldown=5 ignition=24 wrappers=6 entries=7"
+        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 entries=8"
     )
     if marker not in result.stdout:
         raise VerificationError(

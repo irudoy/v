@@ -171,6 +171,60 @@ class BuildRomTest(unittest.TestCase):
         self.assertGreater(result.preserved_map_copy_bytes, 0)
         self.assertTrue(checksums.verify(result.data).valid)
 
+    def test_previous_feedback_state_mask_endpoint_can_be_migrated(self):
+        historical = bytearray(self.base_result.data)
+        engine = self.map_layout.assembly_unit_by_key[
+            "cruise_feedback_engine"
+        ]
+        status_mask_immediate = engine.span.start + 0x41
+        self.assertEqual(historical[status_mask_immediate], 0x8F)
+        historical[status_mask_immediate] = 0x9F
+        historical = checksums.recalculate(historical)
+        self.assertIn(
+            build_rom.sha256(
+                historical[engine.span.start : engine.span.end]
+            ),
+            build_rom.HISTORICAL_FEEDBACK_ENGINE_SHA256,
+        )
+
+        result = build_rom.build_image(
+            historical, source_name="previous feedback state mask"
+        )
+
+        self.assertEqual(
+            result.input_state, "complete-runtime-migration"
+        )
+        self.assertEqual(result.data, self.base_result.data)
+
+    def test_pre_feedback_indicator_endpoint_can_be_migrated(self):
+        historical = bytearray(self.base_result.data)
+        layout = build_rom.rolling_launch_layout.load_layout()
+        unit = layout.assembly_unit_by_key["feedback_arbiter"]
+        historical[unit.span.start : unit.span.end] = (
+            bytes([0xFF]) * unit.span.size
+        )
+        hook = layout.hook_by_key["feedback_arbitration"]
+        self.assertEqual(
+            int.from_bytes(
+                historical[hook.address : hook.address + hook.width],
+                layout.byte_order,
+            ),
+            hook.replacement,
+        )
+        historical[hook.address : hook.address + hook.width] = (
+            hook.stock.to_bytes(hook.width, layout.byte_order)
+        )
+        historical = checksums.recalculate(historical)
+
+        result = build_rom.build_image(
+            historical, source_name="pre-feedback-indicator runtime"
+        )
+
+        self.assertEqual(
+            result.input_state, "complete-runtime-migration"
+        )
+        self.assertEqual(result.data, self.base_result.data)
+
     def test_registered_historical_endpoint_can_be_migrated(self):
         historical = bytearray(self.base_result.data)
         historical[0xD3900] ^= 0x01
@@ -195,6 +249,18 @@ class BuildRomTest(unittest.TestCase):
                     ),
                 )
                 for unit in layout.assembly_units
+            ),
+            hook_values=tuple(
+                (
+                    hook.key,
+                    int.from_bytes(
+                        historical[
+                            hook.address : hook.address + hook.width
+                        ],
+                        layout.byte_order,
+                    ),
+                )
+                for hook in layout.hooks
             ),
         )
         with mock.patch.object(

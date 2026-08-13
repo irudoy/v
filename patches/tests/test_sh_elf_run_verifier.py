@@ -194,7 +194,7 @@ mov #0x5,r1
             result.sha256,
             ROLLING_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 837)
+        self.assertEqual(result.instruction_count, 878)
         self.assertEqual(result.diagnostic_count, 9)
 
     def test_rolling_stock_stubs_come_from_both_manifests(self):
@@ -206,13 +206,19 @@ mov #0x5,r1
             fixture, base_layout, rolling_layout
         )
 
-        self.assertEqual(count, 4)
+        self.assertEqual(count, 5)
         for address in (0xD09D8, 0x2C648, 0xA9554, 0x2A892):
             with self.subTest(address=address):
                 self.assertEqual(
                     fixture[address : address + 4],
                     ROLLING_VERIFIER.RETURN_STUB,
                 )
+        self.assertEqual(
+            fixture[0xC5372 : 0xC5372 + len(
+                ROLLING_VERIFIER.FEEDBACK_SERIALIZER_STUB
+            )],
+            ROLLING_VERIFIER.FEEDBACK_SERIALIZER_STUB,
+        )
 
     def test_rolling_dynamic_transform_preserves_new_instructions(self):
         base_layout = layout_model.load_layout()
@@ -235,7 +241,7 @@ mov #0x5,r1
 
         self.assertGreater(relocated, 0)
         self.assertGreater(differentiated, 0)
-        self.assertEqual(stubs, 4)
+        self.assertEqual(stubs, 5)
         for unit in rolling_layout.assembly_units:
             for statement in parsed[unit.key].statements:
                 if statement.kind != "instruction":
@@ -256,7 +262,8 @@ mov #0x5,r1
         self.assertIn("verify_rolling_launch.verify", source)
         self.assertIn("rolling_launch_cases", source)
         self.assertIn("cases=%lu", harness)
-        self.assertIn("entries=7", harness)
+        self.assertIn("feedback=7", harness)
+        self.assertIn("entries=8", harness)
 
 
 if __name__ == "__main__":
