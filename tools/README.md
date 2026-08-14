@@ -25,6 +25,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | SH-2E execution | Independently assemble exact patch bytes and execute firmware behavior fixtures | [`sh-elf-run/README.md`](sh-elf-run/README.md) |
 | Logs | Convert CONSULT-style diagnostic CSV recordings to MegaLogViewer MLG | [`logs/README.md`](logs/README.md) |
 | Pin tracer | Record reviewed ECM terminal-to-board-to-MCU continuity observations | [`pin-tracer/README.md`](pin-tracer/README.md) |
+| ROM atlas | Generate an interactive flash layout from reviewed evidence and patch manifests | [`romviz/README.md`](romviz/README.md) |
 | Vendor catalog | Rebuild the machine-readable vendor vocabulary used by map analysis | [`../refs/vendor/README.md`](../refs/vendor/README.md) |
 | ROM composition | Build and verify complete JK08A runtime images | [`../patches/rom-builder.md`](../patches/rom-builder.md) |
 
@@ -42,6 +43,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `diagnostics/*.py` | Source-preserving diagnostic import and read-only query layer |
 | `sh-elf-run/run.sh` | Repository-contained instruction execution gate |
 | `sh-elf-run/run-npkern.sh` | Optional exact-revision external npkern gate |
+| `romviz/build.py` | Self-contained interactive ROM address-space atlas generator |
 
 The full Python contract is configured in `../pyproject.toml` and runs with
 `uv run pytest -q`. JavaScript tests belong to the pin tracer and are documented

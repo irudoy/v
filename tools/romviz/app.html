@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>ROM atlas</title>
+  <style>
+/*__ROMVIZ_CSS__*/
+  </style>
+</head>
+<body>
+  <main id="romviz" class="app" aria-labelledby="app-title">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">VQ HR ECU Tuning</p>
+        <h1 id="app-title">ROM atlas</h1>
+        <p id="rom-identity" class="identity"></p>
+      </div>
+      <dl id="header-stats" class="header-stats"></dl>
+    </header>
+
+    <section class="toolbar" aria-label="Atlas controls">
+      <label id="rom-picker-label" class="field field-rom" hidden>
+        <span>ROM</span>
+        <select id="rom-picker"></select>
+      </label>
+      <label class="field field-search">
+        <span>Search objects or addresses</span>
+        <input id="search" type="search" autocomplete="off" placeholder="label, role, 0xD38E4">
+      </label>
+      <label class="field field-address">
+        <span>Go to address</span>
+        <input id="address" inputmode="text" spellcheck="false" placeholder="0x000000">
+      </label>
+      <div class="button-group" aria-label="Zoom controls">
+        <button id="zoom-in" type="button" aria-label="Zoom in">+</button>
+        <button id="zoom-out" type="button" aria-label="Zoom out">-</button>
+        <button id="full-view" type="button">Full ROM</button>
+      </div>
+    </section>
+
+    <section class="layer-controls" aria-label="Visible layers">
+      <div id="layer-filters" class="layer-filters"></div>
+      <label class="semantic-toggle">
+        <input id="semantic-only" type="checkbox">
+        <span>Reviewed semantics only</span>
+      </label>
+    </section>
+
+    <section class="overview-section" aria-labelledby="overview-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="overview-title">Whole flash</h2>
+          <p>Byte entropy with patch allocations and the active viewport</p>
+        </div>
+        <output id="search-status" aria-live="polite"></output>
+      </div>
+      <canvas id="overview" height="58" aria-label="Whole flash entropy overview"></canvas>
+    </section>
+
+    <section class="workspace">
+      <div class="map-panel">
+        <div class="section-heading map-heading">
+          <div>
+            <h2>Address space</h2>
+            <p id="viewport-label"></p>
+          </div>
+          <p class="gesture-help">Wheel or pinch to zoom, drag or two-finger swipe to pan, click an object to inspect</p>
+        </div>
+        <svg id="address-map" role="img" aria-labelledby="address-map-title address-map-desc">
+          <title id="address-map-title">ROM object address map</title>
+          <desc id="address-map-desc">Interactive lanes place firmware structure, calibrations, diagnostics, patches, and checksums on one flash address axis.</desc>
+        </svg>
+      </div>
+
+      <aside id="details" class="details" aria-live="polite">
+        <div id="details-empty" class="details-empty">
+          <h2>Object details</h2>
+          <p>Select a mark or search for an address.</p>
+        </div>
+        <div id="details-content" hidden>
+          <div class="details-heading">
+            <div>
+              <p id="detail-kind" class="eyebrow"></p>
+              <h2 id="detail-label"></h2>
+            </div>
+            <button id="close-details" type="button" aria-label="Clear selection">Clear</button>
+          </div>
+          <p id="detail-range" class="detail-range"></p>
+          <div id="detail-badges" class="detail-badges"></div>
+          <dl id="detail-meta" class="detail-meta"></dl>
+          <p id="detail-description" class="detail-copy"></p>
+          <p id="detail-note" class="detail-copy secondary"></p>
+          <div id="detail-related" class="detail-related"></div>
+          <p id="detail-source" class="detail-source"></p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="warnings" class="warnings" hidden aria-labelledby="warnings-title">
+      <h2 id="warnings-title">Source warnings</h2>
+      <ul id="warning-list"></ul>
+    </section>
+
+    <footer>
+      <p>Exact starts and declared ranges come from repository evidence. Ghidra function spans use exported body byte counts; unknown extents are drawn as point-sized marks.</p>
+    </footer>
+
+    <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+  </main>
+  <script id="romviz-data" type="application/json">__ROMVIZ_DATA__</script>
+  <script>
+/*__ROMVIZ_JS__*/
+  </script>
+</body>
+</html>

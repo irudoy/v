@@ -22,6 +22,7 @@ testpaths = [
     "tools/memgraph/tests",
     "tools/diagnostics/tests",
     "tools/logs/tests",
+    "tools/romviz/tests",
 ]
 python_files = ["test_*.py"]
 addopts = ["--import-mode=importlib"]
