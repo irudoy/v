@@ -46,6 +46,8 @@ See `../tools/map-analysis-pipeline.md` and
 - `JK08A.limiters.md` models the main, stationary, and request limiter paths.
 - `JK08A.ignition-output.md` models the final timing and APC output boundary.
 - `JK08A.diagnostics.md` models diagnostic publication and monitor boundaries.
+- `JK08A.can.md` models the exact HCAN1 mailbox table, stock transmit pipeline,
+  payload boundaries, and safe extension mailbox.
 
 These documents explain complete relationships and safety boundaries. Addressed
 claims and evidence remain in the CSV layer rather than being copied into prose.

@@ -1,0 +1,38 @@
+# JK08A runtime ownership and growth reserves
+
+`jk08a-runtime-reservations.toml` is the cross-runtime ownership ledger for
+Map Switching, Rolling Launch, and custom CAN telemetry. The corresponding
+validator is `jk08a_runtime_reservations.py`; the unified ROM builder loads it
+before composing an image.
+
+Each runtime layout remains authoritative for its active code, hooks, tables,
+configuration, and RAM records. The shared ledger adds two guarantees that an
+individual layout cannot provide:
+
+- active RAM records from different runtimes do not overlap;
+- every runtime has an exclusive, erased ROM and RAM reserve for future schema
+  revisions.
+
+## Current allocation
+
+| Runtime | Active RAM | Future RAM | Future ROM |
+| --- | ---: | ---: | ---: |
+| Map Switching | `0xFFFF5D00..0xFFFF5D3C` | `0xFFFF6000..0xFFFF6100` | `0x000D6800..0x000D7000` |
+| Rolling Launch | `0xFFFF5D40..0xFFFF5D54` | `0xFFFF6100..0xFFFF6200` | `0x000D6000..0x000D6800` |
+| CAN telemetry | `0xFFFF5E00..0xFFFF5F00` | `0xFFFF5F00..0xFFFF6000` | `0x000D4E10..0x000D6000` |
+
+The active RAM total is 336 bytes. The explicit future budgets provide 768
+RAM bytes and 8,688 ROM bytes. Unassigned gaps remain unowned and are not
+silently available to a patch.
+
+The original Map Switching `claimed_rom` interval is a compatibility envelope
+used by its historical layout checks. It includes gaps and overlaps later
+layer addresses, so it is not an exclusive ownership claim. Cross-runtime
+validation uses the exact composition write sets instead. Every future ROM
+reserve must be inside an audited free region, outside all exact write sets and
+checksum fields, and erased in the complete current composition.
+
+Changing a reserve requires updating the ledger and the owning runtime layout
+when that layout exposes the same boundary. Consuming reserved bytes requires
+a new schema version, a narrowed active write-set update, and the applicable
+static and executable verification gates.

@@ -12,9 +12,9 @@ engines.
 - The headless analysis path exports firmware structure from Ghidra, rebuilds a
   queryable Memgraph index from tracked inputs, and projects reviewed facts into
   RomRaider XML, TunerPro XDF, and a map ledger.
-- The unified JK08A builder composes the current map-switching and Rolling
-  Launch runtimes, preserves declared calibration state, closes checksum
-  domains, and emits a machine-readable build manifest.
+- The unified JK08A builder composes the current Map Switching, Rolling Launch,
+  and custom CAN telemetry runtimes, preserves declared calibration state,
+  closes checksum domains, and emits a machine-readable build manifest.
 - Instruction-changing patches have a repository-contained GNU SH-2E
   executable gate. Software verification does not replace bench, readback, or
   engine validation.
@@ -54,6 +54,9 @@ engines.
 - Production ROM composition: [`patches/rom-builder.md`](patches/rom-builder.md)
 - Map-switching runtime: [`patches/map-switching-selector.md`](patches/map-switching-selector.md)
 - Rolling Launch runtime: [`patches/rolling-launch.md`](patches/rolling-launch.md)
+- Custom CAN telemetry design: [`patches/can-telemetry.md`](patches/can-telemetry.md)
+- Runtime ownership and reserves: [`patches/runtime-reservations.md`](patches/runtime-reservations.md)
+- Exact JK08A HCAN1 model: [`defs/JK08A.can.md`](defs/JK08A.can.md)
 - Analysis and definition pipeline: [`tools/map-analysis-pipeline.md`](tools/map-analysis-pipeline.md)
 - Tool navigation and local deployment: [`tools/README.md`](tools/README.md)
 - Memgraph ingestion: [`tools/memgraph/README.md`](tools/memgraph/README.md)

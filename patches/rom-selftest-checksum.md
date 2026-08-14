@@ -62,8 +62,8 @@ end of SUM16 A, so steps 3 and 4 are independent.
 `jk08a_checksums.py` verifies stored values against independently calculated
 values, reports every mismatched field, and recalculates in the order above.
 Its output is verified again before return. The unified builder permits final
-byte changes only inside the union of the map-switching and Rolling Launch
-composition ranges and these six checksum fields.
+byte changes only inside the union of the Map Switching, Rolling Launch, and
+custom CAN telemetry composition ranges and these six checksum fields.
 
 ## RomRaider
 

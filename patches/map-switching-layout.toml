@@ -15,6 +15,9 @@ free_rom_start = 0x000D2108
 free_rom_end = 0x000E1C2A
 claimed_rom_start = 0x000D2108
 claimed_rom_end = 0x000D40C0
+# This legacy compatibility envelope contains gaps and later-layer addresses.
+# Exclusive active writes and future budgets are validated through the exact
+# composer write set and jk08a-runtime-reservations.toml.
 
 [ram]
 reservation_start = 0xFFFF5D00

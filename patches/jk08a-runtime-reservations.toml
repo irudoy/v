@@ -1,0 +1,65 @@
+# Cross-runtime ownership and future-growth budget for exact JK08A.
+#
+# Active ROM writes remain authoritative in each runtime composition model.
+# This ledger assigns exclusive erased reserves and active RAM ownership across
+# all installed runtimes. The map-switching claimed ROM envelope is a legacy
+# compatibility boundary, not exclusive ownership.
+
+schema_version = 1
+rom = "JK08A"
+ram_proven_free_start = 0xFFFF5D00
+ram_proven_free_end = 0xFFFF7000
+
+[[active_ram]]
+owner = "map_switching"
+start = 0xFFFF5D00
+end = 0xFFFF5D3C
+purpose = "Selector state, fuel-cut shadows, and throttle shadows."
+
+[[active_ram]]
+owner = "rolling_launch"
+start = 0xFFFF5D40
+end = 0xFFFF5D54
+purpose = "Rolling Launch state record."
+
+[[active_ram]]
+owner = "can_telemetry"
+start = 0xFFFF5E00
+end = 0xFFFF5F00
+purpose = "Queue state, two snapshot banks, event data, and active slack."
+
+[[future_rom]]
+owner = "can_telemetry"
+start = 0x000D4E10
+end = 0x000D6000
+purpose = "CAN telemetry executable and table expansion."
+
+[[future_rom]]
+owner = "rolling_launch"
+start = 0x000D6000
+end = 0x000D6800
+purpose = "Rolling Launch executable and configuration expansion."
+
+[[future_rom]]
+owner = "map_switching"
+start = 0x000D6800
+end = 0x000D7000
+purpose = "Map Switching executable and table expansion."
+
+[[future_ram]]
+owner = "can_telemetry"
+start = 0xFFFF5F00
+end = 0xFFFF6000
+purpose = "CAN telemetry queue or signal expansion."
+
+[[future_ram]]
+owner = "map_switching"
+start = 0xFFFF6000
+end = 0xFFFF6100
+purpose = "Map Switching state or shadow expansion."
+
+[[future_ram]]
+owner = "rolling_launch"
+start = 0xFFFF6100
+end = 0xFFFF6200
+purpose = "Rolling Launch state or controller expansion."

@@ -1,0 +1,541 @@
+# Authoritative wire schema for the exact JK08A custom CAN telemetry runtime.
+#
+# The generator expands every multi-byte field to byte-source pointers used by
+# the SH-2E capture loop and emits the matching host decoder schema. Runtime
+# arbitrary-address interpretation is intentionally unsupported.
+
+schema_version = 1
+rom = "JK08A"
+protocol_version = 1
+byte_order = "big"
+mailbox = 26
+candidate_can_id = 0x6F0
+candidate_tick_divisor = 1
+base_tick_numerator = 204800
+pphi_candidate_hz = 20000000
+table_address = 0x000D4C00
+table_end = 0x000D4E00
+configuration_address = 0x000D4E00
+state_address = 0xFFFF5E00
+
+[[profile]]
+name = "core32"
+id = 1
+page_count = 5
+
+[[profile]]
+name = "wide54"
+id = 2
+page_count = 8
+
+[[field]]
+name = "tick16"
+page = 0
+offset = 1
+width = 2
+source = 0xFFFF5E08
+profiles = ["core32", "wide54"]
+kind = "telemetry_state"
+signed = false
+scale = "base scheduler ticks"
+
+[[field]]
+name = "rpm_raw"
+page = 0
+offset = 3
+width = 2
+source = 0xFFFF11F4
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "x * 12.5 RPM"
+
+[[field]]
+name = "final_timing_raw"
+page = 0
+offset = 5
+width = 1
+source = 0xFFFF11D4
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = true
+scale = "raw software coordinate"
+
+[[field]]
+name = "apc_command_raw"
+page = 0
+offset = 6
+width = 1
+source = 0xFFFF2022
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw software command"
+
+[[field]]
+name = "fuel_inhibit_mask"
+page = 0
+offset = 7
+width = 1
+source = 0xFFFF22E0
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "bit mask"
+
+[[field]]
+name = "maf_b1_raw"
+page = 1
+offset = 1
+width = 2
+source = 0xFFFF101C
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 200 V"
+
+[[field]]
+name = "maf_b2_raw"
+page = 1
+offset = 3
+width = 2
+source = 0xFFFF101E
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 200 V"
+
+[[field]]
+name = "maf_total_raw"
+page = 1
+offset = 5
+width = 2
+source = 0xFFFF3852
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 100 g/s"
+
+[[field]]
+name = "af_b1_raw"
+page = 1
+offset = 7
+width = 1
+source = 0xFFFF22C4
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "bfs_raw"
+page = 2
+offset = 1
+width = 2
+source = 0xFFFF1026
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 2048 ms"
+
+[[field]]
+name = "af_b2_raw"
+page = 2
+offset = 3
+width = 1
+source = 0xFFFF22C5
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "injection_0_raw"
+page = 2
+offset = 4
+width = 2
+source = 0xFFFF23C8
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 100 ms"
+
+[[field]]
+name = "injection_1_raw"
+page = 2
+offset = 6
+width = 2
+source = 0xFFFF23CA
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 100 ms"
+
+[[field]]
+name = "injection_2_raw"
+page = 3
+offset = 1
+width = 2
+source = 0xFFFF23CC
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 100 ms"
+
+[[field]]
+name = "injection_3_raw"
+page = 3
+offset = 3
+width = 2
+source = 0xFFFF23CE
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 100 ms"
+
+[[field]]
+name = "injection_4_raw"
+page = 3
+offset = 5
+width = 2
+source = 0xFFFF23D0
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 100 ms"
+
+[[field]]
+name = "telemetry_status"
+page = 3
+offset = 7
+width = 1
+source = 0xFFFF5E07
+profiles = ["core32", "wide54"]
+kind = "telemetry_state"
+signed = false
+scale = "bit mask"
+
+[[field]]
+name = "injection_5_raw"
+page = 4
+offset = 1
+width = 2
+source = 0xFFFF23D2
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw / 100 ms"
+
+[[field]]
+name = "knock_timing_state_raw"
+page = 4
+offset = 3
+width = 2
+source = 0xFFFF121A
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = true
+scale = "raw software state"
+
+[[field]]
+name = "knock_surface_state"
+page = 4
+offset = 5
+width = 1
+source = 0xFFFF2466
+profiles = ["core32", "wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "bitfield"
+
+[[field]]
+name = "knock_count_latched"
+page = 4
+offset = 6
+width = 1
+source = 0xFFFF5E0C
+profiles = ["core32", "wide54"]
+kind = "telemetry_state"
+signed = false
+scale = "saturating event count"
+
+[[field]]
+name = "knock_channel_mask_latched"
+page = 4
+offset = 7
+width = 1
+source = 0xFFFF5E0D
+profiles = ["core32", "wide54"]
+kind = "telemetry_state"
+signed = false
+scale = "six-position bit mask"
+
+[[field]]
+name = "app1_raw"
+page = 5
+offset = 1
+width = 2
+source = 0xFFFF269E
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "app2_raw"
+page = 5
+offset = 3
+width = 2
+source = 0xFFFF26A2
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "tps_b1_raw"
+page = 5
+offset = 5
+width = 2
+source = 0xFFFF2756
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "absolute_throttle_raw"
+page = 5
+offset = 7
+width = 1
+source = 0xFFFF1075
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "tps_b2_raw"
+page = 6
+offset = 1
+width = 2
+source = 0xFFFF285C
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "intake_cvtc_actual_b1_raw"
+page = 6
+offset = 3
+width = 1
+source = 0xFFFF2442
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw * 0.5 - 64 degCA"
+
+[[field]]
+name = "intake_cvtc_actual_b2_raw"
+page = 6
+offset = 4
+width = 1
+source = 0xFFFF2443
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw * 0.5 - 64 degCA"
+
+[[field]]
+name = "intake_cvtc_target_b1_raw"
+page = 6
+offset = 5
+width = 1
+source = 0xFFFF2326
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "intake_cvtc_target_b2_raw"
+page = 6
+offset = 6
+width = 1
+source = 0xFFFF2327
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[field]]
+name = "calculated_load_raw"
+page = 6
+offset = 7
+width = 1
+source = 0xFFFF413E
+profiles = ["wide54"]
+kind = "ecu_ram"
+signed = false
+scale = "raw * 100 / 255 percent"
+
+[[context]]
+tag = 0
+name = "temperatures_af"
+
+[[context.field]]
+name = "coolant_raw"
+width = 1
+source = 0xFFFF1079
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw - 50 degC"
+
+[[context.field]]
+name = "iat_raw"
+width = 1
+source = 0xFFFF2837
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw - 50 degC"
+
+[[context.field]]
+name = "fuel_temperature_did_source_raw"
+width = 1
+source = 0xFFFF1074
+kind = "ecu_ram"
+signed = false
+scale = "diagnostic-evidence candidate"
+
+[[context.field]]
+name = "oil_temperature_did_source_raw"
+width = 1
+source = 0xFFFF2876
+kind = "ecu_ram"
+signed = false
+scale = "diagnostic-evidence candidate"
+
+[[context.field]]
+name = "af_state_factor_raw"
+width = 2
+source = 0xFFFF22E8
+kind = "ecu_ram"
+signed = false
+scale = "Q14 factor"
+
+[[context]]
+tag = 1
+name = "short_fuel_trim_cvtc_duty"
+
+[[context.field]]
+name = "stft_b1_raw"
+width = 2
+source = 0xFFFF22DC
+kind = "ecu_ram"
+signed = true
+scale = "Q8.8 percent"
+
+[[context.field]]
+name = "stft_b2_raw"
+width = 2
+source = 0xFFFF22DE
+kind = "ecu_ram"
+signed = true
+scale = "Q8.8 percent"
+
+[[context.field]]
+name = "intake_cvtc_duty_b1_raw"
+width = 1
+source = 0xFFFF2440
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw * 100 / 256 percent"
+
+[[context.field]]
+name = "intake_cvtc_duty_b2_raw"
+width = 1
+source = 0xFFFF2441
+kind = "ecu_ram"
+signed = false
+scale = "candidate raw * 100 / 256 percent"
+
+[[context]]
+tag = 2
+name = "long_fuel_trim_timing"
+
+[[context.field]]
+name = "ltft_b1_raw"
+width = 2
+source = 0xFFFF2302
+kind = "ecu_ram"
+signed = true
+scale = "Q8.8 percent"
+
+[[context.field]]
+name = "ltft_b2_raw"
+width = 2
+source = 0xFFFF2304
+kind = "ecu_ram"
+signed = true
+scale = "Q8.8 percent"
+
+[[context.field]]
+name = "timing_state_2023_raw"
+width = 1
+source = 0xFFFF2023
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[context.field]]
+name = "timing_state_564c_raw"
+width = 1
+source = 0xFFFF564C
+kind = "ecu_ram"
+signed = false
+scale = "raw"
+
+[[context]]
+tag = 3
+name = "health"
+
+[[context.field]]
+name = "protocol_version"
+width = 1
+source = 0x000D4E02
+kind = "rom_configuration"
+signed = false
+scale = "identity"
+
+[[context.field]]
+name = "profile_id"
+width = 1
+source = 0x000D4E04
+kind = "rom_configuration"
+signed = false
+scale = "identity"
+
+[[context.field]]
+name = "profile_crc16"
+width = 2
+source = 0x000D4E0A
+kind = "rom_configuration"
+signed = false
+scale = "CRC-16/CCITT-FALSE"
+
+[[context.field]]
+name = "snapshot_overrun_count"
+width = 1
+source = 0xFFFF5E0E
+kind = "telemetry_state"
+signed = false
+scale = "saturating count"
+
+[[context.field]]
+name = "tx_abort_count"
+width = 1
+source = 0xFFFF5E0F
+kind = "telemetry_state"
+signed = false
+scale = "saturating count"

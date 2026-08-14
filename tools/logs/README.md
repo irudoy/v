@@ -1,4 +1,36 @@
-# Diagnostic CSV to MLG conversion
+# Logging tools
+
+## Custom CAN telemetry decoder
+
+`can_telemetry.py` strictly reconstructs the fixed JK08A custom telemetry
+groups described by `../../patches/can-telemetry-schema.json`. It accepts the
+compact `ID#DATA` candump form, filters one configured standard ID, requires
+page 0 followed by strictly increasing page IDs, verifies the five-bit header
+sequence against `tick16`, discards incomplete or preempted groups, and unwraps
+`tick16` modulo 65536.
+
+Decode a capture to one JSON object per complete snapshot:
+
+```bash
+python3 tools/logs/can_telemetry.py \
+  --profile core32 \
+  --can-id 0x6F0 \
+  capture.log > snapshots.jsonl
+```
+
+`core32` is bound to the selected generated schema out of band. `wide54`
+starts with `schema_verified=false` and enables engineering-unit transforms
+only after context tag 3 reports the exact protocol version, profile ID, and
+profile CRC16. A later health mismatch disables conversion and increments the
+reported mismatch counter. Raw source values remain present in every accepted
+snapshot; transforms are emitted only for scales explicitly declared by the
+schema.
+
+The final stderr marker reports complete, incomplete, malformed, and
+schema-mismatch counts. The decoder never fills a missing page, combines
+different sequence groups, or interpolates a dropped snapshot.
+
+## Diagnostic CSV to MLG
 
 `csv_to_mlg.py` converts semicolon-delimited, long-form diagnostic logs to
 MLVLG v2 files accepted by MegaLogViewer and UltraLog. The expected source

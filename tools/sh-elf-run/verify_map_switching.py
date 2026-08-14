@@ -507,6 +507,16 @@ def verify(verbose=False):
         raise VerificationError(
             f"Rolling Launch executable gate failed: {error}"
         ) from error
+    try:
+        import verify_can_telemetry
+
+        telemetry_result = verify_can_telemetry.verify(
+            verbose=verbose, check_toolchain=False
+        )
+    except Exception as error:
+        raise VerificationError(
+            f"CAN telemetry executable gate failed: {error}"
+        ) from error
     print(
         "VQ_SH_ELF_VERIFY status=PASS"
         f" simulator={EXPECTED_SIMULATOR_VERSION}"
@@ -522,6 +532,9 @@ def verify(verbose=False):
         f" rolling_launch_instructions="
         f"{rolling_result['audit'].instructions}"
         f" rolling_launch_cases={rolling_result['dynamic_cases']}"
+        f" can_telemetry_instructions="
+        f"{telemetry_result['audit'].instructions}"
+        f" can_telemetry_cases={telemetry_result['dynamic_cases']}"
         f" ram_literals_relocated={relocated}"
         f" differentiated_bytes={differentiated}"
         f" stock_stubs={stubs}"

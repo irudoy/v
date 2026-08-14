@@ -229,14 +229,21 @@ not a prerequisite for runtime correctness.
 ## Composition
 
 `build_rom.py` is the production entry point. It starts from an exact compatible
-JK08A base or a complete migratable runtime, installs the current map-switching
-composition, applies Rolling Launch with the selected profile, recalculates all
-checksum domains, and verifies the final closed write set.
+JK08A base or a complete migratable runtime, installs the current Map Switching
+composition, applies Rolling Launch with the selected profile, adds the CAN
+telemetry layer, recalculates all checksum domains, and verifies the final
+closed write set.
 
 `apply_rolling_launch.py` is an isolated diagnostic stage. The composition and
 assembly modules operate in memory and do not expose a flashable output path.
 They require the exact base composition and bind every byte to the declared
 layout and payload manifests.
+
+Rolling Launch currently uses `0xFFFF5D40..0xFFFF5D54` for active state. The
+cross-runtime ledger assigns `0x000D6000..0x000D6800` and
+`0xFFFF6100..0xFFFF6200` exclusively to future Rolling Launch revisions. These
+reserves are erased and outside every exact current write set. See
+`runtime-reservations.md`.
 
 The implementation inventory is:
 

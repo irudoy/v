@@ -30,25 +30,32 @@ uv run python patches/build_rom.py INPUT.bin --verify-only
 The JK08A handler performs these operations in one invocation:
 
 1. Validate image size, immutable identity, and all six stored checksum values.
-2. Classify the image as a compatible unpatched base or a complete runtime that
-   can be migrated. The Rolling Launch layer must be wholly absent, match the
-   exact current payload and configuration schema, or match one registered
-   historical unit fingerprint and its schema contract. Mixed hooks or DIDs,
-   unknown payload bytes, partial pointer tables, invalid configuration records,
-   and unknown protected-code changes are rejected.
-3. Normalize only the combined builder-owned map-switching, Rolling Launch, and
-   checksum ranges back to exact stock bytes.
-4. Apply the current map-switching composition directly from
+2. Validate the shared active-RAM and future ROM/RAM reservation ledger.
+3. Classify the image as a compatible unpatched base or a complete runtime that
+   can be migrated. The CAN telemetry layer must be wholly absent or match the
+   exact current payload, configuration, mailbox record, hooks, and erased
+   future reserve. After removing a validated telemetry layer in memory, the
+   Rolling Launch layer must be wholly absent, match the exact current payload
+   and configuration schema, or match one registered historical unit
+   fingerprint and its schema contract. Mixed hooks or DIDs, unknown payload
+   bytes, partial pointer tables, invalid configuration records, occupied
+   reserves, and unknown protected-code changes are rejected.
+4. Normalize only the combined builder-owned Map Switching, Rolling Launch,
+   CAN telemetry, and checksum ranges back to exact stock bytes.
+5. Apply the current Map Switching composition directly from
    `map-switching-payloads.toml`.
-5. Restore every Map 2 through Map 5 calibration byte when the input already
+6. Restore every Map 2 through Map 5 calibration byte when the input already
    contains a complete runtime. An unpatched base initializes these slots from
    its Map 1 values.
-6. Apply the current Rolling Launch composition directly from
+7. Apply the current Rolling Launch composition directly from
    `rolling-launch-payloads.toml` and the selected local profile.
-7. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
+8. Apply the current CAN telemetry composition directly from
+   `can-telemetry-payloads.toml`. The built-in profile installs the runtime in
+   fail-closed disabled mode and retains the stock-inactive mailbox-26 record.
+9. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
    order, then verify all stored values again.
-8. Require every final difference from the input to be inside the union of the
-   two component write sets and the checksum fields.
+10. Require every final difference from the input to be inside the union of the
+   three component write sets and the checksum fields.
 
 The builder preserves calibration and configuration outside its declared
 ranges, including the Developer Immobilizer bit edited through `defs/JK08A.xml`
@@ -84,6 +91,12 @@ hysteresis_ratio_tenths = 20
 run_timeout_ticks = 300
 rearm_ticks = 100
 target_commands = [115, 114, 113, 112, 111]
+
+[can_telemetry]
+enabled = false
+can_id = 0x6F0
+profile = "core32"
+tick_divisor = 1
 ```
 
 Run it with:
@@ -107,6 +120,26 @@ configured minimum, at least twice the effective hysteresis, and no wider than
 the RPM offset.
 Concrete profiles remain local and are not versioned.
 
+## CAN telemetry profile
+
+The optional `[can_telemetry]` table is strict: all four fields are required
+when the table is present. Omitting it selects the same disabled default shown
+above. `profile` is `core32` or `wide54`; `can_id` is a nonzero standard 11-bit
+identifier; and `tick_divisor` is in `1..255` relative to the natural
+`FUN_00020DFE` snapshot cadence.
+
+`enabled = true` changes mailbox-26 record `0x000097BE` from stock-inactive
+type 5 to interrupt-enabled transmit type 4 and encodes the selected ID as
+`STDID << 5`. A profile can enable transmission only after a passive
+whole-vehicle capture proves the ID unused and a measured bus-load review
+selects the page profile and divisor. The builder validates the exact mailbox
+record against the configuration and rejects a partial or mismatched endpoint.
+
+The generated runtime configuration is 16 bytes and binds enable state,
+profile ID, page count, divisor, CAN ID, profile CRC16, and an integrity word.
+The firmware validates these fields before sampling. The current active and
+future allocations are listed in `runtime-reservations.md`.
+
 ## Output contract
 
 One successful file build creates four non-overwriting artifacts:
@@ -118,8 +151,8 @@ One successful file build creates four non-overwriting artifacts:
 
 An existing byte-identical set is accepted as idempotent. A conflicting file
 causes the invocation to fail before any missing artifact is created. The JSON
-manifest binds the input, normalized stage, map-switching stage, profile digest
-and configuration, final output, checksum values, write-set counts, and exact
-instruction audit counts. Every new image is marked `hardware_status=UNTESTED`;
-software verification does not make it eligible for flashing without the
-project hardware gates.
+manifest binds the input, normalized stage, Map Switching stage, Rolling
+Launch stage, both runtime configurations, CAN mailbox record, final output,
+checksum values, write-set counts, and exact instruction audit counts. Every
+new image is marked `hardware_status=UNTESTED`; software verification does not
+make it eligible for flashing without the project hardware gates.

@@ -26,27 +26,32 @@ built from the current Dockerfile.
 
 The gate performs these checks:
 
-1. Assemble every current map-switching and Rolling Launch source unit with GNU
-   `sh-elf-as --isa=sh2e`.
+1. Assemble every current Map Switching, Rolling Launch, and CAN telemetry
+   source unit with GNU `sh-elf-as --isa=sh2e`.
 2. Reconstruct each fill-aware ROM envelope and require byte identity with the
    corresponding SHA-locked payload in the tracked manifest.
-3. Independently compose the current non-flashable one-MiB map-switching and
-   Rolling Launch fixtures and enforce their declared write sets, entries,
-   hooks, pointers, and instruction audit.
-4. Execute every declared map-switching selector, adapter, limiter, startup,
-   feedback, and Rolling Launch behavior case with distinct fixture values that
-   expose wrong slots or addresses.
+3. Independently compose the current non-flashable one-MiB Map Switching,
+   Rolling Launch, and CAN telemetry fixtures and enforce their declared write
+   sets, entries, hooks, pointers, mailbox record, and instruction audits.
+4. Execute every declared Map Switching selector, adapter, limiter, startup,
+   feedback, Rolling Launch behavior, telemetry capture, bank publication,
+   page request, ACK, abort, preemption, corruption, and ISR path with distinct
+   fixture values that expose wrong slots or addresses.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
    unchanged stock callees outside the implementation under test. The Rolling
    Launch fixture uses a deterministic stock-serializer stub to seed the CAN
-   payload before executing both feedback layers.
+   payload before executing both feedback layers. The telemetry fixture also
+   installs a simulator-only TRAPA vector after byte identity is proven. TRAPA
+   creates the architectural exception stack, then the exact combined SLE1 ISR
+   returns through its unchanged `RTE` instruction.
 6. Execute the exact unsafe delayed-branch incident words at their ROM addresses
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
 
 A successful run prints `VQ_SH_ELF_MAP_SWITCHING`,
-`VQ_SH_ELF_ROLLING_LAUNCH`, `VQ_SH_ELF_ROLLING_VERIFY`, and
+`VQ_SH_ELF_ROLLING_LAUNCH`, `VQ_SH_ELF_ROLLING_VERIFY`,
+`VQ_SH_ELF_CAN_TELEMETRY`, `VQ_SH_ELF_CAN_TELEMETRY_VERIFY`, and
 `VQ_SH_ELF_VERIFY` markers with `status=PASS`. The markers calculate current
 instruction, case, branch, relocation, and composition values at runtime; this
 document does not duplicate them.
@@ -88,6 +93,12 @@ GNU `sh-elf-run` cannot map the SH7058S `0xFFFFxxxx` RAM window. The gate first
 proves the original literal bytes, then relocates only those validated data
 literals to test RAM. Instruction bytes and control-flow addresses remain
 unchanged.
+
+HCAN status registers are write-one-to-clear in silicon but ordinary memory in
+the simulator. Simultaneous mailbox-26/mailbox-28 ISR cases place the two flags
+in independent TXACK1 and ABACK1 words, so both mailbox paths execute in one
+TRAPA exception without modifying instructions under test. Individual ACK and
+abort cases execute each write-one-to-clear instruction and boundary path.
 
 The simulator does not model HCAN-II, the SH7058/SH7059 flash controller, or the
 external watchdog. The npkern marker therefore remains

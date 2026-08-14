@@ -43,6 +43,104 @@ Exact pointer identity does not establish an ECM terminal, peripheral channel,
 or physical unit. Those remain separate claims and are not promoted by name
 similarity.
 
+## Dynamic local-identifier streaming
+
+The exact JK08A diagnostic dispatcher routes SID `0xAC` to `FUN_00033810`
+and SID `0x21` to `FUN_000328C0`. Together they implement a stock, volatile
+byte-gather stream. This mechanism changes diagnostic-session RAM only; it
+does not patch executable code or flash and it is not a periodic broadcast-CAN
+publisher.
+
+The following byte strings are application payloads. KWP format, target and
+source headers, length encoding, and checksum remain transport framing and are
+not included:
+
+```text
+Define:   AC 81 (83 A3 A2 A1 A0)+
+Success:  EC 81
+
+Read:     21 81 TXM NRS
+Response: 61 81 DATA...
+```
+
+For descriptor `0x83`, `A3` is the most-significant address byte and `A0` is
+the least-significant byte. `FUN_0002F2D4` reconstructs the address in
+big-endian order. Each descriptor adds one 32-bit source pointer and exactly
+one response byte. A two-byte word therefore needs two descriptors, normally
+for `address` and `address + 1`; a four-byte value needs four. Response bytes
+retain descriptor order.
+
+A fresh `0x81` definition resets the output count. Before each descriptor the
+parser requires the current count to be at most `0x3D`, so a definition made
+only from `0x83` descriptors can contain 62 output bytes. Compact descriptor
+`0x01` expands a predefined local ID to four consecutive pointers. Descriptor
+`0x02` selects the predefined `0x11` through `0x16` table families and expands
+the selected entry to its declared width. Those compact forms can add multiple
+output bytes at one parser step; arbitrary-address logger profiles should use
+`0x83` and enforce the 62-byte limit themselves.
+
+The resulting pointer array begins at `0xFFFF9820`, its byte count is stored at
+`0xFFFF9920`, and the active dynamic LID is stored at `0xFFFF3EE2`. Successful
+definition returns only `EC 81`; the ECU does not echo the pointer schema, so
+the client must retain the exact ordered profile. The definition is runtime
+state and must be recreated after diagnostic-session or ECU reset.
+
+### Read validation and memory safety
+
+The dynamic read path accepts only a LID above `0x80` that equals the active
+value. It accepts transmission modes `0x04` and `0x06`; other modes, a stale
+LID, malformed definition, or rejected address produce NRC `0x12` through the
+common negative-response builder.
+
+SID `0xAC` does not apply a general memory-map or side-effect check while
+storing a pointer. SID `0x21` treats `0xFFFE0000..0xFFFE0FFF` as a special
+asynchronous range, rejects `0xFFFE1000..0xFFFEFFFF`, and directly
+byte-dereferences other entries. Direct dereference is not a safety guarantee:
+an arbitrary peripheral or invalid address can have side effects or fault.
+Hardware use is limited to reviewed, side-effect-free exact-RAM sources.
+
+### Transmission modes
+
+`FUN_000328C0` stores `TXM` at `0xFFFF8212` and `NRS` at `0xFFFF8214` before
+building the first response.
+
+- Mode `0x04` increments finite-response counter `0xFFFF8213` in transmit
+  completion handler `FUN_0002F12C`. Responses continue until the counter
+  reaches `NRS`, then the handler clears both counter and mode. Intermediate
+  transmissions use `FUN_0002F866` without redispatching SID `0x21`; this path
+  does not establish a fresh pointer-list read between responses.
+- Mode `0x06` bypasses the `NRS` comparison. The transmit-complete handler sets
+  `0xFFFF82E4.bit7`; diagnostic state machine `FUN_0002EA0A` clears the flag,
+  transitions through its response states, and calls dispatcher
+  `FUN_0002F928`. The dispatcher invokes `FUN_000328C0` again, rebuilding
+  `61 81 DATA...` from the current source bytes for every response. `NRS` is
+  stored but does not terminate this stream.
+
+Mode `0x06` is therefore the stock mechanism for successive live samples. It
+removes one request per parameter and reads all selected bytes into one fixed
+schema, but response width still consumes serial bandwidth. Continuous does
+not mean one new physical measurement per response: freshness is bounded by
+both the response cadence and each source variable's producer cadence.
+
+### Snapshot boundary
+
+`FUN_000328C0` traverses `0xFFFF9820` and dereferences each pointer in order.
+It does not mask interrupts or copy the selected sources into an atomic staging
+buffer first. An interrupt or scheduled producer can therefore update part of
+a multi-byte value or one group of related values while the response is being
+built. Byte order is deterministic, but time coherence is not.
+
+The unmodified-ROM stream is suitable for discovery and compact tuning logs
+when tearing is measured and tolerated. A coherent high-rate profile requires
+an executable change that captures selected values at one known scheduler
+boundary and exposes sequence, ECU tick, validity, and age. Such a patch falls
+under the repository's independent SH-2E executable-verification gate.
+
+Static code establishes service grammar and repeat behavior but not the active
+vehicle's KWP framing, selected SCI baud rate, adapter turnaround, or achieved
+cadence. Those remain bench measurements using raw request and response
+timestamps before engine use.
+
 ## Intake-air-temperature and P0128 model
 
 The exact DID table points the reviewed intake-air-temperature DID to an

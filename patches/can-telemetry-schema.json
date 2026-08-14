@@ -1,0 +1,742 @@
+{
+  "byte_order": "big",
+  "frame": {
+    "candidate_can_id": "0x6F0",
+    "dlc": 8,
+    "format": "standard_11_bit_classical_can",
+    "header": "((tick16 & 0x1f) << 3) | page_id",
+    "mailbox": 26
+  },
+  "profiles": [
+    {
+      "contexts": [],
+      "crc16_ccitt_false": "0x27FA",
+      "fields": [
+        {
+          "kind": "telemetry_state",
+          "name": "tick16",
+          "offset": 1,
+          "page": 0,
+          "scale": "base scheduler ticks",
+          "signed": false,
+          "source": "0xFFFF5E08",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "rpm_raw",
+          "offset": 3,
+          "page": 0,
+          "scale": "x * 12.5 RPM",
+          "signed": false,
+          "source": "0xFFFF11F4",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "final_timing_raw",
+          "offset": 5,
+          "page": 0,
+          "scale": "raw software coordinate",
+          "signed": true,
+          "source": "0xFFFF11D4",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "apc_command_raw",
+          "offset": 6,
+          "page": 0,
+          "scale": "raw software command",
+          "signed": false,
+          "source": "0xFFFF2022",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "fuel_inhibit_mask",
+          "offset": 7,
+          "page": 0,
+          "scale": "bit mask",
+          "signed": false,
+          "source": "0xFFFF22E0",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "maf_b1_raw",
+          "offset": 1,
+          "page": 1,
+          "scale": "candidate raw / 200 V",
+          "signed": false,
+          "source": "0xFFFF101C",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "maf_b2_raw",
+          "offset": 3,
+          "page": 1,
+          "scale": "candidate raw / 200 V",
+          "signed": false,
+          "source": "0xFFFF101E",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "maf_total_raw",
+          "offset": 5,
+          "page": 1,
+          "scale": "candidate raw / 100 g/s",
+          "signed": false,
+          "source": "0xFFFF3852",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "af_b1_raw",
+          "offset": 7,
+          "page": 1,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF22C4",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "bfs_raw",
+          "offset": 1,
+          "page": 2,
+          "scale": "candidate raw / 2048 ms",
+          "signed": false,
+          "source": "0xFFFF1026",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "af_b2_raw",
+          "offset": 3,
+          "page": 2,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF22C5",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_0_raw",
+          "offset": 4,
+          "page": 2,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23C8",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_1_raw",
+          "offset": 6,
+          "page": 2,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23CA",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_2_raw",
+          "offset": 1,
+          "page": 3,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23CC",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_3_raw",
+          "offset": 3,
+          "page": 3,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23CE",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_4_raw",
+          "offset": 5,
+          "page": 3,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23D0",
+          "width": 2
+        },
+        {
+          "kind": "telemetry_state",
+          "name": "telemetry_status",
+          "offset": 7,
+          "page": 3,
+          "scale": "bit mask",
+          "signed": false,
+          "source": "0xFFFF5E07",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_5_raw",
+          "offset": 1,
+          "page": 4,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23D2",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "knock_timing_state_raw",
+          "offset": 3,
+          "page": 4,
+          "scale": "raw software state",
+          "signed": true,
+          "source": "0xFFFF121A",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "knock_surface_state",
+          "offset": 5,
+          "page": 4,
+          "scale": "bitfield",
+          "signed": false,
+          "source": "0xFFFF2466",
+          "width": 1
+        },
+        {
+          "kind": "telemetry_state",
+          "name": "knock_count_latched",
+          "offset": 6,
+          "page": 4,
+          "scale": "saturating event count",
+          "signed": false,
+          "source": "0xFFFF5E0C",
+          "width": 1
+        },
+        {
+          "kind": "telemetry_state",
+          "name": "knock_channel_mask_latched",
+          "offset": 7,
+          "page": 4,
+          "scale": "six-position bit mask",
+          "signed": false,
+          "source": "0xFFFF5E0D",
+          "width": 1
+        }
+      ],
+      "id": 1,
+      "name": "core32",
+      "page_count": 5
+    },
+    {
+      "contexts": [
+        {
+          "fields": [
+            {
+              "kind": "ecu_ram",
+              "name": "coolant_raw",
+              "scale": "candidate raw - 50 degC",
+              "signed": false,
+              "source": "0xFFFF1079",
+              "width": 1
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "iat_raw",
+              "scale": "candidate raw - 50 degC",
+              "signed": false,
+              "source": "0xFFFF2837",
+              "width": 1
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "fuel_temperature_did_source_raw",
+              "scale": "diagnostic-evidence candidate",
+              "signed": false,
+              "source": "0xFFFF1074",
+              "width": 1
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "oil_temperature_did_source_raw",
+              "scale": "diagnostic-evidence candidate",
+              "signed": false,
+              "source": "0xFFFF2876",
+              "width": 1
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "af_state_factor_raw",
+              "scale": "Q14 factor",
+              "signed": false,
+              "source": "0xFFFF22E8",
+              "width": 2
+            }
+          ],
+          "name": "temperatures_af",
+          "tag": 0
+        },
+        {
+          "fields": [
+            {
+              "kind": "ecu_ram",
+              "name": "stft_b1_raw",
+              "scale": "Q8.8 percent",
+              "signed": true,
+              "source": "0xFFFF22DC",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "stft_b2_raw",
+              "scale": "Q8.8 percent",
+              "signed": true,
+              "source": "0xFFFF22DE",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "intake_cvtc_duty_b1_raw",
+              "scale": "candidate raw * 100 / 256 percent",
+              "signed": false,
+              "source": "0xFFFF2440",
+              "width": 1
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "intake_cvtc_duty_b2_raw",
+              "scale": "candidate raw * 100 / 256 percent",
+              "signed": false,
+              "source": "0xFFFF2441",
+              "width": 1
+            }
+          ],
+          "name": "short_fuel_trim_cvtc_duty",
+          "tag": 1
+        },
+        {
+          "fields": [
+            {
+              "kind": "ecu_ram",
+              "name": "ltft_b1_raw",
+              "scale": "Q8.8 percent",
+              "signed": true,
+              "source": "0xFFFF2302",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "ltft_b2_raw",
+              "scale": "Q8.8 percent",
+              "signed": true,
+              "source": "0xFFFF2304",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "timing_state_2023_raw",
+              "scale": "raw",
+              "signed": false,
+              "source": "0xFFFF2023",
+              "width": 1
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "timing_state_564c_raw",
+              "scale": "raw",
+              "signed": false,
+              "source": "0xFFFF564C",
+              "width": 1
+            }
+          ],
+          "name": "long_fuel_trim_timing",
+          "tag": 2
+        },
+        {
+          "fields": [
+            {
+              "kind": "rom_configuration",
+              "name": "protocol_version",
+              "scale": "identity",
+              "signed": false,
+              "source": "0x000D4E02",
+              "width": 1
+            },
+            {
+              "kind": "rom_configuration",
+              "name": "profile_id",
+              "scale": "identity",
+              "signed": false,
+              "source": "0x000D4E04",
+              "width": 1
+            },
+            {
+              "kind": "rom_configuration",
+              "name": "profile_crc16",
+              "scale": "CRC-16/CCITT-FALSE",
+              "signed": false,
+              "source": "0x000D4E0A",
+              "width": 2
+            },
+            {
+              "kind": "telemetry_state",
+              "name": "snapshot_overrun_count",
+              "scale": "saturating count",
+              "signed": false,
+              "source": "0xFFFF5E0E",
+              "width": 1
+            },
+            {
+              "kind": "telemetry_state",
+              "name": "tx_abort_count",
+              "scale": "saturating count",
+              "signed": false,
+              "source": "0xFFFF5E0F",
+              "width": 1
+            }
+          ],
+          "name": "health",
+          "tag": 3
+        }
+      ],
+      "crc16_ccitt_false": "0x238C",
+      "fields": [
+        {
+          "kind": "telemetry_state",
+          "name": "tick16",
+          "offset": 1,
+          "page": 0,
+          "scale": "base scheduler ticks",
+          "signed": false,
+          "source": "0xFFFF5E08",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "rpm_raw",
+          "offset": 3,
+          "page": 0,
+          "scale": "x * 12.5 RPM",
+          "signed": false,
+          "source": "0xFFFF11F4",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "final_timing_raw",
+          "offset": 5,
+          "page": 0,
+          "scale": "raw software coordinate",
+          "signed": true,
+          "source": "0xFFFF11D4",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "apc_command_raw",
+          "offset": 6,
+          "page": 0,
+          "scale": "raw software command",
+          "signed": false,
+          "source": "0xFFFF2022",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "fuel_inhibit_mask",
+          "offset": 7,
+          "page": 0,
+          "scale": "bit mask",
+          "signed": false,
+          "source": "0xFFFF22E0",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "maf_b1_raw",
+          "offset": 1,
+          "page": 1,
+          "scale": "candidate raw / 200 V",
+          "signed": false,
+          "source": "0xFFFF101C",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "maf_b2_raw",
+          "offset": 3,
+          "page": 1,
+          "scale": "candidate raw / 200 V",
+          "signed": false,
+          "source": "0xFFFF101E",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "maf_total_raw",
+          "offset": 5,
+          "page": 1,
+          "scale": "candidate raw / 100 g/s",
+          "signed": false,
+          "source": "0xFFFF3852",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "af_b1_raw",
+          "offset": 7,
+          "page": 1,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF22C4",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "bfs_raw",
+          "offset": 1,
+          "page": 2,
+          "scale": "candidate raw / 2048 ms",
+          "signed": false,
+          "source": "0xFFFF1026",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "af_b2_raw",
+          "offset": 3,
+          "page": 2,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF22C5",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_0_raw",
+          "offset": 4,
+          "page": 2,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23C8",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_1_raw",
+          "offset": 6,
+          "page": 2,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23CA",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_2_raw",
+          "offset": 1,
+          "page": 3,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23CC",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_3_raw",
+          "offset": 3,
+          "page": 3,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23CE",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_4_raw",
+          "offset": 5,
+          "page": 3,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23D0",
+          "width": 2
+        },
+        {
+          "kind": "telemetry_state",
+          "name": "telemetry_status",
+          "offset": 7,
+          "page": 3,
+          "scale": "bit mask",
+          "signed": false,
+          "source": "0xFFFF5E07",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_5_raw",
+          "offset": 1,
+          "page": 4,
+          "scale": "candidate raw / 100 ms",
+          "signed": false,
+          "source": "0xFFFF23D2",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "knock_timing_state_raw",
+          "offset": 3,
+          "page": 4,
+          "scale": "raw software state",
+          "signed": true,
+          "source": "0xFFFF121A",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "knock_surface_state",
+          "offset": 5,
+          "page": 4,
+          "scale": "bitfield",
+          "signed": false,
+          "source": "0xFFFF2466",
+          "width": 1
+        },
+        {
+          "kind": "telemetry_state",
+          "name": "knock_count_latched",
+          "offset": 6,
+          "page": 4,
+          "scale": "saturating event count",
+          "signed": false,
+          "source": "0xFFFF5E0C",
+          "width": 1
+        },
+        {
+          "kind": "telemetry_state",
+          "name": "knock_channel_mask_latched",
+          "offset": 7,
+          "page": 4,
+          "scale": "six-position bit mask",
+          "signed": false,
+          "source": "0xFFFF5E0D",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "app1_raw",
+          "offset": 1,
+          "page": 5,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF269E",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "app2_raw",
+          "offset": 3,
+          "page": 5,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF26A2",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "tps_b1_raw",
+          "offset": 5,
+          "page": 5,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF2756",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "absolute_throttle_raw",
+          "offset": 7,
+          "page": 5,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF1075",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "tps_b2_raw",
+          "offset": 1,
+          "page": 6,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF285C",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "intake_cvtc_actual_b1_raw",
+          "offset": 3,
+          "page": 6,
+          "scale": "candidate raw * 0.5 - 64 degCA",
+          "signed": false,
+          "source": "0xFFFF2442",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "intake_cvtc_actual_b2_raw",
+          "offset": 4,
+          "page": 6,
+          "scale": "candidate raw * 0.5 - 64 degCA",
+          "signed": false,
+          "source": "0xFFFF2443",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "intake_cvtc_target_b1_raw",
+          "offset": 5,
+          "page": 6,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF2326",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "intake_cvtc_target_b2_raw",
+          "offset": 6,
+          "page": 6,
+          "scale": "raw",
+          "signed": false,
+          "source": "0xFFFF2327",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "calculated_load_raw",
+          "offset": 7,
+          "page": 6,
+          "scale": "raw * 100 / 255 percent",
+          "signed": false,
+          "source": "0xFFFF413E",
+          "width": 1
+        }
+      ],
+      "id": 2,
+      "name": "wide54",
+      "page_count": 8
+    }
+  ],
+  "protocol_version": 1,
+  "rom": "JK08A",
+  "schema_version": 1
+}

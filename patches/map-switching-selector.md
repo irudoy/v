@@ -162,9 +162,10 @@ It is not required for normal selection or feedback.
 ## ROM composition
 
 `build_rom.py` is the production entry point. It composes the current
-map-switching and Rolling Launch runtimes, applies a local calibration profile,
-recalculates checksums, and verifies a closed write set. `apply_map_switching.py`
-is an isolated diagnostic stage and is not the production image workflow.
+Map Switching, Rolling Launch, and CAN telemetry runtimes, applies a local
+calibration profile, recalculates checksums, and verifies a closed write set.
+`apply_map_switching.py` is an isolated diagnostic stage and is not the
+production image workflow.
 
 The pure composition modules intentionally do not create flashable files. They
 bind exact input identity, anchors, hooks, layouts, assembly payload digests,
@@ -176,6 +177,13 @@ self-test B -> self-test A -> SUM16 A -> SUM16 B
 
 The builder preserves all calibration outside declared component ranges. See
 `rom-builder.md` for the complete image and output contract.
+
+The layout's broad `claimed_rom` range is a legacy compatibility envelope. It
+contains unused gaps and addresses assigned to later composition layers, so it
+is not exclusive ownership. Exact active writes come from
+`map_switching_compose.py`. The cross-runtime ledger reserves
+`0x000D6800..0x000D7000` and `0xFFFF6000..0xFFFF6100` exclusively for future
+Map Switching revisions. See `runtime-reservations.md`.
 
 ## Implementation inventory
 
@@ -203,7 +211,8 @@ A composition is software-valid only when all applicable checks pass:
 
 1. Exact JK08A size, identity bytes, and input checksums match.
 2. Stock anchors and protected-code bytes match their declared values.
-3. Claimed ROM and RAM regions are disjoint from every other owner.
+3. Exact active ROM writes, active RAM, and shared future reserves are
+   disjoint from every other owner.
 4. Assembly sources reproduce the exact payload bytes in the manifests.
 5. Every hook and pointer table has either the complete stock form or the exact
    current form; mixed states are rejected.

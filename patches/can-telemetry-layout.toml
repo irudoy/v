@@ -1,0 +1,170 @@
+# Authoritative storage and hook contract for exact JK08A CAN telemetry.
+#
+# The active implementation occupies only the assembly and configuration
+# ranges. The remainder of the owned ROM and RAM budgets is a named future
+# reserve and must stay erased or unused in this schema version.
+
+schema_version = 1
+rom = "JK08A"
+byte_order = "big"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+base_composition_sha256 = "d15c8c3c3e0a9232218612f2a914e328ec9f63041d50e6a8b763262fd00f554c"
+expected_composition_sha256 = "e784e2ecc760c9de147072a5cc58e5935041c070501e74b82019612287227c4a"
+free_rom_start = 0x000D4280
+free_rom_end = 0x000E1C2A
+owned_rom_start = 0x000D4280
+owned_rom_end = 0x000D6000
+reserved_rom_start = 0x000D4E10
+reserved_rom_end = 0x000D6000
+configuration_address = 0x000D4E00
+configuration_size = 16
+mailbox_record_address = 0x000097BE
+mailbox_record_stock = 0x05000000
+
+[ram]
+proven_free_start = 0xFFFF5D00
+proven_free_end = 0xFFFF7000
+lower_runtime_end = 0xFFFF5D54
+reservation_start = 0xFFFF5E00
+reservation_end = 0xFFFF6000
+active_start = 0xFFFF5E00
+active_end = 0xFFFF5F00
+future_start = 0xFFFF5F00
+future_end = 0xFFFF6000
+state_start = 0xFFFF5E00
+state_size = 32
+bank_a_start = 0xFFFF5E20
+bank_size = 64
+bank_b_start = 0xFFFF5E60
+event_start = 0xFFFF5EA0
+event_size = 64
+active_reserved_start = 0xFFFF5EE0
+active_reserved_size = 32
+
+[[code_region]]
+key = "main_wrapper"
+start = 0x000D4280
+end = 0x000D42A0
+entry = 0x000D4280
+
+[[code_region]]
+key = "knock_wrapper"
+start = 0x000D42A0
+end = 0x000D42E0
+entry = 0x000D42A0
+
+[[code_region]]
+key = "startup_wrapper"
+start = 0x000D42E0
+end = 0x000D4340
+entry = 0x000D42E0
+
+[[code_region]]
+key = "capture"
+start = 0x000D4340
+end = 0x000D4500
+entry = 0x000D4340
+
+[[code_region]]
+key = "build_bank"
+start = 0x000D4500
+end = 0x000D4700
+entry = 0x000D4500
+
+[[code_region]]
+key = "request_page"
+start = 0x000D4700
+end = 0x000D4800
+entry = 0x000D4700
+
+[[code_region]]
+key = "sle1_isr"
+start = 0x000D4800
+end = 0x000D4900
+entry = 0x000D4800
+
+[[code_region]]
+key = "completion"
+start = 0x000D4900
+end = 0x000D4C00
+entry = 0x000D4900
+
+[[assembly_unit]]
+key = "wrappers"
+source = "can-telemetry-wrappers.s"
+start = 0x000D4280
+end = 0x000D4340
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "e4817e2c03b6212ace36f7b3359bf19b5d96ae1c0298760935a0bf1f8d7895ca"
+instruction_count = 38
+data_bytes = 32
+code_regions = ["main_wrapper", "knock_wrapper", "startup_wrapper"]
+
+[[assembly_unit]]
+key = "capture"
+source = "can-telemetry-capture.s"
+start = 0x000D4340
+end = 0x000D4800
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "2def67e69f6ff42ec3fea95057ec4b0b6d97b1b57e2b13c3a6eaac56d4f6e126"
+instruction_count = 215
+data_bytes = 62
+code_regions = ["capture", "build_bank", "request_page"]
+
+[[assembly_unit]]
+key = "completion"
+source = "can-telemetry-completion.s"
+start = 0x000D4800
+end = 0x000D4C00
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "dce5f86f9700c8a0157d73ec5ca03a07e0a1dc97c266ca490105d096d5291c2e"
+instruction_count = 217
+data_bytes = 56
+code_regions = ["sle1_isr", "completion"]
+
+[[assembly_unit]]
+key = "tables"
+source = "can-telemetry-tables.s"
+start = 0x000D4C00
+end = 0x000D4E00
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "7729c234d4091bd6a82dd3f4c0c432b25d5222df35a5198839ca7a95ce01cec9"
+instruction_count = 0
+data_bytes = 292
+code_regions = []
+
+[[hook]]
+key = "coherent_snapshot_call"
+address = 0x00028090
+width = 4
+stock = 0x00020DFE
+replacement = 0x000D4280
+purpose = "Call stock FUN_00020DFE and capture one coherent telemetry snapshot before interrupts are re-enabled."
+
+[[hook]]
+key = "knock_interval_latch"
+address = 0x00021A70
+width = 4
+stock = 0x000493E8
+replacement = 0x000D42A0
+purpose = "Latch the completed knock interval before the displaced coordinator consumes and clears its count."
+
+[[hook]]
+key = "startup_state_clear"
+address = 0x00027D28
+width = 4
+stock = 0x000D38A0
+replacement = 0x000D42E0
+purpose = "Clear active telemetry RAM before continuing the existing Rolling Launch and map-switching startup chain."
+
+[[hook]]
+key = "hcan1_sle1_vector"
+address = 0x000203A0
+width = 4
+stock = 0x000C7914
+replacement = 0x000D4800
+purpose = "Handle mailbox 26 completion and preserve the complete stock mailbox-28 SLE1 behavior."

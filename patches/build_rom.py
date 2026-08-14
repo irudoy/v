@@ -3,9 +3,9 @@
 
 The CLI detects the ROM series from immutable image bytes by default or accepts
 an explicit ``--rom`` selector.  Only JK08A is currently registered.  Its
-handler installs the current map-switching and Rolling Launch runtimes directly
-from their SHA-locked payload bundles through the current layout and composer
-contracts.
+handler installs the current map-switching, Rolling Launch, and CAN telemetry
+runtimes directly from their SHA-locked payload bundles through the current
+layout and composer contracts.
 
 Compatible unpatched inputs retain their lower calibration and configuration.
 A complete current or historical JK08A composition may also be rebuilt: all
@@ -33,7 +33,13 @@ if str(ROOT) not in sys.path:
 
 from patches import apply_map_switching
 from patches import apply_rolling_launch
+from patches import apply_can_telemetry
+from patches import can_telemetry
+from patches import can_telemetry_assembly
+from patches import can_telemetry_compose
+from patches import can_telemetry_layout
 from patches import jk08a_checksums as checksums
+from patches import jk08a_runtime_reservations
 from patches import map_switching_compose
 from patches import map_switching_layout
 from patches import rolling_launch
@@ -46,12 +52,13 @@ from tools.mapkit import rom as romkit
 AUTO_ROM = "auto"
 SUPPORTED_ROMS = ("JK08A",)
 PROFILE_SCHEMA_VERSION = 2
-MANIFEST_SCHEMA_VERSION = 1
+MANIFEST_SCHEMA_VERSION = 2
 TOOL_NAME = "patches/build_rom.py"
 
-PROFILE_ROOT_KEYS = frozenset(
+PROFILE_REQUIRED_ROOT_KEYS = frozenset(
     ("schema_version", "rom", "name", "rolling_launch")
 )
+PROFILE_OPTIONAL_ROOT_KEYS = frozenset(("can_telemetry",))
 ROLLING_PROFILE_KEYS = frozenset(
     (
         "mode",
@@ -76,6 +83,9 @@ MODE_NAMES = {
     "rpm_hold": rolling_launch.Mode.RPM_HOLD,
     "rpm_hold_retard": rolling_launch.Mode.RPM_HOLD_RETARD,
 }
+TELEMETRY_PROFILE_KEYS = frozenset(
+    ("enabled", "can_id", "profile", "tick_divisor")
+)
 
 
 class BuildError(ValueError):
@@ -87,6 +97,7 @@ class Profile:
     name: str
     rom: str
     calibration: rolling_launch.Calibration
+    telemetry: can_telemetry.Configuration
     source: str
     sha256: str | None
 
@@ -247,9 +258,12 @@ class BuildResult:
     input_state: str
     profile: Profile
     configuration: bytes
+    telemetry_configuration: bytes
+    telemetry_mailbox_record: bytes
     source_sha256: str
     normalized_sha256: str
     map_stage_sha256: str
+    rolling_stage_sha256: str
     output_sha256: str
     output_md5: str
     source_checksums: checksums.ChecksumValues
@@ -261,6 +275,8 @@ class BuildResult:
     map_instruction_count: int
     rolling_instruction_count: int
     rolling_code_entry_count: int
+    telemetry_instruction_count: int
+    telemetry_code_entry_count: int
     diagnostic_count: int
 
 
@@ -296,6 +312,7 @@ def builtin_profile():
         name=apply_rolling_launch.PROFILE_NAME,
         rom="JK08A",
         calibration=apply_rolling_launch.PROFILE_CALIBRATION,
+        telemetry=can_telemetry.default_configuration(),
         source="builtin",
         sha256=None,
     )
@@ -310,7 +327,16 @@ def load_profile(path):
     except (OSError, UnicodeError, tomllib.TOMLDecodeError) as error:
         raise BuildError(f"{path}: cannot load profile: {error}") from error
 
-    _require_exact_keys(raw, PROFILE_ROOT_KEYS, str(path))
+    if not isinstance(raw, dict):
+        raise BuildError(f"{path}: expected a TOML table")
+    missing = sorted(PROFILE_REQUIRED_ROOT_KEYS - set(raw))
+    extra = sorted(
+        set(raw) - PROFILE_REQUIRED_ROOT_KEYS - PROFILE_OPTIONAL_ROOT_KEYS
+    )
+    if missing or extra:
+        raise BuildError(
+            f"{path}: fields differ; missing={missing}; extra={extra}"
+        )
     if (
         type(raw["schema_version"]) is not int
         or raw["schema_version"] != PROFILE_SCHEMA_VERSION
@@ -394,10 +420,52 @@ def load_profile(path):
         raise BuildError(
             f"{path}: Rolling Launch calibration round trip differs"
         )
+    telemetry_values = raw.get("can_telemetry")
+    if telemetry_values is None:
+        telemetry = can_telemetry.default_configuration()
+    else:
+        _require_exact_keys(
+            telemetry_values,
+            TELEMETRY_PROFILE_KEYS,
+            f"{path} [can_telemetry]",
+        )
+        enabled = telemetry_values["enabled"]
+        profile_name = telemetry_values["profile"]
+        if type(enabled) is not bool:
+            raise BuildError(
+                f"{path}: can_telemetry.enabled must be a boolean"
+            )
+        if not isinstance(profile_name, str):
+            raise BuildError(
+                f"{path}: can_telemetry.profile must be a string"
+            )
+        telemetry = can_telemetry.Configuration(
+            enabled=enabled,
+            can_id=_require_integer(
+                telemetry_values["can_id"], "can_telemetry.can_id"
+            ),
+            profile=profile_name,
+            tick_divisor=_require_integer(
+                telemetry_values["tick_divisor"],
+                "can_telemetry.tick_divisor",
+            ),
+        )
+        if not telemetry.is_valid():
+            raise BuildError(f"{path}: CAN telemetry configuration is invalid")
+        try:
+            encoded = telemetry.to_bytes()
+            decoded = can_telemetry.Configuration.from_bytes(encoded)
+        except ValueError as error:
+            raise BuildError(f"{path}: {error}") from error
+        if decoded != telemetry:
+            raise BuildError(
+                f"{path}: CAN telemetry configuration round trip differs"
+            )
     return Profile(
         name=name.strip(),
         rom=rom,
         calibration=calibration,
+        telemetry=telemetry,
         source=str(path),
         sha256=sha256(raw_bytes),
     )
@@ -409,15 +477,19 @@ def _range_offsets(ranges):
     ))
 
 
-def _component_ranges(map_layout, launch_layout):
+def _component_ranges(map_layout, launch_layout, telemetry_layout=None):
+    telemetry_layout = telemetry_layout or can_telemetry_layout.load_layout()
     return (
         map_switching_compose.composition_write_ranges(map_layout)
         + rolling_launch_compose.composition_write_ranges(launch_layout)
+        + can_telemetry_compose.composition_write_ranges(telemetry_layout)
     )
 
 
-def _component_offsets(map_layout, launch_layout):
-    result = _range_offsets(_component_ranges(map_layout, launch_layout))
+def _component_offsets(map_layout, launch_layout, telemetry_layout=None):
+    result = _range_offsets(
+        _component_ranges(map_layout, launch_layout, telemetry_layout)
+    )
     overlap = result & set(checksums.checksum_byte_offsets())
     if overlap:
         raise BuildError(
@@ -590,6 +662,110 @@ def _require_coherent_rolling_endpoint(
     )
 
 
+def _require_coherent_telemetry_endpoint(
+    source, layout, payloads, context, launch_layout=None
+):
+    """Accept only an absent or complete current CAN telemetry endpoint."""
+    expected_units = set(layout.assembly_unit_by_key)
+    if set(payloads) != expected_units:
+        raise BuildError(
+            "internal CAN telemetry payload set differs from the layout"
+        )
+
+    erased_units = all(
+        source[unit.span.start : unit.span.end]
+        == bytes([0xFF]) * unit.span.size
+        for unit in layout.assembly_units
+    )
+    current_units = all(
+        source[unit.span.start : unit.span.end] == payloads[unit.key]
+        for unit in layout.assembly_units
+    )
+    configuration = source[
+        layout.configuration.start : layout.configuration.end
+    ]
+    configuration_erased = (
+        configuration == bytes([0xFF]) * layout.configuration.size
+    )
+    reserve_erased = (
+        source[layout.reserved_rom.start : layout.reserved_rom.end]
+        == bytes([0xFF]) * layout.reserved_rom.size
+    )
+    hook_values = {
+        hook.key: _read_integer(
+            source, hook.address, hook.width, layout.byte_order
+        )
+        for hook in layout.hooks
+    }
+    lower_hook_values = {}
+    if launch_layout is not None:
+        lower_hook_values = {
+            hook.address: hook.stock for hook in launch_layout.hooks
+        }
+    hooks_stock = all(
+        hook_values[hook.key]
+        in ({hook.stock} | (
+            {lower_hook_values[hook.address]}
+            if hook.address in lower_hook_values
+            else set()
+        ))
+        for hook in layout.hooks
+    )
+    hooks_current = all(
+        hook_values[hook.key] == hook.replacement for hook in layout.hooks
+    )
+    record_start = layout.mailbox_record_address
+    mailbox_record = source[record_start : record_start + 4]
+    if all((
+        erased_units,
+        configuration_erased,
+        reserve_erased,
+        hooks_stock,
+        mailbox_record == can_telemetry.STOCK_MAILBOX_RECORD,
+    )):
+        return "absent"
+
+    try:
+        model = can_telemetry.Configuration.from_bytes(configuration)
+        configuration_current = model.to_bytes() == configuration
+    except (TypeError, ValueError):
+        model = None
+        configuration_current = False
+    if all((
+        current_units,
+        configuration_current,
+        reserve_erased,
+        hooks_current,
+        model is not None and mailbox_record == model.mailbox_record(),
+    )):
+        return "current"
+
+    raise BuildError(f"{context}: partial or unknown CAN telemetry state")
+
+
+def _strip_telemetry_endpoint(source, layout, state):
+    """Restore the exact lower-layer bytes used by endpoint validation."""
+    if state == "absent":
+        return bytes(source)
+    if state != "current":
+        raise BuildError(f"unsupported CAN telemetry endpoint {state!r}")
+    data = bytearray(source)
+    for unit in layout.assembly_units:
+        data[unit.span.start : unit.span.end] = (
+            bytes([0xFF]) * unit.span.size
+        )
+    data[layout.configuration.start : layout.configuration.end] = (
+        bytes([0xFF]) * layout.configuration.size
+    )
+    for hook in layout.hooks:
+        data[hook.address : hook.address + hook.width] = hook.stock.to_bytes(
+            hook.width, layout.byte_order
+        )
+    start = layout.mailbox_record_address
+    data[start : start + 4] = can_telemetry.STOCK_MAILBOX_RECORD
+    return bytes(checksums.recalculate(data))
+
+
 def _require_complete_map_endpoint(
     source,
     map_layout,
@@ -652,7 +828,7 @@ def _require_complete_map_endpoint(
                 f"pointer table {family.key} differs"
             )
 
-    _require_coherent_rolling_endpoint(
+    return _require_coherent_rolling_endpoint(
         source, launch_layout, launch_payloads, context
     )
 
@@ -677,8 +853,10 @@ def _restore_map_copies(image, layout, copies):
 
 
 def _normalize_jk08a(source, source_name):
+    jk08a_runtime_reservations.load_ledger()
     map_layout = map_switching_layout.load_layout()
     launch_layout = rolling_launch_layout.load_layout()
+    telemetry_layout = can_telemetry_layout.load_layout()
     stock_image = romkit.load("JK08A")
     stock = stock_image.data
     source = bytes(source)
@@ -690,7 +868,12 @@ def _normalize_jk08a(source, source_name):
 
     map_payloads = apply_map_switching.load_payloads(map_layout)
     launch_payloads = rolling_launch_assembly.load_payloads(launch_layout)
-    component_offsets = _component_offsets(map_layout, launch_layout)
+    telemetry_payloads = can_telemetry_assembly.load_payloads(
+        telemetry_layout
+    )
+    component_offsets = _component_offsets(
+        map_layout, launch_layout, telemetry_layout
+    )
     is_unpatched = all(
         source[offset] == stock[offset] for offset in component_offsets
     )
@@ -698,14 +881,29 @@ def _normalize_jk08a(source, source_name):
     if is_unpatched:
         input_state = "compatible-base"
     else:
-        _require_complete_map_endpoint(
+        telemetry_state = _require_coherent_telemetry_endpoint(
             source,
+            telemetry_layout,
+            telemetry_payloads,
+            source_name,
+            launch_layout,
+        )
+        lower_source = _strip_telemetry_endpoint(
+            source, telemetry_layout, telemetry_state
+        )
+        rolling_state = _require_complete_map_endpoint(
+            lower_source,
             map_layout,
             launch_layout,
             map_payloads,
             launch_payloads,
             source_name,
         )
+        if telemetry_state == "current" and rolling_state != "current":
+            raise BuildError(
+                f"{source_name}: current CAN telemetry is not layered "
+                "over the current Rolling Launch endpoint"
+            )
         saved_copies = _capture_map_copies(source, map_layout)
         input_state = "complete-runtime-migration"
 
@@ -728,8 +926,10 @@ def _normalize_jk08a(source, source_name):
         source_verification,
         map_layout,
         launch_layout,
+        telemetry_layout,
         map_payloads,
         launch_payloads,
+        telemetry_payloads,
         component_offsets,
     )
 
@@ -816,6 +1016,11 @@ def build_image(
             f"profile ROM {profile.rom!r} does not match selected "
             f"ROM {selected_rom!r}"
         )
+    if (
+        not isinstance(profile.telemetry, can_telemetry.Configuration)
+        or not profile.telemetry.is_valid()
+    ):
+        raise BuildError("profile CAN telemetry configuration is invalid")
     if selected_rom != "JK08A":
         raise BuildError(f"no builder is registered for {selected_rom}")
 
@@ -827,8 +1032,10 @@ def build_image(
             source_verification,
             map_layout,
             launch_layout,
+            telemetry_layout,
             map_payloads,
             launch_payloads,
+            telemetry_payloads,
             component_offsets,
         ) = _normalize_jk08a(source, source_name)
 
@@ -859,8 +1066,19 @@ def build_image(
             source_name=f"{source_name} complete map stage",
             expected_source_sha256=sha256(map_stage),
         )
+        rolling_stage = launch_result.data
+        telemetry_result = apply_can_telemetry.patch_image(
+            rolling_stage,
+            configuration=profile.telemetry,
+            telemetry_layout=telemetry_layout,
+            telemetry_payloads=telemetry_payloads,
+            launch_layout=launch_layout,
+            launch_payloads=launch_payloads,
+            source_name=f"{source_name} complete Rolling Launch stage",
+            expected_source_sha256=sha256(rolling_stage),
+        )
         output_verification = checksums.require_valid(
-            launch_result.data, "complete JK08A output"
+            telemetry_result.data, "complete JK08A output"
         )
     except (
         BuildError,
@@ -868,31 +1086,35 @@ def build_image(
         checksums.ChecksumError,
         apply_map_switching.PatchError,
         apply_rolling_launch.PatchError,
+        apply_can_telemetry.PatchError,
     ) as error:
         if isinstance(error, BuildError):
             raise
         raise BuildError(str(error)) from error
 
     changed, permitted, checksum_changed = _validate_preservation(
-        source, launch_result.data, component_offsets
+        source, telemetry_result.data, component_offsets
     )
     if saved_copies is not None:
-        final_copies = _capture_map_copies(launch_result.data, map_layout)
+        final_copies = _capture_map_copies(telemetry_result.data, map_layout)
         if final_copies != saved_copies:
             raise BuildError("final image changes preserved alternate maps")
 
     return BuildResult(
-        data=launch_result.data,
+        data=telemetry_result.data,
         rom=selected_rom,
         detection=detection,
         input_state=input_state,
         profile=profile,
         configuration=launch_result.configuration,
+        telemetry_configuration=telemetry_result.configuration,
+        telemetry_mailbox_record=telemetry_result.mailbox_record,
         source_sha256=sha256(source),
         normalized_sha256=sha256(normalized),
         map_stage_sha256=sha256(map_stage),
-        output_sha256=sha256(launch_result.data),
-        output_md5=md5(launch_result.data),
+        rolling_stage_sha256=sha256(rolling_stage),
+        output_sha256=sha256(telemetry_result.data),
+        output_md5=md5(telemetry_result.data),
         source_checksums=source_verification.stored,
         output_checksums=output_verification.stored,
         changed_bytes=changed,
@@ -902,6 +1124,8 @@ def build_image(
         map_instruction_count=map_layout.assembled_instruction_count,
         rolling_instruction_count=launch_result.instruction_count,
         rolling_code_entry_count=launch_result.code_entry_count,
+        telemetry_instruction_count=telemetry_result.instruction_count,
+        telemetry_code_entry_count=telemetry_result.code_entry_count,
         diagnostic_count=launch_result.diagnostic_count,
     )
 
@@ -941,10 +1165,20 @@ def manifest_data(result, input_path, output_path):
                 if calibration.enabled_for(index)
             ],
             "configuration_hex": result.configuration.hex(),
+            "can_telemetry": {
+                "enabled": result.profile.telemetry.enabled,
+                "can_id": result.profile.telemetry.can_id,
+                "wire_profile": result.profile.telemetry.profile,
+                "tick_divisor": result.profile.telemetry.tick_divisor,
+                "configuration_hex": result.telemetry_configuration.hex(),
+                "mailbox_record_hex": result.telemetry_mailbox_record.hex(),
+            },
         },
         "stages": {
             "normalized_sha256": result.normalized_sha256,
             "map_switching_sha256": result.map_stage_sha256,
+            "rolling_launch_sha256": result.rolling_stage_sha256,
+            "can_telemetry_sha256": result.output_sha256,
         },
         "output": {
             "path": str(output_path),
@@ -961,6 +1195,12 @@ def manifest_data(result, input_path, output_path):
             "map_instruction_count": result.map_instruction_count,
             "rolling_instruction_count": result.rolling_instruction_count,
             "rolling_code_entry_count": result.rolling_code_entry_count,
+            "telemetry_instruction_count": (
+                result.telemetry_instruction_count
+            ),
+            "telemetry_code_entry_count": (
+                result.telemetry_code_entry_count
+            ),
             "diagnostic_count": result.diagnostic_count,
         },
     }
@@ -1061,9 +1301,19 @@ def main(argv=None):
         f"enable_mask={calibration.enable_mask:#04x} "
         f"configuration={result.configuration.hex()}"
     )
+    telemetry = result.profile.telemetry
+    print(
+        f"can_telemetry_enabled={str(telemetry.enabled).lower()} "
+        f"can_id={telemetry.can_id:#05x} "
+        f"wire_profile={telemetry.profile} "
+        f"tick_divisor={telemetry.tick_divisor} "
+        f"configuration={result.telemetry_configuration.hex()} "
+        f"mailbox_record={result.telemetry_mailbox_record.hex()}"
+    )
     print(
         f"normalized_sha256={result.normalized_sha256} "
-        f"map_stage_sha256={result.map_stage_sha256}"
+        f"map_stage_sha256={result.map_stage_sha256} "
+        f"rolling_stage_sha256={result.rolling_stage_sha256}"
     )
     print(
         f"output_sha256={result.output_sha256} md5={result.output_md5} "

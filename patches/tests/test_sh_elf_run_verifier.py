@@ -5,6 +5,9 @@ import unittest
 
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_layout as layout_model
+from patches import can_telemetry_assembly
+from patches import can_telemetry_compose
+from patches import can_telemetry_layout
 from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
 from patches import rolling_launch_layout
@@ -24,6 +27,13 @@ ROLLING_SPEC = importlib.util.spec_from_file_location(
 )
 ROLLING_VERIFIER = importlib.util.module_from_spec(ROLLING_SPEC)
 ROLLING_SPEC.loader.exec_module(ROLLING_VERIFIER)
+
+TELEMETRY_MODULE_PATH = ROOT / "tools/sh-elf-run/verify_can_telemetry.py"
+TELEMETRY_SPEC = importlib.util.spec_from_file_location(
+    "verify_can_telemetry_sh_elf", TELEMETRY_MODULE_PATH
+)
+TELEMETRY_VERIFIER = importlib.util.module_from_spec(TELEMETRY_SPEC)
+TELEMETRY_SPEC.loader.exec_module(TELEMETRY_VERIFIER)
 
 
 class ShElfRunVerifierTest(unittest.TestCase):
@@ -263,6 +273,107 @@ mov #0x5,r1
         self.assertIn("rolling_launch_cases", source)
         self.assertIn("cases=%lu", harness)
         self.assertIn("feedback=7", harness)
+        self.assertIn("entries=8", harness)
+
+    def test_can_telemetry_composition_lock_matches_verifier(self):
+        layout = can_telemetry_layout.load_layout()
+        blobs = can_telemetry_assembly.load_payloads(layout)
+
+        result = TELEMETRY_VERIFIER.require_composition(layout, blobs)
+
+        self.assertEqual(
+            result.sha256,
+            TELEMETRY_VERIFIER.EXPECTED_COMPOSITION_SHA256,
+        )
+        self.assertEqual(result.instruction_count, 470)
+        self.assertEqual(result.code_entry_count, 8)
+
+    def test_can_telemetry_relocator_supports_generated_pointer_rows(self):
+        fixture = bytearray(32)
+        fixture[4:16] = bytes.fromhex(
+            "ffff5e00000d4e00ffff1234"
+        )
+        parsed = assembly_model.ParsedSource(
+            Path("tables.s"),
+            {},
+            (
+                assembly_model.SourceStatement(
+                    1,
+                    4,
+                    "long",
+                    "0xFFFF5E00, 0x000D4E00, 0xFFFF1234",
+                    12,
+                ),
+            ),
+        )
+
+        count = TELEMETRY_VERIFIER.relocate_telemetry_ram_literals(
+            fixture, {"tables": parsed}
+        )
+
+        self.assertEqual(count, 2)
+        self.assertEqual(fixture[4:8], bytes.fromhex("01005e00"))
+        self.assertEqual(fixture[8:12], bytes.fromhex("000d4e00"))
+        self.assertEqual(fixture[12:16], bytes.fromhex("01001234"))
+
+    def test_can_telemetry_dynamic_transform_preserves_instructions(self):
+        base_layout = layout_model.load_layout()
+        launch_layout = rolling_launch_layout.load_layout()
+        telemetry_layout = can_telemetry_layout.load_layout()
+        parsed = can_telemetry_assembly.validate_assembly_sources(
+            telemetry_layout
+        )
+        composition = can_telemetry_compose.compose(
+            layout=telemetry_layout
+        )
+
+        fixture, base_count, launch_count, telemetry_count, _, stubs = (
+            TELEMETRY_VERIFIER.build_dynamic_fixture(
+                composition,
+                base_layout,
+                launch_layout,
+                telemetry_layout,
+                parsed,
+            )
+        )
+
+        self.assertGreater(base_count, 0)
+        self.assertGreater(launch_count, 0)
+        self.assertGreater(telemetry_count, 0)
+        self.assertEqual(stubs, 8)
+        self.assertEqual(
+            fixture[
+                TELEMETRY_VERIFIER.TRAPA_VECTOR_ADDRESS :
+                TELEMETRY_VERIFIER.TRAPA_VECTOR_ADDRESS + 4
+            ],
+            (0xD4800).to_bytes(4, "big"),
+        )
+        for unit in telemetry_layout.assembly_units:
+            for statement in parsed[unit.key].statements:
+                if statement.kind != "instruction":
+                    continue
+                self.assertEqual(
+                    fixture[statement.address : statement.address + 2],
+                    composition.data[
+                        statement.address : statement.address + 2
+                    ],
+                )
+
+    def test_top_level_gate_registers_can_telemetry(self):
+        source = MODULE_PATH.read_text(encoding="utf-8")
+        verifier = TELEMETRY_MODULE_PATH.read_text(encoding="utf-8")
+        harness = (
+            ROOT / "tools/sh-elf-run/can_telemetry_harness.c"
+        ).read_text(encoding="utf-8")
+        exception = (
+            ROOT / "tools/sh-elf-run/invoke_exception.s"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("verify_can_telemetry.verify", source)
+        self.assertIn("can_telemetry_cases", source)
+        self.assertIn("can_telemetry_harness.c", verifier)
+        self.assertIn("cases=49", verifier)
+        self.assertIn("trapa #0x40", exception)
         self.assertIn("entries=8", harness)
 
 

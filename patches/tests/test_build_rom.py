@@ -9,6 +9,7 @@ from unittest import mock
 from patches import build_rom
 from patches import jk08a_checksums as checksums
 from patches import map_switching_layout
+from patches import can_telemetry
 from patches import rolling_launch
 
 
@@ -21,7 +22,7 @@ STOCK = (
 )
 
 
-def profile_text(**overrides):
+def profile_text(*, telemetry=None, **overrides):
     values = {
         "mode": '"rpm_hold_retard"',
         "enabled_maps": "[1, 3]",
@@ -41,13 +42,18 @@ def profile_text(**overrides):
     }
     values.update(overrides)
     body = "\n".join(f"{key} = {value}" for key, value in values.items())
-    return (
+    result = (
         "schema_version = 2\n"
         'rom = "JK08A"\n'
         'name = "mode-2-test"\n\n'
         "[rolling_launch]\n"
         f"{body}\n"
     )
+    if telemetry is not None:
+        result += "\n[can_telemetry]\n" + "\n".join(
+            f"{key} = {value}" for key, value in telemetry.items()
+        ) + "\n"
+    return result
 
 
 class BuildRomTest(unittest.TestCase):
@@ -136,7 +142,19 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual(rebuilt.data, self.base_result.data)
         self.assertEqual(rebuilt.changed_bytes, 0)
 
-        map_only = bytearray(self.base_result.data)
+        telemetry_layout = build_rom.can_telemetry_layout.load_layout()
+        telemetry_payloads = build_rom.can_telemetry_assembly.load_payloads(
+            telemetry_layout
+        )
+        telemetry_state = build_rom._require_coherent_telemetry_endpoint(
+            self.base_result.data,
+            telemetry_layout,
+            telemetry_payloads,
+            "test runtime",
+        )
+        map_only = bytearray(build_rom._strip_telemetry_endpoint(
+            self.base_result.data, telemetry_layout, telemetry_state
+        ))
         launch_layout = build_rom.rolling_launch_layout.load_layout()
         for span in launch_layout.claimed_rom_ranges:
             map_only[span.start : span.end] = bytes([0xFF]) * span.size
@@ -197,7 +215,10 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual(result.data, self.base_result.data)
 
     def test_pre_feedback_indicator_endpoint_can_be_migrated(self):
-        historical = bytearray(self.base_result.data)
+        telemetry_layout = build_rom.can_telemetry_layout.load_layout()
+        historical = bytearray(build_rom._strip_telemetry_endpoint(
+            self.base_result.data, telemetry_layout, "current"
+        ))
         layout = build_rom.rolling_launch_layout.load_layout()
         unit = layout.assembly_unit_by_key["feedback_arbiter"]
         historical[unit.span.start : unit.span.end] = (
@@ -226,7 +247,10 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual(result.data, self.base_result.data)
 
     def test_registered_historical_endpoint_can_be_migrated(self):
-        historical = bytearray(self.base_result.data)
+        telemetry_layout = build_rom.can_telemetry_layout.load_layout()
+        historical = bytearray(build_rom._strip_telemetry_endpoint(
+            self.base_result.data, telemetry_layout, "current"
+        ))
         historical[0xD3900] ^= 0x01
         layout = build_rom.rolling_launch_layout.load_layout()
         controller = layout.assembly_unit_by_key["ignition_controller"]
@@ -362,6 +386,76 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual(
             result.configuration, profile.calibration.to_bytes()
         )
+
+    def test_profile_can_enable_configurable_can_telemetry(self):
+        telemetry_values = {
+            "enabled": "true",
+            "can_id": "0x6EF",
+            "profile": '"wide54"',
+            "tick_divisor": "5",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "profile.toml"
+            path.write_text(
+                profile_text(telemetry=telemetry_values),
+                encoding="utf-8",
+            )
+            profile = build_rom.load_profile(path)
+        self.assertEqual(
+            profile.telemetry,
+            can_telemetry.Configuration(True, 0x6EF, "wide54", 5),
+        )
+        result = build_rom.build_image(self.stock, profile=profile)
+        self.assertEqual(
+            result.telemetry_configuration, profile.telemetry.to_bytes()
+        )
+        self.assertEqual(
+            result.telemetry_mailbox_record,
+            profile.telemetry.mailbox_record(),
+        )
+        self.assertTrue(checksums.verify(result.data).valid)
+
+    def test_builtin_profile_installs_disabled_telemetry(self):
+        result = self.base_result
+        self.assertFalse(result.profile.telemetry.enabled)
+        self.assertEqual(
+            result.telemetry_mailbox_record,
+            can_telemetry.STOCK_MAILBOX_RECORD,
+        )
+        layout = build_rom.can_telemetry_layout.load_layout()
+        self.assertTrue(all(
+            result.data[unit.span.start : unit.span.end]
+            != bytes([0xFF]) * unit.span.size
+            for unit in layout.assembly_units
+            if unit.key != "tables"
+        ))
+
+    def test_partial_can_telemetry_states_are_rejected(self):
+        layout = build_rom.can_telemetry_layout.load_layout()
+        cases = {}
+        damaged_unit = bytearray(self.base_result.data)
+        damaged_unit[layout.assembly_units[0].span.start] ^= 1
+        cases["damaged-unit"] = damaged_unit
+        damaged_hook = bytearray(self.base_result.data)
+        hook = layout.hooks[0]
+        damaged_hook[hook.address : hook.address + hook.width] = (
+            hook.stock.to_bytes(hook.width, layout.byte_order)
+        )
+        cases["damaged-hook"] = damaged_hook
+        damaged_configuration = bytearray(self.base_result.data)
+        damaged_configuration[layout.configuration.start] ^= 1
+        cases["damaged-configuration"] = damaged_configuration
+        damaged_reserve = bytearray(self.base_result.data)
+        damaged_reserve[layout.reserved_rom.start] = 0
+        cases["occupied-future-reserve"] = damaged_reserve
+        for name, source in cases.items():
+            with self.subTest(name=name):
+                source = checksums.recalculate(source)
+                with self.assertRaisesRegex(
+                    build_rom.BuildError,
+                    "partial or unknown CAN telemetry state",
+                ):
+                    build_rom.build_image(source, source_name=name)
 
     def test_profile_accepts_zero_minimum_speed(self):
         with tempfile.TemporaryDirectory() as directory:
