@@ -73,15 +73,11 @@ def test_generated_document_is_self_contained(tmp_path):
     assert payload["roms"][0]["objects"]
 
 
-def test_optional_telemetry_layout_is_labeled_candidate_when_present():
-    layout = model.ROOT / "patches" / "can-telemetry-layout.toml"
-    if not layout.exists():
-        pytest.skip("optional CAN telemetry layout is absent")
-
+def test_telemetry_layout_is_labeled_composed():
     rom = model.build_rom_model(model.resolve_manifest("JK08A"))
     telemetry = [item for item in rom["objects"] if item["patch"] == "can-telemetry"]
     assert telemetry
-    assert {item["patchStatus"] for item in telemetry} == {"candidate"}
+    assert {item["patchStatus"] for item in telemetry} == {"composed"}
 
 
 def test_custom_map_copies_remain_visible_as_patch_allocations_and_maps():

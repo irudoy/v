@@ -31,6 +31,5 @@ path = "patches/rolling-launch-layout.toml"
 id = "can-telemetry"
 label = "CAN telemetry"
 kind = "layout"
-status = "candidate"
+status = "composed"
 path = "patches/can-telemetry-layout.toml"
-optional = true

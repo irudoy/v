@@ -12,17 +12,16 @@ and patch ranges from declared manifests.
 ## JK08A build
 
 ```bash
-uv run python tools/romviz/build.py JK08A \
-  --output tmp/romviz/jk08a-rom-atlas.html
+make romviz
 ```
 
-The HTML is self-contained and opens directly from the filesystem. A local
-server is available when browser file access is restricted:
+The root target always rebuilds `tmp/romviz/jk08a-rom-atlas.html`. The HTML is
+self-contained and opens directly from the filesystem. The underlying command
+is available for direct tool development:
 
 ```bash
 uv run python tools/romviz/build.py JK08A \
-  --output tmp/romviz/jk08a-rom-atlas.html \
-  --serve 8765
+  --output tmp/romviz/jk08a-rom-atlas.html
 ```
 
 The interface supports mouse-wheel and trackpad-pinch zoom, pointer dragging,
@@ -46,8 +45,7 @@ than copying object addresses into visualization code.
 | Axis semantics and inferred extents | `defs/JK08A.axes.csv`, `defs/JK08A.interp.csv`, and map geometry |
 | Diagnostic bindings and DTC storage | `defs/JK08A.diagnostic-bindings.csv` and `defs/JK08A.dtc.csv` |
 | Definition-controlled byte patches | `defs/JK08A.overrides.toml` |
-| Composed runtime layouts | map-switching and Rolling Launch layout TOML files |
-| Candidate runtime allocations | optional CAN telemetry layout manifest |
+| Composed runtime layouts | map-switching, Rolling Launch, and CAN telemetry layout manifests |
 | Checksum fields and domains | `patches.jk08a_checksums` constants |
 
 Ghidra exports provide exact function entry addresses and body byte counts. The
@@ -68,8 +66,8 @@ manifests, and checksum module. No interface changes are required. Multiple
 ROMs can be embedded in one atlas:
 
 ```bash
-uv run python tools/romviz/build.py JK08A <ROM> \
-  --output tmp/romviz/vq-rom-atlas.html
+make romviz ROMS="JK08A <ROM>" \
+  ROMVIZ_OUTPUT=tmp/romviz/vq-rom-atlas.html
 ```
 
 An optional patch source may be absent without failing the build. Required

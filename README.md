@@ -63,5 +63,43 @@ engines.
 - Definition generation: [`tools/mapkit/README.md`](tools/mapkit/README.md)
 - Executable verification: [`tools/sh-elf-run/README.md`](tools/sh-elf-run/README.md)
 
-The Python test contract is `uv run pytest -q`; the pin-tracer contract is
-documented beside that tool. Each narrow README owns its operational commands.
+## Root orchestration
+
+The root `Makefile` delegates to the tracked subsystem entry points without
+moving build logic into Make recipes. Run `make help` for the complete target
+and variable list. Common read-only workflows are:
+
+```bash
+make check
+make test
+make verify
+```
+
+`make verify` includes the repository-contained GNU SH-2E Docker gate. The
+direct Python test contract remains `uv run pytest -q`; the pin-tracer contract
+is documented beside that tool.
+
+Build the self-contained ROM atlas HTML with:
+
+```bash
+make romviz
+```
+
+The target always rebuilds the ignored `tmp/romviz/jk08a-rom-atlas.html`
+artifact. It does not start a server or watch source files.
+
+The unified production builder remains the only complete modified-ROM entry
+point. Map Switching, Rolling Launch, CAN telemetry, checksum closure, and the
+final write-set audit run through the same command:
+
+```bash
+make rom-verify INPUT=tmp/input.bin
+make rom-build INPUT=tmp/input.bin OUTPUT=tmp/output.bin
+make rom-build INPUT=tmp/input.bin OUTPUT=tmp/output.bin \
+  PROFILE=tmp/profile.toml
+```
+
+`make defs-generate` regenerates the tracked XML, XDF, and map ledger from an
+already running and populated Memgraph instance. No root target starts,
+mutates, or backs up Memgraph, flashes hardware, or deletes temporary files.
+Each narrow README retains the detailed subsystem contract.
