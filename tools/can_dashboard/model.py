@@ -14,6 +14,7 @@ from tools.logs import can_telemetry
 
 STOCK_RPM_ID = 0x180
 ASCD_BUTTON_ID = 0x239
+VEHICLE_SPEED_ID = 0x280
 PRND_ID = 0x421
 DASHBOARD_STATE_ID = 0x551
 DEFAULT_CAN_ID = 0x6F0
@@ -22,6 +23,7 @@ BASE_TICK_SECONDS = 0.01024
 OBSERVED_IDS = (
     STOCK_RPM_ID,
     ASCD_BUTTON_ID,
+    VEHICLE_SPEED_ID,
     PRND_ID,
     DASHBOARD_STATE_ID,
 )
@@ -31,9 +33,16 @@ PRND_CODES = {
     0x10: "R",
     0x18: "N",
     0x20: "D",
+    0x28: "DS",
+    0x80: "M1",
+    0x88: "M2",
+    0x90: "M3",
+    0x98: "M4",
+    0xA0: "M5",
 }
 ASCD_BUTTON_CODES = {
     0x20: "RELEASE",
+    0x10: "RES",
     0x08: "SET",
     0x02: "CANCEL",
 }
@@ -42,6 +51,28 @@ DASHBOARD_STATE_CODES = {
     0x62: "CRUISE",
     0x72: "CRUISE+SET",
 }
+
+DASHBOARD_AFFINE_TRANSFORMS = {
+    "timing_command_deg": ("final_timing_raw", 1, 0),
+    "app1_v": ("app1_raw", 1 / 200, 0),
+    "app2_v": ("app2_raw", 1 / 200, 0),
+    "tps_b1_v": ("tps_b1_raw", 1 / 200, 0),
+    "tps_b2_v": ("tps_b2_raw", 1 / 200, 0),
+    "fuel_temperature_deg_c": (
+        "fuel_temperature_did_source_raw", 1, -50
+    ),
+    "oil_temperature_deg_c": (
+        "oil_temperature_did_source_raw", 1, -50
+    ),
+}
+
+
+def _dashboard_engineering_values(raw):
+    return {
+        target: raw[source] * factor + offset
+        for target, (source, factor, offset) in DASHBOARD_AFFINE_TRANSFORMS.items()
+        if source in raw
+    }
 
 
 @dataclass(frozen=True)
@@ -99,6 +130,8 @@ class DashboardModel:
         self.unexpected_tick_steps = 0
         self.error_frames = 0
         self.stock_rpm = None
+        self.vehicle_speed_raw = None
+        self.vehicle_speed_kmh = None
         self.gear = "?"
         self.gear_raw = None
         self.ascd_button = "?"
@@ -154,12 +187,16 @@ class DashboardModel:
         if self.schema_verified:
             retained = replace(snapshot, fields=dict(self.raw), schema_verified=True)
             self.engineering.update(can_telemetry.engineering_values(retained))
+            self.engineering.update(_dashboard_engineering_values(self.raw))
         return snapshot
 
     def _decode_stock_context(self, frame):
         data = bytes(frame.data)
         if frame.arbitration_id == STOCK_RPM_ID and len(data) >= 2:
             self.stock_rpm = int.from_bytes(data[0:2], "big") / 8
+        elif frame.arbitration_id == VEHICLE_SPEED_ID and len(data) >= 6:
+            self.vehicle_speed_raw = int.from_bytes(data[4:6], "big")
+            self.vehicle_speed_kmh = self.vehicle_speed_raw / 100
         elif frame.arbitration_id == ASCD_BUTTON_ID and len(data) >= 4:
             self.ascd_button_raw = data[3]
             self.ascd_button = ASCD_BUTTON_CODES.get(
@@ -284,12 +321,16 @@ class DemoGenerator:
             "fuel_temperature_did_source_raw": 78,
             "oil_temperature_did_source_raw": 126,
             "af_state_factor_raw": 16_384,
-            "stft_b1_raw": 1.7 * math.sin(elapsed * 0.4) * 256,
-            "stft_b2_raw": 1.4 * math.sin(elapsed * 0.4 + 0.3) * 256,
+            "stft_b1_raw": (
+                100 + 1.7 * math.sin(elapsed * 0.4)
+            ) * 256,
+            "stft_b2_raw": (
+                100 + 1.4 * math.sin(elapsed * 0.4 + 0.3)
+            ) * 256,
             "intake_cvtc_duty_b1_raw": (18 + 55 * wave) * 256 / 100,
             "intake_cvtc_duty_b2_raw": (19 + 54 * wave) * 256 / 100,
-            "ltft_b1_raw": 2.1 * 256,
-            "ltft_b2_raw": 1.6 * 256,
+            "ltft_b1_raw": 102.1 * 256,
+            "ltft_b2_raw": 101.6 * 256,
             "timing_state_2023_raw": 0x12,
             "timing_state_564c_raw": 0x20,
             "protocol_version": 1,
@@ -334,11 +375,15 @@ class DemoGenerator:
         prnd[0] = 0x20
         button = bytearray(8)
         button[3] = 0x20
+        speed = bytearray(8)
+        speed_kmh = 55 * ((math.sin(elapsed * 0.9) + 1) / 2)
+        speed[4:6] = int(speed_kmh * 100).to_bytes(2, "big")
         dashboard = bytearray(8)
         dashboard[5] = 0x72 if rpm > 3200 else 0x02
         return (
             FrameRecord(STOCK_RPM_ID, bytes(rpm_payload), elapsed),
             FrameRecord(PRND_ID, bytes(prnd), elapsed),
             FrameRecord(ASCD_BUTTON_ID, bytes(button), elapsed),
+            FrameRecord(VEHICLE_SPEED_ID, bytes(speed), elapsed),
             FrameRecord(DASHBOARD_STATE_ID, bytes(dashboard), elapsed),
         )

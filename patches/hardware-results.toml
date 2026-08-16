@@ -248,6 +248,103 @@ overlay_21_status = "pass"
 overlay_22_sha256 = "21f532b924e24deede30c07bbf7d253bf4c908355bca44c7c863fee592aa2a84"
 overlay_22_status = "functional_fail"
 
+[can_telemetry.current_wide54_divisor1]
+recorded_on = "2026-08-17"
+firmware_label = "1.11"
+source_sha256 = "1a78e4ae2bd22c59aba90f7eb85140b91a1f43fa87966a09fa56a199306f8f8e"
+output_sha256 = "aa18c919bf885b572aba15bb5068609ccb0ecc99f739e364938fc170bdf0d72a"
+output_md5 = "965eb769f7d4003038a356ac3972830d"
+software_status = "pass"
+hardware_status = "pass"
+hardware_scope = "moving load, DS/manual selection, stationary idle, and listen-only dashboard reception"
+acceptance_status = "complete for the current tuning-telemetry use"
+additional_hardware_validation_required = false
+can_id = 0x6F0
+profile = "wide54"
+tick_divisor = 1
+schema_version = 1
+profile_id = 2
+profile_crc16 = 0x238C
+nominal_bitrate = 500000
+pcan_error_recording_enabled = true
+capture_name = "new-log-full.trc"
+capture_sha256 = "a1f8b8c50d45e2f281917bea998d638e2d81e3a2be51b105f885f9f43c181298"
+capture_frame_count = 1000000
+capture_span_ms = 366919.6
+standard_id_count = 45
+extended_id_count = 0
+rtr_count = 0
+warning_record_count = 0
+error_record_count = 0
+average_bus_load_percent = [57.185, 69.437]
+peak_100ms_bus_load_percent = [59.006, 71.650]
+peak_1000ms_bus_load_percent = [57.473, 69.787]
+telemetry_frame_count = 286493
+initial_partial_group_frame_count = 5
+complete_snapshot_count = 35811
+schema_mismatch_count = 0
+incomplete_snapshot_count = 0
+malformed_snapshot_count_after_initial_sync = 0
+missed_snapshot_count = 0
+unexpected_tick_step_count = 0
+snapshot_overrun_count = 0
+tx_abort_count = 0
+nonzero_telemetry_status_count = 0
+measured_snapshot_rate_hz = 97.599398
+snapshot_period_median_ms = 10.2
+snapshot_period_p99_ms = 12.1
+snapshot_period_max_ms = 15.7
+group_latency_median_ms = 2.3
+group_latency_p99_ms = 6.3
+group_latency_max_ms = 8.1
+stock_rpm_pair_count = 35811
+stock_rpm_mean_absolute_difference = 6.382
+stock_rpm_max_absolute_difference = 84.375
+vehicle_speed_can_id = 0x280
+vehicle_speed_byte_offset = 4
+vehicle_speed_width = 2
+vehicle_speed_scale = "big-endian raw / 100 km/h candidate"
+vehicle_speed_observed_range_kmh = [0.0, 68.54]
+dashboard_screenshot_sha256 = "2522f1e63c7bd97ee6c3842682883f18d6677af97a101f2f4eebbccd03043952"
+dashboard_visible_group_count = 105153
+dashboard_visible_schema_mismatch_count = 0
+dashboard_visible_error_frame_count = 0
+dashboard_visible_snapshot_overrun_count = 0
+dashboard_visible_tx_abort_count = 0
+carscanner_capture_sha256 = [
+  "86e809584ca54c9e90b224dd870a84033f17cabec7e6a61d79cbb6d26140cf58",
+  "8662e731783f33ced6eec8c7c31aac4097b1e3b43bf956d101e6fd1940438a2d",
+  "66d29b86b182ae6941b5fa9bab3e1aa48b1e26cfa2010f0d6502aaa1259a6024",
+  "f2c6bea28fc3f3280109a014e42b5d45c2d8e3b18b21d3b74bdbc9f5e6405bef",
+  "d07db6575113c7d09fb7a02bc572133643defb635aba9a9869d679e76c14223b",
+  "2b25f6e79063884ea48f0a474f7f67ac67f2719682188837ba750cdade43a469",
+  "c97eda1e133e604f12d57c775ce3bf1796f09fd17d0c93229156a4538de47972",
+  "6a6ab926b88803146b8eeb7549339bb3eeaecfcd985d0187d74dcfb322c80b9e",
+  "4757ad525591d3641ceb19b3b9dd75e717aa2ee08e1a2abcc681924f40bdd78d",
+  "29aefb421e3da9eaf4f1123700a909f54dc27a6c2fc6e5deee2b8dc924dc2126",
+]
+near_adjacent_parameter_checks = [
+  "coolant stream 91 degC and diagnostic 91 degC",
+  "APP stream raw 153/152 -> 0.765/0.760 V and diagnostic 0.76/0.76 V",
+  "TPS stream raw 151/151 -> 0.755/0.755 V and diagnostic 0.77/0.77 V",
+  "STFT stream 95.92/92.47 percent factor -> -4.08/-7.53 percent correction and diagnostic -3/-8 percent",
+  "LTFT stream 103.32/103.21 percent factor -> 3.32/3.21 percent correction and diagnostic 3/3 percent",
+  "oil-temperature stream raw 141 -> 91 degC and diagnostic 90 degC",
+  "intake CVTC stream 0.5/-0.5 degCA and diagnostic 0.5/0.0 degCA",
+]
+selector_can_id = 0x421
+selector_byte_offset = 0
+selector_codes = [
+  "08=P", "10=R", "18=N", "20=D", "28=DS",
+  "80=M1", "88=M2", "90=M3", "98=M4", "A0=M5",
+]
+selector_trace_observed_codes = [0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x80, 0x88, 0x90]
+selector_operator_only_codes = [0x98, 0xA0]
+ascd_can_id = 0x239
+ascd_byte_offset = 3
+ascd_resume_code = 0x10
+ascd_resume_status = "operator-confirmed live observation outside the saved trace"
+
 [passive_can]
 recorded_on = "2026-08-16"
 format = "PEAK PCAN-View TRC 1.1"
@@ -256,8 +353,8 @@ candidate_id = 0x6F0
 candidate_frame_count = 0
 total_frame_count = 363923
 observed_span_ms = 187111.7
-status = "partial_vehicle_baseline"
-remaining_states = ["moving_load", "shutdown", "active_diagnostics"]
+status = "accepted stationary baseline plus active moving-load telemetry validation"
+remaining_states = []
 
 [[passive_can.captures]]
 capture_name = "startup.trc"

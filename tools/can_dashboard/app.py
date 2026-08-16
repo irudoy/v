@@ -59,10 +59,11 @@ class Metric:
 
 HERO_METRICS = (
     Metric("rpm", "ENGINE SPEED", "RPM", 0),
+    Metric("vehicle_speed_kmh", "VEHICLE SPEED", "km/h*", 1),
     Metric("calculated_load_percent", "CALCULATED LOAD", "%", 1),
-    Metric("final_timing_raw", "TIMING COMMAND", "raw", 0),
+    Metric("timing_command_deg", "TIMING COMMAND", "deg*", 0),
     Metric("maf_total_g_s", "TOTAL AIRFLOW", "g/s*", 2),
-    Metric("injection_average_ms", "INJECTION CALC", "ms", 2),
+    Metric("injection_average_ms", "INJECTION CALC", "ms*", 2),
     Metric("coolant_deg_c", "COOLANT", "degC*", 0),
     Metric("gear", "SELECTOR", "", 0),
 )
@@ -82,10 +83,10 @@ PANELS = (
     )),
     ("Ignition, throttle, and CVTC", (
         Metric("apc_command_raw", "APC command", "raw", 0),
-        Metric("app1_raw", "APP 1", "raw", 0),
-        Metric("app2_raw", "APP 2", "raw", 0),
-        Metric("tps_b1_raw", "TPS bank 1", "raw", 0),
-        Metric("tps_b2_raw", "TPS bank 2", "raw", 0),
+        Metric("app1_v", "APP 1", "V*", 3),
+        Metric("app2_v", "APP 2", "V*", 3),
+        Metric("tps_b1_v", "TPS bank 1", "V*", 3),
+        Metric("tps_b2_v", "TPS bank 2", "V*", 3),
         Metric("absolute_throttle_raw", "Absolute throttle", "raw", 0),
         Metric("intake_cvtc_actual_b1_deg_ca", "CVTC actual B1", "degCA*", 1),
         Metric("intake_cvtc_actual_b2_deg_ca", "CVTC actual B2", "degCA*", 1),
@@ -109,8 +110,8 @@ PANELS = (
     )),
     ("Temperatures and context", (
         Metric("iat_deg_c", "Intake air", "degC*", 0),
-        Metric("fuel_temperature_did_source_raw", "Fuel temp DID source", "raw*", 0),
-        Metric("oil_temperature_did_source_raw", "Oil temp DID source", "raw*", 0),
+        Metric("fuel_temperature_deg_c", "Fuel temperature", "degC*", 0),
+        Metric("oil_temperature_deg_c", "Oil temperature", "degC*", 0),
         Metric("timing_state_2023_raw", "Timing state 2023", "", 0, True),
         Metric("timing_state_564c_raw", "Timing state 564C", "", 0, True),
         Metric("stock_rpm", "Stock CAN RPM", "RPM", 0),
@@ -325,7 +326,7 @@ class DashboardApp:
 
         heroes = tk.Frame(self.root, bg=BG)
         heroes.pack(fill="x", padx=14)
-        colors = (GREEN, BLUE, PURPLE, CYAN, AMBER, RED, TEXT)
+        colors = (GREEN, BLUE, PURPLE, CYAN, AMBER, RED, TEXT, BLUE)
         for column, (metric, color) in enumerate(zip(HERO_METRICS, colors)):
             heroes.columnconfigure(column, weight=1, uniform="hero")
             card = HeroCard(heroes, metric, color)
@@ -353,7 +354,7 @@ class DashboardApp:
         ).pack(fill="x", padx=14, pady=(0, 4), ipady=6)
         tk.Label(
             self.root,
-            text="* Candidate transform or binding. Timing command is not measured spark angle; injection calc is not a verified electrical pulse width.",
+            text="* Target-correlated or candidate transform. Timing is a software command; injection is a compensated command, not a measured electrical duration.",
             bg=BG,
             fg=MUTED,
             font=("Segoe UI", 8),
@@ -499,6 +500,8 @@ class DashboardApp:
             return self.model.value("rpm", self.model.stock_rpm)
         if key == "stock_rpm":
             return self.model.stock_rpm
+        if key == "vehicle_speed_kmh":
+            return self.model.vehicle_speed_kmh
         if key == "gear":
             return self.model.gear
         if key == "ascd_button":

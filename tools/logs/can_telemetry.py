@@ -95,6 +95,7 @@ class Decoder:
         self._last_tick = None
         self._unwrapped_tick = None
         self._schema_verified = profile == "core32"
+        self._seen_page_zero = False
         self.incomplete_groups = 0
         self.malformed_frames = 0
         self.schema_mismatches = 0
@@ -122,6 +123,7 @@ class Decoder:
         page = payload[0] & 0x07
         sequence = payload[0] >> 3
         if page == 0:
+            self._seen_page_zero = True
             self._discard()
             tick16 = int.from_bytes(payload[1:3], "big")
             if tick16 & 0x1F != sequence:
@@ -129,6 +131,10 @@ class Decoder:
                 return None
             self._pages = [payload]
             self._sequence = sequence
+        elif not self._seen_page_zero:
+            # A capture or live connection may begin in the tail of a valid
+            # group. Wait for page 0 before classifying ordering failures.
+            return None
         elif (
             not self._pages
             or sequence != self._sequence
@@ -228,10 +234,6 @@ def engineering_values(snapshot):
         "maf_total_raw": ("maf_total_g_s", 1 / 100),
         "bfs_raw": ("bfs_ms", 1 / 2048),
         "af_state_factor_raw": ("af_state_factor", 1 / 16384),
-        "stft_b1_raw": ("stft_b1_percent", 1 / 256),
-        "stft_b2_raw": ("stft_b2_percent", 1 / 256),
-        "ltft_b1_raw": ("ltft_b1_percent", 1 / 256),
-        "ltft_b2_raw": ("ltft_b2_percent", 1 / 256),
         "intake_cvtc_duty_b1_raw": (
             "intake_cvtc_duty_b1_percent", 100 / 256
         ),
@@ -252,6 +254,10 @@ def engineering_values(snapshot):
         "calculated_load_raw": (
             "calculated_load_percent", 100 / 255, 0
         ),
+        "stft_b1_raw": ("stft_b1_percent", 1 / 256, -100),
+        "stft_b2_raw": ("stft_b2_percent", 1 / 256, -100),
+        "ltft_b1_raw": ("ltft_b1_percent", 1 / 256, -100),
+        "ltft_b2_raw": ("ltft_b2_percent", 1 / 256, -100),
     }
     for name, (target, factor, offset) in affine.items():
         if name in raw:

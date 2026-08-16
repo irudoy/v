@@ -36,6 +36,11 @@ class DashboardModelTest(unittest.TestCase):
         self.assertIn("ltft_b1_percent", dashboard.engineering)
         self.assertIn("intake_cvtc_actual_b1_deg_ca", dashboard.engineering)
         self.assertIn("calculated_load_percent", dashboard.engineering)
+        self.assertIn("app1_v", dashboard.engineering)
+        self.assertIn("tps_b1_v", dashboard.engineering)
+        self.assertIn("oil_temperature_deg_c", dashboard.engineering)
+        self.assertGreater(dashboard.value("stft_b1_percent"), -5)
+        self.assertLess(dashboard.value("stft_b1_percent"), 5)
         self.assertGreater(dashboard.value("rpm"), 800)
         self.assertLess(dashboard.value("rpm"), 4_100)
         self.assertEqual(dashboard.missed_snapshots, 0)
@@ -53,6 +58,33 @@ class DashboardModelTest(unittest.TestCase):
         self.assertEqual(dashboard.ascd_button, "RELEASE")
         self.assertIn(dashboard.dashboard_state, {"STOCK", "CRUISE+SET"})
         self.assertIsNotNone(dashboard.stock_rpm)
+        self.assertIsNotNone(dashboard.vehicle_speed_kmh)
+
+    def test_target_vehicle_selector_button_and_speed_codes(self):
+        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        for code, label in model.PRND_CODES.items():
+            dashboard.process_frame(
+                model.FrameRecord(model.PRND_ID, bytes((code, 0))),
+                now=1.0,
+            )
+            self.assertEqual(dashboard.gear, label)
+
+        button = bytearray(5)
+        button[3] = 0x10
+        dashboard.process_frame(
+            model.FrameRecord(model.ASCD_BUTTON_ID, bytes(button)),
+            now=1.1,
+        )
+        self.assertEqual(dashboard.ascd_button, "RES")
+
+        speed = bytearray(8)
+        speed[4:6] = (6854).to_bytes(2, "big")
+        dashboard.process_frame(
+            model.FrameRecord(model.VEHICLE_SPEED_ID, bytes(speed)),
+            now=1.2,
+        )
+        self.assertEqual(dashboard.vehicle_speed_raw, 6854)
+        self.assertEqual(dashboard.vehicle_speed_kmh, 68.54)
 
     def test_status_bits_and_decoder_errors_are_exposed(self):
         generator = model.DemoGenerator()

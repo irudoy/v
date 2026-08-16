@@ -43,8 +43,9 @@ On the Windows laptop:
    to provide CAN ACK.
 
 The default hardware filter accepts custom telemetry plus stock context IDs
-`0x180`, `0x239`, `0x421`, and `0x551`. The latter provide an independent RPM
-cross-check, ASCD input, PRND, and dashboard indication state.
+`0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide an independent
+RPM cross-check, vehicle speed, ASCD input, selector state, and dashboard
+indication state.
 
 ## Direct repository run
 
@@ -75,12 +76,40 @@ Schema-dependent conversions stay disabled until the in-band health context
 matches protocol version, profile ID, and CRC16. Stale context values remain
 visible while their update cadence is one quarter of the snapshot rate.
 
-Fields marked with `*` use candidate transforms or diagnostic semantic
-bindings. `final_timing_raw` is a software command, not a measured spark angle.
-Injection values use the declared candidate `/100 ms` transform but are not a
-verified electrical injector-open duration. The dashboard preserves these
-boundaries in its labels and footer.
+Fields marked with `*` use target-correlated transforms, candidate transforms,
+or diagnostic semantic bindings. The current conversions are:
+
+| Display | Source | Conversion | Evidence boundary |
+| --- | --- | --- | --- |
+| vehicle speed | `0x280` bytes 4..5 | big-endian `raw / 100 km/h` | target field and zero state confirmed; scale remains homologous |
+| APP 1/2 | telemetry words | `raw / 200 V` | homologous formula and near-adjacent target agreement |
+| TPS bank 1/2 | telemetry words | `raw / 200 V` | near-adjacent target agreement |
+| fuel/oil temperature | telemetry bytes | `raw - 50 degC` | exact JK08A DID pointers plus homologous profile; oil agrees on target |
+| short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |
+| timing command | telemetry signed byte | `raw deg` | near-adjacent target agreement; software command only |
+
+The CarScanner comparison follows the CAN recording rather than sharing a
+clock with it. It corroborates transforms but cannot prove equality for values
+that can change between captures. Injection values use the declared candidate
+`raw / 100 ms` transform but are compensated software commands, not verified
+electrical injector-open durations. Timing is also a software command, not a
+measured spark angle. The dashboard preserves these boundaries in its labels
+and footer.
 
 Health indicators include complete snapshot and frame rates, tick-derived
 loss, incomplete and malformed groups, schema mismatches, source queue drops,
 telemetry status flags, and the rotating overrun and abort counters.
+
+## Target-vehicle result
+
+The 2026-08-17 `wide54`, divisor-1 capture contains 35,811 complete snapshots
+at 97.599 Hz. After synchronization to the first page 0, it has zero malformed
+or incomplete groups, tick gaps, schema mismatches, nonzero telemetry status,
+snapshot overruns, TX aborts, PCAN warnings, and PCAN errors. Whole-bus average
+load is 57.185% to 69.437%, and the maximum rolling 100 ms estimate is 59.006%
+to 71.650% at `500 kbit/s`.
+
+Observed selector codes are `08=P`, `10=R`, `18=N`, `20=D`, `28=DS`,
+`80=M1`, `88=M2`, `90=M3`, `98=M4`, and `A0=M5`. Codes `98` and `A0` are
+operator-confirmed observations outside the saved trace. ASCD byte 3 code
+`10` is RESUME/ACCEL and has the same evidence boundary.

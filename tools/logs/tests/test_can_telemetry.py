@@ -90,6 +90,15 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             health.fields["calculated_load_raw"] * 100 / 255,
         )
 
+        trims = feed_group(
+            decoder, frames("wide54", 4, context_tag=1)
+        )
+        trim_physical = can_telemetry.engineering_values(trims)
+        self.assertAlmostEqual(
+            trim_physical["stft_b1_percent"],
+            trims.fields["stft_b1_raw"] / 256 - 100,
+        )
+
     def test_health_mismatch_is_rejected(self):
         decoder = can_telemetry.Decoder("wide54")
         result = feed_group(
@@ -142,6 +151,16 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         unknown = frames("wide54", 2, context_tag=0x7F)
         self.assertIsNone(feed_group(decoder, unknown))
         self.assertGreaterEqual(decoder.malformed_frames, 3)
+
+    def test_initial_partial_group_waits_for_page_zero(self):
+        decoder = can_telemetry.Decoder("wide54")
+        group = frames("wide54", 7, context_tag=2)
+        for payload in group[3:]:
+            self.assertIsNone(decoder.feed(decoder.can_id, payload))
+        self.assertEqual(decoder.malformed_frames, 0)
+        self.assertIsNotNone(feed_group(
+            decoder, frames("wide54", 8, context_tag=3)
+        ))
 
     def test_candump_parser_accepts_compact_frames(self):
         parsed = can_telemetry.parse_candump_line(

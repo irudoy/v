@@ -99,8 +99,8 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 172)
-        self.assertEqual(len(inherited), 35)
+        self.assertEqual(len(rows), 174)
+        self.assertEqual(len(inherited), 37)
         self.assertEqual(
             sum(row["rom_scope"] == "exact-rom" for row in rows), 137
         )
@@ -137,6 +137,14 @@ class BindingSourceTest(unittest.TestCase):
             },
         )
         by_id = {row["id"]: row for row in rows}
+        self.assertEqual(
+            by_id["fuel-temperature-did-1104"]["firmware_addr"],
+            "ffff1074",
+        )
+        self.assertEqual(
+            by_id["engine-oil-temperature-did-111f"]["firmware_addr"],
+            "ffff2876",
+        )
         self.assertEqual(
             by_id["power-balance-mask-iolid-0c"]["firmware_addr"],
             "ffff992f",

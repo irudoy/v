@@ -39,7 +39,9 @@ groups described by `../../patches/can-telemetry-schema.json`. It accepts the
 compact `ID#DATA` candump form, filters one configured standard ID, requires
 page 0 followed by strictly increasing page IDs, verifies the five-bit header
 sequence against `tick16`, discards incomplete or preempted groups, and unwraps
-`tick16` modulo 65536.
+`tick16` modulo 65536. A capture may begin in the tail of a group already in
+progress; frames before the first page 0 are ignored as initial synchronization
+rather than classified as malformed.
 
 Decode a capture to one JSON object per complete snapshot:
 
@@ -57,6 +59,10 @@ profile CRC16. A later health mismatch disables conversion and increments the
 reported mismatch counter. Raw source values remain present in every accepted
 snapshot; transforms are emitted only for scales explicitly declared by the
 schema.
+
+Fuel-trim words retain the firmware's Q8.8 absolute-percent representation,
+whose neutral value is 100.00%. The engineering correction emitted by the
+decoder is therefore `raw / 256 - 100 percent`.
 
 The final stderr marker reports complete, incomplete, malformed, and
 schema-mismatch counts. The decoder never fills a missing page, combines

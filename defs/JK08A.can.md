@@ -156,10 +156,11 @@ The 44 IDs common to the idle and Rolling Launch captures are:
 
 The startup capture additionally contains `0x71D`, `0x71E`, `0x71F`, `0x72D`,
 and `0x72E`. Neither conditional ECM frame `0x512` nor telemetry candidate
-`0x6F0` occurs in any capture. `0x6F0` remains provisional because moving
-load, shutdown, and an active diagnostic session have not been recorded. It
-has lower arbitration priority than all observed stock ECM broadcasts through
-`0x6E2`, but higher priority than the five startup-only IDs.
+`0x6F0` occurs in any endpoint-disabled capture. A separate enabled capture
+establishes successful `0x6F0` coexistence under moving load and accepts the ID
+for the current tuning-telemetry use. The ID has lower arbitration priority
+than all observed stock ECM broadcasts through `0x6E2`, but higher priority
+than the five startup-only IDs.
 
 Measured ECM periods agree with the code-derived schedule:
 
@@ -185,12 +186,47 @@ This independently confirms the shared big-endian engine-speed source and the
 `RPM = raw / 8` transform.
 
 Live control correlations establish `0x239` byte 3 values `0x20` for release,
-`0x08` for SET, and `0x02` for CANCEL. Frame `0x551` byte 5 preserves low
-nibble `0x02` while custom dashboard states appear as `0x62` for CRUISE and
-`0x72` for CRUISE plus SET. The operator-confirmed selector sequence
-P, R, N, D, N, R, P establishes `0x421` byte 0 values `0x08` for P, `0x10`
-for R, `0x18` for N, and `0x20` for D. Transient zero appears between some
-detents and is not a stable selector position.
+`0x10` for RESUME/ACCEL, `0x08` for SET, and `0x02` for CANCEL. The saved
+2026-08-17 trace contains release, SET, and CANCEL; the `0x10` RESUME/ACCEL
+code is an operator-confirmed live observation outside that saved trace. Frame
+`0x551` byte 5 preserves low nibble `0x02` while custom dashboard states appear
+as `0x62` for CRUISE and `0x72` for CRUISE plus SET.
+
+Target-vehicle selector observations establish the following `0x421` byte-0
+mapping:
+
+| Code | Selector state | Evidence |
+| ---: | --- | --- |
+| `0x08` | P | saved trace and operator confirmation |
+| `0x10` | R | saved trace and operator confirmation |
+| `0x18` | N | saved trace and operator confirmation |
+| `0x20` | D | saved trace and operator confirmation |
+| `0x28` | DS | saved trace and operator confirmation |
+| `0x80` | M1 | saved trace and operator confirmation |
+| `0x88` | M2 | saved trace and operator confirmation |
+| `0x90` | M3 | saved trace and operator confirmation |
+| `0x98` | M4 | operator confirmation outside saved trace |
+| `0xA0` | M5 | operator confirmation outside saved trace |
+
+Transient zero appears between some detents and is not a stable selector
+position. No M6 or M7 code is inferred from the numeric pattern.
+
+### Enabled telemetry moving-load evidence
+
+The 2026-08-17 `1.11` capture records 1,000,000 standard received data frames
+over 366.920 seconds with PCAN-View error-frame recording enabled. It contains
+286,493 `0x6F0` frames and 35,811 complete `wide54` divisor-1 groups after the
+initial partial group. Every accepted tick advances by one. Schema mismatch,
+incomplete group, malformed group after synchronization, telemetry status,
+snapshot-overrun, transmit-abort, PCAN warning, and PCAN error counts are all
+zero. Measured whole-bus load is 57.185% to 69.437% on average, with a
+59.006% to 71.650% peak over a rolling 100 ms window.
+
+Frame `0x280` bytes 4 and 5 form a big-endian moving quantity. The homologous
+Z34 formula `raw / 100 km/h` yields 0.00 to 68.54 km/h in this target capture
+and returns to zero at the operator-confirmed stationary end. This establishes
+the target field location and zero state. The physical scale remains a
+candidate until a synchronized independent speed reference is recorded.
 
 ## Mailbox-empty interrupt
 
