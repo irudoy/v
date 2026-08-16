@@ -12,19 +12,21 @@ import sys
 import threading
 import time
 import tkinter as tk
-from tkinter import filedialog, ttk
+from tkinter import filedialog, messagebox, ttk
 
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from tools.can_dashboard import __version__
 from tools.can_dashboard.model import (
     DEFAULT_BITRATE,
     DEFAULT_CAN_ID,
     DashboardModel,
     FrameRecord,
 )
+from tools.can_dashboard.recording import TelemetryMlgRecorder
 from tools.can_dashboard.sources import (
     PcanConfiguration,
     SourceStatus,
@@ -118,6 +120,9 @@ PANELS = (
         Metric("ascd_button", "ASCD input"),
         Metric("dashboard_state", "Dashboard state"),
         Metric("context_name", "Last context"),
+        Metric("gps_lat", "GPS latitude", "deg", 6),
+        Metric("gps_lon", "GPS longitude", "deg", 6),
+        Metric("gps_status", "GPS source"),
     )),
 )
 
@@ -244,6 +249,8 @@ class DashboardApp:
         self.source_state = "stopped"
         self.source_detail = "not connected"
         self.model = DashboardModel(args.profile, args.can_id, args.tick_divisor)
+        self.recorder = None
+        self.recording_started_monotonic = None
         self.last_ui_group = 0
         self.hero_cards = {}
         self.data_panels = []
@@ -256,9 +263,11 @@ class DashboardApp:
             self.root.after(200, lambda: self.start_replay(args.replay))
         elif not args.no_auto_connect:
             self.root.after(300, self.start_pcan)
+        if args.record is not None:
+            self.root.after(500, lambda: self.start_recording(args.record))
 
     def _build_window(self):
-        self.root.title("JK08A CAN Telemetry")
+        self.root.title(f"JK08A CAN Telemetry v{__version__}")
         self.root.configure(bg=BG)
         self.root.geometry("1520x920")
         self.root.minsize(1180, 760)
@@ -271,7 +280,7 @@ class DashboardApp:
         top.pack(fill="x", padx=14, pady=(12, 8))
         tk.Label(
             top,
-            text="JK08A CAN TELEMETRY",
+            text=f"JK08A CAN TELEMETRY v{__version__}",
             bg=BG,
             fg=TEXT,
             font=("Segoe UI Semibold", 17),
@@ -303,6 +312,12 @@ class DashboardApp:
         ttk.Button(controls, text="Demo", command=self.start_demo).pack(side="left", padx=3)
         ttk.Button(controls, text="Replay", command=self.select_replay).pack(side="left", padx=3)
         ttk.Button(controls, text="Stop", command=self.stop_source).pack(side="left", padx=3)
+        self.record_button = ttk.Button(
+            controls,
+            text="Record MLG",
+            command=self.toggle_recording,
+        )
+        self.record_button.pack(side="left", padx=(9, 3))
 
         telemetry_bar = tk.Frame(self.root, bg=PANEL_ALT, highlightbackground=BORDER, highlightthickness=1)
         telemetry_bar.pack(fill="x", padx=14, pady=(0, 9))
@@ -310,6 +325,7 @@ class DashboardApp:
         self.schema_var = tk.StringVar(value="Schema: waiting")
         self.rate_var = tk.StringVar(value="Groups: 0.0 Hz | Frames: 0.0 Hz")
         self.loss_var = tk.StringVar(value="Loss: 0 | Incomplete: 0 | Malformed: 0")
+        self.record_var = tk.StringVar(value="MLG: idle")
         for variable, color in (
             (self.source_var, TEXT),
             (self.schema_var, AMBER),
@@ -323,6 +339,13 @@ class DashboardApp:
                 fg=color,
                 font=("Consolas", 9),
             ).pack(side="left", padx=12, pady=7)
+        tk.Label(
+            telemetry_bar,
+            textvariable=self.record_var,
+            bg=PANEL_ALT,
+            fg=AMBER,
+            font=("Consolas", 9),
+        ).pack(side="right", padx=12, pady=7)
 
         heroes = tk.Frame(self.root, bg=BG)
         heroes.pack(fill="x", padx=14)
@@ -464,7 +487,79 @@ class DashboardApp:
         )
         self.worker.start()
 
+    @staticmethod
+    def _default_recording_name():
+        timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+        return f"{timestamp}_jk08a-can-v{__version__}.mlg"
+
+    def toggle_recording(self):
+        if self.recorder is None:
+            self.start_recording()
+        else:
+            self.stop_recording()
+
+    def start_recording(self, path=None):
+        if self.recorder is not None:
+            return
+        interactive = path is None
+        if interactive:
+            path = filedialog.asksaveasfilename(
+                title="Save MLVLG recording",
+                defaultextension=".mlg",
+                initialfile=self._default_recording_name(),
+                filetypes=(("MegaLogViewer log", "*.mlg"), ("All files", "*.*")),
+            )
+            if not path:
+                return
+        output = Path(path)
+        force = False
+        if output.exists():
+            if not interactive:
+                self.record_var.set(f"MLG error: {output.name} already exists")
+                return
+            force = messagebox.askyesno(
+                "Replace MLVLG recording",
+                f"Replace existing file?\n{output}",
+            )
+            if not force:
+                return
+        try:
+            self.recorder = TelemetryMlgRecorder(
+                output,
+                self.args.profile,
+                time.time(),
+                force=force,
+            )
+        except (OSError, ValueError) as error:
+            self.record_var.set(f"MLG error: {error}")
+            return
+        self.recording_started_monotonic = time.monotonic()
+        self.record_button.configure(text="Stop MLG")
+        self.record_var.set(f"MLG: recording {output.name}")
+
+    def stop_recording(self):
+        if self.recorder is None:
+            return
+        recorder = self.recorder
+        self.recorder = None
+        self.recording_started_monotonic = None
+        self.record_button.configure(text="Record MLG")
+        try:
+            summary = recorder.close()
+        except (OSError, ValueError) as error:
+            recorder.abort()
+            self.record_var.set(f"MLG error: {error}")
+            return
+        if summary.event_records:
+            self.record_var.set(
+                f"MLG: saved {summary.output.name}, "
+                f"{summary.event_records} snapshots"
+            )
+        else:
+            self.record_var.set("MLG: no complete snapshots, file not created")
+
     def stop_source(self):
+        self.stop_recording()
         if self.stop_event is not None:
             self.stop_event.set()
         if self.worker is not None and self.worker.is_alive():
@@ -490,8 +585,28 @@ class DashboardApp:
             processed += 1
             if isinstance(event, SourceStatus):
                 self._set_source_status(event.state, event.detail)
+                if event.state in {"stopped", "error"}:
+                    self.stop_recording()
             elif isinstance(event, FrameRecord):
-                self.model.process_frame(event)
+                snapshot = self.model.process_frame(event)
+                if snapshot is not None and self.recorder is not None:
+                    event_time = (
+                        event.received_monotonic
+                        if event.received_monotonic is not None
+                        else now
+                    )
+                    elapsed = max(
+                        0.0,
+                        event_time - self.recording_started_monotonic,
+                    )
+                    try:
+                        self.recorder.append(self.model, elapsed)
+                    except (OSError, ValueError) as error:
+                        self.recorder.abort()
+                        self.recorder = None
+                        self.recording_started_monotonic = None
+                        self.record_button.configure(text="Record MLG")
+                        self.record_var.set(f"MLG error: {error}")
         self._refresh(now)
         self.root.after(50, self._poll)
 
@@ -510,6 +625,8 @@ class DashboardApp:
             return self.model.dashboard_state
         if key == "context_name":
             return self.model.context_name
+        if key in {"gps_lat", "gps_lon", "gps_status"}:
+            return getattr(self.model, key)
         if key == "injection_average_ms":
             values = [
                 self.model.value(f"injection_{index}_ms")
@@ -594,6 +711,11 @@ class DashboardApp:
 
 def build_parser():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
     parser.add_argument("--channel", default="PCAN_USBBUS1")
     parser.add_argument("--bitrate", type=int, default=DEFAULT_BITRATE)
     parser.add_argument("--can-id", type=lambda value: int(value, 0), default=DEFAULT_CAN_ID)
@@ -604,6 +726,11 @@ def build_parser():
     parser.add_argument("--replay", type=Path)
     parser.add_argument("--replay-speed", type=float, default=1.0)
     parser.add_argument("--no-auto-connect", action="store_true")
+    parser.add_argument(
+        "--record",
+        type=Path,
+        help="start MLVLG recording to this new file",
+    )
     return parser
 
 

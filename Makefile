@@ -10,7 +10,8 @@ NPM ?= npm
 ROM ?= JK08A
 ROMS ?= JK08A
 ROMVIZ_OUTPUT ?= tmp/romviz/jk08a-rom-atlas.html
-CAN_DASHBOARD_OUTPUT ?= tmp/jk08a-can-dashboard-windows.zip
+CAN_DASHBOARD_VERSION := $(shell sed -n 's/^__version__ = "\([^"]*\)"/\1/p' tools/can_dashboard/__init__.py)
+CAN_DASHBOARD_OUTPUT ?= tmp/jk08a-can-dashboard-v$(CAN_DASHBOARD_VERSION)-windows.zip
 INPUT ?=
 OUTPUT ?=
 PROFILE ?=

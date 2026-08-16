@@ -1,6 +1,8 @@
 # JK08A CAN telemetry dashboard
 
-This Tkinter application displays the custom JK08A `core32` or `wide54`
+Current dashboard version: `1.0.0`.
+
+This Tkinter application displays and records the custom JK08A `core32` or `wide54`
 telemetry stream from a PEAK PCAN-USB adapter. The default configuration
 matches local candidate `v1.11`:
 
@@ -15,11 +17,18 @@ not transmit application CAN messages. Listen-only mode also suppresses CAN
 ACK participation. Use the separate active/ACK launcher only on an isolated
 bench where the ECU otherwise has no node to acknowledge its transmissions.
 
+The version has one source in `tools/can_dashboard/__init__.py`. It is visible
+in the window title, main heading, portable-package directory, and
+`VERSION.txt`. Semantic-version major changes denote an incompatible UI, CLI,
+or MLG contract; minor changes add compatible functionality; patch changes
+preserve both contracts.
+
 The Windows driver package installs the PCAN-Basic DLL in the system directory.
 The dashboard accesses it through `python-can` 4.6.1. PEAK documents the
 PCAN-Basic DLL as the supported interface between an application and the device
 driver, and `python-can` documents `PCAN_USBBUS1`, passive state, and
-`500000 bit/s` for this adapter.
+`500000 bit/s` for this adapter. The portable package also installs `tzdata`
+2026.3 so IANA timezones used by the TRC converter are available on Windows.
 
 ## Portable Windows package
 
@@ -27,7 +36,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/jk08a-can-dashboard-windows.zip
+  --output tmp/jk08a-can-dashboard-v1.0.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -41,6 +50,9 @@ On the Windows laptop:
 6. Run `run-dashboard.cmd` for listen-only vehicle capture.
 7. Use `run-dashboard-active.cmd` only when an isolated ECU needs this adapter
    to provide CAN ACK.
+
+The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
+1.1 paths to it after `install.cmd`; each result is written beside its source.
 
 The default hardware filter accepts custom telemetry plus stock context IDs
 `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide an independent
@@ -63,11 +75,39 @@ py -3.11 -m tools.can_dashboard.app --demo
 py -3.11 -m tools.can_dashboard.app --replay capture.log
 py -3.11 -m tools.can_dashboard.app --active
 py -3.11 -m tools.can_dashboard.app --channel PCAN_USBBUS2
+py -3.11 -m tools.can_dashboard.app --record drive.mlg
 ```
 
 Replay accepts PEAK PCAN-View TRC 1.1 files directly, including the `.trc`
 captures used by the project. It also accepts compact candump lines such as
 `(12.500000) can0 6F0#A001020304050607`.
+
+## MLG recording
+
+`Record MLG` selects a destination and starts an atomic MLVLG v2 recording.
+Only complete strict telemetry snapshots produce records. `Stop MLG`, source
+stop, source replacement, and window close finalize and validate the file.
+No output is left when no complete snapshot was received. Existing files
+require an explicit replacement confirmation in the UI and are rejected by
+`--record`.
+
+The `wide54` MLG schema has 60 channels: time, schema state, every fixed and
+rotating custom-telemetry field, stock CAN RPM, vehicle speed, selector code,
+ASCD input, dashboard state, and `gps_lat`/`gps_lon`. Candidate transforms
+retain `*` in their field names. Decoded telemetry and context values use F32,
+so a rotating context that has not arrived yet can be represented as `NaN`
+rather than a fabricated zero.
+
+MLG has a wrapping 16-bit 10-us block timestamp. A hold-last bridge record is
+inserted when complete snapshots are more than 0.3 seconds apart, which keeps
+the wrap sequence unambiguous to the local UltraLog parser. Normal divisor-1
+traffic needs no bridge records.
+
+The dashboard declares `gps_lat` and `gps_lon` for Track Map compatibility,
+but no geographic-coordinate signal is verified on the captured primary CAN
+network. Both values therefore display `--` and are stored as `NaN`. A real
+route requires a separately captured and decoded AV/navigation network or
+another GPS source. The logger never invents coordinates from vehicle speed.
 
 ## Display semantics
 
@@ -99,6 +139,14 @@ and footer.
 Health indicators include complete snapshot and frame rates, tick-derived
 loss, incomplete and malformed groups, schema mismatches, source queue drops,
 telemetry status flags, and the rotating overrun and abort counters.
+
+Convert an existing PEAK trace without replay timing:
+
+```bash
+python3 tools/logs/trc_to_mlg.py tmp/can-dump/new-log-full.trc
+```
+
+The converter and live recorder use the same MLVLG schema and validator.
 
 ## Target-vehicle result
 

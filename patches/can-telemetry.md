@@ -447,6 +447,13 @@ hardware acceptance for the current tuning-telemetry configuration. No
 additional shutdown, concurrent-diagnostic, DTC-comparison, or direct
 scheduler-slack observation is required for this use.
 
+The versioned dashboard records the strict stream directly as MLVLG v2, and a
+separate converter produces the same schema from PEAK TRC 1.1 captures. The
+schema contains all custom fields, retained stock RPM/speed/control context,
+and reserved `gps_lat`/`gps_lon` channels. Geographic coordinates are not
+verified on the captured primary CAN network and remain `NaN`; no route is
+derived from speed or other vehicle signals.
+
 The retained fallback order is `wide54` divisor 2, then `wide54` divisor 4.
 The passing divisor-1 result remains selected unless a later observation shows
 recurring incomplete or preempted groups, a nonzero overrun/abort trend, CAN
@@ -525,6 +532,9 @@ to claims about measured spark angle, injector waveform, or air-fuel ratio.
 | `apply_can_telemetry.py` | isolated checksum-closing application stage |
 | `build_rom.py` | production three-runtime composition |
 | `../tools/logs/can_telemetry.py` | strict candump group decoder |
+| `../tools/logs/mlvlg.py` | common MLVLG v2 encoder and validator |
+| `../tools/logs/trc_to_mlg.py` | strict PEAK TRC to MLVLG converter |
+| `../tools/can_dashboard/` | versioned live display and MLVLG recorder |
 | `../tools/sh-elf-run/verify_can_telemetry.py` | independent executable gate |
 | `jk08a-runtime-reservations.toml` | shared active ownership and future budgets |
 

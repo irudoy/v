@@ -43,6 +43,7 @@ engines.
 | `tools/memgraph/` | Reproducible graph ingestion, provenance audit, and backup |
 | `tools/mapkit/`, `tools/maps/` | Definition and ledger projection |
 | `tools/diagnostics/` | Factory and community diagnostic corpus tooling |
+| `tools/logs/` | Strict CAN decoders, PEAK audit, and MLVLG conversion |
 | `tools/can_dashboard/` | Portable Windows PCAN-USB live telemetry dashboard |
 | `tools/sh-elf-run/` | Independent GNU SH-2E executable verification |
 | `tools/pin-tracer/` | Reviewed physical ECM terminal-to-MCU tracing workspace |
@@ -57,6 +58,7 @@ engines.
 - Rolling Launch runtime: [`patches/rolling-launch.md`](patches/rolling-launch.md)
 - Custom CAN telemetry design: [`patches/can-telemetry.md`](patches/can-telemetry.md)
 - Windows PCAN dashboard: [`tools/can_dashboard/README.md`](tools/can_dashboard/README.md)
+- CAN and MLVLG logging tools: [`tools/logs/README.md`](tools/logs/README.md)
 - Runtime ownership and reserves: [`patches/runtime-reservations.md`](patches/runtime-reservations.md)
 - Exact JK08A HCAN1 model: [`defs/JK08A.can.md`](defs/JK08A.can.md)
 - Analysis and definition pipeline: [`tools/map-analysis-pipeline.md`](tools/map-analysis-pipeline.md)

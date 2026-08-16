@@ -5,12 +5,17 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import sys
 import tempfile
 import zipfile
 
-
 ROOT = Path(__file__).resolve().parents[2]
-PACKAGE_ROOT = "jk08a-can-dashboard"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from tools.can_dashboard import __version__
+
+PACKAGE_ROOT = f"jk08a-can-dashboard-v{__version__}"
 SOURCE_FILES = (
     "patches/__init__.py",
     "patches/can_telemetry_profile.py",
@@ -18,10 +23,13 @@ SOURCE_FILES = (
     "patches/can-telemetry-schema.json",
     "tools/logs/__init__.py",
     "tools/logs/can_telemetry.py",
+    "tools/logs/mlvlg.py",
     "tools/logs/peak_trc_audit.py",
+    "tools/logs/trc_to_mlg.py",
     "tools/can_dashboard/__init__.py",
     "tools/can_dashboard/app.py",
     "tools/can_dashboard/model.py",
+    "tools/can_dashboard/recording.py",
     "tools/can_dashboard/sources.py",
     "tools/can_dashboard/README.md",
 )
@@ -71,6 +79,18 @@ RUN_DEMO_CMD = RUN_CMD.replace(
     "--can-id 0x6F0 --profile wide54 --tick-divisor 1 --demo",
 )
 
+CONVERT_TRC_CMD = r"""@echo off
+setlocal
+cd /d "%~dp0"
+if not exist ".venv\Scripts\python.exe" (
+  echo Run install.cmd first.
+  pause
+  exit /b 1
+)
+".venv\Scripts\python.exe" -m tools.logs.trc_to_mlg %*
+if errorlevel 1 pause
+"""
+
 
 def build_package(output, *, force=False):
     output = Path(output)
@@ -105,6 +125,8 @@ def build_package(output, *, force=False):
                 "run-dashboard.cmd": RUN_CMD,
                 "run-dashboard-active.cmd": RUN_ACTIVE_CMD,
                 "run-demo.cmd": RUN_DEMO_CMD,
+                "convert-trc-to-mlg.cmd": CONVERT_TRC_CMD,
+                "VERSION.txt": __version__ + "\n",
             }
             for name, content in generated.items():
                 member = zipfile.ZipInfo(
@@ -125,6 +147,11 @@ def build_package(output, *, force=False):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args(argv)

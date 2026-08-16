@@ -72,6 +72,43 @@ The Windows live dashboard in `../can_dashboard/` uses this same decoder. It
 retains the latest values from rotating contexts, exposes loss and queue health,
 and keeps candidate transforms visibly distinct from proven physical outputs.
 
+## PEAK TRC telemetry to MLG
+
+`trc_to_mlg.py` converts a strict PEAK PCAN-View TRC 1.1 capture directly to
+MLVLG v2. It feeds every captured frame through the same dashboard model, emits
+one MLG data record per complete custom-telemetry snapshot, and retains the
+latest stock RPM, vehicle speed, selector, ASCD, and dashboard-state context.
+It does not replay the capture in real time.
+
+```bash
+python3 tools/logs/trc_to_mlg.py \
+  --profile wide54 \
+  --can-id 0x6F0 \
+  --tick-divisor 1 \
+  tmp/can-dump/new-log-full.trc
+```
+
+The MLG start timestamp is the PEAK `$STARTTIME` plus the offset of the first
+complete telemetry snapshot. PEAK stores its start as an OLE Automation local
+date, so `--timezone Asia/Vladivostok` is the default and another IANA timezone
+can be selected. Existing outputs are rejected unless `--force` is supplied.
+
+The `wide54` output contains 60 fields: `Date`, `Elapsed`, schema state, every
+fixed and rotating telemetry value, five stock-CAN context values, and the GPS
+contract fields `gps_lat` and `gps_lon`. Missing rotating contexts use IEEE 754
+`NaN`. Candidate engineering transforms remain marked with `*`.
+
+No verified latitude or longitude encoding exists in the captured primary CAN
+traffic. The GPS fields are still declared so the local UltraLog Track Map
+detects the schema, but every sample remains `NaN`; the converter does not
+fabricate a route. A later verified AV/navigation or external GPS decoder can
+populate the same fields without changing their MLG contract.
+
+`mlvlg.py` is the common big-endian MLVLG v2 encoder and structural validator
+used by this converter, the live dashboard recorder, and `csv_to_mlg.py`. It
+checks header layout, descriptor-derived record size, block counters, complete
+records, and payload CRC before an atomic output replacement.
+
 ## Diagnostic CSV to MLG
 
 `csv_to_mlg.py` converts semicolon-delimited, long-form diagnostic logs to

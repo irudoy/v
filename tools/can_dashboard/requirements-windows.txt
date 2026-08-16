@@ -1,1 +1,2 @@
 python-can[pcan]==4.6.1
+tzdata==2026.3

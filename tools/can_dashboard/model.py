@@ -138,6 +138,9 @@ class DashboardModel:
         self.ascd_button_raw = None
         self.dashboard_state = "?"
         self.dashboard_state_raw = None
+        self.gps_lat = None
+        self.gps_lon = None
+        self.gps_status = "not observed on primary CAN"
         self._snapshot_times = deque()
         self._telemetry_frame_times = deque()
 

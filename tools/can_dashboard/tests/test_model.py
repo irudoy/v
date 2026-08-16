@@ -59,6 +59,12 @@ class DashboardModelTest(unittest.TestCase):
         self.assertIn(dashboard.dashboard_state, {"STOCK", "CRUISE+SET"})
         self.assertIsNotNone(dashboard.stock_rpm)
         self.assertIsNotNone(dashboard.vehicle_speed_kmh)
+        self.assertIsNone(dashboard.gps_lat)
+        self.assertIsNone(dashboard.gps_lon)
+        self.assertEqual(
+            dashboard.gps_status,
+            "not observed on primary CAN",
+        )
 
     def test_target_vehicle_selector_button_and_speed_codes(self):
         dashboard = model.DashboardModel("wide54", 0x6F0, 1)

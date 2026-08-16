@@ -4,6 +4,7 @@ import unittest
 import zipfile
 
 from tools.can_dashboard import package_windows
+from tools.can_dashboard import __version__
 
 
 class WindowsPackageTest(unittest.TestCase):
@@ -20,21 +21,37 @@ class WindowsPackageTest(unittest.TestCase):
                     prefix + "run-dashboard.cmd",
                     prefix + "run-dashboard-active.cmd",
                     prefix + "run-demo.cmd",
+                    prefix + "convert-trc-to-mlg.cmd",
+                    prefix + "VERSION.txt",
                     prefix + "requirements.txt",
                     prefix + "patches/can-telemetry-schema.json",
                     prefix + "tools/can_dashboard/app.py",
+                    prefix + "tools/can_dashboard/recording.py",
                     prefix + "tools/logs/can_telemetry.py",
+                    prefix + "tools/logs/mlvlg.py",
                     prefix + "tools/logs/peak_trc_audit.py",
+                    prefix + "tools/logs/trc_to_mlg.py",
                 }
                 self.assertTrue(expected <= names)
                 requirements = archive.read(
                     prefix + "requirements.txt"
                 ).decode("utf-8")
-                self.assertEqual(requirements.strip(), "python-can[pcan]==4.6.1")
+                self.assertEqual(
+                    requirements.splitlines(),
+                    ["python-can[pcan]==4.6.1", "tzdata==2026.3"],
+                )
                 active = archive.read(
                     prefix + "run-dashboard-active.cmd"
                 ).decode("utf-8")
                 self.assertIn("--active", active)
+                self.assertEqual(
+                    archive.read(prefix + "VERSION.txt").decode("ascii"),
+                    __version__ + "\n",
+                )
+                self.assertEqual(
+                    package_windows.PACKAGE_ROOT,
+                    f"jk08a-can-dashboard-v{__version__}",
+                )
 
             with self.assertRaises(FileExistsError):
                 package_windows.build_package(output)

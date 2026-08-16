@@ -311,6 +311,24 @@ dashboard_visible_schema_mismatch_count = 0
 dashboard_visible_error_frame_count = 0
 dashboard_visible_snapshot_overrun_count = 0
 dashboard_visible_tx_abort_count = 0
+dashboard_version = "1.0.0"
+dashboard_package_name = "jk08a-can-dashboard-v1.0.0-windows.zip"
+dashboard_package_sha256 = "edadd00ecb34530074f0a45ddc3430ce62509857094eaef3af0ab29b1b690513"
+dashboard_package_size_bytes = 46375
+dashboard_package_member_count = 22
+mlg_name = "new-log-full.mlg"
+mlg_sha256 = "190a803ac85e5483b010397bbde3bfd42bd3e635c8fa6bcf6acb9913e63ac614"
+mlg_size_bytes = 8779059
+mlg_format = "MLVLG v2 big-endian"
+mlg_field_count = 60
+mlg_record_length_bytes = 240
+mlg_data_record_count = 35811
+mlg_bridge_record_count = 0
+mlg_elapsed_seconds = 366.908813
+mlg_ultralog_parser_status = "pass: 60 channels, 35811 points, 0.000..366.909 s"
+mlg_gps_fields = ["gps_lat", "gps_lon"]
+mlg_finite_gps_sample_count = 0
+mlg_gps_status = "declared as NaN; no verified coordinates on captured primary CAN"
 carscanner_capture_sha256 = [
   "86e809584ca54c9e90b224dd870a84033f17cabec7e6a61d79cbb6d26140cf58",
   "8662e731783f33ced6eec8c7c31aac4097b1e3b43bf956d101e6fd1940438a2d",

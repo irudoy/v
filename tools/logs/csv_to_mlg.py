@@ -18,28 +18,33 @@ import tempfile
 from typing import BinaryIO, Iterator
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-MLG_FORMAT_VERSION = 2
-MLG_HEADER_SIZE = 24
-MLG_FIELD_SIZE = 89
-MLG_FIELD_NAME_SIZE = 34
-MLG_FIELD_UNITS_SIZE = 10
-MLG_FIELD_CATEGORY_SIZE = 34
+from tools.logs import mlvlg
 
-MLG_U32 = 4
-MLG_F32 = 7
+MLG_FORMAT_VERSION = mlvlg.MLG_FORMAT_VERSION
+MLG_HEADER_SIZE = mlvlg.MLG_HEADER_SIZE
+MLG_FIELD_SIZE = mlvlg.MLG_FIELD_SIZE
+MLG_FIELD_NAME_SIZE = mlvlg.MLG_FIELD_NAME_SIZE
+MLG_FIELD_UNITS_SIZE = mlvlg.MLG_FIELD_UNITS_SIZE
+MLG_FIELD_CATEGORY_SIZE = mlvlg.MLG_FIELD_CATEGORY_SIZE
 
-MLG_FLOAT = 0
-MLG_DATE = 3
-MLG_ON_OFF = 4
+MLG_U32 = mlvlg.MLG_U32
+MLG_F32 = mlvlg.MLG_F32
+
+MLG_FLOAT = mlvlg.MLG_FLOAT
+MLG_DATE = mlvlg.MLG_DATE
+MLG_ON_OFF = mlvlg.MLG_ON_OFF
 
 # UltraLog recognizes a u16 timestamp wrap only when the raw drop exceeds
 # 30,000 ticks. Keeping every interval at or below 0.3 seconds makes each
 # wrapped drop at least 35,536 ticks and therefore unambiguous to its parser.
 DEFAULT_MAX_GAP_SECONDS = 0.3
 MAX_SAFE_GAP_SECONDS = 0.3
-TIMESTAMP_TICKS_PER_SECOND = 100_000
-BLOCK_COUNTER_MODULUS = 256
+TIMESTAMP_TICKS_PER_SECOND = mlvlg.TIMESTAMP_TICKS_PER_SECOND
+BLOCK_COUNTER_MODULUS = mlvlg.BLOCK_COUNTER_MODULUS
 
 REQUIRED_COLUMNS = {
     "SECONDS",
@@ -411,34 +416,22 @@ def build_field_specs(scan: ScanResult) -> tuple[FieldSpec, ...]:
     return tuple(fields)
 
 
-def _encode_text(value: str, size: int) -> bytes:
-    encoded = _ascii_text(value).encode("ascii")
-    if len(encoded) >= size:
-        raise ConversionError(
-            f"MLG text field exceeds {size - 1} bytes: {value!r}"
-        )
-    return encoded + bytes(size - len(encoded))
+def _wire_field(field: FieldSpec) -> mlvlg.FieldSpec:
+    return mlvlg.FieldSpec(
+        name=field.name,
+        units=field.units,
+        category=field.category,
+        field_type=field.field_type,
+        display_style=field.display_style,
+        digits=field.digits,
+    )
 
 
 def _encode_field(field: FieldSpec) -> bytes:
-    result = b"".join(
-        (
-            struct.pack(">B", field.field_type),
-            _encode_text(field.name, MLG_FIELD_NAME_SIZE),
-            _encode_text(field.units, MLG_FIELD_UNITS_SIZE),
-            struct.pack(
-                ">Bffb",
-                field.display_style,
-                1.0,
-                0.0,
-                field.digits,
-            ),
-            _encode_text(field.category, MLG_FIELD_CATEGORY_SIZE),
-        )
-    )
-    if len(result) != MLG_FIELD_SIZE:
-        raise AssertionError(f"encoded MLG field is {len(result)} bytes")
-    return result
+    try:
+        return mlvlg.encode_field(_wire_field(field))
+    except mlvlg.MlvlgError as error:
+        raise ConversionError(str(error)) from error
 
 
 def _source_date(path: Path, override: date | None) -> date:
@@ -531,76 +524,24 @@ def _write_block(
         latitude,
         longitude,
     )
-    elapsed = seconds - first_seconds
-    timestamp = round(elapsed * TIMESTAMP_TICKS_PER_SECOND) & 0xFFFF
     output.write(
-        b"\x00"
-        + bytes((record_index % BLOCK_COUNTER_MODULUS,))
-        + struct.pack(">H", timestamp)
-        + data
-        + bytes((sum(data) & 0xFF,))
+        mlvlg.encode_payload_block(
+            data,
+            record_index,
+            seconds - first_seconds,
+        )
     )
 
 
 def validate_mlg(path: Path) -> ValidationSummary:
-    with path.open("rb") as stream:
-        header = stream.read(MLG_HEADER_SIZE)
-        if len(header) != MLG_HEADER_SIZE:
-            raise ConversionError(f"{path}: truncated MLG header")
-        (
-            file_format,
-            version,
-            _timestamp,
-            info_data_start,
-            data_begin,
-            record_length,
-            field_count,
-        ) = struct.unpack(">6sHIIIHH", header)
-        if file_format != b"MLVLG\x00":
-            raise ConversionError(f"{path}: invalid MLG signature")
-        if version != MLG_FORMAT_VERSION:
-            raise ConversionError(f"{path}: unsupported MLG version {version}")
-        if info_data_start != 0:
-            raise ConversionError(f"{path}: unexpected MLG info-data section")
-        expected_data_begin = MLG_HEADER_SIZE + field_count * MLG_FIELD_SIZE
-        if data_begin != expected_data_begin:
-            raise ConversionError(
-                f"{path}: data begins at {data_begin}, expected "
-                f"{expected_data_begin}"
-            )
-        descriptors = stream.read(field_count * MLG_FIELD_SIZE)
-        if len(descriptors) != field_count * MLG_FIELD_SIZE:
-            raise ConversionError(f"{path}: truncated MLG field descriptors")
-
-        block_size = record_length + 5
-        records = 0
-        while True:
-            block = stream.read(block_size)
-            if not block:
-                break
-            if len(block) != block_size:
-                raise ConversionError(f"{path}: truncated MLG data block")
-            if block[0] != 0:
-                raise ConversionError(
-                    f"{path}: unsupported MLG block type {block[0]}"
-                )
-            if block[1] != records % BLOCK_COUNTER_MODULUS:
-                raise ConversionError(
-                    f"{path}: invalid block counter at record {records}"
-                )
-            data = block[4:-1]
-            if sum(data) & 0xFF != block[-1]:
-                raise ConversionError(
-                    f"{path}: CRC mismatch at record {records}"
-                )
-            records += 1
-
-    if records == 0:
-        raise ConversionError(f"{path}: MLG contains no data records")
+    try:
+        summary = mlvlg.validate_mlg(path)
+    except mlvlg.MlvlgError as error:
+        raise ConversionError(str(error)) from error
     return ValidationSummary(
-        fields=field_count,
-        record_length=record_length,
-        records=records,
+        fields=summary.fields,
+        record_length=summary.record_length,
+        records=summary.data_records,
     )
 
 
@@ -642,17 +583,13 @@ def convert_csv(
     log_date = _source_date(source, date_override)
     midnight_epoch = _midnight_epoch(log_date, zone)
     start_timestamp = math.floor(midnight_epoch + scan.first_seconds + 1e-9)
-    data_begin = MLG_HEADER_SIZE + len(fields) * MLG_FIELD_SIZE
-    header = struct.pack(
-        ">6sHIIIHH",
-        b"MLVLG",
-        MLG_FORMAT_VERSION,
-        start_timestamp,
-        0,
-        data_begin,
-        record_length,
-        len(fields),
-    )
+    try:
+        header = mlvlg.encode_header(
+            tuple(_wire_field(field) for field in fields),
+            start_timestamp,
+        )
+    except mlvlg.MlvlgError as error:
+        raise ConversionError(str(error)) from error
 
     output.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(

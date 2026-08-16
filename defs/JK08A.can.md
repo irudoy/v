@@ -228,6 +228,21 @@ and returns to zero at the operator-confirmed stationary end. This establishes
 the target field location and zero state. The physical scale remains a
 candidate until a synchronized independent speed reference is recorded.
 
+### Navigation-coordinate boundary
+
+The captured primary CAN network has no verified latitude or longitude
+signal. The factory AV/navigation topology connects the GPS antenna directly
+to the AV control unit, which calculates vehicle position from GPS, gyro,
+vehicle speed, and map data. Its primary-CAN signal chart carries vehicle
+context into that unit but does not identify a geographic-coordinate broadcast.
+The separate AV communication network was not present in the OBD PCAN capture.
+
+Accordingly, no primary-CAN ID or byte layout is assigned to latitude or
+longitude. The dashboard and MLG schema reserve `gps_lat` and `gps_lon` for
+UltraLog compatibility, expose their source as unavailable on primary CAN,
+and store `NaN` until a separate AV-network or external-GPS capture establishes
+an exact binding. Vehicle speed is not integrated into a synthetic route.
+
 ## Mailbox-empty interrupt
 
 Vector-table word `0x000203A0` points to `FUN_000C7914`. The ISR checks only
