@@ -247,3 +247,64 @@ overlay_21_sha256 = "1e6866e96e77fba203166b38f5efcfd83b6bcad609b7e0ada67727cd5fd
 overlay_21_status = "pass"
 overlay_22_sha256 = "21f532b924e24deede30c07bbf7d253bf4c908355bca44c7c863fee592aa2a84"
 overlay_22_status = "functional_fail"
+
+[passive_can]
+recorded_on = "2026-08-16"
+format = "PEAK PCAN-View TRC 1.1"
+nominal_bitrate = 500000
+candidate_id = 0x6F0
+candidate_frame_count = 0
+total_frame_count = 363923
+observed_span_ms = 187111.7
+status = "partial_vehicle_baseline"
+remaining_states = ["moving_load", "shutdown", "active_diagnostics"]
+
+[[passive_can.captures]]
+capture_name = "startup.trc"
+capture_sha256 = "1d9cb1d792aaae9c44a45809709c6f6fb48729fa6faa09899b46310d4887c6ad"
+firmware_label = "1.8"
+firmware_sha256 = "5ea97b2fe18f58a16670ec597af3bc3f5e7fc22980aa9bc8ee411234db45818b"
+context = "startup"
+frame_count = 30481
+observed_span_ms = 15660.4
+standard_id_count = 49
+extended_id_count = 0
+rtr_count = 0
+warning_record_count = 0
+error_record_count = 0
+
+[[passive_can.captures]]
+capture_name = "idle-ascd-prnd.trc"
+capture_sha256 = "7ad7fde9f2b8c4eafbeb658babcb199135a583d4dcbdc391e9023f41bd87bbb3"
+firmware_label = "1.8"
+firmware_sha256 = "5ea97b2fe18f58a16670ec597af3bc3f5e7fc22980aa9bc8ee411234db45818b"
+context = "idle, ASCD input, and stationary PRND selection"
+frame_count = 100000
+observed_span_ms = 51398.0
+standard_id_count = 44
+extended_id_count = 0
+rtr_count = 0
+warning_record_count = 0
+error_record_count = 0
+prnd_can_id = 0x421
+prnd_byte_index = 0
+prnd_mapping_status = "operator_confirmed"
+prnd_selector_sequence = ["P", "R", "N", "D", "N", "R", "P"]
+prnd_code_sequence = [0x08, 0x10, 0x18, 0x20, 0x18, 0x10, 0x08]
+prnd_transient_code = 0x00
+prnd_transient_code_is_stable_position = false
+
+[[passive_can.captures]]
+capture_name = "ascd-rl.trc"
+capture_sha256 = "aa64e9d92a530e63a85f4d07a4afadd9b338ac7304e6d3c3e3a76fb2aaee2c15"
+firmware_label = "1.10"
+firmware_sha256 = "1a78e4ae2bd22c59aba90f7eb85140b91a1f43fa87966a09fa56a199306f8f8e"
+context = "idle, ASCD input, and stationary Rolling Launch trials"
+frame_count = 233442
+observed_span_ms = 120053.3
+standard_id_count = 44
+extended_id_count = 0
+rtr_count = 0
+warning_record_count = 0
+error_record_count = 0
+result = "11 ACTIVE dashboard intervals; no stock ECM cadence regression"

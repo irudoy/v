@@ -80,6 +80,15 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             physical["coolant_deg_c"],
             verified_temperature.fields["coolant_raw"] - 50,
         )
+        fixed_physical = can_telemetry.engineering_values(health)
+        self.assertEqual(
+            fixed_physical["intake_cvtc_actual_b1_deg_ca"],
+            health.fields["intake_cvtc_actual_b1_raw"] * 0.5 - 64,
+        )
+        self.assertAlmostEqual(
+            fixed_physical["calculated_load_percent"],
+            health.fields["calculated_load_raw"] * 100 / 255,
+        )
 
     def test_health_mismatch_is_rejected(self):
         decoder = can_telemetry.Decoder("wide54")

@@ -1,5 +1,37 @@
 # Logging tools
 
+## PEAK TRC bus audit
+
+`peak_trc_audit.py` parses strict PCAN-View TRC 1.1 classical-CAN captures. It
+validates every message number, timestamp, ID, DLC, and data length; inventories
+IDs and DLCs; reports period percentiles and payload diversity; counts RTR,
+warning, and error records; checks a candidate telemetry ID; and estimates
+average and rolling-window bus load. The parser follows the official
+[PEAK trace format specification](https://www.peak-system.com/produktcd/Develop/PC%20interfaces/Windows/PCAN-Basic%20API/PCAN-Parameter_Documentation.pdf#page=130).
+
+TRC 1.1 does not record the configured nominal bitrate. Load calculation is
+therefore disabled unless the bitrate is supplied explicitly:
+
+```bash
+python3 tools/logs/peak_trc_audit.py \
+  --bitrate 500000 \
+  --candidate-id 0x6F0 \
+  --all-ids \
+  tmp/can-dump/*.trc
+```
+
+The lower load bound counts every successful classical-CAN frame without bit
+stuffing. Warning and error records are reported but are not converted into a
+bit count because their four status bytes are not CAN payload. An audit with
+such records therefore understates total physical occupancy.
+The upper bound applies the conservative maximum stuffing count. Both include
+intermission. The 100 ms and 1,000 ms peaks use rolling windows rather than
+fixed timestamp buckets. A clean trace proves only absence during the recorded
+states; it does not establish that an ID is unused in unrecorded vehicle or
+diagnostic states. PCAN-View records error frames only when that optional trace
+content is enabled, as described by the official
+[PCAN-View trace documentation](https://www.peak-system.com/products/software/analysis-software/pcan-view/?no_cache=1&sword_list%5B0%5D=flexible&sword_list%5B1%5D=data&sword_list%5B2%5D=rate).
+
 ## Custom CAN telemetry decoder
 
 `can_telemetry.py` strictly reconstructs the fixed JK08A custom telemetry
@@ -29,6 +61,10 @@ schema.
 The final stderr marker reports complete, incomplete, malformed, and
 schema-mismatch counts. The decoder never fills a missing page, combines
 different sequence groups, or interpolates a dropped snapshot.
+
+The Windows live dashboard in `../can_dashboard/` uses this same decoder. It
+retains the latest values from rotating contexts, exposes loss and queue health,
+and keeps candidate transforms visibly distinct from proven physical outputs.
 
 ## Diagnostic CSV to MLG
 

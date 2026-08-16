@@ -43,6 +43,7 @@ engines.
 | `tools/memgraph/` | Reproducible graph ingestion, provenance audit, and backup |
 | `tools/mapkit/`, `tools/maps/` | Definition and ledger projection |
 | `tools/diagnostics/` | Factory and community diagnostic corpus tooling |
+| `tools/can_dashboard/` | Portable Windows PCAN-USB live telemetry dashboard |
 | `tools/sh-elf-run/` | Independent GNU SH-2E executable verification |
 | `tools/pin-tracer/` | Reviewed physical ECM terminal-to-MCU tracing workspace |
 | `refs/` | Primary references and tracked machine-readable projections |
@@ -55,6 +56,7 @@ engines.
 - Map-switching runtime: [`patches/map-switching-selector.md`](patches/map-switching-selector.md)
 - Rolling Launch runtime: [`patches/rolling-launch.md`](patches/rolling-launch.md)
 - Custom CAN telemetry design: [`patches/can-telemetry.md`](patches/can-telemetry.md)
+- Windows PCAN dashboard: [`tools/can_dashboard/README.md`](tools/can_dashboard/README.md)
 - Runtime ownership and reserves: [`patches/runtime-reservations.md`](patches/runtime-reservations.md)
 - Exact JK08A HCAN1 model: [`defs/JK08A.can.md`](defs/JK08A.can.md)
 - Analysis and definition pipeline: [`tools/map-analysis-pipeline.md`](tools/map-analysis-pipeline.md)
@@ -87,6 +89,12 @@ make romviz
 
 The target always rebuilds the ignored `tmp/romviz/jk08a-rom-atlas.html`
 artifact. It does not start a server or watch source files.
+
+Build the portable Windows PCAN dashboard archive with:
+
+```bash
+make dashboard-package
+```
 
 The unified production builder remains the only complete modified-ROM entry
 point. Map Switching, Rolling Launch, CAN telemetry, checksum closure, and the

@@ -23,7 +23,8 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | Definitions | Project reviewed facts into RomRaider XML, TunerPro XDF, and the map ledger | [`mapkit/README.md`](mapkit/README.md) |
 | Diagnostics | Build, validate, ingest, and query factory and community diagnostic evidence | [`diagnostics/README.md`](diagnostics/README.md) |
 | SH-2E execution | Independently assemble exact patch bytes and execute firmware behavior fixtures | [`sh-elf-run/README.md`](sh-elf-run/README.md) |
-| Logs | Convert CONSULT-style diagnostic CSV recordings to MegaLogViewer MLG | [`logs/README.md`](logs/README.md) |
+| Logs | Audit PEAK CAN traces and convert CONSULT-style CSV recordings to MegaLogViewer MLG | [`logs/README.md`](logs/README.md) |
+| CAN dashboard | Display strict JK08A custom telemetry through PCAN-USB on Windows | [`can_dashboard/README.md`](can_dashboard/README.md) |
 | Pin tracer | Record reviewed ECM terminal-to-board-to-MCU continuity observations | [`pin-tracer/README.md`](pin-tracer/README.md) |
 | ROM atlas | Generate an interactive flash layout from reviewed evidence and patch manifests | [`romviz/README.md`](romviz/README.md) |
 | Vendor catalog | Rebuild the machine-readable vendor vocabulary used by map analysis | [`../refs/vendor/README.md`](../refs/vendor/README.md) |
@@ -41,6 +42,8 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `mapkit/emit_def.py` | Emit the paired XML and XDF projections |
 | `maps/build_tracker.py` | Emit the reviewable map ledger projection |
 | `diagnostics/*.py` | Source-preserving diagnostic import and read-only query layer |
+| `can_dashboard/app.py` | Tkinter live view for strict custom telemetry and stock CAN context |
+| `can_dashboard/package_windows.py` | Reproducible portable Windows source-package generator |
 | `sh-elf-run/run.sh` | Repository-contained instruction execution gate |
 | `sh-elf-run/run-npkern.sh` | Optional exact-revision external npkern gate |
 | `romviz/build.py` | Self-contained interactive ROM address-space atlas generator |

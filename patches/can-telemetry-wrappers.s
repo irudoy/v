@@ -2,9 +2,11 @@
 //
 // The main wrapper preserves the displaced FUN_00020DFE call and captures
 // after its coherent interrupt-disabled boundary. The knock wrapper latches
-// the completed interval before FUN_000493E8 clears its event count. Startup
-// clears only the active 256-byte telemetry allocation before continuing the
-// existing Rolling Launch and map-switching startup chain.
+// the completed interval before FUN_000493E8 clears its event count. This latch
+// is refreshed on every base tick, so a divisor greater than one can overwrite
+// an interval before publication. Startup clears only the active 256-byte
+// telemetry allocation before continuing the existing Rolling Launch and
+// map-switching startup chain.
 
 .org 0x000D4280
 telemetry_main_wrapper:

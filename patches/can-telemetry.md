@@ -4,20 +4,22 @@
 
 This document specifies the implemented software endpoint. The tracked source,
 layout, generated tables, SHA-locked payloads, host decoder, unified builder,
-and independent GNU SH-2E executable gate are complete. The endpoint is
-hardware-untested, disabled by default, and does not authorize flashing. No
-concrete tuned image or active tune identity is tracked.
+and independent GNU SH-2E executable gate are complete. The endpoint itself is
+hardware-untested, disabled by default, and does not authorize flashing.
+Passive whole-vehicle captures establish an initial bus baseline but do not
+exercise custom mailbox 26. No concrete tuned image or active tune identity is
+tracked.
 
 The objective is a coherent, loss-detectable tuning stream over stock HCAN1
 without diagnostic polling. The receiver is passive. The ECU firmware owns
 sampling, event latching, framing, and transmission.
 
 The maximum useful periodic rate is the natural `FUN_00020DFE` cadence:
-`204800 / Pphi` seconds, with a candidate value of `10.24 ms` or
-`97.65625 Hz` at `Pphi = 20 MHz`. Faster transport of the same scheduler-owned
-values would duplicate samples. Event producers that run faster than this
-cadence require counters, bitmaps, or peak latches instead of a faster general
-snapshot.
+`204800 / Pphi` seconds. Passive vehicle timestamps establish
+`Pphi = 20 MHz`, so the measured cadence is `10.24 ms` or `97.65625 Hz`.
+Faster transport of the same scheduler-owned values would duplicate samples.
+Event producers that run faster than this cadence require counters, bitmaps,
+or peak latches instead of a faster general snapshot.
 
 ## Architecture
 
@@ -46,11 +48,12 @@ stock receive mailboxes, and the stock mailbox-28 SLE1 behavior.
 | composed startup wrapper | existing wrapper chain | explicitly clears telemetry RAM state |
 
 The mailbox ID is a build parameter. `0x6F0` is only the disabled default and
-initial candidate because it is numerically above the highest stock ECM
-broadcast ID `0x6E2`
-and therefore has lower arbitration priority than every stock ECM broadcast.
-It must not be emitted until a passive capture proves the ID unused in all
-required vehicle states. For this candidate, the mailbox record would be
+initial candidate because it is numerically above the highest normal stock ECM
+broadcast ID `0x6E2` and therefore has lower arbitration priority than every
+normal stock ECM broadcast. It is absent from 363,923 frames spanning startup,
+idle, stationary controls, and stationary Rolling Launch trials. Moving load,
+shutdown, and active diagnostics remain unrecorded, so the ID is not approved
+for transmission. For this candidate, the mailbox record would be
 `04 08 DE 00` because the table stores `STDID << 5`.
 
 Physical mailbox 26 uses control base `0xFFFFDC40`, data bytes
@@ -313,11 +316,53 @@ divisor, reserved byte, CAN ID range `1..0x7FF`, exact profile CRC16, and the
 integrity word. The builder independently requires the mailbox record to encode
 the same CAN ID and enable state.
 
+## Profile and divisor semantics
+
+`core32` transmits pages 0 through 4, five CAN frames per snapshot. It contains
+the high-rate tuning core: RPM, final timing command, APC command, fuel-inhibit
+mask, both MAF channels and their total, both A/F channels, BFS, six injection
+words, knock state, and the latched knock interval count and channel mask.
+
+`wide54` transmits pages 0 through 7, eight CAN frames per snapshot. It includes
+the complete `core32` set and adds APP, both throttle positions, absolute
+throttle, actual and target intake CVTC for both banks, calculated load, and one
+rotating page-7 context. Coolant/IAT/temperature sources, STFT/CVTC duty,
+LTFT/timing state, and protocol/queue health are therefore each available at
+one quarter of the snapshot rate. Pinning one context is a separate build-time
+choice that omits the other three contexts.
+
+`wide54` at divisor 1 is the schema-1 ceiling, not a full-rate stream of every
+context field. The three-bit page ID is exhausted by pages 0 through 7. Sending
+all four current contexts at every base tick requires a new wire schema and at
+least three additional DLC-8 frames per group, or a second CAN ID.
+
+The base wrapper runs every `10.24 ms`. `tick_divisor` selects every Nth base
+tick for publication:
+
+| Divisor | Snapshot rate | Snapshot interval | `tick16` step on the wire |
+| ---: | ---: | ---: | ---: |
+| 1 | 97.65625 Hz | 10.24 ms | 1 |
+| 2 | 48.828125 Hz | 20.48 ms | 2 |
+| 4 | 24.4140625 Hz | 40.96 ms | 4 |
+
+The transmitted `tick16` step distinguishes configured downsampling from a
+lost snapshot. The schema-1 builder copies all eight pages into the inactive
+bank whenever a snapshot is due, including under `core32`; `page_count` limits
+transmission, not capture construction. At the same divisor, `core32` and
+`wide54` therefore have the same main-loop capture/copy work. `wide54` adds
+three CAN transmissions and their three completion-ISR executions.
+
+The knock wrapper refreshes the count and mask latches at every base interval
+before the stock consumer clears them. With a divisor greater than 1, an older
+nonzero interval can be overwritten before the next published snapshot.
+Divisor 1 is therefore the only schema-1 setting that preserves each base-rate
+knock interval in the outgoing snapshot sequence.
+
 ## Bandwidth
 
 A standard 11-bit classical-CAN data frame with DLC 8 occupies 111 bits
 including intermission before bit stuffing. A conservative maximum-stuffing
-bound is 135 bits. At `500 kbit/s` and the candidate `97.65625 Hz` snapshot
+bound is 135 bits. At `500 kbit/s` and the measured `97.65625 Hz` snapshot
 rate:
 
 | Profile | Frames per snapshot | Frames per second | Added bus load | No-arbitration group time |
@@ -335,8 +380,55 @@ The exact stock ECM broadcast estimate is 9.70% to 11.78% without conditional
 
 These totals exclude every other vehicle controller, retransmission, error
 frame, and diagnostic session. Aggregate utilization alone is not an approval
-criterion. Passive whole-bus capture and measured arbitration delay decide
-whether `wide54`, `core32`, or a tick divisor of 2 or greater is safe.
+criterion. Passive whole-bus capture and a bounded hardware trial determine
+the usable profile and divisor.
+
+### Measured whole-vehicle baseline
+
+The operator-confirmed nominal bitrate is `500 kbit/s`. Three endpoint-disabled
+PEAK TRC 1.1 captures contain 363,923 standard data frames over 187.112 seconds.
+The load bounds count intermission; the lower bound excludes bit stuffing and
+the upper bound applies a conservative maximum-stuffing count.
+
+| Firmware label and context | Average load | Peak 100 ms | Peak 1 s |
+| --- | ---: | ---: | ---: |
+| `1.8`, startup | 39.889% to 48.402% | 43.260% to 52.500% | 40.428% to 49.057% |
+| `1.8`, idle, ASCD, PRND | 39.870% to 48.379% | 41.262% to 50.070% | 40.098% to 48.654% |
+| `1.10`, idle, ASCD, Rolling Launch | 39.849% to 48.353% | 41.198% to 49.990% | 40.052% to 48.600% |
+
+The traces contain no RTR, warning, or error records. PCAN-View can omit error
+frames according to its recording configuration, so this does not yet close
+the physical error-rate gate. They also do not cover moving load, shutdown, or
+an active diagnostic session.
+
+Adding the theoretical telemetry cost to the highest observed average gives a
+planning bound, not a counterfactual measurement:
+
+| Profile and divisor | Snapshot rate | Projected average load |
+| --- | ---: | ---: |
+| `core32`, 4 | 24.414 Hz | 42.599% to 51.698% |
+| `core32`, 2 | 48.828 Hz | 45.309% to 54.994% |
+| `core32`, 1 | 97.656 Hz | 50.729% to 61.586% |
+| `wide54`, 4 | 24.414 Hz | 44.225% to 53.675% |
+| `wide54`, 2 | 48.828 Hz | 48.561% to 58.949% |
+| `wide54`, 1 | 97.656 Hz | 57.233% to 69.496% |
+
+The selected first enabled bench trial is a bounded ceiling test with
+`wide54`, divisor 1. It requests 97.656 snapshot groups and 781.25 telemetry
+frames per second; the four rotating contexts are each sampled at 24.414 Hz.
+The provisional `0x6F0` ID loses arbitration to every normal observed stock ID
+through `0x6E2`, but it has priority over startup-only IDs `0x71D..0x72E`.
+Startup timing must therefore be included in the comparison.
+
+The fallback order is `wide54` divisor 2, then `wide54` divisor 4. Changing to
+`core32` is appropriate only when the additional fields are intentionally
+discarded; at a common divisor it does not reduce snapshot construction work.
+Backoff is triggered by recurring incomplete or preempted groups, a nonzero
+overrun/abort trend during ordinary traffic, CAN warning/error or bus-state
+records, regression in stock-frame period/jitter, ECU reset or new DTC, or
+insufficient measured scheduler slack. Absence of PCAN error records alone is
+not sufficient because arbitration retries do not necessarily increment the
+telemetry abort counter.
 
 ## Failure behavior
 
@@ -380,9 +472,16 @@ control-flow address under test is changed.
 
 ### Passive vehicle gate
 
-Before choosing the CAN ID or page rate, capture the complete vehicle bus with
-the stock ROM during key-on, crank, idle, loaded operation, shutdown, and an
-active diagnostic session. Establish:
+The current captures cover startup, idle, stationary ASCD and PRND input, and
+stationary Rolling Launch activity with the custom endpoint disabled. They
+confirm `Pphi = 20 MHz`, stable ECM cadence across firmware labels `1.8` and
+`1.10`, the initial whole-bus utilization bounds, and absence of `0x6F0` in
+those states.
+
+Before approving the CAN ID or page rate, extend the passive capture to moving
+loaded operation, shutdown, and an intentional active diagnostic session.
+Confirm that PCAN-View error-frame recording is enabled. The completed evidence
+set must establish:
 
 - candidate-ID absence;
 - bitrate and actual stock periods;
@@ -426,9 +525,10 @@ and wideband measurement where physical output is the claim.
 | `../tools/sh-elf-run/verify_can_telemetry.py` | independent executable gate |
 | `jk08a-runtime-reservations.toml` | shared active ownership and future budgets |
 
-Remaining work is hardware-only for schema 1: complete the passive vehicle
-capture, select a proven-unused CAN ID and safe divisor, measure the extended
-interrupt-disabled interval, run the disabled endpoint on the bench, then
-enable `core32` on the bench. `wide54` selection follows measured bus headroom.
-Any event extension requires a new schema, an exact producer hook gate, and a
-separate physical validation plan.
+Remaining work is hardware-only for schema 1: record moving load, shutdown,
+and an active diagnostic session with error-frame capture enabled; select a
+proven-unused CAN ID; measure the extended interrupt-disabled interval; run the
+disabled endpoint on the bench; then run the bounded `wide54` divisor-1 ceiling
+test. If its acceptance criteria fail, repeat with divisors 2 and 4 in that
+order. Any event extension requires a new schema, an exact producer hook gate,
+and a separate physical validation plan.

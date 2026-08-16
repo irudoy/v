@@ -106,9 +106,9 @@ The stock type-3 frames are:
 | `0x580` | 3 | 6 | `0x000C5508` | `10*Tcan` |
 | `0x6E2` | 3 | 3 | `0x000C5100` | `10*Tcan` |
 
-The code-proven period is `Tcan = 204800 / Pphi` seconds. The board-level
-candidate `Pphi = 20 MHz` gives `Tcan = 10.24 ms`; physical timestamps remain
-the hardware gate. Frame `0x512` additionally requires `0xFFFF4231.bit2`.
+The code-proven period is `Tcan = 204800 / Pphi` seconds. Passive vehicle
+timestamps establish `Pphi = 20 MHz` and `Tcan = 10.24 ms`. Frame `0x512`
+additionally requires `0xFFFF4231.bit2`.
 
 ## Proven payload boundaries
 
@@ -128,6 +128,69 @@ The following payload claims are sufficiently narrow for use as cross-checks:
 
 Other field names require a code trace or a synchronized vehicle capture.
 Geometry copied from a Z34 frame list is not exact JK08A evidence.
+
+## Passive vehicle capture evidence
+
+Three PEAK PCAN-View TRC 1.1 captures recorded on 2026-08-16 provide the
+current vehicle baseline. The nominal bitrate was configured as `500 kbit/s`.
+The raw traces remain local and untracked; their hashes and exact firmware
+identities are registered in `../patches/hardware-results.toml`.
+
+| Firmware label | Recorded context | Frames | Observed span | Standard IDs |
+| --- | --- | ---: | ---: | ---: |
+| `1.8` | startup | 30,481 | 15.660 s | 49 |
+| `1.8` | idle, ASCD input, and stationary PRND selection | 100,000 | 51.398 s | 44 |
+| `1.10` | idle, ASCD input, and stationary Rolling Launch trials | 233,442 | 120.053 s | 44 |
+
+All 363,923 records are received standard data frames. The traces contain no
+extended, RTR, warning, or error records. Absence of error records is
+conclusive only when PCAN-View error-frame logging was enabled during capture.
+
+The 44 IDs common to the idle and Rolling Launch captures are:
+
+```text
+002 160 174 176 177 180 182 1A5 1B4 1F9 215 216 239 245 280 284 285
+2A0 2B0 2B3 2B4 2DE 351 354 355 358 35D 421 515 51F 540 541 542 54A
+54B 54C 551 560 580 5C5 60D 625 6C2 6E2
+```
+
+The startup capture additionally contains `0x71D`, `0x71E`, `0x71F`, `0x72D`,
+and `0x72E`. Neither conditional ECM frame `0x512` nor telemetry candidate
+`0x6F0` occurs in any capture. `0x6F0` remains provisional because moving
+load, shutdown, and an active diagnostic session have not been recorded. It
+has lower arbitration priority than all observed stock ECM broadcasts through
+`0x6E2`, but higher priority than the five startup-only IDs.
+
+Measured ECM periods agree with the code-derived schedule:
+
+| ID | Median period | P99 range across captures |
+| ---: | ---: | ---: |
+| `0x160` | 10.2 ms | 10.6 to 10.7 ms |
+| `0x180` | 10.2 ms | 11.0 to 11.3 ms |
+| `0x182` | 10.2 ms | 11.0 to 11.4 ms |
+| `0x1F9` | 10.2 ms | 11.0 to 11.3 ms |
+| `0x239` | 20.5 ms | 21.4 to 21.7 ms |
+| `0x551` | 102.4 ms | 104.9 to 105.8 ms |
+| `0x580` | 102.3 to 102.4 ms | 105.2 to 105.8 ms |
+| `0x6E2` | 102.3 to 102.4 ms | 105.5 to 106.0 ms |
+
+The `10*Tcan` median of 102.4 ms yields `Tcan = 10.24 ms`; substitution into
+`Tcan = 204800 / Pphi` establishes `Pphi = 20 MHz`. The `1.8` and `1.10`
+captures have identical normal-operation ID and DLC sets and no material ECM
+period or jitter regression.
+
+Across 18,267 paired scheduler cycles, `0x180` bytes 0 and 1 exactly equal the
+following `0x1F9` bytes 2 and 3. The second copy arrives 0.4 to 1.8 ms later.
+This independently confirms the shared big-endian engine-speed source and the
+`RPM = raw / 8` transform.
+
+Live control correlations establish `0x239` byte 3 values `0x20` for release,
+`0x08` for SET, and `0x02` for CANCEL. Frame `0x551` byte 5 preserves low
+nibble `0x02` while custom dashboard states appear as `0x62` for CRUISE and
+`0x72` for CRUISE plus SET. The operator-confirmed selector sequence
+P, R, N, D, N, R, P establishes `0x421` byte 0 values `0x08` for P, `0x10`
+for R, `0x18` for N, and `0x20` for D. Transient zero appears between some
+detents and is not a stable selector position.
 
 ## Mailbox-empty interrupt
 

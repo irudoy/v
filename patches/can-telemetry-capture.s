@@ -178,6 +178,8 @@ telemetry_config_wide_crc:
 .word 0x238C
 
 .org 0x000D4500
+// Always construct pages 0 through 7. The configured page count truncates
+// transmission in the queue path; it does not reduce snapshot-copy work.
 telemetry_build_bank:
 mov.l @(telemetry_build_state,pc),r3
 mov.l @(telemetry_page_table,pc),r5

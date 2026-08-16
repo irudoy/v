@@ -100,6 +100,10 @@ class Decoder:
         self.schema_mismatches = 0
         self.completed_groups = 0
 
+    @property
+    def schema_verified(self):
+        return self._schema_verified
+
     def _discard(self):
         if self._pages:
             self.incomplete_groups += 1
@@ -238,6 +242,20 @@ def engineering_values(snapshot):
     for name, (target, factor) in direct.items():
         if name in raw:
             result[target] = raw[name] * factor
+    affine = {
+        "intake_cvtc_actual_b1_raw": (
+            "intake_cvtc_actual_b1_deg_ca", 0.5, -64
+        ),
+        "intake_cvtc_actual_b2_raw": (
+            "intake_cvtc_actual_b2_deg_ca", 0.5, -64
+        ),
+        "calculated_load_raw": (
+            "calculated_load_percent", 100 / 255, 0
+        ),
+    }
+    for name, (target, factor, offset) in affine.items():
+        if name in raw:
+            result[target] = raw[name] * factor + offset
     for index in range(6):
         name = f"injection_{index}_raw"
         if name in raw:

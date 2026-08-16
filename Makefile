@@ -10,6 +10,7 @@ NPM ?= npm
 ROM ?= JK08A
 ROMS ?= JK08A
 ROMVIZ_OUTPUT ?= tmp/romviz/jk08a-rom-atlas.html
+CAN_DASHBOARD_OUTPUT ?= tmp/jk08a-can-dashboard-windows.zip
 INPUT ?=
 OUTPUT ?=
 PROFILE ?=
@@ -17,7 +18,7 @@ PROFILE ?=
 PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
 
 .PHONY: help setup check test-python test-js test verify-firmware verify
-.PHONY: romviz defs-generate rom-verify rom-build
+.PHONY: romviz dashboard-package defs-generate rom-verify rom-build
 
 help:
 	@printf '%s\n' \
@@ -33,6 +34,7 @@ help:
 		'  verify-firmware   Run the repository-contained GNU SH-2E executable gate.' \
 		'  verify            Run check, test, and verify-firmware in sequence.' \
 		'  romviz            Rebuild the self-contained ROM atlas HTML.' \
+		'  dashboard-package Build the portable Windows PCAN dashboard ZIP.' \
 		'  defs-generate     Regenerate XML, XDF, and the map ledger from Memgraph.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
@@ -41,6 +43,7 @@ help:
 		'  ROM               ROM series for definitions and ROM builds (default: JK08A).' \
 		'  ROMS              Space-separated ROM models embedded in romviz (default: JK08A).' \
 		'  ROMVIZ_OUTPUT     ROM atlas output path.' \
+		'  CAN_DASHBOARD_OUTPUT  Windows dashboard ZIP path.' \
 		'  INPUT             Input ROM path for rom-verify and rom-build.' \
 		'  OUTPUT            Output ROM path for rom-build.' \
 		'  PROFILE           Optional local unified-builder profile.'
@@ -74,6 +77,10 @@ romviz:
 	@test -n "$(strip $(ROMS))" || { printf '%s\n' 'ROMS is required' >&2; exit 2; }
 	@test -n "$(strip $(ROMVIZ_OUTPUT))" || { printf '%s\n' 'ROMVIZ_OUTPUT is required' >&2; exit 2; }
 	$(PYTHON) tools/romviz/build.py $(ROMS) --output "$(ROMVIZ_OUTPUT)"
+
+dashboard-package:
+	@test -n "$(strip $(CAN_DASHBOARD_OUTPUT))" || { printf '%s\n' 'CAN_DASHBOARD_OUTPUT is required' >&2; exit 2; }
+	$(PYTHON) tools/can_dashboard/package_windows.py --force --output "$(CAN_DASHBOARD_OUTPUT)"
 
 defs-generate:
 	$(PYTHON) tools/mapkit/emit_def.py "$(ROM)"

@@ -12,9 +12,13 @@ The authoritative implementation sources are:
 - `rolling_launch.py` for the independent state and calibration model;
 - `hardware-results.toml` for immutable image identities and hardware outcomes.
 
-The current candidate is software-verified and hardware-untested. Earlier
-overlay results do not qualify the current runtime. Concrete profiles, derived
-images, and active tune identities remain local and unversioned.
+The current candidate is software-verified and has partial passive CAN evidence
+from an exact local combined image. That evidence qualifies button decoding,
+dashboard states, scheduler timing, and one rearm boundary only. Fuel-limiter
+output, injector behavior, and physical ignition timing remain hardware-
+untested. Earlier overlay results do not qualify the current runtime. Concrete
+profiles, derived images, and active tune identities remain local and
+unversioned.
 
 ## Functional model
 
@@ -87,6 +91,29 @@ A failed attempt requires both a nonzero abort reason and the published
 `BUTTON_HELD` gate flag. Releasing CANCEL removes the failure indication on the
 next evaluated state. The indication is level-based and does not change the
 30/30 map-feedback pulse timing.
+
+### Passive CAN evidence
+
+The 2026-08-16 `1.10` vehicle capture contains 233,442 standard frames over
+120.053 seconds. Its exact firmware and trace hashes are registered in
+`hardware-results.toml`. Frame `0x239` byte 3 contains 4,229 release samples,
+282 SET samples, and 1,349 CANCEL samples. Frame `0x551` byte 5 contains 868
+stock-value samples at `0x02`, 193 CRUISE-only samples at `0x62`, and 111
+CRUISE-plus-SET samples at `0x72`.
+
+The `0x72` samples form 11 distinct ACTIVE indication intervals. Fast ECM
+frames retain a 10.2 ms median period and slow ECM frames retain a 102.3 to
+102.4 ms median period both inside and outside custom indication intervals;
+their maximum gaps remain below 12.2 ms and 106.2 ms respectively. This gives
+no evidence of a scheduler or stock-CAN timing regression in the recorded
+stationary conditions.
+
+One repeated CANCEL press begins 0.860 seconds after the preceding release,
+before the local build's configured rearm interval expires, and produces no
+ACTIVE indication. Later presses produce bounded RPM oscillation around their
+temporary hold regions. These observations are consistent with cooldown and
+RPM-hold behavior, but CAN engine speed and dashboard state alone do not prove
+fuel-cut electrical output or physical spark retard.
 
 ## Modes
 
@@ -281,8 +308,9 @@ A candidate is software-valid only when all applicable checks pass:
 8. The generated definition tables agree with the configuration contract.
 9. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
-Software verification does not authorize flashing. The first hardware gate is
-a stationary, controlled `rpm_hold` test with retard disabled. It must confirm
+Software verification and passive CAN evidence do not authorize another
+flash. The next qualifying hardware gate is a stationary, controlled
+`rpm_hold` test with retard disabled. It must confirm
 activation, captured and cut RPM behavior, timeout, release, cooldown, rearm,
 map isolation, all dashboard indication states, map-pulse priority, normal ASCD
 behavior, and subsequent map selection. Retard mode requires a separate

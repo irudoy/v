@@ -1,0 +1,1 @@
+python-can[pcan]==4.6.1
