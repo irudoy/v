@@ -131,15 +131,18 @@ or diagnostic semantic bindings. The current conversions are:
 | TPS bank 1/2 | telemetry words | `raw / 200 V` | near-adjacent target agreement |
 | fuel/oil temperature | telemetry bytes | `raw - 50 degC` | exact JK08A DID pointers plus homologous profile; oil agrees on target |
 | short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |
-| timing command | telemetry signed byte | `raw deg` | near-adjacent target agreement; software command only |
+| timing coordinate | `final_timing_raw` signed byte | `raw deg` | upstream stock coordinate during a Rolling Launch late override; not a measured spark angle |
+| APC command | `apc_command_raw` byte | raw | effective software command consumed by the APC scheduler; normal-path timing coordinate is `110 - raw` |
 
 The CarScanner comparison follows the CAN recording rather than sharing a
 clock with it. It corroborates transforms but cannot prove equality for values
 that can change between captures. Injection values use the declared candidate
 `raw / 100 ms` transform but are compensated software commands, not verified
 electrical injector-open durations. Timing is also a software command, not a
-measured spark angle. The dashboard preserves these boundaries in its labels
-and footer.
+measured spark angle. The current top-card label `Timing command` names
+`final_timing_raw`; during a Rolling Launch late override it is the upstream
+stock coordinate rather than the effective command. The detailed `APC command`
+field carries the effective command.
 
 Health indicators include complete snapshot and frame rates, tick-derived
 loss, incomplete and malformed groups, schema mismatches, source queue drops,

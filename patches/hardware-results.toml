@@ -234,6 +234,36 @@ candidate_status = "deferred"
 candidate_blocker = "target-vehicle diagnostics unavailable"
 candidate_resume_gate = "passive stock CRUISE MAIN OFF-ON-OFF capture"
 
+[map_switching.calibration_effects_v1_11]
+observed_on = "2026-08-17"
+firmware_label = "1.11"
+image_sha256 = "aa18c919bf885b572aba15bb5068609ccb0ecc99f739e364938fc170bdf0d72a"
+capture_name = "new-log-full.trc"
+capture_sha256 = "a1f8b8c50d45e2f281917bea998d638e2d81e3a2be51b105f885f9f43c181298"
+hardware_status = "functional_pass_with_unexercised_boundaries"
+map_2_commit_offset_ms = 112395.3
+map_3_commit_offset_ms = 178162.2
+map_2_feedback_pulse_count = 2
+map_3_feedback_pulse_count = 3
+warm_lift_off_filter = "speed above 10 km/h, APP1 raw below 190, absolute throttle raw below 25, RPM 1200..5000, ASCD released"
+warm_lift_off_coolant_range_deg_c = [89, 93]
+initial_stock_family_sample_count = 1534
+initial_stock_family_full_inhibit_count = 957
+map_2_sample_count = 2132
+map_2_full_inhibit_count = 0
+map_3_sample_count = 6098
+map_3_full_inhibit_count = 0
+matched_timing_window_rpm = [4000, 4400]
+matched_map_2_timing_coordinate_median = 14
+matched_map_3_timing_coordinate_median = -2
+matched_timing_coordinate_delta = -16
+matched_map_2_injection_word_mean_median = 1.58
+matched_map_3_injection_word_mean_median = 1.58
+matched_map_2_bfs_candidate_ms_median = 1.089
+matched_map_3_bfs_candidate_ms_median = 1.086
+result = "Map 2 and Map 3 commits are observable without a partial-state symptom; both selected calibrations suppress warm sub-5000-RPM DFCO, and the slot-specific 0x12196 change produces the predicted timing-coordinate shift without a corresponding fuel-word shift"
+evidence_boundary = "the initial segment has the stock-family calibration fingerprint but Map 1, Map 4, and Map 5 are byte-identical for all switched families; the trace does not exercise Map 3 DFCO above 5000 RPM, the per-slot main fuel limiter, a physical spark reference, or electrical injector outputs"
+
 [[map_switching.incidents]]
 id = "lookup_revision_1_stage_7_delay_slot"
 source_stage = 5
@@ -271,6 +301,29 @@ overlay_21_sha256 = "1e6866e96e77fba203166b38f5efcfd83b6bcad609b7e0ada67727cd5fd
 overlay_21_status = "pass"
 overlay_22_sha256 = "21f532b924e24deede30c07bbf7d253bf4c908355bca44c7c863fee592aa2a84"
 overlay_22_status = "functional_fail"
+
+[rolling_launch.maps_2_3_v1_11]
+observed_on = "2026-08-17"
+firmware_label = "1.11"
+image_sha256 = "aa18c919bf885b572aba15bb5068609ccb0ecc99f739e364938fc170bdf0d72a"
+capture_name = "new-log-full.trc"
+capture_sha256 = "a1f8b8c50d45e2f281917bea998d638e2d81e3a2be51b105f885f9f43c181298"
+hardware_status = "functional_pass_with_physical_output_boundaries"
+map_2_activation_count = 2
+map_3_activation_count = 3
+map_2_full_inhibit_cycle_counts = [4, 4]
+map_3_full_inhibit_cycle_counts = [6, 4, 5]
+activation_rpm_range = [3112.5, 3637.5]
+post_release_full_inhibit_clear_latency_ms = [6.9, 81.1]
+dashboard_active_state = 7
+dashboard_active_byte5 = 0x72
+full_fuel_inhibit_mask = 0x3F
+normal_final_timing_apc_identity_count = 35444
+final_timing_apc_override_difference_count = 367
+override_difference_cancel_held_count = 342
+override_difference_release_count = 25
+result = "all five moving CANCEL trials enter ACTIVE, reach the bounded retard target region, cycle the full fuel-inhibit mask around a captured-RPM-dependent window, clear after release, and rearm for later trials on both selected maps"
+evidence_boundary = "engine-level RPM hold and the effective APC software command are causal hardware results; final_timing_raw is the upstream stock coordinate before the Rolling Launch late override, and the capture does not measure spark angle at the crankshaft or electrical injector-open duration"
 
 [can_telemetry.current_wide54_divisor1]
 recorded_on = "2026-08-17"

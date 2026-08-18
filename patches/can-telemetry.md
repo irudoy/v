@@ -228,6 +228,13 @@ their physical cylinder order or that `0xFFFF23C8..0xFFFF23D3` is the final
 electrical injector-open duration. `0xFFFF2022` is a software command, not a
 measured spark angle.
 
+On the stock normal path, `final_timing_raw = 110 - apc_command_raw`.
+Rolling Launch inserts its late override after the final stock coordinate is
+written and before the APC scheduler consumes the command. During that
+override, `final_timing_raw` therefore remains the upstream stock coordinate,
+while `apc_command_raw` is the effective software command. Neither field is a
+measurement of physical crankshaft timing.
+
 `telemetry_status` is latched until a complete group carrying it succeeds:
 
 | Bit | Meaning |

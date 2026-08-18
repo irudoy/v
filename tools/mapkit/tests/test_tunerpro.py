@@ -71,10 +71,10 @@ SLOT_TABLES = {
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-    "Cold Idle Ignition Timing (Candidate) (0x12196)":
-        "Idle Speed Control / Ignition Timing",
-    "Idle Ignition Timing (Candidate) (0x1219E)":
-        "Idle Speed Control / Ignition Timing",
+    "Mode-Selected Timing-State Addend A (x-128) (0x12196)":
+        "Ignition Timing / State Accumulators",
+    "Mode-Selected Timing-State Addend B (x-128) (0x1219E)":
+        "Ignition Timing / State Accumulators",
 }
 
 
@@ -415,7 +415,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             "0x14E52",
         }.isdisjoint(addresses))
 
-    def test_idle_ignition_candidates_reach_the_working_definition(self):
+    def test_timing_state_addends_reach_the_working_definition(self):
         by_address = {
             table.find("./XDFAXIS[@id='z']/EMBEDDEDDATA").get("mmedaddress"):
                 table
@@ -423,10 +423,10 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         }
         expected = {
             "0x12196": slot_name(
-                1, "Cold Idle Ignition Timing (Candidate) (0x12196)"
+                1, "Mode-Selected Timing-State Addend A (x-128) (0x12196)"
             ),
             "0x1219E": slot_name(
-                1, "Idle Ignition Timing (Candidate) (0x1219E)"
+                1, "Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
             ),
         }
         for address, title in expected.items():
@@ -435,12 +435,12 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                 self.assertEqual(table.findtext("./title"), title)
                 self.assertEqual(
                     self.item_category(table),
-                    "Idle Speed Control / Ignition Timing",
+                    "Ignition Timing / State Accumulators",
                 )
                 axis = table.find("./XDFAXIS[@id='z']")
                 self.assertEqual(
                     axis.findtext("./units"),
-                    "Ignition timing (deg) [cand]",
+                    "Timing-state count",
                 )
                 self.assertEqual(axis.find("./MATH").get("equation"), "X-128")
                 x_axis = table.find("./XDFAXIS[@id='x']")

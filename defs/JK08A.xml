@@ -1387,8 +1387,11 @@
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
          address as the Bosch-family table, but exact JK08A code interpolates and selects it
-         dynamically in stock operation. It is not an inactive-family calibration. Result
-         disposition: inline_comparison.
+         dynamically in stock operation. It is not an inactive-family calibration. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that stock request
+         thresholds can coexist with complete suppression of the full 0x3f inhibit mask when the
+         restore pair is changed. This table is a request gate, not an independently sufficient
+         cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0x126E4" sizex="16" endian="big">
@@ -1410,8 +1413,10 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
-         tables on every evaluation and selects this one for the rising mode edge. Result
-         disposition: inline_comparison.
+         tables on every evaluation and selects this one for the rising mode edge. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that retaining this stock
+         entry threshold does not force DFCO entry when the restore classifier returns a nonzero
+         class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0x12718" sizex="16" endian="big">
@@ -1433,7 +1438,11 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
-         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         floors and a conditional 1200 RPM floor can raise its effective value. A target-vehicle
+         warm moving A/B capture changed the restore pair while retaining stock
+         000126e4/00012718 and eliminated the full 0x3f inhibit mask throughout the tested
+         sub-5000-RPM lift-off region. This validates the restore pair as an operational veto
+         but does not isolate the two restore tables or behavior above the tested range. Result
          disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
@@ -1458,7 +1467,10 @@
          The Nissan A2L registry labels this address as the Bosch-family restore table, but
          exact JK08A code always interpolates it and uses it in live classifier branches. It is
          not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
-         floor can raise its effective value. Result disposition: inline_comparison.
+         floor can raise its effective value. The target-vehicle restore-pair A/B result
+         registered in patches/hardware-results.toml validates this family as an operational
+         veto while leaving its individual contribution and above-range boundary unexercised.
+         Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - DFCO Intermediate Restore RPM Threshold"
            category="Fuelling//Overrun" storagetype="uint8" storageaddress="0x1298C" sizex="16"
@@ -1574,23 +1586,27 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
          while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
          enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
-         homology identifies the table as the Cold Idle Ignition Timing candidate with one
-         degree per centered raw count; code proves the x-128 signed addend but not a direct
-         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
-         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
-         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
-         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
-         ffff1511, write of derived x-128 at site 0004b0d0).
+         homology supplies the historical Cold Idle Ignition Timing label and a candidate degree
+         interpretation, but target-vehicle A/B evidence shows that the table is operational
+         during warm deceleration. In matched 4000..4400 RPM lift-off, a 16-count slot
+         difference produced the same 16-count shift in the median final software timing
+         coordinate with no corresponding fuel-word shift. The Cold Idle qualifier is therefore
+         nonexclusive, while a crank-referenced degree scale and the complete selector predicate
+         remain unverified. Numeric round trip over the actual range: 128 -> 0 -> 128; 145 -> 17
+         -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is selected.
+         For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned
+         linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write
+         of derived x-128 at site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Cold Idle Ignition Timing (Candidate) (0x12196)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 1 - Mode-Selected Timing-State Addend A (x-128) (0x12196)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0x12196" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -1601,22 +1617,22 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
          writes]
-         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
-         per centered raw count. The available code trace proves the x-128 signed addend and its
-         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
-         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
-         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
-         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0).
+         A2L homology identifies the table as the Idle Ignition Timing candidate with a
+         candidate one-degree interpretation. Exact code proves the x-128 timing-state count and
+         its consumers, but target hardware has not isolated this table or established a direct
+         final crank-relative angle. Numeric scale round trip: 128 -> 0 -> 128; 160 -> 32 ->
+         160. Index: implicit eight-point axis over uint8 ffff11b2: for q<224, index i=q>>5 and
+         the low 5 bits define a Q0.16 fraction between cells i and i+1; for q>=224, cell 7 is
+         selected. Result disposition: writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Idle Ignition Timing (Candidate) (0x1219E)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 1 - Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0x1219E" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -1741,8 +1757,11 @@
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
          address as the Bosch-family table, but exact JK08A code interpolates and selects it
-         dynamically in stock operation. It is not an inactive-family calibration. Result
-         disposition: inline_comparison.
+         dynamically in stock operation. It is not an inactive-family calibration. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that stock request
+         thresholds can coexist with complete suppression of the full 0x3f inhibit mask when the
+         restore pair is changed. This table is a request gate, not an independently sufficient
+         cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0xD3F80" sizex="16" endian="big">
@@ -1765,8 +1784,10 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
-         tables on every evaluation and selects this one for the rising mode edge. Result
-         disposition: inline_comparison.
+         tables on every evaluation and selects this one for the rising mode edge. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that retaining this stock
+         entry threshold does not force DFCO entry when the restore classifier returns a nonzero
+         class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0xD2400" sizex="16" endian="big">
@@ -1789,7 +1810,11 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
-         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         floors and a conditional 1200 RPM floor can raise its effective value. A target-vehicle
+         warm moving A/B capture changed the restore pair while retaining stock
+         000126e4/00012718 and eliminated the full 0x3f inhibit mask throughout the tested
+         sub-5000-RPM lift-off region. This validates the restore pair as an operational veto
+         but does not isolate the two restore tables or behavior above the tested range. Result
          disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
@@ -1815,7 +1840,10 @@
          The Nissan A2L registry labels this address as the Bosch-family restore table, but
          exact JK08A code always interpolates it and uses it in live classifier branches. It is
          not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
-         floor can raise its effective value. Result disposition: inline_comparison.
+         floor can raise its effective value. The target-vehicle restore-pair A/B result
+         registered in patches/hardware-results.toml validates this family as an operational
+         veto while leaving its individual contribution and above-range boundary unexercised.
+         Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - DFCO Intermediate Restore RPM Threshold"
            category="Fuelling//Overrun" storagetype="uint8" storageaddress="0xD3FC0" sizex="16"
@@ -1934,23 +1962,27 @@
          project map-switching patch
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
          while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
          enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
-         homology identifies the table as the Cold Idle Ignition Timing candidate with one
-         degree per centered raw count; code proves the x-128 signed addend but not a direct
-         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
-         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
-         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
-         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
-         ffff1511, write of derived x-128 at site 0004b0d0).
+         homology supplies the historical Cold Idle Ignition Timing label and a candidate degree
+         interpretation, but target-vehicle A/B evidence shows that the table is operational
+         during warm deceleration. In matched 4000..4400 RPM lift-off, a 16-count slot
+         difference produced the same 16-count shift in the median final software timing
+         coordinate with no corresponding fuel-word shift. The Cold Idle qualifier is therefore
+         nonexclusive, while a crank-referenced degree scale and the complete selector predicate
+         remain unverified. Numeric round trip over the actual range: 128 -> 0 -> 128; 145 -> 17
+         -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is selected.
+         For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned
+         linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write
+         of derived x-128 at site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Cold Idle Ignition Timing (Candidate) (0x12196)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 2 - Mode-Selected Timing-State Addend A (x-128) (0x12196)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0xD4080" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -1962,22 +1994,22 @@
          project map-switching patch
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
          writes]
-         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
-         per centered raw count. The available code trace proves the x-128 signed addend and its
-         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
-         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
-         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
-         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0).
+         A2L homology identifies the table as the Idle Ignition Timing candidate with a
+         candidate one-degree interpretation. Exact code proves the x-128 timing-state count and
+         its consumers, but target hardware has not isolated this table or established a direct
+         final crank-relative angle. Numeric scale round trip: 128 -> 0 -> 128; 160 -> 32 ->
+         160. Index: implicit eight-point axis over uint8 ffff11b2: for q<224, index i=q>>5 and
+         the low 5 bits define a Q0.16 fraction between cells i and i+1; for q>=224, cell 7 is
+         selected. Result disposition: writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Idle Ignition Timing (Candidate) (0x1219E)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 2 - Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0xD40A0" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -2104,8 +2136,11 @@
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
          address as the Bosch-family table, but exact JK08A code interpolates and selects it
-         dynamically in stock operation. It is not an inactive-family calibration. Result
-         disposition: inline_comparison.
+         dynamically in stock operation. It is not an inactive-family calibration. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that stock request
+         thresholds can coexist with complete suppression of the full 0x3f inhibit mask when the
+         restore pair is changed. This table is a request gate, not an independently sufficient
+         cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0xD3F90" sizex="16" endian="big">
@@ -2128,8 +2163,10 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
-         tables on every evaluation and selects this one for the rising mode edge. Result
-         disposition: inline_comparison.
+         tables on every evaluation and selects this one for the rising mode edge. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that retaining this stock
+         entry threshold does not force DFCO entry when the restore classifier returns a nonzero
+         class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0xD2410" sizex="16" endian="big">
@@ -2152,7 +2189,11 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
-         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         floors and a conditional 1200 RPM floor can raise its effective value. A target-vehicle
+         warm moving A/B capture changed the restore pair while retaining stock
+         000126e4/00012718 and eliminated the full 0x3f inhibit mask throughout the tested
+         sub-5000-RPM lift-off region. This validates the restore pair as an operational veto
+         but does not isolate the two restore tables or behavior above the tested range. Result
          disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
@@ -2178,7 +2219,10 @@
          The Nissan A2L registry labels this address as the Bosch-family restore table, but
          exact JK08A code always interpolates it and uses it in live classifier branches. It is
          not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
-         floor can raise its effective value. Result disposition: inline_comparison.
+         floor can raise its effective value. The target-vehicle restore-pair A/B result
+         registered in patches/hardware-results.toml validates this family as an operational
+         veto while leaving its individual contribution and above-range boundary unexercised.
+         Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - DFCO Intermediate Restore RPM Threshold"
            category="Fuelling//Overrun" storagetype="uint8" storageaddress="0xD3FD0" sizex="16"
@@ -2297,23 +2341,27 @@
          project map-switching patch
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
          while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
          enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
-         homology identifies the table as the Cold Idle Ignition Timing candidate with one
-         degree per centered raw count; code proves the x-128 signed addend but not a direct
-         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
-         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
-         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
-         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
-         ffff1511, write of derived x-128 at site 0004b0d0).
+         homology supplies the historical Cold Idle Ignition Timing label and a candidate degree
+         interpretation, but target-vehicle A/B evidence shows that the table is operational
+         during warm deceleration. In matched 4000..4400 RPM lift-off, a 16-count slot
+         difference produced the same 16-count shift in the median final software timing
+         coordinate with no corresponding fuel-word shift. The Cold Idle qualifier is therefore
+         nonexclusive, while a crank-referenced degree scale and the complete selector predicate
+         remain unverified. Numeric round trip over the actual range: 128 -> 0 -> 128; 145 -> 17
+         -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is selected.
+         For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned
+         linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write
+         of derived x-128 at site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Cold Idle Ignition Timing (Candidate) (0x12196)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 3 - Mode-Selected Timing-State Addend A (x-128) (0x12196)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0xD4088" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -2325,22 +2373,22 @@
          project map-switching patch
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
          writes]
-         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
-         per centered raw count. The available code trace proves the x-128 signed addend and its
-         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
-         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
-         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
-         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0).
+         A2L homology identifies the table as the Idle Ignition Timing candidate with a
+         candidate one-degree interpretation. Exact code proves the x-128 timing-state count and
+         its consumers, but target hardware has not isolated this table or established a direct
+         final crank-relative angle. Numeric scale round trip: 128 -> 0 -> 128; 160 -> 32 ->
+         160. Index: implicit eight-point axis over uint8 ffff11b2: for q<224, index i=q>>5 and
+         the low 5 bits define a Q0.16 fraction between cells i and i+1; for q>=224, cell 7 is
+         selected. Result disposition: writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Idle Ignition Timing (Candidate) (0x1219E)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 3 - Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0xD40A8" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -2467,8 +2515,11 @@
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
          address as the Bosch-family table, but exact JK08A code interpolates and selects it
-         dynamically in stock operation. It is not an inactive-family calibration. Result
-         disposition: inline_comparison.
+         dynamically in stock operation. It is not an inactive-family calibration. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that stock request
+         thresholds can coexist with complete suppression of the full 0x3f inhibit mask when the
+         restore pair is changed. This table is a request gate, not an independently sufficient
+         cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0xD3FA0" sizex="16" endian="big">
@@ -2491,8 +2542,10 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
-         tables on every evaluation and selects this one for the rising mode edge. Result
-         disposition: inline_comparison.
+         tables on every evaluation and selects this one for the rising mode edge. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that retaining this stock
+         entry threshold does not force DFCO entry when the restore classifier returns a nonzero
+         class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0xD2420" sizex="16" endian="big">
@@ -2515,7 +2568,11 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
-         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         floors and a conditional 1200 RPM floor can raise its effective value. A target-vehicle
+         warm moving A/B capture changed the restore pair while retaining stock
+         000126e4/00012718 and eliminated the full 0x3f inhibit mask throughout the tested
+         sub-5000-RPM lift-off region. This validates the restore pair as an operational veto
+         but does not isolate the two restore tables or behavior above the tested range. Result
          disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
@@ -2541,7 +2598,10 @@
          The Nissan A2L registry labels this address as the Bosch-family restore table, but
          exact JK08A code always interpolates it and uses it in live classifier branches. It is
          not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
-         floor can raise its effective value. Result disposition: inline_comparison.
+         floor can raise its effective value. The target-vehicle restore-pair A/B result
+         registered in patches/hardware-results.toml validates this family as an operational
+         veto while leaving its individual contribution and above-range boundary unexercised.
+         Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - DFCO Intermediate Restore RPM Threshold"
            category="Fuelling//Overrun" storagetype="uint8" storageaddress="0xD3FE0" sizex="16"
@@ -2660,23 +2720,27 @@
          project map-switching patch
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
          while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
          enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
-         homology identifies the table as the Cold Idle Ignition Timing candidate with one
-         degree per centered raw count; code proves the x-128 signed addend but not a direct
-         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
-         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
-         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
-         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
-         ffff1511, write of derived x-128 at site 0004b0d0).
+         homology supplies the historical Cold Idle Ignition Timing label and a candidate degree
+         interpretation, but target-vehicle A/B evidence shows that the table is operational
+         during warm deceleration. In matched 4000..4400 RPM lift-off, a 16-count slot
+         difference produced the same 16-count shift in the median final software timing
+         coordinate with no corresponding fuel-word shift. The Cold Idle qualifier is therefore
+         nonexclusive, while a crank-referenced degree scale and the complete selector predicate
+         remain unverified. Numeric round trip over the actual range: 128 -> 0 -> 128; 145 -> 17
+         -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is selected.
+         For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned
+         linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write
+         of derived x-128 at site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Cold Idle Ignition Timing (Candidate) (0x12196)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 4 - Mode-Selected Timing-State Addend A (x-128) (0x12196)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0xD4090" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -2688,22 +2752,22 @@
          project map-switching patch
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
          writes]
-         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
-         per centered raw count. The available code trace proves the x-128 signed addend and its
-         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
-         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
-         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
-         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0).
+         A2L homology identifies the table as the Idle Ignition Timing candidate with a
+         candidate one-degree interpretation. Exact code proves the x-128 timing-state count and
+         its consumers, but target hardware has not isolated this table or established a direct
+         final crank-relative angle. Numeric scale round trip: 128 -> 0 -> 128; 160 -> 32 ->
+         160. Index: implicit eight-point axis over uint8 ffff11b2: for q<224, index i=q>>5 and
+         the low 5 bits define a Q0.16 fraction between cells i and i+1; for q>=224, cell 7 is
+         selected. Result disposition: writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Idle Ignition Timing (Candidate) (0x1219E)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 4 - Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0xD40B0" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -2830,8 +2894,11 @@
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. The Nissan A2L registry labels this
          address as the Bosch-family table, but exact JK08A code interpolates and selects it
-         dynamically in stock operation. It is not an inactive-family calibration. Result
-         disposition: inline_comparison.
+         dynamically in stock operation. It is not an inactive-family calibration. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that stock request
+         thresholds can coexist with complete suppression of the full 0x3f inhibit mask when the
+         restore pair is changed. This table is a request gate, not an independently sufficient
+         cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0xD3FB0" sizex="16" endian="big">
@@ -2854,8 +2921,10 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          The comparison is strict RPM/25 > threshold. Exact JK08A code interpolates both cut
-         tables on every evaluation and selects this one for the rising mode edge. Result
-         disposition: inline_comparison.
+         tables on every evaluation and selects this one for the rising mode edge. Target-
+         vehicle A/B evidence in patches/hardware-results.toml shows that retaining this stock
+         entry threshold does not force DFCO entry when the restore classifier returns a nonzero
+         class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
            storagetype="uint8" storageaddress="0xD2430" sizex="16" endian="big">
@@ -2878,7 +2947,11 @@
          static diagnostic context: Engine Coolant Temperature [code, homologous_community, via
          map evidence: indexed_by]
          Exact JK08A code always interpolates this table together with 0001298c. Runtime coolant
-         floors and a conditional 1200 RPM floor can raise its effective value. Result
+         floors and a conditional 1200 RPM floor can raise its effective value. A target-vehicle
+         warm moving A/B capture changed the restore pair while retaining stock
+         000126e4/00012718 and eliminated the full 0x3f inhibit mask throughout the tested
+         sub-5000-RPM lift-off region. This validates the restore pair as an operational veto
+         but does not isolate the two restore tables or behavior above the tested range. Result
          disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
@@ -2904,7 +2977,10 @@
          The Nissan A2L registry labels this address as the Bosch-family restore table, but
          exact JK08A code always interpolates it and uses it in live classifier branches. It is
          not an inactive-family calibration. Runtime coolant floors and a conditional 1200 RPM
-         floor can raise its effective value. Result disposition: inline_comparison.
+         floor can raise its effective value. The target-vehicle restore-pair A/B result
+         registered in patches/hardware-results.toml validates this family as an operational
+         veto while leaving its individual contribution and above-range boundary unexercised.
+         Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - DFCO Intermediate Restore RPM Threshold"
            category="Fuelling//Overrun" storagetype="uint8" storageaddress="0xD3FF0" sizex="16"
@@ -3023,23 +3099,27 @@
          project map-switching patch
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          The raw lookup result has no direct RAM sink: 0004b0c6 and 0004b0cc consume it inline,
          while 0004b0d0 writes derived x-128 to ffff1511. Within the same 0004afdc, ffff1511
          enters a saturating sum that produces ffff23ee; 0004bdc2 reads this result. A2L
-         homology identifies the table as the Cold Idle Ignition Timing candidate with one
-         degree per centered raw count; code proves the x-128 signed addend but not a direct
-         final crank-relative angle. Numeric round trip over the actual range: 128 -> 0 -> 128;
-         145 -> 17 -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is
-         selected. For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by
-         unsigned linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM
-         ffff1511, write of derived x-128 at site 0004b0d0).
+         homology supplies the historical Cold Idle Ignition Timing label and a candidate degree
+         interpretation, but target-vehicle A/B evidence shows that the table is operational
+         during warm deceleration. In matched 4000..4400 RPM lift-off, a 16-count slot
+         difference produced the same 16-count shift in the median final software timing
+         coordinate with no corresponding fuel-word shift. The Cold Idle qualifier is therefore
+         nonexclusive, while a crank-referenced degree scale and the complete selector predicate
+         remain unverified. Numeric round trip over the actual range: 128 -> 0 -> 128; 145 -> 17
+         -> 145. Index: implicit 1D-8: u = uint8(RAM ffff11b2). For u >= 224, y7 is selected.
+         For u < 224: i = u/32 rounded down, q = (u-i*32)*2048 in Q0.16, followed by unsigned
+         linear interpolation of y[i]..y[i+1]. Result disposition: writes (RAM ffff1511, write
+         of derived x-128 at site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Cold Idle Ignition Timing (Candidate) (0x12196)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 5 - Mode-Selected Timing-State Addend A (x-128) (0x12196)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0xD4098" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
@@ -3051,22 +3131,22 @@
          project map-switching patch
          canonical accessor 0x4AFDC; r4 operand: pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Ignition timing (deg) [candidate]
+         scaling x-128 Timing-state count [code]
          static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence:
          writes]
-         A2L homology identifies the table as the Idle Ignition Timing candidate with one degree
-         per centered raw count. The available code trace proves the x-128 signed addend and its
-         timing-state consumers but not a direct final crank-relative angle. Numeric scale round
-         trip: 128 -> 0 -> 128; 160 -> 32 -> 160. Index: Implicit eight-point axis over uint8
-         ffff11b2: for q<224, index i=q>>5 and the low 5 bits define a Q0.16 fraction between
-         cells i and i+1; for q>=224, cell 7 is selected. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0).
+         A2L homology identifies the table as the Idle Ignition Timing candidate with a
+         candidate one-degree interpretation. Exact code proves the x-128 timing-state count and
+         its consumers, but target hardware has not isolated this table or established a direct
+         final crank-relative angle. Numeric scale round trip: 128 -> 0 -> 128; 160 -> 32 ->
+         160. Index: implicit eight-point axis over uint8 ffff11b2: for q<224, index i=q>>5 and
+         the low 5 bits define a Q0.16 fraction between cells i and i+1; for q>=224, cell 7 is
+         selected. Result disposition: writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Idle Ignition Timing (Candidate) (0x1219E)"
-           category="Idle Speed Control//Ignition Timing" storagetype="uint8"
+    <table type="2D" name="Map 5 - Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
+           category="Ignition Timing//State Accumulators" storagetype="uint8"
            storageaddress="0xD40B8" sizex="8" endian="big">
-      <scaling units="Ignition timing (deg) [cand]" expression="x-128" to_byte="x+128"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>

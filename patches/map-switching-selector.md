@@ -18,12 +18,12 @@ derived ROM bytes, and active tune identities remain local and unversioned.
 ## Status and scope
 
 The current endpoint is software-verified. Vehicle capture of firmware `1.11`
-confirms the selector sequences and serialized pulse counts, but rejects the
-current visual ON state: state 6 illuminates SET together with CRUISE on the
-exact target. The timing is 30 serializer invocations ON followed by 30
-invocations OFF for each pulse. Hardware status is read only from
-`hardware-results.toml`; successful results from earlier compositions do not
-qualify a changed endpoint.
+confirms Map 2 and Map 3 commits, serialized pulse counts, and selected
+calibration effects. It rejects the current visual ON state: state 6
+illuminates SET together with CRUISE on the exact target. The timing is 30
+serializer invocations ON followed by 30 invocations OFF for each pulse.
+Hardware status is read only from `hardware-results.toml`; successful results
+from earlier compositions do not qualify a changed endpoint.
 
 The runtime switches these families:
 
@@ -35,8 +35,8 @@ The runtime switches these families:
 | DFCO intermediate restore | lookup adapter |
 | main ignition trim | lookup adapter |
 | high-detonation ignition trim | lookup adapter |
-| cold-idle ignition timing | lookup adapter |
-| idle ignition timing | lookup adapter |
+| mode-selected timing-state addend A (`0x12196`) | lookup adapter |
+| mode-selected timing-state addend B (`0x1219E`) | lookup adapter |
 | fuel targets | lookup adapter |
 | main fuel compensation | lookup adapter |
 | fuel-cut limiter cluster | RAM shadow |
@@ -170,6 +170,51 @@ state 5 (`0x50`) remains unverified. Hardware correlation is deferred while
 target-vehicle diagnostics are unavailable. Work resumes with a passive stock
 CRUISE MAIN `OFF -> ON -> OFF` capture on the current firmware. No executable
 feedback value changes before that correlation.
+
+## Active calibration evidence
+
+The firmware `1.11` moving capture is bound to its exact image and trace hashes
+in `hardware-results.toml`. The input stream contains a two-pulse selector
+gesture committed at trace offset `112.3953 s`, followed by exactly two
+post-commit feedback pulses. A three-pulse gesture committed at `178.1622 s`
+is followed by exactly three post-commit feedback pulses. The engine remains
+at stationary idle across each commit without a fuel-inhibit transition or an
+abrupt timing-coordinate discontinuity. This is consistent with the atomic
+publication contract.
+
+The same trace supplies a causal calibration check. Under warm lift-off below
+`5000 RPM`, the initial stock-family segment contains 957 full `0x3F` fuel
+inhibit samples among 1,534 selected samples. Map 2 contains zero among 2,132,
+and Map 3 contains zero among 6,098. The six calculated injection words remain
+nonzero in the selected-map intervals. Map 1, Map 4, and Map 5 have identical
+bytes for every switched family in this exact image, so the initial segment is
+a stock-family fingerprint rather than a unique in-band slot identifier.
+
+Only six of the twelve switched families differ between Maps 2 and 3 in this
+local image: all four warm DFCO threshold families, the `0x12196` timing-state
+family, and the column-0 release cell of main fuel cut `0x0934E`. Main ignition,
+high-detonation ignition, `0x1219E` idle timing, Fuel Targets, Fuel Compensation
+Main, and the request-limiter scalar are byte-identical between the two slots.
+They cannot explain an A/B difference in this capture. Exact per-image
+calibration values remain local and unversioned.
+
+Map 2 and Map 3 have the same fuel, main-ignition, high-detonation, idle-timing,
+and request-limiter content relevant to the matched lift-off window. Their
+slot-specific `0x12196` content differs. At `4000..4400 RPM`, matched warm
+lift-off samples have the same median calculated injection value and nearly
+identical BFS, while the median final timing coordinate changes from 14 on
+Map 2 to -2 on Map 3. The exact 16-count output difference matches the
+per-slot calibration difference. This establishes that the `0x12196` family
+is operational during warm deceleration and that its centered result reaches
+the final software timing coordinate. The catalog-derived `Cold Idle` label is
+therefore retained only as provenance, not as the presentation name or an
+exclusive physical qualifier. A crank-referenced degree scale remains
+unverified.
+
+This capture does not distinguish Map 2 from Map 3 through DFCO below
+`5000 RPM`, because both calibrations intentionally suppress the state in that
+region. It also does not reach the per-slot main fuel-limiter boundary. Those
+specific slot differences remain unexercised.
 
 ## Diagnostic mirror
 

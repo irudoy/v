@@ -2,14 +2,15 @@
 
 ## Status and scope
 
-This document records the static code model of deceleration fuel cut (DFCO) in
-the exact JK08A/JK03A executable. The request logic, four RPM threshold tables,
-entry and exit delays, five-state machine, rotating release tail, final
-six-channel arbitration, and ATU-II output path are established by executable
-code. Physical signal names that are not connected to an exact diagnostic or
-terminal source remain unnamed.
+This document records the code model and bounded target-vehicle evidence for
+deceleration fuel cut (DFCO) in the exact JK08A/JK03A executable. The request
+logic, four RPM threshold tables, entry and exit delays, five-state machine,
+rotating release tail, final six-channel arbitration, and ATU-II output path
+are established by executable code. Physical signal names that are not
+connected to an exact diagnostic or terminal source remain unnamed.
 
-No road log or bench observation is used here. Timing in scheduler counts is
+The enabled 1.11 vehicle capture validates the restore family as an operational
+entry veto under warm moving lift-off. Timing in scheduler counts is
 code-proven. Timing in milliseconds and the physical injector result remain
 hardware-validation items.
 
@@ -135,6 +136,31 @@ though the upper table is not used by every branch.
 
 `0xFFFF2468.bit6` forces return 1. A clear current `0xFFFF2458.bit5` also
 returns 1 and updates the associated status bit.
+
+## Target-vehicle restore-family evidence
+
+The exact image and 2026-08-17 moving capture are registered in
+`../patches/hardware-results.toml`. The selected test calibration retained the
+stock Hold and Entry request families while changing the Full Restore and
+Intermediate Restore pair above the observed sub-5000-RPM region. Under warm
+moving lift-off, the stock-family interval contained 957 full `0x3F` inhibit
+samples among 1,534 selected samples. The restore-only contrast contained zero
+full-inhibit samples among 2,132 selected samples, and all six calculated
+injection words remained nonzero.
+
+This result matches the code-level entry condition:
+
+```text
+cut_request == 1 and restore_class == 0 -> entry may proceed
+cut_request == 1 and restore_class != 0 -> entry is vetoed
+```
+
+Consequently, Hold and Entry do not need to be moved above the operating range
+to suppress DFCO in the tested region. Changing the restore pair alone is
+sufficient there. The capture changes `0x12818` and `0x1298C` together, so it
+does not isolate which restore table dominates each moving branch. It also does
+not exercise the changed boundary at or above 5000 RPM or prove physical
+injector closure.
 
 ## Per-slot map-switching projection
 
@@ -322,13 +348,14 @@ therefore resolve from one atomic slot index. Shared axes, delays, state-machine
 logic, offsets, floors, and arbitration remain global and byte-identical to the
 input firmware.
 
-## Hardware validation boundary
+## Remaining hardware validation boundary
 
-The next validation phase should establish, without changing this static model:
+Further validation can establish, without changing the code model:
 
 - physical meaning and transition conditions of `0xFFFF2459.bit5`;
 - target `Pphi` and the timer-count conversion;
-- state, timer, threshold, and `0xFFFF22E0` transitions during real deceleration;
+- direct state and timer values during real deceleration;
+- separate `0x12818` and `0x1298C` effects and the above-range boundary;
 - physical injector closure and diagnostic injector-duration behavior;
 - injector channel-to-cylinder order;
 - behavior of the rotating release branch near 750 RPM.

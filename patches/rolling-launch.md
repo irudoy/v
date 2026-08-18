@@ -12,12 +12,13 @@ The authoritative implementation sources are:
 - `rolling_launch.py` for the independent state and calibration model;
 - `hardware-results.toml` for immutable image identities and hardware outcomes.
 
-The current candidate is software-verified and has partial passive CAN evidence
-from an exact local combined image. That evidence qualifies button decoding,
-dashboard states, scheduler timing, and one rearm boundary only. Fuel-limiter
-output, injector behavior, and physical ignition timing remain hardware-
-untested. Earlier overlay results do not qualify the current runtime. Concrete
-profiles, derived images, and active tune identities remain local and
+The current candidate is software-verified and has active target-vehicle
+evidence from an exact local combined image. The evidence qualifies button
+decoding, dashboard states, repeated rearm, the full software fuel-inhibit
+mask, captured-RPM-dependent hold behavior, and the bounded software ignition
+command on Maps 2 and 3. Physical spark timing and electrical injector output
+remain unmeasured. Earlier overlay results do not qualify the current runtime.
+Concrete profiles, derived images, and active tune identities remain local and
 unversioned.
 
 ## Functional model
@@ -123,6 +124,40 @@ ACTIVE indication. Later presses produce bounded RPM oscillation around their
 temporary hold regions. These observations are consistent with cooldown and
 RPM-hold behavior, but CAN engine speed and dashboard state alone do not prove
 fuel-cut electrical output or physical spark retard.
+
+### Active tuning-telemetry evidence
+
+The firmware `1.11` moving capture adds direct runtime-state evidence through
+the custom telemetry endpoint. Its exact image and trace hashes are registered
+in `hardware-results.toml`. Two CANCEL trials occur after a confirmed Map 2
+commit and three after a confirmed Map 3 commit. All five trials enter dashboard
+state 7 and produce repeated full `0x3F` fuel-inhibit cycles. The individual
+cycle counts are 4 and 4 on Map 2, then 6, 4, and 5 on Map 3.
+
+The first full-inhibit transition in each trial occurs at the expected
+captured-RPM-dependent upper boundary within the 12.5 RPM telemetry
+quantization and normal engine overshoot. Falling RPM clears the mask at the
+lower boundary, and repeated cycles remain bounded around the same window.
+After CANCEL release, the full mask clears within `6.9..81.1 ms` in all five
+trials, and later trials activate again. This qualifies temporary limiter
+installation, engine-level RPM hold, release, and rearm on both selected maps.
+
+The APC command reaches the configured bounded-retard region in every trial.
+When stock timing is earlier, the command moves through the interpolation band;
+when stock timing is already equally late, the stock value is retained. The
+normal firmware identity `final_timing = 110 - APC command` holds in 35,444 of
+35,811 complete telemetry snapshots. All 367 differences occur in the Map 2 or
+Map 3 Rolling Launch intervals: 342 while CANCEL is held and 25 immediately
+around release. This is the expected hook ordering. `final_timing_raw` captures
+the upstream stock coordinate written before the late override, while
+`apc_command_raw` captures the effective command written by the adapter before
+the APC scheduler. The result validates the software controller direction and
+late-override placement, not physical crankshaft timing.
+
+During full inhibit, the six calculated injection words move to the code-proven
+override/fallback region rather than zero. This agrees with the static output
+model and does not establish injector-terminal pulse width. A physical spark
+reference and electrical injector measurement remain separate evidence gates.
 
 ## Modes
 
@@ -317,11 +352,10 @@ A candidate is software-valid only when all applicable checks pass:
 8. The generated definition tables agree with the configuration contract.
 9. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
-Software verification and passive CAN evidence do not authorize another
-flash. The next qualifying hardware gate is a stationary, controlled
-`rpm_hold` test with retard disabled. It must confirm
-activation, captured and cut RPM behavior, timeout, release, cooldown, rearm,
-map isolation, all dashboard indication states, map-pulse priority, normal ASCD
-behavior, and subsequent map selection. Retard mode requires a separate
-controlled test after physical timing correlation and must remain within the
-verified interpolation band.
+Software verification and the recorded target-vehicle result do not authorize
+another flash. The current image qualifies repeated activation, RPM hold,
+release, rearm, and bounded software-command behavior on Maps 2 and 3. Timeout,
+corrupt-state recovery, map changes while active, and the exact physical spark
+and injector outputs remain software-only or unmeasured boundaries. A physical
+timing claim requires a crank-referenced measurement, and an injector-pulse
+claim requires an electrical measurement at the output path.

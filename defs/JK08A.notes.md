@@ -133,6 +133,9 @@ This index points to structured rows without reproducing their fields.
 - Main fuel cut `0x0934E`, stationary cut state, DFCO cut/restore families, the
   aggregate inhibit mask, and request limiter `0x0942C` are modeled in
   `JK08A.limiters.md`, `JK08A.dfco.md`, and `JK08A.fuel-inhibit.md`.
+- Target-vehicle A/B evidence establishes that the DFCO restore pair can veto
+  entry while the stock Hold and Entry request pair remains unchanged. Exact
+  image and capture identities are owned by `patches/hardware-results.toml`.
 - Rotation-monitor threshold maps `0x0B61A`, `0x0B71A`, and `0x0B81A` are not
   ignition maps. Their role, saturated finisher behavior, and dead-table
   conclusion are canonical in `JK08A.findings.csv` and the associated function
@@ -144,6 +147,11 @@ This index points to structured rows without reproducing their fields.
   window, shared axes, and candidate physical scales are represented in the map
   and axis claims. Final command-to-APC behavior is modeled separately in
   `JK08A.ignition-output.md`.
+- Mode-selected tables `0x12196`, `0x1219E`, and `0x121A6` are timing-state
+  addends A, B, and C with a code-proven `x-128` software-count transform.
+  Target-vehicle A/B evidence establishes warm-deceleration use and one-for-one
+  final-coordinate propagation for addend A. The catalog Cold Idle qualifier
+  and physical degree scale are not established as exclusive target semantics.
 - The intake-CVTC main, cold, and conditional correction surfaces and their
   coolant blend are represented by the map, function, variable, and diagnostic
   rows. Candidate physical degree conversion remains distinct from code-proven

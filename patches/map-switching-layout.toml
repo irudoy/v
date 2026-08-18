@@ -455,7 +455,7 @@ pointer_table = 0x000D357C
 [[family]]
 key = "cold_idle_ignition_timing"
 group = "idle_ignition"
-name = "Cold Idle Ignition Timing (Candidate) (0x12196)"
+name = "Mode-Selected Timing-State Addend A (x-128) (0x12196)"
 canonical_address = 0x00012196
 width = 8
 height = 1
@@ -469,7 +469,7 @@ pointer_table = 0x000D4040
 [[family]]
 key = "idle_ignition_timing"
 group = "idle_ignition"
-name = "Idle Ignition Timing (Candidate) (0x1219E)"
+name = "Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
 canonical_address = 0x0001219E
 width = 8
 height = 1

@@ -19,6 +19,8 @@ services:
   memgraph:
     image: memgraph/memgraph-mage:3.11.0   # multi-architecture with native arm64
     container_name: vq-memgraph-mage
+    # Docker Desktop presents the host bind mount as root-owned inside the VM.
+    user: root
     ports:
       - "127.0.0.1:7687:7687"   # Bolt: drivers (neo4j) and Lab; explicit IPv4 loopback
       - "127.0.0.1:7444:7444"   # log stream -> Lab

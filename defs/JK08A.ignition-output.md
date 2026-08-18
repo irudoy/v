@@ -20,6 +20,24 @@ compare paths, and diagnostic publication. It does not prove the physical spark
 edge, external driver polarity, or actual crank angle. Those properties require
 a timing light and a controlled bench or engine test.
 
+## Mode-selected timing-state addends
+
+`FUN_0004AFDC` selects one of three eight-point tables at `0x12196`, `0x1219E`,
+and `0x121A6`. Their exact software transform is `x-128`, and the resulting
+signed count enters the timing-state accumulator through `0xFFFF1511`. The
+tables are therefore presented as mode-selected timing-state addends A, B, and
+C. The A2L names `Cold Idle Ignition Timing` and `Idle Ignition Timing` remain
+catalog provenance rather than exclusive operating-state semantics.
+
+The enabled 1.11 target capture isolates addend A during matched warm
+deceleration. At `4000..4400 RPM`, a 16-count slot difference produces the same
+16-count shift in the median final software timing coordinate while the
+calculated injection words and Base Fuel Schedule remain effectively
+unchanged. This establishes one-for-one software-coordinate propagation in the
+observed state and disproves an exclusive cold-idle qualifier. It does not
+establish the complete A/B/C selector predicates or a crank-referenced degree
+scale.
+
 ## Final command and diagnostic coordinate
 
 Engine-event dispatcher `0x0004E162` executes this fixed order:
@@ -89,6 +107,22 @@ software timing coordinate because the diagnostic transform has slope `-1`.
 Targets `110..117` stay inside the stock normal lower bound. Commands above
 `117`, which would represent values below `-7 deg BTDC` under the same formula,
 are outside this static acceptance boundary.
+
+## Active target-vehicle command evidence
+
+The exact 1.11 image and 2026-08-17 moving capture are registered in
+`../patches/hardware-results.toml`. Across 35,811 complete telemetry snapshots,
+the normal identity `final_timing_raw = 110 - apc_command_raw` holds in 35,444.
+All 367 differences occur during Map 2 or Map 3 Rolling Launch intervals: 342
+while CANCEL is held and 25 around release.
+
+This establishes the intended late-hook ordering on the target. The telemetry
+field sourced from `0xFFFF11D4` remains the upstream stock coordinate, while
+the field sourced from `0xFFFF2022` carries the effective command consumed by
+the APC scheduler. Every recorded activation reaches the configured bounded
+retard-command region and retains the stock value whenever it is already at
+least as retarded. The evidence validates software command direction and
+adapter placement, not physical crankshaft timing.
 
 ## Primary APC scheduler
 
@@ -167,6 +201,7 @@ Static support for Rolling RPM Hold retard requires all of these conditions:
 - the effective command is written to `0xFFFF2022` before `0x0002A892`;
 - commands above `117` remain rejected until separate hardware validation.
 
-Hardware enablement remains blocked until CONSULT3P command observation and a
-timing-light measurement establish command direction, actual crank angle, and
-safe combustion behavior on the target engine.
+Target-vehicle telemetry establishes software command direction and late-hook
+placement inside the accepted `110..117` range. A timing-light measurement is
+still required before interpreting the command as actual crank angle or
+extending the accepted range beyond `117`.

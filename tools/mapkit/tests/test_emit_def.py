@@ -79,10 +79,10 @@ SLOT_TABLES = {
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-    "Cold Idle Ignition Timing (Candidate) (0x12196)":
-        "Idle Speed Control / Ignition Timing",
-    "Idle Ignition Timing (Candidate) (0x1219E)":
-        "Idle Speed Control / Ignition Timing",
+    "Mode-Selected Timing-State Addend A (x-128) (0x12196)":
+        "Ignition Timing / State Accumulators",
+    "Mode-Selected Timing-State Addend B (x-128) (0x1219E)":
+        "Ignition Timing / State Accumulators",
 }
 
 
@@ -654,7 +654,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "0x14E52",
         }.isdisjoint(addresses))
 
-    def test_idle_ignition_candidates_reach_the_working_definition(self):
+    def test_timing_state_addends_reach_the_working_definition(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         by_address = {
             table.get("storageaddress"): table
@@ -663,10 +663,10 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         }
         expected = {
             "0x12196": slot_name(
-                1, "Cold Idle Ignition Timing (Candidate) (0x12196)"
+                1, "Mode-Selected Timing-State Addend A (x-128) (0x12196)"
             ),
             "0x1219E": slot_name(
-                1, "Idle Ignition Timing (Candidate) (0x1219E)"
+                1, "Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
             ),
         }
         for address, name in expected.items():
@@ -675,12 +675,12 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                 self.assertEqual(table.get("name"), name)
                 self.assertEqual(
                     table.get("category"),
-                    "Idle Speed Control//Ignition Timing",
+                    "Ignition Timing//State Accumulators",
                 )
                 scale = table.find("./scaling")
                 self.assertEqual(
                     scale.get("units"),
-                    "Ignition timing (deg) [cand]",
+                    "Timing-state count",
                 )
                 self.assertEqual(scale.get("expression"), "x-128")
                 self.assertEqual(scale.get("to_byte"), "x+128")
