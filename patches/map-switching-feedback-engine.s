@@ -2,8 +2,11 @@
 //
 // The function runs after the exact stock serializer. It replaces the complete
 // three-bit ASCD state in bits 4-6 of payload byte 5 while a structurally valid
-// feedback sequence is active. State 6 displays CRUISE without SET and state 0
-// clears both indicators. Zero or incomplete frame-count configuration disables
+// feedback sequence is active. The 0x8F mask clears all three stock field bits,
+// so a preserved bit 4 cannot promote state 6 to state 7. The current endpoint
+// emits state 6 for ON and state 0 for OFF. Exact-target observation shows that
+// state 6 itself illuminates SET together with CRUISE, so its CRUISE-only
+// semantics are rejected. Zero or incomplete frame-count configuration disables
 // feedback, clears its transient state, and preserves the complete stock payload.
 //
 // feedback_phase_counts contains two uint8 values:

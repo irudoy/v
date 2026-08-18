@@ -1,6 +1,6 @@
 # JK08A CAN telemetry dashboard
 
-Current dashboard version: `1.0.0`.
+Current dashboard version: `1.0.1`.
 
 This Tkinter application displays and records the custom JK08A `core32` or `wide54`
 telemetry stream from a PEAK PCAN-USB adapter. The default configuration
@@ -36,7 +36,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/jk08a-can-dashboard-v1.0.0-windows.zip
+  --output tmp/jk08a-can-dashboard-v1.0.1-windows.zip
 ```
 
 On the Windows laptop:
@@ -58,6 +58,11 @@ The default hardware filter accepts custom telemetry plus stock context IDs
 `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide an independent
 RPM cross-check, vehicle speed, ASCD input, selector state, and dashboard
 indication state.
+
+The `0x551` display uses neutral labels `ASCD STATE 6` and `ASCD STATE 7`.
+Exact-target observation shows that custom state 6 illuminates SET together
+with CRUISE, so it is not labeled CRUISE-only. The correct CRUISE-only state
+remains pending a passive stock-state correlation.
 
 ## Direct repository run
 

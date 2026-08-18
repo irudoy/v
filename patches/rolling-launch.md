@@ -82,9 +82,9 @@ three-bit ASCD field in bits 4..6 of byte 5 in CAN frame `0x551`:
 | Runtime state | Dashboard field |
 | --- | --- |
 | normal `IDLE` | preserve the stock serializer result |
-| failed activation while CANCEL remains held | CRUISE on, SET off (`0x60`) |
-| `ACTIVE` | CRUISE on, SET on (`0x70`) |
-| `COOLDOWN` | CRUISE off, SET off (`0x00`) |
+| failed activation while CANCEL remains held | state 6 (`0x60`); exact target illuminates CRUISE and SET |
+| `ACTIVE` | state 7 (`0x70`) |
+| `COOLDOWN` | state 0 (`0x00`) |
 | corrupt phase | preserve the stock serializer result |
 
 A failed attempt requires both a nonzero abort reason and the published
@@ -98,8 +98,17 @@ The 2026-08-16 `1.10` vehicle capture contains 233,442 standard frames over
 120.053 seconds. Its exact firmware and trace hashes are registered in
 `hardware-results.toml`. Frame `0x239` byte 3 contains 4,229 release samples,
 282 SET samples, and 1,349 CANCEL samples. Frame `0x551` byte 5 contains 868
-stock-value samples at `0x02`, 193 CRUISE-only samples at `0x62`, and 111
-CRUISE-plus-SET samples at `0x72`.
+stock-value samples at `0x02`, 193 custom state-6 samples at `0x62`, and 111
+Rolling Launch ACTIVE state-7 samples at `0x72`. Exact-target observation of
+map feedback establishes that state 6 illuminates SET together with CRUISE; the
+earlier CRUISE-only label is rejected. State 5 is the leading CRUISE-only
+candidate and requires a passive stock-state correlation. That correlation is
+deferred while target-vehicle diagnostics are unavailable.
+
+The full-field isolation correction from firmware `1.9` is present in this
+runtime: both feedback paths clear mask `0x70` with immediate `0x8F` before
+inserting a state. The state-6 result is therefore not caused by preserving the
+state-7 bit.
 
 The `0x72` samples form 11 distinct ACTIVE indication intervals. Fast ECM
 frames retain a 10.2 ms median period and slow ECM frames retain a 102.3 to

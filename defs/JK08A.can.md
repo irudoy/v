@@ -189,8 +189,15 @@ Live control correlations establish `0x239` byte 3 values `0x20` for release,
 `0x10` for RESUME/ACCEL, `0x08` for SET, and `0x02` for CANCEL. The saved
 2026-08-17 trace contains release, SET, and CANCEL; the `0x10` RESUME/ACCEL
 code is an operator-confirmed live observation outside that saved trace. Frame
-`0x551` byte 5 preserves low nibble `0x02` while custom dashboard states appear
-as `0x62` for CRUISE and `0x72` for CRUISE plus SET.
+`0x551` byte 5 preserves low nibble `0x02` while custom state 6 appears as
+`0x62` during map feedback and custom state 7 appears as `0x72` during Rolling
+Launch ACTIVE. Exact-target observation establishes that state 6 illuminates
+SET together with CRUISE. A CRUISE-only value is not yet bound; state 5 is the
+leading candidate from the stock ASCD diagnostic state machine. The map
+feedback mask correction first included in firmware `1.9` is present in
+firmware `1.11`: its `0x8F` immediate clears all three state bits before
+inserting `0x60`. The observed SET lamp is therefore a property of state 6 on
+the exact target, not a retained state-7 bit.
 
 Target-vehicle selector observations establish the following `0x421` byte-0
 mapping:

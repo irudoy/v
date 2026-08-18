@@ -56,7 +56,7 @@ class DashboardModelTest(unittest.TestCase):
             dashboard.process_frame(frame, now=1.03)
         self.assertEqual(dashboard.gear, "D")
         self.assertEqual(dashboard.ascd_button, "RELEASE")
-        self.assertIn(dashboard.dashboard_state, {"STOCK", "CRUISE+SET"})
+        self.assertIn(dashboard.dashboard_state, {"STOCK", "ASCD STATE 7"})
         self.assertIsNotNone(dashboard.stock_rpm)
         self.assertIsNotNone(dashboard.vehicle_speed_kmh)
         self.assertIsNone(dashboard.gps_lat)

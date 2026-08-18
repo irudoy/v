@@ -17,11 +17,13 @@ derived ROM bytes, and active tune identities remain local and unversioned.
 
 ## Status and scope
 
-The current endpoint is software-verified and requires controlled hardware
-validation before flashing. The current visual-feedback timing is 30 serializer
-invocations ON followed by 30 invocations OFF for each pulse. Hardware status is
-read only from `hardware-results.toml`; successful results from earlier
-compositions do not qualify the current endpoint.
+The current endpoint is software-verified. Vehicle capture of firmware `1.11`
+confirms the selector sequences and serialized pulse counts, but rejects the
+current visual ON state: state 6 illuminates SET together with CRUISE on the
+exact target. The timing is 30 serializer invocations ON followed by 30
+invocations OFF for each pulse. Hardware status is read only from
+`hardware-results.toml`; successful results from earlier compositions do not
+qualify a changed endpoint.
 
 The runtime switches these families:
 
@@ -133,24 +135,41 @@ The feedback wrapper calls the stock CAN serializer first. While a valid pulse
 sequence is active, it replaces the complete three-bit ASCD state in bits 4..6
 of byte 5 in CAN frame `0x551`:
 
-| State | Masked value |
-| --- | --- |
-| CRUISE on, SET off | `6` (`0x60`) |
-| CRUISE off, SET off | `0` (`0x00`) |
+| Phase | State | Masked value | Exact-target result |
+| --- | ---: | --- | --- |
+| ON | `6` | `0x60` | CRUISE and SET illuminate; rejected for CRUISE-only feedback |
+| OFF | `0` | `0x00` | both indicators off |
 
-All bits outside this field remain the stock serializer result. Replacing all
-three state bits prevents the serializer's low ASCD bit from adding SET during
-an active CRUISE-only pulse. The pulse count is the selected one-based map
-number. Selector input is blocked until the queue is empty. Invalid feedback
-state clears the queue and preserves the stock frame. A zero/zero phase-count
-configuration disables feedback; a partially zero configuration is invalid.
+All bits outside this field remain the stock serializer result. The full-field
+mask prevents stock bit 4 from altering the injected state, but it does not make
+state 6 CRUISE-only on the target meter. The pulse count is the selected
+one-based map number. Selector input is blocked until the queue is empty.
+Invalid feedback state clears the queue and preserves the stock frame. A
+zero/zero phase-count configuration disables feedback; a partially zero
+configuration is invalid.
 
-The current layout default is 30 ON invocations and 30 OFF invocations. Wall
-time depends on the target serializer period and must be measured on hardware.
-In the combined runtime, a Rolling Launch dashboard arbiter runs after this
-wrapper only when the pre-call feedback state is idle. A queued map pulse has
-strict priority over Rolling Launch indication for the complete serialized
-frame.
+Firmware `1.9` introduced the full-field isolation fix by changing the engine
+immediate at ROM offset `0xD37A1` from `0x9F` to `0x8F`. Firmware `1.11`
+retains the exact `0x8F` byte, and its capture shows map pulses as `0x62`, not
+`0x72`. The fix therefore closes accidental inheritance of state bit 4. It does
+not establish the lamp semantics of the explicitly selected state 6.
+
+The current layout default is 30 ON invocations and 30 OFF invocations. The
+serializer runs every `Tcan = 10.24 ms`, while frame `0x551` is transmitted
+every `10*Tcan = 102.4 ms`. Each phase therefore lasts about 307 ms and exposes
+about three transmitted frames, not 30 CAN frames. In the combined runtime, a
+Rolling Launch dashboard arbiter runs after this wrapper only when the pre-call
+feedback state is idle. A queued map pulse has strict priority over Rolling
+Launch indication for the complete serialized frame.
+
+The stock ASCD state machine makes internal state 5 the leading CRUISE-only
+candidate: DID `0x130E` reports CRUISE on and SET off in that state, while
+state 4 sets the SET source and state 6 toggles it. The pointer-mediated
+transfer into serializer source `0xFFFF40D0` is not statically resolved, so CAN
+state 5 (`0x50`) remains unverified. Hardware correlation is deferred while
+target-vehicle diagnostics are unavailable. Work resumes with a passive stock
+CRUISE MAIN `OFF -> ON -> OFF` capture on the current firmware. No executable
+feedback value changes before that correlation.
 
 ## Diagnostic mirror
 

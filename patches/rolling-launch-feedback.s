@@ -3,9 +3,12 @@
 // The map-switching feedback wrapper and pulse engine always run first. A
 // nonzero map-feedback state owns the serialized frame for this invocation.
 // Otherwise Rolling Launch replaces the complete three-bit ASCD field:
-//   IDLE with a failed CANCEL-held attempt - state 6, CRUISE only
-//   ACTIVE                            - state 7, CRUISE plus SET
-//   COOLDOWN                          - state 0, both indicators off
+//   IDLE with a failed CANCEL-held attempt - state 6
+//   ACTIVE                            - state 7
+//   COOLDOWN                          - state 0
+// Exact-target map-feedback observation shows that state 6 illuminates SET
+// together with CRUISE. Its use for a failed-attempt indication therefore has
+// known incorrect lamp semantics pending a stock-state correlation.
 // Normal IDLE and corrupt phases preserve the stock serializer result.
 
 .org 0x000D41E0

@@ -210,6 +210,30 @@ md5 = "723e6b60d3a39ff8749072eaecd72af3"
 status = "software_only"
 use = "rolling_launch_base"
 
+[map_switching.feedback_v1_11]
+observed_on = "2026-08-17"
+firmware_label = "1.11"
+image_sha256 = "aa18c919bf885b572aba15bb5068609ccb0ecc99f739e364938fc170bdf0d72a"
+capture_name = "new-log-full.trc"
+capture_sha256 = "a1f8b8c50d45e2f281917bea998d638e2d81e3a2be51b105f885f9f43c181298"
+status_mask = 0x70
+map_feedback_state = 6
+map_feedback_byte5 = 0x62
+field_isolation_fix_first_firmware_label = "1.9"
+field_isolation_fix_rom_offset = 0xD37A1
+field_isolation_fix_before = 0x9F
+field_isolation_fix_after = 0x8F
+field_isolation_fix_present = true
+rolling_launch_active_state = 7
+rolling_launch_active_byte5 = 0x72
+hardware_status = "functional_fail"
+operator_observation = "map feedback illuminates SET together with CRUISE"
+code_result = "the v1.9 full-field isolation fix remains present; map feedback and Rolling Launch ACTIVE occupy separate intervals; state 6 itself has incorrect exact-target lamp semantics"
+candidate_cruise_only_state = 5
+candidate_status = "deferred"
+candidate_blocker = "target-vehicle diagnostics unavailable"
+candidate_resume_gate = "passive stock CRUISE MAIN OFF-ON-OFF capture"
+
 [[map_switching.incidents]]
 id = "lookup_revision_1_stage_7_delay_slot"
 source_stage = 5
