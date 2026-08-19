@@ -35,8 +35,8 @@ The runtime switches these families:
 | DFCO intermediate restore | lookup adapter |
 | main ignition trim | lookup adapter |
 | high-detonation ignition trim | lookup adapter |
-| mode-selected timing-state addend A (`0x12196`) | lookup adapter |
-| mode-selected timing-state addend B (`0x1219E`) | lookup adapter |
+| default/post-transition timing-state addend (`0x12196`) | lookup adapter |
+| warm DFCO-transition timing-state addend (`0x1219E`) | lookup adapter |
 | fuel targets | lookup adapter |
 | main fuel compensation | lookup adapter |
 | fuel-cut limiter cluster | RAM shadow |
@@ -193,10 +193,10 @@ a stock-family fingerprint rather than a unique in-band slot identifier.
 Only six of the twelve switched families differ between Maps 2 and 3 in this
 local image: all four warm DFCO threshold families, the `0x12196` timing-state
 family, and the column-0 release cell of main fuel cut `0x0934E`. Main ignition,
-high-detonation ignition, `0x1219E` idle timing, Fuel Targets, Fuel Compensation
-Main, and the request-limiter scalar are byte-identical between the two slots.
-They cannot explain an A/B difference in this capture. Exact per-image
-calibration values remain local and unversioned.
+high-detonation ignition, `0x1219E` warm transition timing, Fuel Targets, Fuel
+Compensation Main, and the request-limiter scalar are byte-identical between
+the two slots. They cannot explain an A/B difference in this capture. Exact
+per-image calibration values remain local and unversioned.
 
 Map 2 and Map 3 have the same fuel, main-ignition, high-detonation, idle-timing,
 and request-limiter content relevant to the matched lift-off window. Their
@@ -204,12 +204,20 @@ slot-specific `0x12196` content differs. At `4000..4400 RPM`, matched warm
 lift-off samples have the same median calculated injection value and nearly
 identical BFS, while the median final timing coordinate changes from 14 on
 Map 2 to -2 on Map 3. The exact 16-count output difference matches the
-per-slot calibration difference. This establishes that the `0x12196` family
-is operational during warm deceleration and that its centered result reaches
-the final software timing coordinate. The catalog-derived `Cold Idle` label is
-therefore retained only as provenance, not as the presentation name or an
-exclusive physical qualifier. A crank-referenced degree scale remains
+per-slot calibration difference. Exact selector analysis identifies `0x12196`
+as the default/post-transition source and `0x1219E` as the warm transition
+source while its 85-count timer is nonzero. This establishes that the
+`0x12196` family is operational during warm deceleration and that its centered
+result reaches the final software timing coordinate. The catalog-derived
+`Cold Idle` label is retained only as provenance, not as the presentation name
+or an exclusive physical qualifier. A crank-referenced degree scale remains
 unverified.
+
+The moving capture is also sufficient to isolate `0x12818` within the changed
+restore pair. Every selected sample is in the stock speed-count-4-or-above
+classifier, where exact code ignores upper/intermediate table `0x1298C` and
+compares RPM only with the effective lower/full-restore threshold. Entry and
+Hold changes are therefore unnecessary for the observed DFCO suppression.
 
 This capture does not distinguish Map 2 from Map 3 through DFCO below
 `5000 RPM`, because both calibrations intentionally suppress the state in that

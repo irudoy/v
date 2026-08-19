@@ -64,16 +64,17 @@ SLOT_TABLES = {
     "DFCO Entry RPM Threshold": "Fuelling / Overrun",
     "DFCO Full Restore RPM Threshold": "Fuelling / Overrun",
     "DFCO Hold RPM Threshold": "Fuelling / Overrun",
-    "DFCO Intermediate Restore RPM Threshold": "Fuelling / Overrun",
+    "DFCO Low-Speed Intermediate Restore RPM Threshold":
+        "Fuelling / Overrun",
     "Ignition Timing Trim Main": "Ignition Timing / Main",
     "Knock Control Enable - Main": "Ignition Timing / Knock Control",
     "Ignition Timing Trim High Det": "Ignition Timing / Main",
     "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-    "Mode-Selected Timing-State Addend A (x-128) (0x12196)":
+    "Default/Post-Transition Timing-State Addend (x-128) (0x12196)":
         "Ignition Timing / State Accumulators",
-    "Mode-Selected Timing-State Addend B (x-128) (0x1219E)":
+    "Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)":
         "Ignition Timing / State Accumulators",
 }
 
@@ -423,10 +424,14 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         }
         expected = {
             "0x12196": slot_name(
-                1, "Mode-Selected Timing-State Addend A (x-128) (0x12196)"
+                1,
+                "Default/Post-Transition Timing-State Addend "
+                "(x-128) (0x12196)",
             ),
             "0x1219E": slot_name(
-                1, "Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
+                1,
+                "Warm DFCO-Transition Timing-State Addend "
+                "(x-128) (0x1219E)",
             ),
         }
         for address, title in expected.items():
@@ -495,7 +500,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             slot_name(1, "DFCO Hold RPM Threshold"): "0x126E4",
             slot_name(1, "DFCO Entry RPM Threshold"): "0x12718",
             slot_name(1, "DFCO Full Restore RPM Threshold"): "0x12818",
-            slot_name(1, "DFCO Intermediate Restore RPM Threshold"):
+            slot_name(1, "DFCO Low-Speed Intermediate Restore RPM Threshold"):
                 "0x1298C",
         }
         tables = {

@@ -36,6 +36,45 @@ class IgnitionOutputContractTest(unittest.TestCase):
         self.assertEqual(117 + maximum_reset_offset, 237)
         self.assertLess(117 + maximum_reset_offset, 256)
 
+    def test_timing_state_selector_stock_constants(self):
+        self.assertEqual(self.rom[0x870B], 0x46)
+        self.assertEqual(self.rom[0x870B] & 0x01, 0)
+        self.assertEqual(self.rom[0x86A2:0x86A5], bytes([0x9E, 0x55, 0x6E]))
+        self.assertEqual(
+            self.rom[0x12196:0x1219E],
+            bytes([0x80, 0x89, 0x89, 0x89, 0x8A, 0x8C, 0x8F, 0x91]),
+        )
+        self.assertEqual(
+            self.rom[0x1219E:0x121A6],
+            bytes([0x80, 0x89, 0x8C, 0x90, 0x94, 0x98, 0x9C, 0xA0]),
+        )
+        self.assertEqual(
+            self.rom[0x121A6:0x121AE],
+            self.rom[0x12196:0x1219E],
+        )
+
+    def test_timing_state_selector_contract_is_complete(self):
+        selector = self.funcs["0004afdc"]
+        for token in (
+            "000121a6",
+            "0001219e",
+            "000086a2",
+            "00012196",
+            "ffff2318",
+            "ffff2590",
+            "ffff22ff",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, selector["semantics"] + selector["note"])
+
+        self.assertIn("strictly below 0x4000", self.vars["ffff2318"]["semantics"])
+        self.assertIn("85", self.vars["ffff2590"]["semantics"])
+        self.assertIn("default/post-transition", self.vars["ffff1511"]["semantics"])
+        self.assertIn("warm DFCO-transition", self.vars["ffff1511"]["semantics"])
+        self.assertIn("every other case", self.contract)
+        self.assertIn("candidate maximum\nwindow of 870.4 ms", self.contract)
+        self.assertIn("whole-application p-code census found no other writer", self.contract)
+
     def test_compare_schedulers_record_position_fallback_gate(self):
         for address in ("0002a892", "0002acba"):
             with self.subTest(address=address):

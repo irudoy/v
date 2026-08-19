@@ -9,10 +9,11 @@ rotating release tail, final six-channel arbitration, and ATU-II output path
 are established by executable code. Physical signal names that are not
 connected to an exact diagnostic or terminal source remain unnamed.
 
-The enabled 1.11 vehicle capture validates the restore family as an operational
-entry veto under warm moving lift-off. Timing in scheduler counts is
-code-proven. Timing in milliseconds and the physical injector result remain
-hardware-validation items.
+The enabled 1.11 vehicle capture validates the lower/full-restore table as the
+operational entry veto under warm moving lift-off. Exact stock branch analysis
+separates that moving role from the upper/intermediate table's low-speed role.
+Timing in scheduler counts is code-proven. Timing in milliseconds and the
+physical injector result remain hardware-validation items.
 
 ## Execution cadence
 
@@ -103,7 +104,7 @@ assigning unproven physical names.
 
 | Address | Stored result | Role |
 |---|---|---|
-| `0x1298C` | `0xFFFF1778` | upper threshold for the intermediate restore class |
+| `0x1298C` | `0xFFFF1778` | low-speed upper threshold for the intermediate restore class |
 | `0x12818` | `0xFFFF16AA` | lower threshold for the full restore class |
 
 Both results use RPM/25. A coolant-indexed floor is selected from raw/selected
@@ -128,11 +129,24 @@ lower threshold < RPM <= upper threshold    -> 2
 RPM > upper threshold                        -> 0
 ```
 
-At speed 4 or above, the common stock branches return 3 at or below the
-selected lower threshold and 0 above it. Additional branches use
-`0xFFFF2458.bit7`, `0xFFFF24CF.bit4`, `0xFFFF1083`, `0xFFFF2978`, speed 10,
-and fallback constants. The two restore tables are therefore operational, even
-though the upper table is not used by every branch.
+At speed 4 or above, every reachable branch under the stock compile-time flags
+`ROM8[0x8B3F].bit7 = 0` and `ROM8[0x870C].bit7 = 0` ignores the adjusted upper
+threshold. These branches return class 3 when RPM is at or below the effective
+lower threshold and class 0 only when RPM is strictly above it. Additional
+runtime branches use `0xFFFF2458.bit7`, `0xFFFF24CF.bit4`, `0xFFFF1083`,
+`0xFFFF2978`, speed 10, and fallback constants, but none compares RPM with
+`0xFFFF1778` under the stock flags.
+
+When `0xFFFF24CF.bit4` is clear, the effective lower threshold is at least
+`ROM8[0x8A3F] = 48`, or 1200 RPM. The moving fallback constant
+`ROM8[0x8A3A] = 42` is then dominated by that floor. Other runtime branches can
+select additional constants, including 72 RPM/25 counts, without making the
+upper map part of the moving comparison.
+
+Consequently, `0x1298C` is live in the stock low-speed branch below 4 counts,
+where it defines the class-2 band, but it has no effect on the stock moving
+classifier at speed 4 or above. Interpolating and storing the map on every call
+does not make it decision-relevant in those moving branches.
 
 `0xFFFF2468.bit6` forces return 1. A clear current `0xFFFF2458.bit5` also
 returns 1 and updates the associated status bit.
@@ -142,11 +156,13 @@ returns 1 and updates the associated status bit.
 The exact image and 2026-08-17 moving capture are registered in
 `../patches/hardware-results.toml`. The selected test calibration retained the
 stock Hold and Entry request families while changing the Full Restore and
-Intermediate Restore pair above the observed sub-5000-RPM region. Under warm
-moving lift-off, the stock-family interval contained 957 full `0x3F` inhibit
-samples among 1,534 selected samples. The restore-only contrast contained zero
-full-inhibit samples among 2,132 selected samples, and all six calculated
-injection words remained nonzero.
+Intermediate Restore pair above the observed sub-5000-RPM region. The capture
+filter required vehicle speed above 10 km/h, placing every selected sample in
+the stock `0xFFFF110E >= 4` moving branch. Under warm moving lift-off, the
+stock-family interval contained 957 full `0x3F` inhibit samples among 1,534
+selected samples. The restore-only contrast contained zero full-inhibit samples
+among 2,132 selected samples, and all six calculated injection words remained
+nonzero.
 
 This result matches the code-level entry condition:
 
@@ -155,12 +171,14 @@ cut_request == 1 and restore_class == 0 -> entry may proceed
 cut_request == 1 and restore_class != 0 -> entry is vetoed
 ```
 
-Consequently, Hold and Entry do not need to be moved above the operating range
-to suppress DFCO in the tested region. Changing the restore pair alone is
-sufficient there. The capture changes `0x12818` and `0x1298C` together, so it
-does not isolate which restore table dominates each moving branch. It also does
-not exercise the changed boundary at or above 5000 RPM or prove physical
-injector closure.
+Exact branch analysis makes `0x12818` the only changed restore table capable of
+causing this moving result; `0x1298C` is not compared on the selected branch.
+Hold and Entry therefore do not need to be moved above the operating range to
+suppress DFCO there, and changing only `0x12818` is sufficient. Equality
+belongs to full-restore class 3: a raw threshold of 200 vetoes DFCO through
+exactly 5000 RPM in the RPM/25 coordinate, while class 0 begins only when the
+quantized coordinate is strictly greater. The capture does not exercise that
+above-boundary transition or prove physical injector closure.
 
 ## Per-slot map-switching projection
 
@@ -328,7 +346,7 @@ display require bench or engine validation.
 | `0x126E4` | 1x16 u8 | held-request RPM threshold | `x * 25 RPM` | live in stock |
 | `0x12718` | 1x16 u8 | rising-edge entry RPM threshold | `x * 25 RPM` | live in stock |
 | `0x12818` | 1x16 u8 | lower/full-restore RPM threshold | `x * 25 RPM` | live in stock |
-| `0x1298C` | 1x16 u8 | upper/intermediate-restore RPM threshold | `x * 25 RPM` | live in stock |
+| `0x1298C` | 1x16 u8 | low-speed upper/intermediate-restore RPM threshold | `x * 25 RPM` | live below speed count 4; ignored by stock moving branches |
 | `0x1269A` | byte vector | rotating-release event counts | injector events | first classes `[0, 2, 2]` |
 | `0x1269D` | byte vector | rotating-release delay | scheduler counts | first classes `[0, 5, 2]` |
 | `0x2371C` | byte vector | state-to-six-channel mask | bit mask | `[0x00, 0x00, 0x15, 0x3F, 0x15]` |
@@ -355,7 +373,7 @@ Further validation can establish, without changing the code model:
 - physical meaning and transition conditions of `0xFFFF2459.bit5`;
 - target `Pphi` and the timer-count conversion;
 - direct state and timer values during real deceleration;
-- separate `0x12818` and `0x1298C` effects and the above-range boundary;
+- exercise the `0x12818` equality and above-range boundary on the vehicle;
 - physical injector closure and diagnostic injector-duration behavior;
 - injector channel-to-cylinder order;
 - behavior of the rotating release branch near 750 RPM.

@@ -696,7 +696,7 @@ static_axis = [
 ]
 
 [table.0001298c]
-name = "DFCO Intermediate Restore RPM Threshold"
+name = "DFCO Low-Speed Intermediate Restore RPM Threshold"
 category = "Fuelling / Overrun"
 order = 33
 emit = true
@@ -1214,7 +1214,7 @@ fine = 1
 coarse = 16
 
 [table.00012196]
-name = "Mode-Selected Timing-State Addend A (x-128) (0x12196)"
+name = "Default/Post-Transition Timing-State Addend (x-128) (0x12196)"
 category = "Ignition Timing / State Accumulators"
 emit = true
 order = 155
@@ -1225,7 +1225,7 @@ static_axis_name = "Engine Speed [RPM] (Candidate)"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 
 [table.0001219e]
-name = "Mode-Selected Timing-State Addend B (x-128) (0x1219E)"
+name = "Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)"
 category = "Ignition Timing / State Accumulators"
 emit = true
 order = 156
@@ -1236,7 +1236,7 @@ static_axis_name = "Engine Speed [RPM] (Candidate)"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 
 [table.000121a6]
-name = "Conditional Signed Additive Term C (x-128) (0x121A6)"
+name = "Stock-Inert Feature Timing-State Addend (x-128) (0x121A6)"
 category = "Internal Calculations"
 emit = false
 order = 157

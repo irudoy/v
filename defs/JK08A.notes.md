@@ -133,9 +133,12 @@ This index points to structured rows without reproducing their fields.
 - Main fuel cut `0x0934E`, stationary cut state, DFCO cut/restore families, the
   aggregate inhibit mask, and request limiter `0x0942C` are modeled in
   `JK08A.limiters.md`, `JK08A.dfco.md`, and `JK08A.fuel-inhibit.md`.
-- Target-vehicle A/B evidence establishes that the DFCO restore pair can veto
-  entry while the stock Hold and Entry request pair remains unchanged. Exact
-  image and capture identities are owned by `patches/hardware-results.toml`.
+- Target-vehicle A/B evidence establishes that the lower/full-restore table
+  `0x12818` can veto moving entry while the stock Hold and Entry request pair
+  remains unchanged. Under stock compile-time flags, upper/intermediate table
+  `0x1298C` affects the low-speed class-2 band but is ignored at speed count 4
+  and above. Exact image and capture identities are owned by
+  `patches/hardware-results.toml`.
 - Rotation-monitor threshold maps `0x0B61A`, `0x0B71A`, and `0x0B81A` are not
   ignition maps. Their role, saturated finisher behavior, and dead-table
   conclusion are canonical in `JK08A.findings.csv` and the associated function
@@ -147,11 +150,13 @@ This index points to structured rows without reproducing their fields.
   window, shared axes, and candidate physical scales are represented in the map
   and axis claims. Final command-to-APC behavior is modeled separately in
   `JK08A.ignition-output.md`.
-- Mode-selected tables `0x12196`, `0x1219E`, and `0x121A6` are timing-state
-  addends A, B, and C with a code-proven `x-128` software-count transform.
-  Target-vehicle A/B evidence establishes warm-deceleration use and one-for-one
-  final-coordinate propagation for addend A. The catalog Cold Idle qualifier
-  and physical degree scale are not established as exclusive target semantics.
+- Timing-state table `0x12196` is the default/post-transition addend and
+  `0x1219E` is the warm DFCO-transition addend for the nonzero portion of an
+  85-count timer. Table `0x121A6` is stock-inert because its feature flag is
+  clear and its lifecycle word cannot satisfy the strict threshold. All three
+  use a code-proven `x-128` transform. Target-vehicle evidence establishes
+  one-for-one final-coordinate propagation for `0x12196`; the catalog Cold
+  Idle qualifier and physical degree scale are not target-proven semantics.
 - The intake-CVTC main, cold, and conditional correction surfaces and their
   coolant blend are represented by the map, function, variable, and diagnostic
   rows. Candidate physical degree conversion remains distinct from code-proven

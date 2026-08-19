@@ -20,23 +20,46 @@ compare paths, and diagnostic publication. It does not prove the physical spark
 edge, external driver polarity, or actual crank angle. Those properties require
 a timing light and a controlled bench or engine test.
 
-## Mode-selected timing-state addends
+## Timing-state selector
 
-`FUN_0004AFDC` selects one of three eight-point tables at `0x12196`, `0x1219E`,
-and `0x121A6`. Their exact software transform is `x-128`, and the resulting
-signed count enters the timing-state accumulator through `0xFFFF1511`. The
-tables are therefore presented as mode-selected timing-state addends A, B, and
-C. The A2L names `Cold Idle Ignition Timing` and `Idle Ignition Timing` remain
-catalog provenance rather than exclusive operating-state semantics.
+`FUN_0004AFDC` produces a signed timing-state addend in `0xFFFF1511`. Three
+eight-point maps use the exact `x-128` transform, but the stock selector gives
+them different roles and also contains a constant bypass:
 
-The enabled 1.11 target capture isolates addend A during matched warm
-deceleration. At `4000..4400 RPM`, a 16-count slot difference produces the same
-16-count shift in the median final software timing coordinate while the
-calculated injection words and Base Fuel Schedule remain effectively
+| Priority | Selected source | Exact predicate |
+|---:|---|---|
+| 1 | feature map `0x121A6` | `ROM8[0x870B].bit0 = 1` and `uint16[0xFFFF2318] < 0x4000` |
+| 2 | warm DFCO-transition map `0x1219E` | `0xFFFF244F.bit2 = 0`, `0xFFFF41DE.bit5 = 1`, `0xFFFF2458.bit5 = 1`, and `0xFFFF2590 != 0` |
+| 3 | constant `ROM8[0x86A2]` | `0xFFFF22FF = 3` and `0xFFFF2458.bit7 = 1` |
+| 4 | default/post-transition map `0x12196` | every other case |
+
+The warm latch in `0xFFFF41DE.bit5` sets when raw coolant snapshot
+`0xFFFF1071` reaches `ROM8[0x86A4] = 110` and remains set down to raw 106.
+Under the exact diagnostic `raw-50` conversion, those boundaries are 60 and
+56 deg C. While `0xFFFF2458.bit5` is clear, the function reloads
+`0xFFFF2590` from `ROM8[0x86A3] = 85`. Once the bit becomes set, the periodic
+scheduler decrements the timer and `0x1219E` remains eligible only while it is
+nonzero. One timer count is `204800/Pphi` seconds, giving a candidate maximum
+window of 870.4 ms at `Pphi = 20 MHz`.
+
+The constant path selects stock byte `0x9E`, which becomes `+30` after the
+same `x-128` transform. It bypasses all three maps.
+
+The `0x121A6` path is stock-inert for two independent reasons. Stock
+`ROM8[0x870B] = 0x46` has bit 0 clear. In addition, initialization writes
+exactly `0x4000` to `0xFFFF2318`, while the selector requires a strict value
+below `0x4000`; a whole-application p-code census found no other writer. The
+stock bytes of `0x121A6` are identical to default map `0x12196`, but this
+identity is not needed for the reachability result.
+
+The enabled 1.11 target capture isolates the default/post-transition map during
+matched warm deceleration. At `4000..4400 RPM`, a 16-count slot difference
+produces the same 16-count shift in the median final software timing coordinate
+while the calculated injection words and Base Fuel Schedule remain effectively
 unchanged. This establishes one-for-one software-coordinate propagation in the
-observed state and disproves an exclusive cold-idle qualifier. It does not
-establish the complete A/B/C selector predicates or a crank-referenced degree
-scale.
+observed state and disproves an exclusive cold-idle qualifier. The A2L names
+`Cold Idle Ignition Timing`, `Idle Ignition Timing`, and `Idle Timing (Lean)`
+remain catalog provenance. A crank-referenced degree scale remains unverified.
 
 ## Final command and diagnostic coordinate
 
