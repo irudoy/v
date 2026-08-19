@@ -68,7 +68,7 @@ The final stderr marker reports complete, incomplete, malformed, and
 schema-mismatch counts. The decoder never fills a missing page, combines
 different sequence groups, or interpolates a dropped snapshot.
 
-The Windows live dashboard in `../can_dashboard/` uses this same decoder. It
+The cross-platform live dashboard in `../can_dashboard/` uses this same decoder. It
 retains the latest values from rotating contexts, exposes loss and queue health,
 and keeps candidate transforms visibly distinct from proven physical outputs.
 
@@ -91,7 +91,10 @@ python3 tools/logs/trc_to_mlg.py \
 The MLG start timestamp is the PEAK `$STARTTIME` plus the offset of the first
 complete telemetry snapshot. PEAK stores its start as an OLE Automation local
 date, so `--timezone Asia/Vladivostok` is the default and another IANA timezone
-can be selected. Existing outputs are rejected unless `--force` is supplied.
+can be selected. Ambiguous and nonexistent local times are rejected rather
+than assigned an implicit daylight-saving fold. Existing outputs are rejected
+unless `--force` is supplied, and the output path may never resolve to the
+source trace.
 
 The `wide54` output contains 60 fields: `Date`, `Elapsed`, schema state, every
 fixed and rotating telemetry value, five stock-CAN context values, and the GPS

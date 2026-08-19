@@ -44,7 +44,7 @@ engines.
 | `tools/mapkit/`, `tools/maps/` | Definition and ledger projection |
 | `tools/diagnostics/` | Factory and community diagnostic corpus tooling |
 | `tools/logs/` | Strict CAN decoders, PEAK audit, and MLVLG conversion |
-| `tools/can_dashboard/` | Portable Windows PCAN-USB live telemetry dashboard |
+| `tools/can_dashboard/` | Portable Windows and macOS PCAN-USB live telemetry dashboard |
 | `tools/sh-elf-run/` | Independent GNU SH-2E executable verification |
 | `tools/pin-tracer/` | Reviewed physical ECM terminal-to-MCU tracing workspace |
 | `refs/` | Primary references and tracked machine-readable projections |
@@ -57,7 +57,7 @@ engines.
 - Map-switching runtime: [`patches/map-switching-selector.md`](patches/map-switching-selector.md)
 - Rolling Launch runtime: [`patches/rolling-launch.md`](patches/rolling-launch.md)
 - Custom CAN telemetry design: [`patches/can-telemetry.md`](patches/can-telemetry.md)
-- Windows PCAN dashboard: [`tools/can_dashboard/README.md`](tools/can_dashboard/README.md)
+- PCAN dashboard: [`tools/can_dashboard/README.md`](tools/can_dashboard/README.md)
 - CAN and MLVLG logging tools: [`tools/logs/README.md`](tools/logs/README.md)
 - Runtime ownership and reserves: [`patches/runtime-reservations.md`](patches/runtime-reservations.md)
 - Exact JK08A HCAN1 model: [`defs/JK08A.can.md`](defs/JK08A.can.md)
@@ -96,6 +96,12 @@ Build the portable Windows PCAN dashboard archive with:
 
 ```bash
 make dashboard-package
+```
+
+Build the native macOS PCAN dashboard application and archive with:
+
+```bash
+make dashboard-package-macos
 ```
 
 The unified production builder remains the only complete modified-ROM entry

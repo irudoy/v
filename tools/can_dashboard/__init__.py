@@ -1,3 +1,5 @@
-"""Live JK08A CAN telemetry dashboard."""
+"""Live VQ CAN telemetry dashboard."""
 
-__version__ = "1.0.1"
+PRODUCT_NAME = "VQ CAN Telemetry"
+PRODUCT_SLUG = "vq-can-telemetry"
+__version__ = "1.1.3"

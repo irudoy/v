@@ -50,7 +50,13 @@ class WindowsPackageTest(unittest.TestCase):
                 )
                 self.assertEqual(
                     package_windows.PACKAGE_ROOT,
-                    f"jk08a-can-dashboard-v{__version__}",
+                    f"vq-can-telemetry-v{__version__}",
+                )
+                self.assertTrue(
+                    all(
+                        item.date_time == (1980, 1, 1, 0, 0, 0)
+                        for item in archive.infolist()
+                    )
                 )
 
             with self.assertRaises(FileExistsError):

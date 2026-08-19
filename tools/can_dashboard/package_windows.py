@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -13,9 +14,9 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.can_dashboard import __version__
+from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
 
-PACKAGE_ROOT = f"jk08a-can-dashboard-v{__version__}"
+PACKAGE_ROOT = f"{PRODUCT_SLUG}-v{__version__}"
 SOURCE_FILES = (
     "patches/__init__.py",
     "patches/can_telemetry_profile.py",
@@ -60,7 +61,7 @@ pause
 exit /b 1
 """
 
-RUN_CMD = r"""@echo off
+RUN_CMD = rf"""@echo off
 setlocal
 cd /d "%~dp0"
 if not exist ".venv\Scripts\pythonw.exe" (
@@ -68,7 +69,7 @@ if not exist ".venv\Scripts\pythonw.exe" (
   pause
   exit /b 1
 )
-start "JK08A CAN Telemetry" ".venv\Scripts\pythonw.exe" -m tools.can_dashboard.app --channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile wide54 --tick-divisor 1
+start "{PRODUCT_NAME}" ".venv\Scripts\pythonw.exe" -m tools.can_dashboard.app --channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile wide54 --tick-divisor 1
 """
 
 RUN_ACTIVE_CMD = RUN_CMD.replace(
@@ -90,6 +91,16 @@ if not exist ".venv\Scripts\python.exe" (
 ".venv\Scripts\python.exe" -m tools.logs.trc_to_mlg %*
 if errorlevel 1 pause
 """
+
+
+def _write_member(archive, name, content):
+    member = zipfile.ZipInfo(
+        f"{PACKAGE_ROOT}/{name}",
+        date_time=(1980, 1, 1, 0, 0, 0),
+    )
+    member.compress_type = zipfile.ZIP_DEFLATED
+    member.external_attr = 0o100644 << 16
+    archive.writestr(member, content)
 
 
 def build_package(output, *, force=False):
@@ -115,7 +126,7 @@ def build_package(output, *, force=False):
                 source = ROOT / relative
                 if not source.is_file():
                     raise FileNotFoundError(source)
-                archive.write(source, f"{PACKAGE_ROOT}/{relative}")
+                _write_member(archive, relative, source.read_bytes())
             requirements = (
                 ROOT / "tools/can_dashboard/requirements-windows.txt"
             ).read_text(encoding="utf-8")
@@ -129,16 +140,8 @@ def build_package(output, *, force=False):
                 "VERSION.txt": __version__ + "\n",
             }
             for name, content in generated.items():
-                member = zipfile.ZipInfo(
-                    f"{PACKAGE_ROOT}/{name}",
-                    date_time=(1980, 1, 1, 0, 0, 0),
-                )
-                member.compress_type = zipfile.ZIP_DEFLATED
-                member.external_attr = 0o100644 << 16
-                archive.writestr(member, content.encode("utf-8"))
-        if output.exists():
-            output.unlink()
-        temporary_path.replace(output)
+                _write_member(archive, name, content.encode("utf-8"))
+        os.replace(temporary_path, output)
     except Exception:
         temporary_path.unlink(missing_ok=True)
         raise

@@ -11,7 +11,9 @@ ROM ?= JK08A
 ROMS ?= JK08A
 ROMVIZ_OUTPUT ?= tmp/romviz/jk08a-rom-atlas.html
 CAN_DASHBOARD_VERSION := $(shell sed -n 's/^__version__ = "\([^"]*\)"/\1/p' tools/can_dashboard/__init__.py)
-CAN_DASHBOARD_OUTPUT ?= tmp/jk08a-can-dashboard-v$(CAN_DASHBOARD_VERSION)-windows.zip
+CAN_DASHBOARD_OUTPUT ?= tmp/vq-can-telemetry-v$(CAN_DASHBOARD_VERSION)-windows.zip
+CAN_DASHBOARD_MACOS_OUTPUT ?= tmp/vq-can-telemetry-v$(CAN_DASHBOARD_VERSION)-macos-arm64.zip
+CAN_DASHBOARD_MACOS_APP_OUTPUT ?= tmp/VQ CAN Telemetry.app
 INPUT ?=
 OUTPUT ?=
 PROFILE ?=
@@ -19,7 +21,7 @@ PROFILE ?=
 PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
 
 .PHONY: help setup check test-python test-js test verify-firmware verify
-.PHONY: romviz dashboard-package defs-generate rom-verify rom-build
+.PHONY: romviz dashboard-package dashboard-package-macos defs-generate rom-verify rom-build
 
 help:
 	@printf '%s\n' \
@@ -36,6 +38,7 @@ help:
 		'  verify            Run check, test, and verify-firmware in sequence.' \
 		'  romviz            Rebuild the self-contained ROM atlas HTML.' \
 		'  dashboard-package Build the portable Windows PCAN dashboard ZIP.' \
+		'  dashboard-package-macos Build the native macOS PCAN dashboard app and ZIP.' \
 		'  defs-generate     Regenerate XML, XDF, and the map ledger from Memgraph.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
@@ -45,6 +48,8 @@ help:
 		'  ROMS              Space-separated ROM models embedded in romviz (default: JK08A).' \
 		'  ROMVIZ_OUTPUT     ROM atlas output path.' \
 		'  CAN_DASHBOARD_OUTPUT  Windows dashboard ZIP path.' \
+		'  CAN_DASHBOARD_MACOS_OUTPUT  macOS arm64 app ZIP path.' \
+		'  CAN_DASHBOARD_MACOS_APP_OUTPUT  Unarchived macOS app path.' \
 		'  INPUT             Input ROM path for rom-verify and rom-build.' \
 		'  OUTPUT            Output ROM path for rom-build.' \
 		'  PROFILE           Optional local unified-builder profile.'
@@ -82,6 +87,14 @@ romviz:
 dashboard-package:
 	@test -n "$(strip $(CAN_DASHBOARD_OUTPUT))" || { printf '%s\n' 'CAN_DASHBOARD_OUTPUT is required' >&2; exit 2; }
 	$(PYTHON) tools/can_dashboard/package_windows.py --force --output "$(CAN_DASHBOARD_OUTPUT)"
+
+dashboard-package-macos:
+	@test -n "$(strip $(CAN_DASHBOARD_MACOS_OUTPUT))" || { printf '%s\n' 'CAN_DASHBOARD_MACOS_OUTPUT is required' >&2; exit 2; }
+	@test -n "$(strip $(CAN_DASHBOARD_MACOS_APP_OUTPUT))" || { printf '%s\n' 'CAN_DASHBOARD_MACOS_APP_OUTPUT is required' >&2; exit 2; }
+	$(UV) run --with-requirements tools/can_dashboard/requirements-macos-build.txt \
+		python tools/can_dashboard/package_macos.py --force \
+		--output "$(CAN_DASHBOARD_MACOS_OUTPUT)" \
+		--app-output "$(CAN_DASHBOARD_MACOS_APP_OUTPUT)"
 
 defs-generate:
 	$(PYTHON) tools/mapkit/emit_def.py "$(ROM)"

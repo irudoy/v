@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 import struct
 import tempfile
+from types import SimpleNamespace
 import unittest
 from zoneinfo import ZoneInfo
 
@@ -113,6 +114,54 @@ class TrcToMlgTest(unittest.TestCase):
         self.assertTrue(
             all(math.isnan(lat) and math.isnan(lon) for lat, lon in gps_values)
         )
+
+    def test_force_cannot_overwrite_source_trace(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "capture.trc"
+            write_trace(source)
+            original = source.read_bytes()
+            with self.assertRaisesRegex(
+                trc_to_mlg.ConversionError,
+                "overwrite the source trace",
+            ):
+                trc_to_mlg.convert_trace(source, source, force=True)
+            self.assertEqual(source.read_bytes(), original)
+
+    def test_nonfinite_start_time_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "capture.trc"
+            output = Path(directory) / "capture.mlg"
+            write_trace(source)
+            content = source.read_text(encoding="ascii").replace(
+                ";$STARTTIME=46251.0734343518",
+                ";$STARTTIME=nan",
+            )
+            source.write_text(content, encoding="ascii")
+            with self.assertRaisesRegex(
+                trc_to_mlg.ConversionError,
+                "invalid \\$STARTTIME",
+            ):
+                trc_to_mlg.convert_trace(source, output)
+            self.assertFalse(output.exists())
+
+    def test_ambiguous_and_nonexistent_local_start_times_are_rejected(self):
+        local_times = (
+            datetime(2026, 11, 1, 1, 30),
+            datetime(2026, 3, 8, 2, 30),
+        )
+        for local_start in local_times:
+            ole_days = (
+                local_start - trc_to_mlg.OLE_AUTOMATION_EPOCH
+            ).total_seconds() / 86_400
+            trace = SimpleNamespace(
+                path=Path("capture.trc"),
+                start_time=str(ole_days),
+            )
+            with self.subTest(local_start=local_start), self.assertRaisesRegex(
+                trc_to_mlg.ConversionError,
+                "ambiguous or nonexistent",
+            ):
+                trc_to_mlg.trace_start_epoch(trace, "America/New_York")
 
 
 if __name__ == "__main__":

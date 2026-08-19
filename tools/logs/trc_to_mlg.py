@@ -6,6 +6,8 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+import math
+import os
 from pathlib import Path
 import sys
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -51,12 +53,49 @@ def trace_start_epoch(trace, timezone_name: str) -> float:
         raise ConversionError(
             f"{trace.path}: invalid $STARTTIME value {trace.start_time!r}"
         ) from error
+    if not math.isfinite(ole_days):
+        raise ConversionError(
+            f"{trace.path}: invalid $STARTTIME value {trace.start_time!r}"
+        )
     try:
         zone = ZoneInfo(timezone_name)
     except ZoneInfoNotFoundError as error:
         raise ConversionError(f"unknown timezone: {timezone_name}") from error
-    local_start = OLE_AUTOMATION_EPOCH + timedelta(days=ole_days)
-    return local_start.replace(tzinfo=zone).timestamp()
+    try:
+        local_start = OLE_AUTOMATION_EPOCH + timedelta(days=ole_days)
+        candidates = set()
+        for fold in (0, 1):
+            aware = local_start.replace(tzinfo=zone, fold=fold)
+            candidate = aware.timestamp()
+            round_trip = datetime.fromtimestamp(candidate, zone).replace(
+                tzinfo=None
+            )
+            if round_trip == local_start:
+                candidates.add(candidate)
+    except (OverflowError, OSError, ValueError) as error:
+        raise ConversionError(
+            f"{trace.path}: $STARTTIME is outside the supported range"
+        ) from error
+    if len(candidates) != 1:
+        raise ConversionError(
+            f"{trace.path}: $STARTTIME is ambiguous or nonexistent in "
+            f"timezone {timezone_name}"
+        )
+    timestamp = candidates.pop()
+    if not math.isfinite(timestamp) or not 0 <= timestamp <= 0xFFFFFFFF:
+        raise ConversionError(
+            f"{trace.path}: $STARTTIME is outside the MLVLG timestamp range"
+        )
+    return timestamp
+
+
+def _same_file(left: Path, right: Path) -> bool:
+    try:
+        if left.exists() and right.exists() and os.path.samefile(left, right):
+            return True
+    except OSError:
+        pass
+    return left.resolve() == right.resolve()
 
 
 def convert_trace(
@@ -71,6 +110,8 @@ def convert_trace(
 ) -> ConversionSummary:
     source = Path(source)
     output = Path(output)
+    if _same_file(source, output):
+        raise ConversionError(f"{output}: output would overwrite the source trace")
     if output.exists() and not force:
         raise ConversionError(
             f"{output}: output already exists; use --force to replace it"

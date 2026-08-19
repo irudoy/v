@@ -1,8 +1,12 @@
 from pathlib import Path
+import sys
 import tempfile
 import threading
+import types
 import unittest
+from unittest import mock
 
+from tools.can_dashboard import app
 from tools.can_dashboard import model, sources
 
 
@@ -58,6 +62,294 @@ class ReplaySourceTest(unittest.TestCase):
         self.assertEqual(len(frames), 1)
         self.assertEqual(frames[0].arbitration_id, 0x6F0)
         self.assertEqual(frames[0].timestamp, 12.5)
+
+    def test_invalid_replay_speed_is_reported_without_opening_source(self):
+        for speed in (0, -1, float("nan"), float("inf")):
+            events = []
+            with self.subTest(speed=speed):
+                sources.run_replay(
+                    Path("missing.trc"),
+                    threading.Event(),
+                    events.append,
+                    speed=speed,
+                )
+                self.assertEqual(
+                    events,
+                    [
+                        sources.SourceStatus(
+                            "error",
+                            "replay speed must be positive",
+                        )
+                    ],
+                )
+
+
+class PcanSourceTest(unittest.TestCase):
+    def test_reset_wraps_bus_lifecycle_when_enabled(self):
+        actions = []
+
+        class FakeBus:
+            def shutdown(self):
+                actions.append(("shutdown",))
+
+        def open_bus(**kwargs):
+            actions.append(("open", kwargs))
+            return FakeBus()
+
+        fake_can = types.SimpleNamespace(
+            Bus=open_bus,
+            BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        stop_event = threading.Event()
+        stop_event.set()
+        events = []
+
+        def reset(channel):
+            actions.append(("reset", channel))
+
+        with mock.patch.dict(sys.modules, {"can": fake_can}), mock.patch.object(
+            sources,
+            "_reset_pcan_channel",
+            side_effect=reset,
+        ):
+            sources.run_pcan(
+                sources.PcanConfiguration(reset_channel=True),
+                stop_event,
+                events.append,
+            )
+
+        self.assertEqual(
+            [action[0] for action in actions],
+            ["reset", "open", "shutdown", "reset"],
+        )
+        self.assertEqual(actions[0][1], "PCAN_USBBUS1")
+        self.assertEqual(actions[1][1]["state"], "passive")
+        self.assertEqual(events[0].state, "connected")
+        self.assertEqual(
+            events[-1],
+            sources.SourceStatus("stopped", "PCAN channel closed"),
+        )
+
+    def test_reset_releases_channel_after_bus_initialization_failure(self):
+        actions = []
+
+        def open_bus(**_kwargs):
+            actions.append(("open",))
+            raise RuntimeError("open failed")
+
+        fake_can = types.SimpleNamespace(
+            Bus=open_bus,
+            BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        events = []
+
+        def reset(channel):
+            actions.append(("reset", channel))
+
+        with mock.patch.dict(sys.modules, {"can": fake_can}), mock.patch.object(
+            sources,
+            "_reset_pcan_channel",
+            side_effect=reset,
+        ):
+            sources.run_pcan(
+                sources.PcanConfiguration(reset_channel=True),
+                threading.Event(),
+                events.append,
+            )
+
+        self.assertEqual(
+            actions,
+            [
+                ("reset", "PCAN_USBBUS1"),
+                ("open",),
+                ("reset", "PCAN_USBBUS1"),
+            ],
+        )
+        self.assertEqual(events[0].state, "error")
+        self.assertIn("open failed", events[0].detail)
+
+    def test_receive_error_remains_terminal_status(self):
+        class FakeBus:
+            def recv(self, timeout):
+                self.timeout = timeout
+                raise RuntimeError("receive failed")
+
+            def shutdown(self):
+                pass
+
+        fake_can = types.SimpleNamespace(
+            Bus=lambda **_kwargs: FakeBus(),
+            BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        events = []
+        with mock.patch.dict(sys.modules, {"can": fake_can}):
+            sources.run_pcan(
+                sources.PcanConfiguration(),
+                threading.Event(),
+                events.append,
+            )
+
+        self.assertEqual([event.state for event in events], ["connected", "error"])
+        self.assertIn("receive failed", events[-1].detail)
+
+    def test_shutdown_error_is_reported(self):
+        class FakeBus:
+            def shutdown(self):
+                raise RuntimeError("shutdown failed")
+
+        fake_can = types.SimpleNamespace(
+            Bus=lambda **_kwargs: FakeBus(),
+            BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        stop_event = threading.Event()
+        stop_event.set()
+        events = []
+        with mock.patch.dict(sys.modules, {"can": fake_can}):
+            sources.run_pcan(
+                sources.PcanConfiguration(),
+                stop_event,
+                events.append,
+            )
+
+        self.assertEqual([event.state for event in events], ["connected", "error"])
+        self.assertIn("shutdown failed", events[-1].detail)
+
+    def test_driver_check_loads_library_without_touching_channel(self):
+        actions = []
+
+        class FakePCANBasic:
+            def __init__(self):
+                actions.append("loaded")
+
+            def Uninitialize(self, _channel):
+                actions.append("uninitialized")
+
+        modules = {
+            name: types.ModuleType(name)
+            for name in (
+                "can",
+                "can.interfaces",
+                "can.interfaces.pcan",
+                "can.interfaces.pcan.basic",
+            )
+        }
+        modules["can.interfaces.pcan.basic"].PCANBasic = FakePCANBasic
+        with mock.patch.dict(sys.modules, modules):
+            sources._check_pcan_driver()
+
+        self.assertEqual(actions, ["loaded"])
+
+    def test_macos_parser_defaults_to_channel_reset(self):
+        with mock.patch.object(app.sys, "platform", "darwin"):
+            args = app.build_parser().parse_args([])
+        self.assertTrue(args.reset_channel)
+
+        args = app.build_parser().parse_args(["--no-reset-channel"])
+        self.assertFalse(args.reset_channel)
+
+        args = app.build_parser().parse_args(["--smoke-test"])
+        self.assertTrue(args.smoke_test)
+
+        args = app.build_parser().parse_args(["--pcan-driver-check"])
+        self.assertTrue(args.pcan_driver_check)
+
+
+class DashboardPresentationTest(unittest.TestCase):
+    def test_default_recording_name_is_generic_and_has_no_extension(self):
+        with mock.patch.object(
+            app.time,
+            "strftime",
+            return_value="2026-08-20_01-21-52",
+        ):
+            name = app.DashboardApp._default_recording_name()
+
+        self.assertEqual(
+            name,
+            f"2026-08-20_01-21-52_vq-can-telemetry-v{app.__version__}",
+        )
+        self.assertFalse(name.endswith(".mlg"))
+
+    def test_standard_can_id_parser_rejects_invalid_ui_values(self):
+        self.assertEqual(app._parse_standard_can_id("0x6f0"), 0x6F0)
+        for value in ("", "invalid", "0", "0x800"):
+            with self.subTest(value=value), self.assertRaisesRegex(
+                ValueError,
+                "0x001..0x7FF",
+            ):
+                app._parse_standard_can_id(value)
+
+    def test_invalid_reconnect_stops_existing_source_before_error(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.can_id_var = types.SimpleNamespace(get=lambda: "invalid")
+        dashboard.stop_source = mock.Mock()
+        dashboard._set_source_status = mock.Mock()
+
+        dashboard.start_pcan()
+
+        dashboard.stop_source.assert_called_once_with()
+        dashboard._set_source_status.assert_called_once_with(
+            "error",
+            "CAN ID must be in 0x001..0x7FF",
+        )
+
+    def test_recording_ignores_frames_received_before_start(self):
+        before = model.FrameRecord(
+            0x6F0,
+            bytes(8),
+            received_monotonic=9.9,
+        )
+        after = model.FrameRecord(
+            0x6F0,
+            bytes(8),
+            received_monotonic=10.25,
+        )
+        self.assertIsNone(app._recording_elapsed(before, 10.0, 11.0))
+        self.assertAlmostEqual(
+            app._recording_elapsed(after, 10.0, 11.0),
+            0.25,
+        )
+
+    def test_source_emitter_rejects_events_after_generation_change(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.events = app.queue.Queue(maxsize=4)
+        dashboard.source_drops = 0
+        dashboard.source_generation = 7
+        emit = dashboard._source_emitter()
+        status = sources.SourceStatus("connected", "test")
+        emit(status)
+        envelope = dashboard.events.get_nowait()
+        self.assertEqual(envelope, app.SourceEnvelope(7, status))
+
+        dashboard.source_generation = 8
+        emit(sources.SourceStatus("stopped", "stale"))
+        self.assertTrue(dashboard.events.empty())
+
+    def test_source_emitter_preserves_terminal_status_when_queue_is_full(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.events = app.queue.Queue(maxsize=1)
+        dashboard.source_drops = 0
+        dashboard.source_generation = 2
+        emit = dashboard._source_emitter()
+        emit(model.FrameRecord(0x6F0, bytes(8)))
+        status = sources.SourceStatus("error", "receive failed")
+        emit(status)
+
+        envelope = dashboard.events.get_nowait()
+        self.assertEqual(envelope, app.SourceEnvelope(2, status))
+        self.assertEqual(dashboard.source_drops, 1)
+
+    def test_nonfinite_values_render_as_missing(self):
+        metric = app.Metric("gps_lat", "GPS", "deg", 6)
+        self.assertEqual(app.DashboardApp._format(metric, float("nan")), "--")
+        self.assertEqual(app.DashboardApp._format(metric, float("inf")), "--")
+
+    def test_cli_rejects_nonfinite_replay_speed_before_tk_initialization(self):
+        for value in ("nan", "inf"):
+            with self.subTest(value=value), self.assertRaisesRegex(
+                SystemExit,
+                "replay speed must be positive",
+            ):
+                app.main(["--replay-speed", value, "--no-auto-connect"])
 
 
 if __name__ == "__main__":

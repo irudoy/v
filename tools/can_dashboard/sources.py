@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from pathlib import Path
 import time
 
@@ -30,13 +31,40 @@ class PcanConfiguration:
     bitrate: int = DEFAULT_BITRATE
     can_id: int = DEFAULT_CAN_ID
     listen_only: bool = True
+    reset_channel: bool = False
+
+
+def _reset_pcan_channel(channel):
+    """Release a PCAN-Basic channel before opening it again.
+
+    MacCAN can retain an initialized channel after an interrupted client. The
+    Cansult macOS tools avoid that state by explicitly uninitializing the
+    handle before constructing python-can's Bus. The return code is
+    intentionally ignored: an already-uninitialized channel is the desired
+    precondition, and the following Bus initialization reports real failures.
+    """
+    from can.interfaces.pcan.basic import PCANBasic, PCAN_CHANNEL_NAMES
+
+    normalized = channel.strip().upper()
+    try:
+        handle = PCAN_CHANNEL_NAMES[normalized]
+    except KeyError as error:
+        raise ValueError(f"unknown PCAN channel: {channel}") from error
+    PCANBasic().Uninitialize(handle)
+
+
+def _check_pcan_driver():
+    """Load the PCAN-Basic library without changing channel state."""
+    from can.interfaces.pcan.basic import PCANBasic
+
+    PCANBasic()
 
 
 def run_pcan(config, stop_event, emit):
     """Read selected frames through python-can's PCAN-Basic backend."""
     try:
         import can
-    except ImportError as error:
+    except ImportError:
         emit(SourceStatus("error", "python-can is not installed"))
         return
 
@@ -46,6 +74,8 @@ def run_pcan(config, stop_event, emit):
     ]
     state = can.BusState.PASSIVE if config.listen_only else can.BusState.ACTIVE
     try:
+        if config.reset_channel:
+            _reset_pcan_channel(config.channel)
         bus = can.Bus(
             interface="pcan",
             channel=config.channel,
@@ -56,18 +86,24 @@ def run_pcan(config, stop_event, emit):
             ignore_config=True,
         )
     except Exception as error:
+        if config.reset_channel:
+            try:
+                _reset_pcan_channel(config.channel)
+            except Exception:
+                pass
         emit(SourceStatus("error", f"PCAN initialization failed: {error}"))
         return
 
     mode = "listen-only" if config.listen_only else "active/ACK"
     emit(SourceStatus("connected", f"{config.channel}, {config.bitrate} bit/s, {mode}"))
+    terminal_error = None
     try:
         while not stop_event.is_set():
             try:
                 message = bus.recv(timeout=0.1)
             except Exception as error:
-                emit(SourceStatus("error", f"PCAN receive failed: {error}"))
-                return
+                terminal_error = f"PCAN receive failed: {error}"
+                break
             if message is None:
                 continue
             emit(FrameRecord(
@@ -80,9 +116,24 @@ def run_pcan(config, stop_event, emit):
                 is_error_frame=message.is_error_frame,
             ))
     finally:
+        cleanup_errors = []
         try:
             bus.shutdown()
-        finally:
+        except Exception as error:
+            cleanup_errors.append(f"shutdown failed: {error}")
+        if config.reset_channel:
+            try:
+                _reset_pcan_channel(config.channel)
+            except Exception as error:
+                cleanup_errors.append(f"channel release failed: {error}")
+        if cleanup_errors:
+            detail = "; ".join(cleanup_errors)
+            terminal_error = (
+                f"{terminal_error}; {detail}" if terminal_error else detail
+            )
+        if terminal_error:
+            emit(SourceStatus("error", terminal_error))
+        else:
             emit(SourceStatus("stopped", "PCAN channel closed"))
 
 
@@ -201,6 +252,13 @@ def _run_candump_replay(path, stop_event, emit, speed):
 
 
 def run_replay(path, stop_event, emit, speed=1.0):
+    if (
+        not isinstance(speed, (int, float))
+        or not math.isfinite(speed)
+        or speed <= 0
+    ):
+        emit(SourceStatus("error", "replay speed must be positive"))
+        return
     path = Path(path)
     emit(SourceStatus("connected", f"replay {path.name}"))
     try:

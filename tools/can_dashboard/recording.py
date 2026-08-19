@@ -1,4 +1,4 @@
-"""MLVLG recording for decoded JK08A dashboard snapshots."""
+"""MLVLG recording for decoded VQ CAN telemetry snapshots."""
 
 from __future__ import annotations
 
@@ -28,6 +28,7 @@ class FieldBinding:
 @dataclass(frozen=True)
 class RecordingSummary:
     output: Path
+    output_existed: bool
     fields: int
     event_records: int
     bridge_records: int
@@ -313,7 +314,8 @@ class TelemetryMlgRecorder:
         self.force = force
         self.bindings = build_bindings(profile, schema_path)
         self.fields = tuple(binding.spec for binding in self.bindings)
-        if self.output.exists() and not force:
+        self.output_existed = self.output.exists()
+        if self.output_existed and not force:
             raise FileExistsError(f"output already exists: {self.output}")
         self.output.parent.mkdir(parents=True, exist_ok=True)
         descriptor, temporary_name = tempfile.mkstemp(
@@ -409,21 +411,32 @@ class TelemetryMlgRecorder:
             self.temporary.unlink(missing_ok=True)
             return RecordingSummary(
                 output=self.output,
+                output_existed=self.output_existed,
                 fields=len(self.fields),
                 event_records=0,
                 bridge_records=0,
                 record_length=self._writer.record_length,
-                output_size=0,
+                output_size=(
+                    self.output.stat().st_size
+                    if self.output.exists()
+                    else 0
+                ),
             )
 
         try:
             validation = mlvlg.validate_mlg(self.temporary)
             if validation.fields != len(self.fields):
-                raise AssertionError("validated MLVLG field count changed")
+                raise mlvlg.MlvlgError(
+                    "validated MLVLG field count differs from the writer"
+                )
             if validation.record_length != self._writer.record_length:
-                raise AssertionError("validated MLVLG record length changed")
+                raise mlvlg.MlvlgError(
+                    "validated MLVLG record length differs from the writer"
+                )
             if validation.data_records != self._writer.data_records:
-                raise AssertionError("validated MLVLG record count changed")
+                raise mlvlg.MlvlgError(
+                    "validated MLVLG record count differs from the writer"
+                )
             if self.output.exists() and not self.force:
                 raise FileExistsError(
                     f"output appeared during recording: {self.output}"
@@ -435,6 +448,7 @@ class TelemetryMlgRecorder:
 
         return RecordingSummary(
             output=self.output,
+            output_existed=self.output_existed,
             fields=len(self.fields),
             event_records=self.event_records,
             bridge_records=self.bridge_records,

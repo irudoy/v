@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Windows-oriented live dashboard for the JK08A custom CAN stream."""
+"""Cross-platform live dashboard for VQ custom CAN telemetry."""
 
 from __future__ import annotations
 
 import argparse
 from collections import deque
 from dataclasses import dataclass
+import math
 from pathlib import Path
 import queue
 import sys
@@ -19,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.can_dashboard import __version__
+from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
 from tools.can_dashboard.model import (
     DEFAULT_BITRATE,
     DEFAULT_CAN_ID,
@@ -57,6 +58,39 @@ class Metric:
     unit: str = ""
     digits: int = 1
     hexadecimal: bool = False
+
+
+@dataclass(frozen=True)
+class SourceEnvelope:
+    generation: int
+    event: SourceStatus | FrameRecord
+
+
+def _parse_standard_can_id(value: str) -> int:
+    try:
+        can_id = int(value, 0)
+    except (TypeError, ValueError) as error:
+        raise ValueError("CAN ID must be in 0x001..0x7FF") from error
+    if not 1 <= can_id <= 0x7FF:
+        raise ValueError("CAN ID must be in 0x001..0x7FF")
+    return can_id
+
+
+def _recording_elapsed(frame: FrameRecord, started: float, fallback: float):
+    event_time = (
+        frame.received_monotonic
+        if frame.received_monotonic is not None
+        else fallback
+    )
+    if (
+        not isinstance(started, (int, float))
+        or not isinstance(event_time, (int, float))
+        or not math.isfinite(started)
+        or not math.isfinite(event_time)
+        or event_time < started
+    ):
+        return None
+    return event_time - started
 
 
 HERO_METRICS = (
@@ -246,6 +280,7 @@ class DashboardApp:
         self.source_drops = 0
         self.stop_event = None
         self.worker = None
+        self.source_generation = 0
         self.source_state = "stopped"
         self.source_detail = "not connected"
         self.model = DashboardModel(args.profile, args.can_id, args.tick_divisor)
@@ -267,7 +302,7 @@ class DashboardApp:
             self.root.after(500, lambda: self.start_recording(args.record))
 
     def _build_window(self):
-        self.root.title(f"JK08A CAN Telemetry v{__version__}")
+        self.root.title(f"{PRODUCT_NAME} v{__version__}")
         self.root.configure(bg=BG)
         self.root.geometry("1520x920")
         self.root.minsize(1180, 760)
@@ -280,7 +315,7 @@ class DashboardApp:
         top.pack(fill="x", padx=14, pady=(12, 8))
         tk.Label(
             top,
-            text=f"JK08A CAN TELEMETRY v{__version__}",
+            text=f"{PRODUCT_NAME.upper()} v{__version__}",
             bg=BG,
             fg=TEXT,
             font=("Segoe UI Semibold", 17),
@@ -400,11 +435,32 @@ class DashboardApp:
             font=("Consolas", 9),
         ).pack(ipady=4)
 
-    def _emit(self, event):
+    def _source_emitter(self):
+        generation = self.source_generation
+
+        def emit(event):
+            if generation != self.source_generation:
+                return
+            envelope = SourceEnvelope(generation, event)
+            try:
+                self.events.put_nowait(envelope)
+            except queue.Full:
+                self.source_drops += 1
+                if isinstance(event, SourceStatus):
+                    try:
+                        self.events.get_nowait()
+                        self.events.put_nowait(envelope)
+                    except (queue.Empty, queue.Full):
+                        pass
+
+        return emit
+
+    def _selected_can_id(self):
         try:
-            self.events.put_nowait(event)
-        except queue.Full:
-            self.source_drops += 1
+            return _parse_standard_can_id(self.can_id_var.get())
+        except ValueError as error:
+            self._set_source_status("error", str(error))
+            return None
 
     def _new_model(self, can_id):
         self.model = DashboardModel(
@@ -416,29 +472,26 @@ class DashboardApp:
         self.source_drops = 0
 
     def start_pcan(self):
-        try:
-            can_id = int(self.can_id_var.get(), 0)
-            if not 1 <= can_id <= 0x7FF:
-                raise ValueError
-        except ValueError:
-            self._set_source_status("error", "CAN ID must be in 0x001..0x7FF")
+        self.stop_source()
+        can_id = self._selected_can_id()
+        if can_id is None:
             return
         channel = self.channel_var.get().strip()
         if not channel:
             self._set_source_status("error", "PCAN channel is empty")
             return
-        self.stop_source()
         self._new_model(can_id)
         config = PcanConfiguration(
             channel=channel,
             bitrate=self.args.bitrate,
             can_id=can_id,
             listen_only=self.listen_only_var.get(),
+            reset_channel=self.args.reset_channel,
         )
         self.stop_event = threading.Event()
         self.worker = threading.Thread(
             target=run_pcan,
-            args=(config, self.stop_event, self._emit),
+            args=(config, self.stop_event, self._source_emitter()),
             daemon=True,
             name="pcan-reader",
         )
@@ -446,17 +499,15 @@ class DashboardApp:
         self.worker.start()
 
     def start_demo(self):
-        try:
-            can_id = int(self.can_id_var.get(), 0)
-        except ValueError:
-            can_id = self.args.can_id
-            self.can_id_var.set(f"0x{can_id:03X}")
         self.stop_source()
+        can_id = self._selected_can_id()
+        if can_id is None:
+            return
         self._new_model(can_id)
         self.stop_event = threading.Event()
         self.worker = threading.Thread(
             target=run_demo,
-            args=(can_id, self.stop_event, self._emit),
+            args=(can_id, self.stop_event, self._source_emitter()),
             daemon=True,
             name="telemetry-demo",
         )
@@ -476,12 +527,19 @@ class DashboardApp:
 
     def start_replay(self, path):
         self.stop_source()
-        can_id = int(self.can_id_var.get(), 0)
+        can_id = self._selected_can_id()
+        if can_id is None:
+            return
         self._new_model(can_id)
         self.stop_event = threading.Event()
         self.worker = threading.Thread(
             target=run_replay,
-            args=(Path(path), self.stop_event, self._emit, self.args.replay_speed),
+            args=(
+                Path(path),
+                self.stop_event,
+                self._source_emitter(),
+                self.args.replay_speed,
+            ),
             daemon=True,
             name="telemetry-replay",
         )
@@ -490,7 +548,7 @@ class DashboardApp:
     @staticmethod
     def _default_recording_name():
         timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
-        return f"{timestamp}_jk08a-can-v{__version__}.mlg"
+        return f"{timestamp}_{PRODUCT_SLUG}-v{__version__}"
 
     def toggle_recording(self):
         if self.recorder is None:
@@ -556,14 +614,25 @@ class DashboardApp:
                 f"{summary.event_records} snapshots"
             )
         else:
-            self.record_var.set("MLG: no complete snapshots, file not created")
+            detail = (
+                "existing file unchanged"
+                if summary.output_existed
+                else "file not created"
+            )
+            self.record_var.set(f"MLG: no complete snapshots, {detail}")
 
     def stop_source(self):
         self.stop_recording()
+        self.source_generation += 1
         if self.stop_event is not None:
             self.stop_event.set()
         if self.worker is not None and self.worker.is_alive():
             self.worker.join(timeout=0.3)
+        while True:
+            try:
+                self.events.get_nowait()
+            except queue.Empty:
+                break
         self.stop_event = None
         self.worker = None
         if self.source_state not in {"stopped", "error"}:
@@ -579,10 +648,15 @@ class DashboardApp:
         processed = 0
         while processed < 4000:
             try:
-                event = self.events.get_nowait()
+                envelope = self.events.get_nowait()
             except queue.Empty:
                 break
             processed += 1
+            if not isinstance(envelope, SourceEnvelope):
+                continue
+            if envelope.generation != self.source_generation:
+                continue
+            event = envelope.event
             if isinstance(event, SourceStatus):
                 self._set_source_status(event.state, event.detail)
                 if event.state in {"stopped", "error"}:
@@ -590,15 +664,13 @@ class DashboardApp:
             elif isinstance(event, FrameRecord):
                 snapshot = self.model.process_frame(event)
                 if snapshot is not None and self.recorder is not None:
-                    event_time = (
-                        event.received_monotonic
-                        if event.received_monotonic is not None
-                        else now
+                    elapsed = _recording_elapsed(
+                        event,
+                        self.recording_started_monotonic,
+                        now,
                     )
-                    elapsed = max(
-                        0.0,
-                        event_time - self.recording_started_monotonic,
-                    )
+                    if elapsed is None:
+                        continue
                     try:
                         self.recorder.append(self.model, elapsed)
                     except (OSError, ValueError) as error:
@@ -632,7 +704,11 @@ class DashboardApp:
                 self.model.value(f"injection_{index}_ms")
                 for index in range(6)
             ]
-            values = [value for value in values if value is not None]
+            values = [
+                value
+                for value in values
+                if isinstance(value, (int, float)) and math.isfinite(value)
+            ]
             return sum(values) / len(values) if values else None
         return self.model.value(key)
 
@@ -642,6 +718,8 @@ class DashboardApp:
             return "--"
         if isinstance(value, str):
             return value
+        if isinstance(value, (int, float)) and not math.isfinite(value):
+            return "--"
         if metric.hexadecimal:
             width = 4 if value > 0xFF else 2
             return f"0x{int(value):0{width}X}"
@@ -722,7 +800,23 @@ def build_parser():
     parser.add_argument("--profile", choices=("core32", "wide54"), default="wide54")
     parser.add_argument("--tick-divisor", type=int, default=1)
     parser.add_argument("--active", action="store_true", help="participate in ACK instead of listen-only")
+    parser.add_argument(
+        "--reset-channel",
+        action=argparse.BooleanOptionalAction,
+        default=sys.platform == "darwin",
+        help="release the PCAN-Basic channel before and after use (default on macOS)",
+    )
     parser.add_argument("--demo", action="store_true")
+    parser.add_argument(
+        "--smoke-test",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument(
+        "--pcan-driver-check",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     parser.add_argument("--replay", type=Path)
     parser.add_argument("--replay-speed", type=float, default=1.0)
     parser.add_argument("--no-auto-connect", action="store_true")
@@ -742,10 +836,29 @@ def main(argv=None):
         raise SystemExit("CAN ID must be in 0x001..0x7FF")
     if not 1 <= args.tick_divisor <= 0xFF:
         raise SystemExit("tick divisor must be in 1..255")
-    if args.replay_speed <= 0:
+    if not math.isfinite(args.replay_speed) or args.replay_speed <= 0:
         raise SystemExit("replay speed must be positive")
+    if args.pcan_driver_check:
+        from tools.can_dashboard.sources import _check_pcan_driver
+
+        _check_pcan_driver()
+        return 0
+    if args.smoke_test:
+        args.demo = True
+        args.no_auto_connect = True
     root = tk.Tk()
-    DashboardApp(root, args)
+    dashboard = DashboardApp(root, args)
+    if args.smoke_test:
+        root.withdraw()
+        root.after(1500, root.quit)
+        root.mainloop()
+        completed_groups = dashboard.model.stats(
+            time.monotonic()
+        ).completed_groups
+        dashboard.close()
+        if completed_groups == 0:
+            raise SystemExit("dashboard smoke test received no complete groups")
+        return 0
     root.mainloop()
     return 0
 

@@ -1,10 +1,11 @@
-# JK08A CAN telemetry dashboard
+# VQ CAN telemetry dashboard
 
-Current dashboard version: `1.0.1`.
+Current dashboard version: `1.1.3`.
 
-This Tkinter application displays and records the custom JK08A `core32` or `wide54`
-telemetry stream from a PEAK PCAN-USB adapter. The default configuration
-matches local candidate `v1.11`:
+This Tkinter application displays and records VQ custom CAN telemetry from a
+PEAK PCAN-USB adapter on Windows or macOS. The current verified schema supports
+the JK08A `core32` and `wide54` profiles. The default configuration matches
+local candidate `v1.11`:
 
 - PCAN channel `PCAN_USBBUS1`;
 - classical CAN at `500000 bit/s`;
@@ -18,10 +19,10 @@ ACK participation. Use the separate active/ACK launcher only on an isolated
 bench where the ECU otherwise has no node to acknowledge its transmissions.
 
 The version has one source in `tools/can_dashboard/__init__.py`. It is visible
-in the window title, main heading, portable-package directory, and
-`VERSION.txt`. Semantic-version major changes denote an incompatible UI, CLI,
-or MLG contract; minor changes add compatible functionality; patch changes
-preserve both contracts.
+in the window title, main heading, Windows portable-package directory,
+`VERSION.txt`, and macOS `Info.plist`. Semantic-version major changes denote an
+incompatible UI, CLI, or MLG contract; minor changes add compatible
+functionality; patch changes preserve both contracts.
 
 The Windows driver package installs the PCAN-Basic DLL in the system directory.
 The dashboard accesses it through `python-can` 4.6.1. PEAK documents the
@@ -30,13 +31,28 @@ driver, and `python-can` documents `PCAN_USBBUS1`, passive state, and
 `500000 bit/s` for this adapter. The portable package also installs `tzdata`
 2026.3 so IANA timezones used by the TRC converter are available on Windows.
 
+On macOS, `python-can` uses the third-party MacCAN `libPCBUSB` user-space
+driver. Version 0.13 supports PCAN-USB on Intel and Apple silicon. The dashboard
+follows the proven Cansult connection sequence and releases the PCAN-Basic
+channel before opening it and after shutdown. This reset is enabled by default
+on macOS and can be disabled with `--no-reset-channel` when another process
+intentionally owns the channel. Close other PCAN clients before normal use.
+The native application embeds Python, Tk, `python-can`, and its data files;
+MacCAN remains a system driver and is not copied into the application.
+
+Each source run has a generation identifier. Reconnect, replay replacement,
+and source stop invalidate queued events from the retired worker before a new
+model is created. Terminal source status is retained even when the frame queue
+is full, and PCAN receive or shutdown failures remain visible as errors rather
+than being replaced by a normal stopped state.
+
 ## Portable Windows package
 
 Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/jk08a-can-dashboard-v1.0.1-windows.zip
+  --output tmp/vq-can-telemetry-v1.1.3-windows.zip
 ```
 
 On the Windows laptop:
@@ -58,6 +74,36 @@ The default hardware filter accepts custom telemetry plus stock context IDs
 `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide an independent
 RPM cross-check, vehicle speed, ASCD input, selector state, and dashboard
 indication state.
+
+## Native macOS application
+
+Build the ignored arm64 application and transfer archive from the repository
+root:
+
+```bash
+make dashboard-package-macos
+```
+
+The target writes:
+
+- `tmp/VQ CAN Telemetry.app` for direct local use;
+- `tmp/vq-can-telemetry-v1.1.3-macos-arm64.zip` for transfer.
+
+The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
+the tested Python/Tk runtime and all Python dependencies, preserves bundle
+symlinks in the ZIP, records version 1.1.3 in `Info.plist`, and applies an
+ad-hoc signature. The build gate verifies the arm64 architecture, deep code
+signature, complete bundle metadata, and a hidden deterministic UI/demo run.
+The same gate loads the frozen `python-can` PCAN backend and the installed
+MacCAN library without changing a channel's state. It extracts the completed
+ZIP and revalidates the archived application before accepting the package.
+
+On the target Mac, install MacCAN `libPCBUSB` 0.13, extract the ZIP, and open
+`VQ CAN Telemetry.app`. No Python installation or shell launcher is needed.
+The main source starts in listen-only mode; use the visible `Listen-only`
+control to opt into active/ACK behavior only on an isolated bench. A downloaded
+ad-hoc-signed build is not notarized, so the first launch may require Finder's
+Open action after the archive source and SHA-256 are verified.
 
 The `0x551` display uses neutral labels `ASCD STATE 6` and `ASCD STATE 7`.
 Exact-target observation shows that custom state 6 illuminates SET together
@@ -83,6 +129,18 @@ py -3.11 -m tools.can_dashboard.app --channel PCAN_USBBUS2
 py -3.11 -m tools.can_dashboard.app --record drive.mlg
 ```
 
+On macOS with `libPCBUSB` already installed, the equivalent repository run is:
+
+```bash
+uv run --with-requirements tools/can_dashboard/requirements-macos.txt \
+  python -m tools.can_dashboard.app \
+  --channel PCAN_USBBUS1 --bitrate 500000 \
+  --can-id 0x6F0 --profile wide54 --tick-divisor 1
+```
+
+The macOS default includes the channel reset. Pass `--no-reset-channel` only
+when preserving another client's PCAN-Basic ownership is intentional.
+
 Replay accepts PEAK PCAN-View TRC 1.1 files directly, including the `.trc`
 captures used by the project. It also accepts compact candump lines such as
 `(12.500000) can0 6F0#A001020304050607`.
@@ -92,9 +150,13 @@ captures used by the project. It also accepts compact candump lines such as
 `Record MLG` selects a destination and starts an atomic MLVLG v2 recording.
 Only complete strict telemetry snapshots produce records. `Stop MLG`, source
 stop, source replacement, and window close finalize and validate the file.
-No output is left when no complete snapshot was received. Existing files
-require an explicit replacement confirmation in the UI and are rejected by
-`--record`.
+No new output is left when no complete snapshot was received; an existing file
+selected for replacement remains unchanged in that case. Existing files require
+an explicit replacement confirmation in the UI and are rejected by `--record`.
+
+Frames already queued when recording starts update the display but are not
+written to the new file. The first MLG event therefore cannot predate the
+recording start or be collapsed onto elapsed time zero.
 
 The `wide54` MLG schema has 60 channels: time, schema state, every fixed and
 rotating custom-telemetry field, stock CAN RPM, vehicle speed, selector code,

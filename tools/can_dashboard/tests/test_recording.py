@@ -3,6 +3,7 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
+from unittest import mock
 
 from tools.can_dashboard import model, recording
 from tools.logs import mlvlg
@@ -70,6 +71,23 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
                 )
             self.assertEqual(list(Path(directory).iterdir()), [])
 
+    def test_empty_forced_recording_preserves_existing_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "existing.mlg"
+            output.write_bytes(b"existing recording")
+            recorder = recording.TelemetryMlgRecorder(
+                output,
+                "wide54",
+                1_776_000_000,
+                force=True,
+            )
+            summary = recorder.close()
+
+            self.assertEqual(output.read_bytes(), b"existing recording")
+            self.assertTrue(summary.output_existed)
+            self.assertEqual(summary.event_records, 0)
+            self.assertEqual(summary.output_size, len(b"existing recording"))
+
     def test_records_complete_schema_context_and_gps_contract(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("wide54", 0x6F0, 1)
@@ -133,6 +151,38 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertEqual(summary.event_records, 2)
         self.assertEqual(summary.bridge_records, 3)
         self.assertEqual(validation.data_records, 5)
+
+    def test_validation_mismatch_is_a_handled_mlvlg_error(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        feed_group(dashboard, generator.group(1), 0.0)
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "mismatch.mlg"
+            recorder = recording.TelemetryMlgRecorder(
+                output,
+                "wide54",
+                1_776_000_000,
+            )
+            recorder.append(dashboard, 0.0)
+            temporary = recorder.temporary
+            mismatch = mlvlg.ValidationSummary(
+                fields=len(recorder.fields) + 1,
+                record_length=recorder._writer.record_length,
+                data_records=recorder._writer.data_records,
+                marker_records=0,
+            )
+            with mock.patch.object(
+                recording.mlvlg,
+                "validate_mlg",
+                return_value=mismatch,
+            ), self.assertRaisesRegex(
+                mlvlg.MlvlgError,
+                "field count differs",
+            ):
+                recorder.close()
+
+            self.assertFalse(output.exists())
+            self.assertFalse(temporary.exists())
 
 
 if __name__ == "__main__":
