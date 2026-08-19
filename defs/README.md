@@ -45,6 +45,8 @@ See `../tools/map-analysis-pipeline.md` and
 - `JK08A.fuel-inhibit.md` models the complete fuel-output inhibit arbitration.
 - `JK08A.limiters.md` models the main, stationary, and request limiter paths.
 - `JK08A.ignition-output.md` models the final timing and APC output boundary.
+- `JK08A.start-signal-temperature-selector.md` models the computed START
+  SIGNAL, battery-voltage acquisition, and selected-temperature sentinel.
 - `JK08A.diagnostics.md` models diagnostic publication and monitor boundaries.
 - `JK08A.can.md` models the exact HCAN1 mailbox table, stock transmit pipeline,
   payload boundaries, and safe extension mailbox.

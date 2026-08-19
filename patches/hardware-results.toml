@@ -418,8 +418,14 @@ carscanner_capture_sha256 = [
   "4757ad525591d3641ceb19b3b9dd75e717aa2ee08e1a2abcc681924f40bdd78d",
   "29aefb421e3da9eaf4f1123700a909f54dc27a6c2fc6e5deee2b8dc924dc2126",
 ]
+carscanner_control_module_voltage_v = 13.92
+carscanner_starter_label = "[NC] Starter"
+carscanner_starter_value = 0
+carscanner_selector_evidence_boundary = "target diagnostic observations immediately after the telemetry drive; not synchronized with the CAN capture or a cranking transition"
 near_adjacent_parameter_checks = [
   "coolant stream 91 degC and diagnostic 91 degC",
+  "control-module voltage diagnostic 13.92 V on the target",
+  "[NC] Starter diagnostic 0 at hot idle on the target; consistent with but not proven identical to DID 0x1302 START SIGNAL",
   "APP stream raw 153/152 -> 0.765/0.760 V and diagnostic 0.76/0.76 V",
   "TPS stream raw 151/151 -> 0.755/0.755 V and diagnostic 0.77/0.77 V",
   "STFT stream 95.92/92.47 percent factor -> -4.08/-7.53 percent correction and diagnostic -3/-8 percent",

@@ -99,8 +99,8 @@ class BindingSourceTest(unittest.TestCase):
         inherited = bindings.materialize_rows(
             rom_sources.resolve("JK03A"), rows
         )
-        self.assertEqual(len(rows), 174)
-        self.assertEqual(len(inherited), 37)
+        self.assertEqual(len(rows), 176)
+        self.assertEqual(len(inherited), 39)
         self.assertEqual(
             sum(row["rom_scope"] == "exact-rom" for row in rows), 137
         )
@@ -144,6 +144,26 @@ class BindingSourceTest(unittest.TestCase):
         self.assertEqual(
             by_id["engine-oil-temperature-did-111f"]["firmware_addr"],
             "ffff2876",
+        )
+        self.assertEqual(
+            by_id["battery-voltage-did-1103"]["firmware_addr"],
+            "ffff1188",
+        )
+        self.assertEqual(
+            by_id["battery-voltage-did-1103"]["diagnostic_key"],
+            "diagnostic-parameter:request:221103",
+        )
+        self.assertEqual(
+            by_id["start-signal-did-1302-bit1"]["firmware_addr"],
+            "ffff4185",
+        )
+        self.assertEqual(
+            by_id["start-signal-did-1302-bit1"]["diagnostic_key"],
+            "diagnostic-parameter:semantic:cid-1302h-bit1-start-signal",
+        )
+        self.assertIn(
+            "rom_const:000229f0=ffff3342",
+            by_id["start-signal-did-1302-bit1"]["evidence"],
         )
         self.assertEqual(
             by_id["power-balance-mask-iolid-0c"]["firmware_addr"],

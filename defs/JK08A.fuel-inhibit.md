@@ -275,9 +275,15 @@ and ETC ACTR-B2 respectively.
 The first latch proves that engine-running speed has been reached. The third is
 a coolant warm-up latch. The second compares exact raw coolant snapshot
 `0xFFFF1071` with selected-temperature snapshot `0xFFFF106E`; the selected
-value normally equals coolant and can instead become the application-lifecycle
-zero fallback through selector `0x0003967A`. These bits latch until diagnostic
-reset service `0x00080B54` clears them.
+value equals coolant while computed START SIGNAL is set and battery-voltage raw
+is below 100. When that condition ends, selector `0x0003967A` returns coolant
+once, sets its transition latch, and then publishes the stock-lifecycle zero
+sentinel. Under the source-bound DID-0x1103 conversion, raw 100 is 8.00 V.
+Consequently bit 4 is a post-start or low-voltage-transition qualifier rather
+than a comparison with a second physical temperature. The zero sentinel has no
+coolant scale and must not be rendered as `-50 deg C`. These bits latch until
+diagnostic reset service `0x00080B54` clears them. The complete source and DID
+chain is specified in `JK08A.start-signal-temperature-selector.md`.
 
 `0x0007D856` resets `0xFFFF4B0E` only when the critical diagnostic aggregate
 bit is clear. While that bit is set, it increments the counter with saturation
@@ -427,8 +433,6 @@ The exact executable establishes all 15 contributors, both side-effect-only
 calls, their stock constants and state transitions, replacement precedence,
 and the final six-bit mask. Remaining boundaries are:
 
-- physical mode behind the alternate selected-temperature path used by
-  `0xFFFF422F.bit4`;
 - originating module and bus-level identity of internal CAN key `0x2EE0`;
 - target channel-to-cylinder order and electrical injector behavior.
 
