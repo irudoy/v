@@ -484,11 +484,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x229B" flags="0x0">
     <title>Intake Cam Timing Main</title>
-    <description>Exact JK08A. Address 0xB43A; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and load-like byte ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares target reference ffff2326 with both intake-cam timing channels. The Cylinder Filling axis name and 0.5 degree-per-byte conversion remain catalog candidates. Raw coolant thresholds 106 and 131 are exact; the corresponding 56 and 81 degree C values depend on the homologous diagnostic conversion. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <description>Exact JK08A. Address 0xB43A; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares target reference ffff2326 with both intake-cam timing channels. The column coordinate is exact at raw*100/128 percent of the fixed BFS reference. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain catalog candidates. Raw coolant thresholds 106 and 131 are exact; the corresponding 56 and 81 degree C values depend on the homologous diagnostic conversion. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="26" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F1E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -568,11 +568,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x48AC" flags="0x0">
     <title>Intake Cam Timing Cold</title>
-    <description>Exact JK08A. Address 0xB53A; 8 rows x 8 columns; uint8; map confidence code. Cold intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and load-like byte ffff102c and writes ffff1c5e. FUN 000bdc66 uses it at raw coolant &lt;=106 and blends it with warm/main target 0000b43a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Code proves the cold intake-cam target role, raw coolant selection, and centered byte representation. The Cylinder Filling axis name, 0.5 degree-per-byte conversion, and engineering coolant temperatures remain source-derived candidates. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <description>Exact JK08A. Address 0xB53A; 8 rows x 8 columns; uint8; map confidence code. Cold intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c and writes ffff1c5e. FUN 000bdc66 uses it at raw coolant &lt;=106 and blends it with warm/main target 0000b43a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Code proves the cold intake-cam target role, raw coolant selection, centered byte representation, and column coordinate at raw*100/128 percent of the fixed BFS reference. The Cylinder Filling physical name, 0.5 degree-per-byte output conversion, and engineering coolant temperatures remain source-derived candidates. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="26" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12EAA" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -614,7 +614,7 @@
     <CATEGORYMEM index="0" category="26" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F92" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>4</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -838,35 +838,20 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xAA84" flags="0x0">
-    <title>Calculated Load</title>
-    <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence code. Sixteen-point Base Fuel Schedule normalization reference for the calculated-load byte. Lookup M by RPM/25 byte ffff11b3 enters q=floor((uint16[ffff1024]&lt;&lt;8)/M); an optional second normalization uses ffff329f, and the result is clamped to 255 and written to ffff413e for J1979 Mode 01 PID 0x04. The exact image closes both wrapper branches: 000263f4 calls the complete uint16 interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell 15 otherwise. Exact DID 0x1208 identifies numerator ffff1024 as current Base Fuel Schedule; the quotient therefore compares it with a same-dimension 100% reference. FUN 0008083c optionally applies floor((q&lt;&lt;7)/uint8[ffff329f]), clamps to 255, and writes ffff413e. FUN 00035856 returns this byte for PID 0x04; standard conversion is 100*A/255. The operational role has code confidence. The raw/2048 ms conversion and static RPM-axis presentation remain candidate and require hardware validation. Static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence: writes].</description>
+  <XDFTABLE uniqueid="0x6574" flags="0x0">
+    <title>Internal Load 100% BFS Reference</title>
+    <description>Exact JK08A. Address 0x9534; 1 rows x 1 columns; uint16; map confidence code. Fixed Base Fuel Schedule normalization reference shared by the internal Q7 load coordinate and engine-torque filling calculations. FUN 0003b75c writes ffff1048=min(255,floor(uint16[ffff1026]*128/scaler)); scheduler 00020dfe snapshots it to ffff102c. FUN 00065928 forms the Engine Torque Map coordinate min(65535,floor(uint16[ffff1024]*40960/scaler)), and FUN 00065c26 uses the same divisor in its torque base term. Stock scaler is 0x6a5a, or 27226. The exact arithmetic proves its common fixed-reference role and makes internal raw 128 equal Base Fuel Schedule divided by this reference at ratio 1. The HR A2L calls the calibration Cylinder Filling Up Efficiency Scaler and describes it as the BFS at maximum airflow. That physical name and the raw/2048 BFS conversion remain source-derived candidates. Editing this scalar shifts ignition, CVTC, candidate AFR, and torque coordinates together. Static diagnostic context: CID=1208H_B/FUEL SCHDL [code, nissan_family_candidate, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Raw input (step 4096)</units>
-      <indexcount>16</indexcount>
+      <units>Selector</units>
+      <indexcount>1</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <LABEL index="1" value="4096" />
-      <LABEL index="2" value="8192" />
-      <LABEL index="3" value="12288" />
-      <LABEL index="4" value="16384" />
-      <LABEL index="5" value="20480" />
-      <LABEL index="6" value="24576" />
-      <LABEL index="7" value="28672" />
-      <LABEL index="8" value="32768" />
-      <LABEL index="9" value="36864" />
-      <LABEL index="10" value="40960" />
-      <LABEL index="11" value="45056" />
-      <LABEL index="12" value="49152" />
-      <LABEL index="13" value="53248" />
-      <LABEL index="14" value="57344" />
-      <LABEL index="15" value="61440" />
+      <LABEL index="0" value="100% BFS reference" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -886,8 +871,8 @@
       </MATH>
     </XDFAXIS>
     <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1491A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>BFS ms [cand]</units>
+      <EMBEDDEDDATA mmedaddress="0x9534" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>BFS [cand]</units>
       <decimalpl>3</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X/2048">
@@ -1041,6 +1026,63 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xAA84" flags="0x0">
+    <title>Diagnostic Calculated Load 100% BFS Reference</title>
+    <description>Exact JK08A. Address 0x1491A; 1 rows x 16 columns; uint16; map confidence code. Sixteen-point RPM-dependent Base Fuel Schedule normalization reference used only by the J1979 Calculated Load producer. Lookup M by RPM/25 byte ffff11b3 enters q=floor((uint16[ffff1024]&lt;&lt;8)/M); an optional second normalization uses ffff329f, and the result is clamped to 255 and written to ffff413e for Mode 01 PID 0x04. The exact image closes both wrapper branches: 000263f4 calls the complete uint16 interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell 15 otherwise. ffff11b3 is min(255,uint16[ffff11f4]&gt;&gt;1); because ffff11f4 is RPM/12.5, the implicit 0x1000 coordinate step gives exact static points 0,400,...,6000 RPM. Exact DID 0x1208 identifies numerator ffff1024 as current Base Fuel Schedule; the quotient therefore compares it with a same-dimension RPM-dependent 100% reference. Stock ROM8[0000870e]=0x28 leaves the optional second normalization inactive. FUN 00035856 returns ffff413e for PID 0x04 at standard conversion 100*A/255. This map does not normalize internal Q7 map coordinate ffff102c; that path uses fixed scalar 00009534 and 100*A/128. The operational role and RPM points have code confidence. The raw/2048 ms conversion remains a source-derived candidate. Static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence: writes].</description>
+    <CATEGORYMEM index="0" category="7" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <LABEL index="8" value="3200" />
+      <LABEL index="9" value="3600" />
+      <LABEL index="10" value="4000" />
+      <LABEL index="11" value="4400" />
+      <LABEL index="12" value="4800" />
+      <LABEL index="13" value="5200" />
+      <LABEL index="14" value="5600" />
+      <LABEL index="15" value="6000" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1491A" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>BFS ms [cand]</units>
+      <decimalpl>3</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/2048">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xE649" flags="0x0">
     <title>Fuel enrichment vs MBT-like axis (0x1236A)</title>
     <description>Exact JK08A. Address 0x1236A; 1 rows x 16 columns; uint8; map confidence candidate. Fuel enrichment vs MBT-like axis Input byte[0xFFFF11AE], axis step 8; feeds fuel rather than angle according to K2Y analysis.</description>
@@ -1146,7 +1188,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -2212,7 +2254,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -3802,11 +3844,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x83D2" flags="0x0">
     <title>Engine Torque Map</title>
-    <description>Exact JK08A. Address 0x10B8E; 16 rows x 16 columns; uint16; map confidence code. Offset-binary Engine Torque surface. FUN 00065928 indexes rows by current rotational-speed coordinate ffff11b6 and columns by q=min(65535,trunc(u16[ffff1024]*40960/ROM16[00009534])), then writes signed result lookup-32768 to ffff18ca. FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08 consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The column axis is copied from ROM 0002378c to a stack buffer before interpolation. Its 0..0xf000 points decode as 0..150% Cylinder Filling at x*160/65536, and the coordinate formula becomes 100*BFS/scaler. The VQ35HR JK00D homolog uses the byte-identical function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6; its larger scaler and torque range provide independent family evidence. The physical name and x*0.1 Nm scale match the HR A2L Engine Torque Map and require hardware validation. Result disposition: consumer.</description>
+    <description>Exact JK08A. Address 0x10B8E; 16 rows x 16 columns; uint16; map confidence code. Offset-binary Engine Torque surface. FUN 00065928 indexes rows by current rotational-speed coordinate ffff11b6 and columns by q=min(65535,trunc(u16[ffff1024]*40960/ROM16[00009534])), then writes signed result lookup-32768 to ffff18ca. FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08 consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The column axis is copied from ROM 0002378c to a stack buffer before interpolation. Multiplying its runtime coordinate by 100/40960 gives the exact normalized ratio 100*BFS/ROM16[00009534]; stored points 0..0xf000 therefore represent 0..150 percent of the fixed BFS reference. The VQ35HR JK00D homolog uses the byte-identical function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6; its larger scaler and torque range provide independent family evidence. The Cylinder Filling physical name and x*0.1 Nm output scale match the HR A2L Engine Torque Map and require hardware validation; the normalized column scale itself is code-proven. Result disposition: consumer.</description>
     <CATEGORYMEM index="0" category="25" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x2378C" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -3932,7 +3974,7 @@
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>load (raw)</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -3940,7 +3982,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X">
+      <MATH equation="X*0.78125">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -4244,7 +4286,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -5310,7 +5352,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -6376,7 +6418,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -7442,7 +7484,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -8692,7 +8734,7 @@
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>load (raw)</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -8700,7 +8742,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X">
+      <MATH equation="X*0.78125">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -9004,7 +9046,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -10070,7 +10112,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -11136,7 +11178,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -12202,7 +12244,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -13452,7 +13494,7 @@
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>load (raw)</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -13460,7 +13502,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X">
+      <MATH equation="X*0.78125">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -13764,7 +13806,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -14830,7 +14872,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -15896,7 +15938,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -16962,7 +17004,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -18212,7 +18254,7 @@
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>load (raw)</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -18220,7 +18262,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X">
+      <MATH equation="X*0.78125">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -18524,7 +18566,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -19590,7 +19632,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -20656,7 +20698,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -21722,7 +21764,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -22972,7 +23014,7 @@
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F0E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>load (raw)</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -22980,7 +23022,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X">
+      <MATH equation="X*0.78125">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -23284,7 +23326,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -24350,7 +24392,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -25416,7 +25458,7 @@
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -26482,7 +26524,7 @@
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x11EBE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>Cylinder Filling [%] [cand]</units>
+      <units>Normalized BFS [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>

@@ -72,6 +72,36 @@ The cross-platform live dashboard in `../can_dashboard/` uses this same decoder.
 retains the latest values from rotating contexts, exposes loss and queue health,
 and keeps candidate transforms visibly distinct from proven physical outputs.
 
+## JK08A load-coordinate audit
+
+`load_axis_audit.py` reconstructs both load representations from a strict
+`wide54` TRC and the exact registered JK08A ROM:
+
+- the internal Q7 map coordinate is
+  `min(255, floor(BaseFuelSchedule * 128 / ROM16[0x9534]))`;
+- the J1979 Mode 01 PID `0x04` byte divides the scheduler BFS snapshot by the
+  RPM-dependent 16-point reference at `0x1491A` and clamps the quotient to 255.
+
+Run the audit on a captured drive:
+
+```bash
+python3 tools/logs/load_axis_audit.py \
+  tmp/can-dump/new-log-full.trc
+```
+
+The report compares the reconstructed diagnostic byte with both the same
+telemetry snapshot and the immediately preceding contiguous snapshot. The
+latter is the expected alignment because the custom snapshot is taken after
+the stock scheduler has copied producer values into its current working
+snapshot and executed the periodic tasks. Entry gates in the diagnostic
+producer can still force zero or 255, so formula agreement is evidence for the
+normal path rather than a replacement for those gates.
+
+The internal coordinate is not J1979 Calculated Load. Both are ratios of Base
+Fuel Schedule, but they use different denominators and byte encodings. The
+existing telemetry contains enough data to reconstruct the internal
+coordinate; no wire-schema or firmware change is required.
+
 ## PEAK TRC telemetry to MLG
 
 `trc_to_mlg.py` converts a strict PEAK PCAN-View TRC 1.1 capture directly to

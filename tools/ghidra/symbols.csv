@@ -38,7 +38,7 @@ addr,name,note
 000c7bc4,immo_status_byte_stager,reads immo-present 0xFFFE930E; stages status bytes 0xFFFEB3A2-A4/0xFFFEB440/0xFFFEB294 for frame cluster 0x000c8xxx; zero hardware registers
 000d3ed0,hcan_mailbox_config,init-time mailbox-control configuration 0xFFFFD904 (=0x700); called from hcan1_init; NOT a runtime TX serializer (mailbox data at 0xFFFFD900+ is written through a base pointer)
 0002040c,periodic_tick_isr,ATU-II channel 3 periodic tick and scheduler-divider ISR
-00020dfe,periodic_snapshot_dispatch,Periodic snapshot copier and scheduler dispatch
+00020dfe,periodic_snapshot_dispatch,Periodic state copier including normalized-BFS load snapshot and scheduler dispatch
 000274ac,atu2_prescaler_init,ATU-II prescaler initialization with PSCR1 value 1
 000280d8,cyclic_adc_mux_scan_update,Cyclic ADC scan and PF13 through PF15 external mux sequencing
 00028668,adc_channel_read_with_mux_select,Read an ADC channel with optional PF13 through PF15 mux selection
@@ -107,7 +107,7 @@ addr,name,note
 0002657c,signed_fixed_point_multiply,Signed 32 by unsigned 16 fixed-point multiply with variable shift
 0003a904,dual_bank_maf_coordinator,Process both MAF channels and publish the combined airflow aggregate
 0003b252,combined_maf_aggregate,Build the nonnegative combined MAF value used by BFS
-0003b75c,base_fuel_schedule_producer,Calculate and publish newest Base Fuel Schedule word ffff1026
+0003b75c,base_fuel_schedule_producer,Calculate Base Fuel Schedule ffff1026 and normalized-BFS load byte ffff1048
 0003be3c,fuel_compensation_coordinator,Publish Fuel Compensation Main byte ffff1160 and selected multiplier ffff115c
 0004e974,injection_pulse_precursor_builder,Build common and two-bank injection pulse precursors
 0004ead4,bank_base_pulse_builder,Apply bank trims and common additive word to form two parity bases

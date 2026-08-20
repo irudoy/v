@@ -17,7 +17,9 @@ COMMON_TABLES = {
     "Developer Immobilizer": "NATS / Immobilizer",
     "MAF Factor": "Fuelling / MAF Scaling",
     "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
-    "Calculated Load": "Fuelling / Engine Load",
+    "Internal Load 100% BFS Reference": "Fuelling / Engine Load",
+    "Diagnostic Calculated Load 100% BFS Reference":
+        "Fuelling / Engine Load",
     "Ignition Timing Trim Cold": "Ignition Timing / Main",
     "Knock Control Enable - Cold": "Ignition Timing / Knock Control",
     "Knock Sensitivity": "Ignition Timing / Knock Control",

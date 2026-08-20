@@ -11,7 +11,9 @@ XDF = ROOT / "defs" / "JK08A.xdf"
 COMMON_TABLES = {
     "MAF Factor": "Fuelling / MAF Scaling",
     "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
-    "Calculated Load": "Fuelling / Engine Load",
+    "Internal Load 100% BFS Reference": "Fuelling / Engine Load",
+    "Diagnostic Calculated Load 100% BFS Reference":
+        "Fuelling / Engine Load",
     "Ignition Timing Trim Cold": "Ignition Timing / Main",
     "Knock Control Enable - Cold": "Ignition Timing / Knock Control",
     "Knock Sensitivity": "Ignition Timing / Knock Control",
@@ -355,7 +357,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 45)
-        self.assertEqual(len(tables), 107)
+        self.assertEqual(len(tables), 108)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 

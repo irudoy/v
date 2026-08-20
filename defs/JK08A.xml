@@ -649,15 +649,16 @@
     <!-- 0x0B43A  16x16 uint8  map [code]; entry 0x261B8 (explicit, core 0x26944)
          accessor 0xBDA64; r4 operand: slice
          scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12F3E rpm [code]; X Axis 0x12F1E load
-         [candidate]
+         [code]
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
          The intake-cam target identity is code-proven by its placement in two-channel CVTC
          dispatcher 000bd170, the coolant target selector, and the consumer that compares target
-         reference ffff2326 with both intake-cam timing channels. The Cylinder Filling axis name
-         and 0.5 degree-per-byte conversion remain catalog candidates. Raw coolant thresholds
-         106 and 131 are exact; the corresponding 56 and 81 degree C values depend on the
-         homologous diagnostic conversion. Result disposition: consumer.
+         reference ffff2326 with both intake-cam timing channels. The column coordinate is exact
+         at raw*100/128 percent of the fixed BFS reference. The Cylinder Filling physical name
+         and 0.5 degree-per-byte output conversion remain catalog candidates. Raw coolant
+         thresholds 106 and 131 are exact; the corresponding 56 and 81 degree C values depend on
+         the homologous diagnostic conversion. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake Cam Timing Main" category="Variable Valve Timing//Intake Cam"
            storagetype="uint8" storageaddress="0x0B43A" sizex="16" sizey="16" endian="big">
@@ -665,7 +666,7 @@
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F1E"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -693,13 +694,14 @@
     <!-- 0x0B53A  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
          accessor 0xBDA64; r4 operand: pool
          scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12ECA rpm [code]; X Axis 0x12EAA load
-         [candidate]
+         [code]
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
-         Code proves the cold intake-cam target role, raw coolant selection, and centered byte
-         representation. The Cylinder Filling axis name, 0.5 degree-per-byte conversion, and
-         engineering coolant temperatures remain source-derived candidates. Result disposition:
-         consumer.
+         Code proves the cold intake-cam target role, raw coolant selection, centered byte
+         representation, and column coordinate at raw*100/128 percent of the fixed BFS
+         reference. The Cylinder Filling physical name, 0.5 degree-per-byte output conversion,
+         and engineering coolant temperatures remain source-derived candidates. Result
+         disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake Cam Timing Cold" category="Variable Valve Timing//Intake Cam"
            storagetype="uint8" storageaddress="0x0B53A" sizex="8" sizey="8" endian="big">
@@ -707,7 +709,7 @@
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12EAA"
              sizex="8" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -719,7 +721,7 @@
     <!-- 0x0AB5A  4x4 uint8  map [code]; entry 0x26084 (explicit, core 0x26944)
          accessor 0xBDA64; r4 operand: pool
          scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12F9A rpm [code]; X Axis 0x12F92 load
-         [candidate]
+         [code]
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
          Code proves the conditional intake-cam correction path and centered raw arithmetic. The
@@ -733,7 +735,7 @@
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F92"
              sizex="4" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -836,29 +838,24 @@
       </table>
     </table>
 
-    <!-- 0x1491A  16 uint16  map [code]; entry 0x263F4 (implicit, core 0x26A64)
-         accessor 0x8083C; r4 operand: pool
-         scaling x/2048 BFS ms [candidate]
-         static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence:
-         writes]
-         The exact image closes both wrapper branches: 000263f4 calls the complete uint16
-         interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell
-         15 otherwise. Exact DID 0x1208 identifies numerator ffff1024 as current Base Fuel
-         Schedule; the quotient therefore compares it with a same-dimension 100% reference. FUN
-         0008083c optionally applies floor((q<<7)/uint8[ffff329f]), clamps to 255, and writes
-         ffff413e. FUN 00035856 returns this byte for PID 0x04; standard conversion is
-         100*A/255. The operational role has code confidence. The raw/2048 ms conversion and
-         static RPM-axis presentation remain candidate and require hardware validation.
+    <!-- 0x09534  1 uint16  map [code]
+         accessor 0x3B75C; r4 operand: manual
+         scaling x/2048 BFS [candidate]
+         static diagnostic context: CID=1208H_B/FUEL SCHDL [code, nissan_family_candidate, via
+         map evidence: indexed_by]
+         Stock scaler is 0x6a5a, or 27226. The exact arithmetic proves its common fixed-
+         reference role and makes internal raw 128 equal Base Fuel Schedule divided by this
+         reference at ratio 1. The HR A2L calls the calibration Cylinder Filling Up Efficiency
+         Scaler and describes it as the BFS at maximum airflow. That physical name and the
+         raw/2048 BFS conversion remain source-derived candidates. Editing this scalar shifts
+         ignition, CVTC, candidate AFR, and torque coordinates together.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Calculated Load" category="Fuelling//Engine Load"
-           storagetype="uint16" storageaddress="0x1491A" sizex="16" endian="big">
-      <scaling units="BFS ms [cand]" expression="x/2048" to_byte="x*2048" format="0.000"
+    <table type="2D" name="Internal Load 100% BFS Reference" category="Fuelling//Engine Load"
+           storagetype="uint16" storageaddress="0x09534" sizex="1" endian="big">
+      <scaling units="BFS [cand]" expression="x/2048" to_byte="x*2048" format="0.000"
                fineincrement="0.001" coarseincrement="0.01"/>
-      <table type="Static X Axis" name="Raw input (step 4096)" sizex="16">
-        <data>0</data><data>4096</data><data>8192</data><data>12288</data>
-        <data>16384</data><data>20480</data><data>24576</data><data>28672</data>
-        <data>32768</data><data>36864</data><data>40960</data><data>45056</data>
-        <data>49152</data><data>53248</data><data>57344</data><data>61440</data>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>100% BFS reference</data>
       </table>
     </table>
 
@@ -922,6 +919,36 @@
       </table>
     </table>
 
+    <!-- 0x1491A  16 uint16  map [code]; entry 0x263F4 (implicit, core 0x26A64)
+         accessor 0x8083C; r4 operand: pool
+         scaling x/2048 BFS ms [candidate]
+         static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence:
+         writes]
+         The exact image closes both wrapper branches: 000263f4 calls the complete uint16
+         interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell
+         15 otherwise. ffff11b3 is min(255,uint16[ffff11f4]>>1); because ffff11f4 is RPM/12.5,
+         the implicit 0x1000 coordinate step gives exact static points 0,400,...,6000 RPM. Exact
+         DID 0x1208 identifies numerator ffff1024 as current Base Fuel Schedule; the quotient
+         therefore compares it with a same-dimension RPM-dependent 100% reference. Stock
+         ROM8[0000870e]=0x28 leaves the optional second normalization inactive. FUN 00035856
+         returns ffff413e for PID 0x04 at standard conversion 100*A/255. This map does not
+         normalize internal Q7 map coordinate ffff102c; that path uses fixed scalar 00009534 and
+         100*A/128. The operational role and RPM points have code confidence. The raw/2048 ms
+         conversion remains a source-derived candidate.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Diagnostic Calculated Load 100% BFS Reference"
+           category="Fuelling//Engine Load" storagetype="uint16" storageaddress="0x1491A"
+           sizex="16" endian="big">
+      <scaling units="BFS ms [cand]" expression="x/2048" to_byte="x*2048" format="0.000"
+               fineincrement="0.001" coarseincrement="0.01"/>
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="16">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+        <data>3200</data><data>3600</data><data>4000</data><data>4400</data>
+        <data>4800</data><data>5200</data><data>5600</data><data>6000</data>
+      </table>
+    </table>
+
     <!-- 0x1236A  16 uint8  map [candidate]; entry 0x264A0 (explicit, core 0x26944)
          accessor 0x8152A, 0x81D74; r4 operand: pool
          scaling x raw; axis 0x1238A rpm [candidate]
@@ -963,7 +990,7 @@
     <!-- 0x0991A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x4E1C0; r4 operand: sp
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across
          the trio. Code proves selection and downstream state flow, but not a direct final-angle
          or calculated-MBT interpretation. The physical name and scale remain A2L/catalog-
@@ -976,7 +1003,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -998,7 +1025,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -1248,18 +1275,20 @@
     <!-- 0x10B8E  16x16 uint16  map [code]; entry 0x262A8 (explicit, core 0x26984)
          accessor 0x65928; r4 operand: pool
          scaling x*0.1-3276.8 Engine Torque [Nm] [candidate]; Y Axis 0x14B4A rpm [candidate]; X
-         Axis 0x2378C load [candidate]
+         Axis 0x2378C load [code]
          FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated
          multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08
          consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map
          0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The
-         column axis is copied from ROM 0002378c to a stack buffer before interpolation. Its
-         0..0xf000 points decode as 0..150% Cylinder Filling at x*160/65536, and the coordinate
-         formula becomes 100*BFS/scaler. The VQ35HR JK00D homolog uses the byte-identical
-         function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler
-         000095f6; its larger scaler and torque range provide independent family evidence. The
-         physical name and x*0.1 Nm scale match the HR A2L Engine Torque Map and require
-         hardware validation. Result disposition: consumer.
+         column axis is copied from ROM 0002378c to a stack buffer before interpolation.
+         Multiplying its runtime coordinate by 100/40960 gives the exact normalized ratio
+         100*BFS/ROM16[00009534]; stored points 0..0xf000 therefore represent 0..150 percent of
+         the fixed BFS reference. The VQ35HR JK00D homolog uses the byte-identical function
+         shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6;
+         its larger scaler and torque range provide independent family evidence. The Cylinder
+         Filling physical name and x*0.1 Nm output scale match the HR A2L Engine Torque Map and
+         require hardware validation; the normalized column scale itself is code-proven. Result
+         disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Engine Torque Map" category="Transmission//Shifting Performance"
            storagetype="uint16" storageaddress="0x10B8E" sizex="16" sizey="16" endian="big">
@@ -1267,7 +1296,7 @@
                format="0.0" fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x2378C"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.00244140625"
+        <scaling units="Normalized BFS [%]" expression="x*0.00244140625"
                  to_byte="x/0.00244140625" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
@@ -1322,7 +1351,7 @@
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load
+         Axis 0x12F0E load [code]
          Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
          is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
          map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
@@ -1344,7 +1373,8 @@
                format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
@@ -1491,7 +1521,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
          0004df82. Code does not prove this surface as a direct final angle. The physical name
          and scale match homolog EV18A 0x9a76.
@@ -1503,7 +1533,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -1525,7 +1555,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -1539,7 +1569,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for the next pass. A code-proven APC path exists through ffff22fa; code does
          not prove this surface as a direct final angle. The physical name and scale match
@@ -1552,7 +1582,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -1574,7 +1604,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -1691,7 +1721,7 @@
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load
+         Axis 0x12F0E load [code]
          Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
          is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
          map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
@@ -1713,7 +1743,8 @@
                format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
@@ -1866,7 +1897,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
          0004df82. Code does not prove this surface as a direct final angle. The physical name
          and scale match homolog EV18A 0x9a76.
@@ -1878,7 +1909,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -1900,7 +1931,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -1915,7 +1946,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for the next pass. A code-proven APC path exists through ffff22fa; code does
          not prove this surface as a direct final angle. The physical name and scale match
@@ -1928,7 +1959,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -1950,7 +1981,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2071,7 +2102,7 @@
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load
+         Axis 0x12F0E load [code]
          Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
          is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
          map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
@@ -2093,7 +2124,8 @@
                format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
@@ -2246,7 +2278,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
          0004df82. Code does not prove this surface as a direct final angle. The physical name
          and scale match homolog EV18A 0x9a76.
@@ -2258,7 +2290,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2280,7 +2312,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2295,7 +2327,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for the next pass. A code-proven APC path exists through ffff22fa; code does
          not prove this surface as a direct final angle. The physical name and scale match
@@ -2308,7 +2340,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2330,7 +2362,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2451,7 +2483,7 @@
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load
+         Axis 0x12F0E load [code]
          Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
          is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
          map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
@@ -2473,7 +2505,8 @@
                format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
@@ -2626,7 +2659,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
          0004df82. Code does not prove this surface as a direct final angle. The physical name
          and scale match homolog EV18A 0x9a76.
@@ -2638,7 +2671,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2660,7 +2693,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2675,7 +2708,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for the next pass. A code-proven APC path exists through ffff22fa; code does
          not prove this surface as a direct final angle. The physical name and scale match
@@ -2688,7 +2721,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2710,7 +2743,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -2831,7 +2864,7 @@
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load
+         Axis 0x12F0E load [code]
          Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
          is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
          map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
@@ -2853,7 +2886,8 @@
                format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
-        <scaling units="load (raw)" expression="x" to_byte="x" format="0"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
@@ -3006,7 +3040,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool, slice, sp
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          The code-proven APC path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 -> ffff11d4 ->
          0004df82. Code does not prove this surface as a direct final angle. The physical name
          and scale match homolog EV18A 0x9a76.
@@ -3018,7 +3052,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -3040,7 +3074,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -3055,7 +3089,7 @@
          canonical accessor 0x493E8, 0x4E1C0; r4 operand: phi, pool
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
-         0x11EBE load [candidate]
+         0x11EBE load [code]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
          selector for the next pass. A code-proven APC path exists through ffff22fa; code does
          not prove this surface as a direct final angle. The physical name and scale match
@@ -3068,7 +3102,7 @@
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
@@ -3090,7 +3124,7 @@
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
              sizex="16" endian="big">
-        <scaling units="Cylinder Filling [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"

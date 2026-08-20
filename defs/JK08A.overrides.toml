@@ -326,6 +326,16 @@ fine = 1
 coarse = 100
 static_axis = ["K-Value"]
 
+[table.00009534]
+name = "Internal Load 100% BFS Reference"
+category = "Fuelling / Engine Load"
+order = 40
+emit = true
+format = "0.000"
+fine = 0.001
+coarse = 0.01
+static_axis = ["100% BFS reference"]
+
 [table.0000934e]
 name = "Rev Limit - Fuel Cut"
 category = "Limiters / Rev Limit"
@@ -483,13 +493,18 @@ order = 50
 coarse = 4
 
 [table.0001491a]
-name = "Calculated Load"
+name = "Diagnostic Calculated Load 100% BFS Reference"
 category = "Fuelling / Engine Load"
-order = 40
+order = 43
 emit = true
 format = "0.000"
 fine = 0.001
 coarse = 0.01
+static_axis_name = "Engine Speed [RPM]"
+static_axis = [
+  0, 400, 800, 1200, 1600, 2000, 2400, 2800,
+  3200, 3600, 4000, 4400, 4800, 5200, 5600, 6000,
+]
 
 [table.00014e52]
 name = "Filter Weight - new-sample share Q16 (0x14E52)"

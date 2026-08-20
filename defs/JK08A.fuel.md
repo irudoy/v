@@ -52,7 +52,11 @@ main/stationary/DFCO mask precedence are documented in
 The MAF/BFS producer uses a separate every-fourth-base-interrupt table at
 `0x21818`. `FUN_0003A904` is index 2 and `FUN_0003B75C` is index 3. The periodic
 snapshot dispatcher moves `0xFFFF1026` into current BFS `0xFFFF1024` and retains
-the previous current value in `0xFFFF1028`.
+the previous current value in `0xFFFF1028`. The same producer forms live Q7
+normalized-BFS byte `0xFFFF1048`, which the dispatcher snapshots to internal
+map coordinate `0xFFFF102C`. Its fixed-reference formula and distinction from
+J1979 Calculated Load are specified in
+[`JK08A.load.md`](JK08A.load.md).
 
 ## MAF to Base Fuel Schedule
 
