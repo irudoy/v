@@ -1140,33 +1140,6 @@
       </table>
     </table>
 
-    <!-- 0x1202E  4 uint8  map [candidate]; entry 0x26358 (implicit, core 0x26A7C)
-         accessor 0x3E1DA; r4 operand: pool
-         scaling x raw
-         Code proves a conditional unsigned 1D-4 lookup: when (RAM ffff2459 & 0x20)==0, the
-         accessor constrains the index to 0..255, interpolates uint8 nodes, and copies the byte
-         result into two RAM regions. All four cells equal 200, so every executed lookup writes
-         200. The catalog match establishes only a candidate for the general family and units,
-         without an address or concept association. Index: x = min(max((uint16_t)r5 - 96, 0),
-         255). Implicit nodes are located at x=0, 64, 128, 192: for x<192, i=x/64 and Q0.16
-         fraction (x-i*64)*1024 are used; for x>=192, element 3 is returned. Result disposition:
-         writes (RAM ffff1ee0 at site 0003e2da; RAM ffff257a at site 0003e2de). Blocking
-         condition: The machine trace ends after writes 0003e2da/ffff1ee0 and 0003e2de/ffff257a:
-         the artifact contains no external readers of either register and no consumer associated
-         with the lookup result. The six shown consumers read ffff4226, which is not a sink for
-         the map result. Therefore, code does not establish physical semantics or distinguish
-         the five operating-mode variants in the catalog.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Initial Retard Quantity - unresolved mode (0x1202E)"
-           category="Ignition Timing//Transient Correction" storagetype="uint8"
-           storageaddress="0x1202E" sizex="4" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="Static X Axis" name="Raw input (step 64)" sizex="4">
-        <data>0</data><data>64</data><data>128</data><data>192</data>
-      </table>
-    </table>
-
     <!-- 0x141F4  64 uint16  map [code]; entry 0x26410 (implicit, core 0x26A74)
          accessor 0x3A904; r4 operand: slice
          scaling x raw

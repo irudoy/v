@@ -53,8 +53,6 @@ DEFAULT_VISIBLE_TABLES = {
     "Intake Cam Timing Cold": "Variable Valve Timing / Intake Cam",
     "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
     "Engine Torque Map": "Transmission / Shifting Performance",
-    "Initial Retard Quantity - unresolved mode (0x1202E)":
-        "Ignition Timing / Transient Correction",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
     "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
     "Stationary Rev Limiter Accumulator Step (0x124D2)":
@@ -371,7 +369,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             for address, entry in overrides["table"].items()
             if entry.get("emit") is False
         }
-        self.assertEqual(len(explicitly_hidden), 162)
+        self.assertEqual(len(explicitly_hidden), 163)
         self.assertIn("000094b2", explicitly_hidden)
         self.assertTrue(all(
             entry.get("category") in hidden_categories

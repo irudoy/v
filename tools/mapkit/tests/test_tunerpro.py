@@ -45,8 +45,6 @@ DEFAULT_VISIBLE_TABLES = {
     "Intake Cam Timing Cold": "Variable Valve Timing / Intake Cam",
     "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
     "Engine Torque Map": "Transmission / Shifting Performance",
-    "Initial Retard Quantity - unresolved mode (0x1202E)":
-        "Ignition Timing / Transient Correction",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
     "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
     "Stationary Rev Limiter Accumulator Step (0x124D2)":
@@ -356,7 +354,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 45)
-        self.assertEqual(len(tables), 107)
+        self.assertEqual(len(tables), 106)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 

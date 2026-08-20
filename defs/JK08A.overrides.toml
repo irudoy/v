@@ -1113,12 +1113,15 @@ coarse = 4
 # proven arithmetic use or an explicitly marked catalog hypothesis. Physical
 # signals for the internal calculations are unresolved.
 [table.0001202e]
-name = "Initial Retard Quantity - unresolved mode (0x1202E)"
-category = "Ignition Timing / Transient Correction"
+name = "RPM-Drop Publication Inhibit by Pre-Mode RPM (0x1202E)"
+category = "Internal Calculations"
+emit = false
 order = 131
 format = "0"
 fine = 1
-coarse = 4
+coarse = 200
+static_axis_name = "Engine Speed [RPM]"
+static_axis = [1200, 2000, 2800, 3600]
 
 [table.00012522]
 name = "Positive Difference Coefficient /100 (0x12522)"

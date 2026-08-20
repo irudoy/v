@@ -9,6 +9,9 @@ rotating release tail, final six-channel arbitration, and ATU-II output path
 are established by executable code. Physical signal names that are not
 connected to an exact diagnostic or terminal source remain unnamed.
 
+The upstream filtered engine-speed-drop path and calibration `0x1202E` are
+specified separately in [JK08A.rpm-drop-state.md](JK08A.rpm-drop-state.md).
+
 The enabled 1.11 vehicle capture validates the lower/full-restore table as the
 operational entry veto under warm moving lift-off. Exact stock branch analysis
 separates that moving role from the upper/intermediate table's low-speed role.
@@ -107,10 +110,13 @@ assigning unproven physical names.
 | `0x1298C` | `0xFFFF1778` | low-speed upper threshold for the intermediate restore class |
 | `0x12818` | `0xFFFF16AA` | lower threshold for the full restore class |
 
-Both results use RPM/25. A coolant-indexed floor is selected from raw/selected
-coolant boundaries `[4, 8, 12, 32]` and floor values `[36, 48, 54, 62]`, or
-`[900, 1200, 1350, 1550] RPM`. When `0xFFFF24CF.bit4` is clear, both thresholds
-are also clamped to at least `ROM8[0x8A3F] = 48`, or 1200 RPM.
+Both results use RPM/25. Scheduled positive RPM-drop byte `0xFFFF106A` is
+classified by the first three breakpoints in ROM sequence
+`0x11CB5 = [4, 8, 12, 32]`. Values `0..3`, `4..7`, `8..11`, and `12..255`
+select floor values `0x1299C = [36, 48, 54, 62]`, or
+`[900, 1200, 1350, 1550] RPM`. The fourth adjacent byte, 32, is not compared
+by this four-class loop. When `0xFFFF24CF.bit4` is clear, both thresholds are
+also clamped to at least `ROM8[0x8A3F] = 48`, or 1200 RPM.
 
 The return contract is:
 
