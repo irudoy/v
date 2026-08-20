@@ -25,6 +25,7 @@ diagnostic bindings.
 | DTC descriptor and attribute edit ranges | `JK08A.dtc.csv` |
 | Definition names, categories, visibility, and presentation | `JK08A.overrides.toml` |
 | Internal and diagnostic load-coordinate model | `JK08A.load.md` |
+| Intake-CVTC target and reference model | `JK08A.cvtc.md` |
 | Exact target/source relationship | `rom-inheritance.toml` |
 | Measured catalog and open semantic work | Generated `JK08A.maps.csv` |
 | RomRaider and TunerPro output | Generated `JK08A.xml` and `JK08A.xdf` |
@@ -101,6 +102,8 @@ The following documents own complete current subsystem models:
   multiplier, trims, calculated pulse words, and injector-output boundary;
 - `JK08A.load.md` - internal normalized-BFS map coordinate, scheduler
   snapshot, J1979 Calculated Load, consumers, and telemetry reconstruction;
+- `JK08A.cvtc.md` - exact intake-CVTC target interpolation, cold/warm
+  selection, conditioned references, and target-vehicle log replay;
 - `JK08A.dfco.md` - deceleration fuel-cut thresholds, delays, state machine,
   arbitration, and output path;
 - `JK08A.fuel-inhibit.md` - all global fuel-output inhibit contributors and

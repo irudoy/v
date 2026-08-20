@@ -255,6 +255,21 @@ class PcanSourceTest(unittest.TestCase):
 
 
 class DashboardPresentationTest(unittest.TestCase):
+    def test_cvtc_reference_labels_match_recovered_roles(self):
+        metrics = {
+            metric.key: metric.label
+            for _, panel_metrics in app.PANELS
+            for metric in panel_metrics
+        }
+        self.assertEqual(
+            metrics["intake_cvtc_target_b1_raw"],
+            "CVTC common ref",
+        )
+        self.assertEqual(
+            metrics["intake_cvtc_target_b2_raw"],
+            "Aux centered ref",
+        )
+
     def test_default_recording_name_is_generic_and_has_no_extension(self):
         with mock.patch.object(
             app.time,

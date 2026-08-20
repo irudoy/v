@@ -263,6 +263,14 @@ snapshot boundary.
 | 6 | 6 | `intake_cvtc_target_b2_raw` | `0xFFFF2327` |
 | 6 | 7 | `calculated_load_raw` | `0xFFFF413E` |
 
+The two `intake_cvtc_target_b*_raw` identifiers are retained as legacy wire
+schema names because they participate in the verified profile CRC. They are not
+a symmetric bank pair. `0xFFFF2326` is the common conditioned intake-CVTC
+target/reference compared with both actual cam channels. `0xFFFF2327` is an
+independently produced auxiliary centered reference and is not a bank-2 target.
+The dashboard and MLG presentation use `CVTC common ref` and
+`Aux centered ref` without changing the wire schema.
+
 Page 7 uses byte 1 as a context tag and rotates four regular contexts. One
 context is therefore sampled at one quarter of the snapshot rate. A build may
 pin one context instead when its fields need the full snapshot rate.

@@ -89,10 +89,10 @@ RAW_FIELD_DISPLAY = {
         "CVTC actual B2*", "degCA", 0.5, -128.0, 1, "CVTC"
     ),
     "intake_cvtc_target_b1_raw": (
-        "CVTC target B1", "raw", 1.0, 0.0, 0, "CVTC"
+        "CVTC common ref", "raw", 1.0, 0.0, 0, "CVTC"
     ),
     "intake_cvtc_target_b2_raw": (
-        "CVTC target B2", "raw", 1.0, 0.0, 0, "CVTC"
+        "Aux centered ref", "raw", 1.0, 0.0, 0, "CVTC"
     ),
     "calculated_load_raw": (
         "Calculated load", "%", 100 / 255, 0.0, 1, "Engine"

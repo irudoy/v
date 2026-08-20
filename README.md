@@ -61,6 +61,7 @@ engines.
 - CAN and MLVLG logging tools: [`tools/logs/README.md`](tools/logs/README.md)
 - Runtime ownership and reserves: [`patches/runtime-reservations.md`](patches/runtime-reservations.md)
 - Exact JK08A HCAN1 model: [`defs/JK08A.can.md`](defs/JK08A.can.md)
+- Exact JK08A intake-CVTC model: [`defs/JK08A.cvtc.md`](defs/JK08A.cvtc.md)
 - Analysis and definition pipeline: [`tools/map-analysis-pipeline.md`](tools/map-analysis-pipeline.md)
 - Tool navigation and local deployment: [`tools/README.md`](tools/README.md)
 - Memgraph ingestion: [`tools/memgraph/README.md`](tools/memgraph/README.md)

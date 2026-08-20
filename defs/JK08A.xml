@@ -653,12 +653,13 @@
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
          The intake-cam target identity is code-proven by its placement in two-channel CVTC
-         dispatcher 000bd170, the coolant target selector, and the consumer that compares target
-         reference ffff2326 with both intake-cam timing channels. The column coordinate is exact
-         at raw*100/128 percent of the fixed BFS reference. The Cylinder Filling physical name
-         and 0.5 degree-per-byte output conversion remain catalog candidates. Raw coolant
-         thresholds 106 and 131 are exact; the corresponding 56 and 81 degree C values depend on
-         the homologous diagnostic conversion. Result disposition: consumer.
+         dispatcher 000bd170, the coolant target selector, and the consumer that compares common
+         reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle
+         replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-
+         interpolation order, and scheduler alignment. With downstream neutralization excluded,
+         prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw
+         for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
+         conversion remain catalog candidates. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake Cam Timing Main" category="Variable Valve Timing//Intake Cam"
            storagetype="uint8" storageaddress="0x0B43A" sizex="16" sizey="16" endian="big">
@@ -699,9 +700,10 @@
          indexed_by]
          Code proves the cold intake-cam target role, raw coolant selection, centered byte
          representation, and column coordinate at raw*100/128 percent of the fixed BFS
-         reference. The Cylinder Filling physical name, 0.5 degree-per-byte output conversion,
-         and engineering coolant temperatures remain source-derived candidates. Result
-         disposition: consumer.
+         reference. The target-vehicle capture remains entirely above the warm threshold and
+         does not dynamically validate this surface or the coolant blend. The Cylinder Filling
+         physical name and 0.5 degree-per-byte output conversion remain source-derived
+         candidates. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake Cam Timing Cold" category="Variable Valve Timing//Intake Cam"
            storagetype="uint8" storageaddress="0x0B53A" sizex="8" sizey="8" endian="big">
@@ -725,8 +727,10 @@
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
          Code proves the conditional intake-cam correction path and centered raw arithmetic. The
-         high-detonation meaning of ffff2466.bit6, the Cylinder Filling axis name, and the 0.5
-         degree-per-byte conversion remain catalog candidates. Result disposition: consumer.
+         target-vehicle capture contains zero samples with ffff2466.bit6 set, so this branch has
+         no dynamic validation. The high-detonation meaning of the selector, the Cylinder
+         Filling axis name, and the 0.5 degree-per-byte conversion remain catalog candidates.
+         Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake Cam Timing Conditional Correction"
            category="Variable Valve Timing//Intake Cam" storagetype="uint8"

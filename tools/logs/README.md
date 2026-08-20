@@ -102,6 +102,43 @@ Fuel Schedule, but they use different denominators and byte encodings. The
 existing telemetry contains enough data to reconstruct the internal
 coordinate; no wire-schema or firmware change is required.
 
+## JK08A CVTC target-map audit
+
+`cvtc_target_audit.py` replays the exact stock byte-axis search, Q0.16
+interpolation order, warm/main map `0xB43A`, cold map `0xB53A`, conditional
+correction `0xAB5A`, and coolant selector against a strict verified `wide54`
+capture. The map column coordinate is reconstructed with the same normalized
+BFS formula used by `load_axis_audit.py`; the RPM coordinate is reconstructed
+from the captured RPM/12.5 word.
+
+```bash
+python3 tools/logs/cvtc_target_audit.py \
+  --calibration-image tmp/1JK08A-tune-v1-11.bin \
+  tmp/can-dump/new-log-full.trc
+```
+
+Without `--calibration-image`, the tool uses the hash-verified registered JK08A
+stock ROM. An explicit image is hashed and reported, and every replay constant,
+axis, and surface is read directly from that image.
+
+The report tests same-snapshot and preceding-snapshot input alignment, separates
+downstream neutralization from direct map disagreement, and reports stable
+active intervals where the reconstructed map result remains unchanged for a
+selected number of source cycles. It also compares the reconstruction with both
+actual cam channels and the auxiliary centered reference.
+
+The telemetry fields named `intake_cvtc_target_b1_raw` and
+`intake_cvtc_target_b2_raw` are legacy wire identifiers. The first carries the
+common conditioned reference at `0xFFFF2326`; the second carries the independent
+auxiliary reference at `0xFFFF2327`. They are not two bank-specific targets.
+Changing either schema identifier would change the verified profile CRC, so the
+decoder keeps the wire names while user-facing labels use the recovered roles.
+
+The audit validates only paths exercised by the capture. A warm-engine log with
+the correction selector clear cannot validate the cold surface, coolant blend,
+or conditional correction. Agreement in raw software coordinates also does not
+prove the candidate degree conversion or physical camshaft response.
+
 ## PEAK TRC telemetry to MLG
 
 `trc_to_mlg.py` converts a strict PEAK PCAN-View TRC 1.1 capture directly to

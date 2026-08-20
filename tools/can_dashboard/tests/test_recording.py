@@ -124,6 +124,10 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         names = [name for _, name in fields]
         self.assertIn("Vehicle speed*", names)
         self.assertIn("Stock CAN RPM", names)
+        self.assertIn("CVTC common ref", names)
+        self.assertIn("Aux centered ref", names)
+        self.assertNotIn("CVTC target B1", names)
+        self.assertNotIn("CVTC target B2", names)
         self.assertIn("gps_lat", names)
         self.assertIn("gps_lon", names)
         self.assertTrue(math.isnan(records[0]["gps_lat"]))
