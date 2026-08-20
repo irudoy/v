@@ -427,7 +427,7 @@ pointer_table = 0x000D3528
 [[family]]
 key = "ignition_timing_trim_main"
 group = "ignition"
-name = "Ignition Timing Trim Main"
+name = "High-Octane Ignition Timing Trim"
 canonical_address = 0x00009A1A
 width = 16
 height = 16
@@ -441,7 +441,7 @@ pointer_table = 0x000D3568
 [[family]]
 key = "ignition_timing_trim_high_det"
 group = "ignition"
-name = "Ignition Timing Trim High Det"
+name = "High-Detonation Ignition Timing Trim"
 canonical_address = 0x00009B1A
 width = 16
 height = 16

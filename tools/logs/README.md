@@ -148,6 +148,32 @@ the correction selector clear cannot validate the cold surface, coolant blend,
 or conditional correction. Agreement in raw software coordinates also does not
 prove the candidate degree conversion or physical camshaft response.
 
+## JK08A ignition timing-state audit
+
+`ignition_surface_audit.py` replays the exact bit-field-aware interpolation of
+hot timing-state surfaces `0x9A1A` and `0x9B1A`. It reconstructs the Q7
+normalized-BFS coordinate, selects per-map copies from an exact combined image,
+and recovers complete map-selection gestures from stock CAN button input.
+
+```bash
+python3 tools/logs/ignition_surface_audit.py \
+  --calibration-image tmp/1JK08A-tune-v1-11.bin \
+  tmp/can-dump/new-log-full.trc
+```
+
+The report keeps the interpolated low-seven timing-state field separate from
+the lower-left-cell bit-7 flag, inventories high-detonation selector state and
+latched knock events, and reports the Q8 state transitions at map commits. The
+`implied_direct_base_q8` value subtracts the conditional direct-branch map term
+from captured `0xFFFF121A`; it is not asserted as the active branch because the
+current wire profile does not carry `0xFFFF2467` or `0xFFFF2469`.
+
+An explicit calibration image is required to replay Map 2 through Map 5. With
+the registered stock image, all recovered slots intentionally resolve to the
+canonical Map 1 surfaces. The audit does not convert timing state to physical
+crank angle and cannot validate a cold or high-detonation branch absent from
+the capture.
+
 ## PEAK TRC telemetry to MLG
 
 `trc_to_mlg.py` converts a strict PEAK PCAN-View TRC 1.1 capture directly to

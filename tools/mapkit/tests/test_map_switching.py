@@ -82,7 +82,7 @@ def cold_ignition():
         )
     )
     family["addr"] = "0000991a"
-    family["semantics"] = "Ignition Timing Trim Cold"
+    family["semantics"] = "Cold Ignition Timing Trim"
     return family
 
 
@@ -251,12 +251,12 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         main = [
             view
             for view in views
-            if "Knock Control Enable - Main" in view["name"]
+            if "Knock-State Enable - High Octane" in view["name"]
         ]
         high_det = [
             view
             for view in views
-            if "Knock Control Enable - High Det" in view["name"]
+            if "Knock-State Enable - High Detonation" in view["name"]
         ]
         self.assertEqual(len(cold), 1)
         self.assertEqual(len(main), 5)
@@ -324,7 +324,9 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
                 "JK08A",
             )
         )
-        self.assertIn('name="Map 3 - Ignition Timing Trim Main"', xml)
+        self.assertIn(
+            'name="Map 3 - High-Octane Ignition Timing Trim"', xml
+        )
         self.assertIn(
             'category="Ignition Timing//Main"',
             xml,
@@ -342,7 +344,9 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
                 "JK08A",
             )
         )
-        self.assertIn('name="Map 3 - Knock Control Enable - Main"', view_xml)
+        self.assertIn(
+            'name="Map 3 - Knock-State Enable - High Octane"', view_xml
+        )
         self.assertIn('mask="80"', view_xml)
 
     def test_tunerpro_renderer_accepts_the_same_projected_model(self):

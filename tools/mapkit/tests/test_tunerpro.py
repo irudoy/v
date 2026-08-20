@@ -14,8 +14,8 @@ COMMON_TABLES = {
     "Internal Load 100% BFS Reference": "Fuelling / Engine Load",
     "Diagnostic Calculated Load 100% BFS Reference":
         "Fuelling / Engine Load",
-    "Ignition Timing Trim Cold": "Ignition Timing / Main",
-    "Knock Control Enable - Cold": "Ignition Timing / Knock Control",
+    "Cold Ignition Timing Trim": "Ignition Timing / Main",
+    "Knock-State Enable - Cold": "Ignition Timing / Knock Control",
     "Knock Sensitivity": "Ignition Timing / Knock Control",
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
@@ -68,10 +68,10 @@ SLOT_TABLES = {
     "DFCO Hold RPM Threshold": "Fuelling / Overrun",
     "DFCO Low-Speed Intermediate Restore RPM Threshold":
         "Fuelling / Overrun",
-    "Ignition Timing Trim Main": "Ignition Timing / Main",
-    "Knock Control Enable - Main": "Ignition Timing / Knock Control",
-    "Ignition Timing Trim High Det": "Ignition Timing / Main",
-    "Knock Control Enable - High Det": "Ignition Timing / Knock Control",
+    "High-Octane Ignition Timing Trim": "Ignition Timing / Main",
+    "Knock-State Enable - High Octane": "Ignition Timing / Knock Control",
+    "High-Detonation Ignition Timing Trim": "Ignition Timing / Main",
+    "Knock-State Enable - High Detonation": "Ignition Timing / Knock Control",
     "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
     "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
     "Default/Post-Transition Timing-State Addend (x-128) (0x12196)":
@@ -340,9 +340,9 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for table in self.root.findall("./XDFTABLE")
         }
         for title in (
-            "Ignition Timing Trim Cold",
-            slot_name(1, "Ignition Timing Trim Main"),
-            slot_name(1, "Ignition Timing Trim High Det"),
+            "Cold Ignition Timing Trim",
+            slot_name(1, "High-Octane Ignition Timing Trim"),
+            slot_name(1, "High-Detonation Ignition Timing Trim"),
         ):
             with self.subTest(title=title):
                 axis = by_title[title].find("./XDFAXIS[@id='z']")
@@ -614,8 +614,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             table.findtext("./title"): table
             for table in self.root.findall("./XDFTABLE")
         }
-        low = by_title["Ignition Timing Trim Cold"]
-        flag = by_title["Knock Control Enable - Cold"]
+        low = by_title["Cold Ignition Timing Trim"]
+        flag = by_title["Knock-State Enable - Cold"]
         for table, other_mask, divisor in (
             (low, "128", "1"),
             (flag, "127", "128"),

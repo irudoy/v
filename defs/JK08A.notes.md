@@ -160,10 +160,11 @@ This index points to structured rows without reproducing their fields.
 
 ### Ignition, knock, and CVTC
 
-- The cold, high-octane, and high-detonation ignition triplet, masked knock
-  window, shared axes, and candidate physical scales are represented in the map
-  and axis claims. Final command-to-APC behavior is modeled separately in
-  `JK08A.ignition-output.md`.
+- The cold, high-octane, and high-detonation timing-state triplet, its active
+  and reference samples, masked knock-state enable field, selector feedback,
+  shared axes, and candidate physical scale are modeled in
+  `JK08A.ignition-state.md`. Final command-to-APC behavior is modeled
+  separately in `JK08A.ignition-output.md`.
 - Timing-state table `0x12196` is the default/post-transition addend and
   `0x1219E` is the warm DFCO-transition addend for the nonzero portion of an
   85-count timer. Table `0x121A6` is stock-inert because its feature flag is
