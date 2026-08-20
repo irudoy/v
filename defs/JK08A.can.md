@@ -125,6 +125,12 @@ The following payload claims are sufficiently narrow for use as cross-checks:
 - `0x551` byte 5 bits 4 through 6 contain `0xFFFF40D0 & 7`, the complete
   three-bit ASCD display state.
 - `0x551` byte 4 is forced to zero in exact JK08A.
+- `0x174` byte 3 high nibble is target gear and its low nibble is current gear.
+  Values 1 through 7 become zero-based indices 0 through 6; every other value
+  becomes zero. `FUN_000C47EA` publishes the live pair and `FUN_00020DFE`
+  snapshots it for request-limiter use.
+- `0x177` byte 2 bits 0 through 2 are a zero-based TCM gear-phase index decoded
+  by `FUN_000C4ACE`. Higher bits are independent status flags.
 
 Other field names require a code trace or a synchronized vehicle capture.
 Geometry copied from a Z34 frame list is not exact JK08A evidence.
@@ -217,6 +223,23 @@ mapping:
 
 Transient zero appears between some detents and is not a stable selector
 position. No M6 or M7 code is inferred from the numeric pattern.
+
+The same moving capture establishes transmission payload sequencing independent
+of selector frame `0x421`:
+
+| Shift observation | `0x174` byte 3 sequence | `0x177` low-three-bit sequence |
+| --- | --- | --- |
+| downshift 4 to 3 | `0x44 -> 0x34 -> 0x33` | `3 -> 2` between target and current updates |
+| downshift 3 to 2 | `0x33 -> 0x23 -> 0x22` | `2 -> 1` between target and current updates |
+| upshift 2 to 3 | `0x22 -> 0x32 -> 0x33` | `1 -> 2` between target and current updates |
+
+The high nibble therefore represents target gear and changes before the
+low-nibble current gear for both shift directions. In stable first through
+fourth gear, the `0x177` value equals current gear minus one. Its intermediate
+timing establishes an operational TCM phase index but does not prove the exact
+mechanical engagement boundary. These payloads are received by the ECM:
+stock mailbox records `0x9786=01 08 2E 80` and `0x9782=01 06 2E E0` encode
+standard IDs `0x174` and `0x177` as `STDID << 5`.
 
 ### Enabled telemetry moving-load evidence
 

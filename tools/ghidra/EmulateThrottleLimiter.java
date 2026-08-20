@@ -70,9 +70,9 @@ public class EmulateThrottleLimiter extends GhidraScript {
     static final long RAMP_FLAGS = 0xFFFF24A3L;
     static final long RAMP_MODE = 0xFFFF25B0L;
     static final long RAW_COOLANT = 0xFFFF1071L;
-    static final long CONTEXT_BASE = 0xFFFF1082L;
-    static final long CONTEXT_NEXT = 0xFFFF1083L;
-    static final long CONTEXT_LIMIT = 0xFFFF1064L;
+    static final long CURRENT_GEAR_INDEX = 0xFFFF1082L;
+    static final long TARGET_GEAR_INDEX = 0xFFFF1083L;
+    static final long GEAR_PHASE_INDEX = 0xFFFF1064L;
     static final long DYNAMIC_ENABLE_FLAGS = 0xFFFF84C3L;
     static final long THRESHOLD_CAP_FLAGS = 0xFFFF4188L;
     static final long FORCE_NEUTRAL_FLAGS = 0xFFFF4252L;
@@ -298,8 +298,8 @@ public class EmulateThrottleLimiter extends GhidraScript {
 
         Context tracking = newContext("recovery_tracking");
         seedLimiter(tracking, 2464, 9856, 9600, 10000, 12000, 20000);
-        writeU8(tracking.shared, CONTEXT_BASE, 0);
-        writeU8(tracking.shared, CONTEXT_NEXT, 1);
+        writeU8(tracking.shared, CURRENT_GEAR_INDEX, 0);
+        writeU8(tracking.shared, TARGET_GEAR_INDEX, 1);
         execute(tracking, LIMITER, 0);
         expectS16(tracking, RECOVERY_STATE, 9673, "recovery tracks lower request");
         expectS16(tracking, LIMITER_OUTPUT, 9673, "tracked limiter output");
@@ -452,9 +452,9 @@ public class EmulateThrottleLimiter extends GhidraScript {
         writeU8(context.shared, RAMP_FLAGS, 0);
         writeU8(context.shared, RAMP_MODE, 0);
         writeU8(context.shared, RAW_COOLANT, 100);
-        writeU8(context.shared, CONTEXT_BASE, 0);
-        writeU8(context.shared, CONTEXT_NEXT, 0);
-        writeU8(context.shared, CONTEXT_LIMIT, 0);
+        writeU8(context.shared, CURRENT_GEAR_INDEX, 0);
+        writeU8(context.shared, TARGET_GEAR_INDEX, 0);
+        writeU8(context.shared, GEAR_PHASE_INDEX, 0);
         writeU8(context.shared, DYNAMIC_ENABLE_FLAGS, 0);
         writeU8(context.shared, THRESHOLD_CAP_FLAGS, 0);
         writeU8(context.shared, FORCE_NEUTRAL_FLAGS, 0);

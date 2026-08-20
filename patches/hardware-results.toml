@@ -382,6 +382,19 @@ vehicle_speed_byte_offset = 4
 vehicle_speed_width = 2
 vehicle_speed_scale = "big-endian raw / 100 km/h candidate"
 vehicle_speed_observed_range_kmh = [0.0, 68.54]
+transmission_target_current_can_id = 0x174
+transmission_target_current_byte_offset = 3
+transmission_target_current_encoding = "high nibble target gear and low nibble current gear; values 1..7 decode to zero-based 0..6 and every other value decodes to zero"
+transmission_gear_phase_can_id = 0x177
+transmission_gear_phase_byte_offset = 2
+transmission_gear_phase_mask = 0x07
+transmission_transition_examples = [
+  "downshift 4 to 3: 0x174 0x44 -> 0x34 -> 0x33; 0x177 low3 3 -> 2 between target and current updates",
+  "downshift 3 to 2: 0x174 0x33 -> 0x23 -> 0x22; 0x177 low3 2 -> 1 between target and current updates",
+  "upshift 2 to 3: 0x174 0x22 -> 0x32 -> 0x33; 0x177 low3 1 -> 2 between target and current updates",
+]
+transmission_context_status = "target/current field ordering and operational TCM gear-phase index accepted for the exact JK08A limiter model"
+transmission_context_evidence_boundary = "the capture proves field order and stable zero-based gear correlation through fourth gear; the exact mechanical engagement represented by the intermediate phase update is not assigned"
 dashboard_screenshot_sha256 = "2522f1e63c7bd97ee6c3842682883f18d6677af97a101f2f4eebbccd03043952"
 dashboard_visible_group_count = 105153
 dashboard_visible_schema_mismatch_count = 0

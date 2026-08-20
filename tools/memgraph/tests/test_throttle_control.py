@@ -1,4 +1,5 @@
 import csv
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -9,6 +10,7 @@ FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
 VARS = ROOT / "defs" / "JK08A.vars.csv"
 FINDINGS = ROOT / "defs" / "JK08A.findings.csv"
 CONTRACT = ROOT / "defs" / "JK08A.throttle-control.md"
+HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
 
 
 def read_by_addr(path):
@@ -24,6 +26,8 @@ class ThrottleControlContractTest(unittest.TestCase):
         cls.vars = read_by_addr(VARS)
         cls.findings = read_by_addr(FINDINGS)
         cls.contract = CONTRACT.read_text(encoding="utf-8")
+        with HARDWARE_RESULTS.open("rb") as source:
+            cls.hardware_results = tomllib.load(source)
 
     def u16(self, address):
         return int.from_bytes(self.rom[address:address + 2], "big")
@@ -61,6 +65,7 @@ class ThrottleControlContractTest(unittest.TestCase):
             0x943A: 30,
             0x943C: 50,
             0x943E: 182,
+            0x94B2: 0x0500,
         }
         for address, expected in expected_words.items():
             with self.subTest(address=f"{address:04x}"):
@@ -87,6 +92,7 @@ class ThrottleControlContractTest(unittest.TestCase):
             "0000943a": ("recovery", "ffff19dc"),
             "0000943c": ("recovery", "ffff19dc"),
             "0000943e": ("duration", "ffff413c"),
+            "000094b2": ("lower floor", "ffff4162"),
             "00014384": ("auxiliary", "ffff2400"),
         }
         for address, tokens in required.items():
@@ -95,6 +101,88 @@ class ThrottleControlContractTest(unittest.TestCase):
             for token in tokens:
                 with self.subTest(address=address, token=token):
                     self.assertIn(token, text)
+
+    def test_transmission_can_and_variant_selectors_match_stock_rom(self):
+        self.assertEqual(self.rom[0x83C1], 0x2C)
+        self.assertEqual(self.rom[0x870C], 0x44)
+        self.assertEqual(
+            self.rom[0x9782:0x9786], bytes.fromhex("01 06 2e e0")
+        )
+        self.assertEqual(
+            self.rom[0x9786:0x978A], bytes.fromhex("01 08 2e 80")
+        )
+        self.assertEqual(self.u16(0xC3C56), 0x2E80)
+        self.assertEqual(self.u16(0xC3C5A), 0x2EE0)
+
+        function_tokens = {
+            "00077352": ("00077892", "00077dec", "000777fa"),
+            "000777fa": ("ffff4162", "ffff3480", "ffff3484"),
+            "00077892": ("ffff418f", "ffff41a6", "ffff4413"),
+            "00079030": ("ffff3480", "ffff3484", "ffff19c6"),
+            "000c3b14": ("0x174", "0x177", "shifted left by five"),
+            "000c47ea": ("target gear", "current gear", "ffff1087"),
+            "000c4ace": ("gear-phase", "ffff1066", "0x177"),
+            "000c5cb2": ("ffff1086", "ffff1087", "invalid"),
+        }
+        for address, tokens in function_tokens.items():
+            text = (
+                self.funcs[address]["semantics"]
+                + self.funcs[address]["note"]
+            ).lower()
+            for token in tokens:
+                with self.subTest(address=address, token=token):
+                    self.assertIn(token, text)
+
+    def test_transmission_context_and_secondary_scalar_gate_are_canonical(self):
+        required_variables = {
+            "ffff1064": ("0x177", "gear-phase", "30"),
+            "ffff1066": ("byte 2", "0x07", "gear-phase"),
+            "ffff1082": ("current gear", "low nibble"),
+            "ffff1083": ("target gear", "high nibble"),
+            "ffff1086": ("current gear", "0x174"),
+            "ffff1087": ("target gear", "0x174"),
+            "ffff25b0": ("no countdown", "100"),
+            "ffff32ec": ("0x942c", "ffff4162"),
+            "ffff3480": ("ffff4162", "ffff19c6"),
+            "ffff3484": ("ffff4162", "ffff19c6"),
+            "ffff4162": ("stock-lifecycle", "ffff41a6"),
+            "ffff418f": ("no runtime bit-4 producer", "zero"),
+            "ffff41a6": ("ffff4252", "ffff4413", "bit 3"),
+            "ffff4252": ("current gear", "target gear", "stock-lifecycle"),
+            "ffff4253": ("bit 6", "inhibit"),
+            "ffff4413": ("0x1e", "remains zero"),
+        }
+        for address, tokens in required_variables.items():
+            text = (
+                self.vars[address]["semantics"] + self.vars[address]["note"]
+            ).lower()
+            for token in tokens:
+                with self.subTest(address=address, token=token):
+                    self.assertIn(token, text)
+
+        normalized_contract = " ".join(self.contract.lower().split())
+        for token in (
+            "0x44 -> 0x34 -> 0x33",
+            "0x22 -> 0x32 -> 0x33",
+            "secondary candidate is calculated but cannot constrain",
+            "calibration-only `0x942c` a/b test is isolated",
+        ):
+            with self.subTest(contract_token=token):
+                self.assertIn(token, normalized_contract)
+
+    def test_hardware_registry_records_transmission_payload_evidence(self):
+        result = self.hardware_results["can_telemetry"][
+            "current_wide54_divisor1"
+        ]
+        self.assertEqual(result["transmission_target_current_can_id"], 0x174)
+        self.assertEqual(result["transmission_target_current_byte_offset"], 3)
+        self.assertEqual(result["transmission_gear_phase_can_id"], 0x177)
+        self.assertEqual(result["transmission_gear_phase_byte_offset"], 2)
+        self.assertEqual(result["transmission_gear_phase_mask"], 0x07)
+        examples = " ".join(result["transmission_transition_examples"])
+        for token in ("0x44 -> 0x34 -> 0x33", "0x22 -> 0x32 -> 0x33"):
+            with self.subTest(token=token):
+                self.assertIn(token, examples)
 
     def test_direct_app_area_branch_is_stock_disabled(self):
         self.assertEqual(self.rom[0x870C], 0x44)

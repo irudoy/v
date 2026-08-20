@@ -112,8 +112,8 @@ The exact stock calibration inputs are:
 | `0x9430` | 0 | Dynamic-threshold decrement |
 | `0x9434` | `0xFFFF` | Coolant-latch alternate threshold and decrement floor |
 | `0x9436` | 0 | Dynamic-threshold increment |
-| `0x943A` | 30 | Recovery-envelope rate for the high-context branch |
-| `0x943C` | 50 | Recovery-envelope rate for the other branch |
+| `0x943A` | 30 | Recovery-envelope rate when target gear is above TCM gear phase |
+| `0x943C` | 50 | Recovery-envelope rate for every other gear relation |
 | `0x943E` | 182 | Auxiliary-request duration |
 
 Words `0x9432=16` and `0x9438=5` are adjacent to this cluster but are not read
@@ -188,6 +188,12 @@ normal: R_new = min(0x7FFF, max(B(N),    R + floor( 200*delta/128)))
 
 On the inactive branch, `R` is replaced with `A` when `O < 0x7FFF`,
 `FFFF25B0` is loaded with `ROM8[0x8A9B]=100`, and `FFFF24A3.bit2` is cleared.
+Initializer `0002C648` loads the same value. A whole-program census found no
+other writer or computed-address candidate for `FFFF25B0`; it is not a
+countdown. Under the recovered stock lifecycle it remains nonzero, while
+`FFFF24A3.bit2` alone switches from the fast rate to the normal rate after a
+nonpositive-ramp transition.
+
 The independent final term applies on both active and inactive branches:
 
 ```text
@@ -195,11 +201,29 @@ Q = clamp_s16(R_new + floor(2000*delta/128))
 ```
 
 Recovery envelope `H=FFFF19DC` tracks `Q` immediately only when `Q < H`,
-`Q < A`, and `FFFF1083 > FFFF1082`. Otherwise it increases toward `0x7FFF` by
-30 when `FFFF1083 > FFFF1064`, or by 50 otherwise. Output is `min(Q,H)`. If
-`H` is more restrictive than `Q`, the function restores `FFFF19DA` to its
-entry value so the hidden ramp cannot advance behind the recovery envelope.
-The physical identities of the three context bytes remain unresolved.
+`Q < A`, and target gear index `FFFF1083` is greater than current gear index
+`FFFF1082`. Otherwise it increases toward `0x7FFF` by 30 when target gear is
+greater than TCM gear-phase index `FFFF1064`, or by 50 otherwise. Output is
+`min(Q,H)`. If `H` is more restrictive than `Q`, the function restores
+`FFFF19DA` to its entry value so the hidden ramp cannot advance behind the
+recovery envelope.
+
+The three indices have exact CAN bindings:
+
+- CAN `0x174` payload byte 3 high nibble is target gear and the low nibble is
+  current gear. Nibble values 1 through 7 become zero-based indices 0 through
+  6; every other value becomes zero.
+- CAN `0x177` payload byte 2 bits 0 through 2 form the zero-based TCM
+  gear-phase index.
+- `00020DFE` snapshots the live decoded bytes into `FFFF1083`, `FFFF1082`, and
+  `FFFF1064` before the limiter consumes them.
+
+Passive target transitions `0x44 -> 0x34 -> 0x33` and
+`0x22 -> 0x32 -> 0x33` establish that the high nibble changes first for both
+downshifts and upshifts. In stable gears the `0x177` low-three-bit value equals
+current gear minus one; during a shift it changes after the target nibble and
+before the current nibble. This proves an operational phase index but does not
+identify the exact mechanical engagement boundary.
 
 `FFFF4252.bit1` overrides the result with neutral `0x7FFF` and synchronizes the
 ramp from shared request `FFFF19C6`. When the final output is below `A` and
@@ -208,6 +232,50 @@ the five-word table at `0x14384` and duration `0x943E` to `FFFF2400` and
 `FFFF413C`. Otherwise it writes `-0x8000` and zero. The table index is
 `min(FFFF1083, 4)` and its stock centered values are
 `[1000, 1300, 1300, 1000, 1000]`.
+
+The stock-selected producer `00077892` sets `FFFF4252.bit1` only when all of
+these conditions hold:
+
+```text
+FFFF418F.bit4 == 1
+FFFF1082 != FFFF1083
+FFFF4253.bit6 == 0
+```
+
+`FFFF4253.bit6` is a separately calculated transition-inhibit aggregate.
+Primary startup clears `FFFF418F`, and a whole-program census found no runtime
+producer for bit 4. The only direct writers change bits 0 or 1 while preserving
+bit 4. The forced-neutral branch is therefore inactive throughout the
+recovered stock lifecycle. It is a transition mismatch condition rather than
+an upshift-only condition; direction-specific behavior uses the separate
+`target > current` comparisons above.
+
+## Secondary use of `0x942C`
+
+Stock-selected transmission coordinator `00077892` also reads `0x942C`. It
+derives a gear-indexed unsigned value from `FFFF10E6` and table `0x15212`, caps
+that value at `0x942C`, floors it at `0x94B2=0x0500`, stores it in
+`FFFF32EC`, and subtracts `4*FFFF11B6` before building signed candidate
+`FFFF4162`.
+
+The downstream activation chain is exact:
+
+```text
+0x942C -> FFFF32EC -> FFFF4162
+  -> 000777FA while FFFF41A6.bit3 is set
+  -> FFFF3480 / FFFF3484
+  -> 00079030 -> FFFF19C6
+```
+
+Before common completion, `00077892` sets `FFFF41A6.bit3` only when
+`FFFF4252.bit1` is set or retained byte `FFFF4413` is nonzero. It can write
+`FFFF4413=ROM8[0x8B07]=0x1E` only on the same bit-1 branch. Startup clears the
+byte, and a whole-program census found no other exact access on the selected
+implementation. Both prerequisites are therefore lifecycle-zero, so the
+secondary candidate is calculated but cannot constrain `FFFF19C6` in stock
+operation. A calibration-only `0x942C` A/B test is isolated from this
+secondary path as long as external diagnostics or another patch do not mutate
+these state bytes.
 
 ## Shared signed-request arbitration
 
@@ -397,7 +465,10 @@ nor opening polarity is asserted in the definition layer.
 ## Calibration implications
 
 - `0x942C` can reduce the shared throttle/airflow request before the hard fuel
-  cut, but it is not a fuel-cut threshold.
+  cut, but it is not a fuel-cut threshold. Its secondary transmission-request
+  calculation is stock-lifecycle inactive at the common request boundary; an
+  A/B test must not externally force `FFFF418F.bit4`, `FFFF4252.bit1`,
+  `FFFF4413`, or `FFFF41A6.bit3`.
 - `0x1465A`, `0x1469A`, `0x92FC`, `FFFF120E`, and the lower/upper target bounds
   participate in the lift-off target even when the APP-derived request is at
   its minimum.

@@ -46,8 +46,8 @@ class ThrottleLimiterCalibration:
     threshold_down_rate: int
     alternate_threshold: int
     threshold_up_rate: int
-    recovery_rate_high_context: int
-    recovery_rate_low_context: int
+    recovery_rate_target_above_phase: int
+    recovery_rate_other: int
     auxiliary_duration: int
     coolant_set_threshold: int
     coolant_hysteresis: int
@@ -68,8 +68,8 @@ class ThrottleLimiterCalibration:
             threshold_down_rate=_u16(data, 0x9430),
             alternate_threshold=_u16(data, 0x9434),
             threshold_up_rate=_u16(data, 0x9436),
-            recovery_rate_high_context=_u16(data, 0x943A),
-            recovery_rate_low_context=_u16(data, 0x943C),
+            recovery_rate_target_above_phase=_u16(data, 0x943A),
+            recovery_rate_other=_u16(data, 0x943C),
             auxiliary_duration=_u16(data, 0x943E),
             coolant_set_threshold=_u8(data, 0x8A99),
             coolant_hysteresis=_u8(data, 0x8A9A),
@@ -108,9 +108,56 @@ class ThrottleLimiterInput:
     mode_cap_enabled: bool = False
     force_neutral: bool = False
     shared_request: int = 0
-    context_base: int = 0
-    context_next: int = 0
-    context_limit: int = 0
+    current_gear_index: int = 0
+    target_gear_index: int = 0
+    gear_phase_index: int = 0
+
+
+def decode_can_174_gear_indices(payload_byte_3: int) -> tuple[int, int]:
+    """Decode the exact target/current gear fields consumed by the limiter.
+
+    Both nibbles use one-based transmission values 1 through 7. The stock
+    decoder publishes zero for zero and every value above 7.
+    """
+    value = payload_byte_3 & 0xFF
+
+    def decode(nibble: int) -> int:
+        return nibble - 1 if 1 <= nibble <= 7 else 0
+
+    return decode(value >> 4), decode(value & 0x0F)
+
+
+def decode_can_177_gear_phase_index(payload_byte_2: int) -> int:
+    """Decode the secondary TCM gear-phase index consumed by the limiter."""
+    return payload_byte_2 & 0x07
+
+
+def transmission_transition_forces_neutral(
+    *,
+    transition_gate: bool,
+    current_gear_index: int,
+    target_gear_index: int,
+    transition_inhibited: bool,
+) -> bool:
+    """Model the bit-1 producer in stock-path function 0x00077892."""
+    return (
+        transition_gate
+        and (current_gear_index & 0xFF) != (target_gear_index & 0xFF)
+        and not transition_inhibited
+    )
+
+
+def transmission_request_candidate_enabled(
+    *,
+    force_neutral: bool,
+    retained_transition: int,
+) -> bool:
+    """Model the bit-3 selector written by stock-path function 0x00077892.
+
+    This selector is evaluated before common completion function 0x000777fa
+    can publish the secondary 0x942c-derived signed candidate.
+    """
+    return force_neutral or (retained_transition & 0xFF) != 0
 
 
 def step_throttle_limiter(
@@ -200,20 +247,20 @@ def step_throttle_limiter(
     )
 
     recovery = _s16(state.recovery)
-    context_base = inputs.context_base & 0xFF
-    context_next = inputs.context_next & 0xFF
-    context_limit = inputs.context_limit & 0xFF
+    current_gear = inputs.current_gear_index & 0xFF
+    target_gear = inputs.target_gear_index & 0xFF
+    gear_phase = inputs.gear_phase_index & 0xFF
     if (
         request < recovery
         and request < app_request
-        and context_next > context_base
+        and target_gear > current_gear
     ):
         recovery = request
     else:
         recovery_rate = (
-            calibration.recovery_rate_high_context
-            if context_next > context_limit
-            else calibration.recovery_rate_low_context
+            calibration.recovery_rate_target_above_phase
+            if target_gear > gear_phase
+            else calibration.recovery_rate_other
         )
         recovery = min(0x7FFF, recovery + recovery_rate)
 
@@ -227,8 +274,8 @@ def step_throttle_limiter(
         output = 0x7FFF
         ramp = _s16(inputs.shared_request)
 
-    if output < app_request and context_next > context_base:
-        auxiliary_request = calibration.auxiliary_requests[min(context_next, 4)]
+    if output < app_request and target_gear > current_gear:
+        auxiliary_request = calibration.auxiliary_requests[min(target_gear, 4)]
         auxiliary_duration = calibration.auxiliary_duration
     else:
         auxiliary_request = -0x8000

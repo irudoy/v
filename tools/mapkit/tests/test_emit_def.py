@@ -370,7 +370,8 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             for address, entry in overrides["table"].items()
             if entry.get("emit") is False
         }
-        self.assertEqual(len(explicitly_hidden), 160)
+        self.assertEqual(len(explicitly_hidden), 161)
+        self.assertIn("000094b2", explicitly_hidden)
         self.assertTrue(all(
             entry.get("category") in hidden_categories
             for entry in explicitly_hidden.values()

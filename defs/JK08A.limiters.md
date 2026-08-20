@@ -138,9 +138,36 @@ otherwise. An independent rate-2000 term is applied to the final request on
 every active or inactive pass. `0xFFFF19DC` provides a second recovery envelope;
 when this envelope wins, the ramp is rolled back to its entry value. Equality
 between previous limiter output and APP request takes the inactive/reset branch.
+The fast-mode byte `0xFFFF25B0` is initialized and reloaded with 100 and has no
+other writer; it is not a countdown. Its paired latch alone selects the normal
+rate after a nonpositive-ramp transition.
+
+CAN `0x174` payload byte 3 supplies zero-based target gear in its high nibble
+and current gear in its low nibble. CAN `0x177` payload byte 2 bits 0 through 2
+supply the zero-based TCM gear-phase index. The limiter admits immediate
+recovery tracking and its auxiliary output only for `target > current`, and
+selects the 30-count recovery rate for `target > phase`, otherwise 50. Passive
+target transitions prove target-first field ordering for both shift directions.
+
+The optional forced-neutral override is not a stock upshift gate. Selected
+producer `FUN_00077892` sets it for any target/current mismatch only when
+`0xFFFF418F.bit4` is set and its independent inhibit aggregate is clear.
+Startup clears bit 4 and no runtime producer exists, so the override remains
+clear in the recovered stock lifecycle.
+
 The full state machine, calibration inventory, exact integer boundaries, and
 auxiliary outputs are specified in
 [`JK08A.throttle-control.md`](JK08A.throttle-control.md).
+
+`FUN_00077892` also uses `0x0942C` as the upper cap in a gear-indexed
+transmission-request calculation. The resulting signed word `0xFFFF4162` can
+reach `FUN_00079030` only while `0xFFFF41A6.bit3` is set. The selected function
+sets that bit only from the lifecycle-inert forced-neutral state or retained
+byte `0xFFFF4413`; the retained byte can itself be loaded only on the same
+inert branch. The secondary result is therefore calculated but excluded from
+the stock request boundary. A calibration-only A/B change to `0x0942C` remains
+isolated from this secondary path unless external diagnostics or another patch
+mutate those state bytes.
 
 The exact downstream chain is:
 

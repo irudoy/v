@@ -129,6 +129,17 @@ Startup calls the displaced stock initializer first, initializes Map 1 limiter
 shadows, and leaves the selector idle. The stock fallback clear boundary remains
 unchanged.
 
+The selected `0x942C` word is present both inside the complete throttle-cluster
+shadow and at `0xFFFF1796`, the dynamic-threshold state consumed by
+`FUN_0007584E`. The existing scalar hook at `0x77BAC` also exposes the selected
+word to `FUN_00077892`, which calculates a transmission-derived signed request.
+Exact whole-program tracing establishes that its downstream selector
+`FFFF41A6.bit3` is cleared before common request publication throughout the
+recovered stock lifecycle. The secondary calculation therefore cannot affect
+the shared request unless external diagnostics or another patch mutate the
+transition state. Controlled `0x942C` A/B profiles rely on this explicit state
+boundary.
+
 ## Visual feedback
 
 The feedback wrapper calls the stock CAN serializer first. While a valid pulse

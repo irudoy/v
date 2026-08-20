@@ -136,6 +136,10 @@ This index points to structured rows without reproducing their fields.
 - Main fuel cut `0x0934E`, stationary cut state, DFCO cut/restore families, the
   aggregate inhibit mask, and request limiter `0x0942C` are modeled in
   `JK08A.limiters.md`, `JK08A.dfco.md`, and `JK08A.fuel-inhibit.md`.
+- CAN `0x174` current/target gear indices, CAN `0x177` TCM gear-phase index,
+  the stock-inert transition-neutral override, and the lifecycle-inactive
+  secondary `0x0942C` request path are canonical in `JK08A.can.md`,
+  `JK08A.throttle-control.md`, `funcs.csv`, and `vars.csv`.
 - Target-vehicle A/B evidence establishes that the lower/full-restore table
   `0x12818` can veto moving entry while the stock Hold and Entry request pair
   remains unchanged. Under stock compile-time flags, upper/intermediate table

@@ -99,8 +99,11 @@ addr,name,note
 00097eb4,diagnostic_group_summary_update,Build extension runtime-record summaries including dual-bank MAF record 0x129
 0006efbc,dfco_upstream_mode_update,Update upstream DFCO mode or eligibility bit 5
 0008c3fa,dfco_upstream_aux_gate,Evaluate auxiliary gate for upstream DFCO mode
-000c4ace,can_2ee0_payload_decoder,Decode internal CAN dispatch key 0x2ee0 including requested RPM ceiling byte
-000c5d2e,can_2ee0_invalid_fallback,Publish neutral requested RPM ceiling fallback for invalid key 0x2ee0 data
+000c3b14,hcan1_receive_payload_dispatch,Dispatch HCAN1 payload handlers by the STDID shifted-left-five internal key
+000c47ea,can_174_transmission_payload_decoder,Decode CAN 0x174 target and current zero-based gear indices
+000c4ace,can_177_transmission_payload_decoder,Decode CAN 0x177 requested RPM ceiling and TCM gear-phase index
+000c5cb2,can_174_invalid_fallback,Reset decoded CAN 0x174 transmission fields after invalid data
+000c5d2e,can_177_invalid_fallback,Publish the invalid-data fallback for the CAN 0x177 requested RPM ceiling
 0002657c,signed_fixed_point_multiply,Signed 32 by unsigned 16 fixed-point multiply with variable shift
 0003a904,dual_bank_maf_coordinator,Process both MAF channels and publish the combined airflow aggregate
 0003b252,combined_maf_aggregate,Build the nonnegative combined MAF value used by BFS
@@ -156,6 +159,10 @@ addr,name,note
 00071508,signed_request_limit_arbiter,Select the most restrictive signed request-limit candidate
 000702a0,request_controller_dispatch,Run the ordered request-controller stages and final selector
 00070d82,request_limit_selector,Select and publish the signed limiter or controller result
+00077352,transmission_request_dispatch,Select and run the exact JK08A transmission request coordinator
+000777fa,transmission_request_bound_publisher,Publish transmission-derived signed bounds for the common request boundary
+00077892,automatic_transmission_request_coordinator,Build the stock-selected transmission transition state and signed request candidate
+00077dec,alternate_transmission_request_coordinator,Build the alternate transmission request state and signed request candidate
 00079dd8,request_boundary_dispatch,Run the periodic signed request-boundary stages
 00079030,signed_request_boundary,Apply signed request bounds and publish the shared coordinate
 000730fc,request_coordinate_coordinator,Convert the bounded shared request to the stock opening-area request

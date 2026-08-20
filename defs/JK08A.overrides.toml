@@ -430,34 +430,44 @@ coarse = 16
 static_axis = ["up rate"]
 
 [table.0000943a]
-name = "Throttle Rev Limiter Recovery Rate High Context"
+name = "Throttle Rev Limiter Recovery Rate Target Above Gear Phase"
 category = "Limiters / Rev Limit / Internal State"
 order = 206
 emit = false
 format = "0"
 fine = 1
 coarse = 16
-static_axis = ["high-context recovery"]
+static_axis = ["target above gear phase"]
 
 [table.0000943c]
-name = "Throttle Rev Limiter Recovery Rate Low Context"
+name = "Throttle Rev Limiter Recovery Rate Other Gear Relation"
 category = "Limiters / Rev Limit / Internal State"
 order = 207
 emit = false
 format = "0"
 fine = 1
 coarse = 16
-static_axis = ["low-context recovery"]
+static_axis = ["other gear relation"]
 
 [table.0000943e]
-name = "Throttle Rev Limiter Auxiliary Duration"
+name = "Throttle Rev Limiter Upshift Auxiliary Duration"
 category = "Limiters / Rev Limit / Internal State"
 order = 208
 emit = false
 format = "0"
 fine = 1
 coarse = 16
-static_axis = ["auxiliary duration"]
+static_axis = ["target above current duration"]
+
+[table.000094b2]
+name = "Transmission Request Scalar Floor"
+category = "Limiters / Rev Limit / Internal State"
+order = 209
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["secondary request floor"]
 
 [table.000121fe]
 name = "Composite Calculation Base Curve (0x121FE)"

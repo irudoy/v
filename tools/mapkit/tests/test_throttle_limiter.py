@@ -5,7 +5,11 @@ from tools.mapkit.throttle_limiter import (
     ThrottleLimiterCalibration,
     ThrottleLimiterInput,
     ThrottleLimiterState,
+    decode_can_174_gear_indices,
+    decode_can_177_gear_phase_index,
     step_throttle_limiter,
+    transmission_request_candidate_enabled,
+    transmission_transition_forces_neutral,
 )
 
 
@@ -46,8 +50,8 @@ def test_stock_calibration_is_bound_to_rom():
         threshold_down_rate=0,
         alternate_threshold=0xFFFF,
         threshold_up_rate=0,
-        recovery_rate_high_context=30,
-        recovery_rate_low_context=50,
+        recovery_rate_target_above_phase=30,
+        recovery_rate_other=50,
         auxiliary_duration=182,
         coolant_set_threshold=255,
         coolant_hysteresis=16,
@@ -192,7 +196,7 @@ def test_recovery_rollback_tracking_auxiliary_and_forced_neutral():
     tracking = step_throttle_limiter(
         calibration,
         state(speed_filtered=9856, recovery=12000),
-        replace(conditions, context_next=1),
+        replace(conditions, target_gear_index=1),
     )
     assert (tracking.recovery, tracking.output) == (9673, 9673)
     assert (tracking.auxiliary_request, tracking.auxiliary_duration) == (1300, 182)
@@ -203,3 +207,50 @@ def test_recovery_rollback_tracking_auxiliary_and_forced_neutral():
         replace(conditions, force_neutral=True, shared_request=1234),
     )
     assert (neutral.output, neutral.ramp) == (0x7FFF, 1234)
+
+
+def test_transmission_can_fields_and_transition_neutral_gate():
+    assert decode_can_174_gear_indices(0x44) == (3, 3)
+    assert decode_can_174_gear_indices(0x34) == (2, 3)
+    assert decode_can_174_gear_indices(0x33) == (2, 2)
+    assert decode_can_174_gear_indices(0xAA) == (0, 0)
+    assert decode_can_177_gear_phase_index(0x0B) == 3
+    assert decode_can_177_gear_phase_index(0x0A) == 2
+
+    assert transmission_transition_forces_neutral(
+        transition_gate=True,
+        current_gear_index=3,
+        target_gear_index=2,
+        transition_inhibited=False,
+    )
+    assert not transmission_transition_forces_neutral(
+        transition_gate=True,
+        current_gear_index=3,
+        target_gear_index=3,
+        transition_inhibited=False,
+    )
+    assert not transmission_transition_forces_neutral(
+        transition_gate=False,
+        current_gear_index=3,
+        target_gear_index=2,
+        transition_inhibited=False,
+    )
+    assert not transmission_transition_forces_neutral(
+        transition_gate=True,
+        current_gear_index=3,
+        target_gear_index=2,
+        transition_inhibited=True,
+    )
+
+    assert not transmission_request_candidate_enabled(
+        force_neutral=False,
+        retained_transition=0,
+    )
+    assert transmission_request_candidate_enabled(
+        force_neutral=True,
+        retained_transition=0,
+    )
+    assert transmission_request_candidate_enabled(
+        force_neutral=False,
+        retained_transition=0x1E,
+    )
