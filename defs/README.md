@@ -49,6 +49,9 @@ See `../tools/map-analysis-pipeline.md` and
 - `JK08A.dfco.md` models deceleration fuel cut.
 - `JK08A.fuel-inhibit.md` models the complete fuel-output inhibit arbitration.
 - `JK08A.limiters.md` models the main, stationary, and request limiter paths.
+- `JK08A.request-conditioning.md` models the paired zero-surface request
+  stages, live `0..800` normalization endpoints, and stock-disabled centered
+  correction surface.
 - `JK08A.throttle-control.md` models the complete accelerator-pedal, shared
   request, target, feedback-regulator, and ATU-II PWM path.
 - `JK08A.ignition-state.md` models the cold, high-octane, and high-detonation
