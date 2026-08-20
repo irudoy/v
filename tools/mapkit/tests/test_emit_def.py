@@ -54,7 +54,6 @@ DEFAULT_VISIBLE_TABLES = {
     "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
     "Engine Torque Map": "Transmission / Shifting Performance",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
-    "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
     "Stationary Rev Limiter Accumulator Step (0x124D2)":
         "Limiters / Stationary Rev Limiter",
     "Injection Pulse Channel Multiplier (0x129C0)": "Fuel Delivery / Main",
@@ -358,6 +357,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
         default = emit_def.presentation_default_emit(overrides)
         self.assertTrue(default)
         hidden_categories = {
+            "Diagnostics / MAF",
             "Internal Calculations",
             "Diagnostics / Internal Calculations",
             "Electronic Throttle Control / Internal Coordinates",
@@ -369,7 +369,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             for address, entry in overrides["table"].items()
             if entry.get("emit") is False
         }
-        self.assertEqual(len(explicitly_hidden), 163)
+        self.assertEqual(len(explicitly_hidden), 164)
         self.assertIn("000094b2", explicitly_hidden)
         self.assertTrue(all(
             entry.get("category") in hidden_categories

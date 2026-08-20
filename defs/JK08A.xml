@@ -931,22 +931,6 @@
       </table>
     </table>
 
-    <!-- 0x1236A  16 uint8  map [candidate]; entry 0x264A0 (explicit, core 0x26944)
-         accessor 0x8152A, 0x81D74; r4 operand: pool
-         scaling x raw; axis 0x1238A rpm [candidate]
-         Input byte[0xFFFF11AE], axis step 8; feeds fuel rather than angle according to K2Y
-         analysis.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Fuel enrichment vs MBT-like axis (0x1236A)"
-           category="Fuelling//Enrichment" storagetype="uint8" storageaddress="0x1236A"
-           sizex="16" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" coarseincrement="4"/>
-      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x1238A" sizex="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
-      </table>
-    </table>
-
     <!-- 0x120F6  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
          accessor 0x4FE9C; r4 operand: pool
          scaling x DFCO scheduler counts

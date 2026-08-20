@@ -46,7 +46,6 @@ DEFAULT_VISIBLE_TABLES = {
     "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
     "Engine Torque Map": "Transmission / Shifting Performance",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
-    "Fuel enrichment vs MBT-like axis (0x1236A)": "Fuelling / Enrichment",
     "Stationary Rev Limiter Accumulator Step (0x124D2)":
         "Limiters / Stationary Rev Limiter",
     "Injection Pulse Channel Multiplier (0x129C0)": "Fuel Delivery / Main",
@@ -354,7 +353,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 45)
-        self.assertEqual(len(tables), 106)
+        self.assertEqual(len(tables), 105)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 

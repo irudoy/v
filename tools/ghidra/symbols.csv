@@ -96,6 +96,11 @@ addr,name,note
 0007ebec,diagnostic_runtime_records_init,Initialize 0x157 runtime diagnostic records including extension summaries
 000804ce,diagnostic_readiness_latches_update,Update engine-running temperature-difference and coolant-warm diagnostic latches
 00080b54,diagnostic_state_reset,Reset runtime diagnostic records and readiness latches
+00080e20,dual_bank_maf_range_monitor_coordinator,Run and aggregate P0101/P0102/P0103 and P010B/P010C/P010D monitors
+00080f82,dual_bank_maf_diagnostic_dispatch,Dispatch six exact MAF diagnostic runtime records from Boolean monitor results
+0008152a,maf_range_performance_bank_1_monitor,Build and evaluate the P0101 bank-1 range-performance state
+00081d74,maf_range_performance_bank_2_monitor,Build and evaluate the P010B bank-2 range-performance state
+00082604,maf_range_model_byte_builder,Build one bank-indexed comparison byte for P0101 or P010B
 00097eb4,diagnostic_group_summary_update,Build extension runtime-record summaries including dual-bank MAF record 0x129
 0006efbc,dfco_upstream_mode_update,Update upstream DFCO mode or eligibility bit 5
 0008c3fa,dfco_upstream_aux_gate,Evaluate auxiliary gate for upstream DFCO mode

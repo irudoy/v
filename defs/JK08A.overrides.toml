@@ -488,10 +488,18 @@ order = 42
 coarse = 4
 
 [table.0001236a]
-name = "Fuel enrichment vs MBT-like axis (0x1236A)"
-category = "Fuelling / Enrichment"
+name = "MAF Range-Performance RPM Factor (0x1236A)"
+category = "Diagnostics / MAF"
+emit = false
 order = 50
+format = "0"
+fine = 1
 coarse = 4
+static_axis_name = "Engine Speed [RPM]"
+static_axis = [
+  400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
+  3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
+]
 
 [table.0001491a]
 name = "Diagnostic Calculated Load 100% BFS Reference"
@@ -1591,8 +1599,8 @@ fine = 1
 coarse = 16
 
 [table.00012868]
-name = "Three-Factor Product Multiplier - raw u8 (0x12868)"
-category = "Internal Calculations"
+name = "MAF Diagnostic Composite Factor B - raw u8 (0x12868)"
+category = "Diagnostics / MAF"
 emit = false
 order = 181
 format = "0"
@@ -1672,8 +1680,8 @@ fine = 1
 coarse = 16
 
 [table.00012ac2]
-name = "Three-Factor Product Multiplier B - raw u8 (0x12AC2)"
-category = "Internal Calculations"
+name = "MAF Diagnostic Composite Factor A - raw u8 (0x12AC2)"
+category = "Diagnostics / MAF"
 emit = false
 order = 190
 format = "0"
