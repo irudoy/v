@@ -587,10 +587,14 @@ def _expected_long_literals(layout):
             ),
         "fuel_compensation_pointers":
             family["fuel_compensation_main"].pointer_table,
-        "fuel_targets_base": family["fuel_targets"].canonical_address,
-        "fuel_targets_stock_wrapper":
-            _hook_stock_for_adapter(layout, "fuel_targets_adapter"),
-        "fuel_targets_pointers": family["fuel_targets"].pointer_table,
+        "exhaust_cvtc_target_base":
+            family["exhaust_cvtc_target"].canonical_address,
+        "exhaust_cvtc_target_stock_wrapper":
+            _hook_stock_for_adapter(
+                layout, "exhaust_cvtc_target_adapter"
+            ),
+        "exhaust_cvtc_target_pointers":
+            family["exhaust_cvtc_target"].pointer_table,
         "cold_idle_ignition_base":
             family["cold_idle_ignition_timing"].canonical_address,
         "idle_ignition_base":

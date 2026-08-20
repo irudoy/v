@@ -24,7 +24,7 @@
 #define FULL_DFCO_ADAPTER 0x000d2480U
 #define IGNITION_ADAPTER 0x000d2340U
 #define FUEL_COMP_ADAPTER 0x000d2380U
-#define FUEL_TARGET_ADAPTER 0x000d23c0U
+#define EXHAUST_CVTC_TARGET_ADAPTER 0x000d23c0U
 #define FEEDBACK_WRAPPER 0x000d35e0U
 #define LIMITER_COMMIT 0x000d3660U
 #define FEEDBACK_COUNTS 0x000d3848U
@@ -119,7 +119,8 @@ static const struct family adapter_families[] = {
          0x000d3400U},
     },
     {
-        "fuel_targets", FUEL_TARGET_ADAPTER, 0x0000b33aU, 256U,
+        "exhaust_cvtc_target", EXHAUST_CVTC_TARGET_ADAPTER,
+        0x0000b33aU, 256U,
         {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
          0x000d3000U},
     },
@@ -143,7 +144,8 @@ static const struct pass_through pass_throughs[] = {
     {"full_dfco_unknown", FULL_DFCO_ADAPTER, 0x0001298dU},
     {"ignition_cold", IGNITION_ADAPTER, 0x0000991aU},
     {"fuel_compensation_unknown", FUEL_COMP_ADAPTER, 0x0000a29bU},
-    {"fuel_targets_unknown", FUEL_TARGET_ADAPTER, 0x0000b33bU},
+    {"exhaust_cvtc_target_unknown", EXHAUST_CVTC_TARGET_ADAPTER,
+     0x0000b33bU},
     {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
 };
 

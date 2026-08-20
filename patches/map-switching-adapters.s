@@ -96,22 +96,22 @@ fuel_compensation_pointers:
 .long 0x000D35A4
 
 .org 0x000D23C0
-fuel_targets_adapter:
-mov.l @(fuel_targets_stock_wrapper,pc),r3
-mov.l @(fuel_targets_base,pc),r0
+exhaust_cvtc_target_adapter:
+mov.l @(exhaust_cvtc_target_stock_wrapper,pc),r3
+mov.l @(exhaust_cvtc_target_base,pc),r0
 cmp/eq r0,r4
-bt fuel_targets_select
+bt exhaust_cvtc_target_select
 jmp @r3
 nop
-fuel_targets_select:
-mov.l @(fuel_targets_pointers,pc),r2
+exhaust_cvtc_target_select:
+mov.l @(exhaust_cvtc_target_pointers,pc),r2
 bra 0x000D2270
 nop
 
 .org 0x000D23E0
-fuel_targets_base:
+exhaust_cvtc_target_base:
 .long 0x0000B33A
-fuel_targets_stock_wrapper:
+exhaust_cvtc_target_stock_wrapper:
 .long 0x000261B8
-fuel_targets_pointers:
+exhaust_cvtc_target_pointers:
 .long 0x000D3590

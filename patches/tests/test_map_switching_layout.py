@@ -174,7 +174,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "overrun_adapter",
                 "ignition_adapter",
                 "fuel_compensation_adapter",
-                "fuel_targets_adapter",
+                "exhaust_cvtc_target_adapter",
                 "full_dfco_adapter",
                 "startup_wrapper",
                 "limiter_commit",

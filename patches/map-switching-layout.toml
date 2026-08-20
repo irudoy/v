@@ -93,7 +93,7 @@ end = 0x000D23C0
 entry = 0x000D2380
 
 [[code_region]]
-key = "fuel_targets_adapter"
+key = "exhaust_cvtc_target_adapter"
 start = 0x000D23C0
 end = 0x000D2400
 entry = 0x000D23C0
@@ -166,7 +166,7 @@ code_regions = [
     "overrun_adapter",
     "ignition_adapter",
     "fuel_compensation_adapter",
-    "fuel_targets_adapter",
+    "exhaust_cvtc_target_adapter",
 ]
 
 [[assembly_unit]]
@@ -321,7 +321,7 @@ replacement = 0x000D2380
 purpose = "Route the fuel compensation lookup through a base-selecting adapter."
 
 [[hook]]
-key = "fuel_targets_lookup"
+key = "exhaust_cvtc_target_lookup"
 address = 0x000C0020
 width = 4
 stock = 0x000261B8
@@ -481,7 +481,7 @@ copies = [0x000D40A0, 0x000D40A8, 0x000D40B0, 0x000D40B8]
 pointer_table = 0x000D4054
 
 [[family]]
-key = "fuel_targets"
+key = "exhaust_cvtc_target"
 group = "cvtc"
 name = "Exhaust Cam Timing Main"
 canonical_address = 0x0000B33A
@@ -489,7 +489,7 @@ width = 16
 height = 16
 storage_type = "uint8"
 access_kind = "adapter"
-adapter = "fuel_targets_adapter"
+adapter = "exhaust_cvtc_target_adapter"
 copy_alignment = 256
 copies = [0x000D2D00, 0x000D2E00, 0x000D2F00, 0x000D3000]
 pointer_table = 0x000D3590

@@ -72,8 +72,12 @@ STOCK_IGNITION_HIGH_DET_BASE = FAMILIES[
 IGNITION_HIGH_DET_BASES = FAMILIES[
     "ignition_timing_trim_high_det"
 ].all_slot_addresses
-STOCK_FUEL_TARGETS_BASE = FAMILIES["fuel_targets"].canonical_address
-FUEL_TARGETS_BASES = FAMILIES["fuel_targets"].all_slot_addresses
+STOCK_EXHAUST_CVTC_TARGET_BASE = FAMILIES[
+    "exhaust_cvtc_target"
+].canonical_address
+EXHAUST_CVTC_TARGET_BASES = FAMILIES[
+    "exhaust_cvtc_target"
+].all_slot_addresses
 STOCK_FUEL_COMPENSATION_BASE = FAMILIES[
     "fuel_compensation_main"
 ].canonical_address

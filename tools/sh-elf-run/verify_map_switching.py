@@ -288,7 +288,7 @@ def install_stock_return_stubs(fixture, layout):
         "ignition_lookup_4e1c0_b",
         "fuel_compensation_lookup_2c648",
         "fuel_compensation_lookup_3be3c",
-        "fuel_targets_lookup",
+        "exhaust_cvtc_target_lookup",
         "idle_ignition_lookup",
         "cruise_feedback_serializer",
     }

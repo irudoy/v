@@ -25,8 +25,12 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
     by_id = {item["id"]: item for item in rom["objects"]}
     assert by_id["definition-switch:0:00008725"]["label"] == "Developer Immobilizer"
     assert by_id["patch:map-switching:patch-code:selector_host"]["start"] == 0xD2108
-    assert by_id["custom-map:map-switching:fuel_targets:map-2"]["start"] == 0xD2D00
-    assert by_id["custom-map:map-switching:fuel_targets:map-2"]["layer"] == "maps"
+    assert by_id[
+        "custom-map:map-switching:exhaust_cvtc_target:map-2"
+    ]["start"] == 0xD2D00
+    assert by_id[
+        "custom-map:map-switching:exhaust_cvtc_target:map-2"
+    ]["layer"] == "maps"
     assert by_id["patch:rolling-launch:patch-code:engine"]["end"] == 0xD3EA0
     assert by_id["checksum-field:sum16_a"]["start"] == 0x8200
 
@@ -44,8 +48,11 @@ def test_map_and_axis_extents_are_derived_from_geometry():
     rom = model.build_rom_model(model.resolve_manifest("JK08A"))
     by_id = {item["id"]: item for item in rom["objects"]}
 
-    fuel_targets = by_id["map:0000b33a"]
-    assert fuel_targets["end"] - fuel_targets["start"] == 16 * 16
+    exhaust_cvtc_target = by_id["map:0000b33a"]
+    assert (
+        exhaust_cvtc_target["end"] - exhaust_cvtc_target["start"]
+        == 16 * 16
+    )
 
     rpm_axis = by_id["axis:00012f3e"]
     assert rpm_axis["exactExtent"] is True

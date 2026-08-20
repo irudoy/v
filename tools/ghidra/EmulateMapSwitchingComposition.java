@@ -53,7 +53,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final long OVER_RUN_ADAPTER = 0x000D2300L;
     static final long IGNITION_ADAPTER = 0x000D2340L;
     static final long FUEL_COMP_ADAPTER = 0x000D2380L;
-    static final long FUEL_TARGET_ADAPTER = 0x000D23C0L;
+    static final long EXHAUST_CVTC_TARGET_ADAPTER = 0x000D23C0L;
     static final long FULL_DFCO_ADAPTER = 0x000D2480L;
     static final long FEEDBACK_WRAPPER = 0x000D35E0L;
     static final long LIMITER_COMMIT = 0x000D3660L;
@@ -217,7 +217,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "fuel_compensation_lookup_3be3c", 0x0003C388L,
                 0x000261F0L, 0x000D2380L),
         new HookSpec(
-                "fuel_targets_lookup", 0x000C0020L,
+                "exhaust_cvtc_target_lookup", 0x000C0020L,
                 0x000261B8L, 0x000D23C0L),
         new HookSpec(
                 "rev_fuel_cut_base", 0x0004F468L,
@@ -291,7 +291,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     0x000D40B0L, 0x000D40B8L,
                 }),
         new FamilySpec(
-                "fuel_targets", 0x0000B33AL, 256, 0x000D3590L,
+                "exhaust_cvtc_target", 0x0000B33AL, 256, 0x000D3590L,
                 new long[]{
                     0x000D2D00L, 0x000D2E00L,
                     0x000D2F00L, 0x000D3000L,
@@ -342,7 +342,8 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "fuel_compensation_main",
                 FUEL_COMP_ADAPTER, 0x000261F0L),
         new AdapterSpec(
-                "fuel_targets", FUEL_TARGET_ADAPTER, 0x000261B8L),
+                "exhaust_cvtc_target",
+                EXHAUST_CVTC_TARGET_ADAPTER, 0x000261B8L),
         new AdapterSpec(
                 "cold_idle_ignition_timing",
                 IDLE_IGNITION_ADAPTER, 0x00026370L),
@@ -368,8 +369,8 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "fuel_compensation_unknown",
                 FUEL_COMP_ADAPTER, 0x000261F0L, 0x0000A29BL),
         new PassThrough(
-                "fuel_targets_unknown",
-                FUEL_TARGET_ADAPTER, 0x000261B8L, 0x0000B33BL),
+                "exhaust_cvtc_target_unknown",
+                EXHAUST_CVTC_TARGET_ADAPTER, 0x000261B8L, 0x0000B33BL),
         new PassThrough(
                 "idle_ignition_hidden",
                 IDLE_IGNITION_ADAPTER, 0x00026370L, 0x000121A6L),
@@ -382,7 +383,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         OVER_RUN_ADAPTER,
         IGNITION_ADAPTER,
         FUEL_COMP_ADAPTER,
-        FUEL_TARGET_ADAPTER,
+        EXHAUST_CVTC_TARGET_ADAPTER,
         FULL_DFCO_ADAPTER,
         FEEDBACK_WRAPPER,
         LIMITER_COMMIT,

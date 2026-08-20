@@ -137,7 +137,7 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
                 0x0000A29AL, 0x000D3100L, 0x000D3200L,
                 0x000D3300L, 0x000D3400L),
         new Vector(
-                "fuel_targets",
+                "exhaust_cvtc_target",
                 0x000D23C0L, 0x000261B8L, 0x0000B33AL, 0x000D3590L,
                 0x0000B33AL, 0x000D2D00L, 0x000D2E00L,
                 0x000D2F00L, 0x000D3000L),
@@ -170,7 +170,7 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
                 "fuel_compensation_unknown",
                 0x000D2380L, 0x000261F0L, 0x0000A29BL),
         new PassThrough(
-                "fuel_targets_unknown",
+                "exhaust_cvtc_target_unknown",
                 0x000D23C0L, 0x000261B8L, 0x0000B33BL),
         new PassThrough(
                 "idle_ignition_hidden",
