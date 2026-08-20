@@ -26,8 +26,8 @@ from tools.mapkit import rom as romkit
 
 
 INTERNAL_LOAD_SCALER_ADDRESS = 0x9534
-IGNITION_MAIN_MAP_ADDRESS = 0x9A1A
-IGNITION_HIGH_DET_MAP_ADDRESS = 0x9B1A
+HIGH_OCTANE_TIMING_STATE_MAP_ADDRESS = 0x9A1A
+HIGH_DETONATION_TIMING_STATE_MAP_ADDRESS = 0x9B1A
 IGNITION_RPM_AXIS_ADDRESS = 0x11ECE
 IGNITION_LOAD_AXIS_ADDRESS = 0x11EBE
 IGNITION_MAP_SIZE = 16
@@ -61,8 +61,8 @@ class IgnitionCalibration:
     image_source: Path
     image_sha256: str
     load_scaler: int
-    main_by_slot: tuple[ExplicitU8Map, ...]
-    high_det_by_slot: tuple[ExplicitU8Map, ...]
+    high_octane_by_slot: tuple[ExplicitU8Map, ...]
+    high_detonation_by_slot: tuple[ExplicitU8Map, ...]
     recovery_step_q8: int
     event_step_q8: int
     forced_state_raw: int
@@ -85,10 +85,10 @@ class IgnitionSample:
 class ReplayPoint:
     load_raw: int
     rpm50_raw: int
-    main_raw: int
-    high_det_raw: int
-    map_delta_raw: int
-    map_term_q8: int
+    high_octane_raw: int
+    high_detonation_raw: int
+    hot_surface_delta_raw: int
+    hot_surface_term_q8: int
 
 
 @dataclass(frozen=True)
@@ -113,12 +113,12 @@ class ExpectationSummary:
 class AlignmentSummary:
     source_lag: int
     comparisons: int
-    map_delta_range: tuple[int, int]
+    hot_surface_delta_range: tuple[int, int]
     implied_direct_base_range: tuple[int, int]
-    main_vs_stock_differences: int
-    high_det_vs_stock_differences: int
-    main_flagged_results: int
-    high_det_flagged_results: int
+    high_octane_vs_stock_differences: int
+    high_detonation_vs_stock_differences: int
+    high_octane_flagged_results: int
+    high_detonation_flagged_results: int
 
 
 @dataclass(frozen=True)
@@ -136,7 +136,7 @@ class TraceIgnitionAudit:
     event_step_q8: int
     forced_state_raw: int
     state_q8_range: tuple[int, int]
-    high_det_selected: int
+    high_detonation_selected: int
     knock_event_samples: int
     knock_event_total: int
     quiet_state_steps: DistributionSummary
@@ -192,20 +192,27 @@ def load_calibration(
     if calibration_image is None:
         image = romkit.load(rom)
         image_source = Path(image.path)
-        main_addresses = (IGNITION_MAIN_MAP_ADDRESS,) * SLOT_COUNT
-        high_det_addresses = (IGNITION_HIGH_DET_MAP_ADDRESS,) * SLOT_COUNT
+        high_octane_addresses = (
+            HIGH_OCTANE_TIMING_STATE_MAP_ADDRESS,
+        ) * SLOT_COUNT
+        high_detonation_addresses = (
+            HIGH_DETONATION_TIMING_STATE_MAP_ADDRESS,
+        ) * SLOT_COUNT
     else:
         image_source = Path(calibration_image).resolve()
         data = image_source.read_bytes()
         image = romkit.Image(image_source.name, str(image_source), data)
         families = load_layout().family_by_key
-        main_addresses = families[
-            "ignition_timing_trim_main"
+        high_octane_addresses = families[
+            "high_octane_timing_state"
         ].all_slot_addresses
-        high_det_addresses = families[
-            "ignition_timing_trim_high_det"
+        high_detonation_addresses = families[
+            "high_detonation_timing_state"
         ].all_slot_addresses
-    if len(main_addresses) != SLOT_COUNT or len(high_det_addresses) != SLOT_COUNT:
+    if (
+        len(high_octane_addresses) != SLOT_COUNT
+        or len(high_detonation_addresses) != SLOT_COUNT
+    ):
         raise ValueError("ignition map-switching families must contain five slots")
     return IgnitionCalibration(
         image_source=image_source,
@@ -213,9 +220,11 @@ def load_calibration(
         load_scaler=image.values(
             INTERNAL_LOAD_SCALER_ADDRESS, 1, "uint16"
         )[0],
-        main_by_slot=tuple(_load_map(image, address) for address in main_addresses),
-        high_det_by_slot=tuple(
-            _load_map(image, address) for address in high_det_addresses
+        high_octane_by_slot=tuple(
+            _load_map(image, address) for address in high_octane_addresses
+        ),
+        high_detonation_by_slot=tuple(
+            _load_map(image, address) for address in high_detonation_addresses
         ),
         recovery_step_q8=image.values(
             KNOCK_RECOVERY_STEP_ADDRESS, 1, "uint16"
@@ -382,20 +391,22 @@ def replay_point(
         raise ValueError("map number must be in 1..5")
     load_raw = internal_load_raw(source.bfs_raw, calibration.load_scaler)
     rpm50_raw = min(0xFF, source.rpm_raw >> 2)
-    main_raw = interpolate_ignition_u8(
-        calibration.main_by_slot[map_number - 1], rpm50_raw, load_raw
+    high_octane_raw = interpolate_ignition_u8(
+        calibration.high_octane_by_slot[map_number - 1], rpm50_raw, load_raw
     )
-    high_det_raw = interpolate_ignition_u8(
-        calibration.high_det_by_slot[map_number - 1], rpm50_raw, load_raw
+    high_detonation_raw = interpolate_ignition_u8(
+        calibration.high_detonation_by_slot[map_number - 1],
+        rpm50_raw,
+        load_raw,
     )
-    delta = (main_raw & 0x7F) - (high_det_raw & 0x7F)
+    delta = (high_octane_raw & 0x7F) - (high_detonation_raw & 0x7F)
     return ReplayPoint(
         load_raw=load_raw,
         rpm50_raw=rpm50_raw,
-        main_raw=main_raw,
-        high_det_raw=high_det_raw,
-        map_delta_raw=delta,
-        map_term_q8=delta << 8,
+        high_octane_raw=high_octane_raw,
+        high_detonation_raw=high_detonation_raw,
+        hot_surface_delta_raw=delta,
+        hot_surface_term_q8=delta << 8,
     )
 
 
@@ -472,7 +483,7 @@ def _alignment_summary(
         if target.tick - source.tick != source_lag * tick_divisor:
             continue
         point = replay_point(calibration, source, target.map_number)
-        base = _signed_u16(target.state_q8 - point.map_term_q8)
+        base = _signed_u16(target.state_q8 - point.hot_surface_term_q8)
         rows.append((target_index, target, point, base))
     if not rows:
         raise ValueError(f"no contiguous samples for source lag {source_lag}")
@@ -486,22 +497,26 @@ def _alignment_summary(
     return AlignmentSummary(
         source_lag=source_lag,
         comparisons=len(rows),
-        map_delta_range=(
-            min(point.map_delta_raw for point in points),
-            max(point.map_delta_raw for point in points),
+        hot_surface_delta_range=(
+            min(point.hot_surface_delta_raw for point in points),
+            max(point.hot_surface_delta_raw for point in points),
         ),
         implied_direct_base_range=(min(bases), max(bases)),
-        main_vs_stock_differences=sum(
-            (point.main_raw & 0x7F) != (stock.main_raw & 0x7F)
+        high_octane_vs_stock_differences=sum(
+            (point.high_octane_raw & 0x7F)
+            != (stock.high_octane_raw & 0x7F)
             for point, stock in zip(points, stock_points)
         ),
-        high_det_vs_stock_differences=sum(
-            (point.high_det_raw & 0x7F) != (stock.high_det_raw & 0x7F)
+        high_detonation_vs_stock_differences=sum(
+            (point.high_detonation_raw & 0x7F)
+            != (stock.high_detonation_raw & 0x7F)
             for point, stock in zip(points, stock_points)
         ),
-        main_flagged_results=sum(bool(point.main_raw & 0x80) for point in points),
-        high_det_flagged_results=sum(
-            bool(point.high_det_raw & 0x80) for point in points
+        high_octane_flagged_results=sum(
+            bool(point.high_octane_raw & 0x80) for point in points
+        ),
+        high_detonation_flagged_results=sum(
+            bool(point.high_detonation_raw & 0x80) for point in points
         ),
     )
 
@@ -553,7 +568,7 @@ def audit_trace(
             min(sample.state_q8 for sample in samples),
             max(sample.state_q8 for sample in samples),
         ),
-        high_det_selected=sum(
+        high_detonation_selected=sum(
             bool(sample.surface_state & 0x40) for sample in samples
         ),
         knock_event_samples=sum(sample.knock_count != 0 for sample in samples),
@@ -660,7 +675,8 @@ def main(argv: list[str] | None = None) -> int:
             )
             print(
                 f"  state_q8={result.state_q8_range[0]}..{result.state_q8_range[1]}, "
-                f"high_det_selected={result.high_det_selected}/{result.analyzed_snapshots}, "
+                f"high_detonation_selected="
+                f"{result.high_detonation_selected}/{result.analyzed_snapshots}, "
                 f"event_samples={result.knock_event_samples}, "
                 f"event_total={result.knock_event_total}"
             )
@@ -681,14 +697,18 @@ def main(argv: list[str] | None = None) -> int:
                 print(
                     f"  source_lag={alignment.source_lag}: "
                     f"n={alignment.comparisons}, "
-                    f"map_delta={alignment.map_delta_range[0]}.."
-                    f"{alignment.map_delta_range[1]}, "
+                    f"hot_surface_delta={alignment.hot_surface_delta_range[0]}.."
+                    f"{alignment.hot_surface_delta_range[1]}, "
                     f"implied_direct_base_q8={alignment.implied_direct_base_range[0]}.."
                     f"{alignment.implied_direct_base_range[1]}, "
-                    f"main_vs_stock={alignment.main_vs_stock_differences}, "
-                    f"high_det_vs_stock={alignment.high_det_vs_stock_differences}, "
-                    f"main_flagged={alignment.main_flagged_results}, "
-                    f"high_det_flagged={alignment.high_det_flagged_results}"
+                    f"high_octane_vs_stock="
+                    f"{alignment.high_octane_vs_stock_differences}, "
+                    f"high_detonation_vs_stock="
+                    f"{alignment.high_detonation_vs_stock_differences}, "
+                    f"high_octane_flagged="
+                    f"{alignment.high_octane_flagged_results}, "
+                    f"high_detonation_flagged="
+                    f"{alignment.high_detonation_flagged_results}"
                 )
     except (OSError, ValueError, peak_trc_audit.TraceError) as error:
         parser.error(str(error))

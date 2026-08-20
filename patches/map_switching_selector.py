@@ -60,17 +60,17 @@ STOCK_OVER_RUN_INTERMEDIATE_RESTORE_BYTES = bytes.fromhex(
     "6c 6c 6c 6c 6c 64 60 5c 58 54 4c 30 24 24 24 30"
 )
 
-STOCK_IGNITION_MAIN_BASE = FAMILIES[
-    "ignition_timing_trim_main"
+STOCK_HIGH_OCTANE_TIMING_STATE_BASE = FAMILIES[
+    "high_octane_timing_state"
 ].canonical_address
-IGNITION_MAIN_BASES = FAMILIES[
-    "ignition_timing_trim_main"
+HIGH_OCTANE_TIMING_STATE_BASES = FAMILIES[
+    "high_octane_timing_state"
 ].all_slot_addresses
-STOCK_IGNITION_HIGH_DET_BASE = FAMILIES[
-    "ignition_timing_trim_high_det"
+STOCK_HIGH_DETONATION_TIMING_STATE_BASE = FAMILIES[
+    "high_detonation_timing_state"
 ].canonical_address
-IGNITION_HIGH_DET_BASES = FAMILIES[
-    "ignition_timing_trim_high_det"
+HIGH_DETONATION_TIMING_STATE_BASES = FAMILIES[
+    "high_detonation_timing_state"
 ].all_slot_addresses
 STOCK_EXHAUST_CVTC_TARGET_BASE = FAMILIES[
     "exhaust_cvtc_target"

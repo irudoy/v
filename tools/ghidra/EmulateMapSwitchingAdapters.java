@@ -122,12 +122,12 @@ public class EmulateMapSwitchingAdapters extends GhidraScript {
                 0x0001298CL, 0x000D3FC0L, 0x000D3FD0L,
                 0x000D3FE0L, 0x000D3FF0L),
         new Vector(
-                "ignition_timing_trim_main",
+                "high_octane_timing_state",
                 0x000D2340L, 0x00026230L, 0x00009A1AL, 0x000D3568L,
                 0x00009A1AL, 0x000D2500L, 0x000D2600L,
                 0x000D2700L, 0x000D2800L),
         new Vector(
-                "ignition_timing_trim_high_det",
+                "high_detonation_timing_state",
                 0x000D2340L, 0x00026230L, 0x00009B1AL, 0x000D357CL,
                 0x00009B1AL, 0x000D2900L, 0x000D2A00L,
                 0x000D2B00L, 0x000D2C00L),

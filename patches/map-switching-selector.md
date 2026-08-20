@@ -203,15 +203,16 @@ a stock-family fingerprint rather than a unique in-band slot identifier.
 
 Only six of the twelve switched families differ between Maps 2 and 3 in this
 local image: all four warm DFCO threshold families, the `0x12196` timing-state
-family, and the column-0 release cell of main fuel cut `0x0934E`. Main ignition,
-high-detonation timing state, `0x1219E` warm transition timing, exhaust CVTC target, Fuel
-Compensation Main, and the request-limiter scalar are byte-identical between
-the two slots. They cannot explain an A/B difference in this capture. Exact
-per-image calibration values remain local and unversioned.
+family, and the column-0 release cell of main fuel cut `0x0934E`. High-octane
+timing state, high-detonation timing state, `0x1219E` warm transition timing,
+exhaust CVTC target, Fuel Compensation Main, and the request-limiter scalar are
+byte-identical between the two slots. They cannot explain an A/B difference in
+this capture. Exact per-image calibration values remain local and unversioned.
 
-Map 2 and Map 3 have the same fuel, high-octane timing, high-detonation timing, idle-timing,
-and request-limiter content relevant to the matched lift-off window. Their
-slot-specific `0x12196` content differs. At `4000..4400 RPM`, matched warm
+Map 2 and Map 3 have the same fuel, high-octane timing state,
+high-detonation timing state, idle-timing, and request-limiter content relevant
+to the matched lift-off window. Their slot-specific `0x12196` content differs.
+At `4000..4400 RPM`, matched warm
 lift-off samples have the same median calculated injection value and nearly
 identical BFS, while the median final timing coordinate changes from 14 on
 Map 2 to -2 on Map 3. The exact 16-count output difference matches the

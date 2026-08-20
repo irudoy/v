@@ -45,33 +45,33 @@ overrun_restore_pointers:
 .org 0x000D2340
 ignition_adapter:
 mov.l @(ignition_stock_wrapper,pc),r3
-mov.l @(ignition_main_base,pc),r0
+mov.l @(high_octane_timing_state_base,pc),r0
 cmp/eq r0,r4
-bt ignition_select_main
-mov.l @(ignition_high_det_base,pc),r0
+bt select_high_octane_timing_state
+mov.l @(high_detonation_timing_state_base,pc),r0
 cmp/eq r0,r4
-bt ignition_select_high_det
+bt select_high_detonation_timing_state
 jmp @r3
 nop
-ignition_select_main:
-mov.l @(ignition_main_pointers,pc),r2
+select_high_octane_timing_state:
+mov.l @(high_octane_timing_state_pointers,pc),r2
 bra 0x000D2270
 nop
-ignition_select_high_det:
-mov.l @(ignition_high_det_pointers,pc),r2
+select_high_detonation_timing_state:
+mov.l @(high_detonation_timing_state_pointers,pc),r2
 bra 0x000D2270
 nop
 
 .org 0x000D2360
-ignition_main_base:
+high_octane_timing_state_base:
 .long 0x00009A1A
-ignition_high_det_base:
+high_detonation_timing_state_base:
 .long 0x00009B1A
 ignition_stock_wrapper:
 .long 0x00026230
-ignition_main_pointers:
+high_octane_timing_state_pointers:
 .long 0x000D3568
-ignition_high_det_pointers:
+high_detonation_timing_state_pointers:
 .long 0x000D357C
 
 .org 0x000D2380

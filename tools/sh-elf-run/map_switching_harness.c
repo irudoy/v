@@ -102,13 +102,13 @@ static const struct family adapter_families[] = {
          0x000d3ff0U},
     },
     {
-        "ignition_timing_trim_main", IGNITION_ADAPTER, 0x00009a1aU,
+        "high_octane_timing_state", IGNITION_ADAPTER, 0x00009a1aU,
         256U,
         {0x00009a1aU, 0x000d2500U, 0x000d2600U, 0x000d2700U,
          0x000d2800U},
     },
     {
-        "ignition_timing_trim_high_det", IGNITION_ADAPTER, 0x00009b1aU,
+        "high_detonation_timing_state", IGNITION_ADAPTER, 0x00009b1aU,
         256U,
         {0x00009b1aU, 0x000d2900U, 0x000d2a00U, 0x000d2b00U,
          0x000d2c00U},

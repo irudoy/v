@@ -425,7 +425,7 @@ copies = [0x000D3FC0, 0x000D3FD0, 0x000D3FE0, 0x000D3FF0]
 pointer_table = 0x000D3528
 
 [[family]]
-key = "ignition_timing_trim_main"
+key = "high_octane_timing_state"
 group = "ignition"
 name = "High-Octane Ignition Timing Trim"
 canonical_address = 0x00009A1A
@@ -439,7 +439,7 @@ copies = [0x000D2500, 0x000D2600, 0x000D2700, 0x000D2800]
 pointer_table = 0x000D3568
 
 [[family]]
-key = "ignition_timing_trim_high_det"
+key = "high_detonation_timing_state"
 group = "ignition"
 name = "High-Detonation Ignition Timing Trim"
 canonical_address = 0x00009B1A

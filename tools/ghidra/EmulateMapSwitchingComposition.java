@@ -263,14 +263,14 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     0x000D3FE0L, 0x000D3FF0L,
                 }),
         new FamilySpec(
-                "ignition_timing_trim_main", 0x00009A1AL, 256,
+                "high_octane_timing_state", 0x00009A1AL, 256,
                 0x000D3568L,
                 new long[]{
                     0x000D2500L, 0x000D2600L,
                     0x000D2700L, 0x000D2800L,
                 }),
         new FamilySpec(
-                "ignition_timing_trim_high_det", 0x00009B1AL, 256,
+                "high_detonation_timing_state", 0x00009B1AL, 256,
                 0x000D357CL,
                 new long[]{
                     0x000D2900L, 0x000D2A00L,
@@ -333,10 +333,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "over_run_fuel_intermediate_restore",
                 FULL_DFCO_ADAPTER, 0x00026388L),
         new AdapterSpec(
-                "ignition_timing_trim_main",
+                "high_octane_timing_state",
                 IGNITION_ADAPTER, 0x00026230L),
         new AdapterSpec(
-                "ignition_timing_trim_high_det",
+                "high_detonation_timing_state",
                 IGNITION_ADAPTER, 0x00026230L),
         new AdapterSpec(
                 "fuel_compensation_main",

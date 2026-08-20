@@ -569,16 +569,16 @@ def _expected_long_literals(layout):
             family["over_run_fuel_restore"].pointer_table,
         "full_dfco_intermediate_restore_pointers":
             family["over_run_fuel_intermediate_restore"].pointer_table,
-        "ignition_main_base":
-            family["ignition_timing_trim_main"].canonical_address,
-        "ignition_high_det_base":
-            family["ignition_timing_trim_high_det"].canonical_address,
+        "high_octane_timing_state_base":
+            family["high_octane_timing_state"].canonical_address,
+        "high_detonation_timing_state_base":
+            family["high_detonation_timing_state"].canonical_address,
         "ignition_stock_wrapper":
             _hook_stock_for_adapter(layout, "ignition_adapter"),
-        "ignition_main_pointers":
-            family["ignition_timing_trim_main"].pointer_table,
-        "ignition_high_det_pointers":
-            family["ignition_timing_trim_high_det"].pointer_table,
+        "high_octane_timing_state_pointers":
+            family["high_octane_timing_state"].pointer_table,
+        "high_detonation_timing_state_pointers":
+            family["high_detonation_timing_state"].pointer_table,
         "fuel_compensation_base":
             family["fuel_compensation_main"].canonical_address,
         "fuel_compensation_stock_wrapper":

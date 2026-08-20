@@ -77,7 +77,7 @@ def cold_ignition():
     family = deepcopy(
         calibration(
             map_switching_layout.load_layout().family_by_key[
-                "ignition_timing_trim_main"
+                "high_octane_timing_state"
             ]
         )
     )
@@ -151,7 +151,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         maps = deepcopy(self.maps)
         overrides = deepcopy(self.overrides)
         family = self.layout.family_by_key[
-            "ignition_timing_trim_main"
+            "high_octane_timing_state"
         ]
         source = map_switching.address_key(family.canonical_address)
 
@@ -253,20 +253,20 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             for view in views
             if "Knock-State Enable - High Octane" in view["name"]
         ]
-        high_det = [
+        high_detonation = [
             view
             for view in views
             if "Knock-State Enable - High Detonation" in view["name"]
         ]
         self.assertEqual(len(cold), 1)
         self.assertEqual(len(main), 5)
-        self.assertEqual(len(high_det), 5)
+        self.assertEqual(len(high_detonation), 5)
         self.assertEqual(
             {view["source"] for view in main},
             {
                 map_switching.address_key(address)
                 for address in self.layout.family_by_key[
-                    "ignition_timing_trim_main"
+                    "high_octane_timing_state"
                 ].all_slot_addresses
             },
         )

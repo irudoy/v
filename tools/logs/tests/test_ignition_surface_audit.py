@@ -124,8 +124,10 @@ class IgnitionSurfaceFormulaTest(unittest.TestCase):
 
     def test_stock_calibration_binds_exact_constants(self):
         calibration = ignition_surface_audit.load_calibration()
-        self.assertEqual(calibration.main_by_slot[0].address, 0x9A1A)
-        self.assertEqual(calibration.high_det_by_slot[0].address, 0x9B1A)
+        self.assertEqual(calibration.high_octane_by_slot[0].address, 0x9A1A)
+        self.assertEqual(
+            calibration.high_detonation_by_slot[0].address, 0x9B1A
+        )
         self.assertEqual(calibration.recovery_step_q8, 13)
         self.assertEqual(calibration.event_step_q8, 307)
         self.assertEqual(calibration.forced_state_raw, -5)
