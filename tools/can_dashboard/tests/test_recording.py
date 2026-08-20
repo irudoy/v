@@ -119,13 +119,15 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertEqual(summary.event_records, 8)
         self.assertEqual(summary.bridge_records, 0)
         self.assertEqual(validation.data_records, 8)
-        self.assertEqual(validation.fields, 60)
+        self.assertEqual(validation.fields, 61)
         self.assertEqual(header[2], 1_776_000_000)
         names = [name for _, name in fields]
         self.assertIn("Vehicle speed*", names)
         self.assertIn("Stock CAN RPM", names)
         self.assertIn("Intake CVTC target*", names)
         self.assertIn("Exhaust CVTC target*", names)
+        self.assertIn("Knock timing state", names)
+        self.assertIn("High-detonation surface selected", names)
         self.assertIn("gps_lat", names)
         self.assertIn("gps_lon", names)
         self.assertTrue(math.isnan(records[0]["gps_lat"]))
@@ -147,6 +149,21 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         for spec in cvtc_specs.values():
             self.assertEqual(spec.scale, 0.5)
             self.assertEqual(spec.transform, -64.0)
+        knock_specs = {
+            binding.spec.name: binding.spec
+            for binding in recorder.bindings
+            if binding.spec.name in {
+                "Knock timing state",
+                "High-detonation surface selected",
+            }
+        }
+        self.assertEqual(knock_specs["Knock timing state"].scale, 1 / 256)
+        self.assertEqual(knock_specs["Knock timing state"].units, "state")
+        self.assertEqual(knock_specs["Knock timing state"].digits, 3)
+        self.assertEqual(
+            knock_specs["High-detonation surface selected"].display_style,
+            mlvlg.MLG_ON_OFF,
+        )
         self.assertEqual(
             records[-1]["Intake CVTC actual B1*"],
             dashboard.raw["intake_cvtc_actual_b1_raw"],
@@ -158,6 +175,14 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertEqual(
             records[-1]["Exhaust CVTC target*"],
             dashboard.raw["intake_cvtc_target_b2_raw"],
+        )
+        self.assertEqual(
+            records[-1]["Knock timing state"],
+            dashboard.raw["knock_timing_state_raw"],
+        )
+        self.assertEqual(
+            records[-1]["High-detonation surface selected"],
+            0,
         )
         self.assertAlmostEqual(records[-1]["gps_lat"], 43.115536, places=5)
         self.assertAlmostEqual(records[-1]["gps_lon"], 131.885485, places=5)

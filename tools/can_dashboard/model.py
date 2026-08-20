@@ -54,6 +54,7 @@ DASHBOARD_STATE_CODES = {
 
 DASHBOARD_AFFINE_TRANSFORMS = {
     "timing_command_deg": ("final_timing_raw", 1, 0),
+    "knock_timing_state": ("knock_timing_state_raw", 1 / 256, 0),
     "app1_v": ("app1_raw", 1 / 200, 0),
     "app2_v": ("app2_raw", 1 / 200, 0),
     "tps_b1_v": ("tps_b1_raw", 1 / 200, 0),
@@ -68,11 +69,18 @@ DASHBOARD_AFFINE_TRANSFORMS = {
 
 
 def _dashboard_engineering_values(raw):
-    return {
+    values = {
         target: raw[source] * factor + offset
         for target, (source, factor, offset) in DASHBOARD_AFFINE_TRANSFORMS.items()
         if source in raw
     }
+    if "knock_surface_state" in raw:
+        values["knock_surface_mode"] = (
+            "HIGH DETONATION"
+            if raw["knock_surface_state"] & 0x40
+            else "HIGH OCTANE"
+        )
+    return values
 
 
 @dataclass(frozen=True)
@@ -246,6 +254,12 @@ class DashboardModel:
         if self.schema_verified and name in self.engineering:
             return self.engineering[name]
         return self.raw.get(name, default)
+
+    @property
+    def high_detonation_selected(self):
+        if not self.schema_verified or "knock_surface_state" not in self.raw:
+            return None
+        return int(bool(self.raw["knock_surface_state"] & 0x40))
 
     @property
     def telemetry_status_flags(self):

@@ -90,7 +90,8 @@ class TrcToMlgTest(unittest.TestCase):
         self.assertEqual(summary.telemetry_frames, 64)
         self.assertEqual(summary.mlg_records, 8)
         self.assertEqual(summary.bridge_records, 0)
-        self.assertEqual(summary.mlg_fields, 60)
+        self.assertEqual(summary.mlg_fields, 61)
+        self.assertEqual(validation.record_length, 244)
         self.assertEqual(validation.data_records, 8)
         self.assertEqual(header[0], b"MLVLG\x00")
         expected_start = math.floor(
@@ -109,6 +110,8 @@ class TrcToMlgTest(unittest.TestCase):
         self.assertEqual(header[2], expected_start)
         self.assertAlmostEqual(summary.first_snapshot_offset_ms, 1001.2)
         self.assertIn("Vehicle speed*", names)
+        self.assertIn("Knock timing state", names)
+        self.assertIn("High-detonation surface selected", names)
         self.assertIn("gps_lat", names)
         self.assertIn("gps_lon", names)
         self.assertTrue(

@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `1.1.5`.
+Current dashboard version: `1.2.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The current verified schema supports
@@ -52,7 +52,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v1.1.5-windows.zip
+  --output tmp/vq-can-telemetry-v1.2.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -87,11 +87,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v1.1.5-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v1.2.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 1.1.5 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 1.2.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -168,12 +168,12 @@ Frames already queued when recording starts update the display but are not
 written to the new file. The first MLG event therefore cannot predate the
 recording start or be collapsed onto elapsed time zero.
 
-The `wide54` MLG schema has 60 channels: time, schema state, every fixed and
-rotating custom-telemetry field, stock CAN RPM, vehicle speed, selector code,
-ASCD input, dashboard state, and `gps_lat`/`gps_lon`. Candidate transforms
-retain `*` in their field names. Decoded telemetry and context values use F32,
-so a rotating context that has not arrived yet can be represented as `NaN`
-rather than a fabricated zero.
+The `wide54` MLG schema has 61 channels: time, schema state, every fixed and
+rotating custom-telemetry field, a decoded high-detonation-surface selector,
+stock CAN RPM, vehicle speed, selector code, ASCD input, dashboard state, and
+`gps_lat`/`gps_lon`. Candidate transforms retain `*` in their field names.
+Decoded telemetry and context values use F32, so a rotating context that has
+not arrived yet can be represented as `NaN` rather than a fabricated zero.
 
 MLG has a wrapping 16-bit 10-us block timestamp. A hold-last bridge record is
 inserted when complete snapshots are more than 0.3 seconds apart, which keeps
@@ -205,6 +205,13 @@ or diagnostic semantic bindings. The current conversions are:
 | short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |
 | timing coordinate | `final_timing_raw` signed byte | `raw deg` | upstream stock coordinate during a Rolling Launch late override; not a measured spark angle |
 | APC command | `apc_command_raw` byte | raw | effective software command consumed by the APC scheduler; normal-path timing coordinate is `110 - raw` |
+| knock timing state | `0xFFFF121A` signed word | `raw / 256 state` | exact Q8 software state; its physical unit remains unresolved |
+| active hot surface | `0xFFFF2466.bit6` | clear = High Octane, set = High Detonation | exact selector; other bits in the byte have separate roles |
+
+The MLG descriptor applies the exact Q8 scale to `Knock timing state` and keeps
+the original `Knock surface state` bitfield. The additional
+`High-detonation surface selected` channel exposes bit 6 as an ON/OFF field for
+plotting and filtering without discarding the raw byte.
 
 The CarScanner comparison follows the CAN recording rather than sharing a
 clock with it. It corroborates transforms but cannot prove equality for values

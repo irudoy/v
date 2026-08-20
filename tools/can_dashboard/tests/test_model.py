@@ -41,6 +41,12 @@ class DashboardModelTest(unittest.TestCase):
         self.assertIn("app1_v", dashboard.engineering)
         self.assertIn("tps_b1_v", dashboard.engineering)
         self.assertIn("oil_temperature_deg_c", dashboard.engineering)
+        self.assertEqual(
+            dashboard.value("knock_timing_state"),
+            dashboard.raw["knock_timing_state_raw"] / 256,
+        )
+        self.assertEqual(dashboard.value("knock_surface_mode"), "HIGH OCTANE")
+        self.assertEqual(dashboard.high_detonation_selected, 0)
         self.assertGreater(dashboard.value("stft_b1_percent"), -5)
         self.assertLess(dashboard.value("stft_b1_percent"), 5)
         self.assertGreater(dashboard.value("rpm"), 800)
@@ -54,6 +60,24 @@ class DashboardModelTest(unittest.TestCase):
             dashboard.value("exhaust_cvtc_target_deg_ca"),
             dashboard.raw["intake_cvtc_target_b2_raw"] * 0.5 - 64,
         )
+
+    def test_hot_ignition_surface_selector_decodes_bit_6(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        for tick in range(1, 5):
+            feed_group(dashboard, generator.group(tick), tick * 0.01)
+
+        group = list(generator.group(5))
+        page = bytearray(group[4].data)
+        page[5] = 0x40
+        group[4] = model.FrameRecord(0x6F0, bytes(page))
+        feed_group(dashboard, group, 0.05)
+
+        self.assertEqual(
+            dashboard.value("knock_surface_mode"),
+            "HIGH DETONATION",
+        )
+        self.assertEqual(dashboard.high_detonation_selected, 1)
 
     def test_tick_loss_and_stock_context_are_visible(self):
         generator = model.DemoGenerator()

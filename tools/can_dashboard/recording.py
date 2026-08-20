@@ -64,7 +64,7 @@ RAW_FIELD_DISPLAY = {
         "Telemetry status", "raw", 1.0, 0.0, 0, "Transport"
     ),
     "knock_timing_state_raw": (
-        "Knock timing state", "raw", 1.0, 0.0, 0, "Knock"
+        "Knock timing state", "state", 1 / 256, 0.0, 3, "Knock"
     ),
     "knock_surface_state": (
         "Knock surface state", "raw", 1.0, 0.0, 0, "Knock"
@@ -232,6 +232,18 @@ def build_bindings(
     bindings.extend(_raw_binding(name) for name in names)
     bindings.extend(
         (
+            FieldBinding(
+                mlvlg.FieldSpec(
+                    "High-detonation surface selected",
+                    "",
+                    "Knock",
+                    mlvlg.MLG_F32,
+                    mlvlg.MLG_ON_OFF,
+                    digits=0,
+                ),
+                "high_detonation_selected",
+                "attribute",
+            ),
             FieldBinding(
                 mlvlg.FieldSpec(
                     "Stock CAN RPM", "rpm", "Context", mlvlg.MLG_F32, digits=0
