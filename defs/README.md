@@ -56,6 +56,8 @@ See `../tools/map-analysis-pipeline.md` and
   request, target, feedback-regulator, and ATU-II PWM path.
 - `JK08A.ignition-state.md` models the cold, high-octane, and high-detonation
   timing-state surfaces, their masked fields, selector, and knock-state path.
+- `JK08A.knock-detection.md` models the active per-channel knock-threshold
+  lookup, evaluator outputs, and the unreferenced neighboring calibration bank.
 - `JK08A.ignition-output.md` models the final timing and APC output boundary.
 - `JK08A.start-signal-temperature-selector.md` models the computed START
   SIGNAL, battery-voltage acquisition, and selected-temperature sentinel.

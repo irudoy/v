@@ -22,7 +22,8 @@ COMMON_TABLES = {
         "Fuelling / Engine Load",
     "Cold Ignition Timing Trim": "Ignition Timing / Main",
     "Knock-State Enable - Cold": "Ignition Timing / Knock Control",
-    "Knock Sensitivity": "Ignition Timing / Knock Control",
+    "Knock Threshold by Evaluator Channel":
+        "Ignition Timing / Knock Control / Thresholds",
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
@@ -52,8 +53,6 @@ DEFAULT_VISIBLE_TABLES = {
     "Intake Cam Timing Cold": "Variable Valve Timing / Intake Cam",
     "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
     "Engine Torque Map": "Transmission / Shifting Performance",
-    "Knock Slice Map - parallel bank (0x10F8E)":
-        "Ignition Timing / Knock Control / Thresholds",
     "Initial Retard Quantity - unresolved mode (0x1202E)":
         "Ignition Timing / Transient Correction",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
@@ -124,7 +123,7 @@ class EmitDefStaticAxesTest(unittest.TestCase):
             "mask": "FFFF",
             "static_axis_x_name": "Engine Speed [RPM]",
             "static_axis_x": [400 * (index + 1) for index in range(16)],
-            "static_axis_y_name": "Cylinder",
+            "static_axis_y_name": "Evaluator Channel",
             "static_axis_y": [1, 2, 3, 4, 5, 6],
         }
 
@@ -251,7 +250,7 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         self.assertIn('type="Static X Axis"', xml)
         self.assertIn('name="Engine Speed [RPM]"', xml)
         self.assertIn('type="Static Y Axis"', xml)
-        self.assertIn('name="Cylinder"', xml)
+        self.assertIn('name="Evaluator Channel"', xml)
 
     def test_candidate_map_keeps_a_functional_category(self):
         self.map["confidence"] = "candidate"
@@ -372,7 +371,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             for address, entry in overrides["table"].items()
             if entry.get("emit") is False
         }
-        self.assertEqual(len(explicitly_hidden), 161)
+        self.assertEqual(len(explicitly_hidden), 162)
         self.assertIn("000094b2", explicitly_hidden)
         self.assertTrue(all(
             entry.get("category") in hidden_categories
@@ -715,7 +714,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertTrue({
             "0x08FDC",
             "0x0911C",
-            "0x10F8E",
+            "0x1108E",
             "0x124D2",
         } <= addresses)
 

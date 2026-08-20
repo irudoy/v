@@ -165,6 +165,10 @@ This index points to structured rows without reproducing their fields.
   shared axes, and candidate physical scale are modeled in
   `JK08A.ignition-state.md`. Final command-to-APC behavior is modeled
   separately in `JK08A.ignition-output.md`.
+- Active per-channel knock threshold map `0x1108E`, its one-based row lookup,
+  evaluator outputs, and the unreferenced neighboring bank at `0x10F8E` are
+  modeled in `JK08A.knock-detection.md`. The inactive bank is not an editable
+  tuning calibration for exact JK08A code.
 - Timing-state table `0x12196` is the default/post-transition addend and
   `0x1219E` is the warm DFCO-transition addend for the nonzero portion of an
   85-count timer. Table `0x121A6` is stock-inert because its feature flag is

@@ -249,8 +249,8 @@ fine = 0.0000152587890625
 coarse = 0.00006103515625
 
 [table.0001108e]
-name = "Knock Sensitivity"
-category = "Ignition Timing / Knock Control"
+name = "Knock Threshold by Evaluator Channel"
+category = "Ignition Timing / Knock Control / Thresholds"
 order = 110
 emit = true
 format = "0.000"
@@ -261,13 +261,14 @@ static_axis_x = [
   400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
   3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
 ]
-static_axis_y_name = "Cylinder"
+static_axis_y_name = "Evaluator Channel"
 static_axis_y = [1, 2, 3, 4, 5, 6]
 
 [table.00010f8e]
-name = "Knock Slice Map - parallel bank (0x10F8E)"
-category = "Ignition Timing / Knock Control / Thresholds"
+name = "Unreferenced Knock-Shaped Bank (0x10F8E)"
+category = "Internal Calculations"
 order = 41
+emit = false
 format = "0.000"
 fine = 0.0015259
 coarse = 0.015259
@@ -276,7 +277,7 @@ static_axis_x = [
   400, 800, 1200, 1600, 2000, 2400, 2800, 3200,
   3600, 4000, 4400, 4800, 5200, 5600, 6000, 6400,
 ]
-static_axis_y_name = "Cylinder"
+static_axis_y_name = "Unverified Row"
 static_axis_y = [1, 2, 3, 4, 5, 6]
 
 [table.000085d9]

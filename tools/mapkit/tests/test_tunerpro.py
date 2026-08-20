@@ -16,7 +16,8 @@ COMMON_TABLES = {
         "Fuelling / Engine Load",
     "Cold Ignition Timing Trim": "Ignition Timing / Main",
     "Knock-State Enable - Cold": "Ignition Timing / Knock Control",
-    "Knock Sensitivity": "Ignition Timing / Knock Control",
+    "Knock Threshold by Evaluator Channel":
+        "Ignition Timing / Knock Control / Thresholds",
     "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
     "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
     "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
@@ -44,8 +45,6 @@ DEFAULT_VISIBLE_TABLES = {
     "Intake Cam Timing Cold": "Variable Valve Timing / Intake Cam",
     "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
     "Engine Torque Map": "Transmission / Shifting Performance",
-    "Knock Slice Map - parallel bank (0x10F8E)":
-        "Ignition Timing / Knock Control / Thresholds",
     "Initial Retard Quantity - unresolved mode (0x1202E)":
         "Ignition Timing / Transient Correction",
     "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
@@ -357,7 +356,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 45)
-        self.assertEqual(len(tables), 108)
+        self.assertEqual(len(tables), 107)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
@@ -470,7 +469,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertTrue({
             "0x8FDC",
             "0x911C",
-            "0x10F8E",
+            "0x1108E",
             "0x124D2",
         } <= addresses)
 

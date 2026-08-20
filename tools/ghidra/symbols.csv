@@ -131,8 +131,8 @@ addr,name,note
 0002acba,apc_reset_compare_scheduler,Convert the offset timing command into an APC GR11B compare event
 0002b768,capture_interval_update,Normalize the captured engine-event interval and publish its division by twelve
 000493e8,knock_timing_state_coordinator,Update knock and high-detonation timing state and publish the hot-map term
-00049ffc,knock_slice_threshold_lookup,Interpolate the current-cylinder knock threshold by engine speed
-0004a238,knock_slice_evaluator,Compare the current-cylinder knock metric with its interpolated threshold
+00049ffc,knock_slice_threshold_lookup,Interpolate the current evaluator-channel knock threshold by engine speed
+0004a238,knock_slice_evaluator,Compare the current evaluator-channel knock metric with its interpolated threshold
 0004aad0,bounded_mode_state_source,Publish a bounded signed mode-dependent state for the periodic snapshot
 0004af38,selected_timing_state_terms,Extract the selected map fields and publish downstream timing-state terms
 0004afdc,signed_timing_state_accumulator,Combine mode-selected base and correction terms into signed timing state

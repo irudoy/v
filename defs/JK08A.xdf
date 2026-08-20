@@ -922,68 +922,6 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x2B0E" flags="0x0">
-    <title>Knock Slice Map - parallel bank (0x10F8E)</title>
-    <description>Exact JK08A. Address 0x10F8E; 6 rows x 16 columns; uint16; map confidence candidate. Parallel Knock Slice threshold bank: structural counterpart of active per-cylinder knock-threshold map 0x1108e. The array is organized as 6 cylinders by 16 engine-speed points. No direct xref to this base was found, so the specific mode and bank activity remain candidate.</description>
-    <CATEGORYMEM index="0" category="13" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Engine Speed [RPM]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="400" />
-      <LABEL index="1" value="800" />
-      <LABEL index="2" value="1200" />
-      <LABEL index="3" value="1600" />
-      <LABEL index="4" value="2000" />
-      <LABEL index="5" value="2400" />
-      <LABEL index="6" value="2800" />
-      <LABEL index="7" value="3200" />
-      <LABEL index="8" value="3600" />
-      <LABEL index="9" value="4000" />
-      <LABEL index="10" value="4400" />
-      <LABEL index="11" value="4800" />
-      <LABEL index="12" value="5200" />
-      <LABEL index="13" value="5600" />
-      <LABEL index="14" value="6000" />
-      <LABEL index="15" value="6400" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Cylinder</units>
-      <indexcount>6</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="1" />
-      <LABEL index="1" value="2" />
-      <LABEL index="2" value="3" />
-      <LABEL index="3" value="4" />
-      <LABEL index="4" value="5" />
-      <LABEL index="5" value="6" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x10F8E" mmedelementsizebits="16" mmedrowcount="6" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>knock strength [cand]</units>
-      <decimalpl>3</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*0.0015259">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0xAA3A" flags="0x0">
     <title>Base Fuel Schedule K-Value</title>
     <description>Exact JK08A. Address 0x9284; 1 rows x 1 columns; uint16; map confidence code. Base Fuel Schedule K-Value. The primary calculation in FUN 0003b75c multiplies nonnegative MAF aggregate ffff1e38 by this uint16 scalar before fixed-point normalization produces ffff1e40 and, downstream, Base Fuel Schedule DID 0x1208. Exact code establishes the address, uint16 representation, stock value 26806, MAF-to-BFS position, and multiplicative role. UpRev names this calibration K - Fuel Multiplier and states MAF * K = BFS; A2L independently names it K-Value and supplies ms/kg. The engineering unit remains source-derived pending hardware validation. A2L MAF Factor is a separate airflow scalar and is not an alias for this word. Static diagnostic context: CID=1208H_B/FUEL SCHDL [code, nissan_family_candidate, via map evidence: writes].</description>
@@ -3315,9 +3253,9 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x1E69" flags="0x0">
-    <title>Knock Sensitivity</title>
-    <description>Exact JK08A. Address 0x1108E; 6 rows x 16 columns; uint16; map confidence code. Knock Slice Map: per-cylinder knock threshold by engine speed. Measured knock strength exceeding the interpolated threshold contributes to increasing the knock count. 00049ffc selects a cylinder row, interpolates 16 uint16 points along axis 0x15340, and stores the threshold for comparison in 0004a238. Value 0xffff is the uint16 upper bound and makes exceeding the threshold practically impossible.</description>
-    <CATEGORYMEM index="0" category="12" />
+    <title>Knock Threshold by Evaluator Channel</title>
+    <description>Exact JK08A. Address 0x1108E; 6 rows x 16 columns; uint16; map confidence code. Knock Slice Map: per-evaluator-channel knock threshold by engine speed. A calculated metric exceeding the interpolated threshold contributes to increasing the knock count. 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 points along axis 0x15340, and stores the threshold for comparison in 0004a238. Stock rows 3 and 5 are all 0xffff. Value 0xffff is the uint16 upper bound and makes exceeding the threshold practically impossible. The catalog identifies the rows as cylinders, but exact code does not establish their physical cylinder or sensor order.</description>
+    <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
       <units>Engine Speed [RPM]</units>
@@ -3349,7 +3287,7 @@
     </XDFAXIS>
     <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Cylinder</units>
+      <units>Evaluator Channel</units>
       <indexcount>6</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
