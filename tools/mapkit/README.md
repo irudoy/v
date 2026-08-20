@@ -90,6 +90,13 @@ uv run python tools/mapkit/ptrscan.py JK08A 0x1495a
 Pointer-scan hits are candidates, not references. Confirm each site with the
 Ghidra inspection tools documented in `../ghidra/README.md`.
 
+`throttle_limiter.py` is a pure integer state model of stock function
+`0x0007584E`. It reads the limiter calibration directly from a verified ROM and
+keeps the per-RPM baseline lookup as an explicit input. Fast unit tests cover
+state transitions and arithmetic boundaries; the exact-ROM p-code harness in
+`../ghidra/EmulateThrottleLimiter.java` remains the independent executable
+reference, including the baseline lookup and downstream target projection.
+
 ## Generator invariants
 
 - A visible table must pass geometry, axis, scaling, and presentation gates.

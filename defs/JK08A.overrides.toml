@@ -339,6 +339,46 @@ static_axis_x = ["Normal", "Reverse"]
 static_axis_y_name = "Fuel"
 static_axis_y = ["Cut", "Restore"]
 
+[table.00009424]
+name = "Throttle Rev Limiter Threshold Blend Gain"
+category = "Limiters / Rev Limit / Internal State"
+order = 190
+emit = false
+format = "0.0000"
+fine = 0.01
+coarse = 0.1
+static_axis = ["blend gain"]
+
+[table.00009426]
+name = "Throttle Rev Limiter Normal Ramp Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 191
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["normal rate"]
+
+[table.00009428]
+name = "Throttle Rev Limiter Fast Ramp Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 192
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["fast rate"]
+
+[table.0000942a]
+name = "Throttle Rev Limiter Final Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 193
+emit = false
+format = "0.000"
+fine = 0.1
+coarse = 1
+static_axis = ["final rate"]
+
 [table.0000942c]
 name = "Rev Limit - Throttle Cut"
 category = "Limiters / Rev Limit"
@@ -348,6 +388,76 @@ format = "0"
 fine = 50
 coarse = 250
 static_axis = ["throttle cut"]
+
+[table.0000942e]
+name = "Throttle Rev Limiter Mode Cap"
+category = "Limiters / Rev Limit / Internal State"
+order = 202
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["mode cap"]
+
+[table.00009430]
+name = "Throttle Rev Limiter Threshold Down Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 203
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["down rate"]
+
+[table.00009434]
+name = "Throttle Rev Limiter Coolant-Latch Threshold"
+category = "Limiters / Rev Limit / Internal State"
+order = 204
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["alternate threshold"]
+
+[table.00009436]
+name = "Throttle Rev Limiter Threshold Up Rate"
+category = "Limiters / Rev Limit / Internal State"
+order = 205
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["up rate"]
+
+[table.0000943a]
+name = "Throttle Rev Limiter Recovery Rate High Context"
+category = "Limiters / Rev Limit / Internal State"
+order = 206
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["high-context recovery"]
+
+[table.0000943c]
+name = "Throttle Rev Limiter Recovery Rate Low Context"
+category = "Limiters / Rev Limit / Internal State"
+order = 207
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["low-context recovery"]
+
+[table.0000943e]
+name = "Throttle Rev Limiter Auxiliary Duration"
+category = "Limiters / Rev Limit / Internal State"
+order = 208
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["auxiliary duration"]
 
 [table.000121fe]
 name = "Composite Calculation Base Curve (0x121FE)"
@@ -1753,6 +1863,16 @@ order = 124
 format = "0.00"
 fine = 0.1
 coarse = 1
+
+[table.00014384]
+name = "Throttle Rev Limiter Auxiliary Request"
+category = "Limiters / Rev Limit / Internal State"
+emit = false
+order = 209
+format = "0"
+fine = 1
+coarse = 16
+static_axis = ["context 0", "context 1", "context 2", "context 3", "context 4+"]
 
 [table.00018ac6]
 name = "QH0 Flow Potential Coordinate Trustful"

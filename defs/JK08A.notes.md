@@ -104,6 +104,9 @@ The following documents own complete current subsystem models:
   final mask precedence;
 - `JK08A.limiters.md` - main and stationary engine-speed fuel cuts plus the
   separate request limiter;
+- `JK08A.throttle-control.md` - dual accelerator-pedal acquisition, signed
+  request arbitration, opening-area composition, per-channel targets,
+  throttle feedback, fixed-point regulation, and the ATU-II PWM boundary;
 - `JK08A.ignition-output.md` - final timing coordinate, late-retard insertion,
   APC scheduling, and fallback gate;
 - `JK08A.diagnostics.md` - UDS publication, diagnostic bindings, rear-O2,
@@ -164,6 +167,20 @@ This index points to structured rows without reproducing their fields.
 - Accelerator-pedal hysteresis `0x08FDC`/`0x08FDE` is an ETC state threshold,
   not an engine-speed limiter. Exact sensor and DTC relationships are recorded
   in the structured claims.
+
+### Electronic throttle
+
+- The stock command route is `ffff243c` through the shared signed-request
+  subsystem to `ffff19c6`, inverse coordinate `ffff198a`, opening-area request
+  `ffff183e`, shared target `ffff19b2`, channel targets `ffff28bc`/`ffff28be`,
+  regulator effort `ffff37b8`/`ffff37bc`, and ATU-II BFR6A-D. The complete
+  branch and hardware boundary are modeled in `JK08A.throttle-control.md`.
+- Direct inverse coordinate `ffff1984` is calculated from `ffff243c`, but its
+  `000730fc` branch is disabled by stock `0x870c.bit7 = 0`. `ffff40c6` is a
+  derived common opening monitor rather than a motor-command word.
+- Lift-off retains an idle/opening-area contribution at `ffff1340` before the
+  per-channel target limits. DFCO state and throttle target therefore remain
+  separate control decisions.
 
 ### Diagnostic and emissions models
 

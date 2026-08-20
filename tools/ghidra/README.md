@@ -57,7 +57,7 @@ preflight before graph writes; see `../memgraph/README.md`.
 | Diagnostics | `ExportDiagnosticRefs`, `ScanImmoAnchors`, `TraceRamAccesses` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
 | Inspection | `InspectAddress`, `DumpListing`, `DumpFuncListing`, `DecompileFuncs`, `FindTableRefs`, `FindPoolWords` | Inspect ownership, references, functions, listings, pools, and decompilation |
 | Patch construction | `AuditFreeRegion`, `AssembleSh2` | Prove erased envelopes and assemble bounded Ghidra payload fixtures |
-| P-code execution | `EmulateMapSwitching*` | Reconstruct and exercise current map-switching behavior in Ghidra |
+| P-code execution | `EmulateThrottleLimiter`, `EmulateMapSwitching*` | Execute stock limiter behavior and reconstruct current map-switching behavior in Ghidra |
 
 Each script documents its positional arguments in its source header. Generated
 CSV and listings belong in a machine-local export directory.
@@ -89,6 +89,33 @@ Run it once for every entry in `defs/JK08A.interp.csv`. The loader rejects a
 missing census, unsupported branching alignment, an accessor absent from the
 exported function set, or a target image that does not match its registry.
 Algorithm and ingestion details are in `../map-analysis-pipeline.md`.
+
+## Stock throttle-limiter p-code coverage
+
+`EmulateThrottleLimiter.java` SHA-locks the stock JK08A ROM and executes the
+unmodified function at `0x0007584E`. Its focused cases cover the disabled early
+return, filter initialization and recurrence, coolant hysteresis, all dynamic
+threshold directions and gates, steady-state request boundaries, fast-ramp
+transition, recovery tracking and rollback, forced neutral, auxiliary output,
+and equality behavior.
+
+An optional CSV path enables a 7200..7800 candidate-RPM sweep at four APP
+requests. The same run publishes the most restrictive request through exact
+stock functions `0x00070D82` and `0x00079030`, then executes an isolated target
+projection through `0x0003DE4C`, `0x000730FC`, `0x00072C3C`, and both channel
+calls to `0x0006F48C`:
+
+```bash
+tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+  -process 1JK08A-20260726-stock.bin -noanalysis -readOnly \
+  -scriptPath tools/ghidra \
+  -postScript EmulateThrottleLimiter.java <output.csv>
+```
+
+The projection seeds unrelated signed bounds as permissive, sets idle and
+subtractive area terms to zero, and enables symmetric normal channel handling.
+It verifies exact composition but is not a vehicle target prediction. Generated
+CSV output is a local test artifact and is not tracked.
 
 ## Current map-switching p-code coverage
 

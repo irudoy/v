@@ -158,5 +158,37 @@ addr,name,note
 00070d82,request_limit_selector,Select and publish the signed limiter or controller result
 00079dd8,request_boundary_dispatch,Run the periodic signed request-boundary stages
 00079030,signed_request_boundary,Apply signed request bounds and publish the shared coordinate
-000730fc,request_coordinate_coordinator,Run downstream request-coordinate and local threshold calculations
+000730fc,request_coordinate_coordinator,Convert the bounded shared request to the stock opening-area request
 00073432,primary_request_inverse_lookup,Convert the shared signed request into inverse lookup coordinates
+0002862c,accelerator_pedal_adc_sampler,Sample and align the two accelerator-pedal ADC channels
+00072b68,accelerator_pedal_channel_0_adjuster,Offset and range-check accelerator-pedal channel 0
+0006e826,accelerator_pedal_channel_1_adjuster,Scale offset and publish accelerator-pedal channel 1
+0006ec68,accelerator_pedal_pair_selector,Select and rate-limit the dual-channel pedal quantity
+00075590,accelerator_pedal_request_preprocessor,Normalize the pedal snapshot and publish the signed request precursor
+00075306,pedal_request_scaler,Conditionally scale the signed pedal-request precursor
+00075396,pedal_request_mode_selector,Select the mode and fault pedal-request source
+000753d4,pedal_request_compensator,Apply the Q15 pedal and compensation coefficient to the signed request
+00075540,pedal_request_inverse_lookup,Convert the compensated pedal request to the shared-request candidate domain
+000476a0,opening_area_upper_builder,Build the saturated upper term for the idle opening-area base
+000476d2,idle_opening_area_builder,Combine the two opening-area lookups under the runtime upper term
+00072c3c,throttle_area_compositor,Compose the normal shared throttle target area and alternate feedback value
+0006f454,throttle_target_coordinator,Build the common and two per-channel throttle targets
+0006f464,common_throttle_target_coordinate,Convert the shared target area to the common opening coordinate
+0006f48c,channel_throttle_target_builder,Build and cap one channel throttle target
+000710bc,throttle_opening_monitor_builder,Derive the common opening-coordinate monitor from the area request
+0003e75a,throttle_feedback_acquisition,Build the paired per-channel throttle-feedback estimates
+0003ea9a,throttle_feedback_normalizer_a,Normalize the first throttle-feedback candidate
+0003eade,throttle_feedback_normalizer_b,Normalize the second throttle-feedback candidate
+000cafbc,throttle_feedback_plausibility_selector,Select one normalized throttle-feedback candidate per channel
+000cb078,throttle_feedback_fault_selector,Apply per-channel throttle-feedback fallback selection
+000cb140,throttle_feedback_error_encoder,Encode feedback-reference magnitude and direction
+000cb1ca,throttle_target_scaler,Scale one channel target into the regulator domain
+000cb224,throttle_target_fault_selector,Select the normal or fallback regulator target
+000cb2b6,throttle_target_error_encoder,Encode target-reference magnitude and direction
+000cb354,throttle_target_error_scaler,Mask and scale the target-reference term
+000cb41c,throttle_regulator_coefficient_selector,Select per-channel throttle-regulator gains and modes
+000cb614,throttle_fixed_point_regulator,Update regulator state and publish effort magnitude and direction
+000cc5f0,throttle_effort_to_duty,Apply supply compensation and publish bounded duty
+000cc6a2,throttle_direction_publisher,Translate regulator direction into complementary-pair masks
+000cc720,throttle_regulator_coordinator,Run the ordered regulator stages for both channels
+000407c0,atu2_throttle_pwm_publisher,Scale duty and write complementary ATU-II BFR6A-D outputs

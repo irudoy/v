@@ -88,8 +88,9 @@ At or below 2000 RPM the first table cell produces step zero, so readiness canno
 build from a cleared state. At the stock high-RPM limiter region the interpolated
 cell is 255 and the step is 127. Exactly three timer expirations reach
 `3*127=381`, or 300 countdown counts after initial entry. The countdown period is
-the same exact `204800/Pphi` used by the surrounding byte-timer range. With the
-board-level candidate `Pphi=20 MHz`, high-RPM readiness takes about 3.072 seconds.
+the same exact `204800/Pphi` used by the surrounding byte-timer range. Passive
+target-CAN timing establishes `Pphi=20 MHz`, so high-RPM readiness takes about
+3.072 seconds.
 
 After readiness, `0xFFFF11AE` uses exact `x*50 RPM` thresholds:
 
@@ -103,21 +104,43 @@ therefore also becomes a full `0x3F` mask.
 
 ## Rotational-speed request limiter
 
-`FUN_0007584E` reads the 28-byte calibration cluster at `0x09424`; the upper-speed
-scalar is `ROM16[0x0942C]=0x2580`. A value of `0xFFFF` bypasses the branch and writes
-neutral signed limit `0x7FFF` to `0xFFFF19D8`.
+`FUN_0007584E` reads calibrated words from `0x09424..0x0943E`; the base
+threshold is `ROM16[0x0942C]=0x2580`. A value of `0xFFFF` writes neutral signed
+limit `0x7FFF` to `0xFFFF19D8` and returns without advancing any limiter state.
 
 On the enabled path, speed coordinate `N=uint16[0xFFFF11B6]` is filtered as:
 
 ```text
-first pass: S = min(65535, 4*N)
-later pass: S = min(65535, N + floor(3*S_previous/4))
+first pass: S_new = min(65535, 4*N), S_blend = S_new
+later pass: S_blend = S_entry
+            S_new = min(65535, N + floor(3*S_entry/4))
 ```
 
-For stable speed the state converges to `4*N`. Dynamic threshold `0xFFFF1796` is
-initialized from `0x0942C`. In stock calibration, decrement and increment steps at
-`0x09430` and `0x09436` are zero and the alternative cap at `0x09434` is `0xFFFF`,
-so the threshold remains `0x2580` in the normal path.
+For stable speed the state converges to `4*N`. The blend uses the entry value,
+while both request-rate terms use the newly stored value. This one-sample split
+increases reduction during a rising-speed transient.
+
+Dynamic threshold `0xFFFF1796` is initialized from `0x0942C`. The coolant latch
+sets only at raw 255, remains set at raw 239, and clears at raw 238. Its stock
+alternate threshold at `0x9434` is `0xFFFF`. Stock decrement and increment rates
+at `0x9430` and `0x9436` are zero, so the normal threshold remains `0x2580`.
+
+At steady speed, the effective delta is:
+
+```text
+L = clamp_u16(S + floor(76 * (D - S) / 1024))
+delta = L - S
+```
+
+The signed `delta` changes state `0xFFFF19DA` with rate 1500 while the fast-mode
+byte is nonzero and its nonpositive-ramp latch remains clear, or with rate 200
+otherwise. An independent rate-2000 term is applied to the final request on
+every active or inactive pass. `0xFFFF19DC` provides a second recovery envelope;
+when this envelope wins, the ramp is rolled back to its entry value. Equality
+between previous limiter output and APP request takes the inactive/reset branch.
+The full state machine, calibration inventory, exact integer boundaries, and
+auxiliary outputs are specified in
+[`JK08A.throttle-control.md`](JK08A.throttle-control.md).
 
 The exact downstream chain is:
 
@@ -127,7 +150,12 @@ The exact downstream chain is:
   -> FUN_00071508 -> 0xFFFF243A
   -> FUN_000702A0 / FUN_00070D82 -> 0xFFFF2438 and 0xFFFF19C2
   -> FUN_00079030 -> 0xFFFF19C6
-  -> FUN_00073432 and FUN_00073628
+  -> FUN_00073432 -> 0xFFFF198A
+  -> FUN_000730FC -> 0xFFFF183E
+  -> FUN_00072C3C -> 0xFFFF19B2
+  -> FUN_0006F48C -> 0xFFFF28BC / 0xFFFF28BE
+  -> FUN_000CC720 regulator
+  -> FUN_000407C0 -> ATU-II BFR6A-D
 ```
 
 `FUN_00071508` is a signed-min arbiter, so the most restrictive signed candidate
@@ -138,9 +166,12 @@ coordinate.
 
 The HR catalog conversion maps `0x2580` to 7500 RPM, placing the candidate request
 intervention 150 RPM below the column-0 fuel-cut activation and 50 RPM above its
-release point. This numeric ordering supports staged request reduction before hard
-fuel cut, but static code does not prove actual throttle-plate motion or response
-time.
+release point. Exact stock-ROM execution across 7200..7800 candidate RPM and four
+APP requests confirms neutral arbitration through 7500 and progressive request
+reduction above it. After 20 measured 10.24 ms passes, APP request 10000 produces
+limiter requests 10000, 7601, 5466, and 3086 at 7500, 7600, 7700, and 7800.
+Exact code carries the request to the ATU-II PWM registers, but it does not prove
+actual throttle-plate motion, channel-to-bank identity, or response time.
 
 ## Exact fuel-mask precedence
 
@@ -193,8 +224,9 @@ override/fallback paths through `FUN_0004EBA2`, `FUN_00052034`, and
 `FUN_0002C13C`.
 
 Static code therefore establishes a hard six-channel fuel-output path for main and
-stationary RPM cut, and a separate softer signed-request path for `0x0942C`. Hardware
-validation remains required for the physical throttle action, exact `0x0942C` scale,
-external injector-driver behavior, and channel-to-cylinder order. The two shared-status
-prerequisites are lifecycle-zero and stock-inert under the
+stationary RPM cut, and a separate softer signed-request path for `0x0942C` that
+reaches ATU-II BFR6A-D through the stock throttle regulator. Hardware validation
+remains required for physical throttle motion, exact `0x0942C` scale, bank and
+polarity assignment, external injector-driver behavior, and channel-to-cylinder
+order. The two shared-status prerequisites are lifecycle-zero and stock-inert under the
 recovered startup, runtime, recovery, and DMAC paths.

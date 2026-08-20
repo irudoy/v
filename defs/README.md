@@ -44,6 +44,8 @@ See `../tools/map-analysis-pipeline.md` and
 - `JK08A.dfco.md` models deceleration fuel cut.
 - `JK08A.fuel-inhibit.md` models the complete fuel-output inhibit arbitration.
 - `JK08A.limiters.md` models the main, stationary, and request limiter paths.
+- `JK08A.throttle-control.md` models the complete accelerator-pedal, shared
+  request, target, feedback-regulator, and ATU-II PWM path.
 - `JK08A.ignition-output.md` models the final timing and APC output boundary.
 - `JK08A.start-signal-temperature-selector.md` models the computed START
   SIGNAL, battery-voltage acquisition, and selected-temperature sentinel.

@@ -1664,13 +1664,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
-         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
-         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
-         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
-         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
-         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
-         pending controlled hardware validation.
+         The stock word is 0x2580, or 7500 candidate RPM, between fuel-cut release 7450 RPM and
+         activation 7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and
+         7200..7800 candidate RPM at four APP requests; after 20 measured 10.24 ms passes, APP
+         10000 yields 10000 at 7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The limiter
+         never enters fuel mask ffff22e0. Physical plate motion, response time, channel-to-bank
+         identity, ECM terminals, the Throttle Rev Limiter label, and the RPM multiplier require
+         controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
            storagetype="uint16" storageaddress="0x0942C" sizex="1" endian="big">
@@ -2040,13 +2040,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
-         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
-         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
-         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
-         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
-         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
-         pending controlled hardware validation.
+         The stock word is 0x2580, or 7500 candidate RPM, between fuel-cut release 7450 RPM and
+         activation 7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and
+         7200..7800 candidate RPM at four APP requests; after 20 measured 10.24 ms passes, APP
+         10000 yields 10000 at 7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The limiter
+         never enters fuel mask ffff22e0. Physical plate motion, response time, channel-to-bank
+         identity, ECM terminals, the Throttle Rev Limiter label, and the RPM multiplier require
+         controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
            storagetype="uint16" storageaddress="0xD3520" sizex="1" endian="big">
@@ -2416,13 +2416,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
-         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
-         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
-         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
-         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
-         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
-         pending controlled hardware validation.
+         The stock word is 0x2580, or 7500 candidate RPM, between fuel-cut release 7450 RPM and
+         activation 7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and
+         7200..7800 candidate RPM at four APP requests; after 20 measured 10.24 ms passes, APP
+         10000 yields 10000 at 7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The limiter
+         never enters fuel mask ffff22e0. Physical plate motion, response time, channel-to-bank
+         identity, ECM terminals, the Throttle Rev Limiter label, and the RPM multiplier require
+         controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
            storagetype="uint16" storageaddress="0xD3522" sizex="1" endian="big">
@@ -2792,13 +2792,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
-         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
-         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
-         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
-         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
-         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
-         pending controlled hardware validation.
+         The stock word is 0x2580, or 7500 candidate RPM, between fuel-cut release 7450 RPM and
+         activation 7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and
+         7200..7800 candidate RPM at four APP requests; after 20 measured 10.24 ms passes, APP
+         10000 yields 10000 at 7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The limiter
+         never enters fuel mask ffff22e0. Physical plate motion, response time, channel-to-bank
+         identity, ECM terminals, the Throttle Rev Limiter label, and the RPM multiplier require
+         controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
            storagetype="uint16" storageaddress="0xD3524" sizex="1" endian="big">
@@ -3168,13 +3168,13 @@
          canonical accessor 0x7584E; r4 operand: manual
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 RPM [candidate]
-         The stock word is 0x2580, or 7500 RPM with the HR A2L multiplier, between candidate
-         Normal fuel-cut release 7450 RPM and activation 7650 RPM. Exact code closes the path to
-         shared signed airflow/torque-request coordinate ffff19c6, but no continuous trace
-         reaches a bank-specific throttle-angle command, motor PWM register, or ECM terminal. It
-         never enters fuel mask ffff22e0, so it cannot replace, clear, or delay hard fuel cut.
-         The physical Throttle Rev Limiter label and multiplier remain catalog/homology evidence
-         pending controlled hardware validation.
+         The stock word is 0x2580, or 7500 candidate RPM, between fuel-cut release 7450 RPM and
+         activation 7650 RPM. Exact SHA-locked ROM execution covers 51 state and sweep cases and
+         7200..7800 candidate RPM at four APP requests; after 20 measured 10.24 ms passes, APP
+         10000 yields 10000 at 7500, 7601 at 7600, 5466 at 7700, and 3086 at 7800. The limiter
+         never enters fuel mask ffff22e0. Physical plate motion, response time, channel-to-bank
+         identity, ECM terminals, the Throttle Rev Limiter label, and the RPM multiplier require
+         controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
            storagetype="uint16" storageaddress="0xD3526" sizex="1" endian="big">

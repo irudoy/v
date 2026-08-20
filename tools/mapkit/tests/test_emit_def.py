@@ -362,6 +362,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             "Internal Calculations",
             "Diagnostics / Internal Calculations",
             "Electronic Throttle Control / Internal Coordinates",
+            "Limiters / Rev Limit / Internal State",
             "Unidentified Calibrations",
         }
         explicitly_hidden = {
@@ -369,7 +370,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             for address, entry in overrides["table"].items()
             if entry.get("emit") is False
         }
-        self.assertEqual(len(explicitly_hidden), 148)
+        self.assertEqual(len(explicitly_hidden), 160)
         self.assertTrue(all(
             entry.get("category") in hidden_categories
             for entry in explicitly_hidden.values()

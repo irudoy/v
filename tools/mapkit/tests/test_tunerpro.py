@@ -570,8 +570,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertEqual(axis.findtext("./units"), "RPM [cand]")
         self.assertEqual(axis.find("./MATH").get("equation"), "X*0.78125")
         description = table.findtext("./description")
-        self.assertIn("shared signed airflow/torque-request coordinate ffff19c6", description)
-        self.assertIn("no continuous trace reaches a bank-specific throttle-angle command", description)
+        self.assertIn("shared signed request ffff19c6", description)
+        self.assertIn("continuous command path to ATU-II BFR6A-D", description)
 
     def test_patch_base_data_matches_exact_stock_image(self):
         for patch in self.root.findall("./XDFPATCH"):
