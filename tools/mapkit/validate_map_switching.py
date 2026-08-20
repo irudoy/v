@@ -128,16 +128,16 @@ def validate():
                     f"{family.key}: slot at {address:#x} differs from map 1"
                 )
 
-    if 'name="Map 5 - Fuel Targets"' not in romraider_model:
-        raise ValueError("RomRaider projection lacks Map 5 Fuel Targets")
-    if 'category="Fuelling//Fuel Targets"' not in romraider_model:
-        raise ValueError("RomRaider projection lacks the canonical fuel group")
+    if 'name="Map 5 - Exhaust Cam Timing Main"' not in romraider_model:
+        raise ValueError("RomRaider projection lacks Map 5 exhaust CVTC target")
+    if 'category="Variable Valve Timing//Exhaust Cam"' not in romraider_model:
+        raise ValueError("RomRaider projection lacks the exhaust CVTC group")
     if "Map Switching//" in romraider_model:
         raise ValueError(
             "RomRaider projection creates a separate map-switching group"
         )
-    if "Map 5 - Fuel Targets" not in xdf:
-        raise ValueError("TunerPro projection lacks Map 5 Fuel Targets")
+    if "Map 5 - Exhaust Cam Timing Main" not in xdf:
+        raise ValueError("TunerPro projection lacks Map 5 exhaust CVTC target")
     if projection.slot_editor_view_count != 70:
         raise ValueError(
             "runtime does not expose 70 slot-specific editor views"

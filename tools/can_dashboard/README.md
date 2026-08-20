@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `1.1.4`.
+Current dashboard version: `1.1.5`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The current verified schema supports
@@ -52,7 +52,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v1.1.4-windows.zip
+  --output tmp/vq-can-telemetry-v1.1.5-windows.zip
 ```
 
 On the Windows laptop:
@@ -87,11 +87,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v1.1.4-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v1.1.5-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 1.1.4 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 1.1.5 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -111,12 +111,14 @@ with CRUISE, so it is not labeled CRUISE-only. The correct CRUISE-only state
 remains pending a passive stock-state correlation.
 
 The legacy wire fields `intake_cvtc_target_b1_raw` and
-`intake_cvtc_target_b2_raw` are displayed and recorded as `CVTC common ref` and
-`Aux centered ref`. Static code and target-vehicle replay establish that
-`0xFFFF2326` is one common conditioned CVTC reference, while `0xFFFF2327` is an
-independently produced auxiliary centered reference rather than a bank-2
-target. The wire identifiers remain unchanged to preserve the verified schema
-CRC.
+`intake_cvtc_target_b2_raw` are displayed and recorded as `Intake CVTC target`
+and `Exhaust CVTC target`. The exact UDS pointer table publishes
+`0xFFFF2327` through target-exhaust-angle DID `0x1166`; it is not a bank-2
+intake target. The wire identifiers remain unchanged to preserve the verified
+schema CRC. The displayed `(raw-128)*0.5 degCA` conversion is a homologous
+calibration candidate and is marked with `*`. The two captured actual-angle
+fields remain intake B1/B2; actual exhaust angles are not present in the
+current wire profile.
 
 ## Direct repository run
 

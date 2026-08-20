@@ -37,7 +37,7 @@ The runtime switches these families:
 | high-detonation ignition trim | lookup adapter |
 | default/post-transition timing-state addend (`0x12196`) | lookup adapter |
 | warm DFCO-transition timing-state addend (`0x1219E`) | lookup adapter |
-| fuel targets | lookup adapter |
+| exhaust CVTC target | lookup adapter |
 | main fuel compensation | lookup adapter |
 | fuel-cut limiter cluster | RAM shadow |
 | throttle limiter cluster | RAM shadow |
@@ -204,7 +204,7 @@ a stock-family fingerprint rather than a unique in-band slot identifier.
 Only six of the twelve switched families differ between Maps 2 and 3 in this
 local image: all four warm DFCO threshold families, the `0x12196` timing-state
 family, and the column-0 release cell of main fuel cut `0x0934E`. Main ignition,
-high-detonation ignition, `0x1219E` warm transition timing, Fuel Targets, Fuel
+high-detonation ignition, `0x1219E` warm transition timing, exhaust CVTC target, Fuel
 Compensation Main, and the request-limiter scalar are byte-identical between
 the two slots. They cannot explain an A/B difference in this capture. Exact
 per-image calibration values remain local and unversioned.

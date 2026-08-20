@@ -251,6 +251,12 @@ def engineering_values(snapshot):
         "intake_cvtc_actual_b2_raw": (
             "intake_cvtc_actual_b2_deg_ca", 0.5, -64
         ),
+        "intake_cvtc_target_b1_raw": (
+            "intake_cvtc_target_deg_ca", 0.5, -64
+        ),
+        "intake_cvtc_target_b2_raw": (
+            "exhaust_cvtc_target_deg_ca", 0.5, -64
+        ),
         "calculated_load_raw": (
             "calculated_load_percent", 100 / 255, 0
         ),

@@ -255,19 +255,19 @@ class PcanSourceTest(unittest.TestCase):
 
 
 class DashboardPresentationTest(unittest.TestCase):
-    def test_cvtc_reference_labels_match_recovered_roles(self):
+    def test_cvtc_target_labels_match_recovered_roles(self):
         metrics = {
             metric.key: metric.label
             for _, panel_metrics in app.PANELS
             for metric in panel_metrics
         }
         self.assertEqual(
-            metrics["intake_cvtc_target_b1_raw"],
-            "CVTC common ref",
+            metrics["intake_cvtc_target_deg_ca"],
+            "Intake CVTC target",
         )
         self.assertEqual(
-            metrics["intake_cvtc_target_b2_raw"],
-            "Aux centered ref",
+            metrics["exhaust_cvtc_target_deg_ca"],
+            "Exhaust CVTC target",
         )
 
     def test_default_recording_name_is_generic_and_has_no_extension(self):

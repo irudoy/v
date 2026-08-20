@@ -184,13 +184,13 @@ fine = 0.78125
 coarse = 3.125
 
 [table.0000b33a]
-name = "Fuel Targets"
-category = "Fuelling / Fuel Targets"
+name = "Exhaust Cam Timing Main"
+category = "Variable Valve Timing / Exhaust Cam"
 order = 10
 emit = true
-format = "0.00"
-fine = 0.1
-coarse = 0.5
+format = "0.0"
+fine = 0.5
+coarse = 2.0
 
 [table.0000b43a]
 name = "Intake Cam Timing Main"

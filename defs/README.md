@@ -43,8 +43,9 @@ See `../tools/map-analysis-pipeline.md` and
 - `JK08A.fuel.md` models the main fuel calculation and calculated pulse words.
 - `JK08A.load.md` separates the internal normalized-BFS map coordinate from
   J1979 Calculated Load and records their exact producers and scheduling.
-- `JK08A.cvtc.md` models the intake-CVTC target surfaces, exact interpolation,
-  coolant selection, downstream reference conditioning, and log replay.
+- `JK08A.cvtc.md` models the intake- and exhaust-CVTC target surfaces, exact
+  interpolation, coolant selection, downstream target conditioning, and log
+  replay.
 - `JK08A.dfco.md` models deceleration fuel cut.
 - `JK08A.fuel-inhibit.md` models the complete fuel-output inhibit arbitration.
 - `JK08A.limiters.md` models the main, stationary, and request limiter paths.

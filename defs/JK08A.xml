@@ -1354,27 +1354,26 @@
          Map 1 uses canonical stock storage
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load [code]
-         Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
-         is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
-         map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
-         writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] ->
-         000bfe22/000261b8 -> 00026770/00026944/00026c78/00026740 -> 000bfe28 extu.b.
-         ffff2466[0x40]=0 -> 000bfe2e/000bfe30 -> 000bfe6c -> ffff1c5d. ffff2466[0x40]=1 ->
-         000bfe4c(0000ab4a, uint8 128..148) -> 000bfe50/000bfe52: this-other ->
-         000bfe54/000bfe56: +128 -> 000bfe58..000bfe68: clamp 0..255 -> 000bfe6c -> ffff1c5d.
-         For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d
-         through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state.
-         The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the
-         UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x
-         maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical
-         identity remains unverified on JK08A hardware.
+         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
+         [code]
+         static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
+         map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
+         indexed_by]
+         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
+         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
+         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
+         monitors. This closes the subsystem identity independently of map geometry. Code proves
+         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
+         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
+         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
+         5,366 active samples after 16 unchanged-input cycles; remaining differences are
+         downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Fuel Targets" category="Fuelling//Fuel Targets"
-           storagetype="uint8" storageaddress="0x0B33A" sizex="16" sizey="16" endian="big">
-      <scaling units="AFR (gasoline scale) [cand]" expression="1881.6/x" to_byte="1881.6/x"
-               format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
+    <table type="3D" name="Map 1 - Exhaust Cam Timing Main"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0x0B33A" sizex="16" sizey="16" endian="big">
+      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
@@ -1382,7 +1381,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -1724,27 +1723,26 @@
          project map-switching patch
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load [code]
-         Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
-         is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
-         map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
-         writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] ->
-         000bfe22/000261b8 -> 00026770/00026944/00026c78/00026740 -> 000bfe28 extu.b.
-         ffff2466[0x40]=0 -> 000bfe2e/000bfe30 -> 000bfe6c -> ffff1c5d. ffff2466[0x40]=1 ->
-         000bfe4c(0000ab4a, uint8 128..148) -> 000bfe50/000bfe52: this-other ->
-         000bfe54/000bfe56: +128 -> 000bfe58..000bfe68: clamp 0..255 -> 000bfe6c -> ffff1c5d.
-         For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d
-         through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state.
-         The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the
-         UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x
-         maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical
-         identity remains unverified on JK08A hardware.
+         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
+         [code]
+         static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
+         map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
+         indexed_by]
+         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
+         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
+         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
+         monitors. This closes the subsystem identity independently of map geometry. Code proves
+         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
+         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
+         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
+         5,366 active samples after 16 unchanged-input cycles; remaining differences are
+         downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Fuel Targets" category="Fuelling//Fuel Targets"
-           storagetype="uint8" storageaddress="0xD2D00" sizex="16" sizey="16" endian="big">
-      <scaling units="AFR (gasoline scale) [cand]" expression="1881.6/x" to_byte="1881.6/x"
-               format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
+    <table type="3D" name="Map 2 - Exhaust Cam Timing Main"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0xD2D00" sizex="16" sizey="16" endian="big">
+      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
@@ -1752,7 +1750,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2105,27 +2103,26 @@
          project map-switching patch
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load [code]
-         Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
-         is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
-         map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
-         writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] ->
-         000bfe22/000261b8 -> 00026770/00026944/00026c78/00026740 -> 000bfe28 extu.b.
-         ffff2466[0x40]=0 -> 000bfe2e/000bfe30 -> 000bfe6c -> ffff1c5d. ffff2466[0x40]=1 ->
-         000bfe4c(0000ab4a, uint8 128..148) -> 000bfe50/000bfe52: this-other ->
-         000bfe54/000bfe56: +128 -> 000bfe58..000bfe68: clamp 0..255 -> 000bfe6c -> ffff1c5d.
-         For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d
-         through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state.
-         The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the
-         UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x
-         maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical
-         identity remains unverified on JK08A hardware.
+         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
+         [code]
+         static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
+         map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
+         indexed_by]
+         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
+         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
+         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
+         monitors. This closes the subsystem identity independently of map geometry. Code proves
+         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
+         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
+         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
+         5,366 active samples after 16 unchanged-input cycles; remaining differences are
+         downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Fuel Targets" category="Fuelling//Fuel Targets"
-           storagetype="uint8" storageaddress="0xD2E00" sizex="16" sizey="16" endian="big">
-      <scaling units="AFR (gasoline scale) [cand]" expression="1881.6/x" to_byte="1881.6/x"
-               format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
+    <table type="3D" name="Map 3 - Exhaust Cam Timing Main"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0xD2E00" sizex="16" sizey="16" endian="big">
+      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2133,7 +2130,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2486,27 +2483,26 @@
          project map-switching patch
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load [code]
-         Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
-         is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
-         map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
-         writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] ->
-         000bfe22/000261b8 -> 00026770/00026944/00026c78/00026740 -> 000bfe28 extu.b.
-         ffff2466[0x40]=0 -> 000bfe2e/000bfe30 -> 000bfe6c -> ffff1c5d. ffff2466[0x40]=1 ->
-         000bfe4c(0000ab4a, uint8 128..148) -> 000bfe50/000bfe52: this-other ->
-         000bfe54/000bfe56: +128 -> 000bfe58..000bfe68: clamp 0..255 -> 000bfe6c -> ffff1c5d.
-         For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d
-         through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state.
-         The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the
-         UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x
-         maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical
-         identity remains unverified on JK08A hardware.
+         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
+         [code]
+         static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
+         map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
+         indexed_by]
+         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
+         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
+         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
+         monitors. This closes the subsystem identity independently of map geometry. Code proves
+         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
+         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
+         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
+         5,366 active samples after 16 unchanged-input cycles; remaining differences are
+         downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Fuel Targets" category="Fuelling//Fuel Targets"
-           storagetype="uint8" storageaddress="0xD2F00" sizex="16" sizey="16" endian="big">
-      <scaling units="AFR (gasoline scale) [cand]" expression="1881.6/x" to_byte="1881.6/x"
-               format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
+    <table type="3D" name="Map 4 - Exhaust Cam Timing Main"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0xD2F00" sizex="16" sizey="16" endian="big">
+      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2514,7 +2510,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -2867,27 +2863,26 @@
          project map-switching patch
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling 1881.6/x AFR (gasoline scale) [candidate]; Y Axis 0x12F2E rpm [candidate]; X
-         Axis 0x12F0E load [code]
-         Control 2D table: its output is an offset-encoded byte with neutral 128; when flag 0x40
-         is set, it forms a saturated difference with the output of 0000ab4a as clamp_u8(this -
-         map_0000ab4a + 128), otherwise it is passed through directly. Result disposition:
-         writes. Result target: ffff1c5d. Machine trace: 0000b33a[uint8 128..178] ->
-         000bfe22/000261b8 -> 00026770/00026944/00026c78/00026740 -> 000bfe28 extu.b.
-         ffff2466[0x40]=0 -> 000bfe2e/000bfe30 -> 000bfe6c -> ffff1c5d. ffff2466[0x40]=1 ->
-         000bfe4c(0000ab4a, uint8 128..148) -> 000bfe50/000bfe52: this-other ->
-         000bfe54/000bfe56: +128 -> 000bfe58..000bfe68: clamp 0..255 -> 000bfe6c -> ffff1c5d.
-         For the actual ranges, the difference path yields 108..178. 000bfe88 reads ffff1c5d
-         through DAT_000c0284+DAT_000c01e6 and then explicitly treats 0x80 as the neutral state.
-         The tuner-facing gasoline-AFR projection is candidate evidence from the HR A2L and the
-         UpRev/EcuTek fuel-target descriptions rather than this code trace. Formula 1881.6/x
-         maps raw 128 to 14.70 AFR, raw 168 to 11.20 AFR, and raw 178 to 10.57 AFR. Physical
-         identity remains unverified on JK08A hardware.
+         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
+         [code]
+         static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
+         map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
+         indexed_by]
+         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
+         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
+         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
+         monitors. This closes the subsystem identity independently of map geometry. Code proves
+         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
+         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
+         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
+         5,366 active samples after 16 unchanged-input cycles; remaining differences are
+         downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Fuel Targets" category="Fuelling//Fuel Targets"
-           storagetype="uint8" storageaddress="0xD3000" sizex="16" sizey="16" endian="big">
-      <scaling units="AFR (gasoline scale) [cand]" expression="1881.6/x" to_byte="1881.6/x"
-               format="0.00" fineincrement="0.1" coarseincrement="0.5"/>
+    <table type="3D" name="Map 5 - Exhaust Cam Timing Main"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0xD3000" sizex="16" sizey="16" endian="big">
+      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2895,7 +2890,7 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12F2E" sizey="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 

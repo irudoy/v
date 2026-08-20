@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay JK08A intake-CVTC target maps against a strict wide54 TRC."""
+"""Replay JK08A intake- or exhaust-CVTC target maps against a wide54 TRC."""
 
 from __future__ import annotations
 
@@ -40,6 +40,16 @@ CVTC_CORRECTION_STATE_MASK = 0x40
 CVTC_WARM_THRESHOLD_ADDRESS = 0x8D2D
 CVTC_COLD_THRESHOLD_ADDRESS = 0x8D2E
 
+EXHAUST_CVTC_MAIN_MAP_ADDRESS = 0xB33A
+EXHAUST_CVTC_MAIN_RPM_AXIS_ADDRESS = 0x12F2E
+EXHAUST_CVTC_MAIN_LOAD_AXIS_ADDRESS = 0x12F0E
+EXHAUST_CVTC_COLD_MAP_ADDRESS = 0xB2FA
+EXHAUST_CVTC_COLD_RPM_AXIS_ADDRESS = 0x12EC2
+EXHAUST_CVTC_COLD_LOAD_AXIS_ADDRESS = 0x12EA2
+EXHAUST_CVTC_CORRECTION_MAP_ADDRESS = 0xAB4A
+EXHAUST_CVTC_CORRECTION_RPM_AXIS_ADDRESS = 0x12F96
+EXHAUST_CVTC_CORRECTION_LOAD_AXIS_ADDRESS = 0x12F8E
+
 
 @dataclass(frozen=True)
 class ExplicitU8Map:
@@ -59,6 +69,8 @@ class CvtcCalibration:
     correction: ExplicitU8Map
     cold_threshold: int
     warm_threshold: int
+    target: str
+    conditioned_reference: str
 
 
 @dataclass(frozen=True)
@@ -72,8 +84,8 @@ class CvtcSample:
     knock_surface_state: int
     reference_a_raw: int
     reference_b_raw: int
-    actual_b1_raw: int
-    actual_b2_raw: int
+    intake_actual_b1_raw: int
+    intake_actual_b2_raw: int
 
 
 @dataclass(frozen=True)
@@ -115,8 +127,8 @@ class AlignmentSummary:
     comparisons: int
     selected_to_reference_a: ErrorSummary
     selected_to_reference_b: ErrorSummary
-    selected_to_actual_b1: ErrorSummary
-    selected_to_actual_b2: ErrorSummary
+    selected_to_intake_actual_b1: ErrorSummary
+    selected_to_intake_actual_b2: ErrorSummary
     without_conditioned_neutralization: ErrorSummary | None
     active_to_active: ErrorSummary | None
     conditioned_neutralization_count: int
@@ -131,6 +143,7 @@ class AlignmentSummary:
 class TraceCvtcAudit:
     source: Path
     source_sha256: str
+    target: str
     calibration_image_source: Path
     calibration_image_sha256: str
     source_frames: int
@@ -143,8 +156,8 @@ class TraceCvtcAudit:
     coolant_age_max_ms: float
     reference_a_raw_range: tuple[int, int]
     reference_b_raw_range: tuple[int, int]
-    actual_b1_raw_range: tuple[int, int]
-    actual_b2_raw_range: tuple[int, int]
+    intake_actual_b1_raw_range: tuple[int, int]
+    intake_actual_b2_raw_range: tuple[int, int]
     alignments: tuple[AlignmentSummary, ...]
 
 
@@ -171,6 +184,7 @@ def _load_map(image, address, size, row_axis_address, column_axis_address):
 def load_calibration(
     rom: str = "JK08A",
     calibration_image: Path | None = None,
+    target: str = "intake",
 ) -> CvtcCalibration:
     if calibration_image is None:
         image = romkit.load(rom)
@@ -179,39 +193,66 @@ def load_calibration(
         image_source = Path(calibration_image).resolve()
         data = image_source.read_bytes()
         image = romkit.Image(image_source.name, str(image_source), data)
+    if target == "intake":
+        main = (
+            CVTC_MAIN_MAP_ADDRESS,
+            CVTC_MAIN_SIZE,
+            CVTC_MAIN_RPM_AXIS_ADDRESS,
+            CVTC_MAIN_LOAD_AXIS_ADDRESS,
+        )
+        cold = (
+            CVTC_COLD_MAP_ADDRESS,
+            CVTC_COLD_SIZE,
+            CVTC_COLD_RPM_AXIS_ADDRESS,
+            CVTC_COLD_LOAD_AXIS_ADDRESS,
+        )
+        correction = (
+            CVTC_CORRECTION_MAP_ADDRESS,
+            CVTC_CORRECTION_SIZE,
+            CVTC_CORRECTION_RPM_AXIS_ADDRESS,
+            CVTC_CORRECTION_LOAD_AXIS_ADDRESS,
+        )
+        conditioned_reference = "reference_a_raw"
+    elif target == "exhaust":
+        main = (
+            EXHAUST_CVTC_MAIN_MAP_ADDRESS,
+            CVTC_MAIN_SIZE,
+            EXHAUST_CVTC_MAIN_RPM_AXIS_ADDRESS,
+            EXHAUST_CVTC_MAIN_LOAD_AXIS_ADDRESS,
+        )
+        cold = (
+            EXHAUST_CVTC_COLD_MAP_ADDRESS,
+            CVTC_COLD_SIZE,
+            EXHAUST_CVTC_COLD_RPM_AXIS_ADDRESS,
+            EXHAUST_CVTC_COLD_LOAD_AXIS_ADDRESS,
+        )
+        correction = (
+            EXHAUST_CVTC_CORRECTION_MAP_ADDRESS,
+            CVTC_CORRECTION_SIZE,
+            EXHAUST_CVTC_CORRECTION_RPM_AXIS_ADDRESS,
+            EXHAUST_CVTC_CORRECTION_LOAD_AXIS_ADDRESS,
+        )
+        conditioned_reference = "reference_b_raw"
+    else:
+        raise ValueError(f"unknown CVTC target {target!r}")
+
     return CvtcCalibration(
         image_source=image_source,
         image_sha256=hashlib.sha256(image.data).hexdigest(),
         load_scaler=image.values(
             INTERNAL_LOAD_SCALER_ADDRESS, 1, "uint16"
         )[0],
-        main=_load_map(
-            image,
-            CVTC_MAIN_MAP_ADDRESS,
-            CVTC_MAIN_SIZE,
-            CVTC_MAIN_RPM_AXIS_ADDRESS,
-            CVTC_MAIN_LOAD_AXIS_ADDRESS,
-        ),
-        cold=_load_map(
-            image,
-            CVTC_COLD_MAP_ADDRESS,
-            CVTC_COLD_SIZE,
-            CVTC_COLD_RPM_AXIS_ADDRESS,
-            CVTC_COLD_LOAD_AXIS_ADDRESS,
-        ),
-        correction=_load_map(
-            image,
-            CVTC_CORRECTION_MAP_ADDRESS,
-            CVTC_CORRECTION_SIZE,
-            CVTC_CORRECTION_RPM_AXIS_ADDRESS,
-            CVTC_CORRECTION_LOAD_AXIS_ADDRESS,
-        ),
+        main=_load_map(image, *main),
+        cold=_load_map(image, *cold),
+        correction=_load_map(image, *correction),
         cold_threshold=image.values(
             CVTC_COLD_THRESHOLD_ADDRESS, 1, "uint8"
         )[0],
         warm_threshold=image.values(
             CVTC_WARM_THRESHOLD_ADDRESS, 1, "uint8"
         )[0],
+        target=target,
+        conditioned_reference=conditioned_reference,
     )
 
 
@@ -451,8 +492,8 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
                 knock_surface_state=model.raw["knock_surface_state"],
                 reference_a_raw=model.raw["intake_cvtc_target_b1_raw"],
                 reference_b_raw=model.raw["intake_cvtc_target_b2_raw"],
-                actual_b1_raw=model.raw["intake_cvtc_actual_b1_raw"],
-                actual_b2_raw=model.raw["intake_cvtc_actual_b2_raw"],
+                intake_actual_b1_raw=model.raw["intake_cvtc_actual_b1_raw"],
+                intake_actual_b2_raw=model.raw["intake_cvtc_actual_b2_raw"],
             )
         )
     return model, samples
@@ -464,6 +505,7 @@ def _alignment_summary(
     source_lag: int,
     tick_divisor: int,
     stable_cycles: tuple[int, ...],
+    conditioned_reference: str = "reference_a_raw",
 ) -> AlignmentSummary:
     if source_lag < 0:
         raise ValueError("source lag must be nonnegative")
@@ -482,16 +524,20 @@ def _alignment_summary(
         predicted = point.coolant_selected_raw
         errors_a.append(predicted - target.reference_a_raw)
         errors_b.append(predicted - target.reference_b_raw)
-        errors_actual_b1.append(predicted - target.actual_b1_raw)
-        errors_actual_b2.append(predicted - target.actual_b2_raw)
+        errors_actual_b1.append(predicted - target.intake_actual_b1_raw)
+        errors_actual_b2.append(predicted - target.intake_actual_b2_raw)
         rows.append((source_index, target_index, point, target))
     if not rows:
         raise ValueError(f"no contiguous samples for source lag {source_lag}")
 
+    if conditioned_reference not in ("reference_a_raw", "reference_b_raw"):
+        raise ValueError("conditioned reference must be reference A or B")
+
     neutralized_rows = [
         (target_index, target.tick)
         for _, target_index, point, target in rows
-        if point.coolant_selected_raw != 0x80 and target.reference_a_raw == 0x80
+        if point.coolant_selected_raw != 0x80
+        and getattr(target, conditioned_reference) == 0x80
     ]
     neutralized_runs = 0
     previous_index = None
@@ -507,18 +553,18 @@ def _alignment_summary(
         previous_tick = tick
 
     without_neutralization = [
-        point.coolant_selected_raw - target.reference_a_raw
+        point.coolant_selected_raw - getattr(target, conditioned_reference)
         for _, _, point, target in rows
         if not (
             point.coolant_selected_raw != 0x80
-            and target.reference_a_raw == 0x80
+            and getattr(target, conditioned_reference) == 0x80
         )
     ]
     active_to_active = [
-        point.coolant_selected_raw - target.reference_a_raw
+        point.coolant_selected_raw - getattr(target, conditioned_reference)
         for _, _, point, target in rows
         if point.coolant_selected_raw != 0x80
-        and target.reference_a_raw != 0x80
+        and getattr(target, conditioned_reference) != 0x80
     ]
     stable = []
     for cycles in stable_cycles:
@@ -535,14 +581,15 @@ def _alignment_summary(
             ):
                 continue
             selected = point.coolant_selected_raw
-            if selected == 0x80 or target.reference_a_raw == 0x80:
+            reference = getattr(target, conditioned_reference)
+            if selected == 0x80 or reference == 0x80:
                 continue
             if any(
                 candidate.coolant_selected_raw != selected
                 for candidate in points_by_source[first : source_index + 1]
             ):
                 continue
-            errors.append(selected - target.reference_a_raw)
+            errors.append(selected - reference)
         if errors:
             stable.append(StableActiveSummary(cycles, _error_summary(errors)))
 
@@ -552,8 +599,8 @@ def _alignment_summary(
         comparisons=len(points),
         selected_to_reference_a=_error_summary(errors_a),
         selected_to_reference_b=_error_summary(errors_b),
-        selected_to_actual_b1=_error_summary(errors_actual_b1),
-        selected_to_actual_b2=_error_summary(errors_actual_b2),
+        selected_to_intake_actual_b1=_error_summary(errors_actual_b1),
+        selected_to_intake_actual_b2=_error_summary(errors_actual_b2),
         without_conditioned_neutralization=_optional_error_summary(
             without_neutralization
         ),
@@ -582,13 +629,14 @@ def audit_trace(
     tick_divisor: int = 1,
     source_lags: tuple[int, ...] = (0, 1, 2),
     stable_cycles: tuple[int, ...] = (1, 4, 8, 16),
+    target: str = "intake",
 ) -> TraceCvtcAudit:
     source = Path(source)
     source_sha256 = _sha256_file(source)
     trace = peak_trc_audit.load_trace(source)
     if _sha256_file(source) != source_sha256:
         raise ValueError(f"{source}: capture changed while it was being parsed")
-    calibration = load_calibration(rom, calibration_image)
+    calibration = load_calibration(rom, calibration_image, target)
     model, samples = _samples(trace, profile, can_id, tick_divisor)
     if len(samples) < 3:
         raise ValueError(f"{source}: fewer than three verified CVTC snapshots")
@@ -602,12 +650,14 @@ def audit_trace(
             lag,
             tick_divisor,
             stable_cycles,
+            calibration.conditioned_reference,
         )
         for lag in source_lags
     )
     return TraceCvtcAudit(
         source=source,
         source_sha256=source_sha256,
+        target=calibration.target,
         calibration_image_source=calibration.image_source,
         calibration_image_sha256=calibration.image_sha256,
         source_frames=len(trace.frames),
@@ -629,13 +679,13 @@ def audit_trace(
             min(sample.reference_b_raw for sample in samples),
             max(sample.reference_b_raw for sample in samples),
         ),
-        actual_b1_raw_range=(
-            min(sample.actual_b1_raw for sample in samples),
-            max(sample.actual_b1_raw for sample in samples),
+        intake_actual_b1_raw_range=(
+            min(sample.intake_actual_b1_raw for sample in samples),
+            max(sample.intake_actual_b1_raw for sample in samples),
         ),
-        actual_b2_raw_range=(
-            min(sample.actual_b2_raw for sample in samples),
-            max(sample.actual_b2_raw for sample in samples),
+        intake_actual_b2_raw_range=(
+            min(sample.intake_actual_b2_raw for sample in samples),
+            max(sample.intake_actual_b2_raw for sample in samples),
         ),
         alignments=alignments,
     )
@@ -673,6 +723,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--tick-divisor", type=int, default=1)
     parser.add_argument(
+        "--target",
+        choices=("intake", "exhaust"),
+        default="intake",
+        help="CVTC target family to replay",
+    )
+    parser.add_argument(
         "--source-lags",
         type=lambda value: tuple(int(item, 0) for item in value.split(",")),
         default=(0, 1, 2),
@@ -701,8 +757,10 @@ def main(argv: list[str] | None = None) -> int:
                 tick_divisor=args.tick_divisor,
                 source_lags=args.source_lags,
                 stable_cycles=args.stable_cycles,
+                target=args.target,
             )
             print(result.source)
+            print(f"  target={result.target}")
             print(f"  capture_sha256={result.source_sha256}")
             print(
                 f"  calibration={result.calibration_image_source}, "
@@ -726,10 +784,10 @@ def main(argv: list[str] | None = None) -> int:
                 f"{result.reference_a_raw_range[1]}, "
                 f"reference_b={result.reference_b_raw_range[0]}.."
                 f"{result.reference_b_raw_range[1]}, "
-                f"actual_b1={result.actual_b1_raw_range[0]}.."
-                f"{result.actual_b1_raw_range[1]}, "
-                f"actual_b2={result.actual_b2_raw_range[0]}.."
-                f"{result.actual_b2_raw_range[1]}"
+                f"intake_actual_b1={result.intake_actual_b1_raw_range[0]}.."
+                f"{result.intake_actual_b1_raw_range[1]}, "
+                f"intake_actual_b2={result.intake_actual_b2_raw_range[0]}.."
+                f"{result.intake_actual_b2_raw_range[1]}"
             )
             for alignment in result.alignments:
                 bands = ",".join(
@@ -758,14 +816,14 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 print(
                     _format_errors(
-                        "selected_to_actual_b1",
-                        alignment.selected_to_actual_b1,
+                        "selected_to_intake_actual_b1",
+                        alignment.selected_to_intake_actual_b1,
                     )
                 )
                 print(
                     _format_errors(
-                        "selected_to_actual_b2",
-                        alignment.selected_to_actual_b2,
+                        "selected_to_intake_actual_b2",
+                        alignment.selected_to_intake_actual_b2,
                     )
                 )
                 print(

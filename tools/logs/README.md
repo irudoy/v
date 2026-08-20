@@ -105,14 +105,20 @@ coordinate; no wire-schema or firmware change is required.
 ## JK08A CVTC target-map audit
 
 `cvtc_target_audit.py` replays the exact stock byte-axis search, Q0.16
-interpolation order, warm/main map `0xB43A`, cold map `0xB53A`, conditional
-correction `0xAB5A`, and coolant selector against a strict verified `wide54`
-capture. The map column coordinate is reconstructed with the same normalized
-BFS formula used by `load_axis_audit.py`; the RPM coordinate is reconstructed
-from the captured RPM/12.5 word.
+interpolation order, coolant selection, and downstream target conditioning
+against a strict verified `wide54` capture. The default intake family uses
+warm/main map `0xB43A`, cold map `0xB53A`, and correction `0xAB5A`. The
+`--target exhaust` family uses `0xB33A`, `0xB2FA`, and `0xAB4A`. The column
+coordinate is reconstructed with the same normalized-BFS formula used by
+`load_axis_audit.py`; the RPM coordinate comes from the captured RPM/12.5 word.
 
 ```bash
 python3 tools/logs/cvtc_target_audit.py \
+  --calibration-image tmp/1JK08A-tune-v1-11.bin \
+  tmp/can-dump/new-log-full.trc
+
+python3 tools/logs/cvtc_target_audit.py \
+  --target exhaust \
   --calibration-image tmp/1JK08A-tune-v1-11.bin \
   tmp/can-dump/new-log-full.trc
 ```
@@ -124,15 +130,18 @@ axis, and surface is read directly from that image.
 The report tests same-snapshot and preceding-snapshot input alignment, separates
 downstream neutralization from direct map disagreement, and reports stable
 active intervals where the reconstructed map result remains unchanged for a
-selected number of source cycles. It also compares the reconstruction with both
-actual cam channels and the auxiliary centered reference.
+selected number of source cycles. Intake conditioning is evaluated against
+`0xFFFF2326`; exhaust conditioning is evaluated against `0xFFFF2327`. The two
+captured actual-angle fields are explicitly reported as intake actual B1/B2;
+the current wire profile does not contain actual exhaust angles.
 
 The telemetry fields named `intake_cvtc_target_b1_raw` and
 `intake_cvtc_target_b2_raw` are legacy wire identifiers. The first carries the
-common conditioned reference at `0xFFFF2326`; the second carries the independent
-auxiliary reference at `0xFFFF2327`. They are not two bank-specific targets.
-Changing either schema identifier would change the verified profile CRC, so the
-decoder keeps the wire names while user-facing labels use the recovered roles.
+common conditioned intake target at `0xFFFF2326`; the second carries the common
+conditioned exhaust target at `0xFFFF2327`. They are not two bank-specific
+intake targets. Changing either schema identifier would change the verified
+profile CRC, so the decoder keeps the wire names while user-facing labels use
+the recovered roles.
 
 The audit validates only paths exercised by the capture. A warm-engine log with
 the correction selector clear cannot validate the cold surface, coolant blend,

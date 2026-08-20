@@ -326,7 +326,7 @@ address = 0x000C0020
 width = 4
 stock = 0x000261B8
 replacement = 0x000D23C0
-purpose = "Route the fuel target lookup through a base-selecting adapter."
+purpose = "Route the exhaust CVTC target lookup through a base-selecting adapter."
 
 [[hook]]
 key = "rev_fuel_cut_base"
@@ -482,8 +482,8 @@ pointer_table = 0x000D4054
 
 [[family]]
 key = "fuel_targets"
-group = "fuel"
-name = "Fuel Targets"
+group = "cvtc"
+name = "Exhaust Cam Timing Main"
 canonical_address = 0x0000B33A
 width = 16
 height = 16

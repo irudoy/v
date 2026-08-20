@@ -35,6 +35,8 @@ class DashboardModelTest(unittest.TestCase):
         self.assertIn("stft_b1_percent", dashboard.engineering)
         self.assertIn("ltft_b1_percent", dashboard.engineering)
         self.assertIn("intake_cvtc_actual_b1_deg_ca", dashboard.engineering)
+        self.assertIn("intake_cvtc_target_deg_ca", dashboard.engineering)
+        self.assertIn("exhaust_cvtc_target_deg_ca", dashboard.engineering)
         self.assertIn("calculated_load_percent", dashboard.engineering)
         self.assertIn("app1_v", dashboard.engineering)
         self.assertIn("tps_b1_v", dashboard.engineering)
@@ -44,6 +46,14 @@ class DashboardModelTest(unittest.TestCase):
         self.assertGreater(dashboard.value("rpm"), 800)
         self.assertLess(dashboard.value("rpm"), 4_100)
         self.assertEqual(dashboard.missed_snapshots, 0)
+        self.assertEqual(
+            dashboard.value("intake_cvtc_target_deg_ca"),
+            dashboard.raw["intake_cvtc_target_b1_raw"] * 0.5 - 64,
+        )
+        self.assertEqual(
+            dashboard.value("exhaust_cvtc_target_deg_ca"),
+            dashboard.raw["intake_cvtc_target_b2_raw"] * 0.5 - 64,
+        )
 
     def test_tick_loss_and_stock_context_are_visible(self):
         generator = model.DemoGenerator()

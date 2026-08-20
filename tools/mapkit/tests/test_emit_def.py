@@ -69,7 +69,7 @@ DEFAULT_VISIBLE_TABLES = {
 }
 
 SLOT_TABLES = {
-    "Fuel Targets": "Fuelling / Fuel Targets",
+    "Exhaust Cam Timing Main": "Variable Valve Timing / Exhaust Cam",
     "Fuel Compensation Main": "Fuelling / Fuel Compensation",
     "DFCO Entry RPM Threshold": "Fuelling / Overrun",
     "DFCO Full Restore RPM Threshold": "Fuelling / Overrun",
@@ -609,17 +609,17 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             ["00 01", "00 00"],
         )
 
-    def test_tracked_fuel_targets_use_gasoline_afr_scaling(self):
+    def test_tracked_exhaust_cvtc_target_uses_centered_degree_scaling(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
-            if table.get("name") == slot_name(1, "Fuel Targets")
+            if table.get("name") == slot_name(1, "Exhaust Cam Timing Main")
         )
         scale = table.find("./scaling")
-        self.assertEqual(scale.get("units"), "AFR (gasoline scale) [cand]")
-        self.assertEqual(scale.get("expression"), "1881.6/x")
-        self.assertEqual(scale.get("to_byte"), "1881.6/x")
-        self.assertEqual(scale.get("format"), "0.00")
+        self.assertEqual(scale.get("units"), "degCA [cand]")
+        self.assertEqual(scale.get("expression"), "(x-128)*0.5")
+        self.assertEqual(scale.get("to_byte"), "x*2+128")
+        self.assertEqual(scale.get("format"), "0.0")
 
     def test_tracked_ignition_trim_is_labeled_as_relative_adjustment(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")

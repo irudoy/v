@@ -25,7 +25,7 @@ diagnostic bindings.
 | DTC descriptor and attribute edit ranges | `JK08A.dtc.csv` |
 | Definition names, categories, visibility, and presentation | `JK08A.overrides.toml` |
 | Internal and diagnostic load-coordinate model | `JK08A.load.md` |
-| Intake-CVTC target and reference model | `JK08A.cvtc.md` |
+| Intake/exhaust-CVTC target and reference model | `JK08A.cvtc.md` |
 | Exact target/source relationship | `rom-inheritance.toml` |
 | Measured catalog and open semantic work | Generated `JK08A.maps.csv` |
 | RomRaider and TunerPro output | Generated `JK08A.xml` and `JK08A.xdf` |
@@ -102,8 +102,8 @@ The following documents own complete current subsystem models:
   multiplier, trims, calculated pulse words, and injector-output boundary;
 - `JK08A.load.md` - internal normalized-BFS map coordinate, scheduler
   snapshot, J1979 Calculated Load, consumers, and telemetry reconstruction;
-- `JK08A.cvtc.md` - exact intake-CVTC target interpolation, cold/warm
-  selection, conditioned references, and target-vehicle log replay;
+- `JK08A.cvtc.md` - exact intake/exhaust-CVTC target interpolation, cold/warm
+  selection, conditioned targets, and target-vehicle log replay;
 - `JK08A.dfco.md` - deceleration fuel-cut thresholds, delays, state machine,
   arbitration, and output path;
 - `JK08A.fuel-inhibit.md` - all global fuel-output inhibit contributors and
@@ -133,9 +133,10 @@ This index points to structured rows without reproducing their fields.
   and Base Fuel Schedule chain are represented across `findings.csv`,
   `funcs.csv`, `vars.csv`, and `diagnostic-bindings.csv` and modeled in
   `JK08A.fuel.md`.
-- Fuel Compensation Main `0x0A29A`, fuel target control `0x0B33A`, common gain,
-  transient additive terms, parity bases, and the calculated six-channel words
-  are owned by the same structured layer and fuel specification.
+- Fuel Compensation Main `0x0A29A`, common gain, transient additive terms,
+  parity bases, and the calculated six-channel words are owned by the same
+  structured layer and fuel specification. Exhaust-CVTC target `0x0B33A` is
+  owned by the CVTC specification.
 
 ### Fuel cuts and rotational limits
 
@@ -170,10 +171,10 @@ This index points to structured rows without reproducing their fields.
   use a code-proven `x-128` transform. Target-vehicle evidence establishes
   one-for-one final-coordinate propagation for `0x12196`; the catalog Cold
   Idle qualifier and physical degree scale are not target-proven semantics.
-- The intake-CVTC main, cold, and conditional correction surfaces and their
-  coolant blend are represented by the map, function, variable, and diagnostic
-  rows. Candidate physical degree conversion remains distinct from code-proven
-  centered arithmetic.
+- The intake- and exhaust-CVTC main, cold, and conditional correction surfaces,
+  their coolant blends, and their distinct conditioned targets are represented
+  by the map, function, variable, and diagnostic rows. Candidate physical
+  degree conversion remains distinct from code-proven centered arithmetic.
 - Accelerator-pedal hysteresis `0x08FDC`/`0x08FDE` is an ETC state threshold,
   not an engine-speed limiter. Exact sensor and DTC relationships are recorded
   in the structured claims.
@@ -195,9 +196,9 @@ This index points to structured rows without reproducing their fields.
 ### Diagnostic and emissions models
 
 - UDS pointer publication, fuel trims, calculated injection pulse DIDs, intake
-  cam timing, rear O2, catalyst, heater, EVAP, and P0128 relationships are
-  routed through `JK08A.diagnostic-bindings.csv` and summarized in
-  `JK08A.diagnostics.md`.
+  and exhaust cam timing, rear O2, catalyst, heater, EVAP, and P0128
+  relationships are routed through `JK08A.diagnostic-bindings.csv` and
+  summarized in `JK08A.diagnostics.md`.
 - Duplicate DTC codes retain separate exact descriptor records and paths.
   Definition controls come only from `JK08A.dtc.csv`.
 

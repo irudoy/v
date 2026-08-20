@@ -266,10 +266,11 @@ snapshot boundary.
 The two `intake_cvtc_target_b*_raw` identifiers are retained as legacy wire
 schema names because they participate in the verified profile CRC. They are not
 a symmetric bank pair. `0xFFFF2326` is the common conditioned intake-CVTC
-target/reference compared with both actual cam channels. `0xFFFF2327` is an
-independently produced auxiliary centered reference and is not a bank-2 target.
-The dashboard and MLG presentation use `CVTC common ref` and
-`Aux centered ref` without changing the wire schema.
+target compared with both actual intake-cam channels. The exact UDS table maps
+target-exhaust-angle DID `0x1166` to `0xFFFF2327`, which is independently
+conditioned by the exhaust-CVTC path. The dashboard and MLG presentation use
+`Intake CVTC target` and `Exhaust CVTC target` without changing the wire
+schema. Their degree conversion remains a marked homologous candidate.
 
 Page 7 uses byte 1 as a context tag and rotates four regular contexts. One
 context is therefore sampled at one quarter of the snapshot rate. A build may

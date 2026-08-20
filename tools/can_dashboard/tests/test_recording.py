@@ -124,14 +124,41 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         names = [name for _, name in fields]
         self.assertIn("Vehicle speed*", names)
         self.assertIn("Stock CAN RPM", names)
-        self.assertIn("CVTC common ref", names)
-        self.assertIn("Aux centered ref", names)
-        self.assertNotIn("CVTC target B1", names)
-        self.assertNotIn("CVTC target B2", names)
+        self.assertIn("Intake CVTC target*", names)
+        self.assertIn("Exhaust CVTC target*", names)
         self.assertIn("gps_lat", names)
         self.assertIn("gps_lon", names)
         self.assertTrue(math.isnan(records[0]["gps_lat"]))
         self.assertTrue(math.isnan(records[0]["gps_lon"]))
+        cvtc_specs = {
+            binding.spec.name: binding.spec
+            for binding in recorder.bindings
+            if binding.spec.name in {
+                "Intake CVTC actual B1*",
+                "Intake CVTC target*",
+                "Exhaust CVTC target*",
+            }
+        }
+        self.assertEqual(set(cvtc_specs), {
+            "Intake CVTC actual B1*",
+            "Intake CVTC target*",
+            "Exhaust CVTC target*",
+        })
+        for spec in cvtc_specs.values():
+            self.assertEqual(spec.scale, 0.5)
+            self.assertEqual(spec.transform, -64.0)
+        self.assertEqual(
+            records[-1]["Intake CVTC actual B1*"],
+            dashboard.raw["intake_cvtc_actual_b1_raw"],
+        )
+        self.assertEqual(
+            records[-1]["Intake CVTC target*"],
+            dashboard.raw["intake_cvtc_target_b1_raw"],
+        )
+        self.assertEqual(
+            records[-1]["Exhaust CVTC target*"],
+            dashboard.raw["intake_cvtc_target_b2_raw"],
+        )
         self.assertAlmostEqual(records[-1]["gps_lat"], 43.115536, places=5)
         self.assertAlmostEqual(records[-1]["gps_lon"], 131.885485, places=5)
         self.assertGreater(records[-1]["Stock CAN RPM"], 0)

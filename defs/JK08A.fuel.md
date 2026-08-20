@@ -37,12 +37,11 @@ ordered as follows:
 | 54 | `FUN_0005C910` | runtime STFT publication |
 | 60 | `FUN_0004ECAC` | two parity bases and six-channel compensated pulse calculation |
 | 80 | `FUN_00057020` | downstream mode-dependent fuel calculation |
-| 83 | `FUN_000C21E6` | fuel-target calculation through `0xB33A` |
 
 The ordering proves current-pass dependencies from the inhibit mask and fuel
-multiplier through the transient term and pulse calculation. It does not imply
-that the later fuel-target result at index 83 controls the pulse already
-calculated at index 60 in the same pass.
+multiplier through the transient term and pulse calculation. Scheduler index 83
+is the separate two-bank exhaust-VTC coordinator `FUN_000C21E6`; it is outside
+the fuel calculation.
 
 The request limiter is calculated before the fuel-output inhibit mask, but it
 does not feed that mask. Its signed-minimum controller path and the exact

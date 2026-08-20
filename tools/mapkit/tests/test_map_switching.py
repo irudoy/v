@@ -373,7 +373,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         )
         self.assertEqual(stats["calibration_tables"], 61)
         self.assertEqual(stats["masked_views"], 11)
-        self.assertIn("<title>Map 5 - Fuel Targets</title>", xdf)
+        self.assertIn("<title>Map 5 - Exhaust Cam Timing Main</title>", xdf)
         self.assertIn('mmedaddress="0xD3000"', xdf)
         self.assertNotIn("JK08A-MS5", xdf)
         self.assertIn(

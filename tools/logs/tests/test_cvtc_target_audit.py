@@ -4,6 +4,15 @@ from tools.logs import cvtc_target_audit
 
 
 class CvtcTargetFormulaTest(unittest.TestCase):
+    def test_exhaust_calibration_uses_exhaust_surfaces_and_reference(self):
+        calibration = cvtc_target_audit.load_calibration(target="exhaust")
+        self.assertEqual(calibration.main.address, 0xB33A)
+        self.assertEqual(calibration.cold.address, 0xB2FA)
+        self.assertEqual(calibration.correction.address, 0xAB4A)
+        self.assertEqual(calibration.conditioned_reference, "reference_b_raw")
+        with self.assertRaisesRegex(ValueError, "unknown CVTC target"):
+            cvtc_target_audit.load_calibration(target="unknown")
+
     def test_explicit_axis_clamps_and_returns_q016_fraction(self):
         axis = (10, 20, 40)
         self.assertEqual(cvtc_target_audit.explicit_axis_position(axis, 0), (0, 0))
@@ -94,8 +103,8 @@ class CvtcTargetFormulaTest(unittest.TestCase):
                 knock_surface_state=0,
                 reference_a_raw=reference,
                 reference_b_raw=128,
-                actual_b1_raw=128,
-                actual_b2_raw=128,
+                intake_actual_b1_raw=128,
+                intake_actual_b2_raw=128,
             )
 
         def point(selected):
@@ -144,8 +153,8 @@ class CvtcTargetFormulaTest(unittest.TestCase):
                 knock_surface_state=0,
                 reference_a_raw=128,
                 reference_b_raw=128,
-                actual_b1_raw=128,
-                actual_b2_raw=128,
+                intake_actual_b1_raw=128,
+                intake_actual_b2_raw=128,
             )
             for tick in range(3)
         ]
@@ -173,6 +182,45 @@ class CvtcTargetFormulaTest(unittest.TestCase):
             cvtc_target_audit._format_errors("active", None),
             "    active: n=0",
         )
+
+    def test_exhaust_alignment_conditions_against_reference_b(self):
+        sample = cvtc_target_audit.CvtcSample(
+            timestamp=0.0,
+            tick=0,
+            bfs_raw=1,
+            rpm_raw=4,
+            coolant_raw=140,
+            coolant_age_ms=0.0,
+            knock_surface_state=0,
+            reference_a_raw=200,
+            reference_b_raw=150,
+            intake_actual_b1_raw=128,
+            intake_actual_b2_raw=128,
+        )
+        point = cvtc_target_audit.ReplayPoint(
+            load_raw=1,
+            rpm50_raw=1,
+            cold_raw=150,
+            main_base_raw=150,
+            correction_raw=128,
+            main_selected_raw=150,
+            coolant_selected_raw=150,
+            coolant_band="warm",
+            correction_active=False,
+        )
+        summary = cvtc_target_audit._alignment_summary(
+            [sample],
+            [point],
+            0,
+            1,
+            (),
+            "reference_b_raw",
+        )
+        self.assertEqual(summary.active_to_active.exact, 1)
+        with self.assertRaisesRegex(ValueError, "reference A or B"):
+            cvtc_target_audit._alignment_summary(
+                [sample], [point], 0, 1, (), "invalid"
+            )
 
 
 if __name__ == "__main__":

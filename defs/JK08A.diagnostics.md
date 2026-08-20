@@ -34,10 +34,26 @@ The current reviewed model establishes these durable behaviors:
   agree with the exact Mode 01 STFT/LTFT ordering;
 - injection-pulse DIDs return the first two words of the six-channel calculated
   pulse array described in `JK08A.fuel.md`;
-- the intake-cam timing DID returns a centered two-bank software value whose
-  physical degree conversion remains homologous evidence;
+- intake-cam actual timing, exhaust-cam actual timing, and their common targets
+  have distinct exact RAM publications;
 - a returned value can have mode-dependent transforms, so one affine diagnostic
   formula is not automatically a universal internal representation.
+
+The exact cam-timing pointer bindings currently are:
+
+| DID | Exact returned byte | Firmware role |
+|---|---:|---|
+| `0x1164` | `0xFFFF2324` | bank-1 actual exhaust-cam timing |
+| `0x1165` | `0xFFFF2325` | bank-2 actual exhaust-cam timing |
+| `0x1166` | `0xFFFF2327` | common conditioned exhaust-cam target |
+| `0x122F` | `0xFFFF1AAC` | bank-1 exhaust-VTC duty |
+| `0x1230` | `0xFFFF1AAE` | bank-2 exhaust-VTC duty |
+
+`FUN_0008F168` independently consumes the actual and target exhaust values in
+the monitor paths associated with P1078/P1084 and P0014/P0024. This closes the
+subsystem identity without relying on a community label. The centered-byte
+arithmetic is exact; the `raw * 0.5 - 64 degCA` conversion remains homologous
+candidate evidence because public profiles disagree on the multiplier.
 
 Exact pointer identity does not establish an ECM terminal, peripheral channel,
 or physical unit. Those remain separate claims and are not promoted by name

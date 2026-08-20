@@ -17,10 +17,10 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
     rom = model.build_rom_model(model.resolve_manifest("JK08A"))
 
     assert rom["size"] == 0x100000
-    assert rom["reviewedFunctions"] == 581
+    assert rom["reviewedFunctions"] == 583
     assert rom["structuralFunctions"] >= rom["reviewedFunctions"]
     assert rom["counts"]["maps"] == 512
-    assert rom["counts"]["axes"] == 72
+    assert rom["counts"]["axes"] == 76
 
     by_id = {item["id"]: item for item in rom["objects"]}
     assert by_id["definition-switch:0:00008725"]["label"] == "Developer Immobilizer"

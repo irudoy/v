@@ -61,7 +61,7 @@ DEFAULT_VISIBLE_TABLES = {
 }
 
 SLOT_TABLES = {
-    "Fuel Targets": "Fuelling / Fuel Targets",
+    "Exhaust Cam Timing Main": "Variable Valve Timing / Exhaust Cam",
     "Fuel Compensation Main": "Fuelling / Fuel Compensation",
     "DFCO Entry RPM Threshold": "Fuelling / Overrun",
     "DFCO Full Restore RPM Threshold": "Fuelling / Overrun",
@@ -324,15 +324,15 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             },
         )
 
-    def test_fuel_targets_use_gasoline_afr_scaling(self):
+    def test_exhaust_cvtc_target_uses_centered_degree_scaling(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == slot_name(1, "Fuel Targets")
+            if table.findtext("./title") == slot_name(1, "Exhaust Cam Timing Main")
         )
         axis = table.find("./XDFAXIS[@id='z']")
-        self.assertEqual(axis.findtext("./units"), "AFR (gasoline scale) [cand]")
-        self.assertEqual(axis.findtext("./decimalpl"), "2")
-        self.assertEqual(axis.find("./MATH").get("equation"), "1881.6/X")
+        self.assertEqual(axis.findtext("./units"), "degCA [cand]")
+        self.assertEqual(axis.findtext("./decimalpl"), "1")
+        self.assertEqual(axis.find("./MATH").get("equation"), "(X-128)*0.5")
 
     def test_ignition_trim_is_labeled_as_relative_adjustment(self):
         by_title = {

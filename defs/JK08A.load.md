@@ -82,7 +82,7 @@ The internal coordinate has a broad tuning role:
 | --- | --- |
 | `FUN 0004e1c0` | Column input for timing-state maps `0x991A`, `0x9A1A`, and `0x9B1A` |
 | `FUN 000bda64` | Column input for intake-cam target maps `0xB43A`, `0xB53A`, and conditional correction `0xAB5A` |
-| `FUN 000bfdc0` | Normal Y input for candidate target-AFR maps `0xB33A` and `0xAB4A`; runtime flags can force `0xFF` |
+| `FUN 000bfdc0` | Normal load input for exhaust-CVTC target maps `0xB33A`, `0xB2FA`, and correction `0xAB4A`; runtime flags can force `0xFF` |
 | `FUN 0004d2a6` | Threshold comparison and `raw >> 3` coordinate for intake-cam-deviation coefficient maps `0xA4AA` and `0x9F1A` |
 | `FUN 0004ac60`, `000528be`, `0005651c` | Inputs to additional limits, transient coefficients, and state thresholds with unresolved physical outputs |
 
