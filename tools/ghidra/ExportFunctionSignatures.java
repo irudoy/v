@@ -31,6 +31,7 @@ import java.util.Set;
 
 public class ExportFunctionSignatures extends GhidraScript {
     static final long ROM_HI = 0x180000L;
+    static final long RAM_LO = 0xffff0000L;
 
     @Override
     public void run() throws Exception {
@@ -145,13 +146,16 @@ public class ExportFunctionSignatures extends GhidraScript {
                 continue;
             }
             long offset = target.getOffset() & 0xffffffffL;
-            if (offset >= ROM_HI) {
+            boolean romReference = offset < ROM_HI;
+            boolean ramReference = offset >= RAM_LO;
+            if (!romReference && !ramReference) {
                 continue;
             }
             String value = "";
-            if (width > 0) {
+            int exportedWidth = romReference ? width : 0;
+            if (exportedWidth > 0) {
                 try {
-                    byte[] bytes = new byte[width];
+                    byte[] bytes = new byte[exportedWidth];
                     memory.getBytes(target, bytes);
                     value = hex(bytes);
                 } catch (Exception error) {
@@ -170,7 +174,7 @@ public class ExportFunctionSignatures extends GhidraScript {
                     ordinal,
                     mnemonic,
                     target,
-                    width,
+                    exportedWidth,
                     value,
                     referenceType);
             if (emitted.add(row)) {

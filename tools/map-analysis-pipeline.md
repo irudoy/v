@@ -63,7 +63,7 @@ Ghidra projects and export directories remain machine-local. Scripts under
 |---|---|---|
 | `funcs.csv`, `calls.csv` | `ExportGraph.java` | Function boundaries and resolved call edges |
 | `xrefs.csv` | `ExportXrefs.java` | RAM, peripheral, and literal-pool references |
-| `function_signatures.csv`, `function_sites.csv`, `function_references.csv` | `ExportFunctionSignatures.java` | Exact and relocation-tolerant function hashes plus ordinal callsites and ROM references |
+| `function_signatures.csv`, `function_sites.csv`, `function_references.csv` | `ExportFunctionSignatures.java` | Exact and relocation-tolerant function hashes plus ordinal callsites, ROM references, and direct RAM targets |
 | `map_inventory.csv` | `MapInventory.java` | Kernel slot, wrapper, callsite, and baseline operand census |
 | `direct_lookup_inventory.csv` | `DirectLookupInventory.java` | Direct and implicit-axis table census |
 | `accessors.<kernel>.csv` | `ResolveAccessors.java` | Backtracking and decompiler-data-flow operands with branch sets and verdicts |
