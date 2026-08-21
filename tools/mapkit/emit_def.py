@@ -1094,16 +1094,18 @@ def emit_target(
                 address_projection.axes,
                 address_projection.overrides,
             )
-            map_layout = (
-                definition_projections.map_switching_definition_layout(
-                    target.definition_projection
+            if target.definition_projection.map_switching:
+                map_layout = (
+                    definition_projections.map_switching_definition_layout(
+                        target.definition_projection
+                    )
                 )
-            )
-            launch_layout = (
-                definition_projections.rolling_launch_definition_layout(
-                    target.definition_projection
+            if target.definition_projection.rolling_launch:
+                launch_layout = (
+                    definition_projections.rolling_launch_definition_layout(
+                        target.definition_projection
+                    )
                 )
-            )
             layout_rom = rom
         except definition_projections.DefinitionProjectionError as error:
             sys.exit(str(error))

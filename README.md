@@ -137,3 +137,7 @@ same target and inheritance registries. ROM builds use immutable-byte automatic
 detection unless `ROM=<ROM>` is explicit. No root target starts, mutates, or
 backs up Memgraph, flashes hardware, or deletes temporary files. Each narrow
 README retains the detailed subsystem contract.
+
+JK78C participates in all-target definition and ROM-atlas generation with its
+reviewed calibration addresses and structural export. Its checksum and runtime
+contracts remain undeclared, so the production ROM builder does not accept it.

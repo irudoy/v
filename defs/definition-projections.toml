@@ -1,13 +1,17 @@
-schema_version = 1
+schema_version = 2
 
 # Relocated editor projections are SHA-bound and use reviewed address
-# correspondences. They are independent from exact-code inheritance.
+# correspondences. Checksum and runtime capabilities are independently gated.
+# Projections are independent from exact-code inheritance.
 
 [projection.JK00D]
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3"
 addresses = "JK08A-JK00D.definition-addresses.csv"
+checksum = true
+map_switching = true
+rolling_launch = true
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis is relocated through the SHA-bound reviewed
@@ -28,6 +32,9 @@ source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289"
 addresses = "JK08A-JK00C.definition-addresses.csv"
+checksum = true
+map_switching = true
+rolling_launch = true
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis is relocated through the SHA-bound reviewed
@@ -41,3 +48,25 @@ evidence = "Reviewed JK08A-to-JK00D correspondence composed with exact or normal
 
 [projection.JK00C.switch]
 can_telemetry_startup = 0x000E1503
+
+[projection.JK78C]
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
+addresses = "JK08A-JK78C.definition-addresses.csv"
+checksum = false
+map_switching = false
+rolling_launch = false
+comment = """
+The definition uses JK08A as the canonical semantic and presentation source.
+Every emitted stock map and axis is relocated through the SHA-bound reviewed
+correspondence in defs/JK08A-JK78C.definition-addresses.csv. Homologous claims
+are downgraded to candidate confidence unless target-specific evidence keeps
+code confidence. Source tables whose JK78C implementation changes geometry or
+removes the corresponding lookup are omitted explicitly. JK78C checksum,
+map-switching, Rolling Launch, and editor-switch contracts are not declared;
+the generated definition contains none of those controls.
+"""
+evidence = "Reviewed structural function correspondence, interpolation-call order, exact storage anchors, target literals, and target axis geometry."
+
+[projection.JK78C.switch]

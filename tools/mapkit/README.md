@@ -49,10 +49,12 @@ second and third positional arguments select alternate XML and XDF paths for a
 reproducibility comparison.
 The generator validates the selected ROM identity, inheritance or relocated
 projection hashes, canonical graph facts, definition gate, applicable target
-DTC storage, presentation schema, map-switching layout, and Rolling Launch
-controls before writing either projection. Target-specific wording uses only
-the explicit `{target_rom}` presentation token. Canonical source labels and
-evidence paths are preserved verbatim.
+DTC storage, presentation schema, and each capability enabled for a relocated
+target before writing either projection. Checksum metadata, map switching,
+Rolling Launch, and editor switches remain absent when the target registry does
+not declare their contracts. Target-specific wording uses only the explicit
+`{target_rom}` presentation token. Canonical source labels and evidence paths
+are preserved verbatim.
 
 The generated headers identify their inputs and warn that manual changes do not
 survive regeneration. Change the tracked canonical source layer or target
@@ -91,7 +93,8 @@ uv run python tools/mapkit/validate_map_switching.py
 ```
 
 Validate every relocated definition registry, stock-image hash, address bound,
-checksum layout, and target runtime layout without selecting a default ROM:
+and each enabled checksum or runtime capability without selecting a default
+ROM:
 
 ```bash
 uv run python tools/mapkit/definition_projections.py --check

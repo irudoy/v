@@ -1,10 +1,8 @@
 schema_version = 2
 rom = "JK78C"
 label = "23710-JK78C"
-annotation_source = "JK78C stock image"
+annotation_source = "JK78C structural export and reviewed relocation projection"
 image_registry = "rom-images/roms.csv"
-
-[metadata]
-submodel = "VQ37VHR"
-memmodel = "SH7058"
-endian = "big"
+identity_registry = "defs/rom-identities.toml"
+ghidra_export = "~/tools/ghidra-projects/export-JK78C"
+definition_xml = "defs/JK78C.xml"

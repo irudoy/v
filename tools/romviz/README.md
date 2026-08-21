@@ -59,7 +59,7 @@ warning in the atlas.
 | JK00A, JK03A, JK03B, JK08A | Exact-code JK08A function, map, axis, diagnostic, DTC, definition-control, composed-runtime, and checksum evidence with target identity |
 | JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, composed production runtime profiles, and target checksum layouts |
 | 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure and stock-image metrics |
-| JK78C | Stock-image identity and page metrics; missing analysis layers are explicit warnings |
+| JK78C | JK78C Ghidra structure, reviewed target definition addresses, and stock-image metrics; missing diagnostics, DTC, checksum, and runtime layers remain explicit warnings |
 
 The exact JK00A/JK03A/JK03B/JK08A family uses one canonical annotation layer
 because its declared executable address ranges are byte-identical. Only the

@@ -28,6 +28,13 @@ TARGETS = {
     },
 }
 
+JK78C_MAP_ADDRESSES = {
+    "Fuel Compensation - Main - Bank 1": "0x09EBA",
+    "Fuel Compensation - Main - Bank 2": "0x09FBA",
+    "Timing-State Addend - Warm DFCO Transition - Bank 1": "0x137E8",
+    "Timing-State Addend - Warm DFCO Transition - Bank 2": "0x137F0",
+}
+
 
 def _xml_tables(rom):
     root = ET.parse(DEFS / f"{rom}.xml").getroot()
@@ -114,3 +121,35 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         assert _xdf_table_address(
             tables["Rolling Launch Minimum Coolant Temperature"]
         ) == "0xE0666"
+
+
+def test_jk78c_artifacts_expose_only_reviewed_definition_capabilities():
+    target, tables = _xml_tables("JK78C")
+    romid = target.find("romid")
+
+    assert romid.findtext("xmlid") == "JK78C"
+    assert romid.findtext("internalidstring") == "JK78C"
+    assert romid.find("flashmethod") is None
+    assert target.findall("checksum") == []
+    assert len(target.findall("table")) == 34
+    assert not any(name.startswith("DTC ") for name in tables)
+    assert not any(name.startswith("Rolling Launch") for name in tables)
+    assert not any(name.startswith("Map 2 -") for name in tables)
+    for name, address in JK78C_MAP_ADDRESSES.items():
+        assert tables[name].get("storageaddress") == address
+
+    xml_text = (DEFS / "JK78C.xml").read_text(encoding="utf-8")
+    assert "defs/JK08A-JK78C.definition-addresses.csv" in xml_text
+    assert "storageaddress=\"0x099DB0\"" not in xml_text
+
+    root = ET.parse(DEFS / "JK78C.xdf").getroot()
+    description = root.find("XDFHEADER").findtext("description")
+    xdf_tables = _xdf_tables(root)
+    assert len(root.findall("XDFTABLE")) == 34
+    assert root.findall("XDFPATCH") == []
+    assert root.findall("XDFFLAG") == []
+    assert "no verified JK78C checksum layout" in description
+    for name, address in JK78C_MAP_ADDRESSES.items():
+        assert _xdf_table_address(xdf_tables[name]) == address.replace(
+            "0x0", "0x"
+        )

@@ -1,0 +1,50 @@
+entity,source,target,variant,status,sites,function_kinds,evidence
+Axis,00011ebe,000135b8,,homologous-call,1,instruction-aligned-homolog,target ignition accessor preserves the load-axis operand and 16-point geometry
+Axis,00011ece,000135c8,,homologous-call,1,instruction-aligned-homolog,target ignition accessor preserves the RPM-axis operand and 16-point geometry
+Axis,00011cf0,00013af8,,homologous-call,2,instruction-aligned-homolog,two target bank accessors share the reviewed 16-point X axis
+Axis,00011d4c,00013b18,,homologous-call,2,instruction-aligned-homolog,two target bank accessors share the reviewed 16-point Y axis
+Axis,00011d0c,00013463,,homologous-call,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
+Axis,00014114,0001552c,,homologous-call,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
+Axis,00014aba,00015cf2,,homologous-call,2,ordered-normalized-shape;ordered-unique-mapped-neighbor-fingerprint,unique structural axis pair preserves mapped neighbors
+Axis,00014b4a,00015d42,,homologous-call,1,ordered-normalized-shape,unique structural axis pair preserves normalized geometry
+Axis,000155a0,000167e4,,homologous-call,3,ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
+Axis,00018716,0001a8ea,,homologous-call,4,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
+Axis,00018ac6,0001ae5a,,homologous-call,4,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
+Axis,000190d0,0001b4aa,,homologous-call,3,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
+Axis,0002378c,00024674,,homologous-call,1,ordered-normalized-shape,unique structural axis pair preserves normalized geometry
+Map,000085d9,000084ed,,homologous-call,1,instruction-aligned-homolog,aligned activation and release threshold loads preserve the state-machine role and stock values
+Map,00008a27,00008896,,homologous-call,2,normalized-function-reference,normalized homologous consumers reference the target MAF factor scalar
+Map,00008fdc,00008d28,,homologous-call,1,instruction-aligned-homolog,aligned homologous consumer preserves the scalar operand role and stock value
+Map,0000911c,00008e2a,,homologous-call,1,instruction-aligned-homolog,aligned readiness state machine preserves the threshold role
+Map,00009284,00008f80,,homologous-call,3,normalized-function-reference,normalized homologous consumers preserve the K-value operand role
+Map,0000934e,,,unsupported,0,changed-geometry,homologous fuel-cut helper uses interpolated curves and scalar caps instead of the source 2x2 table
+Map,0000942c,0000911e,,homologous-call,2,instruction-aligned-homolog,two homologous consumers preserve the limiter scalar role and stock value
+Map,00009534,000091ee,,homologous-call,4,normalized-function-reference,normalized homologous consumers preserve the primary limiter scalar role
+Map,0000991a,000095ca,,homologous-call,1,unique-same-contract-accessor,unique same-contract accessor preserves the 16x16 cold ignition surface role
+Map,00009a1a,000096ca,,homologous-call,1,unique-same-contract-accessor,unique same-contract accessor preserves the first 16x16 ignition surface and operand order
+Map,00009b1a,000097ca,,homologous-call,1,unique-same-contract-accessor,unique same-contract accessor preserves the second 16x16 ignition surface and operand order
+Map,0000a29a,00009eba,bank_1,homologous-call,1,mutual-best-accessor-pair,mutual-best bank accessor preserves geometry axes and lookup role
+Map,0000a29a,00009fba,bank_2,homologous-call,1,mutual-best-accessor-pair,mutual-best bank accessor preserves geometry axes and lookup role
+Map,0000ab5a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
+Map,0000b33a,,,unsupported,0,changed-geometry,homologous target uses branch-selected 8-point curves instead of the source 16x16 surface
+Map,0000b43a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
+Map,0000b53a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
+Map,0000e98e,0000face,,homologous-exact-chain,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural accessor pair and exact storage anchor preserve interpolation-call order
+Map,00010b8e,00011d4e,,homologous-call,1,ordered-normalized-shape,unique structural map pair preserves normalized geometry
+Map,0001108e,00011f4e,,homologous-call,1,exact-normalized-function-shape,exact normalized accessor shape preserves the direct-row-major table operand
+Map,00012196,000137e0,,homologous-call,1,instruction-aligned-homolog,homologous fallback branch preserves the default table role
+Map,0001219e,000137e8,bank_1,homologous-call,1,instruction-aligned-homolog,target bank branch preserves the source warm-transition table role
+Map,0001219e,000137f0,bank_2,homologous-call,1,instruction-aligned-homolog,target bank branch preserves the source warm-transition table role
+Map,000124d2,00013a70,,homologous-call,1,unique-same-contract-accessor,unique state-machine accessor preserves the lookup role and geometry
+Map,000126e4,00013c5a,,homologous-exact-chain,1,coordinator-call-order;exact-bytes,homologous coordinator preserves lookup order and exact map bytes
+Map,00012718,00013c86,,homologous-exact-chain,1,coordinator-call-order;exact-bytes,homologous coordinator preserves lookup order and exact map bytes
+Map,00012818,00013d46,,homologous-call,1,unique-same-contract-accessor;coordinator-call-order,unique accessor and coordinator preserve lookup role and order
+Map,0001298c,00013e72,,homologous-call,1,unique-same-contract-accessor;coordinator-call-order,unique accessor and coordinator preserve lookup role and order
+Map,000129c0,00013e86,,homologous-exact-chain,1,instruction-aligned-homolog;exact-bytes,near-exact homologous accessor preserves the operand and six exact bytes
+Map,00013202,00014538,,homologous-call,3,ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
+Map,000141f4,0001559c,,homologous-call,1,ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
+Map,00014274,0001561c,,homologous-call,1,ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
+Map,00014c1a,00015e12,,homologous-call,1,ordered-unique-mapped-neighbor-fingerprint,unique structural pair preserves mapped neighbors
+Map,000154a0,00016664,,homologous-call,1,ordered-normalized-shape,unique structural pair preserves normalized geometry
+Map,000175c8,0001950c,,homologous-call,4,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order
+Map,00018766,0001a94a,,homologous-call,3,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural pair preserves interpolation-call order

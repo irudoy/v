@@ -715,10 +715,17 @@ def render(
     description += ", with target identity from defs/rom-identities.toml."
     if dtc_records:
         description += " Individual and group DTC patches overlap by design."
-    description += (
-        " No editor-side checksum is declared; the flashing workflow handles "
-        "checksum correction."
-    )
+    if definition_projection is not None and not definition_projection.checksum:
+        description += (
+            f" No editor-side checksum is declared. The project has no "
+            f"verified {rom} checksum layout, so edited images are not "
+            "flash-ready."
+        )
+    else:
+        description += (
+            " No editor-side checksum is declared; the flashing workflow "
+            "handles checksum correction."
+        )
     if overrides.get("map_switching", {}).get("enabled"):
         if definition_projection is None:
             description += (

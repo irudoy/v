@@ -10,8 +10,8 @@ from tools.mapkit import rom as romkit
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
-TARGETS = ("JK00C", "JK00D")
-UNSUPPORTED = {
+TARGETS = ("JK00C", "JK00D", "JK78C")
+SH7058_HR_UNSUPPORTED = {
     "000085d9",
     "00008fdc",
     "0000911c",
@@ -20,30 +20,46 @@ UNSUPPORTED = {
     "0000b53a",
     "000124d2",
 }
+JK78C_UNSUPPORTED = {
+    "0000934e",
+    "0000ab5a",
+    "0000b33a",
+    "0000b43a",
+    "0000b53a",
+}
 
 
-def test_registry_binds_both_relocated_targets_without_a_default():
+def test_registry_binds_relocated_targets_without_a_default():
     projections = definition_projections.load_registry()
     assert set(projections) == set(TARGETS)
     assert definition_projections.projection_for_rom("JK08A") is None
     for projection in projections.values():
         definition_projections.verify_image_binding(projection)
         assert projection.source == "JK08A"
-        assert projection.unsupported_maps == UNSUPPORTED
+    assert projections["JK00C"].unsupported_maps == SH7058_HR_UNSUPPORTED
+    assert projections["JK00D"].unsupported_maps == SH7058_HR_UNSUPPORTED
+    assert projections["JK78C"].unsupported_maps == JK78C_UNSUPPORTED
 
 
-def test_complete_registry_validation_covers_both_targets():
+def test_complete_registry_validation_covers_every_target_capability_set():
     stats = definition_projections.validate_registry()
     assert set(stats) == set(TARGETS)
-    for values in stats.values():
+    for rom in ("JK00C", "JK00D"):
+        values = stats[rom]
         assert values["mapped"] > 0
-        assert values["unsupported"] == len(UNSUPPORTED)
+        assert values["unsupported"] == len(SH7058_HR_UNSUPPORTED)
+        assert values["checksum"] is True
         assert values["map_families"] == 13
         assert values["rolling_configuration"] == 0xE0660
+    assert stats["JK78C"]["mapped"] == 44
+    assert stats["JK78C"]["unsupported"] == len(JK78C_UNSUPPORTED)
+    assert stats["JK78C"]["checksum"] is False
+    assert stats["JK78C"]["map_families"] == 0
+    assert stats["JK78C"]["rolling_configuration"] is None
 
 
 def test_exhaust_target_has_two_explicit_bank_variants():
-    for rom in TARGETS:
+    for rom in ("JK00C", "JK00D"):
         projection = definition_projections.projection_for_rom(rom)
         rows = [
             binding
@@ -56,7 +72,7 @@ def test_exhaust_target_has_two_explicit_bank_variants():
 
 
 def test_runtime_definition_layouts_use_target_allocation():
-    for rom in TARGETS:
+    for rom in ("JK00C", "JK00D"):
         projection = definition_projections.projection_for_rom(rom)
         maps = definition_projections.map_switching_definition_layout(projection)
         launch = definition_projections.rolling_launch_definition_layout(projection)
@@ -135,6 +151,24 @@ def test_projection_applies_target_map_checksums_and_switches(
     assert result.overrides["checksum"][1]["sumloc"] == runtime_a_sum
     assert len(result.overrides["switch"]) == switch_count
     assert "flashmethod" not in result.overrides["rom"]
+
+
+def test_jk78c_projection_omits_unverified_runtime_capabilities():
+    projection = definition_projections.projection_for_rom("JK78C")
+    result = definition_projections.apply_projection(
+        projection,
+        {"00008a27": _direct_scalar_model()},
+        {},
+        _minimal_overrides(),
+        romkit.load("JK78C"),
+        required_maps={"00008a27"},
+    )
+
+    assert set(result.maps) == {"00008896"}
+    assert "checksum" not in result.overrides
+    assert result.overrides["switch"] == []
+    assert result.overrides["map_switching"] == {"enabled": False}
+    assert result.overrides["rolling_launch"] == {"enabled": False}
 
 
 def test_visible_map_without_binding_stops_projection():

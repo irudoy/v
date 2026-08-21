@@ -52,6 +52,25 @@ def test_all_models_build_with_exact_registered_identities():
         for rom in set(REGISTERED_ROMS) - {"1ND0A", "1ND3B"}
     )
     assert by_id["JK78C"]["warnings"]
+    assert by_id["JK78C"]["reviewedFunctions"] == 0
+    assert by_id["JK78C"]["structuralFunctions"] == 2969
+    assert by_id["JK78C"]["counts"]["maps"] == 34
+
+
+def test_jk78c_model_uses_target_definition_without_runtime_claims():
+    rom = model.build_rom_model(model.resolve_manifest("JK78C"))
+    by_id = {item["id"]: item for item in rom["objects"]}
+
+    assert rom["metadata"]["ECU ID"] == "1JK78C"
+    assert any(
+        item["label"] == "Fuel Compensation - Main - Bank 1"
+        and item["start"] == 0x09EBA
+        for item in rom["objects"]
+    )
+    assert not any(item["layer"] == "patches" for item in rom["objects"])
+    assert not any(item["layer"] == "integrity" for item in rom["objects"])
+    assert "function:0006af76" in by_id
+    assert any("checksum layout" in warning for warning in rom["warnings"])
 
 
 def test_jk08a_model_covers_reviewed_sources_and_composed_patches():

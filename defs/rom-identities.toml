@@ -104,3 +104,22 @@ endian = "big"
 filesize = "1024kb"
 author = "VQ HR ECU project"
 version = "WIP"
+
+[rom.JK78C]
+xmlid = "JK78C"
+internalidaddress = "8205"
+internalidstring = "JK78C"
+ecuid = "1JK78C"
+caseid = "Unknown"
+make = "Infiniti"
+model = "G37 (2008-09)"
+submodel = "VQ37VHR"
+market = "USDM"
+transmission = "Unknown"
+# RomRaider memory-family label for the verified 1 MiB SH-2E layout. The exact
+# SH70582xN silicon suffix is not established from chip markings.
+memmodel = "SH7058"
+endian = "big"
+filesize = "1024kb"
+author = "VQ HR ECU project"
+version = "WIP"

@@ -25,7 +25,7 @@ presentation and generated output.
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
-| `definition-projections.toml` | SHA-bound relocated definition targets, switches, and evidence | yes |
+| `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
 | `JK08A-<ROM>.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
 | `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
 | `JK08A.maps.csv` | Catalog ledger projected from Memgraph | no, regenerate |
@@ -94,6 +94,15 @@ and three VQ37-only contracts are recorded independently. Equal wrapper bytes
 and reviewed library order establish the contract registry; they do not by
 themselves establish map semantics or equal calibration geometry.
 
+`JK08A-JK78C.definition-addresses.csv` projects 29 visible source-map roles to
+31 JK78C tables, including explicit bank variants, and records five source
+maps as unsupported. The unsupported entries cover removed dispatcher slots
+and target algorithms whose table geometry differs. Thirteen reviewed axis
+pairs complete the emitted geometry. The JK78C registry disables checksum,
+map-switching, Rolling Launch, and editor-switch capabilities because their
+target contracts are not established. Its XML/XDF files are calibration
+definitions only and do not make edited images flash-ready.
+
 ## Evidence specifications
 
 - `JK08A.notes.md` is a compact routing and evidence index, not a batch journal.
@@ -157,24 +166,26 @@ field. A dump tool or a community definition does not establish a validated
 flashing path for this ECU family.
 
 The generator validates ROM identity, exact inheritance or projection hashes,
-map geometry, scaling, visibility, DTC stock bytes, map-slot layout, and
-Rolling Launch controls. A visible map must pass the definition gate. Hidden
-research maps remain in the graph and ledger. Presentation text uses the
-explicit `{target_rom}` token where a target label is required; source ROM
-labels and evidence filenames are never rewritten as target labels.
+map geometry, scaling, visibility, DTC stock bytes, and every target capability
+enabled in `definition-projections.toml`. A visible map must pass the definition
+gate. Hidden research maps remain in the graph and ledger. Presentation text
+uses the explicit `{target_rom}` token where a target label is required; source
+ROM labels and evidence filenames are never rewritten as target labels.
 
-Each definition keeps the selected ROM identity. Map 1 uses that ROM's stock
-storage. The exact-code family derives Map 2 through Map 5 from
-`patches/map-switching-layout.toml`; relocated targets use their explicit
-`patches/rom-address-profiles.toml` allocation, including separate exhaust-bank
-families. Rolling Launch exposes only the validated target configuration
-controls. Neither projection creates speculative canonical graph maps or
-copies JK08A calibration values into another ROM.
+Each definition keeps the selected ROM identity. A target with map switching
+enabled uses its own stock Map 1 storage. The exact-code family derives Map 2
+through Map 5 from `patches/map-switching-layout.toml`; relocated targets with
+that capability use an explicit `patches/rom-address-profiles.toml` allocation,
+including separate exhaust-bank families. Rolling Launch and checksum metadata
+are emitted only when their independent target capabilities are enabled.
+Neither projection creates speculative canonical graph maps or copies JK08A
+calibration values into another ROM.
 
 RomRaider and TunerPro receive equivalent calibration tables and controls in
-their native formats. TunerPro does not own image checksum correction; complete
-ROM output must pass the builder and checksum gates documented in
-`../patches/rom-builder.md`.
+their native formats. TunerPro does not own image checksum correction. A ROM
+with a verified builder must pass the builder and checksum gates documented in
+`../patches/rom-builder.md`; a definition-only target remains ineligible for
+flashing.
 
 ## DTC controls
 

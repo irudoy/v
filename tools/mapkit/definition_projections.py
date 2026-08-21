@@ -47,6 +47,9 @@ PROJECTION_FIELDS = frozenset(
         "source_sha256",
         "target_sha256",
         "addresses",
+        "checksum",
+        "map_switching",
+        "rolling_launch",
         "switch",
         "comment",
         "evidence",
@@ -92,6 +95,9 @@ class DefinitionProjection:
     source_sha256: str
     target_sha256: str
     address_path: Path
+    checksum: bool
+    map_switching: bool
+    rolling_launch: bool
     switch_addresses: tuple[tuple[str, int], ...]
     comment: str
     evidence: str
@@ -234,6 +240,9 @@ def _parse_projection(target, row, path):
     for key in ("source_sha256", "target_sha256"):
         if not isinstance(row[key], str) or not SHA256_RE.fullmatch(row[key]):
             raise DefinitionProjectionError(f"{context}.{key} is not a SHA-256")
+    for key in ("checksum", "map_switching", "rolling_launch"):
+        if type(row[key]) is not bool:
+            raise DefinitionProjectionError(f"{context}.{key} must be a boolean")
     address_name = row["addresses"]
     if (
         not isinstance(address_name, str)
@@ -268,6 +277,9 @@ def _parse_projection(target, row, path):
         source_sha256=row["source_sha256"],
         target_sha256=row["target_sha256"],
         address_path=address_path,
+        checksum=row["checksum"],
+        map_switching=row["map_switching"],
+        rolling_launch=row["rolling_launch"],
         switch_addresses=tuple(sorted(switch_addresses)),
         comment=row["comment"].strip(),
         evidence=row["evidence"].strip(),
@@ -288,7 +300,7 @@ def load_registry(path=DEFAULT_REGISTRY):
         raise DefinitionProjectionError(
             f"{path}: expected only schema_version and projection"
         )
-    if document["schema_version"] != 1:
+    if document["schema_version"] != 2:
         raise DefinitionProjectionError(f"{path}: unsupported schema_version")
     rows = document["projection"]
     if not isinstance(rows, dict) or not rows:
@@ -428,7 +440,11 @@ def apply_projection(
     required = set(required_maps)
     selected_sources = set(required)
     switching = overrides.get("map_switching", {})
-    if isinstance(switching, dict) and switching.get("enabled", False):
+    if (
+        projection.map_switching
+        and isinstance(switching, dict)
+        and switching.get("enabled", False)
+    ):
         selected_sources.update(
             f"{family.canonical_address:08x}"
             for family in map_switching_layout.load_layout().families
@@ -627,15 +643,24 @@ def apply_projection(
     else:
         projected_overrides.pop("masked_view", None)
 
-    source_checksums = overrides.get("checksum", [])
-    if isinstance(source_checksums, dict):
-        source_checksums = [source_checksums]
-    projected_overrides["checksum"] = _target_checksums(
-        projection.target, source_checksums
-    )
+    if projection.checksum:
+        source_checksums = overrides.get("checksum", [])
+        if isinstance(source_checksums, dict):
+            source_checksums = [source_checksums]
+        projected_overrides["checksum"] = _target_checksums(
+            projection.target, source_checksums
+        )
+    else:
+        projected_overrides.pop("checksum", None)
     projected_overrides["switch"] = _target_switches(
         projection, overrides.get("switch", []), image
     )
+    projected_overrides["map_switching"] = {
+        "enabled": projection.map_switching
+    }
+    projected_overrides["rolling_launch"] = {
+        "enabled": projection.rolling_launch
+    }
     projected_overrides["rom"]["comment"] = {"text": projection.comment}
 
     return AppliedAddressProjection(
@@ -756,15 +781,27 @@ def validate_registry(path=DEFAULT_REGISTRY):
                     f"{target}: target {binding.entity} {binding.target} "
                     "is outside the stock image"
                 )
-        map_layout = map_switching_definition_layout(projection)
-        launch_layout = rolling_launch_definition_layout(projection)
-        rom_checksums.layout_for_rom(target)
+        map_layout = (
+            map_switching_definition_layout(projection)
+            if projection.map_switching
+            else None
+        )
+        launch_layout = (
+            rolling_launch_definition_layout(projection)
+            if projection.rolling_launch
+            else None
+        )
+        if projection.checksum:
+            rom_checksums.layout_for_rom(target)
         stats[target] = {
             "bindings": len(projection.bindings),
             "mapped": sum(binding.mapped for binding in projection.bindings),
             "unsupported": len(projection.unsupported_maps),
-            "map_families": len(map_layout.families),
-            "rolling_configuration": launch_layout.configuration.start,
+            "checksum": projection.checksum,
+            "map_families": len(map_layout.families) if map_layout else 0,
+            "rolling_configuration": (
+                launch_layout.configuration.start if launch_layout else None
+            ),
         }
     return stats
 
@@ -779,13 +816,19 @@ def main(argv=None):
     if not args.check:
         parser.error("--check is required")
     for target, values in validate_registry(args.registry).items():
+        rolling_configuration = values["rolling_configuration"]
+        rolling_text = (
+            f"{rolling_configuration:#x}"
+            if rolling_configuration is not None
+            else "disabled"
+        )
         print(
             f"{target}: bindings={values['bindings']}, "
             f"mapped={values['mapped']}, "
             f"unsupported={values['unsupported']}, "
+            f"checksum={'enabled' if values['checksum'] else 'disabled'}, "
             f"map_families={values['map_families']}, "
-            "rolling_configuration="
-            f"{values['rolling_configuration']:#x}"
+            f"rolling_configuration={rolling_text}"
         )
     print("status=PASS; no default target selected")
 

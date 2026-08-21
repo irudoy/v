@@ -8,7 +8,15 @@ from tools.mapkit import definition_targets
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
-ROMS = ("JK00A", "JK03A", "JK03B", "JK08A", "JK00C", "JK00D")
+ROMS = (
+    "JK00A",
+    "JK03A",
+    "JK03B",
+    "JK08A",
+    "JK00C",
+    "JK00D",
+    "JK78C",
+)
 
 
 class DefinitionTargetsTest(unittest.TestCase):
@@ -25,7 +33,7 @@ class DefinitionTargetsTest(unittest.TestCase):
                 self.assertEqual(target.image.rom, rom)
                 self.assertEqual(
                     target.definition_projection is not None,
-                    rom in {"JK00C", "JK00D"},
+                    rom in {"JK00C", "JK00D", "JK78C"},
                 )
                 address = int(target.romid["internalidaddress"], 16)
                 identity = target.romid["internalidstring"].encode("ascii")
