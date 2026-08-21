@@ -93,12 +93,13 @@ is documented beside that tool.
 Build the self-contained ROM atlas HTML with:
 
 ```bash
-make romviz ROMS=JK08A
+make romviz
 ```
 
-The target requires an explicit ROM list and rebuilds the ignored
-`tmp/romviz/rom-atlas.html` artifact. It does not start a server or watch source
-files.
+The target rebuilds the ignored `tmp/romviz/rom-atlas.html` artifact for every
+flash ROM registered in `rom-images/roms.csv`. `ROMS="JK08A JK00C"` limits the
+atlas to an explicit selection. The target does not start a server or watch
+source files.
 
 Build the portable Windows PCAN dashboard archive with:
 

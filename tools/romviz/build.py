@@ -77,8 +77,8 @@ def main(argv=None):
     )
     parser.add_argument(
         "rom",
-        nargs="+",
-        help="ROM label or path to a tools/romviz/roms manifest",
+        nargs="*",
+        help="ROM label, manifest path, or all (default: all registered ROMs)",
     )
     parser.add_argument(
         "--output",
@@ -92,12 +92,26 @@ def main(argv=None):
         metavar="PORT",
         help="serve the generated file on 127.0.0.1 until interrupted",
     )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="validate selected inputs without writing an atlas",
+    )
     args = parser.parse_args(argv)
-    output, atlas = write_atlas(args.rom, args.output)
+    if args.check and args.serve:
+        parser.error("--check and --serve cannot be combined")
+    if args.check:
+        atlas = model.build_atlas(args.rom)
+        output = None
+    else:
+        output, atlas = write_atlas(args.rom, args.output)
     summary = ", ".join(
         f"{rom['id']}={len(rom['objects'])} objects" for rom in atlas["roms"]
     )
-    print(f"wrote {output} ({summary})")
+    if args.check:
+        print(f"validated ROM atlas inputs ({summary})")
+    else:
+        print(f"wrote {output} ({summary})")
     if args.serve:
         _serve(output, args.serve)
     return 0

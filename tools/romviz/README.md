@@ -1,84 +1,109 @@
 # ROM atlas generator
 
-`romviz` builds a self-contained interactive address-space atlas from the
-repository evidence model. The generated HTML places structural functions,
-reviewed semantics, maps, axes, diagnostic records, custom patch allocations,
-hooks, and checksum domains on one flash address axis.
+`romviz` builds a self-contained interactive address-space atlas from tracked
+repository evidence. A single HTML file can contain every registered stock ROM
+while preserving the evidence boundary of each image.
 
 The output contains no ROM bytes. It includes per-page entropy and erased-byte
-ratios derived from the stock image, object metadata from repository sources,
-and patch ranges from declared manifests.
+ratios derived from each SHA-locked stock image, plus the structural functions,
+reviewed semantics, definitions, diagnostics, patch allocations, hooks, and
+checksum domains that are explicitly available for that ROM.
 
-## JK08A build
+## Build
 
-```bash
-make romviz ROMS=JK08A
-```
-
-The root target rebuilds `tmp/romviz/rom-atlas.html`. The HTML is
-self-contained and opens directly from the filesystem. The underlying command
-is available for direct tool development:
+Build all flash ROMs registered in `rom-images/roms.csv`:
 
 ```bash
-uv run python tools/romviz/build.py JK08A \
-  --output tmp/romviz/jk08a-rom-atlas.html
+make romviz
 ```
+
+The root target uses `ROMS=all` by default and rebuilds the ignored
+`tmp/romviz/rom-atlas.html` artifact. Limit the output to an explicit selection
+when needed:
+
+```bash
+make romviz ROMS="JK08A JK00C" \
+  ROMVIZ_OUTPUT=tmp/romviz/selected-rom-atlas.html
+```
+
+The underlying command is available for direct tool development. An empty ROM
+selection and the explicit `all` token both select the complete registry:
+
+```bash
+uv run python tools/romviz/build.py all \
+  --output tmp/romviz/rom-atlas.html
+uv run python tools/romviz/build.py --check
+```
+
+`all` cannot be combined with explicit ROM labels. The build fails if a flash
+ROM in the image registry lacks a tracked manifest.
 
 The interface supports mouse-wheel and trackpad-pinch zoom, pointer dragging,
 trackpad horizontal panning, whole-ROM navigation, layer filters, reviewed-only
 function filtering, text and address search, object details, and related-address
-jumps. Custom per-slot map copies appear both as map-switching allocations and
-as maps in the calibration lane. The URL fragment records the active ROM,
-viewport, and selected object for reproducible local links.
+jumps. The URL fragment records the active ROM, viewport, and selected object
+for reproducible local links.
 
-## Source model
+## Evidence model
 
-The JK08A manifest is `roms/JK08A.toml`. It references existing evidence rather
-than copying object addresses into visualization code.
+Each target has `tools/romviz/roms/<ROM>.toml`. Manifest schema version 2 keeps
+stock identity mandatory and makes analysis layers independently declarable.
+Tracked declared sources are strict: missing files, invalid geometry, wrong
+image hashes, out-of-range objects, and unknown patch kinds fail the build.
+Machine-local Ghidra exports are the documented exception and produce a warning
+when unavailable. An undeclared layer remains absent and produces a visible
+warning in the atlas.
 
-| Layer | Source |
+| ROM family | Current atlas evidence |
 |---|---|
-| Stock image identity and size | `rom-images/roms.csv` and the SHA-locked image |
-| Function starts and body byte counts | machine-local Ghidra `funcs.csv` export |
-| Reviewed function semantics | `defs/JK08A.funcs.csv` |
-| Map ranges and semantics | generated `defs/JK08A.maps.csv` projection |
-| Axis semantics and inferred extents | `defs/JK08A.axes.csv`, `defs/JK08A.interp.csv`, and map geometry |
-| Diagnostic bindings and DTC storage | `defs/JK08A.diagnostic-bindings.csv` and `defs/JK08A.dtc.csv` |
-| Definition-controlled byte patches | `defs/JK08A.overrides.toml` |
-| Composed runtime layouts | map-switching, Rolling Launch, and CAN telemetry layout manifests |
-| Checksum fields and domains | `patches.jk08a_checksums` constants |
+| JK00A, JK03A, JK03B, JK08A | Exact-code JK08A function, map, axis, diagnostic, DTC, definition-control, composed-runtime, and checksum evidence with target identity |
+| JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, candidate runtime address profiles, and target checksum layouts |
+| 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure and stock-image metrics |
+| JK78C | Stock-image identity and page metrics; missing analysis layers are explicit warnings |
+
+The exact JK00A/JK03A/JK03B/JK08A family uses one canonical annotation layer
+because its declared executable address ranges are byte-identical. Only the
+explicit `{target_rom}` presentation token is materialized for a target;
+provenance paths and source labels are preserved unchanged.
+
+JK00C and JK00D do not inherit JK08A addresses. Their map, axis, and definition
+control objects are loaded from the generated `defs/JK00C.xml` and
+`defs/JK00D.xml` projections, which are backed by SHA-bound reviewed relocation
+registries. Their runtime address profiles remain labeled `candidate` until the
+production builder emits those targets.
 
 Ghidra exports provide exact function entry addresses and body byte counts. The
 export does not preserve discontiguous body ranges, so the atlas draws each
-function as a contiguous byte-count envelope anchored at its entry. Reviewed
-objects remain distinguishable from structure-only functions. Unknown extents
-are point-sized and identified in the details view.
+function as a contiguous byte-count envelope anchored at its entry. Machine-local
+exports are optional at rendering time: reviewed entries retain point extents,
+and a missing structural export produces a warning.
 
 Patch status is explicit. `composed` marks ranges owned by the current unified
 builder, `available` marks reversible definition controls, and `candidate`
-marks declared allocations that are not part of the composed builder layout.
+marks exact registered allocations that are not emitted by the production
+builder for that target.
 
-## Adding another ROM
+## Adding a ROM
 
-Add `tools/romviz/roms/<ROM>.toml` with the same schema and point each field at
-that ROM's image registry entry, reviewed sources, structural export, patch
-manifests, and checksum module. No interface changes are required. Multiple
-ROMs can be embedded in one atlas:
+1. Add the SHA-locked flash image to `rom-images/roms.csv`.
+2. Add `tools/romviz/roms/<ROM>.toml` with schema version 2.
+3. Declare only the evidence sources that are valid for the exact target.
+4. Run the complete registry validation and regenerate the atlas.
 
 ```bash
-make romviz ROMS="JK08A <ROM>" \
-  ROMVIZ_OUTPUT=tmp/romviz/vq-rom-atlas.html
+uv run python tools/romviz/build.py --check
+make romviz
 ```
 
-An optional patch source may be absent without failing the build. Required
-evidence, image identity, object bounds, unsupported map geometry, duplicate
-object IDs, and unknown patch source kinds fail the build.
+No interface change or Makefile target change is required. The registry check
+ensures that `all` includes the new flash ROM.
 
 ## Verification
 
 ```bash
 node --check tools/romviz/app.js
 uv run pytest -q tools/romviz/tests
+make check
 ```
 
 Generated atlas files belong under ignored `tmp/` or another explicit output

@@ -1,0 +1,16 @@
+schema_version = 2
+rom = "JK00C"
+label = "23710-JK00C"
+annotation_source = "JK08A reviewed relocation projection"
+image_registry = "rom-images/roms.csv"
+identity_registry = "defs/rom-identities.toml"
+ghidra_export = "~/tools/ghidra-projects/export-JK00C"
+definition_xml = "defs/JK00C.xml"
+checksum_registry = "patches/checksum-layouts.toml"
+
+[[patch]]
+id = "runtime-address-profile"
+label = "Unified runtime address profile"
+kind = "address-profile"
+status = "candidate"
+path = "patches/rom-address-profiles.toml"

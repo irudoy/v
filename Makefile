@@ -8,7 +8,7 @@ NODE ?= node
 NPM ?= npm
 
 ROM ?= auto
-ROMS ?=
+ROMS ?= all
 DEFS_ROM ?= all
 ROMVIZ_OUTPUT ?= tmp/romviz/rom-atlas.html
 CAN_DASHBOARD_VERSION := $(shell sed -n 's/^__version__ = "\([^"]*\)"/\1/p' tools/can_dashboard/__init__.py)
@@ -47,7 +47,7 @@ help:
 		'Variables:' \
 		'  ROM               Exact ROM or auto detection for ROM builds (default: auto).' \
 		'  DEFS_ROM          Definition target or all (default: all).' \
-		'  ROMS              Required space-separated ROM models embedded in romviz.' \
+		'  ROMS              ROM models or all for romviz (default: all).' \
 		'  ROMVIZ_OUTPUT     ROM atlas output path.' \
 		'  CAN_DASHBOARD_OUTPUT  Windows dashboard ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_OUTPUT  macOS arm64 app ZIP path.' \
@@ -64,6 +64,7 @@ check:
 	$(PYTHON) tools/mapkit/definition_projections.py --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
+	$(PYTHON) tools/romviz/build.py --check
 	$(NODE) --check tools/romviz/app.js
 
 test-python:
@@ -84,7 +85,6 @@ verify:
 	+$(MAKE) verify-firmware
 
 romviz:
-	@test -n "$(strip $(ROMS))" || { printf '%s\n' 'ROMS is required' >&2; exit 2; }
 	@test -n "$(strip $(ROMVIZ_OUTPUT))" || { printf '%s\n' 'ROMVIZ_OUTPUT is required' >&2; exit 2; }
 	$(PYTHON) tools/romviz/build.py $(ROMS) --output "$(ROMVIZ_OUTPUT)"
 

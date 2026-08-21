@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -6,11 +7,51 @@ from tools.romviz import build
 from tools.romviz import model
 
 
+REGISTERED_ROMS = (
+    "1ND0A",
+    "1ND3B",
+    "JK00A",
+    "JK00C",
+    "JK00D",
+    "JK03A",
+    "JK03B",
+    "JK08A",
+    "JK78C",
+)
+
+
 def test_dimension_contract():
     assert model._dimension("1D-16") == (16, 1)
     assert model._dimension("4x3") == (4, 3)
     with pytest.raises(model.ModelError, match="unsupported map dimension"):
         model._dimension("16 by 16")
+
+
+def test_all_selection_covers_every_registered_flash_rom():
+    assert model.registered_roms() == REGISTERED_ROMS
+    assert tuple(path.stem for path in model.registered_manifests()) == REGISTERED_ROMS
+    assert tuple(
+        Path(value).stem for value in model.expand_manifest_values([])
+    ) == REGISTERED_ROMS
+    assert tuple(
+        Path(value).stem for value in model.expand_manifest_values(["all"])
+    ) == REGISTERED_ROMS
+    with pytest.raises(model.ModelError, match="cannot be combined"):
+        model.expand_manifest_values(["all", "JK08A"])
+
+
+def test_all_models_build_with_exact_registered_identities():
+    atlas = model.build_atlas(["all"])
+    by_id = {rom["id"]: rom for rom in atlas["roms"]}
+
+    assert tuple(by_id) == REGISTERED_ROMS
+    assert by_id["1ND0A"]["size"] == 0x180000
+    assert by_id["1ND3B"]["size"] == 0x180000
+    assert all(
+        by_id[rom]["size"] == 0x100000
+        for rom in set(REGISTERED_ROMS) - {"1ND0A", "1ND3B"}
+    )
+    assert by_id["JK78C"]["warnings"]
 
 
 def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
@@ -42,6 +83,43 @@ def test_jk08a_object_ids_and_ranges_are_valid():
     assert len(ids) == len(set(ids))
     assert all(0 <= item["start"] < item["end"] <= rom["size"] for item in rom["objects"])
     assert all(item["layer"] in {entry[0] for entry in model.LAYERS} for item in rom["objects"])
+
+
+def test_exact_family_materializes_only_explicit_target_tokens():
+    rom = model.build_rom_model(model.resolve_manifest("JK00A"))
+    switch = next(
+        item
+        for item in rom["objects"]
+        if item["label"] == "Developer Immobilizer"
+    )
+
+    assert rom["metadata"]["ECU ID"] == "1JK00A"
+    assert "Exact JK00A only." in switch["description"]
+    assert switch["source"] == "defs/JK08A.overrides.toml"
+
+
+@pytest.mark.parametrize(
+    ("rom_id", "address"),
+    (("JK00C", 0x0B7BE), ("JK00D", 0x0B7CE)),
+)
+def test_relocated_definitions_use_target_map_addresses(rom_id, address):
+    rom = model.build_rom_model(model.resolve_manifest(rom_id))
+    exhaust = next(
+        item
+        for item in rom["objects"]
+        if item["label"] == "Map 1 - Exhaust CVTC Target - Main - Bank 1"
+    )
+    profile = next(
+        item
+        for item in rom["objects"]
+        if item["id"]
+        == "patch:runtime-address-profile:patch-claim:injected-rom"
+    )
+
+    assert exhaust["start"] == address
+    assert exhaust["source"] == f"defs/{rom_id}.xml"
+    assert profile["patchStatus"] == "candidate"
+    assert any(item["id"] == "checksum-field:sum16_a" for item in rom["objects"])
 
 
 def test_map_and_axis_extents_are_derived_from_geometry():

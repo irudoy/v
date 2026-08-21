@@ -1,8 +1,9 @@
-schema_version = 1
+schema_version = 2
 rom = "JK08A"
 label = "23710-JK08A"
 annotation_source = "JK08A"
 image_registry = "rom-images/roms.csv"
+identity_registry = "defs/rom-identities.toml"
 ghidra_export = "~/tools/ghidra-projects/export-JK08A-exact"
 map_ledger = "defs/JK08A.maps.csv"
 axes = "defs/JK08A.axes.csv"
@@ -11,13 +12,14 @@ reviewed_functions = "defs/JK08A.funcs.csv"
 diagnostic_bindings = "defs/JK08A.diagnostic-bindings.csv"
 dtc = "defs/JK08A.dtc.csv"
 overrides = "defs/JK08A.overrides.toml"
-checksum_module = "patches.jk08a_checksums"
+checksum_registry = "patches/checksum-layouts.toml"
 
 [[patch]]
 id = "map-switching"
 label = "Map switching"
 kind = "layout"
 status = "composed"
+source_rom = "JK08A"
 path = "patches/map-switching-layout.toml"
 
 [[patch]]
@@ -25,6 +27,7 @@ id = "rolling-launch"
 label = "Rolling Launch"
 kind = "layout"
 status = "composed"
+source_rom = "JK08A"
 path = "patches/rolling-launch-layout.toml"
 
 [[patch]]
@@ -32,4 +35,5 @@ id = "can-telemetry"
 label = "CAN telemetry"
 kind = "layout"
 status = "composed"
+source_rom = "JK08A"
 path = "patches/can-telemetry-layout.toml"

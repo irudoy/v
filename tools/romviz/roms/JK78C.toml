@@ -1,0 +1,10 @@
+schema_version = 2
+rom = "JK78C"
+label = "23710-JK78C"
+annotation_source = "JK78C stock image"
+image_registry = "rom-images/roms.csv"
+
+[metadata]
+submodel = "VQ37VHR"
+memmodel = "SH7058"
+endian = "big"
