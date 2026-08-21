@@ -58,9 +58,9 @@ source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
 addresses = "JK08A-JK78C.definition-addresses.csv"
-checksum = false
-romraider_checksum = false
-map_switching = false
+checksum = true
+romraider_checksum = true
+map_switching = true
 rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
@@ -68,13 +68,16 @@ Every emitted stock map and axis is relocated through the SHA-bound reviewed
 correspondence in defs/JK08A-JK78C.definition-addresses.csv. Homologous claims
 are downgraded to candidate confidence unless target-specific evidence keeps
 code confidence. Source tables whose JK78C implementation changes geometry or
-removes the corresponding lookup are omitted explicitly. JK78C checksum,
-map-switching, Rolling Launch, and editor-switch contracts are not declared;
-the generated definition contains none of those controls.
+removes the corresponding lookup are omitted explicitly. The project and
+native RomRaider checksum contracts cover all six JK78C checksum fields. Map 2
+through Map 5 storage and the CAN Telemetry at Startup control use the
+validated JK78C runtime allocation in patches/rom-address-profiles.toml.
+Rolling Launch is not supported on JK78C.
 """
-evidence = "Reviewed structural function correspondence, interpolation-call order, exact storage anchors, target literals, and target axis geometry."
+evidence = "Reviewed structural function correspondence, interpolation-call order, exact storage anchors, target literals, target axis geometry, checksum code, runtime correspondence, and independently reproduced stock checksum values."
 
 [projection.JK78C.switch]
+can_telemetry_startup = 0x0001F803
 
 [projection.1ND0A]
 source = "JK08A"

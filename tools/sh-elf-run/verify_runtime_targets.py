@@ -31,6 +31,7 @@ from patches import runtime_targets
 MAP_CASES_BY_VARIANT = {
     "dual-exhaust": 139,
     "sh7059-1nd": 145,
+    "sh7058-jk78": 145,
 }
 ROLLING_CASES = 121
 TELEMETRY_CASES = 62
@@ -167,7 +168,7 @@ def _install_stock_stubs(fixture, target):
     """Install only target-specific unchanged stock-call simulator stubs."""
     map_hooks = {hook.key: hook for hook in target.map_layout.hooks}
     can_hooks = target.telemetry_layout.hook_by_key
-    if target.map_layout.variant == "sh7059-1nd":
+    if target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
         map_keys = {
             "selector_host_call",
             "startup_initializer",
@@ -395,13 +396,13 @@ def _run_harnesses(target, fixture, build_dir):
             "entries=13"
         )
         map_defines = ("TARGET_DUAL_EXHAUST",)
-    elif target.map_layout.variant == "sh7059-1nd":
+    elif target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
         map_marker = (
             "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=145 selector=17 "
             "adapters=105 limiter=14 feedback=9 feedback_invocations=17 "
             "entries=12"
         )
-        map_defines = ("TARGET_SH7059_1ND",)
+        map_defines = ("TARGET_VQ37",)
     else:
         raise VerificationError(
             f"{target.rom}: unsupported map harness variant "

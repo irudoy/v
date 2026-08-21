@@ -14,6 +14,7 @@ STOCKS = {
     "JK03A": ROOT / "rom-images/23710-JK03A/1JK03A-20260715-stock.bin",
     "JK03B": ROOT / "rom-images/23710-JK03B/1JK03B-20260804-stock.bin",
     "JK08A": ROOT / "rom-images/23710-JK08A/1JK08A-20260726-stock.bin",
+    "JK78C": ROOT / "rom-images/23710-JK78C/1JK78C-20260715-stock.bin",
 }
 EXPECTED = {
     "1ND0A": rom_checksums.ChecksumValues(
@@ -78,6 +79,14 @@ EXPECTED = {
         runtime_b_sum=0xAC399870,
         runtime_b_xor=0x07131670,
     ),
+    "JK78C": rom_checksums.ChecksumValues(
+        sum16_a=0x1F44,
+        sum16_b=0xCCFA,
+        runtime_a_xor=0xE1E877CF,
+        runtime_a_sum=0x0AF99D87,
+        runtime_b_sum=0x2BAC8C8C,
+        runtime_b_xor=0xC83320EC,
+    ),
 }
 
 
@@ -103,6 +112,16 @@ class RomChecksumsTest(unittest.TestCase):
         self.assertEqual(jk00d.runtime_a_xor_field, 0x97A8)
         self.assertEqual(jk00d.runtime_a_sum_field, 0x97B0)
         self.assertEqual(jk00c.runtime_b_end, jk00d.runtime_b_end)
+
+    def test_jk78c_uses_its_exact_runtime_fields_and_b_boundary(self):
+        layout = rom_checksums.layout_for_rom("JK78C")
+        self.assertEqual(layout.runtime_a_xor_field, 0x93D4)
+        self.assertEqual(layout.runtime_a_sum_field, 0x93DC)
+        self.assertEqual(layout.runtime_b_end, 0x22604)
+        self.assertEqual(
+            layout.runtime_a_exclusions,
+            frozenset({0x93D4, 0x93DC, 0x20000}),
+        )
 
     def test_sh7059_layout_covers_both_firmware_verifiers(self):
         layout = rom_checksums.layout_for_rom("1ND0A")

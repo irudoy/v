@@ -246,7 +246,7 @@ The baseline identifies four implementation groups:
 | SH7058 `7MFKAVN86` | JK00A, JK03A, JK03B, JK08A | Exact code; differences are confined to `0x008200:0x020000` | One same-address series profile can cover all four images while reading calibration values from the selected image |
 | SH7059 `1ND` | 1ND0A, 1ND3B | Exact code; 5,251 differing bytes are confined to `0x008200:0x01bdfc` | One SH7059 structural analysis and builder series can cover both images; the exact checksum layout is registered |
 | SH7058 `8MFK` | JK00C, JK00D | Near code with insertions, deletions, and relocations | Share semantic identifiers, but require address maps and independently validated patch points |
-| SH7058 JK78C | JK78C | Distinct code base in the current collection | Requires an independent layout, checksum model, allocation plan, and executable gate |
+| SH7058 JK78C | JK78C | Distinct code base in the current collection | Uses an independent layout, checksum model, audited allocation, target payloads, and executable gate |
 
 ### Exact-code families
 
@@ -275,9 +275,9 @@ structure without embedding JK08A calibration values in another target.
 The `1ND` pair is byte-identical in `0x000000:0x008200` and
 `0x020000:0x180000`. All 1,909 functions in the current 1ND0A Ghidra census are
 exact in 1ND3B. The registered checksum profile reproduces four SUM16 fields
-and one runtime XOR+SUM domain in both images. No current editor definition or
-production builder exists for this family, but only one canonical code analysis
-is required before per-image calibration projection.
+and one runtime XOR+SUM domain in both images. The generated definitions and
+production builder share one address profile and executable layout while
+retaining independent image identities, calibration values, and stage hashes.
 
 ### Near-code family
 
@@ -310,11 +310,11 @@ about 1.3 percent between JK78C and the SH7059 `1ND` family. These values are
 not semantic similarity scores. They establish that same-address or raw byte
 inheritance is inappropriate.
 
-JK78C and the `1ND` family remain a useful VQ37VHR cross-generation homolog
-pair. Exact relocated anchors and reviewed shared algorithms can guide naming
-and discovery, but the flash size, layout, code base, checksum scheme, and free
-space strategy require independent verification. The relationship transfers
-search hypotheses, not addresses or patch eligibility.
+JK78C and the `1ND` family form a useful VQ37VHR cross-generation homolog pair.
+Reviewed shared algorithms establish semantic correspondence, while each
+family retains its own flash size, addresses, checksum scheme, free-space
+audit, stock hooks, and payload locks. No raw address or patch eligibility is
+inherited across the pair.
 
 Historical Developer Immobilizer validation, map-switching, and Rolling Launch
 artifacts are not retained under `rom-images/`. Their byte contracts, hashes,

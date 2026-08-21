@@ -200,7 +200,7 @@ class BuildRomTest(unittest.TestCase):
                     result.profile.name,
                     (
                         build_rom.OBSERVE_PROFILE_NAME
-                        if rom in runtime_targets.SH7059_1ND_ROMS
+                        if rom in runtime_targets.VQ37_RUNTIME_ROMS
                         else build_rom.apply_rolling_launch.PROFILE_NAME
                     ),
                 )
@@ -215,18 +215,22 @@ class BuildRomTest(unittest.TestCase):
                 )
                 self.assertEqual(
                     result.map_instruction_count,
-                    419 if rom in runtime_targets.SH7059_1ND_ROMS else 453,
+                    419 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 453,
                 )
                 self.assertEqual(
                     result.rolling_instruction_count,
-                    0 if rom in runtime_targets.SH7059_1ND_ROMS else 878,
+                    0 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 878,
                 )
                 self.assertEqual(result.telemetry_instruction_count, 617)
                 self.assertEqual(
                     target.map_layout.variant,
                     (
-                        "sh7059-1nd"
-                        if rom in runtime_targets.SH7059_1ND_ROMS
+                        (
+                            "sh7059-1nd"
+                            if rom in runtime_targets.SH7059_1ND_ROMS
+                            else "sh7058-jk78"
+                        )
+                        if rom in runtime_targets.VQ37_RUNTIME_ROMS
                         else "dual-exhaust"
                     ),
                 )
@@ -234,7 +238,7 @@ class BuildRomTest(unittest.TestCase):
                     target.telemetry_layout.variant,
                     (
                         "mailbox26-tail-chain"
-                        if rom in runtime_targets.SH7059_1ND_ROMS
+                        if rom in runtime_targets.VQ37_RUNTIME_ROMS
                         else "mailbox24-tail-chain"
                     ),
                 )
@@ -279,17 +283,25 @@ class BuildRomTest(unittest.TestCase):
                 output_hashes.add(result.output_sha256)
         self.assertEqual(len(output_hashes), len(runtime_targets.RELOCATED_ROMS))
 
-    def test_1nd_rejects_a_profile_that_enables_rolling_launch(self):
-        profile = replace(
-            build_rom.builtin_profile(runtime_targets.SH7059_1ND_FAMILY),
-            calibration=build_rom.apply_rolling_launch.PROFILE_CALIBRATION,
+    def test_vq37_rejects_a_profile_that_enables_rolling_launch(self):
+        pairs = (
+            (runtime_targets.SH7059_1ND_FAMILY, "1ND0A"),
+            (runtime_targets.SH7058_JK78C_FAMILY, "JK78C"),
         )
-        source = self.family_images["1ND0A"].data
+        for family, rom in pairs:
+            with self.subTest(rom=rom):
+                profile = replace(
+                    build_rom.builtin_profile(family),
+                    calibration=(
+                        build_rom.apply_rolling_launch.PROFILE_CALIBRATION
+                    ),
+                )
+                source = self.family_images[rom].data
 
-        with self.assertRaisesRegex(
-            build_rom.BuildError, "Rolling Launch is unsupported"
-        ):
-            build_rom.build_image(source, profile=profile)
+                with self.assertRaisesRegex(
+                    build_rom.BuildError, "Rolling Launch is unsupported"
+                ):
+                    build_rom.build_image(source, profile=profile)
 
     def test_relocated_migration_preserves_alternate_map_bytes(self):
         rom = "JK00C"
@@ -326,7 +338,7 @@ class BuildRomTest(unittest.TestCase):
         with self.assertRaisesRegex(
             build_rom.BuildError, "unsupported ROM selector"
         ):
-            build_rom.select_rom(self.stock, "JK78C")
+            build_rom.select_rom(self.stock, "NOT-A-ROM")
 
     def test_explicit_series_still_requires_matching_identity(self):
         wrong_identity = bytearray(self.stock)

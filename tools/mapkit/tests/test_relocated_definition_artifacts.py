@@ -29,10 +29,10 @@ TARGETS = {
 }
 
 JK78C_MAP_ADDRESSES = {
-    "Fuel Compensation - Main - Bank 1": "0x09EBA",
-    "Fuel Compensation - Main - Bank 2": "0x09FBA",
-    "Timing-State Addend - Warm DFCO Transition - Bank 1": "0x137E8",
-    "Timing-State Addend - Warm DFCO Transition - Bank 2": "0x137F0",
+    "Map 1 - Fuel Compensation - Main - Bank 1": "0x09EBA",
+    "Map 1 - Fuel Compensation - Main - Bank 2": "0x09FBA",
+    "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 1": "0x137E8",
+    "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 2": "0x137F0",
 }
 
 ONE_ND_MAP_ADDRESSES = {
@@ -131,18 +131,34 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         ) == "0xE0666"
 
 
-def test_jk78c_artifacts_expose_only_reviewed_definition_capabilities():
+def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     target, tables = _xml_tables("JK78C")
     romid = target.find("romid")
+    checksums = {
+        entry.get("type"): entry for entry in target.findall("checksum")
+    }
 
     assert romid.findtext("xmlid") == "JK78C"
     assert romid.findtext("internalidstring") == "JK78C"
+    assert romid.findtext("memmodel") == "SH7058"
+    assert romid.findtext("filesize") == "1024kb"
     assert romid.find("flashmethod") is None
-    assert target.findall("checksum") == []
-    assert len(target.findall("table")) == 34
+    assert checksums["alt"].get("end") == "0x22604"
+    assert checksums["alt"].get("sumloc") == "0x20404"
+    assert checksums["alt"].get("xorloc") == "0x20408"
+    assert checksums["alt2"].get("sumloc") == "0x93DC"
+    assert checksums["alt2"].get("xorloc") == "0x93D4"
+    assert len(target.findall("table")) == 91
     assert not any(name.startswith("DTC ") for name in tables)
     assert not any(name.startswith("Rolling Launch") for name in tables)
-    assert not any(name.startswith("Map 2 -") for name in tables)
+    assert any(name.startswith("Map 2 -") for name in tables)
+    assert "Map 2 - Engine Speed Limit - Fuel Cut" not in tables
+    assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
+    assert "Map 2 - Fuel Compensation - Main - Bank 1" in tables
+    assert "Map 2 - Fuel Compensation - Main - Bank 2" in tables
+    assert tables["CAN Telemetry at Startup"].get(
+        "storageaddress"
+    ) == "0x1F803"
     for name, address in JK78C_MAP_ADDRESSES.items():
         assert tables[name].get("storageaddress") == address
 
@@ -153,10 +169,15 @@ def test_jk78c_artifacts_expose_only_reviewed_definition_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 34
-    assert root.findall("XDFPATCH") == []
+    assert len(root.findall("XDFTABLE")) == 90
+    patches = root.findall("XDFPATCH")
+    assert len(patches) == 1
+    assert patches[0].findtext("title") == "CAN Telemetry at Startup"
+    assert patches[0].find("XDFPATCHENTRY").get("address") == "0x1F803"
     assert root.findall("XDFFLAG") == []
-    assert "no verified JK78C checksum layout" in description
+    assert root.find("XDFCHECKSUM") is None
+    assert "No editor-side checksum is declared" in description
+    assert "no verified" not in description.lower()
     for name, address in JK78C_MAP_ADDRESSES.items():
         assert _xdf_table_address(xdf_tables[name]) == address.replace(
             "0x0", "0x"

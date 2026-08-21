@@ -1,0 +1,137 @@
+domain,key,source,target,stock,variant,status,evidence
+allocation,injected_rom_start,000d2108,0001cb08,,,mapped,Uniform ROM relocation is -0xb5600
+allocation,injected_rom_end,000d6000,00020000,,,target-specific,Active runtime ends at 0x1fa00 and the compact reserve ends at the one-MiB flash boundary
+allocation,injected_ram_start,ffff5d00,ffff0c00,,,mapped,Uniform RAM relocation is -0x5100
+allocation,injected_ram_end,ffff6000,ffff0f00,,,mapped,Runtime uses 0x300 bytes inside the audited 0x400-byte window
+allocation,free_rom_start,,0001caac,,,target-specific,The erased envelope begins before the first projected write
+allocation,free_rom_end,,00020000,,,target-specific,The erased envelope ends at the exclusive flash boundary
+allocation,free_ram_start,,ffff0c00,,,target-specific,Decompiler-assisted trace found no stock accesses
+allocation,free_ram_end,,ffff1000,,,target-specific,Audited free RAM ends at this exclusive address
+map,over_run_fuel_hold,000126e4,00013c5a,,,mapped,Homologous DFCO coordinator preserves the held-request role
+map,over_run_fuel_cut,00012718,00013c86,,,mapped,Homologous DFCO coordinator preserves the rising-edge role
+map,over_run_fuel_restore,00012818,00013d46,,,mapped,Homologous restore coordinator preserves the full-restore role
+map,over_run_fuel_intermediate_restore,0001298c,00013e72,,,mapped,Homologous restore coordinator preserves the intermediate-restore role
+map,over_run_channel_multiplier,000129c0,00013e86,,,mapped,Homologous channel accessor preserves the six unity multipliers
+map,high_octane_timing_state,00009a1a,000096ca,,,mapped,Ignition selector preserves this branch and 16x16 geometry
+map,high_detonation_timing_state,00009b1a,000097ca,,,mapped,Ignition selector preserves this branch and 16x16 geometry
+map,cold_idle_ignition_timing,00012196,000137e0,,,mapped,Idle coordinator preserves the fallback-table role
+map,idle_ignition_timing,0001219e,000137e8,,bank_1,target-specific,First target bank preserves the warm-table role
+map,idle_ignition_timing,0001219e,000137f0,,bank_2,target-specific,Second target bank preserves the warm-table role
+map,fuel_compensation_main,0000a29a,00009eba,,bank_1,target-specific,First target bank preserves exact geometry and storage
+map,fuel_compensation_main,0000a29a,00009fba,,bank_2,target-specific,Second target bank preserves exact geometry and storage
+map,rev_limit_throttle_cut,0000942c,0000911e,,,mapped,Homologous request limiter preserves the 0x2580 scalar role
+map,rev_limit_fuel_cut,0000934e,,,,unsupported,Target uses interpolated curves and scalar caps instead of the source 2x2 table
+map,exhaust_cvtc_target,0000b33a,,,,unsupported,Target uses branch-selected 8-point curves instead of the source 16x16 surface
+map_hook,selector_host_call,000ce8dc,000fb260,000fd40c,,mapped,Literal call target identifies the exact selector host
+map_hook,startup_initializer,00027d28,0002a6fc,0002f596,,mapped,Literal jump target identifies the startup initializer
+map_hook,overrun_cut_lookup,0004fdd0,0006bbfc,000281b0,,mapped,Target cut-request literal calls the exact DFCO lookup
+map_hook,overrun_restore_lookup,00050258,0006c2f0,000281b0,,mapped,Target restore-classifier literal calls the exact DFCO lookup
+map_hook,ignition_lookup,00026230,00062f10,00028018,site_1,target-specific,Knock path literal calls the common ignition lookup
+map_hook,ignition_lookup,00026230,00069db0,00028018,site_2,target-specific,First primary literal group calls the common ignition lookup
+map_hook,ignition_lookup,00026230,0006a058,00028018,site_3,target-specific,Second primary literal group calls the common ignition lookup
+map_hook,ignition_lookup,00026230,0006a1ac,00028018,site_4,target-specific,Final primary literal calls the common ignition lookup
+map_hook,fuel_compensation_lookup,000261f0,0002feb4,00027fd8,bank_1,target-specific,First target bank literal calls the common lookup
+map_hook,fuel_compensation_lookup,000261f0,00040f6c,00027fd8,bank_2,target-specific,Second target bank literal calls the common lookup
+map_hook,idle_ignition_lookup,00026370,000645e8,00028198,bank_1,target-specific,First target bank literal calls the exact idle lookup
+map_hook,idle_ignition_lookup,00026370,00064834,00028198,bank_2,target-specific,Second target bank literal calls the exact idle lookup
+map_hook,rev_throttle_scalar_base,00077bac,00097170,0000911e,,target-specific,Target consumer owns one scalar instead of the source container
+map_hook,cruise_feedback_serializer,000c3fa4,000eba3c,000ed03c,,mapped,Dispatcher literal resolves the exact 0x551 serializer
+map_symbol,selector_function,000d09d8,000fd40c,,,mapped,Unique mapped-neighbor fingerprint preserves the complete selector body
+map_symbol,button_state,ffff2a85,ffff29a1,,,mapped,Selector reads this button byte
+map_symbol,diagnostic_state,ffff2a84,ffff29a0,,,mapped,Selector reads this adjacent diagnostic byte
+map_symbol,ascd_state,ffff41ae,ffff450c,,,mapped,Selector reads this ASCD state byte
+map_symbol,startup_initializer,0002c648,0002f596,,,mapped,Instruction alignment and the stock jump literal bind the target initializer
+map_symbol,dfco_lookup,00026388,000281b0,,,mapped,Exact-byte target function serves both DFCO hooks
+map_symbol,ignition_lookup,00026230,00028018,,,mapped,Reviewed interpolation contract binds the common ignition lookup
+map_symbol,fuel_compensation_lookup,000261f0,00027fd8,,,mapped,Reviewed interpolation contract binds the common fuel lookup
+map_symbol,idle_ignition_lookup,00026370,00028198,,,mapped,Exact-byte target function serves both idle-bank hooks
+map_symbol,feedback_serializer,000c5372,000ed03c,,,mapped,Near-exact instruction sequence and dispatcher position bind the serializer
+map_symbol,feedback_status_byte,ffff3ada,ffff3d62,,,mapped,Serializer payload offset 0x2a places status at byte 5
+can_hook,coherent_snapshot_call,00028090,0002aa7c,00020f1a,,mapped,Aligned caller instruction binds the coherent snapshot boundary
+can_hook,knock_interval_latch,00021a70,00021b70,00062780,,target-specific,Unique scheduler word binds the target knock-event function
+can_hook,startup_state_clear,00027d28,0002a6fc,0002f596,,mapped,Telemetry clear chains from the map startup literal
+can_hook,hcan1_sle1_vector,000203a0,000203a0,000f0410,,mapped,SLE1 vector stores the complete stock ISR entry
+can_hook,hcan1_primary_init,0002d7fc,000306a0,000ea582,,mapped,Aligned primary caller literal binds the D800 HCAN initializer
+can_hook,hcan1_recovery_init,000c3b10,000eb584,000ea582,,mapped,Recovery path literal binds the same D800 HCAN initializer
+can_symbol,coherent_snapshot,00020dfe,00020f1a,,,mapped,Unique mapped-neighbor fingerprint and aligned caller agree
+can_symbol,knock_function,000493e8,00062780,,,target-specific,Target event path preserves bit tracking and saturating count behavior
+can_symbol,knock_count,ffff2142,ffff2096,,,mapped,Target knock event function updates this saturating counter
+can_symbol,knock_mask,ffff2150,ffff20a4,,,mapped,Target knock event function sets and clears this channel mask
+can_symbol,hcan1_init,000c338a,000ea582,,,mapped,Initializer writes the HCAN1 register window at 0xffffd800
+can_symbol,stock_sle1_isr,000c7914,000f0410,,,mapped,Vector target supplies the complete ISR tail-chain entry
+can_symbol,feedback_config_record,00009766,0000945a,0308aa20,,mapped,Type 03 record selects the exact 0x551 serializer
+can_symbol,feedback_dispatch_literal,000c3fa4,000eba3c,000ed03c,,mapped,Dispatcher literal points to the exact serializer
+can_symbol,feedback_payload_base,ffff3ab5,ffff3d33,,,target-specific,Target serializer uses payload offset 0x2a
+can_symbol,feedback_payload_start,,ffff3d5d,,,target-specific,Target serializer writes eight bytes at base plus 0x2a
+can_symbol,feedback_status_byte,ffff3ada,ffff3d62,,,mapped,Target serializer status is payload byte 5
+can_symbol,mailbox_record_address,000097be,000094ae,05000000,,mapped,Physical mailbox 26 is stock inactive
+can_symbol,occupied_mailbox_record_address,000097c6,000094b6,04000000,,mapped,Adjacent physical mailbox 28 remains stock occupied
+can_symbol,mailbox_index,,0000001a,,,mapped,Target uses physical mailbox 26
+can_symbol,mailbox_data,ffffdc48,ffffdc48,,,mapped,HCAN1 mailbox 26 data address is unchanged
+can_symbol,mailbox_mask,00000400,00000400,,,mapped,HCAN1 mailbox 26 pending mask is unchanged
+telemetry,rpm_raw,ffff11f4,ffff11e0,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,final_timing_raw,ffff11d4,ffff1f45,,,mapped,Exact-size homologous command builder binds the final timing byte at equal instruction ordinal
+telemetry,apc_command_raw,ffff2022,ffff11cf,,,mapped,Aligned diagnostic pointer table and homologous producer agree
+telemetry,fuel_inhibit_mask,ffff22e0,ffff223c,,,mapped,Aligned diagnostic pointer table preserves the inhibit mask position
+telemetry,maf_b1_raw,ffff101c,ffff1024,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,maf_b2_raw,ffff101e,ffff1026,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,maf_total_raw,ffff3852,ffff3a9a,,,mapped,Aligned diagnostic pointer table preserves the field position
+telemetry,front_oxygen_sensor_b1_raw,ffff22c4,ffff11ec,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,bfs_raw,ffff1026,ffff102e,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,front_oxygen_sensor_b2_raw,ffff22c5,ffff11ed,,,mapped,Aligned diagnostic pointer table preserves the adjacent byte
+telemetry,injection_0_raw,ffff23c8,ffff231c,,,mapped,Aligned diagnostic pointer table and channel-array producer agree
+telemetry,injection_1_raw,ffff23ca,ffff231e,,,mapped,Aligned diagnostic pointer table and channel-array layout agree
+telemetry,injection_2_raw,ffff23cc,ffff2320,,,mapped,Channel-indexed producer preserves the two-byte stride
+telemetry,injection_3_raw,ffff23ce,ffff2322,,,mapped,Channel-indexed producer preserves the two-byte stride
+telemetry,injection_4_raw,ffff23d0,ffff2324,,,mapped,Channel-indexed producer preserves the two-byte stride
+telemetry,injection_5_raw,ffff23d2,ffff2326,,,mapped,Channel-indexed producer preserves the two-byte stride
+telemetry,knock_timing_state_raw,ffff121a,,,,unsupported,JK78C selects surfaces directly and does not retain the separate signed Q8 state
+telemetry,knock_surface_state,ffff2466,ffff23c6,,,mapped,Ignition and correction consumers test bit 0x40 to select the surface
+telemetry,app1_raw,ffff269e,ffff25f8,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,app2_raw,ffff26a2,ffff25fc,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,tps_b1_raw,ffff2756,ffff26ac,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,absolute_throttle_raw,ffff1075,ffff107b,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,tps_b2_raw,ffff285c,ffff27ac,,,mapped,Aligned diagnostic pointer table preserves the bank-relative field
+telemetry,intake_cvtc_actual_b1_raw,ffff2442,ffff239c,,,mapped,Aligned diagnostic pointer table preserves the channel byte
+telemetry,intake_cvtc_actual_b2_raw,ffff2443,ffff239d,,,mapped,Aligned diagnostic pointer table preserves the adjacent channel byte
+telemetry,intake_cvtc_target_raw,ffff2326,ffff227a,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,exhaust_cvtc_target_raw,ffff2327,ffff23a4,,,mapped,Aligned diagnostic pointer table preserves the field position
+telemetry,calculated_load_raw,ffff413e,ffff448c,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,throttle_request_bounded_raw,ffff19c6,ffff19b0,,,mapped,Three-generation homologous fail-safe branch reads this bounded request
+telemetry,engine_torque_state_raw,ffff18cc,ffff18d0,,,mapped,Homologous torque functions write this state at aligned call order
+telemetry,injection_timing_state_raw,ffff162e,ffff1646,,,mapped,Aligned diagnostic pointer table preserves the field position
+telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,ffff239e,,,mapped,Aligned diagnostic pointer table preserves the channel byte
+telemetry,throttle_target_shared_raw,ffff19b2,ffff199e,,,mapped,Producer limiter and external consumer bind the shared target
+telemetry,throttle_target_channel_0_raw,ffff28bc,ffff43d8,,,mapped,Homologous channel limiter writes channel zero with a two-byte stride
+telemetry,throttle_target_channel_1_raw,ffff28be,ffff43da,,,mapped,Homologous channel limiter writes channel one with a two-byte stride
+telemetry,exhaust_cvtc_actual_b2_raw,ffff2325,ffff239f,,,mapped,Aligned diagnostic pointer table preserves the adjacent channel byte
+telemetry,coolant_raw,ffff1079,ffff106f,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,iat_raw,ffff2837,ffff278a,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,fuel_temperature_did_source_raw,ffff1074,ffff106b,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,oil_temperature_did_source_raw,ffff2876,ffff1171,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,af_state_factor_raw,ffff22e8,ffff2270,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,stft_b1_raw,ffff22dc,ffff2238,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,stft_b2_raw,ffff22de,ffff223a,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,intake_cvtc_duty_b1_raw,ffff2440,ffff239a,,,mapped,Aligned diagnostic pointer table preserves the duty byte
+telemetry,intake_cvtc_duty_b2_raw,ffff2441,ffff239b,,,mapped,Aligned diagnostic pointer table preserves the adjacent duty byte
+telemetry,ltft_b1_raw,ffff2302,ffff225a,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,ltft_b2_raw,ffff2304,ffff225c,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,timing_state_2023_raw,ffff2023,ffff1f76,,,mapped,Aligned diagnostic pointer table preserves the field position
+telemetry,timing_state_564c_raw,ffff564c,ffff5be4,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,intake_cvtc_duty_b1_word_raw,ffff1ab0,ffff1a8c,,,mapped,Aligned diagnostic pointer table preserves the word position
+telemetry,intake_cvtc_duty_b2_word_raw,ffff1ab2,ffff1a8e,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
+telemetry,manifold_pressure_1116_raw,ffff118a,ffff1176,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,manifold_pressure_112a_raw,ffff16d2,ffff16e0,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,exhaust_cvtc_duty_b1_word_raw,ffff1aac,ffff1a88,,,mapped,Aligned diagnostic pointer table preserves the word position
+telemetry,exhaust_cvtc_duty_b2_word_raw,ffff1aae,ffff1a8a,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
+telemetry,atmospheric_pressure_raw,ffff4544,ffff48bc,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,battery_voltage_raw,ffff1188,ffff1174,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,front_af_sensor_b1_word_raw,ffff2780,ffff26d8,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,front_af_sensor_b2_word_raw,ffff2782,ffff26da,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
+telemetry,af_adjustment_b1_raw,ffff45a0,ffff490a,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,secondary_tps_b1_raw,ffff275e,ffff26b4,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,secondary_tps_b2_raw,ffff2864,ffff27b4,,,mapped,Aligned diagnostic pointer table preserves the bank-relative field
+telemetry,af_adjustment_b2_raw,ffff45a2,ffff490c,,,mapped,Aligned diagnostic pointer table and direct references agree
+capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel banks two warm-idle banks four ignition hooks and scalar-only throttle commit
+capability,rolling_launch,,,,,unsupported,Existing fuel overlay requires a localized rev-limit fuel-cut shadow that JK78C does not provide
+capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type 03 feedback record and one unavailable Q8 field require explicit target bindings

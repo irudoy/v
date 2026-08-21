@@ -11,10 +11,10 @@ from patches import runtime_targets
 def test_runtime_registry_covers_all_supported_families():
     assert runtime_targets.SUPPORTED_ROMS == (
         "JK00A", "JK03A", "JK03B", "JK08A", "JK00C", "JK00D",
-        "1ND0A", "1ND3B",
+        "1ND0A", "1ND3B", "JK78C",
     )
     assert set(runtime_targets.load_payload_locks()) == {
-        "JK00C", "JK00D", "1ND0A", "1ND3B"
+        "JK00C", "JK00D", "1ND0A", "1ND3B", "JK78C"
     }
     for rom in runtime_targets.EXACT_ROMS:
         target = runtime_targets.load_runtime_target(rom)
@@ -92,13 +92,17 @@ def test_relocated_8mfk_sources_cover_alignment_and_tail_chain_variants(rom):
     ).instructions == 617
 
 
-@pytest.mark.parametrize("rom", runtime_targets.SH7059_1ND_ROMS)
-def test_sh7059_1nd_target_has_map_and_can_without_rolling_launch(rom):
+@pytest.mark.parametrize("rom", runtime_targets.VQ37_RUNTIME_ROMS)
+def test_vq37_target_has_map_and_can_without_rolling_launch(rom):
     target = runtime_targets.load_runtime_target(rom)
     profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
 
-    assert target.family == runtime_targets.SH7059_1ND_FAMILY
-    assert target.map_layout.variant == "sh7059-1nd"
+    expected = (
+        (runtime_targets.SH7059_1ND_FAMILY, "sh7059-1nd")
+        if rom in runtime_targets.SH7059_1ND_ROMS
+        else (runtime_targets.SH7058_JK78C_FAMILY, "sh7058-jk78")
+    )
+    assert (target.family, target.map_layout.variant) == expected
     assert target.rolling_layout is None
     assert target.rolling_payloads == {}
     assert target.telemetry_layout.variant == "mailbox26-tail-chain"
@@ -122,8 +126,8 @@ def test_sh7059_1nd_target_has_map_and_can_without_rolling_launch(rom):
     ].runtime_shadow_address is None
 
 
-@pytest.mark.parametrize("rom", runtime_targets.SH7059_1ND_ROMS)
-def test_sh7059_1nd_sources_encode_target_variants(rom):
+@pytest.mark.parametrize("rom", runtime_targets.VQ37_RUNTIME_ROMS)
+def test_vq37_sources_encode_target_variants(rom):
     target = runtime_targets.load_runtime_target(rom)
     limiter = target.map_layout.source_text_by_unit["limiter_commit"]
     adapters = target.map_layout.source_text_by_unit["lookup_adapters"]
@@ -162,6 +166,18 @@ def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
     assert zero.telemetry_payloads == three.telemetry_payloads
     assert zero.map_stage_sha256 != three.map_stage_sha256
     assert zero.telemetry_stage_sha256 != three.telemetry_stage_sha256
+
+
+def test_jk78c_uses_compact_flash_reserve_without_truncating_active_code():
+    target = runtime_targets.load_runtime_target("JK78C")
+
+    assert target.telemetry_layout.owned_rom.end == 0x00020000
+    assert target.telemetry_layout.reserved_rom.start == 0x0001FA00
+    assert target.telemetry_layout.reserved_rom.size == 0x600
+    assert all(
+        unit.span.end <= target.telemetry_layout.reserved_rom.start
+        for unit in target.telemetry_layout.assembly_units
+    )
 
 
 def test_all_relocated_stage_hashes_recompose_exactly():

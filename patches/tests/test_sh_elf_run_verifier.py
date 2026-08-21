@@ -417,7 +417,7 @@ mov #0x5,r1
         self.assertIn("runtime_target_cases", source)
         self.assertIn("runtime_targets.RELOCATED_ROMS", verifier)
         self.assertIn("TARGET_DUAL_EXHAUST", map_harness)
-        self.assertIn("TARGET_SH7059_1ND", map_harness)
+        self.assertIn("TARGET_VQ37", map_harness)
         self.assertIn("TELEMETRY_TAIL_CHAIN", telemetry_harness)
         self.assertIn("RTE_STUB", verifier)
 

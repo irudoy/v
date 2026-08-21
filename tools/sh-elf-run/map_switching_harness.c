@@ -25,7 +25,7 @@
 #define IGNITION_ADAPTER 0x000d2340U
 #define FUEL_COMP_ADAPTER 0x000d2380U
 #define EXHAUST_CVTC_TARGET_ADAPTER 0x000d23c0U
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
 #define IDLE_IGNITION_BANK_2_ADAPTER 0x000d23c0U
 #endif
 #ifdef TARGET_DUAL_EXHAUST
@@ -124,7 +124,7 @@ static const struct family adapter_families[] = {
         {0x0000a29aU, 0x000d3100U, 0x000d3200U, 0x000d3300U,
          0x000d3400U},
     },
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
     {
         "fuel_compensation_main_bank_2", FUEL_COMP_ADAPTER,
         0x0000b33aU, 256U,
@@ -159,7 +159,7 @@ static const struct family adapter_families[] = {
         {0x0001219eU, 0x000d40a0U, 0x000d40a8U, 0x000d40b0U,
          0x000d40b8U},
     },
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
     {
         "cold_idle_ignition_timing_bank_2",
         IDLE_IGNITION_BANK_2_ADAPTER, 0x00012196U, 8U,
@@ -181,7 +181,7 @@ static const struct pass_through pass_throughs[] = {
     {"full_dfco_unknown", FULL_DFCO_ADAPTER, 0x0001298dU},
     {"ignition_cold", IGNITION_ADAPTER, 0x0000991aU},
     {"fuel_compensation_unknown", FUEL_COMP_ADAPTER, 0x0000a29bU},
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
     {"idle_ignition_bank_2_hidden", IDLE_IGNITION_BANK_2_ADAPTER,
      0x000121a6U},
 #else
@@ -195,7 +195,7 @@ static const struct pass_through pass_throughs[] = {
     {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
 };
 
-#ifndef TARGET_SH7059_1ND
+#ifndef TARGET_VQ37
 static const uint32_t fuel_slots[] = {
     0x0000934eU, 0x000d3500U, 0x000d3508U, 0x000d3510U,
     0x000d3518U,
@@ -436,12 +436,12 @@ static int verify_ram_guards(const char *name)
 
 static void expected_limiter_ram(uint8_t expected[RAM_SENTINEL_SIZE], int slot)
 {
-#ifndef TARGET_SH7059_1ND
+#ifndef TARGET_VQ37
     uint8_t throttle[28];
 #endif
     size_t index;
     size_t selector_offset = SELECTOR_STATE - RAM_SENTINEL_BASE;
-#ifndef TARGET_SH7059_1ND
+#ifndef TARGET_VQ37
     size_t fuel_offset = FUEL_SHADOW - RAM_SENTINEL_BASE;
 #endif
     size_t throttle_offset = THROTTLE_SHADOW - RAM_SENTINEL_BASE;
@@ -451,7 +451,7 @@ static void expected_limiter_ram(uint8_t expected[RAM_SENTINEL_SIZE], int slot)
     expected[selector_offset] = (uint8_t)slot;
     for (index = 1; index < 8; ++index)
         expected[selector_offset + index] = 0;
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
     read_bytes(
         expected + throttle_offset, rom_pointer(throttle_slots[slot]), 2);
 #else
@@ -476,7 +476,7 @@ static int verify_limiter_memory(const char *name, int slot)
             name, "limiter_ram", ram_pointer(RAM_SENTINEL_BASE),
             expected, sizeof(expected)))
         return 0;
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
     runtime[0] = 0xa5;
     runtime[1] = 0xa5;
 #else
@@ -615,7 +615,7 @@ static int verify_optional_selector_shadows(const char *name, int active)
             name, "throttle_shadow", ram_pointer(THROTTLE_SHADOW),
             expected + throttle_offset, 28))
         return 0;
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
     runtime[0] = 0xa5;
     runtime[1] = 0xa5;
 #else
@@ -716,7 +716,7 @@ int main(void)
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
     if (total_cases != 145U)
         return fail_value("summary", "case_count", total_cases, 145);
 #elif defined(TARGET_DUAL_EXHAUST)
@@ -732,7 +732,7 @@ int main(void)
 
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
-#ifdef TARGET_SH7059_1ND
+#ifdef TARGET_VQ37
         "adapters=105 limiter=14 feedback=9 feedback_invocations=%lu "
         "entries=12\n",
 #elif defined(TARGET_DUAL_EXHAUST)

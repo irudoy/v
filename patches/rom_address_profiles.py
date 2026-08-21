@@ -74,7 +74,9 @@ DUAL_EXHAUST_MAP_FAMILY_KEYS = frozenset(
     }
 )
 
-SH7059_1ND_MAP_FAMILY_KEYS = frozenset(
+VQ37_MAP_VARIANTS = frozenset({"sh7059-1nd", "sh7058-jk78"})
+
+VQ37_MAP_FAMILY_KEYS = frozenset(
     {
         "over_run_fuel_hold",
         "over_run_fuel_cut",
@@ -93,7 +95,8 @@ SH7059_1ND_MAP_FAMILY_KEYS = frozenset(
 
 MAP_FAMILY_KEYS_BY_VARIANT = {
     "dual-exhaust": DUAL_EXHAUST_MAP_FAMILY_KEYS,
-    "sh7059-1nd": SH7059_1ND_MAP_FAMILY_KEYS,
+    "sh7059-1nd": VQ37_MAP_FAMILY_KEYS,
+    "sh7058-jk78": VQ37_MAP_FAMILY_KEYS,
 }
 
 DUAL_EXHAUST_MAP_HOOK_KEYS = frozenset(
@@ -117,7 +120,7 @@ DUAL_EXHAUST_MAP_HOOK_KEYS = frozenset(
     }
 )
 
-SH7059_1ND_MAP_HOOK_KEYS = frozenset(
+VQ37_MAP_HOOK_KEYS = frozenset(
     {
         "selector_host_call",
         "startup_initializer",
@@ -138,7 +141,8 @@ SH7059_1ND_MAP_HOOK_KEYS = frozenset(
 
 MAP_HOOK_KEYS_BY_VARIANT = {
     "dual-exhaust": DUAL_EXHAUST_MAP_HOOK_KEYS,
-    "sh7059-1nd": SH7059_1ND_MAP_HOOK_KEYS,
+    "sh7059-1nd": VQ37_MAP_HOOK_KEYS,
+    "sh7058-jk78": VQ37_MAP_HOOK_KEYS,
 }
 
 DUAL_EXHAUST_MAP_SYMBOL_KEYS = frozenset(
@@ -160,7 +164,7 @@ DUAL_EXHAUST_MAP_SYMBOL_KEYS = frozenset(
     }
 )
 
-SH7059_1ND_MAP_SYMBOL_KEYS = frozenset(
+VQ37_MAP_SYMBOL_KEYS = frozenset(
     {
         "selector_function",
         "button_state",
@@ -178,7 +182,8 @@ SH7059_1ND_MAP_SYMBOL_KEYS = frozenset(
 
 MAP_SYMBOL_KEYS_BY_VARIANT = {
     "dual-exhaust": DUAL_EXHAUST_MAP_SYMBOL_KEYS,
-    "sh7059-1nd": SH7059_1ND_MAP_SYMBOL_KEYS,
+    "sh7059-1nd": VQ37_MAP_SYMBOL_KEYS,
+    "sh7058-jk78": VQ37_MAP_SYMBOL_KEYS,
 }
 
 ROLLING_HOOK_KEYS = frozenset(
@@ -794,7 +799,7 @@ def _map_family_sources(profile):
         result["exhaust_cvtc_target_even"] = "exhaust_cvtc_target"
         result["exhaust_cvtc_target_odd"] = "exhaust_cvtc_target"
         return result
-    if profile.map_variant == "sh7059-1nd":
+    if profile.map_variant in VQ37_MAP_VARIANTS:
         return {
             "over_run_fuel_hold": "over_run_fuel_hold",
             "over_run_fuel_cut": "over_run_fuel_cut",
@@ -1057,12 +1062,17 @@ def _validate_can_bindings(profile, telemetry_layout):
 
     symbols = profile.can_symbol_by_key
     contracts = {
-        "mailbox24-tail-chain": (24, 0xFFFFDC08, 0x0100, 0x0308AA20),
-        "mailbox26-tail-chain": (26, 0xFFFFDC48, 0x0400, 0xA308AA20),
+        "mailbox24-tail-chain": (24, 0xFFFFDC08, 0x0100),
+        "mailbox26-tail-chain": (26, 0xFFFFDC48, 0x0400),
     }
-    mailbox_index, mailbox_data, mailbox_mask, feedback_record = contracts[
+    mailbox_index, mailbox_data, mailbox_mask = contracts[
         profile.telemetry_completion_variant
     ]
+    feedback_record = (
+        0xA308AA20
+        if profile.map_variant == "sh7059-1nd"
+        else 0x0308AA20
+    )
     if (
         symbols["mailbox_index"] != mailbox_index
         or symbols["mailbox_data"] != mailbox_data
@@ -1095,10 +1105,17 @@ def _validate_can_bindings(profile, telemetry_layout):
     telemetry_addresses = list(telemetry.values())
     if len(telemetry_addresses) != len(set(telemetry_addresses)):
         raise AddressProfileError(f"{profile.rom}: duplicate telemetry sources")
-    lower_bound = 0xFFFE8000 if profile.family == "sh7059_1nd" else 0xFFFF0000
+    if profile.family == "sh7059_1nd":
+        lower_bound, upper_bound = 0xFFFE8000, 0xFFFF0000
+    else:
+        lower_bound, upper_bound = 0xFFFF0000, 0xFFFFC000
     for key, address in telemetry.items():
         span = AddressRange(address, address + widths[key])
-        if address < lower_bound or span.end > profile.free_ram.start:
+        if (
+            address < lower_bound
+            or span.end > upper_bound
+            or span.overlaps(profile.free_ram)
+        ):
             raise AddressProfileError(
                 f"{profile.rom}.{key}: telemetry source enters injected RAM"
             )
@@ -1137,6 +1154,12 @@ def _validate_structure(profile):
             "mailbox26-tail-chain",
             Capabilities(True, False, True),
         ),
+        "sh7058-jk78": (
+            "sh7058_jk78c",
+            0x100000,
+            "mailbox26-tail-chain",
+            Capabilities(True, False, True),
+        ),
     }
     family, rom_size, can_variant, capabilities = contracts[profile.map_variant]
     if profile.layout_source != "JK08A" or profile.family != family:
@@ -1157,17 +1180,20 @@ def _validate_structure(profile):
     map_layout = map_switching_layout.load_layout()
     launch_layout = rolling_launch_layout.load_layout()
     telemetry_layout = can_telemetry_layout.load_layout()
-    expected_rom = AddressRange(
-        map_layout.free_rom.start + profile.rom_delta,
-        telemetry_layout.owned_rom.end + profile.rom_delta,
-    )
+    expected_rom_start = map_layout.free_rom.start + profile.rom_delta
+    active_rom_end = telemetry_layout.reserved_rom.start + profile.rom_delta
+    maximum_rom_end = telemetry_layout.owned_rom.end + profile.rom_delta
     expected_ram = AddressRange(
         map_layout.ram.reservation.start + profile.ram_delta,
         telemetry_layout.ram.reservation.end + profile.ram_delta,
     )
-    if profile.injected_rom != expected_rom:
+    if (
+        profile.injected_rom.start != expected_rom_start
+        or not active_rom_end <= profile.injected_rom.end <= maximum_rom_end
+    ):
         raise AddressProfileError(
-            f"{profile.rom}: injected ROM does not match the rebased layout"
+            f"{profile.rom}: injected ROM does not contain the active "
+            "rebased layout or exceeds its canonical budget"
         )
     if profile.injected_ram != expected_ram:
         raise AddressProfileError(

@@ -22,6 +22,7 @@ if str(ROOT) not in sys.path:
 
 from patches.map_switching_layout import (
     DEFAULT_MANIFEST,
+    VQ37_VARIANTS,
     load_layout,
     validate_assembled_blob,
 )
@@ -785,14 +786,14 @@ def _validate_limiter_commit(parsed, variant="single-exhaust"):
         raise ValueError(
             f"{parsed.path}: active index must be published exactly once"
         )
-    if variant == "sh7059-1nd":
+    if variant in VQ37_VARIANTS:
         if (
             texts.count("mov.w @r2,r0") != 1
             or texts.count("mov.w r0,@r5") != 1
             or any("fuel_" in label for label in parsed.labels)
         ):
             raise ValueError(
-                f"{parsed.path}: SH7059 limiter must commit one throttle "
+                f"{parsed.path}: VQ37 limiter must commit one throttle "
                 "scalar and no unsupported fuel-cut shadow"
             )
     elif (

@@ -45,10 +45,14 @@ DEFAULT_PAYLOADS = Path(__file__).with_name("runtime-target-payloads.toml")
 EXACT_FAMILY = "sh7058_7mfkavn86"
 RELOCATED_8MFK_FAMILY = "sh7058_8mfk"
 SH7059_1ND_FAMILY = "sh7059_1nd"
+SH7058_JK78C_FAMILY = "sh7058_jk78c"
 EXACT_ROMS = ("JK00A", "JK03A", "JK03B", "JK08A")
 RELOCATED_8MFK_ROMS = ("JK00C", "JK00D")
 SH7059_1ND_ROMS = ("1ND0A", "1ND3B")
-RELOCATED_ROMS = RELOCATED_8MFK_ROMS + SH7059_1ND_ROMS
+SH7058_JK78C_ROMS = ("JK78C",)
+VQ37_RUNTIME_ROMS = SH7059_1ND_ROMS + SH7058_JK78C_ROMS
+VQ37_MAP_VARIANTS = rom_address_profiles.VQ37_MAP_VARIANTS
+RELOCATED_ROMS = RELOCATED_8MFK_ROMS + VQ37_RUNTIME_ROMS
 SUPPORTED_ROMS = EXACT_ROMS + RELOCATED_ROMS
 ZERO_SHA256 = "0" * 64
 
@@ -72,7 +76,7 @@ MAP_HOOK_KEYS = {
     "idle_ignition_lookup": "idle_ignition_lookup",
 }
 
-SH7059_1ND_MAP_HOOK_KEYS = {
+VQ37_MAP_HOOK_KEYS = {
     "selector_host_call": "selector_host_call",
     "startup_initializer": "startup_initializer",
     "overrun_cut_lookup": "overrun_cut_lookup",
@@ -331,7 +335,7 @@ def _address_mapping(profile):
             family_targets[target_key],
             f"{profile.rom}.map_families",
         )
-    if profile.map_variant == "sh7059-1nd":
+    if profile.map_variant in VQ37_MAP_VARIANTS:
         _add_mapping(
             mapping,
             canonical_map.family_by_key[
@@ -363,7 +367,7 @@ def _address_mapping(profile):
     hook_keys = (
         MAP_HOOK_KEYS
         if profile.map_variant == "dual-exhaust"
-        else SH7059_1ND_MAP_HOOK_KEYS
+        else VQ37_MAP_HOOK_KEYS
     )
     for hook in canonical_map.hooks:
         target_key = hook_keys.get(hook.key)
@@ -548,17 +552,20 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     delta = profile.rom_delta
     ram_delta = profile.ram_delta
     custom_sources = {}
-    if profile.map_variant == "sh7059-1nd":
+    if profile.map_variant in VQ37_MAP_VARIANTS:
         custom_sources = {
-            "lookup_adapters": "map-switching-1nd-adapters.s",
-            "limiter_commit": "map-switching-1nd-limiter-commit.s",
+            "lookup_adapters": "map-switching-vq37-adapters.s",
+            "limiter_commit": "map-switching-vq37-limiter-commit.s",
         }
     unit_prototypes = []
     for unit in base.assembly_units:
         prototype = replace(
             unit, source=custom_sources.get(unit.key, unit.source)
         )
-        if profile.map_variant == "sh7059-1nd" and unit.key == "lookup_adapters":
+        if (
+            profile.map_variant in VQ37_MAP_VARIANTS
+            and unit.key == "lookup_adapters"
+        ):
             prototype = replace(
                 prototype,
                 code_regions=tuple(
@@ -597,7 +604,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     code_regions = []
     for item in base.code_regions:
         if (
-            profile.map_variant == "sh7059-1nd"
+            profile.map_variant in VQ37_MAP_VARIANTS
             and item.key == "exhaust_cvtc_target_adapter"
         ):
             code_regions.append(replace(
@@ -1053,9 +1060,13 @@ def _project_can(
         free_rom=map_switching_layout.AddressRange(
             profile.free_rom.start, profile.free_rom.end, "free_rom"
         ),
-        owned_rom=_shift_range(base.owned_rom, delta),
+        owned_rom=map_switching_layout.AddressRange(
+            base.owned_rom.start + delta,
+            profile.injected_rom.end,
+            "owned_rom",
+        ),
         reserved_rom=map_switching_layout.AddressRange(
-            extra_end, base.owned_rom.end + delta, "reserved_rom"
+            extra_end, profile.injected_rom.end, "reserved_rom"
         ),
         configuration=_shift_range(base.configuration, delta),
         mailbox_record_address=can_symbols["mailbox_record_address"],

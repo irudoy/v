@@ -6,3 +6,16 @@ image_registry = "rom-images/roms.csv"
 identity_registry = "defs/rom-identities.toml"
 ghidra_export = "~/tools/ghidra-projects/export-JK78C"
 definition_xml = "defs/JK78C.xml"
+checksum_registry = "patches/checksum-layouts.toml"
+
+[[patch]]
+id = "runtime-address-profile"
+label = "Unified production runtime profile"
+kind = "address-profile"
+status = "composed"
+path = "patches/rom-address-profiles.toml"
+
+[metadata]
+submodel = "VQ37VHR"
+memmodel = "SH7058"
+endian = "big"

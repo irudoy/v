@@ -352,6 +352,14 @@ def _series_context(rom=CANONICAL_ROM):
             "same_address_inheritance": True,
             "members": runtime_targets.SH7059_1ND_ROMS,
         },
+        runtime_targets.SH7058_JK78C_FAMILY: {
+            "kind": "distinct-code",
+            "canonical": "JK78C",
+            "mcu": "SH7058",
+            "flash_size": 0x100000,
+            "same_address_inheritance": False,
+            "members": runtime_targets.SH7058_JK78C_ROMS,
+        },
     }.get(family_key)
     if expected is None or any((
         family.get("kind") != expected["kind"],
@@ -393,9 +401,10 @@ def _require_integer(value, context):
 
 def builtin_profile(rom=ROM_SERIES):
     """Return the conservative profile permitted by the target family."""
-    observe_only = (
-        str(rom).lower() == runtime_targets.SH7059_1ND_FAMILY
-    )
+    observe_only = str(rom).lower() in {
+        runtime_targets.SH7059_1ND_FAMILY,
+        runtime_targets.SH7058_JK78C_FAMILY,
+    }
     calibration = (
         rolling_launch.Calibration()
         if observe_only

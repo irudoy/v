@@ -11,8 +11,9 @@ def profiles():
 
 
 def test_registry_has_only_explicit_exact_profiles(profiles):
-    assert set(profiles) == {"JK00C", "JK00D", "1ND0A", "1ND3B"}
+    assert set(profiles) == {"JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B"}
     assert rom_address_profiles.profile_for_rom("jk00c") is profiles["JK00C"]
+    assert rom_address_profiles.profile_for_rom("jk78c") is profiles["JK78C"]
     with pytest.raises(
         rom_address_profiles.AddressProfileError,
         match="exact ROM label is required",

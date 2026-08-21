@@ -120,6 +120,25 @@ after the application domains.
 | 1ND0A | `2f52` | `b7dd` | `e629` | `41d8` | `e0f04d48` | `7131b24a` |
 | 1ND3B | `5dd1` | `b7dd` | `e629` | `41d8` | `5a01b3c1` | `ab671f91` |
 
+## JK78C exact-code layout
+
+JK78C retains the four-domain SH7058 algorithm while using target-specific
+Runtime A fields and a shorter Runtime B region. Its exact checksum functions
+at `0x0216fc`, `0x02173c`, `0x021762`, `0x0217fc`, and `0x02185c` preserve the
+normalized control-flow shapes of the JK00D implementation. Target literals
+bind the start and final-byte boundaries and all four Runtime reference fields.
+
+| Domain | Stored field or fields | Region | Exclusions |
+|---|---|---|---|
+| SUM16 A | `0x008200` | `[0x008202, 0x020000)` | none |
+| SUM16 B | `0x020000` | `[0x020002, 0x100000)` | none |
+| Runtime A | XOR `0x0093d4`, SUM `0x0093dc` | `[0x008204, 0x100000)` | `0x0093d4`, `0x0093dc`, `0x020000` |
+| Runtime B | XOR `0x020408`, SUM `0x020404` | `[0x02040c, 0x022604)` | none |
+
+The Runtime B literal identifies `0x022602` as the final covered byte, so the
+last aligned word starts at `0x022600`. All six stock references reproduce by
+independent calculation.
+
 ## RomRaider 7MFKAVN86 projection
 
 The native RomRaider handlers reproduce the layout in this order:
@@ -150,6 +169,7 @@ the XDF contract.
 | JK08A | `2cae` | `eee1` | `47a28253` | `094aa8cf` | `ac399870` | `07131670` |
 | JK00C | `a02a` | `b095` | `ebaee2dd` | `3ba6fca3` | `d38ba003` | `da585443` |
 | JK00D | `d2c8` | `d962` | `d1850caa` | `0b2cd270` | `d396725d` | `da5e998d` |
+| JK78C | `1f44` | `ccfa` | `e1e877cf` | `0af99d87` | `2bac8c8c` | `c83320ec` |
 
 Domain B and its values match because JK00A, JK03A, JK03B, and JK08A have an
 identical `0x020000..0x0fffff` region. The A and SUM16 A values reflect
@@ -175,5 +195,4 @@ observed on a physical ECU.
 ## Scope
 
 Exact layouts are registered for JK00A, JK03A, JK03B, JK08A, JK00C, JK00D,
-1ND0A, and 1ND3B. This specification makes no claim about checksum-field
-locations or coverage for JK78C.
+JK78C, 1ND0A, and 1ND3B.

@@ -96,10 +96,12 @@ themselves establish map semantics or equal calibration geometry.
 31 JK78C tables, including explicit bank variants, and records five source
 maps as unsupported. The unsupported entries cover removed dispatcher slots
 and target algorithms whose table geometry differs. Thirteen reviewed axis
-pairs complete the emitted geometry. The JK78C registry disables checksum,
-map-switching, Rolling Launch, and editor-switch capabilities because their
-target contracts are not established. Its XML/XDF files are calibration
-definitions only and do not make edited images flash-ready.
+pairs complete the emitted geometry. The JK78C registry enables native
+RomRaider checksum handling, target-specific Map Switching storage, and the CAN
+telemetry startup switch from the validated runtime profile. Rolling Launch is
+disabled because the required target fuel-cut actuator is not localized. The
+XML/XDF files expose editor controls; the unified builder remains responsible
+for runtime composition and complete checksum closure.
 
 `JK08A-1ND.definition-addresses.csv` projects the same reviewed VQ37 semantic
 set to the SH7059 1ND layout. It records 31 target maps, thirteen axes, and five
@@ -108,10 +110,11 @@ reviewed JK78C-to-1ND0A structural functions, exact storage, interpolation-call
 order, selector branches, and target literals. 1ND3B reuses the address layout
 because all address-bearing executable code is byte-identical to 1ND0A, while
 its identity, stock calibration values, and image hash remain independent.
-Both 1ND definitions expose calibration tables only. The project checksum
-implementation covers their six checksum fields, but native RomRaider checksum
-metadata cannot represent the complete layout. Map switching, Rolling Launch,
-and editor switches remain undeclared.
+Both 1ND definitions expose target-specific Map Switching storage and the CAN
+telemetry startup switch. The project checksum implementation covers their six
+checksum fields, but native RomRaider checksum metadata cannot represent the
+complete layout. Rolling Launch remains disabled because the required target
+fuel-cut actuator is not localized.
 
 ## Evidence specifications
 

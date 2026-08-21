@@ -114,6 +114,42 @@ start = 0x02040C
 end = 0x022628
 exclusions = []
 
+[layout.sh7058_jk78c]
+roms = ["JK78C"]
+rom_size = 0x100000
+recalculation_order = ["runtime_b", "runtime_a", "sum16_a", "sum16_b"]
+evidence = "JK78C checksum initializers and verifiers at 0x216fc..0x2187c retain the SH7058 four-domain algorithm, bind Runtime A fields 0x93d4/0x93dc and Runtime B fields 0x20408/0x20404, and bind the final Runtime B byte at 0x22602. All six stock references reproduce independently."
+
+[[layout.sh7058_jk78c.sum16]]
+key = "sum16_a"
+field = 0x008200
+start = 0x008202
+end = 0x020000
+exclusions = []
+
+[[layout.sh7058_jk78c.sum16]]
+key = "sum16_b"
+field = 0x020000
+start = 0x020002
+end = 0x100000
+exclusions = []
+
+[[layout.sh7058_jk78c.runtime32]]
+key = "runtime_a"
+xor_field = 0x0093D4
+sum_field = 0x0093DC
+start = 0x008204
+end = 0x100000
+exclusions = [0x0093D4, 0x0093DC, 0x020000]
+
+[[layout.sh7058_jk78c.runtime32]]
+key = "runtime_b"
+xor_field = 0x020408
+sum_field = 0x020404
+start = 0x02040C
+end = 0x022604
+exclusions = []
+
 [layout.sh7059_1nd]
 roms = ["1ND0A", "1ND3B"]
 rom_size = 0x180000

@@ -1,4 +1,4 @@
-// SH7059 1ND lookup adapters for the five-slot map-switching runtime.
+// VQ37 dual-bank lookup adapters for the five-slot map-switching runtime.
 //
 // The target keeps separate fuel-compensation and warm-idle tables for both
 // banks. The second fuel family reuses the canonical exhaust storage slots;

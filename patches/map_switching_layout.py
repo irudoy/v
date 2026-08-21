@@ -33,6 +33,7 @@ COMPATIBLE_PROTECTED_RANGES = (
     (0x000000, COMPATIBLE_CALIBRATION_START),
     (COMPATIBLE_CALIBRATION_END, 0x100000),
 )
+VQ37_VARIANTS = frozenset({"sh7059-1nd", "sh7058-jk78"})
 
 
 def compatible_protected_ranges(rom_size):
@@ -573,8 +574,12 @@ def validate_structure(layout):
             layout.variant == "sh7059-1nd"
             and layout.rom not in {"1ND0A", "1ND3B"}
         )
+        or (
+            layout.variant == "sh7058-jk78"
+            and layout.rom != "JK78C"
+        )
         or layout.variant not in {
-            "single-exhaust", "dual-exhaust", "sh7059-1nd"
+            "single-exhaust", "dual-exhaust", *VQ37_VARIANTS
         }
     ):
         raise ValueError(
@@ -613,7 +618,7 @@ def validate_structure(layout):
             "exhaust_cvtc_target_even",
             "exhaust_cvtc_target_odd",
         })
-    elif layout.variant == "sh7059-1nd":
+    elif layout.variant in VQ37_VARIANTS:
         required_family_keys = {
             "over_run_fuel_hold",
             "over_run_fuel_cut",
@@ -651,9 +656,9 @@ def validate_structure(layout):
     _unique(layout.hooks, lambda item: item.key, "hook keys")
     _unique(layout.hooks, lambda item: item.address, "hook addresses")
     startup_anchor = layout.anchor_by_key.get("startup_clear_start_stock")
-    if layout.variant == "sh7059-1nd":
+    if layout.variant in VQ37_VARIANTS:
         if layout.anchors:
-            raise ValueError("SH7059 target must not inherit SH7058 anchors")
+            raise ValueError("VQ37 target must not inherit canonical anchors")
     elif (
         startup_anchor is None
         or startup_anchor.address != 0x000029CC
@@ -837,7 +842,7 @@ def validate_structure(layout):
                 )
 
     throttle = layout.family_by_key["rev_limit_throttle_cut"]
-    if layout.variant != "sh7059-1nd":
+    if layout.variant not in VQ37_VARIANTS:
         fuel_cut = layout.family_by_key["rev_limit_fuel_cut"]
         if (
             fuel_cut.shadow_start != layout.ram.fuel_cut_shadow.start
@@ -850,7 +855,7 @@ def validate_structure(layout):
         throttle.shadow_start != layout.ram.throttle_shadow.start
         or throttle.selected_offset != layout.ram.throttle_selected_offset
     )
-    if layout.variant == "sh7059-1nd":
+    if layout.variant in VQ37_VARIANTS:
         throttle_differs = throttle_differs or (
             throttle.stock_container_size != throttle.byte_length
             or throttle.runtime_shadow_address is not None
@@ -1033,7 +1038,7 @@ def validate_structure(layout):
     expected_access_split = (
         (11, 2)
         if layout.variant == "dual-exhaust"
-        else ((11, 1) if layout.variant == "sh7059-1nd" else (10, 2))
+        else ((11, 1) if layout.variant in VQ37_VARIANTS else (10, 2))
     )
     if (adapter_count, shadow_count) != expected_access_split:
         raise ValueError(
@@ -1056,7 +1061,7 @@ def validate_structure(layout):
     }
     if layout.variant == "dual-exhaust":
         expected_assembled_regions.add("exhaust_cvtc_target_odd_adapter")
-    elif layout.variant == "sh7059-1nd":
+    elif layout.variant in VQ37_VARIANTS:
         expected_assembled_regions.remove("exhaust_cvtc_target_adapter")
         expected_assembled_regions.add("idle_ignition_bank_2_adapter")
     if layout.assembled_region_keys != expected_assembled_regions:

@@ -54,23 +54,33 @@ def test_all_models_build_with_exact_registered_identities():
     assert by_id["JK78C"]["warnings"]
     assert by_id["JK78C"]["reviewedFunctions"] == 0
     assert by_id["JK78C"]["structuralFunctions"] == 2969
-    assert by_id["JK78C"]["counts"]["maps"] == 34
+    assert by_id["JK78C"]["counts"]["maps"] == 90
 
 
-def test_jk78c_model_uses_target_definition_without_runtime_claims():
+def test_jk78c_model_includes_target_runtime_and_checksum_evidence():
     rom = model.build_rom_model(model.resolve_manifest("JK78C"))
     by_id = {item["id"]: item for item in rom["objects"]}
 
     assert rom["metadata"]["ECU ID"] == "1JK78C"
+    assert rom["metadata"]["MCU"] == "SH7058"
     assert any(
-        item["label"] == "Fuel Compensation - Main - Bank 1"
+        item["label"] == "Map 1 - Fuel Compensation - Main - Bank 1"
         and item["start"] == 0x09EBA
         for item in rom["objects"]
     )
-    assert not any(item["layer"] == "patches" for item in rom["objects"])
-    assert not any(item["layer"] == "integrity" for item in rom["objects"])
+    runtime = by_id[
+        "patch:runtime-address-profile:patch-claim:injected-rom"
+    ]
+    assert runtime["patchStatus"] == "composed"
+    assert runtime["start"] == 0x0001CB08
+    assert runtime["end"] == 0x00020000
+    assert "patch:runtime-address-profile:patch-hook:map-selector_host_call" in by_id
+    assert "patch:runtime-address-profile:patch-hook:can-hcan1_primary_init" in by_id
+    assert "checksum-field:runtime_b_xor" in by_id
+    assert "checksum-domain:runtime_b" in by_id
     assert "function:0006af76" in by_id
-    assert any("checksum layout" in warning for warning in rom["warnings"])
+    assert not any("checksum layout" in warning for warning in rom["warnings"])
+    assert not any("runtime address profile" in warning for warning in rom["warnings"])
 
 
 def test_jk08a_model_covers_reviewed_sources_and_composed_patches():

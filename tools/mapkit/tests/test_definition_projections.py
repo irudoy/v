@@ -56,9 +56,9 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["rolling_configuration"] == 0xE0660
     assert stats["JK78C"]["mapped"] == 44
     assert stats["JK78C"]["unsupported"] == len(VQ37_UNSUPPORTED)
-    assert stats["JK78C"]["checksum"] is False
-    assert stats["JK78C"]["romraider_checksum"] is False
-    assert stats["JK78C"]["map_families"] == 0
+    assert stats["JK78C"]["checksum"] is True
+    assert stats["JK78C"]["romraider_checksum"] is True
+    assert stats["JK78C"]["map_families"] == 12
     assert stats["JK78C"]["rolling_configuration"] is None
     for rom in ("1ND0A", "1ND3B"):
         values = stats[rom]
@@ -99,12 +99,14 @@ def test_runtime_definition_layouts_use_target_allocation():
         assert launch.rom == rom
         assert launch.configuration.start == 0xE0660
 
-    for rom in ("1ND0A", "1ND3B"):
+    for rom in ("JK78C", "1ND0A", "1ND3B"):
         projection = definition_projections.projection_for_rom(rom)
         maps = definition_projections.map_switching_definition_layout(projection)
 
         assert maps.rom == rom
-        assert maps.variant == "sh7059-1nd"
+        assert maps.variant == (
+            "sh7058-jk78" if rom == "JK78C" else "sh7059-1nd"
+        )
         assert maps.slot_count == 5
         assert len(maps.families) == 12
         assert {
@@ -192,17 +194,25 @@ def test_projection_applies_target_map_checksums_and_switches(
         "rom",
         "target_address",
         "checksum_verified",
+        "romraider_checksum",
         "map_switching",
         "switch_count",
+        "switch_address",
     ),
     (
-        ("JK78C", "00008896", False, False, 0),
-        ("1ND0A", "00008939", True, True, 1),
-        ("1ND3B", "00008939", True, True, 1),
+        ("JK78C", "00008896", True, True, True, 1, "0x1F803"),
+        ("1ND0A", "00008939", True, False, True, 1, "0x134E03"),
+        ("1ND3B", "00008939", True, False, True, 1, "0x134E03"),
     ),
 )
 def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
-    rom, target_address, checksum_verified, map_switching, switch_count
+    rom,
+    target_address,
+    checksum_verified,
+    romraider_checksum,
+    map_switching,
+    switch_count,
+    switch_address,
 ):
     projection = definition_projections.projection_for_rom(rom)
     result = definition_projections.apply_projection(
@@ -215,15 +225,15 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     )
 
     assert projection.checksum is checksum_verified
-    assert projection.romraider_checksum is False
+    assert projection.romraider_checksum is romraider_checksum
     assert set(result.maps) == {target_address}
-    assert "checksum" not in result.overrides
+    assert ("checksum" in result.overrides) is romraider_checksum
     assert len(result.overrides["switch"]) == switch_count
     if switch_count:
         assert result.overrides["switch"][0]["name"] == (
             "CAN Telemetry at Startup"
         )
-        assert result.overrides["switch"][0]["storageaddress"] == "0x134E03"
+        assert result.overrides["switch"][0]["storageaddress"] == switch_address
     assert result.overrides["map_switching"] == {"enabled": map_switching}
     assert result.overrides["rolling_launch"] == {"enabled": False}
 

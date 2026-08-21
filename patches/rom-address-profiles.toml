@@ -607,3 +607,172 @@ telemetry = "Sixty-two ECU sources are bound by aligned diagnostic tables and re
 
 [profile.1ND3B]
 inherits = "1ND0A"
+
+[profile.JK78C]
+family = "sh7058_jk78c"
+layout_source = "JK08A"
+rom_size = 0x100000
+rom_delta = -742912
+ram_delta = -20736
+free_rom_start = 0x0001CAAC
+free_rom_end = 0x00020000
+injected_rom_start = 0x0001CB08
+injected_rom_end = 0x00020000
+free_ram_start = 0xFFFF0C00
+free_ram_end = 0xFFFF1000
+injected_ram_start = 0xFFFF0C00
+injected_ram_end = 0xFFFF0F00
+map_variant = "sh7058-jk78"
+telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_unavailable = ["knock_timing_state_raw"]
+telemetry_zero_source = 0xFFFF0DE0
+
+[profile.JK78C.capabilities]
+map_switching = true
+rolling_launch = false
+can_telemetry = true
+
+[profile.JK78C.map_families]
+over_run_fuel_hold = 0x00013C5A
+over_run_fuel_cut = 0x00013C86
+over_run_fuel_restore = 0x00013D46
+over_run_fuel_intermediate_restore = 0x00013E72
+high_octane_timing_state = 0x000096CA
+high_detonation_timing_state = 0x000097CA
+cold_idle_ignition_timing = 0x000137E0
+idle_ignition_timing_bank_1 = 0x000137E8
+idle_ignition_timing_bank_2 = 0x000137F0
+fuel_compensation_main_bank_1 = 0x00009EBA
+fuel_compensation_main_bank_2 = 0x00009FBA
+rev_limit_throttle_cut = 0x0000911E
+
+[profile.JK78C.map_hooks]
+selector_host_call = [0x000FB260, 0x000FD40C, 0x0001CB08]
+startup_initializer = [0x0002A6FC, 0x0002F596, 0x0001CCA0]
+overrun_cut_lookup = [0x0006BBFC, 0x000281B0, 0x0001CE80]
+overrun_restore_lookup = [0x0006C2F0, 0x000281B0, 0x0001CE80]
+ignition_lookup_1 = [0x00062F10, 0x00028018, 0x0001CD40]
+ignition_lookup_2 = [0x00069DB0, 0x00028018, 0x0001CD40]
+ignition_lookup_3 = [0x0006A058, 0x00028018, 0x0001CD40]
+ignition_lookup_4 = [0x0006A1AC, 0x00028018, 0x0001CD40]
+fuel_compensation_lookup_bank_1 = [0x0002FEB4, 0x00027FD8, 0x0001CD80]
+fuel_compensation_lookup_bank_2 = [0x00040F6C, 0x00027FD8, 0x0001CD80]
+idle_ignition_lookup_bank_1 = [0x000645E8, 0x00028198, 0x0001EA00]
+idle_ignition_lookup_bank_2 = [0x00064834, 0x00028198, 0x0001CDC0]
+rev_throttle_scalar_base = [0x00097170, 0x0000911E, 0xFFFF0C20]
+cruise_feedback_serializer = [0x000EBA3C, 0x000ED03C, 0x0001DFE0]
+
+[profile.JK78C.map_symbols]
+selector_function = 0x000FD40C
+button_state = 0xFFFF29A1
+diagnostic_state = 0xFFFF29A0
+ascd_state = 0xFFFF450C
+startup_initializer = 0x0002F596
+dfco_lookup = 0x000281B0
+ignition_lookup = 0x00028018
+fuel_compensation_lookup = 0x00027FD8
+idle_ignition_lookup = 0x00028198
+feedback_serializer = 0x000ED03C
+feedback_status_byte = 0xFFFF3D62
+
+[profile.JK78C.can_hooks]
+coherent_snapshot_call = [0x0002AA7C, 0x00020F1A, 0x00020F1A, 0x0001EC80]
+knock_interval_latch = [0x00021B70, 0x00062780, 0x00062780, 0x0001ECB0]
+startup_state_clear = [0x0002A6FC, 0x0002F596, 0x0001CCA0, 0x0001ECF0]
+hcan1_sle1_vector = [0x000203A0, 0x000F0410, 0x000F0410, 0x0001F200]
+hcan1_primary_init = [0x000306A0, 0x000EA582, 0x000EA582, 0x0001F810]
+hcan1_recovery_init = [0x000EB584, 0x000EA582, 0x000EA582, 0x0001F810]
+
+[profile.JK78C.can_symbols]
+coherent_snapshot = 0x00020F1A
+knock_function = 0x00062780
+knock_count = 0xFFFF2096
+knock_mask = 0xFFFF20A4
+hcan1_init = 0x000EA582
+stock_sle1_isr = 0x000F0410
+feedback_config_record_address = 0x0000945A
+feedback_config_record_value = 0x0308AA20
+feedback_dispatch_literal = 0x000EBA3C
+feedback_payload_base_literal = 0x000ED238
+feedback_payload_base = 0xFFFF3D33
+feedback_payload_offset = 0x2A
+feedback_status_byte = 0xFFFF3D62
+mailbox_record_address = 0x000094AE
+mailbox_record_stock = 0x05000000
+occupied_mailbox_record_address = 0x000094B6
+occupied_mailbox_record_stock = 0x04000000
+mailbox_index = 26
+mailbox_data = 0xFFFFDC48
+mailbox_mask = 0x0400
+
+[profile.JK78C.telemetry_sources]
+rpm_raw = 0xFFFF11E0
+final_timing_raw = 0xFFFF1F45
+apc_command_raw = 0xFFFF11CF
+fuel_inhibit_mask = 0xFFFF223C
+maf_b1_raw = 0xFFFF1024
+maf_b2_raw = 0xFFFF1026
+maf_total_raw = 0xFFFF3A9A
+front_oxygen_sensor_b1_raw = 0xFFFF11EC
+bfs_raw = 0xFFFF102E
+front_oxygen_sensor_b2_raw = 0xFFFF11ED
+injection_0_raw = 0xFFFF231C
+injection_1_raw = 0xFFFF231E
+injection_2_raw = 0xFFFF2320
+injection_3_raw = 0xFFFF2322
+injection_4_raw = 0xFFFF2324
+injection_5_raw = 0xFFFF2326
+knock_surface_state = 0xFFFF23C6
+app1_raw = 0xFFFF25F8
+app2_raw = 0xFFFF25FC
+tps_b1_raw = 0xFFFF26AC
+absolute_throttle_raw = 0xFFFF107B
+tps_b2_raw = 0xFFFF27AC
+intake_cvtc_actual_b1_raw = 0xFFFF239C
+intake_cvtc_actual_b2_raw = 0xFFFF239D
+intake_cvtc_target_raw = 0xFFFF227A
+exhaust_cvtc_target_raw = 0xFFFF23A4
+calculated_load_raw = 0xFFFF448C
+throttle_request_bounded_raw = 0xFFFF19B0
+engine_torque_state_raw = 0xFFFF18D0
+injection_timing_state_raw = 0xFFFF1646
+exhaust_cvtc_actual_b1_raw = 0xFFFF239E
+throttle_target_shared_raw = 0xFFFF199E
+throttle_target_channel_0_raw = 0xFFFF43D8
+throttle_target_channel_1_raw = 0xFFFF43DA
+exhaust_cvtc_actual_b2_raw = 0xFFFF239F
+coolant_raw = 0xFFFF106F
+iat_raw = 0xFFFF278A
+fuel_temperature_did_source_raw = 0xFFFF106B
+oil_temperature_did_source_raw = 0xFFFF1171
+af_state_factor_raw = 0xFFFF2270
+stft_b1_raw = 0xFFFF2238
+stft_b2_raw = 0xFFFF223A
+intake_cvtc_duty_b1_raw = 0xFFFF239A
+intake_cvtc_duty_b2_raw = 0xFFFF239B
+ltft_b1_raw = 0xFFFF225A
+ltft_b2_raw = 0xFFFF225C
+timing_state_2023_raw = 0xFFFF1F76
+timing_state_564c_raw = 0xFFFF5BE4
+intake_cvtc_duty_b1_word_raw = 0xFFFF1A8C
+intake_cvtc_duty_b2_word_raw = 0xFFFF1A8E
+manifold_pressure_1116_raw = 0xFFFF1176
+manifold_pressure_112a_raw = 0xFFFF16E0
+exhaust_cvtc_duty_b1_word_raw = 0xFFFF1A88
+exhaust_cvtc_duty_b2_word_raw = 0xFFFF1A8A
+atmospheric_pressure_raw = 0xFFFF48BC
+battery_voltage_raw = 0xFFFF1174
+front_af_sensor_b1_word_raw = 0xFFFF26D8
+front_af_sensor_b2_word_raw = 0xFFFF26DA
+af_adjustment_b1_raw = 0xFFFF490A
+secondary_tps_b1_raw = 0xFFFF26B4
+secondary_tps_b2_raw = 0xFFFF27B4
+af_adjustment_b2_raw = 0xFFFF490C
+
+[profile.JK78C.evidence]
+free_rom = "The 0x0001caac..0x0001ffff envelope is erased; recovered stock references at 0x0001e30c and in the final reserve remain outside every runtime write range."
+free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across 2,969 recovered functions: zero accesses, calls, candidates, or decompiler failures."
+maps = "Reviewed JK08A-to-JK78C interpolation contracts, target call topology, bank-local storage, and literal sites bind twelve supported VQ37 families."
+rolling = "Rolling Launch remains disabled because the target rev-limit fuel actuator required by the existing cut strategy is not localized."
+can = "HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
+telemetry = "Sixty-two ECU sources are bound by aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state is encoded from cleared reserved RAM and remains explicitly unavailable in metadata."

@@ -1,4 +1,4 @@
-// Atomic scalar-only limiter commit for SH7059 1ND.
+// Atomic scalar-only limiter commit for VQ37 dual-bank targets.
 //
 // Input:
 //   r4 - requested zero-based slot index
