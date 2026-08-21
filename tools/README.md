@@ -42,6 +42,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `memgraph/ingest_diagnostics.py` | Validate and ingest the global diagnostic corpus |
 | `mapkit/emit_def.py` | Emit the paired XML and XDF projections |
 | `mapkit/definition_targets.py` | Bind target editor identity and stock ROM to canonical exact-code definition sources |
+| `mapkit/definition_projections.py` | Validate and apply SHA-bound relocated map and axis correspondences |
 | `maps/build_tracker.py` | Emit the reviewable map ledger projection |
 | `diagnostics/*.py` | Source-preserving diagnostic import and read-only query layer |
 | `can_dashboard/app.py` | Tkinter live view for strict custom telemetry and stock CAN context |

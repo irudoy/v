@@ -63,7 +63,7 @@ def _override_entries(overrides, key):
     return entries
 
 
-def _enable_switch(address):
+def _enable_switch(address, rom="JK08A"):
     return {
         "name": "Rolling Launch Enable by Map",
         "category": "Rolling Launch / Map Enable",
@@ -72,7 +72,7 @@ def _enable_switch(address):
         "endian": "big",
         "userlevel": "5",
         "description": (
-            "Exact JK08A. Each checkbox independently enables Rolling Launch "
+            f"Exact {rom}. Each checkbox independently enables Rolling Launch "
             "for one map and preserves the other bits. Bits 5 through 7 must "
             "remain clear; the runtime rejects the configuration otherwise."
         ),
@@ -86,7 +86,7 @@ def _enable_switch(address):
     }
 
 
-def _pedal_requirement_switch(address):
+def _pedal_requirement_switch(address, rom="JK08A"):
     return {
         "name": "Rolling Launch Require Accelerator Pedal",
         "category": "Rolling Launch / Activation",
@@ -96,7 +96,7 @@ def _pedal_requirement_switch(address):
         "endian": "big",
         "userlevel": "5",
         "description": (
-            "Exact JK08A. Enabled writes min_pedal=1 and requires a nonzero "
+            f"Exact {rom}. Enabled writes min_pedal=1 and requires a nonzero "
             "normalized accelerator-pedal signal for activation. Disabled "
             "writes min_pedal=0, which makes the pedal gate unconditional. "
             "The signal is not presented as a calibrated pedal percentage."
@@ -409,9 +409,10 @@ def _configuration_tables(configuration_address):
     )
 
 
-def project_definition_model(maps, overrides, layout=None):
+def project_definition_model(maps, overrides, layout=None, target_rom=None):
     """Add validated Rolling Launch controls to a definition model."""
     layout = layout or load_layout()
+    target_rom = target_rom or layout.rom
     projected_maps = deepcopy(maps)
     projected_overrides = deepcopy(overrides)
     table_overrides = projected_overrides.get("table")
@@ -452,7 +453,8 @@ def project_definition_model(maps, overrides, layout=None):
             f"{address_key(enable_mask_address)} collides"
         )
     projected_overrides["bitwise_switch"] = (
-        deepcopy(bitwise_switches) + [_enable_switch(enable_mask_address)]
+        deepcopy(bitwise_switches)
+        + [_enable_switch(enable_mask_address, target_rom)]
     )
 
     switches = _override_entries(projected_overrides, "switch")
@@ -467,7 +469,7 @@ def project_definition_model(maps, overrides, layout=None):
         )
     projected_overrides["switch"] = (
         deepcopy(switches)
-        + [_pedal_requirement_switch(pedal_requirement_address)]
+        + [_pedal_requirement_switch(pedal_requirement_address, target_rom)]
     )
 
     projection = DefinitionProjection(
@@ -490,13 +492,26 @@ def project_definition_model(maps, overrides, layout=None):
         bitwise_switch_count=1,
         enable_bit_count=contract.SLOT_COUNT,
     )
-    validate_projection(projection, maps, overrides, layout)
+    validate_projection(
+        projection,
+        maps,
+        overrides,
+        layout,
+        target_rom=target_rom,
+    )
     return projection
 
 
-def validate_projection(projection, source_maps, source_overrides, layout=None):
+def validate_projection(
+    projection,
+    source_maps,
+    source_overrides,
+    layout=None,
+    target_rom=None,
+):
     """Validate controls, independent enable bits, and source preservation."""
     layout = layout or load_layout()
+    target_rom = target_rom or layout.rom
     configuration_address = layout.configuration.start
     expected_addresses = {
         "configuration_address": configuration_address,
@@ -556,7 +571,9 @@ def validate_projection(projection, source_maps, source_overrides, layout=None):
         if int(str(entry.get("storageaddress", "-1")), 0)
         == configuration_address + 0x04
     ]
-    if projected_bitwise != [_enable_switch(configuration_address + 0x04)]:
+    if projected_bitwise != [
+        _enable_switch(configuration_address + 0x04, target_rom)
+    ]:
         raise ValueError("Rolling Launch per-map bitwise switch differs")
     positions = [bit["position"] for bit in projected_bitwise[0]["bit"]]
     if positions != list(range(contract.SLOT_COUNT)):
@@ -569,7 +586,7 @@ def validate_projection(projection, source_maps, source_overrides, layout=None):
         == configuration_address + 0x0C
     ]
     if projected_pedal != [
-        _pedal_requirement_switch(configuration_address + 0x0C)
+        _pedal_requirement_switch(configuration_address + 0x0C, target_rom)
     ]:
         raise ValueError("Rolling Launch pedal switch differs")
 

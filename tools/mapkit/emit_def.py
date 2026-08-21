@@ -56,6 +56,7 @@ if ROOT not in sys.path:
 if __package__:
     from . import (
         definition_targets,
+        definition_projections,
         map_switching,
         presentation,
         rolling_launch,
@@ -67,6 +68,7 @@ else:
     sys.path.insert(0, os.path.dirname(HERE))
     from mapkit import (
         definition_targets,
+        definition_projections,
         map_switching,
         presentation,
         rolling_launch,
@@ -900,7 +902,12 @@ class AppliedDefinitionProjections:
 
 
 def apply_definition_projections(
-    rom, maps, overrides, layout_rom=None
+    rom,
+    maps,
+    overrides,
+    layout_rom=None,
+    map_layout=None,
+    launch_layout=None,
 ):
     """Apply optional derived layouts inside the common ROM definition."""
     layout_rom = layout_rom or rom
@@ -911,20 +918,20 @@ def apply_definition_projections(
 
     launch_projection = None
     if launch_enabled:
-        launch_layout = rolling_launch.load_layout()
+        launch_layout = launch_layout or rolling_launch.load_layout()
         if launch_layout.rom != layout_rom:
             sys.exit(
                 f"Rolling Launch layout targets {launch_layout.rom}, "
                 f"not canonical source {layout_rom}"
             )
         launch_projection = rolling_launch.project_definition_model(
-            maps, overrides, launch_layout
+            maps, overrides, launch_layout, target_rom=rom
         )
         maps, overrides = launch_projection.maps, launch_projection.overrides
 
     switching_projection = None
     if switching_enabled:
-        switching_layout = map_switching.load_layout()
+        switching_layout = map_layout or map_switching.load_layout()
         if switching_layout.rom != layout_rom:
             sys.exit(
                 f"map-switching layout targets {switching_layout.rom}, "
@@ -1039,6 +1046,7 @@ def emit_target(
         if source_rom not in facts_cache:
             facts_cache[source_rom] = fetch(source_rom)
         maps, axes = copy.deepcopy(facts_cache[source_rom])
+    source_catalog_map_count = len(maps)
     if target.source_model.inherited:
         map_rows = rom_sources.materialize_rows(
             target.source_model, "Map", list(maps.values())
@@ -1048,11 +1056,67 @@ def emit_target(
         )
         maps = dict(zip(maps, map_rows))
         axes = dict(zip(axes, axis_rows))
+
+    address_projection = None
+    map_layout = None
+    launch_layout = None
+    layout_rom = source_rom
+    if target.definition_projection is not None:
+        source_table_overrides = ovr.get("table", {})
+        if not isinstance(source_table_overrides, dict):
+            sys.exit(f"{os.path.basename(ovr_path)}: table must be a TOML table")
+        source_default_emit = presentation_default_emit(ovr)
+        required_maps = {
+            address
+            for address, calibration in maps.items()
+            if table_emit_enabled(
+                source_table_overrides.get(address, {}),
+                source_default_emit,
+                address,
+            )
+            and definition_failure(
+                calibration,
+                axes,
+                source_table_overrides.get(address, {}),
+            ) is None
+        }
+        try:
+            address_projection = definition_projections.apply_projection(
+                target.definition_projection,
+                maps,
+                axes,
+                ovr,
+                target.image,
+                required_maps=required_maps,
+            )
+            maps, axes, ovr = (
+                address_projection.maps,
+                address_projection.axes,
+                address_projection.overrides,
+            )
+            map_layout = (
+                definition_projections.map_switching_definition_layout(
+                    target.definition_projection
+                )
+            )
+            launch_layout = (
+                definition_projections.rolling_launch_definition_layout(
+                    target.definition_projection
+                )
+            )
+            layout_rom = rom
+        except definition_projections.DefinitionProjectionError as error:
+            sys.exit(str(error))
+
     catalog_map_count = len(maps)
     maps, ovr, definition_projection = apply_definition_projections(
-        rom, maps, ovr, layout_rom=source_rom
+        rom,
+        maps,
+        ovr,
+        layout_rom=layout_rom,
+        map_layout=map_layout,
+        launch_layout=launch_layout,
     )
-    ovr = definition_targets.materialize_overrides(target, ovr)
     table_overrides = ovr.get("table", {})
     if not isinstance(table_overrides, dict):
         sys.exit(f"{os.path.basename(ovr_path)}: table must be a TOML table")
@@ -1095,7 +1159,8 @@ def emit_target(
     native_switches = list(native_switches)
     native_bitwise_switches = bitwise_switches(ovr)
     image = target.image
-    dtc_manifest = os.path.join(DEFS, f"{source_rom}.dtc.csv")
+    dtc_rom = rom if target.definition_projection is not None else source_rom
+    dtc_manifest = os.path.join(DEFS, f"{dtc_rom}.dtc.csv")
     records = dtc_records(
         rom, image=image, manifest_path=dtc_manifest
     )
@@ -1140,8 +1205,13 @@ def emit_target(
         if source_rom == rom
         else f"Memgraph {source_rom} (canonical facts)"
     ]
+    if target.definition_projection is not None:
+        sources.append(
+            f"defs/{target.definition_projection.address_path.name} "
+            "(reviewed target addresses)"
+        )
     if dtc_entries:
-        sources.append(f"defs/{source_rom}.dtc.csv (DTC)")
+        sources.append(f"defs/{dtc_rom}.dtc.csv (DTC)")
     sources.append(f"defs/{source_rom}.overrides.toml (presentation)")
     sources.append("defs/rom-identities.toml (target identity)")
     if (
@@ -1211,6 +1281,8 @@ def emit_target(
         native_switches,
         native_bitwise_switches,
         source_rom=source_rom,
+        dtc_rom=dtc_rom,
+        definition_projection=target.definition_projection,
     )
     with open(tunerpro_path, "w") as f:
         f.write(xdf)
@@ -1243,6 +1315,15 @@ def emit_target(
           f"projected model: {len(maps)} maps; visible: {len(emit)}; "
           f"hidden by presentation: {len(hidden)}; "
           f"rejected by definition gate: {len(skipped)}")
+    if address_projection is not None:
+        print(
+            "  relocated definition source: "
+            f"source catalog={source_catalog_map_count}; "
+            f"mapped maps={address_projection.mapped_map_count}; "
+            f"mapped axes={address_projection.mapped_axis_count}; "
+            "unsupported visible homologs="
+            f"{len(address_projection.unsupported_required_maps)}"
+        )
     if (
         definition_projection is not None
         and definition_projection.map_switching is not None

@@ -12,7 +12,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import map_switching_layout
-from tools.mapkit import emit_def, presentation as presentation_policy, tunerpro
+from tools.mapkit import (
+    definition_targets,
+    emit_def,
+    presentation as presentation_policy,
+    tunerpro,
+)
 
 
 def validate():
@@ -20,7 +25,10 @@ def validate():
     image = map_switching_layout.validate_image(layout)
     overrides_path = ROOT / "defs" / f"{layout.rom}.overrides.toml"
     with overrides_path.open("rb") as source:
-        overrides = tomllib.load(source)
+        overrides = definition_targets.materialize_overrides(
+            definition_targets.load_target(layout.rom),
+            tomllib.load(source),
+        )
     maps, axes = emit_def.fetch(layout.rom)
     canonical_map_count = len(maps)
     maps, overrides, projection = emit_def.apply_definition_projections(

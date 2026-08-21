@@ -92,7 +92,7 @@ storagetype = "uint8"
 sizex = "1"
 endian = "big"
 userlevel = "5"
-description = "Exact JK08A only. Bit 0 enables ECM immobilizer enforcement. Vehicle start and operation verified. NATS DTC suppression is independent."
+description = "Exact {target_rom} only. Bit 0 enables ECM immobilizer enforcement. Vehicle start and operation verified. NATS DTC suppression is independent."
 state = [
   { name = "Enabled (Stock)", data = "01" },
   { name = "Disabled (IMMO OFF)", data = "00" },
@@ -106,7 +106,7 @@ storagetype = "uint8"
 sizex = "1"
 endian = "big"
 userlevel = "5"
-description = "Exact JK08A producer configuration. Disabled is the default. A validated START command on the derived control CAN ID overrides this byte until reset; STOP forces streaming off until reset. Requires the project CAN telemetry runtime."
+description = "Exact {target_rom} producer configuration. Disabled is the default. A validated START command on the derived control CAN ID overrides this byte until reset; STOP forces streaming off until reset. Requires the project CAN telemetry runtime."
 state = [
   { name = "Disabled (Default)", data = "00" },
   { name = "Enabled", data = "01" },

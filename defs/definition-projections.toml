@@ -1,0 +1,43 @@
+schema_version = 1
+
+# Relocated editor projections are SHA-bound and use reviewed address
+# correspondences. They are independent from exact-code inheritance.
+
+[projection.JK00D]
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3"
+addresses = "JK08A-JK00D.definition-addresses.csv"
+comment = """
+The definition uses JK08A as the canonical semantic and presentation source.
+Every emitted stock map and axis is relocated through the SHA-bound reviewed
+correspondence in defs/JK08A-JK00D.definition-addresses.csv. Homologous claims
+are downgraded to candidate confidence unless target-specific evidence keeps
+code confidence. Maps without a unique target homolog are omitted explicitly.
+Map 2 through Map 5 storage and Rolling Launch controls use the validated JK00D
+runtime allocation in patches/rom-address-profiles.toml.
+"""
+evidence = "Reviewed interpolation operands, matched function references, target-specific patch profiles, exact stock bytes, and target axis geometry."
+
+[projection.JK00D.switch]
+developer_immobilizer = 0x00008740
+can_telemetry_startup = 0x000E1503
+
+[projection.JK00C]
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289"
+addresses = "JK08A-JK00C.definition-addresses.csv"
+comment = """
+The definition uses JK08A as the canonical semantic and presentation source.
+Every emitted stock map and axis is relocated through the SHA-bound reviewed
+correspondence in defs/JK08A-JK00C.definition-addresses.csv. Homologous claims
+are downgraded to candidate confidence unless target-specific evidence keeps
+code confidence. Maps without a unique target homolog are omitted explicitly.
+Map 2 through Map 5 storage and Rolling Launch controls use the validated JK00C
+runtime allocation in patches/rom-address-profiles.toml.
+"""
+evidence = "Reviewed JK08A-to-JK00D correspondence composed with exact or normalized JK00D-to-JK00C functions, target references, stock bytes, and target axis geometry."
+
+[projection.JK00C.switch]
+can_telemetry_startup = 0x000E1503

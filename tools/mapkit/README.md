@@ -17,6 +17,8 @@ not be edited by hand.
 | `defs/JK08A.overrides.toml` | Editor names, categories, visibility, layout, scaling presentation, and native switches |
 | `defs/JK08A.diagnostic-bindings.csv` | Reviewed diagnostic context shown in projections |
 | `defs/rom-inheritance.toml` | Exact target-to-canonical source binding and SHA-256 evidence |
+| `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
+| `defs/JK08A-<ROM>.definition-addresses.csv` | Reviewed target map and axis addresses |
 | `defs/rom-identities.toml` | Target-specific RomRaider and TunerPro identity fields |
 | Patch layout manifests | Common map-slot and Rolling Launch configuration projections |
 | `rom-images/roms.csv` | Exact source-image identity and path |
@@ -24,6 +26,10 @@ not be edited by hand.
 JK00A, JK03A, and JK03B inherit the canonical JK08A structural and semantic
 sources. Every generated definition is bound to its own verified stock image
 and target identity; calibration values are not copied into the output.
+JK00C and JK00D instead use SHA-bound reviewed address projections because
+their calibration and executable layouts are relocated. The projection omits
+non-unique source maps explicitly and validates every emitted target map and
+axis against the selected stock image.
 
 ## Paired editor definitions
 
@@ -41,10 +47,12 @@ target leaves every existing XML/XDF unchanged. Use
 the independently selected canonical ledger. The lower-level script's optional
 second and third positional arguments select alternate XML and XDF paths for a
 reproducibility comparison.
-The generator validates the selected ROM identity and inheritance hashes,
-canonical graph facts, definition gate, target DTC storage, presentation
-schema, map-switching layout, and Rolling Launch controls before writing either
-projection.
+The generator validates the selected ROM identity, inheritance or relocated
+projection hashes, canonical graph facts, definition gate, applicable target
+DTC storage, presentation schema, map-switching layout, and Rolling Launch
+controls before writing either projection. Target-specific wording uses only
+the explicit `{target_rom}` presentation token. Canonical source labels and
+evidence paths are preserved verbatim.
 
 The generated headers identify their inputs and warn that manual changes do not
 survive regeneration. Change the tracked canonical source layer or target
@@ -80,6 +88,13 @@ without writing a ROM:
 
 ```bash
 uv run python tools/mapkit/validate_map_switching.py
+```
+
+Validate every relocated definition registry, stock-image hash, address bound,
+checksum layout, and target runtime layout without selecting a default ROM:
+
+```bash
+uv run python tools/mapkit/definition_projections.py --check
 ```
 
 For a byte-for-byte regeneration check, emit XML and XDF into a temporary
@@ -122,6 +137,8 @@ reference, including the baseline lookup and downstream target projection.
 - A static axis cannot overlap a recovered graph axis.
 - Target ROM identity, exact inheritance ranges, DTC stock bytes, and projected
   address bounds are validated before emission.
+- Relocated definitions retain canonical provenance while applying only
+  explicit target-address bindings.
 - XML and XDF are rendered from the same in-memory model in one invocation.
 - Canonical category paths use ` / ` internally. RomRaider XML renders those
   paths with its `//` hierarchy separator, while TunerPro retains flat category

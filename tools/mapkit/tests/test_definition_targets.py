@@ -8,7 +8,7 @@ from tools.mapkit import definition_targets
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
-ROMS = ("JK00A", "JK03A", "JK03B", "JK08A")
+ROMS = ("JK00A", "JK03A", "JK03B", "JK08A", "JK00C", "JK00D")
 
 
 class DefinitionTargetsTest(unittest.TestCase):
@@ -16,13 +16,17 @@ class DefinitionTargetsTest(unittest.TestCase):
         self.assertEqual(definition_targets.registered_targets(), ROMS)
         self.assertEqual(definition_targets.registered_sources(), ("JK08A",))
 
-    def test_exact_family_targets_bind_to_their_stock_identity(self):
+    def test_all_registered_targets_bind_to_their_stock_identity(self):
         for rom in ROMS:
             with self.subTest(rom=rom):
                 target = definition_targets.load_target(rom)
                 self.assertEqual(target.rom, rom)
                 self.assertEqual(target.source, "JK08A")
                 self.assertEqual(target.image.rom, rom)
+                self.assertEqual(
+                    target.definition_projection is not None,
+                    rom in {"JK00C", "JK00D"},
+                )
                 address = int(target.romid["internalidaddress"], 16)
                 identity = target.romid["internalidstring"].encode("ascii")
                 self.assertEqual(
@@ -48,6 +52,14 @@ class DefinitionTargetsTest(unittest.TestCase):
         self.assertIn(
             "defs/JK08A.notes.md",
             materialized["rom"]["comment"]["text"],
+        )
+        self.assertNotIn(
+            definition_targets.TARGET_ROM_TOKEN,
+            materialized["switch"][0]["description"],
+        )
+        self.assertEqual(
+            materialized["rom"]["comment"]["text"],
+            canonical["rom"]["comment"]["text"],
         )
 
     def test_unregistered_identity_is_rejected(self):

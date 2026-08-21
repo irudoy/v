@@ -21,6 +21,8 @@ presentation and generated output.
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
+| `definition-projections.toml` | SHA-bound relocated definition targets, switches, and evidence | yes |
+| `JK08A-<ROM>.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
 | `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
 | `JK08A.maps.csv` | Catalog ledger projected from Memgraph | no, regenerate |
 | `<ROM>.xml` | Target-specific RomRaider definition projection | no, regenerate |
@@ -45,12 +47,20 @@ See `../tools/map-analysis-pipeline.md` and
 
 ## Cross-family correspondence
 
-JK00D uses a distinct calibration layout and cannot inherit addressed JK08A
-claims. `JK08A-JK00D.interp-correspondence.csv` binds each reviewed source
-wrapper to its relocated JK00D homolog. The registry covers every JK08A
-wrapper and permits target-only JK00D wrappers. Pair validation requires equal
-geometry, storage type, axis types, and interpolation family outside the
+JK00C and JK00D use a distinct calibration layout and cannot inherit addressed
+JK08A claims. `JK08A-JK00D.interp-correspondence.csv` binds each reviewed
+source wrapper to its relocated JK00D homolog. The registry covers every
+JK08A wrapper and permits target-only JK00D wrappers. Pair validation requires
+equal geometry, storage type, axis types, and interpolation family outside the
 addresses.
+
+`definition-projections.toml` binds JK00C and JK00D to exact source and target
+image hashes. Its per-target correspondence CSV relocates every visible stock
+map and required axis with explicit status and evidence. A source map without
+a unique target homolog is recorded as unsupported instead of being guessed.
+JK00C correspondences compose reviewed JK08A-to-JK00D operands only through
+unique exact or normalized JK00D-to-JK00C function matches. The generator
+validates the resulting target geometry and stock bytes before emission.
 
 `tools/rom_correspondence.py` combines this registry with machine-local Ghidra
 function signatures, call ordinals, and resolver censuses. Its function and
@@ -101,13 +111,14 @@ claims and evidence remain in the CSV layer rather than being copied into prose.
 
 ## Generated definitions
 
-`tools/mapkit/emit_def.py` resolves the selected ROM through
-`rom-inheritance.toml`, reads the canonical live graph projection,
-`JK08A.dtc.csv`, `JK08A.overrides.toml`, `rom-identities.toml`, the selected
-exact stock image, and current patch layout manifests. It renders one
-target-specific XML/XDF pair from a single in-memory model. The `all` mode
-renders every identity registered in `rom-identities.toml`; it stages the full
-set and leaves existing outputs unchanged if any target fails.
+`tools/mapkit/emit_def.py` resolves the selected ROM through either exact-code
+inheritance or a SHA-bound relocated definition projection. It reads the
+canonical live graph projection, applicable DTC manifest,
+`JK08A.overrides.toml`, `rom-identities.toml`, the selected exact stock image,
+and current patch layout manifests. It renders one target-specific XML/XDF
+pair from a single in-memory model. The `all` mode renders every identity
+registered in `rom-identities.toml`; it stages the full set and leaves existing
+outputs unchanged if any target fails.
 
 ```bash
 make defs-generate
@@ -119,16 +130,20 @@ generated RomRaider identity intentionally omits the optional `flashmethod`
 field. A dump tool or a community definition does not establish a validated
 flashing path for this ECU family.
 
-The generator validates ROM identity, map geometry, scaling, visibility, DTC
-stock bytes, map-slot layout, and Rolling Launch controls. A visible map must
-pass the definition gate. Hidden research maps remain in the graph and ledger.
+The generator validates ROM identity, exact inheritance or projection hashes,
+map geometry, scaling, visibility, DTC stock bytes, map-slot layout, and
+Rolling Launch controls. A visible map must pass the definition gate. Hidden
+research maps remain in the graph and ledger. Presentation text uses the
+explicit `{target_rom}` token where a target label is required; source ROM
+labels and evidence filenames are never rewritten as target labels.
 
 Each definition keeps the selected ROM identity. Map 1 uses that ROM's stock
-storage; Map 2 through Map 5 are editor projections of reserved addresses
-declared by `patches/map-switching-layout.toml`. Rolling Launch exposes only the
-validated configuration controls declared by its canonical layout. Neither
-projection creates speculative canonical graph maps or copies JK08A
-calibration values into another ROM.
+storage. The exact-code family derives Map 2 through Map 5 from
+`patches/map-switching-layout.toml`; relocated targets use their explicit
+`patches/rom-address-profiles.toml` allocation, including separate exhaust-bank
+families. Rolling Launch exposes only the validated target configuration
+controls. Neither projection creates speculative canonical graph maps or
+copies JK08A calibration values into another ROM.
 
 RomRaider and TunerPro receive equivalent calibration tables and controls in
 their native formats. TunerPro does not own image checksum correction; complete

@@ -72,6 +72,22 @@ class RollingLaunchDefinitionProjectionTest(unittest.TestCase):
         self.assertEqual(projection.enable_bit_count, 5)
         self.assertEqual(projection.editor_view_count, 10)
 
+    def test_target_label_is_independent_from_layout_rom(self):
+        projection = rolling_launch.project_definition_model(
+            self.maps,
+            self.overrides,
+            self.layout,
+            target_rom="JK00A",
+        )
+        enable = projection.overrides["bitwise_switch"][-1]
+        pedal = projection.overrides["switch"][-1]
+
+        self.assertEqual(projection.configuration_address, "000d3f60")
+        self.assertIn("Exact JK00A.", enable["description"])
+        self.assertIn("Exact JK00A.", pedal["description"])
+        self.assertNotIn("Exact JK08A.", enable["description"])
+        self.assertNotIn("Exact JK08A.", pedal["description"])
+
     def test_projection_exposes_activation_and_rpm_controls(self):
         projection = self.project()
         expected = {

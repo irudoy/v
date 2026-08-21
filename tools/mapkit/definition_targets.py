@@ -10,6 +10,7 @@ import re
 import tomllib
 
 from tools.mapkit import rom as romkit
+from tools.mapkit import definition_projections
 from tools import rom_sources
 
 
@@ -32,6 +33,7 @@ ROMID_FIELDS = (
     "author",
     "version",
 )
+TARGET_ROM_TOKEN = "{target_rom}"
 
 # RomRaider accepts flashmethod as optional metadata for a compatible flashing
 # implementation. Do not emit one until the project validates that path on the
@@ -47,6 +49,7 @@ class DefinitionTarget:
     rom: str
     source: str
     source_model: rom_sources.SourceModel
+    definition_projection: definition_projections.DefinitionProjection | None
     romid: dict[str, str]
     image: romkit.Image
 
@@ -99,7 +102,12 @@ def registered_sources(
     """Return unique canonical sources for all registered definition targets."""
     sources = []
     for rom in registered_targets(identity_path):
-        source = rom_sources.resolve(rom, path=inheritance_path).source
+        projection = definition_projections.projection_for_rom(rom)
+        source = (
+            projection.source
+            if projection is not None
+            else rom_sources.resolve(rom, path=inheritance_path).source
+        )
         if source not in sources:
             sources.append(source)
     return tuple(sources)
@@ -111,10 +119,26 @@ def load_target(rom, identity_path=DEFAULT_IDENTITIES):
     if rom not in identities:
         raise DefinitionTargetError(f"no editor identity is registered for {rom}")
     try:
-        source_model = rom_sources.resolve(rom)
-        rom_sources.verify_image_binding(source_model)
+        definition_projection = definition_projections.projection_for_rom(rom)
+        if definition_projection is None:
+            source_model = rom_sources.resolve(rom)
+            rom_sources.verify_image_binding(source_model)
+            source = source_model.source
+        else:
+            definition_projections.verify_image_binding(definition_projection)
+            source_model = rom_sources.resolve(definition_projection.source)
+            if source_model.inherited:
+                raise DefinitionTargetError(
+                    f"{rom}: relocated definition source must be canonical"
+                )
+            source = definition_projection.source
         image = romkit.load(rom)
-    except (OSError, ValueError, rom_sources.SourceModelError) as error:
+    except (
+        OSError,
+        ValueError,
+        rom_sources.SourceModelError,
+        definition_projections.DefinitionProjectionError,
+    ) as error:
         raise DefinitionTargetError(str(error)) from error
 
     romid = dict(identities[rom])
@@ -137,39 +161,34 @@ def load_target(rom, identity_path=DEFAULT_IDENTITIES):
         )
     return DefinitionTarget(
         rom=rom,
-        source=source_model.source,
+        source=source,
         source_model=source_model,
+        definition_projection=definition_projection,
         romid=romid,
         image=image,
     )
 
 
-def _replace_label(value, source, target):
+def _materialize_target_token(value, target):
     if isinstance(value, str):
-        return value.replace(source, target)
+        return value.replace(TARGET_ROM_TOKEN, target)
     if isinstance(value, list):
-        return [_replace_label(item, source, target) for item in value]
+        return [_materialize_target_token(item, target) for item in value]
     if isinstance(value, dict):
         return {
-            key: _replace_label(item, source, target)
+            key: _materialize_target_token(item, target)
             for key, item in value.items()
         }
     return value
 
 
 def materialize_overrides(target, overrides):
-    """Apply target labels and ROM identity without duplicating presentation."""
-    result = _replace_label(copy.deepcopy(overrides), target.source, target.rom)
+    """Apply explicit target tokens and identity without rewriting provenance."""
+    result = _materialize_target_token(copy.deepcopy(overrides), target.rom)
     source_comment = overrides.get("rom", {}).get("comment")
     result["rom"] = dict(target.romid)
     if source_comment is not None:
-        comment = _replace_label(
-            copy.deepcopy(source_comment), target.source, target.rom
+        result["rom"]["comment"] = _materialize_target_token(
+            copy.deepcopy(source_comment), target.rom
         )
-        comment = _replace_label(
-            comment,
-            f"defs/{target.rom}.",
-            f"defs/{target.source}.",
-        )
-        result["rom"]["comment"] = comment
     return result
