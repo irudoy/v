@@ -85,6 +85,37 @@ def test_jk08a_object_ids_and_ranges_are_valid():
     assert all(item["layer"] in {entry[0] for entry in model.LAYERS} for item in rom["objects"])
 
 
+@pytest.mark.parametrize("rom_id", ("1ND0A", "1ND3B"))
+def test_1nd_models_include_all_six_checksum_fields(rom_id):
+    rom = model.build_rom_model(model.resolve_manifest(rom_id))
+    checksum_fields = {
+        item["id"]
+        for item in rom["objects"]
+        if item["kind"] == "checksum-field"
+    }
+    checksum_domains = {
+        item["id"]
+        for item in rom["objects"]
+        if item["kind"] == "checksum-domain"
+    }
+
+    assert checksum_fields == {
+        "checksum-field:sum16_a",
+        "checksum-field:sum16_b",
+        "checksum-field:boot_sum16",
+        "checksum-field:vector_sum16",
+        "checksum-field:runtime_a_sum",
+        "checksum-field:runtime_a_xor",
+    }
+    assert checksum_domains == {
+        "checksum-domain:sum16_a",
+        "checksum-domain:sum16_b",
+        "checksum-domain:boot_sum16",
+        "checksum-domain:vector_sum16",
+        "checksum-domain:runtime_a",
+    }
+
+
 def test_exact_family_materializes_only_explicit_target_tokens():
     rom = model.build_rom_model(model.resolve_manifest("JK00A"))
     switch = next(

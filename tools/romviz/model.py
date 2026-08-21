@@ -876,23 +876,11 @@ def _checksum_objects(rom, registry_value, rom_size):
             tags=("checksum", "field"),
             meta=_meta(width_bytes=width),
         ))
-    domains = (
-        ("sum16_a", layout.sum16_a_start, layout.sum16_a_end, ()),
-        (
-            "runtime_a",
-            layout.runtime_a_start,
-            layout.runtime_a_end,
-            layout.runtime_a_exclusions,
-        ),
-        ("sum16_b", layout.sum16_b_start, layout.sum16_b_end, ()),
-        (
-            "runtime_b",
-            layout.runtime_b_start,
-            layout.runtime_b_end,
-            layout.runtime_b_exclusions,
-        ),
-    )
-    for name, start, end, exclusions in domains:
+    for domain in layout.domains:
+        name = domain.key
+        start = domain.start
+        end = domain.end
+        exclusions = domain.exclusions
         if not (0 <= start < end <= rom_size):
             raise ModelError(f"{registry}: invalid checksum domain {name}")
         objects.append(_object(

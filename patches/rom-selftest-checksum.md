@@ -1,9 +1,9 @@
-# ROM checksums - supported SH7058 families
+# ROM checksums - supported SH7058 and SH7059 families
 
-The registered JK00A, JK03A, JK03B, JK08A, JK00C, and JK00D images are 1 MiB,
-big-endian, and based at `0x0`. Each uses two SUM16 checks and two runtime
-self-test XOR+SUM domains. Addressed coverage belongs to the exact ROM profile
-in `checksum-layouts.toml`; it is not inferred from file size or MCU family.
+The registered SH7058 images are 1 MiB and the registered SH7059 images are
+1.5 MiB. All images are big-endian and based at `0x0`. Addressed coverage and
+the number of checksum domains belong to the exact ROM profile in
+`checksum-layouts.toml`; neither is inferred from file size or MCU family.
 
 The Developer Immobilizer control in the JK08A definitions changes only
 `ROM[0x8725].bit0`. The historical one-bit validation image retained stock
@@ -85,6 +85,41 @@ Its output is verified again before return. The unified builder permits final
 byte changes only inside the union of its runtime composition ranges and the
 six checksum fields selected for the exact input ROM.
 
+## SH7059 1ND exact-code layout
+
+1ND0A and 1ND3B share one exact checksum implementation and six stored
+references. Four domains sum big-endian `u16` values modulo `2^16`. The
+application domain computes XOR and SUM over big-endian `u32` values, with the
+sum reduced modulo `2^32`.
+
+| SUM16 domain | Stored field | Region | Exclusions |
+|---|---:|---|---|
+| Calibration | `0x008200` | `[0x008202, 0x020000)` | none |
+| Application | `0x020000` | `[0x020002, 0x180000)` | none |
+| Boot code | `0x005ffe` | `[0x000000, 0x005ffe)` | none |
+| Vector code | `0x006efe` | `[0x006000, 0x008200)` | `0x006efe` |
+
+| Runtime domain | Region | XOR reference | SUM reference | Exclusions |
+|---|---|---:|---:|---|
+| A | `[0x008200, 0x180000)` | `0x009610` | `0x009618` | `0x008200`, `0x009610`, `0x009618`, `0x020000` |
+
+Function `0x00002c60` incrementally checks the calibration and application
+SUM16 fields. Function `0x0012604c` independently checks both lower-code SUM16
+fields and the runtime XOR+SUM pair. Its instruction stream starts the runtime
+cursor at `0x008200`, terminates it at `0x180000`, and compares the calculated
+values with `0x009610` and `0x009618`. The stock self-test checksum contract
+does not use RIPEMD-160.
+
+Runtime A is recalculated before the calibration SUM16 because both runtime
+references lie inside the calibration domain. The two primary SUM16 fields are
+excluded from Runtime A. The lower-code sums are independent and can be closed
+after the application domains.
+
+| ROM | Calibration SUM16 | Application SUM16 | Boot SUM16 | Vector SUM16 | A XOR | A SUM |
+|---|---:|---:|---:|---:|---:|---:|
+| 1ND0A | `2f52` | `b7dd` | `e629` | `41d8` | `e0f04d48` | `7131b24a` |
+| 1ND3B | `5dd1` | `b7dd` | `e629` | `41d8` | `5a01b3c1` | `ab671f91` |
+
 ## RomRaider 7MFKAVN86 projection
 
 The native RomRaider handlers reproduce the layout in this order:
@@ -139,6 +174,6 @@ observed on a physical ECU.
 
 ## Scope
 
-Exact layouts are registered for JK00A, JK03A, JK03B, JK08A, JK00C, and
-JK00D. This specification makes no claim about checksum-field locations or
-coverage for 1ND0A, 1ND3B, or JK78C.
+Exact layouts are registered for JK00A, JK03A, JK03B, JK08A, JK00C, JK00D,
+1ND0A, and 1ND3B. This specification makes no claim about checksum-field
+locations or coverage for JK78C.

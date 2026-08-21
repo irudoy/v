@@ -4,6 +4,7 @@ label = "23710-1ND0A"
 annotation_source = "1ND0A structural export"
 image_registry = "rom-images/roms.csv"
 ghidra_export = "~/tools/ghidra-projects/export-1ND0A"
+checksum_registry = "patches/checksum-layouts.toml"
 
 [metadata]
 submodel = "VQ37VHR"

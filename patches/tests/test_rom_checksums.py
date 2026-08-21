@@ -6,6 +6,8 @@ from patches import rom_checksums
 
 ROOT = Path(__file__).resolve().parents[2]
 STOCKS = {
+    "1ND0A": ROOT / "rom-images/23710-1ND0A/11ND0A-20260715-stock.bin",
+    "1ND3B": ROOT / "rom-images/23710-1ND3B/11ND3B-20260715-stock.bin",
     "JK00A": ROOT / "rom-images/23710-JK00A/1JK00A-20260804-stock.bin",
     "JK00C": ROOT / "rom-images/23710-JK00C/1JK00C-20260803-stock.bin",
     "JK00D": ROOT / "rom-images/23710-JK00D/1JK00D-20260726-stock.bin",
@@ -14,6 +16,20 @@ STOCKS = {
     "JK08A": ROOT / "rom-images/23710-JK08A/1JK08A-20260726-stock.bin",
 }
 EXPECTED = {
+    "1ND0A": rom_checksums.ChecksumValues(
+        sum16_a=0x2F52,
+        sum16_b=0xB7DD,
+        runtime_a_xor=0xE0F04D48,
+        runtime_a_sum=0x7131B24A,
+        extra=(("boot_sum16", 0xE629), ("vector_sum16", 0x41D8)),
+    ),
+    "1ND3B": rom_checksums.ChecksumValues(
+        sum16_a=0x5DD1,
+        sum16_b=0xB7DD,
+        runtime_a_xor=0x5A01B3C1,
+        runtime_a_sum=0xAB671F91,
+        extra=(("boot_sum16", 0xE629), ("vector_sum16", 0x41D8)),
+    ),
     "JK00A": rom_checksums.ChecksumValues(
         sum16_a=0xECBD,
         sum16_b=0xEEE1,
@@ -87,6 +103,29 @@ class RomChecksumsTest(unittest.TestCase):
         self.assertEqual(jk00d.runtime_a_xor_field, 0x97A8)
         self.assertEqual(jk00d.runtime_a_sum_field, 0x97B0)
         self.assertEqual(jk00c.runtime_b_end, jk00d.runtime_b_end)
+
+    def test_sh7059_layout_covers_both_firmware_verifiers(self):
+        layout = rom_checksums.layout_for_rom("1ND0A")
+        self.assertEqual(layout, rom_checksums.layout_for_rom("1ND3B"))
+        self.assertEqual(len(layout.checksum_fields), 6)
+        self.assertEqual(
+            {domain.key for domain in layout.sum16_domains},
+            {"sum16_a", "sum16_b", "boot_sum16", "vector_sum16"},
+        )
+        self.assertEqual(
+            layout.runtime_a_exclusions,
+            frozenset({0x8200, 0x9610, 0x9618, 0x20000}),
+        )
+
+    def test_sh7059_lower_code_mutations_close_auxiliary_sum16_fields(self):
+        layout = rom_checksums.layout_for_rom("1ND0A")
+        changed = bytearray(self.stocks["1ND0A"])
+        changed[0x1000] ^= 0x55
+        changed[0x6500] ^= 0xAA
+        fixed = rom_checksums.recalculate(changed, layout)
+        self.assertTrue(rom_checksums.verify(fixed, layout).valid)
+        self.assertNotEqual(fixed[0x5FFE:0x6000], changed[0x5FFE:0x6000])
+        self.assertNotEqual(fixed[0x6EFE:0x6F00], changed[0x6EFE:0x6F00])
 
     def test_each_layout_recalculates_only_its_checksum_fields(self):
         for rom, stock in self.stocks.items():

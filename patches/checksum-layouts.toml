@@ -1,69 +1,157 @@
 # Authoritative checksum storage and coverage layouts for supported ROMs.
 #
-# Every range is half-open. Runtime exclusions name aligned 32-bit words that
-# are skipped by the corresponding firmware self-test loop.
+# Every range is half-open. Exclusions name aligned values skipped by the
+# corresponding firmware checksum loop. Recalculation order is explicit
+# because stored fields can belong to a later checksum domain.
 
-schema_version = 1
+schema_version = 2
 
 [layout.sh7058_7mfkavn86]
 roms = ["JK00A", "JK03A", "JK03B", "JK08A"]
 rom_size = 0x100000
-sum16_a_field = 0x008200
-sum16_a_start = 0x008202
-sum16_a_end = 0x020000
-runtime_a_xor_field = 0x0096D4
-runtime_a_sum_field = 0x0096DC
-runtime_a_start = 0x008204
-runtime_a_end = 0x100000
-runtime_a_exclusions = [0x0096D4, 0x0096DC, 0x020000]
-sum16_b_field = 0x020000
-sum16_b_start = 0x020002
-sum16_b_end = 0x100000
-runtime_b_xor_field = 0x020408
-runtime_b_sum_field = 0x020404
-runtime_b_start = 0x02040C
-runtime_b_end = 0x02259C
-runtime_b_exclusions = []
+recalculation_order = ["runtime_b", "runtime_a", "sum16_a", "sum16_b"]
 evidence = "Exact checksum code and storage are shared by the complete 7MFKAVN86 family; the six stock references verify independently in every registered member."
+
+[[layout.sh7058_7mfkavn86.sum16]]
+key = "sum16_a"
+field = 0x008200
+start = 0x008202
+end = 0x020000
+exclusions = []
+
+[[layout.sh7058_7mfkavn86.sum16]]
+key = "sum16_b"
+field = 0x020000
+start = 0x020002
+end = 0x100000
+exclusions = []
+
+[[layout.sh7058_7mfkavn86.runtime32]]
+key = "runtime_a"
+xor_field = 0x0096D4
+sum_field = 0x0096DC
+start = 0x008204
+end = 0x100000
+exclusions = [0x0096D4, 0x0096DC, 0x020000]
+
+[[layout.sh7058_7mfkavn86.runtime32]]
+key = "runtime_b"
+xor_field = 0x020408
+sum_field = 0x020404
+start = 0x02040C
+end = 0x02259C
+exclusions = []
 
 [layout.sh7058_8mfk_jk00c]
 roms = ["JK00C"]
 rom_size = 0x100000
-sum16_a_field = 0x008200
-sum16_a_start = 0x008202
-sum16_a_end = 0x020000
-runtime_a_xor_field = 0x009798
-runtime_a_sum_field = 0x0097A0
-runtime_a_start = 0x008204
-runtime_a_end = 0x100000
-runtime_a_exclusions = [0x009798, 0x0097A0, 0x020000]
-sum16_b_field = 0x020000
-sum16_b_start = 0x020002
-sum16_b_end = 0x100000
-runtime_b_xor_field = 0x020408
-runtime_b_sum_field = 0x020404
-runtime_b_start = 0x02040C
-runtime_b_end = 0x022628
-runtime_b_exclusions = []
+recalculation_order = ["runtime_b", "runtime_a", "sum16_a", "sum16_b"]
 evidence = "JK00C checksum initializers and verifiers at 0x2168e..0x2180e bind Runtime A fields 0x9798/0x97a0 and Runtime B fields 0x20408/0x20404; the literal pool binds the final Runtime B byte at 0x22626."
+
+[[layout.sh7058_8mfk_jk00c.sum16]]
+key = "sum16_a"
+field = 0x008200
+start = 0x008202
+end = 0x020000
+exclusions = []
+
+[[layout.sh7058_8mfk_jk00c.sum16]]
+key = "sum16_b"
+field = 0x020000
+start = 0x020002
+end = 0x100000
+exclusions = []
+
+[[layout.sh7058_8mfk_jk00c.runtime32]]
+key = "runtime_a"
+xor_field = 0x009798
+sum_field = 0x0097A0
+start = 0x008204
+end = 0x100000
+exclusions = [0x009798, 0x0097A0, 0x020000]
+
+[[layout.sh7058_8mfk_jk00c.runtime32]]
+key = "runtime_b"
+xor_field = 0x020408
+sum_field = 0x020404
+start = 0x02040C
+end = 0x022628
+exclusions = []
 
 [layout.sh7058_8mfk_jk00d]
 roms = ["JK00D"]
 rom_size = 0x100000
-sum16_a_field = 0x008200
-sum16_a_start = 0x008202
-sum16_a_end = 0x020000
-runtime_a_xor_field = 0x0097A8
-runtime_a_sum_field = 0x0097B0
-runtime_a_start = 0x008204
-runtime_a_end = 0x100000
-runtime_a_exclusions = [0x0097A8, 0x0097B0, 0x020000]
-sum16_b_field = 0x020000
-sum16_b_start = 0x020002
-sum16_b_end = 0x100000
-runtime_b_xor_field = 0x020408
-runtime_b_sum_field = 0x020404
-runtime_b_start = 0x02040C
-runtime_b_end = 0x022628
-runtime_b_exclusions = []
+recalculation_order = ["runtime_b", "runtime_a", "sum16_a", "sum16_b"]
 evidence = "JK00D checksum initializers and verifiers at 0x2168e..0x2180e bind Runtime A fields 0x97a8/0x97b0 and Runtime B fields 0x20408/0x20404; the literal pool binds the final Runtime B byte at 0x22626."
+
+[[layout.sh7058_8mfk_jk00d.sum16]]
+key = "sum16_a"
+field = 0x008200
+start = 0x008202
+end = 0x020000
+exclusions = []
+
+[[layout.sh7058_8mfk_jk00d.sum16]]
+key = "sum16_b"
+field = 0x020000
+start = 0x020002
+end = 0x100000
+exclusions = []
+
+[[layout.sh7058_8mfk_jk00d.runtime32]]
+key = "runtime_a"
+xor_field = 0x0097A8
+sum_field = 0x0097B0
+start = 0x008204
+end = 0x100000
+exclusions = [0x0097A8, 0x0097B0, 0x020000]
+
+[[layout.sh7058_8mfk_jk00d.runtime32]]
+key = "runtime_b"
+xor_field = 0x020408
+sum_field = 0x020404
+start = 0x02040C
+end = 0x022628
+exclusions = []
+
+[layout.sh7059_1nd]
+roms = ["1ND0A", "1ND3B"]
+rom_size = 0x180000
+recalculation_order = ["runtime_a", "sum16_a", "sum16_b", "boot_sum16", "vector_sum16"]
+evidence = "Exact function 0x2c60 incrementally verifies the 0x8200 and 0x20000 SUM16 fields. Function 0x12604c independently verifies lower-code SUM16 fields at 0x5ffe/0x6efe and the full application XOR+SUM fields at 0x9610/0x9618. Both stock ROMs reproduce all six references."
+
+[[layout.sh7059_1nd.sum16]]
+key = "sum16_a"
+field = 0x008200
+start = 0x008202
+end = 0x020000
+exclusions = []
+
+[[layout.sh7059_1nd.sum16]]
+key = "sum16_b"
+field = 0x020000
+start = 0x020002
+end = 0x180000
+exclusions = []
+
+[[layout.sh7059_1nd.sum16]]
+key = "boot_sum16"
+field = 0x005FFE
+start = 0x000000
+end = 0x005FFE
+exclusions = []
+
+[[layout.sh7059_1nd.sum16]]
+key = "vector_sum16"
+field = 0x006EFE
+start = 0x006000
+end = 0x008200
+exclusions = [0x006EFE]
+
+[[layout.sh7059_1nd.runtime32]]
+key = "runtime_a"
+xor_field = 0x009610
+sum_field = 0x009618
+start = 0x008200
+end = 0x180000
+exclusions = [0x008200, 0x009610, 0x009618, 0x020000]

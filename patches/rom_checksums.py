@@ -14,24 +14,23 @@ LAYOUT_FIELDS = frozenset(
     {
         "roms",
         "rom_size",
-        "sum16_a_field",
-        "sum16_a_start",
-        "sum16_a_end",
-        "runtime_a_xor_field",
-        "runtime_a_sum_field",
-        "runtime_a_start",
-        "runtime_a_end",
-        "runtime_a_exclusions",
-        "sum16_b_field",
-        "sum16_b_start",
-        "sum16_b_end",
-        "runtime_b_xor_field",
-        "runtime_b_sum_field",
-        "runtime_b_start",
-        "runtime_b_end",
-        "runtime_b_exclusions",
+        "recalculation_order",
+        "sum16",
+        "runtime32",
         "evidence",
     }
+)
+SUM16_FIELDS = frozenset({"key", "field", "start", "end", "exclusions"})
+RUNTIME32_FIELDS = frozenset(
+    {"key", "xor_field", "sum_field", "start", "end", "exclusions"}
+)
+VALUE_FIELDS = (
+    "sum16_a",
+    "sum16_b",
+    "runtime_a_xor",
+    "runtime_a_sum",
+    "runtime_b_sum",
+    "runtime_b_xor",
 )
 
 
@@ -40,54 +39,152 @@ class ChecksumError(ValueError):
 
 
 @dataclass(frozen=True)
+class Sum16Domain:
+    key: str
+    field: int
+    start: int
+    end: int
+    exclusions: frozenset[int]
+
+
+@dataclass(frozen=True)
+class Runtime32Domain:
+    key: str
+    xor_field: int
+    sum_field: int
+    start: int
+    end: int
+    exclusions: frozenset[int]
+
+
+@dataclass(frozen=True)
 class ChecksumLayout:
     key: str
     roms: tuple[str, ...]
     rom_size: int
-    sum16_a_field: int
-    sum16_a_start: int
-    sum16_a_end: int
-    runtime_a_xor_field: int
-    runtime_a_sum_field: int
-    runtime_a_start: int
-    runtime_a_end: int
-    runtime_a_exclusions: frozenset[int]
-    sum16_b_field: int
-    sum16_b_start: int
-    sum16_b_end: int
-    runtime_b_xor_field: int
-    runtime_b_sum_field: int
-    runtime_b_start: int
-    runtime_b_end: int
-    runtime_b_exclusions: frozenset[int]
+    sum16_domains: tuple[Sum16Domain, ...]
+    runtime32_domains: tuple[Runtime32Domain, ...]
+    recalculation_order: tuple[str, ...]
     evidence: str
+
+    def _sum16(self, key):
+        for domain in self.sum16_domains:
+            if domain.key == key:
+                return domain
+        raise AttributeError(f"checksum layout {self.key} has no {key} domain")
+
+    def _runtime32(self, key):
+        for domain in self.runtime32_domains:
+            if domain.key == key:
+                return domain
+        raise AttributeError(f"checksum layout {self.key} has no {key} domain")
+
+    @property
+    def sum16_a_field(self):
+        return self._sum16("sum16_a").field
+
+    @property
+    def sum16_a_start(self):
+        return self._sum16("sum16_a").start
+
+    @property
+    def sum16_a_end(self):
+        return self._sum16("sum16_a").end
+
+    @property
+    def sum16_b_field(self):
+        return self._sum16("sum16_b").field
+
+    @property
+    def sum16_b_start(self):
+        return self._sum16("sum16_b").start
+
+    @property
+    def sum16_b_end(self):
+        return self._sum16("sum16_b").end
+
+    @property
+    def runtime_a_xor_field(self):
+        return self._runtime32("runtime_a").xor_field
+
+    @property
+    def runtime_a_sum_field(self):
+        return self._runtime32("runtime_a").sum_field
+
+    @property
+    def runtime_a_start(self):
+        return self._runtime32("runtime_a").start
+
+    @property
+    def runtime_a_end(self):
+        return self._runtime32("runtime_a").end
+
+    @property
+    def runtime_a_exclusions(self):
+        return self._runtime32("runtime_a").exclusions
+
+    @property
+    def runtime_b_xor_field(self):
+        return self._runtime32("runtime_b").xor_field
+
+    @property
+    def runtime_b_sum_field(self):
+        return self._runtime32("runtime_b").sum_field
+
+    @property
+    def runtime_b_start(self):
+        return self._runtime32("runtime_b").start
+
+    @property
+    def runtime_b_end(self):
+        return self._runtime32("runtime_b").end
+
+    @property
+    def runtime_b_exclusions(self):
+        return self._runtime32("runtime_b").exclusions
 
     @property
     def checksum_fields(self):
-        return (
-            ("sum16_a", self.sum16_a_field, 2),
-            ("runtime_a_xor", self.runtime_a_xor_field, 4),
-            ("runtime_a_sum", self.runtime_a_sum_field, 4),
-            ("sum16_b", self.sum16_b_field, 2),
-            ("runtime_b_sum", self.runtime_b_sum_field, 4),
-            ("runtime_b_xor", self.runtime_b_xor_field, 4),
+        return tuple(
+            (domain.key, domain.field, 2)
+            for domain in self.sum16_domains
+        ) + tuple(
+            field
+            for domain in self.runtime32_domains
+            for field in (
+                (f"{domain.key}_sum", domain.sum_field, 4),
+                (f"{domain.key}_xor", domain.xor_field, 4),
+            )
         )
+
+    @property
+    def domains(self):
+        return self.sum16_domains + self.runtime32_domains
 
 
 @dataclass(frozen=True)
 class ChecksumValues:
-    sum16_a: int
-    sum16_b: int
-    runtime_a_xor: int
-    runtime_a_sum: int
-    runtime_b_sum: int
-    runtime_b_xor: int
+    sum16_a: int | None = None
+    sum16_b: int | None = None
+    runtime_a_xor: int | None = None
+    runtime_a_sum: int | None = None
+    runtime_b_sum: int | None = None
+    runtime_b_xor: int | None = None
+    extra: tuple[tuple[str, int], ...] = ()
 
     def items(self):
-        return tuple(
+        standard = tuple(
             (field.name, getattr(self, field.name))
             for field in fields(self)
+            if field.name != "extra" and getattr(self, field.name) is not None
         )
+        return standard + self.extra
+
+    def __getattr__(self, name):
+        for key, value in self.extra:
+            if key == name:
+                return value
+        raise AttributeError(name)
 
 
 @dataclass(frozen=True)
@@ -123,6 +220,48 @@ def _validate_range(start, end, alignment, limit, context):
         )
 
 
+def _validate_key(value, context):
+    if (
+        not isinstance(value, str)
+        or not value
+        or not value[0].isalpha()
+        or not value.replace("_", "").isalnum()
+        or value.lower() != value
+    ):
+        raise ChecksumError(f"{context}.key must be a lowercase identifier")
+    return value
+
+
+def _parse_exclusions(row, start, end, alignment, context):
+    raw = row["exclusions"]
+    if (
+        not isinstance(raw, list)
+        or len(raw) != len(set(raw))
+        or any(type(value) is not int for value in raw)
+    ):
+        raise ChecksumError(f"{context}.exclusions must be a unique integer array")
+    if any(value % alignment or not start <= value < end for value in raw):
+        raise ChecksumError(
+            f"{context}.exclusions contains an unaligned or out-of-range value"
+        )
+    return frozenset(raw)
+
+
+def _parse_domain_rows(raw, fields, context):
+    if not isinstance(raw, list) or not raw:
+        raise ChecksumError(f"{context} must be a nonempty array of tables")
+    for index, row in enumerate(raw, 1):
+        row_context = f"{context}[{index}]"
+        if not isinstance(row, dict) or set(row) != fields:
+            actual = set(row) if isinstance(row, dict) else set()
+            raise ChecksumError(
+                f"{row_context}: fields differ; "
+                f"missing={sorted(fields - actual)}; "
+                f"extra={sorted(actual - fields)}"
+            )
+        yield row, row_context
+
+
 def _parse_layout(key, row, context):
     if not isinstance(row, dict) or set(row) != LAYOUT_FIELDS:
         actual = set(row) if isinstance(row, dict) else set()
@@ -141,77 +280,135 @@ def _parse_layout(key, row, context):
         raise ChecksumError(f"{context}.roms must be a unique nonempty array")
     if not isinstance(row["evidence"], str) or not row["evidence"].strip():
         raise ChecksumError(f"{context}.evidence must be nonempty text")
-
-    values = {
-        name: _require_int(row, name, context)
-        for name in LAYOUT_FIELDS
-        if name not in {"roms", "runtime_a_exclusions", "runtime_b_exclusions", "evidence"}
-    }
-    rom_size = values["rom_size"]
+    rom_size = _require_int(row, "rom_size", context)
     if rom_size <= 0:
         raise ChecksumError(f"{context}.rom_size must be positive")
-    _validate_range(
-        values["sum16_a_start"], values["sum16_a_end"], 2, rom_size,
-        f"{context}.sum16_a",
-    )
-    _validate_range(
-        values["sum16_b_start"], values["sum16_b_end"], 2, rom_size,
-        f"{context}.sum16_b",
-    )
-    _validate_range(
-        values["runtime_a_start"], values["runtime_a_end"], 4, rom_size,
-        f"{context}.runtime_a",
-    )
-    _validate_range(
-        values["runtime_b_start"], values["runtime_b_end"], 4, rom_size,
-        f"{context}.runtime_b",
-    )
-    for name, width in (
-        ("sum16_a_field", 2),
-        ("sum16_b_field", 2),
-        ("runtime_a_xor_field", 4),
-        ("runtime_a_sum_field", 4),
-        ("runtime_b_xor_field", 4),
-        ("runtime_b_sum_field", 4),
+
+    sum16_domains = []
+    for domain_row, domain_context in _parse_domain_rows(
+        row["sum16"], SUM16_FIELDS, f"{context}.sum16"
     ):
-        offset = values[name]
-        if offset % width or offset + width > rom_size:
-            raise ChecksumError(
-                f"{context}.{name} is not an in-image {width}-byte field"
-            )
+        domain_key = _validate_key(domain_row["key"], domain_context)
+        field = _require_int(domain_row, "field", domain_context)
+        start = _require_int(domain_row, "start", domain_context)
+        end = _require_int(domain_row, "end", domain_context)
+        _validate_range(start, end, 2, rom_size, domain_context)
+        if field % 2 or field + 2 > rom_size:
+            raise ChecksumError(f"{domain_context}.field is not an in-image u16")
+        sum16_domains.append(Sum16Domain(
+            key=domain_key,
+            field=field,
+            start=start,
+            end=end,
+            exclusions=_parse_exclusions(
+                domain_row, start, end, 2, domain_context
+            ),
+        ))
 
-    exclusions = {}
-    for domain in ("runtime_a", "runtime_b"):
-        name = f"{domain}_exclusions"
-        raw = row[name]
-        if (
-            not isinstance(raw, list)
-            or len(raw) != len(set(raw))
-            or any(type(value) is not int for value in raw)
-        ):
-            raise ChecksumError(f"{context}.{name} must be a unique integer array")
-        start, end = values[f"{domain}_start"], values[f"{domain}_end"]
-        if any(value % 4 or not start <= value < end for value in raw):
-            raise ChecksumError(
-                f"{context}.{name} contains an unaligned or out-of-range word"
-            )
-        exclusions[name] = frozenset(raw)
+    runtime32_domains = []
+    for domain_row, domain_context in _parse_domain_rows(
+        row["runtime32"], RUNTIME32_FIELDS, f"{context}.runtime32"
+    ):
+        domain_key = _validate_key(domain_row["key"], domain_context)
+        start = _require_int(domain_row, "start", domain_context)
+        end = _require_int(domain_row, "end", domain_context)
+        _validate_range(start, end, 4, rom_size, domain_context)
+        field_values = {
+            name: _require_int(domain_row, name, domain_context)
+            for name in ("xor_field", "sum_field")
+        }
+        for name, field in field_values.items():
+            if field % 4 or field + 4 > rom_size:
+                raise ChecksumError(
+                    f"{domain_context}.{name} is not an in-image u32"
+                )
+        runtime32_domains.append(Runtime32Domain(
+            key=domain_key,
+            start=start,
+            end=end,
+            exclusions=_parse_exclusions(
+                domain_row, start, end, 4, domain_context
+            ),
+            **field_values,
+        ))
 
-    required_a = {
-        values["runtime_a_xor_field"],
-        values["runtime_a_sum_field"],
-    }
-    if not required_a <= exclusions["runtime_a_exclusions"]:
+    domains = tuple(sum16_domains) + tuple(runtime32_domains)
+    domain_keys = tuple(domain.key for domain in domains)
+    if len(set(domain_keys)) != len(domain_keys):
+        raise ChecksumError(f"{context}: checksum domain keys must be unique")
+    order = row["recalculation_order"]
+    if (
+        not isinstance(order, list)
+        or len(order) != len(set(order))
+        or set(order) != set(domain_keys)
+    ):
         raise ChecksumError(
-            f"{context}.runtime_a_exclusions must contain both Runtime A fields"
+            f"{context}.recalculation_order must contain every domain key once"
         )
+
+    checksum_fields = tuple(
+        (domain.key, domain.key, domain.field, 2)
+        for domain in sum16_domains
+    ) + tuple(
+        field
+        for domain in runtime32_domains
+        for field in (
+            (domain.key, f"{domain.key}_xor", domain.xor_field, 4),
+            (domain.key, f"{domain.key}_sum", domain.sum_field, 4),
+        )
+    )
+    occupied = set()
+    for _domain_key, field_name, field, width in checksum_fields:
+        field_bytes = set(range(field, field + width))
+        if occupied & field_bytes:
+            raise ChecksumError(f"{context}: checksum field {field_name} overlaps")
+        occupied.update(field_bytes)
+    order_index = {domain_key: index for index, domain_key in enumerate(order)}
+    for domain in sum16_domains:
+        required = {
+            offset
+            for field_domain, _name, field, width in checksum_fields
+            if (
+                field_domain == domain.key
+                or order_index[field_domain] > order_index[domain.key]
+            )
+            for offset in range(field, field + width, 2)
+            if domain.start <= offset < domain.end
+        }
+        if not required <= domain.exclusions:
+            missing = ", ".join(
+                hex(value) for value in sorted(required - domain.exclusions)
+            )
+            raise ChecksumError(
+                f"{context}.{domain.key}.exclusions misses stored fields: {missing}"
+            )
+    for domain in runtime32_domains:
+        required = {
+            field & ~3
+            for field_domain, _name, field, width in checksum_fields
+            if (
+                domain.start <= field
+                and field + width <= domain.end
+                and (
+                    field_domain == domain.key
+                    or order_index[field_domain] > order_index[domain.key]
+                )
+            )
+        }
+        if not required <= domain.exclusions:
+            missing = ", ".join(hex(value) for value in sorted(required - domain.exclusions))
+            raise ChecksumError(
+                f"{context}.{domain.key}.exclusions misses stored field words: {missing}"
+            )
 
     return ChecksumLayout(
         key=key,
         roms=tuple(roms),
+        rom_size=rom_size,
+        sum16_domains=tuple(sum16_domains),
+        runtime32_domains=tuple(runtime32_domains),
+        recalculation_order=tuple(order),
         evidence=row["evidence"],
-        **values,
-        **exclusions,
     )
 
 
@@ -225,7 +422,7 @@ def load_registry(path=DEFAULT_REGISTRY):
         raise ChecksumError(f"checksum registry cannot be loaded: {path}: {error}") from error
     if set(document) != {"schema_version", "layout"}:
         raise ChecksumError(f"{path}: expected only schema_version and layout")
-    if document["schema_version"] != 1:
+    if document["schema_version"] != 2:
         raise ChecksumError(f"{path}: unsupported schema_version")
     raw_layouts = document["layout"]
     if not isinstance(raw_layouts, dict) or not raw_layouts:
@@ -269,9 +466,11 @@ def _write_unsigned(data, offset, width, value):
     data[offset : offset + width] = value.to_bytes(width, "big")
 
 
-def _sum16(data, start, end):
+def _sum16(data, start, end, exclusions=frozenset()):
     total = 0
     for offset in range(start, end, 2):
+        if offset in exclusions:
+            continue
         total = (total + _read_unsigned(data, offset, 2)) & 0xFFFF
     return total
 
@@ -288,42 +487,53 @@ def _runtime32(data, start, end, exclusions=frozenset()):
     return xor_value, sum_value
 
 
-def stored_values(image, layout):
-    """Read all six stored checksum references for one layout."""
-    data = _validated_data(image, layout)
-    return ChecksumValues(
-        sum16_a=_read_unsigned(data, layout.sum16_a_field, 2),
-        sum16_b=_read_unsigned(data, layout.sum16_b_field, 2),
-        runtime_a_xor=_read_unsigned(data, layout.runtime_a_xor_field, 4),
-        runtime_a_sum=_read_unsigned(data, layout.runtime_a_sum_field, 4),
-        runtime_b_sum=_read_unsigned(data, layout.runtime_b_sum_field, 4),
-        runtime_b_xor=_read_unsigned(data, layout.runtime_b_xor_field, 4),
+def _checksum_values(values):
+    standard = {
+        key: values[key]
+        for key in VALUE_FIELDS
+        if key in values
+    }
+    extra = tuple(
+        (key, value)
+        for key, value in values.items()
+        if key not in VALUE_FIELDS
     )
+    return ChecksumValues(**standard, extra=extra)
+
+
+def stored_values(image, layout):
+    """Read every stored checksum reference for one layout."""
+    data = _validated_data(image, layout)
+    values = {
+        domain.key: _read_unsigned(data, domain.field, 2)
+        for domain in layout.sum16_domains
+    }
+    for domain in layout.runtime32_domains:
+        values[f"{domain.key}_xor"] = _read_unsigned(
+            data, domain.xor_field, 4
+        )
+        values[f"{domain.key}_sum"] = _read_unsigned(
+            data, domain.sum_field, 4
+        )
+    return _checksum_values(values)
 
 
 def calculate_values(image, layout):
-    """Calculate all six references from the currently stored image."""
+    """Calculate every reference from the currently stored image."""
     data = _validated_data(image, layout)
-    runtime_a_xor, runtime_a_sum = _runtime32(
-        data,
-        layout.runtime_a_start,
-        layout.runtime_a_end,
-        layout.runtime_a_exclusions,
-    )
-    runtime_b_xor, runtime_b_sum = _runtime32(
-        data,
-        layout.runtime_b_start,
-        layout.runtime_b_end,
-        layout.runtime_b_exclusions,
-    )
-    return ChecksumValues(
-        sum16_a=_sum16(data, layout.sum16_a_start, layout.sum16_a_end),
-        sum16_b=_sum16(data, layout.sum16_b_start, layout.sum16_b_end),
-        runtime_a_xor=runtime_a_xor,
-        runtime_a_sum=runtime_a_sum,
-        runtime_b_sum=runtime_b_sum,
-        runtime_b_xor=runtime_b_xor,
-    )
+    values = {
+        domain.key: _sum16(
+            data, domain.start, domain.end, domain.exclusions
+        )
+        for domain in layout.sum16_domains
+    }
+    for domain in layout.runtime32_domains:
+        xor_value, sum_value = _runtime32(
+            data, domain.start, domain.end, domain.exclusions
+        )
+        values[f"{domain.key}_xor"] = xor_value
+        values[f"{domain.key}_sum"] = sum_value
+    return _checksum_values(values)
 
 
 def verify(image, layout):
@@ -351,37 +561,24 @@ def require_valid(image, layout, context="ROM image"):
 def recalculate(image, layout):
     """Return a self-consistent image using the documented dependency order."""
     data = bytearray(_validated_data(image, layout))
-
-    runtime_b_xor, runtime_b_sum = _runtime32(
-        data,
-        layout.runtime_b_start,
-        layout.runtime_b_end,
-        layout.runtime_b_exclusions,
-    )
-    _write_unsigned(data, layout.runtime_b_sum_field, 4, runtime_b_sum)
-    _write_unsigned(data, layout.runtime_b_xor_field, 4, runtime_b_xor)
-
-    runtime_a_xor, runtime_a_sum = _runtime32(
-        data,
-        layout.runtime_a_start,
-        layout.runtime_a_end,
-        layout.runtime_a_exclusions,
-    )
-    _write_unsigned(data, layout.runtime_a_xor_field, 4, runtime_a_xor)
-    _write_unsigned(data, layout.runtime_a_sum_field, 4, runtime_a_sum)
-
-    _write_unsigned(
-        data,
-        layout.sum16_a_field,
-        2,
-        _sum16(data, layout.sum16_a_start, layout.sum16_a_end),
-    )
-    _write_unsigned(
-        data,
-        layout.sum16_b_field,
-        2,
-        _sum16(data, layout.sum16_b_start, layout.sum16_b_end),
-    )
+    sum16_by_key = {domain.key: domain for domain in layout.sum16_domains}
+    runtime32_by_key = {
+        domain.key: domain for domain in layout.runtime32_domains
+    }
+    for key in layout.recalculation_order:
+        if key in sum16_by_key:
+            domain = sum16_by_key[key]
+            value = _sum16(
+                data, domain.start, domain.end, domain.exclusions
+            )
+            _write_unsigned(data, domain.field, 2, value)
+        else:
+            domain = runtime32_by_key[key]
+            xor_value, sum_value = _runtime32(
+                data, domain.start, domain.end, domain.exclusions
+            )
+            _write_unsigned(data, domain.sum_field, 4, sum_value)
+            _write_unsigned(data, domain.xor_field, 4, xor_value)
 
     result = bytes(data)
     require_valid(result, layout, f"recalculated {layout.key} image")
