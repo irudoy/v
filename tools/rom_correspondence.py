@@ -4,9 +4,10 @@
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
+from collections import Counter, defaultdict
 import csv
 from dataclasses import dataclass
+import hashlib
 from pathlib import Path
 import re
 
@@ -76,6 +77,7 @@ REFERENCE_FIELDS = (
     "value_hex",
     "ref_type",
 )
+CALL_FIELDS = ("src", "dst")
 REFERENCE_OUTPUT_FIELDS = (
     "source_func",
     "target_func",
@@ -191,6 +193,7 @@ class StorageAccessorMatch:
     status: str
     anchors: int
     contracts: int
+    kind: str = "exact-map-storage-anchor"
 
 
 def read_signatures(path):
@@ -516,6 +519,299 @@ def _read_census(export_dir, kernel, cache):
         )
     cache[path] = rows
     return rows
+
+
+def _read_calls(export_dir):
+    path = Path(export_dir) / "calls.csv"
+    try:
+        with path.open(newline="", encoding="utf-8") as source:
+            reader = csv.DictReader(source)
+            if tuple(reader.fieldnames or ()) != CALL_FIELDS:
+                raise CorrespondenceError(
+                    f"{path}: header {reader.fieldnames}; expected {list(CALL_FIELDS)}"
+                )
+            rows = list(reader)
+    except OSError as error:
+        raise CorrespondenceError(f"call export cannot be read: {path}") from error
+
+    outgoing = defaultdict(Counter)
+    incoming = defaultdict(Counter)
+    for row_number, row in enumerate(rows, 2):
+        context = f"{path}:{row_number}"
+        if not ADDRESS_RE.fullmatch(row["src"]) or not ADDRESS_RE.fullmatch(
+            row["dst"]
+        ):
+            raise CorrespondenceError(f"{context}: invalid call address")
+        outgoing[row["src"]][row["dst"]] += 1
+        incoming[row["dst"]][row["src"]] += 1
+    return outgoing, incoming
+
+
+def _accessor_contract_rows(export_dir, entries):
+    result = defaultdict(lambda: defaultdict(list))
+    cache = {}
+    for contract, entry in enumerate(entries):
+        for row in _read_census(export_dir, entry["kernel"], cache):
+            if row["wrapper"] == entry["wrapper"]:
+                result[row["accessor"]][contract].append(row)
+    return result
+
+
+def _contract_call_signature(rows_by_contract):
+    signature = []
+    for contract, rows in sorted(rows_by_contract.items()):
+        by_callsite = defaultdict(list)
+        for row in rows:
+            by_callsite[row["callsite"]].append(row)
+        site_shape = tuple(
+            sorted(
+                (
+                    len(site_rows),
+                    tuple(sorted(row["branch"] for row in site_rows)),
+                )
+                for site_rows in by_callsite.values()
+            )
+        )
+        signature.append((contract, site_shape))
+    return tuple(signature)
+
+
+def _fingerprint_digest(value):
+    return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
+
+
+def _add_mapping(mapping, kinds, digests, source, target, kind, digest):
+    prior_target = mapping.get(source)
+    if prior_target is not None and prior_target != target:
+        raise CorrespondenceError(
+            f"structural function {source} maps to both {prior_target} and {target}"
+        )
+    if prior_target == target:
+        return
+    prior_sources = [left for left, right in mapping.items() if right == target]
+    if prior_sources and source not in prior_sources:
+        raise CorrespondenceError(
+            f"structural target {target} maps from both {prior_sources[0]} and {source}"
+        )
+    mapping[source] = target
+    kinds[source] = kind
+    digests[source] = digest
+
+
+def _source_neighbor_fingerprint(function, outgoing, incoming, mapping):
+    mapped_out = Counter()
+    mapped_in = Counter()
+    for neighbor, count in outgoing[function].items():
+        if neighbor in mapping:
+            mapped_out[mapping[neighbor]] += count
+    for neighbor, count in incoming[function].items():
+        if neighbor in mapping:
+            mapped_in[mapping[neighbor]] += count
+    return tuple(sorted(mapped_out.items())), tuple(sorted(mapped_in.items()))
+
+
+def _target_neighbor_fingerprint(function, outgoing, incoming, mapped_targets):
+    mapped_out = tuple(
+        sorted(
+            (neighbor, count)
+            for neighbor, count in outgoing[function].items()
+            if neighbor in mapped_targets
+        )
+    )
+    mapped_in = tuple(
+        sorted(
+            (neighbor, count)
+            for neighbor, count in incoming[function].items()
+            if neighbor in mapped_targets
+        )
+    )
+    return mapped_out, mapped_in
+
+
+def match_structural_functions(
+    source_export,
+    target_export,
+    source_interp,
+    target_interp,
+    function_matches,
+    interp_correspondence=None,
+    *,
+    minimum_neighbor_anchors=2,
+):
+    """Extend hash matches with reviewed contracts and unique graph fingerprints."""
+    if minimum_neighbor_anchors < 2:
+        raise CorrespondenceError("structural matching needs at least two anchors")
+    source_signatures = read_signatures(
+        Path(source_export) / "function_signatures.csv"
+    )
+    target_signatures = read_signatures(
+        Path(target_export) / "function_signatures.csv"
+    )
+    correspondence_rows = (
+        read_interp_correspondence(interp_correspondence)
+        if interp_correspondence is not None
+        else None
+    )
+    pairs = pair_interp(
+        read_interp(source_interp),
+        read_interp(target_interp),
+        correspondence_rows,
+    )
+    mapping = {}
+    kinds = {}
+    digests = {}
+    for match in function_matches:
+        _add_mapping(
+            mapping,
+            kinds,
+            digests,
+            match.source,
+            match.target,
+            match.kind,
+            match.signature_sha256,
+        )
+    for source_entry, target_entry in pairs:
+        for field in ("kernel", "wrapper"):
+            source = source_entry[field]
+            target = target_entry[field]
+            _add_mapping(
+                mapping,
+                kinds,
+                digests,
+                source,
+                target,
+                "interpolation-contract",
+                _fingerprint_digest((field, source, target)),
+            )
+
+    source_rows = _accessor_contract_rows(
+        source_export, [source for source, _ in pairs]
+    )
+    target_rows = _accessor_contract_rows(
+        target_export, [target for _, target in pairs]
+    )
+    source_by_signature = defaultdict(list)
+    target_by_signature = defaultdict(list)
+    for accessor, rows in source_rows.items():
+        source_by_signature[_contract_call_signature(rows)].append(accessor)
+    for accessor, rows in target_rows.items():
+        target_by_signature[_contract_call_signature(rows)].append(accessor)
+    for signature, sources in sorted(source_by_signature.items()):
+        targets = target_by_signature.get(signature, ())
+        if len(sources) == len(targets) == 1:
+            _add_mapping(
+                mapping,
+                kinds,
+                digests,
+                sources[0],
+                targets[0],
+                "unique-interpolation-call-signature",
+                _fingerprint_digest(signature),
+            )
+
+    source_out, source_in = _read_calls(source_export)
+    target_out, target_in = _read_calls(target_export)
+    while True:
+        mapped_targets = set(mapping.values())
+        source_index = defaultdict(list)
+        target_index = defaultdict(list)
+        for function in source_signatures:
+            if function in mapping:
+                continue
+            fingerprint = _source_neighbor_fingerprint(
+                function, source_out, source_in, mapping
+            )
+            if len(fingerprint[0]) + len(fingerprint[1]) >= minimum_neighbor_anchors:
+                source_index[fingerprint].append(function)
+        for function in target_signatures:
+            if function in mapped_targets:
+                continue
+            fingerprint = _target_neighbor_fingerprint(
+                function, target_out, target_in, mapped_targets
+            )
+            if len(fingerprint[0]) + len(fingerprint[1]) >= minimum_neighbor_anchors:
+                target_index[fingerprint].append(function)
+        additions = [
+            (sources[0], target_index[fingerprint][0], fingerprint)
+            for fingerprint, sources in sorted(source_index.items())
+            if len(sources) == 1 and len(target_index.get(fingerprint, ())) == 1
+        ]
+        if not additions:
+            break
+        for source, target, fingerprint in additions:
+            _add_mapping(
+                mapping,
+                kinds,
+                digests,
+                source,
+                target,
+                "unique-mapped-neighbor-fingerprint",
+                _fingerprint_digest(fingerprint),
+            )
+
+    result = []
+    for source, target in sorted(mapping.items()):
+        if source not in source_signatures or target not in target_signatures:
+            continue
+        left = source_signatures[source]
+        right = target_signatures[target]
+        result.append(
+            FunctionMatch(
+                source=source,
+                target=target,
+                kind=kinds[source],
+                source_size=left.size,
+                target_size=right.size,
+                instructions=left.instructions,
+                signature_sha256=digests[source],
+            )
+        )
+    return tuple(result)
+
+
+def structural_accessor_matches(
+    source_export,
+    target_export,
+    source_interp,
+    target_interp,
+    function_matches,
+    interp_correspondence=None,
+):
+    """Keep injective structural function pairs that share reviewed contracts."""
+    correspondence_rows = (
+        read_interp_correspondence(interp_correspondence)
+        if interp_correspondence is not None
+        else None
+    )
+    pairs = pair_interp(
+        read_interp(source_interp),
+        read_interp(target_interp),
+        correspondence_rows,
+    )
+    source_rows = _accessor_contract_rows(
+        source_export, [source for source, _ in pairs]
+    )
+    target_rows = _accessor_contract_rows(
+        target_export, [target for _, target in pairs]
+    )
+    result = []
+    for match in function_matches:
+        source_contracts = set(source_rows.get(match.source, ()))
+        target_contracts = set(target_rows.get(match.target, ()))
+        common = source_contracts & target_contracts
+        if not common:
+            continue
+        result.append(
+            StorageAccessorMatch(
+                source=match.source,
+                target=match.target,
+                status="unique",
+                anchors=len(common),
+                contracts=len(common),
+                kind=match.kind,
+            )
+        )
+    return tuple(result)
 
 
 def read_function_sites(export_dir):
@@ -1081,7 +1377,7 @@ def match_entities_by_call_order(
                         source_accessor,
                         source_entry["wrapper"],
                         site_index,
-                        function_match.anchors,
+                        function_match.kind,
                     )
                     for entity, field in operands:
                         left, right = source_row[field], target_row[field]
@@ -1108,7 +1404,9 @@ def match_entities_by_call_order(
                 target=target,
                 status=status,
                 sites=len(evidence),
-                function_kinds="ordered-exact-storage-anchor",
+                function_kinds=";".join(
+                    sorted({f"ordered-{item[3]}" for item in evidence})
+                ),
             ))
     return tuple(result)
 
@@ -1198,6 +1496,8 @@ def main(argv=None):
     parser.add_argument("--exact-storage-output", type=Path)
     parser.add_argument("--storage-accessor-output", type=Path)
     parser.add_argument("--ordered-entity-output", type=Path)
+    parser.add_argument("--structural-function-output", type=Path)
+    parser.add_argument("--structural-entity-output", type=Path)
     parser.add_argument(
         "--explain-address",
         action="append",
@@ -1261,6 +1561,64 @@ def main(argv=None):
             f"entities={len(entities)} unique={unique} "
             f"ambiguous={len(entities) - unique} output={args.entity_output}"
         )
+    structural_outputs = (
+        args.structural_function_output,
+        args.structural_entity_output,
+    )
+    if any(item is not None for item in structural_outputs):
+        if any(item is None for item in interp_options):
+            raise CorrespondenceError(
+                "--source-interp and --target-interp are required with "
+                "structural outputs"
+            )
+        structural_matches = match_structural_functions(
+            args.source_export,
+            args.target_export,
+            args.source_interp,
+            args.target_interp,
+            matches,
+            args.interp_correspondence,
+        )
+        kinds = Counter(match.kind for match in structural_matches)
+        rendered_kinds = ",".join(
+            f"{kind}={count}" for kind, count in sorted(kinds.items())
+        )
+        print(
+            f"structural_functions={len(structural_matches)} "
+            f"added={len(structural_matches) - len(matches)} "
+            f"kinds={rendered_kinds}"
+        )
+        if args.structural_function_output is not None:
+            write_matches(args.structural_function_output, structural_matches)
+            print(f"output={args.structural_function_output}")
+        if args.structural_entity_output is not None:
+            structural_accessors = structural_accessor_matches(
+                args.source_export,
+                args.target_export,
+                args.source_interp,
+                args.target_interp,
+                structural_matches,
+                args.interp_correspondence,
+            )
+            structural_entities = match_entities_by_call_order(
+                args.source_export,
+                args.target_export,
+                args.source_interp,
+                args.target_interp,
+                structural_accessors,
+                args.interp_correspondence,
+            )
+            write_entities(args.structural_entity_output, structural_entities)
+            structural_unique = sum(
+                match.status == "unique" for match in structural_entities
+            )
+            print(
+                f"structural_accessors={len(structural_accessors)} "
+                f"structural_entities={len(structural_entities)} "
+                f"unique={structural_unique} "
+                f"ambiguous={len(structural_entities) - structural_unique} "
+                f"output={args.structural_entity_output}"
+            )
     storage_outputs = (
         args.exact_storage_output,
         args.storage_accessor_output,
@@ -1339,6 +1697,7 @@ def main(argv=None):
         any(item is not None for item in interp_options)
         and args.entity_output is None
         and not any(item is not None for item in storage_outputs)
+        and not any(item is not None for item in structural_outputs)
     ):
         raise CorrespondenceError(
             "interpolation options require --entity-output or --exact-storage-output"
@@ -1347,6 +1706,7 @@ def main(argv=None):
         args.interp_correspondence is not None
         and args.entity_output is None
         and not any(item is not None for item in storage_outputs)
+        and not any(item is not None for item in structural_outputs)
     ):
         raise CorrespondenceError(
             "--interp-correspondence requires interpolation entity output options"

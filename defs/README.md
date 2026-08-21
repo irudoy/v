@@ -11,8 +11,10 @@ presentation and generated output.
 |---|---|---|
 | `JK08A.interp.csv` | Interpolation entries and recovered geometry | yes |
 | `JK00D.interp.csv` | JK00D interpolation entries and recovered geometry | yes |
+| `JK78C.interp.csv` | SH7058 VQ37 interpolation entries and recovered geometry | yes |
 | `1ND0A.interp.csv` | SH7059 1ND interpolation entries and recovered geometry | yes |
 | `JK08A-JK00D.interp-correspondence.csv` | Reviewed cross-family interpolation wrapper pairs | yes |
+| `JK08A-JK78C.interp-correspondence.csv` | Reviewed VQ25-to-VQ37 interpolation wrapper pairs and explicit source-only contracts | yes |
 | `JK08A-1ND0A.interp-correspondence.csv` | Reviewed cross-generation interpolation wrapper pairs and explicit source-only contracts | yes |
 | `JK08A.findings.csv` | Map semantics, role, scale, confidence, and evidence | yes |
 | `JK08A.axes.csv` | Axis semantics, scale, confidence, and evidence | yes |
@@ -85,6 +87,12 @@ including the explicit unsupported entry, while `1ND0A.interp.csv` retains the
 three target-only contracts. Hash-unique cross-generation function matching
 does not cover the map consumers; target map relocation therefore requires a
 separate reviewed structural function correspondence.
+
+JK78C contains the same 36 interpolation contracts as 1ND0A at SH7058
+addresses. Its 33 mapped JK08A contracts, one explicit source-only contract,
+and three VQ37-only contracts are recorded independently. Equal wrapper bytes
+and reviewed library order establish the contract registry; they do not by
+themselves establish map semantics or equal calibration geometry.
 
 ## Evidence specifications
 

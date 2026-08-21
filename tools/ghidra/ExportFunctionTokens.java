@@ -85,7 +85,8 @@ public class ExportFunctionTokens extends GhidraScript {
         String value = text.toLowerCase(Locale.ROOT);
         value = value.replaceAll("\\b(?:fun|dat|lab|sub)_[0-9a-f]+\\b", "symbol");
         value = value.replaceAll("0x[0-9a-f]+", "#");
-        value = value.replaceAll("(?<![a-z_])-?[0-9]+(?![a-z_])", "#");
+        value = value.replaceAll(
+                "(?<![a-z0-9_])-?[0-9]+(?![a-z0-9_])", "#");
         value = value.replaceAll("\\s+", " ").trim();
         return value;
     }

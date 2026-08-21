@@ -209,6 +209,35 @@ def test_tracked_1nd_interp_correspondence_is_complete():
     ] == [("00026944", "000261b8")]
 
 
+def test_tracked_jk78c_interp_correspondence_is_complete():
+    root = Path(__file__).parents[2]
+    source = rom_correspondence.read_interp(root / "defs" / "JK08A.interp.csv")
+    target = rom_correspondence.read_interp(root / "defs" / "JK78C.interp.csv")
+    correspondence = rom_correspondence.read_interp_correspondence(
+        root / "defs" / "JK08A-JK78C.interp-correspondence.csv"
+    )
+
+    assert len(source) == 34
+    assert len(target) == 36
+    assert len(rom_correspondence.pair_interp(
+        source, target, correspondence
+    )) == 33
+    mapped_targets = {
+        (row["target_kernel"], row["target_wrapper"])
+        for row in correspondence
+        if row["status"] == "mapped"
+    }
+    assert len({
+        (row["kernel"], row["wrapper"])
+        for row in target
+    } - mapped_targets) == 3
+    assert [
+        (row["source_kernel"], row["source_wrapper"])
+        for row in correspondence
+        if row["status"] == "unsupported"
+    ] == [("00026944", "000261b8")]
+
+
 def test_exact_storage_matches_only_unique_contract_operands(tmp_path):
     source_export = tmp_path / "source"
     target_export = tmp_path / "target"
@@ -338,6 +367,145 @@ def test_exact_storage_matches_only_unique_contract_operands(tmp_path):
         ("Axis", "00001210", "00002210", "unique", 1),
         ("Map", "00001100", "00002100", "unique", 1),
     ]
+
+
+def test_structural_matching_adds_contract_and_neighbor_candidates(tmp_path):
+    source_export = tmp_path / "source"
+    target_export = tmp_path / "target"
+    source_export.mkdir()
+    target_export.mkdir()
+    source_signatures = {
+        "00001000": _signature("00001000", "a", "1"),
+        "00001100": _signature("00001100", "b", "2"),
+        "00002000": _signature("00002000", "c", "3"),
+        "00002100": _signature("00002100", "d", "4"),
+    }
+    target_signatures = {
+        "00003000": _signature("00003000", "a", "5"),
+        "00003100": _signature("00003100", "b", "6"),
+        "00004000": _signature("00004000", "e", "7"),
+        "00004100": _signature("00004100", "f", "8"),
+    }
+    for directory, signatures in (
+        (source_export, source_signatures),
+        (target_export, target_signatures),
+    ):
+        with (directory / "function_signatures.csv").open(
+            "w", newline="", encoding="utf-8"
+        ) as output:
+            writer = csv.DictWriter(
+                output, fieldnames=rom_correspondence.SIGNATURE_FIELDS
+            )
+            writer.writeheader()
+            for row in signatures.values():
+                writer.writerow({
+                    field: getattr(row, field)
+                    for field in rom_correspondence.SIGNATURE_FIELDS
+                })
+
+    for directory, rows in (
+        (
+            source_export,
+            (("00002000", "00001000"), ("00002000", "00001100")),
+        ),
+        (
+            target_export,
+            (("00004000", "00003000"), ("00004000", "00003100")),
+        ),
+    ):
+        with (directory / "calls.csv").open(
+            "w", newline="", encoding="utf-8"
+        ) as output:
+            writer = csv.writer(output)
+            writer.writerow(rom_correspondence.CALL_FIELDS)
+            writer.writerows(rows)
+
+    source_interp = tmp_path / "source.interp.csv"
+    target_interp = tmp_path / "target.interp.csv"
+    interp_row = {
+        "family": "explicit",
+        "kernel": "00005000",
+        "wrapper": "00006000",
+        "width": "2",
+        "height": "2",
+        "step": "",
+        "storagetype": "uint8",
+        "axistype_x": "uint8",
+        "axistype_y": "uint8",
+    }
+    for path, row in (
+        (source_interp, interp_row),
+        (target_interp, dict(
+            interp_row,
+            kernel="00007000",
+            wrapper="00008000",
+        )),
+    ):
+        with path.open("w", newline="", encoding="utf-8") as output:
+            writer = csv.DictWriter(
+                output, fieldnames=rom_correspondence.INTERP_FIELDS
+            )
+            writer.writeheader()
+            writer.writerow(row)
+
+    census_fields = (
+        "kernel", "wrapper", "accessor", "callsite",
+        "df_r4", "df_r5", "df_r6", "branch",
+    )
+    for path, row in (
+        (
+            source_export / "accessors.5000.csv",
+            ("00005000", "00006000", "00002100", "00002110",
+             "00009000", "00009100", "00009200", ""),
+        ),
+        (
+            target_export / "accessors.7000.csv",
+            ("00007000", "00008000", "00004100", "00004110",
+             "0000a000", "0000a100", "0000a200", ""),
+        ),
+    ):
+        with path.open("w", newline="", encoding="utf-8") as output:
+            writer = csv.writer(output)
+            writer.writerow(census_fields)
+            writer.writerow(row)
+
+    base = rom_correspondence.match_functions(
+        source_signatures, target_signatures
+    )
+    matches = rom_correspondence.match_structural_functions(
+        source_export,
+        target_export,
+        source_interp,
+        target_interp,
+        base,
+    )
+    assert [(row.source, row.target, row.kind) for row in matches] == [
+        ("00001000", "00003000", "exact-bytes"),
+        ("00001100", "00003100", "exact-bytes"),
+        ("00002000", "00004000", "unique-mapped-neighbor-fingerprint"),
+        ("00002100", "00004100", "unique-interpolation-call-signature"),
+    ]
+
+    accessors = rom_correspondence.structural_accessor_matches(
+        source_export,
+        target_export,
+        source_interp,
+        target_interp,
+        matches,
+    )
+    assert [(row.source, row.target, row.kind) for row in accessors] == [
+        ("00002100", "00004100", "unique-interpolation-call-signature")
+    ]
+    entities = rom_correspondence.match_entities_by_call_order(
+        source_export,
+        target_export,
+        source_interp,
+        target_interp,
+        accessors,
+    )
+    assert {row.function_kinds for row in entities} == {
+        "ordered-unique-interpolation-call-signature"
+    }
 
 
 def test_signature_reader_rejects_duplicate_addresses():

@@ -35,8 +35,9 @@ filesystem path. Ghidra projects and export directories remain outside Git.
 `function_signatures.csv`, call-site ordinal data to `function_sites.csv`, and
 ROM literal/reference data and direct RAM references to
 `function_references.csv`. `ExportFunctionTokens.java` writes normalized
-instruction sequences for bounded structural-similarity review. A typical
-read-only export is:
+instruction sequences for bounded structural-similarity review. Literal values
+and symbol addresses are folded, while register numbers remain part of the
+instruction shape. A typical read-only export is:
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
@@ -98,6 +99,14 @@ mode then compares the anchored accessor's callsites by wrapper-local order,
 requiring equal callsite and branch cardinality. Exact-storage, accessor, and
 ordered-entity CSVs remain independent candidate reports. Agreement strengthens
 structural evidence; disagreement requires instruction-level review.
+
+The optional structural mode starts from unique function hashes and reviewed
+interpolation kernel and wrapper pairs. It adds accessors with unique
+interpolation-call signatures, then iteratively adds functions with a unique
+incoming and outgoing fingerprint against at least two mapped neighbors.
+Structural map and axis candidates use wrapper-local call order, not equal
+instruction ordinals. This mode remains a candidate generator and does not
+promote graph similarity into semantic inheritance.
 
 ## Address inspection
 

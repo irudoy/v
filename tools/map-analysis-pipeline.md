@@ -98,6 +98,14 @@ unrelated restructuring. Both channels remain review candidates, and any
 disagreement is resolved from the participating instructions and data flow
 before an address enters a definition projection.
 
+Structural function mode adds two independent candidate stages after the
+reviewed interpolation contracts are loaded. A unique interpolation-call
+signature can pair accessors whose complete function hash changed. Iterative
+call-graph matching then requires a unique fingerprint with at least two
+already mapped incoming or outgoing neighbors on both sides. Only paired
+interpolation accessors feed wrapper-local ordered entity matching; arbitrary
+ROM references are not paired by instruction ordinal from structural matches.
+
 ## Derived graph schema
 
 Firmware node identity is `{rom, addr}`, with lowercase hexadecimal addresses
