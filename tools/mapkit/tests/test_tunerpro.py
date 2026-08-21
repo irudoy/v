@@ -11,16 +11,16 @@ XDF = ROOT / "defs" / "JK08A.xdf"
 COMMON_TABLES = {
     "MAF Factor": "Fuelling / MAF Scaling",
     "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
-    "Internal Load 100% BFS Reference": "Fuelling / Engine Load",
-    "Diagnostic Calculated Load 100% BFS Reference":
-        "Fuelling / Engine Load",
-    "Cold Ignition Timing Trim": "Ignition Timing / Main",
-    "Knock-State Enable - Cold": "Ignition Timing / Knock Control",
+    "Internal Load Normalization Reference": "Fuelling / Load Model",
+    "Ignition Timing Surface - Cold State":
+        "Ignition Timing / State Surfaces",
+    "Knock-State Path Enable - Cold State":
+        "Ignition Timing / State Control",
     "Knock Threshold by Evaluator Channel":
         "Ignition Timing / Knock Control / Thresholds",
-    "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
-    "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
-    "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
+    "MAF Sensor Transfer - Bank 1": "Fuelling / MAF Scaling",
+    "MAF Sensor Transfer - Bank 2": "Fuelling / MAF Scaling",
+    "Stationary Engine Speed Limit": "Limiters / Engine Speed / Stationary",
     "Rolling Launch Minimum Coolant Temperature": "Rolling Launch / Activation",
     "Rolling Launch Minimum Vehicle Speed": "Rolling Launch / Activation",
     "Rolling Launch Minimum Engine Speed": "Rolling Launch / Activation",
@@ -32,48 +32,54 @@ COMMON_TABLES = {
 }
 
 DEFAULT_VISIBLE_TABLES = {
-    "Accelerator Pedal High-State Hysteresis (0x8FDC)":
+    "Accelerator Pedal High-State Hysteresis":
         "Electronic Throttle Control / Accelerator Pedal / Thresholds",
-    "Stationary Rev Limiter Readiness Threshold (0x911C)":
-        "Limiters / Stationary Rev Limiter",
-    "Intake Cam Timing Conditional Correction": "Variable Valve Timing / Intake Cam",
-    "Knock Sensor Circuit Monitor Surface A (0xABBA)":
-        "Diagnostics / Knock Sensor Monitor",
-    "Knock Sensor Circuit Monitor Surface B (0xABFA)":
-        "Diagnostics / Knock Sensor Monitor",
-    "Intake Cam Timing Main": "Variable Valve Timing / Intake Cam",
-    "Intake Cam Timing Cold": "Variable Valve Timing / Intake Cam",
-    "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
-    "Engine Torque Map": "Transmission / Shifting Performance",
-    "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
-    "Stationary Rev Limiter Accumulator Step (0x124D2)":
-        "Limiters / Stationary Rev Limiter",
-    "Injection Pulse Channel Multiplier (0x129C0)": "Fuel Delivery / Main",
-    "Target Throttle Valve Opening Table": "Electronic Throttle Control / Main",
-    "Engine Torque Scaled Correction vs RPM": "Transmission / Shifting Performance",
-    "Engine Torque Base Correction vs RPM": "Transmission / Shifting Performance",
-    "QH0 / Torque Conversion Map Trustful": "Electronic Throttle Control / Main",
-    "Target Throttle Valve Opening Table Trustful": "Electronic Throttle Control / Main",
+    "Stationary Limiter Readiness Threshold":
+        "Limiters / Engine Speed / Stationary",
+    "Intake CVTC Target Correction - High-Detonation State":
+        "Variable Valve Timing / Intake Cam",
+    "Intake CVTC Target - Main": "Variable Valve Timing / Intake Cam",
+    "Intake CVTC Target - Cold": "Variable Valve Timing / Intake Cam",
+    "Requested Torque Conversion by QH0 - Primary":
+        "Electronic Throttle Control / Requested Torque",
+    "Engine Torque Surface": "Torque Model / Engine Torque",
+    "Stationary Limiter Readiness Step":
+        "Limiters / Engine Speed / Stationary",
+    "Injection Pulse Channel Multiplier": "Fuelling / Injection",
+    "Throttle Angle-to-Area Conversion - Primary":
+        "Electronic Throttle Control / Throttle Geometry",
+    "Engine Torque Correction Coefficient vs RPM":
+        "Torque Model / Engine Torque",
+    "Engine Torque Base Term vs RPM": "Torque Model / Engine Torque",
+    "Requested Torque Conversion by QH0 - Validation Copy":
+        "Electronic Throttle Control / Requested Torque",
+    "Throttle Angle-to-Area Conversion - Validation Copy":
+        "Electronic Throttle Control / Throttle Geometry",
 }
 
 SLOT_TABLES = {
-    "Exhaust Cam Timing Main": "Variable Valve Timing / Exhaust Cam",
-    "Fuel Compensation Main": "Fuelling / Fuel Compensation",
-    "DFCO Entry RPM Threshold": "Fuelling / Overrun",
-    "DFCO Full Restore RPM Threshold": "Fuelling / Overrun",
-    "DFCO Hold RPM Threshold": "Fuelling / Overrun",
+    "Exhaust CVTC Target - Main": "Variable Valve Timing / Exhaust Cam",
+    "Fuel Compensation - Main": "Fuelling / Compensation",
+    "DFCO Entry RPM Threshold": "Fuelling / Deceleration Fuel Cut",
+    "DFCO Full Restore RPM Threshold": "Fuelling / Deceleration Fuel Cut",
+    "DFCO Hold RPM Threshold": "Fuelling / Deceleration Fuel Cut",
     "DFCO Low-Speed Intermediate Restore RPM Threshold":
-        "Fuelling / Overrun",
-    "High-Octane Ignition Timing Trim": "Ignition Timing / Main",
-    "Knock-State Enable - High Octane": "Ignition Timing / Knock Control",
-    "High-Detonation Ignition Timing Trim": "Ignition Timing / Main",
-    "Knock-State Enable - High Detonation": "Ignition Timing / Knock Control",
-    "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
-    "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-    "Default/Post-Transition Timing-State Addend (x-128) (0x12196)":
-        "Ignition Timing / State Accumulators",
-    "Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)":
-        "Ignition Timing / State Accumulators",
+        "Fuelling / Deceleration Fuel Cut",
+    "Ignition Timing Surface - High-Octane State":
+        "Ignition Timing / State Surfaces",
+    "Knock-State Path Enable - High-Octane State":
+        "Ignition Timing / State Control",
+    "Ignition Timing Surface - High-Detonation State":
+        "Ignition Timing / State Surfaces",
+    "Knock-State Path Enable - High-Detonation State":
+        "Ignition Timing / State Control",
+    "Engine Speed Limit - Fuel Cut": "Limiters / Engine Speed / Driving",
+    "Engine Speed Limit - Throttle Request":
+        "Limiters / Engine Speed / Driving",
+    "Timing-State Addend - Default/Post-Transition":
+        "Ignition Timing / State Corrections",
+    "Timing-State Addend - Warm DFCO Transition":
+        "Ignition Timing / State Corrections",
 }
 
 
@@ -323,7 +329,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
     def test_exhaust_cvtc_target_uses_centered_degree_scaling(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
-            if table.findtext("./title") == slot_name(1, "Exhaust Cam Timing Main")
+            if table.findtext("./title") == slot_name(1, "Exhaust CVTC Target - Main")
         )
         axis = table.find("./XDFAXIS[@id='z']")
         self.assertEqual(axis.findtext("./units"), "degCA [cand]")
@@ -336,9 +342,9 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for table in self.root.findall("./XDFTABLE")
         }
         for title in (
-            "Cold Ignition Timing Trim",
-            slot_name(1, "High-Octane Ignition Timing Trim"),
-            slot_name(1, "High-Detonation Ignition Timing Trim"),
+            "Ignition Timing Surface - Cold State",
+            slot_name(1, "Ignition Timing Surface - High-Octane State"),
+            slot_name(1, "Ignition Timing Surface - High-Detonation State"),
         ):
             with self.subTest(title=title):
                 axis = by_title[title].find("./XDFAXIS[@id='z']")
@@ -353,7 +359,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 45)
-        self.assertEqual(len(tables), 105)
+        self.assertEqual(len(tables), 101)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
@@ -423,13 +429,11 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         expected = {
             "0x12196": slot_name(
                 1,
-                "Default/Post-Transition Timing-State Addend "
-                "(x-128) (0x12196)",
+                "Timing-State Addend - Default/Post-Transition",
             ),
             "0x1219E": slot_name(
                 1,
-                "Warm DFCO-Transition Timing-State Addend "
-                "(x-128) (0x1219E)",
+                "Timing-State Addend - Warm DFCO Transition",
             ),
         }
         for address, title in expected.items():
@@ -438,7 +442,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                 self.assertEqual(table.findtext("./title"), title)
                 self.assertEqual(
                     self.item_category(table),
-                    "Ignition Timing / State Accumulators",
+                    "Ignition Timing / State Corrections",
                 )
                 axis = table.find("./XDFAXIS[@id='z']")
                 self.assertEqual(
@@ -476,8 +480,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             for table in self.root.findall("./XDFTABLE")
         }
         for title in (
-            "MAF Sensor Scaling Bank 1",
-            "MAF Sensor Scaling Bank 2",
+            "MAF Sensor Transfer - Bank 1",
+            "MAF Sensor Transfer - Bank 2",
         ):
             with self.subTest(title=title):
                 axis = tables[title].find("./XDFAXIS[@id='x']")
@@ -530,7 +534,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
             if table.findtext("./title") == slot_name(
-                1, "Rev Limit - Fuel Cut"
+                1, "Engine Speed Limit - Fuel Cut"
             )
         )
         axis_x = table.find("./XDFAXIS[@id='x']")
@@ -556,7 +560,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
             if table.findtext("./title") == slot_name(
-                1, "Rev Limit - Throttle Cut"
+                1, "Engine Speed Limit - Throttle Request"
             )
         )
         axis = table.find("./XDFAXIS[@id='z']")
@@ -610,8 +614,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             table.findtext("./title"): table
             for table in self.root.findall("./XDFTABLE")
         }
-        low = by_title["Cold Ignition Timing Trim"]
-        flag = by_title["Knock-State Enable - Cold"]
+        low = by_title["Ignition Timing Surface - Cold State"]
+        flag = by_title["Knock-State Path Enable - Cold State"]
         for table, other_mask, divisor in (
             (low, "128", "1"),
             (flag, "127", "128"),

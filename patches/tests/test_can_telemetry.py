@@ -23,13 +23,31 @@ class CanTelemetryContractTest(unittest.TestCase):
                 for item in self.manifest.profiles
             ),
             (
-                ("core32", 1, 5, 0x27FA),
-                ("wide54", 2, 8, 0x238C),
+                ("tuning", 1, 11, 0xE881),
             ),
         )
-        self.assertEqual(len(self.manifest.fields), 32)
-        self.assertEqual(len(self.manifest.page_sources), 49)
-        self.assertEqual(len(self.manifest.contexts), 4)
+        self.assertEqual(len(self.manifest.fields), 40)
+        self.assertEqual(len(self.manifest.page_sources), 63)
+        self.assertEqual(len(self.manifest.contexts), 8)
+        names = {item.name for item in self.manifest.fields}
+        context_names = {
+            field.name
+            for context in self.manifest.contexts
+            for field in context.fields
+        }
+        self.assertTrue({
+            "front_oxygen_sensor_b1_raw",
+            "front_oxygen_sensor_b2_raw",
+            "intake_cvtc_target_raw",
+            "exhaust_cvtc_target_raw",
+            "throttle_request_bounded_raw",
+            "engine_torque_state_raw",
+        } <= names)
+        self.assertTrue({
+            "battery_voltage_raw",
+            "front_af_sensor_b1_word_raw",
+            "secondary_tps_b2_raw",
+        } <= context_names)
         self.assertEqual(
             can_telemetry_profile.render_tables(self.manifest),
             can_telemetry_profile.DEFAULT_TABLES.read_text(encoding="utf-8"),
@@ -42,9 +60,9 @@ class CanTelemetryContractTest(unittest.TestCase):
     def test_configuration_round_trip_and_mailbox_encoding(self):
         cases = (
             can_telemetry.default_configuration(),
-            can_telemetry.Configuration(True, 0x001, "core32", 255),
-            can_telemetry.Configuration(True, 0x6EF, "wide54", 5),
-            can_telemetry.Configuration(True, 0x7FF, "wide54", 1),
+            can_telemetry.Configuration(True, 0x001, "tuning", 255),
+            can_telemetry.Configuration(True, 0x6EF, "tuning", 5),
+            can_telemetry.Configuration(True, 0x7FF, "tuning", 1),
         )
         for configuration in cases:
             with self.subTest(configuration=configuration):
@@ -78,11 +96,11 @@ class CanTelemetryContractTest(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     can_telemetry.Configuration.from_bytes(damaged)
         invalid = (
-            can_telemetry.Configuration(True, 0, "core32", 1),
-            can_telemetry.Configuration(True, 0x800, "core32", 1),
+            can_telemetry.Configuration(True, 0, "tuning", 1),
+            can_telemetry.Configuration(True, 0x800, "tuning", 1),
             can_telemetry.Configuration(True, 0x6F0, "missing", 1),
-            can_telemetry.Configuration(True, 0x6F0, "core32", 0),
-            can_telemetry.Configuration(1, 0x6F0, "core32", 1),
+            can_telemetry.Configuration(True, 0x6F0, "tuning", 0),
+            can_telemetry.Configuration(1, 0x6F0, "tuning", 1),
         )
         for configuration in invalid:
             with self.subTest(configuration=configuration):
@@ -98,8 +116,8 @@ class CanTelemetryContractTest(unittest.TestCase):
         self.assertEqual(self.layout.reserved_rom.size, 0x11F0)
         self.assertEqual(self.layout.ram.active.size, 0x100)
         self.assertEqual(self.layout.ram.future.size, 0x100)
-        self.assertEqual(self.layout.assembled_instruction_count, 470)
-        self.assertEqual(self.layout.assembled_data_bytes, 442)
+        self.assertEqual(self.layout.assembled_instruction_count, 482)
+        self.assertEqual(self.layout.assembled_data_bytes, 596)
 
     def test_static_assembly_and_default_composition_are_locked(self):
         parsed = can_telemetry_assembly.validate_assembly_sources(
@@ -108,7 +126,7 @@ class CanTelemetryContractTest(unittest.TestCase):
         audit = can_telemetry_assembly.validate_instruction_semantics(
             self.layout, parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 470)
+        self.assertEqual(audit.instructions, 482)
         composition = can_telemetry_compose.compose(
             layout=self.layout, blobs=self.blobs
         )
@@ -116,7 +134,7 @@ class CanTelemetryContractTest(unittest.TestCase):
             composition.sha256,
             self.layout.expected_composition_sha256,
         )
-        self.assertEqual(composition.instruction_count, 470)
+        self.assertEqual(composition.instruction_count, 482)
         self.assertEqual(composition.code_entry_count, 8)
         self.assertEqual(
             composition.data[

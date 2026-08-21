@@ -9,8 +9,8 @@ from patches import can_telemetry_profile
 
 
 CONFIG_MAGIC = 0x4354
-CONFIG_VERSION = 1
-CONFIG_INTEGRITY = 0x54454C31
+CONFIG_VERSION = 2
+CONFIG_INTEGRITY = 0x54454C32
 CONFIG_SIZE = 16
 STOCK_MAILBOX_RECORD = bytes.fromhex("05000000")
 
@@ -19,7 +19,7 @@ STOCK_MAILBOX_RECORD = bytes.fromhex("05000000")
 class Configuration:
     enabled: bool = False
     can_id: int = 0x6F0
-    profile: str = "core32"
+    profile: str = "tuning"
     tick_divisor: int = 1
 
     def is_valid(self, manifest=None):
@@ -112,6 +112,6 @@ def default_configuration():
     return Configuration(
         enabled=False,
         can_id=manifest.candidate_can_id,
-        profile="core32",
+        profile="tuning",
         tick_divisor=manifest.candidate_tick_divisor,
     )

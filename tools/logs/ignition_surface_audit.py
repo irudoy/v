@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay JK08A hot ignition surfaces against a verified wide54 TRC."""
+"""Replay JK08A hot ignition surfaces against a verified tuning TRC."""
 
 from __future__ import annotations
 
@@ -526,7 +526,7 @@ def audit_trace(
     *,
     rom: str = "JK08A",
     calibration_image: Path | None = None,
-    profile: str = "wide54",
+    profile: str = "tuning",
     can_id: int = 0x6F0,
     tick_divisor: int = 1,
     source_lags: tuple[int, ...] = (0, 1, 2),

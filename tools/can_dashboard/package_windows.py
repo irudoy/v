@@ -69,15 +69,15 @@ if not exist ".venv\Scripts\pythonw.exe" (
   pause
   exit /b 1
 )
-start "{PRODUCT_NAME}" ".venv\Scripts\pythonw.exe" -m tools.can_dashboard.app --channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile wide54 --tick-divisor 1
+start "{PRODUCT_NAME}" ".venv\Scripts\pythonw.exe" -m tools.can_dashboard.app --channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile tuning --tick-divisor 1
 """
 
 RUN_ACTIVE_CMD = RUN_CMD.replace(
     "--tick-divisor 1", "--tick-divisor 1 --active"
 )
 RUN_DEMO_CMD = RUN_CMD.replace(
-    "--channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile wide54 --tick-divisor 1",
-    "--can-id 0x6F0 --profile wide54 --tick-divisor 1 --demo",
+    "--channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile tuning --tick-divisor 1",
+    "--can-id 0x6F0 --profile tuning --tick-divisor 1 --demo",
 )
 
 CONVERT_TRC_CMD = r"""@echo off

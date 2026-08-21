@@ -72,7 +72,7 @@ class IgnitionOutputContractTest(unittest.TestCase):
         self.assertIn("default/post-transition", self.vars["ffff1511"]["semantics"])
         self.assertIn("warm DFCO-transition", self.vars["ffff1511"]["semantics"])
         self.assertIn("every other case", self.contract)
-        self.assertIn("candidate maximum\nwindow of 870.4 ms", self.contract)
+        self.assertIn("maximum selection window of `870.4 ms`", self.contract)
         self.assertIn("whole-application p-code census found no other writer", self.contract)
 
     def test_compare_schedulers_record_position_fallback_gate(self):

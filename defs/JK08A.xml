@@ -636,7 +636,7 @@
          operational high-state role is proven; a narrower WOT or kickdown interpretation is not
          asserted.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Accelerator Pedal High-State Hysteresis (0x8FDC)"
+    <table type="2D" name="Accelerator Pedal High-State Hysteresis"
            category="Electronic Throttle Control//Accelerator Pedal//Thresholds"
            storagetype="uint16" storageaddress="0x08FDC" sizex="2" endian="big">
       <scaling units="normalized ADC counts" expression="x" to_byte="x" format="0"
@@ -661,8 +661,9 @@
          for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
          conversion remain catalog candidates. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Intake Cam Timing Main" category="Variable Valve Timing//Intake Cam"
-           storagetype="uint8" storageaddress="0x0B43A" sizex="16" sizey="16" endian="big">
+    <table type="3D" name="Intake CVTC Target - Main"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
+           storageaddress="0x0B43A" sizex="16" sizey="16" endian="big">
       <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F1E"
@@ -682,8 +683,8 @@
          The stock value is 381 accumulator counts. The threshold controls readiness for
          stationary fuel-cut/restore hysteresis 000085d9/000085da.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Stationary Rev Limiter Readiness Threshold (0x911C)"
-           category="Limiters//Stationary Rev Limiter" storagetype="uint16"
+    <table type="2D" name="Stationary Limiter Readiness Threshold"
+           category="Limiters//Engine Speed//Stationary" storagetype="uint16"
            storageaddress="0x0911C" sizex="1" endian="big">
       <scaling units="accumulator counts" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="16"/>
@@ -705,8 +706,9 @@
          physical name and 0.5 degree-per-byte output conversion remain source-derived
          candidates. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Intake Cam Timing Cold" category="Variable Valve Timing//Intake Cam"
-           storagetype="uint8" storageaddress="0x0B53A" sizex="8" sizey="8" endian="big">
+    <table type="3D" name="Intake CVTC Target - Cold"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
+           storageaddress="0x0B53A" sizex="8" sizey="8" endian="big">
       <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12EAA"
@@ -732,7 +734,7 @@
          Filling axis name, and the 0.5 degree-per-byte conversion remain catalog candidates.
          Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Intake Cam Timing Conditional Correction"
+    <table type="3D" name="Intake CVTC Target Correction - High-Detonation State"
            category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0x0AB5A" sizex="4" sizey="4" endian="big">
       <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -755,11 +757,11 @@
          RPM/12.5, so origin 160 is 2000 RPM and each two-count selector step is 25 RPM. At or
          below 2000 RPM the stock result is 128 and step zero. In the high-RPM limiter region
          result 255 gives step 127; exactly three expiries reach inclusive readiness threshold
-         381, or 300 tenth-phase counts. Candidate Pphi=20 MHz converts this to about 3.072
-         seconds.
+         381, or 300 tenth-phase counts. Passive target-CAN timestamps establish 10.24 ms/count
+         and a total of 3.072 seconds.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Stationary Rev Limiter Accumulator Step (0x124D2)"
-           category="Limiters//Stationary Rev Limiter" storagetype="uint8"
+    <table type="2D" name="Stationary Limiter Readiness Step"
+           category="Limiters//Engine Speed//Stationary" storagetype="uint8"
            storageaddress="0x124D2" sizex="16" endian="big">
       <scaling units="accumulator counts" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="16"/>
@@ -781,64 +783,13 @@
          proves channel indexing but does not establish the physical cylinder order;
          presentation labels remain generic channel numbers.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Injection Pulse Channel Multiplier (0x129C0)"
-           category="Fuel Delivery//Main" storagetype="uint8" storageaddress="0x129C0" sizex="6"
-           endian="big">
+    <table type="2D" name="Injection Pulse Channel Multiplier" category="Fuelling//Injection"
+           storagetype="uint8" storageaddress="0x129C0" sizex="6" endian="big">
       <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.0000"
                fineincrement="0.0078125" coarseincrement="0.0625"/>
       <table type="Static X Axis" name="Channel" sizex="6">
         <data>1</data><data>2</data><data>3</data><data>4</data>
         <data>5</data><data>6</data>
-      </table>
-    </table>
-
-    <!-- 0x0ABBA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
-         accessor 0xA52E4; r4 operand: pool
-         scaling x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load [candidate]
-         static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom];
-         DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom]
-         The surface is selected when byte[ffff3427] <= byte[0x8796], where the ROM threshold is
-         95. The physical unit of raw and the direction in which increasing a cell affects the
-         final DTC verdict are unknown.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Knock Sensor Circuit Monitor Surface A (0xABBA)"
-           category="Diagnostics//Knock Sensor Monitor" storagetype="uint8"
-           storageaddress="0x0ABBA" sizex="8" sizey="8" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="8"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12BEA"
-             sizex="8" endian="big">
-        <scaling units="Base Fuel Schedule (ms) [cand]" expression="x/8" to_byte="x*8"
-                 format="0"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x12BE2" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
-      </table>
-    </table>
-
-    <!-- 0x0ABFA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
-         accessor 0xA52E4; r4 operand: pool
-         scaling x raw; Y Axis 0x12BE2 rpm [candidate]; X Axis 0x12BEA load [candidate]
-         static diagnostic context: DTC P0327 [code, exact_rom]; DTC P0328 [code, exact_rom];
-         DTC P0332 [code, exact_rom]; DTC P0333 [code, exact_rom]
-         The surface is selected when byte[ffff3427] > byte[0x8796], where the ROM threshold is
-         95. The physical unit of raw and the direction in which increasing a cell affects the
-         final DTC verdict are unknown.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Knock Sensor Circuit Monitor Surface B (0xABFA)"
-           category="Diagnostics//Knock Sensor Monitor" storagetype="uint8"
-           storageaddress="0x0ABFA" sizex="8" sizey="8" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="8"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12BEA"
-             sizex="8" endian="big">
-        <scaling units="Base Fuel Schedule (ms) [cand]" expression="x/8" to_byte="x*8"
-                 format="0"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x12BE2" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
 
@@ -854,8 +805,9 @@
          raw/2048 BFS conversion remain source-derived candidates. Editing this scalar shifts
          ignition, CVTC, candidate AFR, and torque coordinates together.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Internal Load 100% BFS Reference" category="Fuelling//Engine Load"
-           storagetype="uint16" storageaddress="0x09534" sizex="1" endian="big">
+    <table type="2D" name="Internal Load Normalization Reference"
+           category="Fuelling//Load Model" storagetype="uint16" storageaddress="0x09534"
+           sizex="1" endian="big">
       <scaling units="BFS [cand]" expression="x/2048" to_byte="x*2048" format="0.000"
                fineincrement="0.001" coarseincrement="0.01"/>
       <table type="Static X Axis" name="Selector" sizex="1">
@@ -901,58 +853,6 @@
       </table>
     </table>
 
-    <!-- 0x1491A  16 uint16  map [code]; entry 0x263F4 (implicit, core 0x26A64)
-         accessor 0x8083C; r4 operand: pool
-         scaling x/2048 BFS ms [candidate]
-         static diagnostic context: CAL/LD VALUE [code, homologous_vq35hr, via map evidence:
-         writes]
-         The exact image closes both wrapper branches: 000263f4 calls the complete uint16
-         interpolation path in 00026a60/00026740 for coordinates below 0xf000 and returns cell
-         15 otherwise. ffff11b3 is min(255,uint16[ffff11f4]>>1); because ffff11f4 is RPM/12.5,
-         the implicit 0x1000 coordinate step gives exact static points 0,400,...,6000 RPM. Exact
-         DID 0x1208 identifies numerator ffff1024 as current Base Fuel Schedule; the quotient
-         therefore compares it with a same-dimension RPM-dependent 100% reference. Stock
-         ROM8[0000870e]=0x28 leaves the optional second normalization inactive. FUN 00035856
-         returns ffff413e for PID 0x04 at standard conversion 100*A/255. This map does not
-         normalize internal Q7 map coordinate ffff102c; that path uses fixed scalar 00009534 and
-         100*A/128. The operational role and RPM points have code confidence. The raw/2048 ms
-         conversion remains a source-derived candidate.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Diagnostic Calculated Load 100% BFS Reference"
-           category="Fuelling//Engine Load" storagetype="uint16" storageaddress="0x1491A"
-           sizex="16" endian="big">
-      <scaling units="BFS ms [cand]" expression="x/2048" to_byte="x*2048" format="0.000"
-               fineincrement="0.001" coarseincrement="0.01"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="16">
-        <data>0</data><data>400</data><data>800</data><data>1200</data>
-        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
-        <data>3200</data><data>3600</data><data>4000</data><data>4400</data>
-        <data>4800</data><data>5200</data><data>5600</data><data>6000</data>
-      </table>
-    </table>
-
-    <!-- 0x120F6  16 uint8  map [code]; entry 0x26388 (implicit, core 0x26A84)
-         accessor 0x4FE9C; r4 operand: pool
-         scaling x DFCO scheduler counts
-         All 16 cells equal 60. Stock ROM8[0000870c].bit7 is clear, so this table is selected
-         only by the non-stock bit7 branch with ffff2468.bit7 set, warm coolant, and RPM below
-         3000. The timer decrements once per DFCO scheduler event. Its exact period is
-         204800/Pphi seconds; 10.24 ms/count is a board-level candidate pending target clock
-         confirmation. Result disposition: state_timer.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Conditional DFCO Entry Delay - scheduler counts (0x120F6)"
-           category="Fuelling//Overrun" storagetype="uint8" storageaddress="0x120F6" sizex="16"
-           endian="big">
-      <scaling units="DFCO scheduler counts" expression="x" to_byte="x" format="0"
-               fineincrement="1" coarseincrement="16"/>
-      <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
-        <data>0</data><data>16</data><data>32</data><data>48</data>
-        <data>64</data><data>80</data><data>96</data><data>112</data>
-        <data>128</data><data>144</data><data>160</data><data>176</data>
-        <data>192</data><data>208</data><data>224</data><data>240</data>
-      </table>
-    </table>
-
     <!-- 0x0991A  16x16 uint8  map [code]; entry 0x26230 (explicit, core 0x26944)
          accessor 0x4E1C0; r4 operand: sp
          scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x11ECE rpm [code]; X Axis
@@ -962,9 +862,9 @@
          lower-left selected cell. Code proves relative state flow, but not a direct final angle
          or physical crank-angle scale.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Cold Ignition Timing Trim" category="Ignition Timing//Main"
-           storagetype="uint8" storageaddress="0x0991A" sizex="16" sizey="16" endian="big"
-           mask="7F">
+    <table type="3D" name="Ignition Timing Surface - Cold State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0991A" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -984,9 +884,9 @@
          then blends it into both samples through raw 131. The low seven bits feed timing state;
          bit 7 independently enables a knock-state path.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Knock-State Enable - Cold" category="Ignition Timing//Knock Control"
-           storagetype="uint8" storageaddress="0x0991A" sizex="16" sizey="16" endian="big"
-           mask="80">
+    <table type="3D" name="Knock-State Path Enable - Cold State"
+           category="Ignition Timing//State Control" storagetype="uint8"
+           storageaddress="0x0991A" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -1038,8 +938,8 @@
          multiplier require hardware validation. Result disposition: consumer and inverse
          coordinate source.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="QH0 / Torque Conversion Map"
-           category="Electronic Throttle Control//Main" storagetype="uint16"
+    <table type="3D" name="Requested Torque Conversion by QH0 - Primary"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
            storageaddress="0x0E98E" sizex="16" sizey="16" endian="big">
       <scaling units="Requested Torque [Nm] [cand]" expression="x*0.1-3276.8"
                to_byte="x/0.1+32768" format="0.0" fineincrement="1" coarseincrement="10"/>
@@ -1064,8 +964,8 @@
          remain identical. The physical units and multiplier require hardware validation. Result
          disposition: consumer and inverse coordinate source.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="QH0 / Torque Conversion Map Trustful"
-           category="Electronic Throttle Control//Main" storagetype="uint16"
+    <table type="3D" name="Requested Torque Conversion by QH0 - Validation Copy"
+           category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
            storageaddress="0x175C8" sizex="16" sizey="16" endian="big">
       <scaling units="Requested Torque [Nm] [cand]" expression="x*0.1-3276.8"
                to_byte="x/0.1+32768" format="0.0" fineincrement="1" coarseincrement="10"/>
@@ -1091,8 +991,8 @@
          bind the exposed source path to paired throttle-position feedback. Physical units and
          scale require hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Target Throttle Valve Opening Table"
-           category="Electronic Throttle Control//Main" storagetype="uint16"
+    <table type="2D" name="Throttle Angle-to-Area Conversion - Primary"
+           category="Electronic Throttle Control//Throttle Geometry" storagetype="uint16"
            storageaddress="0x13202" sizex="32" endian="big">
       <scaling units="Throttle Opening Area [cm^2] [cand]" expression="x*0.0008"
                to_byte="x/0.0008" format="0.000" fineincrement="0.01" coarseincrement="0.1"/>
@@ -1112,8 +1012,8 @@
          matching the catalog's primary/trustful pair. Physical units and scale require hardware
          validation.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Target Throttle Valve Opening Table Trustful"
-           category="Electronic Throttle Control//Main" storagetype="uint16"
+    <table type="2D" name="Throttle Angle-to-Area Conversion - Validation Copy"
+           category="Electronic Throttle Control//Throttle Geometry" storagetype="uint16"
            storageaddress="0x18766" sizex="32" endian="big">
       <scaling units="Throttle Opening Area [cm^2] [cand]" expression="x*0.0008"
                to_byte="x/0.0008" format="0.000" fineincrement="0.01" coarseincrement="0.1"/>
@@ -1135,7 +1035,7 @@
          candidate scale. Stock outputs are strictly positive, so the contribution denominator
          A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="MAF Sensor Scaling Bank 2" category="Fuelling//MAF Scaling"
+    <table type="2D" name="MAF Sensor Transfer - Bank 2" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x141F4" sizex="64" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="256"/>
@@ -1170,7 +1070,7 @@
          candidate scale. Stock outputs are strictly positive, so the contribution denominator
          A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="MAF Sensor Scaling Bank 1" category="Fuelling//MAF Scaling"
+    <table type="2D" name="MAF Sensor Transfer - Bank 1" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x14274" sizex="64" endian="big">
       <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="256"/>
@@ -1205,8 +1105,9 @@
          zero value establishes the stationary role. Additional entry gates ffff244f bit 2 and
          ffff2458 bit 5 remain physically unnamed.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Stationary Rev Limiter" category="Limiters//Stationary Rev Limiter"
-           storagetype="uint8" storageaddress="0x085D9" sizex="2" endian="big">
+    <table type="2D" name="Stationary Engine Speed Limit"
+           category="Limiters//Engine Speed//Stationary" storagetype="uint8"
+           storageaddress="0x085D9" sizex="2" endian="big">
       <scaling units="RPM" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Selector" sizex="2">
@@ -1232,7 +1133,7 @@
          require hardware validation; the normalized column scale itself is code-proven. Result
          disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Engine Torque Map" category="Transmission//Shifting Performance"
+    <table type="3D" name="Engine Torque Surface" category="Torque Model//Engine Torque"
            storagetype="uint16" storageaddress="0x10B8E" sizex="16" sizey="16" endian="big">
       <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1-3276.8" to_byte="x/0.1+32768"
                format="0.0" fineincrement="1" coarseincrement="10"/>
@@ -1256,9 +1157,9 @@
          the Engine Torque Map catalog and requires hardware validation. Result disposition:
          consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Engine Torque Base Correction vs RPM"
-           category="Transmission//Shifting Performance" storagetype="uint16"
-           storageaddress="0x154A0" sizex="8" endian="big">
+    <table type="2D" name="Engine Torque Base Term vs RPM"
+           category="Torque Model//Engine Torque" storagetype="uint16" storageaddress="0x154A0"
+           sizex="8" endian="big">
       <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
                fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
@@ -1277,9 +1178,9 @@
          torque correction role. The physical x*0.1 Nm conversion follows the Engine Torque Map
          catalog and requires hardware validation. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Engine Torque Scaled Correction vs RPM"
-           category="Transmission//Shifting Performance" storagetype="uint16"
-           storageaddress="0x14C1A" sizex="8" endian="big">
+    <table type="2D" name="Engine Torque Correction Coefficient vs RPM"
+           category="Torque Model//Engine Torque" storagetype="uint16" storageaddress="0x14C1A"
+           sizex="8" endian="big">
       <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
                fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
@@ -1307,7 +1208,7 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Exhaust Cam Timing Main"
+    <table type="3D" name="Map 1 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0x0B33A" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -1333,9 +1234,8 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Fuel Compensation Main"
-           category="Fuelling//Fuel Compensation" storagetype="uint8" storageaddress="0x0A29A"
-           sizex="16" sizey="16" endian="big">
+    <table type="3D" name="Map 1 - Fuel Compensation - Main" category="Fuelling//Compensation"
+           storagetype="uint8" storageaddress="0x0A29A" sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11D4C"
@@ -1364,8 +1264,9 @@
          restore pair is changed. This table is a request gate, not an independently sufficient
          cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0x126E4" sizex="16" endian="big">
+    <table type="2D" name="Map 1 - DFCO Hold RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0x126E4" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1389,8 +1290,9 @@
          entry threshold does not force DFCO entry when the restore classifier returns a nonzero
          class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0x12718" sizex="16" endian="big">
+    <table type="2D" name="Map 1 - DFCO Entry RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0x12718" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1417,8 +1319,9 @@
          remains class 3, so a raw value of 200 vetoes through exactly 5000 RPM in the quantized
          coordinate and class 0 begins only above it. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0x12818" sizex="16" endian="big">
+    <table type="2D" name="Map 1 - DFCO Full Restore RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0x12818" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1445,8 +1348,8 @@
          boundary. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - DFCO Low-Speed Intermediate Restore RPM Threshold"
-           category="Fuelling//Overrun" storagetype="uint8" storageaddress="0x1298C" sizex="16"
-           endian="big">
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0x1298C" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1467,9 +1370,9 @@
          ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
          JK08A code does not prove this surface as a direct final angle.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - High-Octane Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0x09A1A"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 1 - Ignition Timing Surface - High-Octane State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x09A1A" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -1490,8 +1393,8 @@
          selector is set. Coordinator 000493e8 also looks it up independently for the
          conditional signed Q8 difference against 0x9B1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Knock-State Enable - High Octane"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 1 - Knock-State Path Enable - High-Octane State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0x09A1A" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -1517,9 +1420,9 @@
          does not prove this surface as a direct final angle. The physical name and scale match
          homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - High-Detonation Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0x09B1A"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 1 - Ignition Timing Surface - High-Detonation State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x09B1A" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -1540,8 +1443,8 @@
          0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed
          Q8 difference from 0x9A1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Knock-State Enable - High Detonation"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 1 - Knock-State Path Enable - High-Detonation State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0x09B1A" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -1570,9 +1473,8 @@
          over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
          writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D"
-           name="Map 1 - Default/Post-Transition Timing-State Addend (x-128) (0x12196)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 1 - Timing-State Addend - Default/Post-Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x12196" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -1592,14 +1494,14 @@
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, a candidate 870.4 ms at
-         Pphi=20 MHz. A2L homology identifies the historical Idle Ignition Timing name, but no
-         crank-referenced degree scale is established. Index: implicit eight-point axis over
-         ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site
-         0004b0d0).
+         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
+         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
+         name, but no crank-referenced degree scale is established. Index: implicit eight-point
+         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1219E" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -1620,8 +1522,9 @@
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
          candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Rev Limit - Fuel Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0x0934E" sizex="2" sizey="2" endian="big">
+    <table type="3D" name="Map 1 - Engine Speed Limit - Fuel Cut"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0x0934E" sizex="2" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
@@ -1649,8 +1552,9 @@
          response time, channel-to-bank identity, ECM terminals, the Throttle Rev Limiter label,
          and the RPM multiplier require controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0x0942C" sizex="1" endian="big">
+    <table type="2D" name="Map 1 - Engine Speed Limit - Throttle Request"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0x0942C" sizex="1" endian="big">
       <scaling units="RPM [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0"
                fineincrement="50" coarseincrement="250"/>
       <table type="Static X Axis" name="Selector" sizex="1">
@@ -1678,7 +1582,7 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Exhaust Cam Timing Main"
+    <table type="3D" name="Map 2 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xD2D00" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -1705,9 +1609,8 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Fuel Compensation Main"
-           category="Fuelling//Fuel Compensation" storagetype="uint8" storageaddress="0xD3100"
-           sizex="16" sizey="16" endian="big">
+    <table type="3D" name="Map 2 - Fuel Compensation - Main" category="Fuelling//Compensation"
+           storagetype="uint8" storageaddress="0xD3100" sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11D4C"
@@ -1737,8 +1640,9 @@
          restore pair is changed. This table is a request gate, not an independently sufficient
          cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD3F80" sizex="16" endian="big">
+    <table type="2D" name="Map 2 - DFCO Hold RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD3F80" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1763,8 +1667,9 @@
          entry threshold does not force DFCO entry when the restore classifier returns a nonzero
          class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD2400" sizex="16" endian="big">
+    <table type="2D" name="Map 2 - DFCO Entry RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD2400" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1792,8 +1697,9 @@
          remains class 3, so a raw value of 200 vetoes through exactly 5000 RPM in the quantized
          coordinate and class 0 begins only above it. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD2440" sizex="16" endian="big">
+    <table type="2D" name="Map 2 - DFCO Full Restore RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD2440" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1821,8 +1727,8 @@
          boundary. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - DFCO Low-Speed Intermediate Restore RPM Threshold"
-           category="Fuelling//Overrun" storagetype="uint8" storageaddress="0xD3FC0" sizex="16"
-           endian="big">
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD3FC0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -1844,9 +1750,9 @@
          ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
          JK08A code does not prove this surface as a direct final angle.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - High-Octane Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0xD2500"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 2 - Ignition Timing Surface - High-Octane State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0xD2500" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -1867,8 +1773,8 @@
          selector is set. Coordinator 000493e8 also looks it up independently for the
          conditional signed Q8 difference against 0x9B1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Knock-State Enable - High Octane"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 2 - Knock-State Path Enable - High-Octane State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xD2500" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -1895,9 +1801,9 @@
          does not prove this surface as a direct final angle. The physical name and scale match
          homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - High-Detonation Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0xD2900"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 2 - Ignition Timing Surface - High-Detonation State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0xD2900" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -1918,8 +1824,8 @@
          0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed
          Q8 difference from 0x9A1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Knock-State Enable - High Detonation"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 2 - Knock-State Path Enable - High-Detonation State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xD2900" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -1949,9 +1855,8 @@
          over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
          writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D"
-           name="Map 2 - Default/Post-Transition Timing-State Addend (x-128) (0x12196)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 2 - Timing-State Addend - Default/Post-Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0xD4080" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -1972,14 +1877,14 @@
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, a candidate 870.4 ms at
-         Pphi=20 MHz. A2L homology identifies the historical Idle Ignition Timing name, but no
-         crank-referenced degree scale is established. Index: implicit eight-point axis over
-         ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site
-         0004b0d0).
+         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
+         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
+         name, but no crank-referenced degree scale is established. Index: implicit eight-point
+         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0xD40A0" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -2001,8 +1906,9 @@
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
          candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Rev Limit - Fuel Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0xD3500" sizex="2" sizey="2" endian="big">
+    <table type="3D" name="Map 2 - Engine Speed Limit - Fuel Cut"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0xD3500" sizex="2" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
@@ -2031,8 +1937,9 @@
          response time, channel-to-bank identity, ECM terminals, the Throttle Rev Limiter label,
          and the RPM multiplier require controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0xD3520" sizex="1" endian="big">
+    <table type="2D" name="Map 2 - Engine Speed Limit - Throttle Request"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0xD3520" sizex="1" endian="big">
       <scaling units="RPM [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0"
                fineincrement="50" coarseincrement="250"/>
       <table type="Static X Axis" name="Selector" sizex="1">
@@ -2060,7 +1967,7 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Exhaust Cam Timing Main"
+    <table type="3D" name="Map 3 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xD2E00" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -2087,9 +1994,8 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Fuel Compensation Main"
-           category="Fuelling//Fuel Compensation" storagetype="uint8" storageaddress="0xD3200"
-           sizex="16" sizey="16" endian="big">
+    <table type="3D" name="Map 3 - Fuel Compensation - Main" category="Fuelling//Compensation"
+           storagetype="uint8" storageaddress="0xD3200" sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11D4C"
@@ -2119,8 +2025,9 @@
          restore pair is changed. This table is a request gate, not an independently sufficient
          cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD3F90" sizex="16" endian="big">
+    <table type="2D" name="Map 3 - DFCO Hold RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD3F90" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2145,8 +2052,9 @@
          entry threshold does not force DFCO entry when the restore classifier returns a nonzero
          class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD2410" sizex="16" endian="big">
+    <table type="2D" name="Map 3 - DFCO Entry RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD2410" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2174,8 +2082,9 @@
          remains class 3, so a raw value of 200 vetoes through exactly 5000 RPM in the quantized
          coordinate and class 0 begins only above it. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD2450" sizex="16" endian="big">
+    <table type="2D" name="Map 3 - DFCO Full Restore RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD2450" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2203,8 +2112,8 @@
          boundary. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - DFCO Low-Speed Intermediate Restore RPM Threshold"
-           category="Fuelling//Overrun" storagetype="uint8" storageaddress="0xD3FD0" sizex="16"
-           endian="big">
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD3FD0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2226,9 +2135,9 @@
          ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
          JK08A code does not prove this surface as a direct final angle.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - High-Octane Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0xD2600"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 3 - Ignition Timing Surface - High-Octane State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0xD2600" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -2249,8 +2158,8 @@
          selector is set. Coordinator 000493e8 also looks it up independently for the
          conditional signed Q8 difference against 0x9B1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Knock-State Enable - High Octane"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 3 - Knock-State Path Enable - High-Octane State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xD2600" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -2277,9 +2186,9 @@
          does not prove this surface as a direct final angle. The physical name and scale match
          homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - High-Detonation Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0xD2A00"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 3 - Ignition Timing Surface - High-Detonation State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0xD2A00" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -2300,8 +2209,8 @@
          0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed
          Q8 difference from 0x9A1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Knock-State Enable - High Detonation"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 3 - Knock-State Path Enable - High-Detonation State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xD2A00" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -2331,9 +2240,8 @@
          over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
          writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D"
-           name="Map 3 - Default/Post-Transition Timing-State Addend (x-128) (0x12196)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 3 - Timing-State Addend - Default/Post-Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0xD4088" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -2354,14 +2262,14 @@
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, a candidate 870.4 ms at
-         Pphi=20 MHz. A2L homology identifies the historical Idle Ignition Timing name, but no
-         crank-referenced degree scale is established. Index: implicit eight-point axis over
-         ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site
-         0004b0d0).
+         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
+         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
+         name, but no crank-referenced degree scale is established. Index: implicit eight-point
+         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0xD40A8" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -2383,8 +2291,9 @@
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
          candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Rev Limit - Fuel Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0xD3508" sizex="2" sizey="2" endian="big">
+    <table type="3D" name="Map 3 - Engine Speed Limit - Fuel Cut"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0xD3508" sizex="2" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
@@ -2413,8 +2322,9 @@
          response time, channel-to-bank identity, ECM terminals, the Throttle Rev Limiter label,
          and the RPM multiplier require controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0xD3522" sizex="1" endian="big">
+    <table type="2D" name="Map 3 - Engine Speed Limit - Throttle Request"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0xD3522" sizex="1" endian="big">
       <scaling units="RPM [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0"
                fineincrement="50" coarseincrement="250"/>
       <table type="Static X Axis" name="Selector" sizex="1">
@@ -2442,7 +2352,7 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Exhaust Cam Timing Main"
+    <table type="3D" name="Map 4 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xD2F00" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -2469,9 +2379,8 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Fuel Compensation Main"
-           category="Fuelling//Fuel Compensation" storagetype="uint8" storageaddress="0xD3300"
-           sizex="16" sizey="16" endian="big">
+    <table type="3D" name="Map 4 - Fuel Compensation - Main" category="Fuelling//Compensation"
+           storagetype="uint8" storageaddress="0xD3300" sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11D4C"
@@ -2501,8 +2410,9 @@
          restore pair is changed. This table is a request gate, not an independently sufficient
          cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD3FA0" sizex="16" endian="big">
+    <table type="2D" name="Map 4 - DFCO Hold RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD3FA0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2527,8 +2437,9 @@
          entry threshold does not force DFCO entry when the restore classifier returns a nonzero
          class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD2420" sizex="16" endian="big">
+    <table type="2D" name="Map 4 - DFCO Entry RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD2420" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2556,8 +2467,9 @@
          remains class 3, so a raw value of 200 vetoes through exactly 5000 RPM in the quantized
          coordinate and class 0 begins only above it. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD2460" sizex="16" endian="big">
+    <table type="2D" name="Map 4 - DFCO Full Restore RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD2460" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2585,8 +2497,8 @@
          boundary. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - DFCO Low-Speed Intermediate Restore RPM Threshold"
-           category="Fuelling//Overrun" storagetype="uint8" storageaddress="0xD3FE0" sizex="16"
-           endian="big">
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD3FE0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2608,9 +2520,9 @@
          ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
          JK08A code does not prove this surface as a direct final angle.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - High-Octane Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0xD2700"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 4 - Ignition Timing Surface - High-Octane State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0xD2700" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -2631,8 +2543,8 @@
          selector is set. Coordinator 000493e8 also looks it up independently for the
          conditional signed Q8 difference against 0x9B1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Knock-State Enable - High Octane"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 4 - Knock-State Path Enable - High-Octane State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xD2700" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -2659,9 +2571,9 @@
          does not prove this surface as a direct final angle. The physical name and scale match
          homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - High-Detonation Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0xD2B00"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 4 - Ignition Timing Surface - High-Detonation State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0xD2B00" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -2682,8 +2594,8 @@
          0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed
          Q8 difference from 0x9A1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Knock-State Enable - High Detonation"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 4 - Knock-State Path Enable - High-Detonation State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xD2B00" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -2713,9 +2625,8 @@
          over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
          writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D"
-           name="Map 4 - Default/Post-Transition Timing-State Addend (x-128) (0x12196)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 4 - Timing-State Addend - Default/Post-Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0xD4090" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -2736,14 +2647,14 @@
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, a candidate 870.4 ms at
-         Pphi=20 MHz. A2L homology identifies the historical Idle Ignition Timing name, but no
-         crank-referenced degree scale is established. Index: implicit eight-point axis over
-         ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site
-         0004b0d0).
+         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
+         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
+         name, but no crank-referenced degree scale is established. Index: implicit eight-point
+         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0xD40B0" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -2765,8 +2676,9 @@
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
          candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Rev Limit - Fuel Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0xD3510" sizex="2" sizey="2" endian="big">
+    <table type="3D" name="Map 4 - Engine Speed Limit - Fuel Cut"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0xD3510" sizex="2" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
@@ -2795,8 +2707,9 @@
          response time, channel-to-bank identity, ECM terminals, the Throttle Rev Limiter label,
          and the RPM multiplier require controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0xD3524" sizex="1" endian="big">
+    <table type="2D" name="Map 4 - Engine Speed Limit - Throttle Request"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0xD3524" sizex="1" endian="big">
       <scaling units="RPM [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0"
                fineincrement="50" coarseincrement="250"/>
       <table type="Static X Axis" name="Selector" sizex="1">
@@ -2824,7 +2737,7 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Exhaust Cam Timing Main"
+    <table type="3D" name="Map 5 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xD3000" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -2851,9 +2764,8 @@
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Fuel Compensation Main"
-           category="Fuelling//Fuel Compensation" storagetype="uint8" storageaddress="0xD3400"
-           sizex="16" sizey="16" endian="big">
+    <table type="3D" name="Map 5 - Fuel Compensation - Main" category="Fuelling//Compensation"
+           storagetype="uint8" storageaddress="0xD3400" sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11D4C"
@@ -2883,8 +2795,9 @@
          restore pair is changed. This table is a request gate, not an independently sufficient
          cut command. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - DFCO Hold RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD3FB0" sizex="16" endian="big">
+    <table type="2D" name="Map 5 - DFCO Hold RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD3FB0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2909,8 +2822,9 @@
          entry threshold does not force DFCO entry when the restore classifier returns a nonzero
          class. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - DFCO Entry RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD2430" sizex="16" endian="big">
+    <table type="2D" name="Map 5 - DFCO Entry RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD2430" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2938,8 +2852,9 @@
          remains class 3, so a raw value of 200 vetoes through exactly 5000 RPM in the quantized
          coordinate and class 0 begins only above it. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - DFCO Full Restore RPM Threshold" category="Fuelling//Overrun"
-           storagetype="uint8" storageaddress="0xD2470" sizex="16" endian="big">
+    <table type="2D" name="Map 5 - DFCO Full Restore RPM Threshold"
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD2470" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2967,8 +2882,8 @@
          boundary. Result disposition: inline_comparison.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - DFCO Low-Speed Intermediate Restore RPM Threshold"
-           category="Fuelling//Overrun" storagetype="uint8" storageaddress="0xD3FF0" sizex="16"
-           endian="big">
+           category="Fuelling//Deceleration Fuel Cut" storagetype="uint8"
+           storageaddress="0xD3FF0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
       <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
@@ -2990,9 +2905,9 @@
          ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
          JK08A code does not prove this surface as a direct final angle.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - High-Octane Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0xD2800"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 5 - Ignition Timing Surface - High-Octane State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0xD2800" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -3013,8 +2928,8 @@
          selector is set. Coordinator 000493e8 also looks it up independently for the
          conditional signed Q8 difference against 0x9B1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Knock-State Enable - High Octane"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 5 - Knock-State Path Enable - High-Octane State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xD2800" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -3041,9 +2956,9 @@
          does not prove this surface as a direct final angle. The physical name and scale match
          homolog EV18A 0x9b76.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - High-Detonation Ignition Timing Trim"
-           category="Ignition Timing//Main" storagetype="uint8" storageaddress="0xD2C00"
-           sizex="16" sizey="16" endian="big" mask="7F">
+    <table type="3D" name="Map 5 - Ignition Timing Surface - High-Detonation State"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0xD2C00" sizex="16" sizey="16" endian="big" mask="7F">
       <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
                format="0" fineincrement="1" coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x11EBE"
@@ -3064,8 +2979,8 @@
          0x9A1A. Coordinator 000493e8 also looks it up independently for the conditional signed
          Q8 difference from 0x9A1A.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Knock-State Enable - High Detonation"
-           category="Ignition Timing//Knock Control" storagetype="uint8"
+    <table type="3D" name="Map 5 - Knock-State Path Enable - High-Detonation State"
+           category="Ignition Timing//State Control" storagetype="uint8"
            storageaddress="0xD2C00" sizex="16" sizey="16" endian="big" mask="80">
       <scaling units="Enable flag (0: Off | 1: On)" expression="x" to_byte="x" format="0"
                fineincrement="1" coarseincrement="1"/>
@@ -3095,9 +3010,8 @@
          over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
          writes (RAM ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D"
-           name="Map 5 - Default/Post-Transition Timing-State Addend (x-128) (0x12196)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 5 - Timing-State Addend - Default/Post-Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0xD4098" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -3118,14 +3032,14 @@
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, a candidate 870.4 ms at
-         Pphi=20 MHz. A2L homology identifies the historical Idle Ignition Timing name, but no
-         crank-referenced degree scale is established. Index: implicit eight-point axis over
-         ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site
-         0004b0d0).
+         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
+         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
+         name, but no crank-referenced degree scale is established. Index: implicit eight-point
+         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0).
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)"
-           category="Ignition Timing//State Accumulators" storagetype="uint8"
+    <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0xD40B8" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
@@ -3147,8 +3061,9 @@
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
          candidate Normal/Reverse column labels.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Rev Limit - Fuel Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0xD3518" sizex="2" sizey="2" endian="big">
+    <table type="3D" name="Map 5 - Engine Speed Limit - Fuel Cut"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0xD3518" sizex="2" sizey="2" endian="big">
       <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0.0"
                fineincrement="12.5" coarseincrement="125"/>
       <table type="Static X Axis" name="State" sizex="2">
@@ -3177,8 +3092,9 @@
          response time, channel-to-bank identity, ECM terminals, the Throttle Rev Limiter label,
          and the RPM multiplier require controlled hardware validation.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Rev Limit - Throttle Cut" category="Limiters//Rev Limit"
-           storagetype="uint16" storageaddress="0xD3526" sizex="1" endian="big">
+    <table type="2D" name="Map 5 - Engine Speed Limit - Throttle Request"
+           category="Limiters//Engine Speed//Driving" storagetype="uint16"
+           storageaddress="0xD3526" sizex="1" endian="big">
       <scaling units="RPM [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0"
                fineincrement="50" coarseincrement="250"/>
       <table type="Static X Axis" name="Selector" sizex="1">

@@ -128,7 +128,7 @@ def validate():
                     f"{family.key}: slot at {address:#x} differs from map 1"
                 )
 
-    if 'name="Map 5 - Exhaust Cam Timing Main"' not in romraider_model:
+    if 'name="Map 5 - Exhaust CVTC Target - Main"' not in romraider_model:
         raise ValueError("RomRaider projection lacks Map 5 exhaust CVTC target")
     if 'category="Variable Valve Timing//Exhaust Cam"' not in romraider_model:
         raise ValueError("RomRaider projection lacks the exhaust CVTC group")
@@ -136,7 +136,7 @@ def validate():
         raise ValueError(
             "RomRaider projection creates a separate map-switching group"
         )
-    if "Map 5 - Exhaust Cam Timing Main" not in xdf:
+    if "Map 5 - Exhaust CVTC Target - Main" not in xdf:
         raise ValueError("TunerPro projection lacks Map 5 exhaust CVTC target")
     if projection.slot_editor_view_count != 70:
         raise ValueError(

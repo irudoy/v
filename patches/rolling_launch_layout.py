@@ -32,8 +32,8 @@ class SchedulerLayout:
     table_address: int
     table_index: int
     tick_numerator: int
-    pphi_candidate_hz: int
-    candidate_tick_microseconds: int
+    pphi_hz: int
+    tick_microseconds: int
 
 
 @dataclass(frozen=True)
@@ -166,8 +166,8 @@ def load_layout(path=DEFAULT_MANIFEST):
             "table_address",
             "table_index",
             "tick_numerator",
-            "pphi_candidate_hz",
-            "candidate_tick_microseconds",
+            "pphi_hz",
+            "tick_microseconds",
         ),
         f"{path.name} [scheduler]",
     )
@@ -360,10 +360,10 @@ def validate_structure(layout):
         scheduler.table_address != 0x00021970
         or scheduler.table_index != 0
         or scheduler.tick_numerator != 204800
-        or scheduler.pphi_candidate_hz <= 0
-        or scheduler.candidate_tick_microseconds
+        or scheduler.pphi_hz != 20_000_000
+        or scheduler.tick_microseconds
         != scheduler.tick_numerator * 1_000_000
-        // scheduler.pphi_candidate_hz
+        // scheduler.pphi_hz
     ):
         raise ValueError("periodic scheduler timing contract differs")
 

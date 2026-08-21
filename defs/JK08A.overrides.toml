@@ -109,8 +109,8 @@ state = [
 # definition and they have no presentation entries. See defs/JK08A.notes.md.
 
 [table.0000991a]
-name = "Cold Ignition Timing Trim"
-category = "Ignition Timing / Main"
+name = "Ignition Timing Surface - Cold State"
+category = "Ignition Timing / State Surfaces"
 order = 100
 emit = true
 mask = "7F"
@@ -119,8 +119,8 @@ fine = 1
 coarse = 4
 
 [table.00009a1a]
-name = "High-Octane Ignition Timing Trim"
-category = "Ignition Timing / Main"
+name = "Ignition Timing Surface - High-Octane State"
+category = "Ignition Timing / State Surfaces"
 order = 101
 emit = true
 mask = "7F"
@@ -129,8 +129,8 @@ fine = 1
 coarse = 4
 
 [table.00009b1a]
-name = "High-Detonation Ignition Timing Trim"
-category = "Ignition Timing / Main"
+name = "Ignition Timing Surface - High-Detonation State"
+category = "Ignition Timing / State Surfaces"
 order = 102
 emit = true
 mask = "7F"
@@ -140,8 +140,8 @@ coarse = 4
 
 [[masked_view]]
 source = "0000991a"
-name = "Knock-State Enable - Cold"
-category = "Ignition Timing / Knock Control"
+name = "Knock-State Path Enable - Cold State"
+category = "Ignition Timing / State Control"
 mask = "80"
 units = "Enable flag (0: Off | 1: On)"
 expression = "x"
@@ -152,8 +152,8 @@ coarse = 1
 
 [[masked_view]]
 source = "00009a1a"
-name = "Knock-State Enable - High Octane"
-category = "Ignition Timing / Knock Control"
+name = "Knock-State Path Enable - High-Octane State"
+category = "Ignition Timing / State Control"
 mask = "80"
 units = "Enable flag (0: Off | 1: On)"
 expression = "x"
@@ -164,8 +164,8 @@ coarse = 1
 
 [[masked_view]]
 source = "00009b1a"
-name = "Knock-State Enable - High Detonation"
-category = "Ignition Timing / Knock Control"
+name = "Knock-State Path Enable - High-Detonation State"
+category = "Ignition Timing / State Control"
 mask = "80"
 units = "Enable flag (0: Off | 1: On)"
 expression = "x"
@@ -175,8 +175,8 @@ fine = 1
 coarse = 1
 
 [table.0000a29a]
-name = "Fuel Compensation Main"
-category = "Fuelling / Fuel Compensation"
+name = "Fuel Compensation - Main"
+category = "Fuelling / Compensation"
 order = 20
 emit = true
 format = "0.00"
@@ -184,7 +184,7 @@ fine = 0.78125
 coarse = 3.125
 
 [table.0000b33a]
-name = "Exhaust Cam Timing Main"
+name = "Exhaust CVTC Target - Main"
 category = "Variable Valve Timing / Exhaust Cam"
 order = 10
 emit = true
@@ -193,7 +193,7 @@ fine = 0.5
 coarse = 2.0
 
 [table.0000b43a]
-name = "Intake Cam Timing Main"
+name = "Intake CVTC Target - Main"
 category = "Variable Valve Timing / Intake Cam"
 order = 10
 format = "0.0"
@@ -201,7 +201,7 @@ fine = 0.5
 coarse = 2.0
 
 [table.0000b53a]
-name = "Intake Cam Timing Cold"
+name = "Intake CVTC Target - Cold"
 category = "Variable Valve Timing / Intake Cam"
 order = 11
 format = "0.0"
@@ -209,7 +209,7 @@ fine = 0.5
 coarse = 2.0
 
 [table.0000ab5a]
-name = "Intake Cam Timing Conditional Correction"
+name = "Intake CVTC Target Correction - High-Detonation State"
 category = "Variable Valve Timing / Intake Cam"
 order = 12
 format = "0.0"
@@ -217,16 +217,18 @@ fine = 0.5
 coarse = 2.0
 
 [table.0000abba]
-name = "Knock Sensor Circuit Monitor Surface A (0xABBA)"
-category = "Diagnostics / Knock Sensor Monitor"
+name = "Knock Sensor Circuit Monitor - Mode A"
+category = "Diagnostics / Knock Sensor Circuit"
+emit = false
 order = 30
 format = "0"
 fine = 1
 coarse = 8
 
 [table.0000abfa]
-name = "Knock Sensor Circuit Monitor Surface B (0xABFA)"
-category = "Diagnostics / Knock Sensor Monitor"
+name = "Knock Sensor Circuit Monitor - Mode B"
+category = "Diagnostics / Knock Sensor Circuit"
+emit = false
 order = 31
 format = "0"
 fine = 1
@@ -281,8 +283,8 @@ static_axis_y_name = "Unverified Row"
 static_axis_y = [1, 2, 3, 4, 5, 6]
 
 [table.000085d9]
-name = "Stationary Rev Limiter"
-category = "Limiters / Stationary Rev Limiter"
+name = "Stationary Engine Speed Limit"
+category = "Limiters / Engine Speed / Stationary"
 order = 210
 emit = true
 fine = 50
@@ -290,7 +292,7 @@ coarse = 100
 static_axis = ["fuel cut", "fuel restore"]
 
 [table.00008fdc]
-name = "Accelerator Pedal High-State Hysteresis (0x8FDC)"
+name = "Accelerator Pedal High-State Hysteresis"
 category = "Electronic Throttle Control / Accelerator Pedal / Thresholds"
 order = 10
 format = "0"
@@ -299,8 +301,8 @@ coarse = 8
 static_axis = ["activate", "release"]
 
 [table.0000911c]
-name = "Stationary Rev Limiter Readiness Threshold (0x911C)"
-category = "Limiters / Stationary Rev Limiter"
+name = "Stationary Limiter Readiness Threshold"
+category = "Limiters / Engine Speed / Stationary"
 order = 11
 format = "0"
 fine = 1
@@ -328,8 +330,8 @@ coarse = 100
 static_axis = ["K-Value"]
 
 [table.00009534]
-name = "Internal Load 100% BFS Reference"
-category = "Fuelling / Engine Load"
+name = "Internal Load Normalization Reference"
+category = "Fuelling / Load Model"
 order = 40
 emit = true
 format = "0.000"
@@ -338,8 +340,8 @@ coarse = 0.01
 static_axis = ["100% BFS reference"]
 
 [table.0000934e]
-name = "Rev Limit - Fuel Cut"
-category = "Limiters / Rev Limit"
+name = "Engine Speed Limit - Fuel Cut"
+category = "Limiters / Engine Speed / Driving"
 order = 200
 emit = true
 format = "0.0"
@@ -391,8 +393,8 @@ coarse = 1
 static_axis = ["final rate"]
 
 [table.0000942c]
-name = "Rev Limit - Throttle Cut"
-category = "Limiters / Rev Limit"
+name = "Engine Speed Limit - Throttle Request"
+category = "Limiters / Engine Speed / Driving"
 order = 201
 emit = true
 format = "0"
@@ -502,10 +504,10 @@ static_axis = [
 ]
 
 [table.0001491a]
-name = "Diagnostic Calculated Load 100% BFS Reference"
-category = "Fuelling / Engine Load"
+name = "Diagnostic Calculated-Load Reference"
+category = "Diagnostics / OBD"
+emit = false
 order = 43
-emit = true
 format = "0.000"
 fine = 0.001
 coarse = 0.01
@@ -644,8 +646,9 @@ fine = 1
 coarse = 16
 
 [table.000120f6]
-name = "Conditional DFCO Entry Delay - scheduler counts (0x120F6)"
-category = "Fuelling / Overrun"
+name = "DFCO Conditional Entry Delay"
+category = "Fuelling / Deceleration Fuel Cut"
+emit = false
 order = 93
 format = "0"
 fine = 1
@@ -697,8 +700,8 @@ fine = 1
 coarse = 16
 
 [table.000124d2]
-name = "Stationary Rev Limiter Accumulator Step (0x124D2)"
-category = "Limiters / Stationary Rev Limiter"
+name = "Stationary Limiter Readiness Step"
+category = "Limiters / Engine Speed / Stationary"
 order = 12
 format = "0"
 fine = 1
@@ -799,7 +802,7 @@ coarse = 16
 # selection in this executable: both source-labeled pairs are live.
 [table.000126e4]
 name = "DFCO Hold RPM Threshold"
-category = "Fuelling / Overrun"
+category = "Fuelling / Deceleration Fuel Cut"
 order = 30
 emit = true
 format = "0"
@@ -813,7 +816,7 @@ static_axis = [
 
 [table.00012718]
 name = "DFCO Entry RPM Threshold"
-category = "Fuelling / Overrun"
+category = "Fuelling / Deceleration Fuel Cut"
 order = 31
 emit = true
 format = "0"
@@ -827,7 +830,7 @@ static_axis = [
 
 [table.00012818]
 name = "DFCO Full Restore RPM Threshold"
-category = "Fuelling / Overrun"
+category = "Fuelling / Deceleration Fuel Cut"
 order = 32
 emit = true
 format = "0"
@@ -841,7 +844,7 @@ static_axis = [
 
 [table.0001298c]
 name = "DFCO Low-Speed Intermediate Restore RPM Threshold"
-category = "Fuelling / Overrun"
+category = "Fuelling / Deceleration Fuel Cut"
 order = 33
 emit = true
 format = "0"
@@ -1177,7 +1180,7 @@ fine = 0.0000152587890625
 coarse = 0.001
 
 [table.000141f4]
-name = "MAF Sensor Scaling Bank 2"
+name = "MAF Sensor Transfer - Bank 2"
 category = "Fuelling / MAF Scaling"
 order = 137
 emit = true
@@ -1197,7 +1200,7 @@ static_axis = [
 ]
 
 [table.00014274]
-name = "MAF Sensor Scaling Bank 1"
+name = "MAF Sensor Transfer - Bank 1"
 category = "Fuelling / MAF Scaling"
 order = 138
 emit = true
@@ -1361,8 +1364,8 @@ fine = 1
 coarse = 16
 
 [table.00012196]
-name = "Default/Post-Transition Timing-State Addend (x-128) (0x12196)"
-category = "Ignition Timing / State Accumulators"
+name = "Timing-State Addend - Default/Post-Transition"
+category = "Ignition Timing / State Corrections"
 emit = true
 order = 155
 format = "0"
@@ -1372,8 +1375,8 @@ static_axis_name = "Engine Speed [RPM] (Candidate)"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 
 [table.0001219e]
-name = "Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)"
-category = "Ignition Timing / State Accumulators"
+name = "Timing-State Addend - Warm DFCO Transition"
+category = "Ignition Timing / State Corrections"
 emit = true
 order = 156
 format = "0"
@@ -1851,8 +1854,8 @@ fine = 1
 coarse = 16
 
 [table.000129c0]
-name = "Injection Pulse Channel Multiplier (0x129C0)"
-category = "Fuel Delivery / Main"
+name = "Injection Pulse Channel Multiplier"
+category = "Fuelling / Injection"
 order = 22
 static_axis_name = "Channel"
 static_axis = [1, 2, 3, 4, 5, 6]
@@ -1861,32 +1864,32 @@ fine = 0.0078125
 coarse = 0.0625
 
 [table.0000e98e]
-name = "QH0 / Torque Conversion Map"
-category = "Electronic Throttle Control / Main"
+name = "Requested Torque Conversion by QH0 - Primary"
+category = "Electronic Throttle Control / Requested Torque"
 order = 120
 format = "0.0"
 fine = 1
 coarse = 10
 
 [table.000175c8]
-name = "QH0 / Torque Conversion Map Trustful"
-category = "Electronic Throttle Control / Main"
+name = "Requested Torque Conversion by QH0 - Validation Copy"
+category = "Electronic Throttle Control / Requested Torque"
 order = 121
 format = "0.0"
 fine = 1
 coarse = 10
 
 [table.00013202]
-name = "Target Throttle Valve Opening Table"
-category = "Electronic Throttle Control / Main"
+name = "Throttle Angle-to-Area Conversion - Primary"
+category = "Electronic Throttle Control / Throttle Geometry"
 order = 122
 format = "0.000"
 fine = 0.01
 coarse = 0.1
 
 [table.00018766]
-name = "Target Throttle Valve Opening Table Trustful"
-category = "Electronic Throttle Control / Main"
+name = "Throttle Angle-to-Area Conversion - Validation Copy"
+category = "Electronic Throttle Control / Throttle Geometry"
 order = 123
 format = "0.000"
 fine = 0.01
@@ -1912,7 +1915,7 @@ coarse = 16
 static_axis = ["context 0", "context 1", "context 2", "context 3", "context 4+"]
 
 [table.00018ac6]
-name = "QH0 Flow Potential Coordinate Trustful"
+name = "QH0 Flow Potential Coordinate - Validation Copy"
 category = "Electronic Throttle Control / Internal Coordinates"
 emit = false
 order = 125
@@ -1930,7 +1933,7 @@ fine = 0.1
 coarse = 1
 
 [table.000190d0]
-name = "Throttle Valve Opening Coordinate Trustful"
+name = "Throttle Valve Opening Coordinate - Validation Copy"
 category = "Electronic Throttle Control / Internal Coordinates"
 emit = false
 order = 127
@@ -1993,24 +1996,24 @@ fine = 1
 coarse = 256
 
 [table.00010b8e]
-name = "Engine Torque Map"
-category = "Transmission / Shifting Performance"
+name = "Engine Torque Surface"
+category = "Torque Model / Engine Torque"
 order = 210
 format = "0.0"
 fine = 1
 coarse = 10
 
 [table.000154a0]
-name = "Engine Torque Base Correction vs RPM"
-category = "Transmission / Shifting Performance"
+name = "Engine Torque Base Term vs RPM"
+category = "Torque Model / Engine Torque"
 order = 211
 format = "0.0"
 fine = 1
 coarse = 10
 
 [table.00014c1a]
-name = "Engine Torque Scaled Correction vs RPM"
-category = "Transmission / Shifting Performance"
+name = "Engine Torque Correction Coefficient vs RPM"
+category = "Torque Model / Engine Torque"
 order = 212
 format = "0.0"
 fine = 1

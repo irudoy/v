@@ -82,7 +82,7 @@ def cold_ignition():
         )
     )
     family["addr"] = "0000991a"
-    family["semantics"] = "Cold Ignition Timing Trim"
+    family["semantics"] = "Ignition Timing Surface - Cold State"
     return family
 
 
@@ -251,12 +251,12 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         main = [
             view
             for view in views
-            if "Knock-State Enable - High Octane" in view["name"]
+            if "Knock-State Path Enable - High-Octane State" in view["name"]
         ]
         high_detonation = [
             view
             for view in views
-            if "Knock-State Enable - High Detonation" in view["name"]
+            if "Knock-State Path Enable - High-Detonation State" in view["name"]
         ]
         self.assertEqual(len(cold), 1)
         self.assertEqual(len(main), 5)
@@ -325,10 +325,10 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             )
         )
         self.assertIn(
-            'name="Map 3 - High-Octane Ignition Timing Trim"', xml
+            'name="Map 3 - Ignition Timing Surface - High-Octane State"', xml
         )
         self.assertIn(
-            'category="Ignition Timing//Main"',
+            'category="Ignition Timing//State Surfaces"',
             xml,
         )
         self.assertIn('storageaddress="0xD2600"', xml)
@@ -345,7 +345,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
             )
         )
         self.assertIn(
-            'name="Map 3 - Knock-State Enable - High Octane"', view_xml
+            'name="Map 3 - Knock-State Path Enable - High-Octane State"', view_xml
         )
         self.assertIn('mask="80"', view_xml)
 
@@ -377,7 +377,7 @@ class MapSwitchingDefinitionProjectionTest(unittest.TestCase):
         )
         self.assertEqual(stats["calibration_tables"], 61)
         self.assertEqual(stats["masked_views"], 11)
-        self.assertIn("<title>Map 5 - Exhaust Cam Timing Main</title>", xdf)
+        self.assertIn("<title>Map 5 - Exhaust CVTC Target - Main</title>", xdf)
         self.assertIn('mmedaddress="0xD3000"', xdf)
         self.assertNotIn("JK08A-MS5", xdf)
         self.assertIn(

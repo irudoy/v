@@ -6,7 +6,7 @@
 #define TELEMETRY_STATE 0xffff5e00U
 #define TELEMETRY_ACTIVE_SIZE 0x100U
 #define BANK_A 0xffff5e20U
-#define BANK_B 0xffff5e60U
+#define BANK_B 0xffff5e78U
 #define CONFIG 0x000d4e00U
 #define TABLE 0x000d4c00U
 #define MAIN_WRAPPER 0x000d4280U
@@ -33,14 +33,9 @@ extern void invoke_exception_probe(uint32_t *registers);
 
 static size_t case_count;
 
-static const uint8_t core_configuration[16] = {
-    0x43, 0x54, 0x01, 0x01, 0x01, 0x05, 0x01, 0x00,
-    0x06, 0xf0, 0x27, 0xfa, 0x54, 0x45, 0x4c, 0x31,
-};
-
-static const uint8_t wide_configuration[16] = {
-    0x43, 0x54, 0x01, 0x01, 0x02, 0x08, 0x01, 0x00,
-    0x06, 0xf0, 0x23, 0x8c, 0x54, 0x45, 0x4c, 0x31,
+static const uint8_t configuration[16] = {
+    0x43, 0x54, 0x02, 0x01, 0x01, 0x0b, 0x01, 0x00,
+    0x06, 0xf0, 0xe8, 0x81, 0x54, 0x45, 0x4c, 0x32,
 };
 
 static volatile uint8_t *ram_pointer(uint32_t original)
@@ -132,7 +127,7 @@ static void seed_sources(void)
 {
     size_t index;
 
-    for (index = 0; index < 73; ++index) {
+    for (index = 0; index < 111; ++index) {
         uint32_t address = read_u32(rom_pointer(TABLE + index * 4));
         volatile uint8_t *target =
             (volatile uint8_t *)(uintptr_t)address;
@@ -140,21 +135,21 @@ static void seed_sources(void)
     }
 }
 
-static void set_configuration(int wide)
+static void set_configuration(void)
 {
     copy_bytes(
         rom_pointer(CONFIG),
-        wide ? wide_configuration : core_configuration,
-        sizeof(core_configuration));
+        configuration,
+        sizeof(configuration));
 }
 
-static void reset_case(int wide)
+static void reset_case(void)
 {
     seed_sources();
     fill_bytes(ram_pointer(TELEMETRY_STATE), TELEMETRY_ACTIVE_SIZE, 0);
-    fill_bytes(ram_pointer(BANK_A), 64, 0xa5);
-    fill_bytes(ram_pointer(BANK_B), 64, 0xa5);
-    set_configuration(wide);
+    fill_bytes(ram_pointer(BANK_A), 88, 0xa5);
+    fill_bytes(ram_pointer(BANK_B), 88, 0xa5);
+    set_configuration();
     write_u16(ram_pointer(TXPR1), 0);
     write_u16(ram_pointer(TXACK1), 0);
     write_u16(ram_pointer(ABACK1), 0);
@@ -171,8 +166,8 @@ static int verify_bank(const char *name, uint32_t bank, uint8_t context)
     size_t page;
     size_t offset;
 
-    for (page = 0; page < 7; ++page) {
-        uint8_t header = (uint8_t)(((tick & 0x1fU) << 3) | page);
+    for (page = 0; page < 9; ++page) {
+        uint8_t header = (uint8_t)(((tick & 0x0fU) << 4) | page);
         if (actual[page * 8] != header)
             return fail_value(
                 name, "page_header", actual[page * 8], header);
@@ -187,17 +182,29 @@ static int verify_bank(const char *name, uint32_t bank, uint8_t context)
                     actual[page * 8 + offset + 1], expected);
         }
     }
-    if (actual[56] != (uint8_t)(((tick & 0x1fU) << 3) | 7U))
-        return fail_value(name, "context_header", actual[56], 7);
-    if (actual[57] != context)
-        return fail_value(name, "context_tag", actual[57], context);
+    if (actual[72] != (uint8_t)(((tick & 0x0fU) << 4) | 9U))
+        return fail_value(name, "context_9_header", actual[72], 9);
+    if (actual[73] != context)
+        return fail_value(name, "context_9_tag", actual[73], context);
     for (offset = 0; offset < 6; ++offset) {
         uint32_t source = read_u32(
-            rom_pointer(TABLE + (49 + context * 6 + offset) * 4));
+            rom_pointer(TABLE + (63 + context * 6 + offset) * 4));
         uint8_t expected = ((volatile uint8_t *)(uintptr_t)source)[0];
-        if (actual[58 + offset] != expected)
+        if (actual[74 + offset] != expected)
             return fail_value(
-                name, "context_source", actual[58 + offset], expected);
+                name, "context_9_source", actual[74 + offset], expected);
+    }
+    if (actual[80] != (uint8_t)(((tick & 0x0fU) << 4) | 10U))
+        return fail_value(name, "context_10_header", actual[80], 10);
+    if (actual[81] != context)
+        return fail_value(name, "context_10_tag", actual[81], context);
+    for (offset = 0; offset < 6; ++offset) {
+        uint32_t source = read_u32(
+            rom_pointer(TABLE + (87 + context * 6 + offset) * 4));
+        uint8_t expected = ((volatile uint8_t *)(uintptr_t)source)[0];
+        if (actual[82 + offset] != expected)
+            return fail_value(
+                name, "context_10_source", actual[82 + offset], expected);
     }
     return 1;
 }
@@ -230,7 +237,7 @@ static int run_wrapper_cases(void)
     size_t index;
 
     count_case();
-    reset_case(0);
+    reset_case();
     fill_bytes(ram_pointer(0xffff5df0U), 0x120, 0xa5);
     (void)invoke_r4(STARTUP_WRAPPER, 0);
     for (index = 0; index < TELEMETRY_ACTIVE_SIZE; ++index) {
@@ -247,7 +254,7 @@ static int run_wrapper_cases(void)
     }
 
     count_case();
-    reset_case(0);
+    reset_case();
     ram_pointer(KNOCK_COUNT)[0] = 0xfe;
     ram_pointer(KNOCK_MASK)[0] = 0x2d;
     (void)invoke_r4(KNOCK_WRAPPER, 0);
@@ -259,9 +266,9 @@ static int run_wrapper_cases(void)
             "knock", "mask", ram_pointer(TELEMETRY_STATE)[13], 0x2d);
 
     count_case();
-    reset_case(0);
+    reset_case();
     (void)invoke_r4(MAIN_WRAPPER, 0);
-    if (!verify_started("main-wrapper", 1, 5, BANK_B))
+    if (!verify_started("main-wrapper", 1, 11, BANK_B))
         return 0;
     return 1;
 }
@@ -291,7 +298,7 @@ static void mutate_configuration(enum config_mutation mutation)
         config[0] = 0;
         break;
     case CONFIG_VERSION:
-        config[2] = 2;
+        config[2] = 1;
         break;
     case CONFIG_DISABLED:
         config[3] = 0;
@@ -303,10 +310,10 @@ static void mutate_configuration(enum config_mutation mutation)
         config[4] = 0;
         break;
     case CONFIG_PROFILE_HIGH:
-        config[4] = 3;
+        config[4] = 2;
         break;
     case CONFIG_PAGE_COUNT:
-        config[5] = 8;
+        config[5] = 10;
         break;
     case CONFIG_DIVISOR:
         config[6] = 0;
@@ -337,7 +344,7 @@ static int run_configuration_cases(void)
         volatile uint8_t *state;
 
         count_case();
-        reset_case(0);
+        reset_case();
         mutate_configuration(mutation);
         (void)invoke_r4(CAPTURE, 0);
         state = ram_pointer(TELEMETRY_STATE);
@@ -356,26 +363,26 @@ static int run_capture_cases(void)
     volatile uint8_t *state;
 
     count_case();
-    reset_case(0);
+    reset_case();
     write_u16(rom_pointer(CONFIG) + 8, 1);
     write_u16(ram_pointer(TELEMETRY_STATE) + 8, 0x121f);
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("core-idle", 1, 5, BANK_B))
+    if (!verify_started("low-id", 1, 11, BANK_B))
         return 0;
-    if (!verify_bank("core-idle", BANK_B, 0))
+    if (!verify_bank("low-id", BANK_B, 0))
         return 0;
 
     count_case();
-    reset_case(1);
+    reset_case();
     write_u16(rom_pointer(CONFIG) + 8, 0x07ff);
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("wide-idle", 1, 8, BANK_B))
+    if (!verify_started("high-id", 1, 11, BANK_B))
         return 0;
-    if (!verify_bank("wide-idle", BANK_B, 0))
+    if (!verify_bank("high-id", BANK_B, 0))
         return 0;
 
     count_case();
-    reset_case(0);
+    reset_case();
     rom_pointer(CONFIG)[6] = 3;
     (void)invoke_r4(CAPTURE, 0);
     (void)invoke_r4(CAPTURE, 0);
@@ -385,20 +392,20 @@ static int run_capture_cases(void)
 
     count_case();
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("divider-due", 1, 5, BANK_B))
+    if (!verify_started("divider-due", 1, 11, BANK_B))
         return 0;
     if (read_u16(state + 8) != 3 || state[10] != 0)
         return fail_value("divider-due", "tick", read_u16(state + 8), 3);
 
     count_case();
-    reset_case(0);
+    reset_case();
     write_u16(ram_pointer(TELEMETRY_STATE) + 8, 0xffff);
     (void)invoke_r4(CAPTURE, 0);
     if (read_u16(ram_pointer(TELEMETRY_STATE) + 8) != 0)
         return fail_value("tick-wrap", "tick", 1, 0);
 
     count_case();
-    reset_case(0);
+    reset_case();
     (void)invoke_r4(CAPTURE, 0);
     ram_pointer(0xffff11f4U)[0] = 0x12;
     ram_pointer(0xffff11f4U)[1] = 0x34;
@@ -425,15 +432,15 @@ static int run_capture_cases(void)
         return fail_value("overrun-saturates", "counter", state[14], 0xff);
 
     count_case();
-    reset_case(0);
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[0] = 1;
     (void)invoke_r4(CAPTURE, 0);
-    if (!verify_started("idle-bank-a", 0, 5, BANK_A))
+    if (!verify_started("idle-bank-a", 0, 11, BANK_A))
         return 0;
 
     count_case();
-    reset_case(0);
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[0] = 0;
     state[2] = 1;
@@ -450,7 +457,7 @@ static int run_direct_entry_cases(void)
 
     for (context = 0; context < 4; ++context) {
         count_case();
-        reset_case(1);
+        reset_case();
         state = ram_pointer(TELEMETRY_STATE);
         state[6] = context;
         write_u16(state + 8, (uint16_t)(0x1000U + context));
@@ -464,23 +471,34 @@ static int run_direct_entry_cases(void)
     }
 
     count_case();
-    reset_case(0);
+    reset_case();
+    state = ram_pointer(TELEMETRY_STATE);
+    state[6] = 0xff;
+    (void)invoke_r4(BUILD_BANK, (uint32_t)(uintptr_t)ram_pointer(BANK_A));
+    if (!verify_bank("direct-build-invalid-context", BANK_A, 0))
+        return 0;
+    if (state[6] != 1)
+        return fail_value(
+            "direct-build-invalid-context", "context_next", state[6], 1);
+
+    count_case();
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[0] = 0;
-    state[3] = 7;
-    fill_bytes(ram_pointer(BANK_A), 64, 0x77);
+    state[3] = 10;
+    fill_bytes(ram_pointer(BANK_A), 88, 0x77);
     (void)invoke_r4(REQUEST_PAGE, 0);
     if (!expect_bytes(
             "request-a", "mailbox", ram_pointer(MAILBOX_DATA),
-            ram_pointer(BANK_A) + 56, 8))
+            ram_pointer(BANK_A) + 80, 8))
         return 0;
 
     count_case();
-    reset_case(0);
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[0] = 1;
     state[3] = 4;
-    fill_bytes(ram_pointer(BANK_B), 64, 0x44);
+    fill_bytes(ram_pointer(BANK_B), 88, 0x44);
     (void)invoke_r4(REQUEST_PAGE, 0);
     if (!expect_bytes(
             "request-b", "mailbox", ram_pointer(MAILBOX_DATA),
@@ -507,11 +525,11 @@ static int run_completion_cases(void)
     size_t page;
 
     count_case();
-    reset_case(0);
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[7] = 0x0f;
     (void)invoke_r4(CAPTURE, 0);
-    for (page = 1; page < 5; ++page) {
+    for (page = 1; page < 11; ++page) {
         signal_ack(MAILBOX26_MASK);
         (void)invoke_r4(COMPLETION, 0);
         if (state[3] != page)
@@ -527,7 +545,7 @@ static int run_completion_cases(void)
         return fail_value("ack-sequence", "done", state[7], 0);
 
     count_case();
-    reset_case(0);
+    reset_case();
     (void)invoke_r4(CAPTURE, 0);
     (void)invoke_r4(CAPTURE, 0);
     state = ram_pointer(TELEMETRY_STATE);
@@ -541,25 +559,25 @@ static int run_completion_cases(void)
         return 0;
 
     count_case();
-    reset_case(0);
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[0] = 0;
     state[1] = 1;
     state[2] = 1;
-    state[3] = 4;
-    state[4] = 5;
+    state[3] = 10;
+    state[4] = 11;
     signal_ack(MAILBOX26_MASK);
     (void)invoke_r4(COMPLETION, 0);
     if (state[0] != 1 || state[7] != 0)
         return fail_value("ack-last-pending", "status", state[7], 0);
 
     count_case();
-    reset_case(0);
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[0] = 0;
     state[2] = 1;
-    state[3] = 4;
-    state[4] = 5;
+    state[3] = 10;
+    state[4] = 11;
     ram_pointer(BANK_A)[31] = 0x03;
     state[7] = 0x0f;
     signal_ack(MAILBOX26_MASK);
@@ -568,10 +586,10 @@ static int run_completion_cases(void)
         return fail_value("status-bank-a", "status", state[7], 0x0c);
 
     count_case();
-    reset_case(0);
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[2] = 1;
-    state[4] = 5;
+    state[4] = 11;
     signal_ack(0);
     (void)invoke_r4(COMPLETION, 0);
     if (state[2] != 1)
@@ -579,18 +597,18 @@ static int run_completion_cases(void)
 
     for (page = 0; page < 4; ++page) {
         count_case();
-        reset_case(0);
+        reset_case();
         state = ram_pointer(TELEMETRY_STATE);
         state[2] = 1;
-        state[4] = 5;
+        state[4] = 11;
         if (page == 0)
             state[0] = 2;
         else if (page == 1)
             state[1] = 2;
         else if (page == 2)
-            state[4] = 6;
+            state[4] = 10;
         else
-            state[3] = 5;
+            state[3] = 11;
         signal_ack(MAILBOX26_MASK);
         (void)invoke_r4(COMPLETION, 0);
         if (state[1] != 0 || state[2] != 0 || state[3] != 0)
@@ -604,7 +622,7 @@ static int run_abort_cases(void)
     volatile uint8_t *state;
 
     count_case();
-    reset_case(0);
+    reset_case();
     (void)invoke_r4(CAPTURE, 0);
     state = ram_pointer(TELEMETRY_STATE);
     signal_abort(MAILBOX26_MASK);
@@ -613,7 +631,7 @@ static int run_abort_cases(void)
         return fail_value("abort-idle", "state", state[15], 1);
 
     count_case();
-    reset_case(0);
+    reset_case();
     (void)invoke_r4(CAPTURE, 0);
     (void)invoke_r4(CAPTURE, 0);
     state = ram_pointer(TELEMETRY_STATE);
@@ -623,7 +641,7 @@ static int run_abort_cases(void)
         return fail_value("abort-pending", "busy", state[2], 1);
 
     count_case();
-    reset_case(0);
+    reset_case();
     (void)invoke_r4(CAPTURE, 0);
     state = ram_pointer(TELEMETRY_STATE);
     state[15] = 0xff;
@@ -653,10 +671,10 @@ static int run_isr_case(
     volatile uint8_t *state;
 
     count_case();
-    reset_case(0);
+    reset_case();
     state = ram_pointer(TELEMETRY_STATE);
     state[2] = (uint8_t)busy;
-    state[4] = 5;
+    state[4] = 11;
     write_u16(ram_pointer(TXACK1), txack);
     write_u16(ram_pointer(ABACK1), aback);
     invoke_exception_probe(registers);
@@ -710,7 +728,7 @@ int main(void)
         return 1;
     printf(
         "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=%lu entries=8 "
-        "profiles=2 contexts=4 isr_rte=5\n",
+        "profiles=1 contexts=8 isr_rte=5\n",
         (unsigned long)case_count);
     return 0;
 }

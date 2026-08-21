@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay JK08A intake- or exhaust-CVTC target maps against a wide54 TRC."""
+"""Replay JK08A intake- or exhaust-CVTC target maps against a tuning TRC."""
 
 from __future__ import annotations
 
@@ -458,8 +458,8 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
         "rpm_raw",
         "coolant_raw",
         "knock_surface_state",
-        "intake_cvtc_target_b1_raw",
-        "intake_cvtc_target_b2_raw",
+        "intake_cvtc_target_raw",
+        "exhaust_cvtc_target_raw",
         "intake_cvtc_actual_b1_raw",
         "intake_cvtc_actual_b2_raw",
     )
@@ -490,8 +490,8 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
                 coolant_raw=model.raw["coolant_raw"],
                 coolant_age_ms=(timestamp - coolant_updated) * 1000,
                 knock_surface_state=model.raw["knock_surface_state"],
-                reference_a_raw=model.raw["intake_cvtc_target_b1_raw"],
-                reference_b_raw=model.raw["intake_cvtc_target_b2_raw"],
+                reference_a_raw=model.raw["intake_cvtc_target_raw"],
+                reference_b_raw=model.raw["exhaust_cvtc_target_raw"],
                 intake_actual_b1_raw=model.raw["intake_cvtc_actual_b1_raw"],
                 intake_actual_b2_raw=model.raw["intake_cvtc_actual_b2_raw"],
             )
@@ -624,7 +624,7 @@ def audit_trace(
     *,
     rom: str = "JK08A",
     calibration_image: Path | None = None,
-    profile: str = "wide54",
+    profile: str = "tuning",
     can_id: int = 0x6F0,
     tick_divisor: int = 1,
     source_lags: tuple[int, ...] = (0, 1, 2),
@@ -752,7 +752,7 @@ def main(argv: list[str] | None = None) -> int:
                 source,
                 rom="JK08A",
                 calibration_image=args.calibration_image,
-                profile="wide54",
+                profile="tuning",
                 can_id=args.can_id,
                 tick_divisor=args.tick_divisor,
                 source_lags=args.source_lags,

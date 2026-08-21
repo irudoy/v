@@ -152,7 +152,7 @@ complete high-level high-detonation policy.
 
 `tools/logs/ignition_surface_audit.py` replays the exact ignition finisher,
 normalized-BFS coordinate, active map slots, and the two hot surfaces against a
-strict verified `wide54` capture. It recovers complete one-based map commits
+strict verified historical schema-1 `wide54` capture. It recovers complete one-based map commits
 from the exact released/SET/CANCEL/SET/released gesture.
 
 For `new-log-full.trc` and its registered 1.11 image:

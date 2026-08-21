@@ -285,7 +285,7 @@ mov #0x5,r1
             result.sha256,
             TELEMETRY_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 470)
+        self.assertEqual(result.instruction_count, 482)
         self.assertEqual(result.code_entry_count, 8)
 
     def test_can_telemetry_relocator_supports_generated_pointer_rows(self):
@@ -372,7 +372,7 @@ mov #0x5,r1
         self.assertIn("verify_can_telemetry.verify", source)
         self.assertIn("can_telemetry_cases", source)
         self.assertIn("can_telemetry_harness.c", verifier)
-        self.assertIn("cases=49", verifier)
+        self.assertIn("cases=50", verifier)
         self.assertIn("trapa #0x40", exception)
         self.assertIn("entries=8", harness)
 

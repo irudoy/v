@@ -102,7 +102,7 @@ def convert_trace(
     source: Path,
     output: Path,
     *,
-    profile: str = "wide54",
+    profile: str = "tuning",
     can_id: int = 0x6F0,
     tick_divisor: int = 1,
     timezone_name: str = "Asia/Vladivostok",
@@ -216,7 +216,7 @@ def main(argv: list[str] | None = None) -> int:
         help="write every MLVLG file to this directory",
     )
     parser.add_argument(
-        "--profile", choices=("core32", "wide54"), default="wide54"
+        "--profile", choices=("tuning",), default="tuning"
     )
     parser.add_argument(
         "--can-id", type=lambda value: int(value, 0), default=0x6F0

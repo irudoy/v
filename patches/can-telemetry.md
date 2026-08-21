@@ -1,560 +1,295 @@
-# JK08A custom CAN telemetry design
+# JK08A custom CAN telemetry schema 2
 
 ## Status and objective
 
-This document specifies the implemented software endpoint. The tracked source,
-layout, generated tables, SHA-locked payloads, host decoder, unified builder,
-and independent GNU SH-2E executable gate are complete. Target-vehicle testing
-passes for `wide54`, divisor 1, and standard ID `0x6F0` in the recorded moving
-load and stationary contexts. The endpoint remains disabled by default, and a
-hardware result does not authorize flashing another image. Concrete image and
-capture identities are represented only by hashes in `hardware-results.toml`.
+This document specifies the single implemented JK08A custom telemetry patch.
+The firmware, generated source-pointer table, strict host decoder, dashboard,
+MLVLG recorder, ROM builder, and GNU SH-2E executable gate use the same schema
+2 contract.
+
+The endpoint is disabled by default. The complete software gate passes, but
+schema 2 has not been tested in the target vehicle. The recorded schema 1
+`wide54` result remains useful bus-capacity and mailbox evidence; it does not
+validate schema 2 and is intentionally not accepted by the current decoder.
 
 The objective is a coherent, loss-detectable tuning stream over stock HCAN1
-without diagnostic polling. The receiver is passive. The ECU firmware owns
-sampling, event latching, framing, and transmission.
-
-The maximum useful periodic rate is the natural `FUN_00020DFE` cadence:
-`204800 / Pphi` seconds. Passive vehicle timestamps establish
-`Pphi = 20 MHz`, so the measured cadence is `10.24 ms` or `97.65625 Hz`.
-Faster transport of the same scheduler-owned values would duplicate samples.
-Event producers that run faster than this cadence require counters, bitmaps,
-or peak latches instead of a faster general snapshot.
+without diagnostic polling. Sampling occurs immediately after the stock
+periodic scheduler while interrupts are already masked. The natural cadence is
+`204800 / Pphi`. With the measured `Pphi = 20 MHz`, this is `10.24 ms` or
+`97.65625 Hz`. Sending the same scheduler-owned values faster would duplicate
+samples.
 
 ## Architecture
 
 ```text
-main-loop gate
-  -> stock FUN_00020DFE and its 124 periodic tasks
-  -> coherent telemetry capture
-  -> inactive 64-byte frame bank
+main-loop wrapper
+  -> stock FUN_00020DFE and its periodic tasks
+  -> coherent capture into inactive 88-byte bank
   -> atomic active/pending publication
+  -> eleven DLC-8 frames on one standard CAN ID
   -> HCAN1 physical mailbox 26
-  -> SLE1 completion wrapper
+  -> combined SLE1 completion handler
   -> next page or newest pending snapshot
 ```
 
-The design preserves the stock CAN transmit scan, the stock serializers, all
-stock receive mailboxes, and the stock mailbox-28 SLE1 behavior.
+The implementation preserves the stock CAN transmit scan, stock serializers,
+all stock receive mailboxes, and the complete mailbox-28 SLE1 behavior.
 
 ## Exact integration points
 
-| Integration point | Stock value | Designed behavior |
+| Integration point | Stock value | Implemented behavior |
 | --- | ---: | --- |
-| mailbox-26 record at `0x000097BE` | `05 00 00 00` | type 4, DLC 8, build-selected unused standard ID |
-| main-loop call literal at `0x00028090` | `0x00020DFE` | wrapper calls stock `0x00020DFE`, captures, then returns |
-| periodic table entry at `0x00021A70` | `0x000493E8` | wrapper latches knock count/mask before stock coordinator clears the count |
-| HCAN1 SLE1 vector word at `0x000203A0` | `0x000C7914` | combined ISR handles mailbox 26, reproduces mailbox-28 behavior, and executes `RTE` |
-| composed startup wrapper | existing wrapper chain | explicitly clears telemetry RAM state |
+| mailbox-26 record at `0x000097BE` | `05 00 00 00` | type 4, DLC 8, build-selected standard ID when enabled |
+| main-loop call literal at `0x00028090` | `0x00020DFE` | call stock scheduler, capture, return |
+| periodic table entry at `0x00021A70` | `0x000493E8` | latch knock count and mask before the stock consumer clears them |
+| HCAN1 SLE1 vector at `0x000203A0` | `0x000C7914` | service mailbox 26 and reproduce mailbox-28 success and abort behavior |
+| composed startup wrapper | existing wrapper chain | clear the complete active telemetry RAM allocation |
 
-The mailbox ID is a build parameter. `0x6F0` is the disabled default and the
-hardware-tested ID for the current `wide54`, divisor-1 result. It is numerically
-above the highest normal stock ECM broadcast ID `0x6E2` and therefore has lower
-arbitration priority than every normal stock ECM broadcast. It is absent from
-363,923 endpoint-disabled frames spanning startup, idle, stationary controls,
-and stationary Rolling Launch trials. A subsequent moving-load capture with
-the endpoint enabled contains 286,493 valid `0x6F0` frames without a schema,
-queue, warning, or error result. This evidence accepts `0x6F0` for the current
-tuning-telemetry use. For this ID, the mailbox record is `04 08 DE 00` because
-the table stores `STDID << 5`.
+The candidate standard ID is `0x6F0`. The ID remains a build parameter in the
+range `0x001..0x7FF`, but every page in one build uses the same ID. Eleven
+pages fit the four-bit page number, and additional IDs would not reduce bus
+occupancy while only one verified physical mailbox is used.
 
-Physical mailbox 26 uses control base `0xFFFFDC40`, data bytes
-`0xFFFFDC48..0xFFFFDC4F`, and bit `0x0400` in HCAN1 TXPR1, TXACK1, ABACK1,
-and MBIMR1.
+For `0x6F0`, the enabled mailbox record is `04 08 DE 00` because the table
+stores `STDID << 5`. Physical mailbox 26 uses control base `0xFFFFDC40`, data
+bytes `0xFFFFDC48..0xFFFFDC4F`, and bit `0x0400` in HCAN1 TXPR1, TXACK1,
+ABACK1, and MBIMR1.
 
 ## Coherent capture boundary
 
-The main loop enables interrupts at `0x00027EEC`, waits for
-`0xFFFF84B9.bit2`, and calls the pointer stored at `0x00028090`.
-`FUN_00020DFE` masks interrupts, performs its snapshot copies, calls all 124
-periodic tasks, and returns before the main loop re-enables interrupts through
-`FUN_00027AA2`.
+The main loop calls the pointer at `0x00028090` while interrupts are masked.
+`FUN_00020DFE` performs its snapshot copies and periodic tasks before returning.
+The wrapper calls the stock function first and copies all selected sources
+immediately afterward without another interrupt-state transition.
 
-The telemetry wrapper therefore calls stock `FUN_00020DFE` first and copies
-all selected sources immediately afterward. No additional interrupt-mask
-transition is required. The copy extends an existing interrupt-disabled
-region, so its instruction count and measured duration are hardware gates.
+All multi-byte values retain ECU big-endian representation. Firmware performs
+no engineering conversion. The generated host schema owns signedness, scale,
+and candidate semantic labels.
 
-All multi-byte sources are copied in ECU big-endian representation. The
-firmware performs no engineering-unit conversion. Scaling and physical names
-belong to the generated host schema, where evidence levels can be retained.
-
-### Knock event phase
-
-`FUN_0004A238` sets `0xFFFF24C2.bit6` for the current threshold exceedance,
-updates per-cylinder bitmap `0xFFFF2150`, and saturating-increments event count
-`0xFFFF2142`. Periodic-table entry 65 calls `FUN_000493E8`, which consumes and
-clears the count before the final snapshot boundary.
-
-A direct post-`FUN_00020DFE` read of `0xFFFF2142` would therefore normally
-observe zero. The wrapper at `0x00021A70` copies the count and bitmap into
-telemetry-owned latches before calling stock `FUN_000493E8`. The final capture
-uses those latches together with the updated timing state. This hook preserves
-the stock call and clear order.
+`FUN_000493E8` consumes and clears the knock interval count before the final
+capture boundary. The wrapper at periodic entry 65 therefore latches
+`0xFFFF2142` and `0xFFFF2150` before calling the stock function. The main
+capture includes those latches with the updated timing state.
 
 ## ROM and RAM layout
 
-The telemetry runtime owns `0x000D4280..0x000D6000` inside the audited free ROM
-region. Active schema-1 bytes are contiguous through `0x000D4E10`; the
-remaining 4,592 bytes are an erased, exclusive future reserve.
+The runtime owns `0x000D4280..0x000D6000` inside the audited free ROM region.
 
 | ROM range | Size | Purpose |
 | ---: | ---: | --- |
 | `0x000D4280..0x000D4340` | 192 | main, knock, and startup wrappers |
-| `0x000D4340..0x000D4800` | 1,216 | capture, bank build, and page request |
-| `0x000D4800..0x000D4C00` | 1,024 | combined SLE1 ISR and queue completion |
-| `0x000D4C00..0x000D4E00` | 512 | generated source-pointer tables |
+| `0x000D4340..0x000D4800` | 1,216 | configuration guard, capture, bank builder, and page request |
+| `0x000D4800..0x000D4C00` | 1,024 | combined SLE1 ISR and bounded queue |
+| `0x000D4C00..0x000D4E00` | 512 | 444-byte generated source-pointer table plus erased tail |
 | `0x000D4E00..0x000D4E10` | 16 | fail-closed build configuration |
-| `0x000D4E10..0x000D6000` | 4,592 | exclusive future ROM reserve |
+| `0x000D4E10..0x000D6000` | 4,592 | exclusive erased future ROM reserve |
 
-The active half-open allocation is `0xFFFF5E00..0xFFFF5F00`. It lies within
-the audited `0xFFFF5D00..0xFFFF7000` free range and has no direct exact-ROM
-xref in the current census. The cross-runtime ledger reserves the adjacent
-`0xFFFF5F00..0xFFFF6000` exclusively for future telemetry revisions and checks
-it against every active and future owner.
+The active RAM allocation is `0xFFFF5E00..0xFFFF5F00`.
 
-| Range | Size | Purpose |
+| RAM range | Size | Purpose |
 | ---: | ---: | --- |
-| `0xFFFF5E00..0xFFFF5E20` | 32 | state, counters, profile, and event latches |
-| `0xFFFF5E20..0xFFFF5E60` | 64 | complete frame bank A |
-| `0xFFFF5E60..0xFFFF5EA0` | 64 | complete frame bank B |
-| `0xFFFF5EA0..0xFFFF5EE0` | 64 | event accumulators or a future bounded event ring |
-| `0xFFFF5EE0..0xFFFF5F00` | 32 | reserved, cleared at startup |
+| `0xFFFF5E00..0xFFFF5E20` | 32 | state, profile, status, counters, and knock latches |
+| `0xFFFF5E20..0xFFFF5E78` | 88 | complete frame bank A |
+| `0xFFFF5E78..0xFFFF5ED0` | 88 | complete frame bank B |
+| `0xFFFF5ED0..0xFFFF5EE0` | 16 | reserved event state |
+| `0xFFFF5EE0..0xFFFF5F00` | 32 | active reserve, cleared at startup |
+| `0xFFFF5F00..0xFFFF6000` | 256 | exclusive future telemetry RAM reserve |
 
-| Future range | Size | Purpose |
+The main path constructs a complete inactive bank before publication. The ISR
+never reads a bank that the main path may overwrite.
+
+## Configuration contract
+
+The 16-byte configuration contains:
+
+| Offset | Width | Field |
 | ---: | ---: | --- |
-| `0xFFFF5F00..0xFFFF6000` | 256 | exclusive future RAM reserve; unused by schema 1 |
+| 0 | 2 | magic `0x4354` |
+| 2 | 1 | protocol version `2` |
+| 3 | 1 | enable byte `0` or `1` |
+| 4 | 1 | profile ID `1` |
+| 5 | 1 | page count `11` |
+| 6 | 1 | tick divisor `1..255` |
+| 7 | 1 | reserved zero |
+| 8 | 2 | standard CAN ID |
+| 10 | 2 | profile CRC16 `0xE881` |
+| 12 | 4 | integrity word `0x54454C32` (`TEL2`) |
 
-Each frame bank contains eight ready-to-copy eight-byte CAN payloads. The
-snapshot wrapper builds a complete inactive bank before publishing it. The
-interrupt handler never reads a bank that the main path may overwrite.
+The only profile name is `tuning`. The default disabled bytes are
+`43 54 02 00 01 0B 01 00 06 F0 E8 81 54 45 4C 32`.
 
-## Queue policy
-
-The queue has one active bank and one replaceable pending bank:
-
-1. If TX is idle, a new capture becomes active and page 0 is requested.
-2. If TX is active, the inactive bank receives the newest capture and becomes
-   pending.
-3. A later capture overwrites an already pending bank and increments
-   `snapshot_overrun`. This is a latest-wins queue, not a backlog.
-4. After every successful page transmission, a newer pending snapshot
-   preempts the untransmitted tail of the active snapshot. The receiver
-   discards the resulting incomplete older group.
-5. Without a pending snapshot, the ISR requests the next page. Completion of
-   the last configured page makes TX idle.
-6. An ABACK abandons the active group, increments `tx_abort`, and starts the
-   newest pending group if present.
-
-The firmware never waits for TX completion in the main loop and never creates
-an unbounded queue. HCAN automatic retransmission remains enabled. A lost
-arbitration or bus error leaves TXPR set; no new page is requested until the
-controller reports completion. The design does not use TX cancellation.
-
-## SLE1 combined ISR
-
-The stock SLE1 ISR at `0x000C7914` handles only physical mailbox 28, bit
-`0x1000`, and owns the exception return. Calling it with `JSR` is invalid.
-An indirect tail jump would consume a general register whose interrupted entry
-value the stock prologue must preserve. The implemented vector target therefore
-uses one combined ISR that:
-
-1. save every register and special register it modifies;
-2. check mailbox-26 bit `0x0400` in TXACK1 and ABACK1;
-3. clear a handled flag by writing one to the corresponding register;
-4. clear HCAN1 IRR bit 8 by writing `0x0100` to `0xFFFFD808`;
-5. advance or abandon the bounded telemetry queue;
-6. reproduce the complete stock mailbox-28 TXACK and ABACK body, including the
-   success-only call to `0x000C6B68`;
-7. restore `r0..r7`, PR, and the original exception stack; and
-8. execute `RTE` with its delay-slot `NOP`.
-
-If mailbox 26 and mailbox 28 are both pending, the combined handler services
-both during the same exception path. TXACK has the same priority over ABACK as
-the stock mailbox-28 handler. TXACK1 and ABACK1 remain write-one-to-clear
-registers; each path writes only its mailbox mask.
+Firmware validates every field before incrementing the telemetry tick or
+touching the queue. The builder independently requires the mailbox record to
+match the same enable state and CAN ID. Any mismatch leaves custom TX inactive.
 
 ## Wire protocol
 
-All frames use one build-selected standard 11-bit CAN ID and DLC 8. Byte 0 is
-the page header:
+All frames use one standard 11-bit CAN ID and DLC 8. Byte 0 is:
 
 ```text
-byte0 = ((tick16 & 0x1f) << 3) | page_id
+byte0 = ((tick16 & 0x0f) << 4) | page_id
 ```
 
-`page_id` occupies bits 2 through 0. The low five bits of `tick16` occupy bits
-7 through 3. Page 0 carries the complete big-endian `tick16` in bytes 1 and 2.
-At the candidate cadence, the five-bit sequence wraps every `327.68 ms` and
-`tick16` wraps every `671.08864 s`.
+`page_id` occupies bits 3 through 0. The low four bits of `tick16` occupy bits
+7 through 4. Page 0 also carries the complete big-endian `tick16` in bytes 1
+and 2. At divisor 1, the header sequence wraps every `163.84 ms`; `tick16`
+wraps every `671.08864 s`.
 
-The receiver must require page 0, verify that `tick16 & 0x1f` equals the page
-header sequence, require strictly increasing page IDs, and discard every
-incomplete group. It unwraps `tick16` modulo 65536. It must not interpolate a
-missing page or combine pages from different groups.
+The receiver requires page 0 followed by pages 1 through 10 in order, verifies
+the header sequence against `tick16`, and discards incomplete, duplicate,
+reordered, or preempted groups. It never combines pages from different groups
+or fabricates a missing value.
 
-### Core pages
+### Fixed pages
 
-Pages 0 through 4 form the stable `core32` profile. They carry 32 source bytes
-plus one telemetry status byte.
+Pages 0 through 8 are captured at every published snapshot.
 
-| Page | Bytes | Field | Exact source or origin |
-| ---: | ---: | --- | --- |
-| 0 | 1..2 | `tick16` | telemetry state |
-| 0 | 3..4 | `rpm_raw` | `0xFFFF11F4`, `RPM = raw * 12.5` |
-| 0 | 5 | `final_timing_raw` | signed byte `0xFFFF11D4` |
-| 0 | 6 | `apc_command_raw` | `0xFFFF2022` |
-| 0 | 7 | `fuel_inhibit_mask` | `0xFFFF22E0` |
-| 1 | 1..2 | `maf_b1_raw` | `0xFFFF101C` |
-| 1 | 3..4 | `maf_b2_raw` | `0xFFFF101E` |
-| 1 | 5..6 | `maf_total_raw` | `0xFFFF3852` |
-| 1 | 7 | `af_b1_raw` | `0xFFFF22C4` |
-| 2 | 1..2 | `bfs_raw` | `0xFFFF1026` |
-| 2 | 3 | `af_b2_raw` | `0xFFFF22C5` |
-| 2 | 4..5 | `injection_0_raw` | `0xFFFF23C8` |
-| 2 | 6..7 | `injection_1_raw` | `0xFFFF23CA` |
-| 3 | 1..2 | `injection_2_raw` | `0xFFFF23CC` |
-| 3 | 3..4 | `injection_3_raw` | `0xFFFF23CE` |
-| 3 | 5..6 | `injection_4_raw` | `0xFFFF23D0` |
-| 3 | 7 | `telemetry_status` | telemetry latches |
-| 4 | 1..2 | `injection_5_raw` | `0xFFFF23D2` |
-| 4 | 3..4 | `knock_timing_state_raw` | `0xFFFF121A` |
-| 4 | 5 | `knock_surface_state` | `0xFFFF2466` |
-| 4 | 6 | `knock_count_latched` | pre-`0x000493E8` latch of `0xFFFF2142` |
-| 4 | 7 | `knock_channel_mask_latched` | pre-`0x000493E8` latch of `0xFFFF2150` |
-
-Injection channels remain numbered 0 through 5. Static code does not prove
-their physical cylinder order or that `0xFFFF23C8..0xFFFF23D3` is the final
-electrical injector-open duration. `0xFFFF2022` is a software command, not a
-measured spark angle.
-
-On the stock normal path, `final_timing_raw = 110 - apc_command_raw`.
-Rolling Launch inserts its late override after the final stock coordinate is
-written and before the APC scheduler consumes the command. During that
-override, `final_timing_raw` therefore remains the upstream stock coordinate,
-while `apc_command_raw` is the effective software command. Neither field is a
-measurement of physical crankshaft timing.
-
-`telemetry_status` is latched until a complete group carrying it succeeds:
-
-| Bit | Meaning |
+| Page | Fields and exact sources |
 | ---: | --- |
-| 0 | at least one pending snapshot was replaced |
-| 1 | at least one telemetry TX abort occurred |
-| 2 | at least one event accumulator overflowed |
-| 3 | an active group was preempted after a page ACK |
-| 4..7 | reserved, transmitted as zero |
+| 0 | `tick16`; `rpm_raw` `FFFF11F4`; `final_timing_raw` `FFFF11D4`; `apc_command_raw` `FFFF2022`; `fuel_inhibit_mask` `FFFF22E0` |
+| 1 | `maf_b1_raw` `FFFF101C`; `maf_b2_raw` `FFFF101E`; `maf_total_raw` `FFFF3852`; `front_oxygen_sensor_b1_raw` `FFFF22C4` |
+| 2 | `bfs_raw` `FFFF1026`; `front_oxygen_sensor_b2_raw` `FFFF22C5`; `injection_0_raw` `FFFF23C8`; `injection_1_raw` `FFFF23CA` |
+| 3 | `injection_2_raw` `FFFF23CC`; `injection_3_raw` `FFFF23CE`; `injection_4_raw` `FFFF23D0`; `telemetry_status` |
+| 4 | `injection_5_raw` `FFFF23D2`; `knock_timing_state_raw` `FFFF121A`; `knock_surface_state` `FFFF2466`; latched knock count and channel mask |
+| 5 | `app1_raw` `FFFF269E`; `app2_raw` `FFFF26A2`; `tps_b1_raw` `FFFF2756`; `absolute_throttle_raw` `FFFF1075` |
+| 6 | `tps_b2_raw` `FFFF285C`; intake actual B1/B2 `FFFF2442/2443`; intake target `FFFF2326`; exhaust target `FFFF2327`; calculated load `FFFF413E` |
+| 7 | bounded throttle request `FFFF19C6`; engine torque state `FFFF18CC`; injection timing state `FFFF162E`; exhaust actual B1 `FFFF2324` |
+| 8 | shared throttle target `FFFF19B2`; channel targets `FFFF28BC/28BE`; exhaust actual B2 `FFFF2325` |
 
-### Wide pages
+The six injection words are calculated software values. Their physical
+cylinder order and equality to electrical injector-open duration remain
+unverified. The timing fields are software coordinates rather than an
+independent crank-referenced spark measurement.
 
-The `wide54` profile adds pages 5 through 7. Pages 5 and 6 are sampled at every
-snapshot boundary.
+### Rotating context pages
 
-| Page | Bytes | Field | Exact source |
-| ---: | ---: | --- | --- |
-| 5 | 1..2 | `app1_raw` | `0xFFFF269E` |
-| 5 | 3..4 | `app2_raw` | `0xFFFF26A2` |
-| 5 | 5..6 | `tps_b1_raw` | `0xFFFF2756` |
-| 5 | 7 | `absolute_throttle_raw` | `0xFFFF1075` |
-| 6 | 1..2 | `tps_b2_raw` | `0xFFFF285C` |
-| 6 | 3 | `intake_cvtc_actual_b1_raw` | `0xFFFF2442` |
-| 6 | 4 | `intake_cvtc_actual_b2_raw` | `0xFFFF2443` |
-| 6 | 5 | `intake_cvtc_target_b1_raw` | `0xFFFF2326` |
-| 6 | 6 | `intake_cvtc_target_b2_raw` | `0xFFFF2327` |
-| 6 | 7 | `calculated_load_raw` | `0xFFFF413E` |
+Pages 9 and 10 carry the same context tag in byte 1. Tags rotate from 0 through
+3. Both pages are transmitted every snapshot, while each tagged field set is
+refreshed once per four published snapshots. At divisor 1, the context-field
+rate is `24.4140625 Hz`.
 
-The two `intake_cvtc_target_b*_raw` identifiers are retained as legacy wire
-schema names because they participate in the verified profile CRC. They are not
-a symmetric bank pair. `0xFFFF2326` is the common conditioned intake-CVTC
-target compared with both actual intake-cam channels. The exact UDS table maps
-target-exhaust-angle DID `0x1166` to `0xFFFF2327`, which is independently
-conditioned by the exhaust-CVTC path. The dashboard and MLG presentation use
-`Intake CVTC target` and `Exhaust CVTC target` without changing the wire
-schema. Their degree conversion remains a marked homologous candidate.
+| Tag | Page 9 bytes 2..7 | Page 10 bytes 2..7 |
+| ---: | --- | --- |
+| 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | high-resolution intake duty B1/B2 `FFFF1AB0/1AB2`, manifold pressure bytes `FFFF118A/16D2` |
+| 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, atmosphere `FFFF4544`, battery `FFFF1188` |
+| 2 | LTFT B1/B2 `FFFF2302/2304`, timing states `FFFF2023/564C` | front A/F words `FFFF2780/2782`, adjustment state B1 `FFFF45A0` |
+| 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, adjustment state B2 `FFFF45A2` |
 
-Page 7 uses byte 1 as a context tag and rotates four regular contexts. One
-context is therefore sampled at one quarter of the snapshot rate. A build may
-pin one context instead when its fields need the full snapshot rate.
+Schema-dependent conversions stay disabled until page 9 tag 3 reports version
+2, profile ID 1, and CRC `0xE881`. A later mismatch disables conversions again.
+Raw values from an otherwise structurally complete group remain available for
+diagnosis.
 
-| Tag | Bytes 2..7 |
-| ---: | --- |
-| `0x00` | coolant `0xFFFF1079`, IAT `0xFFFF2837`, raw DID sources `0xFFFF1074` and `0xFFFF2876`, full A/F factor `0xFFFF22E8` |
-| `0x01` | full STFT B1 `0xFFFF22DC`, full STFT B2 `0xFFFF22DE`, intake CVTC duty B1/B2 `0xFFFF2440/41` |
-| `0x02` | full LTFT B1 `0xFFFF2302`, full LTFT B2 `0xFFFF2304`, timing-state bytes `0xFFFF2023` and `0xFFFF564C` |
-| `0x03` | protocol version, profile ID, profile CRC16, saturated overrun count, saturated abort count |
+## Queue and interrupt behavior
 
-The exact DID pointer table binds `0xFFFF1074` and `0xFFFF2876`; their fuel-
-temperature and oil-temperature names and physical transforms remain
-diagnostic-evidence claims. The host schema must preserve that distinction.
+The queue contains one active bank and one replaceable pending bank:
 
-Tags `0x80..0xFF` are reserved for an event aggregate and preempt one regular
-context when present:
+1. An idle transmitter publishes the new bank and requests page 0.
+2. A busy transmitter writes the inactive bank and marks it pending.
+3. Another capture replaces only the pending bank and increments the saturated
+   overrun counter.
+4. After an ACK, pending data preempts the remainder of an older active group.
+5. After an abort, the active group is discarded and the newest pending group
+   starts immediately.
+6. Corrupt bank, pending, page-count, or page-index state disables only custom
+   transmission.
 
-| Byte | Event field |
-| ---: | --- |
-| 1 | `0x80 | event_type` |
-| 2..3 | event `tick16` |
-| 4 | channel or cylinder bitmap |
-| 5..6 | event raw or peak word |
-| 7 | saturating event count |
+The host sees preemption as an incomplete group and resynchronizes at the next
+page 0. `telemetry_status` latches pending replacement, TX abort, reserved event
+overflow, and post-ACK preemption. Status bits clear only after a complete
+group carrying the corresponding page succeeds.
 
-Tags `0x80..0xFF` and the generic event aggregate are reserved for a later
-schema. Schema 1 implements only the regular contexts and the dedicated knock
-count/mask latches in core page 4. The current decoder rejects unknown context
-tags. A future high-rate producer must aggregate within one snapshot interval
-rather than enqueue one CAN record per combustion event.
+The combined SLE1 handler saves `r0..r7` and PR, services mailbox 26, reproduces
+the exact stock mailbox-28 TXACK/ABACK and activity behavior, restores the
+interrupted state, and executes `RTE`. TXACK has priority over ABACK for each
+mailbox, matching the stock handler.
 
-## Generated profile contract
+## Rate and bandwidth
 
-`can-telemetry-profile.toml` is the tracked declarative profile source.
-`can_telemetry_profile.py` generates both fixed SH-2E source pointers and the
-host decoder schema. Runtime arbitrary-address interpretation is not part of
-the firmware.
+`tick_divisor` selects every Nth base capture:
 
-The generator must validate:
-
-- source address and width against an explicit side-effect-free RAM allowlist;
-- byte order and signedness;
-- no field split across pages;
-- page count from 1 through 8;
-- tick divisor and expected load;
-- profile ID and CRC16 over the ordered wire schema;
-- mailbox ID range and exact `STDID << 5` encoding; and
-- overlap with every composed RAM, ROM, hook, and vector claim.
-
-The runtime transmits raw values only. A manifest binds ROM identity, CAN ID,
-tick divisor, page count, profile ID, and schema CRC. `wide54` conversion
-requires a matching in-band health context. `core32` has no context page, so
-its decoder binding is the explicitly selected generated schema and build
-manifest.
-
-Before incrementing the telemetry tick or touching the queue, the runtime
-validates magic, schema version, enable byte, profile ID, page count, nonzero
-divisor, reserved byte, CAN ID range `1..0x7FF`, exact profile CRC16, and the
-integrity word. The builder independently requires the mailbox record to encode
-the same CAN ID and enable state.
-
-## Profile and divisor semantics
-
-`core32` transmits pages 0 through 4, five CAN frames per snapshot. It contains
-the high-rate tuning core: RPM, final timing command, APC command, fuel-inhibit
-mask, both MAF channels and their total, both A/F channels, BFS, six injection
-words, knock state, and the latched knock interval count and channel mask.
-
-`wide54` transmits pages 0 through 7, eight CAN frames per snapshot. It includes
-the complete `core32` set and adds APP, both throttle positions, absolute
-throttle, actual and target intake CVTC for both banks, calculated load, and one
-rotating page-7 context. Coolant/IAT/temperature sources, STFT/CVTC duty,
-LTFT/timing state, and protocol/queue health are therefore each available at
-one quarter of the snapshot rate. Pinning one context is a separate build-time
-choice that omits the other three contexts.
-
-`wide54` at divisor 1 is the schema-1 ceiling, not a full-rate stream of every
-context field. The three-bit page ID is exhausted by pages 0 through 7. Sending
-all four current contexts at every base tick requires a new wire schema and at
-least three additional DLC-8 frames per group, or a second CAN ID.
-
-The base wrapper runs every `10.24 ms`. `tick_divisor` selects every Nth base
-tick for publication:
-
-| Divisor | Snapshot rate | Snapshot interval | `tick16` step on the wire |
+| Divisor | Snapshot rate | Snapshot interval | Wire `tick16` step |
 | ---: | ---: | ---: | ---: |
 | 1 | 97.65625 Hz | 10.24 ms | 1 |
 | 2 | 48.828125 Hz | 20.48 ms | 2 |
 | 4 | 24.4140625 Hz | 40.96 ms | 4 |
 
-The transmitted `tick16` step distinguishes configured downsampling from a
-lost snapshot. The schema-1 builder copies all eight pages into the inactive
-bank whenever a snapshot is due, including under `core32`; `page_count` limits
-transmission, not capture construction. At the same divisor, `core32` and
-`wide54` therefore have the same main-loop capture/copy work. `wide54` adds
-three CAN transmissions and their three completion-ISR executions.
+All eleven pages are constructed and transmitted for every selected snapshot.
+Divisor 1 is the intended tuning configuration and preserves every base-rate
+knock latch update.
 
-The knock wrapper refreshes the count and mask latches at every base interval
-before the stock consumer clears them. With a divisor greater than 1, an older
-nonzero interval can be overwritten before the next published snapshot.
-Divisor 1 is therefore the only schema-1 setting that preserves each base-rate
-knock interval in the outgoing snapshot sequence.
+A standard DLC-8 classical-CAN frame occupies 111 bits including intermission
+before stuffing. A conservative maximum-stuffing bound is 135 bits. At
+`500 kbit/s`, eleven frames at divisor 1 produce `1,074.21875 frames/s`, add
+`23.848%..29.004%` theoretical load, and require `2.442..2.970 ms` without
+arbitration delay.
 
-## Bandwidth
+The highest recorded endpoint-disabled whole-vehicle average was
+`39.889%..48.402%`. Adding the theoretical schema 2 stream gives a planning
+average of `63.737%..77.406%`. The corresponding recorded 100 ms peak plus the
+full theoretical stream is `67.108%..81.504%`. These sums are planning bounds,
+not measurements of schema 2 traffic, and exclude retransmission and error
+frames.
 
-A standard 11-bit classical-CAN data frame with DLC 8 occupies 111 bits
-including intermission before bit stuffing. A conservative maximum-stuffing
-bound is 135 bits. At `500 kbit/s` and the measured `97.65625 Hz` snapshot
-rate:
+## Evidence and acceptance boundary
 
-| Profile | Frames per snapshot | Frames per second | Added bus load | No-arbitration group time |
-| --- | ---: | ---: | ---: | ---: |
-| `core32` | 5 | 488.28125 | 10.84% to 13.18% | 1.11 to 1.35 ms |
-| `wide54` | 8 | 781.25 | 17.34% to 21.09% | 1.78 to 2.16 ms |
+The historical schema 1 target-vehicle capture used `0x6F0`, eight frames per
+snapshot, and divisor 1. It recorded 35,811 complete groups at 97.599 Hz with
+zero tick gaps, schema mismatches, queue status, overrun, abort, warning, or
+error records. Whole-bus average load was `57.185%..69.437%`. This establishes
+that mailbox 26, the combined ISR design, the selected ID, and the earlier load
+level operated successfully in that drive.
 
-The exact stock ECM broadcast estimate is 9.70% to 11.78% without conditional
-`0x512` and 11.25% to 13.64% with it. Stock ECM plus telemetry is therefore:
+Schema 2 changes the configuration identity, header layout, page count, RAM
+banks, source table, payload, decoder, and total load. A schema 2 image remains
+ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 
-| Profile | Without `0x512` | With `0x512` |
-| --- | ---: | ---: |
-| `core32` | 20.54% to 24.96% | 22.09% to 26.82% |
-| `wide54` | 27.04% to 32.87% | 28.59% to 34.73% |
+- eleven ordered pages and exact tick continuity;
+- version 2, profile ID 1, and CRC `0xE881` health identity;
+- no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
+- acceptable stock-frame cadence and whole-bus utilization.
 
-These totals exclude every other vehicle controller, retransmission, error
-frame, and diagnostic session. Aggregate utilization alone is not an approval
-criterion. Passive whole-bus capture and a bounded hardware trial determine
-the usable profile and divisor.
-
-### Measured whole-vehicle baseline
-
-The operator-confirmed nominal bitrate is `500 kbit/s`. Three endpoint-disabled
-PEAK TRC 1.1 captures contain 363,923 standard data frames over 187.112 seconds.
-The load bounds count intermission; the lower bound excludes bit stuffing and
-the upper bound applies a conservative maximum-stuffing count.
-
-| Firmware label and context | Average load | Peak 100 ms | Peak 1 s |
-| --- | ---: | ---: | ---: |
-| `1.8`, startup | 39.889% to 48.402% | 43.260% to 52.500% | 40.428% to 49.057% |
-| `1.8`, idle, ASCD, PRND | 39.870% to 48.379% | 41.262% to 50.070% | 40.098% to 48.654% |
-| `1.10`, idle, ASCD, Rolling Launch | 39.849% to 48.353% | 41.198% to 49.990% | 40.052% to 48.600% |
-
-The traces contain no RTR, warning, or error records. PCAN-View can omit error
-frames according to its recording configuration, so these endpoint-disabled
-captures alone do not close the physical error-rate gate. The enabled capture
-below supplies the acceptance evidence with error-frame recording enabled.
-
-Adding the theoretical telemetry cost to the highest observed average gives a
-planning bound, not a counterfactual measurement:
-
-| Profile and divisor | Snapshot rate | Projected average load |
-| --- | ---: | ---: |
-| `core32`, 4 | 24.414 Hz | 42.599% to 51.698% |
-| `core32`, 2 | 48.828 Hz | 45.309% to 54.994% |
-| `core32`, 1 | 97.656 Hz | 50.729% to 61.586% |
-| `wide54`, 4 | 24.414 Hz | 44.225% to 53.675% |
-| `wide54`, 2 | 48.828 Hz | 48.561% to 58.949% |
-| `wide54`, 1 | 97.656 Hz | 57.233% to 69.496% |
-
-### Target-vehicle `wide54` result
-
-The 2026-08-17 target-vehicle run uses firmware label `1.11`, standard ID
-`0x6F0`, `wide54`, divisor 1, and a listen-only PCAN-USB receiver at
-`500 kbit/s`. PCAN-View error-frame recording was enabled. The saved TRC spans
-366.920 seconds and contains 1,000,000 standard received data frames across 45
-IDs, including 286,493 custom frames. Five initial custom frames are the tail
-of a group already in progress when recording begins. Every subsequent custom
-frame forms one of 35,811 complete snapshots.
-
-| Measurement | Result |
-| --- | ---: |
-| Complete snapshot rate | 97.599 Hz |
-| Tick steps | 35,810 steps of exactly 1 |
-| Schema mismatches | 0 |
-| Incomplete or malformed groups after initial synchronization | 0 |
-| Nonzero telemetry status samples | 0 |
-| Snapshot overrun / TX abort | 0 / 0 |
-| PCAN warning / error records | 0 / 0 |
-| Group latency median / P99 / maximum | 2.3 / 6.3 / 8.1 ms |
-| Whole-bus average load | 57.185% to 69.437% |
-| Whole-bus peak 100 ms load | 59.006% to 71.650% |
-| Whole-bus peak 1 s load | 57.473% to 69.787% |
-
-The final dashboard view retains 105,153 complete groups with verified schema
-and zero visible loss, source drop, schema mismatch, error, overrun, or abort
-counters. The stream RPM and nearest stock `0x180` RPM samples differ by a
-mean absolute 6.382 RPM across all 35,811 groups. The recorded result closes
-hardware acceptance for the current tuning-telemetry configuration. No
-additional shutdown, concurrent-diagnostic, DTC-comparison, or direct
-scheduler-slack observation is required for this use.
-
-The versioned dashboard records the strict stream directly as MLVLG v2, and a
-separate converter produces the same schema from PEAK TRC 1.1 captures. The
-schema contains all custom fields, retained stock RPM/speed/control context,
-and reserved `gps_lat`/`gps_lon` channels. Geographic coordinates are not
-verified on the captured primary CAN network and remain `NaN`; no route is
-derived from speed or other vehicle signals.
-
-The retained fallback order is `wide54` divisor 2, then `wide54` divisor 4.
-The passing divisor-1 result remains selected unless a later observation shows
-recurring incomplete or preempted groups, a nonzero overrun/abort trend, CAN
-warning/error or bus-state records, stock-frame period regression, or ECU
-reset. Changing to `core32` is appropriate only when the additional fields are
-intentionally discarded; at a common divisor it does not reduce snapshot
-construction work. Absence of PCAN error records alone is not sufficient
-because arbitration retries do not necessarily increment the telemetry abort
-counter.
-
-## Failure behavior
-
-- Invalid configuration, invalid page count, or corrupted queue state disables
-  custom TX and leaves every stock mailbox path intact.
-- No telemetry path writes a stock payload record or stock mailbox.
-- A busy mailbox never blocks the control loop.
-- A delayed chain loses old snapshots rather than transmitting an unbounded
-  history.
-- Sequence, tick, incomplete groups, overrun count, and abort count make every
-  loss visible to the logger.
-- Bus-off and recovery remain under the stock HCAN controller and application
-  behavior; telemetry does not reset the controller or alter stock error state.
+The acceptance run does not need a shutdown cycle, active diagnostic session,
+DTC comparison, or direct scheduler-slack measurement for this logging use.
 
 ## Verification gates
 
-### Static and executable gates
+The repository-contained gate independently assembles all injected SH-2E
+instructions and proves identity with the tracked payloads before installing
+simulator-only high-RAM relocations and stock-function stubs. It executes all
+changed entries, relevant branch outcomes, delay slots, call and return paths,
+both banks, all pages, all eight context records, queue boundaries, latest-wins
+replacement, preemption, TXACK, ABACK, simultaneous mailbox-26/mailbox-28
+flags, corrupt-state fail-closed behavior, a real `TRAPA` exception entry, and
+the exact ISR `RTE`.
 
-The tracked software endpoint passes all of the following gates:
+The locked software result is:
 
-1. exact stock hash and exact original bytes at every table, hook, and vector
-   site;
-2. unified ROM and RAM overlap validation;
-3. independently assembled SH-2E fixtures for every injected instruction;
-4. `tools/sh-elf-run/` execution of startup clear, capture publication, idle
-   start, every page transition, latest-wins replacement, preemption, final
-   completion, TXACK, ABACK, simultaneous mailbox-26/mailbox-28 flags, corrupt
-   state fail-closed behavior, relevant branches, delay slots, calls, returns,
-   a real `TRAPA` exception entry, and the exact ISR `RTE`;
-5. proof that simulator stubs and relocations do not alter bytes under test;
-6. generated firmware and host schemas with the same profile CRC; and
-7. a decoder test corpus containing wrap, loss, duplicate, reordered,
-   incomplete, preempted, regular-context, health-match, and health-mismatch
-   frames.
+- 482 injected instructions and 596 data bytes;
+- eight executable entries and 50 dynamic telemetry cases;
+- composition SHA-256
+  `65f4f9f0095c77ae4580bbbaa0777b68e6ac596c7c56fadde2256084f881aaa1`;
+- 1,320 changed bytes inside a 2,980-byte declared write set.
 
-The GNU gate independently assembles 470 injected instructions, verifies eight
-entries and the locked one-MiB composition, and executes 49 telemetry cases.
-Simulator-only high-RAM relocations, stock-function stubs, and the TRAPA vector
-are installed only after exact instruction identity. No instruction or
-control-flow address under test is changed.
+This gate proves the bounded software contract. It does not replace physical
+CAN, ECU, sensor, or actuator validation.
 
-### Target-vehicle acceptance
-
-The endpoint-disabled captures establish `Pphi = 20 MHz`, stock ID/DLC and
-cadence, stationary utilization, and absence of `0x6F0` in the recorded stock
-states. The enabled target-vehicle capture establishes coherent page order,
-sequence and tick continuity, context rotation, queue health, CAN error status,
-stock-frame coexistence, moving-load utilization, and dashboard reception at
-the maximum schema-1 rate.
-
-Together with the executable gate, this is the complete acceptance basis for
-the current `0x6F0`, `wide54`, divisor-1 tuning logger. Additional stress or
-physical-output measurements are relevant only to a changed configuration or
-to claims about measured spark angle, injector waveform, or air-fuel ratio.
-
-## Implementation inventory and acceptance status
+## Artifact inventory
 
 | Artifact | Responsibility |
 | --- | --- |
 | `can-telemetry-profile.toml` | authoritative field and context schema |
-| `can_telemetry_profile.py` | table and host-schema generator |
+| `can_telemetry_profile.py` | pointer-table and host-schema generator |
+| `can-telemetry-schema.json` | generated strict host contract |
 | `can-telemetry-layout.toml` | ROM, RAM, hook, configuration, and reserve contract |
-| `can-telemetry-*.s` | wrappers, capture, queue, combined ISR, and generated tables |
+| `can-telemetry-*.s` | wrappers, capture, queue, ISR, and generated tables |
 | `can-telemetry-payloads.toml` | SHA-locked independently assembled bytes |
-| `can_telemetry.py` | fail-closed build configuration and mailbox encoding |
+| `can_telemetry.py` | fail-closed configuration and mailbox encoding |
 | `can_telemetry_compose.py` | deterministic non-flashable composition |
-| `apply_can_telemetry.py` | isolated checksum-closing application stage |
-| `build_rom.py` | production three-runtime composition |
-| `../tools/logs/can_telemetry.py` | strict candump group decoder |
-| `../tools/logs/mlvlg.py` | common MLVLG v2 encoder and validator |
-| `../tools/logs/trc_to_mlg.py` | strict PEAK TRC to MLVLG converter |
+| `apply_can_telemetry.py` | checksum-closing application stage |
+| `build_rom.py` | complete three-runtime image composition |
+| `../tools/logs/can_telemetry.py` | strict schema 2 decoder |
+| `../tools/logs/trc_to_mlg.py` | PEAK TRC to MLVLG converter |
 | `../tools/can_dashboard/` | versioned live display and MLVLG recorder |
-| `../tools/sh-elf-run/verify_can_telemetry.py` | independent executable gate |
-| `jk08a-runtime-reservations.toml` | shared active ownership and future budgets |
-
-Schema 1 has no remaining hardware acceptance gate for the current standard ID,
-profile, divisor, and tuning-logger use. A later observed transport failure uses
-divisors 2 and 4 in that order. Any event extension or wire-schema change
-requires an exact producer hook gate and a separate physical validation plan.
+| `../tools/sh-elf-run/verify_can_telemetry.py` | executable instruction gate |
+| `jk08a-runtime-reservations.toml` | cross-runtime ownership and future budgets |

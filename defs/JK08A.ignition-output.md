@@ -39,8 +39,8 @@ Under the exact diagnostic `raw-50` conversion, those boundaries are 60 and
 56 deg C. While `0xFFFF2458.bit5` is clear, the function reloads
 `0xFFFF2590` from `ROM8[0x86A3] = 85`. Once the bit becomes set, the periodic
 scheduler decrements the timer and `0x1219E` remains eligible only while it is
-nonzero. One timer count is `204800/Pphi` seconds, giving a candidate maximum
-window of 870.4 ms at `Pphi = 20 MHz`.
+nonzero. One timer count is `204800/Pphi` seconds. Passive target-CAN timing
+establishes `Pphi = 20 MHz`, giving a maximum selection window of `870.4 ms`.
 
 The constant path selects stock byte `0x9E`, which becomes `+30` after the
 same `x-128` transform. It bypasses all three maps.

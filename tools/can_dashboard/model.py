@@ -120,7 +120,7 @@ def _window_rate(samples, now, window=2.0):
 class DashboardModel:
     """Retain the latest fixed and rotating fields from strict snapshots."""
 
-    def __init__(self, profile="wide54", can_id=DEFAULT_CAN_ID, tick_divisor=1):
+    def __init__(self, profile="tuning", can_id=DEFAULT_CAN_ID, tick_divisor=1):
         if type(tick_divisor) is not int or not 1 <= tick_divisor <= 0xFF:
             raise ValueError("tick_divisor must be in 1..255")
         self.profile = profile
@@ -130,7 +130,7 @@ class DashboardModel:
         self.raw = {}
         self.engineering = {}
         self.updated_at = {}
-        self.schema_verified = profile == "core32"
+        self.schema_verified = False
         self.context_name = None
         self.last_tick = None
         self.last_snapshot_monotonic = None
@@ -273,16 +273,17 @@ class DashboardModel:
 
 
 class DemoGenerator:
-    """Generate wire-valid wide54 groups with realistic changing values."""
+    """Generate wire-valid tuning groups with realistic changing values."""
 
     def __init__(self, can_id=DEFAULT_CAN_ID, schema_path=can_telemetry.DEFAULT_SCHEMA):
         self.can_id = can_id
         document = json.loads(Path(schema_path).read_text(encoding="utf-8"))
         self.profile = next(
-            item for item in document["profiles"] if item["name"] == "wide54"
+            item for item in document["profiles"] if item["name"] == "tuning"
         )
-        self.context_by_tag = {
-            item["tag"]: item for item in self.profile["contexts"]
+        self.context_by_page_and_tag = {
+            (item["page"], item["tag"]): item
+            for item in self.profile["contexts"]
         }
 
     @staticmethod
@@ -311,9 +312,9 @@ class DemoGenerator:
             "maf_b1_raw": (1.05 + 2.2 * wave) * 200,
             "maf_b2_raw": (1.08 + 2.15 * wave) * 200,
             "maf_total_raw": maf_total * 100,
-            "af_b1_raw": 128 + 12 * math.sin(elapsed * 2.1),
+            "front_oxygen_sensor_b1_raw": 128 + 12 * math.sin(elapsed * 2.1),
             "bfs_raw": (2.0 + 4.0 * wave) * 2048,
-            "af_b2_raw": 128 + 11 * math.sin(elapsed * 2.0 + 0.2),
+            "front_oxygen_sensor_b2_raw": 128 + 11 * math.sin(elapsed * 2.0 + 0.2),
             **{
                 f"injection_{index}_raw": (injection + index * 0.02) * 100
                 for index in range(6)
@@ -330,9 +331,17 @@ class DemoGenerator:
             "tps_b2_raw": 310 + 2480 * wave,
             "intake_cvtc_actual_b1_raw": (cvtc + 64) * 2,
             "intake_cvtc_actual_b2_raw": (cvtc - 0.5 + 64) * 2,
-            "intake_cvtc_target_b1_raw": (5 + 35 * wave + 64) * 2,
-            "intake_cvtc_target_b2_raw": (20 * wave + 64) * 2,
+            "intake_cvtc_target_raw": (5 + 35 * wave + 64) * 2,
+            "exhaust_cvtc_target_raw": (20 * wave + 64) * 2,
             "calculated_load_raw": load * 255 / 100,
+            "throttle_request_bounded_raw": 900 + 2400 * wave,
+            "engine_torque_state_raw": (45 + 210 * wave) * 10,
+            "injection_timing_state_raw": 320 + 180 * wave,
+            "exhaust_cvtc_actual_b1_raw": (2 + 18 * wave + 64) * 2,
+            "throttle_target_shared_raw": 1000 + 2600 * wave,
+            "throttle_target_channel_0_raw": 1050 + 2550 * wave,
+            "throttle_target_channel_1_raw": 1030 + 2520 * wave,
+            "exhaust_cvtc_actual_b2_raw": (1.5 + 17.5 * wave + 64) * 2,
             "coolant_raw": 90 + 50,
             "iat_raw": 32 + 50,
             "fuel_temperature_did_source_raw": 78,
@@ -350,11 +359,25 @@ class DemoGenerator:
             "ltft_b2_raw": 101.6 * 256,
             "timing_state_2023_raw": 0x12,
             "timing_state_564c_raw": 0x20,
-            "protocol_version": 1,
+            "protocol_version": 2,
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),
             "snapshot_overrun_count": 0,
             "tx_abort_count": 0,
+            "intake_cvtc_duty_b1_word_raw": (18 + 55 * wave) * 1024 / 100,
+            "intake_cvtc_duty_b2_word_raw": (19 + 54 * wave) * 1024 / 100,
+            "manifold_pressure_1116_raw": 35 + 170 * wave,
+            "manifold_pressure_112a_raw": 36 + 168 * wave,
+            "exhaust_cvtc_duty_b1_word_raw": (12 + 48 * wave) * 1024 / 100,
+            "exhaust_cvtc_duty_b2_word_raw": (13 + 47 * wave) * 1024 / 100,
+            "atmospheric_pressure_raw": 100,
+            "battery_voltage_raw": 175,
+            "front_af_sensor_b1_word_raw": 1200 + 500 * wave,
+            "front_af_sensor_b2_word_raw": 1180 + 510 * wave,
+            "af_adjustment_b1_raw": 0x4000 + 400 * math.sin(elapsed),
+            "secondary_tps_b1_raw": 280 + 2450 * wave,
+            "secondary_tps_b2_raw": 290 + 2430 * wave,
+            "af_adjustment_b2_raw": 0x4000 + 380 * math.sin(elapsed + 0.2),
         }
 
     def group(self, tick, elapsed=None):
@@ -363,7 +386,7 @@ class DemoGenerator:
         values["tick16"] = tick & 0xFFFF
         pages = [bytearray(8) for _ in range(self.profile["page_count"])]
         for page, payload in enumerate(pages):
-            payload[0] = (((tick & 0x1F) << 3) | page) & 0xFF
+            payload[0] = (((tick & 0x0F) << 4) | page) & 0xFF
         for field in self.profile["fields"]:
             self._encode(
                 pages[field["page"]],
@@ -372,11 +395,15 @@ class DemoGenerator:
                 values[field["name"]],
             )
         context_tag = (tick - 1) & 0x03
-        pages[7][1] = context_tag
-        offset = 2
-        for field in self.context_by_tag[context_tag]["fields"]:
-            self._encode(pages[7], offset, field, values[field["name"]])
-            offset += field["width"]
+        for page in (9, 10):
+            pages[page][1] = context_tag
+            offset = 2
+            context = self.context_by_page_and_tag[(page, context_tag)]
+            for field in context["fields"]:
+                self._encode(
+                    pages[page], offset, field, values[field["name"]]
+                )
+                offset += field["width"]
         return tuple(
             FrameRecord(self.can_id, bytes(payload), elapsed)
             for payload in pages

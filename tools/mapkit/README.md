@@ -56,6 +56,13 @@ own any of those facts.
 
 ## Projection verification
 
+Audit the canonical editor names, functional taxonomy, and explicit non-tuning
+exclusions without requiring a running graph:
+
+```bash
+uv run python tools/mapkit/presentation_audit.py
+```
+
 Validate the live graph model against both tracked common definition files
 without writing a ROM:
 

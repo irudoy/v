@@ -4,12 +4,12 @@
 # ranges. The remainder of the owned ROM and RAM budgets is a named future
 # reserve and must stay erased or unused in this schema version.
 
-schema_version = 1
+schema_version = 2
 rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "d15c8c3c3e0a9232218612f2a914e328ec9f63041d50e6a8b763262fd00f554c"
-expected_composition_sha256 = "e784e2ecc760c9de147072a5cc58e5935041c070501e74b82019612287227c4a"
+expected_composition_sha256 = "65f4f9f0095c77ae4580bbbaa0777b68e6ac596c7c56fadde2256084f881aaa1"
 free_rom_start = 0x000D4280
 free_rom_end = 0x000E1C2A
 owned_rom_start = 0x000D4280
@@ -34,10 +34,10 @@ future_end = 0xFFFF6000
 state_start = 0xFFFF5E00
 state_size = 32
 bank_a_start = 0xFFFF5E20
-bank_size = 64
-bank_b_start = 0xFFFF5E60
-event_start = 0xFFFF5EA0
-event_size = 64
+bank_size = 88
+bank_b_start = 0xFFFF5E78
+event_start = 0xFFFF5ED0
+event_size = 16
 active_reserved_start = 0xFFFF5EE0
 active_reserved_size = 32
 
@@ -108,9 +108,9 @@ start = 0x000D4340
 end = 0x000D4800
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "2def67e69f6ff42ec3fea95057ec4b0b6d97b1b57e2b13c3a6eaac56d4f6e126"
-instruction_count = 215
-data_bytes = 62
+expected_sha256 = "e96f3dea01a24b273d1690bfebfee660a4b84b3e98b140751b6b8b9e2c5419f8"
+instruction_count = 229
+data_bytes = 64
 code_regions = ["capture", "build_bank", "request_page"]
 
 [[assembly_unit]]
@@ -120,8 +120,8 @@ start = 0x000D4800
 end = 0x000D4C00
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "dce5f86f9700c8a0157d73ec5ca03a07e0a1dc97c266ca490105d096d5291c2e"
-instruction_count = 217
+expected_sha256 = "9670a2e58f88508f8550da25f6b098e7bd1088e53aa05b774531326d23cbec5c"
+instruction_count = 215
 data_bytes = 56
 code_regions = ["sle1_isr", "completion"]
 
@@ -132,9 +132,9 @@ start = 0x000D4C00
 end = 0x000D4E00
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "7729c234d4091bd6a82dd3f4c0c432b25d5222df35a5198839ca7a95ce01cec9"
+expected_sha256 = "f2684fd0dc73296223889d67aa7fd3ef87bc4344f54bda2c681ba303abdb75b8"
 instruction_count = 0
-data_bytes = 292
+data_bytes = 444
 code_regions = []
 
 [[hook]]

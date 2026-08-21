@@ -14,7 +14,7 @@ mov.w @(telemetry_config_magic,pc),r1
 cmp/eq r1,r0
 bf telemetry_capture_return
 mov.b @(0x2,r4),r0
-cmp/eq 0x1,r0
+cmp/eq 0x2,r0
 bf telemetry_capture_return
 mov.b @(0x3,r4),r0
 cmp/eq 0x1,r0
@@ -22,14 +22,8 @@ bf telemetry_capture_return
 mov.b @(0x4,r4),r0
 extu.b r0,r5
 cmp/eq 0x1,r0
-bt telemetry_capture_core_profile
-cmp/eq 0x2,r0
 bf telemetry_capture_return
-mov #0x8,r6
-bra telemetry_capture_check_pages
-nop
-telemetry_capture_core_profile:
-mov #0x5,r6
+mov #0xB,r6
 telemetry_capture_check_pages:
 mov.b @(0x5,r4),r0
 extu.b r0,r0
@@ -49,14 +43,7 @@ bt telemetry_capture_return
 mov.w @(telemetry_config_can_id_max,pc),r1
 cmp/hi r1,r0
 bt telemetry_capture_return
-mov r5,r0
-cmp/eq 0x1,r0
-bt telemetry_capture_core_crc
-mov.w @(telemetry_config_wide_crc,pc),r1
-bra telemetry_capture_check_crc
-nop
-telemetry_capture_core_crc:
-mov.w @(telemetry_config_core_crc,pc),r1
+mov.w @(telemetry_config_crc,pc),r1
 telemetry_capture_check_crc:
 mov.w @(0xA,r4),r0
 cmp/eq r1,r0
@@ -165,30 +152,27 @@ telemetry_capture_state:
 telemetry_capture_bank_a:
 .long 0xFFFF5E20
 telemetry_capture_bank_b:
-.long 0xFFFF5E60
+.long 0xFFFF5E78
 telemetry_config_integrity:
-.long 0x54454C31
+.long 0x54454C32
 telemetry_config_magic:
 .word 0x4354
 telemetry_config_can_id_max:
 .word 0x07FF
-telemetry_config_core_crc:
-.word 0x27FA
-telemetry_config_wide_crc:
-.word 0x238C
+telemetry_config_crc:
+.word 0xE881
 
 .org 0x000D4500
-// Always construct pages 0 through 7. The configured page count truncates
-// transmission in the queue path; it does not reduce snapshot-copy work.
+// Always construct nine fixed pages and both rotating context pages.
 telemetry_build_bank:
 mov.l @(telemetry_build_state,pc),r3
 mov.l @(telemetry_page_table,pc),r5
 mov #0x0,r6
 telemetry_build_page_loop:
 mov.b @(0x9,r3),r0
-and 0x1F,r0
+and 0x0F,r0
 shll2 r0
-shll r0
+shll2 r0
 or r6,r0
 mov.b r0,@r4
 add 0x1,r4
@@ -202,14 +186,14 @@ dt r2
 bf telemetry_build_byte_loop
 add 0x1,r6
 mov r6,r0
-cmp/eq 0x7,r0
+cmp/eq 0x9,r0
 bf telemetry_build_page_loop
 
 mov.b @(0x9,r3),r0
-and 0x1F,r0
+and 0x0F,r0
 shll2 r0
-shll r0
-or 0x7,r0
+shll2 r0
+or 0x9,r0
 mov.b r0,@r4
 add 0x1,r4
 mov.b @(0x6,r3),r0
@@ -222,24 +206,53 @@ telemetry_build_context_valid:
 mov r6,r0
 mov.b r0,@r4
 add 0x1,r4
-mov.l @(telemetry_context_table,pc),r5
+mov.l @(telemetry_context_page_9_table,pc),r5
 mov r6,r1
-telemetry_build_context_seek:
+telemetry_build_context_page_9_seek:
 tst r1,r1
-bt telemetry_build_context_copy
+bt telemetry_build_context_page_9_copy
 add 0x18,r5
 add -0x1,r1
-bra telemetry_build_context_seek
+bra telemetry_build_context_page_9_seek
 nop
-telemetry_build_context_copy:
+telemetry_build_context_page_9_copy:
 mov #0x6,r2
-telemetry_build_context_byte_loop:
+telemetry_build_context_page_9_byte_loop:
 mov.l @r5+,r1
 mov.b @r1,r0
 mov.b r0,@r4
 add 0x1,r4
 dt r2
-bf telemetry_build_context_byte_loop
+bf telemetry_build_context_page_9_byte_loop
+
+mov.b @(0x9,r3),r0
+and 0x0F,r0
+shll2 r0
+shll2 r0
+or 0xA,r0
+mov.b r0,@r4
+add 0x1,r4
+mov r6,r0
+mov.b r0,@r4
+add 0x1,r4
+mov.l @(telemetry_context_page_10_table,pc),r5
+mov r6,r1
+telemetry_build_context_page_10_seek:
+tst r1,r1
+bt telemetry_build_context_page_10_copy
+add 0x18,r5
+add -0x1,r1
+bra telemetry_build_context_page_10_seek
+nop
+telemetry_build_context_page_10_copy:
+mov #0x6,r2
+telemetry_build_context_page_10_byte_loop:
+mov.l @r5+,r1
+mov.b @r1,r0
+mov.b r0,@r4
+add 0x1,r4
+dt r2
+bf telemetry_build_context_page_10_byte_loop
 add 0x1,r6
 mov #0x4,r1
 cmp/hs r1,r6
@@ -256,8 +269,10 @@ telemetry_build_state:
 .long 0xFFFF5E00
 telemetry_page_table:
 .long 0x000D4C00
-telemetry_context_table:
-.long 0x000D4CC4
+telemetry_context_page_9_table:
+.long 0x000D4CFC
+telemetry_context_page_10_table:
+.long 0x000D4D5C
 
 .org 0x000D4700
 telemetry_request_page:
@@ -296,7 +311,7 @@ telemetry_request_state:
 telemetry_request_bank_a_literal:
 .long 0xFFFF5E20
 telemetry_request_bank_b:
-.long 0xFFFF5E60
+.long 0xFFFF5E78
 telemetry_mailbox_data:
 .long 0xFFFFDC48
 telemetry_txpr1:

@@ -72,6 +72,24 @@ While Rolling Launch is `ACTIVE` or `COOLDOWN`, the selector arbiter bypasses
 the custom map selector and calls the displaced stock ASCD host. This prevents
 both runtimes from modifying shared state during one gesture.
 
+## Scheduler timebase
+
+The periodic hook replaces table entry 0 at `0x00021970`, calls the displaced
+stock task, and advances Rolling Launch once per exact `FUN_00020DFE` pass.
+The timer configuration proves a period of `204800/Pphi` seconds. Passive
+target-CAN timestamps independently establish `Pphi = 20 MHz`, so one runtime
+tick is `10.24 ms` on JK08A.
+
+The default configuration therefore gives these exact target durations:
+
+| Field | Ticks | Duration |
+| --- | ---: | ---: |
+| run timeout | 300 | 3.072 s |
+| rearm | 100 | 1.024 s |
+
+The time conversion is a measured target property. It does not by itself
+establish the physical spark or injector-output behavior.
+
 ## Dashboard indication
 
 The dashboard arbiter calls the complete map-feedback wrapper first. A nonzero

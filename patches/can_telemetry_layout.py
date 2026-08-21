@@ -197,7 +197,7 @@ def load_layout(path=DEFAULT_MANIFEST):
 
 
 def validate_structure(layout):
-    if layout.schema_version != 1:
+    if layout.schema_version != 2:
         raise ValueError(f"unsupported CAN telemetry layout schema {layout.schema_version}")
     if layout.rom != "JK08A" or layout.byte_order != "big":
         raise ValueError("CAN telemetry supports only big-endian exact JK08A")
@@ -308,7 +308,7 @@ def validate_structure(layout):
     for left, right in zip(partitions, partitions[1:]):
         if left.end != right.start:
             raise ValueError("active RAM partitions are not contiguous")
-    if tuple(item.size for item in partitions) != (32, 64, 64, 64, 32):
+    if tuple(item.size for item in partitions) != (32, 88, 88, 16, 32):
         raise ValueError("active RAM partition sizes differ")
 
     profile = can_telemetry_profile.load_manifest()

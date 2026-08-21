@@ -3,7 +3,7 @@ import tomllib
 import unittest
 import xml.etree.ElementTree as ET
 
-from tools.mapkit import emit_def, presentation
+from tools.mapkit import emit_def, presentation, presentation_audit
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -17,16 +17,16 @@ COMMON_TABLES = {
     "Developer Immobilizer": "NATS / Immobilizer",
     "MAF Factor": "Fuelling / MAF Scaling",
     "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
-    "Internal Load 100% BFS Reference": "Fuelling / Engine Load",
-    "Diagnostic Calculated Load 100% BFS Reference":
-        "Fuelling / Engine Load",
-    "Cold Ignition Timing Trim": "Ignition Timing / Main",
-    "Knock-State Enable - Cold": "Ignition Timing / Knock Control",
+    "Internal Load Normalization Reference": "Fuelling / Load Model",
+    "Ignition Timing Surface - Cold State":
+        "Ignition Timing / State Surfaces",
+    "Knock-State Path Enable - Cold State":
+        "Ignition Timing / State Control",
     "Knock Threshold by Evaluator Channel":
         "Ignition Timing / Knock Control / Thresholds",
-    "MAF Sensor Scaling Bank 1": "Fuelling / MAF Scaling",
-    "MAF Sensor Scaling Bank 2": "Fuelling / MAF Scaling",
-    "Stationary Rev Limiter": "Limiters / Stationary Rev Limiter",
+    "MAF Sensor Transfer - Bank 1": "Fuelling / MAF Scaling",
+    "MAF Sensor Transfer - Bank 2": "Fuelling / MAF Scaling",
+    "Stationary Engine Speed Limit": "Limiters / Engine Speed / Stationary",
     "Rolling Launch Enable by Map": "Rolling Launch / Map Enable",
     "Rolling Launch Require Accelerator Pedal": "Rolling Launch / Activation",
     "Rolling Launch Minimum Coolant Temperature": "Rolling Launch / Activation",
@@ -40,48 +40,54 @@ COMMON_TABLES = {
 }
 
 DEFAULT_VISIBLE_TABLES = {
-    "Accelerator Pedal High-State Hysteresis (0x8FDC)":
+    "Accelerator Pedal High-State Hysteresis":
         "Electronic Throttle Control / Accelerator Pedal / Thresholds",
-    "Stationary Rev Limiter Readiness Threshold (0x911C)":
-        "Limiters / Stationary Rev Limiter",
-    "Intake Cam Timing Conditional Correction": "Variable Valve Timing / Intake Cam",
-    "Knock Sensor Circuit Monitor Surface A (0xABBA)":
-        "Diagnostics / Knock Sensor Monitor",
-    "Knock Sensor Circuit Monitor Surface B (0xABFA)":
-        "Diagnostics / Knock Sensor Monitor",
-    "Intake Cam Timing Main": "Variable Valve Timing / Intake Cam",
-    "Intake Cam Timing Cold": "Variable Valve Timing / Intake Cam",
-    "QH0 / Torque Conversion Map": "Electronic Throttle Control / Main",
-    "Engine Torque Map": "Transmission / Shifting Performance",
-    "Conditional DFCO Entry Delay - scheduler counts (0x120F6)": "Fuelling / Overrun",
-    "Stationary Rev Limiter Accumulator Step (0x124D2)":
-        "Limiters / Stationary Rev Limiter",
-    "Injection Pulse Channel Multiplier (0x129C0)": "Fuel Delivery / Main",
-    "Target Throttle Valve Opening Table": "Electronic Throttle Control / Main",
-    "Engine Torque Scaled Correction vs RPM": "Transmission / Shifting Performance",
-    "Engine Torque Base Correction vs RPM": "Transmission / Shifting Performance",
-    "QH0 / Torque Conversion Map Trustful": "Electronic Throttle Control / Main",
-    "Target Throttle Valve Opening Table Trustful": "Electronic Throttle Control / Main",
+    "Stationary Limiter Readiness Threshold":
+        "Limiters / Engine Speed / Stationary",
+    "Intake CVTC Target Correction - High-Detonation State":
+        "Variable Valve Timing / Intake Cam",
+    "Intake CVTC Target - Main": "Variable Valve Timing / Intake Cam",
+    "Intake CVTC Target - Cold": "Variable Valve Timing / Intake Cam",
+    "Requested Torque Conversion by QH0 - Primary":
+        "Electronic Throttle Control / Requested Torque",
+    "Engine Torque Surface": "Torque Model / Engine Torque",
+    "Stationary Limiter Readiness Step":
+        "Limiters / Engine Speed / Stationary",
+    "Injection Pulse Channel Multiplier": "Fuelling / Injection",
+    "Throttle Angle-to-Area Conversion - Primary":
+        "Electronic Throttle Control / Throttle Geometry",
+    "Engine Torque Correction Coefficient vs RPM":
+        "Torque Model / Engine Torque",
+    "Engine Torque Base Term vs RPM": "Torque Model / Engine Torque",
+    "Requested Torque Conversion by QH0 - Validation Copy":
+        "Electronic Throttle Control / Requested Torque",
+    "Throttle Angle-to-Area Conversion - Validation Copy":
+        "Electronic Throttle Control / Throttle Geometry",
 }
 
 SLOT_TABLES = {
-    "Exhaust Cam Timing Main": "Variable Valve Timing / Exhaust Cam",
-    "Fuel Compensation Main": "Fuelling / Fuel Compensation",
-    "DFCO Entry RPM Threshold": "Fuelling / Overrun",
-    "DFCO Full Restore RPM Threshold": "Fuelling / Overrun",
-    "DFCO Hold RPM Threshold": "Fuelling / Overrun",
+    "Exhaust CVTC Target - Main": "Variable Valve Timing / Exhaust Cam",
+    "Fuel Compensation - Main": "Fuelling / Compensation",
+    "DFCO Entry RPM Threshold": "Fuelling / Deceleration Fuel Cut",
+    "DFCO Full Restore RPM Threshold": "Fuelling / Deceleration Fuel Cut",
+    "DFCO Hold RPM Threshold": "Fuelling / Deceleration Fuel Cut",
     "DFCO Low-Speed Intermediate Restore RPM Threshold":
-        "Fuelling / Overrun",
-    "High-Octane Ignition Timing Trim": "Ignition Timing / Main",
-    "Knock-State Enable - High Octane": "Ignition Timing / Knock Control",
-    "High-Detonation Ignition Timing Trim": "Ignition Timing / Main",
-    "Knock-State Enable - High Detonation": "Ignition Timing / Knock Control",
-    "Rev Limit - Fuel Cut": "Limiters / Rev Limit",
-    "Rev Limit - Throttle Cut": "Limiters / Rev Limit",
-    "Default/Post-Transition Timing-State Addend (x-128) (0x12196)":
-        "Ignition Timing / State Accumulators",
-    "Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)":
-        "Ignition Timing / State Accumulators",
+        "Fuelling / Deceleration Fuel Cut",
+    "Ignition Timing Surface - High-Octane State":
+        "Ignition Timing / State Surfaces",
+    "Knock-State Path Enable - High-Octane State":
+        "Ignition Timing / State Control",
+    "Ignition Timing Surface - High-Detonation State":
+        "Ignition Timing / State Surfaces",
+    "Knock-State Path Enable - High-Detonation State":
+        "Ignition Timing / State Control",
+    "Engine Speed Limit - Fuel Cut": "Limiters / Engine Speed / Driving",
+    "Engine Speed Limit - Throttle Request":
+        "Limiters / Engine Speed / Driving",
+    "Timing-State Addend - Default/Post-Transition":
+        "Ignition Timing / State Corrections",
+    "Timing-State Addend - Warm DFCO Transition":
+        "Ignition Timing / State Corrections",
 }
 
 
@@ -168,7 +174,7 @@ class EmitDefStaticAxesTest(unittest.TestCase):
         )
         presentation = {
             "name": "Injection Pulse Channel Multiplier",
-            "category": "Fuel Delivery / Main",
+            "category": "Fuelling / Injection",
             "static_axis_name": "Channel",
             "static_axis": [1, 2, 3, 4, 5, 6],
         }
@@ -356,7 +362,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
         self.assertTrue(emit_def.map_switching_enabled(overrides))
         default = emit_def.presentation_default_emit(overrides)
         self.assertTrue(default)
-        hidden_categories = {
+        internal_hidden_categories = {
             "Diagnostics / MAF",
             "Internal Calculations",
             "Diagnostics / Internal Calculations",
@@ -369,17 +375,21 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             for address, entry in overrides["table"].items()
             if entry.get("emit") is False
         }
-        self.assertEqual(len(explicitly_hidden), 164)
+        self.assertEqual(len(explicitly_hidden), 168)
         self.assertIn("000094b2", explicitly_hidden)
         self.assertTrue(all(
-            entry.get("category") in hidden_categories
-            for entry in explicitly_hidden.values()
+            entry.get("category") in internal_hidden_categories
+            or address in presentation_audit.NON_TUNING_TABLES
+            for address, entry in explicitly_hidden.items()
         ))
         self.assertTrue(all(
             entry.get("emit") is False
             for entry in overrides["table"].values()
-            if entry.get("category") in hidden_categories
+            if entry.get("category") in internal_hidden_categories
         ))
+        self.assertTrue(
+            set(presentation_audit.NON_TUNING_TABLES) <= set(explicitly_hidden)
+        )
         self.assertTrue(
             {"000126e4", "0001298c"} <= set(overrides["table"])
         )
@@ -610,7 +620,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
-            if table.get("name") == slot_name(1, "Exhaust Cam Timing Main")
+            if table.get("name") == slot_name(1, "Exhaust CVTC Target - Main")
         )
         scale = table.find("./scaling")
         self.assertEqual(scale.get("units"), "degCA [cand]")
@@ -625,9 +635,9 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             for table in rom.findall("./table")
         }
         for name in (
-            "Cold Ignition Timing Trim",
-            slot_name(1, "High-Octane Ignition Timing Trim"),
-            slot_name(1, "High-Detonation Ignition Timing Trim"),
+            "Ignition Timing Surface - Cold State",
+            slot_name(1, "Ignition Timing Surface - High-Octane State"),
+            slot_name(1, "Ignition Timing Surface - High-Detonation State"),
         ):
             with self.subTest(name=name):
                 table = by_name[name]
@@ -666,13 +676,11 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         expected = {
             "0x12196": slot_name(
                 1,
-                "Default/Post-Transition Timing-State Addend "
-                "(x-128) (0x12196)",
+                "Timing-State Addend - Default/Post-Transition",
             ),
             "0x1219E": slot_name(
                 1,
-                "Warm DFCO-Transition Timing-State Addend "
-                "(x-128) (0x1219E)",
+                "Timing-State Addend - Warm DFCO Transition",
             ),
         }
         for address, name in expected.items():
@@ -681,7 +689,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                 self.assertEqual(table.get("name"), name)
                 self.assertEqual(
                     table.get("category"),
-                    "Ignition Timing//State Accumulators",
+                    "Ignition Timing//State Corrections",
                 )
                 scale = table.find("./scaling")
                 self.assertEqual(
@@ -723,8 +731,8 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             for table in rom.findall("./table")
         }
         for name in (
-            "MAF Sensor Scaling Bank 1",
-            "MAF Sensor Scaling Bank 2",
+            "MAF Sensor Transfer - Bank 1",
+            "MAF Sensor Transfer - Bank 2",
         ):
             with self.subTest(name=name):
                 table = by_name[name]
@@ -771,7 +779,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
-            if table.get("name") == slot_name(1, "Rev Limit - Fuel Cut")
+            if table.get("name") == slot_name(1, "Engine Speed Limit - Fuel Cut")
         )
         scaling = table.find("./scaling")
         axis_x = table.find("./table[@type='Static X Axis']")
@@ -796,7 +804,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         table = next(
             table for table in rom.findall("./table")
             if table.get("name") == slot_name(
-                1, "Rev Limit - Throttle Cut"
+                1, "Engine Speed Limit - Throttle Request"
             )
         )
         scaling = table.find("./scaling")

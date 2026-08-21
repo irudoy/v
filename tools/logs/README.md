@@ -37,7 +37,7 @@ content is enabled, as described by the official
 `can_telemetry.py` strictly reconstructs the fixed JK08A custom telemetry
 groups described by `../../patches/can-telemetry-schema.json`. It accepts the
 compact `ID#DATA` candump form, filters one configured standard ID, requires
-page 0 followed by strictly increasing page IDs, verifies the five-bit header
+page 0 followed by strictly increasing page IDs, verifies the four-bit header
 sequence against `tick16`, discards incomplete or preempted groups, and unwraps
 `tick16` modulo 65536. A capture may begin in the tail of a group already in
 progress; frames before the first page 0 are ignored as initial synchronization
@@ -47,14 +47,14 @@ Decode a capture to one JSON object per complete snapshot:
 
 ```bash
 python3 tools/logs/can_telemetry.py \
-  --profile core32 \
+  --profile tuning \
   --can-id 0x6F0 \
   capture.log > snapshots.jsonl
 ```
 
-`core32` is bound to the selected generated schema out of band. `wide54`
-starts with `schema_verified=false` and enables engineering-unit transforms
-only after context tag 3 reports the exact protocol version, profile ID, and
+The schema-2 `tuning` profile requires pages 0 through 10. It starts with
+`schema_verified=false` and enables engineering-unit transforms only after
+page 9 context tag 3 reports the exact protocol version, profile ID, and
 profile CRC16. A later health mismatch disables conversion and increments the
 reported mismatch counter. Raw source values remain present in every accepted
 snapshot; transforms are emitted only for scales explicitly declared by the
@@ -75,7 +75,7 @@ and keeps candidate transforms visibly distinct from proven physical outputs.
 ## JK08A load-coordinate audit
 
 `load_axis_audit.py` reconstructs both load representations from a strict
-`wide54` TRC and the exact registered JK08A ROM:
+schema-2 `tuning` TRC and the exact registered JK08A ROM:
 
 - the internal Q7 map coordinate is
   `min(255, floor(BaseFuelSchedule * 128 / ROM16[0x9534]))`;
@@ -86,7 +86,7 @@ Run the audit on a captured drive:
 
 ```bash
 python3 tools/logs/load_axis_audit.py \
-  tmp/can-dump/new-log-full.trc
+  schema2-capture.trc
 ```
 
 The report compares the reconstructed diagnostic byte with both the same
@@ -106,7 +106,7 @@ coordinate; no wire-schema or firmware change is required.
 
 `cvtc_target_audit.py` replays the exact stock byte-axis search, Q0.16
 interpolation order, coolant selection, and downstream target conditioning
-against a strict verified `wide54` capture. The default intake family uses
+against a strict schema-2 `tuning` capture. The default intake family uses
 warm/main map `0xB43A`, cold map `0xB53A`, and correction `0xAB5A`. The
 `--target exhaust` family uses `0xB33A`, `0xB2FA`, and `0xAB4A`. The column
 coordinate is reconstructed with the same normalized-BFS formula used by
@@ -115,12 +115,12 @@ coordinate is reconstructed with the same normalized-BFS formula used by
 ```bash
 python3 tools/logs/cvtc_target_audit.py \
   --calibration-image tmp/1JK08A-tune-v1-11.bin \
-  tmp/can-dump/new-log-full.trc
+  schema2-capture.trc
 
 python3 tools/logs/cvtc_target_audit.py \
   --target exhaust \
   --calibration-image tmp/1JK08A-tune-v1-11.bin \
-  tmp/can-dump/new-log-full.trc
+  schema2-capture.trc
 ```
 
 Without `--calibration-image`, the tool uses the hash-verified registered JK08A
@@ -131,17 +131,10 @@ The report tests same-snapshot and preceding-snapshot input alignment, separates
 downstream neutralization from direct map disagreement, and reports stable
 active intervals where the reconstructed map result remains unchanged for a
 selected number of source cycles. Intake conditioning is evaluated against
-`0xFFFF2326`; exhaust conditioning is evaluated against `0xFFFF2327`. The two
-captured actual-angle fields are explicitly reported as intake actual B1/B2;
-the current wire profile does not contain actual exhaust angles.
-
-The telemetry fields named `intake_cvtc_target_b1_raw` and
-`intake_cvtc_target_b2_raw` are legacy wire identifiers. The first carries the
-common conditioned intake target at `0xFFFF2326`; the second carries the common
-conditioned exhaust target at `0xFFFF2327`. They are not two bank-specific
-intake targets. Changing either schema identifier would change the verified
-profile CRC, so the decoder keeps the wire names while user-facing labels use
-the recovered roles.
+`0xFFFF2326`; exhaust conditioning is evaluated against `0xFFFF2327`. Schema 2
+also carries actual exhaust positions for both banks. The target fields are
+named `intake_cvtc_target_raw` and `exhaust_cvtc_target_raw`, matching the two
+common conditioned targets.
 
 The audit validates only paths exercised by the capture. A warm-engine log with
 the correction selector clear cannot validate the cold surface, coolant blend,
@@ -158,7 +151,7 @@ and recovers complete map-selection gestures from stock CAN button input.
 ```bash
 python3 tools/logs/ignition_surface_audit.py \
   --calibration-image tmp/1JK08A-tune-v1-11.bin \
-  tmp/can-dump/new-log-full.trc
+  schema2-capture.trc
 ```
 
 The report keeps the interpolated low-seven timing-state field separate from
@@ -184,10 +177,10 @@ It does not replay the capture in real time.
 
 ```bash
 python3 tools/logs/trc_to_mlg.py \
-  --profile wide54 \
+  --profile tuning \
   --can-id 0x6F0 \
   --tick-divisor 1 \
-  tmp/can-dump/new-log-full.trc
+  schema2-capture.trc
 ```
 
 The MLG start timestamp is the PEAK `$STARTTIME` plus the offset of the first
@@ -198,7 +191,7 @@ than assigned an implicit daylight-saving fold. Existing outputs are rejected
 unless `--force` is supplied, and the output path may never resolve to the
 source trace.
 
-The `wide54` output contains 60 fields: `Date`, `Elapsed`, schema state, every
+The `tuning` output contains 83 fields: `Date`, `Elapsed`, schema state, every
 fixed and rotating telemetry value, five stock-CAN context values, and the GPS
 contract fields `gps_lat` and `gps_lon`. Missing rotating contexts use IEEE 754
 `NaN`. Candidate engineering transforms remain marked with `*`.
@@ -213,6 +206,10 @@ populate the same fields without changing their MLG contract.
 used by this converter, the live dashboard recorder, and `csv_to_mlg.py`. It
 checks header layout, descriptor-derived record size, block counters, complete
 records, and payload CRC before an atomic output replacement.
+
+The current decoder and converter intentionally reject historical schema-1
+`core32` and `wide54` captures. Those logs require a repository revision whose
+generated schema matches their recorded profile CRC.
 
 ## Diagnostic CSV to MLG
 

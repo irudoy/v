@@ -14,6 +14,7 @@ are separated from editor presentation and generated output.
 | `JK08A.funcs.csv` | Function semantics, callable contracts, and evidence | yes |
 | `JK08A.vars.csv` | RAM and peripheral semantics and evidence | yes |
 | `JK08A.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims | yes |
+| `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | yes |
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
@@ -67,6 +68,11 @@ See `../tools/map-analysis-pipeline.md` and
 - `JK08A.start-signal-temperature-selector.md` models the computed START
   SIGNAL, battery-voltage acquisition, and selected-temperature sentinel.
 - `JK08A.diagnostics.md` models diagnostic publication and monitor boundaries.
+- `JK08A.tuning-telemetry.md` defines schema-2 custom-CAN coverage, stock-CAN
+  context, closed-loop observation groups, and measurements that still require
+  new instrumentation or external equipment.
+- `JK08A.definition-presentation.md` defines editor naming, category taxonomy,
+  validation-copy terminology, and the non-tuning visibility boundary.
 - `JK08A.can.md` models the exact HCAN1 mailbox table, stock transmit pipeline,
   payload boundaries, and safe extension mailbox.
 

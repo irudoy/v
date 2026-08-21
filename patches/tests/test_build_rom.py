@@ -391,7 +391,7 @@ class BuildRomTest(unittest.TestCase):
         telemetry_values = {
             "enabled": "true",
             "can_id": "0x6EF",
-            "profile": '"wide54"',
+            "profile": '"tuning"',
             "tick_divisor": "5",
         }
         with tempfile.TemporaryDirectory() as directory:
@@ -403,7 +403,7 @@ class BuildRomTest(unittest.TestCase):
             profile = build_rom.load_profile(path)
         self.assertEqual(
             profile.telemetry,
-            can_telemetry.Configuration(True, 0x6EF, "wide54", 5),
+            can_telemetry.Configuration(True, 0x6EF, "tuning", 5),
         )
         result = build_rom.build_image(self.stock, profile=profile)
         self.assertEqual(

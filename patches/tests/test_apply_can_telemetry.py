@@ -29,8 +29,8 @@ class ApplyCanTelemetryTest(unittest.TestCase):
     def test_disabled_and_enabled_outputs_are_checksum_valid(self):
         configurations = (
             can_telemetry.default_configuration(),
-            can_telemetry.Configuration(True, 0x6F0, "core32", 1),
-            can_telemetry.Configuration(True, 0x6EF, "wide54", 5),
+            can_telemetry.Configuration(True, 0x6F0, "tuning", 1),
+            can_telemetry.Configuration(True, 0x6EF, "tuning", 5),
         )
         for configuration in configurations:
             with self.subTest(configuration=configuration):
@@ -42,13 +42,13 @@ class ApplyCanTelemetryTest(unittest.TestCase):
                 self.assertEqual(
                     result.mailbox_record, configuration.mailbox_record()
                 )
-                self.assertEqual(result.instruction_count, 470)
+                self.assertEqual(result.instruction_count, 482)
                 self.assertEqual(result.code_entry_count, 8)
                 self.assertGreater(result.final_changed_bytes, 1100)
 
     def test_output_changes_only_closed_write_set_and_checksums(self):
         result = self.apply(
-            can_telemetry.Configuration(True, 0x6F0, "core32", 1)
+            can_telemetry.Configuration(True, 0x6F0, "tuning", 1)
         )
         permitted, _ = apply_can_telemetry._final_write_offsets(self.layout)
         changed = {

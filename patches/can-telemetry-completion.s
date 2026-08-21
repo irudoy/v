@@ -232,9 +232,7 @@ cmp/hs r2,r1
 bt telemetry_queue_corrupt
 mov.b @(0x4,r3),r0
 extu.b r0,r2
-cmp/eq 0x5,r0
-bt telemetry_queue_page_count_valid
-cmp/eq 0x8,r0
+cmp/eq 0xB,r0
 bf telemetry_queue_corrupt
 telemetry_queue_page_count_valid:
 mov.b @(0x3,r3),r0
@@ -285,7 +283,7 @@ telemetry_completion_request_page:
 telemetry_completion_bank_a:
 .long 0xFFFF5E20
 telemetry_completion_bank_b:
-.long 0xFFFF5E60
+.long 0xFFFF5E78
 telemetry_completion_mailbox26_mask:
 .word 0x0400
 telemetry_completion_mailbox_empty_mask:

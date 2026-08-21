@@ -15,8 +15,9 @@ specified separately in [JK08A.rpm-drop-state.md](JK08A.rpm-drop-state.md).
 The enabled 1.11 vehicle capture validates the lower/full-restore table as the
 operational entry veto under warm moving lift-off. Exact stock branch analysis
 separates that moving role from the upper/intermediate table's low-speed role.
-Timing in scheduler counts is code-proven. Timing in milliseconds and the
-physical injector result remain hardware-validation items.
+Timing in scheduler counts is code-proven, and passive target-CAN timestamps
+establish the physical `10.24 ms` conversion. The physical injector result
+remains a hardware-validation item.
 
 ## Execution cadence
 
@@ -47,11 +48,11 @@ therefore equals exactly:
 204800 / Pphi seconds
 ```
 
-The local NissanECU hardware note identifies a 10 MHz crystal, while the
-SH7059 manual defines `Pphi = EXTAL * 2`. If that board-level assumption applies
-to the target ECU, one DFCO count is 10.24 ms. This physical conversion is a
-candidate until the target peripheral clock is measured or independently
-confirmed.
+Passive target-CAN timestamps show a `102.4 ms` median over ten scheduler
+periods. Together with the exact timer formula, this establishes
+`Pphi = 20 MHz` and one DFCO count of `10.24 ms` on the target ECU. The local
+NissanECU hardware note and the SH7059 relation `Pphi = EXTAL * 2` independently
+agree with that result.
 
 ## Upstream mode snapshots
 
@@ -217,7 +218,7 @@ byte into `0xFFFF2571` and the low byte into `0xFFFF2572`.
 
 With stock `ROM8[0x870C].bit7 = 0`, normal branches select:
 
-| Condition | Stage 1 | Stage 2 | Candidate time at 10.24 ms/count |
+| Condition | Stage 1 | Stage 2 | Time at 10.24 ms/count |
 |---|---:|---:|---:|
 | `0xFFFF2468.bit7 = 0` | 60 | 0 | 614.4 ms |
 | bit 7 set and raw coolant below `0x6E` | 40 | 0 | 409.6 ms |
@@ -277,8 +278,8 @@ without a rotating tail.
 
 For the stock `0x8B3F.bit7 = 0` branch, `0xFFFF1517` selects class 0 below 4,
 class 1 at 4, and class 2 at or above 5. Tables at `0x1269D` and `0x1269A`
-provide delays `[0, 5, 2]` and counts `[0, 2, 2]`. Candidate physical delays
-are 0, 51.2, and 20.48 ms under the 10.24 ms/count assumption.
+provide delays `[0, 5, 2]` and counts `[0, 2, 2]`. The corresponding target
+delays are 0, 51.2, and 20.48 ms.
 
 `FUN_00050766` rotates the current injector-event one-hot mask held in
 `0xFFFF1936`. Injector-event handler `FUN_0002BE40` supplies that mask, clears
@@ -377,7 +378,6 @@ input firmware.
 Further validation can establish, without changing the code model:
 
 - physical meaning and transition conditions of `0xFFFF2459.bit5`;
-- target `Pphi` and the timer-count conversion;
 - direct state and timer values during real deceleration;
 - exercise the `0x12818` equality and above-range boundary on the vehicle;
 - physical injector closure and diagnostic injector-duration behavior;

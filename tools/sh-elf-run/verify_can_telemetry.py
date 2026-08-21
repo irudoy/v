@@ -31,13 +31,13 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "e784e2ecc760c9de147072a5cc58e5935041c070501e74b82019612287227c4a"
+    "65f4f9f0095c77ae4580bbbaa0777b68e6ac596c7c56fadde2256084f881aaa1"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 1219
+EXPECTED_COMPOSITION_CHANGED_BYTES = 1320
 EXPECTED_COMPOSITION_WRITE_BYTES = 2980
-EXPECTED_INSTRUCTION_COUNT = 470
+EXPECTED_INSTRUCTION_COUNT = 482
 EXPECTED_CODE_ENTRY_COUNT = 8
-EXPECTED_DYNAMIC_CASES = 49
+EXPECTED_DYNAMIC_CASES = 50
 RETURN_STUB = bytes.fromhex("000b0009")
 TRAPA_VECTOR_ADDRESS = 0x00000100
 
@@ -258,8 +258,8 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=180,
     )
     marker = (
-        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=49 entries=8 "
-        "profiles=2 contexts=4 isr_rte=5"
+        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=50 entries=8 "
+        "profiles=1 contexts=8 isr_rte=5"
     )
     if marker not in result.stdout:
         raise VerificationError(

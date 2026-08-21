@@ -13,7 +13,7 @@ import tomllib
 DEFAULT_SOURCE = Path(__file__).with_name("can-telemetry-profile.toml")
 DEFAULT_TABLES = Path(__file__).with_name("can-telemetry-tables.s")
 DEFAULT_SCHEMA = Path(__file__).with_name("can-telemetry-schema.json")
-PROFILE_NAMES = ("core32", "wide54")
+PROFILE_NAMES = ("tuning",)
 
 
 @dataclass(frozen=True)
@@ -35,6 +35,7 @@ class Field:
 
 @dataclass(frozen=True)
 class Context:
+    page: int
     tag: int
     name: str
     fields: tuple[Field, ...]
@@ -66,7 +67,11 @@ class Manifest:
     candidate_can_id: int
     candidate_tick_divisor: int
     base_tick_numerator: int
-    pphi_candidate_hz: int
+    pphi_hz: int
+    fixed_page_count: int
+    context_pages: tuple[int, ...]
+    context_count: int
+    header_sequence_bits: int
     table_address: int
     table_end: int
     configuration_address: int
@@ -85,13 +90,28 @@ class Manifest:
 
     @property
     def page_sources(self):
-        slots = {(page, offset): None for page in range(7) for offset in range(1, 8)}
+        slots = {
+            (page, offset): None
+            for page in range(self.fixed_page_count)
+            for offset in range(1, 8)
+        }
         for field in self.fields:
             if field.page is None or field.offset is None:
                 continue
             for index, address in enumerate(field.byte_sources):
                 slots[(field.page, field.offset + index)] = address
-        return tuple(slots[(page, offset)] for page in range(7) for offset in range(1, 8))
+        return tuple(
+            slots[(page, offset)]
+            for page in range(self.fixed_page_count)
+            for offset in range(1, 8)
+        )
+
+    @property
+    def contexts_by_page(self):
+        return {
+            page: tuple(item for item in self.contexts if item.page == page)
+            for page in self.context_pages
+        }
 
 
 def crc16_ccitt_false(data):
@@ -129,7 +149,7 @@ def _parse_field(raw, *, context, page_field):
         offset=raw.get("offset"),
         width=raw["width"],
         source=raw["source"],
-        profiles=tuple(raw.get("profiles", ("wide54",))),
+        profiles=tuple(raw.get("profiles", ("tuning",))),
         kind=raw["kind"],
         signed=raw["signed"],
         scale=raw["scale"],
@@ -161,7 +181,7 @@ def _parse_field(raw, *, context, page_field):
     if page_field:
         if (
             type(field.page) is not int
-            or not 0 <= field.page <= 6
+            or not 0 <= field.page <= 8
             or type(field.offset) is not int
             or not 1 <= field.offset <= 7
             or field.offset + field.width > 8
@@ -188,23 +208,23 @@ def _canonical_profile(raw, fields, contexts, protocol_version):
             "scale": field.scale,
         })
     context_rows = []
-    if raw["page_count"] == 8:
-        for context in contexts:
-            context_rows.append({
-                "tag": context.tag,
-                "name": context.name,
-                "fields": [
-                    {
-                        "name": field.name,
-                        "width": field.width,
-                        "source": f"0x{field.source:08X}",
-                        "kind": field.kind,
-                        "signed": field.signed,
-                        "scale": field.scale,
-                    }
-                    for field in context.fields
-                ],
-            })
+    for context in contexts:
+        context_rows.append({
+            "page": context.page,
+            "tag": context.tag,
+            "name": context.name,
+            "fields": [
+                {
+                    "name": field.name,
+                    "width": field.width,
+                    "source": f"0x{field.source:08X}",
+                    "kind": field.kind,
+                    "signed": field.signed,
+                    "scale": field.scale,
+                }
+                for field in context.fields
+            ],
+        })
     return {
         "protocol_version": protocol_version,
         "name": raw["name"],
@@ -222,21 +242,26 @@ def load_manifest(path=DEFAULT_SOURCE):
     root_keys = {
         "schema_version", "rom", "protocol_version", "byte_order",
         "mailbox", "candidate_can_id", "candidate_tick_divisor",
-        "base_tick_numerator", "pphi_candidate_hz", "table_address",
+        "base_tick_numerator", "pphi_hz", "fixed_page_count",
+        "context_pages", "context_count", "header_sequence_bits", "table_address",
         "table_end", "configuration_address", "state_address", "profile",
         "field", "context",
     }
     _require_keys(raw, root_keys, (), path.name)
     if (
-        raw["schema_version"] != 1
+        raw["schema_version"] != 2
         or raw["rom"] != "JK08A"
-        or raw["protocol_version"] != 1
+        or raw["protocol_version"] != 2
         or raw["byte_order"] != "big"
         or raw["mailbox"] != 26
         or not 1 <= raw["candidate_can_id"] <= 0x7FF
         or not 1 <= raw["candidate_tick_divisor"] <= 0xFF
         or raw["base_tick_numerator"] != 204800
-        or raw["pphi_candidate_hz"] <= 0
+        or raw["pphi_hz"] != 20_000_000
+        or raw["fixed_page_count"] != 9
+        or raw["context_pages"] != [9, 10]
+        or raw["context_count"] != 4
+        or raw["header_sequence_bits"] != 4
         or raw["table_address"] != 0x000D4C00
         or raw["table_end"] != 0x000D4E00
         or raw["configuration_address"] != 0x000D4E00
@@ -253,7 +278,10 @@ def load_manifest(path=DEFAULT_SOURCE):
 
     contexts = []
     for index, item in enumerate(raw["context"]):
-        _require_keys(item, {"tag", "name", "field"}, (), f"context[{index}]")
+        _require_keys(
+            item, {"page", "tag", "name", "field"}, (),
+            f"context[{index}]",
+        )
         context_fields = tuple(
             _parse_field(
                 field,
@@ -262,9 +290,13 @@ def load_manifest(path=DEFAULT_SOURCE):
             )
             for field_index, field in enumerate(item["field"])
         )
-        context = Context(item["tag"], item["name"], context_fields)
+        context = Context(
+            item["page"], item["tag"], item["name"], context_fields
+        )
         if (
-            type(context.tag) is not int
+            type(context.page) is not int
+            or context.page not in raw["context_pages"]
+            or type(context.tag) is not int
             or not isinstance(context.name, str)
             or not context.name
             or len(context.byte_sources) != 6
@@ -279,13 +311,26 @@ def load_manifest(path=DEFAULT_SOURCE):
                 raise ValueError(f"context[{index}]: ROM source lies outside configuration")
         contexts.append(context)
     contexts = tuple(contexts)
-    if tuple(item.tag for item in contexts) != (0, 1, 2, 3):
-        raise ValueError("context tags must be exactly 0 through 3")
+    wire_names = [field.name for field in fields]
+    wire_names.extend(
+        field.name for context in contexts for field in context.fields
+    )
+    if len(set(wire_names)) != len(wire_names):
+        raise ValueError("fixed and context field names are not globally unique")
+    expected_context_identity = tuple(
+        (page, tag)
+        for page in raw["context_pages"]
+        for tag in range(raw["context_count"])
+    )
+    if tuple((item.page, item.tag) for item in contexts) != expected_context_identity:
+        raise ValueError(
+            "context pages and tags must be ordered as two complete 0 through 3 sets"
+        )
 
     profile_raw = raw["profile"]
     if tuple(item.get("name") for item in profile_raw) != PROFILE_NAMES:
         raise ValueError("profile names or order differ")
-    expected_profiles = (("core32", 1, 5), ("wide54", 2, 8))
+    expected_profiles = (("tuning", 1, 11),)
     profiles = []
     for index, (item, expected) in enumerate(zip(profile_raw, expected_profiles)):
         _require_keys(item, {"name", "id", "page_count"}, (), f"profile[{index}]")
@@ -307,7 +352,11 @@ def load_manifest(path=DEFAULT_SOURCE):
         candidate_can_id=raw["candidate_can_id"],
         candidate_tick_divisor=raw["candidate_tick_divisor"],
         base_tick_numerator=raw["base_tick_numerator"],
-        pphi_candidate_hz=raw["pphi_candidate_hz"],
+        pphi_hz=raw["pphi_hz"],
+        fixed_page_count=raw["fixed_page_count"],
+        context_pages=tuple(raw["context_pages"]),
+        context_count=raw["context_count"],
+        header_sequence_bits=raw["header_sequence_bits"],
         table_address=raw["table_address"],
         table_end=raw["table_end"],
         configuration_address=raw["configuration_address"],
@@ -328,18 +377,16 @@ def _validate_coverage(manifest):
             if key in occupied:
                 raise ValueError(f"page byte {key} is assigned more than once")
             occupied[key] = field.name
-    for page in range(7):
+    for page in range(manifest.fixed_page_count):
         missing = [offset for offset in range(1, 8) if (page, offset) not in occupied]
         if missing:
             raise ValueError(f"page {page} lacks source bytes {missing}")
     for field in manifest.fields:
         for profile_name in field.profiles:
             page_count = manifest.profile_by_name[profile_name].page_count
-            if field.page >= page_count and not (
-                profile_name == "wide54" and field.page <= 6
-            ):
+            if field.page >= page_count:
                 raise ValueError(f"{field.name}: field lies outside profile {profile_name}")
-    if len(manifest.page_sources) != 49 or any(
+    if len(manifest.page_sources) != manifest.fixed_page_count * 7 or any(
         item is None for item in manifest.page_sources
     ):
         raise ValueError("fixed page pointer table is incomplete")
@@ -348,19 +395,25 @@ def _validate_coverage(manifest):
 def render_tables(manifest):
     lines = [
         "// Generated from can-telemetry-profile.toml. Do not edit.",
-        "// The capture loop consumes 49 fixed page-byte pointers followed by",
-        "// four six-byte context pointer groups.",
+        "// The capture loop consumes 63 fixed page-byte pointers followed by",
+        "// two sets of four six-byte context pointer groups.",
         "",
         f".org 0x{manifest.table_address:08X}",
         "telemetry_page_source_table:",
     ]
-    for page in range(7):
+    for page in range(manifest.fixed_page_count):
         start = page * 7
         values = manifest.page_sources[start : start + 7]
         lines.append(".long " + ", ".join(f"0x{value:08X}" for value in values))
-    lines.extend(("", "telemetry_context_source_table:"))
-    for context in manifest.contexts:
-        lines.append(".long " + ", ".join(f"0x{value:08X}" for value in context.byte_sources))
+    for page in manifest.context_pages:
+        lines.extend(("", f"telemetry_context_page_{page}_source_table:"))
+        for context in manifest.contexts_by_page[page]:
+            lines.append(
+                ".long "
+                + ", ".join(
+                    f"0x{value:08X}" for value in context.byte_sources
+                )
+            )
     return "\n".join(lines) + "\n"
 
 
@@ -390,7 +443,7 @@ def render_schema(manifest):
             "dlc": 8,
             "mailbox": manifest.mailbox,
             "candidate_can_id": f"0x{manifest.candidate_can_id:03X}",
-            "header": "((tick16 & 0x1f) << 3) | page_id",
+            "header": "((tick16 & 0x0f) << 4) | page_id",
         },
         "profiles": [
             {
@@ -405,12 +458,13 @@ def render_schema(manifest):
                 ],
                 "contexts": [
                     {
+                        "page": context.page,
                         "tag": context.tag,
                         "name": context.name,
                         "fields": [_field_json(field) for field in context.fields],
                     }
                     for context in manifest.contexts
-                ] if profile.page_count == 8 else [],
+                ],
             }
             for profile in manifest.profiles
         ],
@@ -456,7 +510,7 @@ def main(argv=None):
         f" profiles={len(manifest.profiles)}"
         f" fields={len(manifest.fields)}"
         f" contexts={len(manifest.contexts)}"
-        f" table_bytes={49 * 4 + 24 * 4}"
+        f" table_bytes={len(manifest.page_sources) * 4 + len(manifest.contexts) * 24}"
     )
     return 0
 

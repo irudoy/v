@@ -54,14 +54,27 @@ class RollingLaunchCompositionTest(unittest.TestCase):
             )),
         )
 
-    def test_scheduler_tick_formula_is_explicit(self):
+    def test_scheduler_tick_formula_matches_target_measurement(self):
         scheduler = self.layout.scheduler
         self.assertEqual(scheduler.table_index, 0)
         self.assertEqual(scheduler.tick_numerator, 204800)
+        self.assertEqual(scheduler.pphi_hz, 20_000_000)
         self.assertEqual(
-            scheduler.candidate_tick_microseconds,
+            scheduler.tick_microseconds,
             scheduler.tick_numerator * 1_000_000
-            // scheduler.pphi_candidate_hz,
+            // scheduler.pphi_hz,
+        )
+        self.assertEqual(scheduler.tick_microseconds, 10_240)
+        calibration = rolling_launch.Calibration.from_bytes(
+            self.layout.default_configuration
+        )
+        self.assertEqual(
+            calibration.run_timeout_ticks * scheduler.tick_microseconds,
+            3_072_000,
+        )
+        self.assertEqual(
+            calibration.rearm_ticks * scheduler.tick_microseconds,
+            1_024_000,
         )
 
     def test_tracked_payloads_and_machine_control_flow_match_sources(self):

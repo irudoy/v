@@ -15,7 +15,8 @@
 //   +0x11 u8  effective ignition command
 //   +0x12 u16 captured ignition-retard band start
 //
-// One tick is one exact periodic scheduler pass, or 204800/Pphi seconds.
+// One tick is one exact periodic scheduler pass: 204800/Pphi seconds. Passive
+// target-CAN timing establishes Pphi=20 MHz and a 10.24 ms target period.
 // The default calibration enables no map slot. Modes are 0 observe, 1 RPM
 // hold, and 2 RPM hold plus band-limited retard. Only modes 1 and 2 write the
 // fuel shadow.

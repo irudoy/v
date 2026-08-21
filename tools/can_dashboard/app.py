@@ -109,8 +109,8 @@ PANELS = (
         Metric("maf_b1_v", "MAF bank 1", "V*", 3),
         Metric("maf_b2_v", "MAF bank 2", "V*", 3),
         Metric("bfs_ms", "BFS", "ms*", 3),
-        Metric("af_b1_raw", "A/F bank 1", "raw", 0),
-        Metric("af_b2_raw", "A/F bank 2", "raw", 0),
+        Metric("front_oxygen_sensor_b1_raw", "Front O2 sensor B1", "raw", 0),
+        Metric("front_oxygen_sensor_b2_raw", "Front O2 sensor B2", "raw", 0),
         Metric("af_state_factor", "A/F state factor", "", 4),
         Metric("stft_b1_percent", "STFT bank 1", "%", 2),
         Metric("stft_b2_percent", "STFT bank 2", "%", 2),
@@ -157,6 +157,41 @@ PANELS = (
         Metric("gps_lat", "GPS latitude", "deg", 6),
         Metric("gps_lon", "GPS longitude", "deg", 6),
         Metric("gps_status", "GPS source"),
+    )),
+)
+
+EXTENDED_PANELS = (
+    ("Torque and requests", (
+        Metric("engine_torque_state_nm", "Engine torque state", "Nm*", 1),
+        Metric("throttle_request_bounded_raw", "Bounded throttle request", "raw", 0),
+        Metric("throttle_target_shared_raw", "Shared throttle target", "raw", 0),
+        Metric("throttle_target_channel_0_raw", "Throttle target channel 0", "raw", 0),
+        Metric("throttle_target_channel_1_raw", "Throttle target channel 1", "raw", 0),
+        Metric("injection_timing_state_raw", "Injection timing state", "raw", 0),
+    )),
+    ("CVTC detail", (
+        Metric("exhaust_cvtc_actual_b1_deg_ca", "Exhaust CVTC actual B1", "degCA*", 1),
+        Metric("exhaust_cvtc_actual_b2_deg_ca", "Exhaust CVTC actual B2", "degCA*", 1),
+        Metric("intake_cvtc_duty_b1_word_percent", "Intake CVTC duty B1 word", "%*", 1),
+        Metric("intake_cvtc_duty_b2_word_percent", "Intake CVTC duty B2 word", "%*", 1),
+        Metric("exhaust_cvtc_duty_b1_word_percent", "Exhaust CVTC duty B1 word", "%*", 1),
+        Metric("exhaust_cvtc_duty_b2_word_percent", "Exhaust CVTC duty B2 word", "%*", 1),
+    )),
+    ("Pressure and sensors", (
+        Metric("manifold_pressure_1116_raw", "Manifold pressure 0x1116", "raw", 0),
+        Metric("manifold_pressure_112a_raw", "Manifold pressure 0x112A", "raw", 0),
+        Metric("atmospheric_pressure_raw", "Atmospheric pressure", "raw", 0),
+        Metric("battery_voltage_v", "Battery voltage", "V*", 2),
+        Metric("front_af_sensor_b1_word_raw", "Front A/F sensor B1", "raw", 0),
+        Metric("front_af_sensor_b2_word_raw", "Front A/F sensor B2", "raw", 0),
+    )),
+    ("Throttle and A/F states", (
+        Metric("secondary_tps_b1_raw", "Secondary TPS B1", "raw", 0),
+        Metric("secondary_tps_b2_raw", "Secondary TPS B2", "raw", 0),
+        Metric("af_adjustment_b1_raw", "A/F adjustment B1", "raw", 0, True),
+        Metric("af_adjustment_b2_raw", "A/F adjustment B2", "raw", 0, True),
+        Metric("protocol_version", "Protocol version", "", 0),
+        Metric("profile_crc16", "Profile CRC16", "", 0, True),
     )),
 )
 
@@ -391,15 +426,26 @@ class DashboardApp:
             card.grid(row=0, column=column, sticky="nsew", padx=(0 if column == 0 else 5, 0))
             self.hero_cards[metric.key] = card
 
-        panels = tk.Frame(self.root, bg=BG)
-        panels.pack(fill="both", expand=True, padx=14, pady=9)
-        for column in range(4):
-            panels.columnconfigure(column, weight=1, uniform="panel")
-        panels.rowconfigure(0, weight=1)
-        for column, (title, metrics) in enumerate(PANELS):
-            panel = DataPanel(panels, title, metrics)
-            panel.grid(row=0, column=column, sticky="nsew", padx=(0 if column == 0 else 6, 0))
-            self.data_panels.append((panel, metrics))
+        notebook = ttk.Notebook(self.root)
+        notebook.pack(fill="both", expand=True, padx=14, pady=9)
+        for tab_name, definitions in (
+            ("Primary", PANELS),
+            ("Extended", EXTENDED_PANELS),
+        ):
+            panels = tk.Frame(notebook, bg=BG)
+            notebook.add(panels, text=tab_name)
+            for column in range(4):
+                panels.columnconfigure(column, weight=1, uniform="panel")
+            panels.rowconfigure(0, weight=1)
+            for column, (title, metrics) in enumerate(definitions):
+                panel = DataPanel(panels, title, metrics)
+                panel.grid(
+                    row=0,
+                    column=column,
+                    sticky="nsew",
+                    padx=(0 if column == 0 else 6, 0),
+                )
+                self.data_panels.append((panel, metrics))
 
         self.health_var = tk.StringVar(value="No telemetry groups received")
         tk.Label(
@@ -797,7 +843,7 @@ def build_parser():
     parser.add_argument("--channel", default="PCAN_USBBUS1")
     parser.add_argument("--bitrate", type=int, default=DEFAULT_BITRATE)
     parser.add_argument("--can-id", type=lambda value: int(value, 0), default=DEFAULT_CAN_ID)
-    parser.add_argument("--profile", choices=("core32", "wide54"), default="wide54")
+    parser.add_argument("--profile", choices=("tuning",), default="tuning")
     parser.add_argument("--tick-divisor", type=int, default=1)
     parser.add_argument("--active", action="store_true", help="participate in ACK instead of listen-only")
     parser.add_argument(

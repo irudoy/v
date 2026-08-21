@@ -4,239 +4,10 @@
     "candidate_can_id": "0x6F0",
     "dlc": 8,
     "format": "standard_11_bit_classical_can",
-    "header": "((tick16 & 0x1f) << 3) | page_id",
+    "header": "((tick16 & 0x0f) << 4) | page_id",
     "mailbox": 26
   },
   "profiles": [
-    {
-      "contexts": [],
-      "crc16_ccitt_false": "0x27FA",
-      "fields": [
-        {
-          "kind": "telemetry_state",
-          "name": "tick16",
-          "offset": 1,
-          "page": 0,
-          "scale": "base scheduler ticks",
-          "signed": false,
-          "source": "0xFFFF5E08",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "rpm_raw",
-          "offset": 3,
-          "page": 0,
-          "scale": "x * 12.5 RPM",
-          "signed": false,
-          "source": "0xFFFF11F4",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "final_timing_raw",
-          "offset": 5,
-          "page": 0,
-          "scale": "raw software coordinate",
-          "signed": true,
-          "source": "0xFFFF11D4",
-          "width": 1
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "apc_command_raw",
-          "offset": 6,
-          "page": 0,
-          "scale": "raw software command",
-          "signed": false,
-          "source": "0xFFFF2022",
-          "width": 1
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "fuel_inhibit_mask",
-          "offset": 7,
-          "page": 0,
-          "scale": "bit mask",
-          "signed": false,
-          "source": "0xFFFF22E0",
-          "width": 1
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "maf_b1_raw",
-          "offset": 1,
-          "page": 1,
-          "scale": "candidate raw / 200 V",
-          "signed": false,
-          "source": "0xFFFF101C",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "maf_b2_raw",
-          "offset": 3,
-          "page": 1,
-          "scale": "candidate raw / 200 V",
-          "signed": false,
-          "source": "0xFFFF101E",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "maf_total_raw",
-          "offset": 5,
-          "page": 1,
-          "scale": "candidate raw / 100 g/s",
-          "signed": false,
-          "source": "0xFFFF3852",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "af_b1_raw",
-          "offset": 7,
-          "page": 1,
-          "scale": "raw",
-          "signed": false,
-          "source": "0xFFFF22C4",
-          "width": 1
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "bfs_raw",
-          "offset": 1,
-          "page": 2,
-          "scale": "candidate raw / 2048 ms",
-          "signed": false,
-          "source": "0xFFFF1026",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "af_b2_raw",
-          "offset": 3,
-          "page": 2,
-          "scale": "raw",
-          "signed": false,
-          "source": "0xFFFF22C5",
-          "width": 1
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "injection_0_raw",
-          "offset": 4,
-          "page": 2,
-          "scale": "candidate raw / 100 ms",
-          "signed": false,
-          "source": "0xFFFF23C8",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "injection_1_raw",
-          "offset": 6,
-          "page": 2,
-          "scale": "candidate raw / 100 ms",
-          "signed": false,
-          "source": "0xFFFF23CA",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "injection_2_raw",
-          "offset": 1,
-          "page": 3,
-          "scale": "candidate raw / 100 ms",
-          "signed": false,
-          "source": "0xFFFF23CC",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "injection_3_raw",
-          "offset": 3,
-          "page": 3,
-          "scale": "candidate raw / 100 ms",
-          "signed": false,
-          "source": "0xFFFF23CE",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "injection_4_raw",
-          "offset": 5,
-          "page": 3,
-          "scale": "candidate raw / 100 ms",
-          "signed": false,
-          "source": "0xFFFF23D0",
-          "width": 2
-        },
-        {
-          "kind": "telemetry_state",
-          "name": "telemetry_status",
-          "offset": 7,
-          "page": 3,
-          "scale": "bit mask",
-          "signed": false,
-          "source": "0xFFFF5E07",
-          "width": 1
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "injection_5_raw",
-          "offset": 1,
-          "page": 4,
-          "scale": "candidate raw / 100 ms",
-          "signed": false,
-          "source": "0xFFFF23D2",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "knock_timing_state_raw",
-          "offset": 3,
-          "page": 4,
-          "scale": "raw software state",
-          "signed": true,
-          "source": "0xFFFF121A",
-          "width": 2
-        },
-        {
-          "kind": "ecu_ram",
-          "name": "knock_surface_state",
-          "offset": 5,
-          "page": 4,
-          "scale": "bitfield",
-          "signed": false,
-          "source": "0xFFFF2466",
-          "width": 1
-        },
-        {
-          "kind": "telemetry_state",
-          "name": "knock_count_latched",
-          "offset": 6,
-          "page": 4,
-          "scale": "saturating event count",
-          "signed": false,
-          "source": "0xFFFF5E0C",
-          "width": 1
-        },
-        {
-          "kind": "telemetry_state",
-          "name": "knock_channel_mask_latched",
-          "offset": 7,
-          "page": 4,
-          "scale": "six-position bit mask",
-          "signed": false,
-          "source": "0xFFFF5E0D",
-          "width": 1
-        }
-      ],
-      "id": 1,
-      "name": "core32",
-      "page_count": 5
-    },
     {
       "contexts": [
         {
@@ -283,6 +54,7 @@
             }
           ],
           "name": "temperatures_af",
+          "page": 9,
           "tag": 0
         },
         {
@@ -321,6 +93,7 @@
             }
           ],
           "name": "short_fuel_trim_cvtc_duty",
+          "page": 9,
           "tag": 1
         },
         {
@@ -359,6 +132,7 @@
             }
           ],
           "name": "long_fuel_trim_timing",
+          "page": 9,
           "tag": 2
         },
         {
@@ -405,10 +179,151 @@
             }
           ],
           "name": "health",
+          "page": 9,
+          "tag": 3
+        },
+        {
+          "fields": [
+            {
+              "kind": "ecu_ram",
+              "name": "intake_cvtc_duty_b1_word_raw",
+              "scale": "candidate raw * 100 / 1024 percent",
+              "signed": false,
+              "source": "0xFFFF1AB0",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "intake_cvtc_duty_b2_word_raw",
+              "scale": "candidate raw * 100 / 1024 percent",
+              "signed": false,
+              "source": "0xFFFF1AB2",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "manifold_pressure_1116_raw",
+              "scale": "diagnostic-evidence candidate",
+              "signed": false,
+              "source": "0xFFFF118A",
+              "width": 1
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "manifold_pressure_112a_raw",
+              "scale": "diagnostic-evidence candidate",
+              "signed": false,
+              "source": "0xFFFF16D2",
+              "width": 1
+            }
+          ],
+          "name": "intake_cvtc_duty_and_manifold_pressure",
+          "page": 10,
+          "tag": 0
+        },
+        {
+          "fields": [
+            {
+              "kind": "ecu_ram",
+              "name": "exhaust_cvtc_duty_b1_word_raw",
+              "scale": "candidate raw * 100 / 1024 percent",
+              "signed": false,
+              "source": "0xFFFF1AAC",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "exhaust_cvtc_duty_b2_word_raw",
+              "scale": "candidate raw * 100 / 1024 percent",
+              "signed": false,
+              "source": "0xFFFF1AAE",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "atmospheric_pressure_raw",
+              "scale": "diagnostic-evidence candidate",
+              "signed": false,
+              "source": "0xFFFF4544",
+              "width": 1
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "battery_voltage_raw",
+              "scale": "candidate raw * 0.08 V",
+              "signed": false,
+              "source": "0xFFFF1188",
+              "width": 1
+            }
+          ],
+          "name": "exhaust_cvtc_duty_pressure_and_voltage",
+          "page": 10,
+          "tag": 1
+        },
+        {
+          "fields": [
+            {
+              "kind": "ecu_ram",
+              "name": "front_af_sensor_b1_word_raw",
+              "scale": "unresolved physical conversion",
+              "signed": false,
+              "source": "0xFFFF2780",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "front_af_sensor_b2_word_raw",
+              "scale": "unresolved physical conversion",
+              "signed": false,
+              "source": "0xFFFF2782",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "af_adjustment_b1_raw",
+              "scale": "unresolved signedness and physical conversion",
+              "signed": false,
+              "source": "0xFFFF45A0",
+              "width": 2
+            }
+          ],
+          "name": "front_af_and_adjustment_b1",
+          "page": 10,
+          "tag": 2
+        },
+        {
+          "fields": [
+            {
+              "kind": "ecu_ram",
+              "name": "secondary_tps_b1_raw",
+              "scale": "unresolved physical conversion",
+              "signed": false,
+              "source": "0xFFFF275E",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "secondary_tps_b2_raw",
+              "scale": "unresolved physical conversion",
+              "signed": false,
+              "source": "0xFFFF2864",
+              "width": 2
+            },
+            {
+              "kind": "ecu_ram",
+              "name": "af_adjustment_b2_raw",
+              "scale": "unresolved signedness and physical conversion",
+              "signed": false,
+              "source": "0xFFFF45A2",
+              "width": 2
+            }
+          ],
+          "name": "secondary_throttle_and_adjustment_b2",
+          "page": 10,
           "tag": 3
         }
       ],
-      "crc16_ccitt_false": "0x238C",
+      "crc16_ccitt_false": "0xE881",
       "fields": [
         {
           "kind": "telemetry_state",
@@ -492,7 +407,7 @@
         },
         {
           "kind": "ecu_ram",
-          "name": "af_b1_raw",
+          "name": "front_oxygen_sensor_b1_raw",
           "offset": 7,
           "page": 1,
           "scale": "raw",
@@ -512,7 +427,7 @@
         },
         {
           "kind": "ecu_ram",
-          "name": "af_b2_raw",
+          "name": "front_oxygen_sensor_b2_raw",
           "offset": 3,
           "page": 2,
           "scale": "raw",
@@ -702,7 +617,7 @@
         },
         {
           "kind": "ecu_ram",
-          "name": "intake_cvtc_target_b1_raw",
+          "name": "intake_cvtc_target_raw",
           "offset": 5,
           "page": 6,
           "scale": "raw",
@@ -712,7 +627,7 @@
         },
         {
           "kind": "ecu_ram",
-          "name": "intake_cvtc_target_b2_raw",
+          "name": "exhaust_cvtc_target_raw",
           "offset": 6,
           "page": 6,
           "scale": "raw",
@@ -729,14 +644,94 @@
           "signed": false,
           "source": "0xFFFF413E",
           "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "throttle_request_bounded_raw",
+          "offset": 1,
+          "page": 7,
+          "scale": "signed internal request coordinate",
+          "signed": true,
+          "source": "0xFFFF19C6",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "engine_torque_state_raw",
+          "offset": 3,
+          "page": 7,
+          "scale": "candidate raw * 0.1 Nm",
+          "signed": true,
+          "source": "0xFFFF18CC",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "injection_timing_state_raw",
+          "offset": 5,
+          "page": 7,
+          "scale": "unresolved software timing coordinate",
+          "signed": false,
+          "source": "0xFFFF162E",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "exhaust_cvtc_actual_b1_raw",
+          "offset": 7,
+          "page": 7,
+          "scale": "candidate raw * 0.5 - 64 degCA",
+          "signed": false,
+          "source": "0xFFFF2324",
+          "width": 1
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "throttle_target_shared_raw",
+          "offset": 1,
+          "page": 8,
+          "scale": "raw target-area coordinate",
+          "signed": false,
+          "source": "0xFFFF19B2",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "throttle_target_channel_0_raw",
+          "offset": 3,
+          "page": 8,
+          "scale": "raw target coordinate",
+          "signed": false,
+          "source": "0xFFFF28BC",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "throttle_target_channel_1_raw",
+          "offset": 5,
+          "page": 8,
+          "scale": "raw target coordinate",
+          "signed": false,
+          "source": "0xFFFF28BE",
+          "width": 2
+        },
+        {
+          "kind": "ecu_ram",
+          "name": "exhaust_cvtc_actual_b2_raw",
+          "offset": 7,
+          "page": 8,
+          "scale": "candidate raw * 0.5 - 64 degCA",
+          "signed": false,
+          "source": "0xFFFF2325",
+          "width": 1
         }
       ],
-      "id": 2,
-      "name": "wide54",
-      "page_count": 8
+      "id": 1,
+      "name": "tuning",
+      "page_count": 11
     }
   ],
-  "protocol_version": 1,
+  "protocol_version": 2,
   "rom": "JK08A",
-  "schema_version": 1
+  "schema_version": 2
 }

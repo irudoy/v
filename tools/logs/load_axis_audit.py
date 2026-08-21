@@ -184,7 +184,7 @@ def audit_trace(
     source: Path,
     *,
     rom: str = "JK08A",
-    profile: str = "wide54",
+    profile: str = "tuning",
     can_id: int = 0x6F0,
     tick_divisor: int = 1,
 ) -> TraceLoadAudit:
@@ -269,7 +269,7 @@ def main(argv: list[str] | None = None) -> int:
             result = audit_trace(
                 source,
                 rom="JK08A",
-                profile="wide54",
+                profile="tuning",
                 can_id=args.can_id,
                 tick_divisor=args.tick_divisor,
             )

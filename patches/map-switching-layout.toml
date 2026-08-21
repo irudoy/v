@@ -427,7 +427,7 @@ pointer_table = 0x000D3528
 [[family]]
 key = "high_octane_timing_state"
 group = "ignition"
-name = "High-Octane Ignition Timing Trim"
+name = "Ignition Timing Surface - High-Octane State"
 canonical_address = 0x00009A1A
 width = 16
 height = 16
@@ -441,7 +441,7 @@ pointer_table = 0x000D3568
 [[family]]
 key = "high_detonation_timing_state"
 group = "ignition"
-name = "High-Detonation Ignition Timing Trim"
+name = "Ignition Timing Surface - High-Detonation State"
 canonical_address = 0x00009B1A
 width = 16
 height = 16
@@ -455,7 +455,7 @@ pointer_table = 0x000D357C
 [[family]]
 key = "cold_idle_ignition_timing"
 group = "idle_ignition"
-name = "Default/Post-Transition Timing-State Addend (x-128) (0x12196)"
+name = "Timing-State Addend - Default/Post-Transition"
 canonical_address = 0x00012196
 width = 8
 height = 1
@@ -469,7 +469,7 @@ pointer_table = 0x000D4040
 [[family]]
 key = "idle_ignition_timing"
 group = "idle_ignition"
-name = "Warm DFCO-Transition Timing-State Addend (x-128) (0x1219E)"
+name = "Timing-State Addend - Warm DFCO Transition"
 canonical_address = 0x0001219E
 width = 8
 height = 1
@@ -483,7 +483,7 @@ pointer_table = 0x000D4054
 [[family]]
 key = "exhaust_cvtc_target"
 group = "cvtc"
-name = "Exhaust Cam Timing Main"
+name = "Exhaust CVTC Target - Main"
 canonical_address = 0x0000B33A
 width = 16
 height = 16
@@ -497,7 +497,7 @@ pointer_table = 0x000D3590
 [[family]]
 key = "fuel_compensation_main"
 group = "fuel"
-name = "Fuel Compensation Main"
+name = "Fuel Compensation - Main"
 canonical_address = 0x0000A29A
 width = 16
 height = 16
@@ -511,7 +511,7 @@ pointer_table = 0x000D35A4
 [[family]]
 key = "rev_limit_fuel_cut"
 group = "rev_limiter"
-name = "Rev Limit - Fuel Cut"
+name = "Engine Speed Limit - Fuel Cut"
 canonical_address = 0x0000934E
 width = 2
 height = 2
@@ -528,7 +528,7 @@ shadow_start = 0xFFFF5D10
 [[family]]
 key = "rev_limit_throttle_cut"
 group = "rev_limiter"
-name = "Rev Limit - Throttle Cut"
+name = "Engine Speed Limit - Throttle Request"
 canonical_address = 0x0000942C
 width = 1
 height = 1

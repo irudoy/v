@@ -131,7 +131,7 @@ denominator varies with RPM.
 ## Moving-load capture validation
 
 `tools/logs/load_axis_audit.py` reproduces both formulas from the exact ROM and
-strict `wide54` telemetry. For capture SHA-256
+strict historical schema-1 `wide54` telemetry. For capture SHA-256
 `a1f8b8c50d45e2f281917bea998d638e2d81e3a2be51b105f885f9f43c181298`:
 
 - 35,811 complete snapshots are present and 35,809 follow schema verification;
@@ -156,7 +156,7 @@ calculation. Editing it is therefore a cross-subsystem change, not a display
 calibration. `0x1491A` controls diagnostic Calculated Load and is not an axis
 reference for the ignition or intake-cam maps.
 
-Existing `wide54` telemetry is sufficient for offline reconstruction of the
+The historical `wide54` capture is sufficient for offline reconstruction of the
 internal coordinate. Adding `ffff102c` to a future wire schema is useful only
 when exact per-pass alignment must survive dropped groups or when the live
 snapshot byte itself is required.

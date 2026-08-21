@@ -94,7 +94,7 @@ class Decoder:
         self._sequence = None
         self._last_tick = None
         self._unwrapped_tick = None
-        self._schema_verified = profile == "core32"
+        self._schema_verified = False
         self._seen_page_zero = False
         self.incomplete_groups = 0
         self.malformed_frames = 0
@@ -120,13 +120,13 @@ class Decoder:
             self.malformed_frames += 1
             self._discard()
             return None
-        page = payload[0] & 0x07
-        sequence = payload[0] >> 3
+        page = payload[0] & 0x0F
+        sequence = payload[0] >> 4
         if page == 0:
             self._seen_page_zero = True
             self._discard()
             tick16 = int.from_bytes(payload[1:3], "big")
-            if tick16 & 0x1F != sequence:
+            if tick16 & 0x0F != sequence:
                 self.malformed_frames += 1
                 return None
             self._pages = [payload]
@@ -174,25 +174,31 @@ class Decoder:
                 )
             values[field["name"]] = _decode_value(pages[page], field)
 
-        context_tag = None
-        context_name = None
-        if self.page_count == 8:
-            context_tag = pages[7][1]
-            context_by_tag = {
-                item["tag"]: item for item in self.profile["contexts"]
-            }
-            context = context_by_tag.get(context_tag)
+        context_tags = {
+            page: pages[page][1] for page in self.manifest.context_pages
+        }
+        if len(set(context_tags.values())) != 1:
+            self.malformed_frames += 1
+            return None
+        context_tag = next(iter(context_tags.values()))
+        contexts = {
+            (item["page"], item["tag"]): item
+            for item in self.profile["contexts"]
+        }
+        context_names = []
+        for page in self.manifest.context_pages:
+            context = contexts.get((page, context_tag))
             if context is None:
                 self.malformed_frames += 1
                 return None
-            context_name = context["name"]
+            context_names.append(context["name"])
             offset = 2
             for field in context["fields"]:
                 values[field["name"]] = _decode_value(
-                    pages[7], field, offset=offset
+                    pages[page], field, offset=offset
                 )
                 offset += field["width"]
-            if context_name == "health":
+            if context["name"] == "health":
                 expected = self.manifest.profile_by_name[self.profile["name"]]
                 healthy = all((
                     values["protocol_version"]
@@ -205,6 +211,7 @@ class Decoder:
                     self._schema_verified = False
                     return None
                 self._schema_verified = True
+        context_name = " + ".join(context_names)
 
         self._last_tick = tick16
         self._unwrapped_tick = unwrapped
@@ -212,7 +219,7 @@ class Decoder:
         return Snapshot(
             tick16=tick16,
             unwrapped_tick=unwrapped,
-            sequence=tick16 & 0x1F,
+            sequence=tick16 & 0x0F,
             fields=values,
             context_tag=context_tag,
             context_name=context_name,
@@ -240,6 +247,20 @@ def engineering_values(snapshot):
         "intake_cvtc_duty_b2_raw": (
             "intake_cvtc_duty_b2_percent", 100 / 256
         ),
+        "engine_torque_state_raw": ("engine_torque_state_nm", 0.1),
+        "intake_cvtc_duty_b1_word_raw": (
+            "intake_cvtc_duty_b1_word_percent", 100 / 1024
+        ),
+        "intake_cvtc_duty_b2_word_raw": (
+            "intake_cvtc_duty_b2_word_percent", 100 / 1024
+        ),
+        "exhaust_cvtc_duty_b1_word_raw": (
+            "exhaust_cvtc_duty_b1_word_percent", 100 / 1024
+        ),
+        "exhaust_cvtc_duty_b2_word_raw": (
+            "exhaust_cvtc_duty_b2_word_percent", 100 / 1024
+        ),
+        "battery_voltage_raw": ("battery_voltage_v", 0.08),
     }
     for name, (target, factor) in direct.items():
         if name in raw:
@@ -251,10 +272,16 @@ def engineering_values(snapshot):
         "intake_cvtc_actual_b2_raw": (
             "intake_cvtc_actual_b2_deg_ca", 0.5, -64
         ),
-        "intake_cvtc_target_b1_raw": (
+        "exhaust_cvtc_actual_b1_raw": (
+            "exhaust_cvtc_actual_b1_deg_ca", 0.5, -64
+        ),
+        "exhaust_cvtc_actual_b2_raw": (
+            "exhaust_cvtc_actual_b2_deg_ca", 0.5, -64
+        ),
+        "intake_cvtc_target_raw": (
             "intake_cvtc_target_deg_ca", 0.5, -64
         ),
-        "intake_cvtc_target_b2_raw": (
+        "exhaust_cvtc_target_raw": (
             "exhaust_cvtc_target_deg_ca", 0.5, -64
         ),
         "calculated_load_raw": (
@@ -298,7 +325,7 @@ def parse_candump_line(line):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", nargs="?", type=Path, help="candump log; default is stdin")
-    parser.add_argument("--profile", choices=("core32", "wide54"), required=True)
+    parser.add_argument("--profile", choices=("tuning",), default="tuning")
     parser.add_argument("--can-id", type=lambda value: int(value, 0), default=0x6F0)
     args = parser.parse_args(argv)
     decoder = Decoder(args.profile, args.can_id)

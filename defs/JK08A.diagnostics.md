@@ -59,6 +59,36 @@ Exact pointer identity does not establish an ECM terminal, peripheral channel,
 or physical unit. Those remain separate claims and are not promoted by name
 similarity.
 
+### Declared service-0x22 inventory
+
+`tools/diagnostics/sid22_inventory.py` SHA-locks the exact JK08A ROM, the
+1,256-byte publisher at `0x0003235C`, and all six pointer-table extents. It
+reconstructs only declared response width and byte sources; physical names and
+conversions remain in reviewed diagnostic bindings.
+
+The publisher accepts response modes `0x04` and `0x06` and dispatches six DID
+families:
+
+| DID family | Pointer table | Record shape | Declared entries | Publisher bound |
+|---|---|---|---:|---|
+| `0x11xx` | `0x226AC..0x2289C` | 124 records, 4-byte stride; lows `00`, `20`, `40`, and `60` return four sequential bytes, other declared records return one byte | 82 | none |
+| `0x12xx` | `0x2289C..0x229E0` | 81 records, 4-byte stride; lows `00`, `20`, and `40` return four sequential bytes, other declared records return two sequential bytes | 60 | none |
+| `0x13xx` | `0x229E0..0x22A88` | 21 records, 8-byte stride; low `00` returns four sequential bytes, other records return two independently addressed bytes | 20 | low byte `<=0x14` |
+| `0x14xx` | `0x22A88..0x22B0C` | 33 records, 4-byte stride; lows `00` and `20` return four sequential bytes, other declared records return one byte | 31 | none |
+| `0x15xx` | `0x22B0C..0x22BAC` | 20 records, 8-byte stride; low `00` returns four sequential bytes, other records return two independently addressed bytes | 19 | low byte `<=0x13` |
+| `0x16xx` | `0x22BB0..0x22CB0` | 64 records, 4-byte stride; lows `00` and `20` return four sequential bytes, other declared records return one byte | 64 | low byte `<=0x3F` |
+
+The resulting exact inventory contains 276 declared DIDs. A pointer value of
+`0xFFFFFFFF` suppresses an ordinary record. DID `0x120B` is the single special
+case: its sentinel slot selects a dedicated dynamic two-byte publisher branch
+and therefore remains part of the declared inventory.
+
+Families `0x11`, `0x12`, and `0x14` do not check the low byte against their
+table extent before calculating a record address. Unsupported low bytes can
+therefore index records in an adjacent ROM table. This is read-side aliasing,
+not evidence that the resulting DID is declared or semantically valid. Runtime
+profiles use only inventoried DIDs and never rely on that behavior.
+
 ## Dynamic local-identifier streaming
 
 The exact JK08A diagnostic dispatcher routes SID `0xAC` to `FUN_00033810`

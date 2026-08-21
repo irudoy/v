@@ -66,7 +66,7 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
             ):
                 recording.TelemetryMlgRecorder(
                     output,
-                    "wide54",
+                    "tuning",
                     0x1_0000_0000,
                 )
             self.assertEqual(list(Path(directory).iterdir()), [])
@@ -77,7 +77,7 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
             output.write_bytes(b"existing recording")
             recorder = recording.TelemetryMlgRecorder(
                 output,
-                "wide54",
+                "tuning",
                 1_776_000_000,
                 force=True,
             )
@@ -90,12 +90,12 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
 
     def test_records_complete_schema_context_and_gps_contract(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "telemetry.mlg"
             recorder = recording.TelemetryMlgRecorder(
                 output,
-                "wide54",
+                "tuning",
                 1_776_000_000.25,
             )
             for tick in range(1, 9):
@@ -119,7 +119,7 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertEqual(summary.event_records, 8)
         self.assertEqual(summary.bridge_records, 0)
         self.assertEqual(validation.data_records, 8)
-        self.assertEqual(validation.fields, 61)
+        self.assertEqual(validation.fields, 83)
         self.assertEqual(header[2], 1_776_000_000)
         names = [name for _, name in fields]
         self.assertIn("Vehicle speed*", names)
@@ -170,11 +170,11 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         )
         self.assertEqual(
             records[-1]["Intake CVTC target*"],
-            dashboard.raw["intake_cvtc_target_b1_raw"],
+            dashboard.raw["intake_cvtc_target_raw"],
         )
         self.assertEqual(
             records[-1]["Exhaust CVTC target*"],
-            dashboard.raw["intake_cvtc_target_b2_raw"],
+            dashboard.raw["exhaust_cvtc_target_raw"],
         )
         self.assertEqual(
             records[-1]["Knock timing state"],
@@ -190,13 +190,13 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
 
     def test_inserts_hold_last_records_for_timestamp_wrap_detection(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         feed_group(dashboard, generator.group(1), 0.0)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "gaps.mlg"
             recorder = recording.TelemetryMlgRecorder(
                 output,
-                "wide54",
+                "tuning",
                 1_776_000_000,
             )
             recorder.append(dashboard, 0.0)
@@ -210,13 +210,13 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
 
     def test_validation_mismatch_is_a_handled_mlvlg_error(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         feed_group(dashboard, generator.group(1), 0.0)
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "mismatch.mlg"
             recorder = recording.TelemetryMlgRecorder(
                 output,
-                "wide54",
+                "tuning",
                 1_776_000_000,
             )
             recorder.append(dashboard, 0.0)

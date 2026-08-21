@@ -33,6 +33,8 @@ regeneration commands are documented in `../../refs/diagnostics/README.md`.
 | `import_obd2tools.py` | Pinned obd2tools checkout | Nissan-family parameter and request candidates |
 | `import_ecudocs.py` | Pinned ecudocs checkout | Structured ECU profile claims and request placement |
 | `import_nissan_datatable.py` | Legacy Nissan data-table PDF | Consult I registers, requests, and operation definitions |
+| `sid22_inventory.py` | Exact SHA-locked JK08A ROM | Semantic-free service-0x22 DID, width, and response-source inventory |
+| `tuning_signal_coverage.py` | Exact DID inventory and custom-CAN schema | Validated current and unresolved tuning-observation coverage |
 
 All importers validate exact source revision or PDF identity where their source
 manifest provides one. `--check` parses and validates without replacing tracked
@@ -51,6 +53,31 @@ uv run python tools/diagnostics/import_370z_logger.py \
 
 Run the same command without `--check` only when intentionally regenerating its
 tracked source projection. Review the resulting diff before graph ingestion.
+
+The exact JK08A service-0x22 response inventory is emitted to standard output
+and does not create a tracked projection:
+
+```bash
+uv run python tools/diagnostics/sid22_inventory.py
+uv run python tools/diagnostics/sid22_inventory.py --format json
+```
+
+The tool SHA-locks the complete ROM, publisher function, and all six pointer
+table extents. Its output deliberately contains no physical names or units;
+those remain reviewed claims in `defs/JK08A.diagnostic-bindings.csv`.
+
+The tuning-coverage report cross-checks the reviewed signal catalog against the
+exact DID inventory and every tuning field in the current custom-CAN profile:
+
+```bash
+uv run python tools/diagnostics/tuning_signal_coverage.py
+uv run python tools/diagnostics/tuning_signal_coverage.py --format json
+```
+
+Its source is `defs/JK08A.tuning-signals.toml`. The report distinguishes
+fixed-rate and rotating stream coverage, stock-CAN context, unresolved runtime
+semantics, and observations requiring new instrumentation or external
+measurement.
 
 ## Graph model
 

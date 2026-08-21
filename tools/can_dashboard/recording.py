@@ -55,11 +55,15 @@ RAW_FIELD_DISPLAY = {
     "maf_total_raw": (
         "Total airflow*", "g/s", 1 / 100, 0.0, 2, "Air"
     ),
-    "af_b1_raw": ("A/F bank 1", "raw", 1.0, 0.0, 0, "Fuel"),
+    "front_oxygen_sensor_b1_raw": (
+        "Front O2 sensor B1", "raw", 1.0, 0.0, 0, "Fuel"
+    ),
     "bfs_raw": (
         "Base fuel schedule*", "ms", 1 / 2048, 0.0, 3, "Fuel"
     ),
-    "af_b2_raw": ("A/F bank 2", "raw", 1.0, 0.0, 0, "Fuel"),
+    "front_oxygen_sensor_b2_raw": (
+        "Front O2 sensor B2", "raw", 1.0, 0.0, 0, "Fuel"
+    ),
     "telemetry_status": (
         "Telemetry status", "raw", 1.0, 0.0, 0, "Transport"
     ),
@@ -88,14 +92,38 @@ RAW_FIELD_DISPLAY = {
     "intake_cvtc_actual_b2_raw": (
         "Intake CVTC actual B2*", "degCA", 0.5, -64.0, 1, "CVTC"
     ),
-    "intake_cvtc_target_b1_raw": (
+    "intake_cvtc_target_raw": (
         "Intake CVTC target*", "degCA", 0.5, -64.0, 1, "CVTC"
     ),
-    "intake_cvtc_target_b2_raw": (
+    "exhaust_cvtc_target_raw": (
         "Exhaust CVTC target*", "degCA", 0.5, -64.0, 1, "CVTC"
     ),
     "calculated_load_raw": (
         "Calculated load", "%", 100 / 255, 0.0, 1, "Engine"
+    ),
+    "throttle_request_bounded_raw": (
+        "Bounded throttle request", "raw", 1.0, 0.0, 0, "Throttle"
+    ),
+    "engine_torque_state_raw": (
+        "Engine torque state*", "Nm", 0.1, 0.0, 1, "Engine"
+    ),
+    "injection_timing_state_raw": (
+        "Injection timing state", "raw", 1.0, 0.0, 0, "Injection"
+    ),
+    "exhaust_cvtc_actual_b1_raw": (
+        "Exhaust CVTC actual B1*", "degCA", 0.5, -64.0, 1, "CVTC"
+    ),
+    "exhaust_cvtc_actual_b2_raw": (
+        "Exhaust CVTC actual B2*", "degCA", 0.5, -64.0, 1, "CVTC"
+    ),
+    "throttle_target_shared_raw": (
+        "Shared throttle target", "raw", 1.0, 0.0, 0, "Throttle"
+    ),
+    "throttle_target_channel_0_raw": (
+        "Throttle target channel 0", "raw", 1.0, 0.0, 0, "Throttle"
+    ),
+    "throttle_target_channel_1_raw": (
+        "Throttle target channel 1", "raw", 1.0, 0.0, 0, "Throttle"
     ),
     "coolant_raw": ("Coolant", "degC", 1.0, -50.0, 0, "Temperature"),
     "iat_raw": ("Intake air", "degC", 1.0, -50.0, 0, "Temperature"),
@@ -144,6 +172,48 @@ RAW_FIELD_DISPLAY = {
     ),
     "tx_abort_count": (
         "TX abort count", "", 1.0, 0.0, 0, "Transport"
+    ),
+    "intake_cvtc_duty_b1_word_raw": (
+        "Intake CVTC duty B1 word*", "%", 100 / 1024, 0.0, 1, "CVTC"
+    ),
+    "intake_cvtc_duty_b2_word_raw": (
+        "Intake CVTC duty B2 word*", "%", 100 / 1024, 0.0, 1, "CVTC"
+    ),
+    "manifold_pressure_1116_raw": (
+        "Manifold pressure 0x1116", "raw", 1.0, 0.0, 0, "Air"
+    ),
+    "manifold_pressure_112a_raw": (
+        "Manifold pressure 0x112A", "raw", 1.0, 0.0, 0, "Air"
+    ),
+    "exhaust_cvtc_duty_b1_word_raw": (
+        "Exhaust CVTC duty B1 word*", "%", 100 / 1024, 0.0, 1, "CVTC"
+    ),
+    "exhaust_cvtc_duty_b2_word_raw": (
+        "Exhaust CVTC duty B2 word*", "%", 100 / 1024, 0.0, 1, "CVTC"
+    ),
+    "atmospheric_pressure_raw": (
+        "Atmospheric pressure", "raw", 1.0, 0.0, 0, "Air"
+    ),
+    "battery_voltage_raw": (
+        "Battery voltage*", "V", 0.08, 0.0, 2, "Context"
+    ),
+    "front_af_sensor_b1_word_raw": (
+        "Front A/F sensor B1", "raw", 1.0, 0.0, 0, "Fuel"
+    ),
+    "front_af_sensor_b2_word_raw": (
+        "Front A/F sensor B2", "raw", 1.0, 0.0, 0, "Fuel"
+    ),
+    "af_adjustment_b1_raw": (
+        "A/F adjustment B1", "raw", 1.0, 0.0, 0, "Fuel"
+    ),
+    "af_adjustment_b2_raw": (
+        "A/F adjustment B2", "raw", 1.0, 0.0, 0, "Fuel"
+    ),
+    "secondary_tps_b1_raw": (
+        "Secondary TPS B1", "raw", 1.0, 0.0, 0, "Throttle"
+    ),
+    "secondary_tps_b2_raw": (
+        "Secondary TPS B2", "raw", 1.0, 0.0, 0, "Throttle"
     ),
 }
 

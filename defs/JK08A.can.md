@@ -243,7 +243,7 @@ standard IDs `0x174` and `0x177` as `STDID << 5`.
 
 ### Enabled telemetry moving-load evidence
 
-The 2026-08-17 `1.11` capture records 1,000,000 standard received data frames
+The 2026-08-17 `1.11` schema-1 capture records 1,000,000 standard received data frames
 over 366.920 seconds with PCAN-View error-frame recording enabled. It contains
 286,493 `0x6F0` frames and 35,811 complete `wide54` divisor-1 groups after the
 initial partial group. Every accepted tick advances by one. Schema mismatch,
@@ -305,6 +305,15 @@ mailbox-empty interrupt while keeping it outside the stock type-3 scans.
 Mailbox 31 is also initialized inactive, but the SH7058S manual has a specific
 transmit-cancellation limitation for mailbox 31. It is not part of the baseline
 extension design.
+
+SH7058S hardware-manual section 17.7.6 permits changing the identifier of a
+transmit mailbox whenever its corresponding TXPR bit is clear. After mailbox 26
+reports TXACK or ABACK and the handler clears the flag, firmware could write a
+different standard ID to `0xFFFFDC40`, update the payload, and request another
+transmission without reconfiguring MBC or entering halt mode. Current telemetry
+schema 2 does not use this capability: all eleven pages use one build-selected
+standard ID and the identifier record remains constant while the endpoint is
+active.
 
 The implemented custom telemetry layer promotes mailbox 26 to type 4 only when
 its build configuration is enabled. It replaces the SLE1 vector with one

@@ -18,7 +18,7 @@ def feed_group(dashboard, group, base_time):
 class DashboardModelTest(unittest.TestCase):
     def test_demo_groups_verify_schema_and_retain_contexts(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         for tick in range(1, 9):
             timestamp = tick * model.BASE_TICK_SECONDS
             snapshot = feed_group(
@@ -41,6 +41,9 @@ class DashboardModelTest(unittest.TestCase):
         self.assertIn("app1_v", dashboard.engineering)
         self.assertIn("tps_b1_v", dashboard.engineering)
         self.assertIn("oil_temperature_deg_c", dashboard.engineering)
+        self.assertIn("engine_torque_state_nm", dashboard.engineering)
+        self.assertIn("battery_voltage_v", dashboard.engineering)
+        self.assertIn("exhaust_cvtc_actual_b1_deg_ca", dashboard.engineering)
         self.assertEqual(
             dashboard.value("knock_timing_state"),
             dashboard.raw["knock_timing_state_raw"] / 256,
@@ -54,16 +57,16 @@ class DashboardModelTest(unittest.TestCase):
         self.assertEqual(dashboard.missed_snapshots, 0)
         self.assertEqual(
             dashboard.value("intake_cvtc_target_deg_ca"),
-            dashboard.raw["intake_cvtc_target_b1_raw"] * 0.5 - 64,
+            dashboard.raw["intake_cvtc_target_raw"] * 0.5 - 64,
         )
         self.assertEqual(
             dashboard.value("exhaust_cvtc_target_deg_ca"),
-            dashboard.raw["intake_cvtc_target_b2_raw"] * 0.5 - 64,
+            dashboard.raw["exhaust_cvtc_target_raw"] * 0.5 - 64,
         )
 
     def test_hot_ignition_surface_selector_decodes_bit_6(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         for tick in range(1, 5):
             feed_group(dashboard, generator.group(tick), tick * 0.01)
 
@@ -81,7 +84,7 @@ class DashboardModelTest(unittest.TestCase):
 
     def test_tick_loss_and_stock_context_are_visible(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         feed_group(dashboard, generator.group(1), 1.0)
         feed_group(dashboard, generator.group(3), 1.02)
         self.assertEqual(dashboard.missed_snapshots, 1)
@@ -101,7 +104,7 @@ class DashboardModelTest(unittest.TestCase):
         )
 
     def test_target_vehicle_selector_button_and_speed_codes(self):
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         for code, label in model.PRND_CODES.items():
             dashboard.process_frame(
                 model.FrameRecord(model.PRND_ID, bytes((code, 0))),
@@ -128,7 +131,7 @@ class DashboardModelTest(unittest.TestCase):
 
     def test_status_bits_and_decoder_errors_are_exposed(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         group = list(generator.group(1))
         page = bytearray(group[3].data)
         page[7] = 0x09
@@ -148,7 +151,7 @@ class DashboardModelTest(unittest.TestCase):
 
     def test_divisor_changes_expected_tick_step(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 4)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 4)
         feed_group(dashboard, generator.group(4), 3.0)
         feed_group(dashboard, generator.group(8), 3.04)
         self.assertEqual(dashboard.missed_snapshots, 0)
@@ -156,16 +159,16 @@ class DashboardModelTest(unittest.TestCase):
 
     def test_health_mismatch_disables_retained_engineering_values(self):
         generator = model.DemoGenerator()
-        dashboard = model.DashboardModel("wide54", 0x6F0, 1)
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         for tick in range(1, 5):
             feed_group(dashboard, generator.group(tick), 4.0 + tick * 0.01)
         self.assertTrue(dashboard.schema_verified)
         self.assertIsNotNone(dashboard.value("rpm"))
 
         bad = list(generator.group(8))
-        health = bytearray(bad[7].data)
+        health = bytearray(bad[9].data)
         health[5] ^= 1
-        bad[7] = model.FrameRecord(0x6F0, bytes(health))
+        bad[9] = model.FrameRecord(0x6F0, bytes(health))
         self.assertIsNone(feed_group(dashboard, bad, 4.1))
         self.assertFalse(dashboard.schema_verified)
         self.assertIsNone(dashboard.value("rpm"))

@@ -86,12 +86,12 @@ class TrcToMlgTest(unittest.TestCase):
             header, names, gps_values = read_names_and_gps(output)
 
         self.assertEqual(summary.complete_snapshots, 8)
-        self.assertEqual(summary.source_frames, 104)
-        self.assertEqual(summary.telemetry_frames, 64)
+        self.assertEqual(summary.source_frames, 128)
+        self.assertEqual(summary.telemetry_frames, 88)
         self.assertEqual(summary.mlg_records, 8)
         self.assertEqual(summary.bridge_records, 0)
-        self.assertEqual(summary.mlg_fields, 61)
-        self.assertEqual(validation.record_length, 244)
+        self.assertEqual(summary.mlg_fields, 83)
+        self.assertEqual(validation.record_length, 332)
         self.assertEqual(validation.data_records, 8)
         self.assertEqual(header[0], b"MLVLG\x00")
         expected_start = math.floor(
@@ -105,10 +105,10 @@ class TrcToMlgTest(unittest.TestCase):
                 728_000,
                 tzinfo=ZoneInfo("Asia/Vladivostok"),
             ).timestamp()
-            + 1.0012
+            + 1.0015
         )
         self.assertEqual(header[2], expected_start)
-        self.assertAlmostEqual(summary.first_snapshot_offset_ms, 1001.2)
+        self.assertAlmostEqual(summary.first_snapshot_offset_ms, 1001.5)
         self.assertIn("Vehicle speed*", names)
         self.assertIn("Knock timing state", names)
         self.assertIn("High-detonation surface selected", names)

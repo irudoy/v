@@ -95,7 +95,7 @@ target_commands = [115, 114, 113, 112, 111]
 [can_telemetry]
 enabled = false
 can_id = 0x6F0
-profile = "core32"
+profile = "tuning"
 tick_divisor = 1
 ```
 
@@ -124,8 +124,8 @@ Concrete profiles remain local and are not versioned.
 
 The optional `[can_telemetry]` table is strict: all four fields are required
 when the table is present. Omitting it selects the same disabled default shown
-above. `profile` is `core32` or `wide54`; `can_id` is a nonzero standard 11-bit
-identifier; and `tick_divisor` is in `1..255` relative to the natural
+above. `profile` is the schema-2 `tuning` profile; `can_id` is a nonzero
+standard 11-bit identifier; and `tick_divisor` is in `1..255` relative to the natural
 `FUN_00020DFE` snapshot cadence.
 
 `enabled = true` changes mailbox-26 record `0x000097BE` from stock-inactive

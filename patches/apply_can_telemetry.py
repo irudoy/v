@@ -222,7 +222,7 @@ def main(argv=None):
         "--can-id", type=lambda value: int(value, 0), default=0x6F0
     )
     parser.add_argument(
-        "--profile", choices=("core32", "wide54"), default="core32"
+        "--profile", choices=("tuning",), default="tuning"
     )
     parser.add_argument("--tick-divisor", type=int, default=1)
     parser.add_argument(

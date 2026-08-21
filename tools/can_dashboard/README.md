@@ -1,16 +1,15 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `1.2.0`.
+Current dashboard version: `2.0.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
-PEAK PCAN-USB adapter on Windows or macOS. The current verified schema supports
-the JK08A `core32` and `wide54` profiles. The default configuration matches
-local candidate `v1.11`:
+PEAK PCAN-USB adapter on Windows or macOS. The application implements only the
+incompatible JK08A schema-2 `tuning` profile:
 
 - PCAN channel `PCAN_USBBUS1`;
 - classical CAN at `500000 bit/s`;
 - standard ID `0x6F0`;
-- `wide54`, divisor 1;
+- `tuning`, divisor 1;
 - listen-only PCAN state.
 
 The application uses the tracked strict decoder and generated schema. It does
@@ -52,7 +51,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v1.2.0-windows.zip
+  --output tmp/vq-can-telemetry-v2.0.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -87,11 +86,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v1.2.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v2.0.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 1.2.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 2.0.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -110,15 +109,11 @@ Exact-target observation shows that custom state 6 illuminates SET together
 with CRUISE, so it is not labeled CRUISE-only. The correct CRUISE-only state
 remains pending a passive stock-state correlation.
 
-The legacy wire fields `intake_cvtc_target_b1_raw` and
-`intake_cvtc_target_b2_raw` are displayed and recorded as `Intake CVTC target`
-and `Exhaust CVTC target`. The exact UDS pointer table publishes
-`0xFFFF2327` through target-exhaust-angle DID `0x1166`; it is not a bank-2
-intake target. The wire identifiers remain unchanged to preserve the verified
-schema CRC. The displayed `(raw-128)*0.5 degCA` conversion is a homologous
-calibration candidate and is marked with `*`. The two captured actual-angle
-fields remain intake B1/B2; actual exhaust angles are not present in the
-current wire profile.
+Schema 2 names `0xFFFF2326` as `intake_cvtc_target_raw` and `0xFFFF2327` as
+`exhaust_cvtc_target_raw`, matching their recovered common-target roles. The
+displayed `(raw-128)*0.5 degCA` conversion remains a homologous candidate and
+is marked with `*`. Actual intake and exhaust positions for both banks are
+present in the current profile.
 
 ## Direct repository run
 
@@ -145,7 +140,7 @@ On macOS with `libPCBUSB` already installed, the equivalent repository run is:
 uv run --with-requirements tools/can_dashboard/requirements-macos.txt \
   python -m tools.can_dashboard.app \
   --channel PCAN_USBBUS1 --bitrate 500000 \
-  --can-id 0x6F0 --profile wide54 --tick-divisor 1
+  --can-id 0x6F0 --profile tuning --tick-divisor 1
 ```
 
 The macOS default includes the channel reset. Pass `--no-reset-channel` only
@@ -168,7 +163,7 @@ Frames already queued when recording starts update the display but are not
 written to the new file. The first MLG event therefore cannot predate the
 recording start or be collapsed onto elapsed time zero.
 
-The `wide54` MLG schema has 61 channels: time, schema state, every fixed and
+The `tuning` MLG schema has 83 channels: time, schema state, every fixed and
 rotating custom-telemetry field, a decoded high-detonation-surface selector,
 stock CAN RPM, vehicle speed, selector code, ASCD input, dashboard state, and
 `gps_lat`/`gps_lon`. Candidate transforms retain `*` in their field names.
@@ -188,7 +183,8 @@ another GPS source. The logger never invents coordinates from vehicle speed.
 
 ## Display semantics
 
-The decoder retains the latest values from the four rotating page-7 contexts.
+The decoder retains the latest values from the paired page-9 and page-10
+contexts for all four tags.
 Schema-dependent conversions stay disabled until the in-band health context
 matches protocol version, profile ID, and CRC16. Stale context values remain
 visible while their update cadence is one quarter of the snapshot rate.
@@ -230,14 +226,14 @@ telemetry status flags, and the rotating overrun and abort counters.
 Convert an existing PEAK trace without replay timing:
 
 ```bash
-python3 tools/logs/trc_to_mlg.py tmp/can-dump/new-log-full.trc
+python3 tools/logs/trc_to_mlg.py schema2-capture.trc
 ```
 
 The converter and live recorder use the same MLVLG schema and validator.
 
-## Target-vehicle result
+## Hardware evidence boundary
 
-The 2026-08-17 `wide54`, divisor-1 capture contains 35,811 complete snapshots
+The 2026-08-17 schema-1 `wide54`, divisor-1 capture contains 35,811 complete snapshots
 at 97.599 Hz. After synchronization to the first page 0, it has zero malformed
 or incomplete groups, tick gaps, schema mismatches, nonzero telemetry status,
 snapshot overruns, TX aborts, PCAN warnings, and PCAN errors. Whole-bus average
@@ -248,3 +244,8 @@ Observed selector codes are `08=P`, `10=R`, `18=N`, `20=D`, `28=DS`,
 `80=M1`, `88=M2`, `90=M3`, `98=M4`, and `A0=M5`. Codes `98` and `A0` are
 operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
+
+That capture establishes the dashboard source path, stock context bindings,
+mailbox-26 operation, and the earlier bus-load level. Dashboard 2.0.0 does not
+decode schema 1. The eleven-frame schema-2 stream requires its own bounded
+target-vehicle capture before normal logging use.

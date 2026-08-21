@@ -189,7 +189,6 @@ where downstream conditioning makes a map replay differ from the published
 byte. The capture does not establish the candidate degree-per-byte conversion,
 electrical valve command, or physical camshaft angle at the crankshaft.
 
-The verified CAN profile retains legacy field identifiers
-`intake_cvtc_target_b1_raw` and `intake_cvtc_target_b2_raw` because they are part
-of the profile CRC. User-facing dashboard and MLG labels identify them as
-intake and exhaust targets without changing the wire contract.
+CAN telemetry schema 2 names the two sources `intake_cvtc_target_raw` and
+`exhaust_cvtc_target_raw`, matching their recovered common-target roles. The
+generated profile CRC binds those names and sources to the host decoder.

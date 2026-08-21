@@ -77,11 +77,10 @@ high_byte(uint16[0xFFFF1024]) >= ROM8[0x8B5D] = 0x48
 uint8[0xFFFF253B] == 0
 ```
 
-Any failed condition reloads `0xFFFF253B` with 110. This byte is in the common
-tenth-phase decrement range, so continuous eligibility must first exhaust 110
-counts. Under the board-level candidate `Pphi=20 MHz`, that is about 1.1264 s;
-the count value is code-proven and the time conversion remains a hardware
-candidate.
+Any failed condition reloads `0xFFFF253B` with 110. The byte lies outside the
+code-proven `0xFFFF256A..0xFFFF25F3` tenth-phase decrement range. Its decrement
+owner and wall-clock period remain unresolved, so the value 110 is not assigned
+a `10.24 ms` conversion.
 
 ### Vehicle-speed fuel cut
 

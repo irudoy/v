@@ -205,7 +205,8 @@ Only six of the twelve switched families differ between Maps 2 and 3 in this
 local image: all four warm DFCO threshold families, the `0x12196` timing-state
 family, and the column-0 release cell of main fuel cut `0x0934E`. High-octane
 timing state, high-detonation timing state, `0x1219E` warm transition timing,
-exhaust CVTC target, Fuel Compensation Main, and the request-limiter scalar are
+exhaust CVTC target, the main fuel-compensation surface, and the
+request-limiter scalar are
 byte-identical between the two slots. They cannot explain an A/B difference in
 this capture. Exact per-image calibration values remain local and unversioned.
 

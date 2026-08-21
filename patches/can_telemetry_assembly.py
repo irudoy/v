@@ -32,12 +32,37 @@ SOURCE_LABELS = {
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr", "not", "rte"}
 
 
+def render_payloads(layout, blobs):
+    expected = set(layout.assembly_unit_by_key)
+    if set(blobs) != expected:
+        raise ValueError(
+            f"payload set differs; missing={sorted(expected - set(blobs))}; "
+            f"extra={sorted(set(blobs) - expected)}"
+        )
+    lines = [
+        "# SHA-locked GNU SH-2E payloads for exact JK08A CAN telemetry.",
+        f"schema_version = {layout.schema_version}",
+        "",
+        "[units]",
+    ]
+    for unit in layout.assembly_units:
+        blob = layout_model.validate_assembled_blob(unit, blobs[unit.key])
+        encoded = blob.hex()
+        lines.extend((f'{unit.key} = """',))
+        lines.extend(
+            encoded[index : index + 64]
+            for index in range(0, len(encoded), 64)
+        )
+        lines.append('"""')
+    return "\n".join(lines) + "\n"
+
+
 def load_payloads(layout=None, path=DEFAULT_PAYLOADS):
     layout = layout or layout_model.load_layout()
     path = Path(path)
     with path.open("rb") as source:
         raw = tomllib.load(source)
-    if raw.get("schema_version") != 1 or not isinstance(raw.get("units"), dict):
+    if raw.get("schema_version") != 2 or not isinstance(raw.get("units"), dict):
         raise ValueError(f"{path}: unsupported payload table")
     expected = set(layout.assembly_unit_by_key)
     units = raw["units"]
@@ -92,14 +117,15 @@ def _expected_long_literals():
             "telemetry_capture_config": 0x000D4E00,
             "telemetry_capture_state": 0xFFFF5E00,
             "telemetry_capture_bank_a": 0xFFFF5E20,
-            "telemetry_capture_bank_b": 0xFFFF5E60,
-            "telemetry_config_integrity": 0x54454C31,
+            "telemetry_capture_bank_b": 0xFFFF5E78,
+            "telemetry_config_integrity": 0x54454C32,
             "telemetry_build_state": 0xFFFF5E00,
             "telemetry_page_table": 0x000D4C00,
-            "telemetry_context_table": 0x000D4CC4,
+            "telemetry_context_page_9_table": 0x000D4CFC,
+            "telemetry_context_page_10_table": 0x000D4D5C,
             "telemetry_request_state": 0xFFFF5E00,
             "telemetry_request_bank_a_literal": 0xFFFF5E20,
-            "telemetry_request_bank_b": 0xFFFF5E60,
+            "telemetry_request_bank_b": 0xFFFF5E78,
             "telemetry_mailbox_data": 0xFFFFDC48,
             "telemetry_txpr1": 0xFFFFD820,
         },
@@ -115,7 +141,7 @@ def _expected_long_literals():
             "telemetry_completion_irr1": 0xFFFFD808,
             "telemetry_completion_request_page": 0x000D4700,
             "telemetry_completion_bank_a": 0xFFFF5E20,
-            "telemetry_completion_bank_b": 0xFFFF5E60,
+            "telemetry_completion_bank_b": 0xFFFF5E78,
         },
     }
 
@@ -150,19 +176,20 @@ def _validate_capture(parsed):
         "mov.w @(0x8,r4),r0",
         "mov.w @(0xa,r4),r0",
         "cmp/hi r1,r0",
-        "mov.w @(telemetry_config_core_crc,pc),r1",
-        "mov.w @(telemetry_config_wide_crc,pc),r1",
+        "mov.w @(telemetry_config_crc,pc),r1",
     ):
         if required not in texts:
             raise ValueError(
                 f"capture configuration guard lacks {required}"
             )
-    if texts.count("mov.b @r4+,r0") != 1 or texts.count("dt r2") != 3:
+    if texts.count("mov.b @r4+,r0") != 1 or texts.count("dt r2") != 4:
         raise ValueError("bounded snapshot or mailbox copy loops differ")
     for required in (
         "telemetry_capture_due", "telemetry_capture_busy_bank",
         "telemetry_capture_idle", "telemetry_build_page_loop",
-        "telemetry_build_context_byte_loop", "telemetry_request_copy_loop",
+        "telemetry_build_context_page_9_byte_loop",
+        "telemetry_build_context_page_10_byte_loop",
+        "telemetry_request_copy_loop",
     ):
         if required not in parsed.labels:
             raise ValueError(f"capture lacks {required}")
@@ -257,9 +284,22 @@ def validate_instruction_semantics(layout, parsed_by_unit, blobs):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--payloads", type=Path, default=DEFAULT_PAYLOADS)
+    parser.add_argument(
+        "--update-from",
+        type=Path,
+        help="replace the payload manifest from <unit>.bin GNU outputs",
+    )
     args = parser.parse_args(argv)
     layout = layout_model.load_layout()
     parsed = validate_assembly_sources(layout)
+    if args.update_from is not None:
+        blobs = {
+            unit.key: (args.update_from / f"{unit.key}.bin").read_bytes()
+            for unit in layout.assembly_units
+        }
+        args.payloads.write_text(
+            render_payloads(layout, blobs), encoding="utf-8"
+        )
     blobs = load_payloads(layout, args.payloads)
     audit = validate_instruction_semantics(layout, parsed, blobs)
     print(
