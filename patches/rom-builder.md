@@ -79,6 +79,26 @@ does not call an Immobilizer patcher. Historical image identities and hardware
 outcomes are retained in `hardware-results.toml`; the production path imports
 only the current composition modules.
 
+## Relocated address profiles
+
+`rom-address-profiles.toml` records exact JK00C and JK00D stock addresses and
+the audited 8MFK runtime allocation. `rom_address_profiles.py` binds every
+profile to its registered stock image, verifies all original hook words,
+requires the complete erased ROM envelope, preserves the occupied stock
+mailbox 26, and rejects any incomplete semantic table. The registry has no
+implicit ROM selector.
+
+The 8MFK runtime uses a uniform ROM relocation of `0xC700` and a RAM relocation
+of `0x300`, while retaining explicit nonuniform stock hooks and application-RAM
+sources. Its exhaust-CVTC target is two independent bank families. The second
+adapter and its four map copies occupy the beginning of the former telemetry
+future reserve. Telemetry uses stock-inactive mailbox 24 and a completion ISR
+that handles that mailbox before tail-chaining to the complete stock ISR.
+
+These profiles are verified address evidence. The production builder remains
+limited to `sh7058_7mfkavn86` until target-specific assembly rendering and the
+executable fixtures consume the profiles.
+
 ## Rolling Launch profile
 
 Without `--profile`, the builder uses the conservative built-in

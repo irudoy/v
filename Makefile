@@ -60,6 +60,7 @@ setup:
 	$(UV) sync --frozen
 
 check:
+	$(PYTHON) patches/rom_address_profiles.py --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
 	$(NODE) --check tools/romviz/app.js

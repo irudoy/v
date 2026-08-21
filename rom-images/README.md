@@ -288,12 +288,16 @@ and edit distance `43,104`, confirming a common code lineage with relatively
 small edits rather than independent implementations.
 
 Direct reuse of JK08A or JK00D addresses is unsafe. JK00C and JK00D match none
-of the 15 current JK08A Map Switching stock hooks, the JK08A runtime allocation
-is occupied, and the JK08A runtime checksum calculations do not match their
-stored fields. Existing reviewed homologs show that higher-level algorithms do
-survive at relocated addresses. This family needs a function and calibration
-correspondence manifest before one canonical semantic layer can project onto
-both revisions.
+of the 15 current JK08A Map Switching stock hooks, and their checksum fields
+and application state are relocated. Reviewed homologs show that the
+higher-level algorithms survive at target-specific addresses.
+
+`../patches/rom-address-profiles.toml` binds both exact stock images to the
+audited ROM range `0x000de800:0x000e2700`, the audited RAM range
+`0xffff6000:0xffff6600`, every current runtime hook, the split exhaust-CVTC
+banks, Rolling Launch diagnostics, HCAN mailbox ownership, and every schema-2
+telemetry source. The production builder does not consume this profile until
+target-specific assembly and executable fixtures are complete.
 
 ### Significantly different groups
 
