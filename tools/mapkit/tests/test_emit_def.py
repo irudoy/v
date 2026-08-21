@@ -506,6 +506,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             set(switches) - set(actual),
             {
                 "Developer Immobilizer",
+                "CAN Telemetry at Startup",
                 "Rolling Launch Require Accelerator Pedal",
             },
         )
@@ -547,6 +548,9 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             for slot in range(1, 6)
             for name, category in SLOT_TABLES.items()
         })
+        expected["CAN Telemetry at Startup"] = (
+            "Logging / CAN Telemetry"
+        )
         self.assertEqual(set(tuner_items), set(expected))
         for name, category in expected.items():
             with self.subTest(name=name):
@@ -563,6 +567,23 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             "(candidate)" not in category and "(traced)" not in category
             for category in categories
         ))
+
+    def test_tracked_xml_exposes_disabled_telemetry_startup_switch(self):
+        rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
+        switch = next(
+            table
+            for table in rom.findall("./table")
+            if table.get("name") == "CAN Telemetry at Startup"
+        )
+        self.assertEqual(switch.get("type"), "Switch")
+        self.assertEqual(switch.get("storageaddress"), "0xD4E03")
+        self.assertEqual(
+            [
+                (state.get("name"), state.get("data"))
+                for state in switch.findall("./state")
+            ],
+            [("Disabled (Default)", "00"), ("Enabled", "01")],
+        )
 
     def test_tracked_xml_has_one_rolling_launch_bitwise_switch(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")

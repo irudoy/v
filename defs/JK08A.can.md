@@ -314,6 +314,9 @@ SH7058S transmit-cancellation limitation applies only when mailbox 31 is a
 transmit buffer. The telemetry runtime calls the complete stock initializer,
 preserves its return value, and then configures mailbox 31 as MBC `010`, DLC 8,
 standard receive for the control ID. Its activity interrupt stays masked.
+The direct physical mailbox ID word uses `STDID << 4`, not the table-record
+encoding `STDID << 5`; the lower nibble contains RTR, IDE, and extended-ID
+bits. Control ID `0x6F1` is therefore written as `0x6F10`.
 
 The stock receive scans cover only the 30 table-backed mailboxes 1 through 30.
 Telemetry therefore polls mailbox-31 RXPR1 at its interrupt-disabled scheduler

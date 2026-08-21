@@ -46,6 +46,7 @@ static const uint8_t stop_command[8] = {
 };
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
+extern uint32_t invoke_r0(uint32_t entry);
 extern void invoke_exception_probe(uint32_t *registers);
 
 static size_t case_count;
@@ -268,7 +269,7 @@ static int run_wrapper_cases(void)
 
     count_case();
     reset_case();
-    if (invoke_r4(HCAN1_INIT_WRAPPER, 0) != 1)
+    if (invoke_r0(HCAN1_INIT_WRAPPER) != 1)
         return fail_value("hcan1-init", "stock_result", 0, 1);
     if (read_u16(ram_pointer(CONTROL_MAILBOX)) != 0x6f10)
         return fail_value(
@@ -289,7 +290,7 @@ static int run_wrapper_cases(void)
     count_case();
     reset_case();
     write_u16(rom_pointer(CONFIG) + 8, 0x07fe);
-    if (invoke_r4(HCAN1_INIT_WRAPPER, 0) != 1)
+    if (invoke_r0(HCAN1_INIT_WRAPPER) != 1)
         return fail_value("hcan1-init-high-id", "stock_result", 0, 1);
     if (read_u16(ram_pointer(CONTROL_MAILBOX)) != 0x7ff0)
         return fail_value(
@@ -299,7 +300,7 @@ static int run_wrapper_cases(void)
     count_case();
     reset_case();
     rom_pointer(CONFIG)[10] ^= 1;
-    if (invoke_r4(HCAN1_INIT_WRAPPER, 0) != 1)
+    if (invoke_r0(HCAN1_INIT_WRAPPER) != 1)
         return fail_value("hcan1-init-invalid", "stock_result", 0, 1);
     if (read_u16(ram_pointer(CONTROL_MAILBOX) + 4) != 0x0700)
         return fail_value(

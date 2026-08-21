@@ -13,3 +13,14 @@ _invoke_r4:
     rts
     nop
     .size _invoke_r4,.-_invoke_r4
+
+    .global _invoke_r0
+    .type _invoke_r0,@function
+_invoke_r0:
+    sts.l pr,@-r15
+    jsr @r4
+    nop
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _invoke_r0,.-_invoke_r0

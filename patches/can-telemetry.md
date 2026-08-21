@@ -76,6 +76,11 @@ uses `0x6F0` and control uses `0x6F1`. Physical mailbox 31 uses control base
 RXPR1, RFPR1, MBIMR1, and UMSR1. Its mailbox activity interrupt remains masked;
 the main wrapper polls it at the base scheduler boundary.
 
+The table record and the physical mailbox register use different encodings.
+The table stores `STDID << 5` for the stock initializer, while mailbox 31
+register bytes 0 and 1 store `STDID << 4` directly because byte 1 bits 3 and 2
+are RTR and IDE. The default control register word is therefore `0x6F10`.
+
 ## Coherent capture boundary
 
 The main loop calls the pointer at `0x00028090` while interrupts are masked.

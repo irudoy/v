@@ -311,6 +311,45 @@ class PcanSourceTest(unittest.TestCase):
 
 
 class DashboardPresentationTest(unittest.TestCase):
+    @staticmethod
+    def control_dashboard(*, active):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.control_requests = sources.queue.Queue(maxsize=8)
+        dashboard.worker = types.SimpleNamespace(is_alive=lambda: True)
+        dashboard.pcan_active = active
+        dashboard.model = types.SimpleNamespace(
+            can_id=0x6F0,
+            decoder=types.SimpleNamespace(
+                schema=app.can_telemetry.load_schema()[0]
+            ),
+        )
+        values = []
+        dashboard.control_var = types.SimpleNamespace(set=values.append)
+        return dashboard, values
+
+    def test_stream_start_queues_schema_declared_control_frame(self):
+        dashboard, values = self.control_dashboard(active=True)
+
+        dashboard.send_stream_command("start")
+
+        self.assertEqual(
+            dashboard.control_requests.get_nowait(),
+            sources.ControlRequest(
+                "start",
+                0x6F1,
+                bytes.fromhex("54454C320201B632"),
+            ),
+        )
+        self.assertEqual(values[-1], "Control: START queued")
+
+    def test_stream_control_requires_active_connection(self):
+        dashboard, values = self.control_dashboard(active=False)
+
+        dashboard.send_stream_command("stop")
+
+        self.assertTrue(dashboard.control_requests.empty())
+        self.assertIn("Listen-only disabled", values[-1])
+
     def test_cvtc_target_labels_match_recovered_roles(self):
         metrics = {
             metric.key: metric.label

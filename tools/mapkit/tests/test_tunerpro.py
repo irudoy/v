@@ -292,6 +292,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
 
         expected_patches = {
             "Developer Immobilizer": "NATS / Immobilizer",
+            "CAN Telemetry at Startup": "Logging / CAN Telemetry",
             "Rolling Launch Require Accelerator Pedal":
                 "Rolling Launch / Activation",
         }
@@ -358,7 +359,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
-        self.assertEqual(len(patches), 45)
+        self.assertEqual(len(patches), 46)
         self.assertEqual(len(tables), 101)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
@@ -586,15 +587,26 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                     basedata = bytes.fromhex(entry.get("basedata"))
                     patchdata = bytes.fromhex(entry.get("patchdata"))
                     self.assertEqual(int(entry.get("datasize"), 16), len(patchdata))
-                    if patch.findtext("./title") == (
-                        "Rolling Launch Require Accelerator Pedal"
-                    ):
-                        # Rolling Launch occupies erased stock space, so this
-                        # reversible control is based on the validated runtime
-                        # profile instead of the unpatched ROM bytes.
-                        self.assertEqual(address, 0xD3F6C)
-                        self.assertEqual(basedata, b"\x00\x01")
-                        self.assertEqual(patchdata, b"\x00\x00")
+                    runtime_controls = {
+                        "Rolling Launch Require Accelerator Pedal": (
+                            0xD3F6C,
+                            b"\x00\x01",
+                            b"\x00\x00",
+                        ),
+                        "CAN Telemetry at Startup": (
+                            0xD4E03,
+                            b"\x00",
+                            b"\x01",
+                        ),
+                    }
+                    title = patch.findtext("./title")
+                    if title in runtime_controls:
+                        # These controls occupy erased stock space and are
+                        # based on the validated installed runtime profile.
+                        expected = runtime_controls[title]
+                        self.assertEqual(address, expected[0])
+                        self.assertEqual(basedata, expected[1])
+                        self.assertEqual(patchdata, expected[2])
                         continue
                     self.assertEqual(
                         self.image.data[address:address + len(basedata)],
