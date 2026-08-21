@@ -57,6 +57,30 @@ ENTITY_FIELDS = (
     "function_kinds",
 )
 SITE_FIELDS = ("func_addr", "ins_addr", "ordinal", "mnemonic")
+REFERENCE_FIELDS = (
+    "func_addr",
+    "ins_addr",
+    "ordinal",
+    "mnemonic",
+    "ref_addr",
+    "width",
+    "value_hex",
+    "ref_type",
+)
+REFERENCE_OUTPUT_FIELDS = (
+    "source_func",
+    "target_func",
+    "source_ins",
+    "target_ins",
+    "ordinal",
+    "mnemonic",
+    "source_ref",
+    "target_ref",
+    "width",
+    "source_value",
+    "target_value",
+    "function_kind",
+)
 
 
 class CorrespondenceError(ValueError):
@@ -92,6 +116,34 @@ class EntityMatch:
     status: str
     sites: int
     function_kinds: str
+
+
+@dataclass(frozen=True)
+class InstructionReference:
+    func_addr: str
+    ins_addr: str
+    ordinal: int
+    mnemonic: str
+    ref_addr: str
+    width: int
+    value_hex: str
+    ref_type: str
+
+
+@dataclass(frozen=True)
+class ReferenceMatch:
+    source_func: str
+    target_func: str
+    source_ins: str
+    target_ins: str
+    ordinal: int
+    mnemonic: str
+    source_ref: str
+    target_ref: str
+    width: int
+    source_value: str
+    target_value: str
+    function_kind: str
 
 
 def read_signatures(path):
@@ -422,6 +474,130 @@ def read_function_sites(export_dir):
     return sites
 
 
+def read_function_references(export_dir):
+    path = Path(export_dir) / "function_references.csv"
+    try:
+        with path.open(newline="", encoding="utf-8") as source:
+            reader = csv.DictReader(source)
+            if tuple(reader.fieldnames or ()) != REFERENCE_FIELDS:
+                raise CorrespondenceError(
+                    f"{path}: header {reader.fieldnames}; "
+                    f"expected {list(REFERENCE_FIELDS)}"
+                )
+            raw_rows = list(reader)
+    except OSError as error:
+        raise CorrespondenceError(
+            f"function-reference export cannot be read: {path}"
+        ) from error
+
+    rows = []
+    seen = {}
+    for row_number, row in enumerate(raw_rows, 2):
+        context = f"{path}:{row_number}"
+        for field in ("func_addr", "ins_addr", "ref_addr"):
+            if not ADDRESS_RE.fullmatch(row[field]):
+                raise CorrespondenceError(f"{context}: invalid {field}")
+        try:
+            ordinal = int(row["ordinal"])
+            width = int(row["width"])
+        except ValueError as error:
+            raise CorrespondenceError(
+                f"{context}: ordinal and width must be decimal"
+            ) from error
+        if ordinal < 0 or width not in {0, 1, 2, 4}:
+            raise CorrespondenceError(f"{context}: invalid ordinal or width")
+        if not row["mnemonic"] or not row["ref_type"]:
+            raise CorrespondenceError(f"{context}: missing reference metadata")
+        expected_hex_length = width * 2
+        value_hex = row["value_hex"]
+        if (
+            len(value_hex) != expected_hex_length
+            or (value_hex and not re.fullmatch(r"[0-9a-f]+", value_hex))
+        ):
+            raise CorrespondenceError(f"{context}: invalid value_hex")
+        key = (
+            row["func_addr"],
+            row["ins_addr"],
+            row["ref_addr"],
+            row["ref_type"],
+        )
+        normalized = (ordinal, row["mnemonic"], width, value_hex)
+        if key in seen:
+            if seen[key] == normalized:
+                continue
+            raise CorrespondenceError(
+                f"{context}: conflicting duplicate reference"
+            )
+        seen[key] = normalized
+        rows.append(
+            InstructionReference(
+                func_addr=row["func_addr"],
+                ins_addr=row["ins_addr"],
+                ordinal=ordinal,
+                mnemonic=row["mnemonic"],
+                ref_addr=row["ref_addr"],
+                width=width,
+                value_hex=value_hex,
+                ref_type=row["ref_type"],
+            )
+        )
+    return tuple(rows)
+
+
+def match_references(source_export, target_export, function_matches):
+    """Pair ROM references at equal instruction ordinals in matched functions."""
+    source_rows = read_function_references(source_export)
+    target_rows = read_function_references(target_export)
+    functions = {match.source: match for match in function_matches}
+    target_index = defaultdict(list)
+    for row in target_rows:
+        target_index[
+            (
+                row.func_addr,
+                row.ordinal,
+                row.mnemonic,
+                row.width,
+                row.ref_type,
+            )
+        ].append(row)
+
+    result = []
+    for source in source_rows:
+        function = functions.get(source.func_addr)
+        if function is None:
+            continue
+        peers = target_index.get(
+            (
+                function.target,
+                source.ordinal,
+                source.mnemonic,
+                source.width,
+                source.ref_type,
+            ),
+            (),
+        )
+        if len(peers) != 1:
+            continue
+        target = peers[0]
+        result.append(
+            ReferenceMatch(
+                source_func=source.func_addr,
+                target_func=target.func_addr,
+                source_ins=source.ins_addr,
+                target_ins=target.ins_addr,
+                ordinal=source.ordinal,
+                mnemonic=source.mnemonic,
+                source_ref=source.ref_addr,
+                target_ref=target.ref_addr,
+                width=source.width,
+                source_value=source.value_hex,
+                target_value=target.value_hex,
+                function_kind=function.kind,
+            )
+        )
+    return tuple(result)
+
+
 def _rom_address(value):
     return bool(ADDRESS_RE.fullmatch(value or "")) and 0x1000 <= int(value, 16) < 0x180000
 
@@ -552,6 +728,24 @@ def write_entities(path, matches):
             writer.writerow({field: getattr(match, field) for field in ENTITY_FIELDS})
 
 
+def write_reference_matches(path, matches):
+    path = Path(path)
+    with path.open("w", newline="", encoding="utf-8") as output:
+        writer = csv.DictWriter(
+            output,
+            fieldnames=REFERENCE_OUTPUT_FIELDS,
+            lineterminator="\n",
+        )
+        writer.writeheader()
+        for match in matches:
+            writer.writerow(
+                {
+                    field: getattr(match, field)
+                    for field in REFERENCE_OUTPUT_FIELDS
+                }
+            )
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Pair unique exact and normalized-shape Ghidra functions."
@@ -563,6 +757,7 @@ def main(argv=None):
     parser.add_argument("--target-interp", type=Path)
     parser.add_argument("--interp-correspondence", type=Path)
     parser.add_argument("--entity-output", type=Path)
+    parser.add_argument("--reference-output", type=Path)
     parser.add_argument(
         "--explain-address",
         action="append",
@@ -595,6 +790,17 @@ def main(argv=None):
     if args.output is not None:
         write_matches(args.output, matches)
         print(f"output={args.output}")
+    if args.reference_output is not None:
+        references = match_references(
+            args.source_export,
+            args.target_export,
+            matches,
+        )
+        write_reference_matches(args.reference_output, references)
+        print(
+            f"references={len(references)} "
+            f"output={args.reference_output}"
+        )
     entity_options = (args.source_interp, args.target_interp, args.entity_output)
     if any(item is not None for item in entity_options):
         if any(item is None for item in entity_options):

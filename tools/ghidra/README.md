@@ -32,8 +32,9 @@ filesystem path. Ghidra projects and export directories remain outside Git.
 `ExportGraph.java` writes `funcs.csv` and `calls.csv`.
 `ExportXrefs.java` writes peripheral, RAM, and literal-pool references to
 `xrefs.csv`. `ExportFunctionSignatures.java` writes relocation-tolerant
-`function_signatures.csv` and call-site ordinal data to `function_sites.csv`.
-A typical read-only export is:
+`function_signatures.csv`, call-site ordinal data to `function_sites.csv`, and
+ROM literal/reference data to `function_references.csv`. A typical read-only
+export is:
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
@@ -70,8 +71,10 @@ CSV and listings belong in a machine-local export directory.
 `ExportFunctionSignatures.java` hashes exact instruction bytes, mnemonic
 sequences, and normalized instruction shapes for every recovered function.
 The companion site export records each `jsr` and `bsr` by instruction ordinal
-inside its function. Ordinals keep resolver callsites comparable when a
-homologous function changes instruction widths or literal-pool placement.
+inside its function. The reference export records loaded bytes and pool
+locations at the same ordinal. Ordinals keep resolver callsites and literals
+comparable when a homologous function changes instruction widths or
+literal-pool placement.
 
 `tools/rom_correspondence.py` pairs unique exact-byte functions first and then
 unique normalized shapes. With two interpolation registries, their reviewed

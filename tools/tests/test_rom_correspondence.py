@@ -145,3 +145,59 @@ def test_signature_reader_rejects_duplicate_addresses():
             rom_correspondence.CorrespondenceError, match="duplicate addr"
         ):
             rom_correspondence.read_signatures(path)
+
+
+def test_reference_matching_uses_function_and_instruction_ordinal(tmp_path):
+    source_export = tmp_path / "source"
+    target_export = tmp_path / "target"
+    source_export.mkdir()
+    target_export.mkdir()
+    fields = rom_correspondence.REFERENCE_FIELDS
+    source_row = {
+        "func_addr": "00001000",
+        "ins_addr": "00001004",
+        "ordinal": "2",
+        "mnemonic": "mov.l",
+        "ref_addr": "00001020",
+        "width": "4",
+        "value_hex": "00002000",
+        "ref_type": "read",
+    }
+    target_row = {
+        "func_addr": "00003000",
+        "ins_addr": "00003008",
+        "ordinal": "2",
+        "mnemonic": "mov.l",
+        "ref_addr": "00003024",
+        "width": "4",
+        "value_hex": "00004000",
+        "ref_type": "read",
+    }
+    for directory, row in (
+        (source_export, source_row),
+        (target_export, target_row),
+    ):
+        with (directory / "function_references.csv").open(
+            "w", newline="", encoding="utf-8"
+        ) as output:
+            writer = csv.DictWriter(output, fieldnames=fields)
+            writer.writeheader()
+            writer.writerow(row)
+    function_match = rom_correspondence.FunctionMatch(
+        source="00001000",
+        target="00003000",
+        kind="normalized-shape",
+        source_size=8,
+        target_size=10,
+        instructions=4,
+        signature_sha256="a" * 64,
+    )
+
+    matches = rom_correspondence.match_references(
+        source_export, target_export, (function_match,)
+    )
+    assert len(matches) == 1
+    assert matches[0].source_ref == "00001020"
+    assert matches[0].target_ref == "00003024"
+    assert matches[0].source_value == "00002000"
+    assert matches[0].target_value == "00004000"
