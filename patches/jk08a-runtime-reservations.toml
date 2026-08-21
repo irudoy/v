@@ -30,7 +30,7 @@ purpose = "Queue state, two snapshot banks, event data, and active slack."
 
 [[future_rom]]
 owner = "can_telemetry"
-start = 0x000D4E10
+start = 0x000D5000
 end = 0x000D6000
 purpose = "CAN telemetry executable and table expansion."
 

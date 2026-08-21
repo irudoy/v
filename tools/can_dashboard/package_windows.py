@@ -24,6 +24,7 @@ SOURCE_FILES = (
     "patches/can-telemetry-schema.json",
     "tools/logs/__init__.py",
     "tools/logs/can_telemetry.py",
+    "tools/logs/can_telemetry_schema.py",
     "tools/logs/mlvlg.py",
     "tools/logs/peak_trc_audit.py",
     "tools/logs/trc_to_mlg.py",

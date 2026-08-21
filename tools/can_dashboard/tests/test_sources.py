@@ -85,6 +85,62 @@ class ReplaySourceTest(unittest.TestCase):
 
 
 class PcanSourceTest(unittest.TestCase):
+    def test_active_connection_sends_queued_stream_control(self):
+        sent = []
+        events = []
+        requests = sources.queue.Queue()
+        requests.put(sources.ControlRequest(
+            "start",
+            0x6F1,
+            bytes.fromhex("54454C320201B632"),
+        ))
+
+        class FakeMessage:
+            def __init__(self, **kwargs):
+                self.__dict__.update(kwargs)
+
+        bus = types.SimpleNamespace(
+            send=lambda message, timeout: sent.append((message, timeout))
+        )
+        can_module = types.SimpleNamespace(Message=FakeMessage)
+
+        sources._send_control_requests(
+            bus,
+            can_module,
+            sources.PcanConfiguration(listen_only=False),
+            requests,
+            events.append,
+        )
+
+        self.assertTrue(requests.empty())
+        self.assertEqual(len(sent), 1)
+        self.assertEqual(sent[0][0].arbitration_id, 0x6F1)
+        self.assertEqual(
+            sent[0][0].data,
+            bytes.fromhex("54454C320201B632"),
+        )
+        self.assertEqual(sent[0][1], 0.1)
+        self.assertEqual(events[0].state, "sent")
+
+    def test_listen_only_connection_rejects_stream_control(self):
+        events = []
+        requests = sources.queue.Queue()
+        requests.put(sources.ControlRequest("stop", 0x6F1, bytes(8)))
+        bus = types.SimpleNamespace(send=mock.Mock())
+
+        sources._send_control_requests(
+            bus,
+            types.SimpleNamespace(Message=mock.Mock()),
+            sources.PcanConfiguration(listen_only=True),
+            requests,
+            events.append,
+        )
+
+        bus.send.assert_not_called()
+        self.assertTrue(requests.empty())
+        self.assertEqual(events[0].state, "error")
+        self.assertIn("active/ACK", events[0].detail)
+
     def test_reset_wraps_bus_lifecycle_when_enabled(self):
         actions = []
 
@@ -286,10 +342,10 @@ class DashboardPresentationTest(unittest.TestCase):
 
     def test_standard_can_id_parser_rejects_invalid_ui_values(self):
         self.assertEqual(app._parse_standard_can_id("0x6f0"), 0x6F0)
-        for value in ("", "invalid", "0", "0x800"):
+        for value in ("", "invalid", "0", "0x7ff", "0x800"):
             with self.subTest(value=value), self.assertRaisesRegex(
                 ValueError,
-                "0x001..0x7FF",
+                "0x001..0x7FE",
             ):
                 app._parse_standard_can_id(value)
 
@@ -304,7 +360,7 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.stop_source.assert_called_once_with()
         dashboard._set_source_status.assert_called_once_with(
             "error",
-            "CAN ID must be in 0x001..0x7FF",
+            "data CAN ID must be in 0x001..0x7FE",
         )
 
     def test_recording_ignores_frames_received_before_start(self):

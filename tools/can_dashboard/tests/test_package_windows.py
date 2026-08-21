@@ -28,6 +28,7 @@ class WindowsPackageTest(unittest.TestCase):
                     prefix + "tools/can_dashboard/app.py",
                     prefix + "tools/can_dashboard/recording.py",
                     prefix + "tools/logs/can_telemetry.py",
+                    prefix + "tools/logs/can_telemetry_schema.py",
                     prefix + "tools/logs/mlvlg.py",
                     prefix + "tools/logs/peak_trc_audit.py",
                     prefix + "tools/logs/trc_to_mlg.py",

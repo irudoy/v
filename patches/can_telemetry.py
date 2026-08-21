@@ -1,4 +1,4 @@
-"""Fail-closed configuration model for the JK08A CAN telemetry runtime."""
+"""Fail-closed configuration model for the JK08A CAN telemetry producer."""
 
 from __future__ import annotations
 
@@ -13,6 +13,8 @@ CONFIG_VERSION = 2
 CONFIG_INTEGRITY = 0x54454C32
 CONFIG_SIZE = 16
 STOCK_MAILBOX_RECORD = bytes.fromhex("05000000")
+MAX_DATA_CAN_ID = 0x7FE
+CONTROL_CAN_ID_OFFSET = 1
 
 
 @dataclass(frozen=True)
@@ -27,7 +29,7 @@ class Configuration:
         return all((
             type(self.enabled) is bool,
             type(self.can_id) is int,
-            1 <= self.can_id <= 0x7FF,
+            1 <= self.can_id <= MAX_DATA_CAN_ID,
             self.profile in manifest.profile_by_name,
             type(self.tick_divisor) is int,
             1 <= self.tick_divisor <= 0xFF,
@@ -90,7 +92,7 @@ class Configuration:
             page_count == profile.page_count,
             tick_divisor != 0,
             reserved == 0,
-            1 <= can_id <= 0x7FF,
+            1 <= can_id <= MAX_DATA_CAN_ID,
             profile_crc == profile.crc16,
             integrity == CONFIG_INTEGRITY,
         )):
@@ -101,10 +103,12 @@ class Configuration:
         return result
 
     def mailbox_record(self):
-        if not self.enabled:
-            return STOCK_MAILBOX_RECORD
         encoded_id = self.can_id << 5
         return bytes((0x04, 0x08, encoded_id >> 8, encoded_id & 0xFF))
+
+    @property
+    def control_can_id(self):
+        return self.can_id + CONTROL_CAN_ID_OFFSET
 
 
 def default_configuration():

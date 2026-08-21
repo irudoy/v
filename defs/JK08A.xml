@@ -53,6 +53,13 @@
       <state name="Disabled (IMMO OFF)" data="00"/>
     </table>
 
+    <table type="Switch" name="CAN Telemetry at Startup" category="Logging//CAN Telemetry"
+           storageaddress="0xD4E03" storagetype="uint8" sizex="1" endian="big" userlevel="5">
+      <description>Exact JK08A producer configuration. Disabled is the default. A validated START command on the derived control CAN ID overrides this byte until reset; STOP forces streaming off until reset. Requires the project CAN telemetry runtime.</description>
+      <state name="Disabled (Default)" data="00"/>
+      <state name="Enabled" data="01"/>
+    </table>
+
     <table type="Switch" name="Rolling Launch Require Accelerator Pedal"
            category="Rolling Launch//Activation" storageaddress="0xD3F6C" storagetype="uint8"
            sizey="2" endian="big" userlevel="5">

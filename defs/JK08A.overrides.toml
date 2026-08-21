@@ -99,6 +99,20 @@ state = [
   { name = "Disabled (IMMO OFF)", data = "00" },
 ]
 
+[[switch]]
+name = "CAN Telemetry at Startup"
+category = "Logging / CAN Telemetry"
+storageaddress = "0xD4E03"
+storagetype = "uint8"
+sizex = "1"
+endian = "big"
+userlevel = "5"
+description = "Exact JK08A producer configuration. Disabled is the default. A validated START command on the derived control CAN ID overrides this byte until reset; STOP forces streaming off until reset. Requires the project CAN telemetry runtime."
+state = [
+  { name = "Disabled (Default)", data = "00" },
+  { name = "Enabled", data = "01" },
+]
+
 # Calibration axes remain embedded in their tables. Canonical axis facts stay in
 # the graph and defs/JK08A.axes.csv without separate editable reference views.
 

@@ -1,6 +1,11 @@
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from tools.can_dashboard import model
+from tools.logs import can_telemetry
+from tools.logs import can_telemetry_schema
 
 
 def feed_group(dashboard, group, base_time):
@@ -16,6 +21,38 @@ def feed_group(dashboard, group, base_time):
 
 
 class DashboardModelTest(unittest.TestCase):
+    def test_model_and_demo_share_an_external_rom_neutral_schema(self):
+        document = json.loads(
+            can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+        profile = document["profiles"][0]
+        profile["name"] = "portable"
+        profile["id"] = 7
+        portable_crc = can_telemetry_schema.profile_crc16(
+            profile, document["protocol_version"]
+        )
+        profile["crc16_ccitt_false"] = f"0x{portable_crc:04X}"
+        with tempfile.TemporaryDirectory() as directory:
+            schema_path = Path(directory) / "portable-schema.json"
+            schema_path.write_text(
+                json.dumps(document), encoding="utf-8"
+            )
+            generator = model.DemoGenerator(
+                profile="portable", schema_path=schema_path
+            )
+            dashboard = model.DashboardModel(
+                "portable", 0x6F0, 1, schema_path
+            )
+            for tick in range(1, 5):
+                feed_group(
+                    dashboard,
+                    generator.group(tick),
+                    tick * model.BASE_TICK_SECONDS,
+                )
+
+        self.assertTrue(dashboard.schema_verified)
+        self.assertEqual(dashboard.decoder.profile["name"], "portable")
+
     def test_demo_groups_verify_schema_and_retain_contexts(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)

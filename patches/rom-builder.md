@@ -51,7 +51,9 @@ The JK08A handler performs these operations in one invocation:
    `rolling-launch-payloads.toml` and the selected local profile.
 8. Apply the current CAN telemetry composition directly from
    `can-telemetry-payloads.toml`. The built-in profile installs the runtime in
-   fail-closed disabled mode and retains the stock-inactive mailbox-26 record.
+   fail-closed disabled-at-startup mode, configures mailbox 26 as the idle
+   telemetry transmitter, and configures mailbox 31 as the control receiver
+   after each HCAN1 initialization.
 9. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
    order, then verify all stored values again.
 10. Require every final difference from the input to be inside the union of the
@@ -124,16 +126,23 @@ Concrete profiles remain local and are not versioned.
 
 The optional `[can_telemetry]` table is strict: all four fields are required
 when the table is present. Omitting it selects the same disabled default shown
-above. `profile` is the schema-2 `tuning` profile; `can_id` is a nonzero
-standard 11-bit identifier; and `tick_divisor` is in `1..255` relative to the natural
-`FUN_00020DFE` snapshot cadence.
+above. `profile` is the schema-2 `tuning` profile; `can_id` is in
+`0x001..0x7FE`; and `tick_divisor` is in `1..255` relative to the natural
+`FUN_00020DFE` snapshot cadence. The adjacent standard ID is reserved for
+runtime control.
 
-`enabled = true` changes mailbox-26 record `0x000097BE` from stock-inactive
-type 5 to interrupt-enabled transmit type 4 and encodes the selected ID as
-`STDID << 5`. A profile can enable transmission only after a passive
-whole-vehicle capture proves the ID unused and a measured bus-load review
-selects the page profile and divisor. The builder validates the exact mailbox
-record against the configuration and rejects a partial or mismatched endpoint.
+Every profile changes mailbox-26 record `0x000097BE` from stock-inactive type 5
+to interrupt-enabled transmit type 4 and encodes the selected data ID as
+`STDID << 5`. `enabled` controls whether sampling starts after reset; an idle
+type-4 mailbox does not request CAN traffic. A validated START command on
+`can_id + 1` activates streaming until reset even when `enabled = false`, and
+STOP forces it off. The builder validates the exact mailbox record against the
+configuration and rejects a partial or mismatched endpoint.
+
+A profile can start transmission automatically only after a passive
+whole-vehicle capture proves both adjacent IDs unused and a measured bus-load
+review selects the page profile and divisor. The generated XML/XDF switch at
+`0x000D4E03` edits the same startup flag.
 
 The generated runtime configuration is 16 bytes and binds enable state,
 profile ID, page count, divisor, CAN ID, profile CRC16, and an integrity word.

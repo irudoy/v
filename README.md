@@ -9,6 +9,9 @@ engines.
 - Stock ROM identity and provenance are tracked for owned and reference SH7058
   and SH7059 images. `JK08A` is the active target; `JK03A` shares its verified
   executable ranges and inherits the canonical JK08A annotation layer.
+- The stock collection has two exact-code families, one near-code SH7058
+  family, and one distinct SH7058 image. Pairwise fixed-address and relocated
+  window measurements are reproducible from the tracked homology registry.
 - The headless analysis path exports firmware structure from Ghidra, rebuilds a
   queryable Memgraph index from tracked inputs, and projects reviewed facts into
   RomRaider XML, TunerPro XDF, and a map ledger.
@@ -26,7 +29,7 @@ engines.
 | Information | Canonical source |
 |---|---|
 | Addressed technical claims and evidence | `defs/*.csv`, TOML manifests, assembly, and narrow repository specifications |
-| Stock ROM identity, provenance, and hashes | `rom-images/roms.csv` and `rom-images/README.md` |
+| Stock ROM identity, provenance, hashes, and homology | `rom-images/roms.csv`, `rom-images/homology.toml`, `rom-images/homology.csv`, and `rom-images/README.md` |
 | Derived-image identity and hardware result | `patches/hardware-results.toml` |
 | Query and relationship index | Reproducible Memgraph projection built by tracked loaders |
 | XML, XDF, ledger, and counters | Generated projections, never handwritten authority |

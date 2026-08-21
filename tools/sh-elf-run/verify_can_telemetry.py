@@ -31,14 +31,15 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "65f4f9f0095c77ae4580bbbaa0777b68e6ac596c7c56fadde2256084f881aaa1"
+    "afb4a85e799b017a50d436859322a6f23b8544d06e59070834f1ef77c1144747"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 1320
-EXPECTED_COMPOSITION_WRITE_BYTES = 2980
-EXPECTED_INSTRUCTION_COUNT = 482
-EXPECTED_CODE_ENTRY_COUNT = 8
-EXPECTED_DYNAMIC_CASES = 50
+EXPECTED_COMPOSITION_CHANGED_BYTES = 1723
+EXPECTED_COMPOSITION_WRITE_BYTES = 3484
+EXPECTED_INSTRUCTION_COUNT = 647
+EXPECTED_CODE_ENTRY_COUNT = 10
+EXPECTED_DYNAMIC_CASES = 62
 RETURN_STUB = bytes.fromhex("000b0009")
+RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 TRAPA_VECTOR_ADDRESS = 0x00000100
 
 
@@ -104,20 +105,22 @@ def require_composition(layout, blobs):
 
 
 def install_stock_return_stubs(fixture, layout):
-    """Stub only the three external stock callees reached by this gate."""
+    """Stub only the four external stock callees reached by this gate."""
     hooks = layout.hook_by_key
     targets = {
         hooks["coherent_snapshot_call"].stock,
         hooks["knock_interval_latch"].stock,
+        hooks["hcan1_primary_init"].stock,
         0x000C6B68,
     }
-    expected = {0x00020DFE, 0x000493E8, 0x000C6B68}
+    expected = {0x00020DFE, 0x000493E8, 0x000C338A, 0x000C6B68}
     if targets != expected:
         raise VerificationError(
             f"CAN telemetry stock stub targets differ: {sorted(targets)}"
         )
     for address in targets:
-        fixture[address : address + len(RETURN_STUB)] = RETURN_STUB
+        stub = RETURN_ONE_STUB if address == 0x000C338A else RETURN_STUB
+        fixture[address : address + len(stub)] = stub
     return len(targets)
 
 
@@ -258,7 +261,7 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=180,
     )
     marker = (
-        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=50 entries=8 "
+        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=62 entries=10 "
         "profiles=1 contexts=8 isr_rte=5"
     )
     if marker not in result.stdout:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Decode ordered JK08A custom CAN telemetry groups from candump text."""
+"""Decode ordered custom CAN telemetry groups from a wire schema."""
 
 from __future__ import annotations
 
@@ -15,8 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from patches import can_telemetry_profile
-
+from tools.logs import can_telemetry_schema
 
 DEFAULT_SCHEMA = ROOT / "patches" / "can-telemetry-schema.json"
 CANDUMP_COMPACT = re.compile(
@@ -40,32 +39,186 @@ class Snapshot:
     timestamp: float | None
 
 
-def _load_schema(path=DEFAULT_SCHEMA):
+def load_schema(path=DEFAULT_SCHEMA):
     path = Path(path)
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as error:
         raise DecodeError(f"cannot load telemetry schema {path}: {error}") from error
-    manifest = can_telemetry_profile.load_manifest()
-    try:
-        profiles = {item["name"]: item for item in raw["profiles"]}
-    except (KeyError, TypeError) as error:
-        raise DecodeError("generated telemetry schema structure differs") from error
+    if not isinstance(raw, dict):
+        raise DecodeError("telemetry schema root must be an object")
+    protocol_version = raw.get("protocol_version")
+    frame = raw.get("frame")
+    profile_rows = raw.get("profiles")
     if (
-        raw.get("byte_order") != "big"
-        or raw.get("frame", {}).get("dlc") != 8
-        or set(profiles) != set(manifest.profile_by_name)
+        raw.get("schema_version") != 2
+        or type(protocol_version) is not int
+        or not 0 <= protocol_version <= 0xFF
+        or raw.get("byte_order") != "big"
+        or not isinstance(frame, dict)
+        or frame.get("format") != "standard_11_bit_classical_can"
+        or frame.get("dlc") != 8
+        or not isinstance(profile_rows, list)
+        or not profile_rows
     ):
-        raise DecodeError("generated telemetry schema identity differs")
-    for name, spec in manifest.profile_by_name.items():
-        generated = profiles[name]
+        raise DecodeError("telemetry schema transport contract differs")
+
+    profiles = {}
+    profile_ids = set()
+    for profile_index, source_profile in enumerate(profile_rows):
+        context = f"profile[{profile_index}]"
+        if not isinstance(source_profile, dict):
+            raise DecodeError(f"{context} must be an object")
+        name = source_profile.get("name")
+        profile_id = source_profile.get("id")
+        page_count = source_profile.get("page_count")
+        fields = source_profile.get("fields")
+        contexts = source_profile.get("contexts")
+        try:
+            crc16 = int(source_profile.get("crc16_ccitt_false"), 0)
+        except (TypeError, ValueError) as error:
+            raise DecodeError(f"{context} has an invalid CRC16") from error
         if (
-            generated.get("id") != spec.profile_id
-            or generated.get("page_count") != spec.page_count
-            or generated.get("crc16_ccitt_false") != f"0x{spec.crc16:04X}"
+            not isinstance(name, str)
+            or not name
+            or name in profiles
+            or type(profile_id) is not int
+            or not 0 <= profile_id <= 0xFF
+            or profile_id in profile_ids
+            or type(page_count) is not int
+            or not 1 <= page_count <= 16
+            or not 0 <= crc16 <= 0xFFFF
+            or not isinstance(fields, list)
+            or not isinstance(contexts, list)
         ):
-            raise DecodeError(f"generated profile {name} differs from its source")
-    return manifest, profiles
+            raise DecodeError(f"{context} has an invalid identity")
+
+        occupied = {}
+        field_names = set()
+        fixed_pages = set()
+        for field_index, field in enumerate(fields):
+            field_context = f"{context}.fields[{field_index}]"
+            _validate_schema_field(field, field_context)
+            page = field.get("page")
+            offset = field.get("offset")
+            width = field["width"]
+            if (
+                type(page) is not int
+                or not 0 <= page < page_count
+                or type(offset) is not int
+                or not 1 <= offset <= 7
+                or offset + width > 8
+            ):
+                raise DecodeError(f"{field_context} has invalid placement")
+            if field["name"] in field_names:
+                raise DecodeError(f"duplicate field name {field['name']!r}")
+            field_names.add(field["name"])
+            fixed_pages.add(page)
+            for byte_offset in range(offset, offset + width):
+                key = (page, byte_offset)
+                if key in occupied:
+                    raise DecodeError(f"{field_context} overlaps {occupied[key]}")
+                occupied[key] = field["name"]
+
+        contexts_by_page = {}
+        health_contexts = 0
+        for context_index, context_row in enumerate(contexts):
+            row_context = f"{context}.contexts[{context_index}]"
+            if not isinstance(context_row, dict):
+                raise DecodeError(f"{row_context} must be an object")
+            page = context_row.get("page")
+            tag = context_row.get("tag")
+            context_name = context_row.get("name")
+            context_fields = context_row.get("fields")
+            if (
+                type(page) is not int
+                or not 0 <= page < page_count
+                or type(tag) is not int
+                or not 0 <= tag <= 0xFF
+                or not isinstance(context_name, str)
+                or not context_name
+                or not isinstance(context_fields, list)
+                or not context_fields
+            ):
+                raise DecodeError(f"{row_context} has an invalid identity")
+            page_rows = contexts_by_page.setdefault(page, {})
+            if tag in page_rows:
+                raise DecodeError(f"{row_context} duplicates page/tag identity")
+            page_rows[tag] = context_row
+            payload_width = 0
+            for field_index, field in enumerate(context_fields):
+                field_context = f"{row_context}.fields[{field_index}]"
+                _validate_schema_field(field, field_context)
+                if "page" in field or "offset" in field:
+                    raise DecodeError(
+                        f"{field_context} must use sequential context placement"
+                    )
+                if field["name"] in field_names:
+                    raise DecodeError(f"duplicate field name {field['name']!r}")
+                field_names.add(field["name"])
+                payload_width += field["width"]
+            if payload_width != 6:
+                raise DecodeError(f"{row_context} must fill six payload bytes")
+            if context_name == "health":
+                health_contexts += 1
+                required_health = {
+                    "protocol_version", "profile_id", "profile_crc16"
+                }
+                if not required_health <= {
+                    field["name"] for field in context_fields
+                }:
+                    raise DecodeError(f"{row_context} lacks schema identity fields")
+
+        context_pages = set(contexts_by_page)
+        if fixed_pages & context_pages:
+            raise DecodeError(f"{context} mixes fixed and context page layouts")
+        if fixed_pages | context_pages != set(range(page_count)):
+            raise DecodeError(f"{context} does not define every page")
+        for page in fixed_pages:
+            missing = [
+                offset for offset in range(1, 8)
+                if (page, offset) not in occupied
+            ]
+            if missing:
+                raise DecodeError(f"{context} page {page} lacks bytes {missing}")
+        tag_sets = {tuple(sorted(rows)) for rows in contexts_by_page.values()}
+        if contexts_by_page and len(tag_sets) != 1:
+            raise DecodeError(f"{context} context pages use different tags")
+        if not contexts_by_page or health_contexts != 1:
+            raise DecodeError(f"{context} must define exactly one health context")
+        if (
+            can_telemetry_schema.profile_crc16(
+                source_profile, protocol_version
+            )
+            != crc16
+        ):
+            raise DecodeError(f"{context} CRC16 does not match its wire contract")
+
+        profile = dict(source_profile)
+        profile["_context_pages"] = tuple(sorted(context_pages))
+        profile["_crc16"] = crc16
+        profiles[name] = profile
+        profile_ids.add(profile_id)
+    return raw, profiles
+
+
+def _validate_schema_field(field, context):
+    if not isinstance(field, dict):
+        raise DecodeError(f"{context} must be an object")
+    name = field.get("name")
+    width = field.get("width")
+    signed = field.get("signed")
+    scale = field.get("scale")
+    if (
+        not isinstance(name, str)
+        or not name
+        or type(width) is not int
+        or not 1 <= width <= 4
+        or type(signed) is not bool
+        or not isinstance(scale, str)
+        or not scale
+    ):
+        raise DecodeError(f"{context} has an invalid field contract")
 
 
 def _decode_value(payload, field, *, offset=None):
@@ -82,12 +235,13 @@ class Decoder:
     """Strictly assemble complete, ordered telemetry snapshot groups."""
 
     def __init__(self, profile, can_id=0x6F0, schema_path=DEFAULT_SCHEMA):
-        self.manifest, profiles = _load_schema(schema_path)
+        self.schema, profiles = load_schema(schema_path)
         if profile not in profiles:
             raise DecodeError(f"unknown telemetry profile {profile!r}")
         if type(can_id) is not int or not 1 <= can_id <= 0x7FF:
             raise DecodeError("CAN ID must be a nonzero standard 11-bit ID")
         self.profile = profiles[profile]
+        self.context_pages = self.profile["_context_pages"]
         self.can_id = can_id
         self.page_count = self.profile["page_count"]
         self._pages = []
@@ -174,9 +328,7 @@ class Decoder:
                 )
             values[field["name"]] = _decode_value(pages[page], field)
 
-        context_tags = {
-            page: pages[page][1] for page in self.manifest.context_pages
-        }
+        context_tags = {page: pages[page][1] for page in self.context_pages}
         if len(set(context_tags.values())) != 1:
             self.malformed_frames += 1
             return None
@@ -186,7 +338,7 @@ class Decoder:
             for item in self.profile["contexts"]
         }
         context_names = []
-        for page in self.manifest.context_pages:
+        for page in self.context_pages:
             context = contexts.get((page, context_tag))
             if context is None:
                 self.malformed_frames += 1
@@ -199,12 +351,11 @@ class Decoder:
                 )
                 offset += field["width"]
             if context["name"] == "health":
-                expected = self.manifest.profile_by_name[self.profile["name"]]
                 healthy = all((
                     values["protocol_version"]
-                    == self.manifest.protocol_version,
-                    values["profile_id"] == expected.profile_id,
-                    values["profile_crc16"] == expected.crc16,
+                    == self.schema["protocol_version"],
+                    values["profile_id"] == self.profile["id"],
+                    values["profile_crc16"] == self.profile["_crc16"],
                 ))
                 if not healthy:
                     self.schema_mismatches += 1
@@ -325,10 +476,11 @@ def parse_candump_line(line):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", nargs="?", type=Path, help="candump log; default is stdin")
-    parser.add_argument("--profile", choices=("tuning",), default="tuning")
+    parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
+    parser.add_argument("--profile", default="tuning")
     parser.add_argument("--can-id", type=lambda value: int(value, 0), default=0x6F0)
     args = parser.parse_args(argv)
-    decoder = Decoder(args.profile, args.can_id)
+    decoder = Decoder(args.profile, args.can_id, args.schema)
     source = args.input.open("r", encoding="utf-8") if args.input else sys.stdin
     try:
         for line in source:

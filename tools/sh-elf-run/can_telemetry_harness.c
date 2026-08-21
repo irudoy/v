@@ -10,23 +10,40 @@
 #define CONFIG 0x000d4e00U
 #define TABLE 0x000d4c00U
 #define MAIN_WRAPPER 0x000d4280U
-#define KNOCK_WRAPPER 0x000d42a0U
-#define STARTUP_WRAPPER 0x000d42e0U
+#define KNOCK_WRAPPER 0x000d42b0U
+#define STARTUP_WRAPPER 0x000d42f0U
 #define CAPTURE 0x000d4340U
 #define BUILD_BANK 0x000d4500U
 #define REQUEST_PAGE 0x000d4700U
 #define SLE1_ISR 0x000d4800U
 #define COMPLETION 0x000d4900U
+#define HCAN1_INIT_WRAPPER 0x000d4e10U
+#define CONTROL_POLL 0x000d4ea0U
 #define KNOCK_COUNT 0xffff2142U
 #define KNOCK_MASK 0xffff2150U
 #define TXPR1 0xffffd820U
 #define TXACK1 0xffffd830U
 #define ABACK1 0xffffd838U
 #define IRR1 0xffffd808U
+#define RXPR1 0xffffd840U
+#define RFPR1 0xffffd848U
+#define MBIMR1 0xffffd850U
+#define UMSR1 0xffffd858U
 #define MAILBOX_DATA 0xffffdc48U
+#define CONTROL_MAILBOX 0xffffdce0U
+#define CONTROL_MAILBOX_DATA 0xffffdce8U
 #define STOCK_ACTIVITY 0xffffa56fU
 #define MAILBOX26_MASK 0x0400U
 #define MAILBOX28_MASK 0x1000U
+#define MAILBOX31_MASK 0x8000U
+
+static const uint8_t start_command[8] = {
+    0x54, 0x45, 0x4c, 0x32, 0x02, 0x01, 0xb6, 0x32,
+};
+
+static const uint8_t stop_command[8] = {
+    0x54, 0x45, 0x4c, 0x32, 0x02, 0x00, 0xa6, 0x13,
+};
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 extern void invoke_exception_probe(uint32_t *registers);
@@ -35,7 +52,7 @@ static size_t case_count;
 
 static const uint8_t configuration[16] = {
     0x43, 0x54, 0x02, 0x01, 0x01, 0x0b, 0x01, 0x00,
-    0x06, 0xf0, 0xe8, 0x81, 0x54, 0x45, 0x4c, 0x32,
+    0x06, 0xf0, 0x75, 0xbf, 0x54, 0x45, 0x4c, 0x32,
 };
 
 static volatile uint8_t *ram_pointer(uint32_t original)
@@ -154,8 +171,21 @@ static void reset_case(void)
     write_u16(ram_pointer(TXACK1), 0);
     write_u16(ram_pointer(ABACK1), 0);
     write_u16(ram_pointer(IRR1), 0);
+    write_u16(ram_pointer(RXPR1), 0);
+    write_u16(ram_pointer(RFPR1), 0);
+    write_u16(ram_pointer(MBIMR1), MAILBOX31_MASK);
+    write_u16(ram_pointer(UMSR1), 0);
     fill_bytes(ram_pointer(MAILBOX_DATA), 8, 0);
+    fill_bytes(ram_pointer(CONTROL_MAILBOX), 0x14, 0);
+    write_u16(ram_pointer(CONTROL_MAILBOX) + 4, 0x0700);
     ram_pointer(STOCK_ACTIVITY)[0] = 0;
+}
+
+static void seed_control_command(const uint8_t *payload, uint8_t dlc)
+{
+    copy_bytes(ram_pointer(CONTROL_MAILBOX_DATA), payload, 8);
+    ram_pointer(CONTROL_MAILBOX)[5] = dlc;
+    write_u16(ram_pointer(RXPR1), MAILBOX31_MASK);
 }
 
 static int verify_bank(const char *name, uint32_t bank, uint8_t context)
@@ -235,6 +265,46 @@ static int verify_started(
 static int run_wrapper_cases(void)
 {
     size_t index;
+
+    count_case();
+    reset_case();
+    if (invoke_r4(HCAN1_INIT_WRAPPER, 0) != 1)
+        return fail_value("hcan1-init", "stock_result", 0, 1);
+    if (read_u16(ram_pointer(CONTROL_MAILBOX)) != 0x6f10)
+        return fail_value(
+            "hcan1-init", "control_id",
+            read_u16(ram_pointer(CONTROL_MAILBOX)), 0x6f10);
+    if (read_u16(ram_pointer(CONTROL_MAILBOX) + 4) != 0x0208)
+        return fail_value(
+            "hcan1-init", "mailbox_control",
+            read_u16(ram_pointer(CONTROL_MAILBOX) + 4), 0x0208);
+    if ((read_u16(ram_pointer(MBIMR1)) & MAILBOX31_MASK) == 0)
+        return fail_value("hcan1-init", "interrupt_mask", 0, 1);
+    if (
+        read_u16(ram_pointer(RXPR1)) != MAILBOX31_MASK
+        || read_u16(ram_pointer(RFPR1)) != MAILBOX31_MASK
+        || read_u16(ram_pointer(UMSR1)) != MAILBOX31_MASK)
+        return fail_value("hcan1-init", "receive_flag_clear", 0, 1);
+
+    count_case();
+    reset_case();
+    write_u16(rom_pointer(CONFIG) + 8, 0x07fe);
+    if (invoke_r4(HCAN1_INIT_WRAPPER, 0) != 1)
+        return fail_value("hcan1-init-high-id", "stock_result", 0, 1);
+    if (read_u16(ram_pointer(CONTROL_MAILBOX)) != 0x7ff0)
+        return fail_value(
+            "hcan1-init-high-id", "control_id",
+            read_u16(ram_pointer(CONTROL_MAILBOX)), 0x7ff0);
+
+    count_case();
+    reset_case();
+    rom_pointer(CONFIG)[10] ^= 1;
+    if (invoke_r4(HCAN1_INIT_WRAPPER, 0) != 1)
+        return fail_value("hcan1-init-invalid", "stock_result", 0, 1);
+    if (read_u16(ram_pointer(CONTROL_MAILBOX) + 4) != 0x0700)
+        return fail_value(
+            "hcan1-init-invalid", "mailbox_control",
+            read_u16(ram_pointer(CONTROL_MAILBOX) + 4), 0x0700);
 
     count_case();
     reset_case();
@@ -325,7 +395,7 @@ static void mutate_configuration(enum config_mutation mutation)
         write_u16(config + 8, 0);
         break;
     case CONFIG_CAN_ID_HIGH:
-        write_u16(config + 8, 0x0800);
+        write_u16(config + 8, 0x07ff);
         break;
     case CONFIG_CRC:
         config[10] ^= 1;
@@ -358,6 +428,132 @@ static int run_configuration_cases(void)
     return 1;
 }
 
+static int run_control_cases(void)
+{
+    volatile uint8_t *state;
+
+    count_case();
+    reset_case();
+    rom_pointer(CONFIG)[3] = 0;
+    seed_control_command(start_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    state = ram_pointer(TELEMETRY_STATE);
+    if (state[11] != 1 || state[10] != 0)
+        return fail_value("control-start-disabled", "override", state[11], 1);
+    (void)invoke_r4(CAPTURE, 0);
+    if (!verify_started("control-start-disabled", 1, 11, BANK_B))
+        return 0;
+    if (read_u16(state + 8) != 1)
+        return fail_value(
+            "control-start-disabled", "tick", read_u16(state + 8), 1);
+
+    count_case();
+    reset_case();
+    state = ram_pointer(TELEMETRY_STATE);
+    state[1] = 1;
+    state[10] = 0x7f;
+    seed_control_command(stop_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (state[11] != 2 || state[1] != 0 || state[10] != 0)
+        return fail_value("control-stop-enabled", "override", state[11], 2);
+    (void)invoke_r4(CAPTURE, 0);
+    if (
+        read_u16(state + 8) != 0
+        || state[2] != 0
+        || read_u16(ram_pointer(TXPR1)) != 0)
+        return fail_value(
+            "control-stop-enabled", "capture_state",
+            read_u16(state + 8), 0);
+
+    count_case();
+    reset_case();
+    rom_pointer(CONFIG)[3] = 0;
+    rom_pointer(CONFIG)[6] = 4;
+    seed_control_command(start_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    state = ram_pointer(TELEMETRY_STATE);
+    if (state[10] != 3)
+        return fail_value("control-start-divider", "divider", state[10], 3);
+    (void)invoke_r4(CAPTURE, 0);
+    if (!verify_started("control-start-divider", 1, 11, BANK_B))
+        return 0;
+    if (read_u16(state + 8) != 1 || state[10] != 0)
+        return fail_value(
+            "control-start-divider", "tick", read_u16(state + 8), 1);
+
+    count_case();
+    reset_case();
+    seed_control_command(start_command, 8);
+    ram_pointer(CONTROL_MAILBOX_DATA)[7] ^= 1;
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 0)
+        return fail_value(
+            "control-invalid-payload", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 0);
+
+    count_case();
+    reset_case();
+    seed_control_command(start_command, 7);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 0)
+        return fail_value(
+            "control-invalid-dlc", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 0);
+
+    count_case();
+    reset_case();
+    write_u16(ram_pointer(RFPR1), MAILBOX31_MASK);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 0)
+        return fail_value(
+            "control-remote-only", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 0);
+
+    count_case();
+    reset_case();
+    seed_control_command(start_command, 8);
+    write_u16(ram_pointer(RFPR1), MAILBOX31_MASK);
+    write_u16(ram_pointer(CONTROL_MAILBOX), 0x6f18);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 0)
+        return fail_value(
+            "control-retained-remote", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 0);
+
+    count_case();
+    reset_case();
+    rom_pointer(CONFIG)[10] ^= 1;
+    seed_control_command(start_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 0)
+        return fail_value(
+            "control-invalid-config", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 0);
+    if (read_u16(ram_pointer(RXPR1)) != MAILBOX31_MASK)
+        return fail_value(
+            "control-invalid-config", "rxpr",
+            read_u16(ram_pointer(RXPR1)), MAILBOX31_MASK);
+
+    count_case();
+    reset_case();
+    (void)invoke_r4(CAPTURE, 0);
+    (void)invoke_r4(CAPTURE, 0);
+    state = ram_pointer(TELEMETRY_STATE);
+    if (state[2] != 1 || state[1] != 1)
+        return fail_value("control-stop-busy", "precondition", state[1], 1);
+    seed_control_command(stop_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (state[11] != 2 || state[1] != 0 || state[2] != 1)
+        return fail_value("control-stop-busy", "queue", state[1], 0);
+    write_u16(ram_pointer(TXACK1), MAILBOX26_MASK);
+    write_u16(ram_pointer(ABACK1), 0);
+    (void)invoke_r4(COMPLETION, 0);
+    if (state[2] != 1 || state[3] != 1)
+        return fail_value("control-stop-busy", "completion", state[3], 1);
+
+    return 1;
+}
+
 static int run_capture_cases(void)
 {
     volatile uint8_t *state;
@@ -374,7 +570,7 @@ static int run_capture_cases(void)
 
     count_case();
     reset_case();
-    write_u16(rom_pointer(CONFIG) + 8, 0x07ff);
+    write_u16(rom_pointer(CONFIG) + 8, 0x07fe);
     (void)invoke_r4(CAPTURE, 0);
     if (!verify_started("high-id", 1, 11, BANK_B))
         return 0;
@@ -716,6 +912,8 @@ int main(void)
         return 1;
     if (!run_configuration_cases())
         return 1;
+    if (!run_control_cases())
+        return 1;
     if (!run_capture_cases())
         return 1;
     if (!run_direct_entry_cases())
@@ -727,7 +925,7 @@ int main(void)
     if (!run_isr_cases())
         return 1;
     printf(
-        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=%lu entries=8 "
+        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=%lu entries=10 "
         "profiles=1 contexts=8 isr_rte=5\n",
         (unsigned long)case_count);
     return 0;

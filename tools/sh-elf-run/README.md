@@ -34,9 +34,10 @@ The gate performs these checks:
    Rolling Launch, and CAN telemetry fixtures and enforce their declared write
    sets, entries, hooks, pointers, mailbox record, and instruction audits.
 4. Execute every declared Map Switching selector, adapter, limiter, startup,
-   feedback, Rolling Launch behavior, telemetry capture, bank publication,
-   page request, ACK, abort, preemption, corruption, and ISR path with distinct
-   fixture values that expose wrong slots or addresses.
+   feedback, Rolling Launch behavior, telemetry HCAN1 initialization, control
+   polling, runtime enable overrides, capture, bank publication, page request,
+   ACK, abort, preemption, corruption, and ISR path with distinct fixture
+   values that expose wrong slots or addresses.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
    unchanged stock callees outside the implementation under test. The Rolling
@@ -99,6 +100,10 @@ the simulator. Simultaneous mailbox-26/mailbox-28 ISR cases place the two flags
 in independent TXACK1 and ABACK1 words, so both mailbox paths execute in one
 TRAPA exception without modifying instructions under test. Individual ACK and
 abort cases execute each write-one-to-clear instruction and boundary path.
+Mailbox-31 cases likewise execute RXPR1, RFPR1, and UMSR1 writes, including
+data, remote-only, retained-remote, malformed, and invalid-configuration paths;
+the fixture observes the write values rather than emulating their hardware
+clearing effect.
 
 The simulator does not model HCAN-II, the SH7058/SH7059 flash controller, or the
 external watchdog. The npkern marker therefore remains

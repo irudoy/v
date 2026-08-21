@@ -1,4 +1,5 @@
 from dataclasses import replace
+import json
 import unittest
 
 from patches import can_telemetry
@@ -23,7 +24,7 @@ class CanTelemetryContractTest(unittest.TestCase):
                 for item in self.manifest.profiles
             ),
             (
-                ("tuning", 1, 11, 0xE881),
+                ("tuning", 1, 11, 0x75BF),
             ),
         )
         self.assertEqual(len(self.manifest.fields), 40)
@@ -56,13 +57,37 @@ class CanTelemetryContractTest(unittest.TestCase):
             can_telemetry_profile.render_schema(self.manifest),
             can_telemetry_profile.DEFAULT_SCHEMA.read_text(encoding="utf-8"),
         )
+        host_schema = json.loads(
+            can_telemetry_profile.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+        self.assertNotIn("rom", host_schema)
+        self.assertNotIn("mailbox", host_schema["frame"])
+        self.assertEqual(host_schema["frame"]["default_can_id"], "0x6F0")
+        self.assertEqual(
+            host_schema["control"],
+            {
+                "can_id": "data_can_id + 1",
+                "commands": {
+                    "start": "54454C320201B632",
+                    "stop": "54454C320200A613",
+                },
+                "dlc": 8,
+                "format": "standard_11_bit_classical_can",
+                "maximum_data_can_id": "0x7FE",
+            },
+        )
+        host_fields = list(host_schema["profiles"][0]["fields"])
+        for context in host_schema["profiles"][0]["contexts"]:
+            host_fields.extend(context["fields"])
+        self.assertTrue(host_fields)
+        self.assertTrue(all("source" not in field for field in host_fields))
 
     def test_configuration_round_trip_and_mailbox_encoding(self):
         cases = (
             can_telemetry.default_configuration(),
             can_telemetry.Configuration(True, 0x001, "tuning", 255),
             can_telemetry.Configuration(True, 0x6EF, "tuning", 5),
-            can_telemetry.Configuration(True, 0x7FF, "tuning", 1),
+            can_telemetry.Configuration(True, 0x7FE, "tuning", 1),
         )
         for configuration in cases:
             with self.subTest(configuration=configuration):
@@ -76,16 +101,15 @@ class CanTelemetryContractTest(unittest.TestCase):
                 )
                 record = configuration.mailbox_record()
                 self.assertEqual(len(record), 4)
-                if configuration.enabled:
-                    self.assertEqual(record[:2], bytes((0x04, 0x08)))
-                    self.assertEqual(
-                        int.from_bytes(record[2:], "big"),
-                        configuration.can_id << 5,
-                    )
-                else:
-                    self.assertEqual(
-                        record, can_telemetry.STOCK_MAILBOX_RECORD
-                    )
+                self.assertEqual(record[:2], bytes((0x04, 0x08)))
+                self.assertEqual(
+                    int.from_bytes(record[2:], "big"),
+                    configuration.can_id << 5,
+                )
+                self.assertEqual(
+                    configuration.control_can_id,
+                    configuration.can_id + 1,
+                )
 
     def test_configuration_rejects_corruption_and_invalid_ranges(self):
         encoded = bytearray(can_telemetry.default_configuration().to_bytes())
@@ -97,6 +121,7 @@ class CanTelemetryContractTest(unittest.TestCase):
                     can_telemetry.Configuration.from_bytes(damaged)
         invalid = (
             can_telemetry.Configuration(True, 0, "tuning", 1),
+            can_telemetry.Configuration(True, 0x7FF, "tuning", 1),
             can_telemetry.Configuration(True, 0x800, "tuning", 1),
             can_telemetry.Configuration(True, 0x6F0, "missing", 1),
             can_telemetry.Configuration(True, 0x6F0, "tuning", 0),
@@ -113,11 +138,11 @@ class CanTelemetryContractTest(unittest.TestCase):
             (self.layout.owned_rom.start, self.layout.owned_rom.end),
             (0xD4280, 0xD6000),
         )
-        self.assertEqual(self.layout.reserved_rom.size, 0x11F0)
+        self.assertEqual(self.layout.reserved_rom.size, 0x1000)
         self.assertEqual(self.layout.ram.active.size, 0x100)
         self.assertEqual(self.layout.ram.future.size, 0x100)
-        self.assertEqual(self.layout.assembled_instruction_count, 482)
-        self.assertEqual(self.layout.assembled_data_bytes, 596)
+        self.assertEqual(self.layout.assembled_instruction_count, 647)
+        self.assertEqual(self.layout.assembled_data_bytes, 680)
 
     def test_static_assembly_and_default_composition_are_locked(self):
         parsed = can_telemetry_assembly.validate_assembly_sources(
@@ -126,7 +151,7 @@ class CanTelemetryContractTest(unittest.TestCase):
         audit = can_telemetry_assembly.validate_instruction_semantics(
             self.layout, parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 482)
+        self.assertEqual(audit.instructions, 647)
         composition = can_telemetry_compose.compose(
             layout=self.layout, blobs=self.blobs
         )
@@ -134,8 +159,8 @@ class CanTelemetryContractTest(unittest.TestCase):
             composition.sha256,
             self.layout.expected_composition_sha256,
         )
-        self.assertEqual(composition.instruction_count, 482)
-        self.assertEqual(composition.code_entry_count, 8)
+        self.assertEqual(composition.instruction_count, 647)
+        self.assertEqual(composition.code_entry_count, 10)
         self.assertEqual(
             composition.data[
                 self.layout.reserved_rom.start : self.layout.reserved_rom.end
@@ -181,7 +206,7 @@ class CanTelemetryContractTest(unittest.TestCase):
             jk08a_runtime_reservations.OWNERS,
         )
         self.assertEqual(
-            sum(item.span.size for item in ledger.future_rom), 8688
+            sum(item.span.size for item in ledger.future_rom), 8192
         )
         self.assertEqual(
             sum(item.span.size for item in ledger.future_ram), 768

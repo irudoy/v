@@ -95,12 +95,21 @@ not established by the current evidence.
 
 ## Transport boundary
 
-Schema 2 uses protocol version 2, profile ID 1, generated CRC16 `0xE881`, one
-build-selected standard CAN ID, and physical mailbox 26. The dashboard, strict
-decoder, TRC converter, and MLVLG recorder implement only this current schema.
-Historical schema 1 captures require the historical decoder revision and are
-not accepted as schema 2 input.
+Schema 2 uses protocol version 2, profile ID 1, generated CRC16 `0x75BF`, one
+build-selected standard data CAN ID on physical mailbox 26, and the adjacent
+control ID on polled receive mailbox 31. The data ID range is `0x001..0x7FE`;
+the control ID is always `data_can_id + 1`.
+
+Configuration byte `0x000D4E03` controls streaming at startup and is exposed in
+the generated definitions as `CAN Telemetry at Startup`. The default is off.
+Exact DLC-8 START and STOP commands on the control ID override that byte until
+reset, and START activates telemetry even when the definition flag is off. The
+dashboard can send these commands only through an active/ACK PCAN connection.
+
+The dashboard, strict decoder, TRC converter, and MLVLG recorder implement only
+this current schema. Historical schema 1 captures require the historical
+decoder revision and are not accepted as schema 2 input.
 
 The firmware and executable SH-2E gate are complete. Physical validation of
-the eleven-frame stream remains required before schema 2 is used for a normal
-target-vehicle logging run.
+mailbox-31 START/STOP and the eleven-frame stream remains required before
+schema 2 is used for a normal target-vehicle logging run.

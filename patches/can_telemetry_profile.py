@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate and generate the fixed JK08A CAN telemetry wire contract."""
+"""Validate the exact producer binding and generate neutral wire artifacts."""
 
 from __future__ import annotations
 
@@ -7,7 +7,15 @@ import argparse
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import sys
 import tomllib
+
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from tools.logs import can_telemetry_schema
 
 
 DEFAULT_SOURCE = Path(__file__).with_name("can-telemetry-profile.toml")
@@ -114,15 +122,6 @@ class Manifest:
         }
 
 
-def crc16_ccitt_false(data):
-    value = 0xFFFF
-    for byte in bytes(data):
-        value ^= byte << 8
-        for _ in range(8):
-            value = ((value << 1) ^ 0x1021) & 0xFFFF if value & 0x8000 else (value << 1) & 0xFFFF
-    return value
-
-
 def _require_keys(table, required, optional, context):
     if not isinstance(table, dict):
         raise ValueError(f"{context}: expected a TOML table")
@@ -202,8 +201,6 @@ def _canonical_profile(raw, fields, contexts, protocol_version):
             "page": field.page,
             "offset": field.offset,
             "width": field.width,
-            "source": f"0x{field.source:08X}",
-            "kind": field.kind,
             "signed": field.signed,
             "scale": field.scale,
         })
@@ -217,8 +214,6 @@ def _canonical_profile(raw, fields, contexts, protocol_version):
                 {
                     "name": field.name,
                     "width": field.width,
-                    "source": f"0x{field.source:08X}",
-                    "kind": field.kind,
                     "signed": field.signed,
                     "scale": field.scale,
                 }
@@ -254,7 +249,7 @@ def load_manifest(path=DEFAULT_SOURCE):
         or raw["protocol_version"] != 2
         or raw["byte_order"] != "big"
         or raw["mailbox"] != 26
-        or not 1 <= raw["candidate_can_id"] <= 0x7FF
+        or not 1 <= raw["candidate_can_id"] <= 0x7FE
         or not 1 <= raw["candidate_tick_divisor"] <= 0xFF
         or raw["base_tick_numerator"] != 204800
         or raw["pphi_hz"] != 20_000_000
@@ -340,7 +335,12 @@ def load_manifest(path=DEFAULT_SOURCE):
         encoded = json.dumps(
             canonical, sort_keys=True, separators=(",", ":")
         ).encode("utf-8")
-        profiles.append(Profile(item["name"], item["id"], item["page_count"], crc16_ccitt_false(encoded)))
+        profiles.append(Profile(
+            item["name"],
+            item["id"],
+            item["page_count"],
+            can_telemetry_schema.crc16_ccitt_false(encoded),
+        ))
     profiles = tuple(profiles)
 
     manifest = Manifest(
@@ -421,8 +421,6 @@ def _field_json(field):
     result = {
         "name": field.name,
         "width": field.width,
-        "source": f"0x{field.source:08X}",
-        "kind": field.kind,
         "signed": field.signed,
         "scale": field.scale,
     }
@@ -435,15 +433,23 @@ def _field_json(field):
 def render_schema(manifest):
     document = {
         "schema_version": manifest.schema_version,
-        "rom": manifest.rom,
         "protocol_version": manifest.protocol_version,
         "byte_order": manifest.byte_order,
         "frame": {
             "format": "standard_11_bit_classical_can",
             "dlc": 8,
-            "mailbox": manifest.mailbox,
-            "candidate_can_id": f"0x{manifest.candidate_can_id:03X}",
+            "default_can_id": f"0x{manifest.candidate_can_id:03X}",
             "header": "((tick16 & 0x0f) << 4) | page_id",
+        },
+        "control": {
+            "format": "standard_11_bit_classical_can",
+            "dlc": 8,
+            "can_id": "data_can_id + 1",
+            "maximum_data_can_id": "0x7FE",
+            "commands": {
+                "start": "54454C320201B632",
+                "stop": "54454C320200A613",
+            },
         },
         "profiles": [
             {

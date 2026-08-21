@@ -34,8 +34,9 @@ content is enabled, as described by the official
 
 ## Custom CAN telemetry decoder
 
-`can_telemetry.py` strictly reconstructs the fixed JK08A custom telemetry
-groups described by `../../patches/can-telemetry-schema.json`. It accepts the
+`can_telemetry.py` strictly reconstructs custom telemetry groups from a selected
+wire-schema JSON. The decoder is ROM-agnostic: it does not import a firmware
+manifest, inspect producer identity, or depend on RAM addresses. It accepts the
 compact `ID#DATA` candump form, filters one configured standard ID, requires
 page 0 followed by strictly increasing page IDs, verifies the four-bit header
 sequence against `tick16`, discards incomplete or preempted groups, and unwraps
@@ -47,6 +48,7 @@ Decode a capture to one JSON object per complete snapshot:
 
 ```bash
 python3 tools/logs/can_telemetry.py \
+  --schema patches/can-telemetry-schema.json \
   --profile tuning \
   --can-id 0x6F0 \
   capture.log > snapshots.jsonl
@@ -71,6 +73,10 @@ different sequence groups, or interpolates a dropped snapshot.
 The cross-platform live dashboard in `../can_dashboard/` uses this same decoder. It
 retains the latest values from rotating contexts, exposes loss and queue health,
 and keeps candidate transforms visibly distinct from proven physical outputs.
+The generated schema also declares exact START and STOP control frames on
+`data_can_id + 1`. `can_telemetry_schema.py` validates their transport fields,
+payload length, and CRC for the dashboard. Offline decoders and converters do
+not transmit CAN frames.
 
 ## JK08A load-coordinate audit
 
@@ -177,6 +183,7 @@ It does not replay the capture in real time.
 
 ```bash
 python3 tools/logs/trc_to_mlg.py \
+  --schema patches/can-telemetry-schema.json \
   --profile tuning \
   --can-id 0x6F0 \
   --tick-divisor 1 \

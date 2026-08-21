@@ -14,6 +14,9 @@ sts.l pr,@-r15
 mov.l @(telemetry_main_stock,pc),r0
 jsr @r0
 nop
+mov.l @(telemetry_control_poll_entry,pc),r0
+jsr @r0
+nop
 mov.l @(telemetry_capture_entry,pc),r0
 jsr @r0
 nop
@@ -24,10 +27,12 @@ nop
 .align 4
 telemetry_main_stock:
 .long 0x00020DFE
+telemetry_control_poll_entry:
+.long 0x000D4EA0
 telemetry_capture_entry:
 .long 0x000D4340
 
-.org 0x000D42A0
+.org 0x000D42B0
 telemetry_knock_wrapper:
 sts.l pr,@-r15
 mov.l @(telemetry_knock_state,pc),r1
@@ -54,7 +59,7 @@ telemetry_knock_mask:
 telemetry_knock_stock:
 .long 0x000493E8
 
-.org 0x000D42E0
+.org 0x000D42F0
 telemetry_startup_wrapper:
 sts.l pr,@-r15
 mov.l @(telemetry_startup_state,pc),r1

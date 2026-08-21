@@ -288,9 +288,14 @@ Relevant HCAN1 addresses are:
 | `0xFFFFD820` | TXPR1 for physical mailboxes 16 through 31 |
 | `0xFFFFD830` | TXACK1 |
 | `0xFFFFD838` | ABACK1 |
+| `0xFFFFD840` | RXPR1; bit 15 is mailbox-31 data-frame pending |
+| `0xFFFFD848` | RFPR1; bit 15 is mailbox-31 remote-frame pending |
 | `0xFFFFD850` | MBIMR1; zero enables a mailbox activity interrupt |
+| `0xFFFFD858` | UMSR1; bit 15 reports mailbox-31 unread-message overflow |
 | `0xFFFFDC40` | physical mailbox 26 control base |
 | `0xFFFFDC48` | physical mailbox 26 eight-byte data field |
+| `0xFFFFDCE0` | physical mailbox 31 control base |
+| `0xFFFFDCE8` | physical mailbox 31 eight-byte data field |
 
 For physical mailbox 26, the corresponding TXPR1, TXACK1, ABACK1, and MBIMR1
 bit is bit 10, or `0x0400`.
@@ -298,13 +303,22 @@ bit is bit 10, or `0x0400`.
 ## Safe extension boundary
 
 Physical mailbox 26 is the only table-owned inactive mailbox that can be
-promoted without replacing a stock receive or transmit role. A type-4 record
-would configure it as a transmit mailbox and automatically enable its
-mailbox-empty interrupt while keeping it outside the stock type-3 scans.
+promoted without replacing a stock receive or transmit role. The telemetry
+runtime uses a type-4 record to configure it as a transmit mailbox and enable
+its mailbox-empty interrupt while keeping it outside the stock type-3 scans.
 
-Mailbox 31 is also initialized inactive, but the SH7058S manual has a specific
-transmit-cancellation limitation for mailbox 31. It is not part of the baseline
-extension design.
+Mailbox 31 is initialized separately as inactive by the complete HCAN1
+initializer at `0x000C338A`. The initializer is called through pointers at
+`0x0002D7FC` during primary startup and `0x000C3B10` during recovery. The
+SH7058S transmit-cancellation limitation applies only when mailbox 31 is a
+transmit buffer. The telemetry runtime calls the complete stock initializer,
+preserves its return value, and then configures mailbox 31 as MBC `010`, DLC 8,
+standard receive for the control ID. Its activity interrupt stays masked.
+
+The stock receive scans cover only the 30 table-backed mailboxes 1 through 30.
+Telemetry therefore polls mailbox-31 RXPR1 at its interrupt-disabled scheduler
+boundary. It also checks RTR and clears the corresponding RXPR1, RFPR1, and
+UMSR1 bits, so a remote request or overflow cannot leave the mailbox blocked.
 
 SH7058S hardware-manual section 17.7.6 permits changing the identifier of a
 transmit mailbox whenever its corresponding TXPR bit is clear. After mailbox 26
@@ -315,8 +329,10 @@ schema 2 does not use this capability: all eleven pages use one build-selected
 standard ID and the identifier record remains constant while the endpoint is
 active.
 
-The implemented custom telemetry layer promotes mailbox 26 to type 4 only when
-its build configuration is enabled. It replaces the SLE1 vector with one
+The implemented custom telemetry layer always promotes mailbox 26 to type 4 so
+a runtime START command can activate a build whose startup flag is disabled.
+The transmitter remains idle until streaming is enabled. The layer replaces
+the SLE1 vector with one
 combined handler that services mailbox 26 and reproduces the complete stock
 mailbox-28 success and abort behavior before executing `RTE`. The stock handler
 cannot be called with `JSR` because it owns the exception return, and an

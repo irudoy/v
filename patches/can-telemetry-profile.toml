@@ -1,8 +1,10 @@
-# Authoritative wire schema for the exact JK08A custom CAN telemetry runtime.
+# Authoritative wire schema and exact JK08A producer binding.
 #
 # The generator expands every multi-byte field to byte-source pointers used by
-# the SH-2E capture loop and emits the matching host decoder schema. Runtime
-# arbitrary-address interpretation is intentionally unsupported.
+# the SH-2E capture loop and emits a ROM-neutral host decoder schema. Producer
+# addresses, mailbox ownership, and ROM identity are not part of the host
+# contract or profile CRC. Runtime arbitrary-address interpretation is
+# intentionally unsupported.
 
 schema_version = 2
 rom = "JK08A"

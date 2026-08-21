@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass, replace
-import json
 import math
 from pathlib import Path
 import time
@@ -120,13 +119,22 @@ def _window_rate(samples, now, window=2.0):
 class DashboardModel:
     """Retain the latest fixed and rotating fields from strict snapshots."""
 
-    def __init__(self, profile="tuning", can_id=DEFAULT_CAN_ID, tick_divisor=1):
+    def __init__(
+        self,
+        profile="tuning",
+        can_id=DEFAULT_CAN_ID,
+        tick_divisor=1,
+        schema_path=can_telemetry.DEFAULT_SCHEMA,
+    ):
         if type(tick_divisor) is not int or not 1 <= tick_divisor <= 0xFF:
             raise ValueError("tick_divisor must be in 1..255")
         self.profile = profile
         self.can_id = can_id
         self.tick_divisor = tick_divisor
-        self.decoder = can_telemetry.Decoder(profile, can_id)
+        self.schema_path = Path(schema_path)
+        self.decoder = can_telemetry.Decoder(
+            profile, can_id, self.schema_path
+        )
         self.raw = {}
         self.engineering = {}
         self.updated_at = {}
@@ -275,12 +283,18 @@ class DashboardModel:
 class DemoGenerator:
     """Generate wire-valid tuning groups with realistic changing values."""
 
-    def __init__(self, can_id=DEFAULT_CAN_ID, schema_path=can_telemetry.DEFAULT_SCHEMA):
+    def __init__(
+        self,
+        can_id=DEFAULT_CAN_ID,
+        profile="tuning",
+        schema_path=can_telemetry.DEFAULT_SCHEMA,
+    ):
         self.can_id = can_id
-        document = json.loads(Path(schema_path).read_text(encoding="utf-8"))
-        self.profile = next(
-            item for item in document["profiles"] if item["name"] == "tuning"
-        )
+        _document, profiles = can_telemetry.load_schema(schema_path)
+        try:
+            self.profile = profiles[profile]
+        except KeyError as error:
+            raise ValueError(f"unknown telemetry profile: {profile}") from error
         self.context_by_page_and_tag = {
             (item["page"], item["tag"]): item
             for item in self.profile["contexts"]

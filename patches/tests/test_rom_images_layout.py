@@ -4,6 +4,8 @@ from pathlib import Path
 import re
 import unittest
 
+from tools import rom_homology
+
 
 ROOT = Path(__file__).resolve().parents[2]
 ROMDIR = ROOT / "rom-images"
@@ -15,7 +17,12 @@ BIN_RE = re.compile(
 
 class RomImagesLayoutTest(unittest.TestCase):
     def test_root_contains_only_part_directories_and_manifests(self):
-        allowed_files = {"README.md", "roms.csv"}
+        allowed_files = {
+            "README.md",
+            "homology.csv",
+            "homology.toml",
+            "roms.csv",
+        }
         for path in ROMDIR.iterdir():
             with self.subTest(path=path.name):
                 if path.name == ".DS_Store":
@@ -86,6 +93,13 @@ class RomImagesLayoutTest(unittest.TestCase):
             for path in ROMDIR.glob("23710-*/*.bin")
         }
         self.assertEqual(set(registered_paths), stock_sources)
+
+    def test_homology_report_matches_registered_stock_images(self):
+        expected = rom_homology.build_report()
+        self.assertEqual(
+            (ROMDIR / "homology.csv").read_text(encoding="utf-8"),
+            expected,
+        )
 
 
 if __name__ == "__main__":

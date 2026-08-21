@@ -1,11 +1,21 @@
-# JK08A custom CAN telemetry schema 2
+# Custom CAN telemetry schema 2 and JK08A producer
 
 ## Status and objective
 
-This document specifies the single implemented JK08A custom telemetry patch.
-The firmware, generated source-pointer table, strict host decoder, dashboard,
-MLVLG recorder, ROM builder, and GNU SH-2E executable gate use the same schema
-2 contract.
+This document specifies the ROM-neutral schema 2 wire contract and its exact
+JK08A firmware producer. The firmware, generated source-pointer table, strict
+host decoder, dashboard, MLVLG recorder, ROM builder, and GNU SH-2E executable
+gate use the same profile identity.
+
+The generated host schema contains only transport layout, field semantics, and
+profile identity. It contains no ROM name, producer RAM address, physical
+mailbox, or patch location. Host tools load that file directly and do not import
+the JK08A producer manifest. The producer binding retains the exact ROM, RAM,
+hook, source-address, and mailbox constraints required to build safe firmware.
+Profile CRC canonicalization likewise excludes ROM identity, source addresses,
+and producer storage kinds. Two producers implementing the same field names,
+placement, widths, signedness, scales, contexts, and protocol version therefore
+publish the same wire identity.
 
 The endpoint is disabled by default. The complete software gate passes, but
 schema 2 has not been tested in the target vehicle. The recorded schema 1
@@ -24,6 +34,7 @@ samples.
 ```text
 main-loop wrapper
   -> stock FUN_00020DFE and its periodic tasks
+  -> poll physical mailbox 31 for an exact START or STOP command
   -> coherent capture into inactive 88-byte bank
   -> atomic active/pending publication
   -> eleven DLC-8 frames on one standard CAN ID
@@ -33,20 +44,24 @@ main-loop wrapper
 ```
 
 The implementation preserves the stock CAN transmit scan, stock serializers,
-all stock receive mailboxes, and the complete mailbox-28 SLE1 behavior.
+all stock receive mailboxes, and the complete mailbox-28 SLE1 behavior. It
+converts stock-inactive mailbox 31 into a polled receive mailbox after every
+primary or recovery HCAN1 initialization.
 
 ## Exact integration points
 
 | Integration point | Stock value | Implemented behavior |
 | --- | ---: | --- |
-| mailbox-26 record at `0x000097BE` | `05 00 00 00` | type 4, DLC 8, build-selected standard ID when enabled |
-| main-loop call literal at `0x00028090` | `0x00020DFE` | call stock scheduler, capture, return |
+| mailbox-26 record at `0x000097BE` | `05 00 00 00` | type 4, DLC 8, build-selected data ID; remains idle while streaming is disabled |
+| main-loop call literal at `0x00028090` | `0x00020DFE` | call stock scheduler, poll control, capture, return |
 | periodic table entry at `0x00021A70` | `0x000493E8` | latch knock count and mask before the stock consumer clears them |
 | HCAN1 SLE1 vector at `0x000203A0` | `0x000C7914` | service mailbox 26 and reproduce mailbox-28 success and abort behavior |
 | composed startup wrapper | existing wrapper chain | clear the complete active telemetry RAM allocation |
+| primary HCAN1 initializer pointer at `0x0002D7FC` | `0x000C338A` | call the stock initializer, preserve its result, then configure mailbox 31 |
+| recovery HCAN1 initializer pointer at `0x000C3B10` | `0x000C338A` | restore mailbox 31 after the stock recovery path reinitializes HCAN1 |
 
 The candidate standard ID is `0x6F0`. The ID remains a build parameter in the
-range `0x001..0x7FF`, but every page in one build uses the same ID. Eleven
+range `0x001..0x7FE`, but every page in one build uses the same ID. Eleven
 pages fit the four-bit page number, and additional IDs would not reduce bus
 occupancy while only one verified physical mailbox is used.
 
@@ -54,6 +69,12 @@ For `0x6F0`, the enabled mailbox record is `04 08 DE 00` because the table
 stores `STDID << 5`. Physical mailbox 26 uses control base `0xFFFFDC40`, data
 bytes `0xFFFFDC48..0xFFFFDC4F`, and bit `0x0400` in HCAN1 TXPR1, TXACK1,
 ABACK1, and MBIMR1.
+
+The control ID is always the data ID plus one. For the default pair, telemetry
+uses `0x6F0` and control uses `0x6F1`. Physical mailbox 31 uses control base
+`0xFFFFDCE0`, data bytes `0xFFFFDCE8..0xFFFFDCEF`, and bit `0x8000` in HCAN1
+RXPR1, RFPR1, MBIMR1, and UMSR1. Its mailbox activity interrupt remains masked;
+the main wrapper polls it at the base scheduler boundary.
 
 ## Coherent capture boundary
 
@@ -63,8 +84,9 @@ The wrapper calls the stock function first and copies all selected sources
 immediately afterward without another interrupt-state transition.
 
 All multi-byte values retain ECU big-endian representation. Firmware performs
-no engineering conversion. The generated host schema owns signedness, scale,
-and candidate semantic labels.
+no engineering conversion. The generated host schema owns placement,
+signedness, scale, and candidate semantic labels. Exact producer source
+addresses remain only in the firmware manifest and generated pointer table.
 
 `FUN_000493E8` consumes and clears the knock interval count before the final
 capture boundary. The wrapper at periodic entry 65 therefore latches
@@ -82,13 +104,14 @@ The runtime owns `0x000D4280..0x000D6000` inside the audited free ROM region.
 | `0x000D4800..0x000D4C00` | 1,024 | combined SLE1 ISR and bounded queue |
 | `0x000D4C00..0x000D4E00` | 512 | 444-byte generated source-pointer table plus erased tail |
 | `0x000D4E00..0x000D4E10` | 16 | fail-closed build configuration |
-| `0x000D4E10..0x000D6000` | 4,592 | exclusive erased future ROM reserve |
+| `0x000D4E10..0x000D5000` | 496 | HCAN1 initialization wrapper, control poller, exact command validator, and shared configuration guard |
+| `0x000D5000..0x000D6000` | 4,096 | exclusive erased future ROM reserve |
 
 The active RAM allocation is `0xFFFF5E00..0xFFFF5F00`.
 
 | RAM range | Size | Purpose |
 | ---: | ---: | --- |
-| `0xFFFF5E00..0xFFFF5E20` | 32 | state, profile, status, counters, and knock latches |
+| `0xFFFF5E00..0xFFFF5E20` | 32 | queue state, runtime enable override, profile, status, counters, and knock latches |
 | `0xFFFF5E20..0xFFFF5E78` | 88 | complete frame bank A |
 | `0xFFFF5E78..0xFFFF5ED0` | 88 | complete frame bank B |
 | `0xFFFF5ED0..0xFFFF5EE0` | 16 | reserved event state |
@@ -112,15 +135,45 @@ The 16-byte configuration contains:
 | 6 | 1 | tick divisor `1..255` |
 | 7 | 1 | reserved zero |
 | 8 | 2 | standard CAN ID |
-| 10 | 2 | profile CRC16 `0xE881` |
+| 10 | 2 | profile CRC16 `0x75BF` |
 | 12 | 4 | integrity word `0x54454C32` (`TEL2`) |
 
 The only profile name is `tuning`. The default disabled bytes are
-`43 54 02 00 01 0B 01 00 06 F0 E8 81 54 45 4C 32`.
+`43 54 02 00 01 0B 01 00 06 F0 75 BF 54 45 4C 32`.
 
-Firmware validates every field before incrementing the telemetry tick or
-touching the queue. The builder independently requires the mailbox record to
-match the same enable state and CAN ID. Any mismatch leaves custom TX inactive.
+Firmware validates every field before incrementing the telemetry tick,
+touching the queue, or accepting a control command. The builder independently
+requires mailbox 26 to be a type-4 DLC-8 transmitter for the configured CAN ID.
+This mailbox configuration is present even when startup streaming is disabled,
+because a later START command must be able to transmit without reinitializing
+HCAN1. No frame is requested while the runtime state remains disabled.
+
+The generated JK08A XML and XDF expose byte `0x000D4E03` as `CAN Telemetry at
+Startup`. `00` is the default disabled state and `01` starts streaming after
+reset. Other values fail closed.
+
+## Runtime control
+
+The control frame is standard 11-bit classical CAN with DLC 8. Its ID is
+`data_can_id + 1`. Commands include a four-byte `TEL2` magic, protocol version,
+operation, and CRC-16/CCITT-FALSE over the first six bytes:
+
+| Command | Exact payload |
+| --- | --- |
+| STOP | `54 45 4C 32 02 00 A6 13` |
+| START | `54 45 4C 32 02 01 B6 32` |
+
+Runtime state byte `0xFFFF5E0B` uses `0` to follow the ROM startup flag, `1` to
+force streaming on, and `2` to force it off. START therefore activates
+telemetry even when byte `0x000D4E03` is `00`. It preloads the divider state so
+the capture immediately following the poll is due. STOP prevents new captures,
+discards a replaceable pending snapshot, and lets an already active 11-frame
+group finish coherently. A reset clears the override and restores the ROM flag.
+
+Mailbox 31 uses non-overwrite receive mode. The poller rejects a retained RTR
+frame, clears RXPR, RFPR, and UMSR for every consumed or rejected frame, and
+accepts only an exact command payload with DLC 8. An invalid producer
+configuration does not consume the mailbox and cannot change runtime state.
 
 ## Wire protocol
 
@@ -176,7 +229,7 @@ rate is `24.4140625 Hz`.
 | 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, adjustment state B2 `FFFF45A2` |
 
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2, profile ID 1, and CRC `0xE881`. A later mismatch disables conversions again.
+2, profile ID 1, and CRC `0x75BF`. A later mismatch disables conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
@@ -245,7 +298,7 @@ banks, source table, payload, decoder, and total load. A schema 2 image remains
 ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 
 - eleven ordered pages and exact tick continuity;
-- version 2, profile ID 1, and CRC `0xE881` health identity;
+- version 2, profile ID 1, and CRC `0x75BF` health identity;
 - no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
 - acceptable stock-frame cadence and whole-bus utilization.
 
@@ -260,16 +313,18 @@ simulator-only high-RAM relocations and stock-function stubs. It executes all
 changed entries, relevant branch outcomes, delay slots, call and return paths,
 both banks, all pages, all eight context records, queue boundaries, latest-wins
 replacement, preemption, TXACK, ABACK, simultaneous mailbox-26/mailbox-28
-flags, corrupt-state fail-closed behavior, a real `TRAPA` exception entry, and
-the exact ISR `RTE`.
+flags, both HCAN1 initialization hooks, startup-disabled START, startup-enabled
+STOP, divisor restart, invalid payloads, invalid DLC, remote frames, corrupt
+configuration, active-group stop, corrupt-state fail-closed behavior, a real
+`TRAPA` exception entry, and the exact ISR `RTE`.
 
 The locked software result is:
 
-- 482 injected instructions and 596 data bytes;
-- eight executable entries and 50 dynamic telemetry cases;
+- 647 injected instructions and 680 data bytes;
+- ten executable entries and 62 dynamic telemetry cases;
 - composition SHA-256
-  `65f4f9f0095c77ae4580bbbaa0777b68e6ac596c7c56fadde2256084f881aaa1`;
-- 1,320 changed bytes inside a 2,980-byte declared write set.
+  `afb4a85e799b017a50d436859322a6f23b8544d06e59070834f1ef77c1144747`;
+- 1,723 changed bytes inside a 3,484-byte declared write set.
 
 This gate proves the bounded software contract. It does not replace physical
 CAN, ECU, sensor, or actuator validation.
@@ -278,11 +333,11 @@ CAN, ECU, sensor, or actuator validation.
 
 | Artifact | Responsibility |
 | --- | --- |
-| `can-telemetry-profile.toml` | authoritative field and context schema |
-| `can_telemetry_profile.py` | pointer-table and host-schema generator |
-| `can-telemetry-schema.json` | generated strict host contract |
+| `can-telemetry-profile.toml` | authoritative wire fields and exact JK08A producer bindings |
+| `can_telemetry_profile.py` | producer validator, pointer-table generator, and neutral host-schema generator |
+| `can-telemetry-schema.json` | generated ROM-neutral strict host contract |
 | `can-telemetry-layout.toml` | ROM, RAM, hook, configuration, and reserve contract |
-| `can-telemetry-*.s` | wrappers, capture, queue, ISR, and generated tables |
+| `can-telemetry-*.s` | wrappers, capture, control receiver, queue, ISR, and generated tables |
 | `can-telemetry-payloads.toml` | SHA-locked independently assembled bytes |
 | `can_telemetry.py` | fail-closed configuration and mailbox encoding |
 | `can_telemetry_compose.py` | deterministic non-flashable composition |

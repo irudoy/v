@@ -3,8 +3,10 @@
 Current dashboard version: `2.0.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
-PEAK PCAN-USB adapter on Windows or macOS. The application implements only the
-incompatible JK08A schema-2 `tuning` profile:
+PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
+it loads the selected wire-schema JSON and never imports a firmware manifest,
+checks a ROM identity, or uses producer RAM addresses. The bundled schema
+provides the incompatible schema-2 `tuning` profile with these defaults:
 
 - PCAN channel `PCAN_USBBUS1`;
 - classical CAN at `500000 bit/s`;
@@ -12,10 +14,13 @@ incompatible JK08A schema-2 `tuning` profile:
 - `tuning`, divisor 1;
 - listen-only PCAN state.
 
-The application uses the tracked strict decoder and generated schema. It does
-not transmit application CAN messages. Listen-only mode also suppresses CAN
-ACK participation. Use the separate active/ACK launcher only on an isolated
-bench where the ECU otherwise has no node to acknowledge its transmissions.
+The fixed dashboard presentation targets the semantic field names in the
+`tuning` profile. Any ROM-specific producer may implement that wire contract;
+producer hooks, RAM addresses, and mailbox ownership stay outside the host
+schema. `--schema` selects another compatible schema file. Listen-only mode
+suppresses CAN transmission and ACK participation. In active/ACK mode the only
+application frames sent by the dashboard are schema-declared START and STOP
+commands initiated by the corresponding buttons.
 
 The version has one source in `tools/can_dashboard/__init__.py`. It is visible
 in the window title, main heading, Windows portable-package directory,
@@ -63,8 +68,8 @@ On the Windows laptop:
 4. Run `install.cmd` once. It creates `.venv` and installs `python-can`.
 5. Run `run-demo.cmd` to verify the UI without CAN hardware.
 6. Run `run-dashboard.cmd` for listen-only vehicle capture.
-7. Use `run-dashboard-active.cmd` only when an isolated ECU needs this adapter
-   to provide CAN ACK.
+7. Use `run-dashboard-active.cmd` when START/STOP control is required or when
+   an isolated ECU needs this adapter to provide CAN ACK.
 
 The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
 1.1 paths to it after `install.cmd`; each result is written beside its source.
@@ -73,6 +78,28 @@ The default hardware filter accepts custom telemetry plus stock context IDs
 `0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide an independent
 RPM cross-check, vehicle speed, ASCD input, selector state, and dashboard
 indication state.
+
+## Stream control
+
+The bundled schema reserves `data_can_id + 1` for control, so the selectable
+data ID range is `0x001..0x7FE`. With the default data ID `0x6F0`, the control
+ID is `0x6F1`. The exact frames are:
+
+| Button | Payload |
+| --- | --- |
+| `Start stream` | `54 45 4C 32 02 01 B6 32` |
+| `Stop stream` | `54 45 4C 32 02 00 A6 13` |
+
+Both frames are standard 11-bit classical CAN with DLC 8. The last two bytes
+are CRC-16/CCITT-FALSE over the first six. START forces streaming on until ECU
+reset even when the firmware definition flag disables startup streaming. STOP
+forces it off until reset. A running 11-frame group is allowed to finish before
+STOP becomes silent.
+
+The buttons require an active/ACK PCAN connection. The dashboard rejects them
+in listen-only, demo, and replay modes. `sent` means the PCAN driver accepted
+the transmit request; the protocol has no response frame, so reception of new
+telemetry after START is the end-to-end confirmation.
 
 ## Native macOS application
 
@@ -99,8 +126,8 @@ ZIP and revalidates the archived application before accepting the package.
 
 On the target Mac, install MacCAN `libPCBUSB` 0.13, extract the ZIP, and open
 `VQ CAN Telemetry.app`. No Python installation or shell launcher is needed.
-The main source starts in listen-only mode; use the visible `Listen-only`
-control to opt into active/ACK behavior only on an isolated bench. A downloaded
+The main source starts in listen-only mode; clear the visible `Listen-only`
+control when stream control or ACK participation is required. A downloaded
 ad-hoc-signed build is not notarized, so the first launch may require Finder's
 Open action after the archive source and SHA-256 are verified.
 
@@ -140,7 +167,8 @@ On macOS with `libPCBUSB` already installed, the equivalent repository run is:
 uv run --with-requirements tools/can_dashboard/requirements-macos.txt \
   python -m tools.can_dashboard.app \
   --channel PCAN_USBBUS1 --bitrate 500000 \
-  --can-id 0x6F0 --profile tuning --tick-divisor 1
+  --can-id 0x6F0 --profile tuning --tick-divisor 1 \
+  --schema patches/can-telemetry-schema.json
 ```
 
 The macOS default includes the channel reset. Pass `--no-reset-channel` only
@@ -197,7 +225,7 @@ or diagnostic semantic bindings. The current conversions are:
 | vehicle speed | `0x280` bytes 4..5 | big-endian `raw / 100 km/h` | target field and zero state confirmed; scale remains homologous |
 | APP 1/2 | telemetry words | `raw / 200 V` | homologous formula and near-adjacent target agreement |
 | TPS bank 1/2 | telemetry words | `raw / 200 V` | near-adjacent target agreement |
-| fuel/oil temperature | telemetry bytes | `raw - 50 degC` | exact JK08A DID pointers plus homologous profile; oil agrees on target |
+| fuel/oil temperature | telemetry bytes | `raw - 50 degC` | current producer DID bindings plus homologous profile; oil agrees on target |
 | short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |
 | timing coordinate | `final_timing_raw` signed byte | `raw deg` | upstream stock coordinate during a Rolling Launch late override; not a measured spark angle |
 | APC command | `apc_command_raw` byte | raw | effective software command consumed by the APC scheduler; normal-path timing coordinate is `110 - raw` |
@@ -229,7 +257,8 @@ Convert an existing PEAK trace without replay timing:
 python3 tools/logs/trc_to_mlg.py schema2-capture.trc
 ```
 
-The converter and live recorder use the same MLVLG schema and validator.
+The converter and live recorder use the same selected wire schema, MLVLG
+schema, and validator. The converter accepts the same `--schema` option.
 
 ## Hardware evidence boundary
 

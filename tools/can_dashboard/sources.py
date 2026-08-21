@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import math
 from pathlib import Path
+import queue
 import time
 
 from tools.can_dashboard.model import (
@@ -23,6 +24,19 @@ from tools.logs.can_telemetry import parse_candump_line
 class SourceStatus:
     state: str
     detail: str
+
+
+@dataclass(frozen=True)
+class ControlStatus:
+    state: str
+    detail: str
+
+
+@dataclass(frozen=True)
+class ControlRequest:
+    command: str
+    can_id: int
+    payload: bytes
 
 
 @dataclass(frozen=True)
@@ -60,7 +74,41 @@ def _check_pcan_driver():
     PCANBasic()
 
 
-def run_pcan(config, stop_event, emit):
+def _send_control_requests(bus, can_module, config, requests, emit):
+    if requests is None:
+        return
+    while True:
+        try:
+            request = requests.get_nowait()
+        except queue.Empty:
+            return
+        if config.listen_only:
+            emit(ControlStatus(
+                "error",
+                "stream control requires an active/ACK connection",
+            ))
+            continue
+        try:
+            message = can_module.Message(
+                arbitration_id=request.can_id,
+                data=request.payload,
+                is_extended_id=False,
+                is_remote_frame=False,
+            )
+            bus.send(message, timeout=0.1)
+        except Exception as error:
+            emit(ControlStatus(
+                "error",
+                f"telemetry {request.command.upper()} failed: {error}",
+            ))
+            continue
+        emit(ControlStatus(
+            "sent",
+            f"telemetry {request.command.upper()} sent on 0x{request.can_id:03X}",
+        ))
+
+
+def run_pcan(config, stop_event, emit, control_requests=None):
     """Read selected frames through python-can's PCAN-Basic backend."""
     try:
         import can
@@ -99,6 +147,13 @@ def run_pcan(config, stop_event, emit):
     terminal_error = None
     try:
         while not stop_event.is_set():
+            _send_control_requests(
+                bus,
+                can,
+                config,
+                control_requests,
+                emit,
+            )
             try:
                 message = bus.recv(timeout=0.1)
             except Exception as error:
@@ -137,8 +192,17 @@ def run_pcan(config, stop_event, emit):
             emit(SourceStatus("stopped", "PCAN channel closed"))
 
 
-def run_demo(can_id, stop_event, emit):
-    generator = DemoGenerator(can_id)
+def run_demo(
+    can_id,
+    stop_event,
+    emit,
+    profile="tuning",
+    schema_path=None,
+):
+    options = {"profile": profile}
+    if schema_path is not None:
+        options["schema_path"] = schema_path
+    generator = DemoGenerator(can_id, **options)
     emit(SourceStatus("connected", "deterministic demo source"))
     tick = 1
     started = time.monotonic()

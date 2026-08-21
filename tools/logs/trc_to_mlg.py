@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert PEAK PCAN-View TRC 1.1 JK08A telemetry to MLVLG v2."""
+"""Convert schema-described PEAK PCAN-View telemetry to MLVLG v2."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ if str(ROOT) not in sys.path:
 
 from tools.can_dashboard.model import DashboardModel, FrameRecord
 from tools.can_dashboard.recording import TelemetryMlgRecorder
+from tools.logs import can_telemetry
 from tools.logs import peak_trc_audit
 
 
@@ -105,6 +106,7 @@ def convert_trace(
     profile: str = "tuning",
     can_id: int = 0x6F0,
     tick_divisor: int = 1,
+    schema_path: Path = can_telemetry.DEFAULT_SCHEMA,
     timezone_name: str = "Asia/Vladivostok",
     force: bool = False,
 ) -> ConversionSummary:
@@ -121,7 +123,7 @@ def convert_trace(
     except peak_trc_audit.TraceError as error:
         raise ConversionError(str(error)) from error
     start_epoch = trace_start_epoch(trace, timezone_name)
-    model = DashboardModel(profile, can_id, tick_divisor)
+    model = DashboardModel(profile, can_id, tick_divisor, schema_path)
     recorder = None
     first_snapshot_seconds = None
     telemetry_frames = 0
@@ -151,6 +153,7 @@ def convert_trace(
                     profile,
                     start_epoch + first_snapshot_seconds,
                     force=force,
+                    schema_path=schema_path,
                 )
             recorder.append(model, timestamp - first_snapshot_seconds)
 
@@ -216,8 +219,12 @@ def main(argv: list[str] | None = None) -> int:
         help="write every MLVLG file to this directory",
     )
     parser.add_argument(
-        "--profile", choices=("tuning",), default="tuning"
+        "--schema",
+        type=Path,
+        default=can_telemetry.DEFAULT_SCHEMA,
+        help="ROM-neutral telemetry wire-schema JSON",
     )
+    parser.add_argument("--profile", default="tuning")
     parser.add_argument(
         "--can-id", type=lambda value: int(value, 0), default=0x6F0
     )
@@ -250,6 +257,7 @@ def main(argv: list[str] | None = None) -> int:
                 profile=args.profile,
                 can_id=args.can_id,
                 tick_divisor=args.tick_divisor,
+                schema_path=args.schema,
                 timezone_name=args.timezone,
                 force=args.force,
             )

@@ -28,6 +28,8 @@ SOURCE_LABELS = {
     "request_page": "telemetry_request_page",
     "sle1_isr": "telemetry_sle1_isr",
     "completion": "telemetry_handle_completion",
+    "hcan1_init_wrapper": "telemetry_hcan1_init_wrapper",
+    "control_poll": "telemetry_control_poll",
 }
 ALLOWED_MNEMONICS = common.SH7058S_SH2E_MNEMONICS | {"bsr", "not", "rte"}
 
@@ -105,6 +107,7 @@ def _expected_long_literals():
     return {
         "wrappers": {
             "telemetry_main_stock": 0x00020DFE,
+            "telemetry_control_poll_entry": 0x000D4EA0,
             "telemetry_capture_entry": 0x000D4340,
             "telemetry_knock_state": 0xFFFF5E00,
             "telemetry_knock_count": 0xFFFF2142,
@@ -143,18 +146,39 @@ def _expected_long_literals():
             "telemetry_completion_bank_a": 0xFFFF5E20,
             "telemetry_completion_bank_b": 0xFFFF5E78,
         },
+        "control": {
+            "telemetry_control_stock_hcan1_init": 0x000C338A,
+            "telemetry_control_config": 0x000D4E00,
+            "telemetry_control_mailbox31": 0xFFFFDCE0,
+            "telemetry_control_rxpr1": 0xFFFFD840,
+            "telemetry_control_rfpr1": 0xFFFFD848,
+            "telemetry_control_mbimr1": 0xFFFFD850,
+            "telemetry_control_umsr1": 0xFFFFD858,
+            "telemetry_control_rxpr1_poll": 0xFFFFD840,
+            "telemetry_control_rfpr1_poll": 0xFFFFD848,
+            "telemetry_control_umsr1_poll": 0xFFFFD858,
+            "telemetry_control_mailbox31_poll": 0xFFFFDCE0,
+            "telemetry_control_state": 0xFFFF5E00,
+            "telemetry_control_config_poll": 0x000D4E00,
+            "telemetry_control_command_magic": 0x54454C32,
+            "telemetry_control_start_tail": 0x0201B632,
+            "telemetry_control_stop_tail": 0x0200A613,
+            "telemetry_control_config_integrity": 0x54454C32,
+        },
     }
 
 
 def _validate_wrappers(parsed):
     texts = _texts(parsed)
-    if texts[:10] != [
+    if texts[:13] != [
         "sts.l pr,@-r15", "mov.l @(telemetry_main_stock,pc),r0",
-        "jsr @r0", "nop", "mov.l @(telemetry_capture_entry,pc),r0",
+        "jsr @r0", "nop",
+        "mov.l @(telemetry_control_poll_entry,pc),r0", "jsr @r0", "nop",
+        "mov.l @(telemetry_capture_entry,pc),r0",
         "jsr @r0", "nop", "lds.l @r15+,pr", "rts", "nop",
     ]:
         raise ValueError("main telemetry wrapper ABI differs")
-    if texts.count("jsr @r0") != 4 or texts.count("lds.l @r15+,pr") != 3:
+    if texts.count("jsr @r0") != 5 or texts.count("lds.l @r15+,pr") != 3:
         raise ValueError("wrapper call or PR preservation count differs")
     if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 1:
         raise ValueError("startup clear loop differs")
@@ -216,6 +240,43 @@ def _validate_completion(parsed):
         raise ValueError("completion lacks fail-closed corrupt-state path")
 
 
+def _validate_control(parsed):
+    texts = _texts(parsed)
+    if texts[:5] != [
+        "sts.l pr,@-r15",
+        "mov.l @(telemetry_control_stock_hcan1_init,pc),r0",
+        "jsr @r0",
+        "nop",
+        "mov.l r0,@-r15",
+    ]:
+        raise ValueError("HCAN1 initialization wrapper ABI differs")
+    if texts.count("mov.l @r15+,r0") != 1:
+        raise ValueError("HCAN1 initialization wrapper loses the stock result")
+    if texts.count("bsr telemetry_control_config_valid") != 2:
+        raise ValueError("control entries do not share the configuration gate")
+    if texts.count("mov.w r0,@(0x4,r1)") != 1:
+        raise ValueError("mailbox 31 receive mode must be committed exactly once")
+    if texts.count("mov.b r0,@(0xb,r3)") != 2:
+        raise ValueError("START and STOP do not publish both runtime overrides")
+    if texts.count("mov.b r0,@(0x1,r3)") != 1:
+        raise ValueError("STOP does not discard the replaceable pending group")
+    if texts.count("mov.w r2,@r3") != 6:
+        raise ValueError("control poll does not clear every pending mailbox flag")
+    if texts.count("tst 0x8,r0") != 1:
+        raise ValueError("control poll does not reject a retained remote frame")
+    for required in (
+        "telemetry_control_init_return",
+        "telemetry_control_poll_data",
+        "telemetry_control_poll_clear",
+        "telemetry_control_start",
+        "telemetry_control_stop",
+        "telemetry_control_config_valid",
+        "telemetry_control_config_invalid",
+    ):
+        if required not in parsed.labels:
+            raise ValueError(f"control unit lacks {required}")
+
+
 def validate_assembly_sources(layout=None):
     layout = layout or layout_model.load_layout()
     can_telemetry_profile.generate(check=True)
@@ -247,6 +308,8 @@ def validate_assembly_sources(layout=None):
             _validate_capture(parsed)
         elif unit.key == "completion":
             _validate_completion(parsed)
+        elif unit.key == "control":
+            _validate_control(parsed)
         elif unit.key == "tables":
             expected = can_telemetry_profile.render_tables(
                 can_telemetry_profile.load_manifest()

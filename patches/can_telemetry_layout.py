@@ -216,7 +216,8 @@ def validate_structure(layout):
         layout.owned_rom.start != 0x000D4280
         or layout.owned_rom.end != 0x000D6000
         or layout.configuration.start != 0x000D4E00
-        or layout.reserved_rom.start != layout.configuration.end
+        or layout.configuration.end != 0x000D4E10
+        or layout.reserved_rom.start != 0x000D5000
         or layout.reserved_rom.end != layout.owned_rom.end
         or layout.mailbox_record_address != 0x000097BE
         or layout.mailbox_record_stock != 0x05000000
@@ -271,9 +272,11 @@ def validate_structure(layout):
 
     required_hooks = {
         "coherent_snapshot_call": (0x28090, 0x20DFE, 0xD4280),
-        "knock_interval_latch": (0x21A70, 0x493E8, 0xD42A0),
-        "startup_state_clear": (0x27D28, 0xD38A0, 0xD42E0),
+        "knock_interval_latch": (0x21A70, 0x493E8, 0xD42B0),
+        "startup_state_clear": (0x27D28, 0xD38A0, 0xD42F0),
         "hcan1_sle1_vector": (0x203A0, 0xC7914, 0xD4800),
+        "hcan1_primary_init": (0x2D7FC, 0xC338A, 0xD4E10),
+        "hcan1_recovery_init": (0xC3B10, 0xC338A, 0xD4E10),
     }
     if set(layout.hook_by_key) != set(required_hooks):
         raise ValueError("CAN telemetry hook set differs")

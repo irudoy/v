@@ -27,6 +27,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | CAN dashboard | Display VQ custom telemetry through PCAN-USB on Windows and macOS | [`can_dashboard/README.md`](can_dashboard/README.md) |
 | Pin tracer | Record reviewed ECM terminal-to-board-to-MCU continuity observations | [`pin-tracer/README.md`](pin-tracer/README.md) |
 | ROM atlas | Generate an interactive flash layout from reviewed evidence and patch manifests | [`romviz/README.md`](romviz/README.md) |
+| ROM homology | Measure exact ranges, fixed-address deltas, and relocated exact code windows across stock images | [`../rom-images/README.md#homology-baseline`](../rom-images/README.md#homology-baseline) |
 | Vendor catalog | Rebuild the machine-readable vendor vocabulary used by map analysis | [`../refs/vendor/README.md`](../refs/vendor/README.md) |
 | ROM composition | Build and verify complete JK08A runtime images | [`../patches/rom-builder.md`](../patches/rom-builder.md) |
 
@@ -48,6 +49,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `sh-elf-run/run.sh` | Repository-contained instruction execution gate |
 | `sh-elf-run/run-npkern.sh` | Optional exact-revision external npkern gate |
 | `romviz/build.py` | Self-contained interactive ROM address-space atlas generator |
+| `rom_homology.py` | Validate declared ROM families and regenerate pairwise homology measurements |
 
 The full Python contract is configured in `../pyproject.toml` and runs with
 `uv run pytest -q`. JavaScript tests belong to the pin tracer and are documented

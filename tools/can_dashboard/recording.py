@@ -3,17 +3,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import json
 import math
 import os
 from pathlib import Path
 import tempfile
 
 from tools.logs import mlvlg
+from tools.logs import can_telemetry
 
 
-ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_SCHEMA = ROOT / "patches" / "can-telemetry-schema.json"
+DEFAULT_SCHEMA = can_telemetry.DEFAULT_SCHEMA
 MAX_GAP_SECONDS = 0.3
 SYNC_RECORD_INTERVAL = 100
 
@@ -254,12 +253,10 @@ def _raw_binding(name: str) -> FieldBinding:
 def build_bindings(
     profile: str, schema_path: Path = DEFAULT_SCHEMA
 ) -> tuple[FieldBinding, ...]:
-    document = json.loads(Path(schema_path).read_text(encoding="utf-8"))
+    _document, profiles = can_telemetry.load_schema(schema_path)
     try:
-        selected = next(
-            item for item in document["profiles"] if item["name"] == profile
-        )
-    except StopIteration as error:
+        selected = profiles[profile]
+    except KeyError as error:
         raise ValueError(f"unknown telemetry profile: {profile}") from error
 
     names = [field["name"] for field in selected["fields"]]

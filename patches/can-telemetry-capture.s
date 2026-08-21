@@ -17,8 +17,10 @@ mov.b @(0x2,r4),r0
 cmp/eq 0x2,r0
 bf telemetry_capture_return
 mov.b @(0x3,r4),r0
-cmp/eq 0x1,r0
-bf telemetry_capture_return
+extu.b r0,r0
+mov #0x1,r1
+cmp/hi r1,r0
+bt telemetry_capture_return
 mov.b @(0x4,r4),r0
 extu.b r0,r5
 cmp/eq 0x1,r0
@@ -54,6 +56,16 @@ cmp/eq r1,r0
 bf telemetry_capture_return
 
 mov.l @(telemetry_capture_state,pc),r3
+mov.b @(0xB,r3),r0
+cmp/eq 0x1,r0
+bt telemetry_capture_enabled
+cmp/eq 0x2,r0
+bt telemetry_capture_return
+mov.b @(0x3,r4),r0
+cmp/eq 0x1,r0
+bf telemetry_capture_return
+
+telemetry_capture_enabled:
 mov r6,r0
 mov.b r0,@(0x4,r3)
 mov r5,r0
@@ -158,9 +170,9 @@ telemetry_config_integrity:
 telemetry_config_magic:
 .word 0x4354
 telemetry_config_can_id_max:
-.word 0x07FF
+.word 0x07FE
 telemetry_config_crc:
-.word 0xE881
+.word 0x75BF
 
 .org 0x000D4500
 // Always construct nine fixed pages and both rotating context pages.

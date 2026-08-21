@@ -1,7 +1,11 @@
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from patches import can_telemetry_profile
 from tools.logs import can_telemetry
+from tools.logs import can_telemetry_schema
 
 
 def frames(profile, tick, *, context_tag=0, health_valid=True):
@@ -39,6 +43,53 @@ def feed_group(decoder, group):
 
 
 class CanTelemetryDecoderTest(unittest.TestCase):
+    def test_schema_crc_rejects_a_changed_wire_contract(self):
+        document = json.loads(
+            can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+        document["profiles"][0]["fields"][0]["name"] = "changed_tick"
+        with tempfile.TemporaryDirectory() as directory:
+            schema_path = Path(directory) / "changed-schema.json"
+            schema_path.write_text(
+                json.dumps(document), encoding="utf-8"
+            )
+            with self.assertRaisesRegex(
+                can_telemetry.DecodeError,
+                "CRC16 does not match",
+            ):
+                can_telemetry.Decoder("tuning", 0x6F0, schema_path)
+
+    def test_external_schema_identity_does_not_require_a_rom_manifest(self):
+        document = json.loads(
+            can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+        profile = document["profiles"][0]
+        profile["name"] = "portable"
+        profile["id"] = 7
+        portable_crc = can_telemetry_schema.profile_crc16(
+            profile, document["protocol_version"]
+        )
+        profile["crc16_ccitt_false"] = f"0x{portable_crc:04X}"
+        with tempfile.TemporaryDirectory() as directory:
+            schema_path = Path(directory) / "portable-schema.json"
+            schema_path.write_text(
+                json.dumps(document), encoding="utf-8"
+            )
+            decoder = can_telemetry.Decoder(
+                "portable", 0x6F0, schema_path
+            )
+
+            group = list(frames("tuning", 3, context_tag=3))
+            health = bytearray(group[9])
+            health[3] = 7
+            health[4:6] = portable_crc.to_bytes(2, "big")
+            group[9] = bytes(health)
+            snapshot = feed_group(decoder, group)
+
+        self.assertIsNotNone(snapshot)
+        self.assertTrue(snapshot.schema_verified)
+        self.assertEqual(decoder.profile["name"], "portable")
+
     def test_group_decodes_raw_fields_before_health_verification(self):
         decoder = can_telemetry.Decoder("tuning", 0x6F0)
         snapshot = feed_group(
@@ -195,6 +246,58 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             (0x6F0, bytes.fromhex("A001020304050607"), 12.5),
         )
         self.assertIsNone(can_telemetry.parse_candump_line("can0 6F0 [8]"))
+
+
+class CanTelemetryControlTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.schema = json.loads(
+            can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+
+    def test_exact_start_and_stop_frames(self):
+        self.assertEqual(
+            can_telemetry_schema.control_frame(
+                self.schema, 0x6F0, "start"
+            ),
+            (0x6F1, bytes.fromhex("54454C320201B632")),
+        )
+        self.assertEqual(
+            can_telemetry_schema.control_frame(
+                self.schema, 0x6F0, "stop"
+            ),
+            (0x6F1, bytes.fromhex("54454C320200A613")),
+        )
+
+    def test_control_id_uses_the_standard_id_boundary(self):
+        can_id, payload = can_telemetry_schema.control_frame(
+            self.schema, 0x7FE, "start"
+        )
+        self.assertEqual(can_id, 0x7FF)
+        self.assertEqual(
+            can_telemetry_schema.crc16_ccitt_false(payload[:6]),
+            int.from_bytes(payload[6:], "big"),
+        )
+        for data_can_id in (0, 0x7FF, 0x800):
+            with self.subTest(data_can_id=data_can_id), self.assertRaises(
+                ValueError
+            ):
+                can_telemetry_schema.control_frame(
+                    self.schema, data_can_id, "start"
+                )
+
+    def test_unknown_or_corrupt_control_contract_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "undefined"):
+            can_telemetry_schema.control_frame(
+                self.schema, 0x6F0, "reset"
+            )
+
+        damaged = json.loads(json.dumps(self.schema))
+        damaged["control"]["commands"]["start"] = "54454C320201B633"
+        with self.assertRaisesRegex(ValueError, "invalid payload"):
+            can_telemetry_schema.control_frame(
+                damaged, 0x6F0, "start"
+            )
 
 
 if __name__ == "__main__":

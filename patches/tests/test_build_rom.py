@@ -420,7 +420,7 @@ class BuildRomTest(unittest.TestCase):
         self.assertFalse(result.profile.telemetry.enabled)
         self.assertEqual(
             result.telemetry_mailbox_record,
-            can_telemetry.STOCK_MAILBOX_RECORD,
+            result.profile.telemetry.mailbox_record(),
         )
         layout = build_rom.can_telemetry_layout.load_layout()
         self.assertTrue(all(

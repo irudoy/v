@@ -29,12 +29,16 @@ from tools.can_dashboard.model import (
 )
 from tools.can_dashboard.recording import TelemetryMlgRecorder
 from tools.can_dashboard.sources import (
+    ControlRequest,
+    ControlStatus,
     PcanConfiguration,
     SourceStatus,
     run_demo,
     run_pcan,
     run_replay,
 )
+from tools.logs import can_telemetry
+from tools.logs import can_telemetry_schema
 
 
 BG = "#0d1117"
@@ -63,16 +67,16 @@ class Metric:
 @dataclass(frozen=True)
 class SourceEnvelope:
     generation: int
-    event: SourceStatus | FrameRecord
+    event: SourceStatus | ControlStatus | FrameRecord
 
 
 def _parse_standard_can_id(value: str) -> int:
     try:
         can_id = int(value, 0)
     except (TypeError, ValueError) as error:
-        raise ValueError("CAN ID must be in 0x001..0x7FF") from error
-    if not 1 <= can_id <= 0x7FF:
-        raise ValueError("CAN ID must be in 0x001..0x7FF")
+        raise ValueError("data CAN ID must be in 0x001..0x7FE") from error
+    if not 1 <= can_id <= 0x7FE:
+        raise ValueError("data CAN ID must be in 0x001..0x7FE")
     return can_id
 
 
@@ -315,10 +319,17 @@ class DashboardApp:
         self.source_drops = 0
         self.stop_event = None
         self.worker = None
+        self.control_requests = None
+        self.pcan_active = False
         self.source_generation = 0
         self.source_state = "stopped"
         self.source_detail = "not connected"
-        self.model = DashboardModel(args.profile, args.can_id, args.tick_divisor)
+        self.model = DashboardModel(
+            args.profile,
+            args.can_id,
+            args.tick_divisor,
+            args.schema,
+        )
         self.recorder = None
         self.recording_started_monotonic = None
         self.last_ui_group = 0
@@ -381,7 +392,17 @@ class DashboardApp:
         ttk.Button(controls, text="Connect", command=self.start_pcan).pack(side="left", padx=3)
         ttk.Button(controls, text="Demo", command=self.start_demo).pack(side="left", padx=3)
         ttk.Button(controls, text="Replay", command=self.select_replay).pack(side="left", padx=3)
-        ttk.Button(controls, text="Stop", command=self.stop_source).pack(side="left", padx=3)
+        ttk.Button(controls, text="Disconnect", command=self.stop_source).pack(side="left", padx=3)
+        ttk.Button(
+            controls,
+            text="Start stream",
+            command=lambda: self.send_stream_command("start"),
+        ).pack(side="left", padx=(9, 3))
+        ttk.Button(
+            controls,
+            text="Stop stream",
+            command=lambda: self.send_stream_command("stop"),
+        ).pack(side="left", padx=3)
         self.record_button = ttk.Button(
             controls,
             text="Record MLG",
@@ -395,6 +416,7 @@ class DashboardApp:
         self.schema_var = tk.StringVar(value="Schema: waiting")
         self.rate_var = tk.StringVar(value="Groups: 0.0 Hz | Frames: 0.0 Hz")
         self.loss_var = tk.StringVar(value="Loss: 0 | Incomplete: 0 | Malformed: 0")
+        self.control_var = tk.StringVar(value="Control: idle")
         self.record_var = tk.StringVar(value="MLG: idle")
         for variable, color in (
             (self.source_var, TEXT),
@@ -414,6 +436,13 @@ class DashboardApp:
             textvariable=self.record_var,
             bg=PANEL_ALT,
             fg=AMBER,
+            font=("Consolas", 9),
+        ).pack(side="right", padx=12, pady=7)
+        tk.Label(
+            telemetry_bar,
+            textvariable=self.control_var,
+            bg=PANEL_ALT,
+            fg=CYAN,
             font=("Consolas", 9),
         ).pack(side="right", padx=12, pady=7)
 
@@ -513,6 +542,7 @@ class DashboardApp:
             self.args.profile,
             can_id,
             self.args.tick_divisor,
+            self.args.schema,
         )
         self.last_ui_group = 0
         self.source_drops = 0
@@ -535,14 +565,53 @@ class DashboardApp:
             reset_channel=self.args.reset_channel,
         )
         self.stop_event = threading.Event()
+        self.control_requests = queue.Queue(maxsize=8)
+        self.pcan_active = not config.listen_only
         self.worker = threading.Thread(
             target=run_pcan,
-            args=(config, self.stop_event, self._source_emitter()),
+            args=(
+                config,
+                self.stop_event,
+                self._source_emitter(),
+                self.control_requests,
+            ),
             daemon=True,
             name="pcan-reader",
         )
         self._set_source_status("connecting", f"opening {channel}")
         self.worker.start()
+
+    def send_stream_command(self, command):
+        if (
+            self.control_requests is None
+            or self.worker is None
+            or not self.worker.is_alive()
+        ):
+            self.control_var.set("Control error: connect PCAN first")
+            return
+        if not self.pcan_active:
+            self.control_var.set(
+                "Control error: reconnect with Listen-only disabled"
+            )
+            return
+        try:
+            can_id, payload = can_telemetry_schema.control_frame(
+                self.model.decoder.schema,
+                self.model.can_id,
+                command,
+            )
+            self.control_requests.put_nowait(
+                ControlRequest(command, can_id, payload)
+            )
+        except queue.Full:
+            detail = "command queue is full"
+            self.control_var.set(f"Control error: {detail}")
+            return
+        except ValueError as error:
+            detail = str(error)
+            self.control_var.set(f"Control error: {detail}")
+            return
+        self.control_var.set(f"Control: {command.upper()} queued")
 
     def start_demo(self):
         self.stop_source()
@@ -553,7 +622,13 @@ class DashboardApp:
         self.stop_event = threading.Event()
         self.worker = threading.Thread(
             target=run_demo,
-            args=(can_id, self.stop_event, self._source_emitter()),
+            args=(
+                can_id,
+                self.stop_event,
+                self._source_emitter(),
+                self.args.profile,
+                self.args.schema,
+            ),
             daemon=True,
             name="telemetry-demo",
         )
@@ -633,6 +708,7 @@ class DashboardApp:
                 self.args.profile,
                 time.time(),
                 force=force,
+                schema_path=self.args.schema,
             )
         except (OSError, ValueError) as error:
             self.record_var.set(f"MLG error: {error}")
@@ -681,6 +757,8 @@ class DashboardApp:
                 break
         self.stop_event = None
         self.worker = None
+        self.control_requests = None
+        self.pcan_active = False
         if self.source_state not in {"stopped", "error"}:
             self._set_source_status("stopped", "source stopped")
 
@@ -707,6 +785,9 @@ class DashboardApp:
                 self._set_source_status(event.state, event.detail)
                 if event.state in {"stopped", "error"}:
                     self.stop_recording()
+            elif isinstance(event, ControlStatus):
+                prefix = "Control" if event.state == "sent" else "Control error"
+                self.control_var.set(f"{prefix}: {event.detail}")
             elif isinstance(event, FrameRecord):
                 snapshot = self.model.process_frame(event)
                 if snapshot is not None and self.recorder is not None:
@@ -843,7 +924,13 @@ def build_parser():
     parser.add_argument("--channel", default="PCAN_USBBUS1")
     parser.add_argument("--bitrate", type=int, default=DEFAULT_BITRATE)
     parser.add_argument("--can-id", type=lambda value: int(value, 0), default=DEFAULT_CAN_ID)
-    parser.add_argument("--profile", choices=("tuning",), default="tuning")
+    parser.add_argument(
+        "--schema",
+        type=Path,
+        default=can_telemetry.DEFAULT_SCHEMA,
+        help="ROM-neutral telemetry wire-schema JSON",
+    )
+    parser.add_argument("--profile", default="tuning")
     parser.add_argument("--tick-divisor", type=int, default=1)
     parser.add_argument("--active", action="store_true", help="participate in ACK instead of listen-only")
     parser.add_argument(
@@ -878,8 +965,8 @@ def main(argv=None):
     args = build_parser().parse_args(argv)
     if args.bitrate <= 0:
         raise SystemExit("bitrate must be positive")
-    if not 1 <= args.can_id <= 0x7FF:
-        raise SystemExit("CAN ID must be in 0x001..0x7FF")
+    if not 1 <= args.can_id <= 0x7FE:
+        raise SystemExit("data CAN ID must be in 0x001..0x7FE")
     if not 1 <= args.tick_divisor <= 0xFF:
         raise SystemExit("tick divisor must be in 1..255")
     if not math.isfinite(args.replay_speed) or args.replay_speed <= 0:
