@@ -219,9 +219,30 @@ def _validate_capture(parsed):
             raise ValueError(f"capture lacks {required}")
 
 
-def _validate_completion(parsed):
+def _validate_completion(parsed, variant="combined-mailbox26"):
     texts = _texts(parsed)
     prologue = [f"mov.l r{index},@-r15" for index in range(8)] + ["sts.l pr,@-r15"]
+    if variant == "mailbox24-tail-chain":
+        tail = [
+            "bsr telemetry_handle_completion",
+            "nop",
+            "lds.l @r15+,pr",
+            *[f"mov.l @r15+,r{index}" for index in range(7, 0, -1)],
+            "mov.l @(telemetry_stock_sle1_isr,pc),r0",
+            "jmp @r0",
+            "mov.l @r15+,r0",
+        ]
+        if texts[:9] != prologue or texts[9 : 9 + len(tail)] != tail:
+            raise ValueError("tail-chain SLE1 wrapper ABI differs")
+        if texts.count("rte") != 0 or texts.count("jsr @r0") != 3:
+            raise ValueError("tail-chain completion call graph differs")
+        if texts.count("mov.w r5,@r4") != 2:
+            raise ValueError("custom mailbox acknowledgment behavior differs")
+        if "telemetry_queue_corrupt" not in parsed.labels:
+            raise ValueError("completion lacks fail-closed corrupt-state path")
+        return
+    if variant != "combined-mailbox26":
+        raise ValueError(f"unsupported completion variant {variant!r}")
     epilogue = ["lds.l @r15+,pr"] + [f"mov.l @r15+,r{index}" for index in range(7, -1, -1)] + ["rte", "nop"]
     if texts[:9] != prologue:
         raise ValueError("SLE1 handler register prologue differs")
@@ -282,12 +303,30 @@ def validate_assembly_sources(layout=None):
     can_telemetry_profile.generate(check=True)
     source_dir = layout_model.DEFAULT_MANIFEST.parent
     parsed_by_unit = {}
-    expected_literals = _expected_long_literals()
+    expected_literals = (
+        layout.source_literal_by_unit or _expected_long_literals()
+    )
+    source_texts = layout.source_text_by_unit
     for unit in layout.assembly_units:
-        parsed = common.parse_source(source_dir / unit.source, unit.span.start, unit.span.end)
+        source_path = source_dir / unit.source
+        if unit.key in source_texts:
+            parsed = common.parse_source_text(
+                source_texts[unit.key], source_path,
+                unit.span.start, unit.span.end,
+            )
+        else:
+            parsed = common.parse_source(
+                source_path, unit.span.start, unit.span.end
+            )
         parsed_by_unit[unit.key] = parsed
         _validate_instruction_forms(parsed)
-        common._validate_delay_slots(parsed)
+        common._validate_delay_slots(
+            parsed,
+            allow_tail_restore=(
+                layout.variant == "mailbox24-tail-chain"
+                and unit.key == "completion"
+            ),
+        )
         if parsed.instruction_count != unit.instruction_count:
             raise ValueError(
                 f"{unit.key}: source has {parsed.instruction_count} instructions, expected {unit.instruction_count}"
@@ -307,14 +346,17 @@ def validate_assembly_sources(layout=None):
         elif unit.key == "capture":
             _validate_capture(parsed)
         elif unit.key == "completion":
-            _validate_completion(parsed)
+            _validate_completion(parsed, layout.variant)
         elif unit.key == "control":
             _validate_control(parsed)
         elif unit.key == "tables":
             expected = can_telemetry_profile.render_tables(
                 can_telemetry_profile.load_manifest()
             )
-            if (source_dir / unit.source).read_text(encoding="utf-8") != expected:
+            actual = source_texts.get(unit.key)
+            if actual is None:
+                actual = source_path.read_text(encoding="utf-8")
+            if not source_texts and actual != expected:
                 raise ValueError("generated table source differs")
         else:
             raise ValueError(f"{unit.key}: no source validator is registered")
@@ -334,7 +376,16 @@ def validate_instruction_semantics(layout, parsed_by_unit, blobs):
     audits = []
     for unit in layout.assembly_units:
         blob = layout_model.validate_assembled_blob(unit, blobs[unit.key])
-        audits.append(common.validate_source_blob(parsed_by_unit[unit.key], blob, unit.span.start, addresses))
+        audits.append(common.validate_source_blob(
+            parsed_by_unit[unit.key],
+            blob,
+            unit.span.start,
+            addresses,
+            allow_tail_restore=(
+                layout.variant == "mailbox24-tail-chain"
+                and unit.key == "completion"
+            ),
+        ))
     return common.InstructionAudit(
         instructions=sum(item.instructions for item in audits),
         delayed_transfers=sum(item.delayed_transfers for item in audits),

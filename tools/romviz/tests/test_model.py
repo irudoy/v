@@ -118,7 +118,11 @@ def test_relocated_definitions_use_target_map_addresses(rom_id, address):
 
     assert exhaust["start"] == address
     assert exhaust["source"] == f"defs/{rom_id}.xml"
-    assert profile["patchStatus"] == "candidate"
+    assert profile["patchStatus"] == "composed"
+    assert profile["label"] == "Unified production runtime profile composed allocation"
+    assert profile["description"] == (
+        "Exact target allocation emitted by the current production builder."
+    )
     assert any(item["id"] == "checksum-field:sum16_a" for item in rom["objects"])
 
 

@@ -22,7 +22,7 @@ PROFILE ?=
 PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
 
 .PHONY: help setup check test-python test-js test verify-firmware verify
-.PHONY: romviz dashboard-package dashboard-package-macos defs-generate rom-verify rom-build
+.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-verify rom-build
 
 help:
 	@printf '%s\n' \
@@ -41,6 +41,7 @@ help:
 		'  dashboard-package Build the portable Windows PCAN dashboard ZIP.' \
 		'  dashboard-package-macos Build the native macOS PCAN dashboard app and ZIP.' \
 		'  defs-generate     Regenerate XML, XDF, and the map ledger from Memgraph.' \
+		'  runtime-targets-generate Rebuild GNU SH-2E payload locks for relocated ROMs.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
 		'' \
@@ -61,6 +62,7 @@ setup:
 
 check:
 	$(PYTHON) patches/rom_address_profiles.py --check
+	$(PYTHON) patches/runtime_targets.py --check
 	$(PYTHON) tools/mapkit/definition_projections.py --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
@@ -105,6 +107,9 @@ defs-generate:
 	$(PYTHON) tools/mapkit/emit_def.py "$(DEFS_ROM)"
 	$(PYTHON) tools/maps/build_tracker.py all
 	$(PYTHON) tools/mapkit/validate_map_switching.py
+
+runtime-targets-generate:
+	tools/sh-elf-run/generate-targets.sh
 
 rom-verify:
 	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }

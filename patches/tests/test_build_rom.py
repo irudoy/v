@@ -10,7 +10,9 @@ from patches import build_rom
 from patches import jk08a_checksums as checksums
 from patches import map_switching_layout
 from patches import can_telemetry
+from patches import rom_checksums
 from patches import rolling_launch
+from patches import runtime_targets
 from tools import rom_homology
 
 
@@ -75,7 +77,14 @@ class BuildRomTest(unittest.TestCase):
                     source_name=f"exact {rom} stock",
                 )
             )
-            for rom in build_rom.SUPPORTED_ROMS
+            for rom in runtime_targets.EXACT_ROMS
+        }
+        cls.relocated_results = {
+            rom: build_rom.build_image(
+                cls.family_images[rom].data,
+                source_name=f"exact {rom} stock",
+            )
+            for rom in runtime_targets.RELOCATED_ROMS
         }
 
         migrated = bytearray(cls.base_result.data)
@@ -115,7 +124,7 @@ class BuildRomTest(unittest.TestCase):
             build_rom.builtin_profile().rom,
             build_rom.ROM_SERIES,
         )
-        for rom in build_rom.SUPPORTED_ROMS:
+        for rom in runtime_targets.EXACT_ROMS:
             with self.subTest(rom=rom):
                 source = self.family_images[rom].data
                 result = self.family_results[rom]
@@ -163,7 +172,110 @@ class BuildRomTest(unittest.TestCase):
                         "complete-runtime-migration",
                     )
                     self.assertEqual(rebuilt.data, result.data)
-        self.assertEqual(len(output_hashes), len(build_rom.SUPPORTED_ROMS))
+        self.assertEqual(len(output_hashes), len(runtime_targets.EXACT_ROMS))
+
+    def test_relocated_family_builds_are_target_specific_and_idempotent(self):
+        output_hashes = set()
+        for rom in runtime_targets.RELOCATED_ROMS:
+            with self.subTest(rom=rom):
+                source = self.family_images[rom].data
+                target = runtime_targets.load_runtime_target(rom)
+                result = self.relocated_results[rom]
+                checksum_layout = target.checksum_layout
+                component_offsets = build_rom._component_offsets(
+                    target.map_layout,
+                    target.rolling_layout,
+                    target.telemetry_layout,
+                    checksum_layout,
+                )
+                permitted = component_offsets | set(
+                    rom_checksums.checksum_byte_offsets(checksum_layout)
+                )
+
+                self.assertEqual(result.rom, rom)
+                self.assertEqual(result.series, runtime_targets.RELOCATED_FAMILY)
+                self.assertEqual(result.detection, build_rom.AUTO_ROM)
+                self.assertEqual(result.profile.rom, runtime_targets.RELOCATED_FAMILY)
+                self.assertEqual(build_rom.select_rom(source), (rom, "auto"))
+                explicit = build_rom.build_image(
+                    source, rom=rom.lower(), source_name=f"explicit {rom}"
+                )
+                self.assertEqual(explicit.detection, "explicit")
+                self.assertEqual(explicit.data, result.data)
+                self.assertTrue(
+                    rom_checksums.verify(result.data, checksum_layout).valid
+                )
+                self.assertEqual(result.map_instruction_count, 453)
+                self.assertEqual(result.rolling_instruction_count, 878)
+                self.assertEqual(result.telemetry_instruction_count, 617)
+                self.assertEqual(target.map_layout.variant, "dual-exhaust")
+                self.assertEqual(
+                    target.telemetry_layout.variant,
+                    "mailbox24-tail-chain",
+                )
+                self.assertEqual(
+                    result.data[
+                        target.telemetry_layout.mailbox_record_address :
+                        target.telemetry_layout.mailbox_record_address + 4
+                    ],
+                    result.telemetry_mailbox_record,
+                )
+
+                changed = {
+                    offset
+                    for offset, pair in enumerate(zip(source, result.data))
+                    if pair[0] != pair[1]
+                }
+                self.assertEqual(changed - permitted, set())
+                identity = slice(
+                    map_switching_layout.COMPATIBLE_IDENTITY_START,
+                    map_switching_layout.COMPATIBLE_IDENTITY_END,
+                )
+                self.assertEqual(result.data[identity], source[identity])
+                for family in target.map_layout.families:
+                    canonical = source[
+                        family.canonical_address :
+                        family.canonical_address + family.byte_length
+                    ]
+                    for address in family.copies:
+                        self.assertEqual(
+                            result.data[address : address + family.byte_length],
+                            canonical,
+                        )
+
+                rebuilt = build_rom.build_image(
+                    result.data, source_name=f"complete {rom} runtime"
+                )
+                self.assertEqual(
+                    rebuilt.input_state, "complete-runtime-migration"
+                )
+                self.assertEqual(rebuilt.data, result.data)
+                self.assertEqual(rebuilt.changed_bytes, 0)
+                output_hashes.add(result.output_sha256)
+        self.assertEqual(len(output_hashes), len(runtime_targets.RELOCATED_ROMS))
+
+    def test_relocated_migration_preserves_alternate_map_bytes(self):
+        rom = "JK00C"
+        target = runtime_targets.load_runtime_target(rom)
+        source = bytearray(self.relocated_results[rom].data)
+        for family_index, family in enumerate(target.map_layout.families):
+            source[family.copies[-1]] ^= family_index + 1
+        source = rom_checksums.recalculate(source, target.checksum_layout)
+        saved = build_rom._capture_map_copies(source, target.map_layout)
+
+        result = build_rom.build_image(
+            source, source_name="JK00C runtime with alternate maps"
+        )
+
+        self.assertEqual(result.input_state, "complete-runtime-migration")
+        self.assertEqual(
+            build_rom._capture_map_copies(result.data, target.map_layout),
+            saved,
+        )
+        self.assertGreater(result.preserved_map_copy_bytes, 0)
+        self.assertTrue(
+            rom_checksums.verify(result.data, target.checksum_layout).valid
+        )
 
     def test_unknown_identity_and_unsupported_rom_are_rejected(self):
         wrong_identity = bytearray(self.stock)
@@ -177,7 +289,7 @@ class BuildRomTest(unittest.TestCase):
         with self.assertRaisesRegex(
             build_rom.BuildError, "unsupported ROM selector"
         ):
-            build_rom.select_rom(self.stock, "JK00D")
+            build_rom.select_rom(self.stock, "JK78C")
 
     def test_explicit_series_still_requires_matching_identity(self):
         wrong_identity = bytearray(self.stock)

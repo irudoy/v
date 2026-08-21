@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the validated JK08A CAN telemetry layer to a complete runtime."""
+"""Apply a validated CAN telemetry layout to a complete runtime."""
 
 from __future__ import annotations
 
@@ -20,7 +20,8 @@ from patches import can_telemetry
 from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
 from patches import can_telemetry_layout
-from patches import jk08a_checksums as checksums
+from patches import jk08a_checksums as canonical_checksums
+from patches import rom_checksums
 from patches import rolling_launch
 from patches import rolling_launch_assembly
 from patches import rolling_launch_layout
@@ -40,8 +41,8 @@ class PatchResult:
     mailbox_record: bytes
     source_sha256: str
     output_sha256: str
-    source_checksums: checksums.ChecksumValues
-    output_checksums: checksums.ChecksumValues
+    source_checksums: rom_checksums.ChecksumValues
+    output_checksums: rom_checksums.ChecksumValues
     composition_changed_bytes: int
     final_changed_bytes: int
     permitted_write_bytes: int
@@ -98,16 +99,20 @@ def _require_telemetry_base(source, layout, context):
         if actual != hook.stock:
             raise PatchError(f"{context}: telemetry base hook {hook.key} differs")
     record = source[layout.mailbox_record_address : layout.mailbox_record_address + 4]
-    if record != can_telemetry.STOCK_MAILBOX_RECORD:
-        raise PatchError(f"{context}: mailbox-26 stock record differs")
+    expected_record = layout.mailbox_record_stock.to_bytes(
+        4, layout.byte_order
+    )
+    if record != expected_record:
+        raise PatchError(f"{context}: telemetry mailbox stock record differs")
 
 
-def _final_write_offsets(layout):
+def _final_write_offsets(layout, checksum_layout=None):
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     composition = set(chain.from_iterable(
         range(item.start, item.end)
         for item in can_telemetry_compose.composition_write_ranges(layout)
     ))
-    checksum = set(checksums.checksum_byte_offsets())
+    checksum = set(rom_checksums.checksum_byte_offsets(checksum_layout))
     overlap = composition & checksum
     if overlap:
         raise PatchError(f"checksum overlaps telemetry write set at {min(overlap):#x}")
@@ -124,9 +129,11 @@ def patch_image(
     launch_payloads=None,
     source_name="<memory>",
     expected_source_sha256=None,
+    checksum_layout=None,
 ):
     telemetry_layout = telemetry_layout or can_telemetry_layout.load_layout()
     launch_layout = launch_layout or rolling_launch_layout.load_layout()
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     try:
         telemetry_payloads = can_telemetry_compose._validated_blobs(
             telemetry_layout,
@@ -137,16 +144,21 @@ def patch_image(
         raise PatchError(str(error)) from error
 
     source = bytes(source)
-    if len(source) != ROM_SIZE:
-        raise PatchError(f"{source_name}: source has {len(source)} bytes, expected {ROM_SIZE}")
+    if len(source) != checksum_layout.rom_size:
+        raise PatchError(
+            f"{source_name}: source has {len(source)} bytes, expected "
+            f"{checksum_layout.rom_size}"
+        )
     source_digest = sha256(source)
     if expected_source_sha256 is not None and source_digest != expected_source_sha256:
         raise PatchError(
             f"{source_name}: source SHA-256 is {source_digest}, expected {expected_source_sha256}"
         )
     try:
-        source_verification = checksums.require_valid(source, source_name)
-    except checksums.ChecksumError as error:
+        source_verification = rom_checksums.require_valid(
+            source, checksum_layout, source_name
+        )
+    except rom_checksums.ChecksumError as error:
         raise PatchError(str(error)) from error
     _require_complete_rolling_endpoint(source, launch_layout, launch_payloads, source_name)
     _require_telemetry_base(source, telemetry_layout, source_name)
@@ -169,12 +181,18 @@ def patch_image(
             configuration_bytes,
             mailbox_record,
         )
-        patched = bytes(checksums.recalculate(composed))
-        output_verification = checksums.require_valid(patched, "CAN telemetry output")
-    except (checksums.ChecksumError, ValueError) as error:
+        patched = bytes(rom_checksums.recalculate(
+            composed, checksum_layout
+        ))
+        output_verification = rom_checksums.require_valid(
+            patched, checksum_layout, "CAN telemetry output"
+        )
+    except (rom_checksums.ChecksumError, ValueError) as error:
         raise PatchError(str(error)) from error
 
-    permitted, checksum_offsets = _final_write_offsets(telemetry_layout)
+    permitted, checksum_offsets = _final_write_offsets(
+        telemetry_layout, checksum_layout
+    )
     changed = {
         index for index, pair in enumerate(zip(source, patched)) if pair[0] != pair[1]
     }
@@ -188,7 +206,7 @@ def patch_image(
         raise PatchError("final telemetry configuration differs")
     start = telemetry_layout.mailbox_record_address
     if patched[start : start + 4] != mailbox_record:
-        raise PatchError("final mailbox-26 record differs")
+        raise PatchError("final telemetry mailbox record differs")
 
     return PatchResult(
         data=patched,

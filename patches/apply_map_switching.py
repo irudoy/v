@@ -23,7 +23,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from patches import jk08a_checksums as checksums
+from patches import jk08a_checksums as canonical_checksums
+from patches import rom_checksums
 from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model
 from tools.mapkit import rom as romkit
@@ -43,8 +44,8 @@ class PatchResult:
     data: bytes
     source_sha256: str
     output_sha256: str
-    source_checksums: checksums.ChecksumValues
-    output_checksums: checksums.ChecksumValues
+    source_checksums: rom_checksums.ChecksumValues
+    output_checksums: rom_checksums.ChecksumValues
     composition_changed_bytes: int
     final_changed_bytes: int
     permitted_write_bytes: int
@@ -121,14 +122,17 @@ def load_blob_overrides(layout, arguments):
     return overrides
 
 
-def _final_write_offsets(layout):
+def _final_write_offsets(layout, checksum_layout=None):
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     composition_offsets = set(
         chain.from_iterable(
             range(region.start, region.end)
             for region in composer.composition_write_ranges(layout)
         )
     )
-    return composition_offsets | set(checksums.checksum_byte_offsets())
+    return composition_offsets | set(
+        rom_checksums.checksum_byte_offsets(checksum_layout)
+    )
 
 
 def _validate_slot_initialization(layout, source, patched):
@@ -145,8 +149,10 @@ def _validate_slot_initialization(layout, source, patched):
                 )
 
 
-def _validate_preservation(layout, source, patched):
-    permitted = _final_write_offsets(layout)
+def _validate_preservation(
+    layout, source, patched, checksum_layout
+):
+    permitted = _final_write_offsets(layout, checksum_layout)
     changed = {
         offset
         for offset, (before, after) in enumerate(zip(source, patched))
@@ -167,14 +173,18 @@ def patch_image(
     blobs=None,
     source_name="<memory>",
     stock_image=None,
+    checksum_layout=None,
 ):
     """Return a checked, self-consistent map-switching image."""
     layout = layout or layout_model.load_layout()
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     source = bytes(source)
     image_rom = stock_image.rom if stock_image is not None else layout.rom
     image = romkit.Image(image_rom, source_name, source)
     try:
-        source_verification = checksums.require_valid(source, source_name)
+        source_verification = rom_checksums.require_valid(
+            source, checksum_layout, source_name
+        )
         layout_model.validate_compatible_image(
             layout, image, stock_image
         )
@@ -185,18 +195,20 @@ def patch_image(
             source_policy="compatible",
             stock_image=stock_image,
         )
-        patched = checksums.recalculate(composition.data)
-        output_verification = checksums.require_valid(
-            patched, "map-switching output"
+        patched = rom_checksums.recalculate(
+            composition.data, checksum_layout
         )
-    except (checksums.ChecksumError, ValueError) as error:
+        output_verification = rom_checksums.require_valid(
+            patched, checksum_layout, "map-switching output"
+        )
+    except (rom_checksums.ChecksumError, ValueError) as error:
         raise PatchError(str(error)) from error
 
     _validate_slot_initialization(layout, source, patched)
     final_changed_bytes, permitted_write_bytes = _validate_preservation(
-        layout, source, patched
+        layout, source, patched, checksum_layout
     )
-    checksum_offsets = checksums.checksum_byte_offsets()
+    checksum_offsets = rom_checksums.checksum_byte_offsets(checksum_layout)
     checksum_changed_bytes = sum(
         source[offset] != patched[offset] for offset in checksum_offsets
     )

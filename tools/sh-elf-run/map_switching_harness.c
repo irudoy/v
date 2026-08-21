@@ -25,6 +25,9 @@
 #define IGNITION_ADAPTER 0x000d2340U
 #define FUEL_COMP_ADAPTER 0x000d2380U
 #define EXHAUST_CVTC_TARGET_ADAPTER 0x000d23c0U
+#ifdef TARGET_DUAL_EXHAUST
+#define EXHAUST_CVTC_TARGET_ODD_ADAPTER 0x000d5000U
+#endif
 #define FEEDBACK_WRAPPER 0x000d35e0U
 #define LIMITER_COMMIT 0x000d3660U
 #define FEEDBACK_COUNTS 0x000d3848U
@@ -124,6 +127,14 @@ static const struct family adapter_families[] = {
         {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
          0x000d3000U},
     },
+#ifdef TARGET_DUAL_EXHAUST
+    {
+        "exhaust_cvtc_target_odd", EXHAUST_CVTC_TARGET_ODD_ADAPTER,
+        0x0000b43aU, 256U,
+        {0x0000b43aU, 0x000d5100U, 0x000d5200U, 0x000d5300U,
+         0x000d5400U},
+    },
+#endif
     {
         "cold_idle_ignition_timing", IDLE_IGNITION_ADAPTER,
         0x00012196U, 8U,
@@ -146,6 +157,10 @@ static const struct pass_through pass_throughs[] = {
     {"fuel_compensation_unknown", FUEL_COMP_ADAPTER, 0x0000a29bU},
     {"exhaust_cvtc_target_unknown", EXHAUST_CVTC_TARGET_ADAPTER,
      0x0000b33bU},
+#ifdef TARGET_DUAL_EXHAUST
+    {"exhaust_cvtc_target_odd_unknown",
+     EXHAUST_CVTC_TARGET_ODD_ADAPTER, 0x0000b43bU},
+#endif
     {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
 };
 
@@ -649,16 +664,26 @@ int main(void)
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
+#ifdef TARGET_DUAL_EXHAUST
+    if (total_cases != 139U)
+        return fail_value("summary", "case_count", total_cases, 139);
+#else
     if (total_cases != 131U)
         return fail_value("summary", "case_count", total_cases, 131);
+#endif
     if (feedback_invocations != 17U)
         return fail_value(
             "summary", "feedback_invocations", feedback_invocations, 17);
 
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
+#ifdef TARGET_DUAL_EXHAUST
+        "adapters=99 limiter=14 feedback=9 feedback_invocations=%lu "
+        "entries=13\n",
+#else
         "adapters=91 limiter=14 feedback=9 feedback_invocations=%lu "
         "entries=12\n",
+#endif
         (unsigned long)total_cases, (unsigned long)feedback_invocations);
     return 0;
 }

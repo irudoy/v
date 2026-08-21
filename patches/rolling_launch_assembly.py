@@ -414,11 +414,21 @@ def validate_assembly_sources(layout=None):
     layout = layout or layout_model.load_layout()
     source_dir = layout_model.DEFAULT_MANIFEST.parent
     parsed_by_unit = {}
-    expected_literals = _expected_long_literals()
+    expected_literals = (
+        layout.source_literal_by_unit or _expected_long_literals()
+    )
+    source_texts = layout.source_text_by_unit
     for unit in layout.assembly_units:
-        parsed = common.parse_source(
-            source_dir / unit.source, unit.span.start, unit.span.end
-        )
+        source_path = source_dir / unit.source
+        if unit.key in source_texts:
+            parsed = common.parse_source_text(
+                source_texts[unit.key], source_path,
+                unit.span.start, unit.span.end,
+            )
+        else:
+            parsed = common.parse_source(
+                source_path, unit.span.start, unit.span.end
+            )
         parsed_by_unit[unit.key] = parsed
         _validate_16_bit_source_forms(parsed)
         common._validate_delay_slots(parsed)

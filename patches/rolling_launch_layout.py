@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validated storage contract for the exact JK08A Rolling Launch fixture.
+"""Validated storage contract for registered Rolling Launch targets.
 
 The manifest extends the complete map-switching in-memory composition. This
 module validates ROM/RAM ownership, hooks, diagnostic DID pointers, the
@@ -73,6 +73,11 @@ class Layout:
     assembly_units: tuple[common.AssemblyUnit, ...]
     hooks: tuple[common.Hook, ...]
     diagnostics: tuple[Diagnostic, ...]
+    variant: str = "canonical"
+    source_texts: tuple[tuple[str, str], ...] = ()
+    source_literals: tuple[
+        tuple[str, tuple[tuple[str, int], ...]], ...
+    ] = ()
 
     @property
     def code_region_by_key(self):
@@ -97,6 +102,16 @@ class Layout:
     @property
     def assembled_data_bytes(self):
         return sum(unit.data_bytes for unit in self.assembly_units)
+
+    @property
+    def source_text_by_unit(self):
+        return dict(self.source_texts)
+
+    @property
+    def source_literal_by_unit(self):
+        return {
+            key: dict(values) for key, values in self.source_literals
+        }
 
     @property
     def claimed_rom_ranges(self):
@@ -325,8 +340,21 @@ def validate_structure(layout):
         raise ValueError(
             f"unsupported Rolling Launch layout schema {layout.schema_version}"
         )
-    if layout.rom != "JK08A" or layout.byte_order != "big":
-        raise ValueError("Rolling Launch supports only big-endian exact JK08A")
+    if (
+        layout.byte_order != "big"
+        or (
+            layout.variant == "canonical" and layout.rom != "JK08A"
+        )
+        or (
+            layout.variant == "relocated-8mfk"
+            and layout.rom not in {"JK00C", "JK00D"}
+        )
+        or layout.variant not in {"canonical", "relocated-8mfk"}
+    ):
+        raise ValueError(
+            f"unsupported Rolling Launch target {layout.rom!r} "
+            f"variant={layout.variant!r}"
+        )
     _sha256_text(layout.source_sha256, "source_sha256")
     _sha256_text(
         layout.base_composition_sha256, "base_composition_sha256"
@@ -357,7 +385,7 @@ def validate_structure(layout):
 
     scheduler = layout.scheduler
     if (
-        scheduler.table_address != 0x00021970
+        scheduler.table_address % 4
         or scheduler.table_index != 0
         or scheduler.tick_numerator != 204800
         or scheduler.pphi_hz != 20_000_000
@@ -366,6 +394,11 @@ def validate_structure(layout):
         // scheduler.pphi_hz
     ):
         raise ValueError("periodic scheduler timing contract differs")
+    if (
+        layout.variant == "canonical"
+        and scheduler.table_address != 0x00021970
+    ):
+        raise ValueError("canonical scheduler table address differs")
 
     if not layout.ram.proven_free.contains(layout.ram.base_reservation):
         raise ValueError("map-switching RAM lies outside the proven free range")
@@ -445,24 +478,36 @@ def validate_structure(layout):
         )
 
     required_hooks = {
+        "periodic_scheduler_index_0",
+        "selector_arbitration",
+        "startup_state_clear",
+        "primary_ignition_command",
+        "feedback_arbitration",
+    }
+    if set(layout.hook_by_key) != required_hooks:
+        raise ValueError("Rolling Launch hook set differs")
+    canonical_hooks = {
         "periodic_scheduler_index_0": (0x21970, 0xA9554, 0xD3860),
         "selector_arbitration": (0xCE8DC, 0xD2108, 0xD3880),
         "startup_state_clear": (0x27D28, 0xD22A0, 0xD38A0),
         "primary_ignition_command": (0x4E198, 0x2A892, 0xD3EA0),
         "feedback_arbitration": (0xC3FA4, 0xD35E0, 0xD41E0),
     }
-    if set(layout.hook_by_key) != set(required_hooks):
-        raise ValueError("Rolling Launch hook set differs")
     entries = {region.entry for region in layout.code_regions}
     for hook in layout.hooks:
-        expected = required_hooks[hook.key]
         if (
-            (hook.address, hook.stock, hook.replacement) != expected
+            hook.address % 4
             or hook.width != 4
             or hook.replacement not in entries
             or not hook.purpose
         ):
             raise ValueError(f"{hook.key}: hook contract differs")
+        if (
+            layout.variant == "canonical"
+            and (hook.address, hook.stock, hook.replacement)
+            != canonical_hooks[hook.key]
+        ):
+            raise ValueError(f"{hook.key}: canonical hook binding differs")
 
     expected_dids = (0x1211, 0x1212, 0x1213, 0x1216, 0x1217,
                      0x1224, 0x1227, 0x1228, 0x1229)
@@ -472,17 +517,22 @@ def validate_structure(layout):
         layout.ram.state.start, layout.ram.state.start + 18, 2
     ))
     for item, target in zip(layout.diagnostics, expected_targets):
-        low = item.did & 0xFF
-        expected_pointer = 0x0002289C + low * 4
         if (
             item.did >> 8 != 0x12
-            or item.pointer_address != expected_pointer
+            or item.pointer_address % 4
             or item.stock != 0xFFFFFFFF
             or item.target != target
             or item.width != 2
             or not item.name
         ):
             raise ValueError(f"DID {item.did:#06x}: diagnostic contract differs")
+        if layout.variant == "canonical":
+            low = item.did & 0xFF
+            expected_pointer = 0x0002289C + low * 4
+            if item.pointer_address != expected_pointer:
+                raise ValueError(
+                    f"DID {item.did:#06x}: canonical pointer differs"
+                )
 
     writes = [
         common.AddressRange(unit.span.start, unit.span.end, f"unit.{unit.key}")

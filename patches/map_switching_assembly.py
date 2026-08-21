@@ -153,8 +153,8 @@ def _source_target(parsed, statement):
         ) from error
 
 
-def _validate_delay_slots(parsed):
-    """Require an explicit NOP after every delayed SH-2E transfer."""
+def _validate_delay_slots(parsed, *, allow_tail_restore=False):
+    """Require an audited instruction after every delayed SH-2E transfer."""
     statements = parsed.statement_by_address
     for statement in parsed.statements:
         if (
@@ -163,10 +163,17 @@ def _validate_delay_slots(parsed):
         ):
             continue
         slot = statements.get(statement.address + 2)
+        safe_tail_restore = (
+            allow_tail_restore
+            and statement.text.lower() == "jmp @r0"
+            and slot is not None
+            and slot.kind == "instruction"
+            and slot.text.lower() == "mov.l @r15+,r0"
+        )
         if (
             slot is None
             or slot.kind != "instruction"
-            or slot.text.lower() != "nop"
+            or (slot.text.lower() != "nop" and not safe_tail_restore)
         ):
             raise ValueError(
                 f"{parsed.path}:{statement.line_number}: "
@@ -306,12 +313,13 @@ def _validate_pc_relative_encoding(parsed, statement, word):
 
 
 def validate_source_blob(
-    parsed, blob, start, valid_instruction_addresses=None
+    parsed, blob, start, valid_instruction_addresses=None,
+    *, allow_tail_restore=False,
 ):
     """Independently audit control flow and PC-relative machine encodings."""
     blob = bytes(blob)
     _validate_sh7058s_instruction_subset(parsed)
-    _validate_delay_slots(parsed)
+    _validate_delay_slots(parsed, allow_tail_restore=allow_tail_restore)
     instruction_addresses = {
         statement.address
         for statement in parsed.statements
@@ -340,9 +348,21 @@ def validate_source_blob(
         if mnemonic in DELAYED_CONTROL_MNEMONICS:
             delayed += 1
             slot_offset = offset + 2
+            slot = parsed.statement_by_address.get(statement.address + 2)
+            safe_tail_restore = (
+                allow_tail_restore
+                and statement.text.lower() == "jmp @r0"
+                and slot is not None
+                and slot.kind == "instruction"
+                and slot.text.lower() == "mov.l @r15+,r0"
+                and blob[slot_offset : slot_offset + 2] == b"\x60\xf6"
+            )
             if (
                 slot_offset + 2 > len(blob)
-                or blob[slot_offset : slot_offset + 2] != b"\x00\x09"
+                or (
+                    blob[slot_offset : slot_offset + 2] != b"\x00\x09"
+                    and not safe_tail_restore
+                )
             ):
                 raise ValueError(
                     f"{parsed.path}:{statement.line_number}: binary "
@@ -423,14 +443,14 @@ def _values(text, path, line_number):
     return values
 
 
-def parse_source(path, start, end):
+def parse_source_text(source, path, start, end):
     """Parse the deliberately small source subset accepted by AssembleSh2."""
     path = Path(path)
     labels = {}
     statements = []
     cursor = start
     for line_number, raw_line in enumerate(
-        path.read_text(encoding="utf-8").splitlines(), 1
+        source.splitlines(), 1
     ):
         line = _strip_comment(raw_line).strip()
         if not line:
@@ -504,6 +524,14 @@ def parse_source(path, start, end):
         )
         cursor += size
     return ParsedSource(path, labels, tuple(statements))
+
+
+def parse_source(path, start, end):
+    """Parse one tracked assembly source file."""
+    path = Path(path)
+    return parse_source_text(
+        path.read_text(encoding="utf-8"), path, start, end
+    )
 
 
 def _hook_stock_for_adapter(layout, adapter_key):
@@ -937,18 +965,59 @@ def _validate_feedback_engine(parsed, layout):
         )
 
 
+def _validate_dual_exhaust_adapter(parsed):
+    _validate_registers_and_control_flow(parsed, 0)
+    texts = _instruction_texts(parsed)
+    required = {
+        "mov #0x5,r1",
+        "cmp/hs r1,r0",
+        "mov #0x0,r0",
+        "shll2 r0",
+        "mov.l @(r0,r2),r4",
+        "jmp @r3",
+        "nop",
+    }
+    if not required <= set(texts):
+        raise ValueError(
+            f"{parsed.path}: dual-bank exhaust adapter contract differs"
+        )
+    if texts.count("jmp @r3") != 2:
+        raise ValueError(
+            f"{parsed.path}: dual-bank exhaust adapter tail count differs"
+        )
+
+
 def validate_assembly_sources(layout=None):
     """Cross-check all implemented source slices with the exact layout."""
     layout = layout or load_layout()
     source_dir = DEFAULT_MANIFEST.parent
-    expected_literals = _expected_long_literals(layout)
+    literal_by_unit = layout.source_literal_by_unit
+    expected_literals = (
+        {
+            key: value
+            for values in literal_by_unit.values()
+            for key, value in values.items()
+        }
+        if literal_by_unit
+        else _expected_long_literals(layout)
+    )
     actual_literals = {}
     parsed_by_unit = {}
+    source_texts = layout.source_text_by_unit
 
     for unit in layout.assembly_units:
-        parsed = parse_source(
-            source_dir / unit.source, unit.span.start, unit.span.end
-        )
+        source_path = source_dir / unit.source
+        if unit.key in source_texts:
+            parsed = parse_source_text(
+                source_texts[unit.key],
+                source_path,
+                unit.span.start,
+                unit.span.end,
+            )
+        else:
+            parsed = parse_source(
+                source_path, unit.span.start, unit.span.end
+            )
         parsed_by_unit[unit.key] = parsed
         _validate_sh7058s_instruction_subset(parsed)
         _validate_delay_slots(parsed)
@@ -994,6 +1063,8 @@ def validate_assembly_sources(layout=None):
             _validate_limiter_commit(parsed)
         elif unit.key == "startup_wrapper":
             _validate_startup_wrapper(parsed)
+        elif unit.key == "exhaust_odd_adapter":
+            _validate_dual_exhaust_adapter(parsed)
         else:
             raise ValueError(
                 f"{unit.key}: no source-level ABI validator is registered"

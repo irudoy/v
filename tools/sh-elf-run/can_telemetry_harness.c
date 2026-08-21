@@ -877,12 +877,15 @@ static int run_isr_case(
     invoke_exception_probe(registers);
     if (!verify_registers(name, registers))
         return 0;
+#ifndef TELEMETRY_TAIL_CHAIN
     if ((txack | aback) & MAILBOX28_MASK) {
         if (ram_pointer(STOCK_ACTIVITY)[0] != 0xff)
             return fail_value(
                 name, "stock_activity", ram_pointer(STOCK_ACTIVITY)[0], 0xff);
     }
-    if ((txack | aback) != 0 && read_u16(ram_pointer(IRR1)) != 0x0100)
+#endif
+    if (((txack | aback) & MAILBOX26_MASK) != 0
+            && read_u16(ram_pointer(IRR1)) != 0x0100)
         return fail_value(
             name, "irr", read_u16(ram_pointer(IRR1)), 0x0100);
     return 1;

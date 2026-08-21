@@ -10,10 +10,10 @@ npkern project is optional, external, and revision-locked.
 
 ## Repository-contained gate
 
-Run the complete current JK08A gate from the repository root:
+Run the complete current runtime gate from the repository root:
 
 ```bash
-tools/sh-elf-run/run.sh --verbose
+make verify-firmware
 ```
 
 The first run builds the image defined by `Dockerfile`; later runs reuse Docker
@@ -27,25 +27,32 @@ built from the current Dockerfile.
 The gate performs these checks:
 
 1. Assemble every current Map Switching, Rolling Launch, and CAN telemetry
-   source unit with GNU `sh-elf-as --isa=sh2e`.
+   source unit with GNU `sh-elf-as --isa=sh2e`. This covers the canonical JK08A
+   units and every rendered JK00C/JK00D target unit.
 2. Reconstruct each fill-aware ROM envelope and require byte identity with the
    corresponding SHA-locked payload in the tracked manifest.
 3. Independently compose the current non-flashable one-MiB Map Switching,
-   Rolling Launch, and CAN telemetry fixtures and enforce their declared write
-   sets, entries, hooks, pointers, mailbox record, and instruction audits.
+   Rolling Launch, and CAN telemetry fixtures for JK08A, JK00C, and JK00D and
+   enforce their declared write sets, entries, hooks, pointers, mailbox record,
+   stock-image identity, and three-stage hashes.
 4. Execute every declared Map Switching selector, adapter, limiter, startup,
    feedback, Rolling Launch behavior, telemetry HCAN1 initialization, control
    polling, runtime enable overrides, capture, bank publication, page request,
    ACK, abort, preemption, corruption, and ISR path with distinct fixture
-   values that expose wrong slots or addresses.
+   values that expose wrong slots or addresses. The 8MFK cases include both
+   exhaust-CVTC banks, the two-byte-aligned throttle limiter container,
+   mailbox 24, and the stock-ISR tail chain.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
    unchanged stock callees outside the implementation under test. The Rolling
    Launch fixture uses a deterministic stock-serializer stub to seed the CAN
    payload before executing both feedback layers. The telemetry fixture also
    installs a simulator-only TRAPA vector after byte identity is proven. TRAPA
-   creates the architectural exception stack, then the exact combined SLE1 ISR
-   returns through its unchanged `RTE` instruction.
+   creates the architectural exception stack. The canonical combined SLE1 ISR
+   returns through its unchanged `RTE` instruction. Each 8MFK wrapper restores
+   all interrupted registers, including `r0` in the `JMP` delay slot, and
+   tail-chains to an explicit simulator-only `RTE` stub for the unchanged stock
+   ISR.
 6. Execute the exact unsafe delayed-branch incident words at their ROM addresses
    and require an illegal-instruction stop, while a control fixture that changes
    only the delay-slot word returns normally.
@@ -53,9 +60,18 @@ The gate performs these checks:
 A successful run prints `VQ_SH_ELF_MAP_SWITCHING`,
 `VQ_SH_ELF_ROLLING_LAUNCH`, `VQ_SH_ELF_ROLLING_VERIFY`,
 `VQ_SH_ELF_CAN_TELEMETRY`, `VQ_SH_ELF_CAN_TELEMETRY_VERIFY`, and
+`VQ_SH_ELF_RUNTIME_TARGET`, `VQ_SH_ELF_RUNTIME_TARGETS`, and
 `VQ_SH_ELF_VERIFY` markers with `status=PASS`. The markers calculate current
 instruction, case, branch, relocation, and composition values at runtime; this
 document does not duplicate them.
+
+The target payload registry is a tracked product of the same pinned GNU
+toolchain. Rebuild it after an intentional target-source or address-profile
+change with:
+
+```bash
+make runtime-targets-generate
+```
 
 ## External npkern gate
 
@@ -96,14 +112,16 @@ literals to test RAM. Instruction bytes and control-flow addresses remain
 unchanged.
 
 HCAN status registers are write-one-to-clear in silicon but ordinary memory in
-the simulator. Simultaneous mailbox-26/mailbox-28 ISR cases place the two flags
-in independent TXACK1 and ABACK1 words, so both mailbox paths execute in one
-TRAPA exception without modifying instructions under test. Individual ACK and
-abort cases execute each write-one-to-clear instruction and boundary path.
-Mailbox-31 cases likewise execute RXPR1, RFPR1, and UMSR1 writes, including
-data, remote-only, retained-remote, malformed, and invalid-configuration paths;
-the fixture observes the write values rather than emulating their hardware
-clearing effect.
+the simulator. Canonical simultaneous mailbox-26/mailbox-28 ISR cases place the
+two flags in independent TXACK1 and ABACK1 words, so both mailbox paths execute
+in one TRAPA exception without modifying instructions under test. The 8MFK
+cases exercise mailbox 24 alone and together with unrelated stock mailbox-28
+flags, then verify the target wrapper's register-preserving stock-ISR boundary.
+Individual ACK and abort cases execute each custom write-one-to-clear
+instruction and boundary path. Mailbox-31 cases likewise execute RXPR1, RFPR1,
+and UMSR1 writes, including data, remote-only, retained-remote, malformed, and
+invalid-configuration paths; the fixture observes the write values rather than
+emulating their hardware clearing effect.
 
 The simulator does not model HCAN-II, the SH7058/SH7059 flash controller, or the
 external watchdog. The npkern marker therefore remains

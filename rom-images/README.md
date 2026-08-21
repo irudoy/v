@@ -296,8 +296,10 @@ higher-level algorithms survive at target-specific addresses.
 audited ROM range `0x000de800:0x000e2700`, the audited RAM range
 `0xffff6000:0xffff6600`, every current runtime hook, the split exhaust-CVTC
 banks, Rolling Launch diagnostics, HCAN mailbox ownership, and every schema-2
-telemetry source. The production builder does not consume this profile until
-target-specific assembly and executable fixtures are complete.
+telemetry source. The production builder consumes these profiles together with
+target-specific GNU SH-2E payload locks. The executable gate binds every
+emitted target instruction to the corresponding stock bytes and exercises the
+relocated Map Switching, Rolling Launch, and CAN telemetry paths.
 
 ### Significantly different groups
 

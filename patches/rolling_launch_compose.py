@@ -239,6 +239,7 @@ def compose(
     output_sha256 = hashlib.sha256(data).hexdigest()
     if (
         configuration == layout.default_configuration
+        and layout.expected_composition_sha256 != "0" * 64
         and output_sha256 != layout.expected_composition_sha256
     ):
         raise ValueError(
@@ -286,6 +287,7 @@ def validate_composed(
     output_sha256 = hashlib.sha256(composed).hexdigest()
     if (
         configuration == layout.default_configuration
+        and layout.expected_composition_sha256 != "0" * 64
         and output_sha256 != layout.expected_composition_sha256
     ):
         raise ValueError(

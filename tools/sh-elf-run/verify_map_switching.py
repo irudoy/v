@@ -134,13 +134,15 @@ def _source_value(statement):
     return int(values[0].replace("_", ""), 0)
 
 
-def assemble_unit(unit, parsed, build_dir):
+def assemble_unit(unit, parsed, build_dir, source_text=None):
     """Assemble one absolute source and reconstruct its fill-aware blob."""
     source_path = ROOT / "patches" / unit.source
     object_path = build_dir / f"{unit.key}.o"
     elf_path = build_dir / f"{unit.key}.elf"
     binary_path = build_dir / f"{unit.key}.raw"
-    source = preprocess_gnu_source(source_path.read_text(encoding="utf-8"))
+    if source_text is None:
+        source_text = source_path.read_text(encoding="utf-8")
+    source = preprocess_gnu_source(source_text)
 
     run_command(
         [AS, "--big", "--isa=sh2e", "-o", object_path, "-"],
@@ -517,6 +519,14 @@ def verify(verbose=False):
         raise VerificationError(
             f"CAN telemetry executable gate failed: {error}"
         ) from error
+    try:
+        import verify_runtime_targets
+
+        runtime_results = verify_runtime_targets.verify(verbose=verbose)
+    except Exception as error:
+        raise VerificationError(
+            f"relocated runtime-target executable gate failed: {error}"
+        ) from error
     print(
         "VQ_SH_ELF_VERIFY status=PASS"
         f" simulator={EXPECTED_SIMULATOR_VERSION}"
@@ -535,6 +545,9 @@ def verify(verbose=False):
         f" can_telemetry_instructions="
         f"{telemetry_result['audit'].instructions}"
         f" can_telemetry_cases={telemetry_result['dynamic_cases']}"
+        f" runtime_targets={len(runtime_results)}"
+        f" runtime_target_cases="
+        f"{sum(item['dynamic_cases'] for item in runtime_results)}"
         f" ram_literals_relocated={relocated}"
         f" differentiated_bytes={differentiated}"
         f" stock_stubs={stubs}"

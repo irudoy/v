@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validated ROM, RAM, hook, and reserve model for JK08A CAN telemetry."""
+"""Validated ROM, RAM, hook, and reserve model for telemetry targets."""
 
 from __future__ import annotations
 
@@ -54,6 +54,11 @@ class Layout:
     code_regions: tuple[common.CodeRegion, ...]
     assembly_units: tuple[common.AssemblyUnit, ...]
     hooks: tuple[common.Hook, ...]
+    variant: str = "combined-mailbox26"
+    source_texts: tuple[tuple[str, str], ...] = ()
+    source_literals: tuple[
+        tuple[str, tuple[tuple[str, int], ...]], ...
+    ] = ()
 
     @property
     def code_region_by_key(self):
@@ -74,6 +79,16 @@ class Layout:
     @property
     def assembled_data_bytes(self):
         return sum(item.data_bytes for item in self.assembly_units)
+
+    @property
+    def source_text_by_unit(self):
+        return dict(self.source_texts)
+
+    @property
+    def source_literal_by_unit(self):
+        return {
+            key: dict(values) for key, values in self.source_literals
+        }
 
 
 def _require_keys(table, keys, context):
@@ -199,8 +214,24 @@ def load_layout(path=DEFAULT_MANIFEST):
 def validate_structure(layout):
     if layout.schema_version != 2:
         raise ValueError(f"unsupported CAN telemetry layout schema {layout.schema_version}")
-    if layout.rom != "JK08A" or layout.byte_order != "big":
-        raise ValueError("CAN telemetry supports only big-endian exact JK08A")
+    if (
+        layout.byte_order != "big"
+        or (
+            layout.variant == "combined-mailbox26"
+            and layout.rom != "JK08A"
+        )
+        or (
+            layout.variant == "mailbox24-tail-chain"
+            and layout.rom not in {"JK00C", "JK00D"}
+        )
+        or layout.variant not in {
+            "combined-mailbox26", "mailbox24-tail-chain"
+        }
+    ):
+        raise ValueError(
+            f"unsupported CAN telemetry target {layout.rom!r} "
+            f"variant={layout.variant!r}"
+        )
     _sha(layout.source_sha256, "source_sha256")
     _sha(layout.base_composition_sha256, "base_composition_sha256")
     _sha(layout.expected_composition_sha256, "expected_composition_sha256")
@@ -212,17 +243,25 @@ def validate_structure(layout):
         raise ValueError("configuration size differs from the runtime contract")
     if not layout.owned_rom.contains(layout.configuration):
         raise ValueError("configuration lies outside owned ROM")
-    if (
-        layout.owned_rom.start != 0x000D4280
-        or layout.owned_rom.end != 0x000D6000
-        or layout.configuration.start != 0x000D4E00
-        or layout.configuration.end != 0x000D4E10
-        or layout.reserved_rom.start != 0x000D5000
+    if layout.variant == "combined-mailbox26":
+        if (
+            layout.owned_rom.start != 0x000D4280
+            or layout.owned_rom.end != 0x000D6000
+            or layout.configuration.start != 0x000D4E00
+            or layout.configuration.end != 0x000D4E10
+            or layout.reserved_rom.start != 0x000D5000
+            or layout.reserved_rom.end != layout.owned_rom.end
+            or layout.mailbox_record_address != 0x000097BE
+            or layout.mailbox_record_stock != 0x05000000
+        ):
+            raise ValueError("fixed canonical ROM ownership differs")
+    elif (
+        layout.configuration.size != 16
         or layout.reserved_rom.end != layout.owned_rom.end
-        or layout.mailbox_record_address != 0x000097BE
+        or layout.mailbox_record_address % 2
         or layout.mailbox_record_stock != 0x05000000
     ):
-        raise ValueError("fixed ROM ownership contract differs")
+        raise ValueError("relocated ROM ownership contract differs")
 
     _unique(layout.code_regions, lambda item: item.key, "code regions")
     _unique(layout.code_regions, lambda item: item.entry, "code entries")
@@ -267,10 +306,22 @@ def validate_structure(layout):
     for left, right in zip(active_spans, active_spans[1:]):
         if left.end != right.start:
             raise ValueError("active ROM spans are not contiguous")
-    if active_spans[-1].end != layout.reserved_rom.start:
-        raise ValueError("active ROM does not end at the reserve boundary")
+    if active_spans[-1].end > layout.reserved_rom.start:
+        raise ValueError("active ROM overlaps the reserve boundary")
+    if (
+        layout.variant == "combined-mailbox26"
+        and active_spans[-1].end != layout.reserved_rom.start
+    ):
+        raise ValueError("canonical active ROM does not end at the reserve")
 
     required_hooks = {
+        "coherent_snapshot_call", "knock_interval_latch",
+        "startup_state_clear", "hcan1_sle1_vector",
+        "hcan1_primary_init", "hcan1_recovery_init",
+    }
+    if set(layout.hook_by_key) != required_hooks:
+        raise ValueError("CAN telemetry hook set differs")
+    canonical_hooks = {
         "coherent_snapshot_call": (0x28090, 0x20DFE, 0xD4280),
         "knock_interval_latch": (0x21A70, 0x493E8, 0xD42B0),
         "startup_state_clear": (0x27D28, 0xD38A0, 0xD42F0),
@@ -278,17 +329,21 @@ def validate_structure(layout):
         "hcan1_primary_init": (0x2D7FC, 0xC338A, 0xD4E10),
         "hcan1_recovery_init": (0xC3B10, 0xC338A, 0xD4E10),
     }
-    if set(layout.hook_by_key) != set(required_hooks):
-        raise ValueError("CAN telemetry hook set differs")
     entries = {item.entry for item in layout.code_regions}
     for hook in layout.hooks:
         if (
-            (hook.address, hook.stock, hook.replacement) != required_hooks[hook.key]
+            hook.address % 4
             or hook.width != 4
             or hook.replacement not in entries
             or not hook.purpose
         ):
             raise ValueError(f"{hook.key}: hook contract differs")
+        if (
+            layout.variant == "combined-mailbox26"
+            and (hook.address, hook.stock, hook.replacement)
+            != canonical_hooks[hook.key]
+        ):
+            raise ValueError(f"{hook.key}: canonical hook binding differs")
 
     ram = layout.ram
     if not ram.proven_free.contains(ram.reservation):
@@ -296,15 +351,21 @@ def validate_structure(layout):
     if ram.lower_runtime_end > ram.reservation.start:
         raise ValueError("telemetry RAM overlaps the lower runtime")
     if (
-        ram.reservation.start != 0xFFFF5E00
-        or ram.reservation.end != 0xFFFF6000
-        or ram.active.start != ram.reservation.start
+        ram.active.start != ram.reservation.start
         or ram.active.end != ram.future.start
         or ram.future.end != ram.reservation.end
         or ram.active.size != 0x100
         or ram.future.size != 0x100
     ):
         raise ValueError("telemetry RAM budget differs")
+    if (
+        layout.variant == "combined-mailbox26"
+        and (
+            ram.reservation.start != 0xFFFF5E00
+            or ram.reservation.end != 0xFFFF6000
+        )
+    ):
+        raise ValueError("canonical telemetry RAM reservation differs")
     partitions = (ram.state, ram.bank_a, ram.bank_b, ram.event, ram.active_reserved)
     if partitions[0].start != ram.active.start or partitions[-1].end != ram.active.end:
         raise ValueError("active RAM partition boundaries differ")
@@ -314,14 +375,17 @@ def validate_structure(layout):
     if tuple(item.size for item in partitions) != (32, 88, 88, 16, 32):
         raise ValueError("active RAM partition sizes differ")
 
-    profile = can_telemetry_profile.load_manifest()
-    if (
-        profile.table_address != layout.assembly_unit_by_key["tables"].span.start
-        or profile.table_end != layout.assembly_unit_by_key["tables"].span.end
-        or profile.configuration_address != layout.configuration.start
-        or profile.state_address != ram.state.start
-    ):
-        raise ValueError("wire profile addresses differ from the layout")
+    if layout.variant == "combined-mailbox26":
+        profile = can_telemetry_profile.load_manifest()
+        if (
+            profile.table_address
+            != layout.assembly_unit_by_key["tables"].span.start
+            or profile.table_end
+            != layout.assembly_unit_by_key["tables"].span.end
+            or profile.configuration_address != layout.configuration.start
+            or profile.state_address != ram.state.start
+        ):
+            raise ValueError("wire profile addresses differ from the layout")
 
 
 def validate_base_composition(layout, data):
@@ -344,7 +408,7 @@ def validate_base_composition(layout, data):
             raise ValueError(f"{hook.key}: base hook value is {actual:#x}")
     actual_record = int.from_bytes(data[layout.mailbox_record_address : layout.mailbox_record_address + 4], layout.byte_order)
     if actual_record != layout.mailbox_record_stock:
-        raise ValueError("base mailbox-26 record differs")
+        raise ValueError("base telemetry mailbox record differs")
     return data
 
 

@@ -376,6 +376,25 @@ mov #0x5,r1
         self.assertIn("trapa #0x40", exception)
         self.assertIn("entries=10", harness)
 
+    def test_top_level_gate_registers_relocated_runtime_targets(self):
+        source = MODULE_PATH.read_text(encoding="utf-8")
+        verifier = (
+            ROOT / "tools/sh-elf-run/verify_runtime_targets.py"
+        ).read_text(encoding="utf-8")
+        map_harness = (
+            ROOT / "tools/sh-elf-run/map_switching_harness.c"
+        ).read_text(encoding="utf-8")
+        telemetry_harness = (
+            ROOT / "tools/sh-elf-run/can_telemetry_harness.c"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("verify_runtime_targets.verify", source)
+        self.assertIn("runtime_target_cases", source)
+        self.assertIn("runtime_targets.RELOCATED_ROMS", verifier)
+        self.assertIn("TARGET_DUAL_EXHAUST", map_harness)
+        self.assertIn("TELEMETRY_TAIL_CHAIN", telemetry_harness)
+        self.assertIn("RTE_STUB", verifier)
+
 
 if __name__ == "__main__":
     unittest.main()

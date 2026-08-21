@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Validated storage model for the exact 7MFKAVN86 map-switching profile.
+"""Validated storage model for registered map-switching runtime targets.
 
 The manifest is the single source for slot addresses shared by the firmware
-contract and definition projection. JK08A is the canonical layout image; an
-exact-code family member may supply its own identity and calibration baseline.
-This module can materialize calibration copies in memory for tests. It never
-writes a ROM image.
+contract and definition projection. JK08A is the canonical layout image;
+relocated targets carry explicit source, address, and payload bindings. This
+module can materialize calibration copies in memory for tests. It never writes
+a ROM image.
 """
 
 from __future__ import annotations
@@ -198,6 +198,11 @@ class Layout:
     anchors: tuple[Anchor, ...]
     hooks: tuple[Hook, ...]
     families: tuple[Family, ...]
+    variant: str = "single-exhaust"
+    source_texts: tuple[tuple[str, str], ...] = ()
+    source_literals: tuple[
+        tuple[str, tuple[tuple[str, int], ...]], ...
+    ] = ()
 
     @property
     def family_by_key(self):
@@ -244,6 +249,16 @@ class Layout:
     @property
     def assembled_data_bytes(self):
         return sum(unit.data_bytes for unit in self.assembly_units)
+
+    @property
+    def source_text_by_unit(self):
+        return dict(self.source_texts)
+
+    @property
+    def source_literal_by_unit(self):
+        return {
+            key: dict(values) for key, values in self.source_literals
+        }
 
     def reserved_rom_ranges(self):
         ranges = [
@@ -538,10 +553,20 @@ def validate_structure(layout):
         raise ValueError(
             f"unsupported map-switching layout schema {layout.schema_version}"
         )
-    if layout.rom != "JK08A":
-        raise ValueError(f"layout targets unsupported ROM {layout.rom!r}")
+    if (
+        (layout.variant == "single-exhaust" and layout.rom != "JK08A")
+        or (
+            layout.variant == "dual-exhaust"
+            and layout.rom not in {"JK00C", "JK00D"}
+        )
+        or layout.variant not in {"single-exhaust", "dual-exhaust"}
+    ):
+        raise ValueError(
+            f"unsupported map-switching target {layout.rom!r} "
+            f"variant={layout.variant!r}"
+        )
     if layout.byte_order != "big":
-        raise ValueError("JK08A layout must use big-endian words")
+        raise ValueError("map-switching layouts must use big-endian words")
     if layout.slot_count != 5:
         raise ValueError("the pilot contract requires exactly five slots")
     if len(layout.source_sha256) != 64:
@@ -552,10 +577,6 @@ def validate_structure(layout):
         raise ValueError("source_sha256 is not hexadecimal") from error
     if not layout.free_rom.contains(layout.claimed_rom):
         raise ValueError("claimed ROM range is outside the audited free region")
-    if len(layout.families) != 12:
-        raise ValueError(
-            "the production contract requires twelve calibration families"
-        )
     required_family_keys = {
         "over_run_fuel_hold",
         "over_run_fuel_cut",
@@ -570,6 +591,16 @@ def validate_structure(layout):
         "rev_limit_fuel_cut",
         "rev_limit_throttle_cut",
     }
+    if layout.variant == "dual-exhaust":
+        required_family_keys.remove("exhaust_cvtc_target")
+        required_family_keys.update({
+            "exhaust_cvtc_target_even",
+            "exhaust_cvtc_target_odd",
+        })
+    if len(layout.families) != len(required_family_keys):
+        raise ValueError(
+            "the production family count differs from the target variant"
+        )
     actual_family_keys = {family.key for family in layout.families}
     if actual_family_keys != required_family_keys:
         raise ValueError(
@@ -798,7 +829,7 @@ def validate_structure(layout):
         or config_type != 3
     ):
         raise ValueError(
-            "feedback must use exact JK08A HCAN1 transmit mailbox 3"
+            "feedback must use the validated HCAN1 transmit mailbox 3"
         )
     if config_dlc != feedback.dlc or feedback.dlc != 8:
         raise ValueError("feedback CAN configuration must have DLC 8")
@@ -952,10 +983,12 @@ def validate_structure(layout):
     shadow_count = sum(
         family.access_kind == "ram_shadow" for family in layout.families
     )
-    if (adapter_count, shadow_count) != (10, 2):
+    expected_access_split = (
+        (11, 2) if layout.variant == "dual-exhaust" else (10, 2)
+    )
+    if (adapter_count, shadow_count) != expected_access_split:
         raise ValueError(
-            "production access split must contain ten adapters and two "
-            "RAM shadows"
+            "production adapter and RAM-shadow split differs"
         )
 
     expected_assembled_regions = {
@@ -972,6 +1005,8 @@ def validate_structure(layout):
         "cruise_feedback_wrapper",
         "cruise_feedback_engine",
     }
+    if layout.variant == "dual-exhaust":
+        expected_assembled_regions.add("exhaust_cvtc_target_odd_adapter")
     if layout.assembled_region_keys != expected_assembled_regions:
         raise ValueError(
             "implemented assembly region set differs: "
@@ -1082,13 +1117,13 @@ def validate_image(layout=None, image=None):
 
 
 def validate_compatible_image(layout=None, image=None, stock_image=None):
-    """Validate a calibrated exact-family image against its stock baseline.
+    """Validate a calibrated target image against its stock baseline.
 
     Compatible inputs may differ only in the calibration/configuration
     partition. The vector prefix, complete upper partition, all patch anchors,
     the ROM identity, and the claimed erased region must still match the
-    selected stock image. A noncanonical stock baseline must itself retain the
-    canonical protected ranges.
+    selected stock image. A supplied baseline must itself retain the protected
+    ranges declared by the selected target layout.
     """
     layout = layout or load_layout()
     if image is None:

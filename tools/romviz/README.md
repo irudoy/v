@@ -57,7 +57,7 @@ warning in the atlas.
 | ROM family | Current atlas evidence |
 |---|---|
 | JK00A, JK03A, JK03B, JK08A | Exact-code JK08A function, map, axis, diagnostic, DTC, definition-control, composed-runtime, and checksum evidence with target identity |
-| JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, candidate runtime address profiles, and target checksum layouts |
+| JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, composed production runtime profiles, and target checksum layouts |
 | 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure and stock-image metrics |
 | JK78C | Stock-image identity and page metrics; missing analysis layers are explicit warnings |
 
@@ -69,8 +69,8 @@ provenance paths and source labels are preserved unchanged.
 JK00C and JK00D do not inherit JK08A addresses. Their map, axis, and definition
 control objects are loaded from the generated `defs/JK00C.xml` and
 `defs/JK00D.xml` projections, which are backed by SHA-bound reviewed relocation
-registries. Their runtime address profiles remain labeled `candidate` until the
-production builder emits those targets.
+registries. Their runtime address profiles are labeled `composed` because the
+production builder emits target-specific runtime payloads at those addresses.
 
 Ghidra exports provide exact function entry addresses and body byte counts. The
 export does not preserve discontiguous body ranges, so the atlas draws each

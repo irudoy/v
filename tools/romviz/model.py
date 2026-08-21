@@ -1264,6 +1264,7 @@ def _address_profile_objects(spec, rom_size):
     patch_id = spec["id"]
     patch_label = spec["label"]
     status = spec["status"]
+    composed = status == "composed"
     source_name = f"{_display_path(path)} [profile.{profile.rom}]"
     objects = []
 
@@ -1300,9 +1301,11 @@ def _address_profile_objects(spec, rom_size):
         "injected-rom",
         profile.injected_rom.start,
         profile.injected_rom.end,
-        f"{patch_label} candidate allocation",
+        f"{patch_label} {'composed' if composed else 'candidate'} allocation",
         description=(
-            "Exact target allocation registered for future unified composition; "
+            "Exact target allocation emitted by the current production builder."
+            if composed
+            else "Exact target allocation registered for future unified composition; "
             "the current production builder does not emit this target."
         ),
     )

@@ -10,7 +10,7 @@ checksum_registry = "patches/checksum-layouts.toml"
 
 [[patch]]
 id = "runtime-address-profile"
-label = "Unified runtime address profile"
+label = "Unified production runtime profile"
 kind = "address-profile"
-status = "candidate"
+status = "composed"
 path = "patches/rom-address-profiles.toml"

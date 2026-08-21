@@ -15,15 +15,17 @@ engines.
 - The headless analysis path exports firmware structure from Ghidra, rebuilds a
   queryable Memgraph index from tracked inputs, and projects reviewed facts into
   RomRaider XML, TunerPro XDF, and a map ledger.
-- The unified exact-family builder composes the current Map Switching, Rolling
-  Launch, and custom CAN telemetry runtimes for JK00A, JK03A, JK03B, and JK08A,
-  preserves target calibration state, closes checksum domains, and emits a
-  machine-readable build manifest.
-- One canonical annotation and presentation layer generates target-specific
-  RomRaider XML and TunerPro XDF files for all four exact-family identities.
+- The unified builder composes the current Map Switching, Rolling Launch, and
+  custom CAN telemetry runtimes for JK00A, JK03A, JK03B, JK08A, JK00C, and
+  JK00D. It preserves target calibration state, closes each ROM's checksum
+  domains, and emits a machine-readable build manifest.
+- One canonical annotation and presentation layer plus explicit relocated
+  correspondences generate target-specific RomRaider XML and TunerPro XDF
+  files for all six runtime-supported identities.
 - Instruction-changing patches have a repository-contained GNU SH-2E
-  executable gate. Software verification does not replace bench, readback, or
-  engine validation.
+  executable gate. It independently assembles and executes the canonical JK08A
+  runtime and the target-specific JK00C/JK00D projections. Software verification
+  does not replace bench, readback, or engine validation.
 - Concrete tuned images, local calibration profiles, build recipes, active tune
   identities, and generated test artifacts are intentionally outside Git.
 
@@ -89,6 +91,9 @@ make verify
 `make verify` includes the repository-contained GNU SH-2E Docker gate. The
 direct Python test contract remains `uv run pytest -q`; the pin-tracer contract
 is documented beside that tool.
+
+`make runtime-targets-generate` regenerates the tracked JK00C/JK00D GNU SH-2E
+payload locks and all three stage hashes from the registered address profiles.
 
 Build the self-contained ROM atlas HTML with:
 

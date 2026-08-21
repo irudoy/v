@@ -25,13 +25,14 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import apply_map_switching as map_runtime
-from patches import jk08a_checksums as checksums
+from patches import jk08a_checksums as canonical_checksums
 from patches import map_switching_layout as map_layout_model
 from patches import map_switching_compose as map_composer
 from patches import rolling_launch
 from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
 from patches import rolling_launch_layout as rolling_layout_model
+from patches import rom_checksums
 
 
 ROM_SIZE = 0x100000
@@ -89,8 +90,8 @@ class PatchResult:
     configuration: bytes
     source_sha256: str
     output_sha256: str
-    source_checksums: checksums.ChecksumValues
-    output_checksums: checksums.ChecksumValues
+    source_checksums: rom_checksums.ChecksumValues
+    output_checksums: rom_checksums.ChecksumValues
     composition_changed_bytes: int
     final_changed_bytes: int
     permitted_write_bytes: int
@@ -176,12 +177,13 @@ def _validate_source(
     map_payloads,
     source_name,
     expected_source_sha256,
+    checksum_layout,
 ):
     source = bytes(source)
-    if len(source) != ROM_SIZE:
+    if len(source) != checksum_layout.rom_size:
         raise PatchError(
             f"{source_name}: source has {len(source)} bytes, expected "
-            f"{ROM_SIZE}"
+            f"{checksum_layout.rom_size}"
         )
     digest = sha256(source)
     if expected_source_sha256 is not None and digest != expected_source_sha256:
@@ -190,8 +192,10 @@ def _validate_source(
             f"{expected_source_sha256}"
         )
     try:
-        verification = checksums.require_valid(source, source_name)
-    except checksums.ChecksumError as error:
+        verification = rom_checksums.require_valid(
+            source, checksum_layout, source_name
+        )
+    except rom_checksums.ChecksumError as error:
         raise PatchError(str(error)) from error
     _require_map_switching_endpoint(
         source, map_layout, map_payloads, source_name
@@ -213,12 +217,13 @@ def _validate_calibration(calibration):
     return calibration, configuration
 
 
-def _final_write_offsets(layout):
+def _final_write_offsets(layout, checksum_layout=None):
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     composition = set(chain.from_iterable(
         range(item.start, item.end)
         for item in rolling_launch_compose.composition_write_ranges(layout)
     ))
-    checksum = set(checksums.checksum_byte_offsets())
+    checksum = set(rom_checksums.checksum_byte_offsets(checksum_layout))
     overlap = composition & checksum
     if overlap:
         raise PatchError(
@@ -228,8 +233,12 @@ def _final_write_offsets(layout):
     return composition | checksum, checksum
 
 
-def _validate_final_preservation(source, patched, layout):
-    permitted, checksum_offsets = _final_write_offsets(layout)
+def _validate_final_preservation(
+    source, patched, layout, checksum_layout
+):
+    permitted, checksum_offsets = _final_write_offsets(
+        layout, checksum_layout
+    )
     changed = {
         offset
         for offset, (before, after) in enumerate(zip(source, patched))
@@ -253,10 +262,12 @@ def patch_image(
     rolling_payloads=None,
     source_name="<memory>",
     expected_source_sha256=LOCKED_MAP_SWITCHING_SOURCE_SHA256,
+    checksum_layout=None,
 ):
     """Return one checksum-valid Rolling RPM Hold image after strict checks."""
     map_layout = map_layout or map_layout_model.load_layout()
     rolling_layout = rolling_layout or rolling_layout_model.load_layout()
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     try:
         map_payloads = map_payloads or map_runtime.load_payloads(map_layout)
         rolling_payloads = rolling_payloads or (
@@ -288,6 +299,7 @@ def patch_image(
         map_payloads,
         source_name,
         expected_source_sha256,
+        checksum_layout,
     )
     calibration, configuration = _validate_calibration(calibration)
     try:
@@ -306,17 +318,21 @@ def patch_image(
             rolling_payloads,
             configuration,
         )
-        patched = bytes(checksums.recalculate(composed))
-        output_verification = checksums.require_valid(
-            patched, "Rolling Launch output"
+        patched = bytes(rom_checksums.recalculate(
+            composed, checksum_layout
+        ))
+        output_verification = rom_checksums.require_valid(
+            patched, checksum_layout, "Rolling Launch output"
         )
-    except (checksums.ChecksumError, ValueError) as error:
+    except (rom_checksums.ChecksumError, ValueError) as error:
         raise PatchError(str(error)) from error
 
     final_changed, permitted, checksum_changed = _validate_final_preservation(
-        source, patched, rolling_layout
+        source, patched, rolling_layout, checksum_layout
     )
-    checksum_offsets = set(checksums.checksum_byte_offsets())
+    checksum_offsets = set(
+        rom_checksums.checksum_byte_offsets(checksum_layout)
+    )
     for offset, (before, after) in enumerate(zip(composed, patched)):
         if before != after and offset not in checksum_offsets:
             raise PatchError(

@@ -3,8 +3,9 @@
 
 The CLI detects the exact ROM identity from immutable image bytes by default or
 accepts an explicit ``--rom`` selector. JK00A, JK03A, JK03B, and JK08A share
-the canonical JK08A address and executable-code profile. Their target-specific
-calibration, configuration, identity, and checksum bytes remain independent.
+the canonical JK08A address and executable-code profile. JK00C and JK00D use
+exact relocated 8MFK layouts and independently assembled target payloads. Each
+member retains its own calibration, identity, and checksum layout.
 
 Compatible unpatched inputs retain their calibration and configuration. A
 complete current or historical composition may also be rebuilt: all alternate
@@ -38,7 +39,7 @@ from patches import can_telemetry
 from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
 from patches import can_telemetry_layout
-from patches import jk08a_checksums as checksums
+from patches import jk08a_checksums as canonical_checksums
 from patches import jk08a_runtime_reservations
 from patches import map_switching_compose
 from patches import map_switching_layout
@@ -46,6 +47,8 @@ from patches import rolling_launch
 from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
 from patches import rolling_launch_layout
+from patches import rom_checksums
+from patches import runtime_targets
 from tools.mapkit import rom as romkit
 from tools import rom_homology
 
@@ -53,7 +56,7 @@ from tools import rom_homology
 AUTO_ROM = "auto"
 ROM_SERIES = "sh7058_7mfkavn86"
 CANONICAL_ROM = "JK08A"
-SUPPORTED_ROMS = ("JK00A", "JK03A", "JK03B", "JK08A")
+SUPPORTED_ROMS = runtime_targets.SUPPORTED_ROMS
 PROFILE_SCHEMA_VERSION = 2
 MANIFEST_SCHEMA_VERSION = 3
 TOOL_NAME = "patches/build_rom.py"
@@ -278,8 +281,8 @@ class BuildResult:
     rolling_stage_sha256: str
     output_sha256: str
     output_md5: str
-    source_checksums: checksums.ChecksumValues
-    output_checksums: checksums.ChecksumValues
+    source_checksums: rom_checksums.ChecksumValues
+    output_checksums: rom_checksums.ChecksumValues
     changed_bytes: int
     permitted_write_bytes: int
     checksum_changed_bytes: int
@@ -300,9 +303,9 @@ def md5(data):
     return hashlib.md5(data).hexdigest()
 
 
-@lru_cache(maxsize=1)
-def _series_context():
-    """Load and validate the exact-code family used by this builder."""
+@lru_cache(maxsize=None)
+def _series_context(rom=CANONICAL_ROM):
+    """Load and validate the registered runtime family for one exact ROM."""
     try:
         images = rom_homology.load_images()
         _settings, families, relationships = rom_homology.load_homology()
@@ -311,32 +314,50 @@ def _series_context():
     except rom_homology.HomologyError as error:
         raise BuildError(f"ROM family registry is invalid: {error}") from error
 
-    family = families.get(ROM_SERIES)
+    rom = str(rom).upper()
+    family_key = next(
+        (
+            key for key, row in families.items()
+            if rom in row.get("members", ())
+        ),
+        None,
+    )
+    family = families.get(family_key)
     if not isinstance(family, dict):
-        raise BuildError(f"ROM family registry has no {ROM_SERIES!r} entry")
+        raise BuildError(f"ROM family registry has no runtime family for {rom}")
     members = tuple(family.get("members", ()))
-    if any((
-        family.get("kind") != "exact-code",
-        family.get("canonical") != CANONICAL_ROM,
+    expected = {
+        runtime_targets.EXACT_FAMILY: {
+            "kind": "exact-code",
+            "canonical": CANONICAL_ROM,
+            "same_address_inheritance": True,
+            "members": runtime_targets.EXACT_ROMS,
+        },
+        runtime_targets.RELOCATED_FAMILY: {
+            "kind": "near-code",
+            "canonical": "JK00D",
+            "same_address_inheritance": False,
+            "members": runtime_targets.RELOCATED_ROMS,
+        },
+    }.get(family_key)
+    if expected is None or any((
+        family.get("kind") != expected["kind"],
+        family.get("canonical") != expected["canonical"],
         family.get("mcu") != "SH7058",
-        family.get("flash_size") != checksums.ROM_SIZE,
-        family.get("same_address_inheritance") is not True,
-        members != SUPPORTED_ROMS,
+        family.get("flash_size") != canonical_checksums.ROM_SIZE,
+        family.get("same_address_inheritance")
+        is not expected["same_address_inheritance"],
+        members != expected["members"],
     )):
         raise BuildError(
             "ROM family registry differs from the locked builder contract"
         )
     return SeriesContext(
-        key=ROM_SERIES,
-        canonical_rom=CANONICAL_ROM,
+        key=family_key,
+        canonical_rom=expected["canonical"],
         members=members,
         images={rom: images[rom] for rom in members},
     )
-
-
-def _stock_image(context, rom):
-    image = context.images[rom]
-    return romkit.Image(rom, str(image.path), image.data)
 
 
 def _require_exact_keys(table, expected, context):
@@ -399,7 +420,8 @@ def load_profile(path):
     rom = raw["rom"]
     if not isinstance(rom, str) or not rom.strip():
         raise BuildError(f"{path}: rom must be a non-empty string")
-    rom = rom.strip().upper()
+    rom = rom.strip()
+    rom = rom.lower() if rom.lower().startswith("sh") else rom.upper()
     name = raw["name"]
     if not isinstance(name, str) or not name.strip():
         raise BuildError(f"{path}: name must be a non-empty string")
@@ -537,11 +559,17 @@ def _component_ranges(map_layout, launch_layout, telemetry_layout=None):
     )
 
 
-def _component_offsets(map_layout, launch_layout, telemetry_layout=None):
+def _component_offsets(
+    map_layout, launch_layout, telemetry_layout=None,
+    checksum_layout=None,
+):
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     result = _range_offsets(
         _component_ranges(map_layout, launch_layout, telemetry_layout)
     )
-    overlap = result & set(checksums.checksum_byte_offsets())
+    overlap = result & set(
+        rom_checksums.checksum_byte_offsets(checksum_layout)
+    )
     if overlap:
         raise BuildError(
             f"component write set overlaps checksum field at {min(overlap):#x}"
@@ -767,12 +795,15 @@ def _require_coherent_telemetry_endpoint(
     )
     record_start = layout.mailbox_record_address
     mailbox_record = source[record_start : record_start + 4]
+    stock_mailbox_record = layout.mailbox_record_stock.to_bytes(
+        4, layout.byte_order
+    )
     if all((
         erased_units,
         configuration_erased,
         reserve_erased,
         hooks_stock,
-        mailbox_record == can_telemetry.STOCK_MAILBOX_RECORD,
+        mailbox_record == stock_mailbox_record,
     )):
         return "absent"
 
@@ -794,7 +825,9 @@ def _require_coherent_telemetry_endpoint(
     raise BuildError(f"{context}: partial or unknown CAN telemetry state")
 
 
-def _strip_telemetry_endpoint(source, layout, state):
+def _strip_telemetry_endpoint(
+    source, layout, state, checksum_layout=None
+):
     """Restore the exact lower-layer bytes used by endpoint validation."""
     if state == "absent":
         return bytes(source)
@@ -813,8 +846,11 @@ def _strip_telemetry_endpoint(source, layout, state):
             hook.width, layout.byte_order
         )
     start = layout.mailbox_record_address
-    data[start : start + 4] = can_telemetry.STOCK_MAILBOX_RECORD
-    return bytes(checksums.recalculate(data))
+    data[start : start + 4] = layout.mailbox_record_stock.to_bytes(
+        4, layout.byte_order
+    )
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
+    return bytes(rom_checksums.recalculate(data, checksum_layout))
 
 
 def _require_complete_map_endpoint(
@@ -894,36 +930,39 @@ def _capture_map_copies(source, layout):
     }
 
 
-def _restore_map_copies(image, layout, copies):
+def _restore_map_copies(image, layout, copies, checksum_layout=None):
     data = bytearray(image)
     for family in layout.families:
         for address in family.copies:
             key = (family.key, address)
             data[address : address + family.byte_length] = copies[key]
-    return bytes(checksums.recalculate(data))
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
+    return bytes(rom_checksums.recalculate(data, checksum_layout))
 
 
-def _normalize_exact_family(source, source_name, selected_rom, context):
-    jk08a_runtime_reservations.load_ledger()
-    map_layout = map_switching_layout.load_layout()
-    launch_layout = rolling_launch_layout.load_layout()
-    telemetry_layout = can_telemetry_layout.load_layout()
-    stock_image = _stock_image(context, selected_rom)
+def _normalize_runtime(source, source_name, target):
+    if target.family == runtime_targets.EXACT_FAMILY:
+        jk08a_runtime_reservations.load_ledger()
+    map_layout = target.map_layout
+    launch_layout = target.rolling_layout
+    telemetry_layout = target.telemetry_layout
+    checksum_layout = target.checksum_layout
+    stock_image = target.stock_image
     stock = stock_image.data
     source = bytes(source)
 
     try:
-        source_verification = checksums.require_valid(source, source_name)
-    except checksums.ChecksumError as error:
+        source_verification = rom_checksums.require_valid(
+            source, checksum_layout, source_name
+        )
+    except rom_checksums.ChecksumError as error:
         raise BuildError(str(error)) from error
 
-    map_payloads = apply_map_switching.load_payloads(map_layout)
-    launch_payloads = rolling_launch_assembly.load_payloads(launch_layout)
-    telemetry_payloads = can_telemetry_assembly.load_payloads(
-        telemetry_layout
-    )
+    map_payloads = target.map_payloads
+    launch_payloads = target.rolling_payloads
+    telemetry_payloads = target.telemetry_payloads
     component_offsets = _component_offsets(
-        map_layout, launch_layout, telemetry_layout
+        map_layout, launch_layout, telemetry_layout, checksum_layout
     )
     is_unpatched = all(
         source[offset] == stock[offset] for offset in component_offsets
@@ -940,7 +979,7 @@ def _normalize_exact_family(source, source_name, selected_rom, context):
             launch_layout,
         )
         lower_source = _strip_telemetry_endpoint(
-            source, telemetry_layout, telemetry_state
+            source, telemetry_layout, telemetry_state, checksum_layout
         )
         rolling_state = _require_complete_map_endpoint(
             lower_source,
@@ -961,9 +1000,11 @@ def _normalize_exact_family(source, source_name, selected_rom, context):
     normalized = bytearray(source)
     for offset in component_offsets:
         normalized[offset] = stock[offset]
-    normalized = bytes(checksums.recalculate(normalized))
+    normalized = bytes(rom_checksums.recalculate(
+        normalized, checksum_layout
+    ))
     try:
-        image = romkit.Image(selected_rom, source_name, normalized)
+        image = romkit.Image(target.rom, source_name, normalized)
         map_switching_layout.validate_compatible_image(
             map_layout, image, stock_image
         )
@@ -983,11 +1024,12 @@ def _normalize_exact_family(source, source_name, selected_rom, context):
         telemetry_payloads,
         component_offsets,
         stock_image,
+        checksum_layout,
     )
 
 
-def _probe_rom(source, rom, context):
-    stock = context.images[rom].data
+def _probe_rom(source, rom, images):
+    stock = images[rom].data
     if len(source) != len(stock):
         return False
     start = map_switching_layout.COMPATIBLE_IDENTITY_START
@@ -995,14 +1037,16 @@ def _probe_rom(source, rom, context):
     return source[start:end] == stock[start:end]
 
 
-def _rom_probes(context=None):
+def _rom_probes():
     """Return the immutable-byte probe registry."""
-    context = context or _series_context()
+    _series_context(CANONICAL_ROM)
+    _series_context("JK00D")
+    images = rom_homology.load_images()
     return {
         rom: (
-            lambda source, rom=rom: _probe_rom(source, rom, context)
+            lambda source, rom=rom: _probe_rom(source, rom, images)
         )
-        for rom in context.members
+        for rom in SUPPORTED_ROMS
     }
 
 
@@ -1010,8 +1054,7 @@ def select_rom(source, selector=AUTO_ROM):
     """Return ``(ROM, detection mode)`` after immutable-byte selection."""
     source = bytes(source)
     requested = str(selector).strip()
-    context = _series_context()
-    probes = _rom_probes(context)
+    probes = _rom_probes()
     if tuple(probes) != SUPPORTED_ROMS:
         raise BuildError("internal ROM probe registry differs from support list")
     if requested.lower() == AUTO_ROM:
@@ -1041,8 +1084,13 @@ def select_rom(source, selector=AUTO_ROM):
     return selected, "explicit"
 
 
-def _validate_preservation(source, output, component_offsets):
-    checksum_offsets = set(checksums.checksum_byte_offsets())
+def _validate_preservation(
+    source, output, component_offsets, checksum_layout=None
+):
+    checksum_layout = checksum_layout or canonical_checksums.LAYOUT
+    checksum_offsets = set(
+        rom_checksums.checksum_byte_offsets(checksum_layout)
+    )
     permitted = component_offsets | checksum_offsets
     changed = {
         offset
@@ -1066,9 +1114,9 @@ def build_image(
 ):
     """Build and verify one complete ROM without writing files."""
     source = bytes(source)
-    context = _series_context()
     selected_rom, detection = select_rom(source, rom)
-    profile = profile or builtin_profile()
+    context = _series_context(selected_rom)
+    profile = profile or builtin_profile(context.key)
     if not isinstance(profile, Profile):
         raise BuildError("profile must be a build_rom.Profile")
     if profile.rom not in (selected_rom, context.key):
@@ -1082,6 +1130,7 @@ def build_image(
     ):
         raise BuildError("profile CAN telemetry configuration is invalid")
     try:
+        target = runtime_targets.load_runtime_target(selected_rom)
         (
             normalized,
             input_state,
@@ -1095,8 +1144,9 @@ def build_image(
             telemetry_payloads,
             component_offsets,
             stock_image,
-        ) = _normalize_exact_family(
-            source, source_name, selected_rom, context
+            checksum_layout,
+        ) = _normalize_runtime(
+            source, source_name, target
         )
 
         map_result = apply_map_switching.patch_image(
@@ -1105,17 +1155,20 @@ def build_image(
             blobs=map_payloads,
             source_name=f"{source_name} normalized {selected_rom}",
             stock_image=stock_image,
+            checksum_layout=checksum_layout,
         )
         map_stage = map_result.data
         preserved_map_copy_bytes = 0
         if saved_copies is not None:
             map_stage = _restore_map_copies(
-                map_stage, map_layout, saved_copies
+                map_stage, map_layout, saved_copies, checksum_layout
             )
             preserved_map_copy_bytes = sum(
                 len(blob) for blob in saved_copies.values()
             )
-            checksums.require_valid(map_stage, "restored map stage")
+            rom_checksums.require_valid(
+                map_stage, checksum_layout, "restored map stage"
+            )
 
         launch_result = apply_rolling_launch.patch_image(
             map_stage,
@@ -1126,6 +1179,7 @@ def build_image(
             rolling_payloads=launch_payloads,
             source_name=f"{source_name} complete map stage",
             expected_source_sha256=sha256(map_stage),
+            checksum_layout=checksum_layout,
         )
         rolling_stage = launch_result.data
         telemetry_result = apply_can_telemetry.patch_image(
@@ -1137,14 +1191,18 @@ def build_image(
             launch_payloads=launch_payloads,
             source_name=f"{source_name} complete Rolling Launch stage",
             expected_source_sha256=sha256(rolling_stage),
+            checksum_layout=checksum_layout,
         )
-        output_verification = checksums.require_valid(
-            telemetry_result.data, f"complete {selected_rom} output"
+        output_verification = rom_checksums.require_valid(
+            telemetry_result.data,
+            checksum_layout,
+            f"complete {selected_rom} output",
         )
     except (
         BuildError,
         ValueError,
-        checksums.ChecksumError,
+        rom_checksums.ChecksumError,
+        runtime_targets.RuntimeTargetError,
         apply_map_switching.PatchError,
         apply_rolling_launch.PatchError,
         apply_can_telemetry.PatchError,
@@ -1154,7 +1212,7 @@ def build_image(
         raise BuildError(str(error)) from error
 
     changed, permitted, checksum_changed = _validate_preservation(
-        source, telemetry_result.data, component_offsets
+        source, telemetry_result.data, component_offsets, checksum_layout
     )
     if saved_copies is not None:
         final_copies = _capture_map_copies(telemetry_result.data, map_layout)
@@ -1318,7 +1376,7 @@ def main(argv=None):
     parser.add_argument(
         "--rom",
         default=AUTO_ROM,
-        metavar="auto|JK00A|JK03A|JK03B|JK08A",
+        metavar="auto|ROM",
         help="exact ROM selector; defaults to immutable-byte detection",
     )
     parser.add_argument(

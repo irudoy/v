@@ -1,0 +1,207 @@
+#!/usr/bin/env python3
+"""Independently assemble and lock relocated 8MFK runtime payloads."""
+
+from __future__ import annotations
+
+import argparse
+from dataclasses import replace
+from pathlib import Path
+import sys
+import tempfile
+
+
+TOOL_DIR = Path(__file__).resolve().parent
+ROOT = TOOL_DIR.parents[1]
+for item in (TOOL_DIR, ROOT):
+    if str(item) not in sys.path:
+        sys.path.insert(0, str(item))
+
+import verify_map_switching
+
+from patches import can_telemetry_assembly
+from patches import can_telemetry_compose
+from patches import can_telemetry_layout
+from patches import map_switching_assembly
+from patches import map_switching_compose
+from patches import map_switching_layout
+from patches import rolling_launch_assembly
+from patches import rolling_launch_compose
+from patches import rolling_launch_layout
+from patches import runtime_targets
+
+
+def _assemble(layout, parsed_by_unit, build_dir):
+    result = {}
+    source_texts = layout.source_text_by_unit
+    for unit in layout.assembly_units:
+        result[unit.key] = verify_map_switching.assemble_unit(
+            unit,
+            parsed_by_unit[unit.key],
+            build_dir,
+            source_text=source_texts[unit.key],
+        )
+    return result
+
+
+def build_locks(rom):
+    projected = runtime_targets.project_relocated_target(rom)
+    map_switching_layout.validate_structure(projected.map_layout)
+    rolling_launch_layout.validate_structure(projected.rolling_layout)
+    can_telemetry_layout.validate_structure(projected.telemetry_layout)
+    map_parsed = map_switching_assembly.validate_assembly_sources(
+        projected.map_layout
+    )
+    rolling_parsed = rolling_launch_assembly.validate_assembly_sources(
+        projected.rolling_layout
+    )
+    telemetry_parsed = can_telemetry_assembly.validate_assembly_sources(
+        projected.telemetry_layout
+    )
+
+    with tempfile.TemporaryDirectory(
+        prefix=f"vq-runtime-target-{rom.lower()}-"
+    ) as directory:
+        build_dir = Path(directory)
+        map_payloads = _assemble(
+            projected.map_layout, map_parsed, build_dir
+        )
+        rolling_payloads = _assemble(
+            projected.rolling_layout, rolling_parsed, build_dir
+        )
+        telemetry_payloads = _assemble(
+            projected.telemetry_layout, telemetry_parsed, build_dir
+        )
+
+    provisional = runtime_targets.PayloadLocks(
+        rom=rom,
+        stock_sha256=runtime_targets._sha256(
+            projected.stock_image.data
+        ),
+        map_stage_sha256=runtime_targets.ZERO_SHA256,
+        rolling_stage_sha256=runtime_targets.ZERO_SHA256,
+        telemetry_stage_sha256=runtime_targets.ZERO_SHA256,
+        map_payloads=map_payloads,
+        rolling_payloads=rolling_payloads,
+        telemetry_payloads=telemetry_payloads,
+    )
+    target = runtime_targets.project_relocated_target(rom, provisional)
+    map_switching_layout.validate_structure(target.map_layout)
+    rolling_launch_layout.validate_structure(target.rolling_layout)
+    can_telemetry_layout.validate_structure(target.telemetry_layout)
+    map_parsed = map_switching_assembly.validate_assembly_sources(
+        target.map_layout
+    )
+    rolling_parsed = rolling_launch_assembly.validate_assembly_sources(
+        target.rolling_layout
+    )
+    telemetry_parsed = can_telemetry_assembly.validate_assembly_sources(
+        target.telemetry_layout
+    )
+    map_switching_assembly.validate_instruction_semantics(
+        target.map_layout, map_parsed, map_payloads
+    )
+    rolling_launch_assembly.validate_instruction_semantics(
+        target.rolling_layout, rolling_parsed, rolling_payloads
+    )
+    can_telemetry_assembly.validate_instruction_semantics(
+        target.telemetry_layout, telemetry_parsed, telemetry_payloads
+    )
+
+    map_result = map_switching_compose.compose(
+        layout=target.map_layout,
+        image=target.stock_image,
+        blobs=map_payloads,
+    )
+    launch_layout = replace(
+        target.rolling_layout,
+        base_composition_sha256=map_result.sha256,
+    )
+    rolling_result = rolling_launch_compose.compose(
+        layout=launch_layout,
+        base=map_result.data,
+        blobs=rolling_payloads,
+    )
+    telemetry_layout = replace(
+        target.telemetry_layout,
+        base_composition_sha256=rolling_result.sha256,
+    )
+    telemetry_result = can_telemetry_compose.compose(
+        layout=telemetry_layout,
+        base=rolling_result.data,
+        blobs=telemetry_payloads,
+    )
+    return replace(
+        provisional,
+        map_stage_sha256=map_result.sha256,
+        rolling_stage_sha256=rolling_result.sha256,
+        telemetry_stage_sha256=telemetry_result.sha256,
+    )
+
+
+def _hex_block(data):
+    value = data.hex()
+    return "\n".join(
+        value[index : index + 64]
+        for index in range(0, len(value), 64)
+    )
+
+
+def render(locks):
+    lines = [
+        "# Generated by make runtime-targets-generate. Do not edit.",
+        "# Payloads are independently assembled with GNU SH-2E binutils.",
+        "",
+        "schema_version = 1",
+    ]
+    for item in locks:
+        lines.extend([
+            "",
+            f"[target.{item.rom}]",
+            f'stock_sha256 = "{item.stock_sha256}"',
+            f'map_stage_sha256 = "{item.map_stage_sha256}"',
+            f'rolling_stage_sha256 = "{item.rolling_stage_sha256}"',
+            f'telemetry_stage_sha256 = "{item.telemetry_stage_sha256}"',
+        ])
+        for label, payloads in (
+            ("map_units", item.map_payloads),
+            ("rolling_units", item.rolling_payloads),
+            ("telemetry_units", item.telemetry_payloads),
+        ):
+            lines.extend(["", f"[target.{item.rom}.{label}]"])
+            for key, data in payloads.items():
+                lines.extend([
+                    f'{key} = """',
+                    _hex_block(data),
+                    '"""',
+                ])
+    return "\n".join(lines) + "\n"
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=runtime_targets.DEFAULT_PAYLOADS,
+    )
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args(argv)
+    content = render([
+        build_locks(rom) for rom in runtime_targets.RELOCATED_ROMS
+    ])
+    if args.check:
+        try:
+            current = args.output.read_text(encoding="utf-8")
+        except OSError as error:
+            parser.error(str(error))
+        if current != content:
+            parser.error(f"generated target payloads differ: {args.output}")
+        print(f"status=PASS output={args.output} targets=2")
+        return 0
+    args.output.write_text(content, encoding="utf-8")
+    print(f"status=PASS output={args.output} targets=2")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

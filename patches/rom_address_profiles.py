@@ -874,6 +874,19 @@ def validate_stock_profile(profile, image):
                 f"expected {expected:#010x}"
             )
 
+    payload_literal = (
+        profile.map_symbol_by_key["feedback_serializer"] + 0x56
+    )
+    actual_payload_base = _read_u32(
+        data, payload_literal, f"{profile.rom}.feedback_payload_base"
+    )
+    if actual_payload_base != can["feedback_payload_base"]:
+        raise AddressProfileError(
+            f"{profile.rom}.feedback_payload_base: stock is "
+            f"{actual_payload_base:#010x}, expected "
+            f"{can['feedback_payload_base']:#010x}"
+        )
+
     canonical = map_switching_layout.load_layout().family_by_key
     source_keys = {
         key: key for key in MAP_FAMILY_KEYS if not key.startswith("exhaust_cvtc")

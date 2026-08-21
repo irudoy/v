@@ -6,14 +6,16 @@ recalculates all checksum domains, verifies the final closed write set, and
 creates one ROM with digest sidecars and a machine-readable manifest.
 
 The registered `sh7058_7mfkavn86` exact-code series contains JK00A, JK03A,
-JK03B, and JK08A. JK08A is the canonical address and executable-code profile;
-each member retains its own stock identity and calibration. The command has two
-selection modes:
+JK03B, and JK08A. JK08A is its canonical address and executable-code profile.
+The registered `sh7058_8mfk` near-code series contains JK00C and JK00D. It uses
+exact target address profiles and independently assembled target payloads.
+Every member retains its own stock identity, calibration, and checksum layout.
+The command has two selection modes:
 
 ```bash
-uv run python patches/build_rom.py INPUT.bin --output OUTPUT.bin
-uv run python patches/build_rom.py INPUT.bin --rom JK08A --output OUTPUT.bin
-uv run python patches/build_rom.py INPUT.bin --rom JK00A --output OUTPUT.bin
+make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin
+make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=JK08A
+make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=JK00C
 ```
 
 The default `--rom auto` mode identifies the exact member from the one-MiB image
@@ -25,23 +27,24 @@ input checksums, stock anchors, an exact vector/code prefix at
 `0x020000..0x0fffff`.
 
 Every invocation validates `rom-images/roms.csv` and
-`rom-images/homology.toml`. The four registered stock images must match their
-SHA-256 identities and the declared exact-code ranges before any composition
-is accepted.
+`rom-images/homology.toml`. The selected stock image must match its registered
+SHA-256 identity and its family contract before any composition is accepted.
 
 Use `--verify-only` to run the complete in-memory composition and verification
 without creating files:
 
 ```bash
-uv run python patches/build_rom.py INPUT.bin --verify-only
+make rom-verify INPUT=INPUT.bin
+make rom-verify INPUT=INPUT.bin ROM=JK00D
 ```
 
-## Exact-family pipeline
+## Registered-family pipeline
 
 The common handler performs these operations in one invocation:
 
 1. Validate image size, immutable identity, and all six stored checksum values.
-2. Validate the shared active-RAM and future ROM/RAM reservation ledger.
+2. Validate either the exact-family ownership ledger or the SHA-bound 8MFK
+   address profile, erased allocation, and target payload registry.
 3. Classify the image as a compatible unpatched base or a complete runtime that
    can be migrated. The CAN telemetry layer must be wholly absent or match the
    exact current payload, configuration, mailbox record, hooks, and erased
@@ -54,18 +57,19 @@ The common handler performs these operations in one invocation:
 4. Normalize only the combined builder-owned Map Switching, Rolling Launch,
    CAN telemetry, and checksum ranges back to bytes from the selected stock
    member.
-5. Apply the current Map Switching composition directly from
-   `map-switching-payloads.toml`.
+5. Apply the current Map Switching composition from the canonical payload
+   manifest or the selected target section of
+   `runtime-target-payloads.toml`.
 6. Restore every Map 2 through Map 5 calibration byte when the input already
    contains a complete runtime. An unpatched base initializes these slots from
    its Map 1 values.
-7. Apply the current Rolling Launch composition directly from
-   `rolling-launch-payloads.toml` and the selected local profile.
-8. Apply the current CAN telemetry composition directly from
-   `can-telemetry-payloads.toml`. The built-in profile installs the runtime in
-   fail-closed disabled-at-startup mode, configures mailbox 26 as the idle
-   telemetry transmitter, and configures mailbox 31 as the control receiver
-   after each HCAN1 initialization.
+7. Apply the current Rolling Launch composition from the applicable payload
+   registry and the selected local profile.
+8. Apply the current CAN telemetry composition from the applicable payload
+   registry. The built-in profile installs the runtime in fail-closed
+   disabled-at-startup mode. The exact-code family uses mailbox 26; the 8MFK
+   family uses stock-inactive mailbox 24. Both use mailbox 31 as the control
+   receiver after each HCAN1 initialization.
 9. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
    order, then verify all stored values again.
 10. Require every final difference from the input to be inside the union of the
@@ -92,12 +96,24 @@ The 8MFK runtime uses a uniform ROM relocation of `0xC700` and a RAM relocation
 of `0x300`, while retaining explicit nonuniform stock hooks and application-RAM
 sources. Its exhaust-CVTC target is two independent bank families. The second
 adapter and its four map copies occupy the beginning of the former telemetry
-future reserve. Telemetry uses stock-inactive mailbox 24 and a completion ISR
-that handles that mailbox before tail-chaining to the complete stock ISR.
+future reserve. The target limiter copies the two-byte-aligned stock throttle
+container with `MOV.W`; using the canonical `MOV.L` loop would fault on SH-2E.
+Telemetry uses stock-inactive mailbox 24 and a completion ISR that handles that
+mailbox before tail-chaining to the complete stock ISR. Its final `JMP` delay
+slot restores `r0`, preserving the interrupted register file at the stock ISR
+boundary.
 
-These profiles are verified address evidence. The production builder remains
-limited to `sh7058_7mfkavn86` until target-specific assembly rendering and the
-executable fixtures consume the profiles.
+`runtime_targets.py` renders every target source through explicit stock and RAM
+bindings. `runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
+the Map Switching, Rolling Launch, and telemetry stage hashes for each exact
+8MFK stock image. Regenerate the registry only through:
+
+```bash
+make runtime-targets-generate
+```
+
+The production builder and executable gate consume the same projected layouts
+and locked payloads for JK00C and JK00D.
 
 ## Rolling Launch profile
 
@@ -138,16 +154,16 @@ tick_divisor = 1
 Run it with:
 
 ```bash
-uv run python patches/build_rom.py INPUT.bin \
-  --profile LOCAL-PROFILE.toml \
-  --output OUTPUT.bin
+make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin \
+  PROFILE=LOCAL-PROFILE.toml
 ```
 
 The accepted mode names are `observe`, `rpm_hold`, and `rpm_hold_retard`.
 `enabled_maps` uses one-based map numbers. Every field is mandatory, unknown
 fields are rejected, and the resulting 32-byte configuration must pass the
 independent fail-closed model. `rom` may name the complete
-`sh7058_7mfkavn86` series or bind the profile to one exact member.
+applicable `sh7058_7mfkavn86` or `sh7058_8mfk` series, or bind the profile to
+one exact member.
 `min_speed = 0` disables the vehicle-speed activation gate, and
 `min_pedal = 0` disables the pedal-position activation gate.
 `hysteresis_ratio_tenths = 20` means 2.0 percent of captured RPM. The runtime
@@ -166,13 +182,15 @@ above. `profile` is the schema-2 `tuning` profile; `can_id` is in
 `FUN_00020DFE` snapshot cadence. The adjacent standard ID is reserved for
 runtime control.
 
-Every profile changes mailbox-26 record `0x000097BE` from stock-inactive type 5
+Every profile changes the selected stock-inactive mailbox record from type 5
 to interrupt-enabled transmit type 4 and encodes the selected data ID as
-`STDID << 5`. `enabled` controls whether sampling starts after reset; an idle
-type-4 mailbox does not request CAN traffic. A validated START command on
-`can_id + 1` activates streaming until reset even when `enabled = false`, and
-STOP forces it off. The builder validates the exact mailbox record against the
-configuration and rejects a partial or mismatched endpoint.
+`STDID << 5`. The exact-code family writes mailbox 26 at `0x000097BE`; JK00C
+and JK00D write mailbox 24 at their profile-specific record address. `enabled`
+controls whether sampling starts after reset; an idle type-4 mailbox does not
+request CAN traffic. A validated START command on `can_id + 1` activates
+streaming until reset even when `enabled = false`, and STOP forces it off. The
+builder validates the exact mailbox record against the configuration and
+rejects a partial or mismatched endpoint.
 
 A profile can start transmission automatically only after a passive
 whole-vehicle capture proves both adjacent IDs unused and a measured bus-load
