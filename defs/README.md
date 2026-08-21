@@ -18,9 +18,10 @@ are separated from editor presentation and generated output.
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
+| `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
 | `JK08A.maps.csv` | Catalog ledger projected from Memgraph | no, regenerate |
-| `JK08A.xml` | RomRaider definition projection | no, regenerate |
-| `JK08A.xdf` | TunerPro XDF projection | no, regenerate |
+| `<ROM>.xml` | Target-specific RomRaider definition projection | no, regenerate |
+| `<ROM>.xdf` | Target-specific TunerPro XDF projection | no, regenerate |
 
 The exact ROM supplies every map and axis value during ingestion. Handwritten
 files must not duplicate image values. The graph is a reproducible relationship
@@ -29,10 +30,11 @@ projection and does not replace these tracked sources.
 ## Canonical exact-code layer
 
 JK08A is the only live annotation and presentation source for its exact-code
-family. `rom-inheritance.toml` binds another target only after verifying both
-image hashes and declared executable-code ranges. An inherited ROM keeps its
-own Ghidra export, value measurements, graph layer, and exact-ROM diagnostic
-bindings. It does not receive copied CSV, ledger, XML, or XDF files.
+family. `rom-inheritance.toml` binds JK00A, JK03A, and JK03B only after
+verifying both image hashes and the declared executable-code ranges. An
+inherited ROM keeps its own stock image and value measurements. It does not
+receive copied semantic CSV or presentation TOML files. Its XML/XDF outputs use
+the canonical structure with the selected stock image and target identity.
 
 The source model and exact image are validated before every complete ingest.
 See `../tools/map-analysis-pipeline.md` and
@@ -81,25 +83,34 @@ claims and evidence remain in the CSV layer rather than being copied into prose.
 
 ## Generated definitions
 
-`tools/mapkit/emit_def.py` reads the live graph projection, exact ROM,
-`JK08A.dtc.csv`, `JK08A.overrides.toml`, and current patch layout manifests. It
-renders `JK08A.xml` and `JK08A.xdf` from one in-memory model.
+`tools/mapkit/emit_def.py` resolves the selected ROM through
+`rom-inheritance.toml`, reads the canonical live graph projection,
+`JK08A.dtc.csv`, `JK08A.overrides.toml`, `rom-identities.toml`, the selected
+exact stock image, and current patch layout manifests. It renders one
+target-specific XML/XDF pair from a single in-memory model. The `all` mode
+renders every identity registered in `rom-identities.toml`; it stages the full
+set and leaves existing outputs unchanged if any target fails.
 
 ```bash
-uv run python tools/mapkit/emit_def.py JK08A
-uv run python tools/maps/build_tracker.py JK08A
-uv run python tools/mapkit/validate_map_switching.py
+make defs-generate
 ```
+
+Use `make defs-generate DEFS_ROM=JK00A` to regenerate only one target. Canonical
+ledgers are derived independently from the registered inheritance sources. The
+generated RomRaider identity intentionally omits the optional `flashmethod`
+field. A dump tool or a community definition does not establish a validated
+flashing path for this ECU family.
 
 The generator validates ROM identity, map geometry, scaling, visibility, DTC
 stock bytes, map-slot layout, and Rolling Launch controls. A visible map must
 pass the definition gate. Hidden research maps remain in the graph and ledger.
 
-The common definition keeps the unchanged JK08A identity. Map 1 uses canonical
-stock storage; Map 2 through Map 5 are editor projections of reserved addresses
+Each definition keeps the selected ROM identity. Map 1 uses that ROM's stock
+storage; Map 2 through Map 5 are editor projections of reserved addresses
 declared by `patches/map-switching-layout.toml`. Rolling Launch exposes only the
-validated configuration controls declared by its layout. Neither projection
-creates speculative canonical graph maps.
+validated configuration controls declared by its canonical layout. Neither
+projection creates speculative canonical graph maps or copies JK08A
+calibration values into another ROM.
 
 RomRaider and TunerPro receive equivalent calibration tables and controls in
 their native formats. TunerPro does not own image checksum correction; complete

@@ -1,9 +1,10 @@
-# JK08A runtime ownership and growth reserves
+# Exact-family runtime ownership and growth reserves
 
-`jk08a-runtime-reservations.toml` is the cross-runtime ownership ledger for
-Map Switching, Rolling Launch, and custom CAN telemetry. The corresponding
-validator is `jk08a_runtime_reservations.py`; the unified ROM builder loads it
-before composing an image.
+`jk08a-runtime-reservations.toml` is the canonical cross-runtime ownership
+ledger for Map Switching, Rolling Launch, and custom CAN telemetry in the
+exact JK00A/JK03A/JK03B/JK08A family. The corresponding validator is
+`jk08a_runtime_reservations.py`; the unified ROM builder loads it before
+composing an image.
 
 Each runtime layout remains authoritative for its active code, hooks, tables,
 configuration, and RAM records. The shared ledger adds two guarantees that an

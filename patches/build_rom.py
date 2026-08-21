@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 """Build one complete production ROM with every supported firmware runtime.
 
-The CLI detects the ROM series from immutable image bytes by default or accepts
-an explicit ``--rom`` selector.  Only JK08A is currently registered.  Its
-handler installs the current map-switching, Rolling Launch, and CAN telemetry
-runtimes directly from their SHA-locked payload bundles through the current
-layout and composer contracts.
+The CLI detects the exact ROM identity from immutable image bytes by default or
+accepts an explicit ``--rom`` selector. JK00A, JK03A, JK03B, and JK08A share
+the canonical JK08A address and executable-code profile. Their target-specific
+calibration, configuration, identity, and checksum bytes remain independent.
 
-Compatible unpatched inputs retain their lower calibration and configuration.
-A complete current or historical JK08A composition may also be rebuilt: all
-alternate-map bytes are preserved while every builder-owned executable span,
-hook, diagnostic pointer, configuration record, and checksum is regenerated.
-Unknown or partial patch states are rejected before an output is written.
+Compatible unpatched inputs retain their calibration and configuration. A
+complete current or historical composition may also be rebuilt: all alternate
+map bytes are preserved while every builder-owned executable span, hook,
+diagnostic pointer, configuration record, and checksum is regenerated. Unknown
+or partial patch states are rejected before an output is written.
 """
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from functools import lru_cache
 import hashlib
 from itertools import chain
 import json
@@ -47,12 +47,15 @@ from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
 from patches import rolling_launch_layout
 from tools.mapkit import rom as romkit
+from tools import rom_homology
 
 
 AUTO_ROM = "auto"
-SUPPORTED_ROMS = ("JK08A",)
+ROM_SERIES = "sh7058_7mfkavn86"
+CANONICAL_ROM = "JK08A"
+SUPPORTED_ROMS = ("JK00A", "JK03A", "JK03B", "JK08A")
 PROFILE_SCHEMA_VERSION = 2
-MANIFEST_SCHEMA_VERSION = 2
+MANIFEST_SCHEMA_VERSION = 3
 TOOL_NAME = "patches/build_rom.py"
 
 PROFILE_REQUIRED_ROOT_KEYS = frozenset(
@@ -90,6 +93,14 @@ TELEMETRY_PROFILE_KEYS = frozenset(
 
 class BuildError(ValueError):
     """Raised when ROM selection, composition, or artifact checks fail."""
+
+
+@dataclass(frozen=True)
+class SeriesContext:
+    key: str
+    canonical_rom: str
+    members: tuple[str, ...]
+    images: dict[str, rom_homology.Image]
 
 
 @dataclass(frozen=True)
@@ -254,6 +265,7 @@ HISTORICAL_FEEDBACK_ENGINE_SHA256 = frozenset(
 class BuildResult:
     data: bytes
     rom: str
+    series: str
     detection: str
     input_state: str
     profile: Profile
@@ -288,6 +300,45 @@ def md5(data):
     return hashlib.md5(data).hexdigest()
 
 
+@lru_cache(maxsize=1)
+def _series_context():
+    """Load and validate the exact-code family used by this builder."""
+    try:
+        images = rom_homology.load_images()
+        _settings, families, relationships = rom_homology.load_homology()
+        rom_homology.validate_families(images, families)
+        rom_homology.validate_relationships(families, relationships)
+    except rom_homology.HomologyError as error:
+        raise BuildError(f"ROM family registry is invalid: {error}") from error
+
+    family = families.get(ROM_SERIES)
+    if not isinstance(family, dict):
+        raise BuildError(f"ROM family registry has no {ROM_SERIES!r} entry")
+    members = tuple(family.get("members", ()))
+    if any((
+        family.get("kind") != "exact-code",
+        family.get("canonical") != CANONICAL_ROM,
+        family.get("mcu") != "SH7058",
+        family.get("flash_size") != checksums.ROM_SIZE,
+        family.get("same_address_inheritance") is not True,
+        members != SUPPORTED_ROMS,
+    )):
+        raise BuildError(
+            "ROM family registry differs from the locked builder contract"
+        )
+    return SeriesContext(
+        key=ROM_SERIES,
+        canonical_rom=CANONICAL_ROM,
+        members=members,
+        images={rom: images[rom] for rom in members},
+    )
+
+
+def _stock_image(context, rom):
+    image = context.images[rom]
+    return romkit.Image(rom, str(image.path), image.data)
+
+
 def _require_exact_keys(table, expected, context):
     if not isinstance(table, dict):
         raise BuildError(f"{context}: expected a TOML table")
@@ -306,11 +357,11 @@ def _require_integer(value, context):
     return value
 
 
-def builtin_profile():
-    """Return the conservative Map 1 RPM Hold profile."""
+def builtin_profile(rom=ROM_SERIES):
+    """Return the conservative Map 1 RPM Hold family profile."""
     return Profile(
         name=apply_rolling_launch.PROFILE_NAME,
-        rom="JK08A",
+        rom=rom,
         calibration=apply_rolling_launch.PROFILE_CALIBRATION,
         telemetry=can_telemetry.default_configuration(),
         source="builtin",
@@ -852,12 +903,12 @@ def _restore_map_copies(image, layout, copies):
     return bytes(checksums.recalculate(data))
 
 
-def _normalize_jk08a(source, source_name):
+def _normalize_exact_family(source, source_name, selected_rom, context):
     jk08a_runtime_reservations.load_ledger()
     map_layout = map_switching_layout.load_layout()
     launch_layout = rolling_launch_layout.load_layout()
     telemetry_layout = can_telemetry_layout.load_layout()
-    stock_image = romkit.load("JK08A")
+    stock_image = _stock_image(context, selected_rom)
     stock = stock_image.data
     source = bytes(source)
 
@@ -912,7 +963,7 @@ def _normalize_jk08a(source, source_name):
         normalized[offset] = stock[offset]
     normalized = bytes(checksums.recalculate(normalized))
     try:
-        image = romkit.Image("JK08A", source_name, normalized)
+        image = romkit.Image(selected_rom, source_name, normalized)
         map_switching_layout.validate_compatible_image(
             map_layout, image, stock_image
         )
@@ -931,11 +982,12 @@ def _normalize_jk08a(source, source_name):
         launch_payloads,
         telemetry_payloads,
         component_offsets,
+        stock_image,
     )
 
 
-def _probe_jk08a(source):
-    stock = romkit.load("JK08A").data
+def _probe_rom(source, rom, context):
+    stock = context.images[rom].data
     if len(source) != len(stock):
         return False
     start = map_switching_layout.COMPATIBLE_IDENTITY_START
@@ -943,16 +995,23 @@ def _probe_jk08a(source):
     return source[start:end] == stock[start:end]
 
 
-def _rom_probes():
+def _rom_probes(context=None):
     """Return the immutable-byte probe registry."""
-    return {"JK08A": _probe_jk08a}
+    context = context or _series_context()
+    return {
+        rom: (
+            lambda source, rom=rom: _probe_rom(source, rom, context)
+        )
+        for rom in context.members
+    }
 
 
 def select_rom(source, selector=AUTO_ROM):
     """Return ``(ROM, detection mode)`` after immutable-byte selection."""
     source = bytes(source)
     requested = str(selector).strip()
-    probes = _rom_probes()
+    context = _series_context()
+    probes = _rom_probes(context)
     if tuple(probes) != SUPPORTED_ROMS:
         raise BuildError("internal ROM probe registry differs from support list")
     if requested.lower() == AUTO_ROM:
@@ -964,8 +1023,8 @@ def select_rom(source, selector=AUTO_ROM):
             raise BuildError(f"ROM series detection failed: {error}") from error
         if not matches:
             raise BuildError(
-                "ROM series could not be detected from immutable image bytes; "
-                f"supported series: {', '.join(SUPPORTED_ROMS)}"
+                "ROM identity could not be detected from immutable image bytes; "
+                f"supported ROMs: {', '.join(SUPPORTED_ROMS)}"
             )
         if len(matches) != 1:
             raise BuildError(
@@ -976,7 +1035,7 @@ def select_rom(source, selector=AUTO_ROM):
     selected = requested.upper()
     if selected not in SUPPORTED_ROMS:
         raise BuildError(
-            f"unsupported ROM series {selector!r}; supported series: "
+            f"unsupported ROM selector {selector!r}; supported ROMs: "
             f"{', '.join(SUPPORTED_ROMS)}"
         )
     return selected, "explicit"
@@ -1007,23 +1066,21 @@ def build_image(
 ):
     """Build and verify one complete ROM without writing files."""
     source = bytes(source)
+    context = _series_context()
     selected_rom, detection = select_rom(source, rom)
     profile = profile or builtin_profile()
     if not isinstance(profile, Profile):
         raise BuildError("profile must be a build_rom.Profile")
-    if profile.rom != selected_rom:
+    if profile.rom not in (selected_rom, context.key):
         raise BuildError(
-            f"profile ROM {profile.rom!r} does not match selected "
-            f"ROM {selected_rom!r}"
+            f"profile scope {profile.rom!r} does not match selected ROM "
+            f"{selected_rom!r} or series {context.key!r}"
         )
     if (
         not isinstance(profile.telemetry, can_telemetry.Configuration)
         or not profile.telemetry.is_valid()
     ):
         raise BuildError("profile CAN telemetry configuration is invalid")
-    if selected_rom != "JK08A":
-        raise BuildError(f"no builder is registered for {selected_rom}")
-
     try:
         (
             normalized,
@@ -1037,13 +1094,17 @@ def build_image(
             launch_payloads,
             telemetry_payloads,
             component_offsets,
-        ) = _normalize_jk08a(source, source_name)
+            stock_image,
+        ) = _normalize_exact_family(
+            source, source_name, selected_rom, context
+        )
 
         map_result = apply_map_switching.patch_image(
             normalized,
             layout=map_layout,
             blobs=map_payloads,
-            source_name=f"{source_name} normalized JK08A",
+            source_name=f"{source_name} normalized {selected_rom}",
+            stock_image=stock_image,
         )
         map_stage = map_result.data
         preserved_map_copy_bytes = 0
@@ -1078,7 +1139,7 @@ def build_image(
             expected_source_sha256=sha256(rolling_stage),
         )
         output_verification = checksums.require_valid(
-            telemetry_result.data, "complete JK08A output"
+            telemetry_result.data, f"complete {selected_rom} output"
         )
     except (
         BuildError,
@@ -1103,6 +1164,7 @@ def build_image(
     return BuildResult(
         data=telemetry_result.data,
         rom=selected_rom,
+        series=context.key,
         detection=detection,
         input_state=input_state,
         profile=profile,
@@ -1145,6 +1207,7 @@ def manifest_data(result, input_path, output_path):
     return {
         "schema_version": MANIFEST_SCHEMA_VERSION,
         "tool": TOOL_NAME,
+        "series": result.series,
         "rom": result.rom,
         "detection": result.detection,
         "input": {
@@ -1255,8 +1318,8 @@ def main(argv=None):
     parser.add_argument(
         "--rom",
         default=AUTO_ROM,
-        metavar="auto|JK08A",
-        help="ROM series selector; defaults to immutable-byte detection",
+        metavar="auto|JK00A|JK03A|JK03B|JK08A",
+        help="exact ROM selector; defaults to immutable-byte detection",
     )
     parser.add_argument(
         "--profile",
@@ -1289,7 +1352,8 @@ def main(argv=None):
 
     calibration = result.profile.calibration
     print(
-        f"status=PASS rom={result.rom} detection={result.detection} "
+        f"status=PASS series={result.series} rom={result.rom} "
+        f"detection={result.detection} "
         f"input_state={result.input_state}"
     )
     print(

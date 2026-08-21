@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Compose and validate a JK08A map-switching fixture in memory.
+"""Compose and validate a 7MFKAVN86 map-switching fixture in memory.
 
 The default input is the exact stock ROM selected by the authoritative layout.
 Callers may explicitly select the compatible-input policy for a calibrated
-JK08A image that retains the exact protected code partition and patch anchors.
+exact-family image that retains the protected code ranges and patch anchors.
 The tool applies calibration copies, pointer tables, hook literals, and all
 SHA-locked Ghidra assembly units, then verifies the complete byte result
 against the declared write set.
@@ -103,21 +103,28 @@ def _validated_blobs(layout, blobs):
     }
 
 
-def _validate_source(layout, image, source_policy):
+def _validate_source(layout, image, source_policy, stock_image=None):
     if source_policy == "exact":
         return layout_model.validate_image(layout, image)
     if source_policy == "compatible":
-        return layout_model.validate_compatible_image(layout, image)
+        return layout_model.validate_compatible_image(
+            layout, image, stock_image
+        )
     raise ValueError(
         f"unsupported source policy {source_policy!r}; "
         "expected 'exact' or 'compatible'"
     )
 
 
-def _build_expected(layout, image, blobs, source_policy):
+def _build_expected(
+    layout, image, blobs, source_policy, stock_image=None
+):
     data = bytearray(
         layout_model.materialize_calibration_copies(
-            layout, image, source_policy=source_policy
+            layout,
+            image,
+            source_policy=source_policy,
+            stock_image=stock_image,
         )
     )
     for hook in layout.hooks:
@@ -203,14 +210,16 @@ def _validate_instruction_placement(layout, composed, blobs):
 
 
 def _validate_composed_contract(
-    layout, image, composed, blobs, source_policy
+    layout, image, composed, blobs, source_policy, stock_image=None
 ):
     if len(composed) != len(image.data):
         raise ValueError(
             f"composed image has {len(composed)} bytes, "
             f"expected {len(image.data)}"
         )
-    expected = _build_expected(layout, image, blobs, source_policy)
+    expected = _build_expected(
+        layout, image, blobs, source_policy, stock_image=stock_image
+    )
     if composed != expected:
         first = next(
             offset
@@ -244,19 +253,34 @@ def _validate_composed_contract(
     )
 
 
-def compose(layout=None, image=None, blobs=None, source_policy="exact"):
+def compose(
+    layout=None,
+    image=None,
+    blobs=None,
+    source_policy="exact",
+    stock_image=None,
+):
     """Return a strictly validated in-memory composition."""
     layout = layout or layout_model.load_layout()
-    image = _validate_source(layout, image, source_policy)
+    image = _validate_source(
+        layout, image, source_policy, stock_image=stock_image
+    )
     blobs = _validated_blobs(layout, blobs or {})
-    data = _build_expected(layout, image, blobs, source_policy)
+    data = _build_expected(
+        layout, image, blobs, source_policy, stock_image=stock_image
+    )
     (
         changed_bytes,
         permitted_write_bytes,
         instruction_count,
         code_entry_count,
     ) = _validate_composed_contract(
-        layout, image, data, blobs, source_policy
+        layout,
+        image,
+        data,
+        blobs,
+        source_policy,
+        stock_image=stock_image,
     )
     return Composition(
         data=data,
@@ -274,10 +298,13 @@ def validate_composed(
     composed=None,
     blobs=None,
     source_policy="exact",
+    stock_image=None,
 ):
     """Validate caller-supplied bytes against the deterministic composition."""
     layout = layout or layout_model.load_layout()
-    image = _validate_source(layout, image, source_policy)
+    image = _validate_source(
+        layout, image, source_policy, stock_image=stock_image
+    )
     blobs = _validated_blobs(layout, blobs or {})
     if composed is None:
         raise ValueError("composed image bytes are required")
@@ -288,7 +315,12 @@ def validate_composed(
         instruction_count,
         code_entry_count,
     ) = _validate_composed_contract(
-        layout, image, composed, blobs, source_policy
+        layout,
+        image,
+        composed,
+        blobs,
+        source_policy,
+        stock_image=stock_image,
     )
     return Composition(
         data=composed,

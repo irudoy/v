@@ -1,0 +1,68 @@
+from pathlib import Path
+import xml.etree.ElementTree as ET
+
+
+ROOT = Path(__file__).resolve().parents[3]
+DEFS = ROOT / "defs"
+ROMS = ("JK00A", "JK03A", "JK03B", "JK08A")
+
+
+def _romraider_signature(path):
+    root = ET.parse(path).getroot()
+    rom = root.find("rom")
+    romid = rom.find("romid")
+    tables = rom.findall("table")
+    checksums = rom.findall("checksum")
+    return {
+        "xmlid": romid.findtext("xmlid"),
+        "internalid": romid.findtext("internalidstring"),
+        "flashmethod": romid.findtext("flashmethod"),
+        "table_addresses": sorted(
+            table.get("storageaddress") for table in tables
+        ),
+        "checksums": sorted(
+            tuple(sorted(checksum.attrib.items())) for checksum in checksums
+        ),
+    }
+
+
+def _tunerpro_signature(path):
+    root = ET.parse(path).getroot()
+    header = root.find("XDFHEADER")
+    return {
+        "title": header.findtext("deftitle"),
+        "description": header.findtext("description"),
+        "tables": len(root.findall("XDFTABLE")),
+        "patches": len(root.findall("XDFPATCH")),
+        "flags": len(root.findall("XDFCONSTANT")),
+    }
+
+
+def test_exact_family_editor_artifacts_share_structure_and_keep_identity():
+    xml = {
+        rom: _romraider_signature(DEFS / f"{rom}.xml")
+        for rom in ROMS
+    }
+    xdf = {
+        rom: _tunerpro_signature(DEFS / f"{rom}.xdf")
+        for rom in ROMS
+    }
+    canonical_xml = xml["JK08A"]
+    canonical_xdf = xdf["JK08A"]
+
+    for rom in ROMS:
+        assert xml[rom]["xmlid"] == rom
+        assert xml[rom]["internalid"] == rom
+        assert xml[rom]["flashmethod"] is None
+        assert xml[rom]["table_addresses"] == canonical_xml["table_addresses"]
+        assert xml[rom]["checksums"] == canonical_xml["checksums"]
+        assert xdf[rom]["title"] == f"{rom} - VQ HR ECU"
+        assert xdf[rom]["tables"] == canonical_xdf["tables"]
+        assert xdf[rom]["patches"] == canonical_xdf["patches"]
+        assert xdf[rom]["flags"] == canonical_xdf["flags"]
+        assert f"Exact {rom} definition" in xdf[rom]["description"]
+        if rom != "JK08A":
+            assert "canonical JK08A Memgraph facts" in xdf[rom]["description"]
+            xml_text = (DEFS / f"{rom}.xml").read_text(encoding="utf-8")
+            assert f"defs/{rom}.notes.md" not in xml_text
+            assert "defs/JK08A.notes.md" in xml_text

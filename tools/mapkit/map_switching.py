@@ -1,9 +1,9 @@
-"""Common-definition projection for the JK08A five-slot map-switching runtime.
+"""Common-definition projection for the 7MFKAVN86 five-slot runtime.
 
 The input maps remain graph-backed canonical facts. This module clones only
 their storage addresses and tuner presentation for the slot copies declared by
 ``patches/map-switching-layout.toml``. ``emit_def.py`` places the projection
-inside the shared JK08A XML/XDF outputs. Slot numbers are added to table names;
+inside each target-specific XML/XDF output. Slot numbers are added to names;
 each copy remains in the canonical functional category. This module does not
 write artifacts.
 """
@@ -72,8 +72,8 @@ def project_definition_model(maps, overrides, layout: Layout | None = None):
     """Project canonical maps and presentation into five storage slots.
 
     Global maps, axes, switches, checksum declarations, and ROM identification
-    remain unchanged. The shared JK08A identity intentionally covers stock and
-    project map-switching images with the same exact ROM layout.
+    remain unchanged. The caller supplies the target-specific identity after
+    selecting the shared exact-code layout.
     """
     layout = layout or load_layout()
     projected_maps = deepcopy(maps)

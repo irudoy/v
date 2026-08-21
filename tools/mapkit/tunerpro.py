@@ -652,8 +652,10 @@ def render(
     dtc_records,
     switches,
     bitwise_switches=(),
+    source_rom=None,
 ):
     """Render a complete TunerPro XDF and return it with emission statistics."""
+    source_rom = source_rom or rom
     individual_patches, group_patches = dtc_patches(rom, dtc_records)
     other_patches = switch_patches(switches)
     patches = other_patches + individual_patches + group_patches
@@ -689,8 +691,15 @@ def render(
         header,
         "description",
         (
-            f"Exact {rom} definition generated from Memgraph, defs/{rom}.dtc.csv, "
-            f"and defs/{rom}.overrides.toml. Individual and group DTC patches "
+            f"Exact {rom} definition generated from "
+            + (
+                "Memgraph"
+                if source_rom == rom
+                else f"canonical {source_rom} Memgraph facts"
+            )
+            + f", defs/{source_rom}.dtc.csv, and "
+            f"defs/{source_rom}.overrides.toml, with target identity from "
+            "defs/rom-identities.toml. Individual and group DTC patches "
             "overlap by design. No editor-side checksum is declared; the flashing "
             "workflow handles checksum correction."
             + (

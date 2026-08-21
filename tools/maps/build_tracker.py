@@ -17,18 +17,20 @@ partitions open work: an all-zero or all-0xFF table requires different analysis
 from a populated surface.
 
 Usage: uv run python tools/maps/build_tracker.py \
-          [<rom>] [<output.csv>]
+          [<rom>|all|--all] [<output.csv>]
 """
 import csv
 import os
 import sys
+import tempfile
 from neo4j import GraphDatabase
 
 BOLT = "bolt://localhost:7687"
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.join(ROOT, "tools"))
-import rom_sources  # noqa: E402
-import diagnostic_context  # noqa: E402
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+from tools import diagnostic_context, rom_sources  # noqa: E402
+from tools.mapkit import definition_targets  # noqa: E402
 
 FIELDS = ["table", "family", "via", "kernel", "dim", "storagetype", "vals", "scaling",
           "axis_x", "axis_y", "accessors", "sites", "confidence", "role", "semantics",
@@ -128,21 +130,19 @@ def report(out, tracker):
         print(f"WARNING: {empty} maps have no wrapper or accessor and are orphan graph nodes")
 
 
-def main():
-    rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
+def emit_tracker(rom, tracker=None, display_tracker=None):
+    """Generate one canonical map ledger."""
     try:
         source_model = rom_sources.resolve(rom)
         rom_sources.verify_image_binding(source_model)
     except ValueError as error:
         sys.exit(str(error))
-    if len(sys.argv) > 2:
-        tracker = sys.argv[2]
-    elif source_model.inherited:
+    if tracker is None and source_model.inherited:
         sys.exit(
             f"{rom} inherits annotations from {source_model.source}; "
             "its ledger is not stored in defs, so specify a temporary output.csv"
         )
-    else:
+    if tracker is None:
         tracker = os.path.join(ROOT, "defs", f"{rom}.maps.csv")
 
     driver = GraphDatabase.driver(BOLT, auth=("", ""))
@@ -160,7 +160,44 @@ def main():
         w = csv.DictWriter(fh, fieldnames=FIELDS, lineterminator="\n")
         w.writeheader()
         w.writerows(out)
-    report(out, tracker)
+    report(out, display_tracker or tracker)
+
+
+def emit_all(output_dir=None):
+    """Generate all canonical ledgers without partial output on render failure."""
+    output_dir = os.fspath(output_dir or os.path.join(ROOT, "defs"))
+    sources = definition_targets.registered_sources()
+    with tempfile.TemporaryDirectory(
+        prefix=".build-tracker-", dir=output_dir
+    ) as stage_dir:
+        staged = []
+        for rom in sources:
+            final_path = os.path.join(output_dir, f"{rom}.maps.csv")
+            stage_path = os.path.join(stage_dir, f"{rom}.maps.csv")
+            emit_tracker(
+                rom,
+                tracker=stage_path,
+                display_tracker=final_path,
+            )
+            staged.append((stage_path, final_path))
+        for staged_path, final_path in staged:
+            os.replace(staged_path, final_path)
+
+
+def main(argv=None):
+    args = list(sys.argv[1:] if argv is None else argv)
+    if not args:
+        args = ["all"]
+    if args[0].lower() in {"all", "--all"}:
+        if len(args) != 1:
+            sys.exit("all mode does not accept an explicit output path")
+        emit_all()
+        return
+    if len(args) > 2:
+        sys.exit(
+            "usage: build_tracker.py [<rom>|all|--all] [<output.csv>]"
+        )
+    emit_tracker(*args)
 
 
 if __name__ == "__main__":

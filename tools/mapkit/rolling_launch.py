@@ -1,10 +1,10 @@
-"""Definition projection for the JK08A Rolling Launch configuration.
+"""Definition projection for the exact-family Rolling Launch configuration.
 
 The runtime stores its tuner-facing activation thresholds, RPM hold values,
 bounded-retard ramp width, adaptive hysteresis controls, pedal requirement,
 and one enable bit per map in a validated 32-byte record. This module projects
-those fields into the common JK08A RomRaider and TunerPro models. It does not
-write definitions or ROM images.
+those fields into a target-specific RomRaider and TunerPro model backed by the
+canonical JK08A executable layout. It does not write definitions or ROM images.
 """
 
 from __future__ import annotations

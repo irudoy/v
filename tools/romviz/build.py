@@ -77,8 +77,7 @@ def main(argv=None):
     )
     parser.add_argument(
         "rom",
-        nargs="*",
-        default=["JK08A"],
+        nargs="+",
         help="ROM label or path to a tools/romviz/roms manifest",
     )
     parser.add_argument(

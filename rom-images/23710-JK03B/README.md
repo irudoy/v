@@ -8,7 +8,9 @@ Hitachi hardware identifier `MEC100-191 A1` and lot `7911`.
 Exact-part and hardware-family sources associate the ECU with a JDM V36
 Skyline 250GT, VQ25HR, and automatic transmission. Its known executable ranges
 are byte-identical to JK00A, JK03A, and JK08A. JK03B has no Ghidra export,
-Memgraph layer, or annotation inheritance entry.
+Memgraph layer, or annotation copies. Its verified exact-code relationship
+selects the canonical JK08A annotation and presentation sources for
+target-specific definition generation.
 
 The complete pre-write line `[0x8080, 0x8100)` contains `0xEE`. A later
 marker-only readback from the same programming workflow contains zero there,

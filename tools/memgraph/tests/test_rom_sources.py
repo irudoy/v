@@ -87,27 +87,24 @@ class RomSourcesTest(unittest.TestCase):
         )
         self.assertEqual(rows[0]["semantics"], "JK08A branch")
 
-    def test_project_registry_is_bound_to_exact_images(self):
-        model = rom_sources.resolve("JK03A")
-        rom_sources.verify_image_binding(model)
-        paths = rom_sources.definition_paths(model)
-        self.assertTrue(all(path.is_file() for path in paths.values()))
-        for suffix in (
-            "axes.csv",
-            "direct_lookup_inventory.csv",
-            "findings.csv",
-            "funcs.csv",
-            "interp.csv",
-            "map_inventory.26944.csv",
-            "map_inventory.26984.csv",
-            "map_inventory.26b84.csv",
-            "maps.csv",
-            "notes.md",
-            "overrides.toml",
-            "vars.csv",
-            "xml",
-        ):
-            self.assertFalse((ROOT / "defs" / f"JK03A.{suffix}").exists())
+    def test_project_registry_is_bound_to_all_exact_family_images(self):
+        for rom in ("JK00A", "JK03A", "JK03B"):
+            with self.subTest(rom=rom):
+                model = rom_sources.resolve(rom)
+                rom_sources.verify_image_binding(model)
+                paths = rom_sources.definition_paths(model)
+                self.assertTrue(all(path.is_file() for path in paths.values()))
+                for suffix in (
+                    "axes.csv",
+                    "diagnostic-bindings.csv",
+                    "findings.csv",
+                    "funcs.csv",
+                    "interp.csv",
+                    "notes.md",
+                    "overrides.toml",
+                    "vars.csv",
+                ):
+                    self.assertFalse((ROOT / "defs" / f"{rom}.{suffix}").exists())
 
 
 if __name__ == "__main__":

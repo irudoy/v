@@ -35,12 +35,14 @@
 #
 # Invocation:
 # uv run python tools/mapkit/emit_def.py \
-#   [<rom>] [<romraider-out>] [<tunerpro-out>]
+#   [<rom>|all|--all] [<romraider-out>] [<tunerpro-out>]
+import copy
 import csv
 from dataclasses import dataclass
 import html
 import os
 import sys
+import tempfile
 import textwrap
 import tomllib
 from neo4j import GraphDatabase
@@ -52,18 +54,31 @@ DEFS = os.path.join(ROOT, "defs")
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 if __package__:
-    from . import map_switching, presentation, rolling_launch, rom as romkit, tunerpro
+    from . import (
+        definition_targets,
+        map_switching,
+        presentation,
+        rolling_launch,
+        rom as romkit,
+        tunerpro,
+    )
     from tools import diagnostic_context
 else:
     sys.path.insert(0, os.path.dirname(HERE))
-    from mapkit import map_switching, presentation, rolling_launch, rom as romkit, tunerpro
+    from mapkit import (
+        definition_targets,
+        map_switching,
+        presentation,
+        rolling_launch,
+        rom as romkit,
+        tunerpro,
+    )
     import diagnostic_context
+from tools import rom_sources
 
 LEVELS = ("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
 
-ROMID_FIELDS = ("xmlid", "internalidaddress", "internalidstring", "ecuid", "caseid",
-                "make", "model", "submodel", "market", "transmission", "memmodel",
-                "endian", "flashmethod", "filesize", "author", "version")
+ROMID_FIELDS = definition_targets.ROMID_FIELDS
 CHECKSUM_FIELDS = (
     "type", "path", "expectedsize",
     "start", "end", "skiploc", "sumloc", "xorloc",
@@ -588,7 +603,7 @@ def bitwise_switch_xml(entry, index):
     return out
 
 
-def evidence_lines(m, axes, rom):
+def evidence_lines(m, axes, source_rom):
     """Describe what is known about a map and at which confidence level."""
     shape = (f'{m["width"]}x{m["height"]}' if m["dims"] == 2 else f'{m["width"]}')
     via = ""
@@ -639,7 +654,7 @@ def evidence_lines(m, axes, rom):
         lines.append("static diagnostic context: " + "; ".join(diagnostic))
     if m["note"]:
         lines.append(m["note"])
-    lines.append(f"Analysis and method - defs/{rom}.notes.md")
+    lines.append(f"Analysis and method - defs/{source_rom}.notes.md")
     return lines
 
 
@@ -680,7 +695,7 @@ def table_axes_xml(m, o, ovr, axes):
     return out
 
 
-def table_xml(m, ovr, axes, rom):
+def table_xml(m, ovr, axes, source_rom):
     o = ovr["table"][m["addr"]]
     cat = presentation.romraider_category_name(o["category"])
     dims = "3D" if m["dims"] == 2 else "2D"
@@ -698,7 +713,7 @@ def table_xml(m, ovr, axes, rom):
              f'storageaddress="{hexa(m["addr"])}"'] + size + ['endian="big"']
     if o.get("mask"):
         attrs.append(f'mask="{att(o["mask"])}"')
-    out = [comment(evidence_lines(m, axes, rom))]
+    out = [comment(evidence_lines(m, axes, source_rom))]
     out += wrap("    ", "<table", attrs, ">")
     out.append(scaling(m["units"], m["scale_expr"], m["to_byte"], m["scale_conf"],
                        o.get("format", "0"), o.get("fine"), o.get("coarse"), 6))
@@ -709,7 +724,7 @@ def table_xml(m, ovr, axes, rom):
     return out
 
 
-def masked_view_xml(m, view, ovr, axes, rom):
+def masked_view_xml(m, view, ovr, axes, source_rom):
     """Build an additional masked view of the same cells without duplicating the Map fact."""
     source = ovr["table"][m["addr"]]
     dims = "3D" if m["dims"] == 2 else "2D"
@@ -738,7 +753,7 @@ def masked_view_xml(m, view, ovr, axes, rom):
     )
     if diagnostic:
         lines.append("Static diagnostic context: " + "; ".join(diagnostic))
-    lines.append(f"Analysis and method - defs/{rom}.notes.md")
+    lines.append(f"Analysis and method - defs/{source_rom}.notes.md")
     attrs = [
         f'type="{dims}"',
         f'name="{att(view["name"])}"',
@@ -884,8 +899,11 @@ class AppliedDefinitionProjections:
         )
 
 
-def apply_definition_projections(rom, maps, overrides):
+def apply_definition_projections(
+    rom, maps, overrides, layout_rom=None
+):
     """Apply optional derived layouts inside the common ROM definition."""
+    layout_rom = layout_rom or rom
     switching_enabled = map_switching_enabled(overrides)
     launch_enabled = rolling_launch_enabled(overrides)
     if not switching_enabled and not launch_enabled:
@@ -894,9 +912,10 @@ def apply_definition_projections(rom, maps, overrides):
     launch_projection = None
     if launch_enabled:
         launch_layout = rolling_launch.load_layout()
-        if launch_layout.rom != rom:
+        if launch_layout.rom != layout_rom:
             sys.exit(
-                f"Rolling Launch layout targets {launch_layout.rom}, not {rom}"
+                f"Rolling Launch layout targets {launch_layout.rom}, "
+                f"not canonical source {layout_rom}"
             )
         launch_projection = rolling_launch.project_definition_model(
             maps, overrides, launch_layout
@@ -906,9 +925,10 @@ def apply_definition_projections(rom, maps, overrides):
     switching_projection = None
     if switching_enabled:
         switching_layout = map_switching.load_layout()
-        if switching_layout.rom != rom:
+        if switching_layout.rom != layout_rom:
             sys.exit(
-                f"map-switching layout targets {switching_layout.rom}, not {rom}"
+                f"map-switching layout targets {switching_layout.rom}, "
+                f"not canonical source {layout_rom}"
             )
         switching_projection = map_switching.project_definition_model(
             maps, overrides, switching_layout
@@ -990,26 +1010,49 @@ def definition_failure(m, axes, ovr=None):
     return None
 
 
-def main():
-    rom = sys.argv[1] if len(sys.argv) > 1 else "JK08A"
-    romraider_path = (
-        sys.argv[2] if len(sys.argv) > 2 else os.path.join(DEFS, f"{rom}.xml")
-    )
-    tunerpro_path = (
-        sys.argv[3] if len(sys.argv) > 3
-        else os.path.splitext(romraider_path)[0] + ".xdf"
-    )
-    ovr_path = os.path.join(DEFS, f"{rom}.overrides.toml")
+def emit_target(
+    rom,
+    romraider_path=None,
+    tunerpro_path=None,
+    facts_cache=None,
+    display_paths=None,
+):
+    """Generate one target-specific RomRaider XML and TunerPro XDF."""
+    romraider_path = romraider_path or os.path.join(DEFS, f"{rom}.xml")
+    tunerpro_path = tunerpro_path or os.path.splitext(romraider_path)[0] + ".xdf"
+    try:
+        target = definition_targets.load_target(rom)
+    except definition_targets.DefinitionTargetError as error:
+        sys.exit(str(error))
+    source_rom = target.source
+    ovr_path = os.path.join(DEFS, f"{source_rom}.overrides.toml")
     if not os.path.exists(ovr_path):
         sys.exit(f"presentation layer not found: {ovr_path}")
     with open(ovr_path, "rb") as f:
-        ovr = tomllib.load(f)
+        ovr = definition_targets.materialize_overrides(
+            target, tomllib.load(f)
+        )
 
-    maps, axes = fetch(rom)
+    if facts_cache is None:
+        maps, axes = fetch(source_rom)
+    else:
+        if source_rom not in facts_cache:
+            facts_cache[source_rom] = fetch(source_rom)
+        maps, axes = copy.deepcopy(facts_cache[source_rom])
+    if target.source_model.inherited:
+        map_rows = rom_sources.materialize_rows(
+            target.source_model, "Map", list(maps.values())
+        )
+        axis_rows = rom_sources.materialize_rows(
+            target.source_model, "Axis", list(axes.values())
+        )
+        maps = dict(zip(maps, map_rows))
+        axes = dict(zip(axes, axis_rows))
     catalog_map_count = len(maps)
     maps, ovr, definition_projection = apply_definition_projections(
-        rom, maps, ovr
+        rom, maps, ovr, layout_rom=source_rom
     )
+    ovr = definition_targets.materialize_overrides(target, ovr)
     table_overrides = ovr.get("table", {})
     if not isinstance(table_overrides, dict):
         sys.exit(f"{os.path.basename(ovr_path)}: table must be a TOML table")
@@ -1036,7 +1079,8 @@ def main():
         if a not in axes:
             sys.exit(f"[axisview.{a}] overrides an axis absent from the graph")
         if not axes[a]["kind"]:
-            sys.exit(f"[axisview.{a}]: the axis is not annotated in {rom}.axes.csv "
+            sys.exit(f"[axisview.{a}]: the axis is not annotated in "
+                     f"{source_rom}.axes.csv "
                      f"and cannot be emitted")
 
     view_entries, views_by_source = masked_views(
@@ -1050,8 +1094,11 @@ def main():
                  "or an array of tables")
     native_switches = list(native_switches)
     native_bitwise_switches = bitwise_switches(ovr)
-    image = romkit.load(rom)
-    records = dtc_records(rom, image=image)
+    image = target.image
+    dtc_manifest = os.path.join(DEFS, f"{source_rom}.dtc.csv")
+    records = dtc_records(
+        rom, image=image, manifest_path=dtc_manifest
+    )
     dtc_entries = dtc_switches(rom, records=records)
     switches = list(native_switches)
     switches += dtc_entries
@@ -1063,9 +1110,9 @@ def main():
         body += bitwise_switch_xml(entry, index) + [""]
     for m in sorted(emit, key=lambda m: (ovr["table"][m["addr"]].get("order", 1 << 20),
                                          m["addr"])):
-        body += table_xml(m, ovr, axes, rom) + [""]
+        body += table_xml(m, ovr, axes, source_rom) + [""]
         for view in views_by_source.get(m["addr"], []):
-            body += masked_view_xml(m, view, ovr, axes, rom) + [""]
+            body += masked_view_xml(m, view, ovr, axes, source_rom) + [""]
     for a in sorted(ovr.get("axisview", {}),
                     key=lambda a: (ovr["axisview"][a].get("order", 1 << 20), a)):
         o, x = ovr["axisview"][a], axes[a]
@@ -1073,7 +1120,7 @@ def main():
         body += [comment([f'{hexa(a)}  axis with {x["len"]} points {x["storagetype"]}, '
                           f'{x["kind"]}' + (f' [{x["scale_conf"]}]'
                                             if x["scale_conf"] else ""),
-                          x["note"] or "", f"Analysis and method - defs/{rom}.notes.md"])]
+                          x["note"] or "", f"Analysis and method - defs/{source_rom}.notes.md"])]
         body += wrap("    ", "<table", ['type="2D"', f'name="{att(o["name"])}"',
                                         f'category="{att(category)}"',
                                         f'storagetype="{att(x["storagetype"])}"',
@@ -1088,10 +1135,15 @@ def main():
     missing = [f for f in ROMID_FIELDS if f not in romid]
     if missing:
         sys.exit(f"{os.path.basename(ovr_path)}: [rom] is missing fields {', '.join(missing)}")
-    sources = ["Memgraph (facts)"]
+    sources = [
+        "Memgraph (facts)"
+        if source_rom == rom
+        else f"Memgraph {source_rom} (canonical facts)"
+    ]
     if dtc_entries:
-        sources.append(f"defs/{rom}.dtc.csv (DTC)")
-    sources.append(f"defs/{rom}.overrides.toml (presentation)")
+        sources.append(f"defs/{source_rom}.dtc.csv (DTC)")
+    sources.append(f"defs/{source_rom}.overrides.toml (presentation)")
+    sources.append("defs/rom-identities.toml (target identity)")
     if (
         definition_projection is not None
         and definition_projection.map_switching is not None
@@ -1109,8 +1161,8 @@ def main():
     head = [comment([f"RomRaider definition for {rom}. Generated by tools/mapkit/emit_def.py from "
                      + ", ".join(sources) + ".",
                      "Edits to this file do not survive the next run.",
-                     "Edit the sources: defs/<rom>.findings.csv, <rom>.axes.csv, "
-                     "<rom>.interp.csv, <rom>.dtc.csv, <rom>.overrides.toml.", ""]
+                     f"Edit the canonical sources under defs/{source_rom}.* and "
+                     "the target identity in defs/rom-identities.toml.", ""]
                     + romid.get("comment", {}).get("text", "").split("\n"), indent=0),
             "<roms>", "  <rom>", "    <romid>"]
     head += [f"      <{f}>{att(romid[f])}</{f}>" for f in ROMID_FIELDS]
@@ -1158,17 +1210,19 @@ def main():
         records,
         native_switches,
         native_bitwise_switches,
+        source_rom=source_rom,
     )
     with open(tunerpro_path, "w") as f:
         f.write(xdf)
 
-    print(f"{os.path.relpath(romraider_path)}: {len(emit)} calibration tables, "
+    shown_xml, shown_xdf = display_paths or (romraider_path, tunerpro_path)
+    print(f"{os.path.relpath(shown_xml)}: {len(emit)} calibration tables, "
           f"{len(dtc_entries)} DTC switches, "
           f"{len(view_entries)} masked views, {len(ovr.get('axisview', {}))} reference axes, "
           f"{len(switches)} switches, "
           f"{len(native_bitwise_switches)} bitwise switches")
     print(
-        f"{os.path.relpath(tunerpro_path)}: "
+        f"{os.path.relpath(shown_xdf)}: "
         f"{xdf_stats['calibration_tables']} calibration tables, "
         f"{xdf_stats['masked_views']} masked views, "
         f"{xdf_stats['bitwise_flags']} bitwise flags, "
@@ -1216,6 +1270,50 @@ def main():
         print(f"    {hexa(a)} {sem}: {why}")
     nosem = sum(1 for m in maps.values() if not m["semantics"] and m["role"] == "table")
     print(f"    {nosem} table-role maps lack semantics and remain open ledger work")
+
+
+def emit_all(output_dir=DEFS):
+    """Generate every registered target without partial output on render failure."""
+    output_dir = os.fspath(output_dir)
+    targets = definition_targets.registered_targets()
+    facts_cache = {}
+    with tempfile.TemporaryDirectory(
+        prefix=".emit-def-", dir=output_dir
+    ) as stage_dir:
+        staged = []
+        for rom in targets:
+            final_xml = os.path.join(output_dir, f"{rom}.xml")
+            final_xdf = os.path.join(output_dir, f"{rom}.xdf")
+            stage_xml = os.path.join(stage_dir, f"{rom}.xml")
+            stage_xdf = os.path.join(stage_dir, f"{rom}.xdf")
+            emit_target(
+                rom,
+                stage_xml,
+                stage_xdf,
+                facts_cache=facts_cache,
+                display_paths=(final_xml, final_xdf),
+            )
+            staged.append((stage_xml, final_xml))
+            staged.append((stage_xdf, final_xdf))
+        for staged_path, final_path in staged:
+            os.replace(staged_path, final_path)
+
+
+def main(argv=None):
+    args = list(sys.argv[1:] if argv is None else argv)
+    if not args:
+        args = ["all"]
+    if args[0].lower() in {"all", "--all"}:
+        if len(args) != 1:
+            sys.exit("all mode does not accept explicit output paths")
+        emit_all()
+        return
+    if len(args) > 3:
+        sys.exit(
+            "usage: emit_def.py [<rom>|all|--all] "
+            "[<romraider-out>] [<tunerpro-out>]"
+        )
+    emit_target(*args)
 
 
 if __name__ == "__main__":

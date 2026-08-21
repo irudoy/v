@@ -5,18 +5,29 @@ It installs every current firmware runtime registered for the selected series,
 recalculates all checksum domains, verifies the final closed write set, and
 creates one ROM with digest sidecars and a machine-readable manifest.
 
-JK08A is the only registered series. The command has two selection modes:
+The registered `sh7058_7mfkavn86` exact-code series contains JK00A, JK03A,
+JK03B, and JK08A. JK08A is the canonical address and executable-code profile;
+each member retains its own stock identity and calibration. The command has two
+selection modes:
 
 ```bash
 uv run python patches/build_rom.py INPUT.bin --output OUTPUT.bin
 uv run python patches/build_rom.py INPUT.bin --rom JK08A --output OUTPUT.bin
+uv run python patches/build_rom.py INPUT.bin --rom JK00A --output OUTPUT.bin
 ```
 
-The default `--rom auto` mode identifies JK08A from the one-MiB image size and
-the immutable identity bytes at `0x8204..0x8219`. It does not inspect the file
-name. `--rom JK08A` bypasses selection ambiguity but does not bypass image
-validation. Both modes require the exact JK08A identity, valid input checksums,
-stock anchors, and no unknown protected-code changes.
+The default `--rom auto` mode identifies the exact member from the one-MiB image
+size and immutable identity bytes at `0x8204..0x8219`. It does not inspect the
+file name. An explicit selector bypasses selection ambiguity but does not
+bypass image validation. Both modes require the selected stock identity, valid
+input checksums, stock anchors, an exact vector/code prefix at
+`0x000000..0x0081ff`, and an exact protected partition at
+`0x020000..0x0fffff`.
+
+Every invocation validates `rom-images/roms.csv` and
+`rom-images/homology.toml`. The four registered stock images must match their
+SHA-256 identities and the declared exact-code ranges before any composition
+is accepted.
 
 Use `--verify-only` to run the complete in-memory composition and verification
 without creating files:
@@ -25,9 +36,9 @@ without creating files:
 uv run python patches/build_rom.py INPUT.bin --verify-only
 ```
 
-## JK08A pipeline
+## Exact-family pipeline
 
-The JK08A handler performs these operations in one invocation:
+The common handler performs these operations in one invocation:
 
 1. Validate image size, immutable identity, and all six stored checksum values.
 2. Validate the shared active-RAM and future ROM/RAM reservation ledger.
@@ -41,7 +52,8 @@ The JK08A handler performs these operations in one invocation:
    bytes, partial pointer tables, invalid configuration records, occupied
    reserves, and unknown protected-code changes are rejected.
 4. Normalize only the combined builder-owned Map Switching, Rolling Launch,
-   CAN telemetry, and checksum ranges back to exact stock bytes.
+   CAN telemetry, and checksum ranges back to bytes from the selected stock
+   member.
 5. Apply the current Map Switching composition directly from
    `map-switching-payloads.toml`.
 6. Restore every Map 2 through Map 5 calibration byte when the input already
@@ -60,10 +72,12 @@ The JK08A handler performs these operations in one invocation:
    three component write sets and the checksum fields.
 
 The builder preserves calibration and configuration outside its declared
-ranges, including the Developer Immobilizer bit edited through `defs/JK08A.xml`
-or `defs/JK08A.xdf`. It does not call an Immobilizer patcher. Historical image
-identities and hardware outcomes are retained in `hardware-results.toml`; the
-production path imports only the current composition modules.
+ranges, including the Developer Immobilizer bit edited through the matching
+`defs/<ROM>.xml` or `defs/<ROM>.xdf`. Map 1 and every newly initialized Map 2
+through Map 5 copy come from the selected input, never from JK08A. The builder
+does not call an Immobilizer patcher. Historical image identities and hardware
+outcomes are retained in `hardware-results.toml`; the production path imports
+only the current composition modules.
 
 ## Rolling Launch profile
 
@@ -74,7 +88,7 @@ including the bounded-retard mode:
 
 ```toml
 schema_version = 2
-rom = "JK08A"
+rom = "sh7058_7mfkavn86"
 name = "rpm-hold-retard-maps-1-3"
 
 [rolling_launch]
@@ -111,8 +125,9 @@ uv run python patches/build_rom.py INPUT.bin \
 
 The accepted mode names are `observe`, `rpm_hold`, and `rpm_hold_retard`.
 `enabled_maps` uses one-based map numbers. Every field is mandatory, unknown
-fields are rejected, the profile ROM must equal the selected ROM, and the
-resulting 32-byte configuration must pass the independent fail-closed model.
+fields are rejected, and the resulting 32-byte configuration must pass the
+independent fail-closed model. `rom` may name the complete
+`sh7058_7mfkavn86` series or bind the profile to one exact member.
 `min_speed = 0` disables the vehicle-speed activation gate, and
 `min_pedal = 0` disables the pedal-position activation gate.
 `hysteresis_ratio_tenths = 20` means 2.0 percent of captured RPM. The runtime
@@ -162,6 +177,7 @@ An existing byte-identical set is accepted as idempotent. A conflicting file
 causes the invocation to fail before any missing artifact is created. The JSON
 manifest binds the input, normalized stage, Map Switching stage, Rolling
 Launch stage, both runtime configurations, CAN mailbox record, final output,
-checksum values, write-set counts, and exact instruction audit counts. Every
-new image is marked `hardware_status=UNTESTED`; software verification does not
-make it eligible for flashing without the project hardware gates.
+checksum values, write-set counts, and exact instruction audit counts. Manifest
+schema 3 records both the series and exact member. Every new image is marked
+`hardware_status=UNTESTED`; software verification does not make it eligible for
+flashing without target-specific bench and vehicle gates.

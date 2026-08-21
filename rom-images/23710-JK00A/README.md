@@ -9,7 +9,8 @@ Public exact-part listings associate `23710-JK00A` with an automatic JDM PV36
 Skyline 350GT and VQ35HR at marketplace-grade confidence. Its known executable
 ranges are byte-identical to JK03A, JK03B, and JK08A despite the different
 engine application. JK00A has no Ghidra export, Memgraph layer, or annotation
-inheritance entry.
+copies. Its verified exact-code relationship selects the canonical JK08A
+annotation and presentation sources for target-specific definition generation.
 
 JK00A and JK00C carry the same hardware identifier but use different software
 IDs and are not an exact-code pair. Hardware labeling alone does not establish

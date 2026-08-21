@@ -256,9 +256,10 @@ therefore exact across the family. The current JK08A checksum implementation
 validates all six stored domains in every member. The four images also have the
 same 15 stock Map Switching hook values, the same empty runtime allocation, the
 same diagnostic pointer slots, and the same stock CAN mailbox record. The
-current builder still rejects non-JK08A identities because its series registry
-contains only JK08A; the binary evidence does not require code relocation for
-the other three members.
+production builder registers all four exact identities under
+`sh7058_7mfkavn86`, uses JK08A as the canonical executable layout, and restores
+builder-owned bytes from the selected member's stock image. No code relocation
+is required within this family.
 
 The reviewed JK08A table layer also transfers structurally within this family.
 At the same addresses, JK03A has 460 of 464 table byte ranges identical to
@@ -266,7 +267,10 @@ JK08A, JK03B has 454, and JK00A has 271. All 36 reviewed DTC descriptor and
 attribute pairs are identical in all four images. Generated definitions must
 measure the selected ROM values rather than copy JK08A values, especially for
 JK00A, but they can share the recovered accessors, geometry, semantics, and
-presentation source.
+presentation source. `defs/rom-inheritance.toml` binds all three inheritors to
+the canonical source, while `defs/rom-identities.toml` supplies distinct editor
+identity blocks. The generated XML/XDF files therefore expose the common
+structure without embedding JK08A calibration values in another target.
 
 The `1ND` pair is byte-identical in `0x000000:0x008200` and
 `0x020000:0x180000`. All 1,909 functions in the current 1ND0A Ghidra census are

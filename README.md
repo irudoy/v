@@ -7,17 +7,20 @@ engines.
 ## Current state
 
 - Stock ROM identity and provenance are tracked for owned and reference SH7058
-  and SH7059 images. `JK08A` is the active target; `JK03A` shares its verified
-  executable ranges and inherits the canonical JK08A annotation layer.
+  and SH7059 images. `JK08A` is the active hardware target and the canonical
+  code profile for the exact JK00A/JK03A/JK03B/JK08A family.
 - The stock collection has two exact-code families, one near-code SH7058
   family, and one distinct SH7058 image. Pairwise fixed-address and relocated
   window measurements are reproducible from the tracked homology registry.
 - The headless analysis path exports firmware structure from Ghidra, rebuilds a
   queryable Memgraph index from tracked inputs, and projects reviewed facts into
   RomRaider XML, TunerPro XDF, and a map ledger.
-- The unified JK08A builder composes the current Map Switching, Rolling Launch,
-  and custom CAN telemetry runtimes, preserves declared calibration state,
-  closes checksum domains, and emits a machine-readable build manifest.
+- The unified exact-family builder composes the current Map Switching, Rolling
+  Launch, and custom CAN telemetry runtimes for JK00A, JK03A, JK03B, and JK08A,
+  preserves target calibration state, closes checksum domains, and emits a
+  machine-readable build manifest.
+- One canonical annotation and presentation layer generates target-specific
+  RomRaider XML and TunerPro XDF files for all four exact-family identities.
 - Instruction-changing patches have a repository-contained GNU SH-2E
   executable gate. Software verification does not replace bench, readback, or
   engine validation.
@@ -40,7 +43,7 @@ engines.
 | Path | Responsibility |
 |---|---|
 | `rom-images/` | Versioned stock dumps and provenance registry |
-| `defs/` | Canonical JK08A annotations and generated editor projections |
+| `defs/` | Canonical JK08A annotations, target identities, and generated editor projections |
 | `patches/` | ROM builder, layouts, payloads, assembly, checksums, and patch tests |
 | `tools/ghidra/` | Headless structure extraction and Ghidra p-code fixtures |
 | `tools/memgraph/` | Reproducible graph ingestion, provenance audit, and backup |
@@ -90,11 +93,12 @@ is documented beside that tool.
 Build the self-contained ROM atlas HTML with:
 
 ```bash
-make romviz
+make romviz ROMS=JK08A
 ```
 
-The target always rebuilds the ignored `tmp/romviz/jk08a-rom-atlas.html`
-artifact. It does not start a server or watch source files.
+The target requires an explicit ROM list and rebuilds the ignored
+`tmp/romviz/rom-atlas.html` artifact. It does not start a server or watch source
+files.
 
 Build the portable Windows PCAN dashboard archive with:
 
@@ -119,7 +123,11 @@ make rom-build INPUT=tmp/input.bin OUTPUT=tmp/output.bin \
   PROFILE=tmp/profile.toml
 ```
 
-`make defs-generate` regenerates the tracked XML, XDF, and map ledger from an
-already running and populated Memgraph instance. No root target starts,
-mutates, or backs up Memgraph, flashes hardware, or deletes temporary files.
-Each narrow README retains the detailed subsystem contract.
+`make defs-generate` regenerates XML/XDF pairs for every registered target,
+the canonical JK08A map ledger, and the common definition validation from an
+already running and populated Memgraph instance. `DEFS_ROM=<ROM>` limits
+definition generation to one target; canonical ledgers are derived from the
+same target and inheritance registries. ROM builds use immutable-byte automatic
+detection unless `ROM=<ROM>` is explicit. No root target starts, mutates, or
+backs up Memgraph, flashes hardware, or deletes temporary files. Each narrow
+README retains the detailed subsystem contract.

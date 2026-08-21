@@ -7,9 +7,10 @@ PYTEST ?= $(UV) run pytest
 NODE ?= node
 NPM ?= npm
 
-ROM ?= JK08A
-ROMS ?= JK08A
-ROMVIZ_OUTPUT ?= tmp/romviz/jk08a-rom-atlas.html
+ROM ?= auto
+ROMS ?=
+DEFS_ROM ?= all
+ROMVIZ_OUTPUT ?= tmp/romviz/rom-atlas.html
 CAN_DASHBOARD_VERSION := $(shell sed -n 's/^__version__ = "\([^"]*\)"/\1/p' tools/can_dashboard/__init__.py)
 CAN_DASHBOARD_OUTPUT ?= tmp/vq-can-telemetry-v$(CAN_DASHBOARD_VERSION)-windows.zip
 CAN_DASHBOARD_MACOS_OUTPUT ?= tmp/vq-can-telemetry-v$(CAN_DASHBOARD_VERSION)-macos-arm64.zip
@@ -44,8 +45,9 @@ help:
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
 		'' \
 		'Variables:' \
-		'  ROM               ROM series for definitions and ROM builds (default: JK08A).' \
-		'  ROMS              Space-separated ROM models embedded in romviz (default: JK08A).' \
+		'  ROM               Exact ROM or auto detection for ROM builds (default: auto).' \
+		'  DEFS_ROM          Definition target or all (default: all).' \
+		'  ROMS              Required space-separated ROM models embedded in romviz.' \
 		'  ROMVIZ_OUTPUT     ROM atlas output path.' \
 		'  CAN_DASHBOARD_OUTPUT  Windows dashboard ZIP path.' \
 		'  CAN_DASHBOARD_MACOS_OUTPUT  macOS arm64 app ZIP path.' \
@@ -97,8 +99,9 @@ dashboard-package-macos:
 		--app-output "$(CAN_DASHBOARD_MACOS_APP_OUTPUT)"
 
 defs-generate:
-	$(PYTHON) tools/mapkit/emit_def.py "$(ROM)"
-	$(PYTHON) tools/maps/build_tracker.py "$(ROM)"
+	@test -n "$(strip $(DEFS_ROM))" || { printf '%s\n' 'DEFS_ROM is required' >&2; exit 2; }
+	$(PYTHON) tools/mapkit/emit_def.py "$(DEFS_ROM)"
+	$(PYTHON) tools/maps/build_tracker.py all
 	$(PYTHON) tools/mapkit/validate_map_switching.py
 
 rom-verify:

@@ -1,4 +1,5 @@
-# Cross-runtime ownership and future-growth budget for exact JK08A.
+# Canonical cross-runtime ownership and future-growth budget for the exact
+# 7MFKAVN86 family.
 #
 # Active ROM writes remain authoritative in each runtime composition model.
 # This ledger assigns exclusive erased reserves and active RAM ownership across

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Add the validated five-slot map-switching runtime to a compatible JK08A ROM.
+"""Add the validated five-slot runtime to a compatible 7MFKAVN86 ROM.
 
 The input may contain calibration and configuration changes below 0x20000. Its
-identity, checksum state, patch anchors, erased allocation, and complete upper
-ROM partition must match the exact JK08A baseline. Existing input bytes are
-preserved outside the declared map-switching and checksum write sets.
+identity, checksum state, patch anchors, erased allocation, vector prefix, and
+complete upper ROM partition must match the selected stock baseline. Existing
+input bytes are preserved outside the declared map-switching and checksum write
+sets.
 """
 
 from __future__ import annotations
@@ -160,19 +161,29 @@ def _validate_preservation(layout, source, patched):
     return len(changed), len(permitted)
 
 
-def patch_image(source, layout=None, blobs=None, source_name="<memory>"):
+def patch_image(
+    source,
+    layout=None,
+    blobs=None,
+    source_name="<memory>",
+    stock_image=None,
+):
     """Return a checked, self-consistent map-switching image."""
     layout = layout or layout_model.load_layout()
     source = bytes(source)
-    image = romkit.Image(layout.rom, source_name, source)
+    image_rom = stock_image.rom if stock_image is not None else layout.rom
+    image = romkit.Image(image_rom, source_name, source)
     try:
         source_verification = checksums.require_valid(source, source_name)
-        layout_model.validate_compatible_image(layout, image)
+        layout_model.validate_compatible_image(
+            layout, image, stock_image
+        )
         composition = composer.compose(
             layout=layout,
             image=image,
             blobs=blobs or load_payloads(layout),
             source_policy="compatible",
+            stock_image=stock_image,
         )
         patched = checksums.recalculate(composition.data)
         output_verification = checksums.require_valid(

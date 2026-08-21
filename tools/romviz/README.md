@@ -12,10 +12,10 @@ and patch ranges from declared manifests.
 ## JK08A build
 
 ```bash
-make romviz
+make romviz ROMS=JK08A
 ```
 
-The root target always rebuilds `tmp/romviz/jk08a-rom-atlas.html`. The HTML is
+The root target rebuilds `tmp/romviz/rom-atlas.html`. The HTML is
 self-contained and opens directly from the filesystem. The underlying command
 is available for direct tool development:
 

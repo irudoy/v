@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Validated storage model for the exact JK08A map-switching pilot.
+"""Validated storage model for the exact 7MFKAVN86 map-switching profile.
 
 The manifest is the single source for slot addresses shared by the firmware
-contract and definition projection. This module validates allocations against
-the exact stock ROM and can materialize calibration copies in memory for tests.
-It never writes a ROM image.
+contract and definition projection. JK08A is the canonical layout image; an
+exact-code family member may supply its own identity and calibration baseline.
+This module can materialize calibration copies in memory for tests. It never
+writes a ROM image.
 """
 
 from __future__ import annotations
@@ -26,7 +27,12 @@ DEFAULT_MANIFEST = Path(__file__).with_name("map-switching-layout.toml")
 STORAGE_BYTES = {"uint8": 1, "uint16": 2, "uint32": 4}
 COMPATIBLE_IDENTITY_START = 0x008204
 COMPATIBLE_IDENTITY_END = 0x00821A
-COMPATIBLE_PROTECTED_START = 0x020000
+COMPATIBLE_CALIBRATION_START = 0x008200
+COMPATIBLE_CALIBRATION_END = 0x020000
+COMPATIBLE_PROTECTED_RANGES = (
+    (0x000000, COMPATIBLE_CALIBRATION_START),
+    (COMPATIBLE_CALIBRATION_END, 0x100000),
+)
 
 
 @dataclass(frozen=True, order=True)
@@ -1076,21 +1082,46 @@ def validate_image(layout=None, image=None):
 
 
 def validate_compatible_image(layout=None, image=None, stock_image=None):
-    """Validate a calibrated JK08A image against the exact code baseline.
+    """Validate a calibrated exact-family image against its stock baseline.
 
-    Compatible inputs may differ in the lower calibration/configuration
-    partition. The complete upper partition, all patch anchors, the ROM
-    identity, and the claimed erased region must still match exact stock.
+    Compatible inputs may differ only in the calibration/configuration
+    partition. The vector prefix, complete upper partition, all patch anchors,
+    the ROM identity, and the claimed erased region must still match the
+    selected stock image. A noncanonical stock baseline must itself retain the
+    canonical protected ranges.
     """
     layout = layout or load_layout()
     if image is None:
         raise ValueError("compatible input image is required")
-    stock_image = validate_image(
-        layout, stock_image or romkit.load(layout.rom)
-    )
+    canonical_image = validate_image(layout, romkit.load(layout.rom))
+    if stock_image is None:
+        stock_image = canonical_image
+    else:
+        _validate_image_contract(layout, stock_image)
+        if len(stock_image.data) != len(canonical_image.data):
+            raise ValueError(
+                f"{stock_image.rom}: stock image has {len(stock_image.data)} "
+                f"bytes, expected {len(canonical_image.data)}"
+            )
+        for start, end in COMPATIBLE_PROTECTED_RANGES:
+            if stock_image.data[start:end] != canonical_image.data[start:end]:
+                relative = next(
+                    offset
+                    for offset, (actual, expected) in enumerate(
+                        zip(
+                            stock_image.data[start:end],
+                            canonical_image.data[start:end],
+                        )
+                    )
+                    if actual != expected
+                )
+                raise ValueError(
+                    f"{stock_image.rom}: stock protected ROM differs from "
+                    f"canonical {layout.rom} at {start + relative:#x}"
+                )
     if len(image.data) != len(stock_image.data):
         raise ValueError(
-            f"{layout.rom}: compatible image has {len(image.data)} bytes, "
+            f"{image.rom}: compatible image has {len(image.data)} bytes, "
             f"expected {len(stock_image.data)}"
         )
     _validate_image_contract(layout, image)
@@ -1103,33 +1134,34 @@ def validate_compatible_image(layout=None, image=None, stock_image=None):
     ]
     if identity != expected_identity:
         raise ValueError(
-            f"{layout.rom}: calibration identity at "
-            f"{COMPATIBLE_IDENTITY_START:#x} differs from exact stock"
+            f"{image.rom}: calibration identity at "
+            f"{COMPATIBLE_IDENTITY_START:#x} differs from selected stock"
         )
 
-    candidate = image.data[COMPATIBLE_PROTECTED_START:]
-    baseline = stock_image.data[COMPATIBLE_PROTECTED_START:]
-    if candidate != baseline:
-        relative = next(
-            offset
-            for offset, (actual, expected) in enumerate(
-                zip(candidate, baseline)
+    for start, end in COMPATIBLE_PROTECTED_RANGES:
+        candidate = image.data[start:end]
+        baseline = stock_image.data[start:end]
+        if candidate != baseline:
+            relative = next(
+                offset
+                for offset, (actual, expected) in enumerate(
+                    zip(candidate, baseline)
+                )
+                if actual != expected
             )
-            if actual != expected
-        )
-        absolute = COMPATIBLE_PROTECTED_START + relative
-        raise ValueError(
-            f"{layout.rom}: protected upper ROM differs from exact stock "
-            f"at {absolute:#x}"
-        )
+            raise ValueError(
+                f"{image.rom}: protected "
+                f"{'upper ROM' if start >= COMPATIBLE_CALIBRATION_END else 'ROM'} "
+                f"differs from selected stock at {start + relative:#x}"
+            )
     return image
 
 
-def _validate_source_image(layout, image, source_policy):
+def _validate_source_image(layout, image, source_policy, stock_image=None):
     if source_policy == "exact":
         return validate_image(layout, image)
     if source_policy == "compatible":
-        return validate_compatible_image(layout, image)
+        return validate_compatible_image(layout, image, stock_image)
     raise ValueError(
         f"unsupported source policy {source_policy!r}; "
         "expected 'exact' or 'compatible'"
@@ -1137,7 +1169,7 @@ def _validate_source_image(layout, image, source_policy):
 
 
 def materialize_calibration_copies(
-    layout=None, image=None, source_policy="exact"
+    layout=None, image=None, source_policy="exact", stock_image=None
 ):
     """Return an in-memory image with identical slot copies and pointer tables.
 
@@ -1145,7 +1177,9 @@ def materialize_calibration_copies(
     for unit tests and definition rendering only, not for flashing.
     """
     layout = layout or load_layout()
-    image = _validate_source_image(layout, image, source_policy)
+    image = _validate_source_image(
+        layout, image, source_policy, stock_image=stock_image
+    )
     data = bytearray(image.data)
     for family in layout.families:
         source = image.data[

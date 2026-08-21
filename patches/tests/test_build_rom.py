@@ -11,6 +11,7 @@ from patches import jk08a_checksums as checksums
 from patches import map_switching_layout
 from patches import can_telemetry
 from patches import rolling_launch
+from tools import rom_homology
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -64,6 +65,18 @@ class BuildRomTest(unittest.TestCase):
         cls.base_result = build_rom.build_image(
             cls.stock, source_name="exact stock"
         )
+        cls.family_images = rom_homology.load_images()
+        cls.family_results = {
+            rom: (
+                cls.base_result
+                if rom == "JK08A"
+                else build_rom.build_image(
+                    cls.family_images[rom].data,
+                    source_name=f"exact {rom} stock",
+                )
+            )
+            for rom in build_rom.SUPPORTED_ROMS
+        }
 
         migrated = bytearray(cls.base_result.data)
         migrated[0x8725] ^= 0x01
@@ -90,7 +103,69 @@ class BuildRomTest(unittest.TestCase):
         )
         self.assertEqual((selected, detection), ("JK08A", "auto"))
 
-    def test_unknown_and_unsupported_series_are_rejected(self):
+    def test_exact_family_builds_preserve_each_target_identity_and_calibration(self):
+        launch_layout = build_rom.rolling_launch_layout.load_layout()
+        component_offsets = build_rom._component_offsets(
+            self.map_layout, launch_layout
+        )
+        permitted = component_offsets | set(checksums.checksum_byte_offsets())
+        output_hashes = set()
+
+        self.assertEqual(
+            build_rom.builtin_profile().rom,
+            build_rom.ROM_SERIES,
+        )
+        for rom in build_rom.SUPPORTED_ROMS:
+            with self.subTest(rom=rom):
+                source = self.family_images[rom].data
+                result = self.family_results[rom]
+                self.assertEqual(result.rom, rom)
+                self.assertEqual(result.series, build_rom.ROM_SERIES)
+                self.assertEqual(result.detection, build_rom.AUTO_ROM)
+                self.assertEqual(
+                    build_rom.select_rom(source),
+                    (rom, build_rom.AUTO_ROM),
+                )
+                self.assertTrue(checksums.verify(result.data).valid)
+                identity = slice(
+                    map_switching_layout.COMPATIBLE_IDENTITY_START,
+                    map_switching_layout.COMPATIBLE_IDENTITY_END,
+                )
+                self.assertEqual(result.data[identity], source[identity])
+                changed = {
+                    offset
+                    for offset, (before, after) in enumerate(
+                        zip(source, result.data)
+                    )
+                    if before != after
+                }
+                self.assertEqual(changed - permitted, set())
+                for family in self.map_layout.families:
+                    canonical = source[
+                        family.canonical_address :
+                        family.canonical_address + family.byte_length
+                    ]
+                    for address in family.copies:
+                        self.assertEqual(
+                            result.data[
+                                address : address + family.byte_length
+                            ],
+                            canonical,
+                        )
+                output_hashes.add(result.output_sha256)
+                if rom != "JK08A":
+                    rebuilt = build_rom.build_image(
+                        result.data,
+                        source_name=f"complete {rom} runtime",
+                    )
+                    self.assertEqual(
+                        rebuilt.input_state,
+                        "complete-runtime-migration",
+                    )
+                    self.assertEqual(rebuilt.data, result.data)
+        self.assertEqual(len(output_hashes), len(build_rom.SUPPORTED_ROMS))
+
+    def test_unknown_identity_and_unsupported_rom_are_rejected(self):
         wrong_identity = bytearray(self.stock)
         wrong_identity[
             map_switching_layout.COMPATIBLE_IDENTITY_START
@@ -100,9 +175,9 @@ class BuildRomTest(unittest.TestCase):
         ):
             build_rom.select_rom(wrong_identity)
         with self.assertRaisesRegex(
-            build_rom.BuildError, "unsupported ROM series"
+            build_rom.BuildError, "unsupported ROM selector"
         ):
-            build_rom.select_rom(self.stock, "JK03A")
+            build_rom.select_rom(self.stock, "JK00D")
 
     def test_explicit_series_still_requires_matching_identity(self):
         wrong_identity = bytearray(self.stock)
@@ -511,6 +586,8 @@ class BuildRomTest(unittest.TestCase):
             self.assertEqual(output_path.read_bytes(), self.base_result.data)
             manifest_path = Path(f"{output_path}.manifest.json")
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(manifest["schema_version"], 3)
+            self.assertEqual(manifest["series"], build_rom.ROM_SERIES)
             self.assertEqual(manifest["rom"], "JK08A")
             self.assertEqual(
                 manifest["output"]["hardware_status"], "UNTESTED"

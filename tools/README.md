@@ -29,7 +29,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | ROM atlas | Generate an interactive flash layout from reviewed evidence and patch manifests | [`romviz/README.md`](romviz/README.md) |
 | ROM homology | Measure exact ranges, fixed-address deltas, and relocated exact code windows across stock images | [`../rom-images/README.md#homology-baseline`](../rom-images/README.md#homology-baseline) |
 | Vendor catalog | Rebuild the machine-readable vendor vocabulary used by map analysis | [`../refs/vendor/README.md`](../refs/vendor/README.md) |
-| ROM composition | Build and verify complete JK08A runtime images | [`../patches/rom-builder.md`](../patches/rom-builder.md) |
+| ROM composition | Build and verify complete exact-family runtime images | [`../patches/rom-builder.md`](../patches/rom-builder.md) |
 
 ## Tracked components
 
@@ -41,6 +41,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `memgraph/ingest.py` | Complete preflight and ordered ingestion for one ROM |
 | `memgraph/ingest_diagnostics.py` | Validate and ingest the global diagnostic corpus |
 | `mapkit/emit_def.py` | Emit the paired XML and XDF projections |
+| `mapkit/definition_targets.py` | Bind target editor identity and stock ROM to canonical exact-code definition sources |
 | `maps/build_tracker.py` | Emit the reviewable map ledger projection |
 | `diagnostics/*.py` | Source-preserving diagnostic import and read-only query layer |
 | `can_dashboard/app.py` | Tkinter live view for strict custom telemetry and stock CAN context |

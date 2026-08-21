@@ -159,6 +159,17 @@ class ApplyMapSwitchingTest(unittest.TestCase):
                 corrupt, self.layout, self.blobs, "changed code"
             )
 
+    def test_changed_vector_prefix_is_rejected(self):
+        corrupt = bytearray(self.tuned)
+        corrupt[0x100] ^= 0x01
+        self.assertTrue(checksums.verify(corrupt).valid)
+        with self.assertRaisesRegex(
+            patcher.PatchError, "protected ROM differs"
+        ):
+            patcher.patch_image(
+                corrupt, self.layout, self.blobs, "changed vector prefix"
+            )
+
     def test_occupied_allocation_and_already_patched_rom_are_rejected(self):
         occupied = bytearray(self.tuned)
         occupied[self.layout.claimed_rom.start] = 0x00

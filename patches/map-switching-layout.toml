@@ -1,4 +1,4 @@
-# Authoritative layout for the exact JK08A five-slot map-switching pilot.
+# Canonical JK08A layout for the exact 7MFKAVN86 five-slot runtime.
 #
 # This manifest allocates storage and records verified hook literals. It does
 # not contain injected SH-2E machine code and is not a ROM patch recipe.
