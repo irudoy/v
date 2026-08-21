@@ -7,7 +7,9 @@ Hitachi hardware identifier `MEC100-120 C1` and lot `6Z03`.
 
 The same physical ECU was later used for a controlled map-switching boot-failure
 reproduction. This stock file is the pre-write baseline, not a readback of a
-JK08A or modified image. It has no Ghidra export or Memgraph layer.
+JK08A or modified image. The stock image is imported into the project Ghidra
+workspace and has a complete local function, call, xref, and interpolation
+resolver export. Its durable semantic layer remains tracked in Git.
 
 Public listings associate the `MEC100-120 C1` hardware family with an automatic
 JDM PV36 Skyline 350GT and VQ35HR. No exact `23710-JK00C` public catalog record

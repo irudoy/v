@@ -1,0 +1,69 @@
+# Authoritative checksum storage and coverage layouts for supported ROMs.
+#
+# Every range is half-open. Runtime exclusions name aligned 32-bit words that
+# are skipped by the corresponding firmware self-test loop.
+
+schema_version = 1
+
+[layout.sh7058_7mfkavn86]
+roms = ["JK00A", "JK03A", "JK03B", "JK08A"]
+rom_size = 0x100000
+sum16_a_field = 0x008200
+sum16_a_start = 0x008202
+sum16_a_end = 0x020000
+runtime_a_xor_field = 0x0096D4
+runtime_a_sum_field = 0x0096DC
+runtime_a_start = 0x008204
+runtime_a_end = 0x100000
+runtime_a_exclusions = [0x0096D4, 0x0096DC, 0x020000]
+sum16_b_field = 0x020000
+sum16_b_start = 0x020002
+sum16_b_end = 0x100000
+runtime_b_xor_field = 0x020408
+runtime_b_sum_field = 0x020404
+runtime_b_start = 0x02040C
+runtime_b_end = 0x02259C
+runtime_b_exclusions = []
+evidence = "Exact checksum code and storage are shared by the complete 7MFKAVN86 family; the six stock references verify independently in every registered member."
+
+[layout.sh7058_8mfk_jk00c]
+roms = ["JK00C"]
+rom_size = 0x100000
+sum16_a_field = 0x008200
+sum16_a_start = 0x008202
+sum16_a_end = 0x020000
+runtime_a_xor_field = 0x009798
+runtime_a_sum_field = 0x0097A0
+runtime_a_start = 0x008204
+runtime_a_end = 0x100000
+runtime_a_exclusions = [0x009798, 0x0097A0, 0x020000]
+sum16_b_field = 0x020000
+sum16_b_start = 0x020002
+sum16_b_end = 0x100000
+runtime_b_xor_field = 0x020408
+runtime_b_sum_field = 0x020404
+runtime_b_start = 0x02040C
+runtime_b_end = 0x022628
+runtime_b_exclusions = []
+evidence = "JK00C checksum initializers and verifiers at 0x2168e..0x2180e bind Runtime A fields 0x9798/0x97a0 and Runtime B fields 0x20408/0x20404; the literal pool binds the final Runtime B byte at 0x22626."
+
+[layout.sh7058_8mfk_jk00d]
+roms = ["JK00D"]
+rom_size = 0x100000
+sum16_a_field = 0x008200
+sum16_a_start = 0x008202
+sum16_a_end = 0x020000
+runtime_a_xor_field = 0x0097A8
+runtime_a_sum_field = 0x0097B0
+runtime_a_start = 0x008204
+runtime_a_end = 0x100000
+runtime_a_exclusions = [0x0097A8, 0x0097B0, 0x020000]
+sum16_b_field = 0x020000
+sum16_b_start = 0x020002
+sum16_b_end = 0x100000
+runtime_b_xor_field = 0x020408
+runtime_b_sum_field = 0x020404
+runtime_b_start = 0x02040C
+runtime_b_end = 0x022628
+runtime_b_exclusions = []
+evidence = "JK00D checksum initializers and verifiers at 0x2168e..0x2180e bind Runtime A fields 0x97a8/0x97b0 and Runtime B fields 0x20408/0x20404; the literal pool binds the final Runtime B byte at 0x22626."

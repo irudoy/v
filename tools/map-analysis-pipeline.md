@@ -31,6 +31,7 @@ stock ROM + tracked source registries
 | `defs/rom-inheritance.toml` | Canonical annotation source, target ROM, exact hashes, and code-equality ranges |
 | `tools/ghidra/symbols.csv` | Curated function names |
 | `defs/<source>.interp.csv` | Interpolation entry, family, role, geometry, element type, and implicit-axis mechanics |
+| `defs/<source>-<target>.interp-correspondence.csv` | Reviewed relocated wrapper and kernel pairs across non-inheriting ROM families |
 | `defs/<source>.findings.csv` | Map role, semantics, scaling, confidence, evidence, and manually traced non-interpolation geometry |
 | `defs/<source>.axes.csv` | Axis semantics, scaling, confidence, and evidence |
 | `defs/<source>.funcs.csv` | Function semantics, contracts, independent confidence fields, and evidence |
@@ -62,6 +63,7 @@ Ghidra projects and export directories remain machine-local. Scripts under
 |---|---|---|
 | `funcs.csv`, `calls.csv` | `ExportGraph.java` | Function boundaries and resolved call edges |
 | `xrefs.csv` | `ExportXrefs.java` | RAM, peripheral, and literal-pool references |
+| `function_signatures.csv`, `function_sites.csv` | `ExportFunctionSignatures.java` | Exact and relocation-tolerant function hashes plus ordinal callsites |
 | `map_inventory.csv` | `MapInventory.java` | Kernel slot, wrapper, callsite, and baseline operand census |
 | `direct_lookup_inventory.csv` | `DirectLookupInventory.java` | Direct and implicit-axis table census |
 | `accessors.<kernel>.csv` | `ResolveAccessors.java` | Backtracking and decompiler-data-flow operands with branch sets and verdicts |
@@ -79,6 +81,12 @@ declared byte-copy helpers, and falls back to instruction propagation without
 discarding unresolved dynamic operands. It emits both the earlier linear
 backtrack and the data-flow result. `bt_only` is a regression; `conflict` is a
 review finding; `selector` preserves multiple legitimate operand tuples.
+
+For non-inheriting families, `tools/rom_correspondence.py` uses unique function
+signatures and equal call ordinals to propose addressed map and axis pairs.
+Interpolation wrappers must be joined through a reviewed correspondence CSV;
+row order and relative address offsets are not evidence. The resulting report
+is an input to target-specific review, not a semantic claim source.
 
 ## Derived graph schema
 

@@ -1,17 +1,19 @@
-# ROM checksums - JK00A / JK03A / JK03B / JK08A
+# ROM checksums - supported SH7058 families
 
-JK00A, JK03A, JK03B, and JK08A images are 1 MiB, big-endian, and based at
-`0x0`. They share a checksum layout consisting of two SUM16 checks and two
-runtime self-test XOR+SUM domains.
+The registered JK00A, JK03A, JK03B, JK08A, JK00C, and JK00D images are 1 MiB,
+big-endian, and based at `0x0`. Each uses two SUM16 checks and two runtime
+self-test XOR+SUM domains. Addressed coverage belongs to the exact ROM profile
+in `checksum-layouts.toml`; it is not inferred from file size or MCU family.
 
 The Developer Immobilizer control in the JK08A definitions changes only
 `ROM[0x8725].bit0`. The historical one-bit validation image retained stock
 checksum fields, and the flasher corrected them while writing. The layout below
 supports code analysis and independent verification of ROM content.
-`jk08a_checksums.py` implements the complete layout, and
-`build_rom.py` requires a valid input and writes a recalculated,
-self-consistent complete output. Component-stage tools use the same module and
-dependency order.
+`rom_checksums.py` implements the profile registry and generic calculation.
+`jk08a_checksums.py` preserves the 7MFKAVN86 compatibility API used by the
+current builder. Component-stage tools use the same dependency order.
+
+## 7MFKAVN86 shared layout
 
 ## SUM16
 
@@ -59,13 +61,31 @@ The B references are included in self-test A and SUM16 B. The A references are
 included in SUM16 A. SUM16 B is excluded from self-test A and lies beyond the
 end of SUM16 A, so steps 3 and 4 are independent.
 
-`jk08a_checksums.py` verifies stored values against independently calculated
+## 8MFK member-specific layouts
+
+JK00C and JK00D retain the same SUM16 fields and half-open SUM16 regions. Their
+runtime B references remain at `0x020404` and `0x020408`, while the covered
+range is `[0x02040c, 0x022628)`. Runtime A still covers
+`[0x008204, 0x100000)` and excludes its own fields plus `0x020000`, but the A
+reference fields differ between the two images.
+
+| ROM | A XOR reference | A SUM reference | B end |
+|-----|----------------:|----------------:|------:|
+| JK00C | `0x009798` | `0x0097a0` | `0x022628` |
+| JK00D | `0x0097a8` | `0x0097b0` | `0x022628` |
+
+The JK00C and JK00D checksum functions at `0x02168e`, `0x0216d0`,
+`0x0216f6`, `0x021790`, and `0x0217f0` have exact same-address instruction
+bytes. Their literal pools bind the member-specific Runtime A fields and the
+common Runtime B final byte at `0x022626`.
+
+`rom_checksums.py` verifies stored values against independently calculated
 values, reports every mismatched field, and recalculates in the order above.
 Its output is verified again before return. The unified builder permits final
-byte changes only inside the union of the Map Switching, Rolling Launch, and
-custom CAN telemetry composition ranges and these six checksum fields.
+byte changes only inside the union of its runtime composition ranges and the
+six checksum fields selected for the exact input ROM.
 
-## RomRaider
+## RomRaider 7MFKAVN86 projection
 
 The native RomRaider handlers reproduce the layout in this order:
 
@@ -93,10 +113,13 @@ the XDF contract.
 | JK03A | `d58a` | `eee1` | `e93fb358` | `d61bc71c` | `ac399870` | `07131670` |
 | JK03B | `9a0a` | `eee1` | `ff15d54a` | `2ec1b4d2` | `ac399870` | `07131670` |
 | JK08A | `2cae` | `eee1` | `47a28253` | `094aa8cf` | `ac399870` | `07131670` |
+| JK00C | `a02a` | `b095` | `ebaee2dd` | `3ba6fca3` | `d38ba003` | `da585443` |
+| JK00D | `d2c8` | `d962` | `d1850caa` | `0b2cd270` | `d396725d` | `da5e998d` |
 
 Domain B and its values match because JK00A, JK03A, JK03B, and JK08A have an
 identical `0x020000..0x0fffff` region. The A and SUM16 A values reflect
-configuration/calibration differences.
+configuration/calibration differences. JK00C and JK00D use the longer Runtime
+B range and have distinct code and calibration content.
 
 ## Runtime self-test machinery
 
@@ -116,6 +139,6 @@ observed on a physical ECU.
 
 ## Scope
 
-The exact-layout profile is confirmed for JK00A, JK03A, JK03B, and JK08A. This
-specification makes no claim about checksum-field locations or coverage for
-1ND0A, 1ND3B, JK78C, JK00C, or JK00D.
+Exact layouts are registered for JK00A, JK03A, JK03B, JK08A, JK00C, and
+JK00D. This specification makes no claim about checksum-field locations or
+coverage for 1ND0A, 1ND3B, or JK78C.

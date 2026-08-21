@@ -1,14 +1,17 @@
 # ECU definition sources and projections
 
-`defs/` contains the canonical JK08A annotation layer, generated tuning-editor
-definitions, and pinned public reference-definition submodules. Technical facts
-are separated from editor presentation and generated output.
+`defs/` contains canonical annotation layers, cross-ROM correspondence
+registries, generated tuning-editor definitions, and pinned public
+reference-definition submodules. Technical facts are separated from editor
+presentation and generated output.
 
 ## Authority model
 
 | File | Responsibility | Edit directly |
 |---|---|---|
 | `JK08A.interp.csv` | Interpolation entries and recovered geometry | yes |
+| `JK00D.interp.csv` | JK00D interpolation entries and recovered geometry | yes |
+| `JK08A-JK00D.interp-correspondence.csv` | Reviewed cross-family interpolation wrapper pairs | yes |
 | `JK08A.findings.csv` | Map semantics, role, scale, confidence, and evidence | yes |
 | `JK08A.axes.csv` | Axis semantics, scale, confidence, and evidence | yes |
 | `JK08A.funcs.csv` | Function semantics, callable contracts, and evidence | yes |
@@ -39,6 +42,21 @@ the canonical structure with the selected stock image and target identity.
 The source model and exact image are validated before every complete ingest.
 See `../tools/map-analysis-pipeline.md` and
 `../tools/memgraph/README.md`.
+
+## Cross-family correspondence
+
+JK00D uses a distinct calibration layout and cannot inherit addressed JK08A
+claims. `JK08A-JK00D.interp-correspondence.csv` binds each reviewed source
+wrapper to its relocated JK00D homolog. The registry covers every JK08A
+wrapper and permits target-only JK00D wrappers. Pair validation requires equal
+geometry, storage type, axis types, and interpolation family outside the
+addresses.
+
+`tools/rom_correspondence.py` combines this registry with machine-local Ghidra
+function signatures, call ordinals, and resolver censuses. Its function and
+entity outputs are deterministic review candidates. They do not establish
+semantic inheritance by themselves; promoted target claims remain explicit
+tracked evidence.
 
 ## Evidence specifications
 

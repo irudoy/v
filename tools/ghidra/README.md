@@ -31,14 +31,17 @@ filesystem path. Ghidra projects and export directories remain outside Git.
 
 `ExportGraph.java` writes `funcs.csv` and `calls.csv`.
 `ExportXrefs.java` writes peripheral, RAM, and literal-pool references to
-`xrefs.csv`. A typical read-only export is:
+`xrefs.csv`. `ExportFunctionSignatures.java` writes relocation-tolerant
+`function_signatures.csv` and call-site ordinal data to `function_sites.csv`.
+A typical read-only export is:
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -process <program-name> -noanalysis -readOnly \
   -scriptPath tools/ghidra \
   -postScript ExportGraph.java <export-dir> \
-  -postScript ExportXrefs.java <export-dir>
+  -postScript ExportXrefs.java <export-dir> \
+  -postScript ExportFunctionSignatures.java <export-dir>
 ```
 
 `RecoverFuncs.java` and `RenameFuncs.java` intentionally mutate the local
@@ -52,7 +55,7 @@ preflight before graph writes; see `../memgraph/README.md`.
 
 | Group | Scripts | Purpose |
 |---|---|---|
-| Structure | `ExportGraph`, `ExportXrefs`, `RecoverFuncs`, `RenameFuncs` | Maintain and export function, call, and reference structure |
+| Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `RecoverFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
 | Map discovery | `FindInterpCore`, `MapInventory`, `DirectLookupInventory`, `ResolveAccessors`, `ScanFlags` | Discover interpolation families, operands, accessors, axes, and local selectors |
 | Diagnostics | `ExportDiagnosticRefs`, `ScanImmoAnchors`, `TraceRamAccesses` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
 | Inspection | `InspectAddress`, `DumpListing`, `DumpFuncListing`, `DecompileFuncs`, `FindTableRefs`, `FindPoolWords` | Inspect ownership, references, functions, listings, pools, and decompilation |
@@ -61,6 +64,20 @@ preflight before graph writes; see `../memgraph/README.md`.
 
 Each script documents its positional arguments in its source header. Generated
 CSV and listings belong in a machine-local export directory.
+
+## Cross-ROM function correspondence
+
+`ExportFunctionSignatures.java` hashes exact instruction bytes, mnemonic
+sequences, and normalized instruction shapes for every recovered function.
+The companion site export records each `jsr` and `bsr` by instruction ordinal
+inside its function. Ordinals keep resolver callsites comparable when a
+homologous function changes instruction widths or literal-pool placement.
+
+`tools/rom_correspondence.py` pairs unique exact-byte functions first and then
+unique normalized shapes. With two interpolation registries, their reviewed
+correspondence file, and complete resolver censuses, it also emits candidate
+map and axis address pairs. Ambiguous source or target operands are retained
+with a non-unique status rather than guessed.
 
 ## Address inspection
 

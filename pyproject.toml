@@ -18,6 +18,7 @@ default-groups = ["dev"]
 [tool.pytest.ini_options]
 testpaths = [
     "patches/tests",
+    "tools/tests",
     "tools/mapkit/tests",
     "tools/memgraph/tests",
     "tools/diagnostics/tests",
