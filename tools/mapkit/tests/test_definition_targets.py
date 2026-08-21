@@ -16,7 +16,10 @@ ROMS = (
     "JK00C",
     "JK00D",
     "JK78C",
+    "1ND0A",
+    "1ND3B",
 )
+RELOCATED_ROMS = frozenset({"JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B"})
 
 
 class DefinitionTargetsTest(unittest.TestCase):
@@ -33,7 +36,7 @@ class DefinitionTargetsTest(unittest.TestCase):
                 self.assertEqual(target.image.rom, rom)
                 self.assertEqual(
                     target.definition_projection is not None,
-                    rom in {"JK00C", "JK00D", "JK78C"},
+                    rom in RELOCATED_ROMS,
                 )
                 address = int(target.romid["internalidaddress"], 16)
                 identity = target.romid["internalidstring"].encode("ascii")

@@ -48,6 +48,7 @@ PROJECTION_FIELDS = frozenset(
         "target_sha256",
         "addresses",
         "checksum",
+        "romraider_checksum",
         "map_switching",
         "rolling_launch",
         "switch",
@@ -96,6 +97,7 @@ class DefinitionProjection:
     target_sha256: str
     address_path: Path
     checksum: bool
+    romraider_checksum: bool
     map_switching: bool
     rolling_launch: bool
     switch_addresses: tuple[tuple[str, int], ...]
@@ -240,9 +242,18 @@ def _parse_projection(target, row, path):
     for key in ("source_sha256", "target_sha256"):
         if not isinstance(row[key], str) or not SHA256_RE.fullmatch(row[key]):
             raise DefinitionProjectionError(f"{context}.{key} is not a SHA-256")
-    for key in ("checksum", "map_switching", "rolling_launch"):
+    for key in (
+        "checksum",
+        "romraider_checksum",
+        "map_switching",
+        "rolling_launch",
+    ):
         if type(row[key]) is not bool:
             raise DefinitionProjectionError(f"{context}.{key} must be a boolean")
+    if row["romraider_checksum"] and not row["checksum"]:
+        raise DefinitionProjectionError(
+            f"{context}.romraider_checksum requires checksum support"
+        )
     address_name = row["addresses"]
     if (
         not isinstance(address_name, str)
@@ -278,6 +289,7 @@ def _parse_projection(target, row, path):
         target_sha256=row["target_sha256"],
         address_path=address_path,
         checksum=row["checksum"],
+        romraider_checksum=row["romraider_checksum"],
         map_switching=row["map_switching"],
         rolling_launch=row["rolling_launch"],
         switch_addresses=tuple(sorted(switch_addresses)),
@@ -300,7 +312,7 @@ def load_registry(path=DEFAULT_REGISTRY):
         raise DefinitionProjectionError(
             f"{path}: expected only schema_version and projection"
         )
-    if document["schema_version"] != 2:
+    if document["schema_version"] != 3:
         raise DefinitionProjectionError(f"{path}: unsupported schema_version")
     rows = document["projection"]
     if not isinstance(rows, dict) or not rows:
@@ -643,7 +655,7 @@ def apply_projection(
     else:
         projected_overrides.pop("masked_view", None)
 
-    if projection.checksum:
+    if projection.romraider_checksum:
         source_checksums = overrides.get("checksum", [])
         if isinstance(source_checksums, dict):
             source_checksums = [source_checksums]
@@ -798,6 +810,7 @@ def validate_registry(path=DEFAULT_REGISTRY):
             "mapped": sum(binding.mapped for binding in projection.bindings),
             "unsupported": len(projection.unsupported_maps),
             "checksum": projection.checksum,
+            "romraider_checksum": projection.romraider_checksum,
             "map_families": len(map_layout.families) if map_layout else 0,
             "rolling_configuration": (
                 launch_layout.configuration.start if launch_layout else None
@@ -826,7 +839,9 @@ def main(argv=None):
             f"{target}: bindings={values['bindings']}, "
             f"mapped={values['mapped']}, "
             f"unsupported={values['unsupported']}, "
-            f"checksum={'enabled' if values['checksum'] else 'disabled'}, "
+            f"checksum={'verified' if values['checksum'] else 'unknown'}, "
+            "romraider_checksum="
+            f"{'enabled' if values['romraider_checksum'] else 'disabled'}, "
             f"map_families={values['map_families']}, "
             f"rolling_configuration={rolling_text}"
         )

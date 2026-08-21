@@ -18,7 +18,7 @@ not be edited by hand.
 | `defs/JK08A.diagnostic-bindings.csv` | Reviewed diagnostic context shown in projections |
 | `defs/rom-inheritance.toml` | Exact target-to-canonical source binding and SHA-256 evidence |
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
-| `defs/JK08A-<ROM>.definition-addresses.csv` | Reviewed target map and axis addresses |
+| `defs/JK08A-*.definition-addresses.csv` | Reviewed target map and axis addresses |
 | `defs/rom-identities.toml` | Target-specific RomRaider and TunerPro identity fields |
 | Patch layout manifests | Common map-slot and Rolling Launch configuration projections |
 | `rom-images/roms.csv` | Exact source-image identity and path |
@@ -30,6 +30,10 @@ JK00C and JK00D instead use SHA-bound reviewed address projections because
 their calibration and executable layouts are relocated. The projection omits
 non-unique source maps explicitly and validates every emitted target map and
 axis against the selected stock image.
+JK78C, 1ND0A, and 1ND3B use independently reviewed VQ37 address projections.
+The two SH7059 images share one address layout because their address-bearing
+executable code is byte-identical, but retain independent image hashes,
+identities, and stock calibration values.
 
 ## Paired editor definitions
 
@@ -50,9 +54,11 @@ reproducibility comparison.
 The generator validates the selected ROM identity, inheritance or relocated
 projection hashes, canonical graph facts, definition gate, applicable target
 DTC storage, presentation schema, and each capability enabled for a relocated
-target before writing either projection. Checksum metadata, map switching,
-Rolling Launch, and editor switches remain absent when the target registry does
-not declare their contracts. Target-specific wording uses only the explicit
+target before writing either projection. The registry distinguishes a verified
+project checksum layout from complete native RomRaider checksum metadata.
+Native checksum metadata, map switching, Rolling Launch, and editor switches
+remain absent when the target registry does not declare their contracts.
+Target-specific wording uses only the explicit
 `{target_rom}` presentation token. Canonical source labels and evidence paths
 are preserved verbatim.
 

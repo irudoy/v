@@ -1,0 +1,50 @@
+entity,source,target,variant,status,sites,function_kinds,evidence
+Axis,00011ebe,0001398a,,homologous-exact-chain,2,exact-storage;shared-explicit-contract,exact 16-byte ignition load axis is used by the homologous 16x16 accessors
+Axis,00011ece,0001399a,,homologous-call,2,selector-branch-order;shared-explicit-contract,homologous ignition selector preserves the 16-point RPM axis and branch order
+Axis,00011cf0,00013f2a,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,two target bank accessors share the exact 16-point X axis
+Axis,00011d4c,00013f4a,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,two target bank accessors share the exact 16-point Y axis
+Axis,00011d0c,0001380d,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
+Axis,00014114,00015a52,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
+Axis,00014aba,000162c0,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,homologous torque accessor preserves the exact eight-point RPM axis
+Axis,00014b4a,00016310,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,homologous torque accessor preserves the exact 16-point RPM axis
+Axis,000155a0,00016e02,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
+Axis,00018716,0001af3e,,homologous-exact-chain,2,exact-storage;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
+Axis,00018ac6,0001b4ae,,homologous-exact-chain,2,exact-storage;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
+Axis,000190d0,0001bafe,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural axis pair preserves interpolation-call order
+Axis,0002378c,00024c78,,homologous-exact-chain,2,homologous-accessor-operand;exact-storage,homologous engine-torque accessor copies the exact 16-word normalized-load axis
+Map,000085d9,00008524,,homologous-call,2,homologous-state-machine;paired-threshold-loads,homologous state machine preserves the 36 and 30 activation and release thresholds
+Map,00008a27,00008939,,homologous-call,2,homologous-base-fuel-consumer;target-literal,target Base Fuel Schedule consumer uses the independently recorded value 133
+Map,00008fdc,00008e50,,homologous-call,2,normalized-function-sequence;paired-threshold-loads,homologous pedal-state consumer preserves the 610 and 528 threshold pair
+Map,0000911c,00008f74,,homologous-call,1,homologous-state-machine;target-literal,homologous readiness state machine preserves the 0x04b0 threshold role
+Map,00009284,00009106,,homologous-call,2,homologous-base-fuel-consumer;target-literal,homologous Base Fuel Schedule consumers preserve the K-value operand
+Map,0000934e,,,unsupported,0,changed-geometry,homologous fuel-cut helper uses interpolated curves and scalar caps instead of the source 2x2 table
+Map,0000942c,000092c2,,homologous-call,3,homologous-request-limiter;target-literal,multiple homologous consumers preserve the 0x2580 limiter scalar role
+Map,00009534,0000940a,,homologous-call,3,homologous-base-fuel-consumer;homologous-torque-consumer,homologous fuel and torque consumers preserve the 0x9f38 normalization reference
+Map,0000991a,00009880,,homologous-call,6,homologous-selector;shared-explicit-contract,target ignition coordinator references this surface on every unselected cold-state path
+Map,00009a1a,00009980,,homologous-call,4,homologous-selector;selector-branch-order,target ignition selector preserves the first source branch as branch 1
+Map,00009b1a,00009a80,,homologous-call,4,homologous-selector;selector-branch-order,target ignition selector preserves the second source branch as branch 0
+Map,0000a29a,0000a1c0,bank_1,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,first target bank accessor preserves exact geometry and storage
+Map,0000a29a,0000a2c0,bank_2,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,second target bank accessor preserves exact geometry and storage
+Map,0000ab5a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
+Map,0000b33a,,,unsupported,0,changed-geometry,homologous target uses branch-selected 8-point curves instead of the source 16x16 surface
+Map,0000b43a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
+Map,0000b53a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
+Map,0000e98e,00010048,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural accessor pair preserves interpolation-call order
+Map,00010b8e,000120c8,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,unique engine-torque surface preserves geometry and exact storage
+Map,0001108e,000122c8,,homologous-call,2,normalized-function-sequence;homologous-accessor-operand,homologous direct-row-major accessor preserves the second torque surface operand
+Map,00012196,00013c12,,homologous-call,1,homologous-coordinator;selector-branch-order,homologous fallback branch preserves the default table role
+Map,0001219e,00013c1a,bank_1,homologous-call,1,homologous-coordinator;selector-branch-order,first target bank branch preserves the source warm-transition table role
+Map,0001219e,00013c22,bank_2,homologous-call,1,homologous-coordinator;selector-branch-order,second target bank branch preserves the source warm-transition table role
+Map,000124d2,00013ea2,,homologous-exact-chain,2,normalized-function-sequence;exact-storage,homologous state-machine accessor preserves geometry and exact table bytes
+Map,000126e4,000140c4,,homologous-call,2,shared-implicit-contract;paired-consumer,homologous DFCO coordinator preserves the held-request table role and near-exact calibration shape
+Map,00012718,00014104,,homologous-call,2,shared-implicit-contract;paired-consumer,homologous DFCO coordinator preserves the rising-edge table role and near-exact calibration shape
+Map,00012818,000141d4,,homologous-exact-chain,2,shared-implicit-contract;exact-storage,homologous restore coordinator preserves the lower table role and exact table bytes
+Map,0001298c,00014308,,homologous-call,2,shared-implicit-contract;paired-consumer,homologous restore coordinator preserves the upper table role and calibration shape
+Map,000129c0,00014324,,homologous-exact-chain,2,normalized-function-sequence;exact-storage,homologous channel accessor preserves the six exact unity-multiplier bytes
+Map,00013202,000149ee,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural pair preserves interpolation-call order
+Map,000141f4,00015ac2,,homologous-call,1,ordered-structural-accessor,unique structural pair preserves interpolation-call order
+Map,00014274,00015b42,,homologous-call,1,ordered-structural-accessor,unique structural pair preserves interpolation-call order
+Map,00014c1a,00016410,,homologous-exact-chain,1,exact-storage,shared torque interpolation contract preserves the exact eight-word coefficient table
+Map,000154a0,00016c82,,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,shared torque interpolation contract preserves the exact eight-word base table
+Map,000175c8,00019b5c,,homologous-exact-chain,2,exact-storage;ordered-structural-accessor,unique structural pair preserves interpolation-call order
+Map,00018766,0001af9e,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural pair preserves interpolation-call order

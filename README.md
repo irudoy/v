@@ -21,7 +21,8 @@ engines.
   domains, and emits a machine-readable build manifest.
 - One canonical annotation and presentation layer plus explicit relocated
   correspondences generate target-specific RomRaider XML and TunerPro XDF
-  files for all six runtime-supported identities.
+  files for all nine stock identities. The two SH7059 1ND images share one
+  reviewed address layout while retaining independent identities and values.
 - Instruction-changing patches have a repository-contained GNU SH-2E
   executable gate. It independently assembles and executes the canonical JK08A
   runtime and the target-specific JK00C/JK00D projections. Software verification
@@ -141,3 +142,8 @@ README retains the detailed subsystem contract.
 JK78C participates in all-target definition and ROM-atlas generation with its
 reviewed calibration addresses and structural export. Its checksum and runtime
 contracts remain undeclared, so the production ROM builder does not accept it.
+
+1ND0A and 1ND3B participate in all-target definition and ROM-atlas generation
+with the shared reviewed SH7059 calibration layout and all six verified
+checksum fields. Their map-switching, Rolling Launch, custom CAN telemetry, and
+production builder contracts remain undeclared.

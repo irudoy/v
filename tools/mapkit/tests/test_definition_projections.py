@@ -10,7 +10,7 @@ from tools.mapkit import rom as romkit
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
-TARGETS = ("JK00C", "JK00D", "JK78C")
+TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B")
 SH7058_HR_UNSUPPORTED = {
     "000085d9",
     "00008fdc",
@@ -27,6 +27,7 @@ JK78C_UNSUPPORTED = {
     "0000b43a",
     "0000b53a",
 }
+VQ37_UNSUPPORTED = JK78C_UNSUPPORTED
 
 
 def test_registry_binds_relocated_targets_without_a_default():
@@ -38,7 +39,8 @@ def test_registry_binds_relocated_targets_without_a_default():
         assert projection.source == "JK08A"
     assert projections["JK00C"].unsupported_maps == SH7058_HR_UNSUPPORTED
     assert projections["JK00D"].unsupported_maps == SH7058_HR_UNSUPPORTED
-    assert projections["JK78C"].unsupported_maps == JK78C_UNSUPPORTED
+    for rom in ("JK78C", "1ND0A", "1ND3B"):
+        assert projections[rom].unsupported_maps == VQ37_UNSUPPORTED
 
 
 def test_complete_registry_validation_covers_every_target_capability_set():
@@ -49,13 +51,23 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["mapped"] > 0
         assert values["unsupported"] == len(SH7058_HR_UNSUPPORTED)
         assert values["checksum"] is True
+        assert values["romraider_checksum"] is True
         assert values["map_families"] == 13
         assert values["rolling_configuration"] == 0xE0660
     assert stats["JK78C"]["mapped"] == 44
-    assert stats["JK78C"]["unsupported"] == len(JK78C_UNSUPPORTED)
+    assert stats["JK78C"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["JK78C"]["checksum"] is False
+    assert stats["JK78C"]["romraider_checksum"] is False
     assert stats["JK78C"]["map_families"] == 0
     assert stats["JK78C"]["rolling_configuration"] is None
+    for rom in ("1ND0A", "1ND3B"):
+        values = stats[rom]
+        assert values["mapped"] == 44
+        assert values["unsupported"] == len(VQ37_UNSUPPORTED)
+        assert values["checksum"] is True
+        assert values["romraider_checksum"] is False
+        assert values["map_families"] == 0
+        assert values["rolling_configuration"] is None
 
 
 def test_exhaust_target_has_two_explicit_bank_variants():
@@ -153,18 +165,30 @@ def test_projection_applies_target_map_checksums_and_switches(
     assert "flashmethod" not in result.overrides["rom"]
 
 
-def test_jk78c_projection_omits_unverified_runtime_capabilities():
-    projection = definition_projections.projection_for_rom("JK78C")
+@pytest.mark.parametrize(
+    ("rom", "target_address", "checksum_verified"),
+    (
+        ("JK78C", "00008896", False),
+        ("1ND0A", "00008939", True),
+        ("1ND3B", "00008939", True),
+    ),
+)
+def test_vq37_projection_omits_undeclared_editor_runtime_capabilities(
+    rom, target_address, checksum_verified
+):
+    projection = definition_projections.projection_for_rom(rom)
     result = definition_projections.apply_projection(
         projection,
         {"00008a27": _direct_scalar_model()},
         {},
         _minimal_overrides(),
-        romkit.load("JK78C"),
+        romkit.load(rom),
         required_maps={"00008a27"},
     )
 
-    assert set(result.maps) == {"00008896"}
+    assert projection.checksum is checksum_verified
+    assert projection.romraider_checksum is False
+    assert set(result.maps) == {target_address}
     assert "checksum" not in result.overrides
     assert result.overrides["switch"] == []
     assert result.overrides["map_switching"] == {"enabled": False}

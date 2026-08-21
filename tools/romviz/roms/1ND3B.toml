@@ -3,7 +3,9 @@ rom = "1ND3B"
 label = "23710-1ND3B"
 annotation_source = "1ND0A exact-code structural export"
 image_registry = "rom-images/roms.csv"
+identity_registry = "defs/rom-identities.toml"
 ghidra_export = "~/tools/ghidra-projects/export-1ND0A"
+definition_xml = "defs/1ND3B.xml"
 checksum_registry = "patches/checksum-layouts.toml"
 
 [metadata]

@@ -105,8 +105,13 @@ def test_jk08a_object_ids_and_ranges_are_valid():
 
 
 @pytest.mark.parametrize("rom_id", ("1ND0A", "1ND3B"))
-def test_1nd_models_include_all_six_checksum_fields(rom_id):
+def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id):
     rom = model.build_rom_model(model.resolve_manifest(rom_id))
+    maf_factor = next(
+        item
+        for item in rom["objects"]
+        if item["label"] == "MAF Factor"
+    )
     checksum_fields = {
         item["id"]
         for item in rom["objects"]
@@ -118,6 +123,11 @@ def test_1nd_models_include_all_six_checksum_fields(rom_id):
         if item["kind"] == "checksum-domain"
     }
 
+    assert rom["metadata"]["ECU ID"] == f"1{rom_id}"
+    assert rom["metadata"]["MCU"] == "SH7059"
+    assert rom["counts"]["maps"] == 34
+    assert maf_factor["start"] == 0x08939
+    assert maf_factor["source"] == f"defs/{rom_id}.xml"
     assert checksum_fields == {
         "checksum-field:sum16_a",
         "checksum-field:sum16_b",

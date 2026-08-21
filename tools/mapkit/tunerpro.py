@@ -721,6 +721,15 @@ def render(
             f"verified {rom} checksum layout, so edited images are not "
             "flash-ready."
         )
+    elif (
+        definition_projection is not None
+        and not definition_projection.romraider_checksum
+    ):
+        description += (
+            " No editor-side checksum is declared; the project's verified "
+            "checksum implementation must correct and verify an edited image "
+            "before flashing."
+        )
     else:
         description += (
             " No editor-side checksum is declared; the flashing workflow "

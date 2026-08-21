@@ -35,6 +35,14 @@ JK78C_MAP_ADDRESSES = {
     "Timing-State Addend - Warm DFCO Transition - Bank 2": "0x137F0",
 }
 
+ONE_ND_MAP_ADDRESSES = {
+    "MAF Factor": "0x08939",
+    "Fuel Compensation - Main - Bank 1": "0x0A1C0",
+    "Fuel Compensation - Main - Bank 2": "0x0A2C0",
+    "Timing-State Addend - Warm DFCO Transition - Bank 1": "0x13C1A",
+    "Timing-State Addend - Warm DFCO Transition - Bank 2": "0x13C22",
+}
+
 
 def _xml_tables(rom):
     root = ET.parse(DEFS / f"{rom}.xml").getroot()
@@ -153,3 +161,41 @@ def test_jk78c_artifacts_expose_only_reviewed_definition_capabilities():
         assert _xdf_table_address(xdf_tables[name]) == address.replace(
             "0x0", "0x"
         )
+
+
+def test_1nd_artifacts_use_shared_sh7059_definition_projection():
+    for rom in ("1ND0A", "1ND3B"):
+        target, tables = _xml_tables(rom)
+        romid = target.find("romid")
+
+        assert romid.findtext("xmlid") == rom
+        assert romid.findtext("internalidstring") == rom
+        assert romid.findtext("ecuid") == f"1{rom}"
+        assert romid.findtext("caseid") == "8FZ35NEE6"
+        assert romid.findtext("memmodel") == "SH7059"
+        assert romid.findtext("filesize") == "1536kb"
+        assert romid.find("flashmethod") is None
+        assert target.findall("checksum") == []
+        assert len(target.findall("table")) == 34
+        assert not any(name.startswith("DTC ") for name in tables)
+        assert not any(name.startswith("Rolling Launch") for name in tables)
+        assert not any(name.startswith("Map 2 -") for name in tables)
+        for name, address in ONE_ND_MAP_ADDRESSES.items():
+            assert tables[name].get("storageaddress") == address
+
+        xml_text = (DEFS / f"{rom}.xml").read_text(encoding="utf-8")
+        assert "defs/JK08A-1ND.definition-addresses.csv" in xml_text
+
+        root = ET.parse(DEFS / f"{rom}.xdf").getroot()
+        description = root.find("XDFHEADER").findtext("description")
+        xdf_tables = _xdf_tables(root)
+        assert len(root.findall("XDFTABLE")) == 34
+        assert root.findall("XDFPATCH") == []
+        assert root.findall("XDFFLAG") == []
+        assert "verified checksum implementation must correct" in description
+        assert "no verified" not in description.lower()
+        assert "defs/JK08A-1ND.definition-addresses.csv" in description
+        for name, address in ONE_ND_MAP_ADDRESSES.items():
+            assert _xdf_table_address(xdf_tables[name]) == address.replace(
+                "0x0", "0x"
+            )

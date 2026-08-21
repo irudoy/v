@@ -26,7 +26,7 @@ presentation and generated output.
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
-| `JK08A-<ROM>.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
+| `JK08A-*.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
 | `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
 | `JK08A.maps.csv` | Catalog ledger projected from Memgraph | no, regenerate |
 | `<ROM>.xml` | Target-specific RomRaider definition projection | no, regenerate |
@@ -84,9 +84,7 @@ mixed-axis wrappers and an alternate-finisher 8x8 byte wrapper while omitting
 the standard-finisher 16x16 byte wrapper used by JK08A.
 `JK08A-1ND0A.interp-correspondence.csv` records every source contract,
 including the explicit unsupported entry, while `1ND0A.interp.csv` retains the
-three target-only contracts. Hash-unique cross-generation function matching
-does not cover the map consumers; target map relocation therefore requires a
-separate reviewed structural function correspondence.
+three target-only contracts.
 
 JK78C contains the same 36 interpolation contracts as 1ND0A at SH7058
 addresses. Its 33 mapped JK08A contracts, one explicit source-only contract,
@@ -102,6 +100,18 @@ pairs complete the emitted geometry. The JK78C registry disables checksum,
 map-switching, Rolling Launch, and editor-switch capabilities because their
 target contracts are not established. Its XML/XDF files are calibration
 definitions only and do not make edited images flash-ready.
+
+`JK08A-1ND.definition-addresses.csv` projects the same reviewed VQ37 semantic
+set to the SH7059 1ND layout. It records 31 target maps, thirteen axes, and five
+explicitly unsupported source maps. The projection is established from
+reviewed JK78C-to-1ND0A structural functions, exact storage, interpolation-call
+order, selector branches, and target literals. 1ND3B reuses the address layout
+because all address-bearing executable code is byte-identical to 1ND0A, while
+its identity, stock calibration values, and image hash remain independent.
+Both 1ND definitions expose calibration tables only. The project checksum
+implementation covers their six checksum fields, but native RomRaider checksum
+metadata cannot represent the complete layout. Map switching, Rolling Launch,
+and editor switches remain undeclared.
 
 ## Evidence specifications
 
@@ -167,17 +177,21 @@ flashing path for this ECU family.
 
 The generator validates ROM identity, exact inheritance or projection hashes,
 map geometry, scaling, visibility, DTC stock bytes, and every target capability
-enabled in `definition-projections.toml`. A visible map must pass the definition
-gate. Hidden research maps remain in the graph and ledger. Presentation text
-uses the explicit `{target_rom}` token where a target label is required; source
-ROM labels and evidence filenames are never rewritten as target labels.
+enabled in `definition-projections.toml`. The `checksum` capability binds a
+target to a verified project checksum layout, while `romraider_checksum`
+independently controls native RomRaider checksum metadata. A visible map must
+pass the definition gate. Hidden research maps remain in the graph and ledger.
+Presentation text uses the explicit `{target_rom}` token where a target label
+is required; source ROM labels and evidence filenames are never rewritten as
+target labels.
 
 Each definition keeps the selected ROM identity. A target with map switching
 enabled uses its own stock Map 1 storage. The exact-code family derives Map 2
 through Map 5 from `patches/map-switching-layout.toml`; relocated targets with
 that capability use an explicit `patches/rom-address-profiles.toml` allocation,
-including separate exhaust-bank families. Rolling Launch and checksum metadata
-are emitted only when their independent target capabilities are enabled.
+including separate exhaust-bank families. Rolling Launch and native checksum
+metadata are emitted only when their independent target capabilities are
+enabled.
 Neither projection creates speculative canonical graph maps or copies JK08A
 calibration values into another ROM.
 
