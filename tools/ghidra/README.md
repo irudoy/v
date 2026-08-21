@@ -33,8 +33,9 @@ filesystem path. Ghidra projects and export directories remain outside Git.
 `ExportXrefs.java` writes peripheral, RAM, and literal-pool references to
 `xrefs.csv`. `ExportFunctionSignatures.java` writes relocation-tolerant
 `function_signatures.csv`, call-site ordinal data to `function_sites.csv`, and
-ROM literal/reference data and direct RAM references to
-`function_references.csv`. `ExportFunctionTokens.java` writes normalized
+ROM literal/reference data and direct SH7058/SH7059 RAM references from
+`0xFFFE8000` upward to `function_references.csv`.
+`ExportFunctionTokens.java` writes normalized
 instruction sequences for bounded structural-similarity review. Literal values
 and symbol addresses are folded, while register numbers remain part of the
 instruction shape. A typical read-only export is:
@@ -76,7 +77,8 @@ CSV and listings belong in a machine-local export directory.
 sequences, and normalized instruction shapes for every recovered function.
 The companion site export records each `jsr` and `bsr` by instruction ordinal
 inside its function. The reference export records loaded bytes and pool
-locations for ROM references and direct RAM targets at the same ordinal.
+locations for ROM references and direct SH7058/SH7059 RAM targets at the same
+ordinal.
 Ordinals keep resolver callsites, literals, and direct application-state
 accesses comparable when a homologous function changes instruction widths or
 literal-pool placement.

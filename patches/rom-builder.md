@@ -115,6 +115,21 @@ make runtime-targets-generate
 The production builder and executable gate consume the same projected layouts
 and locked payloads for JK00C and JK00D.
 
+## SH7059 1ND correspondence
+
+`1nd-runtime-correspondence.csv` records the reviewed 1ND0A runtime allocation,
+stock hooks, target-specific map topology, CAN bindings, and all 63 ECU-RAM
+telemetry fields. 1ND3B shares the exact executable image and therefore the
+same addresses. The file distinguishes direct mappings from target-specific
+adapters and unsupported source semantics.
+
+The 1ND firmware does not retain the separate signed Q8 knock timing state
+used by JK08A. Its ignition path selects the high- or low-octane surface
+directly and keeps byte-sized results. `knock_timing_state_raw` is therefore
+explicitly unsupported instead of being assigned to an unrelated RAM word.
+The surface selector itself remains available at `0xFFFE9488`, where bit 6 is
+consumed by the target ignition and correction paths.
+
 ## Rolling Launch profile
 
 Without `--profile`, the builder uses the conservative built-in

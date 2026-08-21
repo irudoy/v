@@ -31,7 +31,10 @@ import java.util.Set;
 
 public class ExportFunctionSignatures extends GhidraScript {
     static final long ROM_HI = 0x180000L;
-    static final long RAM_LO = 0xffff0000L;
+    // SH7059 exposes 48 KiB of on-chip RAM from 0xFFFE8000. SH7058
+    // application RAM is a strict subset of this range, so the wider bound is
+    // valid for both MCU families and preserves direct SH7059 RAM references.
+    static final long RAM_LO = 0xfffe8000L;
 
     @Override
     public void run() throws Exception {
