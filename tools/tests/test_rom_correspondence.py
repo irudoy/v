@@ -125,6 +125,90 @@ def test_pair_interp_requires_full_source_coverage():
         rom_correspondence.pair_interp(source, target, correspondence)
 
 
+def test_pair_interp_accepts_explicit_unsupported_source_entry():
+    row = dict(zip(rom_correspondence.INTERP_FIELDS, (
+        "explicit", "00001000", "00002000", "16", "16", "",
+        "uint8", "uint8", "uint8",
+    )))
+    source = [row, dict(row, wrapper="00002010")]
+    target = [dict(row, kernel="00003000", wrapper="00004000")]
+    correspondence = [
+        {
+            "source_kernel": "00001000",
+            "source_wrapper": "00002000",
+            "target_kernel": "00003000",
+            "target_wrapper": "00004000",
+            "status": "mapped",
+            "evidence": "reviewed-test-evidence",
+        },
+        {
+            "source_kernel": "00001000",
+            "source_wrapper": "00002010",
+            "target_kernel": "",
+            "target_wrapper": "",
+            "status": "unsupported",
+            "evidence": "complete-target-census",
+        },
+    ]
+
+    assert rom_correspondence.pair_interp(
+        source, target, correspondence
+    ) == ((source[0], target[0]),)
+
+
+def test_read_interp_correspondence_rejects_target_on_unsupported_row(tmp_path):
+    path = tmp_path / "interp-correspondence.csv"
+    with path.open("w", newline="", encoding="utf-8") as output:
+        writer = csv.DictWriter(
+            output,
+            fieldnames=rom_correspondence.INTERP_CORRESPONDENCE_STATUS_FIELDS,
+        )
+        writer.writeheader()
+        writer.writerow({
+            "source_kernel": "00001000",
+            "source_wrapper": "00002000",
+            "target_kernel": "00003000",
+            "target_wrapper": "00004000",
+            "status": "unsupported",
+            "evidence": "complete-target-census",
+        })
+
+    with pytest.raises(
+        rom_correspondence.CorrespondenceError,
+        match="unsupported source entry must not name a target",
+    ):
+        rom_correspondence.read_interp_correspondence(path)
+
+
+def test_tracked_1nd_interp_correspondence_is_complete():
+    root = Path(__file__).parents[2]
+    source = rom_correspondence.read_interp(root / "defs" / "JK08A.interp.csv")
+    target = rom_correspondence.read_interp(root / "defs" / "1ND0A.interp.csv")
+    correspondence = rom_correspondence.read_interp_correspondence(
+        root / "defs" / "JK08A-1ND0A.interp-correspondence.csv"
+    )
+
+    assert len(source) == 34
+    assert len(target) == 36
+    assert len(rom_correspondence.pair_interp(
+        source, target, correspondence
+    )) == 33
+    mapped_targets = {
+        (row["target_kernel"], row["target_wrapper"])
+        for row in correspondence
+        if row["status"] == "mapped"
+    }
+    assert len({
+        (row["kernel"], row["wrapper"])
+        for row in target
+    } - mapped_targets) == 3
+    assert [
+        (row["source_kernel"], row["source_wrapper"])
+        for row in correspondence
+        if row["status"] == "unsupported"
+    ] == [("00026944", "000261b8")]
+
+
 def test_signature_reader_rejects_duplicate_addresses():
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "function_signatures.csv"

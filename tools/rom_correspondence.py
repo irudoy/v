@@ -48,6 +48,15 @@ INTERP_CORRESPONDENCE_FIELDS = (
     "target_wrapper",
     "evidence",
 )
+INTERP_CORRESPONDENCE_STATUS_FIELDS = (
+    "source_kernel",
+    "source_wrapper",
+    "target_kernel",
+    "target_wrapper",
+    "status",
+    "evidence",
+)
+INTERP_CORRESPONDENCE_STATUSES = {"mapped", "unsupported"}
 ENTITY_FIELDS = (
     "entity",
     "source",
@@ -321,10 +330,15 @@ def read_interp_correspondence(path):
     try:
         with path.open(newline="", encoding="utf-8") as source:
             reader = csv.DictReader(source)
-            if tuple(reader.fieldnames or ()) != INTERP_CORRESPONDENCE_FIELDS:
+            header = tuple(reader.fieldnames or ())
+            if header not in {
+                INTERP_CORRESPONDENCE_FIELDS,
+                INTERP_CORRESPONDENCE_STATUS_FIELDS,
+            }:
                 raise CorrespondenceError(
                     f"{path}: header {reader.fieldnames}; "
-                    f"expected {list(INTERP_CORRESPONDENCE_FIELDS)}"
+                    f"expected {list(INTERP_CORRESPONDENCE_FIELDS)} or "
+                    f"{list(INTERP_CORRESPONDENCE_STATUS_FIELDS)}"
                 )
             rows = list(reader)
     except OSError as error:
@@ -336,19 +350,34 @@ def read_interp_correspondence(path):
     target_keys = set()
     for row_number, row in enumerate(rows, 2):
         context = f"{path}:{row_number}"
-        for field in INTERP_CORRESPONDENCE_FIELDS[:4]:
+        for field in ("source_kernel", "source_wrapper"):
             if not ADDRESS_RE.fullmatch(row[field]):
                 raise CorrespondenceError(f"{context}: invalid {field}")
+        status = row.get("status") or "mapped"
+        row["status"] = status
+        if status not in INTERP_CORRESPONDENCE_STATUSES:
+            raise CorrespondenceError(
+                f"{context}: unsupported correspondence status {status!r}"
+            )
+        if status == "mapped":
+            for field in ("target_kernel", "target_wrapper"):
+                if not ADDRESS_RE.fullmatch(row[field]):
+                    raise CorrespondenceError(f"{context}: invalid {field}")
+        elif row["target_kernel"] or row["target_wrapper"]:
+            raise CorrespondenceError(
+                f"{context}: unsupported source entry must not name a target"
+            )
         source_key = (row["source_kernel"], row["source_wrapper"])
         target_key = (row["target_kernel"], row["target_wrapper"])
         if source_key in source_keys:
             raise CorrespondenceError(f"{context}: duplicate source entry")
-        if target_key in target_keys:
+        if status == "mapped" and target_key in target_keys:
             raise CorrespondenceError(f"{context}: duplicate target entry")
         if not row["evidence"]:
             raise CorrespondenceError(f"{context}: evidence is required")
         source_keys.add(source_key)
-        target_keys.add(target_key)
+        if status == "mapped":
+            target_keys.add(target_key)
     if not rows:
         raise CorrespondenceError(f"{path}: no interpolation correspondences")
     return rows
@@ -394,17 +423,24 @@ def pair_interp(source_rows, target_rows, correspondence_rows=None):
             correspondence["source_kernel"],
             correspondence["source_wrapper"],
         )
-        target_key = (
-            correspondence["target_kernel"],
-            correspondence["target_wrapper"],
-        )
-        if source_key in mapped_sources or target_key in mapped_targets:
+        if source_key in mapped_sources:
             raise CorrespondenceError(
-                f"interpolation correspondence {index} is not one-to-one"
+                f"interpolation correspondence {index} repeats a source entry"
             )
         if source_key not in source_index:
             raise CorrespondenceError(
                 f"interpolation correspondence {index} has unknown source {source_key}"
+            )
+        if correspondence.get("status", "mapped") == "unsupported":
+            mapped_sources.add(source_key)
+            continue
+        target_key = (
+            correspondence["target_kernel"],
+            correspondence["target_wrapper"],
+        )
+        if target_key in mapped_targets:
+            raise CorrespondenceError(
+                f"interpolation correspondence {index} repeats a target entry"
             )
         if target_key not in target_index:
             raise CorrespondenceError(

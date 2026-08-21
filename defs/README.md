@@ -11,7 +11,9 @@ presentation and generated output.
 |---|---|---|
 | `JK08A.interp.csv` | Interpolation entries and recovered geometry | yes |
 | `JK00D.interp.csv` | JK00D interpolation entries and recovered geometry | yes |
+| `1ND0A.interp.csv` | SH7059 1ND interpolation entries and recovered geometry | yes |
 | `JK08A-JK00D.interp-correspondence.csv` | Reviewed cross-family interpolation wrapper pairs | yes |
+| `JK08A-1ND0A.interp-correspondence.csv` | Reviewed cross-generation interpolation wrapper pairs and explicit source-only contracts | yes |
 | `JK08A.findings.csv` | Map semantics, role, scale, confidence, and evidence | yes |
 | `JK08A.axes.csv` | Axis semantics, scale, confidence, and evidence | yes |
 | `JK08A.funcs.csv` | Function semantics, callable contracts, and evidence | yes |
@@ -67,6 +69,22 @@ function signatures, call ordinals, and resolver censuses. Its function and
 entity outputs are deterministic review candidates. They do not establish
 semantic inheritance by themselves; promoted target claims remain explicit
 tracked evidence.
+
+An interpolation correspondence may use the six-column format with `status`
+set to `mapped` or `unsupported`. An unsupported row must identify the source
+kernel and wrapper, leave both target address fields empty, and cite a complete
+target-library census. This records a real source-only interpolation contract
+without inventing a target pair. Target-only wrappers remain in the target
+interpolation registry and do not need correspondence rows.
+
+The SH7059 1ND library retains the same interpolation mechanics but adds two
+mixed-axis wrappers and an alternate-finisher 8x8 byte wrapper while omitting
+the standard-finisher 16x16 byte wrapper used by JK08A.
+`JK08A-1ND0A.interp-correspondence.csv` records every source contract,
+including the explicit unsupported entry, while `1ND0A.interp.csv` retains the
+three target-only contracts. Hash-unique cross-generation function matching
+does not cover the map consumers; target map relocation therefore requires a
+separate reviewed structural function correspondence.
 
 ## Evidence specifications
 
