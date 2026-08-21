@@ -43,9 +43,12 @@ from tools.mapkit import rom as romkit
 
 DEFAULT_PAYLOADS = Path(__file__).with_name("runtime-target-payloads.toml")
 EXACT_FAMILY = "sh7058_7mfkavn86"
-RELOCATED_FAMILY = "sh7058_8mfk"
+RELOCATED_8MFK_FAMILY = "sh7058_8mfk"
+SH7059_1ND_FAMILY = "sh7059_1nd"
 EXACT_ROMS = ("JK00A", "JK03A", "JK03B", "JK08A")
-RELOCATED_ROMS = ("JK00C", "JK00D")
+RELOCATED_8MFK_ROMS = ("JK00C", "JK00D")
+SH7059_1ND_ROMS = ("1ND0A", "1ND3B")
+RELOCATED_ROMS = RELOCATED_8MFK_ROMS + SH7059_1ND_ROMS
 SUPPORTED_ROMS = EXACT_ROMS + RELOCATED_ROMS
 ZERO_SHA256 = "0" * 64
 
@@ -67,6 +70,25 @@ MAP_HOOK_KEYS = {
     "rev_throttle_scalar_base": "rev_throttle_scalar_base",
     "cruise_feedback_serializer": "cruise_feedback_serializer",
     "idle_ignition_lookup": "idle_ignition_lookup",
+}
+
+SH7059_1ND_MAP_HOOK_KEYS = {
+    "selector_host_call": "selector_host_call",
+    "startup_initializer": "startup_initializer",
+    "overrun_cut_lookup": "overrun_cut_lookup",
+    "overrun_restore_lookup": "overrun_restore_lookup",
+    "ignition_lookup_493e8": "ignition_lookup_1",
+    "ignition_lookup_4e1c0_a": "ignition_lookup_2",
+    "ignition_lookup_4e1c0_b": "ignition_lookup_3",
+    "fuel_compensation_lookup_2c648": (
+        "fuel_compensation_lookup_bank_1"
+    ),
+    "fuel_compensation_lookup_3be3c": (
+        "fuel_compensation_lookup_bank_2"
+    ),
+    "rev_throttle_scalar_base": "rev_throttle_scalar_base",
+    "cruise_feedback_serializer": "cruise_feedback_serializer",
+    "idle_ignition_lookup": "idle_ignition_lookup_bank_1",
 }
 
 CANONICAL_MAP_SYMBOLS = {
@@ -148,7 +170,7 @@ class RuntimeTarget:
     stock_image: romkit.Image
     checksum_layout: rom_checksums.ChecksumLayout
     map_layout: map_switching_layout.Layout
-    rolling_layout: rolling_launch_layout.Layout
+    rolling_layout: rolling_launch_layout.Layout | None
     telemetry_layout: can_telemetry_layout.Layout
     map_payloads: dict[str, bytes]
     rolling_payloads: dict[str, bytes]
@@ -169,9 +191,10 @@ def _require_sha256(value, context):
     return value
 
 
-def _decode_payloads(row, context):
-    if not isinstance(row, dict) or not row:
-        raise RuntimeTargetError(f"{context}: expected a nonempty table")
+def _decode_payloads(row, context, *, allow_empty=False):
+    if not isinstance(row, dict) or (not row and not allow_empty):
+        qualifier = "a table" if allow_empty else "a nonempty table"
+        raise RuntimeTargetError(f"{context}: expected {qualifier}")
     result = {}
     for key, value in row.items():
         if not isinstance(value, str):
@@ -240,7 +263,9 @@ def load_payload_locks(path=DEFAULT_PAYLOADS):
                 row["map_units"], f"{rom}.map_units"
             ),
             rolling_payloads=_decode_payloads(
-                row["rolling_units"], f"{rom}.rolling_units"
+                row["rolling_units"],
+                f"{rom}.rolling_units",
+                allow_empty=True,
             ),
             telemetry_payloads=_decode_payloads(
                 row["telemetry_units"], f"{rom}.telemetry_units"
@@ -272,40 +297,91 @@ def _address_mapping(profile):
     canonical_can = can_telemetry_layout.load_layout()
 
     family_targets = profile.map_family_by_key
+    if profile.map_variant == "dual-exhaust":
+        family_keys = {
+            family.key: (
+                "exhaust_cvtc_target_even"
+                if family.key == "exhaust_cvtc_target"
+                else family.key
+            )
+            for family in canonical_map.families
+        }
+    else:
+        family_keys = {
+            "over_run_fuel_hold": "over_run_fuel_hold",
+            "over_run_fuel_cut": "over_run_fuel_cut",
+            "over_run_fuel_restore": "over_run_fuel_restore",
+            "over_run_fuel_intermediate_restore": (
+                "over_run_fuel_intermediate_restore"
+            ),
+            "high_octane_timing_state": "high_octane_timing_state",
+            "high_detonation_timing_state": "high_detonation_timing_state",
+            "cold_idle_ignition_timing": "cold_idle_ignition_timing",
+            "idle_ignition_timing": "idle_ignition_timing_bank_1",
+            "fuel_compensation_main": "fuel_compensation_main_bank_1",
+            "rev_limit_throttle_cut": "rev_limit_throttle_cut",
+        }
     for family in canonical_map.families:
-        target_key = (
-            "exhaust_cvtc_target_even"
-            if family.key == "exhaust_cvtc_target"
-            else family.key
-        )
+        target_key = family_keys.get(family.key)
+        if target_key is None:
+            continue
         _add_mapping(
             mapping,
             family.canonical_address,
             family_targets[target_key],
             f"{profile.rom}.map_families",
         )
-    _add_mapping(
-        mapping,
-        canonical_map.family_by_key["rev_limit_fuel_cut"].canonical_address
-        + 8,
-        family_targets["rev_limit_fuel_cut"] + 8,
-        f"{profile.rom}.rev_limit_fuel_cut_tail",
-    )
+    if profile.map_variant == "sh7059-1nd":
+        _add_mapping(
+            mapping,
+            canonical_map.family_by_key[
+                "exhaust_cvtc_target"
+            ].canonical_address,
+            family_targets["fuel_compensation_main_bank_2"],
+            f"{profile.rom}.fuel_compensation_main_bank_2",
+        )
+        _add_mapping(
+            mapping,
+            canonical_map.family_by_key[
+                "rev_limit_fuel_cut"
+            ].canonical_address,
+            family_targets["idle_ignition_timing_bank_2"],
+            f"{profile.rom}.idle_ignition_timing_bank_2",
+        )
+    if "rev_limit_fuel_cut" in family_targets:
+        _add_mapping(
+            mapping,
+            canonical_map.family_by_key[
+                "rev_limit_fuel_cut"
+            ].canonical_address
+            + 8,
+            family_targets["rev_limit_fuel_cut"] + 8,
+            f"{profile.rom}.rev_limit_fuel_cut_tail",
+        )
 
     map_hooks = profile.map_hook_by_key
+    hook_keys = (
+        MAP_HOOK_KEYS
+        if profile.map_variant == "dual-exhaust"
+        else SH7059_1ND_MAP_HOOK_KEYS
+    )
     for hook in canonical_map.hooks:
-        target = map_hooks[MAP_HOOK_KEYS[hook.key]]
+        target_key = hook_keys.get(hook.key)
+        if target_key is None:
+            continue
+        target = map_hooks[target_key]
         _add_mapping(mapping, hook.address, target.address, profile.rom)
         _add_mapping(mapping, hook.stock, target.stock, profile.rom)
 
     map_symbols = profile.map_symbol_by_key
     for key, source in CANONICAL_MAP_SYMBOLS.items():
-        _add_mapping(mapping, source, map_symbols[key], profile.rom)
+        if key in map_symbols:
+            _add_mapping(mapping, source, map_symbols[key], profile.rom)
     _add_mapping(
         mapping,
         canonical_map.feedback.payload_start,
         profile.can_symbol_by_key["feedback_payload_base"]
-        + canonical_map.feedback.payload_offset,
+        + profile.can_symbol_by_key["feedback_payload_offset"],
         profile.rom,
     )
     _add_mapping(
@@ -315,39 +391,50 @@ def _address_mapping(profile):
         profile.rom,
     )
 
-    rolling_hooks = profile.rolling_hook_by_key
-    for hook in canonical_rolling.hooks:
-        target = rolling_hooks[hook.key]
-        _add_mapping(mapping, hook.address, target.address, profile.rom)
-        _add_mapping(mapping, hook.stock, target.base, profile.rom)
-    canonical_diagnostics = {
-        item.name: item for item in canonical_rolling.diagnostics
-    }
-    for key, target in profile.rolling_diagnostic_by_key.items():
-        source = canonical_diagnostics[key]
-        _add_mapping(
-            mapping, source.pointer_address, target.pointer_address,
-            profile.rom,
-        )
-        _add_mapping(mapping, source.target, target.target, profile.rom)
-    rolling_symbols = profile.rolling_symbol_by_key
-    for key, source in CANONICAL_ROLLING_SYMBOLS.items():
-        _add_mapping(mapping, source, rolling_symbols[key], profile.rom)
+    if profile.capabilities.rolling_launch:
+        rolling_hooks = profile.rolling_hook_by_key
+        for hook in canonical_rolling.hooks:
+            target = rolling_hooks[hook.key]
+            _add_mapping(mapping, hook.address, target.address, profile.rom)
+            _add_mapping(mapping, hook.stock, target.base, profile.rom)
+        canonical_diagnostics = {
+            item.name: item for item in canonical_rolling.diagnostics
+        }
+        for key, target in profile.rolling_diagnostic_by_key.items():
+            source = canonical_diagnostics[key]
+            _add_mapping(
+                mapping,
+                source.pointer_address,
+                target.pointer_address,
+                profile.rom,
+            )
+            _add_mapping(mapping, source.target, target.target, profile.rom)
+        rolling_symbols = profile.rolling_symbol_by_key
+        for key, source in CANONICAL_ROLLING_SYMBOLS.items():
+            _add_mapping(mapping, source, rolling_symbols[key], profile.rom)
 
-    can_hooks = profile.can_hook_by_key
-    for hook in canonical_can.hooks:
-        target = can_hooks[hook.key]
-        _add_mapping(mapping, hook.address, target.address, profile.rom)
-        _add_mapping(mapping, hook.stock, target.base, profile.rom)
-    can_symbols = profile.can_symbol_by_key
-    for key, source in CANONICAL_CAN_SYMBOLS.items():
-        _add_mapping(mapping, source, can_symbols[key], profile.rom)
+    if profile.capabilities.can_telemetry:
+        can_hooks = profile.can_hook_by_key
+        for hook in canonical_can.hooks:
+            target = can_hooks[hook.key]
+            _add_mapping(mapping, hook.address, target.address, profile.rom)
+            _add_mapping(mapping, hook.stock, target.base, profile.rom)
+        can_symbols = profile.can_symbol_by_key
+        for key, source in CANONICAL_CAN_SYMBOLS.items():
+            if key in can_symbols:
+                _add_mapping(mapping, source, can_symbols[key], profile.rom)
 
     target_sources = profile.telemetry_source_by_name
     for field in _canonical_telemetry_fields():
         if field.kind != "ecu_ram":
             continue
-        target = target_sources[field.name]
+        target = target_sources.get(
+            field.name, profile.telemetry_zero_source
+        )
+        if target is None:
+            raise RuntimeTargetError(
+                f"{profile.rom}: telemetry field {field.name} has no source"
+            )
         for index in range(field.width):
             _add_mapping(
                 mapping, field.source + index, target + index, profile.rom
@@ -460,30 +547,71 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     base = map_switching_layout.load_layout()
     delta = profile.rom_delta
     ram_delta = profile.ram_delta
+    custom_sources = {}
+    if profile.map_variant == "sh7059-1nd":
+        custom_sources = {
+            "lookup_adapters": "map-switching-1nd-adapters.s",
+            "limiter_commit": "map-switching-1nd-limiter-commit.s",
+        }
+    unit_prototypes = []
+    for unit in base.assembly_units:
+        prototype = replace(
+            unit, source=custom_sources.get(unit.key, unit.source)
+        )
+        if profile.map_variant == "sh7059-1nd" and unit.key == "lookup_adapters":
+            prototype = replace(
+                prototype,
+                code_regions=tuple(
+                    (
+                        "idle_ignition_bank_2_adapter"
+                        if key == "exhaust_cvtc_target_adapter"
+                        else key
+                    )
+                    for key in unit.code_regions
+                ),
+            )
+        unit_prototypes.append(prototype)
+
     source_texts = {
         unit.key: _render_source(
             _read_source(unit.source), profile, mapping
         )
-        for unit in base.assembly_units
+        for unit in unit_prototypes
     }
-    source_texts["limiter_commit"] = _render_unaligned_throttle_limiter(
-        profile, mapping
-    )
+    if profile.map_variant == "dual-exhaust":
+        source_texts["limiter_commit"] = _render_unaligned_throttle_limiter(
+            profile, mapping
+        )
+        odd_template = _read_source("map-switching-exhaust-odd-adapter.s")
+        odd_overrides = {
+            0x0000B33A: profile.map_family_by_key[
+                "exhaust_cvtc_target_odd"
+            ],
+            0x000261B8: profile.map_symbol_by_key["exhaust_lookup"],
+            0x000D5050: profile.extra_exhaust_storage.pointer_table,
+        }
+        source_texts["exhaust_odd_adapter"] = _render_source(
+            odd_template, profile, mapping, odd_overrides
+        )
 
-    odd_template = _read_source("map-switching-exhaust-odd-adapter.s")
-    odd_overrides = {
-        0x0000B33A: profile.map_family_by_key[
-            "exhaust_cvtc_target_odd"
-        ],
-        0x000261B8: profile.map_symbol_by_key["exhaust_lookup"],
-        0x000D5050: profile.extra_exhaust_storage.pointer_table,
-    }
-    source_texts["exhaust_odd_adapter"] = _render_source(
-        odd_template, profile, mapping, odd_overrides
-    )
-
-    code_regions = tuple(
-        replace(
+    code_regions = []
+    for item in base.code_regions:
+        if (
+            profile.map_variant == "sh7059-1nd"
+            and item.key == "exhaust_cvtc_target_adapter"
+        ):
+            code_regions.append(replace(
+                item,
+                key="idle_ignition_bank_2_adapter",
+                span=map_switching_layout.AddressRange(
+                    item.span.start + delta,
+                    item.span.end + delta,
+                    "idle_ignition_bank_2_adapter",
+                ),
+                entry=item.entry + delta,
+            ))
+            continue
+        code_regions.append(replace(
             item,
             span=map_switching_layout.AddressRange(
                 item.span.start + delta,
@@ -491,10 +619,9 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 item.span.key,
             ),
             entry=item.entry + delta,
-        )
-        for item in base.code_regions
-    ) + (
-        map_switching_layout.CodeRegion(
+        ))
+    if profile.map_variant == "dual-exhaust":
+        code_regions.append(map_switching_layout.CodeRegion(
             "exhaust_cvtc_target_odd_adapter",
             map_switching_layout.AddressRange(
                 profile.extra_exhaust_storage.adapter.start,
@@ -502,8 +629,8 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 "exhaust_cvtc_target_odd_adapter",
             ),
             profile.extra_exhaust_storage.adapter.start,
-        ),
-    )
+        ))
+    code_regions = tuple(code_regions)
 
     units = tuple(
         _projected_unit(
@@ -514,78 +641,131 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             unit.code_regions,
             payloads,
         )
-        for unit in base.assembly_units
+        for unit in unit_prototypes
     )
-    odd_proto = map_switching_layout.AssemblyUnit(
-        key="exhaust_odd_adapter",
-        source="map-switching-exhaust-odd-adapter.s",
-        span=map_switching_layout.AddressRange(
-            0x000D5000, 0x000D5040, "assembly.exhaust_odd_adapter"
-        ),
-        fill=0xFF,
-        language="SuperH:BE:32:SH-2A",
-        expected_sha256=ZERO_SHA256,
-        instruction_count=0,
-        data_bytes=0,
-        code_regions=("exhaust_cvtc_target_odd_adapter",),
-    )
-    units += (
-        _projected_unit(
-            odd_proto,
-            source_texts["exhaust_odd_adapter"],
-            profile.extra_exhaust_storage.adapter.start,
-            profile.extra_exhaust_storage.adapter.end,
-            odd_proto.code_regions,
-            payloads,
-        ),
-    )
+    if profile.map_variant == "dual-exhaust":
+        odd_proto = map_switching_layout.AssemblyUnit(
+            key="exhaust_odd_adapter",
+            source="map-switching-exhaust-odd-adapter.s",
+            span=map_switching_layout.AddressRange(
+                0x000D5000, 0x000D5040, "assembly.exhaust_odd_adapter"
+            ),
+            fill=0xFF,
+            language="SuperH:BE:32:SH-2A",
+            expected_sha256=ZERO_SHA256,
+            instruction_count=0,
+            data_bytes=0,
+            code_regions=("exhaust_cvtc_target_odd_adapter",),
+        )
+        units += (
+            _projected_unit(
+                odd_proto,
+                source_texts["exhaust_odd_adapter"],
+                profile.extra_exhaust_storage.adapter.start,
+                profile.extra_exhaust_storage.adapter.end,
+                odd_proto.code_regions,
+                payloads,
+            ),
+        )
 
     target_families = profile.map_family_by_key
     families = []
-    for family in base.families:
-        key = (
-            "exhaust_cvtc_target_even"
-            if family.key == "exhaust_cvtc_target"
-            else family.key
-        )
-        canonical_address = target_families[key]
-        families.append(replace(
-            family,
-            key=key,
-            name=(
-                f"{family.name} - Even Bank"
+    if profile.map_variant == "dual-exhaust":
+        for family in base.families:
+            key = (
+                "exhaust_cvtc_target_even"
                 if family.key == "exhaust_cvtc_target"
-                else family.name
-            ),
-            canonical_address=canonical_address,
-            copies=tuple(address + delta for address in family.copies),
-            pointer_table=family.pointer_table + delta,
-            stock_container_start=(
-                canonical_address - family.selected_offset
-            ),
-            shadow_start=(
-                None
-                if family.shadow_start is None
-                else family.shadow_start + ram_delta
-            ),
-            runtime_shadow_address=(
-                None
-                if family.runtime_shadow_address is None
-                else profile.map_symbol_by_key["throttle_runtime"]
-            ),
+                else family.key
+            )
+            canonical_address = target_families[key]
+            families.append(replace(
+                family,
+                key=key,
+                name=(
+                    f"{family.name} - Even Bank"
+                    if family.key == "exhaust_cvtc_target"
+                    else family.name
+                ),
+                canonical_address=canonical_address,
+                copies=tuple(address + delta for address in family.copies),
+                pointer_table=family.pointer_table + delta,
+                stock_container_start=(
+                    canonical_address - family.selected_offset
+                ),
+                shadow_start=(
+                    None
+                    if family.shadow_start is None
+                    else family.shadow_start + ram_delta
+                ),
+                runtime_shadow_address=(
+                    None
+                    if family.runtime_shadow_address is None
+                    else profile.map_symbol_by_key["throttle_runtime"]
+                ),
+            ))
+        exhaust = base.family_by_key["exhaust_cvtc_target"]
+        odd_address = target_families["exhaust_cvtc_target_odd"]
+        families.append(replace(
+            exhaust,
+            key="exhaust_cvtc_target_odd",
+            name=f"{exhaust.name} - Odd Bank",
+            canonical_address=odd_address,
+            copies=profile.extra_exhaust_storage.copies,
+            pointer_table=profile.extra_exhaust_storage.pointer_table,
+            stock_container_start=odd_address,
+            adapter="exhaust_cvtc_target_odd_adapter",
         ))
-    exhaust = base.family_by_key["exhaust_cvtc_target"]
-    odd_address = target_families["exhaust_cvtc_target_odd"]
-    families.append(replace(
-        exhaust,
-        key="exhaust_cvtc_target_odd",
-        name=f"{exhaust.name} - Odd Bank",
-        canonical_address=odd_address,
-        copies=profile.extra_exhaust_storage.copies,
-        pointer_table=profile.extra_exhaust_storage.pointer_table,
-        stock_container_start=odd_address,
-        adapter="exhaust_cvtc_target_odd_adapter",
-    ))
+    else:
+        storage_keys = {
+            "idle_ignition_timing_bank_2": "rev_limit_fuel_cut",
+            "fuel_compensation_main_bank_2": "exhaust_cvtc_target",
+        }
+        source_keys = {
+            "over_run_fuel_hold": "over_run_fuel_hold",
+            "over_run_fuel_cut": "over_run_fuel_cut",
+            "over_run_fuel_restore": "over_run_fuel_restore",
+            "over_run_fuel_intermediate_restore": (
+                "over_run_fuel_intermediate_restore"
+            ),
+            "high_octane_timing_state": "high_octane_timing_state",
+            "high_detonation_timing_state": "high_detonation_timing_state",
+            "cold_idle_ignition_timing": "cold_idle_ignition_timing",
+            "idle_ignition_timing_bank_1": "idle_ignition_timing",
+            "idle_ignition_timing_bank_2": "idle_ignition_timing",
+            "fuel_compensation_main_bank_1": "fuel_compensation_main",
+            "fuel_compensation_main_bank_2": "fuel_compensation_main",
+        }
+        for key, source_key in source_keys.items():
+            source = base.family_by_key[source_key]
+            storage = base.family_by_key[storage_keys.get(key, source_key)]
+            canonical_address = target_families[key]
+            families.append(replace(
+                source,
+                key=key,
+                name=f"{source.name} - {key.rsplit('_', 1)[-1].title()}",
+                canonical_address=canonical_address,
+                copies=tuple(address + delta for address in storage.copies),
+                pointer_table=storage.pointer_table + delta,
+                stock_container_start=canonical_address,
+                adapter=(
+                    "idle_ignition_bank_2_adapter"
+                    if key == "idle_ignition_timing_bank_2"
+                    else source.adapter
+                ),
+            ))
+        throttle = base.family_by_key["rev_limit_throttle_cut"]
+        throttle_address = target_families["rev_limit_throttle_cut"]
+        families.append(replace(
+            throttle,
+            canonical_address=throttle_address,
+            copies=tuple(address + delta for address in throttle.copies),
+            pointer_table=throttle.pointer_table + delta,
+            stock_container_start=throttle_address,
+            stock_container_size=throttle.byte_length,
+            selected_offset=0,
+            shadow_start=base.ram.throttle_shadow.start + ram_delta,
+            runtime_shadow_address=None,
+        ))
 
     hooks = tuple(
         map_switching_layout.Hook(
@@ -602,25 +782,25 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     feedback_base = base.feedback
     map_symbols = profile.map_symbol_by_key
     can_symbols = profile.can_symbol_by_key
-    payload_literal_delta = 0x56
     feedback = replace(
         feedback_base,
         config_record_address=can_symbols["feedback_config_record_address"],
         config_record=can_symbols["feedback_config_record_value"],
         serializer=map_symbols["feedback_serializer"],
         dispatch_literal=can_symbols["feedback_dispatch_literal"],
-        serializer_payload_base_literal=(
-            map_symbols["feedback_serializer"] + payload_literal_delta
-        ),
+        serializer_payload_base_literal=can_symbols[
+            "feedback_payload_base_literal"
+        ],
         serializer_payload_base=can_symbols["feedback_payload_base"],
+        payload_offset=can_symbols["feedback_payload_offset"],
         payload_start=(
             can_symbols["feedback_payload_base"]
-            + feedback_base.payload_offset
+            + can_symbols["feedback_payload_offset"]
         ),
         status_byte_address=map_symbols["feedback_status_byte"],
         phase_counts_address=feedback_base.phase_counts_address + delta,
         encoding_evidence=(
-            "exact_8mfk_serializer_three_bit_state_and_target_binding"
+            f"exact_{profile.map_variant}_serializer_target_binding"
         ),
     )
     ram = replace(
@@ -645,7 +825,12 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             base.ram.throttle_shadow.end + ram_delta,
             base.ram.throttle_shadow.key,
         ),
-        stock_throttle_runtime=map_symbols["throttle_runtime"],
+        throttle_selected_offset=(
+            base.ram.throttle_selected_offset
+            if profile.map_variant == "dual-exhaust"
+            else 0
+        ),
+        stock_throttle_runtime=map_symbols.get("throttle_runtime", 0),
     )
     layout = replace(
         base,
@@ -663,9 +848,10 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         feedback=feedback,
         code_regions=code_regions,
         assembly_units=units,
+        anchors=base.anchors if profile.map_variant == "dual-exhaust" else (),
         hooks=hooks,
         families=tuple(families),
-        variant="dual-exhaust",
+        variant=profile.map_variant,
         source_texts=tuple(sorted(source_texts.items())),
     )
     return replace(
@@ -848,10 +1034,14 @@ def _project_can(
         active_reserved=_shift_range(base.ram.active_reserved, ram_delta),
     )
     extra = profile.extra_exhaust_storage
-    extra_end = max(
-        extra.adapter.end,
-        extra.pointer_table + 20,
-        *(address + 0x100 for address in extra.copies),
+    extra_end = (
+        base.reserved_rom.start + delta
+        if extra is None
+        else max(
+            extra.adapter.end,
+            extra.pointer_table + 20,
+            *(address + 0x100 for address in extra.copies),
+        )
     )
     can_symbols = profile.can_symbol_by_key
     layout = replace(
@@ -874,7 +1064,7 @@ def _project_can(
         code_regions=code_regions,
         assembly_units=units,
         hooks=hooks,
-        variant="mailbox24-tail-chain",
+        variant=profile.telemetry_completion_variant,
         source_texts=tuple(sorted(source_texts.items())),
     )
     return replace(
@@ -903,20 +1093,33 @@ def project_relocated_target(rom, locks=None):
     map_layout = _project_map(
         profile, stock_sha256, mapping, map_payloads
     )
-    rolling_layout = _project_rolling(
-        profile,
-        stock_sha256,
-        mapping,
-        rolling_payloads,
-        ZERO_SHA256 if locks is None else locks.map_stage_sha256,
-        ZERO_SHA256 if locks is None else locks.rolling_stage_sha256,
+    rolling_layout = (
+        _project_rolling(
+            profile,
+            stock_sha256,
+            mapping,
+            rolling_payloads,
+            ZERO_SHA256 if locks is None else locks.map_stage_sha256,
+            ZERO_SHA256 if locks is None else locks.rolling_stage_sha256,
+        )
+        if profile.capabilities.rolling_launch
+        else None
+    )
+    telemetry_base_sha256 = (
+        ZERO_SHA256
+        if locks is None
+        else (
+            locks.rolling_stage_sha256
+            if profile.capabilities.rolling_launch
+            else locks.map_stage_sha256
+        )
     )
     telemetry_layout = _project_can(
         profile,
         stock_sha256,
         mapping,
         telemetry_payloads,
-        ZERO_SHA256 if locks is None else locks.rolling_stage_sha256,
+        telemetry_base_sha256,
         ZERO_SHA256 if locks is None else locks.telemetry_stage_sha256,
     )
     return RuntimeTarget(
@@ -996,34 +1199,39 @@ def _validate_projected_bindings(target):
             f"{target.rom}: projected map hooks differ"
         )
 
-    actual_rolling_hooks = {
-        item.key: (item.address, item.stock, item.replacement)
-        for item in target.rolling_layout.hooks
-    }
-    expected_rolling_hooks = {
-        item.key: (item.address, item.base, item.replacement)
-        for item in profile.rolling_hooks
-    }
-    if actual_rolling_hooks != expected_rolling_hooks:
-        raise RuntimeTargetError(
-            f"{target.rom}: projected Rolling Launch hooks differ"
-        )
+    if profile.capabilities.rolling_launch:
+        actual_rolling_hooks = {
+            item.key: (item.address, item.stock, item.replacement)
+            for item in target.rolling_layout.hooks
+        }
+        expected_rolling_hooks = {
+            item.key: (item.address, item.base, item.replacement)
+            for item in profile.rolling_hooks
+        }
+        if actual_rolling_hooks != expected_rolling_hooks:
+            raise RuntimeTargetError(
+                f"{target.rom}: projected Rolling Launch hooks differ"
+            )
 
-    actual_diagnostics = {
-        item.name: (
-            item.did, item.pointer_address, item.target, item.width
-        )
-        for item in target.rolling_layout.diagnostics
-    }
-    expected_diagnostics = {
-        item.key: (
-            item.did, item.pointer_address, item.target, item.width
-        )
-        for item in profile.rolling_diagnostics
-    }
-    if actual_diagnostics != expected_diagnostics:
+        actual_diagnostics = {
+            item.name: (
+                item.did, item.pointer_address, item.target, item.width
+            )
+            for item in target.rolling_layout.diagnostics
+        }
+        expected_diagnostics = {
+            item.key: (
+                item.did, item.pointer_address, item.target, item.width
+            )
+            for item in profile.rolling_diagnostics
+        }
+        if actual_diagnostics != expected_diagnostics:
+            raise RuntimeTargetError(
+                f"{target.rom}: projected diagnostic bindings differ"
+            )
+    elif target.rolling_layout is not None or target.rolling_payloads:
         raise RuntimeTargetError(
-            f"{target.rom}: projected diagnostic bindings differ"
+            f"{target.rom}: disabled Rolling Launch has runtime artifacts"
         )
 
     actual_can_hooks = {
@@ -1039,21 +1247,25 @@ def _validate_projected_bindings(target):
             f"{target.rom}: projected CAN hooks differ"
         )
 
-    odd = target.map_layout.family_by_key["exhaust_cvtc_target_odd"]
     can_symbols = profile.can_symbol_by_key
-    if any((
+    allocation_differs = any((
         target.map_layout.claimed_rom.start
         != profile.injected_rom.start,
         target.map_layout.claimed_rom.end != profile.injected_rom.end,
         target.map_layout.ram.reservation.start
         != profile.injected_ram.start,
-        odd.copies != profile.extra_exhaust_storage.copies,
-        odd.pointer_table != profile.extra_exhaust_storage.pointer_table,
         target.telemetry_layout.mailbox_record_address
         != can_symbols["mailbox_record_address"],
         target.telemetry_layout.mailbox_record_stock
         != can_symbols["mailbox_record_stock"],
-    )):
+    ))
+    if profile.map_variant == "dual-exhaust":
+        odd = target.map_layout.family_by_key["exhaust_cvtc_target_odd"]
+        allocation_differs = allocation_differs or any((
+            odd.copies != profile.extra_exhaust_storage.copies,
+            odd.pointer_table != profile.extra_exhaust_storage.pointer_table,
+        ))
+    if allocation_differs:
         raise RuntimeTargetError(
             f"{target.rom}: projected allocation bindings differ"
         )
@@ -1063,13 +1275,18 @@ def validate_relocated_target(target, locks):
     """Validate one projected target through all three raw compositions."""
     _validate_projected_bindings(target)
     map_switching_layout.validate_structure(target.map_layout)
-    rolling_launch_layout.validate_structure(target.rolling_layout)
+    if target.rolling_layout is not None:
+        rolling_launch_layout.validate_structure(target.rolling_layout)
     can_telemetry_layout.validate_structure(target.telemetry_layout)
     map_parsed = map_switching_assembly.validate_assembly_sources(
         target.map_layout
     )
-    rolling_parsed = rolling_launch_assembly.validate_assembly_sources(
-        target.rolling_layout
+    rolling_parsed = (
+        rolling_launch_assembly.validate_assembly_sources(
+            target.rolling_layout
+        )
+        if target.rolling_layout is not None
+        else None
     )
     telemetry_parsed = can_telemetry_assembly.validate_assembly_sources(
         target.telemetry_layout
@@ -1077,9 +1294,10 @@ def validate_relocated_target(target, locks):
     map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
     )
-    rolling_launch_assembly.validate_instruction_semantics(
-        target.rolling_layout, rolling_parsed, target.rolling_payloads
-    )
+    if target.rolling_layout is not None:
+        rolling_launch_assembly.validate_instruction_semantics(
+            target.rolling_layout, rolling_parsed, target.rolling_payloads
+        )
     can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout,
         telemetry_parsed,
@@ -1090,19 +1308,30 @@ def validate_relocated_target(target, locks):
         image=target.stock_image,
         blobs=target.map_payloads,
     )
-    rolling_result = rolling_launch_compose.compose(
-        layout=target.rolling_layout,
-        base=map_result.data,
-        blobs=target.rolling_payloads,
+    rolling_result = (
+        rolling_launch_compose.compose(
+            layout=target.rolling_layout,
+            base=map_result.data,
+            blobs=target.rolling_payloads,
+        )
+        if target.rolling_layout is not None
+        else None
+    )
+    telemetry_base = (
+        rolling_result.data if rolling_result is not None else map_result.data
     )
     telemetry_result = can_telemetry_compose.compose(
         layout=target.telemetry_layout,
-        base=rolling_result.data,
+        base=telemetry_base,
         blobs=target.telemetry_payloads,
     )
     actual = (
         map_result.sha256,
-        rolling_result.sha256,
+        (
+            rolling_result.sha256
+            if rolling_result is not None
+            else map_result.sha256
+        ),
         telemetry_result.sha256,
     )
     expected = (
@@ -1147,7 +1376,7 @@ def main(argv=None):
     print(
         f"status=PASS targets={len(targets)} "
         f"map_families={sum(len(x.map_layout.families) for x in targets.values())} "
-        f"instructions={sum(x.map_layout.assembled_instruction_count + x.rolling_layout.assembled_instruction_count + x.telemetry_layout.assembled_instruction_count for x in targets.values())}"
+        f"instructions={sum(x.map_layout.assembled_instruction_count + (0 if x.rolling_layout is None else x.rolling_layout.assembled_instruction_count) + x.telemetry_layout.assembled_instruction_count for x in targets.values())}"
     )
     return 0
 

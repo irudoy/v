@@ -15,18 +15,20 @@ engines.
 - The headless analysis path exports firmware structure from Ghidra, rebuilds a
   queryable Memgraph index from tracked inputs, and projects reviewed facts into
   RomRaider XML, TunerPro XDF, and a map ledger.
-- The unified builder composes the current Map Switching, Rolling Launch, and
-  custom CAN telemetry runtimes for JK00A, JK03A, JK03B, JK08A, JK00C, and
-  JK00D. It preserves target calibration state, closes each ROM's checksum
-  domains, and emits a machine-readable build manifest.
+- The unified builder composes the current capability-specific runtime for
+  JK00A, JK03A, JK03B, JK08A, JK00C, JK00D, 1ND0A, and 1ND3B. Map Switching
+  and custom CAN telemetry are available on all eight targets. Rolling Launch
+  is available on the six SH7058 targets and is explicitly unsupported on the
+  SH7059 1ND family. The builder preserves target calibration state, closes
+  each ROM's checksum domains, and emits a machine-readable build manifest.
 - One canonical annotation and presentation layer plus explicit relocated
   correspondences generate target-specific RomRaider XML and TunerPro XDF
   files for all nine stock identities. The two SH7059 1ND images share one
   reviewed address layout while retaining independent identities and values.
 - Instruction-changing patches have a repository-contained GNU SH-2E
   executable gate. It independently assembles and executes the canonical JK08A
-  runtime and the target-specific JK00C/JK00D projections. Software verification
-  does not replace bench, readback, or engine validation.
+  runtime and the target-specific JK00C, JK00D, 1ND0A, and 1ND3B projections.
+  Software verification does not replace bench, readback, or engine validation.
 - Concrete tuned images, local calibration profiles, build recipes, active tune
   identities, and generated test artifacts are intentionally outside Git.
 
@@ -93,8 +95,9 @@ make verify
 direct Python test contract remains `uv run pytest -q`; the pin-tracer contract
 is documented beside that tool.
 
-`make runtime-targets-generate` regenerates the tracked JK00C/JK00D GNU SH-2E
-payload locks and all three stage hashes from the registered address profiles.
+`make runtime-targets-generate` regenerates the tracked JK00C, JK00D, 1ND0A,
+and 1ND3B GNU SH-2E payload locks and capability-specific stage hashes from the
+registered address profiles.
 
 Build the self-contained ROM atlas HTML with:
 
@@ -120,8 +123,8 @@ make dashboard-package-macos
 ```
 
 The unified production builder remains the only complete modified-ROM entry
-point. Map Switching, Rolling Launch, CAN telemetry, checksum closure, and the
-final write-set audit run through the same command:
+point. Map Switching, capability-gated Rolling Launch, CAN telemetry, checksum
+closure, and the final write-set audit run through the same command:
 
 ```bash
 make rom-verify INPUT=tmp/input.bin
@@ -145,5 +148,7 @@ contracts remain undeclared, so the production ROM builder does not accept it.
 
 1ND0A and 1ND3B participate in all-target definition and ROM-atlas generation
 with the shared reviewed SH7059 calibration layout and all six verified
-checksum fields. Their map-switching, Rolling Launch, custom CAN telemetry, and
-production builder contracts remain undeclared.
+checksum fields. Their production runtime includes twelve switched calibration
+families, scalar throttle-limiter selection, custom CAN telemetry, checksum
+closure, and the executable gate. Rolling Launch is unavailable because the
+required target rev-limit fuel actuator has not been localized.

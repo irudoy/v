@@ -222,7 +222,7 @@ def _validate_capture(parsed):
 def _validate_completion(parsed, variant="combined-mailbox26"):
     texts = _texts(parsed)
     prologue = [f"mov.l r{index},@-r15" for index in range(8)] + ["sts.l pr,@-r15"]
-    if variant == "mailbox24-tail-chain":
+    if variant in {"mailbox24-tail-chain", "mailbox26-tail-chain"}:
         tail = [
             "bsr telemetry_handle_completion",
             "nop",
@@ -323,7 +323,9 @@ def validate_assembly_sources(layout=None):
         common._validate_delay_slots(
             parsed,
             allow_tail_restore=(
-                layout.variant == "mailbox24-tail-chain"
+                layout.variant in {
+                    "mailbox24-tail-chain", "mailbox26-tail-chain"
+                }
                 and unit.key == "completion"
             ),
         )
@@ -382,7 +384,9 @@ def validate_instruction_semantics(layout, parsed_by_unit, blobs):
             unit.span.start,
             addresses,
             allow_tail_restore=(
-                layout.variant == "mailbox24-tail-chain"
+                layout.variant in {
+                    "mailbox24-tail-chain", "mailbox26-tail-chain"
+                }
                 and unit.key == "completion"
             ),
         ))

@@ -25,6 +25,9 @@
 #define IGNITION_ADAPTER 0x000d2340U
 #define FUEL_COMP_ADAPTER 0x000d2380U
 #define EXHAUST_CVTC_TARGET_ADAPTER 0x000d23c0U
+#ifdef TARGET_SH7059_1ND
+#define IDLE_IGNITION_BANK_2_ADAPTER 0x000d23c0U
+#endif
 #ifdef TARGET_DUAL_EXHAUST
 #define EXHAUST_CVTC_TARGET_ODD_ADAPTER 0x000d5000U
 #endif
@@ -121,12 +124,21 @@ static const struct family adapter_families[] = {
         {0x0000a29aU, 0x000d3100U, 0x000d3200U, 0x000d3300U,
          0x000d3400U},
     },
+#ifdef TARGET_SH7059_1ND
+    {
+        "fuel_compensation_main_bank_2", FUEL_COMP_ADAPTER,
+        0x0000b33aU, 256U,
+        {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
+         0x000d3000U},
+    },
+#else
     {
         "exhaust_cvtc_target", EXHAUST_CVTC_TARGET_ADAPTER,
         0x0000b33aU, 256U,
         {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
          0x000d3000U},
     },
+#endif
 #ifdef TARGET_DUAL_EXHAUST
     {
         "exhaust_cvtc_target_odd", EXHAUST_CVTC_TARGET_ODD_ADAPTER,
@@ -147,6 +159,20 @@ static const struct family adapter_families[] = {
         {0x0001219eU, 0x000d40a0U, 0x000d40a8U, 0x000d40b0U,
          0x000d40b8U},
     },
+#ifdef TARGET_SH7059_1ND
+    {
+        "cold_idle_ignition_timing_bank_2",
+        IDLE_IGNITION_BANK_2_ADAPTER, 0x00012196U, 8U,
+        {0x00012196U, 0x000d4080U, 0x000d4088U, 0x000d4090U,
+         0x000d4098U},
+    },
+    {
+        "idle_ignition_timing_bank_2",
+        IDLE_IGNITION_BANK_2_ADAPTER, 0x0000934eU, 8U,
+        {0x0000934eU, 0x000d3500U, 0x000d3508U, 0x000d3510U,
+         0x000d3518U},
+    },
+#endif
 };
 
 static const struct pass_through pass_throughs[] = {
@@ -155,8 +181,13 @@ static const struct pass_through pass_throughs[] = {
     {"full_dfco_unknown", FULL_DFCO_ADAPTER, 0x0001298dU},
     {"ignition_cold", IGNITION_ADAPTER, 0x0000991aU},
     {"fuel_compensation_unknown", FUEL_COMP_ADAPTER, 0x0000a29bU},
+#ifdef TARGET_SH7059_1ND
+    {"idle_ignition_bank_2_hidden", IDLE_IGNITION_BANK_2_ADAPTER,
+     0x000121a6U},
+#else
     {"exhaust_cvtc_target_unknown", EXHAUST_CVTC_TARGET_ADAPTER,
      0x0000b33bU},
+#endif
 #ifdef TARGET_DUAL_EXHAUST
     {"exhaust_cvtc_target_odd_unknown",
      EXHAUST_CVTC_TARGET_ODD_ADAPTER, 0x0000b43bU},
@@ -164,10 +195,12 @@ static const struct pass_through pass_throughs[] = {
     {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
 };
 
+#ifndef TARGET_SH7059_1ND
 static const uint32_t fuel_slots[] = {
     0x0000934eU, 0x000d3500U, 0x000d3508U, 0x000d3510U,
     0x000d3518U,
 };
+#endif
 
 static const uint32_t throttle_slots[] = {
     0x0000942cU, 0x000d3520U, 0x000d3522U, 0x000d3524U,
@@ -403,10 +436,14 @@ static int verify_ram_guards(const char *name)
 
 static void expected_limiter_ram(uint8_t expected[RAM_SENTINEL_SIZE], int slot)
 {
+#ifndef TARGET_SH7059_1ND
     uint8_t throttle[28];
+#endif
     size_t index;
     size_t selector_offset = SELECTOR_STATE - RAM_SENTINEL_BASE;
+#ifndef TARGET_SH7059_1ND
     size_t fuel_offset = FUEL_SHADOW - RAM_SENTINEL_BASE;
+#endif
     size_t throttle_offset = THROTTLE_SHADOW - RAM_SENTINEL_BASE;
 
     for (index = 0; index < RAM_SENTINEL_SIZE; ++index)
@@ -414,6 +451,10 @@ static void expected_limiter_ram(uint8_t expected[RAM_SENTINEL_SIZE], int slot)
     expected[selector_offset] = (uint8_t)slot;
     for (index = 1; index < 8; ++index)
         expected[selector_offset + index] = 0;
+#ifdef TARGET_SH7059_1ND
+    read_bytes(
+        expected + throttle_offset, rom_pointer(throttle_slots[slot]), 2);
+#else
     read_bytes(expected + fuel_offset, rom_pointer(fuel_slots[slot]), 8);
     read_bytes(expected + fuel_offset + 8, rom_pointer(FUEL_STOCK + 8U), 4);
     read_bytes(throttle, rom_pointer(THROTTLE_STOCK), sizeof(throttle));
@@ -422,6 +463,7 @@ static void expected_limiter_ram(uint8_t expected[RAM_SENTINEL_SIZE], int slot)
         rom_pointer(throttle_slots[slot]), 2);
     for (index = 0; index < sizeof(throttle); ++index)
         expected[throttle_offset + index] = throttle[index];
+#endif
 }
 
 static int verify_limiter_memory(const char *name, int slot)
@@ -434,7 +476,12 @@ static int verify_limiter_memory(const char *name, int slot)
             name, "limiter_ram", ram_pointer(RAM_SENTINEL_BASE),
             expected, sizeof(expected)))
         return 0;
+#ifdef TARGET_SH7059_1ND
+    runtime[0] = 0xa5;
+    runtime[1] = 0xa5;
+#else
     read_bytes(runtime, rom_pointer(throttle_slots[slot]), sizeof(runtime));
+#endif
     if (!fail_bytes(
             name, "throttle_runtime", ram_pointer(THROTTLE_RUNTIME),
             runtime, sizeof(runtime)))
@@ -568,7 +615,12 @@ static int verify_optional_selector_shadows(const char *name, int active)
             name, "throttle_shadow", ram_pointer(THROTTLE_SHADOW),
             expected + throttle_offset, 28))
         return 0;
+#ifdef TARGET_SH7059_1ND
+    runtime[0] = 0xa5;
+    runtime[1] = 0xa5;
+#else
     read_bytes(runtime, rom_pointer(throttle_slots[active]), sizeof(runtime));
+#endif
     return fail_bytes(
         name, "throttle_runtime", ram_pointer(THROTTLE_RUNTIME),
         runtime, sizeof(runtime));
@@ -664,7 +716,10 @@ int main(void)
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
-#ifdef TARGET_DUAL_EXHAUST
+#ifdef TARGET_SH7059_1ND
+    if (total_cases != 145U)
+        return fail_value("summary", "case_count", total_cases, 145);
+#elif defined(TARGET_DUAL_EXHAUST)
     if (total_cases != 139U)
         return fail_value("summary", "case_count", total_cases, 139);
 #else
@@ -677,7 +732,10 @@ int main(void)
 
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
-#ifdef TARGET_DUAL_EXHAUST
+#ifdef TARGET_SH7059_1ND
+        "adapters=105 limiter=14 feedback=9 feedback_invocations=%lu "
+        "entries=12\n",
+#elif defined(TARGET_DUAL_EXHAUST)
         "adapters=99 limiter=14 feedback=9 feedback_invocations=%lu "
         "entries=13\n",
 #else

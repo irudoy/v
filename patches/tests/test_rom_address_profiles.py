@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 import pytest
 
 from patches import rom_address_profiles
@@ -9,7 +11,7 @@ def profiles():
 
 
 def test_registry_has_only_explicit_exact_profiles(profiles):
-    assert set(profiles) == {"JK00C", "JK00D"}
+    assert set(profiles) == {"JK00C", "JK00D", "1ND0A", "1ND3B"}
     assert rom_address_profiles.profile_for_rom("jk00c") is profiles["JK00C"]
     with pytest.raises(
         rom_address_profiles.AddressProfileError,
@@ -24,7 +26,8 @@ def test_registry_has_only_explicit_exact_profiles(profiles):
 
 
 def test_common_rebase_preserves_full_runtime_alignment(profiles):
-    for profile in profiles.values():
+    for rom in ("JK00C", "JK00D"):
+        profile = profiles[rom]
         assert profile.rom_delta == 0xC700
         assert profile.ram_delta == 0x300
         assert profile.free_rom == rom_address_profiles.AddressRange(
@@ -71,7 +74,8 @@ def test_dual_exhaust_and_nonuniform_telemetry_bindings_are_explicit(profiles):
 
 
 def test_mailbox_24_is_selected_and_occupied_mailbox_26_is_preserved(profiles):
-    for profile in profiles.values():
+    for rom in ("JK00C", "JK00D"):
+        profile = profiles[rom]
         symbols = profile.can_symbol_by_key
         assert symbols["mailbox_index"] == 24
         assert symbols["mailbox_mask"] == 0x0100
@@ -79,6 +83,42 @@ def test_mailbox_24_is_selected_and_occupied_mailbox_26_is_preserved(profiles):
         assert symbols["mailbox_record_stock"] == 0x05000000
         assert symbols["occupied_mailbox_record_stock"] == 0x04000000
         assert profile.telemetry_completion_variant == "mailbox24-tail-chain"
+
+
+def test_1nd_profiles_share_exact_code_and_declare_reduced_capabilities(profiles):
+    one = profiles["1ND0A"]
+    three = profiles["1ND3B"]
+
+    assert three == replace(one, rom="1ND3B")
+    assert one.family == "sh7059_1nd"
+    assert one.rom_size == 0x180000
+    assert one.rom_delta == 0x60000
+    assert one.ram_delta == -0x5100
+    assert one.injected_rom == rom_address_profiles.AddressRange(
+        0x132108, 0x136000
+    )
+    assert one.injected_ram == rom_address_profiles.AddressRange(
+        0xFFFF0C00, 0xFFFF0F00
+    )
+    assert one.enabled_capabilities == {"map_switching", "can_telemetry"}
+    assert one.rolling_hooks == ()
+    assert one.rolling_diagnostics == ()
+    assert one.telemetry_unavailable == ("knock_timing_state_raw",)
+    assert "knock_timing_state_raw" not in one.telemetry_source_by_name
+    assert one.telemetry_zero_source == 0xFFFF0DE0
+
+
+def test_1nd_uses_physical_mailbox_26_and_type_a3_feedback(profiles):
+    for rom in ("1ND0A", "1ND3B"):
+        profile = profiles[rom]
+        symbols = profile.can_symbol_by_key
+        assert symbols["mailbox_index"] == 26
+        assert symbols["mailbox_mask"] == 0x0400
+        assert symbols["mailbox_data"] == 0xFFFFDC48
+        assert symbols["feedback_config_record_value"] == 0xA308AA20
+        assert symbols["feedback_payload_base_literal"] == 0x116EAC
+        assert symbols["feedback_payload_offset"] == 0x142
+        assert profile.telemetry_completion_variant == "mailbox26-tail-chain"
 
 
 def test_stock_hook_mutation_is_rejected(profiles):

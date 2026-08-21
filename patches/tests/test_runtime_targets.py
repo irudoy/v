@@ -8,11 +8,14 @@ from patches import rolling_launch_assembly
 from patches import runtime_targets
 
 
-def test_runtime_registry_covers_both_supported_sh7058_families():
+def test_runtime_registry_covers_all_supported_families():
     assert runtime_targets.SUPPORTED_ROMS == (
-        "JK00A", "JK03A", "JK03B", "JK08A", "JK00C", "JK00D"
+        "JK00A", "JK03A", "JK03B", "JK08A", "JK00C", "JK00D",
+        "1ND0A", "1ND3B",
     )
-    assert set(runtime_targets.load_payload_locks()) == {"JK00C", "JK00D"}
+    assert set(runtime_targets.load_payload_locks()) == {
+        "JK00C", "JK00D", "1ND0A", "1ND3B"
+    }
     for rom in runtime_targets.EXACT_ROMS:
         target = runtime_targets.load_runtime_target(rom)
         assert target.rom == rom
@@ -20,12 +23,12 @@ def test_runtime_registry_covers_both_supported_sh7058_families():
         assert target.map_layout.variant == "single-exhaust"
 
 
-@pytest.mark.parametrize("rom", runtime_targets.RELOCATED_ROMS)
-def test_relocated_target_has_complete_projected_runtime(rom):
+@pytest.mark.parametrize("rom", runtime_targets.RELOCATED_8MFK_ROMS)
+def test_relocated_8mfk_target_has_complete_projected_runtime(rom):
     target = runtime_targets.load_runtime_target(rom)
     profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
 
-    assert target.family == runtime_targets.RELOCATED_FAMILY
+    assert target.family == runtime_targets.RELOCATED_8MFK_FAMILY
     assert target.stock_image.rom == rom
     assert target.map_layout.rom == rom
     assert target.map_layout.variant == "dual-exhaust"
@@ -53,8 +56,8 @@ def test_relocated_target_has_complete_projected_runtime(rom):
     )
 
 
-@pytest.mark.parametrize("rom", runtime_targets.RELOCATED_ROMS)
-def test_relocated_sources_cover_alignment_and_tail_chain_variants(rom):
+@pytest.mark.parametrize("rom", runtime_targets.RELOCATED_8MFK_ROMS)
+def test_relocated_8mfk_sources_cover_alignment_and_tail_chain_variants(rom):
     target = runtime_targets.load_runtime_target(rom)
     limiter = target.map_layout.source_text_by_unit["limiter_commit"]
     completion = target.telemetry_layout.source_text_by_unit["completion"]
@@ -87,6 +90,78 @@ def test_relocated_sources_cover_alignment_and_tail_chain_variants(rom):
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
     ).instructions == 617
+
+
+@pytest.mark.parametrize("rom", runtime_targets.SH7059_1ND_ROMS)
+def test_sh7059_1nd_target_has_map_and_can_without_rolling_launch(rom):
+    target = runtime_targets.load_runtime_target(rom)
+    profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
+
+    assert target.family == runtime_targets.SH7059_1ND_FAMILY
+    assert target.map_layout.variant == "sh7059-1nd"
+    assert target.rolling_layout is None
+    assert target.rolling_payloads == {}
+    assert target.telemetry_layout.variant == "mailbox26-tail-chain"
+    assert len(target.map_layout.families) == 12
+    assert set(target.map_payloads) == {
+        unit.key for unit in target.map_layout.assembly_units
+    }
+    assert set(target.telemetry_payloads) == {
+        unit.key for unit in target.telemetry_layout.assembly_units
+    }
+    assert target.map_layout.family_by_key[
+        "fuel_compensation_main_bank_2"
+    ].canonical_address == profile.map_family_by_key[
+        "fuel_compensation_main_bank_2"
+    ]
+    assert target.map_layout.family_by_key[
+        "idle_ignition_timing_bank_2"
+    ].adapter == "idle_ignition_bank_2_adapter"
+    assert target.map_layout.family_by_key[
+        "rev_limit_throttle_cut"
+    ].runtime_shadow_address is None
+
+
+@pytest.mark.parametrize("rom", runtime_targets.SH7059_1ND_ROMS)
+def test_sh7059_1nd_sources_encode_target_variants(rom):
+    target = runtime_targets.load_runtime_target(rom)
+    limiter = target.map_layout.source_text_by_unit["limiter_commit"]
+    adapters = target.map_layout.source_text_by_unit["lookup_adapters"]
+    completion = target.telemetry_layout.source_text_by_unit["completion"]
+    tables = target.telemetry_layout.source_text_by_unit["tables"]
+
+    assert "fuel_map_copy_loop" not in limiter
+    assert limiter.count("mov.w @r2,r0") == 1
+    assert ".long 0xFFFF0C20" in limiter
+    assert "fuel_compensation_bank_2_base" in adapters
+    assert "idle_ignition_bank_2_adapter" in adapters
+    assert "jmp @r0\nmov.l @r15+,r0" in completion
+    assert "0xFFFF0DE0, 0xFFFF0DE1" in tables
+
+    map_parsed = map_switching_assembly.validate_assembly_sources(
+        target.map_layout
+    )
+    telemetry_parsed = can_telemetry_assembly.validate_assembly_sources(
+        target.telemetry_layout
+    )
+    assert map_switching_assembly.validate_instruction_semantics(
+        target.map_layout, map_parsed, target.map_payloads
+    ).instructions == 419
+    assert can_telemetry_assembly.validate_instruction_semantics(
+        target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
+    ).instructions == 617
+
+
+def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
+    locks = runtime_targets.load_payload_locks()
+    zero = locks["1ND0A"]
+    three = locks["1ND3B"]
+
+    assert zero.map_payloads == three.map_payloads
+    assert zero.rolling_payloads == three.rolling_payloads == {}
+    assert zero.telemetry_payloads == three.telemetry_payloads
+    assert zero.map_stage_sha256 != three.map_stage_sha256
+    assert zero.telemetry_stage_sha256 != three.telemetry_stage_sha256
 
 
 def test_all_relocated_stage_hashes_recompose_exactly():

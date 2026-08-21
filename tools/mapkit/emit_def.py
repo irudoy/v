@@ -1221,7 +1221,13 @@ def emit_target(
         and definition_projection.map_switching is not None
     ):
         sources.append(
-            "patches/map-switching-layout.toml (common map-switching slots)"
+            (
+                "patches/rom-address-profiles.toml "
+                "(target runtime map slots)"
+                if target.definition_projection is not None
+                else "patches/map-switching-layout.toml "
+                "(common map-switching slots)"
+            )
         )
     if (
         definition_projection is not None

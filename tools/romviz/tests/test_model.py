@@ -125,9 +125,35 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id):
 
     assert rom["metadata"]["ECU ID"] == f"1{rom_id}"
     assert rom["metadata"]["MCU"] == "SH7059"
-    assert rom["counts"]["maps"] == 34
+    assert rom["counts"]["maps"] == 90
     assert maf_factor["start"] == 0x08939
     assert maf_factor["source"] == f"defs/{rom_id}.xml"
+    by_id = {item["id"]: item for item in rom["objects"]}
+    profile = by_id[
+        "patch:runtime-address-profile:patch-claim:injected-rom"
+    ]
+    assert profile["patchStatus"] == "composed"
+    assert profile["start"] == 0x132108
+    assert profile["end"] == 0x136000
+    assert "definition-switch:0:00134e03" in by_id
+    assert any(
+        item["id"].startswith(
+            "patch:runtime-address-profile:patch-hook:map-"
+        )
+        for item in rom["objects"]
+    )
+    assert any(
+        item["id"].startswith(
+            "patch:runtime-address-profile:patch-hook:can-"
+        )
+        for item in rom["objects"]
+    )
+    assert not any(
+        item["id"].startswith(
+            "patch:runtime-address-profile:patch-hook:rolling-"
+        )
+        for item in rom["objects"]
+    )
     assert checksum_fields == {
         "checksum-field:sum16_a",
         "checksum-field:sum16_b",

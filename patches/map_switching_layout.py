@@ -35,6 +35,16 @@ COMPATIBLE_PROTECTED_RANGES = (
 )
 
 
+def compatible_protected_ranges(rom_size):
+    """Return immutable ranges for one complete supported ROM image."""
+    if rom_size < COMPATIBLE_CALIBRATION_END:
+        raise ValueError("compatible ROM is smaller than the calibration window")
+    return (
+        (0x000000, COMPATIBLE_CALIBRATION_START),
+        (COMPATIBLE_CALIBRATION_END, rom_size),
+    )
+
+
 @dataclass(frozen=True, order=True)
 class AddressRange:
     start: int
@@ -559,7 +569,13 @@ def validate_structure(layout):
             layout.variant == "dual-exhaust"
             and layout.rom not in {"JK00C", "JK00D"}
         )
-        or layout.variant not in {"single-exhaust", "dual-exhaust"}
+        or (
+            layout.variant == "sh7059-1nd"
+            and layout.rom not in {"1ND0A", "1ND3B"}
+        )
+        or layout.variant not in {
+            "single-exhaust", "dual-exhaust", "sh7059-1nd"
+        }
     ):
         raise ValueError(
             f"unsupported map-switching target {layout.rom!r} "
@@ -597,6 +613,21 @@ def validate_structure(layout):
             "exhaust_cvtc_target_even",
             "exhaust_cvtc_target_odd",
         })
+    elif layout.variant == "sh7059-1nd":
+        required_family_keys = {
+            "over_run_fuel_hold",
+            "over_run_fuel_cut",
+            "over_run_fuel_restore",
+            "over_run_fuel_intermediate_restore",
+            "high_octane_timing_state",
+            "high_detonation_timing_state",
+            "cold_idle_ignition_timing",
+            "idle_ignition_timing_bank_1",
+            "idle_ignition_timing_bank_2",
+            "fuel_compensation_main_bank_1",
+            "fuel_compensation_main_bank_2",
+            "rev_limit_throttle_cut",
+        }
     if len(layout.families) != len(required_family_keys):
         raise ValueError(
             "the production family count differs from the target variant"
@@ -620,7 +651,10 @@ def validate_structure(layout):
     _unique(layout.hooks, lambda item: item.key, "hook keys")
     _unique(layout.hooks, lambda item: item.address, "hook addresses")
     startup_anchor = layout.anchor_by_key.get("startup_clear_start_stock")
-    if (
+    if layout.variant == "sh7059-1nd":
+        if layout.anchors:
+            raise ValueError("SH7059 target must not inherit SH7058 anchors")
+    elif (
         startup_anchor is None
         or startup_anchor.address != 0x000029CC
         or startup_anchor.width != 4
@@ -802,20 +836,33 @@ def validate_structure(layout):
                     f"RAM allocations overlap: {left.key} and {right.key}"
                 )
 
-    fuel_cut = layout.family_by_key["rev_limit_fuel_cut"]
     throttle = layout.family_by_key["rev_limit_throttle_cut"]
-    if (
-        fuel_cut.shadow_start != layout.ram.fuel_cut_shadow.start
-        or fuel_cut.stock_container_size != layout.ram.fuel_cut_shadow.size
-    ):
-        raise ValueError("fuel-cut family and RAM shadow declarations differ")
-    if (
+    if layout.variant != "sh7059-1nd":
+        fuel_cut = layout.family_by_key["rev_limit_fuel_cut"]
+        if (
+            fuel_cut.shadow_start != layout.ram.fuel_cut_shadow.start
+            or fuel_cut.stock_container_size != layout.ram.fuel_cut_shadow.size
+        ):
+            raise ValueError(
+                "fuel-cut family and RAM shadow declarations differ"
+            )
+    throttle_differs = (
         throttle.shadow_start != layout.ram.throttle_shadow.start
-        or throttle.stock_container_size != layout.ram.throttle_shadow.size
         or throttle.selected_offset != layout.ram.throttle_selected_offset
-        or throttle.runtime_shadow_address
-        != layout.ram.stock_throttle_runtime
-    ):
+    )
+    if layout.variant == "sh7059-1nd":
+        throttle_differs = throttle_differs or (
+            throttle.stock_container_size != throttle.byte_length
+            or throttle.runtime_shadow_address is not None
+            or layout.ram.stock_throttle_runtime != 0
+        )
+    else:
+        throttle_differs = throttle_differs or (
+            throttle.stock_container_size != layout.ram.throttle_shadow.size
+            or throttle.runtime_shadow_address
+            != layout.ram.stock_throttle_runtime
+        )
+    if throttle_differs:
         raise ValueError("throttle family and RAM shadow declarations differ")
 
     feedback = layout.feedback
@@ -826,7 +873,7 @@ def validate_structure(layout):
     if (
         feedback.can_channel != 1
         or feedback.mailbox_index != 3
-        or config_type != 3
+        or config_type not in {3, 0xA3}
     ):
         raise ValueError(
             "feedback must use the validated HCAN1 transmit mailbox 3"
@@ -984,7 +1031,9 @@ def validate_structure(layout):
         family.access_kind == "ram_shadow" for family in layout.families
     )
     expected_access_split = (
-        (11, 2) if layout.variant == "dual-exhaust" else (10, 2)
+        (11, 2)
+        if layout.variant == "dual-exhaust"
+        else ((11, 1) if layout.variant == "sh7059-1nd" else (10, 2))
     )
     if (adapter_count, shadow_count) != expected_access_split:
         raise ValueError(
@@ -1007,6 +1056,9 @@ def validate_structure(layout):
     }
     if layout.variant == "dual-exhaust":
         expected_assembled_regions.add("exhaust_cvtc_target_odd_adapter")
+    elif layout.variant == "sh7059-1nd":
+        expected_assembled_regions.remove("exhaust_cvtc_target_adapter")
+        expected_assembled_regions.add("idle_ignition_bank_2_adapter")
     if layout.assembled_region_keys != expected_assembled_regions:
         raise ValueError(
             "implemented assembly region set differs: "
@@ -1138,7 +1190,7 @@ def validate_compatible_image(layout=None, image=None, stock_image=None):
                 f"{stock_image.rom}: stock image has {len(stock_image.data)} "
                 f"bytes, expected {len(canonical_image.data)}"
             )
-        for start, end in COMPATIBLE_PROTECTED_RANGES:
+        for start, end in compatible_protected_ranges(len(stock_image.data)):
             if stock_image.data[start:end] != canonical_image.data[start:end]:
                 relative = next(
                     offset
@@ -1173,7 +1225,7 @@ def validate_compatible_image(layout=None, image=None, stock_image=None):
             f"{COMPATIBLE_IDENTITY_START:#x} differs from selected stock"
         )
 
-    for start, end in COMPATIBLE_PROTECTED_RANGES:
+    for start, end in compatible_protected_ranges(len(stock_image.data)):
         candidate = image.data[start:end]
         baseline = stock_image.data[start:end]
         if candidate != baseline:

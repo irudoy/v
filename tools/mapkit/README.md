@@ -20,7 +20,7 @@ not be edited by hand.
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
 | `defs/JK08A-*.definition-addresses.csv` | Reviewed target map and axis addresses |
 | `defs/rom-identities.toml` | Target-specific RomRaider and TunerPro identity fields |
-| Patch layout manifests | Common map-slot and Rolling Launch configuration projections |
+| Runtime layout manifests | Canonical and target-specific map-slot and Rolling Launch projections |
 | `rom-images/roms.csv` | Exact source-image identity and path |
 
 JK00A, JK03A, and JK03B inherit the canonical JK08A structural and semantic
@@ -33,7 +33,10 @@ axis against the selected stock image.
 JK78C, 1ND0A, and 1ND3B use independently reviewed VQ37 address projections.
 The two SH7059 images share one address layout because their address-bearing
 executable code is byte-identical, but retain independent image hashes,
-identities, and stock calibration values.
+identities, and stock calibration values. Their definitions expose the twelve
+target-specific Map Switching families and CAN telemetry control from the same
+validated runtime target consumed by the production builder. Rolling Launch
+controls remain absent because that capability is unsupported on 1ND.
 
 ## Paired editor definitions
 

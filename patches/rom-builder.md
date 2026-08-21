@@ -9,6 +9,10 @@ The registered `sh7058_7mfkavn86` exact-code series contains JK00A, JK03A,
 JK03B, and JK08A. JK08A is its canonical address and executable-code profile.
 The registered `sh7058_8mfk` near-code series contains JK00C and JK00D. It uses
 exact target address profiles and independently assembled target payloads.
+The registered `sh7059_1nd` exact-code series contains 1ND0A and 1ND3B. It uses
+a shared SH7059 address profile, independently assembled target payloads, Map
+Switching, and custom CAN telemetry. Rolling Launch is not supported on this
+series.
 Every member retains its own stock identity, calibration, and checksum layout.
 The command has two selection modes:
 
@@ -16,15 +20,15 @@ The command has two selection modes:
 make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin
 make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=JK08A
 make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=JK00C
+make rom-build INPUT=INPUT.bin OUTPUT=OUTPUT.bin ROM=1ND0A
 ```
 
-The default `--rom auto` mode identifies the exact member from the one-MiB image
-size and immutable identity bytes at `0x8204..0x8219`. It does not inspect the
-file name. An explicit selector bypasses selection ambiguity but does not
+The default `--rom auto` mode identifies the exact member from the registered
+image size and immutable identity bytes at `0x8204..0x8219`. It does not inspect
+the file name. An explicit selector bypasses selection ambiguity but does not
 bypass image validation. Both modes require the selected stock identity, valid
-input checksums, stock anchors, an exact vector/code prefix at
-`0x000000..0x0081ff`, and an exact protected partition at
-`0x020000..0x0fffff`.
+input checksums, target-specific protected regions, and exact address-profile
+anchors where the selected family declares them.
 
 Every invocation validates `rom-images/roms.csv` and
 `rom-images/homology.toml`. The selected stock image must match its registered
@@ -43,18 +47,19 @@ make rom-verify INPUT=INPUT.bin ROM=JK00D
 The common handler performs these operations in one invocation:
 
 1. Validate image size, immutable identity, and all six stored checksum values.
-2. Validate either the exact-family ownership ledger or the SHA-bound 8MFK
-   address profile, erased allocation, and target payload registry.
+2. Validate either the exact-family ownership ledger or the SHA-bound relocated
+   address profile, erased allocation, capabilities, and target payload registry.
 3. Classify the image as a compatible unpatched base or a complete runtime that
    can be migrated. The CAN telemetry layer must be wholly absent or match the
    exact current payload, configuration, mailbox record, hooks, and erased
    future reserve. After removing a validated telemetry layer in memory, the
-   Rolling Launch layer must be wholly absent, match the exact current payload
-   and configuration schema, or match one registered historical unit
-   fingerprint and its schema contract. Mixed hooks or DIDs, unknown payload
-   bytes, partial pointer tables, invalid configuration records, occupied
-   reserves, and unknown protected-code changes are rejected.
-4. Normalize only the combined builder-owned Map Switching, Rolling Launch,
+   Rolling Launch layer, when supported, must be wholly absent, match the exact
+   current payload and configuration schema, or match one registered historical
+   unit fingerprint and its schema contract. A target without Rolling Launch
+   must contain no Rolling Launch artifacts. Mixed hooks or DIDs, unknown
+   payload bytes, partial pointer tables, invalid configuration records,
+   occupied reserves, and unknown protected-code changes are rejected.
+4. Normalize only the builder-owned Map Switching, optional Rolling Launch,
    CAN telemetry, and checksum ranges back to bytes from the selected stock
    member.
 5. Apply the current Map Switching composition from the canonical payload
@@ -64,16 +69,17 @@ The common handler performs these operations in one invocation:
    contains a complete runtime. An unpatched base initializes these slots from
    its Map 1 values.
 7. Apply the current Rolling Launch composition from the applicable payload
-   registry and the selected local profile.
+   registry and selected local profile when the target supports it. Otherwise
+   require `observe` mode with no enabled maps and emit no Rolling Launch bytes.
 8. Apply the current CAN telemetry composition from the applicable payload
    registry. The built-in profile installs the runtime in fail-closed
-   disabled-at-startup mode. The exact-code family uses mailbox 26; the 8MFK
-   family uses stock-inactive mailbox 24. Both use mailbox 31 as the control
-   receiver after each HCAN1 initialization.
+   disabled-at-startup mode. The SH7058 exact-code and SH7059 1ND families use
+   mailbox 26; the 8MFK family uses stock-inactive mailbox 24. All three use
+   mailbox 31 as the control receiver after each HCAN1 initialization.
 9. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
    order, then verify all stored values again.
 10. Require every final difference from the input to be inside the union of the
-   three component write sets and the checksum fields.
+    enabled component write sets and the checksum fields.
 
 The builder preserves calibration and configuration outside its declared
 ranges, including the Developer Immobilizer bit edited through the matching
@@ -85,12 +91,12 @@ only the current composition modules.
 
 ## Relocated address profiles
 
-`rom-address-profiles.toml` records exact JK00C and JK00D stock addresses and
-the audited 8MFK runtime allocation. `rom_address_profiles.py` binds every
-profile to its registered stock image, verifies all original hook words,
-requires the complete erased ROM envelope, preserves the occupied stock
-mailbox 26, and rejects any incomplete semantic table. The registry has no
-implicit ROM selector.
+`rom-address-profiles.toml` records exact JK00C, JK00D, 1ND0A, and 1ND3B stock
+addresses, capabilities, and audited runtime allocations.
+`rom_address_profiles.py` binds every profile to its registered stock image,
+verifies all original hook words, requires the complete erased ROM envelope,
+preserves occupied stock mailboxes, and rejects incomplete variant contracts or
+semantic tables. The registry has no implicit ROM selector.
 
 The 8MFK runtime uses a uniform ROM relocation of `0xC700` and a RAM relocation
 of `0x300`, while retaining explicit nonuniform stock hooks and application-RAM
@@ -103,17 +109,25 @@ mailbox before tail-chaining to the complete stock ISR. Its final `JMP` delay
 slot restores `r0`, preserving the interrupted register file at the stock ISR
 boundary.
 
+The 1ND runtime uses a uniform ROM relocation of `0x60000` and a RAM relocation
+of `-0x5100`, with explicit nonuniform SH7059 stock hooks and application-RAM
+sources. Separate adapters cover both fuel-compensation banks and both warm-idle
+banks. The target limiter publishes only the selected throttle scalar because
+the canonical 2x2 rev-limit fuel-cut actuator has no verified 1ND homolog.
+Telemetry uses mailbox 26 and a register-preserving completion wrapper that
+tail-chains to the complete stock ISR.
+
 `runtime_targets.py` renders every target source through explicit stock and RAM
 bindings. `runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
-the Map Switching, Rolling Launch, and telemetry stage hashes for each exact
-8MFK stock image. Regenerate the registry only through:
+the capability-specific stage hashes for each exact relocated stock image.
+Regenerate the registry only through:
 
 ```bash
 make runtime-targets-generate
 ```
 
 The production builder and executable gate consume the same projected layouts
-and locked payloads for JK00C and JK00D.
+and locked payloads for JK00C, JK00D, 1ND0A, and 1ND3B.
 
 ## SH7059 1ND correspondence
 
@@ -130,12 +144,21 @@ explicitly unsupported instead of being assigned to an unrelated RAM word.
 The surface selector itself remains available at `0xFFFE9488`, where bit 6 is
 consumed by the target ignition and correction paths.
 
+The 1ND address profile binds twelve switched families: four DFCO rows, two
+ignition surfaces, shared cold-idle timing, separate warm-idle timing for both
+banks, separate fuel compensation for both banks, and the throttle-limiter
+scalar. Custom CAN telemetry binds 62 available schema fields. The unavailable
+knock timing field is encoded from cleared reserved RAM and remains identified
+as unavailable in metadata. 1ND0A and 1ND3B share executable payload bytes but
+retain separate stock identities, stage hashes, and six-field checksum closure.
+
 ## Rolling Launch profile
 
-Without `--profile`, the builder uses the conservative built-in
-`rpm-hold-map1-test` profile: Map 1 enabled, RPM Hold mode, and ignition retard
-disabled. A separate local TOML file selects all Rolling Launch calibration,
-including the bounded-retard mode:
+Without `--profile`, a Rolling Launch-capable target uses the conservative
+built-in `rpm-hold-map1-test` profile: Map 1 enabled, RPM Hold mode, and
+ignition retard disabled. A 1ND target uses `observe` mode with no enabled maps
+and emits no Rolling Launch stage. A separate local TOML file selects all
+Rolling Launch calibration, including the bounded-retard mode:
 
 ```toml
 schema_version = 2
@@ -178,7 +201,9 @@ The accepted mode names are `observe`, `rpm_hold`, and `rpm_hold_retard`.
 fields are rejected, and the resulting 32-byte configuration must pass the
 independent fail-closed model. `rom` may name the complete
 applicable `sh7058_7mfkavn86` or `sh7058_8mfk` series, or bind the profile to
-one exact member.
+one exact member. A profile for `sh7059_1nd`, 1ND0A, or 1ND3B must use
+`observe` with an empty `enabled_maps` array because the series has no Rolling
+Launch capability.
 `min_speed = 0` disables the vehicle-speed activation gate, and
 `min_pedal = 0` disables the pedal-position activation gate.
 `hysteresis_ratio_tenths = 20` means 2.0 percent of captured RPM. The runtime
@@ -199,13 +224,14 @@ runtime control.
 
 Every profile changes the selected stock-inactive mailbox record from type 5
 to interrupt-enabled transmit type 4 and encodes the selected data ID as
-`STDID << 5`. The exact-code family writes mailbox 26 at `0x000097BE`; JK00C
-and JK00D write mailbox 24 at their profile-specific record address. `enabled`
-controls whether sampling starts after reset; an idle type-4 mailbox does not
-request CAN traffic. A validated START command on `can_id + 1` activates
-streaming until reset even when `enabled = false`, and STOP forces it off. The
-builder validates the exact mailbox record against the configuration and
-rejects a partial or mismatched endpoint.
+`STDID << 5`. The SH7058 exact-code family writes mailbox 26 at `0x000097BE`;
+1ND uses mailbox 26 at `0x0000974C`; JK00C and JK00D write mailbox 24 at their
+profile-specific record address. `enabled` controls whether sampling starts
+after reset; an idle type-4 mailbox does not request CAN traffic. A validated
+START command on `can_id + 1` activates streaming until reset even when
+`enabled = false`, and STOP forces it off. The builder validates the exact
+mailbox record against the configuration and rejects a partial or mismatched
+endpoint.
 
 A profile can start transmission automatically only after a passive
 whole-vehicle capture proves both adjacent IDs unused and a measured bus-load

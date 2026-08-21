@@ -83,7 +83,7 @@ target_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da97
 addresses = "JK08A-1ND.definition-addresses.csv"
 checksum = true
 romraider_checksum = false
-map_switching = false
+map_switching = true
 rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
@@ -93,12 +93,14 @@ are downgraded to candidate confidence unless target-specific evidence keeps
 code confidence. Source tables whose VQ37 implementation changes geometry or
 removes the corresponding lookup are omitted explicitly. The project checksum
 implementation verifies and recalculates all six 1ND fields; RomRaider has no
-native metadata for this complete layout. Map switching, Rolling Launch, and
-editor-switch contracts are not declared.
+native metadata for this complete layout. Map 2 through Map 5 storage and the
+CAN Telemetry at Startup control use the validated 1ND runtime allocation in
+patches/rom-address-profiles.toml. Rolling Launch is not supported on 1ND.
 """
 evidence = "Reviewed JK78C-to-1ND0A structural functions, shared interpolation contracts, exact storage, selector branch order, target literals, and exact-code 1ND family evidence."
 
 [projection.1ND0A.switch]
+can_telemetry_startup = 0x00134E03
 
 [projection.1ND3B]
 source = "JK08A"
@@ -107,7 +109,7 @@ target_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7
 addresses = "JK08A-1ND.definition-addresses.csv"
 checksum = true
 romraider_checksum = false
-map_switching = false
+map_switching = true
 rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
@@ -118,8 +120,11 @@ retains independent calibration values and SHA binding. Homologous claims are
 downgraded to candidate confidence unless target-specific evidence keeps code
 confidence. The project checksum implementation verifies and recalculates all
 six 1ND fields; RomRaider has no native metadata for this complete layout. Map
-switching, Rolling Launch, and editor-switch contracts are not declared.
+2 through Map 5 storage and the CAN Telemetry at Startup control use the
+validated 1ND runtime allocation in patches/rom-address-profiles.toml. Rolling
+Launch is not supported on 1ND.
 """
 evidence = "Reviewed 1ND0A address projection composed only through exact 1ND0A-to-1ND3B executable ranges, identical address-bearing code, target geometry, and the independent stock-image hash."
 
 [projection.1ND3B.switch]
+can_telemetry_startup = 0x00134E03

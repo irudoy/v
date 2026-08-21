@@ -743,7 +743,7 @@ def _validate_sh7058s_instruction_subset(parsed):
             )
 
 
-def _validate_limiter_commit(parsed):
+def _validate_limiter_commit(parsed, variant="single-exhaust"):
     instructions = [
         item for item in parsed.statements if item.kind == "instruction"
     ]
@@ -785,7 +785,17 @@ def _validate_limiter_commit(parsed):
         raise ValueError(
             f"{parsed.path}: active index must be published exactly once"
         )
-    if (
+    if variant == "sh7059-1nd":
+        if (
+            texts.count("mov.w @r2,r0") != 1
+            or texts.count("mov.w r0,@r5") != 1
+            or any("fuel_" in label for label in parsed.labels)
+        ):
+            raise ValueError(
+                f"{parsed.path}: SH7059 limiter must commit one throttle "
+                "scalar and no unsupported fuel-cut shadow"
+            )
+    elif (
         "mov.w @r2+,r0" not in texts
         or "mov.w @r5+,r0" not in texts
         or any(text.startswith("mov.l @r2") for text in texts)
@@ -1060,7 +1070,7 @@ def validate_assembly_sources(layout=None):
                 ),
             )
         elif unit.key == "limiter_commit":
-            _validate_limiter_commit(parsed)
+            _validate_limiter_commit(parsed, layout.variant)
         elif unit.key == "startup_wrapper":
             _validate_startup_wrapper(parsed)
         elif unit.key == "exhaust_odd_adapter":

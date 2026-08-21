@@ -9,7 +9,7 @@ profile can participate in composition.
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from pathlib import Path
 import sys
@@ -29,7 +29,7 @@ from tools import rom_homology
 
 DEFAULT_REGISTRY = Path(__file__).with_name("rom-address-profiles.toml")
 
-PROFILE_FIELDS = frozenset(
+PROFILE_BASE_FIELDS = frozenset(
     {
         "family",
         "layout_source",
@@ -44,23 +44,19 @@ PROFILE_FIELDS = frozenset(
         "free_ram_end",
         "injected_ram_start",
         "injected_ram_end",
-        "exhaust_variant",
+        "map_variant",
         "telemetry_completion_variant",
-        "map_families",
-        "map_hooks",
-        "map_symbols",
-        "rolling_hooks",
-        "rolling_diagnostics",
-        "rolling_symbols",
-        "can_hooks",
-        "can_symbols",
-        "telemetry_sources",
-        "extra_exhaust_storage",
+        "capabilities",
+        "telemetry_unavailable",
         "evidence",
     }
 )
 
-MAP_FAMILY_KEYS = frozenset(
+CAPABILITY_KEYS = frozenset(
+    {"map_switching", "rolling_launch", "can_telemetry"}
+)
+
+DUAL_EXHAUST_MAP_FAMILY_KEYS = frozenset(
     {
         "over_run_fuel_hold",
         "over_run_fuel_cut",
@@ -78,7 +74,29 @@ MAP_FAMILY_KEYS = frozenset(
     }
 )
 
-MAP_HOOK_KEYS = frozenset(
+SH7059_1ND_MAP_FAMILY_KEYS = frozenset(
+    {
+        "over_run_fuel_hold",
+        "over_run_fuel_cut",
+        "over_run_fuel_restore",
+        "over_run_fuel_intermediate_restore",
+        "high_octane_timing_state",
+        "high_detonation_timing_state",
+        "cold_idle_ignition_timing",
+        "idle_ignition_timing_bank_1",
+        "idle_ignition_timing_bank_2",
+        "fuel_compensation_main_bank_1",
+        "fuel_compensation_main_bank_2",
+        "rev_limit_throttle_cut",
+    }
+)
+
+MAP_FAMILY_KEYS_BY_VARIANT = {
+    "dual-exhaust": DUAL_EXHAUST_MAP_FAMILY_KEYS,
+    "sh7059-1nd": SH7059_1ND_MAP_FAMILY_KEYS,
+}
+
+DUAL_EXHAUST_MAP_HOOK_KEYS = frozenset(
     {
         "selector_host_call",
         "startup_initializer",
@@ -99,7 +117,31 @@ MAP_HOOK_KEYS = frozenset(
     }
 )
 
-MAP_SYMBOL_KEYS = frozenset(
+SH7059_1ND_MAP_HOOK_KEYS = frozenset(
+    {
+        "selector_host_call",
+        "startup_initializer",
+        "overrun_cut_lookup",
+        "overrun_restore_lookup",
+        "ignition_lookup_1",
+        "ignition_lookup_2",
+        "ignition_lookup_3",
+        "ignition_lookup_4",
+        "fuel_compensation_lookup_bank_1",
+        "fuel_compensation_lookup_bank_2",
+        "idle_ignition_lookup_bank_1",
+        "idle_ignition_lookup_bank_2",
+        "rev_throttle_scalar_base",
+        "cruise_feedback_serializer",
+    }
+)
+
+MAP_HOOK_KEYS_BY_VARIANT = {
+    "dual-exhaust": DUAL_EXHAUST_MAP_HOOK_KEYS,
+    "sh7059-1nd": SH7059_1ND_MAP_HOOK_KEYS,
+}
+
+DUAL_EXHAUST_MAP_SYMBOL_KEYS = frozenset(
     {
         "selector_function",
         "button_state",
@@ -117,6 +159,27 @@ MAP_SYMBOL_KEYS = frozenset(
         "throttle_runtime",
     }
 )
+
+SH7059_1ND_MAP_SYMBOL_KEYS = frozenset(
+    {
+        "selector_function",
+        "button_state",
+        "diagnostic_state",
+        "ascd_state",
+        "startup_initializer",
+        "dfco_lookup",
+        "ignition_lookup",
+        "fuel_compensation_lookup",
+        "idle_ignition_lookup",
+        "feedback_serializer",
+        "feedback_status_byte",
+    }
+)
+
+MAP_SYMBOL_KEYS_BY_VARIANT = {
+    "dual-exhaust": DUAL_EXHAUST_MAP_SYMBOL_KEYS,
+    "sh7059-1nd": SH7059_1ND_MAP_SYMBOL_KEYS,
+}
 
 ROLLING_HOOK_KEYS = frozenset(
     {
@@ -171,7 +234,7 @@ CAN_HOOK_KEYS = frozenset(
     }
 )
 
-CAN_SYMBOL_KEYS = frozenset(
+CAN_SYMBOL_KEYS_COMMON = frozenset(
     {
         "coherent_snapshot",
         "knock_function",
@@ -179,11 +242,12 @@ CAN_SYMBOL_KEYS = frozenset(
         "knock_mask",
         "hcan1_init",
         "stock_sle1_isr",
-        "stock_isr_helper",
         "feedback_config_record_address",
         "feedback_config_record_value",
         "feedback_dispatch_literal",
+        "feedback_payload_base_literal",
         "feedback_payload_base",
+        "feedback_payload_offset",
         "feedback_status_byte",
         "mailbox_record_address",
         "mailbox_record_stock",
@@ -194,6 +258,11 @@ CAN_SYMBOL_KEYS = frozenset(
         "mailbox_mask",
     }
 )
+
+CAN_SYMBOL_KEYS_BY_VARIANT = {
+    "mailbox24-tail-chain": CAN_SYMBOL_KEYS_COMMON | {"stock_isr_helper"},
+    "mailbox26-tail-chain": CAN_SYMBOL_KEYS_COMMON,
+}
 
 EVIDENCE_KEYS = frozenset(
     {"free_rom", "free_ram", "maps", "rolling", "can", "telemetry"}
@@ -256,6 +325,13 @@ class ExtraExhaustStorage:
 
 
 @dataclass(frozen=True)
+class Capabilities:
+    map_switching: bool
+    rolling_launch: bool
+    can_telemetry: bool
+
+
+@dataclass(frozen=True)
 class AddressProfile:
     rom: str
     family: str
@@ -267,8 +343,9 @@ class AddressProfile:
     injected_rom: AddressRange
     free_ram: AddressRange
     injected_ram: AddressRange
-    exhaust_variant: str
+    map_variant: str
     telemetry_completion_variant: str
+    capabilities: Capabilities
     map_families: tuple[tuple[str, int], ...]
     map_hooks: tuple[HookBinding, ...]
     map_symbols: tuple[tuple[str, int], ...]
@@ -278,7 +355,9 @@ class AddressProfile:
     can_hooks: tuple[HookBinding, ...]
     can_symbols: tuple[tuple[str, int], ...]
     telemetry_sources: tuple[tuple[str, int], ...]
-    extra_exhaust_storage: ExtraExhaustStorage
+    telemetry_unavailable: tuple[str, ...]
+    telemetry_zero_source: int | None
+    extra_exhaust_storage: ExtraExhaustStorage | None
     evidence: tuple[tuple[str, str], ...]
 
     @property
@@ -317,6 +396,14 @@ class AddressProfile:
     def telemetry_source_by_name(self):
         return dict(self.telemetry_sources)
 
+    @property
+    def enabled_capabilities(self):
+        return frozenset(
+            key
+            for key in CAPABILITY_KEYS
+            if getattr(self.capabilities, key)
+        )
+
 
 def _require_table(row, expected, context):
     if not isinstance(row, dict):
@@ -335,6 +422,28 @@ def _uint(value, context, *, maximum=0xFFFFFFFF):
             f"{context}: expected an integer in 0x0..{maximum:x}"
         )
     return value
+
+
+def _sint(value, context, *, minimum=-0xFFFFFFFF, maximum=0xFFFFFFFF):
+    if type(value) is not int or not minimum <= value <= maximum:
+        raise AddressProfileError(
+            f"{context}: expected an integer in {minimum}..{maximum}"
+        )
+    return value
+
+
+def _capabilities(row, context):
+    _require_table(row, CAPABILITY_KEYS, context)
+    if any(type(value) is not bool for value in row.values()):
+        raise AddressProfileError(f"{context}: capability values must be booleans")
+    result = Capabilities(**row)
+    if not result.map_switching and result.rolling_launch:
+        raise AddressProfileError(
+            f"{context}: Rolling Launch requires Map Switching"
+        )
+    if not result.map_switching and not result.can_telemetry:
+        raise AddressProfileError(f"{context}: profile enables no runtime component")
+    return result
 
 
 def _address_table(row, expected, context):
@@ -435,14 +544,79 @@ def _telemetry_source_keys():
     return frozenset(field.name for field in fields if field.kind == "ecu_ram")
 
 
+def _profile_fields(capabilities, map_variant, telemetry_unavailable):
+    expected = set(PROFILE_BASE_FIELDS)
+    if capabilities.map_switching:
+        expected.update({"map_families", "map_hooks", "map_symbols"})
+    if capabilities.rolling_launch:
+        expected.update(
+            {"rolling_hooks", "rolling_diagnostics", "rolling_symbols"}
+        )
+    if capabilities.map_switching or capabilities.can_telemetry:
+        expected.add("can_symbols")
+    if capabilities.can_telemetry:
+        expected.update({"can_hooks", "telemetry_sources"})
+    if map_variant == "dual-exhaust":
+        expected.add("extra_exhaust_storage")
+    if telemetry_unavailable:
+        expected.add("telemetry_zero_source")
+    return frozenset(expected)
+
+
+def _telemetry_unavailable(value, expected, context):
+    if (
+        not isinstance(value, list)
+        or any(not isinstance(item, str) or not item for item in value)
+        or len(value) != len(set(value))
+    ):
+        raise AddressProfileError(
+            f"{context}: expected a list of unique telemetry field names"
+        )
+    unknown = set(value) - set(expected)
+    if unknown:
+        raise AddressProfileError(
+            f"{context}: unknown telemetry fields {sorted(unknown)}"
+        )
+    return tuple(sorted(value))
+
+
 def _parse_profile(rom, row, context):
-    _require_table(row, PROFILE_FIELDS, context)
+    if not isinstance(row, dict):
+        raise AddressProfileError(f"{context}: expected a TOML table")
+    missing = PROFILE_BASE_FIELDS - set(row)
+    if missing:
+        raise AddressProfileError(
+            f"{context}: fields differ; missing={sorted(missing)}; extra=[]"
+        )
+    capabilities = _capabilities(
+        row["capabilities"], f"{context}.capabilities"
+    )
+    telemetry_keys = _telemetry_source_keys()
+    unavailable = _telemetry_unavailable(
+        row["telemetry_unavailable"],
+        telemetry_keys,
+        f"{context}.telemetry_unavailable",
+    )
+    map_variant = row["map_variant"]
+    if map_variant not in MAP_FAMILY_KEYS_BY_VARIANT:
+        raise AddressProfileError(
+            f"{context}.map_variant: unsupported value {map_variant!r}"
+        )
+    completion_variant = row["telemetry_completion_variant"]
+    if completion_variant not in CAN_SYMBOL_KEYS_BY_VARIANT:
+        raise AddressProfileError(
+            f"{context}.telemetry_completion_variant: unsupported value "
+            f"{completion_variant!r}"
+        )
+    _require_table(
+        row,
+        _profile_fields(capabilities, map_variant, unavailable),
+        context,
+    )
     scalar_ints = {
         key: _uint(row[key], f"{context}.{key}")
         for key in (
             "rom_size",
-            "rom_delta",
-            "ram_delta",
             "free_rom_start",
             "free_rom_end",
             "injected_rom_start",
@@ -453,16 +627,21 @@ def _parse_profile(rom, row, context):
             "injected_ram_end",
         )
     }
+    scalar_ints["rom_delta"] = _sint(
+        row["rom_delta"], f"{context}.rom_delta"
+    )
+    scalar_ints["ram_delta"] = _sint(
+        row["ram_delta"], f"{context}.ram_delta"
+    )
     for key in (
         "family",
         "layout_source",
-        "exhaust_variant",
+        "map_variant",
         "telemetry_completion_variant",
     ):
         if not isinstance(row[key], str) or not row[key].strip():
             raise AddressProfileError(f"{context}.{key}: expected nonempty text")
 
-    telemetry_keys = _telemetry_source_keys()
     evidence = row["evidence"]
     _require_table(evidence, EVIDENCE_KEYS, f"{context}.evidence")
     for key, value in evidence.items():
@@ -492,44 +671,108 @@ def _parse_profile(rom, row, context):
             scalar_ints["injected_ram_start"],
             scalar_ints["injected_ram_end"],
         ),
-        exhaust_variant=row["exhaust_variant"],
-        telemetry_completion_variant=row["telemetry_completion_variant"],
-        map_families=_address_table(
-            row["map_families"], MAP_FAMILY_KEYS, f"{context}.map_families"
+        map_variant=map_variant,
+        telemetry_completion_variant=completion_variant,
+        capabilities=capabilities,
+        map_families=(
+            _address_table(
+                row["map_families"],
+                MAP_FAMILY_KEYS_BY_VARIANT[map_variant],
+                f"{context}.map_families",
+            )
+            if capabilities.map_switching
+            else ()
         ),
-        map_hooks=_hooks(
-            row["map_hooks"], MAP_HOOK_KEYS, f"{context}.map_hooks", chained=False
+        map_hooks=(
+            _hooks(
+                row["map_hooks"],
+                MAP_HOOK_KEYS_BY_VARIANT[map_variant],
+                f"{context}.map_hooks",
+                chained=False,
+            )
+            if capabilities.map_switching
+            else ()
         ),
-        map_symbols=_address_table(
-            row["map_symbols"], MAP_SYMBOL_KEYS, f"{context}.map_symbols"
+        map_symbols=(
+            _address_table(
+                row["map_symbols"],
+                MAP_SYMBOL_KEYS_BY_VARIANT[map_variant],
+                f"{context}.map_symbols",
+            )
+            if capabilities.map_switching
+            else ()
         ),
-        rolling_hooks=_hooks(
-            row["rolling_hooks"],
-            ROLLING_HOOK_KEYS,
-            f"{context}.rolling_hooks",
-            chained=True,
+        rolling_hooks=(
+            _hooks(
+                row["rolling_hooks"],
+                ROLLING_HOOK_KEYS,
+                f"{context}.rolling_hooks",
+                chained=True,
+            )
+            if capabilities.rolling_launch
+            else ()
         ),
-        rolling_diagnostics=_diagnostics(
-            row["rolling_diagnostics"], f"{context}.rolling_diagnostics"
+        rolling_diagnostics=(
+            _diagnostics(
+                row["rolling_diagnostics"],
+                f"{context}.rolling_diagnostics",
+            )
+            if capabilities.rolling_launch
+            else ()
         ),
-        rolling_symbols=_address_table(
-            row["rolling_symbols"],
-            ROLLING_SYMBOL_KEYS,
-            f"{context}.rolling_symbols",
+        rolling_symbols=(
+            _address_table(
+                row["rolling_symbols"],
+                ROLLING_SYMBOL_KEYS,
+                f"{context}.rolling_symbols",
+            )
+            if capabilities.rolling_launch
+            else ()
         ),
-        can_hooks=_hooks(
-            row["can_hooks"], CAN_HOOK_KEYS, f"{context}.can_hooks", chained=True
+        can_hooks=(
+            _hooks(
+                row["can_hooks"],
+                CAN_HOOK_KEYS,
+                f"{context}.can_hooks",
+                chained=True,
+            )
+            if capabilities.can_telemetry
+            else ()
         ),
-        can_symbols=_address_table(
-            row["can_symbols"], CAN_SYMBOL_KEYS, f"{context}.can_symbols"
+        can_symbols=(
+            _address_table(
+                row["can_symbols"],
+                CAN_SYMBOL_KEYS_BY_VARIANT[completion_variant],
+                f"{context}.can_symbols",
+            )
+            if capabilities.map_switching or capabilities.can_telemetry
+            else ()
         ),
-        telemetry_sources=_address_table(
-            row["telemetry_sources"],
-            telemetry_keys,
-            f"{context}.telemetry_sources",
+        telemetry_sources=(
+            _address_table(
+                row["telemetry_sources"],
+                telemetry_keys - set(unavailable),
+                f"{context}.telemetry_sources",
+            )
+            if capabilities.can_telemetry
+            else ()
         ),
-        extra_exhaust_storage=_extra_storage(
-            row["extra_exhaust_storage"], f"{context}.extra_exhaust_storage"
+        telemetry_unavailable=unavailable,
+        telemetry_zero_source=(
+            _uint(
+                row["telemetry_zero_source"],
+                f"{context}.telemetry_zero_source",
+            )
+            if unavailable
+            else None
+        ),
+        extra_exhaust_storage=(
+            _extra_storage(
+                row["extra_exhaust_storage"],
+                f"{context}.extra_exhaust_storage",
+            )
+            if map_variant == "dual-exhaust"
+            else None
         ),
         evidence=tuple(sorted(evidence.items())),
     )
@@ -541,22 +784,375 @@ def _rebased(value, delta):
     return value + delta
 
 
-def _validate_structure(profile):
-    if profile.family != "sh7058_8mfk" or profile.layout_source != "JK08A":
+def _map_family_sources(profile):
+    if profile.map_variant == "dual-exhaust":
+        result = {
+            key: key
+            for key in DUAL_EXHAUST_MAP_FAMILY_KEYS
+            if not key.startswith("exhaust_cvtc")
+        }
+        result["exhaust_cvtc_target_even"] = "exhaust_cvtc_target"
+        result["exhaust_cvtc_target_odd"] = "exhaust_cvtc_target"
+        return result
+    if profile.map_variant == "sh7059-1nd":
+        return {
+            "over_run_fuel_hold": "over_run_fuel_hold",
+            "over_run_fuel_cut": "over_run_fuel_cut",
+            "over_run_fuel_restore": "over_run_fuel_restore",
+            "over_run_fuel_intermediate_restore": (
+                "over_run_fuel_intermediate_restore"
+            ),
+            "high_octane_timing_state": "high_octane_timing_state",
+            "high_detonation_timing_state": "high_detonation_timing_state",
+            "cold_idle_ignition_timing": "cold_idle_ignition_timing",
+            "idle_ignition_timing_bank_1": "idle_ignition_timing",
+            "idle_ignition_timing_bank_2": "idle_ignition_timing",
+            "fuel_compensation_main_bank_1": "fuel_compensation_main",
+            "fuel_compensation_main_bank_2": "fuel_compensation_main",
+            "rev_limit_throttle_cut": "rev_limit_throttle_cut",
+        }
+    raise AddressProfileError(
+        f"{profile.rom}: unsupported map variant {profile.map_variant!r}"
+    )
+
+
+def _validate_extra_storage(profile, telemetry_layout):
+    extra = profile.extra_exhaust_storage
+    if profile.map_variant != "dual-exhaust":
+        if extra is not None:
+            raise AddressProfileError(
+                f"{profile.rom}: unexpected extra exhaust storage"
+            )
+        return
+    if extra is None:
         raise AddressProfileError(
-            f"{profile.rom}: only explicit JK08A-to-8MFK profiles are supported"
+            f"{profile.rom}: missing extra exhaust storage"
         )
-    if profile.rom_size != 0x100000:
+    if extra.adapter.start != (
+        telemetry_layout.reserved_rom.start + profile.rom_delta
+    ):
+        raise AddressProfileError(
+            f"{profile.rom}: extra exhaust adapter does not start at the "
+            "future reserve"
+        )
+    extra_ranges = [
+        extra.adapter,
+        AddressRange(extra.pointer_table, extra.pointer_table + 20),
+        *(AddressRange(address, address + 0x100) for address in extra.copies),
+    ]
+    for span in extra_ranges:
+        if not profile.injected_rom.contains(span):
+            raise AddressProfileError(
+                f"{profile.rom}: extra exhaust storage lies outside injected ROM"
+            )
+    for index, left in enumerate(extra_ranges):
+        for right in extra_ranges[index + 1 :]:
+            if left.overlaps(right):
+                raise AddressProfileError(
+                    f"{profile.rom}: extra exhaust storage overlaps"
+                )
+
+
+def _validate_map_bindings(profile, map_layout):
+    family = profile.map_family_by_key
+    canonical_families = map_layout.family_by_key
+    spans = []
+    for key, source_key in _map_family_sources(profile).items():
+        source = canonical_families[source_key]
+        span = AddressRange(family[key], family[key] + source.byte_length)
+        if span.end > profile.rom_size:
+            raise AddressProfileError(f"{profile.rom}.{key}: map exceeds ROM")
+        spans.append(span)
+    for index, left in enumerate(spans):
+        for right in spans[index + 1 :]:
+            if left.overlaps(right):
+                raise AddressProfileError(f"{profile.rom}: stock maps overlap")
+
+    code = map_layout.code_region_by_key
+    rom_delta = profile.rom_delta
+    ram_delta = profile.ram_delta
+    common = {
+        "selector_host_call": _rebased(code["selector_host"].entry, rom_delta),
+        "startup_initializer": _rebased(
+            code["startup_wrapper"].entry, rom_delta
+        ),
+        "overrun_cut_lookup": _rebased(
+            code["full_dfco_adapter"].entry, rom_delta
+        ),
+        "overrun_restore_lookup": _rebased(
+            code["full_dfco_adapter"].entry, rom_delta
+        ),
+        "cruise_feedback_serializer": _rebased(
+            code["cruise_feedback_wrapper"].entry, rom_delta
+        ),
+    }
+    if profile.map_variant == "dual-exhaust":
+        extra = profile.extra_exhaust_storage
+        expected = common | {
+            "ignition_lookup_knock": _rebased(
+                code["ignition_adapter"].entry, rom_delta
+            ),
+            "ignition_lookup_primary_a": _rebased(
+                code["ignition_adapter"].entry, rom_delta
+            ),
+            "ignition_lookup_primary_b": _rebased(
+                code["ignition_adapter"].entry, rom_delta
+            ),
+            "fuel_compensation_lookup_startup": _rebased(
+                code["fuel_compensation_adapter"].entry, rom_delta
+            ),
+            "fuel_compensation_lookup_runtime": _rebased(
+                code["fuel_compensation_adapter"].entry, rom_delta
+            ),
+            "exhaust_cvtc_target_lookup_even": _rebased(
+                code["exhaust_cvtc_target_adapter"].entry, rom_delta
+            ),
+            "exhaust_cvtc_target_lookup_odd": extra.adapter.start,
+            "rev_fuel_cut_base": _rebased(
+                map_layout.ram.fuel_cut_shadow.start, ram_delta
+            ),
+            "rev_throttle_cluster_base": _rebased(
+                map_layout.ram.throttle_shadow.start, ram_delta
+            ),
+            "rev_throttle_scalar_base": _rebased(
+                map_layout.ram.throttle_shadow.start
+                + map_layout.ram.throttle_selected_offset,
+                ram_delta,
+            ),
+            "idle_ignition_lookup": _rebased(
+                code["idle_ignition_adapter"].entry, rom_delta
+            ),
+        }
+    else:
+        expected = common | {
+            **{
+                f"ignition_lookup_{index}": _rebased(
+                    code["ignition_adapter"].entry, rom_delta
+                )
+                for index in range(1, 5)
+            },
+            "fuel_compensation_lookup_bank_1": _rebased(
+                code["fuel_compensation_adapter"].entry, rom_delta
+            ),
+            "fuel_compensation_lookup_bank_2": _rebased(
+                code["fuel_compensation_adapter"].entry, rom_delta
+            ),
+            "idle_ignition_lookup_bank_1": _rebased(
+                code["idle_ignition_adapter"].entry, rom_delta
+            ),
+            "idle_ignition_lookup_bank_2": _rebased(
+                code["exhaust_cvtc_target_adapter"].entry, rom_delta
+            ),
+            "rev_throttle_scalar_base": _rebased(
+                map_layout.ram.throttle_shadow.start, ram_delta
+            ),
+        }
+    for key, replacement in expected.items():
+        binding = profile.map_hook_by_key[key]
+        if binding.replacement != replacement or binding.base != binding.stock:
+            raise AddressProfileError(f"{profile.rom}.{key}: map hook chain differs")
+
+
+def _validate_rolling_bindings(profile, launch_layout):
+    if not profile.capabilities.rolling_launch:
+        return
+    rom_delta = profile.rom_delta
+    ram_delta = profile.ram_delta
+    launch_code = launch_layout.code_region_by_key
+    rolling = profile.rolling_hook_by_key
+    expected = {
+        "periodic_scheduler_index_0": _rebased(
+            launch_code["periodic_wrapper"].entry, rom_delta
+        ),
+        "selector_arbitration": _rebased(
+            launch_code["selector_arbiter"].entry, rom_delta
+        ),
+        "startup_state_clear": _rebased(
+            launch_code["startup_wrapper"].entry, rom_delta
+        ),
+        "primary_ignition_command": _rebased(
+            launch_code["ignition_adapter"].entry, rom_delta
+        ),
+        "feedback_arbitration": _rebased(
+            launch_code["feedback_arbiter"].entry, rom_delta
+        ),
+    }
+    for key, replacement in expected.items():
+        if rolling[key].replacement != replacement:
+            raise AddressProfileError(
+                f"{profile.rom}.{key}: rolling replacement differs"
+            )
+    chains = {
+        "selector_arbitration": "selector_host_call",
+        "startup_state_clear": "startup_initializer",
+        "feedback_arbitration": "cruise_feedback_serializer",
+    }
+    for rolling_key, map_key in chains.items():
+        if rolling[rolling_key].base != profile.map_hook_by_key[map_key].replacement:
+            raise AddressProfileError(
+                f"{profile.rom}: {rolling_key} hook chain is open"
+            )
+
+    state_start = launch_layout.ram.state.start + ram_delta
+    diagnostics = profile.rolling_diagnostic_by_key
+    canonical = {item.name: item for item in launch_layout.diagnostics}
+    for key, binding in diagnostics.items():
+        source = canonical[key]
+        if (
+            binding.did != source.did
+            or binding.width != source.width
+            or binding.target != source.target + ram_delta
+            or not state_start
+            <= binding.target
+            < state_start + launch_layout.ram.state.size
+        ):
+            raise AddressProfileError(
+                f"{profile.rom}.{key}: rolling diagnostic differs"
+            )
+
+
+def _validate_can_bindings(profile, telemetry_layout):
+    if not profile.capabilities.can_telemetry:
+        return
+    rom_delta = profile.rom_delta
+    telemetry_code = telemetry_layout.code_region_by_key
+    expected = {
+        "coherent_snapshot_call": _rebased(
+            telemetry_code["main_wrapper"].entry, rom_delta
+        ),
+        "knock_interval_latch": _rebased(
+            telemetry_code["knock_wrapper"].entry, rom_delta
+        ),
+        "startup_state_clear": _rebased(
+            telemetry_code["startup_wrapper"].entry, rom_delta
+        ),
+        "hcan1_sle1_vector": _rebased(
+            telemetry_code["sle1_isr"].entry, rom_delta
+        ),
+        "hcan1_primary_init": _rebased(
+            telemetry_code["hcan1_init_wrapper"].entry, rom_delta
+        ),
+        "hcan1_recovery_init": _rebased(
+            telemetry_code["hcan1_init_wrapper"].entry, rom_delta
+        ),
+    }
+    hooks = profile.can_hook_by_key
+    for key, replacement in expected.items():
+        if hooks[key].replacement != replacement:
+            raise AddressProfileError(
+                f"{profile.rom}.{key}: CAN replacement differs"
+            )
+    startup_base = (
+        profile.rolling_hook_by_key["startup_state_clear"].replacement
+        if profile.capabilities.rolling_launch
+        else profile.map_hook_by_key["startup_initializer"].replacement
+    )
+    if hooks["startup_state_clear"].base != startup_base:
+        raise AddressProfileError(f"{profile.rom}: CAN startup hook chain is open")
+    for key in CAN_HOOK_KEYS - {"startup_state_clear"}:
+        if hooks[key].base != hooks[key].stock:
+            raise AddressProfileError(
+                f"{profile.rom}.{key}: unexpected CAN base hook"
+            )
+
+    symbols = profile.can_symbol_by_key
+    contracts = {
+        "mailbox24-tail-chain": (24, 0xFFFFDC08, 0x0100, 0x0308AA20),
+        "mailbox26-tail-chain": (26, 0xFFFFDC48, 0x0400, 0xA308AA20),
+    }
+    mailbox_index, mailbox_data, mailbox_mask, feedback_record = contracts[
+        profile.telemetry_completion_variant
+    ]
+    if (
+        symbols["mailbox_index"] != mailbox_index
+        or symbols["mailbox_data"] != mailbox_data
+        or symbols["mailbox_mask"] != mailbox_mask
+        or symbols["mailbox_record_stock"] != 0x05000000
+        or symbols["occupied_mailbox_record_stock"] != 0x04000000
+        or symbols["feedback_config_record_value"] != feedback_record
+    ):
+        raise AddressProfileError(f"{profile.rom}: mailbox contract differs")
+    if (
+        symbols["feedback_status_byte"]
+        != profile.map_symbol_by_key["feedback_status_byte"]
+        or symbols["feedback_status_byte"]
+        != symbols["feedback_payload_base"]
+        + symbols["feedback_payload_offset"]
+        + 5
+    ):
+        raise AddressProfileError(f"{profile.rom}: feedback status binding differs")
+
+    manifest = can_telemetry_profile.load_manifest()
+    widths = {
+        field.name: field.width
+        for field in tuple(manifest.fields)
+        + tuple(
+            field for context in manifest.contexts for field in context.fields
+        )
+        if field.kind == "ecu_ram"
+    }
+    telemetry = profile.telemetry_source_by_name
+    telemetry_addresses = list(telemetry.values())
+    if len(telemetry_addresses) != len(set(telemetry_addresses)):
+        raise AddressProfileError(f"{profile.rom}: duplicate telemetry sources")
+    lower_bound = 0xFFFE8000 if profile.family == "sh7059_1nd" else 0xFFFF0000
+    for key, address in telemetry.items():
+        span = AddressRange(address, address + widths[key])
+        if address < lower_bound or span.end > profile.free_ram.start:
+            raise AddressProfileError(
+                f"{profile.rom}.{key}: telemetry source enters injected RAM"
+            )
+    if profile.telemetry_unavailable:
+        active_reserved = AddressRange(
+            telemetry_layout.ram.active_reserved.start + profile.ram_delta,
+            telemetry_layout.ram.active_reserved.end + profile.ram_delta,
+        )
+        zero_width = max(widths[key] for key in profile.telemetry_unavailable)
+        zero_span = AddressRange(
+            profile.telemetry_zero_source,
+            profile.telemetry_zero_source + zero_width,
+        )
+        if not active_reserved.contains(zero_span):
+            raise AddressProfileError(
+                f"{profile.rom}: unavailable telemetry zero source is not "
+                "cleared runtime RAM"
+            )
+    elif profile.telemetry_zero_source is not None:
+        raise AddressProfileError(
+            f"{profile.rom}: unexpected telemetry zero source"
+        )
+
+
+def _validate_structure(profile):
+    contracts = {
+        "dual-exhaust": (
+            "sh7058_8mfk",
+            0x100000,
+            "mailbox24-tail-chain",
+            Capabilities(True, True, True),
+        ),
+        "sh7059-1nd": (
+            "sh7059_1nd",
+            0x180000,
+            "mailbox26-tail-chain",
+            Capabilities(True, False, True),
+        ),
+    }
+    family, rom_size, can_variant, capabilities = contracts[profile.map_variant]
+    if profile.layout_source != "JK08A" or profile.family != family:
+        raise AddressProfileError(
+            f"{profile.rom}: unsupported runtime family or layout source"
+        )
+    if profile.rom_size != rom_size:
         raise AddressProfileError(f"{profile.rom}: unexpected ROM size")
+    if profile.telemetry_completion_variant != can_variant:
+        raise AddressProfileError(f"{profile.rom}: unsupported runtime variant")
+    if profile.capabilities != capabilities:
+        raise AddressProfileError(f"{profile.rom}: capability contract differs")
     if profile.rom_delta % 0x100 or profile.ram_delta % 0x100:
         raise AddressProfileError(
             f"{profile.rom}: ROM and RAM deltas must preserve 256-byte alignment"
         )
-    if (
-        profile.exhaust_variant != "dual-bank"
-        or profile.telemetry_completion_variant != "mailbox24-tail-chain"
-    ):
-        raise AddressProfileError(f"{profile.rom}: unsupported runtime variant")
 
     map_layout = map_switching_layout.load_layout()
     launch_layout = rolling_launch_layout.load_layout()
@@ -582,200 +1178,10 @@ def _validate_structure(profile):
     if not profile.free_ram.contains(profile.injected_ram):
         raise AddressProfileError(f"{profile.rom}: injected RAM is not audited free")
 
-    extra = profile.extra_exhaust_storage
-    if extra.adapter.start != telemetry_layout.reserved_rom.start + profile.rom_delta:
-        raise AddressProfileError(
-            f"{profile.rom}: extra exhaust adapter does not start at the future reserve"
-        )
-    extra_ranges = [
-        extra.adapter,
-        AddressRange(extra.pointer_table, extra.pointer_table + 20),
-        *(AddressRange(address, address + 0x100) for address in extra.copies),
-    ]
-    for span in extra_ranges:
-        if not profile.injected_rom.contains(span):
-            raise AddressProfileError(
-                f"{profile.rom}: extra exhaust storage lies outside injected ROM"
-            )
-    for index, left in enumerate(extra_ranges):
-        for right in extra_ranges[index + 1 :]:
-            if left.overlaps(right):
-                raise AddressProfileError(
-                    f"{profile.rom}: extra exhaust storage overlaps"
-                )
-
-    family = profile.map_family_by_key
-    canonical_families = map_layout.family_by_key
-    source_keys = {
-        key: key for key in MAP_FAMILY_KEYS if not key.startswith("exhaust_cvtc")
-    }
-    source_keys["exhaust_cvtc_target_even"] = "exhaust_cvtc_target"
-    source_keys["exhaust_cvtc_target_odd"] = "exhaust_cvtc_target"
-    spans = []
-    for key, source_key in source_keys.items():
-        source = canonical_families[source_key]
-        span = AddressRange(family[key], family[key] + source.byte_length)
-        if span.end > profile.rom_size:
-            raise AddressProfileError(f"{profile.rom}.{key}: map exceeds ROM")
-        spans.append(span)
-    for index, left in enumerate(spans):
-        for right in spans[index + 1 :]:
-            if left.overlaps(right):
-                raise AddressProfileError(f"{profile.rom}: stock maps overlap")
-
-    code = map_layout.code_region_by_key
-    ram_delta = profile.ram_delta
-    rom_delta = profile.rom_delta
-    map_expected_replacements = {
-        "selector_host_call": _rebased(code["selector_host"].entry, rom_delta),
-        "startup_initializer": _rebased(code["startup_wrapper"].entry, rom_delta),
-        "overrun_cut_lookup": _rebased(code["full_dfco_adapter"].entry, rom_delta),
-        "overrun_restore_lookup": _rebased(code["full_dfco_adapter"].entry, rom_delta),
-        "ignition_lookup_knock": _rebased(code["ignition_adapter"].entry, rom_delta),
-        "ignition_lookup_primary_a": _rebased(code["ignition_adapter"].entry, rom_delta),
-        "ignition_lookup_primary_b": _rebased(code["ignition_adapter"].entry, rom_delta),
-        "fuel_compensation_lookup_startup": _rebased(
-            code["fuel_compensation_adapter"].entry, rom_delta
-        ),
-        "fuel_compensation_lookup_runtime": _rebased(
-            code["fuel_compensation_adapter"].entry, rom_delta
-        ),
-        "exhaust_cvtc_target_lookup_even": _rebased(
-            code["exhaust_cvtc_target_adapter"].entry, rom_delta
-        ),
-        "exhaust_cvtc_target_lookup_odd": extra.adapter.start,
-        "rev_fuel_cut_base": _rebased(
-            map_layout.ram.fuel_cut_shadow.start, ram_delta
-        ),
-        "rev_throttle_cluster_base": _rebased(
-            map_layout.ram.throttle_shadow.start, ram_delta
-        ),
-        "rev_throttle_scalar_base": _rebased(
-            map_layout.ram.throttle_shadow.start
-            + map_layout.ram.throttle_selected_offset,
-            ram_delta,
-        ),
-        "cruise_feedback_serializer": _rebased(
-            code["cruise_feedback_wrapper"].entry, rom_delta
-        ),
-        "idle_ignition_lookup": _rebased(
-            code["idle_ignition_adapter"].entry, rom_delta
-        ),
-    }
-    for key, expected in map_expected_replacements.items():
-        binding = profile.map_hook_by_key[key]
-        if binding.replacement != expected or binding.base != binding.stock:
-            raise AddressProfileError(f"{profile.rom}.{key}: map hook chain differs")
-
-    launch_code = launch_layout.code_region_by_key
-    rolling = profile.rolling_hook_by_key
-    rolling_expected_replacements = {
-        "periodic_scheduler_index_0": _rebased(
-            launch_code["periodic_wrapper"].entry, rom_delta
-        ),
-        "selector_arbitration": _rebased(
-            launch_code["selector_arbiter"].entry, rom_delta
-        ),
-        "startup_state_clear": _rebased(
-            launch_code["startup_wrapper"].entry, rom_delta
-        ),
-        "primary_ignition_command": _rebased(
-            launch_code["ignition_adapter"].entry, rom_delta
-        ),
-        "feedback_arbitration": _rebased(
-            launch_code["feedback_arbiter"].entry, rom_delta
-        ),
-    }
-    for key, replacement in rolling_expected_replacements.items():
-        if rolling[key].replacement != replacement:
-            raise AddressProfileError(
-                f"{profile.rom}.{key}: rolling replacement differs"
-            )
-    if rolling["selector_arbitration"].base != profile.map_hook_by_key[
-        "selector_host_call"
-    ].replacement:
-        raise AddressProfileError(f"{profile.rom}: selector hook chain is open")
-    if rolling["startup_state_clear"].base != profile.map_hook_by_key[
-        "startup_initializer"
-    ].replacement:
-        raise AddressProfileError(f"{profile.rom}: startup hook chain is open")
-    if rolling["feedback_arbitration"].base != profile.map_hook_by_key[
-        "cruise_feedback_serializer"
-    ].replacement:
-        raise AddressProfileError(f"{profile.rom}: feedback hook chain is open")
-
-    state_start = launch_layout.ram.state.start + ram_delta
-    diagnostics = profile.rolling_diagnostic_by_key
-    canonical_diagnostics = {item.name: item for item in launch_layout.diagnostics}
-    for key, binding in diagnostics.items():
-        source = canonical_diagnostics[key]
-        if (
-            binding.did != source.did
-            or binding.width != source.width
-            or binding.target != source.target + ram_delta
-            or not state_start <= binding.target < state_start + launch_layout.ram.state.size
-        ):
-            raise AddressProfileError(
-                f"{profile.rom}.{key}: rolling diagnostic differs"
-            )
-
-    telemetry_code = telemetry_layout.code_region_by_key
-    can_expected_replacements = {
-        "coherent_snapshot_call": _rebased(
-            telemetry_code["main_wrapper"].entry, rom_delta
-        ),
-        "knock_interval_latch": _rebased(
-            telemetry_code["knock_wrapper"].entry, rom_delta
-        ),
-        "startup_state_clear": _rebased(
-            telemetry_code["startup_wrapper"].entry, rom_delta
-        ),
-        "hcan1_sle1_vector": _rebased(
-            telemetry_code["sle1_isr"].entry, rom_delta
-        ),
-        "hcan1_primary_init": _rebased(
-            telemetry_code["hcan1_init_wrapper"].entry, rom_delta
-        ),
-        "hcan1_recovery_init": _rebased(
-            telemetry_code["hcan1_init_wrapper"].entry, rom_delta
-        ),
-    }
-    can_hooks = profile.can_hook_by_key
-    for key, replacement in can_expected_replacements.items():
-        if can_hooks[key].replacement != replacement:
-            raise AddressProfileError(
-                f"{profile.rom}.{key}: CAN replacement differs"
-            )
-    if can_hooks["startup_state_clear"].base != rolling[
-        "startup_state_clear"
-    ].replacement:
-        raise AddressProfileError(f"{profile.rom}: CAN startup hook chain is open")
-
-    symbols = profile.can_symbol_by_key
-    if (
-        symbols["mailbox_index"] != 24
-        or symbols["mailbox_data"] != 0xFFFFDC08
-        or symbols["mailbox_mask"] != 0x0100
-        or symbols["mailbox_record_stock"] != 0x05000000
-        or symbols["occupied_mailbox_record_stock"] != 0x04000000
-        or symbols["feedback_config_record_value"] != 0x0308AA20
-    ):
-        raise AddressProfileError(f"{profile.rom}: mailbox contract differs")
-    if symbols["feedback_status_byte"] != profile.map_symbol_by_key[
-        "feedback_status_byte"
-    ]:
-        raise AddressProfileError(f"{profile.rom}: feedback status binding differs")
-
-    telemetry_addresses = list(profile.telemetry_source_by_name.values())
-    if len(telemetry_addresses) != len(set(telemetry_addresses)):
-        raise AddressProfileError(f"{profile.rom}: duplicate telemetry sources")
-    if any(
-        not 0xFFFF0000 <= address < profile.free_ram.start
-        for address in telemetry_addresses
-    ):
-        raise AddressProfileError(
-            f"{profile.rom}: telemetry source enters injected RAM"
-        )
+    _validate_extra_storage(profile, telemetry_layout)
+    _validate_map_bindings(profile, map_layout)
+    _validate_rolling_bindings(profile, launch_layout)
+    _validate_can_bindings(profile, telemetry_layout)
 
 
 @lru_cache(maxsize=None)
@@ -790,15 +1196,40 @@ def load_registry(path=DEFAULT_REGISTRY):
             f"address profile registry cannot be loaded: {path}: {error}"
         ) from error
     _require_table(document, {"schema_version", "profile"}, str(path))
-    if document["schema_version"] != 1:
+    if document["schema_version"] != 2:
         raise AddressProfileError(f"{path}: unsupported schema_version")
     rows = document["profile"]
     if not isinstance(rows, dict) or not rows:
         raise AddressProfileError(f"{path}: no exact profiles")
-    return {
-        rom: _parse_profile(rom, row, f"{path} [profile.{rom}]")
-        for rom, row in rows.items()
-    }
+    profiles = {}
+
+    def resolve(rom, stack=()):
+        if rom in profiles:
+            return profiles[rom]
+        if rom not in rows:
+            raise AddressProfileError(
+                f"{path}: inherited profile {rom!r} does not exist"
+            )
+        if rom in stack:
+            chain = " -> ".join((*stack, rom))
+            raise AddressProfileError(f"{path}: profile inheritance cycle {chain}")
+        row = rows[rom]
+        context = f"{path} [profile.{rom}]"
+        if isinstance(row, dict) and set(row) == {"inherits"}:
+            base_rom = row["inherits"]
+            if not isinstance(base_rom, str) or not base_rom:
+                raise AddressProfileError(
+                    f"{context}.inherits: expected a ROM label"
+                )
+            profile = replace(resolve(base_rom, (*stack, rom)), rom=rom)
+        else:
+            profile = _parse_profile(rom, row, context)
+        profiles[rom] = profile
+        return profile
+
+    for rom in rows:
+        resolve(rom)
+    return profiles
 
 
 def profile_for_rom(rom, path=DEFAULT_REGISTRY):
@@ -860,40 +1291,39 @@ def validate_stock_profile(profile, image):
             )
 
     can = profile.can_symbol_by_key
-    for key in (
-        "feedback_config_record",
-        "mailbox_record",
-        "occupied_mailbox_record",
-    ):
-        address = can[f"{key}_address"]
-        expected = can[f"{key}_value"] if key == "feedback_config_record" else can[f"{key}_stock"]
-        actual = _read_u32(data, address, f"{profile.rom}.{key}")
-        if actual != expected:
+    if can:
+        for key in (
+            "feedback_config_record",
+            "mailbox_record",
+            "occupied_mailbox_record",
+        ):
+            address = can[f"{key}_address"]
+            expected = (
+                can[f"{key}_value"]
+                if key == "feedback_config_record"
+                else can[f"{key}_stock"]
+            )
+            actual = _read_u32(data, address, f"{profile.rom}.{key}")
+            if actual != expected:
+                raise AddressProfileError(
+                    f"{profile.rom}.{key}: stock is {actual:#010x}, "
+                    f"expected {expected:#010x}"
+                )
+
+        actual_payload_base = _read_u32(
+            data,
+            can["feedback_payload_base_literal"],
+            f"{profile.rom}.feedback_payload_base",
+        )
+        if actual_payload_base != can["feedback_payload_base"]:
             raise AddressProfileError(
-                f"{profile.rom}.{key}: stock is {actual:#010x}, "
-                f"expected {expected:#010x}"
+                f"{profile.rom}.feedback_payload_base: stock is "
+                f"{actual_payload_base:#010x}, expected "
+                f"{can['feedback_payload_base']:#010x}"
             )
 
-    payload_literal = (
-        profile.map_symbol_by_key["feedback_serializer"] + 0x56
-    )
-    actual_payload_base = _read_u32(
-        data, payload_literal, f"{profile.rom}.feedback_payload_base"
-    )
-    if actual_payload_base != can["feedback_payload_base"]:
-        raise AddressProfileError(
-            f"{profile.rom}.feedback_payload_base: stock is "
-            f"{actual_payload_base:#010x}, expected "
-            f"{can['feedback_payload_base']:#010x}"
-        )
-
     canonical = map_switching_layout.load_layout().family_by_key
-    source_keys = {
-        key: key for key in MAP_FAMILY_KEYS if not key.startswith("exhaust_cvtc")
-    }
-    source_keys["exhaust_cvtc_target_even"] = "exhaust_cvtc_target"
-    source_keys["exhaust_cvtc_target_odd"] = "exhaust_cvtc_target"
-    for key, source_key in source_keys.items():
+    for key, source_key in _map_family_sources(profile).items():
         address = profile.map_family_by_key[key]
         size = canonical[source_key].byte_length
         if data[address : address + size] == bytes([0xFF]) * size:

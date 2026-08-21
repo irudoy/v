@@ -35,6 +35,13 @@ TELEMETRY_SPEC = importlib.util.spec_from_file_location(
 TELEMETRY_VERIFIER = importlib.util.module_from_spec(TELEMETRY_SPEC)
 TELEMETRY_SPEC.loader.exec_module(TELEMETRY_VERIFIER)
 
+RUNTIME_MODULE_PATH = ROOT / "tools/sh-elf-run/verify_runtime_targets.py"
+RUNTIME_SPEC = importlib.util.spec_from_file_location(
+    "verify_runtime_targets_sh_elf", RUNTIME_MODULE_PATH
+)
+RUNTIME_VERIFIER = importlib.util.module_from_spec(RUNTIME_SPEC)
+RUNTIME_SPEC.loader.exec_module(RUNTIME_VERIFIER)
+
 
 class ShElfRunVerifierTest(unittest.TestCase):
     def test_preprocessor_translates_only_dialect_differences(self):
@@ -59,12 +66,15 @@ mov #0x5,r1
             VERIFIER.alias_high_ram(0xFFFF5D00), 0x01005D00
         )
         self.assertEqual(
+            VERIFIER.alias_high_ram(0xFFFE8024), 0x01008024
+        )
+        self.assertEqual(
             VERIFIER.alias_high_ram(0xFFFFFFFF), 0x0100FFFF
         )
         with self.assertRaisesRegex(
             VERIFIER.VerificationError, "not a high-RAM address"
         ):
-            VERIFIER.alias_high_ram(0xFFFEFFFF)
+            VERIFIER.alias_high_ram(0xFFFE7FFF)
 
     def test_ram_relocation_changes_only_declared_long_data(self):
         fixture = bytearray(32)
@@ -95,6 +105,21 @@ mov #0x5,r1
         self.assertEqual(fixture[4:8], (0x01005D00).to_bytes(4, "big"))
         self.assertEqual(fixture[8:12], (0x00026388).to_bytes(4, "big"))
         self.assertEqual(fixture[12:14], bytes.fromhex("d304"))
+
+    def test_serializer_stub_aligns_pc_relative_literal(self):
+        status_alias = 0x0100B0F2
+
+        aligned = RUNTIME_VERIFIER._feedback_serializer_stub(
+            0x00116E4C, status_alias
+        )
+        halfword_aligned = RUNTIME_VERIFIER._feedback_serializer_stub(
+            0x000CCB32, status_alias
+        )
+
+        self.assertEqual(aligned[16:20], status_alias.to_bytes(4, "big"))
+        self.assertEqual(
+            halfword_aligned[14:18], status_alias.to_bytes(4, "big")
+        )
 
     def test_dynamic_map_values_differ_without_touching_canonical_data(self):
         fixture = bytearray(range(64))
@@ -392,6 +417,7 @@ mov #0x5,r1
         self.assertIn("runtime_target_cases", source)
         self.assertIn("runtime_targets.RELOCATED_ROMS", verifier)
         self.assertIn("TARGET_DUAL_EXHAUST", map_harness)
+        self.assertIn("TARGET_SH7059_1ND", map_harness)
         self.assertIn("TELEMETRY_TAIL_CHAIN", telemetry_harness)
         self.assertIn("RTE_STUB", verifier)
 

@@ -66,7 +66,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["unsupported"] == len(VQ37_UNSUPPORTED)
         assert values["checksum"] is True
         assert values["romraider_checksum"] is False
-        assert values["map_families"] == 0
+        assert values["map_families"] == 12
         assert values["rolling_configuration"] is None
 
 
@@ -98,6 +98,28 @@ def test_runtime_definition_layouts_use_target_allocation():
         } <= set(maps.family_by_key)
         assert launch.rom == rom
         assert launch.configuration.start == 0xE0660
+
+    for rom in ("1ND0A", "1ND3B"):
+        projection = definition_projections.projection_for_rom(rom)
+        maps = definition_projections.map_switching_definition_layout(projection)
+
+        assert maps.rom == rom
+        assert maps.variant == "sh7059-1nd"
+        assert maps.slot_count == 5
+        assert len(maps.families) == 12
+        assert {
+            "fuel_compensation_main_bank_1",
+            "fuel_compensation_main_bank_2",
+            "idle_ignition_timing_bank_1",
+            "idle_ignition_timing_bank_2",
+            "rev_limit_throttle_cut",
+        } <= set(maps.family_by_key)
+        assert "rev_limit_fuel_cut" not in maps.family_by_key
+        with pytest.raises(
+            definition_projections.DefinitionProjectionError,
+            match="Rolling Launch runtime is unavailable",
+        ):
+            definition_projections.rolling_launch_definition_layout(projection)
 
 
 def _minimal_overrides():
@@ -166,15 +188,21 @@ def test_projection_applies_target_map_checksums_and_switches(
 
 
 @pytest.mark.parametrize(
-    ("rom", "target_address", "checksum_verified"),
     (
-        ("JK78C", "00008896", False),
-        ("1ND0A", "00008939", True),
-        ("1ND3B", "00008939", True),
+        "rom",
+        "target_address",
+        "checksum_verified",
+        "map_switching",
+        "switch_count",
+    ),
+    (
+        ("JK78C", "00008896", False, False, 0),
+        ("1ND0A", "00008939", True, True, 1),
+        ("1ND3B", "00008939", True, True, 1),
     ),
 )
-def test_vq37_projection_omits_undeclared_editor_runtime_capabilities(
-    rom, target_address, checksum_verified
+def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
+    rom, target_address, checksum_verified, map_switching, switch_count
 ):
     projection = definition_projections.projection_for_rom(rom)
     result = definition_projections.apply_projection(
@@ -190,8 +218,13 @@ def test_vq37_projection_omits_undeclared_editor_runtime_capabilities(
     assert projection.romraider_checksum is False
     assert set(result.maps) == {target_address}
     assert "checksum" not in result.overrides
-    assert result.overrides["switch"] == []
-    assert result.overrides["map_switching"] == {"enabled": False}
+    assert len(result.overrides["switch"]) == switch_count
+    if switch_count:
+        assert result.overrides["switch"][0]["name"] == (
+            "CAN Telemetry at Startup"
+        )
+        assert result.overrides["switch"][0]["storageaddress"] == "0x134E03"
+    assert result.overrides["map_switching"] == {"enabled": map_switching}
     assert result.overrides["rolling_launch"] == {"enabled": False}
 
 

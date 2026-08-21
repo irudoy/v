@@ -58,7 +58,7 @@ warning in the atlas.
 |---|---|
 | JK00A, JK03A, JK03B, JK08A | Exact-code JK08A function, map, axis, diagnostic, DTC, definition-control, composed-runtime, and checksum evidence with target identity |
 | JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, composed production runtime profiles, and target checksum layouts |
-| 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure, reviewed shared definition addresses, target identity, checksum layout, and stock-image metrics |
+| 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure, reviewed shared definition addresses, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
 | JK78C | JK78C Ghidra structure, reviewed target definition addresses, and stock-image metrics; missing diagnostics, DTC, checksum, and runtime layers remain explicit warnings |
 
 The exact JK00A/JK03A/JK03B/JK08A family uses one canonical annotation layer
@@ -74,8 +74,10 @@ production builder emits target-specific runtime payloads at those addresses.
 
 1ND0A and 1ND3B load their generated target definitions from one reviewed
 SH7059 address correspondence. Their checksum fields and domains come from the
-project checksum registry. No runtime patch allocation is declared for either
-image.
+project checksum registry. Their composed runtime profiles expose twelve
+Map Switching families, custom CAN telemetry, exact hooks, and the shared
+SH7059 allocation. Rolling Launch objects remain absent because the capability
+is unsupported on 1ND.
 
 Ghidra exports provide exact function entry addresses and body byte counts. The
 export does not preserve discontiguous body ranges, so the atlas draws each

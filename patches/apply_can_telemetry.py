@@ -127,19 +127,28 @@ def patch_image(
     telemetry_payloads=None,
     launch_layout=None,
     launch_payloads=None,
+    require_rolling_endpoint=True,
     source_name="<memory>",
     expected_source_sha256=None,
     checksum_layout=None,
 ):
     telemetry_layout = telemetry_layout or can_telemetry_layout.load_layout()
-    launch_layout = launch_layout or rolling_launch_layout.load_layout()
     checksum_layout = checksum_layout or canonical_checksums.LAYOUT
     try:
         telemetry_payloads = can_telemetry_compose._validated_blobs(
             telemetry_layout,
             telemetry_payloads or can_telemetry_assembly.load_payloads(telemetry_layout),
         )
-        launch_payloads = launch_payloads or rolling_launch_assembly.load_payloads(launch_layout)
+        if require_rolling_endpoint:
+            launch_layout = launch_layout or rolling_launch_layout.load_layout()
+            launch_payloads = (
+                launch_payloads
+                or rolling_launch_assembly.load_payloads(launch_layout)
+            )
+        elif launch_layout is not None or launch_payloads not in (None, {}):
+            raise ValueError(
+                "disabled Rolling Launch must not supply layout or payloads"
+            )
     except (OSError, ValueError) as error:
         raise PatchError(str(error)) from error
 
@@ -160,7 +169,10 @@ def patch_image(
         )
     except rom_checksums.ChecksumError as error:
         raise PatchError(str(error)) from error
-    _require_complete_rolling_endpoint(source, launch_layout, launch_payloads, source_name)
+    if require_rolling_endpoint:
+        _require_complete_rolling_endpoint(
+            source, launch_layout, launch_payloads, source_name
+        )
     _require_telemetry_base(source, telemetry_layout, source_name)
 
     try:

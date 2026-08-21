@@ -41,7 +41,7 @@ EXPECTED_INSTRUCTION_COUNT = 435
 EXPECTED_CODE_ENTRY_COUNT = 12
 EXPECTED_DYNAMIC_CASES = 131
 TEST_RAM_BASE = 0x01000000
-HIGH_RAM_BASE = 0xFFFF0000
+HIGH_RAM_BASE = 0xFFFE8000
 ROM_SIZE = 0x00100000
 DRIVER_TEXT_BASE = 0x00110000
 RETURN_STUB = bytes.fromhex("000b0009")
@@ -233,10 +233,10 @@ def require_composition(layout, blobs):
 
 
 def alias_high_ram(value):
-    """Map an exact SH7058S high-RAM address into simulator test RAM."""
+    """Map an exact ECU high-RAM address into simulator test RAM."""
     if value < HIGH_RAM_BASE or value > 0xFFFFFFFF:
         raise VerificationError(f"not a high-RAM address: {value:#x}")
-    return TEST_RAM_BASE + (value - HIGH_RAM_BASE)
+    return TEST_RAM_BASE + (value & 0xFFFF)
 
 
 def relocate_assembly_ram_literals(fixture, parsed_by_unit):

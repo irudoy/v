@@ -37,10 +37,10 @@ JK78C_MAP_ADDRESSES = {
 
 ONE_ND_MAP_ADDRESSES = {
     "MAF Factor": "0x08939",
-    "Fuel Compensation - Main - Bank 1": "0x0A1C0",
-    "Fuel Compensation - Main - Bank 2": "0x0A2C0",
-    "Timing-State Addend - Warm DFCO Transition - Bank 1": "0x13C1A",
-    "Timing-State Addend - Warm DFCO Transition - Bank 2": "0x13C22",
+    "Map 1 - Fuel Compensation - Main - Bank 1": "0x0A1C0",
+    "Map 1 - Fuel Compensation - Main - Bank 2": "0x0A2C0",
+    "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 1": "0x13C1A",
+    "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 2": "0x13C22",
 }
 
 
@@ -176,10 +176,25 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert romid.findtext("filesize") == "1536kb"
         assert romid.find("flashmethod") is None
         assert target.findall("checksum") == []
-        assert len(target.findall("table")) == 34
+        assert len(target.findall("table")) == 91
         assert not any(name.startswith("DTC ") for name in tables)
         assert not any(name.startswith("Rolling Launch") for name in tables)
-        assert not any(name.startswith("Map 2 -") for name in tables)
+        assert any(name.startswith("Map 2 -") for name in tables)
+        assert tables["CAN Telemetry at Startup"].get(
+            "storageaddress"
+        ) == "0x134E03"
+        assert "Map 2 - Engine Speed Limit - Fuel Cut" not in tables
+        assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
+        assert "Map 2 - Fuel Compensation - Main - Bank 1" in tables
+        assert "Map 2 - Fuel Compensation - Main - Bank 2" in tables
+        assert (
+            "Map 2 - Timing-State Addend - Warm DFCO Transition - Bank 1"
+            in tables
+        )
+        assert (
+            "Map 2 - Timing-State Addend - Warm DFCO Transition - Bank 2"
+            in tables
+        )
         for name, address in ONE_ND_MAP_ADDRESSES.items():
             assert tables[name].get("storageaddress") == address
 
@@ -189,8 +204,12 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 34
-        assert root.findall("XDFPATCH") == []
+        assert len(root.findall("XDFTABLE")) == 90
+        patches = root.findall("XDFPATCH")
+        assert len(patches) == 1
+        assert patches[0].findtext("title") == "CAN Telemetry at Startup"
+        entry = patches[0].find("XDFPATCHENTRY")
+        assert entry.get("address") == "0x134E03"
         assert root.findall("XDFFLAG") == []
         assert "verified checksum implementation must correct" in description
         assert "no verified" not in description.lower()

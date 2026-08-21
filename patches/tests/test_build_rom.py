@@ -193,9 +193,17 @@ class BuildRomTest(unittest.TestCase):
                 )
 
                 self.assertEqual(result.rom, rom)
-                self.assertEqual(result.series, runtime_targets.RELOCATED_FAMILY)
+                self.assertEqual(result.series, target.family)
                 self.assertEqual(result.detection, build_rom.AUTO_ROM)
-                self.assertEqual(result.profile.rom, runtime_targets.RELOCATED_FAMILY)
+                self.assertEqual(result.profile.rom, target.family)
+                self.assertEqual(
+                    result.profile.name,
+                    (
+                        build_rom.OBSERVE_PROFILE_NAME
+                        if rom in runtime_targets.SH7059_1ND_ROMS
+                        else build_rom.apply_rolling_launch.PROFILE_NAME
+                    ),
+                )
                 self.assertEqual(build_rom.select_rom(source), (rom, "auto"))
                 explicit = build_rom.build_image(
                     source, rom=rom.lower(), source_name=f"explicit {rom}"
@@ -205,13 +213,30 @@ class BuildRomTest(unittest.TestCase):
                 self.assertTrue(
                     rom_checksums.verify(result.data, checksum_layout).valid
                 )
-                self.assertEqual(result.map_instruction_count, 453)
-                self.assertEqual(result.rolling_instruction_count, 878)
+                self.assertEqual(
+                    result.map_instruction_count,
+                    419 if rom in runtime_targets.SH7059_1ND_ROMS else 453,
+                )
+                self.assertEqual(
+                    result.rolling_instruction_count,
+                    0 if rom in runtime_targets.SH7059_1ND_ROMS else 878,
+                )
                 self.assertEqual(result.telemetry_instruction_count, 617)
-                self.assertEqual(target.map_layout.variant, "dual-exhaust")
+                self.assertEqual(
+                    target.map_layout.variant,
+                    (
+                        "sh7059-1nd"
+                        if rom in runtime_targets.SH7059_1ND_ROMS
+                        else "dual-exhaust"
+                    ),
+                )
                 self.assertEqual(
                     target.telemetry_layout.variant,
-                    "mailbox24-tail-chain",
+                    (
+                        "mailbox26-tail-chain"
+                        if rom in runtime_targets.SH7059_1ND_ROMS
+                        else "mailbox24-tail-chain"
+                    ),
                 )
                 self.assertEqual(
                     result.data[
@@ -253,6 +278,18 @@ class BuildRomTest(unittest.TestCase):
                 self.assertEqual(rebuilt.changed_bytes, 0)
                 output_hashes.add(result.output_sha256)
         self.assertEqual(len(output_hashes), len(runtime_targets.RELOCATED_ROMS))
+
+    def test_1nd_rejects_a_profile_that_enables_rolling_launch(self):
+        profile = replace(
+            build_rom.builtin_profile(runtime_targets.SH7059_1ND_FAMILY),
+            calibration=build_rom.apply_rolling_launch.PROFILE_CALIBRATION,
+        )
+        source = self.family_images["1ND0A"].data
+
+        with self.assertRaisesRegex(
+            build_rom.BuildError, "Rolling Launch is unsupported"
+        ):
+            build_rom.build_image(source, profile=profile)
 
     def test_relocated_migration_preserves_alternate_map_bytes(self):
         rom = "JK00C"

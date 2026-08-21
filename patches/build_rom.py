@@ -2,10 +2,10 @@
 """Build one complete production ROM with every supported firmware runtime.
 
 The CLI detects the exact ROM identity from immutable image bytes by default or
-accepts an explicit ``--rom`` selector. JK00A, JK03A, JK03B, and JK08A share
-the canonical JK08A address and executable-code profile. JK00C and JK00D use
-exact relocated 8MFK layouts and independently assembled target payloads. Each
-member retains its own calibration, identity, and checksum layout.
+accepts an explicit ``--rom`` selector. Exact-code families share their
+canonical executable profile, while near-code and cross-generation targets use
+explicit address layouts and independently assembled payloads. Each member
+retains its own calibration, identity, capabilities, and checksum layout.
 
 Compatible unpatched inputs retain their calibration and configuration. A
 complete current or historical composition may also be rebuilt: all alternate
@@ -60,6 +60,7 @@ SUPPORTED_ROMS = runtime_targets.SUPPORTED_ROMS
 PROFILE_SCHEMA_VERSION = 2
 MANIFEST_SCHEMA_VERSION = 3
 TOOL_NAME = "patches/build_rom.py"
+OBSERVE_PROFILE_NAME = "observe"
 
 PROFILE_REQUIRED_ROOT_KEYS = frozenset(
     ("schema_version", "rom", "name", "rolling_launch")
@@ -330,21 +331,33 @@ def _series_context(rom=CANONICAL_ROM):
         runtime_targets.EXACT_FAMILY: {
             "kind": "exact-code",
             "canonical": CANONICAL_ROM,
+            "mcu": "SH7058",
+            "flash_size": 0x100000,
             "same_address_inheritance": True,
             "members": runtime_targets.EXACT_ROMS,
         },
-        runtime_targets.RELOCATED_FAMILY: {
+        runtime_targets.RELOCATED_8MFK_FAMILY: {
             "kind": "near-code",
             "canonical": "JK00D",
+            "mcu": "SH7058",
+            "flash_size": 0x100000,
             "same_address_inheritance": False,
-            "members": runtime_targets.RELOCATED_ROMS,
+            "members": runtime_targets.RELOCATED_8MFK_ROMS,
+        },
+        runtime_targets.SH7059_1ND_FAMILY: {
+            "kind": "exact-code",
+            "canonical": "1ND0A",
+            "mcu": "SH7059",
+            "flash_size": 0x180000,
+            "same_address_inheritance": True,
+            "members": runtime_targets.SH7059_1ND_ROMS,
         },
     }.get(family_key)
     if expected is None or any((
         family.get("kind") != expected["kind"],
         family.get("canonical") != expected["canonical"],
-        family.get("mcu") != "SH7058",
-        family.get("flash_size") != canonical_checksums.ROM_SIZE,
+        family.get("mcu") != expected["mcu"],
+        family.get("flash_size") != expected["flash_size"],
         family.get("same_address_inheritance")
         is not expected["same_address_inheritance"],
         members != expected["members"],
@@ -379,11 +392,23 @@ def _require_integer(value, context):
 
 
 def builtin_profile(rom=ROM_SERIES):
-    """Return the conservative Map 1 RPM Hold family profile."""
+    """Return the conservative profile permitted by the target family."""
+    observe_only = (
+        str(rom).lower() == runtime_targets.SH7059_1ND_FAMILY
+    )
+    calibration = (
+        rolling_launch.Calibration()
+        if observe_only
+        else apply_rolling_launch.PROFILE_CALIBRATION
+    )
     return Profile(
-        name=apply_rolling_launch.PROFILE_NAME,
+        name=(
+            OBSERVE_PROFILE_NAME
+            if observe_only
+            else apply_rolling_launch.PROFILE_NAME
+        ),
         rom=rom,
-        calibration=apply_rolling_launch.PROFILE_CALIBRATION,
+        calibration=calibration,
         telemetry=can_telemetry.default_configuration(),
         source="builtin",
         sha256=None,
@@ -554,7 +579,11 @@ def _component_ranges(map_layout, launch_layout, telemetry_layout=None):
     telemetry_layout = telemetry_layout or can_telemetry_layout.load_layout()
     return (
         map_switching_compose.composition_write_ranges(map_layout)
-        + rolling_launch_compose.composition_write_ranges(launch_layout)
+        + (
+            ()
+            if launch_layout is None
+            else rolling_launch_compose.composition_write_ranges(launch_layout)
+        )
         + can_telemetry_compose.composition_write_ranges(telemetry_layout)
     )
 
@@ -889,9 +918,13 @@ def _require_complete_map_endpoint(
                 f"map unit {unit.key} differs"
             )
 
-    rolling_hook_values = {
-        hook.address: hook.replacement for hook in launch_layout.hooks
-    }
+    rolling_hook_values = (
+        {}
+        if launch_layout is None
+        else {
+            hook.address: hook.replacement for hook in launch_layout.hooks
+        }
+    )
     for hook in map_layout.hooks:
         actual = _read_integer(
             source, hook.address, hook.width, map_layout.byte_order
@@ -915,6 +948,12 @@ def _require_complete_map_endpoint(
                 f"pointer table {family.key} differs"
             )
 
+    if launch_layout is None:
+        if launch_payloads:
+            raise BuildError(
+                "disabled Rolling Launch has unexpected payloads"
+            )
+        return "current"
     return _require_coherent_rolling_endpoint(
         source, launch_layout, launch_payloads, context
     )
@@ -992,7 +1031,7 @@ def _normalize_runtime(source, source_name, target):
         if telemetry_state == "current" and rolling_state != "current":
             raise BuildError(
                 f"{source_name}: current CAN telemetry is not layered "
-                "over the current Rolling Launch endpoint"
+                "over the current lower runtime endpoint"
             )
         saved_copies = _capture_map_copies(source, map_layout)
         input_state = "complete-runtime-migration"
@@ -1041,6 +1080,7 @@ def _rom_probes():
     """Return the immutable-byte probe registry."""
     _series_context(CANONICAL_ROM)
     _series_context("JK00D")
+    _series_context("1ND0A")
     images = rom_homology.load_images()
     return {
         rom: (
@@ -1131,6 +1171,14 @@ def build_image(
         raise BuildError("profile CAN telemetry configuration is invalid")
     try:
         target = runtime_targets.load_runtime_target(selected_rom)
+        if target.rolling_layout is None and (
+            profile.calibration.mode != rolling_launch.Mode.OBSERVE
+            or profile.calibration.enable_mask != 0
+        ):
+            raise BuildError(
+                f"{selected_rom}: Rolling Launch is unsupported; profile "
+                "must use observe mode with no enabled maps"
+            )
         (
             normalized,
             input_state,
@@ -1170,18 +1218,22 @@ def build_image(
                 map_stage, checksum_layout, "restored map stage"
             )
 
-        launch_result = apply_rolling_launch.patch_image(
-            map_stage,
-            calibration=profile.calibration,
-            map_layout=map_layout,
-            rolling_layout=launch_layout,
-            map_payloads=map_payloads,
-            rolling_payloads=launch_payloads,
-            source_name=f"{source_name} complete map stage",
-            expected_source_sha256=sha256(map_stage),
-            checksum_layout=checksum_layout,
-        )
-        rolling_stage = launch_result.data
+        launch_result = None
+        if launch_layout is not None:
+            launch_result = apply_rolling_launch.patch_image(
+                map_stage,
+                calibration=profile.calibration,
+                map_layout=map_layout,
+                rolling_layout=launch_layout,
+                map_payloads=map_payloads,
+                rolling_payloads=launch_payloads,
+                source_name=f"{source_name} complete map stage",
+                expected_source_sha256=sha256(map_stage),
+                checksum_layout=checksum_layout,
+            )
+            rolling_stage = launch_result.data
+        else:
+            rolling_stage = map_stage
         telemetry_result = apply_can_telemetry.patch_image(
             rolling_stage,
             configuration=profile.telemetry,
@@ -1189,9 +1241,10 @@ def build_image(
             telemetry_payloads=telemetry_payloads,
             launch_layout=launch_layout,
             launch_payloads=launch_payloads,
-            source_name=f"{source_name} complete Rolling Launch stage",
+            source_name=f"{source_name} complete lower runtime stage",
             expected_source_sha256=sha256(rolling_stage),
             checksum_layout=checksum_layout,
+            require_rolling_endpoint=launch_layout is not None,
         )
         output_verification = rom_checksums.require_valid(
             telemetry_result.data,
@@ -1226,7 +1279,9 @@ def build_image(
         detection=detection,
         input_state=input_state,
         profile=profile,
-        configuration=launch_result.configuration,
+        configuration=(
+            b"" if launch_result is None else launch_result.configuration
+        ),
         telemetry_configuration=telemetry_result.configuration,
         telemetry_mailbox_record=telemetry_result.mailbox_record,
         source_sha256=sha256(source),
@@ -1242,11 +1297,17 @@ def build_image(
         checksum_changed_bytes=checksum_changed,
         preserved_map_copy_bytes=preserved_map_copy_bytes,
         map_instruction_count=map_layout.assembled_instruction_count,
-        rolling_instruction_count=launch_result.instruction_count,
-        rolling_code_entry_count=launch_result.code_entry_count,
+        rolling_instruction_count=(
+            0 if launch_result is None else launch_result.instruction_count
+        ),
+        rolling_code_entry_count=(
+            0 if launch_result is None else launch_result.code_entry_count
+        ),
         telemetry_instruction_count=telemetry_result.instruction_count,
         telemetry_code_entry_count=telemetry_result.code_entry_count,
-        diagnostic_count=launch_result.diagnostic_count,
+        diagnostic_count=(
+            0 if launch_result is None else launch_result.diagnostic_count
+        ),
     )
 
 
@@ -1280,6 +1341,7 @@ def manifest_data(result, input_path, output_path):
             "source": result.profile.source,
             "sha256": result.profile.sha256,
             "mode": calibration.mode.name,
+            "rolling_launch_supported": result.rolling_instruction_count > 0,
             "enabled_maps": [
                 index + 1
                 for index in range(rolling_launch.SLOT_COUNT)

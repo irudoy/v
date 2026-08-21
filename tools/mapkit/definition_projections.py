@@ -12,7 +12,7 @@ from __future__ import annotations
 import argparse
 import copy
 import csv
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 import hashlib
 from pathlib import Path
 import re
@@ -24,9 +24,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import map_switching_layout
-from patches import rolling_launch_layout
-from patches import rom_address_profiles
 from patches import rom_checksums
+from patches import runtime_targets
 from tools.mapkit import rom as romkit
 
 
@@ -687,91 +686,34 @@ def apply_projection(
 
 def map_switching_definition_layout(projection):
     """Materialize the target's five-slot editor storage layout."""
-    source = map_switching_layout.load_layout()
-    profile = rom_address_profiles.profile_for_rom(projection.target)
-    if source.rom != profile.layout_source:
+    try:
+        target = runtime_targets.load_runtime_target(projection.target)
+    except runtime_targets.RuntimeTargetError as error:
+        raise DefinitionProjectionError(str(error)) from error
+    if target.map_layout.source_sha256 != projection.target_sha256:
         raise DefinitionProjectionError(
-            f"{projection.target}: map layout source differs from address profile"
+            f"{projection.target}: runtime map layout image binding differs "
+            "from definition projection"
         )
-    families = []
-    for family in source.families:
-        if family.key == "exhaust_cvtc_target":
-            common = {
-                "stock_container_start": profile.map_family_by_key[
-                    "exhaust_cvtc_target_even"
-                ],
-                "stock_container_size": family.stock_container_size,
-            }
-            families.append(
-                replace(
-                    family,
-                    key="exhaust_cvtc_target_even",
-                    name=f"{family.name} Bank 1",
-                    canonical_address=profile.map_family_by_key[
-                        "exhaust_cvtc_target_even"
-                    ],
-                    copies=tuple(
-                        address + profile.rom_delta for address in family.copies
-                    ),
-                    pointer_table=family.pointer_table + profile.rom_delta,
-                    **common,
-                )
-            )
-            families.append(
-                replace(
-                    family,
-                    key="exhaust_cvtc_target_odd",
-                    name=f"{family.name} Bank 2",
-                    canonical_address=profile.map_family_by_key[
-                        "exhaust_cvtc_target_odd"
-                    ],
-                    copies=profile.extra_exhaust_storage.copies,
-                    pointer_table=profile.extra_exhaust_storage.pointer_table,
-                    stock_container_start=profile.map_family_by_key[
-                        "exhaust_cvtc_target_odd"
-                    ],
-                    stock_container_size=family.stock_container_size,
-                )
-            )
-            continue
-        target_address = profile.map_family_by_key[family.key]
-        families.append(
-            replace(
-                family,
-                canonical_address=target_address,
-                copies=tuple(
-                    address + profile.rom_delta for address in family.copies
-                ),
-                pointer_table=family.pointer_table + profile.rom_delta,
-                stock_container_start=(
-                    profile.map_symbol_by_key["throttle_container"]
-                    if family.key == "rev_limit_throttle_cut"
-                    else target_address
-                ),
-            )
-        )
-    return replace(
-        source,
-        rom=projection.target,
-        source_sha256=projection.target_sha256,
-        families=tuple(families),
-    )
+    return target.map_layout
 
 
 def rolling_launch_definition_layout(projection):
     """Return the target configuration address used by editor controls."""
-    source = rolling_launch_layout.load_layout()
-    profile = rom_address_profiles.profile_for_rom(projection.target)
-    return replace(
-        source,
-        rom=projection.target,
-        source_sha256=projection.target_sha256,
-        configuration=replace(
-            source.configuration,
-            start=source.configuration.start + profile.rom_delta,
-            end=source.configuration.end + profile.rom_delta,
-        ),
-    )
+    try:
+        target = runtime_targets.load_runtime_target(projection.target)
+    except runtime_targets.RuntimeTargetError as error:
+        raise DefinitionProjectionError(str(error)) from error
+    if target.rolling_layout is None:
+        raise DefinitionProjectionError(
+            f"{projection.target}: Rolling Launch runtime is unavailable"
+        )
+    if target.rolling_layout.source_sha256 != projection.target_sha256:
+        raise DefinitionProjectionError(
+            f"{projection.target}: Rolling Launch layout image binding differs "
+            "from definition projection"
+        )
+    return target.rolling_layout
 
 
 def validate_registry(path=DEFAULT_REGISTRY):

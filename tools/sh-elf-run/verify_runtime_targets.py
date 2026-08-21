@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute every relocated 8MFK runtime target with GNU SH-2E tools."""
+"""Execute every relocated runtime target with GNU SH-2E tools."""
 
 from __future__ import annotations
 
@@ -28,7 +28,10 @@ from patches import rolling_launch_compose
 from patches import runtime_targets
 
 
-MAP_CASES = 139
+MAP_CASES_BY_VARIANT = {
+    "dual-exhaust": 139,
+    "sh7059-1nd": 145,
+}
 ROLLING_CASES = 121
 TELEMETRY_CASES = 62
 RETURN_STUB = bytes.fromhex("000b0009")
@@ -48,6 +51,23 @@ def _first_difference(actual, expected):
         if pair[0] != pair[1]:
             return index
     return min(len(actual), len(expected))
+
+
+def _feedback_serializer_stub(address, status_alias):
+    """Build an aligned simulator-only status-byte serializer stub."""
+    literal_address = ((address + 4) & ~3) + 12
+    padding_size = literal_address - (
+        address + len(FEEDBACK_SERIALIZER_PREFIX)
+    )
+    if padding_size not in {0, 2}:
+        raise VerificationError(
+            f"serializer stub cannot align its literal at {address:#x}"
+        )
+    return (
+        FEEDBACK_SERIALIZER_PREFIX
+        + bytes.fromhex("0009") * (padding_size // 2)
+        + status_alias.to_bytes(4, "big")
+    )
 
 
 def _assemble_stage(
@@ -103,19 +123,31 @@ def _compose_and_lock(target, locks, map_blobs, rolling_blobs, can_blobs):
         image=target.stock_image,
         blobs=map_blobs,
     )
-    rolling_result = rolling_launch_compose.compose(
-        layout=target.rolling_layout,
-        base=map_result.data,
-        blobs=rolling_blobs,
+    rolling_result = (
+        rolling_launch_compose.compose(
+            layout=target.rolling_layout,
+            base=map_result.data,
+            blobs=rolling_blobs,
+        )
+        if target.rolling_layout is not None
+        else None
     )
     can_result = can_telemetry_compose.compose(
         layout=target.telemetry_layout,
-        base=rolling_result.data,
+        base=(
+            rolling_result.data
+            if rolling_result is not None
+            else map_result.data
+        ),
         blobs=can_blobs,
     )
     actual = (
         map_result.sha256,
-        rolling_result.sha256,
+        (
+            rolling_result.sha256
+            if rolling_result is not None
+            else map_result.sha256
+        ),
         can_result.sha256,
     )
     expected = (
@@ -134,22 +166,37 @@ def _compose_and_lock(target, locks, map_blobs, rolling_blobs, can_blobs):
 def _install_stock_stubs(fixture, target):
     """Install only target-specific unchanged stock-call simulator stubs."""
     map_hooks = {hook.key: hook for hook in target.map_layout.hooks}
-    rolling_hooks = target.rolling_layout.hook_by_key
     can_hooks = target.telemetry_layout.hook_by_key
-    map_keys = {
-        "selector_host_call",
-        "startup_initializer",
-        "overrun_cut_lookup",
-        "overrun_restore_lookup",
-        "ignition_lookup_knock",
-        "ignition_lookup_primary_a",
-        "ignition_lookup_primary_b",
-        "fuel_compensation_lookup_startup",
-        "fuel_compensation_lookup_runtime",
-        "exhaust_cvtc_target_lookup_even",
-        "exhaust_cvtc_target_lookup_odd",
-        "idle_ignition_lookup",
-    }
+    if target.map_layout.variant == "sh7059-1nd":
+        map_keys = {
+            "selector_host_call",
+            "startup_initializer",
+            "overrun_cut_lookup",
+            "overrun_restore_lookup",
+            "ignition_lookup_1",
+            "ignition_lookup_2",
+            "ignition_lookup_3",
+            "ignition_lookup_4",
+            "fuel_compensation_lookup_bank_1",
+            "fuel_compensation_lookup_bank_2",
+            "idle_ignition_lookup_bank_1",
+            "idle_ignition_lookup_bank_2",
+        }
+    else:
+        map_keys = {
+            "selector_host_call",
+            "startup_initializer",
+            "overrun_cut_lookup",
+            "overrun_restore_lookup",
+            "ignition_lookup_knock",
+            "ignition_lookup_primary_a",
+            "ignition_lookup_primary_b",
+            "fuel_compensation_lookup_startup",
+            "fuel_compensation_lookup_runtime",
+            "exhaust_cvtc_target_lookup_even",
+            "exhaust_cvtc_target_lookup_odd",
+            "idle_ignition_lookup",
+        }
     missing = map_keys - map_hooks.keys()
     if missing:
         raise VerificationError(
@@ -159,9 +206,13 @@ def _install_stock_stubs(fixture, target):
         map_hooks[key].stock: RETURN_STUB
         for key in map_keys
     }
+    if target.rolling_layout is not None:
+        rolling_hooks = target.rolling_layout.hook_by_key
+        stubs.update({
+            rolling_hooks["periodic_scheduler_index_0"].stock: RETURN_STUB,
+            rolling_hooks["primary_ignition_command"].stock: RETURN_STUB,
+        })
     stubs.update({
-        rolling_hooks["periodic_scheduler_index_0"].stock: RETURN_STUB,
-        rolling_hooks["primary_ignition_command"].stock: RETURN_STUB,
         can_hooks["coherent_snapshot_call"].stock: RETURN_STUB,
         can_hooks["knock_interval_latch"].stock: RETURN_STUB,
     })
@@ -172,9 +223,7 @@ def _install_stock_stubs(fixture, target):
     status_alias = base_verifier.alias_high_ram(
         target.map_layout.feedback.status_byte_address
     )
-    stubs[serializer] = (
-        FEEDBACK_SERIALIZER_PREFIX + status_alias.to_bytes(4, "big")
-    )
+    stubs[serializer] = _feedback_serializer_stub(serializer, status_alias)
     stock_isr = can_hooks["hcan1_sle1_vector"].stock
     stubs[stock_isr] = RTE_STUB
 
@@ -200,8 +249,12 @@ def _build_dynamic_fixture(
     map_relocated = base_verifier.relocate_assembly_ram_literals(
         fixture, map_parsed
     )
-    rolling_relocated = base_verifier.relocate_assembly_ram_literals(
-        fixture, rolling_parsed
+    rolling_relocated = (
+        base_verifier.relocate_assembly_ram_literals(
+            fixture, rolling_parsed
+        )
+        if rolling_parsed is not None
+        else 0
     )
     can_relocated = can_verifier.relocate_telemetry_ram_literals(
         fixture, can_parsed
@@ -246,7 +299,10 @@ def _build_rom_object(rom, fixture, build_dir):
 def _render_harness(target, name, build_dir):
     source = (TOOL_DIR / name).read_text(encoding="utf-8")
     overrides = None
-    if name == "map_switching_harness.c":
+    if (
+        name == "map_switching_harness.c"
+        and target.map_layout.variant == "dual-exhaust"
+    ):
         odd = target.map_layout.family_by_key[
             "exhaust_cvtc_target_odd"
         ].canonical_address
@@ -288,6 +344,10 @@ def _compile_and_run(
     defines=(),
 ):
     output = build_dir / f"{target.rom.lower()}-{name}.elf"
+    driver_text_base = max(
+        base_verifier.DRIVER_TEXT_BASE,
+        len(target.stock_image.data) + 0x10000,
+    )
     command = [
         base_verifier.GCC,
         "-m2e", "-mb", "-std=c11", "-O2",
@@ -295,7 +355,7 @@ def _compile_and_run(
     ]
     command.extend(f"-D{define}=1" for define in defines)
     command.extend([
-        f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}",
+        f"-Wl,-Ttext-segment={driver_text_base:#x}",
         "-Wl,--section-start=.rom=0",
         "-o", output,
         source,
@@ -325,13 +385,30 @@ def _run_harnesses(target, fixture, build_dir):
     map_source = _render_harness(
         target, "map_switching_harness.c", build_dir
     )
-    rolling_source = _render_harness(
-        target, "rolling_launch_harness.c", build_dir
-    )
     can_source = _render_harness(
         target, "can_telemetry_harness.c", build_dir
     )
-    markers = (
+    if target.map_layout.variant == "dual-exhaust":
+        map_marker = (
+            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=139 selector=17 "
+            "adapters=99 limiter=14 feedback=9 feedback_invocations=17 "
+            "entries=13"
+        )
+        map_defines = ("TARGET_DUAL_EXHAUST",)
+    elif target.map_layout.variant == "sh7059-1nd":
+        map_marker = (
+            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=145 selector=17 "
+            "adapters=105 limiter=14 feedback=9 feedback_invocations=17 "
+            "entries=12"
+        )
+        map_defines = ("TARGET_SH7059_1ND",)
+    else:
+        raise VerificationError(
+            f"{target.rom}: unsupported map harness variant "
+            f"{target.map_layout.variant!r}"
+        )
+
+    markers = [
         _compile_and_run(
             target,
             "map-switching",
@@ -339,12 +416,15 @@ def _run_harnesses(target, fixture, build_dir):
             rom_object,
             (invoke,),
             build_dir,
-            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=139 selector=17 "
-            "adapters=99 limiter=14 feedback=9 feedback_invocations=17 "
-            "entries=13",
-            defines=("TARGET_DUAL_EXHAUST",),
-        ),
-        _compile_and_run(
+            map_marker,
+            defines=map_defines,
+        )
+    ]
+    if target.rolling_layout is not None:
+        rolling_source = _render_harness(
+            target, "rolling_launch_harness.c", build_dir
+        )
+        markers.append(_compile_and_run(
             target,
             "rolling-launch",
             rolling_source,
@@ -355,7 +435,13 @@ def _run_harnesses(target, fixture, build_dir):
             "structural=11 gates=26 config=24 threshold=4 activation=5 "
             "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
             "entries=8",
-        ),
+        ))
+    can_defines = (
+        ("TELEMETRY_TAIL_CHAIN",)
+        if target.telemetry_layout.variant.endswith("-tail-chain")
+        else ()
+    )
+    markers.append(
         _compile_and_run(
             target,
             "can-telemetry",
@@ -365,10 +451,10 @@ def _run_harnesses(target, fixture, build_dir):
             build_dir,
             "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=62 entries=10 "
             "profiles=1 contexts=8 isr_rte=5",
-            defines=("TELEMETRY_TAIL_CHAIN",),
-        ),
+            defines=can_defines,
+        )
     )
-    return markers
+    return tuple(markers)
 
 
 def verify_target(rom, locks, verbose=False):
@@ -376,8 +462,12 @@ def verify_target(rom, locks, verbose=False):
     map_parsed = map_switching_assembly.validate_assembly_sources(
         target.map_layout
     )
-    rolling_parsed = rolling_launch_assembly.validate_assembly_sources(
-        target.rolling_layout
+    rolling_parsed = (
+        rolling_launch_assembly.validate_assembly_sources(
+            target.rolling_layout
+        )
+        if target.rolling_layout is not None
+        else None
     )
     can_parsed = can_telemetry_assembly.validate_assembly_sources(
         target.telemetry_layout
@@ -390,9 +480,13 @@ def verify_target(rom, locks, verbose=False):
             "map", target.map_layout, map_parsed,
             target.map_payloads, build_dir, verbose,
         )
-        rolling_blobs = _assemble_stage(
-            "rolling", target.rolling_layout, rolling_parsed,
-            target.rolling_payloads, build_dir, verbose,
+        rolling_blobs = (
+            _assemble_stage(
+                "rolling", target.rolling_layout, rolling_parsed,
+                target.rolling_payloads, build_dir, verbose,
+            )
+            if target.rolling_layout is not None
+            else {}
         )
         can_blobs = _assemble_stage(
             "telemetry", target.telemetry_layout, can_parsed,
@@ -405,6 +499,8 @@ def verify_target(rom, locks, verbose=False):
             rolling_launch_assembly.validate_instruction_semantics(
                 target.rolling_layout, rolling_parsed, rolling_blobs
             )
+            if target.rolling_layout is not None
+            else None
         )
         can_audit = can_telemetry_assembly.validate_instruction_semantics(
             target.telemetry_layout, can_parsed, can_blobs
@@ -431,13 +527,19 @@ def verify_target(rom, locks, verbose=False):
         print(marker)
     instructions = (
         map_audit.instructions
-        + rolling_audit.instructions
+        + (0 if rolling_audit is None else rolling_audit.instructions)
         + can_audit.instructions
+    )
+    map_cases = MAP_CASES_BY_VARIANT[target.map_layout.variant]
+    dynamic_cases = (
+        map_cases
+        + (ROLLING_CASES if target.rolling_layout is not None else 0)
+        + TELEMETRY_CASES
     )
     print(
         f"VQ_SH_ELF_RUNTIME_TARGET status=PASS rom={rom} "
         f"family={target.family} instructions={instructions} "
-        f"dynamic_cases={MAP_CASES + ROLLING_CASES + TELEMETRY_CASES} "
+        f"dynamic_cases={dynamic_cases} "
         f"map_ram_literals_relocated={map_relocated} "
         f"rolling_ram_literals_relocated={rolling_relocated} "
         f"telemetry_ram_literals_relocated={can_relocated} "
@@ -447,7 +549,7 @@ def verify_target(rom, locks, verbose=False):
     return {
         "rom": rom,
         "instructions": instructions,
-        "dynamic_cases": MAP_CASES + ROLLING_CASES + TELEMETRY_CASES,
+        "dynamic_cases": dynamic_cases,
     }
 
 
