@@ -90,6 +90,23 @@ REFERENCE_OUTPUT_FIELDS = (
     "target_value",
     "function_kind",
 )
+EXACT_STORAGE_FIELDS = (
+    "entity",
+    "source",
+    "target",
+    "status",
+    "bytes",
+    "contracts",
+    "source_sites",
+    "target_sites",
+)
+STORAGE_ACCESSOR_FIELDS = (
+    "source",
+    "target",
+    "status",
+    "anchors",
+    "contracts",
+)
 
 
 class CorrespondenceError(ValueError):
@@ -153,6 +170,27 @@ class ReferenceMatch:
     source_value: str
     target_value: str
     function_kind: str
+
+
+@dataclass(frozen=True)
+class ExactStorageMatch:
+    entity: str
+    source: str
+    target: str
+    status: str
+    bytes: int
+    contracts: int
+    source_sites: int
+    target_sites: int
+
+
+@dataclass(frozen=True)
+class StorageAccessorMatch:
+    source: str
+    target: str
+    status: str
+    anchors: int
+    contracts: int
 
 
 def read_signatures(path):
@@ -746,6 +784,335 @@ def match_entities(
     return tuple(result)
 
 
+def _storage_width(storage_type):
+    if storage_type == "uint8":
+        return 1
+    if storage_type == "uint16":
+        return 2
+    raise CorrespondenceError(f"unsupported interpolation storage type {storage_type!r}")
+
+
+def _operand_specs(interp):
+    if interp["family"] != "explicit":
+        return ()
+    width = int(interp["width"])
+    height = int(interp["height"]) if interp["height"] else 1
+    specs = [
+        ("Map", "df_r4", width * height * _storage_width(interp["storagetype"])),
+        ("Axis", "df_r5", width * _storage_width(interp["axistype_x"])),
+    ]
+    if interp["height"]:
+        specs.append(
+            ("Axis", "df_r6", height * _storage_width(interp["axistype_y"]))
+        )
+    return tuple(specs)
+
+
+def _operand_sites(rows, wrapper, field, image_size, byte_count):
+    sites = defaultdict(int)
+    for row in rows:
+        value = row[field]
+        if row["wrapper"] != wrapper or not _rom_address(value):
+            continue
+        address = int(value, 16)
+        if address + byte_count <= image_size:
+            sites[address] += 1
+    return sites
+
+
+def match_exact_storage(
+    source_export,
+    target_export,
+    source_interp,
+    target_interp,
+    source_image,
+    target_image,
+    interp_correspondence=None,
+):
+    """Match exact operand bytes only within reviewed interpolation contracts."""
+    source_bytes = Path(source_image).read_bytes()
+    target_bytes = Path(target_image).read_bytes()
+    correspondence_rows = (
+        read_interp_correspondence(interp_correspondence)
+        if interp_correspondence is not None
+        else None
+    )
+    interp_pairs = pair_interp(
+        read_interp(source_interp),
+        read_interp(target_interp),
+        correspondence_rows,
+    )
+    caches = ({}, {})
+    observations = defaultdict(lambda: defaultdict(set))
+    site_counts = {}
+    for source_entry, target_entry in interp_pairs:
+        source_rows = _read_census(source_export, source_entry["kernel"], caches[0])
+        target_rows = _read_census(target_export, target_entry["kernel"], caches[1])
+        for entity, field, byte_count in _operand_specs(source_entry):
+            source_sites = _operand_sites(
+                source_rows,
+                source_entry["wrapper"],
+                field,
+                len(source_bytes),
+                byte_count,
+            )
+            target_sites = _operand_sites(
+                target_rows,
+                target_entry["wrapper"],
+                field,
+                len(target_bytes),
+                byte_count,
+            )
+            target_by_bytes = defaultdict(list)
+            for address in target_sites:
+                target_by_bytes[target_bytes[address:address + byte_count]].append(address)
+            contract = (
+                source_entry["kernel"],
+                source_entry["wrapper"],
+                target_entry["kernel"],
+                target_entry["wrapper"],
+                byte_count,
+            )
+            for source_address in source_sites:
+                value = source_bytes[source_address:source_address + byte_count]
+                for target_address in target_by_bytes[value]:
+                    observations[(entity, source_address)][target_address].add(contract)
+                    site_counts[(entity, source_address, target_address, contract)] = (
+                        source_sites[source_address],
+                        target_sites[target_address],
+                    )
+
+    target_sources = defaultdict(set)
+    for (entity, source_address), targets in observations.items():
+        if len(targets) == 1:
+            target_sources[(entity, next(iter(targets)))].add(source_address)
+
+    result = []
+    for (entity, source_address), targets in sorted(observations.items()):
+        for target_address, contracts in sorted(targets.items()):
+            if len(targets) != 1:
+                status = "source-ambiguous"
+            elif len(target_sources[(entity, target_address)]) != 1:
+                status = "target-collision"
+            else:
+                status = "unique"
+            byte_counts = {contract[-1] for contract in contracts}
+            if len(byte_counts) != 1:
+                raise CorrespondenceError(
+                    f"{entity} {source_address:08x}/{target_address:08x} "
+                    "matches contracts with different extents"
+                )
+            counts = [
+                site_counts[(entity, source_address, target_address, contract)]
+                for contract in contracts
+            ]
+            result.append(ExactStorageMatch(
+                entity=entity,
+                source=f"{source_address:08x}",
+                target=f"{target_address:08x}",
+                status=status,
+                bytes=next(iter(byte_counts)),
+                contracts=len(contracts),
+                source_sites=sum(count[0] for count in counts),
+                target_sites=sum(count[1] for count in counts),
+            ))
+    return tuple(result)
+
+
+def match_storage_accessors(
+    source_export,
+    target_export,
+    source_interp,
+    target_interp,
+    storage_matches,
+    interp_correspondence=None,
+):
+    """Anchor accessor pairs through unique exact map-storage matches."""
+    exact_maps = {
+        (match.source, match.target)
+        for match in storage_matches
+        if match.entity == "Map" and match.status == "unique"
+    }
+    correspondence_rows = (
+        read_interp_correspondence(interp_correspondence)
+        if interp_correspondence is not None
+        else None
+    )
+    interp_pairs = pair_interp(
+        read_interp(source_interp),
+        read_interp(target_interp),
+        correspondence_rows,
+    )
+    caches = ({}, {})
+    observations = defaultdict(lambda: defaultdict(set))
+    for source_entry, target_entry in interp_pairs:
+        source_rows = [
+            row
+            for row in _read_census(
+                source_export, source_entry["kernel"], caches[0]
+            )
+            if row["wrapper"] == source_entry["wrapper"]
+        ]
+        target_rows = [
+            row
+            for row in _read_census(
+                target_export, target_entry["kernel"], caches[1]
+            )
+            if row["wrapper"] == target_entry["wrapper"]
+        ]
+        source_by_map = defaultdict(set)
+        target_by_map = defaultdict(set)
+        for row in source_rows:
+            if _rom_address(row["df_r4"]):
+                source_by_map[row["df_r4"]].add(row["accessor"])
+        for row in target_rows:
+            if _rom_address(row["df_r4"]):
+                target_by_map[row["df_r4"]].add(row["accessor"])
+        contract = (
+            source_entry["kernel"],
+            source_entry["wrapper"],
+            target_entry["kernel"],
+            target_entry["wrapper"],
+        )
+        for source_map, target_map in exact_maps:
+            source_accessors = source_by_map.get(source_map, ())
+            target_accessors = target_by_map.get(target_map, ())
+            if len(source_accessors) != 1 or len(target_accessors) != 1:
+                continue
+            source_accessor = next(iter(source_accessors))
+            target_accessor = next(iter(target_accessors))
+            observations[source_accessor][target_accessor].add(
+                (source_map, target_map, contract)
+            )
+
+    target_sources = defaultdict(set)
+    for source, targets in observations.items():
+        if len(targets) == 1:
+            target_sources[next(iter(targets))].add(source)
+
+    result = []
+    for source, targets in sorted(observations.items()):
+        for target, evidence in sorted(targets.items()):
+            if len(targets) != 1:
+                status = "source-ambiguous"
+            elif len(target_sources[target]) != 1:
+                status = "target-collision"
+            else:
+                status = "unique"
+            result.append(StorageAccessorMatch(
+                source=source,
+                target=target,
+                status=status,
+                anchors=len({(item[0], item[1]) for item in evidence}),
+                contracts=len({item[2] for item in evidence}),
+            ))
+    return tuple(result)
+
+
+def _ordered_site_groups(rows):
+    groups = defaultdict(list)
+    for row in rows:
+        groups[row["callsite"]].append(row)
+    return tuple(
+        tuple(sorted(groups[callsite], key=lambda row: row["branch"]))
+        for callsite in sorted(groups, key=lambda value: int(value, 16))
+    )
+
+
+def match_entities_by_call_order(
+    source_export,
+    target_export,
+    source_interp,
+    target_interp,
+    accessor_matches,
+    interp_correspondence=None,
+):
+    """Pair operands by wrapper-local call order in unique anchored functions."""
+    function_by_source = {
+        match.source: match
+        for match in accessor_matches
+        if match.status == "unique"
+    }
+    correspondence_rows = (
+        read_interp_correspondence(interp_correspondence)
+        if interp_correspondence is not None
+        else None
+    )
+    interp_pairs = pair_interp(
+        read_interp(source_interp),
+        read_interp(target_interp),
+        correspondence_rows,
+    )
+    caches = ({}, {})
+    observations = defaultdict(lambda: defaultdict(set))
+    for source_entry, target_entry in interp_pairs:
+        source_groups = defaultdict(list)
+        target_groups = defaultdict(list)
+        for row in _read_census(source_export, source_entry["kernel"], caches[0]):
+            if row["wrapper"] == source_entry["wrapper"]:
+                source_groups[row["accessor"]].append(row)
+        for row in _read_census(target_export, target_entry["kernel"], caches[1]):
+            if row["wrapper"] == target_entry["wrapper"]:
+                target_groups[row["accessor"]].append(row)
+        for source_accessor, source_rows in source_groups.items():
+            function_match = function_by_source.get(source_accessor)
+            if function_match is None:
+                continue
+            target_rows = target_groups.get(function_match.target, ())
+            source_sites = _ordered_site_groups(source_rows)
+            target_sites = _ordered_site_groups(target_rows)
+            if len(source_sites) != len(target_sites) or not source_sites:
+                continue
+            if any(
+                len(source_site) != len(target_site)
+                for source_site, target_site in zip(source_sites, target_sites)
+            ):
+                continue
+            operands = [("Map", "df_r4")]
+            if source_entry["family"] == "explicit":
+                operands.append(("Axis", "df_r5"))
+                if source_entry["height"]:
+                    operands.append(("Axis", "df_r6"))
+            for site_index, (source_site, target_site) in enumerate(
+                zip(source_sites, target_sites)
+            ):
+                for source_row, target_row in zip(source_site, target_site):
+                    evidence = (
+                        source_accessor,
+                        source_entry["wrapper"],
+                        site_index,
+                        function_match.anchors,
+                    )
+                    for entity, field in operands:
+                        left, right = source_row[field], target_row[field]
+                        if _rom_address(left) and _rom_address(right):
+                            observations[(entity, left)][right].add(evidence)
+
+    target_sources = defaultdict(set)
+    for (entity, source), targets in observations.items():
+        if len(targets) == 1:
+            target_sources[(entity, next(iter(targets)))].add(source)
+
+    result = []
+    for (entity, source), targets in sorted(observations.items()):
+        for target, evidence in sorted(targets.items()):
+            if len(targets) != 1:
+                status = "source-ambiguous"
+            elif len(target_sources[(entity, target)]) != 1:
+                status = "target-collision"
+            else:
+                status = "unique"
+            result.append(EntityMatch(
+                entity=entity,
+                source=source,
+                target=target,
+                status=status,
+                sites=len(evidence),
+                function_kinds="ordered-exact-storage-anchor",
+            ))
+    return tuple(result)
+
+
 def write_matches(path, matches):
     path = Path(path)
     with path.open("w", newline="", encoding="utf-8") as output:
@@ -782,6 +1149,38 @@ def write_reference_matches(path, matches):
             )
 
 
+def write_exact_storage_matches(path, matches):
+    path = Path(path)
+    with path.open("w", newline="", encoding="utf-8") as output:
+        writer = csv.DictWriter(
+            output,
+            fieldnames=EXACT_STORAGE_FIELDS,
+            lineterminator="\n",
+        )
+        writer.writeheader()
+        for match in matches:
+            writer.writerow({
+                field: getattr(match, field)
+                for field in EXACT_STORAGE_FIELDS
+            })
+
+
+def write_storage_accessor_matches(path, matches):
+    path = Path(path)
+    with path.open("w", newline="", encoding="utf-8") as output:
+        writer = csv.DictWriter(
+            output,
+            fieldnames=STORAGE_ACCESSOR_FIELDS,
+            lineterminator="\n",
+        )
+        writer.writeheader()
+        for match in matches:
+            writer.writerow({
+                field: getattr(match, field)
+                for field in STORAGE_ACCESSOR_FIELDS
+            })
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Pair unique exact and normalized-shape Ghidra functions."
@@ -794,6 +1193,11 @@ def main(argv=None):
     parser.add_argument("--interp-correspondence", type=Path)
     parser.add_argument("--entity-output", type=Path)
     parser.add_argument("--reference-output", type=Path)
+    parser.add_argument("--source-image", type=Path)
+    parser.add_argument("--target-image", type=Path)
+    parser.add_argument("--exact-storage-output", type=Path)
+    parser.add_argument("--storage-accessor-output", type=Path)
+    parser.add_argument("--ordered-entity-output", type=Path)
     parser.add_argument(
         "--explain-address",
         action="append",
@@ -837,9 +1241,9 @@ def main(argv=None):
             f"references={len(references)} "
             f"output={args.reference_output}"
         )
-    entity_options = (args.source_interp, args.target_interp, args.entity_output)
-    if any(item is not None for item in entity_options):
-        if any(item is None for item in entity_options):
+    interp_options = (args.source_interp, args.target_interp)
+    if args.entity_output is not None:
+        if any(item is None for item in interp_options):
             raise CorrespondenceError(
                 "--source-interp, --target-interp, and --entity-output are required together"
             )
@@ -857,7 +1261,93 @@ def main(argv=None):
             f"entities={len(entities)} unique={unique} "
             f"ambiguous={len(entities) - unique} output={args.entity_output}"
         )
-    elif args.interp_correspondence is not None:
+    storage_outputs = (
+        args.exact_storage_output,
+        args.storage_accessor_output,
+        args.ordered_entity_output,
+    )
+    if any(item is not None for item in storage_outputs):
+        exact_options = (
+            args.source_interp,
+            args.target_interp,
+            args.source_image,
+            args.target_image,
+        )
+        if any(item is None for item in exact_options):
+            raise CorrespondenceError(
+                "--source-interp, --target-interp, --source-image, "
+                "and --target-image are required with storage-derived outputs"
+            )
+        storage_matches = match_exact_storage(
+            args.source_export,
+            args.target_export,
+            args.source_interp,
+            args.target_interp,
+            args.source_image,
+            args.target_image,
+            args.interp_correspondence,
+        )
+        unique = sum(match.status == "unique" for match in storage_matches)
+        if args.exact_storage_output is not None:
+            write_exact_storage_matches(args.exact_storage_output, storage_matches)
+            print(
+                f"exact_storage={len(storage_matches)} unique={unique} "
+                f"ambiguous={len(storage_matches) - unique} "
+                f"output={args.exact_storage_output}"
+            )
+        accessor_matches = match_storage_accessors(
+            args.source_export,
+            args.target_export,
+            args.source_interp,
+            args.target_interp,
+            storage_matches,
+            args.interp_correspondence,
+        )
+        if args.storage_accessor_output is not None:
+            write_storage_accessor_matches(
+                args.storage_accessor_output, accessor_matches
+            )
+            accessor_unique = sum(
+                match.status == "unique" for match in accessor_matches
+            )
+            print(
+                f"storage_accessors={len(accessor_matches)} "
+                f"unique={accessor_unique} "
+                f"ambiguous={len(accessor_matches) - accessor_unique} "
+                f"output={args.storage_accessor_output}"
+            )
+        if args.ordered_entity_output is not None:
+            ordered_entities = match_entities_by_call_order(
+                args.source_export,
+                args.target_export,
+                args.source_interp,
+                args.target_interp,
+                accessor_matches,
+                args.interp_correspondence,
+            )
+            write_entities(args.ordered_entity_output, ordered_entities)
+            ordered_unique = sum(
+                match.status == "unique" for match in ordered_entities
+            )
+            print(
+                f"ordered_entities={len(ordered_entities)} "
+                f"unique={ordered_unique} "
+                f"ambiguous={len(ordered_entities) - ordered_unique} "
+                f"output={args.ordered_entity_output}"
+            )
+    if (
+        any(item is not None for item in interp_options)
+        and args.entity_output is None
+        and not any(item is not None for item in storage_outputs)
+    ):
+        raise CorrespondenceError(
+            "interpolation options require --entity-output or --exact-storage-output"
+        )
+    if (
+        args.interp_correspondence is not None
+        and args.entity_output is None
+        and not any(item is not None for item in storage_outputs)
+    ):
         raise CorrespondenceError(
             "--interp-correspondence requires interpolation entity output options"
         )

@@ -64,6 +64,7 @@ Ghidra projects and export directories remain machine-local. Scripts under
 | `funcs.csv`, `calls.csv` | `ExportGraph.java` | Function boundaries and resolved call edges |
 | `xrefs.csv` | `ExportXrefs.java` | RAM, peripheral, and literal-pool references |
 | `function_signatures.csv`, `function_sites.csv`, `function_references.csv` | `ExportFunctionSignatures.java` | Exact and relocation-tolerant function hashes plus ordinal callsites, ROM references, and direct RAM targets |
+| `function_tokens.csv` | `ExportFunctionTokens.java` | Per-instruction mnemonic and normalized shape sequences for bounded structural-similarity review |
 | `map_inventory.csv` | `MapInventory.java` | Kernel slot, wrapper, callsite, and baseline operand census |
 | `direct_lookup_inventory.csv` | `DirectLookupInventory.java` | Direct and implicit-axis table census |
 | `accessors.<kernel>.csv` | `ResolveAccessors.java` | Backtracking and decompiler-data-flow operands with branch sets and verdicts |
@@ -87,6 +88,15 @@ signatures and equal call ordinals to propose addressed map and axis pairs.
 Interpolation wrappers must be joined through a reviewed correspondence CSV;
 row order and relative address offsets are not evidence. The resulting report
 is an input to target-specific review, not a semantic claim source.
+
+When whole-function signatures do not survive a generation change, the same
+tool can compare complete operand byte extents within paired explicit wrappers.
+Unique equal map storage can anchor one accessor on each side, after which
+equal wrapper-local call and branch cardinality yields a second ordered operand
+report. Exact bytes can miss recalibrated homologs, while call order can survive
+unrelated restructuring. Both channels remain review candidates, and any
+disagreement is resolved from the participating instructions and data flow
+before an address enters a definition projection.
 
 ## Derived graph schema
 

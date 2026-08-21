@@ -34,7 +34,9 @@ filesystem path. Ghidra projects and export directories remain outside Git.
 `xrefs.csv`. `ExportFunctionSignatures.java` writes relocation-tolerant
 `function_signatures.csv`, call-site ordinal data to `function_sites.csv`, and
 ROM literal/reference data and direct RAM references to
-`function_references.csv`. A typical read-only export is:
+`function_references.csv`. `ExportFunctionTokens.java` writes normalized
+instruction sequences for bounded structural-similarity review. A typical
+read-only export is:
 
 ```bash
 tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
@@ -42,7 +44,8 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -scriptPath tools/ghidra \
   -postScript ExportGraph.java <export-dir> \
   -postScript ExportXrefs.java <export-dir> \
-  -postScript ExportFunctionSignatures.java <export-dir>
+  -postScript ExportFunctionSignatures.java <export-dir> \
+  -postScript ExportFunctionTokens.java <export-dir>
 ```
 
 `RecoverFuncs.java` and `RenameFuncs.java` intentionally mutate the local
@@ -56,7 +59,7 @@ preflight before graph writes; see `../memgraph/README.md`.
 
 | Group | Scripts | Purpose |
 |---|---|---|
-| Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `RecoverFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
+| Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `ExportFunctionTokens`, `RecoverFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
 | Map discovery | `FindInterpCore`, `MapInventory`, `DirectLookupInventory`, `ResolveAccessors`, `ScanFlags` | Discover interpolation families, operands, accessors, axes, and local selectors |
 | Diagnostics | `ExportDiagnosticRefs`, `ScanImmoAnchors`, `TraceRamAccesses` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
 | Inspection | `InspectAddress`, `DumpListing`, `DumpFuncListing`, `DecompileFuncs`, `FindTableRefs`, `FindPoolWords` | Inspect ownership, references, functions, listings, pools, and decompilation |
@@ -82,6 +85,19 @@ unique normalized shapes. With two interpolation registries, their reviewed
 correspondence file, and complete resolver censuses, it also emits candidate
 map and axis address pairs. Ambiguous source or target operands are retained
 with a non-unique status rather than guessed.
+
+Cross-generation analysis can also compare complete operand byte extents
+inside paired explicit interpolation contracts. A `unique` exact-storage row
+means that one equal-byte target was found among those compared contracts. It
+does not exclude a recalibrated homolog with different bytes and therefore is
+not sufficient for automatic semantic projection.
+
+A unique exact map-storage pair may anchor an accessor pair when each side has
+one accessor for that map in the same reviewed contract. The ordered-entity
+mode then compares the anchored accessor's callsites by wrapper-local order,
+requiring equal callsite and branch cardinality. Exact-storage, accessor, and
+ordered-entity CSVs remain independent candidate reports. Agreement strengthens
+structural evidence; disagreement requires instruction-level review.
 
 ## Address inspection
 

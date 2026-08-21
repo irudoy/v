@@ -209,6 +209,137 @@ def test_tracked_1nd_interp_correspondence_is_complete():
     ] == [("00026944", "000261b8")]
 
 
+def test_exact_storage_matches_only_unique_contract_operands(tmp_path):
+    source_export = tmp_path / "source"
+    target_export = tmp_path / "target"
+    source_export.mkdir()
+    target_export.mkdir()
+    source_interp = tmp_path / "source.interp.csv"
+    target_interp = tmp_path / "target.interp.csv"
+    interp_row = {
+        "family": "explicit",
+        "kernel": "00001000",
+        "wrapper": "00002000",
+        "width": "2",
+        "height": "2",
+        "step": "",
+        "storagetype": "uint8",
+        "axistype_x": "uint8",
+        "axistype_y": "uint8",
+    }
+    for path, row in (
+        (source_interp, interp_row),
+        (target_interp, dict(
+            interp_row,
+            kernel="00003000",
+            wrapper="00004000",
+        )),
+    ):
+        with path.open("w", newline="", encoding="utf-8") as output:
+            writer = csv.DictWriter(
+                output,
+                fieldnames=rom_correspondence.INTERP_FIELDS,
+            )
+            writer.writeheader()
+            writer.writerow(row)
+
+    census_fields = (
+        "kernel", "wrapper", "accessor", "callsite",
+        "df_r4", "df_r5", "df_r6", "branch",
+    )
+    census_rows = (
+        (
+            source_export / "accessors.1000.csv",
+            {
+                "kernel": "00001000",
+                "wrapper": "00002000",
+                "accessor": "00005000",
+                "callsite": "00005010",
+                "df_r4": "00001100",
+                "df_r5": "00001200",
+                "df_r6": "00001210",
+                "branch": "",
+            },
+        ),
+        (
+            target_export / "accessors.3000.csv",
+            {
+                "kernel": "00003000",
+                "wrapper": "00004000",
+                "accessor": "00006000",
+                "callsite": "00006010",
+                "df_r4": "00002100",
+                "df_r5": "00002200",
+                "df_r6": "00002210",
+                "branch": "",
+            },
+        ),
+    )
+    for path, row in census_rows:
+        with path.open("w", newline="", encoding="utf-8") as output:
+            writer = csv.DictWriter(output, fieldnames=census_fields)
+            writer.writeheader()
+            writer.writerow(row)
+
+    source_bytes = bytearray(0x3000)
+    target_bytes = bytearray(0x3000)
+    source_bytes[0x1100:0x1104] = b"map!"
+    target_bytes[0x2100:0x2104] = b"map!"
+    source_bytes[0x1200:0x1202] = b"x!"
+    target_bytes[0x2200:0x2202] = b"x!"
+    source_bytes[0x1210:0x1212] = b"y!"
+    target_bytes[0x2210:0x2212] = b"y!"
+    source_image = tmp_path / "source.bin"
+    target_image = tmp_path / "target.bin"
+    source_image.write_bytes(source_bytes)
+    target_image.write_bytes(target_bytes)
+
+    matches = rom_correspondence.match_exact_storage(
+        source_export,
+        target_export,
+        source_interp,
+        target_interp,
+        source_image,
+        target_image,
+    )
+    assert [
+        (row.entity, row.source, row.target, row.status, row.bytes)
+        for row in matches
+    ] == [
+        ("Axis", "00001200", "00002200", "unique", 2),
+        ("Axis", "00001210", "00002210", "unique", 2),
+        ("Map", "00001100", "00002100", "unique", 4),
+    ]
+
+    accessors = rom_correspondence.match_storage_accessors(
+        source_export,
+        target_export,
+        source_interp,
+        target_interp,
+        matches,
+    )
+    assert [
+        (row.source, row.target, row.status, row.anchors, row.contracts)
+        for row in accessors
+    ] == [("00005000", "00006000", "unique", 1, 1)]
+
+    ordered = rom_correspondence.match_entities_by_call_order(
+        source_export,
+        target_export,
+        source_interp,
+        target_interp,
+        accessors,
+    )
+    assert [
+        (row.entity, row.source, row.target, row.status, row.sites)
+        for row in ordered
+    ] == [
+        ("Axis", "00001200", "00002200", "unique", 1),
+        ("Axis", "00001210", "00002210", "unique", 1),
+        ("Map", "00001100", "00002100", "unique", 1),
+    ]
+
+
 def test_signature_reader_rejects_duplicate_addresses():
     with tempfile.TemporaryDirectory() as directory:
         path = Path(directory) / "function_signatures.csv"
