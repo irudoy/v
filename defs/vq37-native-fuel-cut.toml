@@ -1,0 +1,127 @@
+schema_version = 1
+
+# VQ37 does not use the canonical VQ35HR 2x2 fuel-cut table. Each target below
+# binds the exact stock state machine to two adjacent scalar caps and two
+# adjacent eight-point curves. Values are big-endian uint16 RPM codes.
+# Coordinator bodies are discontiguous Ghidra functions. The complete stock
+# image hash, scheduler pointer, exact BSR site, and contiguous predicate hash
+# bind the executable chain without treating a contiguous envelope as a body.
+
+[target.JK78C]
+stock_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
+function_address = 0x0006AEB8
+function_size = 190
+function_sha256 = "57c3d3e167d55f15b99df49b8c7a58dc7ccff8cd15c53995412fb753d8bc378b"
+coordinator_address = 0x0006A9B0
+coordinator_pointer_site = 0x00021AC8
+coordinator_predicate_ordinal = 3
+predicate_call_site = 0x0006A9E8
+predicate_instruction_ordinal = 28
+selector_address = 0xFFFF10E5
+rpm_address = 0xFFFF11AC
+state_address = 0xFFFF23F5
+state_active_mask = 0x10
+state_armed_mask = 0x08
+delay_address = 0xFFFF2449
+delay_calibration_address = 0x00008A1F
+delay_calibration_value = 0
+axis_address = 0x00016A64
+axis_values = [15, 16, 17, 17, 18, 18, 19, 20]
+caps_address = 0x00009040
+caps_values = [612, 596]
+curves_address = 0x00016BF4
+curve_values = [
+  612, 612, 612, 612, 612, 612, 612, 612,
+  596, 596, 596, 596, 596, 596, 596, 596,
+]
+pointer_bindings = [
+  { site = 0x0006B068, target = 0x00009040 },
+  { site = 0x0006B06C, target = 0x00009042 },
+  { site = 0x0006B070, target = 0x00016BF4 },
+]
+ram_pointer_bindings = [
+  { site = 0x0006B044, target = 0xFFFF1084 },
+  { site = 0x0006B048, target = 0xFFFF118C },
+  { site = 0x0006B05C, target = 0xFFFF23D0 },
+]
+evidence = "The BSR at coordinator instruction ordinal 28 targets FUN_0006aeb8, the third Boolean predicate aggregated by the final fuel-mask coordinator. It interpolates the adjacent activation and release curves on the shared eight-point axis, caps both results with the adjacent scalar limits, and compares them with the current native RPM word."
+
+[target.1ND0A]
+stock_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
+function_address = 0x00076AD2
+function_size = 190
+function_sha256 = "0099964ae24cd7ff6ee7b93be8e386af6d681ea659f6af7f09e43ca66633dcd6"
+coordinator_address = 0x000760CC
+coordinator_pointer_site = 0x000220D8
+coordinator_predicate_ordinal = 1
+predicate_call_site = 0x0007628A
+predicate_instruction_ordinal = 223
+selector_address = 0xFFFE80ED
+rpm_address = 0xFFFE81B6
+state_address = 0xFFFE94BA
+state_active_mask = 0x20
+state_armed_mask = 0x10
+delay_address = 0xFFFE950E
+delay_calibration_address = 0x00008AF3
+delay_calibration_value = 0
+axis_address = 0x00017072
+axis_values = [15, 16, 17, 17, 18, 18, 19, 20]
+caps_address = 0x000091D2
+caps_values = [612, 596]
+curves_address = 0x00017202
+curve_values = [
+  612, 612, 612, 612, 612, 612, 612, 612,
+  596, 596, 596, 596, 596, 596, 596, 596,
+]
+pointer_bindings = [
+  { site = 0x00076C98, target = 0x000091D2 },
+  { site = 0x00076CA4, target = 0x00017202 },
+  { site = 0x00076CAC, target = 0x00017212 },
+]
+ram_pointer_bindings = [
+  { site = 0x00076C84, target = 0xFFFE9492 },
+  { site = 0x00076CA0, target = 0xFFFE80ED },
+  { site = 0x00076CB0, target = 0xFFFE81B6 },
+  { site = 0x00076CB8, target = 0xFFFE950E },
+]
+evidence = "The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state."
+
+[target.1ND3B]
+stock_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
+function_address = 0x00076AD2
+function_size = 190
+function_sha256 = "0099964ae24cd7ff6ee7b93be8e386af6d681ea659f6af7f09e43ca66633dcd6"
+coordinator_address = 0x000760CC
+coordinator_pointer_site = 0x000220D8
+coordinator_predicate_ordinal = 1
+predicate_call_site = 0x0007628A
+predicate_instruction_ordinal = 223
+selector_address = 0xFFFE80ED
+rpm_address = 0xFFFE81B6
+state_address = 0xFFFE94BA
+state_active_mask = 0x20
+state_armed_mask = 0x10
+delay_address = 0xFFFE950E
+delay_calibration_address = 0x00008AF3
+delay_calibration_value = 0
+axis_address = 0x00017072
+axis_values = [15, 16, 17, 17, 18, 18, 19, 20]
+caps_address = 0x000091D2
+caps_values = [612, 596]
+curves_address = 0x00017202
+curve_values = [
+  612, 612, 612, 612, 612, 612, 612, 612,
+  596, 596, 596, 596, 596, 596, 596, 596,
+]
+pointer_bindings = [
+  { site = 0x00076C98, target = 0x000091D2 },
+  { site = 0x00076CA4, target = 0x00017202 },
+  { site = 0x00076CAC, target = 0x00017212 },
+]
+ram_pointer_bindings = [
+  { site = 0x00076C84, target = 0xFFFE9492 },
+  { site = 0x00076CA0, target = 0xFFFE80ED },
+  { site = 0x00076CB0, target = 0xFFFE81B6 },
+  { site = 0x00076CB8, target = 0xFFFE950E },
+]
+evidence = "The complete 1ND3B fuel-cut function and every address-bearing pointer binding are byte-identical to 1ND0A. The independent stock-image hash and calibration bytes remain target-bound."

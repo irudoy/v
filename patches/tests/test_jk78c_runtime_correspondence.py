@@ -6,6 +6,7 @@ from patches import can_telemetry_compose
 from patches import can_telemetry_profile
 from patches import map_switching_compose
 from patches import runtime_targets
+from tools.mapkit import vq37_native_fuel_cut
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -67,8 +68,60 @@ def test_jk78c_runtime_capabilities_are_explicit():
     }
     assert set(rows) == {"map_switching", "rolling_launch", "can_telemetry"}
     assert rows["map_switching"]["status"] == "target-specific"
-    assert rows["rolling_launch"]["status"] == "unsupported"
+    assert rows["rolling_launch"]["status"] == "target-specific"
     assert rows["can_telemetry"]["status"] == "target-specific"
+
+
+def test_jk78c_native_fuel_cut_evidence_matches_the_exact_registry():
+    rows = {(row["domain"], row["key"]): row for row in _rows()}
+    native = vq37_native_fuel_cut.load_registry()["JK78C"]
+
+    assert int(rows[("map_native", "rev_limit_fuel_cut_caps")]["target"], 16) == (
+        native.caps_address
+    )
+    assert int(rows[("map_native", "rev_limit_fuel_cut_curves")]["target"], 16) == (
+        native.curves_address
+    )
+    assert int(rows[("map_symbol", "rev_fuel_cut_state_machine")]["target"], 16) == (
+        native.function_address
+    )
+    assert int(rows[("map_symbol", "rev_fuel_cut_selector")]["target"], 16) == (
+        native.selector_address
+    )
+    assert int(rows[("map_symbol", "rev_fuel_cut_state")]["target"], 16) == (
+        native.state_address
+    )
+    delay = rows[("map_symbol", "rev_fuel_cut_delay")]
+    assert int(delay["target"], 16) == native.delay_address
+    assert int(
+        rows[(
+            "map_native", "rev_limit_fuel_cut_delay_calibration"
+        )]["target"],
+        16,
+    ) == native.delay_calibration_address
+    assert int(
+        rows[("rolling_symbol", "fuel_cut_coordinator")]["target"], 16
+    ) == native.coordinator_address
+    coordinator_hook = rows[("rolling_hook", "fuel_cut_coordinator")]
+    assert int(coordinator_hook["target"], 16) == (
+        native.coordinator_pointer_site
+    )
+    assert int(coordinator_hook["stock"], 16) == native.coordinator_address
+    hook_keys = (
+        "rev_fuel_cut_caps_base",
+        "rev_fuel_cut_release_cap_base",
+        "rev_fuel_cut_curves_base",
+    )
+    assert tuple(
+        (
+            int(rows[("map_hook", key)]["target"], 16),
+            int(rows[("map_hook", key)]["stock"], 16),
+        )
+        for key in hook_keys
+    ) == tuple(
+        (binding.site, binding.target)
+        for binding in native.pointer_bindings
+    )
 
 
 def test_jk78c_erased_stock_references_remain_outside_runtime_writes():

@@ -11,7 +11,29 @@
 #define RAM_RESERVATION_END 0xffff5d3cU
 #define SELECTOR_STATE 0xffff5d00U
 #define FUEL_SHADOW 0xffff5d10U
+#ifdef TARGET_VQ37
+#define FUEL_SHADOW_SIZE 36U
+#define THROTTLE_SHADOW 0xffff5d38U
+#define THROTTLE_SHADOW_SIZE 2U
+#define NATIVE_FUEL_CUT 0x0006aeb8U
+#define NATIVE_SELECTOR 0xffff10e5U
+#define NATIVE_RPM 0xffff11acU
+#define NATIVE_STATE 0xffff23f5U
+#define NATIVE_DELAY 0xffff2449U
+#ifdef TARGET_1ND
+#define NATIVE_ACTIVE_MASK 0x20U
+#define NATIVE_ARMED_MASK 0x10U
+#elif defined(TARGET_JK78)
+#define NATIVE_ACTIVE_MASK 0x10U
+#define NATIVE_ARMED_MASK 0x08U
+#else
+#error "VQ37 target family is required"
+#endif
+#else
+#define FUEL_SHADOW_SIZE 12U
 #define THROTTLE_SHADOW 0xffff5d20U
+#define THROTTLE_SHADOW_SIZE 28U
+#endif
 #define THROTTLE_RUNTIME 0xffff1796U
 #define CURRENT_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
@@ -41,6 +63,7 @@
 #define THROTTLE_SELECTED_OFFSET 8U
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
+extern uint32_t invoke_r0(uint32_t entry);
 
 struct family {
     const char *name;
@@ -195,7 +218,17 @@ static const struct pass_through pass_throughs[] = {
     {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
 };
 
-#ifndef TARGET_VQ37
+#ifdef TARGET_VQ37
+static const uint32_t fuel_cap_slots[] = {
+    0x00009040U, 0x000d24f4U, 0x000d24f8U, 0x000d24fcU,
+    0x000d353cU,
+};
+
+static const uint32_t fuel_curve_slots[] = {
+    0x00016bf4U, 0x000d36e0U, 0x000d3700U, 0x000d3720U,
+    0x000d3740U,
+};
+#else
 static const uint32_t fuel_slots[] = {
     0x0000934eU, 0x000d3500U, 0x000d3508U, 0x000d3510U,
     0x000d3518U,
@@ -374,6 +407,19 @@ static void read_bytes(
         target[index] = source[index];
 }
 
+#ifdef TARGET_VQ37
+static uint16_t read_be16(const volatile uint8_t *source)
+{
+    return (uint16_t)(((uint16_t)source[0] << 8) | source[1]);
+}
+
+static void write_be16(volatile uint8_t *target, uint16_t value)
+{
+    target[0] = (uint8_t)(value >> 8);
+    target[1] = (uint8_t)value;
+}
+#endif
+
 static int fail_value(
     const char *name, const char *field, uint32_t actual, uint32_t expected)
 {
@@ -419,15 +465,18 @@ static int verify_ram_guards(const char *name)
     size_t reservation_end = RAM_RESERVATION_END - RAM_SENTINEL_BASE;
     size_t selector_end = SELECTOR_STATE + 8U - RAM_SENTINEL_BASE;
     size_t fuel_start = FUEL_SHADOW - RAM_SENTINEL_BASE;
-    size_t fuel_end = FUEL_SHADOW + 12U - RAM_SENTINEL_BASE;
+    size_t fuel_end = FUEL_SHADOW + FUEL_SHADOW_SIZE - RAM_SENTINEL_BASE;
     size_t throttle_start = THROTTLE_SHADOW - RAM_SENTINEL_BASE;
+    size_t throttle_end =
+        THROTTLE_SHADOW + THROTTLE_SHADOW_SIZE - RAM_SENTINEL_BASE;
     size_t offset;
 
     for (offset = 0; offset < RAM_SENTINEL_SIZE; ++offset) {
         int outside = offset < reservation_start || offset >= reservation_end;
         int internal_gap =
             (offset >= selector_end && offset < fuel_start)
-            || (offset >= fuel_end && offset < throttle_start);
+            || (offset >= fuel_end && offset < throttle_start)
+            || (offset >= throttle_end && offset < reservation_end);
         if ((outside || internal_gap) && ram[offset] != 0xa5)
             return fail_value(name, "ram_guard", ram[offset], 0xa5);
     }
@@ -441,9 +490,7 @@ static void expected_limiter_ram(uint8_t expected[RAM_SENTINEL_SIZE], int slot)
 #endif
     size_t index;
     size_t selector_offset = SELECTOR_STATE - RAM_SENTINEL_BASE;
-#ifndef TARGET_VQ37
     size_t fuel_offset = FUEL_SHADOW - RAM_SENTINEL_BASE;
-#endif
     size_t throttle_offset = THROTTLE_SHADOW - RAM_SENTINEL_BASE;
 
     for (index = 0; index < RAM_SENTINEL_SIZE; ++index)
@@ -452,6 +499,11 @@ static void expected_limiter_ram(uint8_t expected[RAM_SENTINEL_SIZE], int slot)
     for (index = 1; index < 8; ++index)
         expected[selector_offset + index] = 0;
 #ifdef TARGET_VQ37
+    read_bytes(
+        expected + fuel_offset, rom_pointer(fuel_cap_slots[slot]), 4);
+    read_bytes(
+        expected + fuel_offset + 4,
+        rom_pointer(fuel_curve_slots[slot]), 32);
     read_bytes(
         expected + throttle_offset, rom_pointer(throttle_slots[slot]), 2);
 #else
@@ -580,6 +632,80 @@ static int run_limiter_cases(void)
     return 1;
 }
 
+#ifdef TARGET_VQ37
+static int verify_native_fuel_cut(
+    const char *field, uint16_t rpm, uint32_t expected_return,
+    uint8_t expected_state)
+{
+    uint32_t returned;
+    uint8_t state;
+
+    write_be16(ram_pointer(NATIVE_RPM), rpm);
+    returned = invoke_r0(NATIVE_FUEL_CUT);
+    if (returned != expected_return)
+        return fail_value(
+            "native_fuel_cut", field, returned, expected_return);
+    state = ram_pointer(NATIVE_STATE)[0]
+        & (NATIVE_ACTIVE_MASK | NATIVE_ARMED_MASK);
+    if (state != expected_state)
+        return fail_value(
+            "native_fuel_cut", field, state, expected_state);
+    return 1;
+}
+
+static int run_native_fuel_cut_cases(void)
+{
+    static const uint8_t empty_state[8] = {0};
+    size_t slot;
+
+    for (slot = 0; slot < 5; ++slot) {
+        uint16_t activation_cap;
+        uint16_t activation_curve;
+        uint16_t activation;
+        uint16_t release_cap;
+        uint16_t release_curve;
+        uint16_t release;
+        uint32_t committed;
+        uint8_t active_state = NATIVE_ACTIVE_MASK | NATIVE_ARMED_MASK;
+
+        seed_ram(empty_state);
+        committed = invoke_r4(LIMITER_COMMIT, (uint32_t)slot);
+        if (committed != slot)
+            return fail_value(
+                "native_fuel_cut", "slot", committed, (uint32_t)slot);
+        activation_cap = read_be16(ram_pointer(FUEL_SHADOW));
+        release_cap = read_be16(ram_pointer(FUEL_SHADOW + 2U));
+        activation_curve = read_be16(ram_pointer(FUEL_SHADOW + 4U));
+        release_curve = read_be16(ram_pointer(FUEL_SHADOW + 20U));
+        activation = activation_cap < activation_curve
+            ? activation_cap : activation_curve;
+        release = release_cap < release_curve
+            ? release_cap : release_curve;
+        if (activation == 0U || release == 0U)
+            return fail_value(
+                "native_fuel_cut", "threshold", 0, 1);
+
+        ram_pointer(NATIVE_SELECTOR)[0] = 15U;
+        ram_pointer(NATIVE_STATE)[0] = 0U;
+        ram_pointer(NATIVE_DELAY)[0] = 0U;
+        if (!verify_native_fuel_cut(
+                "activation_below", (uint16_t)(activation - 1U),
+                0, 0))
+            return 0;
+        if (!verify_native_fuel_cut(
+                "activation_equal", activation, 1, active_state))
+            return 0;
+        if (!verify_native_fuel_cut(
+                "release_equal", release, 1, active_state))
+            return 0;
+        if (!verify_native_fuel_cut(
+                "release_below", (uint16_t)(release - 1U), 0, 0))
+            return 0;
+    }
+    return 1;
+}
+#endif
+
 static int all_value(
     const volatile uint8_t *values, size_t size, uint8_t expected)
 {
@@ -599,8 +725,9 @@ static int verify_optional_selector_shadows(const char *name, int active)
     size_t fuel_offset = FUEL_SHADOW - RAM_SENTINEL_BASE;
     size_t throttle_offset = THROTTLE_SHADOW - RAM_SENTINEL_BASE;
     int untouched =
-        all_value(ram_pointer(FUEL_SHADOW), 12, 0xa5)
-        && all_value(ram_pointer(THROTTLE_SHADOW), 28, 0xa5)
+        all_value(ram_pointer(FUEL_SHADOW), FUEL_SHADOW_SIZE, 0xa5)
+        && all_value(
+            ram_pointer(THROTTLE_SHADOW), THROTTLE_SHADOW_SIZE, 0xa5)
         && all_value(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
 
     if (untouched)
@@ -609,11 +736,11 @@ static int verify_optional_selector_shadows(const char *name, int active)
     expected_limiter_ram(expected, active);
     if (!fail_bytes(
             name, "fuel_shadow", ram_pointer(FUEL_SHADOW),
-            expected + fuel_offset, 12))
+            expected + fuel_offset, FUEL_SHADOW_SIZE))
         return 0;
     if (!fail_bytes(
             name, "throttle_shadow", ram_pointer(THROTTLE_SHADOW),
-            expected + throttle_offset, 28))
+            expected + throttle_offset, THROTTLE_SHADOW_SIZE))
         return 0;
 #ifdef TARGET_VQ37
     runtime[0] = 0xa5;
@@ -708,17 +835,25 @@ int main(void)
         + ARRAY_SIZE(pass_throughs) + 14U + ARRAY_SIZE(selector_cases)
         + ARRAY_SIZE(feedback_cases);
 
+#ifdef TARGET_VQ37
+    total_cases += 20U;
+#endif
+
     if (!run_adapter_cases())
         return 1;
     if (!run_limiter_cases())
         return 1;
+#ifdef TARGET_VQ37
+    if (!run_native_fuel_cut_cases())
+        return 1;
+#endif
     if (!run_selector_cases())
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
 #ifdef TARGET_VQ37
-    if (total_cases != 145U)
-        return fail_value("summary", "case_count", total_cases, 145);
+    if (total_cases != 165U)
+        return fail_value("summary", "case_count", total_cases, 165);
 #elif defined(TARGET_DUAL_EXHAUST)
     if (total_cases != 139U)
         return fail_value("summary", "case_count", total_cases, 139);
@@ -733,8 +868,8 @@ int main(void)
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
 #ifdef TARGET_VQ37
-        "adapters=105 limiter=14 feedback=9 feedback_invocations=%lu "
-        "entries=12\n",
+        "adapters=105 limiter=14 native_fuel=20 feedback=9 "
+        "feedback_invocations=%lu entries=13\n",
 #elif defined(TARGET_DUAL_EXHAUST)
         "adapters=99 limiter=14 feedback=9 feedback_invocations=%lu "
         "entries=13\n",

@@ -27,6 +27,7 @@ presentation and generated output.
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
 | `JK08A-*.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
+| `vq37-native-fuel-cut.toml` | Exact VQ37 coordinator, state-machine, pointer, cap, curve, and RAM bindings | yes |
 | `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
 | `JK08A.maps.csv` | Catalog ledger projected from Memgraph | no, regenerate |
 | `<ROM>.xml` | Target-specific RomRaider definition projection | no, regenerate |
@@ -97,11 +98,13 @@ themselves establish map semantics or equal calibration geometry.
 maps as unsupported. The unsupported entries cover removed dispatcher slots
 and target algorithms whose table geometry differs. Thirteen reviewed axis
 pairs complete the emitted geometry. The JK78C registry enables native
-RomRaider checksum handling, target-specific Map Switching storage, and the CAN
-telemetry startup switch from the validated runtime profile. Rolling Launch is
-disabled because the required target fuel-cut actuator is not localized. The
-XML/XDF files expose editor controls; the unified builder remains responsible
-for runtime composition and complete checksum closure.
+RomRaider checksum handling, fourteen-family target-specific Map Switching,
+Rolling Launch, and the CAN telemetry startup switch from the validated runtime
+profile. The target-native fuel-cut projection adds the adjacent activation and
+release caps plus the two independent eight-point curves used by the exact
+190-byte state machine. The XML/XDF files expose editor controls; the unified
+builder remains responsible for runtime composition and complete checksum
+closure.
 
 `JK08A-1ND.definition-addresses.csv` projects the same reviewed VQ37 semantic
 set to the SH7059 1ND layout. It records 31 target maps, thirteen axes, and five
@@ -113,8 +116,9 @@ its identity, stock calibration values, and image hash remain independent.
 Both 1ND definitions expose target-specific Map Switching storage and the CAN
 telemetry startup switch. The project checksum implementation covers their six
 checksum fields, but native RomRaider checksum metadata cannot represent the
-complete layout. Rolling Launch remains disabled because the required target
-fuel-cut actuator is not localized.
+complete layout. Their target-native fuel-cut maps, Rolling Launch controls,
+and exact scheduler-to-coordinator bindings are shared at the same addresses,
+while each definition remains bound to its independent stock image hash.
 
 ## Evidence specifications
 

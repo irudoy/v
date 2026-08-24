@@ -11,11 +11,10 @@ The registered `sh7058_8mfk` near-code series contains JK00C and JK00D. It uses
 exact target address profiles and independently assembled target payloads.
 The registered `sh7059_1nd` exact-code series contains 1ND0A and 1ND3B. It uses
 a shared SH7059 address profile, independently assembled target payloads, Map
-Switching, and custom CAN telemetry. Rolling Launch is not supported on this
-series.
+Switching, Rolling Launch, and custom CAN telemetry.
 The registered `sh7058_jk78c` series contains JK78C. It uses an independent
 SH7058 address profile, independently assembled target payloads, Map Switching,
-and custom CAN telemetry. Rolling Launch is not supported on this series.
+Rolling Launch, and custom CAN telemetry.
 Every member retains its own stock identity, calibration, and checksum layout.
 The command has two selection modes:
 
@@ -73,8 +72,8 @@ The common handler performs these operations in one invocation:
    contains a complete runtime. An unpatched base initializes these slots from
    its Map 1 values.
 7. Apply the current Rolling Launch composition from the applicable payload
-   registry and selected local profile when the target supports it. Otherwise
-   require `observe` mode with no enabled maps and emit no Rolling Launch bytes.
+   registry and selected local profile when the target supports it. Every
+   currently registered family has a target-specific Rolling Launch stage.
 8. Apply the current CAN telemetry composition from the applicable payload
    registry. The built-in profile installs the runtime in fail-closed
    disabled-at-startup mode. The SH7058 exact-code, JK78C, and SH7059 1ND
@@ -117,21 +116,26 @@ boundary.
 The 1ND runtime uses a uniform ROM relocation of `0x60000` and a RAM relocation
 of `-0x5100`, with explicit nonuniform SH7059 stock hooks and application-RAM
 sources. Separate adapters cover both fuel-compensation banks and both warm-idle
-banks. The target limiter publishes only the selected throttle scalar because
-the canonical 2x2 rev-limit fuel-cut actuator has no verified 1ND homolog.
+banks. Its limiter atomically publishes two native fuel-cut caps, independent
+eight-point activation and release curves, and the selected throttle scalar.
+Exact pointer redirects feed those RAM shadows to the stock 190-byte hysteresis
+state machine. Rolling Launch runs the stock final-mask coordinator first and
+adds an exact all-cylinder request only for an active non-observe state.
 Telemetry uses mailbox 26 and a register-preserving completion wrapper that
 tail-chains to the complete stock ISR.
 
 The JK78C runtime uses a uniform ROM relocation of `-0xB5600` from the VQ37
 assembly layout and a RAM relocation of `-0x5100`, with explicit nonuniform
 stock hooks and SH7058 application-RAM sources. The audited erased ROM envelope
-is `0x0001CAAC..0x00020000`; active generated units end at `0x0001FA00`, leaving
-a `0x600`-byte reserve. The audited RAM allocation is
+is `0x0001CAAC..0x00020000`; active generated units end at `0x0001FA80`, leaving
+a `0x580`-byte reserve. The audited RAM allocation is
 `0xFFFF0C00..0xFFFF1000`, of which the runtime claims
 `0xFFFF0C00..0xFFFF0F00`. Separate adapters cover both fuel-compensation banks
-and both warm-idle banks. The limiter publishes only the selected throttle
-scalar. Telemetry uses mailbox 26 and a register-preserving completion wrapper
-that tail-chains to the complete stock ISR.
+and both warm-idle banks. The limiter publishes the same native cap, curve, and
+throttle contract as 1ND through JK78C-specific pointers and state bits.
+Rolling Launch wraps the JK78C final-mask coordinator without replacing stock
+inhibit contributions. Telemetry uses mailbox 26 and a register-preserving
+completion wrapper that tail-chains to the complete stock ISR.
 
 `runtime_targets.py` renders every target source through explicit stock and RAM
 bindings. `runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
@@ -160,13 +164,14 @@ explicitly unsupported instead of being assigned to an unrelated RAM word.
 The surface selector itself remains available at `0xFFFE9488`, where bit 6 is
 consumed by the target ignition and correction paths.
 
-The 1ND address profile binds twelve switched families: four DFCO rows, two
+The 1ND address profile binds fourteen switched families: four DFCO rows, two
 ignition surfaces, shared cold-idle timing, separate warm-idle timing for both
-banks, separate fuel compensation for both banks, and the throttle-limiter
-scalar. Custom CAN telemetry binds 62 available schema fields. The unavailable
-knock timing field is encoded from cleared reserved RAM and remains identified
-as unavailable in metadata. 1ND0A and 1ND3B share executable payload bytes but
-retain separate stock identities, stage hashes, and six-field checksum closure.
+banks, separate fuel compensation for both banks, native fuel-cut caps and
+curves, and the throttle-limiter scalar. Custom CAN telemetry binds 62
+available schema fields. The unavailable knock timing field is encoded from
+cleared reserved RAM and remains identified as unavailable in metadata. 1ND0A
+and 1ND3B share executable payload bytes but retain separate stock identities,
+stage hashes, and six-field checksum closure.
 
 ## SH7058 JK78C correspondence
 
@@ -175,7 +180,7 @@ allocation, stock hooks, VQ37 map topology, CAN bindings, and all 63 ECU-RAM
 telemetry fields. It distinguishes direct mappings from target-specific
 adapters and unsupported source semantics.
 
-The JK78C address profile binds the same twelve semantic families as 1ND while
+The JK78C address profile binds the same fourteen semantic families as 1ND while
 retaining independent SH7058 addresses and stock code. Custom CAN telemetry
 binds 62 available schema fields. The unavailable signed Q8 knock timing field
 is encoded from cleared reserved RAM and remains identified as unavailable in
@@ -192,9 +197,9 @@ range. These static results establish software ownership only; JK78C remains
 
 Without `--profile`, a Rolling Launch-capable target uses the conservative
 built-in `rpm-hold-map1-test` profile: Map 1 enabled, RPM Hold mode, and
-ignition retard disabled. A VQ37 target uses `observe` mode with no enabled maps
-and emits no Rolling Launch stage. A separate local TOML file selects all
-Rolling Launch calibration, including the bounded-retard mode:
+ignition retard disabled. A VQ37 target installs its complete Rolling Launch
+stage with the built-in `observe` profile and no enabled maps. A separate local
+TOML file can enable RPM Hold or bounded-retard mode on any registered family:
 
 ```toml
 schema_version = 2
@@ -238,8 +243,8 @@ fields are rejected, and the resulting 32-byte configuration must pass the
 independent fail-closed model. `rom` may name the complete
 applicable `sh7058_7mfkavn86`, `sh7058_8mfk`, `sh7058_jk78c`, or `sh7059_1nd`
 series, or bind the profile to one exact member. A profile for
-`sh7058_jk78c`, JK78C, `sh7059_1nd`, 1ND0A, or 1ND3B must use `observe` with an
-empty `enabled_maps` array because the series has no Rolling Launch capability.
+`sh7058_jk78c`, JK78C, `sh7059_1nd`, 1ND0A, or 1ND3B accepts the same three
+modes and one-based map mask as the SH7058 VQ25HR/VQ35HR families.
 `min_speed = 0` disables the vehicle-speed activation gate, and
 `min_pedal = 0` disables the pedal-position activation gate.
 `hysteresis_ratio_tenths = 20` means 2.0 percent of captured RPM. The runtime

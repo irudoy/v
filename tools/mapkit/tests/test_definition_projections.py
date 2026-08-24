@@ -6,6 +6,7 @@ import pytest
 
 from tools.mapkit import definition_projections
 from tools.mapkit import rom as romkit
+from tools.mapkit import vq37_native_fuel_cut
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -53,21 +54,24 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["checksum"] is True
         assert values["romraider_checksum"] is True
         assert values["map_families"] == 13
+        assert values["native_maps"] == 0
         assert values["rolling_configuration"] == 0xE0660
     assert stats["JK78C"]["mapped"] == 44
     assert stats["JK78C"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["JK78C"]["checksum"] is True
     assert stats["JK78C"]["romraider_checksum"] is True
-    assert stats["JK78C"]["map_families"] == 12
-    assert stats["JK78C"]["rolling_configuration"] is None
+    assert stats["JK78C"]["map_families"] == 14
+    assert stats["JK78C"]["native_maps"] == 2
+    assert stats["JK78C"]["rolling_configuration"] == 0x1E960
     for rom in ("1ND0A", "1ND3B"):
         values = stats[rom]
         assert values["mapped"] == 44
         assert values["unsupported"] == len(VQ37_UNSUPPORTED)
         assert values["checksum"] is True
         assert values["romraider_checksum"] is False
-        assert values["map_families"] == 12
-        assert values["rolling_configuration"] is None
+        assert values["map_families"] == 14
+        assert values["native_maps"] == 2
+        assert values["rolling_configuration"] == 0x133F60
 
 
 def test_exhaust_target_has_two_explicit_bank_variants():
@@ -108,20 +112,24 @@ def test_runtime_definition_layouts_use_target_allocation():
             "sh7058-jk78" if rom == "JK78C" else "sh7059-1nd"
         )
         assert maps.slot_count == 5
-        assert len(maps.families) == 12
+        assert len(maps.families) == 14
         assert {
             "fuel_compensation_main_bank_1",
             "fuel_compensation_main_bank_2",
             "idle_ignition_timing_bank_1",
             "idle_ignition_timing_bank_2",
+            "rev_limit_fuel_cut_caps",
+            "rev_limit_fuel_cut_curves",
             "rev_limit_throttle_cut",
         } <= set(maps.family_by_key)
         assert "rev_limit_fuel_cut" not in maps.family_by_key
-        with pytest.raises(
-            definition_projections.DefinitionProjectionError,
-            match="Rolling Launch runtime is unavailable",
-        ):
-            definition_projections.rolling_launch_definition_layout(projection)
+        launch = definition_projections.rolling_launch_definition_layout(
+            projection
+        )
+        assert launch.variant == "vq37-fuel-coordinator"
+        assert launch.configuration.start == (
+            0x1E960 if rom == "JK78C" else 0x133F60
+        )
 
 
 def _minimal_overrides():
@@ -226,7 +234,20 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
 
     assert projection.checksum is checksum_verified
     assert projection.romraider_checksum is romraider_checksum
-    assert set(result.maps) == {target_address}
+    native = vq37_native_fuel_cut.load_registry()[rom]
+    caps_address = f"{native.caps_address:08x}"
+    curves_address = f"{native.curves_address:08x}"
+    assert set(result.maps) == {
+        target_address,
+        caps_address,
+        curves_address,
+    }
+    assert result.overrides["table"][caps_address]["name"] == (
+        "Engine Speed Limit - Fuel Cut Caps"
+    )
+    assert result.overrides["table"][curves_address]["name"] == (
+        "Engine Speed Limit - Fuel Cut Curves"
+    )
     assert ("checksum" in result.overrides) is romraider_checksum
     assert len(result.overrides["switch"]) == switch_count
     if switch_count:
@@ -235,7 +256,7 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
         )
         assert result.overrides["switch"][0]["storageaddress"] == switch_address
     assert result.overrides["map_switching"] == {"enabled": map_switching}
-    assert result.overrides["rolling_launch"] == {"enabled": False}
+    assert result.overrides["rolling_launch"] == {"enabled": True}
 
 
 def test_visible_map_without_binding_stops_projection():

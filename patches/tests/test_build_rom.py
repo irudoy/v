@@ -215,11 +215,11 @@ class BuildRomTest(unittest.TestCase):
                 )
                 self.assertEqual(
                     result.map_instruction_count,
-                    419 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 453,
+                    437 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 453,
                 )
                 self.assertEqual(
                     result.rolling_instruction_count,
-                    0 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 878,
+                    872 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 878,
                 )
                 self.assertEqual(result.telemetry_instruction_count, 617)
                 self.assertEqual(
@@ -283,7 +283,7 @@ class BuildRomTest(unittest.TestCase):
                 output_hashes.add(result.output_sha256)
         self.assertEqual(len(output_hashes), len(runtime_targets.RELOCATED_ROMS))
 
-    def test_vq37_rejects_a_profile_that_enables_rolling_launch(self):
+    def test_vq37_accepts_a_profile_that_enables_rolling_launch(self):
         pairs = (
             (runtime_targets.SH7059_1ND_FAMILY, "1ND0A"),
             (runtime_targets.SH7058_JK78C_FAMILY, "JK78C"),
@@ -297,11 +297,13 @@ class BuildRomTest(unittest.TestCase):
                     ),
                 )
                 source = self.family_images[rom].data
+                result = build_rom.build_image(source, profile=profile)
 
-                with self.assertRaisesRegex(
-                    build_rom.BuildError, "Rolling Launch is unsupported"
-                ):
-                    build_rom.build_image(source, profile=profile)
+                self.assertEqual(
+                    result.configuration,
+                    profile.calibration.to_bytes(),
+                )
+                self.assertEqual(result.rolling_instruction_count, 872)
 
     def test_relocated_migration_preserves_alternate_map_bytes(self):
         rom = "JK00C"

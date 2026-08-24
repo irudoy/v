@@ -89,6 +89,8 @@ VQ37_MAP_FAMILY_KEYS = frozenset(
         "idle_ignition_timing_bank_2",
         "fuel_compensation_main_bank_1",
         "fuel_compensation_main_bank_2",
+        "rev_limit_fuel_cut_caps",
+        "rev_limit_fuel_cut_curves",
         "rev_limit_throttle_cut",
     }
 )
@@ -120,7 +122,7 @@ DUAL_EXHAUST_MAP_HOOK_KEYS = frozenset(
     }
 )
 
-VQ37_MAP_HOOK_KEYS = frozenset(
+VQ37_COMMON_MAP_HOOK_KEYS = frozenset(
     {
         "selector_host_call",
         "startup_initializer",
@@ -139,10 +141,22 @@ VQ37_MAP_HOOK_KEYS = frozenset(
     }
 )
 
+VQ37_1ND_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
+    "rev_fuel_cut_caps_base",
+    "rev_fuel_cut_activation_curve_base",
+    "rev_fuel_cut_release_curve_base",
+}
+
+VQ37_JK78_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
+    "rev_fuel_cut_caps_base",
+    "rev_fuel_cut_release_cap_base",
+    "rev_fuel_cut_curves_base",
+}
+
 MAP_HOOK_KEYS_BY_VARIANT = {
     "dual-exhaust": DUAL_EXHAUST_MAP_HOOK_KEYS,
-    "sh7059-1nd": VQ37_MAP_HOOK_KEYS,
-    "sh7058-jk78": VQ37_MAP_HOOK_KEYS,
+    "sh7059-1nd": VQ37_1ND_MAP_HOOK_KEYS,
+    "sh7058-jk78": VQ37_JK78_MAP_HOOK_KEYS,
 }
 
 DUAL_EXHAUST_MAP_SYMBOL_KEYS = frozenset(
@@ -196,6 +210,16 @@ ROLLING_HOOK_KEYS = frozenset(
     }
 )
 
+VQ37_ROLLING_HOOK_KEYS = ROLLING_HOOK_KEYS | {
+    "fuel_cut_coordinator",
+}
+
+ROLLING_HOOK_KEYS_BY_VARIANT = {
+    "dual-exhaust": ROLLING_HOOK_KEYS,
+    "sh7059-1nd": VQ37_ROLLING_HOOK_KEYS,
+    "sh7058-jk78": VQ37_ROLLING_HOOK_KEYS,
+}
+
 ROLLING_DIAGNOSTIC_KEYS = frozenset(
     {
         "phase_abort_reason",
@@ -227,6 +251,16 @@ ROLLING_SYMBOL_KEYS = frozenset(
         "stock_ignition_consumer",
     }
 )
+
+VQ37_ROLLING_SYMBOL_KEYS = ROLLING_SYMBOL_KEYS | {
+    "fuel_cut_coordinator",
+}
+
+ROLLING_SYMBOL_KEYS_BY_VARIANT = {
+    "dual-exhaust": ROLLING_SYMBOL_KEYS,
+    "sh7059-1nd": VQ37_ROLLING_SYMBOL_KEYS,
+    "sh7058-jk78": VQ37_ROLLING_SYMBOL_KEYS,
+}
 
 CAN_HOOK_KEYS = frozenset(
     {
@@ -710,7 +744,7 @@ def _parse_profile(rom, row, context):
         rolling_hooks=(
             _hooks(
                 row["rolling_hooks"],
-                ROLLING_HOOK_KEYS,
+                ROLLING_HOOK_KEYS_BY_VARIANT[map_variant],
                 f"{context}.rolling_hooks",
                 chained=True,
             )
@@ -728,7 +762,7 @@ def _parse_profile(rom, row, context):
         rolling_symbols=(
             _address_table(
                 row["rolling_symbols"],
-                ROLLING_SYMBOL_KEYS,
+                ROLLING_SYMBOL_KEYS_BY_VARIANT[map_variant],
                 f"{context}.rolling_symbols",
             )
             if capabilities.rolling_launch
@@ -868,6 +902,18 @@ def _validate_map_bindings(profile, map_layout):
         if span.end > profile.rom_size:
             raise AddressProfileError(f"{profile.rom}.{key}: map exceeds ROM")
         spans.append(span)
+    if profile.map_variant in VQ37_MAP_VARIANTS:
+        for key, byte_length in (
+            ("rev_limit_fuel_cut_caps", 4),
+            ("rev_limit_fuel_cut_curves", 32),
+        ):
+            address = family[key]
+            span = AddressRange(address, address + byte_length)
+            if span.end > profile.rom_size:
+                raise AddressProfileError(
+                    f"{profile.rom}.{key}: map exceeds ROM"
+                )
+            spans.append(span)
     for index, left in enumerate(spans):
         for right in spans[index + 1 :]:
             if left.overlaps(right):
@@ -948,10 +994,26 @@ def _validate_map_bindings(profile, map_layout):
             "idle_ignition_lookup_bank_2": _rebased(
                 code["exhaust_cvtc_target_adapter"].entry, rom_delta
             ),
+            "rev_fuel_cut_caps_base": _rebased(
+                map_layout.ram.fuel_cut_shadow.start, ram_delta
+            ),
             "rev_throttle_scalar_base": _rebased(
-                map_layout.ram.throttle_shadow.start, ram_delta
+                map_layout.ram.throttle_shadow.start + 0x18, ram_delta
             ),
         }
+        fuel_curve_shadow = _rebased(
+            map_layout.ram.fuel_cut_shadow.start + 4, ram_delta
+        )
+        if profile.map_variant == "sh7059-1nd":
+            expected.update({
+                "rev_fuel_cut_activation_curve_base": fuel_curve_shadow,
+                "rev_fuel_cut_release_curve_base": fuel_curve_shadow + 0x10,
+            })
+        else:
+            expected["rev_fuel_cut_curves_base"] = fuel_curve_shadow
+            expected["rev_fuel_cut_release_cap_base"] = _rebased(
+                map_layout.ram.fuel_cut_shadow.start + 2, ram_delta
+            )
     for key, replacement in expected.items():
         binding = profile.map_hook_by_key[key]
         if binding.replacement != replacement or binding.base != binding.stock:
@@ -982,6 +1044,10 @@ def _validate_rolling_bindings(profile, launch_layout):
             launch_code["feedback_arbiter"].entry, rom_delta
         ),
     }
+    if profile.map_variant in VQ37_MAP_VARIANTS:
+        expected["fuel_cut_coordinator"] = _rebased(
+            0x000D5000, rom_delta
+        )
     for key, replacement in expected.items():
         if rolling[key].replacement != replacement:
             raise AddressProfileError(
@@ -996,6 +1062,27 @@ def _validate_rolling_bindings(profile, launch_layout):
         if rolling[rolling_key].base != profile.map_hook_by_key[map_key].replacement:
             raise AddressProfileError(
                 f"{profile.rom}: {rolling_key} hook chain is open"
+            )
+
+    symbols = profile.rolling_symbol_by_key
+    periodic = rolling["periodic_scheduler_index_0"]
+    if (
+        periodic.address != symbols["scheduler_table"]
+        or periodic.stock != symbols["scheduler_task"]
+        or periodic.base != symbols["scheduler_task"]
+    ):
+        raise AddressProfileError(
+            f"{profile.rom}: periodic scheduler binding differs"
+        )
+    if profile.map_variant in VQ37_MAP_VARIANTS:
+        coordinator = rolling["fuel_cut_coordinator"]
+        if (
+            coordinator.address != symbols["scheduler_table"] + 31 * 4
+            or coordinator.stock != symbols["fuel_cut_coordinator"]
+            or coordinator.base != symbols["fuel_cut_coordinator"]
+        ):
+            raise AddressProfileError(
+                f"{profile.rom}: fuel coordinator binding differs"
             )
 
     state_start = launch_layout.ram.state.start + ram_delta
@@ -1152,13 +1239,13 @@ def _validate_structure(profile):
             "sh7059_1nd",
             0x180000,
             "mailbox26-tail-chain",
-            Capabilities(True, False, True),
+            Capabilities(True, True, True),
         ),
         "sh7058-jk78": (
             "sh7058_jk78c",
             0x100000,
             "mailbox26-tail-chain",
-            Capabilities(True, False, True),
+            Capabilities(True, True, True),
         ),
     }
     family, rom_size, can_variant, capabilities = contracts[profile.map_variant]

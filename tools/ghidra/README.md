@@ -89,6 +89,19 @@ correspondence file, and complete resolver censuses, it also emits candidate
 map and axis address pairs. Ambiguous source or target operands are retained
 with a non-unique status rather than guessed.
 
+Run the comparison through the repository entry point:
+
+```bash
+make rom-correspondence \
+  CORRESPONDENCE_SOURCE_EXPORT=tmp/source-export \
+  CORRESPONDENCE_TARGET_EXPORT=tmp/target-export \
+  CORRESPONDENCE_OUTPUT=tmp/function-correspondence.csv
+```
+
+`CORRESPONDENCE_ARGS` passes optional script flags for the selected analysis
+mode. The Make target remains the supported orchestration boundary; the Python
+module owns the comparison logic.
+
 Cross-generation analysis can also compare complete operand byte extents
 inside paired explicit interpolation contracts. A `unique` exact-storage row
 means that one equal-byte target was found among those compared contracts. It

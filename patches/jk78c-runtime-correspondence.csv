@@ -1,6 +1,6 @@
 domain,key,source,target,stock,variant,status,evidence
 allocation,injected_rom_start,000d2108,0001cb08,,,mapped,Uniform ROM relocation is -0xb5600
-allocation,injected_rom_end,000d6000,00020000,,,target-specific,Active runtime ends at 0x1fa00 and the compact reserve ends at the one-MiB flash boundary
+allocation,injected_rom_end,000d6000,00020000,,,target-specific,Active runtime including the fuel-coordinator wrapper ends at 0x1fa80 and the compact reserve ends at the one-MiB flash boundary
 allocation,injected_ram_start,ffff5d00,ffff0c00,,,mapped,Uniform RAM relocation is -0x5100
 allocation,injected_ram_end,ffff6000,ffff0f00,,,mapped,Runtime uses 0x300 bytes inside the audited 0x400-byte window
 allocation,free_rom_start,,0001caac,,,target-specific,The erased envelope begins before the first projected write
@@ -21,6 +21,9 @@ map,fuel_compensation_main,0000a29a,00009eba,,bank_1,target-specific,First targe
 map,fuel_compensation_main,0000a29a,00009fba,,bank_2,target-specific,Second target bank preserves exact geometry and storage
 map,rev_limit_throttle_cut,0000942c,0000911e,,,mapped,Homologous request limiter preserves the 0x2580 scalar role
 map,rev_limit_fuel_cut,0000934e,,,,unsupported,Target uses interpolated curves and scalar caps instead of the source 2x2 table
+map_native,rev_limit_fuel_cut_caps,,00009040,,activation_release,target-specific,Adjacent uint16 caps limit the activation and release interpolation results
+map_native,rev_limit_fuel_cut_curves,,00016bf4,,activation_release,target-specific,Adjacent eight-point uint16 curves share the axis at 00016a64 and retain independent activation and release rows
+map_native,rev_limit_fuel_cut_delay_calibration,,00008a1f,,zero_delay,target-specific,Exact ROM8 value zero governs the native activation delay state
 map,exhaust_cvtc_target,0000b33a,,,,unsupported,Target uses branch-selected 8-point curves instead of the source 16x16 surface
 map_hook,selector_host_call,000ce8dc,000fb260,000fd40c,,mapped,Literal call target identifies the exact selector host
 map_hook,startup_initializer,00027d28,0002a6fc,0002f596,,mapped,Literal jump target identifies the startup initializer
@@ -34,6 +37,9 @@ map_hook,fuel_compensation_lookup,000261f0,0002feb4,00027fd8,bank_1,target-speci
 map_hook,fuel_compensation_lookup,000261f0,00040f6c,00027fd8,bank_2,target-specific,Second target bank literal calls the common lookup
 map_hook,idle_ignition_lookup,00026370,000645e8,00028198,bank_1,target-specific,First target bank literal calls the exact idle lookup
 map_hook,idle_ignition_lookup,00026370,00064834,00028198,bank_2,target-specific,Second target bank literal calls the exact idle lookup
+map_hook,rev_fuel_cut_caps_base,,0006b068,00009040,,target-specific,Native state-machine literal selects the adjacent activation and release scalar caps
+map_hook,rev_fuel_cut_release_cap_base,,0006b06c,00009042,,target-specific,Native state-machine release literal binds the second scalar cap independently
+map_hook,rev_fuel_cut_curves_base,,0006b070,00016bf4,,target-specific,Native state-machine literal selects both adjacent eight-point curves
 map_hook,rev_throttle_scalar_base,00077bac,00097170,0000911e,,target-specific,Target consumer owns one scalar instead of the source container
 map_hook,cruise_feedback_serializer,000c3fa4,000eba3c,000ed03c,,mapped,Dispatcher literal resolves the exact 0x551 serializer
 map_symbol,selector_function,000d09d8,000fd40c,,,mapped,Unique mapped-neighbor fingerprint preserves the complete selector body
@@ -47,6 +53,30 @@ map_symbol,fuel_compensation_lookup,000261f0,00027fd8,,,mapped,Reviewed interpol
 map_symbol,idle_ignition_lookup,00026370,00028198,,,mapped,Exact-byte target function serves both idle-bank hooks
 map_symbol,feedback_serializer,000c5372,000ed03c,,,mapped,Near-exact instruction sequence and dispatcher position bind the serializer
 map_symbol,feedback_status_byte,ffff3ada,ffff3d62,,,mapped,Serializer payload offset 0x2a places status at byte 5
+map_symbol,rev_fuel_cut_state_machine,,0006aeb8,,,target-specific,Exact 190-byte function is the third Boolean predicate aggregated by the final fuel-mask coordinator
+map_symbol,rev_fuel_cut_selector,,ffff10e5,,,target-specific,Native interpolation selector indexes the shared eight-point axis
+map_symbol,rev_fuel_cut_state,,ffff23f5,,,target-specific,Bits 0x08 and 0x10 retain the armed and active hysteresis state
+map_symbol,rev_fuel_cut_delay,,ffff2449,,,target-specific,RAM delay state is governed by the exact zero-valued ROM8 calibration at 00008a1f
+rolling_hook,periodic_scheduler_index_0,00021970,00021a4c,000b2294,,mapped,Index 0 of the homologous 33-entry scheduler table binds the periodic wrapper
+rolling_hook,selector_arbitration,000ce8dc,000fb260,000fd40c,,mapped,Rolling arbitration chains from the selector literal
+rolling_hook,startup_state_clear,00027d28,0002a6fc,0002f596,,mapped,Runtime clear chains from the startup literal
+rolling_hook,primary_ignition_command,0004e198,000699d4,0002d6f6,,mapped,Producer literal calls the final ignition command consumer
+rolling_hook,feedback_arbitration,000c3fa4,000eba3c,000ed03c,,mapped,Rolling feedback chains from the Map Switching serializer wrapper
+rolling_hook,fuel_cut_coordinator,,00021ac8,0006a9b0,,target-specific,Index 31 points to the sole writer of the final six-cylinder fuel inhibit mask
+rolling_symbol,scheduler_table,00021970,00021a4c,,,mapped,Homologous 33-entry scheduler table preserves task order
+rolling_symbol,scheduler_task,000a9554,000b2294,,,mapped,Index 0 stock task is displaced by the periodic wrapper
+rolling_symbol,rpm,ffff11bc,ffff11ac,,,mapped,Direct target consumers use the native RPM word
+rolling_symbol,vehicle_speed,ffff110e,ffff10fc,,,mapped,Homologous DFCO consumers compare this byte against the same raw threshold
+rolling_symbol,pedal,ffff2672,ffff25d0,,,mapped,Pedal activation source is recovered from target consumers
+rolling_symbol,coolant_index,ffff1077,ffff106d,,,mapped,Coolant activation index is recovered from target consumers
+rolling_symbol,button_state,ffff2a85,ffff29a1,,,mapped,Selector and rolling arbitration share the button byte
+rolling_symbol,ascd_state,ffff41ae,ffff450c,,,mapped,Selector and rolling arbitration share the ASCD byte
+rolling_symbol,fuel_inhibit,ffff2497,ffff223c,,,target-specific,Sole coordinator 0006a9b0 publishes the final six-cylinder inhibit mask here
+rolling_symbol,apc_mode,ffff24c9,ffff241e,,,mapped,APC control path binds the mode byte
+rolling_symbol,apc_output,ffff2022,ffff11cf,,,mapped,APC output is also the telemetry command source
+rolling_symbol,unsigned_divide,00021ce0,00021e0c,,,mapped,Exact unsigned division helper is recovered from target callers
+rolling_symbol,stock_ignition_consumer,0002a892,0002d6f6,,,mapped,Final ignition command builder calls this consumer
+rolling_symbol,fuel_cut_coordinator,,0006a9b0,,,target-specific,Complete coordinator aggregates stock conditions before its sole final-mask store
 can_hook,coherent_snapshot_call,00028090,0002aa7c,00020f1a,,mapped,Aligned caller instruction binds the coherent snapshot boundary
 can_hook,knock_interval_latch,00021a70,00021b70,00062780,,target-specific,Unique scheduler word binds the target knock-event function
 can_hook,startup_state_clear,00027d28,0002a6fc,0002f596,,mapped,Telemetry clear chains from the map startup literal
@@ -132,6 +162,6 @@ telemetry,af_adjustment_b1_raw,ffff45a0,ffff490a,,,mapped,Aligned diagnostic poi
 telemetry,secondary_tps_b1_raw,ffff275e,ffff26b4,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,secondary_tps_b2_raw,ffff2864,ffff27b4,,,mapped,Aligned diagnostic pointer table preserves the bank-relative field
 telemetry,af_adjustment_b2_raw,ffff45a2,ffff490c,,,mapped,Aligned diagnostic pointer table and direct references agree
-capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel banks two warm-idle banks four ignition hooks and scalar-only throttle commit
-capability,rolling_launch,,,,,unsupported,Existing fuel overlay requires a localized rev-limit fuel-cut shadow that JK78C does not provide
+capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel banks two warm-idle banks four ignition hooks native fuel-cut caps and curves and a throttle-scalar commit
+capability,rolling_launch,,,,,target-specific,Dedicated state requests all-cylinder cut after the stock index-31 coordinator without modifying VQ37 map storage
 capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type 03 feedback record and one unavailable Q8 field require explicit target bindings

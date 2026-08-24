@@ -22,6 +22,7 @@ class RomImagesLayoutTest(unittest.TestCase):
             "homology.csv",
             "homology.toml",
             "roms.csv",
+            "support-matrix.md",
         }
         for path in ROMDIR.iterdir():
             with self.subTest(path=path.name):

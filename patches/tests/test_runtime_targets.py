@@ -6,6 +6,7 @@ from patches import can_telemetry_assembly
 from patches import map_switching_assembly
 from patches import rolling_launch_assembly
 from patches import runtime_targets
+from tools.mapkit import vq37_native_fuel_cut
 
 
 def test_runtime_registry_covers_all_supported_families():
@@ -93,9 +94,10 @@ def test_relocated_8mfk_sources_cover_alignment_and_tail_chain_variants(rom):
 
 
 @pytest.mark.parametrize("rom", runtime_targets.VQ37_RUNTIME_ROMS)
-def test_vq37_target_has_map_and_can_without_rolling_launch(rom):
+def test_vq37_target_has_complete_target_specific_runtime(rom):
     target = runtime_targets.load_runtime_target(rom)
     profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
+    native = vq37_native_fuel_cut.load_registry()[rom]
 
     expected = (
         (runtime_targets.SH7059_1ND_FAMILY, "sh7059-1nd")
@@ -103,10 +105,21 @@ def test_vq37_target_has_map_and_can_without_rolling_launch(rom):
         else (runtime_targets.SH7058_JK78C_FAMILY, "sh7058-jk78")
     )
     assert (target.family, target.map_layout.variant) == expected
-    assert target.rolling_layout is None
-    assert target.rolling_payloads == {}
+    assert target.rolling_layout.variant == "vq37-fuel-coordinator"
+    assert target.rolling_layout.ram.state.size == 24
+    assert set(target.rolling_layout.hook_by_key) == {
+        "periodic_scheduler_index_0",
+        "selector_arbitration",
+        "startup_state_clear",
+        "primary_ignition_command",
+        "feedback_arbitration",
+        "fuel_cut_coordinator",
+    }
+    assert set(target.rolling_payloads) == {
+        unit.key for unit in target.rolling_layout.assembly_units
+    }
     assert target.telemetry_layout.variant == "mailbox26-tail-chain"
-    assert len(target.map_layout.families) == 12
+    assert len(target.map_layout.families) == 14
     assert set(target.map_payloads) == {
         unit.key for unit in target.map_layout.assembly_units
     }
@@ -124,23 +137,59 @@ def test_vq37_target_has_map_and_can_without_rolling_launch(rom):
     assert target.map_layout.family_by_key[
         "rev_limit_throttle_cut"
     ].runtime_shadow_address is None
+    assert target.map_layout.family_by_key[
+        "rev_limit_fuel_cut_caps"
+    ].shadow_start == target.map_layout.ram.fuel_cut_shadow.start
+    assert target.map_layout.family_by_key[
+        "rev_limit_fuel_cut_caps"
+    ].canonical_address == native.caps_address
+    assert target.map_layout.family_by_key[
+        "rev_limit_fuel_cut_curves"
+    ].shadow_start == (
+        target.map_layout.ram.fuel_cut_shadow.start + 4
+    )
+    assert target.map_layout.family_by_key[
+        "rev_limit_fuel_cut_curves"
+    ].canonical_address == native.curves_address
+    coordinator = target.rolling_layout.hook_by_key[
+        "fuel_cut_coordinator"
+    ]
+    assert coordinator.address == native.coordinator_pointer_site
+    assert coordinator.stock == native.coordinator_address
+    assert target.map_layout.ram.fuel_cut_shadow.size == 36
+    assert target.rolling_layout.ram.fuel_shadow.size == 36
+    assert target.map_layout.ram.throttle_shadow.start == 0xFFFF0C38
 
 
 @pytest.mark.parametrize("rom", runtime_targets.VQ37_RUNTIME_ROMS)
 def test_vq37_sources_encode_target_variants(rom):
     target = runtime_targets.load_runtime_target(rom)
+    native = vq37_native_fuel_cut.load_registry()[rom]
     limiter = target.map_layout.source_text_by_unit["limiter_commit"]
     adapters = target.map_layout.source_text_by_unit["lookup_adapters"]
     completion = target.telemetry_layout.source_text_by_unit["completion"]
     tables = target.telemetry_layout.source_text_by_unit["tables"]
+    rolling_engine = target.rolling_layout.source_text_by_unit["engine"]
+    fuel_wrapper = target.rolling_layout.source_text_by_unit[
+        "fuel_cut_wrapper"
+    ]
 
-    assert "fuel_map_copy_loop" not in limiter
+    assert "fuel_cap_copy_loop" in limiter
+    assert "fuel_curve_copy_loop" in limiter
+    assert limiter.count("mov.w @r2+,r6") == 2
     assert limiter.count("mov.w @r2,r0") == 1
-    assert ".long 0xFFFF0C20" in limiter
+    assert ".long 0xFFFF0C10" in limiter
+    assert ".long 0xFFFF0C14" in limiter
+    assert ".long 0xFFFF0C38" in limiter
     assert "fuel_compensation_bank_2_base" in adapters
     assert "idle_ignition_bank_2_adapter" in adapters
     assert "jmp @r0\nmov.l @r15+,r0" in completion
     assert "0xFFFF0DE0, 0xFFFF0DE1" in tables
+    assert "rl_apply_fuel_overlay" not in rolling_engine
+    assert "mov.w r0,@(0x14,r5)" in rolling_engine
+    assert "or 0x3F,r0" in fuel_wrapper
+    assert f".long 0x{native.coordinator_address:08X}" in fuel_wrapper
+    assert ".long 0x000A0000" not in fuel_wrapper
 
     map_parsed = map_switching_assembly.validate_assembly_sources(
         target.map_layout
@@ -148,12 +197,18 @@ def test_vq37_sources_encode_target_variants(rom):
     telemetry_parsed = can_telemetry_assembly.validate_assembly_sources(
         target.telemetry_layout
     )
+    rolling_parsed = rolling_launch_assembly.validate_assembly_sources(
+        target.rolling_layout
+    )
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
-    ).instructions == 419
+    ).instructions == 437
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
     ).instructions == 617
+    assert rolling_launch_assembly.validate_instruction_semantics(
+        target.rolling_layout, rolling_parsed, target.rolling_payloads
+    ).instructions == 872
 
 
 def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
@@ -162,18 +217,37 @@ def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
     three = locks["1ND3B"]
 
     assert zero.map_payloads == three.map_payloads
-    assert zero.rolling_payloads == three.rolling_payloads == {}
+    assert zero.rolling_payloads == three.rolling_payloads
+    assert zero.rolling_payloads
     assert zero.telemetry_payloads == three.telemetry_payloads
     assert zero.map_stage_sha256 != three.map_stage_sha256
+    assert zero.rolling_stage_sha256 != three.rolling_stage_sha256
     assert zero.telemetry_stage_sha256 != three.telemetry_stage_sha256
 
 
-def test_jk78c_uses_compact_flash_reserve_without_truncating_active_code():
-    target = runtime_targets.load_runtime_target("JK78C")
+@pytest.mark.parametrize(
+    ("rom", "wrapper_start", "reserve_start", "owned_end"),
+    (
+        ("JK78C", 0x0001FA00, 0x0001FA80, 0x00020000),
+        ("1ND0A", 0x00135000, 0x00135080, 0x00136000),
+        ("1ND3B", 0x00135000, 0x00135080, 0x00136000),
+    ),
+)
+def test_vq37_reserve_starts_after_fuel_coordinator_wrapper(
+    rom, wrapper_start, reserve_start, owned_end
+):
+    target = runtime_targets.load_runtime_target(rom)
 
-    assert target.telemetry_layout.owned_rom.end == 0x00020000
-    assert target.telemetry_layout.reserved_rom.start == 0x0001FA00
-    assert target.telemetry_layout.reserved_rom.size == 0x600
+    assert target.telemetry_layout.owned_rom.end == owned_end
+    assert target.rolling_layout.assembly_unit_by_key[
+        "fuel_cut_wrapper"
+    ].span == runtime_targets.map_switching_layout.AddressRange(
+        wrapper_start,
+        wrapper_start + 0x80,
+        "assembly.fuel_cut_wrapper",
+    )
+    assert target.telemetry_layout.reserved_rom.start == reserve_start
+    assert target.telemetry_layout.reserved_rom.end == owned_end
     assert all(
         unit.span.end <= target.telemetry_layout.reserved_rom.start
         for unit in target.telemetry_layout.assembly_units

@@ -790,11 +790,22 @@ def _validate_limiter_commit(parsed, variant="single-exhaust"):
         if (
             texts.count("mov.w @r2,r0") != 1
             or texts.count("mov.w r0,@r5") != 1
-            or any("fuel_" in label for label in parsed.labels)
+            or texts.count("mov #0x2,r1") != 1
+            or texts.count("mov #0x10,r1") != 1
+            or texts.count("mov.w @r2+,r6") != 2
+            or texts.count("mov.w r6,@r5") != 2
+            or texts.count("dt r1") != 2
+            or "fuel_cap_copy_loop" not in parsed.labels
+            or "fuel_curve_copy_loop" not in parsed.labels
+            or "fuel_cap_pointer_table" not in parsed.labels
+            or "fuel_curve_pointer_table" not in parsed.labels
+            or "fuel_cap_shadow" not in parsed.labels
+            or "fuel_curve_shadow" not in parsed.labels
         ):
             raise ValueError(
-                f"{parsed.path}: VQ37 limiter must commit one throttle "
-                "scalar and no unsupported fuel-cut shadow"
+                f"{parsed.path}: VQ37 limiter must atomically commit the "
+                "native fuel caps, both eight-point curves, and one "
+                "throttle scalar"
             )
     elif (
         "mov.w @r2+,r0" not in texts

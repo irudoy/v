@@ -27,6 +27,7 @@ from patches import map_switching_layout
 from patches import rom_checksums
 from patches import runtime_targets
 from tools.mapkit import rom as romkit
+from tools.mapkit import vq37_native_fuel_cut
 
 
 DEFAULT_REGISTRY = ROOT / "defs" / "definition-projections.toml"
@@ -674,6 +675,18 @@ def apply_projection(
     }
     projected_overrides["rom"]["comment"] = {"text": projection.comment}
 
+    try:
+        projected_maps, projected_overrides = (
+            vq37_native_fuel_cut.apply_target(
+                projection.target,
+                projected_maps,
+                projected_overrides,
+                image,
+            )
+        )
+    except vq37_native_fuel_cut.NativeFuelCutError as error:
+        raise DefinitionProjectionError(str(error)) from error
+
     return AppliedAddressProjection(
         maps=projected_maps,
         axes=projected_axes,
@@ -747,6 +760,17 @@ def validate_registry(path=DEFAULT_REGISTRY):
         )
         if projection.checksum:
             rom_checksums.layout_for_rom(target)
+        try:
+            native_maps, _native_overrides = (
+                vq37_native_fuel_cut.apply_target(
+                    target,
+                    {},
+                    {"table": {}},
+                    target_image,
+                )
+            )
+        except vq37_native_fuel_cut.NativeFuelCutError as error:
+            raise DefinitionProjectionError(str(error)) from error
         stats[target] = {
             "bindings": len(projection.bindings),
             "mapped": sum(binding.mapped for binding in projection.bindings),
@@ -754,6 +778,7 @@ def validate_registry(path=DEFAULT_REGISTRY):
             "checksum": projection.checksum,
             "romraider_checksum": projection.romraider_checksum,
             "map_families": len(map_layout.families) if map_layout else 0,
+            "native_maps": len(native_maps),
             "rolling_configuration": (
                 launch_layout.configuration.start if launch_layout else None
             ),
@@ -785,6 +810,7 @@ def main(argv=None):
             "romraider_checksum="
             f"{'enabled' if values['romraider_checksum'] else 'disabled'}, "
             f"map_families={values['map_families']}, "
+            f"native_maps={values['native_maps']}, "
             f"rolling_configuration={rolling_text}"
         )
     print("status=PASS; no default target selected")

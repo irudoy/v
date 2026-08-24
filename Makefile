@@ -18,11 +18,15 @@ CAN_DASHBOARD_MACOS_APP_OUTPUT ?= tmp/VQ CAN Telemetry.app
 INPUT ?=
 OUTPUT ?=
 PROFILE ?=
+CORRESPONDENCE_SOURCE_EXPORT ?=
+CORRESPONDENCE_TARGET_EXPORT ?=
+CORRESPONDENCE_OUTPUT ?=
+CORRESPONDENCE_ARGS ?=
 
 PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
 
 .PHONY: help setup check test-python test-js test verify-firmware verify
-.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-verify rom-build
+.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence rom-verify rom-build
 
 help:
 	@printf '%s\n' \
@@ -42,6 +46,7 @@ help:
 		'  dashboard-package-macos Build the native macOS PCAN dashboard app and ZIP.' \
 		'  defs-generate     Regenerate XML, XDF, and the map ledger from Memgraph.' \
 		'  runtime-targets-generate Rebuild GNU SH-2E payload locks for relocated ROMs.' \
+		'  rom-correspondence Compare two Ghidra function-signature exports.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
 		'' \
@@ -55,7 +60,11 @@ help:
 		'  CAN_DASHBOARD_MACOS_APP_OUTPUT  Unarchived macOS app path.' \
 		'  INPUT             Input ROM path for rom-verify and rom-build.' \
 		'  OUTPUT            Output ROM path for rom-build.' \
-		'  PROFILE           Optional local unified-builder profile.'
+		'  PROFILE           Optional local unified-builder profile.' \
+		'  CORRESPONDENCE_SOURCE_EXPORT  Source Ghidra export directory.' \
+		'  CORRESPONDENCE_TARGET_EXPORT  Target Ghidra export directory.' \
+		'  CORRESPONDENCE_OUTPUT  Optional function-correspondence CSV path.' \
+		'  CORRESPONDENCE_ARGS  Optional additional correspondence arguments.'
 
 setup:
 	$(UV) sync --frozen
@@ -110,6 +119,13 @@ defs-generate:
 
 runtime-targets-generate:
 	tools/sh-elf-run/generate-targets.sh
+
+rom-correspondence:
+	@test -n "$(strip $(CORRESPONDENCE_SOURCE_EXPORT))" || { printf '%s\n' 'CORRESPONDENCE_SOURCE_EXPORT is required' >&2; exit 2; }
+	@test -n "$(strip $(CORRESPONDENCE_TARGET_EXPORT))" || { printf '%s\n' 'CORRESPONDENCE_TARGET_EXPORT is required' >&2; exit 2; }
+	$(PYTHON) tools/rom_correspondence.py \
+		"$(CORRESPONDENCE_SOURCE_EXPORT)" \
+		"$(CORRESPONDENCE_TARGET_EXPORT)" $(if $(strip $(CORRESPONDENCE_OUTPUT)),--output "$(CORRESPONDENCE_OUTPUT)",) $(CORRESPONDENCE_ARGS)
 
 rom-verify:
 	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }

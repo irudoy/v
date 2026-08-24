@@ -44,16 +44,20 @@ The gate performs these checks:
    values that expose wrong slots or addresses. The 8MFK cases include both
    exhaust-CVTC banks, the two-byte-aligned throttle limiter container,
    mailbox 24, and the stock-ISR tail chain. The 1ND cases include both fuel
-   banks, both warm-idle banks, the shared cold-idle family, the scalar-only
-   throttle limiter, mailbox 26, the stock-ISR tail chain, and the absence of a
-   Rolling Launch stage. JK78C executes the same VQ37 capability cases through
-   its independent SH7058 addresses, stock hooks, RAM sources, and checksums.
+   banks, both warm-idle banks, the shared cold-idle family, native fuel-cut
+   caps and curves, the exact stock fuel-cut state machine, the throttle
+   scalar, Rolling Launch final-mask coordination, mailbox 26, and the stock-ISR
+   tail chain. JK78C executes the same VQ37 capability cases through its
+   independent SH7058 addresses, stock hooks, RAM sources, and checksums.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
    unchanged stock callees outside the implementation under test. The Rolling
    Launch fixture uses a deterministic, PC-relative-alignment-aware stock
    serializer stub to seed the CAN payload before executing both feedback
-   layers. The telemetry fixture also
+   layers. The VQ37 fixture stubs the stock final-mask fuel coordinator with a
+   deterministic routine that publishes a distinct base mask to the aliased
+   final-mask byte and returns that byte zero-extended, so the wrapper return
+   path is executed against an exact expected value. The telemetry fixture also
    installs a simulator-only TRAPA vector after byte identity is proven. TRAPA
    creates the architectural exception stack. The canonical combined SLE1 ISR
    returns through its unchanged `RTE` instruction. Each 8MFK wrapper restores

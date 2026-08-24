@@ -19,6 +19,7 @@ not be edited by hand.
 | `defs/rom-inheritance.toml` | Exact target-to-canonical source binding and SHA-256 evidence |
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
 | `defs/JK08A-*.definition-addresses.csv` | Reviewed target map and axis addresses |
+| `defs/vq37-native-fuel-cut.toml` | Exact target-native VQ37 fuel-cut maps and executable bindings |
 | `defs/rom-identities.toml` | Target-specific RomRaider and TunerPro identity fields |
 | Runtime layout manifests | Canonical and target-specific map-slot and Rolling Launch projections |
 | `rom-images/roms.csv` | Exact source-image identity and path |
@@ -33,10 +34,10 @@ axis against the selected stock image.
 JK78C, 1ND0A, and 1ND3B use independently reviewed VQ37 address projections.
 The two SH7059 images share one address layout because their address-bearing
 executable code is byte-identical, but retain independent image hashes,
-identities, and stock calibration values. Their definitions expose the twelve
-target-specific Map Switching families and CAN telemetry control from the same
-validated runtime target consumed by the production builder. Rolling Launch
-controls remain absent because that capability is unsupported on 1ND.
+identities, and stock calibration values. Their definitions expose fourteen
+target-specific Map Switching families, the native fuel-cut cap and curve
+tables, Rolling Launch controls, and CAN telemetry control from the same
+validated runtime target consumed by the production builder.
 
 ## Paired editor definitions
 

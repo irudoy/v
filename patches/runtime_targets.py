@@ -416,7 +416,6 @@ def _address_mapping(profile):
         rolling_symbols = profile.rolling_symbol_by_key
         for key, source in CANONICAL_ROLLING_SYMBOLS.items():
             _add_mapping(mapping, source, rolling_symbols[key], profile.rom)
-
     if profile.capabilities.can_telemetry:
         can_hooks = profile.can_hook_by_key
         for hook in canonical_can.hooks:
@@ -511,6 +510,102 @@ add 0x2,r6
     )
 
 
+def _replace_source_once(source, old, new, context):
+    if source.count(old) != 1:
+        raise RuntimeTargetError(f"{context}: canonical source differs")
+    return source.replace(old, new)
+
+
+def _render_vq37_rolling_wrappers(profile, mapping):
+    source = _read_source("rolling-launch-wrappers.s")
+    source = _replace_source_once(
+        source,
+        "dedicated 20-byte Rolling Launch state",
+        "dedicated 24-byte Rolling Launch state",
+        "VQ37 startup wrapper description",
+    )
+    source = _replace_source_once(
+        source,
+        "mov #0x5,r2\nrolling_launch_startup_clear_loop:",
+        "mov #0x6,r2\nrolling_launch_startup_clear_loop:",
+        "VQ37 startup clear count",
+    )
+    return _render_source(source, profile, mapping)
+
+
+def _render_vq37_rolling_engine(profile, mapping):
+    source = _read_source("rolling-launch-engine.s")
+    source = _replace_source_once(
+        source,
+        "// hold, and 2 RPM hold plus band-limited retard. Only modes 1 "
+        "and 2 write the\n"
+        "// fuel shadow.\n",
+        "// hold, and 2 RPM hold plus band-limited retard. Only modes 1 and 2 publish\n"
+        "// the exact all-cylinder request; selected VQ37 maps remain unchanged.\n",
+        "VQ37 actuator description",
+    )
+    source = _replace_source_once(
+        source,
+        "//   +0x12 u16 captured ignition-retard band start\n",
+        "//   +0x12 u16 captured ignition-retard band start\n"
+        "//   +0x14 u16 exact all-cylinder fuel-cut request\n"
+        "//   +0x16 u16 reserved and cleared\n",
+        "VQ37 state description",
+    )
+    source = _replace_source_once(
+        source,
+        "mov.l @(rl_state_address,pc),r5\nmov.b @r5,r0\n",
+        "mov.l @(rl_state_address,pc),r5\n"
+        "mov #0x0,r0\n"
+        "mov.w r0,@(0x14,r5)\n"
+        "mov.b @r5,r0\n",
+        "VQ37 per-tick fuel request clear",
+    )
+    source = _replace_source_once(
+        source,
+        "mov.b @(0x5,r5),r0\n"
+        "cmp/eq 0x0,r0\n"
+        "bt rl_activate_publish\n"
+        "bsr rl_apply_fuel_overlay\n"
+        "nop\n"
+        "rl_activate_publish:\n",
+        "rl_activate_publish:\n",
+        "VQ37 activation actuator",
+    )
+    source = _replace_source_once(
+        source,
+        "mov #0x5,r2\nrl_corrupt_clear_loop:",
+        "mov #0x6,r2\nrl_corrupt_clear_loop:",
+        "VQ37 corrupt-state clear count",
+    )
+    source = _replace_source_once(
+        source,
+        "tst r2,r2\n"
+        "bt rl_active_flags_fuel\n"
+        "mov r3,r0\n",
+        "tst r2,r2\n"
+        "bt rl_active_flags_fuel\n"
+        "mov #0x3F,r0\n"
+        "mov.w r0,@(0x14,r5)\n"
+        "mov r3,r0\n",
+        "VQ37 active fuel request publication",
+    )
+    overlay_start = source.index(
+        "// Atomically replace only the first eight bytes"
+    )
+    overlay_end = source.index(
+        "// Publish active/output flags", overlay_start
+    )
+    source = source[:overlay_start] + source[overlay_end:]
+    source = _replace_source_once(
+        source,
+        "rl_helper_fuel_shadow_address:\n.long 0xFFFF5D10\n",
+        "",
+        "VQ37 fuel-shadow literal removal",
+    )
+    return _render_source(source, profile, mapping)
+
+
 def _source_literals(source_texts, units):
     result = []
     for unit in units:
@@ -562,6 +657,25 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         prototype = replace(
             unit, source=custom_sources.get(unit.key, unit.source)
         )
+        if profile.map_variant in VQ37_MAP_VARIANTS:
+            if unit.key == "startup_wrapper":
+                prototype = replace(
+                    prototype,
+                    span=map_switching_layout.AddressRange(
+                        unit.span.start,
+                        0x000D22EC,
+                        unit.span.key,
+                    ),
+                )
+            elif unit.key == "limiter_commit":
+                prototype = replace(
+                    prototype,
+                    span=map_switching_layout.AddressRange(
+                        unit.span.start,
+                        0x000D36E0,
+                        unit.span.key,
+                    ),
+                )
         if (
             profile.map_variant in VQ37_MAP_VARIANTS
             and unit.key == "lookup_adapters"
@@ -618,11 +732,17 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 entry=item.entry + delta,
             ))
             continue
+        target_end = item.span.end
+        if profile.map_variant in VQ37_MAP_VARIANTS:
+            if item.key == "startup_wrapper":
+                target_end = 0x000D22EC
+            elif item.key == "limiter_commit":
+                target_end = 0x000D36E0
         code_regions.append(replace(
             item,
             span=map_switching_layout.AddressRange(
                 item.span.start + delta,
-                item.span.end + delta,
+                target_end + delta,
                 item.span.key,
             ),
             entry=item.entry + delta,
@@ -762,6 +882,74 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             ))
         throttle = base.family_by_key["rev_limit_throttle_cut"]
         throttle_address = target_families["rev_limit_throttle_cut"]
+        fuel_shadow_start = base.ram.fuel_cut_shadow.start + ram_delta
+        throttle_shadow_start = (
+            base.ram.throttle_shadow.start + ram_delta + 0x18
+        )
+        families.extend((
+            map_switching_layout.Family(
+                key="rev_limit_fuel_cut_caps",
+                group="rev_limiter",
+                name="Engine Speed Limit - Fuel Cut Caps",
+                canonical_address=target_families[
+                    "rev_limit_fuel_cut_caps"
+                ],
+                width=2,
+                height=1,
+                storage_type="uint16",
+                access_kind="ram_shadow",
+                adapter=None,
+                copy_alignment=4,
+                copies=tuple(
+                    address + delta
+                    for address in (
+                        0x000D24F4,
+                        0x000D24F8,
+                        0x000D24FC,
+                        0x000D353C,
+                    )
+                ),
+                pointer_table=0x000D22EC + delta,
+                stock_container_start=target_families[
+                    "rev_limit_fuel_cut_caps"
+                ],
+                stock_container_size=4,
+                selected_offset=0,
+                shadow_start=fuel_shadow_start,
+                runtime_shadow_address=None,
+            ),
+            map_switching_layout.Family(
+                key="rev_limit_fuel_cut_curves",
+                group="rev_limiter",
+                name="Engine Speed Limit - Fuel Cut Curves",
+                canonical_address=target_families[
+                    "rev_limit_fuel_cut_curves"
+                ],
+                width=8,
+                height=2,
+                storage_type="uint16",
+                access_kind="ram_shadow",
+                adapter=None,
+                copy_alignment=32,
+                copies=tuple(
+                    address + delta
+                    for address in (
+                        0x000D36E0,
+                        0x000D3700,
+                        0x000D3720,
+                        0x000D3740,
+                    )
+                ),
+                pointer_table=0x000D4068 + delta,
+                stock_container_start=target_families[
+                    "rev_limit_fuel_cut_curves"
+                ],
+                stock_container_size=32,
+                selected_offset=0,
+                shadow_start=fuel_shadow_start + 4,
+                runtime_shadow_address=None,
+            ),
+        ))
         families.append(replace(
             throttle,
             canonical_address=throttle_address,
@@ -770,7 +958,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             stock_container_start=throttle_address,
             stock_container_size=throttle.byte_length,
             selected_offset=0,
-            shadow_start=base.ram.throttle_shadow.start + ram_delta,
+            shadow_start=throttle_shadow_start,
             runtime_shadow_address=None,
         ))
 
@@ -810,6 +998,11 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             f"exact_{profile.map_variant}_serializer_target_binding"
         ),
     )
+    vq37 = profile.map_variant in VQ37_MAP_VARIANTS
+    fuel_shadow_start = base.ram.fuel_cut_shadow.start + ram_delta
+    throttle_shadow_start = base.ram.throttle_shadow.start + ram_delta
+    if vq37:
+        throttle_shadow_start += 0x18
     ram = replace(
         base.ram,
         reservation=map_switching_layout.AddressRange(
@@ -823,13 +1016,21 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             base.ram.selector.key,
         ),
         fuel_cut_shadow=map_switching_layout.AddressRange(
-            base.ram.fuel_cut_shadow.start + ram_delta,
-            base.ram.fuel_cut_shadow.end + ram_delta,
+            fuel_shadow_start,
+            (
+                fuel_shadow_start + 36
+                if vq37
+                else base.ram.fuel_cut_shadow.end + ram_delta
+            ),
             base.ram.fuel_cut_shadow.key,
         ),
         throttle_shadow=map_switching_layout.AddressRange(
-            base.ram.throttle_shadow.start + ram_delta,
-            base.ram.throttle_shadow.end + ram_delta,
+            throttle_shadow_start,
+            (
+                throttle_shadow_start + 2
+                if vq37
+                else base.ram.throttle_shadow.end + ram_delta
+            ),
             base.ram.throttle_shadow.key,
         ),
         throttle_selected_offset=(
@@ -881,28 +1082,84 @@ def _project_rolling(
     base = rolling_launch_layout.load_layout()
     delta = profile.rom_delta
     ram_delta = profile.ram_delta
-    source_texts = {
-        unit.key: _render_source(
-            _read_source(unit.source), profile, mapping
+    vq37 = profile.map_variant in VQ37_MAP_VARIANTS
+    source_texts = {}
+    for unit in base.assembly_units:
+        if vq37 and unit.key == "wrappers":
+            source_texts[unit.key] = _render_vq37_rolling_wrappers(
+                profile, mapping
+            )
+        elif vq37 and unit.key == "engine":
+            source_texts[unit.key] = _render_vq37_rolling_engine(
+                profile, mapping
+            )
+        else:
+            source_texts[unit.key] = _render_source(
+                _read_source(unit.source), profile, mapping
+            )
+    if vq37:
+        source_texts["fuel_cut_wrapper"] = _render_source(
+            _read_source("rolling-launch-fuel-cut-wrapper.s"),
+            profile,
+            mapping,
+            {
+                0x000A0000: profile.rolling_symbol_by_key[
+                    "fuel_cut_coordinator"
+                ]
+            },
         )
-        for unit in base.assembly_units
-    }
-    code_regions = tuple(
+    code_regions = [
         replace(
             item,
             span=_shift_range(item.span, delta),
             entry=item.entry + delta,
         )
         for item in base.code_regions
-    )
-    units = tuple(
+    ]
+    if vq37:
+        code_regions.append(map_switching_layout.CodeRegion(
+            "fuel_cut_wrapper",
+            map_switching_layout.AddressRange(
+                0x000D5000 + delta,
+                0x000D5080 + delta,
+                "fuel_cut_wrapper",
+            ),
+            0x000D5000 + delta,
+        ))
+    code_regions = tuple(code_regions)
+    units = [
         _projected_unit(
             unit, source_texts[unit.key],
             unit.span.start + delta, unit.span.end + delta,
             unit.code_regions, payloads,
         )
         for unit in base.assembly_units
-    )
+    ]
+    if vq37:
+        fuel_wrapper = map_switching_layout.AssemblyUnit(
+            key="fuel_cut_wrapper",
+            source="rolling-launch-fuel-cut-wrapper.s",
+            span=map_switching_layout.AddressRange(
+                0x000D5000,
+                0x000D5080,
+                "assembly.fuel_cut_wrapper",
+            ),
+            fill=0xFF,
+            language="SuperH:BE:32:SH-2A",
+            expected_sha256=ZERO_SHA256,
+            instruction_count=1,
+            data_bytes=0,
+            code_regions=("fuel_cut_wrapper",),
+        )
+        units.append(_projected_unit(
+            fuel_wrapper,
+            source_texts[fuel_wrapper.key],
+            fuel_wrapper.span.start + delta,
+            fuel_wrapper.span.end + delta,
+            fuel_wrapper.code_regions,
+            payloads,
+        ))
+    units = tuple(units)
     rolling_symbols = profile.rolling_symbol_by_key
     hooks = tuple(
         map_switching_layout.Hook(
@@ -927,14 +1184,24 @@ def _project_rolling(
         )
         for item in base.diagnostics
     )
+    state = _shift_range(base.ram.state, ram_delta)
+    if vq37:
+        state = map_switching_layout.AddressRange(
+            state.start, state.end + 4, state.key
+        )
+    fuel_shadow = _shift_range(base.ram.fuel_shadow, ram_delta)
+    if vq37:
+        fuel_shadow = map_switching_layout.AddressRange(
+            fuel_shadow.start, fuel_shadow.start + 36, fuel_shadow.key
+        )
     ram = replace(
         base.ram,
         proven_free=map_switching_layout.AddressRange(
             profile.free_ram.start, profile.free_ram.end, "ram.proven_free"
         ),
         base_reservation=_shift_range(base.ram.base_reservation, ram_delta),
-        state=_shift_range(base.ram.state, ram_delta),
-        fuel_shadow=_shift_range(base.ram.fuel_shadow, ram_delta),
+        state=state,
+        fuel_shadow=fuel_shadow,
     )
     layout = replace(
         base,
@@ -949,7 +1216,11 @@ def _project_rolling(
         claimed_rom_extensions=tuple(
             _shift_range(item, delta)
             for item in base.claimed_rom_extensions
-        ),
+        ) + ((map_switching_layout.AddressRange(
+            0x000D5000 + delta,
+            0x000D5080 + delta,
+            "claimed_rom_extension.vq37_fuel_cut_wrapper",
+        ),) if vq37 else ()),
         configuration=_shift_range(base.configuration, delta),
         scheduler=replace(
             base.scheduler,
@@ -960,7 +1231,9 @@ def _project_rolling(
         assembly_units=units,
         hooks=hooks,
         diagnostics=diagnostics,
-        variant="relocated-8mfk",
+        variant=(
+            "vq37-fuel-coordinator" if vq37 else "relocated-8mfk"
+        ),
         source_texts=tuple(sorted(source_texts.items())),
     )
     return replace(
@@ -1042,7 +1315,9 @@ def _project_can(
     )
     extra = profile.extra_exhaust_storage
     extra_end = (
-        base.reserved_rom.start + delta
+        base.reserved_rom.start + delta + 0x80
+        if profile.map_variant in VQ37_MAP_VARIANTS
+        else base.reserved_rom.start + delta
         if extra is None
         else max(
             extra.adapter.end,
@@ -1384,10 +1659,20 @@ def main(argv=None):
     except (OSError, ValueError, RuntimeTargetError) as error:
         print(f"status=FAIL reason={error}", file=sys.stderr)
         return 1
+    instructions = sum(
+        target.map_layout.assembled_instruction_count
+        + (
+            0
+            if target.rolling_layout is None
+            else target.rolling_layout.assembled_instruction_count
+        )
+        + target.telemetry_layout.assembled_instruction_count
+        for target in targets.values()
+    )
     print(
         f"status=PASS targets={len(targets)} "
         f"map_families={sum(len(x.map_layout.families) for x in targets.values())} "
-        f"instructions={sum(x.map_layout.assembled_instruction_count + (0 if x.rolling_layout is None else x.rolling_layout.assembled_instruction_count) + x.telemetry_layout.assembled_instruction_count for x in targets.values())}"
+        f"instructions={instructions}"
     )
     return 0
 

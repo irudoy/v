@@ -239,6 +239,10 @@ plus a conservative address-independent code metric. The latter counts exact
 64-byte windows from `0x020000` onward that occur at any even target address and
 excludes low-information fill blocks.
 
+The current separation between binary homology, definition parity, runtime
+features, verification, and hardware evidence is summarized in
+[`support-matrix.md`](support-matrix.md).
+
 The baseline identifies four implementation groups:
 
 | Group | Images | Classification | Builder and definition consequence |

@@ -140,6 +140,33 @@ the shared request unless external diagnostics or another patch mutate the
 transition state. Controlled `0x942C` A/B profiles rely on this explicit state
 boundary.
 
+## VQ37 projected variant
+
+JK78C, 1ND0A, and 1ND3B use fourteen target-specific families. The VQ37
+layout retains the four DFCO rows and two ignition surfaces, provides separate
+warm-idle and fuel-compensation families for both banks, and replaces the
+canonical 2x2 fuel-cut table with two uint16 caps plus independent eight-point
+activation and release curves. The throttle limiter remains one selected
+uint16 scalar. The source exhaust-CVTC 16x16 surface is not projected because
+the target uses a different branch-selected curve model whose exact editor
+binding is not established.
+
+The common projected RAM allocation is:
+
+| Range | Purpose |
+| --- | --- |
+| `0xFFFF0C00..0xFFFF0C07` | active index, selector state, and feedback state |
+| `0xFFFF0C10..0xFFFF0C13` | activation and release fuel-cut caps |
+| `0xFFFF0C14..0xFFFF0C33` | activation and release fuel-cut curves |
+| `0xFFFF0C38..0xFFFF0C39` | selected throttle scalar |
+
+The limiter commit uses two-byte transfers because the 1ND stock containers
+are only word-aligned. Target-specific literal hooks redirect the complete
+stock 190-byte fuel-cut state machine to these shadows. JK78C binds one cap
+pair and one adjacent curve pair; 1ND binds the activation and release curve
+pointers independently. Exact stock coordinator, predicate, calibration, and
+RAM bindings are recorded in `../defs/vq37-native-fuel-cut.toml`.
+
 ## Visual feedback
 
 The feedback wrapper calls the stock CAN serializer first. While a valid pulse

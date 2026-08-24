@@ -1,11 +1,12 @@
-// Atomic scalar-only limiter commit for VQ37 dual-bank targets.
+// Atomic native limiter commit for VQ37 dual-bank targets.
 //
 // Input:
 //   r4 - requested zero-based slot index
 //
-// The target has no homolog of the canonical 2x2 fuel-cut limiter table. The
-// transaction therefore publishes only the selected throttle limiter scalar
-// and the selector state. Rolling Launch is not supported by this target.
+// VQ37 uses a native fuel-cut model: two scalar caps followed by independent
+// eight-point activation and release curves. The stock state machine reads
+// those values through RAM redirects. This transaction copies both native
+// fuel-cut containers and the throttle scalar before publishing the selector.
 
 .org 0x000D3660
 limiter_commit:
@@ -22,6 +23,29 @@ ldc r0,sr
 
 mov r4,r0
 shll2 r0
+
+mov.l @(fuel_cap_pointer_table,pc),r3
+mov.l @(r0,r3),r2
+mov.l @(fuel_cap_shadow,pc),r5
+mov #0x2,r1
+fuel_cap_copy_loop:
+mov.w @r2+,r6
+mov.w r6,@r5
+add 0x2,r5
+dt r1
+bf fuel_cap_copy_loop
+
+mov.l @(fuel_curve_pointer_table,pc),r3
+mov.l @(r0,r3),r2
+mov.l @(fuel_curve_shadow,pc),r5
+mov #0x10,r1
+fuel_curve_copy_loop:
+mov.w @r2+,r6
+mov.w r6,@r5
+add 0x2,r5
+dt r1
+bf fuel_curve_copy_loop
+
 mov.l @(throttle_pointer_table,pc),r3
 mov.l @(r0,r3),r2
 mov.w @r2,r0
@@ -42,9 +66,17 @@ rts
 nop
 
 .align 4
+fuel_cap_pointer_table:
+.long 0x000D22EC
+fuel_curve_pointer_table:
+.long 0x000D4068
+fuel_cap_shadow:
+.long 0xFFFF5D10
+fuel_curve_shadow:
+.long 0xFFFF5D14
 throttle_pointer_table:
 .long 0x000D35CC
 throttle_selected_shadow:
-.long 0xFFFF5D20
+.long 0xFFFF5D38
 selector_state:
 .long 0xFFFF5D00

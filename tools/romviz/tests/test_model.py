@@ -54,7 +54,8 @@ def test_all_models_build_with_exact_registered_identities():
     assert by_id["JK78C"]["warnings"]
     assert by_id["JK78C"]["reviewedFunctions"] == 0
     assert by_id["JK78C"]["structuralFunctions"] == 2969
-    assert by_id["JK78C"]["counts"]["maps"] == 90
+    for rom_id in ("JK78C", "1ND0A", "1ND3B"):
+        assert by_id[rom_id]["counts"]["maps"] == 108
 
 
 def test_jk78c_model_includes_target_runtime_and_checksum_evidence():
@@ -68,6 +69,21 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence():
         and item["start"] == 0x09EBA
         for item in rom["objects"]
     )
+    assert any(
+        item["label"] == "Map 1 - Engine Speed Limit - Fuel Cut Caps"
+        and item["start"] == 0x09040
+        for item in rom["objects"]
+    )
+    assert any(
+        item["label"] == "Map 1 - Engine Speed Limit - Fuel Cut Curves"
+        and item["start"] == 0x16BF4
+        for item in rom["objects"]
+    )
+    assert any(
+        item["label"] == "Rolling Launch Minimum Engine Speed"
+        and item["start"] == 0x1E96A
+        for item in rom["objects"]
+    )
     runtime = by_id[
         "patch:runtime-address-profile:patch-claim:injected-rom"
     ]
@@ -75,6 +91,10 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence():
     assert runtime["start"] == 0x0001CB08
     assert runtime["end"] == 0x00020000
     assert "patch:runtime-address-profile:patch-hook:map-selector_host_call" in by_id
+    assert (
+        "patch:runtime-address-profile:patch-hook:"
+        "rolling-fuel_cut_coordinator"
+    ) in by_id
     assert "patch:runtime-address-profile:patch-hook:can-hcan1_primary_init" in by_id
     assert "checksum-field:runtime_b_xor" in by_id
     assert "checksum-domain:runtime_b" in by_id
@@ -135,9 +155,24 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id):
 
     assert rom["metadata"]["ECU ID"] == f"1{rom_id}"
     assert rom["metadata"]["MCU"] == "SH7059"
-    assert rom["counts"]["maps"] == 90
+    assert rom["counts"]["maps"] == 108
     assert maf_factor["start"] == 0x08939
     assert maf_factor["source"] == f"defs/{rom_id}.xml"
+    assert any(
+        item["label"] == "Map 1 - Engine Speed Limit - Fuel Cut Caps"
+        and item["start"] == 0x091D2
+        for item in rom["objects"]
+    )
+    assert any(
+        item["label"] == "Map 1 - Engine Speed Limit - Fuel Cut Curves"
+        and item["start"] == 0x17202
+        for item in rom["objects"]
+    )
+    assert any(
+        item["label"] == "Rolling Launch Minimum Engine Speed"
+        and item["start"] == 0x133F6A
+        for item in rom["objects"]
+    )
     by_id = {item["id"]: item for item in rom["objects"]}
     profile = by_id[
         "patch:runtime-address-profile:patch-claim:injected-rom"
@@ -158,12 +193,10 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id):
         )
         for item in rom["objects"]
     )
-    assert not any(
-        item["id"].startswith(
-            "patch:runtime-address-profile:patch-hook:rolling-"
-        )
-        for item in rom["objects"]
-    )
+    assert (
+        "patch:runtime-address-profile:patch-hook:"
+        "rolling-fuel_cut_coordinator"
+    ) in by_id
     assert checksum_fields == {
         "checksum-field:sum16_a",
         "checksum-field:sum16_b",

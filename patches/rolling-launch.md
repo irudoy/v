@@ -1,9 +1,11 @@
-# JK08A Rolling Launch
+# Rolling Launch runtime
 
-Rolling Launch is an optional JK08A runtime layered on the complete five-slot
-map-switching composition. It captures engine speed while CANCEL is held,
-installs a temporary map-specific fuel-cut window, and can apply bounded
-retard-only ignition control.
+Rolling Launch is an optional runtime layered on the complete five-slot
+Map Switching composition. It captures engine speed while CANCEL is held,
+applies a target-specific all-cylinder fuel-cut actuator, and can apply bounded
+retard-only ignition control. The JK00A/JK03A/JK03B/JK08A and JK00C/JK00D
+variants use a temporary map-specific fuel-cut window. JK78C, 1ND0A, and 1ND3B
+use a final-mask coordinator request without modifying the selected VQ37 maps.
 
 The authoritative implementation sources are:
 
@@ -12,14 +14,15 @@ The authoritative implementation sources are:
 - `rolling_launch.py` for the independent state and calibration model;
 - `hardware-results.toml` for immutable image identities and hardware outcomes.
 
-The current candidate is software-verified and has active target-vehicle
-evidence from an exact local combined image. The evidence qualifies button
-decoding, dashboard states, repeated rearm, the full software fuel-inhibit
-mask, captured-RPM-dependent hold behavior, and the bounded software ignition
-command on Maps 2 and 3. Physical spark timing and electrical injector output
-remain unmeasured. Earlier overlay results do not qualify the current runtime.
-Concrete profiles, derived images, and active tune identities remain local and
-unversioned.
+The canonical JK08A candidate is software-verified and has active
+target-vehicle evidence from an exact local combined image. The evidence
+qualifies button decoding, dashboard states, repeated rearm, the full software
+fuel-inhibit mask, captured-RPM-dependent hold behavior, and the bounded
+software ignition command on Maps 2 and 3. Physical spark timing and electrical
+injector output remain unmeasured. VQ37 projections have no bench or vehicle
+result and remain software-only. Earlier overlay results do not qualify the
+current runtime. Concrete profiles, derived images, and active tune identities
+remain local and unversioned.
 
 ## Functional model
 
@@ -29,10 +32,10 @@ The runtime has three phases:
 IDLE -> ACTIVE -> COOLDOWN -> IDLE
 ```
 
-`IDLE` evaluates activation gates. `ACTIVE` owns the temporary limiter overlay
-and optional ignition command. Any abort restores the selected map limiter and
-enters `COOLDOWN`. `COOLDOWN` requires the released button code `0x20` for the
-configured rearm period before returning to `IDLE`.
+`IDLE` evaluates activation gates. `ACTIVE` owns the target-specific fuel-cut
+request and optional ignition command. Any abort restores or republishes the
+selected map limiter and enters `COOLDOWN`. `COOLDOWN` requires the released
+button code `0x20` for the configured rearm period before returning to `IDLE`.
 
 Button codes follow the target vehicle's debounced ASCD representation:
 
@@ -74,9 +77,11 @@ both runtimes from modifying shared state during one gesture.
 
 ## Scheduler timebase
 
-The periodic hook replaces table entry 0 at `0x00021970`, calls the displaced
-stock task, and advances Rolling Launch once per exact `FUN_00020DFE` pass.
-The timer configuration proves a period of `204800/Pphi` seconds. Passive
+On the canonical layout, the periodic hook replaces table entry 0 at
+`0x00021970`, calls the displaced stock task, and advances Rolling Launch once
+per exact `FUN_00020DFE` pass. Target profiles bind the homologous table and
+task explicitly. The timer configuration proves a period of `204800/Pphi`
+seconds. Passive
 target-CAN timestamps independently establish `Pphi = 20 MHz`, so one runtime
 tick is `10.24 ms` on JK08A.
 
@@ -198,11 +203,20 @@ hysteresis = clamp(
 restore = cut - hysteresis
 ```
 
-The native RPM unit is 12.5 RPM. The runtime writes the first eight bytes of the
-shared fuel-cut shadow under an interrupt mask and leaves the rest of the
-selected map limiter cluster intact. Abort restores the full selected map
-shadow through the map-switching limiter commit. A corrupt state uses Map 1 as
-the fail-closed source.
+The native RPM unit is 12.5 RPM. The VQ25HR/VQ35HR variants write the first
+eight bytes of the shared fuel-cut shadow under an interrupt mask and leave the
+rest of the selected map limiter cluster intact. Abort restores the full
+selected map shadow through the Map Switching limiter commit.
+
+The VQ37 variant clears a dedicated uint16 request at the start of every
+periodic pass and publishes exactly `0x003F` only while a non-observe mode is
+active. Scheduler index 31 calls a wrapper that first executes the complete
+stock fuel-mask coordinator. An exact request then ORs the six cylinder bits
+into the coordinator result; zero and every malformed request leave the stock
+mask unchanged. The wrapper preserves the stock coordinator's return value.
+Activation does not modify the 36-byte native fuel-cut shadow. Abort
+republishes the captured map through the common limiter commit, and a corrupt
+state uses Map 1 as the fail-closed source.
 
 ## Bounded ignition control
 
@@ -253,11 +267,12 @@ The strict 32-byte record contains:
 | run timeout and rearm | positive bounded tick counts |
 | target commands | one validated byte for each map |
 
-The built-in production profile is `rpm-hold-map1-test`: Map 1 enabled,
-`rpm_hold` mode, and ignition retard disabled. A strict local TOML profile is
-required for other calibration. Every field is mandatory, unknown fields are
-rejected, and enabled maps use one-based numbers. See `rom-builder.md` for the
-profile schema and build invocation.
+The built-in VQ25HR/VQ35HR production profile is `rpm-hold-map1-test`: Map 1
+enabled, `rpm_hold` mode, and ignition retard disabled. VQ37 uses the complete
+runtime with the built-in `observe` profile and no enabled maps. A strict local
+TOML profile can select any supported mode and map mask. Every field is
+mandatory, unknown fields are rejected, and enabled maps use one-based numbers.
+See `rom-builder.md` for the profile schema and build invocation.
 
 RomRaider and XDF expose independent Rolling Launch calibration tables where a
 safe representation exists. Raw aggregate records remain implementation data,
@@ -289,13 +304,18 @@ The dashboard hook redirects the existing map-feedback wrapper call to the
 Rolling Launch arbiter. The arbiter invokes that wrapper before applying its
 own state. Every wrapper calls its displaced function where required.
 Allocation and hook bytes are authoritative only in
-`rolling-launch-layout.toml`.
+`rolling-launch-layout.toml` and the applicable target section of
+`rom-address-profiles.toml`. VQ37 adds a projected 128-byte fuel-coordinator
+wrapper at canonical range `0x000D5000..0x000D5080` and a sixth scheduler hook
+for index 31.
 
 ## State and diagnostics
 
-The 20-byte state records phase, abort reason, flags, map/mode snapshots, run
-and rearm timers, captured RPM, cut RPM, restore RPM, the observed stock and
-effective ignition commands, and the captured retard-band start.
+The canonical 20-byte state records phase, abort reason, flags, map/mode
+snapshots, run and rearm timers, captured RPM, cut RPM, restore RPM, the
+observed stock and effective ignition commands, and the captured retard-band
+start. VQ37 extends the record to 24 bytes with the exact fuel request and one
+cleared reserved word. The nine diagnostic views retain the same offsets.
 
 Raw engineering DIDs expose nine two-byte views:
 
@@ -318,18 +338,19 @@ not a prerequisite for runtime correctness.
 ## Composition
 
 `build_rom.py` is the production entry point. It starts from an exact compatible
-JK08A base or a complete migratable runtime, installs the current Map Switching
-composition, applies Rolling Launch with the selected profile, adds the CAN
-telemetry layer, recalculates all checksum domains, and verifies the final
-closed write set.
+registered base or a complete migratable runtime, installs the current Map
+Switching composition, applies the target-specific Rolling Launch stage with
+the selected profile, adds the CAN telemetry layer, recalculates all checksum
+domains, and verifies the final closed write set.
 
 `apply_rolling_launch.py` is an isolated diagnostic stage. The composition and
 assembly modules operate in memory and do not expose a flashable output path.
 They require the exact base composition and bind every byte to the declared
 layout and payload manifests.
 
-Rolling Launch currently uses `0xFFFF5D40..0xFFFF5D54` for active state. The
-cross-runtime ledger assigns `0x000D6000..0x000D6800` and
+The canonical runtime uses `0xFFFF5D40..0xFFFF5D54` for active state. VQ37
+uses the projected `0xFFFF0C40..0xFFFF0C58` range. The cross-runtime ledger
+assigns `0x000D6000..0x000D6800` and
 `0xFFFF6100..0xFFFF6200` exclusively to future Rolling Launch revisions. These
 reserves are erased and outside every exact current write set. See
 `runtime-reservations.md`.
@@ -355,7 +376,8 @@ The implementation inventory is:
 
 A candidate is software-valid only when all applicable checks pass:
 
-1. The exact JK08A base and complete current map-switching composition match.
+1. The exact selected stock base and complete current Map Switching composition
+   match the registered target profile.
 2. ROM/RAM ownership, stock anchors, hooks, diagnostic pointers, and payload
    digests match their manifests.
 3. Assembly sources reproduce the exact injected bytes.
@@ -370,10 +392,11 @@ A candidate is software-valid only when all applicable checks pass:
 8. The generated definition tables agree with the configuration contract.
 9. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
-Software verification and the recorded target-vehicle result do not authorize
-another flash. The current image qualifies repeated activation, RPM hold,
-release, rearm, and bounded software-command behavior on Maps 2 and 3. Timeout,
-corrupt-state recovery, map changes while active, and the exact physical spark
-and injector outputs remain software-only or unmeasured boundaries. A physical
-timing claim requires a crank-referenced measurement, and an injector-pulse
-claim requires an electrical measurement at the output path.
+Software verification and the recorded JK08A target-vehicle result do not
+authorize another flash. That image qualifies repeated activation, RPM hold,
+release, rearm, and bounded software-command behavior on Maps 2 and 3. VQ37
+runtime behavior, timeout, corrupt-state recovery, map changes while active,
+and the exact physical spark and injector outputs remain software-only or
+unmeasured boundaries. A physical timing claim requires a crank-referenced
+measurement, and an injector-pulse claim requires an electrical measurement at
+the output path.

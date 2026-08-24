@@ -74,16 +74,15 @@ production builder emits target-specific runtime payloads at those addresses.
 
 1ND0A and 1ND3B load their generated target definitions from one reviewed
 SH7059 address correspondence. Their checksum fields and domains come from the
-project checksum registry. Their composed runtime profiles expose twelve
-Map Switching families, custom CAN telemetry, exact hooks, and the shared
-SH7059 allocation. Rolling Launch objects remain absent because the capability
-is unsupported on 1ND.
+project checksum registry. Their composed runtime profiles expose fourteen Map
+Switching families, native fuel-cut caps and curves, Rolling Launch, custom CAN
+telemetry, exact hooks, and the shared SH7059 allocation.
 
 JK78C uses a target-specific SH7058 projection. Its composed runtime profile
-exposes twelve VQ37 Map Switching families and custom CAN telemetry in the
-audited flash and RAM allocations. The checksum layer covers both SUM16 domains
-and both runtime SUM/XOR domains. Rolling Launch remains absent because the
-required target fuel-cut shadow has not been localized.
+exposes fourteen VQ37 Map Switching families, native fuel-cut caps and curves,
+Rolling Launch, and custom CAN telemetry in the audited flash and RAM
+allocations. The checksum layer covers both SUM16 domains and both runtime
+SUM/XOR domains.
 
 Ghidra exports provide exact function entry addresses and body byte counts. The
 export does not preserve discontiguous body ranges, so the atlas draws each

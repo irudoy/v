@@ -31,16 +31,22 @@ TARGETS = {
 JK78C_MAP_ADDRESSES = {
     "Map 1 - Fuel Compensation - Main - Bank 1": "0x09EBA",
     "Map 1 - Fuel Compensation - Main - Bank 2": "0x09FBA",
+    "Map 1 - Engine Speed Limit - Fuel Cut Caps": "0x09040",
+    "Map 1 - Engine Speed Limit - Fuel Cut Curves": "0x16BF4",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 1": "0x137E8",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 2": "0x137F0",
+    "Rolling Launch Minimum Engine Speed": "0x1E96A",
 }
 
 ONE_ND_MAP_ADDRESSES = {
     "MAF Factor": "0x08939",
     "Map 1 - Fuel Compensation - Main - Bank 1": "0x0A1C0",
     "Map 1 - Fuel Compensation - Main - Bank 2": "0x0A2C0",
+    "Map 1 - Engine Speed Limit - Fuel Cut Caps": "0x091D2",
+    "Map 1 - Engine Speed Limit - Fuel Cut Curves": "0x17202",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 1": "0x13C1A",
     "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 2": "0x13C22",
+    "Rolling Launch Minimum Engine Speed": "0x133F6A",
 }
 
 
@@ -148,11 +154,18 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 91
+    assert len(target.findall("table")) == 111
     assert not any(name.startswith("DTC ") for name in tables)
-    assert not any(name.startswith("Rolling Launch") for name in tables)
+    assert tables["Rolling Launch Enable by Map"].get(
+        "storageaddress"
+    ) == "0x1E964"
+    assert tables["Rolling Launch Require Accelerator Pedal"].get(
+        "storageaddress"
+    ) == "0x1E96C"
     assert any(name.startswith("Map 2 -") for name in tables)
     assert "Map 2 - Engine Speed Limit - Fuel Cut" not in tables
+    assert "Map 2 - Engine Speed Limit - Fuel Cut Caps" in tables
+    assert "Map 2 - Engine Speed Limit - Fuel Cut Curves" in tables
     assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
     assert "Map 2 - Fuel Compensation - Main - Bank 1" in tables
     assert "Map 2 - Fuel Compensation - Main - Bank 2" in tables
@@ -169,12 +182,22 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 90
+    assert len(root.findall("XDFTABLE")) == 108
     patches = root.findall("XDFPATCH")
-    assert len(patches) == 1
-    assert patches[0].findtext("title") == "CAN Telemetry at Startup"
-    assert patches[0].find("XDFPATCHENTRY").get("address") == "0x1F803"
-    assert root.findall("XDFFLAG") == []
+    patches_by_title = {patch.findtext("title"): patch for patch in patches}
+    assert set(patches_by_title) == {
+        "CAN Telemetry at Startup",
+        "Rolling Launch Require Accelerator Pedal",
+    }
+    assert patches_by_title["CAN Telemetry at Startup"].find(
+        "XDFPATCHENTRY"
+    ).get("address") == "0x1F803"
+    assert patches_by_title[
+        "Rolling Launch Require Accelerator Pedal"
+    ].find("XDFPATCHENTRY").get("address") == "0x1E96C"
+    assert {
+        flag.findtext("title") for flag in root.findall("XDFFLAG")
+    } == {f"Map {slot} - Rolling Launch Enable" for slot in range(1, 6)}
     assert root.find("XDFCHECKSUM") is None
     assert "No editor-side checksum is declared" in description
     assert "no verified" not in description.lower()
@@ -197,14 +220,21 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert romid.findtext("filesize") == "1536kb"
         assert romid.find("flashmethod") is None
         assert target.findall("checksum") == []
-        assert len(target.findall("table")) == 91
+        assert len(target.findall("table")) == 111
         assert not any(name.startswith("DTC ") for name in tables)
-        assert not any(name.startswith("Rolling Launch") for name in tables)
+        assert tables["Rolling Launch Enable by Map"].get(
+            "storageaddress"
+        ) == "0x133F64"
+        assert tables["Rolling Launch Require Accelerator Pedal"].get(
+            "storageaddress"
+        ) == "0x133F6C"
         assert any(name.startswith("Map 2 -") for name in tables)
         assert tables["CAN Telemetry at Startup"].get(
             "storageaddress"
         ) == "0x134E03"
         assert "Map 2 - Engine Speed Limit - Fuel Cut" not in tables
+        assert "Map 2 - Engine Speed Limit - Fuel Cut Caps" in tables
+        assert "Map 2 - Engine Speed Limit - Fuel Cut Curves" in tables
         assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
         assert "Map 2 - Fuel Compensation - Main - Bank 1" in tables
         assert "Map 2 - Fuel Compensation - Main - Bank 2" in tables
@@ -225,13 +255,28 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 90
+        assert len(root.findall("XDFTABLE")) == 108
         patches = root.findall("XDFPATCH")
-        assert len(patches) == 1
-        assert patches[0].findtext("title") == "CAN Telemetry at Startup"
-        entry = patches[0].find("XDFPATCHENTRY")
+        patches_by_title = {
+            patch.findtext("title"): patch for patch in patches
+        }
+        assert set(patches_by_title) == {
+            "CAN Telemetry at Startup",
+            "Rolling Launch Require Accelerator Pedal",
+        }
+        entry = patches_by_title["CAN Telemetry at Startup"].find(
+            "XDFPATCHENTRY"
+        )
         assert entry.get("address") == "0x134E03"
-        assert root.findall("XDFFLAG") == []
+        pedal = patches_by_title[
+            "Rolling Launch Require Accelerator Pedal"
+        ].find("XDFPATCHENTRY")
+        assert pedal.get("address") == "0x133F6C"
+        assert {
+            flag.findtext("title") for flag in root.findall("XDFFLAG")
+        } == {
+            f"Map {slot} - Rolling Launch Enable" for slot in range(1, 6)
+        }
         assert "verified checksum implementation must correct" in description
         assert "no verified" not in description.lower()
         assert "defs/JK08A-1ND.definition-addresses.csv" in description

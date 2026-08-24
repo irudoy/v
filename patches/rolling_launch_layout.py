@@ -340,6 +340,7 @@ def validate_structure(layout):
         raise ValueError(
             f"unsupported Rolling Launch layout schema {layout.schema_version}"
         )
+    vq37 = layout.variant == "vq37-fuel-coordinator"
     if (
         layout.byte_order != "big"
         or (
@@ -349,7 +350,13 @@ def validate_structure(layout):
             layout.variant == "relocated-8mfk"
             and layout.rom not in {"JK00C", "JK00D"}
         )
-        or layout.variant not in {"canonical", "relocated-8mfk"}
+        or (
+            vq37
+            and layout.rom not in {"JK78C", "1ND0A", "1ND3B"}
+        )
+        or layout.variant not in {
+            "canonical", "relocated-8mfk", "vq37-fuel-coordinator"
+        }
     ):
         raise ValueError(
             f"unsupported Rolling Launch target {layout.rom!r} "
@@ -408,7 +415,12 @@ def validate_structure(layout):
         raise ValueError("Rolling Launch state overlaps map-switching RAM")
     if not layout.ram.base_reservation.contains(layout.ram.fuel_shadow):
         raise ValueError("fuel shadow lies outside map-switching RAM")
-    if layout.ram.state.size != 20 or layout.ram.fuel_shadow.size != 12:
+    expected_state_size = 24 if vq37 else 20
+    expected_fuel_shadow_size = 36 if vq37 else 12
+    if (
+        layout.ram.state.size != expected_state_size
+        or layout.ram.fuel_shadow.size != expected_fuel_shadow_size
+    ):
         raise ValueError("runtime RAM sizes differ from the implementation")
 
     _unique(layout.code_regions, lambda item: item.key, "code region keys")
@@ -484,6 +496,8 @@ def validate_structure(layout):
         "primary_ignition_command",
         "feedback_arbitration",
     }
+    if vq37:
+        required_hooks.add("fuel_cut_coordinator")
     if set(layout.hook_by_key) != required_hooks:
         raise ValueError("Rolling Launch hook set differs")
     canonical_hooks = {

@@ -7,11 +7,23 @@
 #define TEST_RAM_BASE 0x01000000U
 #define SELECTOR_STATE 0xffff5d00U
 #define FUEL_SHADOW 0xffff5d10U
-#define THROTTLE_SHADOW 0xffff5d20U
 #define THROTTLE_RUNTIME 0xffff1796U
 #define RL_STATE_GUARD 0xffff5d3cU
 #define RL_STATE 0xffff5d40U
+#ifdef TARGET_VQ37_ROLLING
+#define FUEL_SHADOW_SIZE 36U
+#define THROTTLE_SHADOW 0xffff5d38U
+#define THROTTLE_SHADOW_SIZE 2U
+#define RL_STATE_SIZE 24U
+#define FUEL_CUT_WRAPPER 0x000d5000U
+#define FUEL_REQUEST_OFFSET 20U
+#define FUEL_REQUEST_MASK 0x003fU
+#else
+#define FUEL_SHADOW_SIZE 12U
+#define THROTTLE_SHADOW 0xffff5d20U
+#define THROTTLE_SHADOW_SIZE 28U
 #define RL_STATE_SIZE 20U
+#endif
 #define RL_CONFIG 0x000d3f60U
 #define BUTTON_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
@@ -35,7 +47,9 @@
 #define FEEDBACK_ARBITER 0x000d41e0U
 #define FEEDBACK_COUNTS 0x000d3848U
 
+#ifndef TARGET_VQ37_ROLLING
 #define FUEL_STOCK 0x0000934eU
+#endif
 
 #define PHASE_IDLE 0U
 #define PHASE_ACTIVE 1U
@@ -77,6 +91,7 @@
 #define FLAGS_RETARD_ACTIVE 0xdbffU
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
+extern uint32_t invoke_r0(uint32_t entry);
 
 static size_t case_count;
 
@@ -91,10 +106,22 @@ static const uint8_t payload_seed[8] = {
     0x11, 0x22, 0x33, 0x44, 0x55, 0xb5, 0x77, 0x88,
 };
 
+#ifdef TARGET_VQ37_ROLLING
+static const uint32_t fuel_cap_slots[5] = {
+    0x00009040U, 0x000d24f4U, 0x000d24f8U, 0x000d24fcU,
+    0x000d353cU,
+};
+
+static const uint32_t fuel_curve_slots[5] = {
+    0x00016bf4U, 0x000d36e0U, 0x000d3700U, 0x000d3720U,
+    0x000d3740U,
+};
+#else
 static const uint32_t fuel_slots[5] = {
     0x0000934eU, 0x000d3500U, 0x000d3508U, 0x000d3510U,
     0x000d3518U,
 };
+#endif
 
 static volatile uint8_t *ram_pointer(uint32_t original)
 {
@@ -192,10 +219,11 @@ static void reset_case(uint8_t mode, uint8_t enable_mask)
     volatile uint8_t *selector = ram_pointer(SELECTOR_STATE);
 
     fill_bytes(selector, 8, 0);
-    fill_bytes(ram_pointer(RL_STATE_GUARD), 28, 0xa5);
+    fill_bytes(ram_pointer(RL_STATE_GUARD), RL_STATE_SIZE + 8U, 0xa5);
     fill_bytes(ram_pointer(RL_STATE), RL_STATE_SIZE, 0);
-    fill_bytes(ram_pointer(FUEL_SHADOW), 12, 0xa5);
-    fill_bytes(ram_pointer(THROTTLE_SHADOW), 28, 0xa5);
+    fill_bytes(ram_pointer(FUEL_SHADOW), FUEL_SHADOW_SIZE, 0xa5);
+    fill_bytes(
+        ram_pointer(THROTTLE_SHADOW), THROTTLE_SHADOW_SIZE, 0xa5);
     fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
     ram_pointer(BUTTON_CODE)[0] = BUTTON_CANCEL;
     ram_pointer(BUTTON_CODE)[1] = BUTTON_CANCEL;
@@ -238,7 +266,8 @@ static int verify_state_guards(const char *name)
         if (guard[index] != 0xa5)
             return fail_value(name, "guard_before", guard[index], 0xa5);
     }
-    for (index = 24; index < 28; ++index) {
+    for (index = RL_STATE_SIZE + 4U;
+         index < RL_STATE_SIZE + 8U; ++index) {
         if (guard[index] != 0xa5)
             return fail_value(name, "guard_after", guard[index], 0xa5);
     }
@@ -263,6 +292,15 @@ static int verify_corrupt_recovery(const char *name)
 
 static int verify_fuel_restored(const char *name, size_t slot)
 {
+#ifdef TARGET_VQ37_ROLLING
+    uint8_t expected[FUEL_SHADOW_SIZE];
+    size_t index;
+
+    for (index = 0; index < 4; ++index)
+        expected[index] = rom_pointer(fuel_cap_slots[slot])[index];
+    for (index = 0; index < 32; ++index)
+        expected[index + 4] = rom_pointer(fuel_curve_slots[slot])[index];
+#else
     uint8_t expected[12];
     size_t index;
 
@@ -270,8 +308,26 @@ static int verify_fuel_restored(const char *name, size_t slot)
         expected[index] = rom_pointer(fuel_slots[slot])[index];
     for (index = 8; index < 12; ++index)
         expected[index] = rom_pointer(FUEL_STOCK)[index];
+#endif
     return fail_bytes(
         name, "fuel_restore", ram_pointer(FUEL_SHADOW), expected,
+        sizeof(expected));
+}
+
+static int verify_engine_fuel_release(const char *name, size_t slot)
+{
+    return verify_fuel_restored(name, slot);
+}
+
+static int verify_fuel_untouched(const char *name)
+{
+    uint8_t expected[FUEL_SHADOW_SIZE];
+    size_t index;
+
+    for (index = 0; index < sizeof(expected); ++index)
+        expected[index] = 0xa5;
+    return fail_bytes(
+        name, "fuel_write", ram_pointer(FUEL_SHADOW), expected,
         sizeof(expected));
 }
 
@@ -317,7 +373,7 @@ static int run_structural_cases(void)
         run_engine();
         if (!verify_corrupt_recovery(test->name))
             return 0;
-        if (!verify_fuel_restored(test->name, 0))
+        if (!verify_engine_fuel_release(test->name, 0))
             return 0;
     }
     return 1;
@@ -582,6 +638,25 @@ static int run_config_cases(void)
 static int verify_overlay(
     const char *name, uint16_t cut, uint16_t restore)
 {
+#ifdef TARGET_VQ37_ROLLING
+    uint8_t expected[FUEL_SHADOW_SIZE];
+
+    (void)cut;
+    (void)restore;
+    for (size_t index = 0; index < sizeof(expected); ++index)
+        expected[index] = 0xa5;
+    if (!fail_bytes(
+            name, "fuel_map_storage", ram_pointer(FUEL_SHADOW), expected,
+            sizeof(expected)))
+        return 0;
+    if (read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_OFFSET)
+        != FUEL_REQUEST_MASK)
+        return fail_value(
+            name, "fuel_request",
+            read_u16(ram_pointer(RL_STATE) + FUEL_REQUEST_OFFSET),
+            FUEL_REQUEST_MASK);
+    return 1;
+#else
     uint8_t expected[8];
 
     expected[0] = (uint8_t)(cut >> 8);
@@ -603,6 +678,7 @@ static int verify_overlay(
     )
         return fail_value(name, "fuel_tail", 0, 0xa5a5a5a5U);
     return 1;
+#endif
 }
 
 static int verify_active_state(
@@ -632,6 +708,14 @@ static int verify_active_state(
         return fail_value(
             name, "retard_band_start", read_u16(state + 18),
             retard_band_start);
+#ifdef TARGET_VQ37_ROLLING
+    if (read_u16(state + FUEL_REQUEST_OFFSET)
+        != (mode == MODE_OBSERVE ? 0U : FUEL_REQUEST_MASK))
+        return fail_value(
+            name, "fuel_request",
+            read_u16(state + FUEL_REQUEST_OFFSET),
+            mode == MODE_OBSERVE ? 0U : FUEL_REQUEST_MASK);
+#endif
     return verify_state_guards(name);
 }
 
@@ -689,11 +773,8 @@ static int run_activation_cases(void)
             "activate-observe", MODE_OBSERVE, 300, 316, 310, 300,
             FLAGS_OBSERVE_ACTIVE))
         return 0;
-    if (
-        ram_pointer(FUEL_SHADOW)[0] != 0xa5
-        || ram_pointer(FUEL_SHADOW)[11] != 0xa5
-    )
-        return fail_value("activate-observe", "fuel_write", 1, 0);
+    if (!verify_fuel_untouched("activate-observe"))
+        return 0;
 
     count_case();
     reset_case(MODE_RPM_HOLD, 0x01);
@@ -768,7 +849,7 @@ static int run_active_cases(void)
         return 0;
     if (read_u16(ram_pointer(RL_STATE) + 2) & FLAG_TIMER_OK)
         return fail_value("active-timeout", "timer_flag", 1, 0);
-    if (!verify_fuel_restored("active-timeout", 0))
+    if (!verify_engine_fuel_release("active-timeout", 0))
         return 0;
 
     count_case();
@@ -779,7 +860,7 @@ static int run_active_cases(void)
     if (!expect_phase_reason(
             "active-map-change", PHASE_COOLDOWN, REASON_MAP_CHANGED))
         return 0;
-    if (!verify_fuel_restored("active-map-change", 0))
+    if (!verify_engine_fuel_release("active-map-change", 0))
         return 0;
 
     count_case();
@@ -808,7 +889,7 @@ static int run_active_cases(void)
     if (!expect_phase_reason(
             "active-release", PHASE_COOLDOWN, REASON_BUTTON_RELEASED))
         return 0;
-    if (!verify_fuel_restored("active-release", 0))
+    if (!verify_engine_fuel_release("active-release", 0))
         return 0;
 
     count_case();
@@ -839,11 +920,8 @@ static int run_active_cases(void)
             "active-observe-release", PHASE_COOLDOWN,
             REASON_BUTTON_RELEASED))
         return 0;
-    if (
-        ram_pointer(FUEL_SHADOW)[0] != 0xa5
-        || ram_pointer(FUEL_SHADOW)[11] != 0xa5
-    )
-        return fail_value("active-observe-release", "fuel_write", 1, 0);
+    if (!verify_fuel_untouched("active-observe-release"))
+        return 0;
     return 1;
 }
 
@@ -1197,7 +1275,7 @@ static int run_wrapper_cases(void)
         if (ram_pointer(RL_STATE)[index] != 0)
             return fail_value("wrapper-startup", "state", ram_pointer(RL_STATE)[index], 0);
     }
-    if (!verify_fuel_restored("wrapper-startup", 0))
+    if (!verify_engine_fuel_release("wrapper-startup", 0))
         return 0;
     if (!verify_state_guards("wrapper-startup"))
         return 0;
@@ -1244,6 +1322,52 @@ static int run_wrapper_cases(void)
     return 1;
 }
 
+#ifdef TARGET_VQ37_ROLLING
+struct fuel_wrapper_case {
+    const char *name;
+    uint16_t request;
+    uint8_t expected_mask;
+};
+
+static const struct fuel_wrapper_case fuel_wrapper_cases[] = {
+    {"fuel-wrapper-inactive", 0x0000U, 0x80U},
+    {"fuel-wrapper-corrupt-request", 0x003eU, 0x80U},
+    {"fuel-wrapper-active", FUEL_REQUEST_MASK, 0xbfU},
+};
+
+static int run_fuel_wrapper_cases(void)
+{
+    size_t index;
+
+    for (index = 0; index < ARRAY_SIZE(fuel_wrapper_cases); ++index) {
+        const struct fuel_wrapper_case *test = &fuel_wrapper_cases[index];
+        volatile uint8_t *state;
+        uint32_t returned;
+
+        count_case();
+        reset_case(MODE_RPM_HOLD, 0x01);
+        state = ram_pointer(RL_STATE);
+        write_u16(state + FUEL_REQUEST_OFFSET, test->request);
+        ram_pointer(FUEL_CUT_STATUS)[0] = 0x12U;
+        returned = invoke_r0(FUEL_CUT_WRAPPER);
+        if (returned != 0x80U)
+            return fail_value(
+                test->name, "stock_return", returned, 0x80U);
+        if (ram_pointer(FUEL_CUT_STATUS)[0] != test->expected_mask)
+            return fail_value(
+                test->name, "fuel_mask",
+                ram_pointer(FUEL_CUT_STATUS)[0], test->expected_mask);
+        if (read_u16(state + FUEL_REQUEST_OFFSET) != test->request)
+            return fail_value(
+                test->name, "fuel_request",
+                read_u16(state + FUEL_REQUEST_OFFSET), test->request);
+        if (!verify_state_guards(test->name))
+            return 0;
+    }
+    return 1;
+}
+#endif
+
 int main(void)
 {
     if (!run_structural_cases())
@@ -1266,6 +1390,19 @@ int main(void)
         return 1;
     if (!run_feedback_cases())
         return 1;
+#ifdef TARGET_VQ37_ROLLING
+    if (!run_fuel_wrapper_cases())
+        return 1;
+    if (case_count != 124U)
+        return fail_value("summary", "case_count", case_count, 124);
+
+    printf(
+        "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=%lu "
+        "structural=11 gates=26 config=24 threshold=4 activation=5 "
+        "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
+        "fuel_coordinator=3 entries=9\n",
+        (unsigned long)case_count);
+#else
     if (case_count != 121U)
         return fail_value("summary", "case_count", case_count, 121);
 
@@ -1275,5 +1412,6 @@ int main(void)
         "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
         "entries=8\n",
         (unsigned long)case_count);
+#endif
     return 0;
 }

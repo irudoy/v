@@ -17,11 +17,12 @@ engines.
   RomRaider XML, TunerPro XDF, and a map ledger.
 - The unified builder composes the current capability-specific runtime for
   JK00A, JK03A, JK03B, JK08A, JK00C, JK00D, JK78C, 1ND0A, and 1ND3B. Map
-  Switching and custom CAN telemetry are available on all nine targets.
-  Rolling Launch is available on the six VQ25HR/VQ35HR SH7058 targets and is
-  explicitly unsupported on the VQ37VHR JK78C and SH7059 1ND families. The
-  builder preserves target calibration state, closes
-  each ROM's checksum domains, and emits a machine-readable build manifest.
+  Switching, Rolling Launch, and custom CAN telemetry are available on all
+  nine targets. VQ37 targets use their native fuel-cut caps and interpolated
+  curves for map slots, while Rolling Launch adds an exact all-cylinder
+  request after the stock final-mask coordinator. The builder preserves target
+  calibration state, closes each ROM's checksum domains, and emits a
+  machine-readable build manifest.
 - One canonical annotation and presentation layer plus explicit relocated
   correspondences generate target-specific RomRaider XML and TunerPro XDF
   files for all nine stock identities. The two SH7059 1ND images share one
@@ -65,6 +66,7 @@ engines.
 ## Entry points
 
 - ROM identity and provenance: [`rom-images/README.md`](rom-images/README.md)
+- ROM family and support parity: [`rom-images/support-matrix.md`](rom-images/support-matrix.md)
 - Canonical annotations and generated definitions: [`defs/README.md`](defs/README.md)
 - Production ROM composition: [`patches/rom-builder.md`](patches/rom-builder.md)
 - Map-switching runtime: [`patches/map-switching-selector.md`](patches/map-switching-selector.md)
@@ -146,14 +148,16 @@ README retains the detailed subsystem contract.
 
 JK78C participates in the production builder, all-target definition generation,
 and ROM-atlas generation through an independent SH7058 address profile. Its
-runtime includes twelve switched calibration families, scalar throttle-limiter
-selection, custom CAN telemetry, six-field checksum closure, and the executable
-gate. Rolling Launch is unavailable because the required target rev-limit fuel
-actuator has not been localized.
+runtime includes fourteen switched calibration families, target-native
+fuel-cut caps and curves, scalar throttle-limiter selection, Rolling Launch,
+custom CAN telemetry, six-field checksum closure, and the executable gate.
+Its software allocation and byte contracts remain untested on bench and
+vehicle hardware.
 
 1ND0A and 1ND3B participate in all-target definition and ROM-atlas generation
 with the shared reviewed SH7059 calibration layout and all six verified
-checksum fields. Their production runtime includes twelve switched calibration
-families, scalar throttle-limiter selection, custom CAN telemetry, checksum
-closure, and the executable gate. Rolling Launch is unavailable because the
-required target rev-limit fuel actuator has not been localized.
+checksum fields. Their production runtime includes fourteen switched
+calibration families, target-native fuel-cut caps and curves, scalar
+throttle-limiter selection, Rolling Launch, custom CAN telemetry, checksum
+closure, and the executable gate. The two images retain independent stock and
+stage identities even though their executable ranges are exact.

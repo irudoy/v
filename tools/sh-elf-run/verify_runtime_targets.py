@@ -26,14 +26,18 @@ from patches import map_switching_compose
 from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
 from patches import runtime_targets
+from tools.mapkit import vq37_native_fuel_cut
 
 
 MAP_CASES_BY_VARIANT = {
     "dual-exhaust": 139,
-    "sh7059-1nd": 145,
-    "sh7058-jk78": 145,
+    "sh7059-1nd": 165,
+    "sh7058-jk78": 165,
 }
-ROLLING_CASES = 121
+ROLLING_CASES_BY_VARIANT = {
+    "relocated-8mfk": 121,
+    "vq37-fuel-coordinator": 124,
+}
 TELEMETRY_CASES = 62
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
@@ -68,6 +72,23 @@ def _feedback_serializer_stub(address, status_alias):
         FEEDBACK_SERIALIZER_PREFIX
         + bytes.fromhex("0009") * (padding_size // 2)
         + status_alias.to_bytes(4, "big")
+    )
+
+
+def _fuel_coordinator_stub(address, mask_alias):
+    """Return a stock-first stub that publishes a distinct base mask.
+
+    The stub writes the base mask to the aliased final-mask byte and
+    returns the same value zero-extended in r0, matching the unsigned
+    byte contract of the stock coordinator.
+    """
+    if address % 4:
+        raise VerificationError(
+            f"fuel coordinator stub is not aligned at {address:#x}"
+        )
+    return (
+        bytes.fromhex("d102e080600c2100000b0009")
+        + mask_alias.to_bytes(4, "big")
     )
 
 
@@ -213,6 +234,17 @@ def _install_stock_stubs(fixture, target):
             rolling_hooks["periodic_scheduler_index_0"].stock: RETURN_STUB,
             rolling_hooks["primary_ignition_command"].stock: RETURN_STUB,
         })
+        if target.rolling_layout.variant == "vq37-fuel-coordinator":
+            profile = runtime_targets.rom_address_profiles.profile_for_rom(
+                target.rom
+            )
+            mask_alias = base_verifier.alias_high_ram(
+                profile.rolling_symbol_by_key["fuel_inhibit"]
+            )
+            coordinator = rolling_hooks["fuel_cut_coordinator"].stock
+            stubs[coordinator] = _fuel_coordinator_stub(
+                coordinator, mask_alias
+            )
     stubs.update({
         can_hooks["coherent_snapshot_call"].stock: RETURN_STUB,
         can_hooks["knock_interval_latch"].stock: RETURN_STUB,
@@ -250,6 +282,24 @@ def _build_dynamic_fixture(
     map_relocated = base_verifier.relocate_assembly_ram_literals(
         fixture, map_parsed
     )
+    if target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
+        native = vq37_native_fuel_cut.load_registry()[target.rom]
+        for binding in (
+            native.pointer_bindings + native.ram_pointer_bindings
+        ):
+            actual = int.from_bytes(
+                fixture[binding.site : binding.site + 4], "big"
+            )
+            if actual < base_verifier.HIGH_RAM_BASE:
+                raise VerificationError(
+                    f"{target.rom}: native fuel-cut pointer at "
+                    f"{binding.site:#x} is not bound to high RAM: "
+                    f"{actual:#x}"
+                )
+            fixture[binding.site : binding.site + 4] = (
+                base_verifier.alias_high_ram(actual).to_bytes(4, "big")
+            )
+            map_relocated += 1
     rolling_relocated = (
         base_verifier.relocate_assembly_ram_literals(
             fixture, rolling_parsed
@@ -308,6 +358,28 @@ def _render_harness(target, name, build_dir):
             "exhaust_cvtc_target_odd"
         ].canonical_address
         overrides = {0x0000B43A: odd, 0x0000B43B: odd + 1}
+    elif (
+        name in {
+            "map_switching_harness.c",
+            "rolling_launch_harness.c",
+        }
+        and target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS
+    ):
+        families = target.map_layout.family_by_key
+        native = vq37_native_fuel_cut.load_registry()[target.rom]
+        overrides = {
+            0x00009040: families[
+                "rev_limit_fuel_cut_caps"
+            ].canonical_address,
+            0x00016BF4: families[
+                "rev_limit_fuel_cut_curves"
+            ].canonical_address,
+            0x0006AEB8: native.function_address,
+            0xFFFF10E5: native.selector_address,
+            0xFFFF11AC: native.rpm_address,
+            0xFFFF23F5: native.state_address,
+            0xFFFF2449: native.delay_address,
+        }
     rendered = runtime_targets.render_target_text(
         target.rom, source, overrides
     )
@@ -398,11 +470,16 @@ def _run_harnesses(target, fixture, build_dir):
         map_defines = ("TARGET_DUAL_EXHAUST",)
     elif target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
         map_marker = (
-            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=145 selector=17 "
-            "adapters=105 limiter=14 feedback=9 feedback_invocations=17 "
-            "entries=12"
+            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=165 selector=17 "
+            "adapters=105 limiter=14 native_fuel=20 feedback=9 "
+            "feedback_invocations=17 entries=13"
         )
-        map_defines = ("TARGET_VQ37",)
+        map_defines = (
+            "TARGET_VQ37",
+            "TARGET_1ND"
+            if target.map_layout.variant == "sh7059-1nd"
+            else "TARGET_JK78",
+        )
     else:
         raise VerificationError(
             f"{target.rom}: unsupported map harness variant "
@@ -425,6 +502,21 @@ def _run_harnesses(target, fixture, build_dir):
         rolling_source = _render_harness(
             target, "rolling_launch_harness.c", build_dir
         )
+        vq37_rolling = (
+            target.rolling_layout.variant == "vq37-fuel-coordinator"
+        )
+        rolling_marker = (
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=124 "
+            "structural=11 gates=26 config=24 threshold=4 activation=5 "
+            "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
+            "fuel_coordinator=3 entries=9"
+            if vq37_rolling
+            else
+            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=121 "
+            "structural=11 gates=26 config=24 threshold=4 activation=5 "
+            "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
+            "entries=8"
+        )
         markers.append(_compile_and_run(
             target,
             "rolling-launch",
@@ -432,10 +524,8 @@ def _run_harnesses(target, fixture, build_dir):
             rom_object,
             (invoke,),
             build_dir,
-            "VQ_SH_ELF_ROLLING_LAUNCH status=PASS cases=121 "
-            "structural=11 gates=26 config=24 threshold=4 activation=5 "
-            "active=9 cooldown=5 ignition=24 wrappers=6 feedback=7 "
-            "entries=8",
+            rolling_marker,
+            defines=("TARGET_VQ37_ROLLING",) if vq37_rolling else (),
         ))
     can_defines = (
         ("TELEMETRY_TAIL_CHAIN",)
@@ -534,7 +624,11 @@ def verify_target(rom, locks, verbose=False):
     map_cases = MAP_CASES_BY_VARIANT[target.map_layout.variant]
     dynamic_cases = (
         map_cases
-        + (ROLLING_CASES if target.rolling_layout is not None else 0)
+        + (
+            ROLLING_CASES_BY_VARIANT[target.rolling_layout.variant]
+            if target.rolling_layout is not None
+            else 0
+        )
         + TELEMETRY_CASES
     )
     print(

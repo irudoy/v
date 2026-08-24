@@ -631,6 +631,8 @@ def validate_structure(layout):
             "idle_ignition_timing_bank_2",
             "fuel_compensation_main_bank_1",
             "fuel_compensation_main_bank_2",
+            "rev_limit_fuel_cut_caps",
+            "rev_limit_fuel_cut_curves",
             "rev_limit_throttle_cut",
         }
     if len(layout.families) != len(required_family_keys):
@@ -851,6 +853,21 @@ def validate_structure(layout):
             raise ValueError(
                 "fuel-cut family and RAM shadow declarations differ"
             )
+    else:
+        fuel_caps = layout.family_by_key["rev_limit_fuel_cut_caps"]
+        fuel_curves = layout.family_by_key["rev_limit_fuel_cut_curves"]
+        if (
+            fuel_caps.shadow_start != layout.ram.fuel_cut_shadow.start
+            or fuel_caps.stock_container_size != fuel_caps.byte_length
+            or fuel_curves.shadow_start
+            != fuel_caps.shadow_start + fuel_caps.byte_length
+            or fuel_curves.stock_container_size != fuel_curves.byte_length
+            or fuel_curves.shadow_start + fuel_curves.byte_length
+            != layout.ram.fuel_cut_shadow.end
+        ):
+            raise ValueError(
+                "VQ37 fuel-cut families do not tile the RAM shadow"
+            )
     throttle_differs = (
         throttle.shadow_start != layout.ram.throttle_shadow.start
         or throttle.selected_offset != layout.ram.throttle_selected_offset
@@ -1038,7 +1055,7 @@ def validate_structure(layout):
     expected_access_split = (
         (11, 2)
         if layout.variant == "dual-exhaust"
-        else ((11, 1) if layout.variant in VQ37_VARIANTS else (10, 2))
+        else ((11, 3) if layout.variant in VQ37_VARIANTS else (10, 2))
     )
     if (adapter_count, shadow_count) != expected_access_split:
         raise ValueError(

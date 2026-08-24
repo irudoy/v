@@ -86,7 +86,7 @@ def test_mailbox_24_is_selected_and_occupied_mailbox_26_is_preserved(profiles):
         assert profile.telemetry_completion_variant == "mailbox24-tail-chain"
 
 
-def test_1nd_profiles_share_exact_code_and_declare_reduced_capabilities(profiles):
+def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profiles):
     one = profiles["1ND0A"]
     three = profiles["1ND3B"]
 
@@ -101,9 +101,16 @@ def test_1nd_profiles_share_exact_code_and_declare_reduced_capabilities(profiles
     assert one.injected_ram == rom_address_profiles.AddressRange(
         0xFFFF0C00, 0xFFFF0F00
     )
-    assert one.enabled_capabilities == {"map_switching", "can_telemetry"}
-    assert one.rolling_hooks == ()
-    assert one.rolling_diagnostics == ()
+    assert one.enabled_capabilities == {
+        "map_switching", "rolling_launch", "can_telemetry"
+    }
+    assert set(one.rolling_hook_by_key) == (
+        rom_address_profiles.VQ37_ROLLING_HOOK_KEYS
+    )
+    assert len(one.rolling_diagnostics) == 9
+    assert one.rolling_symbol_by_key["scheduler_table"] == 0x0002205C
+    assert one.rolling_symbol_by_key["vehicle_speed"] == 0xFFFE8104
+    assert one.rolling_symbol_by_key["fuel_cut_coordinator"] == 0x000760CC
     assert one.telemetry_unavailable == ("knock_timing_state_raw",)
     assert "knock_timing_state_raw" not in one.telemetry_source_by_name
     assert one.telemetry_zero_source == 0xFFFF0DE0
