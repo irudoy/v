@@ -416,7 +416,7 @@ mov #0x5,r1
         self.assertIn("verify_runtime_targets.verify", source)
         self.assertIn("runtime_target_cases", source)
         self.assertIn("runtime_targets.RELOCATED_ROMS", verifier)
-        self.assertIn("TARGET_DUAL_EXHAUST", map_harness)
+        self.assertIn("TARGET_DUAL_CVTC", map_harness)
         self.assertIn("TARGET_VQ37", map_harness)
         self.assertIn("NATIVE_FUEL_CUT", map_harness)
         self.assertIn("native_fuel=20", map_harness)

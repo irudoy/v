@@ -231,7 +231,7 @@ class BuildRomTest(unittest.TestCase):
                             else "sh7058-jk78"
                         )
                         if rom in runtime_targets.VQ37_RUNTIME_ROMS
-                        else "dual-exhaust"
+                        else "dual-cvtc"
                     ),
                 )
                 self.assertEqual(

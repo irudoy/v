@@ -228,15 +228,22 @@ def test_exact_family_materializes_only_explicit_target_tokens():
 
 
 @pytest.mark.parametrize(
-    ("rom_id", "address"),
-    (("JK00C", 0x0B7BE), ("JK00D", 0x0B7CE)),
+    ("rom_id", "intake_address", "exhaust_address"),
+    (("JK00C", 0x0B7BE, 0x0B6BE), ("JK00D", 0x0B7CE, 0x0B6CE)),
 )
-def test_relocated_definitions_use_target_map_addresses(rom_id, address):
+def test_relocated_definitions_use_target_map_addresses(
+    rom_id, intake_address, exhaust_address
+):
     rom = model.build_rom_model(model.resolve_manifest(rom_id))
+    intake = next(
+        item
+        for item in rom["objects"]
+        if item["label"] == "Map 1 - Intake CVTC Target - Main"
+    )
     exhaust = next(
         item
         for item in rom["objects"]
-        if item["label"] == "Map 1 - Exhaust CVTC Target - Main - Bank 1"
+        if item["label"] == "Map 1 - Exhaust CVTC Target - Main"
     )
     profile = next(
         item
@@ -245,7 +252,9 @@ def test_relocated_definitions_use_target_map_addresses(rom_id, address):
         == "patch:runtime-address-profile:patch-claim:injected-rom"
     )
 
-    assert exhaust["start"] == address
+    assert intake["start"] == intake_address
+    assert intake["source"] == f"defs/{rom_id}.xml"
+    assert exhaust["start"] == exhaust_address
     assert exhaust["source"] == f"defs/{rom_id}.xml"
     assert profile["patchStatus"] == "composed"
     assert profile["label"] == "Unified production runtime profile composed allocation"

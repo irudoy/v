@@ -27,6 +27,7 @@
     <CATEGORY index="0x10" name="Rolling Launch / RPM Hold" />
     <CATEGORY index="0x11" name="Torque Model / Engine Torque" />
     <CATEGORY index="0x12" name="Variable Valve Timing / Exhaust Cam" />
+    <CATEGORY index="0x13" name="Variable Valve Timing / Intake Cam" />
   </XDFHEADER>
   <XDFPATCH uniqueid="0xF309" flags="0x0">
     <title>CAN Telemetry at Startup</title>
@@ -75,6 +76,90 @@
     <EMBEDDEDDATA mmedaddress="0xE0664" mmedelementsizebits="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
     <mask>0x10</mask>
   </XDFFLAG>
+  <XDFTABLE uniqueid="0x73F3" flags="0x0">
+    <title>Intake CVTC Target - Cold</title>
+    <description>Exact JK00C. Address 0xB8BE; 8 rows x 8 columns; uint8; map confidence code. Cold intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c and writes ffff1c5e. FUN 000bdc66 uses it at raw coolant &lt;=106 and blends it with warm/main target 0000b43a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Code proves the cold intake-cam target role, raw coolant selection, centered byte representation, and column coordinate at raw*100/128 percent of the fixed BFS reference. The target-vehicle capture remains entirely above the warm threshold and does not dynamically validate this surface or the coolant blend. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain source-derived candidates. Result disposition: consumer. Definition address projected from JK08A 0000b53a through JK08A-JK00C.definition-addresses.csv: cold intake-cam target in the stock intake CVTC descriptor block at 0x000C386C. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="20" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x15237" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Normalized BFS [%]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x15257" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB8BE" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degrees [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-128)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xC678" flags="0x0">
+    <title>Intake CVTC Target Correction - High-Detonation State</title>
+    <description>Exact JK00C. Address 0xAEDE; 4 rows x 4 columns; uint8; map confidence code. Conditional intake-cam target correction. When ffff2466.bit6 is set, FUN 000bda64 calculates clamp_u8(output_0000b43a - output_0000ab5a + 128); when the bit is clear, it bypasses this map. The corrected target is written to ffff1c5c and enters the intake CVTC target path. Code proves the conditional intake-cam correction path and centered raw arithmetic. The target-vehicle capture contains zero samples with ffff2466.bit6 set, so this branch has no dynamic validation. The high-detonation meaning of the selector, the Cylinder Filling axis name, and the 0.5 degree-per-byte conversion remain catalog candidates. Result disposition: consumer. Definition address projected from JK08A 0000ab5a through JK08A-JK00C.definition-addresses.csv: intake-cam correction table in the stock intake CVTC descriptor block at 0x000C386C. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="20" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1531F" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Normalized BFS [%]</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x15327" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xAEDE" mmedelementsizebits="8" mmedrowcount="4" mmedcolcount="4" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degrees [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-128)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x76CF" flags="0x0">
     <title>Injection Pulse Channel Multiplier</title>
     <description>Exact JK00C. Address 0x14D45; 1 rows x 6 columns; uint8; map confidence code. Six-channel injection-pulse multiplier indexed directly by channel number 0..5. For a positive calculated pulse, FUN_0004eba2 multiplies by the selected byte, shifts the product right by 7, saturates to uint16, and writes the raw and transformed six-channel output arrays. All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in override mask ffff22e0 bypasses this multiplier and selects word ffff2436. The trace proves channel indexing but does not establish the physical cylinder order; presentation labels remain generic channel numbers. Definition address projected from JK08A 000129c0 through JK08A-JK00C.definition-addresses.csv: target literals and reviewed homologous consumer topology. Static diagnostic context: INJ PULSE-B1 [code, homologous_vq35hr, via map evidence: writes].</description>
@@ -2947,8 +3032,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x5EF9" flags="0x0">
-    <title>Map 1 - Exhaust CVTC Target - Main - Bank 2</title>
-    <description>Exact JK00C. Address 0xB6BE; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 2. Common-definition Map 1 uses the canonical stock storage. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <title>Map 1 - Exhaust CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xB6BE; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 1 uses the canonical stock storage. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="19" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1529B" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -2989,9 +3074,9 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x34CE" flags="0x0">
-    <title>Map 1 - Exhaust CVTC Target - Main - Bank 1</title>
-    <description>Exact JK00C. Address 0xB7BE; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 1. Common-definition Map 1 uses the canonical stock storage. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="19" />
+    <title>Map 1 - Intake CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xB7BE; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Common-definition Map 1 uses the canonical stock storage. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares common reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-interpolation order, and scheduler alignment. With downstream neutralization excluded, prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain catalog candidates. Result disposition: consumer. Definition address projected from JK08A 0000b43a through JK08A-JK00C.definition-addresses.csv: warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x152AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -3022,7 +3107,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xB7BE" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>degCA [cand]</units>
+      <units>degrees [cand]</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">
@@ -7749,9 +7834,9 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xEE66" flags="0x0">
-    <title>Map 2 - Exhaust CVTC Target - Main - Bank 1</title>
-    <description>Exact JK00C. Address 0xDF400; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 1. Common-definition Map 2 storage is projected from 0xB7BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="19" />
+    <title>Map 2 - Intake CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xDF400; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Common-definition Map 2 storage is projected from 0xB7BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares common reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-interpolation order, and scheduler alignment. With downstream neutralization excluded, prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain catalog candidates. Result disposition: consumer. Definition address projected from JK08A 0000b43a through JK08A-JK00C.definition-addresses.csv: warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x152AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -7782,7 +7867,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF400" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>degCA [cand]</units>
+      <units>degrees [cand]</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">
@@ -7791,8 +7876,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x9A9" flags="0x0">
-    <title>Map 2 - Exhaust CVTC Target - Main - Bank 2</title>
-    <description>Exact JK00C. Address 0xE1800; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 2. Common-definition Map 2 storage is projected from 0xB6BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <title>Map 2 - Exhaust CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xE1800; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 2 storage is projected from 0xB6BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="19" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1529B" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -12551,9 +12636,9 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x8451" flags="0x0">
-    <title>Map 3 - Exhaust CVTC Target - Main - Bank 1</title>
-    <description>Exact JK00C. Address 0xDF500; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 1. Common-definition Map 3 storage is projected from 0xB7BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="19" />
+    <title>Map 3 - Intake CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xDF500; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Common-definition Map 3 storage is projected from 0xB7BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares common reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-interpolation order, and scheduler alignment. With downstream neutralization excluded, prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain catalog candidates. Result disposition: consumer. Definition address projected from JK08A 0000b43a through JK08A-JK00C.definition-addresses.csv: warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x152AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -12584,7 +12669,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF500" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>degCA [cand]</units>
+      <units>degrees [cand]</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">
@@ -12593,8 +12678,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x639E" flags="0x0">
-    <title>Map 3 - Exhaust CVTC Target - Main - Bank 2</title>
-    <description>Exact JK00C. Address 0xE1900; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 2. Common-definition Map 3 storage is projected from 0xB6BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <title>Map 3 - Exhaust CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xE1900; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 3 storage is projected from 0xB6BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="19" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1529B" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -17353,9 +17438,9 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x3A08" flags="0x0">
-    <title>Map 4 - Exhaust CVTC Target - Main - Bank 1</title>
-    <description>Exact JK00C. Address 0xDF600; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 1. Common-definition Map 4 storage is projected from 0xB7BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="19" />
+    <title>Map 4 - Intake CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xDF600; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Common-definition Map 4 storage is projected from 0xB7BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares common reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-interpolation order, and scheduler alignment. With downstream neutralization excluded, prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain catalog candidates. Result disposition: consumer. Definition address projected from JK08A 0000b43a through JK08A-JK00C.definition-addresses.csv: warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x152AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -17386,7 +17471,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF600" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>degCA [cand]</units>
+      <units>degrees [cand]</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">
@@ -17395,8 +17480,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x1C96" flags="0x0">
-    <title>Map 4 - Exhaust CVTC Target - Main - Bank 2</title>
-    <description>Exact JK00C. Address 0xE1A00; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 2. Common-definition Map 4 storage is projected from 0xB6BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <title>Map 4 - Exhaust CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xE1A00; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 4 storage is projected from 0xB6BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="19" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1529B" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -22155,9 +22240,9 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x503F" flags="0x0">
-    <title>Map 5 - Exhaust CVTC Target - Main - Bank 1</title>
-    <description>Exact JK00C. Address 0xDF700; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 1. Common-definition Map 5 storage is projected from 0xB7BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
-    <CATEGORYMEM index="0" category="19" />
+    <title>Map 5 - Intake CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xDF700; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Common-definition Map 5 storage is projected from 0xB7BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares common reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-interpolation order, and scheduler alignment. With downstream neutralization excluded, prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain catalog candidates. Result disposition: consumer. Definition address projected from JK08A 0000b43a through JK08A-JK00C.definition-addresses.csv: warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x152AB" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
       <units>Normalized BFS [%]</units>
@@ -22188,7 +22273,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xDF700" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>degCA [cand]</units>
+      <units>degrees [cand]</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">
@@ -22197,8 +22282,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xA2CF" flags="0x0">
-    <title>Map 5 - Exhaust CVTC Target - Main - Bank 2</title>
-    <description>Exact JK00C. Address 0xE1B00; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Target variant: Bank 2. Common-definition Map 5 storage is projected from 0xB6BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: target-specific interpolation operands and bank topology. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <title>Map 5 - Exhaust CVTC Target - Main</title>
+    <description>Exact JK00C. Address 0xE1B00; 16 rows x 16 columns; uint8; map confidence code. Warm/main exhaust-CVTC target surface. FUN 000bfdc0 interpolates it by RPM/50 and Q7 normalized BFS, optionally subtracts correction 0000ab4a, and writes ffff1c5d. FUN 000bfe88 performs coolant selection and downstream conditioning into common exhaust target ffff2327. Common-definition Map 5 storage is projected from 0xB6BE. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control monitors. This closes the subsystem identity independently of map geometry. Code proves centered raw arithmetic; the homologous HR A2L and community diagnostics supply the candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16 unchanged-input cycles; remaining differences are downstream mode, rate, and offset conditioning. Result disposition: writes. Definition address projected from JK08A 0000b33a through JK08A-JK00C.definition-addresses.csv: warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="19" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1529B" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />

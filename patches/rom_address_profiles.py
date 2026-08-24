@@ -56,7 +56,7 @@ CAPABILITY_KEYS = frozenset(
     {"map_switching", "rolling_launch", "can_telemetry"}
 )
 
-DUAL_EXHAUST_MAP_FAMILY_KEYS = frozenset(
+DUAL_CVTC_MAP_FAMILY_KEYS = frozenset(
     {
         "over_run_fuel_hold",
         "over_run_fuel_cut",
@@ -66,8 +66,8 @@ DUAL_EXHAUST_MAP_FAMILY_KEYS = frozenset(
         "high_detonation_timing_state",
         "cold_idle_ignition_timing",
         "idle_ignition_timing",
-        "exhaust_cvtc_target_even",
-        "exhaust_cvtc_target_odd",
+        "intake_cvtc_target",
+        "exhaust_cvtc_target",
         "fuel_compensation_main",
         "rev_limit_fuel_cut",
         "rev_limit_throttle_cut",
@@ -96,12 +96,12 @@ VQ37_MAP_FAMILY_KEYS = frozenset(
 )
 
 MAP_FAMILY_KEYS_BY_VARIANT = {
-    "dual-exhaust": DUAL_EXHAUST_MAP_FAMILY_KEYS,
+    "dual-cvtc": DUAL_CVTC_MAP_FAMILY_KEYS,
     "sh7059-1nd": VQ37_MAP_FAMILY_KEYS,
     "sh7058-jk78": VQ37_MAP_FAMILY_KEYS,
 }
 
-DUAL_EXHAUST_MAP_HOOK_KEYS = frozenset(
+DUAL_CVTC_MAP_HOOK_KEYS = frozenset(
     {
         "selector_host_call",
         "startup_initializer",
@@ -112,8 +112,8 @@ DUAL_EXHAUST_MAP_HOOK_KEYS = frozenset(
         "ignition_lookup_primary_b",
         "fuel_compensation_lookup_startup",
         "fuel_compensation_lookup_runtime",
-        "exhaust_cvtc_target_lookup_even",
-        "exhaust_cvtc_target_lookup_odd",
+        "intake_cvtc_target_lookup",
+        "exhaust_cvtc_target_lookup",
         "rev_fuel_cut_base",
         "rev_throttle_cluster_base",
         "rev_throttle_scalar_base",
@@ -154,12 +154,12 @@ VQ37_JK78_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
 }
 
 MAP_HOOK_KEYS_BY_VARIANT = {
-    "dual-exhaust": DUAL_EXHAUST_MAP_HOOK_KEYS,
+    "dual-cvtc": DUAL_CVTC_MAP_HOOK_KEYS,
     "sh7059-1nd": VQ37_1ND_MAP_HOOK_KEYS,
     "sh7058-jk78": VQ37_JK78_MAP_HOOK_KEYS,
 }
 
-DUAL_EXHAUST_MAP_SYMBOL_KEYS = frozenset(
+DUAL_CVTC_MAP_SYMBOL_KEYS = frozenset(
     {
         "selector_function",
         "button_state",
@@ -195,7 +195,7 @@ VQ37_MAP_SYMBOL_KEYS = frozenset(
 )
 
 MAP_SYMBOL_KEYS_BY_VARIANT = {
-    "dual-exhaust": DUAL_EXHAUST_MAP_SYMBOL_KEYS,
+    "dual-cvtc": DUAL_CVTC_MAP_SYMBOL_KEYS,
     "sh7059-1nd": VQ37_MAP_SYMBOL_KEYS,
     "sh7058-jk78": VQ37_MAP_SYMBOL_KEYS,
 }
@@ -215,7 +215,7 @@ VQ37_ROLLING_HOOK_KEYS = ROLLING_HOOK_KEYS | {
 }
 
 ROLLING_HOOK_KEYS_BY_VARIANT = {
-    "dual-exhaust": ROLLING_HOOK_KEYS,
+    "dual-cvtc": ROLLING_HOOK_KEYS,
     "sh7059-1nd": VQ37_ROLLING_HOOK_KEYS,
     "sh7058-jk78": VQ37_ROLLING_HOOK_KEYS,
 }
@@ -257,7 +257,7 @@ VQ37_ROLLING_SYMBOL_KEYS = ROLLING_SYMBOL_KEYS | {
 }
 
 ROLLING_SYMBOL_KEYS_BY_VARIANT = {
-    "dual-exhaust": ROLLING_SYMBOL_KEYS,
+    "dual-cvtc": ROLLING_SYMBOL_KEYS,
     "sh7059-1nd": VQ37_ROLLING_SYMBOL_KEYS,
     "sh7058-jk78": VQ37_ROLLING_SYMBOL_KEYS,
 }
@@ -357,7 +357,7 @@ class DiagnosticBinding:
 
 
 @dataclass(frozen=True)
-class ExtraExhaustStorage:
+class ExtraCvtcStorage:
     adapter: AddressRange
     pointer_table: int
     copies: tuple[int, ...]
@@ -396,7 +396,7 @@ class AddressProfile:
     telemetry_sources: tuple[tuple[str, int], ...]
     telemetry_unavailable: tuple[str, ...]
     telemetry_zero_source: int | None
-    extra_exhaust_storage: ExtraExhaustStorage | None
+    extra_cvtc_storage: ExtraCvtcStorage | None
     evidence: tuple[tuple[str, str], ...]
 
     @property
@@ -558,7 +558,7 @@ def _extra_storage(row, context):
         or len(set(copies)) != len(copies)
     ):
         raise AddressProfileError(f"{context}.copies: expected four addresses")
-    result = ExtraExhaustStorage(
+    result = ExtraCvtcStorage(
         adapter=AddressRange(
             _uint(row["adapter_start"], f"{context}.adapter_start"),
             _uint(row["adapter_end"], f"{context}.adapter_end"),
@@ -595,8 +595,8 @@ def _profile_fields(capabilities, map_variant, telemetry_unavailable):
         expected.add("can_symbols")
     if capabilities.can_telemetry:
         expected.update({"can_hooks", "telemetry_sources"})
-    if map_variant == "dual-exhaust":
-        expected.add("extra_exhaust_storage")
+    if map_variant == "dual-cvtc":
+        expected.add("extra_cvtc_storage")
     if telemetry_unavailable:
         expected.add("telemetry_zero_source")
     return frozenset(expected)
@@ -805,12 +805,12 @@ def _parse_profile(rom, row, context):
             if unavailable
             else None
         ),
-        extra_exhaust_storage=(
+        extra_cvtc_storage=(
             _extra_storage(
-                row["extra_exhaust_storage"],
-                f"{context}.extra_exhaust_storage",
+                row["extra_cvtc_storage"],
+                f"{context}.extra_cvtc_storage",
             )
-            if map_variant == "dual-exhaust"
+            if map_variant == "dual-cvtc"
             else None
         ),
         evidence=tuple(sorted(evidence.items())),
@@ -824,14 +824,13 @@ def _rebased(value, delta):
 
 
 def _map_family_sources(profile):
-    if profile.map_variant == "dual-exhaust":
+    if profile.map_variant == "dual-cvtc":
         result = {
             key: key
-            for key in DUAL_EXHAUST_MAP_FAMILY_KEYS
-            if not key.startswith("exhaust_cvtc")
+            for key in DUAL_CVTC_MAP_FAMILY_KEYS
+            if key != "intake_cvtc_target"
         }
-        result["exhaust_cvtc_target_even"] = "exhaust_cvtc_target"
-        result["exhaust_cvtc_target_odd"] = "exhaust_cvtc_target"
+        result["intake_cvtc_target"] = "exhaust_cvtc_target"
         return result
     if profile.map_variant in VQ37_MAP_VARIANTS:
         return {
@@ -856,16 +855,16 @@ def _map_family_sources(profile):
 
 
 def _validate_extra_storage(profile, telemetry_layout):
-    extra = profile.extra_exhaust_storage
-    if profile.map_variant != "dual-exhaust":
+    extra = profile.extra_cvtc_storage
+    if profile.map_variant != "dual-cvtc":
         if extra is not None:
             raise AddressProfileError(
-                f"{profile.rom}: unexpected extra exhaust storage"
+                f"{profile.rom}: unexpected extra CVTC storage"
             )
         return
     if extra is None:
         raise AddressProfileError(
-            f"{profile.rom}: missing extra exhaust storage"
+            f"{profile.rom}: missing extra CVTC storage"
         )
     if extra.adapter.start != (
         telemetry_layout.reserved_rom.start + profile.rom_delta
@@ -937,8 +936,8 @@ def _validate_map_bindings(profile, map_layout):
             code["cruise_feedback_wrapper"].entry, rom_delta
         ),
     }
-    if profile.map_variant == "dual-exhaust":
-        extra = profile.extra_exhaust_storage
+    if profile.map_variant == "dual-cvtc":
+        extra = profile.extra_cvtc_storage
         expected = common | {
             "ignition_lookup_knock": _rebased(
                 code["ignition_adapter"].entry, rom_delta
@@ -955,10 +954,10 @@ def _validate_map_bindings(profile, map_layout):
             "fuel_compensation_lookup_runtime": _rebased(
                 code["fuel_compensation_adapter"].entry, rom_delta
             ),
-            "exhaust_cvtc_target_lookup_even": _rebased(
-                code["exhaust_cvtc_target_adapter"].entry, rom_delta
+            "intake_cvtc_target_lookup": _rebased(
+                code["cvtc_target_adapter"].entry, rom_delta
             ),
-            "exhaust_cvtc_target_lookup_odd": extra.adapter.start,
+            "exhaust_cvtc_target_lookup": extra.adapter.start,
             "rev_fuel_cut_base": _rebased(
                 map_layout.ram.fuel_cut_shadow.start, ram_delta
             ),
@@ -992,7 +991,7 @@ def _validate_map_bindings(profile, map_layout):
                 code["idle_ignition_adapter"].entry, rom_delta
             ),
             "idle_ignition_lookup_bank_2": _rebased(
-                code["exhaust_cvtc_target_adapter"].entry, rom_delta
+                code["cvtc_target_adapter"].entry, rom_delta
             ),
             "rev_fuel_cut_caps_base": _rebased(
                 map_layout.ram.fuel_cut_shadow.start, ram_delta
@@ -1229,7 +1228,7 @@ def _validate_can_bindings(profile, telemetry_layout):
 
 def _validate_structure(profile):
     contracts = {
-        "dual-exhaust": (
+        "dual-cvtc": (
             "sh7058_8mfk",
             0x100000,
             "mailbox24-tail-chain",

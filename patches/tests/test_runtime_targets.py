@@ -21,7 +21,7 @@ def test_runtime_registry_covers_all_supported_families():
         target = runtime_targets.load_runtime_target(rom)
         assert target.rom == rom
         assert target.family == runtime_targets.EXACT_FAMILY
-        assert target.map_layout.variant == "single-exhaust"
+        assert target.map_layout.variant == "single-cvtc"
 
 
 @pytest.mark.parametrize("rom", runtime_targets.RELOCATED_8MFK_ROMS)
@@ -32,7 +32,7 @@ def test_relocated_8mfk_target_has_complete_projected_runtime(rom):
     assert target.family == runtime_targets.RELOCATED_8MFK_FAMILY
     assert target.stock_image.rom == rom
     assert target.map_layout.rom == rom
-    assert target.map_layout.variant == "dual-exhaust"
+    assert target.map_layout.variant == "dual-cvtc"
     assert target.rolling_layout.variant == "relocated-8mfk"
     assert target.telemetry_layout.variant == "mailbox24-tail-chain"
     assert len(target.map_layout.families) == 13
@@ -46,12 +46,12 @@ def test_relocated_8mfk_target_has_complete_projected_runtime(rom):
         unit.key for unit in target.telemetry_layout.assembly_units
     }
 
-    odd = target.map_layout.family_by_key["exhaust_cvtc_target_odd"]
-    assert odd.canonical_address == profile.map_family_by_key[
-        "exhaust_cvtc_target_odd"
+    exhaust = target.map_layout.family_by_key["exhaust_cvtc_target"]
+    assert exhaust.canonical_address == profile.map_family_by_key[
+        "exhaust_cvtc_target"
     ]
-    assert odd.copies == profile.extra_exhaust_storage.copies
-    assert odd.pointer_table == profile.extra_exhaust_storage.pointer_table
+    assert exhaust.copies == profile.extra_cvtc_storage.copies
+    assert exhaust.pointer_table == profile.extra_cvtc_storage.pointer_table
     assert target.telemetry_layout.mailbox_record_address == (
         profile.can_symbol_by_key["mailbox_record_address"]
     )

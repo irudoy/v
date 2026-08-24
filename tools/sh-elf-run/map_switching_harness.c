@@ -46,12 +46,12 @@
 #define FULL_DFCO_ADAPTER 0x000d2480U
 #define IGNITION_ADAPTER 0x000d2340U
 #define FUEL_COMP_ADAPTER 0x000d2380U
-#define EXHAUST_CVTC_TARGET_ADAPTER 0x000d23c0U
+#define CVTC_TARGET_ADAPTER 0x000d23c0U
 #ifdef TARGET_VQ37
 #define IDLE_IGNITION_BANK_2_ADAPTER 0x000d23c0U
 #endif
-#ifdef TARGET_DUAL_EXHAUST
-#define EXHAUST_CVTC_TARGET_ODD_ADAPTER 0x000d5000U
+#ifdef TARGET_DUAL_CVTC
+#define SECONDARY_CVTC_TARGET_ADAPTER 0x000d5000U
 #endif
 #define FEEDBACK_WRAPPER 0x000d35e0U
 #define LIMITER_COMMIT 0x000d3660U
@@ -154,17 +154,29 @@ static const struct family adapter_families[] = {
         {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
          0x000d3000U},
     },
+#elif defined(TARGET_DUAL_CVTC)
+    /* The dual-CVTC layout reuses the canonical exhaust-target allocation
+       for the target intake-cam family, so the target renderer rewrites
+       0x0000b33a to the target intake-cam target base. */
+    {
+        "intake_cvtc_target", CVTC_TARGET_ADAPTER,
+        0x0000b33aU, 256U,
+        {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
+         0x000d3000U},
+    },
 #else
     {
-        "exhaust_cvtc_target", EXHAUST_CVTC_TARGET_ADAPTER,
+        "exhaust_cvtc_target", CVTC_TARGET_ADAPTER,
         0x0000b33aU, 256U,
         {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
          0x000d3000U},
     },
 #endif
-#ifdef TARGET_DUAL_EXHAUST
+#ifdef TARGET_DUAL_CVTC
+    /* The second CVTC family has no canonical counterpart; the runtime
+       verifier rewrites 0x0000b43a to the target exhaust-cam target base. */
     {
-        "exhaust_cvtc_target_odd", EXHAUST_CVTC_TARGET_ODD_ADAPTER,
+        "exhaust_cvtc_target", SECONDARY_CVTC_TARGET_ADAPTER,
         0x0000b43aU, 256U,
         {0x0000b43aU, 0x000d5100U, 0x000d5200U, 0x000d5300U,
          0x000d5400U},
@@ -208,12 +220,11 @@ static const struct pass_through pass_throughs[] = {
     {"idle_ignition_bank_2_hidden", IDLE_IGNITION_BANK_2_ADAPTER,
      0x000121a6U},
 #else
-    {"exhaust_cvtc_target_unknown", EXHAUST_CVTC_TARGET_ADAPTER,
-     0x0000b33bU},
+    {"cvtc_target_unknown", CVTC_TARGET_ADAPTER, 0x0000b33bU},
 #endif
-#ifdef TARGET_DUAL_EXHAUST
-    {"exhaust_cvtc_target_odd_unknown",
-     EXHAUST_CVTC_TARGET_ODD_ADAPTER, 0x0000b43bU},
+#ifdef TARGET_DUAL_CVTC
+    {"secondary_cvtc_target_unknown",
+     SECONDARY_CVTC_TARGET_ADAPTER, 0x0000b43bU},
 #endif
     {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
 };
@@ -854,7 +865,7 @@ int main(void)
 #ifdef TARGET_VQ37
     if (total_cases != 165U)
         return fail_value("summary", "case_count", total_cases, 165);
-#elif defined(TARGET_DUAL_EXHAUST)
+#elif defined(TARGET_DUAL_CVTC)
     if (total_cases != 139U)
         return fail_value("summary", "case_count", total_cases, 139);
 #else
@@ -870,7 +881,7 @@ int main(void)
 #ifdef TARGET_VQ37
         "adapters=105 limiter=14 native_fuel=20 feedback=9 "
         "feedback_invocations=%lu entries=13\n",
-#elif defined(TARGET_DUAL_EXHAUST)
+#elif defined(TARGET_DUAL_CVTC)
         "adapters=99 limiter=14 feedback=9 feedback_invocations=%lu "
         "entries=13\n",
 #else

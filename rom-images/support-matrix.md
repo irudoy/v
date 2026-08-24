@@ -18,7 +18,7 @@ engine name or similar graph structure does not permit address inheritance.
 | Family | Definition source | Map Switching | Rolling Launch | CAN telemetry | Checksum closure | Hardware status |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | `7MFKAVN86` | Canonical JK08A model plus exact-image inheritance | 12 families | Canonical fuel-shadow actuator | Schema 2 | Six fields | JK08A has scoped vehicle evidence; other members inherit no hardware result |
-| `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including separate exhaust banks | Relocated fuel-shadow actuator | Schema 2, mailbox 24 | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
+| `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including independent intake-cam and exhaust-cam target switching | Relocated fuel-shadow actuator | Schema 2, mailbox 24 | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut registry | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut registry | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 
@@ -36,7 +36,7 @@ visible canonical roles still have no promoted target-native editor binding:
 
 | Target family | Canonical roles without a target binding | Classification |
 | --- | --- | --- |
-| `8MFK` | stationary limiter hysteresis `0x085D9`, accelerator-pedal hysteresis `0x08FDC`, stationary-limiter readiness threshold `0x0911C`, intake-CVTC correction `0x0AB5A`, warm intake-CVTC surface `0x0B43A`, cold intake-CVTC surface `0x0B53A`, stationary-limiter step curve `0x124D2` | Seven explicit unsupported projection rows require target-native localization or proof that the mechanism is absent |
+| `8MFK` | stationary limiter hysteresis `0x085D9`, accelerator-pedal hysteresis `0x08FDC`, stationary-limiter readiness threshold `0x0911C`, stationary-limiter step curve `0x124D2` | Four explicit unsupported projection rows require target-native localization or proof that the mechanism is absent |
 | JK78C and `1ND` | exhaust-CVTC target surface `0x0B33A` | VQ37 uses a different branch-selected eight-point curve model; the exact target writer and editor geometry remain unbound |
 
 The three canonical intake-CVTC source slots `0x0AB5A`, `0x0B43A`, and

@@ -45,20 +45,20 @@ def test_common_rebase_preserves_full_runtime_alignment(profiles):
         )
 
 
-def test_dual_exhaust_and_nonuniform_telemetry_bindings_are_explicit(profiles):
+def test_dual_cvtc_and_nonuniform_telemetry_bindings_are_explicit(profiles):
     jk00d = profiles["JK00D"]
     jk00c = profiles["JK00C"]
 
-    assert jk00d.map_family_by_key["exhaust_cvtc_target_even"] == 0xB7CE
-    assert jk00d.map_family_by_key["exhaust_cvtc_target_odd"] == 0xB6CE
-    assert jk00c.map_family_by_key["exhaust_cvtc_target_even"] == 0xB7BE
-    assert jk00c.map_family_by_key["exhaust_cvtc_target_odd"] == 0xB6BE
+    assert jk00d.map_family_by_key["intake_cvtc_target"] == 0xB7CE
+    assert jk00d.map_family_by_key["exhaust_cvtc_target"] == 0xB6CE
+    assert jk00c.map_family_by_key["intake_cvtc_target"] == 0xB7BE
+    assert jk00c.map_family_by_key["exhaust_cvtc_target"] == 0xB6BE
     assert (
-        jk00d.map_hook_by_key["exhaust_cvtc_target_lookup_odd"].replacement
+        jk00d.map_hook_by_key["exhaust_cvtc_target_lookup"].replacement
         == 0xE1700
     )
     assert (
-        jk00c.map_hook_by_key["exhaust_cvtc_target_lookup_odd"].replacement
+        jk00c.map_hook_by_key["exhaust_cvtc_target_lookup"].replacement
         == 0xE1700
     )
 

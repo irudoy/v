@@ -16,9 +16,6 @@ SH7058_HR_UNSUPPORTED = {
     "000085d9",
     "00008fdc",
     "0000911c",
-    "0000ab5a",
-    "0000b43a",
-    "0000b53a",
     "000124d2",
 }
 JK78C_UNSUPPORTED = {
@@ -74,17 +71,33 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["rolling_configuration"] == 0x133F60
 
 
-def test_exhaust_target_has_two_explicit_bank_variants():
-    for rom in ("JK00C", "JK00D"):
+CVTC_TARGET_CORRESPONDENCE = {
+    "JK00C": {
+        "0000ab5a": "0000aede",
+        "0000b33a": "0000b6be",
+        "0000b43a": "0000b7be",
+        "0000b53a": "0000b8be",
+    },
+    "JK00D": {
+        "0000ab5a": "0000aeee",
+        "0000b33a": "0000b6ce",
+        "0000b43a": "0000b7ce",
+        "0000b53a": "0000b8ce",
+    },
+}
+
+
+def test_cvtc_targets_bind_one_intake_and_one_exhaust_path():
+    for rom, expected in CVTC_TARGET_CORRESPONDENCE.items():
         projection = definition_projections.projection_for_rom(rom)
         rows = [
             binding
             for binding in projection.bindings
-            if binding.entity == "Map"
-            and binding.source == "0000b33a"
+            if binding.entity == "Map" and binding.source in expected
         ]
-        assert {row.variant for row in rows} == {"bank_1", "bank_2"}
+        assert {row.source: row.target for row in rows} == expected
         assert all(row.status == "reviewed-target" for row in rows)
+        assert all(row.variant == "" for row in rows)
 
 
 def test_runtime_definition_layouts_use_target_allocation():
@@ -97,8 +110,8 @@ def test_runtime_definition_layouts_use_target_allocation():
         assert maps.slot_count == 5
         assert len(maps.families) == 13
         assert {
-            "exhaust_cvtc_target_even",
-            "exhaust_cvtc_target_odd",
+            "intake_cvtc_target",
+            "exhaust_cvtc_target",
         } <= set(maps.family_by_key)
         assert launch.rom == rom
         assert launch.configuration.start == 0xE0660

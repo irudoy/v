@@ -58,6 +58,11 @@ ZERO_SHA256 = "0" * 64
 
 NUMBER_RE = re.compile(r"(?<![A-Za-z0-9_])0x[0-9A-Fa-f]+")
 
+# The dual-CVTC layout reuses the canonical exhaust-target family
+# allocation for the target intake-cam family and allocates separate
+# storage for the target exhaust-cam family.
+INTAKE_CVTC_TARGET_NAME = "Intake CVTC Target - Main"
+
 MAP_HOOK_KEYS = {
     "selector_host_call": "selector_host_call",
     "startup_initializer": "startup_initializer",
@@ -68,7 +73,7 @@ MAP_HOOK_KEYS = {
     "ignition_lookup_4e1c0_b": "ignition_lookup_primary_b",
     "fuel_compensation_lookup_2c648": "fuel_compensation_lookup_startup",
     "fuel_compensation_lookup_3be3c": "fuel_compensation_lookup_runtime",
-    "exhaust_cvtc_target_lookup": "exhaust_cvtc_target_lookup_even",
+    "exhaust_cvtc_target_lookup": "intake_cvtc_target_lookup",
     "rev_fuel_cut_base": "rev_fuel_cut_base",
     "rev_throttle_cluster_base": "rev_throttle_cluster_base",
     "rev_throttle_scalar_base": "rev_throttle_scalar_base",
@@ -301,10 +306,10 @@ def _address_mapping(profile):
     canonical_can = can_telemetry_layout.load_layout()
 
     family_targets = profile.map_family_by_key
-    if profile.map_variant == "dual-exhaust":
+    if profile.map_variant == "dual-cvtc":
         family_keys = {
             family.key: (
-                "exhaust_cvtc_target_even"
+                "intake_cvtc_target"
                 if family.key == "exhaust_cvtc_target"
                 else family.key
             )
@@ -366,7 +371,7 @@ def _address_mapping(profile):
     map_hooks = profile.map_hook_by_key
     hook_keys = (
         MAP_HOOK_KEYS
-        if profile.map_variant == "dual-exhaust"
+        if profile.map_variant == "dual-cvtc"
         else VQ37_MAP_HOOK_KEYS
     )
     for hook in canonical_map.hooks:
@@ -685,7 +690,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 code_regions=tuple(
                     (
                         "idle_ignition_bank_2_adapter"
-                        if key == "exhaust_cvtc_target_adapter"
+                        if key == "cvtc_target_adapter"
                         else key
                     )
                     for key in unit.code_regions
@@ -699,27 +704,29 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         )
         for unit in unit_prototypes
     }
-    if profile.map_variant == "dual-exhaust":
+    if profile.map_variant == "dual-cvtc":
         source_texts["limiter_commit"] = _render_unaligned_throttle_limiter(
             profile, mapping
         )
-        odd_template = _read_source("map-switching-exhaust-odd-adapter.s")
-        odd_overrides = {
+        secondary_template = _read_source(
+            "map-switching-secondary-cvtc-adapter.s"
+        )
+        secondary_overrides = {
             0x0000B33A: profile.map_family_by_key[
-                "exhaust_cvtc_target_odd"
+                "exhaust_cvtc_target"
             ],
             0x000261B8: profile.map_symbol_by_key["exhaust_lookup"],
-            0x000D5050: profile.extra_exhaust_storage.pointer_table,
+            0x000D5050: profile.extra_cvtc_storage.pointer_table,
         }
-        source_texts["exhaust_odd_adapter"] = _render_source(
-            odd_template, profile, mapping, odd_overrides
+        source_texts["secondary_cvtc_adapter"] = _render_source(
+            secondary_template, profile, mapping, secondary_overrides
         )
 
     code_regions = []
     for item in base.code_regions:
         if (
             profile.map_variant in VQ37_MAP_VARIANTS
-            and item.key == "exhaust_cvtc_target_adapter"
+            and item.key == "cvtc_target_adapter"
         ):
             code_regions.append(replace(
                 item,
@@ -747,15 +754,15 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             ),
             entry=item.entry + delta,
         ))
-    if profile.map_variant == "dual-exhaust":
+    if profile.map_variant == "dual-cvtc":
         code_regions.append(map_switching_layout.CodeRegion(
-            "exhaust_cvtc_target_odd_adapter",
+            "secondary_cvtc_target_adapter",
             map_switching_layout.AddressRange(
-                profile.extra_exhaust_storage.adapter.start,
-                profile.extra_exhaust_storage.adapter.end,
-                "exhaust_cvtc_target_odd_adapter",
+                profile.extra_cvtc_storage.adapter.start,
+                profile.extra_cvtc_storage.adapter.end,
+                "secondary_cvtc_target_adapter",
             ),
-            profile.extra_exhaust_storage.adapter.start,
+            profile.extra_cvtc_storage.adapter.start,
         ))
     code_regions = tuple(code_regions)
 
@@ -770,37 +777,37 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         )
         for unit in unit_prototypes
     )
-    if profile.map_variant == "dual-exhaust":
-        odd_proto = map_switching_layout.AssemblyUnit(
-            key="exhaust_odd_adapter",
-            source="map-switching-exhaust-odd-adapter.s",
+    if profile.map_variant == "dual-cvtc":
+        secondary_proto = map_switching_layout.AssemblyUnit(
+            key="secondary_cvtc_adapter",
+            source="map-switching-secondary-cvtc-adapter.s",
             span=map_switching_layout.AddressRange(
-                0x000D5000, 0x000D5040, "assembly.exhaust_odd_adapter"
+                0x000D5000, 0x000D5040, "assembly.secondary_cvtc_adapter"
             ),
             fill=0xFF,
             language="SuperH:BE:32:SH-2A",
             expected_sha256=ZERO_SHA256,
             instruction_count=0,
             data_bytes=0,
-            code_regions=("exhaust_cvtc_target_odd_adapter",),
+            code_regions=("secondary_cvtc_target_adapter",),
         )
         units += (
             _projected_unit(
-                odd_proto,
-                source_texts["exhaust_odd_adapter"],
-                profile.extra_exhaust_storage.adapter.start,
-                profile.extra_exhaust_storage.adapter.end,
-                odd_proto.code_regions,
+                secondary_proto,
+                source_texts["secondary_cvtc_adapter"],
+                profile.extra_cvtc_storage.adapter.start,
+                profile.extra_cvtc_storage.adapter.end,
+                secondary_proto.code_regions,
                 payloads,
             ),
         )
 
     target_families = profile.map_family_by_key
     families = []
-    if profile.map_variant == "dual-exhaust":
+    if profile.map_variant == "dual-cvtc":
         for family in base.families:
             key = (
-                "exhaust_cvtc_target_even"
+                "intake_cvtc_target"
                 if family.key == "exhaust_cvtc_target"
                 else family.key
             )
@@ -809,7 +816,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 family,
                 key=key,
                 name=(
-                    f"{family.name} - Even Bank"
+                    INTAKE_CVTC_TARGET_NAME
                     if family.key == "exhaust_cvtc_target"
                     else family.name
                 ),
@@ -831,16 +838,15 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 ),
             ))
         exhaust = base.family_by_key["exhaust_cvtc_target"]
-        odd_address = target_families["exhaust_cvtc_target_odd"]
+        exhaust_address = target_families["exhaust_cvtc_target"]
         families.append(replace(
             exhaust,
-            key="exhaust_cvtc_target_odd",
-            name=f"{exhaust.name} - Odd Bank",
-            canonical_address=odd_address,
-            copies=profile.extra_exhaust_storage.copies,
-            pointer_table=profile.extra_exhaust_storage.pointer_table,
-            stock_container_start=odd_address,
-            adapter="exhaust_cvtc_target_odd_adapter",
+            key="exhaust_cvtc_target",
+            canonical_address=exhaust_address,
+            copies=profile.extra_cvtc_storage.copies,
+            pointer_table=profile.extra_cvtc_storage.pointer_table,
+            stock_container_start=exhaust_address,
+            adapter="secondary_cvtc_target_adapter",
         ))
     else:
         storage_keys = {
@@ -1035,7 +1041,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         ),
         throttle_selected_offset=(
             base.ram.throttle_selected_offset
-            if profile.map_variant == "dual-exhaust"
+            if profile.map_variant == "dual-cvtc"
             else 0
         ),
         stock_throttle_runtime=map_symbols.get("throttle_runtime", 0),
@@ -1056,7 +1062,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         feedback=feedback,
         code_regions=code_regions,
         assembly_units=units,
-        anchors=base.anchors if profile.map_variant == "dual-exhaust" else (),
+        anchors=base.anchors if profile.map_variant == "dual-cvtc" else (),
         hooks=hooks,
         families=tuple(families),
         variant=profile.map_variant,
@@ -1313,7 +1319,7 @@ def _project_can(
         event=_shift_range(base.ram.event, ram_delta),
         active_reserved=_shift_range(base.ram.active_reserved, ram_delta),
     )
-    extra = profile.extra_exhaust_storage
+    extra = profile.extra_cvtc_storage
     extra_end = (
         base.reserved_rom.start + delta + 0x80
         if profile.map_variant in VQ37_MAP_VARIANTS
@@ -1545,11 +1551,12 @@ def _validate_projected_bindings(target):
         target.telemetry_layout.mailbox_record_stock
         != can_symbols["mailbox_record_stock"],
     ))
-    if profile.map_variant == "dual-exhaust":
-        odd = target.map_layout.family_by_key["exhaust_cvtc_target_odd"]
+    if profile.map_variant == "dual-cvtc":
+        exhaust = target.map_layout.family_by_key["exhaust_cvtc_target"]
         allocation_differs = allocation_differs or any((
-            odd.copies != profile.extra_exhaust_storage.copies,
-            odd.pointer_table != profile.extra_exhaust_storage.pointer_table,
+            exhaust.copies != profile.extra_cvtc_storage.copies,
+            exhaust.pointer_table
+            != profile.extra_cvtc_storage.pointer_table,
         ))
     if allocation_differs:
         raise RuntimeTargetError(

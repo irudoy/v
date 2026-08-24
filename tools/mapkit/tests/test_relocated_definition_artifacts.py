@@ -8,8 +8,8 @@ TARGETS = {
     "JK00C": {
         "checksum_sum": "0x97A0",
         "checksum_xor": "0x9798",
-        "exhaust_bank_1": "0x0B7BE",
-        "exhaust_bank_2": "0x0B6BE",
+        "intake_cvtc_target": "0x0B7BE",
+        "exhaust_cvtc_target": "0x0B6BE",
         "switches": {
             "CAN Telemetry at Startup": "0xE1503",
             "Rolling Launch Require Accelerator Pedal": "0xE066C",
@@ -18,8 +18,8 @@ TARGETS = {
     "JK00D": {
         "checksum_sum": "0x97B0",
         "checksum_xor": "0x97A8",
-        "exhaust_bank_1": "0x0B7CE",
-        "exhaust_bank_2": "0x0B6CE",
+        "intake_cvtc_target": "0x0B7CE",
+        "exhaust_cvtc_target": "0x0B6CE",
         "switches": {
             "Developer Immobilizer": "0x8740",
             "CAN Telemetry at Startup": "0xE1503",
@@ -92,17 +92,19 @@ def test_relocated_romraider_artifacts_keep_target_addresses_and_provenance():
             assert "Developer Immobilizer" not in tables
 
         assert (
-            tables["Map 1 - Exhaust CVTC Target - Main - Bank 1"].get(
+            tables["Map 1 - Intake CVTC Target - Main"].get(
                 "storageaddress"
             )
-            == expected["exhaust_bank_1"]
+            == expected["intake_cvtc_target"]
         )
         assert (
-            tables["Map 1 - Exhaust CVTC Target - Main - Bank 2"].get(
+            tables["Map 1 - Exhaust CVTC Target - Main"].get(
                 "storageaddress"
             )
-            == expected["exhaust_bank_2"]
+            == expected["exhaust_cvtc_target"]
         )
+        assert "Intake CVTC Target - Cold" in tables
+        assert "Intake CVTC Target Correction - High-Detonation State" in tables
 
         text = (DEFS / f"{rom}.xml").read_text(encoding="utf-8")
         correspondence = f"JK08A-{rom}.definition-addresses.csv"
@@ -122,16 +124,16 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         assert f"defs/JK08A-{rom}.definition-addresses.csv" in description
         assert f"defs/{rom}-{rom}.definition-addresses.csv" not in description
         assert f"defs/{rom}.dtc.csv" not in description
-        assert len(root.findall("XDFTABLE")) == 99
+        assert len(root.findall("XDFTABLE")) == 101
         assert len(root.findall("XDFFLAG")) == 5
         assert root.find("XDFCHECKSUM") is None
 
         assert _xdf_table_address(
-            tables["Map 1 - Exhaust CVTC Target - Main - Bank 1"]
-        ) == expected["exhaust_bank_1"].replace("0x0", "0x")
+            tables["Map 1 - Intake CVTC Target - Main"]
+        ) == expected["intake_cvtc_target"].replace("0x0", "0x")
         assert _xdf_table_address(
-            tables["Map 1 - Exhaust CVTC Target - Main - Bank 2"]
-        ) == expected["exhaust_bank_2"].replace("0x0", "0x")
+            tables["Map 1 - Exhaust CVTC Target - Main"]
+        ) == expected["exhaust_cvtc_target"].replace("0x0", "0x")
         assert _xdf_table_address(
             tables["Rolling Launch Minimum Coolant Temperature"]
         ) == "0xE0666"

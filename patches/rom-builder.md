@@ -104,10 +104,12 @@ semantic tables. The registry has no implicit ROM selector.
 
 The 8MFK runtime uses a uniform ROM relocation of `0xC700` and a RAM relocation
 of `0x300`, while retaining explicit nonuniform stock hooks and application-RAM
-sources. Its exhaust-CVTC target is two independent bank families. The second
-adapter and its four map copies occupy the beginning of the former telemetry
-future reserve. The target limiter copies the two-byte-aligned stock throttle
-container with `MOV.W`; using the canonical `MOV.L` loop would fault on SH-2E.
+sources. It switches an intake-cam target family and an exhaust-cam target
+family independently. The intake family reuses the canonical CVTC allocation;
+the exhaust family adds a second adapter and four map copies at the beginning
+of the former telemetry future reserve. The target limiter copies the
+two-byte-aligned stock throttle container with `MOV.W`; using the canonical
+`MOV.L` loop would fault on SH-2E.
 Telemetry uses stock-inactive mailbox 24 and a completion ISR that handles that
 mailbox before tail-chaining to the complete stock ISR. Its final `JMP` delay
 slot restores `r0`, preserving the interrupted register file at the stock ISR

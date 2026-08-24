@@ -93,7 +93,7 @@ end = 0x000D23C0
 entry = 0x000D2380
 
 [[code_region]]
-key = "exhaust_cvtc_target_adapter"
+key = "cvtc_target_adapter"
 start = 0x000D23C0
 end = 0x000D2400
 entry = 0x000D23C0
@@ -166,7 +166,7 @@ code_regions = [
     "overrun_adapter",
     "ignition_adapter",
     "fuel_compensation_adapter",
-    "exhaust_cvtc_target_adapter",
+    "cvtc_target_adapter",
 ]
 
 [[assembly_unit]]
@@ -489,7 +489,7 @@ width = 16
 height = 16
 storage_type = "uint8"
 access_kind = "adapter"
-adapter = "exhaust_cvtc_target_adapter"
+adapter = "cvtc_target_adapter"
 copy_alignment = 256
 copies = [0x000D2D00, 0x000D2E00, 0x000D2F00, 0x000D3000]
 pointer_table = 0x000D3590

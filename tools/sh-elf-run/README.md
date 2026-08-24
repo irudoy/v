@@ -42,7 +42,7 @@ The gate performs these checks:
    polling, runtime enable overrides, capture, bank publication, page request,
    ACK, abort, preemption, corruption, and ISR path with distinct fixture
    values that expose wrong slots or addresses. The 8MFK cases include both
-   exhaust-CVTC banks, the two-byte-aligned throttle limiter container,
+   CVTC target families, the two-byte-aligned throttle limiter container,
    mailbox 24, and the stock-ISR tail chain. The 1ND cases include both fuel
    banks, both warm-idle banks, the shared cold-idle family, native fuel-cut
    caps and curves, the exact stock fuel-cut state machine, the throttle

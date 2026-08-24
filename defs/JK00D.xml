@@ -76,6 +76,61 @@
       <bit name="Map 5 - Rolling Launch Enable" position="4"/>
     </table>
 
+    <!-- 0x0B8CE  8x8 uint8  map [code]
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x15277 rpm [code]; X Axis 0x15257 load
+         [code]
+         Code proves the cold intake-cam target role, raw coolant selection, centered byte
+         representation, and column coordinate at raw*100/128 percent of the fixed BFS
+         reference. The target-vehicle capture remains entirely above the warm threshold and
+         does not dynamically validate this surface or the coolant blend. The Cylinder Filling
+         physical name and 0.5 degree-per-byte output conversion remain source-derived
+         candidates. Result disposition: consumer. Definition address projected from JK08A
+         0000b53a through JK08A-JK00D.definition-addresses.csv: cold intake-cam target in the
+         stock intake CVTC descriptor block at 0x000C3870.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC Target - Cold"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
+           storageaddress="0x0B8CE" sizex="8" sizey="8" endian="big">
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x15257"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x15277" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AEEE  4x4 uint8  map [code]
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x15347 rpm [code]; X Axis 0x1533F load
+         [code]
+         Code proves the conditional intake-cam correction path and centered raw arithmetic. The
+         target-vehicle capture contains zero samples with ffff2466.bit6 set, so this branch has
+         no dynamic validation. The high-detonation meaning of the selector, the Cylinder
+         Filling axis name, and the 0.5 degree-per-byte conversion remain catalog candidates.
+         Result disposition: consumer. Definition address projected from JK08A 0000ab5a through
+         JK08A-JK00D.definition-addresses.csv: intake-cam correction table in the stock intake
+         CVTC descriptor block at 0x000C3870.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Intake CVTC Target Correction - High-Detonation State"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
+           storageaddress="0x0AEEE" sizex="4" sizey="4" endian="big">
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1533F"
+             sizex="4" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x15347" sizey="4" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x14D65  6 uint8  map [code]
          scaling x/128 ratio [code]
          All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in
@@ -493,9 +548,10 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
          address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B88 beside
+         the cold exhaust target and the exhaust correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Exhaust CVTC Target - Main - Bank 2"
+    <table type="3D" name="Map 1 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0x0B6CE" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -514,24 +570,24 @@
     <!-- 0x0B7CE  16x16 uint8  common-definition Map 1 storage projected from 0x0B7CE [code]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
          [code]
-         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
-         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
-         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
-         monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
-         address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         The intake-cam target identity is code-proven by its placement in two-channel CVTC
+         dispatcher 000bd170, the coolant target selector, and the consumer that compares common
+         reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle
+         replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-
+         interpolation order, and scheduler alignment. With downstream neutralization excluded,
+         prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw
+         for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
+         conversion remain catalog candidates. Result disposition: consumer. Definition address
+         projected from JK08A 0000b43a through JK08A-JK00D.definition-addresses.csv: warm
+         intake-cam target in the stock intake CVTC descriptor block at 0x000C3870 beside the
+         cold intake target and the intake correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Exhaust CVTC Target - Main - Bank 1"
-           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+    <table type="3D" name="Map 1 - Intake CVTC Target - Main"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0x0B7CE" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
              sizex="16" endian="big">
@@ -889,24 +945,24 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
          [code]
-         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
-         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
-         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
-         monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
-         address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         The intake-cam target identity is code-proven by its placement in two-channel CVTC
+         dispatcher 000bd170, the coolant target selector, and the consumer that compares common
+         reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle
+         replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-
+         interpolation order, and scheduler alignment. With downstream neutralization excluded,
+         prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw
+         for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
+         conversion remain catalog candidates. Result disposition: consumer. Definition address
+         projected from JK08A 0000b43a through JK08A-JK00D.definition-addresses.csv: warm
+         intake-cam target in the stock intake CVTC descriptor block at 0x000C3870 beside the
+         cold intake target and the intake correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Exhaust CVTC Target - Main - Bank 1"
-           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+    <table type="3D" name="Map 2 - Intake CVTC Target - Main"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0xDF400" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
              sizex="16" endian="big">
@@ -935,9 +991,10 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
          address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B88 beside
+         the cold exhaust target and the exhaust correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Exhaust CVTC Target - Main - Bank 2"
+    <table type="3D" name="Map 2 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xE1800" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -1309,24 +1366,24 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
          [code]
-         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
-         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
-         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
-         monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
-         address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         The intake-cam target identity is code-proven by its placement in two-channel CVTC
+         dispatcher 000bd170, the coolant target selector, and the consumer that compares common
+         reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle
+         replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-
+         interpolation order, and scheduler alignment. With downstream neutralization excluded,
+         prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw
+         for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
+         conversion remain catalog candidates. Result disposition: consumer. Definition address
+         projected from JK08A 0000b43a through JK08A-JK00D.definition-addresses.csv: warm
+         intake-cam target in the stock intake CVTC descriptor block at 0x000C3870 beside the
+         cold intake target and the intake correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Exhaust CVTC Target - Main - Bank 1"
-           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+    <table type="3D" name="Map 3 - Intake CVTC Target - Main"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0xDF500" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
              sizex="16" endian="big">
@@ -1355,9 +1412,10 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
          address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B88 beside
+         the cold exhaust target and the exhaust correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Exhaust CVTC Target - Main - Bank 2"
+    <table type="3D" name="Map 3 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xE1900" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -1729,24 +1787,24 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
          [code]
-         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
-         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
-         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
-         monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
-         address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         The intake-cam target identity is code-proven by its placement in two-channel CVTC
+         dispatcher 000bd170, the coolant target selector, and the consumer that compares common
+         reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle
+         replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-
+         interpolation order, and scheduler alignment. With downstream neutralization excluded,
+         prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw
+         for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
+         conversion remain catalog candidates. Result disposition: consumer. Definition address
+         projected from JK08A 0000b43a through JK08A-JK00D.definition-addresses.csv: warm
+         intake-cam target in the stock intake CVTC descriptor block at 0x000C3870 beside the
+         cold intake target and the intake correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Exhaust CVTC Target - Main - Bank 1"
-           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+    <table type="3D" name="Map 4 - Intake CVTC Target - Main"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0xDF600" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
              sizex="16" endian="big">
@@ -1775,9 +1833,10 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
          address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B88 beside
+         the cold exhaust target and the exhaust correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Exhaust CVTC Target - Main - Bank 2"
+    <table type="3D" name="Map 4 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xE1A00" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
@@ -2149,24 +2208,24 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
+         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x152EB rpm [code]; X Axis 0x152CB load
          [code]
-         The exact service-0x22 table publishes ffff2327 as DID 0x1166. Structured Nissan
-         diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
-         target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
-         monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
-         address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         The intake-cam target identity is code-proven by its placement in two-channel CVTC
+         dispatcher 000bd170, the coolant target selector, and the consumer that compares common
+         reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle
+         replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-
+         interpolation order, and scheduler alignment. With downstream neutralization excluded,
+         prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw
+         for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
+         conversion remain catalog candidates. Result disposition: consumer. Definition address
+         projected from JK08A 0000b43a through JK08A-JK00D.definition-addresses.csv: warm
+         intake-cam target in the stock intake CVTC descriptor block at 0x000C3870 beside the
+         cold intake target and the intake correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Exhaust CVTC Target - Main - Bank 1"
-           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+    <table type="3D" name="Map 5 - Intake CVTC Target - Main"
+           category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0xDF700" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
              sizex="16" endian="big">
@@ -2195,9 +2254,10 @@
          5,366 active samples after 16 unchanged-input cycles; remaining differences are
          downstream mode, rate, and offset conditioning. Result disposition: writes. Definition
          address projected from JK08A 0000b33a through JK08A-JK00D.definition-addresses.csv:
-         target-specific interpolation operands and bank topology.
+         warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B88 beside
+         the cold exhaust target and the exhaust correction table.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Exhaust CVTC Target - Main - Bank 2"
+    <table type="3D" name="Map 5 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xE1B00" sizex="16" sizey="16" endian="big">
       <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"

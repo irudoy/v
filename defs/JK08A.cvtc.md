@@ -82,6 +82,19 @@ encoding.
 | exhaust | cold/fallback target | `0xB2FA` | 8x8 uint8 | `0x12EC2` | `0x12EA2` | centered byte |
 | exhaust | conditional correction | `0xAB4A` | 4x4 uint8 | `0x12F96` | `0x12F8E` | centered byte |
 
+Each calculator reaches its three surfaces through one literal block that pairs
+every map base with its own interpolation entry:
+
+| Path | Literal block | Cold | Warm/main | Correction |
+|---|---:|---:|---:|---:|
+| intake | `0xBDD04` | `0xB53A` | `0xB43A` | `0xAB5A` |
+| exhaust | `0xC0014` | `0xB2FA` | `0xB33A` | `0xAB4A` |
+
+Both blocks use interpolation entries `0x26140`, `0x261B8`, and `0x26084` in
+that order. The grouping identifies the intake or exhaust role of a target
+surface from stock bytes alone, without map values, axis geometry, or
+dispatcher topology.
+
 The row key is RPM/50 scheduler snapshot `0xFFFF11AE`. Its common producer
 establishes the exact relation
 `min(255, uint16[0xFFFF11F4] >> 2)` to the captured RPM/12.5 word. The column

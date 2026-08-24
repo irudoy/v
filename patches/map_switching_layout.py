@@ -209,7 +209,7 @@ class Layout:
     anchors: tuple[Anchor, ...]
     hooks: tuple[Hook, ...]
     families: tuple[Family, ...]
-    variant: str = "single-exhaust"
+    variant: str = "single-cvtc"
     source_texts: tuple[tuple[str, str], ...] = ()
     source_literals: tuple[
         tuple[str, tuple[tuple[str, int], ...]], ...
@@ -565,9 +565,9 @@ def validate_structure(layout):
             f"unsupported map-switching layout schema {layout.schema_version}"
         )
     if (
-        (layout.variant == "single-exhaust" and layout.rom != "JK08A")
+        (layout.variant == "single-cvtc" and layout.rom != "JK08A")
         or (
-            layout.variant == "dual-exhaust"
+            layout.variant == "dual-cvtc"
             and layout.rom not in {"JK00C", "JK00D"}
         )
         or (
@@ -579,7 +579,7 @@ def validate_structure(layout):
             and layout.rom != "JK78C"
         )
         or layout.variant not in {
-            "single-exhaust", "dual-exhaust", *VQ37_VARIANTS
+            "single-cvtc", "dual-cvtc", *VQ37_VARIANTS
         }
     ):
         raise ValueError(
@@ -612,11 +612,11 @@ def validate_structure(layout):
         "rev_limit_fuel_cut",
         "rev_limit_throttle_cut",
     }
-    if layout.variant == "dual-exhaust":
+    if layout.variant == "dual-cvtc":
         required_family_keys.remove("exhaust_cvtc_target")
         required_family_keys.update({
-            "exhaust_cvtc_target_even",
-            "exhaust_cvtc_target_odd",
+            "intake_cvtc_target",
+            "exhaust_cvtc_target",
         })
     elif layout.variant in VQ37_VARIANTS:
         required_family_keys = {
@@ -1054,7 +1054,7 @@ def validate_structure(layout):
     )
     expected_access_split = (
         (11, 2)
-        if layout.variant == "dual-exhaust"
+        if layout.variant == "dual-cvtc"
         else ((11, 3) if layout.variant in VQ37_VARIANTS else (10, 2))
     )
     if (adapter_count, shadow_count) != expected_access_split:
@@ -1070,16 +1070,16 @@ def validate_structure(layout):
         "full_dfco_adapter",
         "ignition_adapter",
         "fuel_compensation_adapter",
-        "exhaust_cvtc_target_adapter",
+        "cvtc_target_adapter",
         "idle_ignition_adapter",
         "limiter_commit",
         "cruise_feedback_wrapper",
         "cruise_feedback_engine",
     }
-    if layout.variant == "dual-exhaust":
-        expected_assembled_regions.add("exhaust_cvtc_target_odd_adapter")
+    if layout.variant == "dual-cvtc":
+        expected_assembled_regions.add("secondary_cvtc_target_adapter")
     elif layout.variant in VQ37_VARIANTS:
-        expected_assembled_regions.remove("exhaust_cvtc_target_adapter")
+        expected_assembled_regions.remove("cvtc_target_adapter")
         expected_assembled_regions.add("idle_ignition_bank_2_adapter")
     if layout.assembled_region_keys != expected_assembled_regions:
         raise ValueError(

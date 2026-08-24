@@ -616,13 +616,13 @@ def _expected_long_literals(layout):
             ),
         "fuel_compensation_pointers":
             family["fuel_compensation_main"].pointer_table,
-        "exhaust_cvtc_target_base":
+        "cvtc_target_base":
             family["exhaust_cvtc_target"].canonical_address,
-        "exhaust_cvtc_target_stock_wrapper":
+        "cvtc_target_stock_wrapper":
             _hook_stock_for_adapter(
-                layout, "exhaust_cvtc_target_adapter"
+                layout, "cvtc_target_adapter"
             ),
-        "exhaust_cvtc_target_pointers":
+        "cvtc_target_pointers":
             family["exhaust_cvtc_target"].pointer_table,
         "cold_idle_ignition_base":
             family["cold_idle_ignition_timing"].canonical_address,
@@ -744,7 +744,7 @@ def _validate_sh7058s_instruction_subset(parsed):
             )
 
 
-def _validate_limiter_commit(parsed, variant="single-exhaust"):
+def _validate_limiter_commit(parsed, variant="single-cvtc"):
     instructions = [
         item for item in parsed.statements if item.kind == "instruction"
     ]
@@ -987,7 +987,7 @@ def _validate_feedback_engine(parsed, layout):
         )
 
 
-def _validate_dual_exhaust_adapter(parsed):
+def _validate_secondary_cvtc_adapter(parsed):
     _validate_registers_and_control_flow(parsed, 0)
     texts = _instruction_texts(parsed)
     required = {
@@ -1001,11 +1001,11 @@ def _validate_dual_exhaust_adapter(parsed):
     }
     if not required <= set(texts):
         raise ValueError(
-            f"{parsed.path}: dual-bank exhaust adapter contract differs"
+            f"{parsed.path}: second CVTC adapter contract differs"
         )
     if texts.count("jmp @r3") != 2:
         raise ValueError(
-            f"{parsed.path}: dual-bank exhaust adapter tail count differs"
+            f"{parsed.path}: second CVTC adapter tail count differs"
         )
 
 
@@ -1085,8 +1085,8 @@ def validate_assembly_sources(layout=None):
             _validate_limiter_commit(parsed, layout.variant)
         elif unit.key == "startup_wrapper":
             _validate_startup_wrapper(parsed)
-        elif unit.key == "exhaust_odd_adapter":
-            _validate_dual_exhaust_adapter(parsed)
+        elif unit.key == "secondary_cvtc_adapter":
+            _validate_secondary_cvtc_adapter(parsed)
         else:
             raise ValueError(
                 f"{unit.key}: no source-level ABI validator is registered"

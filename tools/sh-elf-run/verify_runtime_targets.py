@@ -30,7 +30,7 @@ from tools.mapkit import vq37_native_fuel_cut
 
 
 MAP_CASES_BY_VARIANT = {
-    "dual-exhaust": 139,
+    "dual-cvtc": 139,
     "sh7059-1nd": 165,
     "sh7058-jk78": 165,
 }
@@ -215,8 +215,8 @@ def _install_stock_stubs(fixture, target):
             "ignition_lookup_primary_b",
             "fuel_compensation_lookup_startup",
             "fuel_compensation_lookup_runtime",
-            "exhaust_cvtc_target_lookup_even",
-            "exhaust_cvtc_target_lookup_odd",
+            "intake_cvtc_target_lookup",
+            "exhaust_cvtc_target_lookup",
             "idle_ignition_lookup",
         }
     missing = map_keys - map_hooks.keys()
@@ -352,10 +352,10 @@ def _render_harness(target, name, build_dir):
     overrides = None
     if (
         name == "map_switching_harness.c"
-        and target.map_layout.variant == "dual-exhaust"
+        and target.map_layout.variant == "dual-cvtc"
     ):
         odd = target.map_layout.family_by_key[
-            "exhaust_cvtc_target_odd"
+            "exhaust_cvtc_target"
         ].canonical_address
         overrides = {0x0000B43A: odd, 0x0000B43B: odd + 1}
     elif (
@@ -461,13 +461,13 @@ def _run_harnesses(target, fixture, build_dir):
     can_source = _render_harness(
         target, "can_telemetry_harness.c", build_dir
     )
-    if target.map_layout.variant == "dual-exhaust":
+    if target.map_layout.variant == "dual-cvtc":
         map_marker = (
             "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=139 selector=17 "
             "adapters=99 limiter=14 feedback=9 feedback_invocations=17 "
             "entries=13"
         )
-        map_defines = ("TARGET_DUAL_EXHAUST",)
+        map_defines = ("TARGET_DUAL_CVTC",)
     elif target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
         map_marker = (
             "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=165 selector=17 "

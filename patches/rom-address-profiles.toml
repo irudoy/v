@@ -20,7 +20,7 @@ free_ram_start = 0xFFFF6000
 free_ram_end = 0xFFFF6600
 injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
-map_variant = "dual-exhaust"
+map_variant = "dual-cvtc"
 telemetry_completion_variant = "mailbox24-tail-chain"
 telemetry_unavailable = []
 
@@ -38,8 +38,8 @@ high_octane_timing_state = 0x00009AEE
 high_detonation_timing_state = 0x00009BEE
 cold_idle_ignition_timing = 0x00014493
 idle_ignition_timing = 0x0001449B
-exhaust_cvtc_target_even = 0x0000B7CE
-exhaust_cvtc_target_odd = 0x0000B6CE
+intake_cvtc_target = 0x0000B7CE
+exhaust_cvtc_target = 0x0000B6CE
 fuel_compensation_main = 0x0000A3EE
 rev_limit_fuel_cut = 0x000093F4
 rev_limit_throttle_cut = 0x000094E4
@@ -54,8 +54,8 @@ ignition_lookup_primary_a = [0x0004FDC8, 0x00026DF4, 0x000DEA40]
 ignition_lookup_primary_b = [0x0004FEE0, 0x00026DF4, 0x000DEA40]
 fuel_compensation_lookup_startup = [0x0002DB84, 0x00026DB4, 0x000DEA80]
 fuel_compensation_lookup_runtime = [0x0003D13C, 0x00026DB4, 0x000DEA80]
-exhaust_cvtc_target_lookup_even = [0x000C3880, 0x00026D7C, 0x000DEAC0]
-exhaust_cvtc_target_lookup_odd = [0x000C5B94, 0x00026D7C, 0x000E1700]
+intake_cvtc_target_lookup = [0x000C3880, 0x00026D7C, 0x000DEAC0]
+exhaust_cvtc_target_lookup = [0x000C5B94, 0x00026D7C, 0x000E1700]
 rev_fuel_cut_base = [0x00050D8C, 0x000093F4, 0xFFFF6010]
 rev_throttle_cluster_base = [0x00078104, 0x000094DC, 0xFFFF6020]
 rev_throttle_scalar_base = [0x0007A6E8, 0x000094E4, 0xFFFF6028]
@@ -207,7 +207,7 @@ secondary_tps_b1_raw = 0xFFFF2808
 secondary_tps_b2_raw = 0xFFFF2916
 af_adjustment_b2_raw = 0xFFFF478A
 
-[profile.JK00D.extra_exhaust_storage]
+[profile.JK00D.extra_cvtc_storage]
 adapter_start = 0x000E1700
 adapter_end = 0x000E1740
 pointer_table = 0x000E1750
@@ -216,7 +216,7 @@ copies = [0x000E1800, 0x000E1900, 0x000E1A00, 0x000E1B00]
 [profile.JK00D.evidence]
 free_rom = "AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xff with zero instructions, data, functions, or references."
 free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,387 recovered functions: zero accesses, calls, candidates, or decompiler failures."
-maps = "Reviewed interpolation correspondence, exact map contents, homologous call topology, and target literal references bind all families; the two exhaust banks remain separate."
+maps = "Reviewed interpolation correspondence, exact map contents, homologous call topology, and target literal references bind all families; the intake-cam and exhaust-cam target families switch independently."
 rolling = "Scheduler, startup, ignition, selector, diagnostic pointer, and direct RAM bindings are recovered from exact or normalized homologs and target stock tables."
 can = "HCAN initialization, vector, serializer, payload, mailbox table, and knock bindings are recovered from target call topology and literal references; mailbox 24 is stock inactive while mailbox 26 is occupied."
 telemetry = "Direct RAM-reference pairs, exact UDS pointer-table positions, producer-consumer topology, and reviewed target function listings bind every schema-2 ECU source."
@@ -235,7 +235,7 @@ free_ram_start = 0xFFFF6000
 free_ram_end = 0xFFFF6600
 injected_ram_start = 0xFFFF6000
 injected_ram_end = 0xFFFF6300
-map_variant = "dual-exhaust"
+map_variant = "dual-cvtc"
 telemetry_completion_variant = "mailbox24-tail-chain"
 telemetry_unavailable = []
 
@@ -253,8 +253,8 @@ high_octane_timing_state = 0x00009ADE
 high_detonation_timing_state = 0x00009BDE
 cold_idle_ignition_timing = 0x00014483
 idle_ignition_timing = 0x0001448B
-exhaust_cvtc_target_even = 0x0000B7BE
-exhaust_cvtc_target_odd = 0x0000B6BE
+intake_cvtc_target = 0x0000B7BE
+exhaust_cvtc_target = 0x0000B6BE
 fuel_compensation_main = 0x0000A3DE
 rev_limit_fuel_cut = 0x000093E6
 rev_limit_throttle_cut = 0x000094D6
@@ -269,8 +269,8 @@ ignition_lookup_primary_a = [0x0004FDCC, 0x00026DF4, 0x000DEA40]
 ignition_lookup_primary_b = [0x0004FEE4, 0x00026DF4, 0x000DEA40]
 fuel_compensation_lookup_startup = [0x0002DB84, 0x00026DB4, 0x000DEA80]
 fuel_compensation_lookup_runtime = [0x0003D13C, 0x00026DB4, 0x000DEA80]
-exhaust_cvtc_target_lookup_even = [0x000C387C, 0x00026D7C, 0x000DEAC0]
-exhaust_cvtc_target_lookup_odd = [0x000C5B58, 0x00026D7C, 0x000E1700]
+intake_cvtc_target_lookup = [0x000C387C, 0x00026D7C, 0x000DEAC0]
+exhaust_cvtc_target_lookup = [0x000C5B58, 0x00026D7C, 0x000E1700]
 rev_fuel_cut_base = [0x00050D90, 0x000093E6, 0xFFFF6010]
 rev_throttle_cluster_base = [0x00078104, 0x000094CE, 0xFFFF6020]
 rev_throttle_scalar_base = [0x0007A6E8, 0x000094D6, 0xFFFF6028]
@@ -422,7 +422,7 @@ secondary_tps_b1_raw = 0xFFFF27F4
 secondary_tps_b2_raw = 0xFFFF2902
 af_adjustment_b2_raw = 0xFFFF4776
 
-[profile.JK00C.extra_exhaust_storage]
+[profile.JK00C.extra_cvtc_storage]
 adapter_start = 0x000E1700
 adapter_end = 0x000E1740
 pointer_table = 0x000E1750
@@ -431,7 +431,7 @@ copies = [0x000E1800, 0x000E1900, 0x000E1A00, 0x000E1B00]
 [profile.JK00C.evidence]
 free_rom = "AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xff with zero instructions, data, functions, or references."
 free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,382 recovered functions: zero accesses, calls, candidates, or decompiler failures."
-maps = "Exact JK00D-to-JK00C function matches and target literals bind the local map addresses; both exhaust-bank families remain explicit."
+maps = "Exact JK00D-to-JK00C function matches and target literals bind the local map addresses; both CVTC target families remain explicit."
 rolling = "Exact JK00D-to-JK00C functions, stock scheduler and UDS tables, and direct RAM references bind all Rolling Launch addresses."
 can = "Exact or directly corresponding HCAN functions and literals bind the vector, initialization paths, payload, mailbox table, and knock sources."
 telemetry = "The aligned target UDS table, direct RAM references, and exact target producer-consumer functions bind every schema-2 ECU source."
