@@ -29,14 +29,11 @@ are bound in `../defs/vq37-native-fuel-cut.toml`. Rolling Launch executes the
 stock final-mask coordinator first and adds all six cylinder bits only for the
 exact request value `0x003F`.
 
-## Remaining editor-parity work
+## Source-map parity
 
-Runtime capability does not imply complete source-map parity. The following
-visible canonical roles still have no promoted target-native editor binding:
-
-| Target family | Canonical roles without a target binding | Classification |
-| --- | --- | --- |
-| JK78C and `1ND` | exhaust-CVTC target surface `0x0B33A` | The published target byte has no statically resolvable store; the writer, its calibration storage, and the editor geometry remain unbound |
+Runtime capability does not imply complete source-map parity. Every visible
+canonical map and required axis either reaches a reviewed target address or is
+an established architectural removal. No canonical role is left unlocalised.
 
 The `8MFK` projections carry no unsupported source row. Every visible canonical
 map and required axis reaches a reviewed JK00C and JK00D address. The
@@ -45,24 +42,52 @@ shared literal pool of the relocated calculators: JK08A `FUN_0004F324`
 corresponds to JK00C `0x050C9A` and JK00D `0x050C96`, and JK08A `FUN_00047A56`
 corresponds to JK00C `0x048ADC` and JK00D `0x048AE0`.
 
-The exhaust-CVTC boundary is characterised by four independent results. The
-canonical 16x16 interpolation contract `0x261B8` has no homolog in either
-complete VQ37 interpolation library census. The service-0x22 `0x11xx` pointer
-table is index-aligned with the canonical table, which places DID `0x1166` at
-JK78C `0xFFFF23A4` and 1ND `0xFFFE9466`; three unrelated slots of the same
-table carry independent direct-reference evidence. Neither published byte
-appears in the complete Ghidra reference export of its image, while the
-canonical `0xFFFF2327` carries 21 references. Enumerating every indexed store
-through the JK78C state base `0xFFFF2314` yields written displacements
-`0x20..0x8E` and never `0x90`. The exhaust target is therefore published
-through a path that static address resolution does not reach, and no
-target-native calibration storage is established.
+### VQ37 removes exhaust camshaft timing control
+
+The DTC descriptor table states the removal directly. JK08A group `0x37` holds
+sub-indices `04`, `03`, `02`, `01`, and `00` for P0174, P0011, P0021, P0014,
+and P0024 at `0x019D14`. JK78C at `0x01C0B8` and 1ND0A at `0x01C73C` hold
+byte-identical `04`, `03`, and `02` records and continue directly with group
+`0x38`. The P1078 and P1084 exhaust-timing-sensor records are absent from both
+VQ37 images as well. No exhaust camshaft monitor exists on VQ37.
+
+The service-0x22 `0x11xx` pointer tables reach the same boundary from the
+diagnostic side. JK08A base `0x226AC` and JK78C base `0x22718` populate 84 of
+124 slots with an identical sparsity pattern. Intake DIDs stay live in both:
+`0x113A` reaches JK08A `0xFFFF2326` and JK78C `0xFFFF227A`. The exhaust triple
+`0x1164`, `0x1165`, and `0x1166` carries 12, 6, and 21 references on JK08A and
+none on JK78C or `1ND`.
+
+Five independent static channels agree that the inherited exhaust target byte
+is never produced. JK78C `0xFFFF23A4` and 1ND `0xFFFE9466` have no direct
+reference, no GBR-relative access, and no decompiler-resolved store through
+pointer arithmetic. Every indexed store whose constant base can reach them has
+a proven index bound that stops short: the two-bank arrays at JK78C
+`0xFFFF239A` and `0xFFFF23A0`, the six-cylinder array at `0xFFFF237A`, and
+their 1ND homologs. Each 32-bit address occurs exactly once in its image, in
+its own pointer-table slot, so no ROM table can deliver it. The same channels
+recover the canonical writers `FUN_000BCED0` and the conditioner store at
+`0x000C0CEE`, so the null result is a property of the target images rather
+than of the method.
+
+The same channels separate inert bytes from live ones inside the block. The
+inherited intake actual-angle DIDs at JK78C `0xFFFF239C` and `0xFFFF239D` and
+1ND `0xFFFE945D` and `0xFFFE945E` carry decompiler-resolved reads, and the
+two-bank arrays beside them carry resolved writes. The exhaust triple carries
+neither a read nor a write in either image.
+
+Canonical exhaust-CVTC target surface `0x0B33A` is therefore an architectural
+removal on VQ37 rather than a relocated address. Interpolation contract
+`0x261B8` is the only canonical contract with no VQ37 library homolog, and it
+serves only the cam-target calculators.
 
 The three canonical intake-CVTC source slots `0x0AB5A`, `0x0B43A`, and
 `0x0B53A` are explicit no-op dispatcher slots in the reviewed VQ37 topology.
-They are architectural removals rather than missing address relocations. The
-canonical fuel-cut table `0x0934E` also remains an unsupported source row on
-VQ37, but its tuning role is covered by the target-native cap and curve maps.
+VQ37 retains intake camshaft timing control together with its P0011 and P0021
+monitors and its live intake target byte, and computes that target without the
+canonical surface pair. The canonical fuel-cut table `0x0934E` also remains an
+unsupported source row on VQ37, but its tuning role is covered by the
+target-native cap and curve maps.
 
 No unsupported row may be replaced with a similar address or graph neighbor.
 Promotion requires exact target storage, geometry, consumer path, and stock

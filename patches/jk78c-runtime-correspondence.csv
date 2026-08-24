@@ -24,7 +24,7 @@ map,rev_limit_fuel_cut,0000934e,,,,unsupported,Target uses interpolated curves a
 map_native,rev_limit_fuel_cut_caps,,00009040,,activation_release,target-specific,Adjacent uint16 caps limit the activation and release interpolation results
 map_native,rev_limit_fuel_cut_curves,,00016bf4,,activation_release,target-specific,Adjacent eight-point uint16 curves share the axis at 00016a64 and retain independent activation and release rows
 map_native,rev_limit_fuel_cut_delay_calibration,,00008a1f,,zero_delay,target-specific,Exact ROM8 value zero governs the native activation delay state
-map,exhaust_cvtc_target,0000b33a,,,,unsupported,Source 16x16 interpolation contract has no target library homolog and no statically resolvable store reaches published target byte ffff23a4
+map,exhaust_cvtc_target,0000b33a,,,,unsupported,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so published target byte ffff23a4 is never produced
 map_hook,selector_host_call,000ce8dc,000fb260,000fd40c,,mapped,Literal call target identifies the exact selector host
 map_hook,startup_initializer,00027d28,0002a6fc,0002f596,,mapped,Literal jump target identifies the startup initializer
 map_hook,overrun_cut_lookup,0004fdd0,0006bbfc,000281b0,,mapped,Target cut-request literal calls the exact DFCO lookup
