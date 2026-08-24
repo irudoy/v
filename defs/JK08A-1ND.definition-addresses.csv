@@ -26,7 +26,7 @@ Map,00009b1a,00009a80,,homologous-call,4,homologous-selector;selector-branch-ord
 Map,0000a29a,0000a1c0,bank_1,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,first target bank accessor preserves exact geometry and storage
 Map,0000a29a,0000a2c0,bank_2,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,second target bank accessor preserves exact geometry and storage
 Map,0000ab5a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
-Map,0000b33a,,,unsupported,0,changed-geometry,homologous target uses branch-selected 8-point curves instead of the source 16x16 surface
+Map,0000b33a,,,unsupported,0,unresolved-publication-path,no statically resolvable store reaches the homologous target byte and the source 16x16 interpolation contract has no target library homolog
 Map,0000b43a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
 Map,0000b53a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
 Map,0000e98e,00010048,,homologous-exact-chain,3,exact-storage;ordered-exact-map-storage-anchor;ordered-structural-accessor,unique structural accessor pair preserves interpolation-call order

@@ -36,7 +36,7 @@ visible canonical roles still have no promoted target-native editor binding:
 
 | Target family | Canonical roles without a target binding | Classification |
 | --- | --- | --- |
-| JK78C and `1ND` | exhaust-CVTC target surface `0x0B33A` | VQ37 uses a different branch-selected eight-point curve model; the exact target writer and editor geometry remain unbound |
+| JK78C and `1ND` | exhaust-CVTC target surface `0x0B33A` | The published target byte has no statically resolvable store; the writer, its calibration storage, and the editor geometry remain unbound |
 
 The `8MFK` projections carry no unsupported source row. Every visible canonical
 map and required axis reaches a reviewed JK00C and JK00D address. The
@@ -44,6 +44,19 @@ stationary rev-limiter and accelerator-pedal thresholds are bound through the
 shared literal pool of the relocated calculators: JK08A `FUN_0004F324`
 corresponds to JK00C `0x050C9A` and JK00D `0x050C96`, and JK08A `FUN_00047A56`
 corresponds to JK00C `0x048ADC` and JK00D `0x048AE0`.
+
+The exhaust-CVTC boundary is characterised by four independent results. The
+canonical 16x16 interpolation contract `0x261B8` has no homolog in either
+complete VQ37 interpolation library census. The service-0x22 `0x11xx` pointer
+table is index-aligned with the canonical table, which places DID `0x1166` at
+JK78C `0xFFFF23A4` and 1ND `0xFFFE9466`; three unrelated slots of the same
+table carry independent direct-reference evidence. Neither published byte
+appears in the complete Ghidra reference export of its image, while the
+canonical `0xFFFF2327` carries 21 references. Enumerating every indexed store
+through the JK78C state base `0xFFFF2314` yields written displacements
+`0x20..0x8E` and never `0x90`. The exhaust target is therefore published
+through a path that static address resolution does not reach, and no
+target-native calibration storage is established.
 
 The three canonical intake-CVTC source slots `0x0AB5A`, `0x0B43A`, and
 `0x0B53A` are explicit no-op dispatcher slots in the reviewed VQ37 topology.
