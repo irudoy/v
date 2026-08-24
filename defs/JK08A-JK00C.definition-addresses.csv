@@ -263,6 +263,10 @@ Map,0000ab5a,0000aede,,reviewed-target,1,normalized-shape,intake-cam correction 
 Map,0000b33a,0000b6be,,reviewed-target,1,normalized-shape,warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table
 Map,0000b43a,0000b7be,,reviewed-target,1,normalized-shape,warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table
 Map,0000b53a,0000b8be,,reviewed-target,1,normalized-shape,cold intake-cam target in the stock intake CVTC descriptor block at 0x000C386C
+Map,000085d9,000085e4,,reviewed-target,2,normalized-shape,stationary rev-limiter activation and release thresholds read at both comparison sites of target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
+Map,00008fdc,00009030,,reviewed-target,2,normalized-shape,accelerator-pedal activation and release thresholds read at both comparison sites of target function 00048adc which is the reviewed homolog of JK08A FUN 00047a56
+Map,0000911c,00009174,,reviewed-target,1,normalized-shape,stationary rev-limiter readiness threshold literal in target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
+Map,000124d2,000147cf,,reviewed-target,1,normalized-shape,stationary rev-limiter step table literal preceding reviewed interpolation entry 00026f8c in target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
 Axis,00012f2e,000152bb,,reviewed-target,1,normalized-shape,engine-speed axis operand at the warm exhaust-target interpolation callsite
 Axis,00012f0e,0001529b,,reviewed-target,1,normalized-shape,load axis operand at the warm exhaust-target interpolation callsite
 Axis,00012f3e,000152cb,,reviewed-target,1,normalized-shape,engine-speed axis operand at the warm intake-target interpolation callsite
@@ -273,7 +277,3 @@ Axis,00012f9a,00015327,,reviewed-target,1,normalized-shape,engine-speed axis ope
 Axis,00012f92,0001531f,,reviewed-target,1,normalized-shape,load axis operand at the intake-correction interpolation callsite
 Axis,00011cf0,00013fb5,,reviewed-target,1,normalized-shape,target-specific interpolation operands and bank topology
 Axis,00011d4c,00014019,,reviewed-target,1,normalized-shape,target-specific interpolation operands and bank topology
-Map,000085d9,,,unsupported,0,,no unique target semantic homolog is established
-Map,00008fdc,,,unsupported,0,,no unique target semantic homolog is established
-Map,0000911c,,,unsupported,0,,no unique target semantic homolog is established
-Map,000124d2,,,unsupported,0,,no unique target semantic homolog is established

@@ -36,8 +36,14 @@ visible canonical roles still have no promoted target-native editor binding:
 
 | Target family | Canonical roles without a target binding | Classification |
 | --- | --- | --- |
-| `8MFK` | stationary limiter hysteresis `0x085D9`, accelerator-pedal hysteresis `0x08FDC`, stationary-limiter readiness threshold `0x0911C`, stationary-limiter step curve `0x124D2` | Four explicit unsupported projection rows require target-native localization or proof that the mechanism is absent |
 | JK78C and `1ND` | exhaust-CVTC target surface `0x0B33A` | VQ37 uses a different branch-selected eight-point curve model; the exact target writer and editor geometry remain unbound |
+
+The `8MFK` projections carry no unsupported source row. Every visible canonical
+map and required axis reaches a reviewed JK00C and JK00D address. The
+stationary rev-limiter and accelerator-pedal thresholds are bound through the
+shared literal pool of the relocated calculators: JK08A `FUN_0004F324`
+corresponds to JK00C `0x050C9A` and JK00D `0x050C96`, and JK08A `FUN_00047A56`
+corresponds to JK00C `0x048ADC` and JK00D `0x048AE0`.
 
 The three canonical intake-CVTC source slots `0x0AB5A`, `0x0B43A`, and
 `0x0B53A` are explicit no-op dispatcher slots in the reviewed VQ37 topology.

@@ -105,6 +105,10 @@ def test_relocated_romraider_artifacts_keep_target_addresses_and_provenance():
         )
         assert "Intake CVTC Target - Cold" in tables
         assert "Intake CVTC Target Correction - High-Detonation State" in tables
+        assert "Stationary Engine Speed Limit" in tables
+        assert "Stationary Limiter Readiness Threshold" in tables
+        assert "Stationary Limiter Readiness Step" in tables
+        assert "Accelerator Pedal High-State Hysteresis" in tables
 
         text = (DEFS / f"{rom}.xml").read_text(encoding="utf-8")
         correspondence = f"JK08A-{rom}.definition-addresses.csv"
@@ -124,7 +128,7 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         assert f"defs/JK08A-{rom}.definition-addresses.csv" in description
         assert f"defs/{rom}-{rom}.definition-addresses.csv" not in description
         assert f"defs/{rom}.dtc.csv" not in description
-        assert len(root.findall("XDFTABLE")) == 101
+        assert len(root.findall("XDFTABLE")) == 105
         assert len(root.findall("XDFFLAG")) == 5
         assert root.find("XDFCHECKSUM") is None
 

@@ -12,12 +12,7 @@ from tools.mapkit import vq37_native_fuel_cut
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
 TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B")
-SH7058_HR_UNSUPPORTED = {
-    "000085d9",
-    "00008fdc",
-    "0000911c",
-    "000124d2",
-}
+SH7058_HR_UNSUPPORTED = frozenset()
 JK78C_UNSUPPORTED = {
     "0000934e",
     "0000ab5a",
@@ -98,6 +93,36 @@ def test_cvtc_targets_bind_one_intake_and_one_exhaust_path():
         assert {row.source: row.target for row in rows} == expected
         assert all(row.status == "reviewed-target" for row in rows)
         assert all(row.variant == "" for row in rows)
+
+
+LIMITER_CORRESPONDENCE = {
+    "JK00C": {
+        "000085d9": "000085e4",
+        "00008fdc": "00009030",
+        "0000911c": "00009174",
+        "000124d2": "000147cf",
+    },
+    "JK00D": {
+        "000085d9": "000085e4",
+        "00008fdc": "0000903e",
+        "0000911c": "00009182",
+        "000124d2": "000147ef",
+    },
+}
+
+
+def test_limiter_and_pedal_thresholds_bind_target_literals():
+    for rom, expected in LIMITER_CORRESPONDENCE.items():
+        projection = definition_projections.projection_for_rom(rom)
+        rows = [
+            binding
+            for binding in projection.bindings
+            if binding.entity == "Map" and binding.source in expected
+        ]
+        assert {row.source: row.target for row in rows} == expected
+        assert all(row.status == "reviewed-target" for row in rows)
+        assert all(row.variant == "" for row in rows)
+        assert all(row.function_kinds == "normalized-shape" for row in rows)
 
 
 def test_runtime_definition_layouts_use_target_allocation():

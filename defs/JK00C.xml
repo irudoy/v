@@ -69,6 +69,46 @@
       <bit name="Map 5 - Rolling Launch Enable" position="4"/>
     </table>
 
+    <!-- 0x09030  2 uint16  map [code]
+         scaling x normalized ADC counts
+         The stock activation and release thresholds are 610 and 528 counts. The input is
+         produced from on-chip A/D channels AN10 and AN17 through dual-channel adjustment and
+         minimum selection. Exact JK08A diagnostic paths expose the paired accelerator-pedal
+         sensors as DID 0x120D/0x120E and monitor them through P2122/P2123/P2127/P2128. The
+         operational high-state role is proven; a narrower WOT or kickdown interpretation is not
+         asserted. Definition address projected from JK08A 00008fdc through
+         JK08A-JK00C.definition-addresses.csv: accelerator-pedal activation and release
+         thresholds read at both comparison sites of target function 00048adc which is the
+         reviewed homolog of JK08A FUN 00047a56.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Accelerator Pedal High-State Hysteresis"
+           category="Electronic Throttle Control//Accelerator Pedal//Thresholds"
+           storagetype="uint16" storageaddress="0x09030" sizex="2" endian="big">
+      <scaling units="normalized ADC counts" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="8"/>
+      <table type="Static X Axis" name="Selector" sizex="2">
+        <data>activate</data><data>release</data>
+      </table>
+    </table>
+
+    <!-- 0x09174  1 uint16  map [code]
+         scaling x accumulator counts
+         The stock value is 381 accumulator counts. The threshold controls readiness for
+         stationary fuel-cut/restore hysteresis 000085d9/000085da. Definition address projected
+         from JK08A 0000911c through JK08A-JK00C.definition-addresses.csv: stationary rev-
+         limiter readiness threshold literal in target function 00050c9a which is the reviewed
+         homolog of JK08A FUN 0004f324.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Stationary Limiter Readiness Threshold"
+           category="Limiters//Engine Speed//Stationary" storagetype="uint16"
+           storageaddress="0x09174" sizex="1" endian="big">
+      <scaling units="accumulator counts" expression="x" to_byte="x" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>readiness</data>
+      </table>
+    </table>
+
     <!-- 0x0B8BE  8x8 uint8  map [code]
          scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x15257 rpm [code]; X Axis 0x15237 load
          [code]
@@ -121,6 +161,31 @@
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x15327" sizey="4" endian="big">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x147CF  16 uint8  map [code]
+         scaling x-128 accumulator counts [code]
+         The lookup coordinate is q=clamp((signed16(ffff11bc)-160)/2,0,255). Input ffff11bc is
+         RPM/12.5, so origin 160 is 2000 RPM and each two-count selector step is 25 RPM. At or
+         below 2000 RPM the stock result is 128 and step zero. In the high-RPM limiter region
+         result 255 gives step 127; exactly three expiries reach inclusive readiness threshold
+         381, or 300 tenth-phase counts. Passive target-CAN timestamps establish 10.24 ms/count
+         and a total of 3.072 seconds. Definition address projected from JK08A 000124d2 through
+         JK08A-JK00C.definition-addresses.csv: stationary rev-limiter step table literal
+         preceding reviewed interpolation entry 00026f8c in target function 00050c9a which is
+         the reviewed homolog of JK08A FUN 0004f324.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Stationary Limiter Readiness Step"
+           category="Limiters//Engine Speed//Stationary" storagetype="uint8"
+           storageaddress="0x147CF" sizex="16" endian="big">
+      <scaling units="accumulator counts" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="16"/>
+      <table type="Static X Axis" name="Raw input (step 16)" sizex="16">
+        <data>0</data><data>16</data><data>32</data><data>48</data>
+        <data>64</data><data>80</data><data>96</data><data>112</data>
+        <data>128</data><data>144</data><data>160</data><data>176</data>
+        <data>192</data><data>208</data><data>224</data><data>240</data>
       </table>
     </table>
 
@@ -446,6 +511,27 @@
         <data>4.16</data><data>4.24</data><data>4.32</data><data>4.4</data>
         <data>4.48</data><data>4.56</data><data>4.64</data><data>4.72</data>
         <data>4.8</data><data>4.88</data><data>4.96</data><data>5.04</data>
+      </table>
+    </table>
+
+    <!-- 0x085E4  2 uint8  map [code]
+         scaling x*50 RPM [code]
+         The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires accumulator
+         ffff16a6 to reach ROM16[0000911c]. Exact firmware traces CAN 0x280 vehicle speed
+         through ffff113c, ffff115e, ffff118e, and the scheduler snapshot ffff110e; the required
+         zero value establishes the stationary role. Additional entry gates ffff244f bit 2 and
+         ffff2458 bit 5 remain physically unnamed. Definition address projected from JK08A
+         000085d9 through JK08A-JK00C.definition-addresses.csv: stationary rev-limiter
+         activation and release thresholds read at both comparison sites of target function
+         00050c9a which is the reviewed homolog of JK08A FUN 0004f324.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Stationary Engine Speed Limit"
+           category="Limiters//Engine Speed//Stationary" storagetype="uint8"
+           storageaddress="0x085E4" sizex="2" endian="big">
+      <scaling units="RPM" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
+               coarseincrement="100"/>
+      <table type="Static X Axis" name="Selector" sizex="2">
+        <data>fuel cut</data><data>fuel restore</data>
       </table>
     </table>
 
