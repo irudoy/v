@@ -29,6 +29,7 @@ presentation and generated output.
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
 | `JK08A-*.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
 | `vq37-native-fuel-cut.toml` | Exact VQ37 coordinator, state-machine, pointer, cap, curve, and RAM bindings | yes |
+| `vq37-native-tables.toml` | Exact VQ37 calibration tables that have no canonical source, with stock value and accessor bindings | yes |
 | `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
 | `JK08A.maps.csv` | Catalog ledger projected from Memgraph | no, regenerate |
 | `<ROM>.xml` | Target-specific RomRaider definition projection | no, regenerate |

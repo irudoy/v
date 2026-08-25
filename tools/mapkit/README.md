@@ -21,6 +21,7 @@ not be edited by hand.
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
 | `defs/JK08A-*.definition-addresses.csv` | Reviewed target map and axis addresses |
 | `defs/vq37-native-fuel-cut.toml` | Exact target-native VQ37 fuel-cut maps and executable bindings |
+| `defs/vq37-native-tables.toml` | Exact target-native VQ37 calibration tables with no canonical source |
 | `defs/rom-identities.toml` | Target-specific RomRaider and TunerPro identity fields |
 | Runtime layout manifests | Canonical and target-specific map-slot and Rolling Launch projections |
 | `rom-images/roms.csv` | Exact source-image identity and path |

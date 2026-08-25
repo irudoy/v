@@ -1,8 +1,10 @@
-// VQ37 dual-bank lookup adapters for the five-slot map-switching runtime.
+// VQ37 duplicated-table lookup adapters for the five-slot map-switching runtime.
 //
-// The target keeps separate fuel-compensation and warm-idle tables for both
-// banks. The second fuel family reuses the canonical exhaust storage slots;
-// the second warm-idle family reuses the canonical fuel-cut storage slots.
+// The target reads two fuel-compensation surfaces and two warm-idle tables
+// through one index byte and one interpolator, so the pairs carry no engine-
+// bank identity and are named by the selector arm that reaches them. The
+// alternate fuel family reuses the canonical exhaust storage slots; the
+// alternate warm-idle family reuses the canonical fuel-cut storage slots.
 // All unrecognized bases tail-call the exact stock lookup.
 
 .org 0x000D2300
@@ -72,63 +74,63 @@ high_detonation_timing_state_pointers:
 .org 0x000D2380
 fuel_compensation_adapter:
 mov.l @(fuel_compensation_stock_wrapper,pc),r3
-mov.l @(fuel_compensation_bank_1_base,pc),r0
+mov.l @(fuel_compensation_default_base,pc),r0
 cmp/eq r0,r4
-bt fuel_compensation_select_bank_1
-mov.l @(fuel_compensation_bank_2_base,pc),r0
+bt fuel_compensation_select_default
+mov.l @(fuel_compensation_alternate_base,pc),r0
 cmp/eq r0,r4
-bt fuel_compensation_select_bank_2
+bt fuel_compensation_select_alternate
 jmp @r3
 nop
-fuel_compensation_select_bank_1:
-mov.l @(fuel_compensation_bank_1_pointers,pc),r2
+fuel_compensation_select_default:
+mov.l @(fuel_compensation_default_pointers,pc),r2
 bra 0x000D2270
 nop
-fuel_compensation_select_bank_2:
-mov.l @(fuel_compensation_bank_2_pointers,pc),r2
+fuel_compensation_select_alternate:
+mov.l @(fuel_compensation_alternate_pointers,pc),r2
 bra 0x000D2270
 nop
 
 .align 4
-fuel_compensation_bank_1_base:
+fuel_compensation_default_base:
 .long 0x0000A29A
-fuel_compensation_bank_2_base:
+fuel_compensation_alternate_base:
 .long 0x0000B33A
 fuel_compensation_stock_wrapper:
 .long 0x000261F0
-fuel_compensation_bank_1_pointers:
+fuel_compensation_default_pointers:
 .long 0x000D35A4
-fuel_compensation_bank_2_pointers:
+fuel_compensation_alternate_pointers:
 .long 0x000D3590
 
 .org 0x000D23C0
-idle_ignition_bank_2_adapter:
-mov.l @(idle_bank_2_stock_wrapper,pc),r3
-mov.l @(cold_idle_bank_2_base,pc),r0
+idle_ignition_pool_2_adapter:
+mov.l @(idle_pool_2_stock_wrapper,pc),r3
+mov.l @(cold_idle_pool_2_base,pc),r0
 cmp/eq r0,r4
-bt idle_bank_2_select_cold
-mov.l @(warm_idle_bank_2_base,pc),r0
+bt idle_pool_2_select_cold
+mov.l @(warm_idle_pool_2_base,pc),r0
 cmp/eq r0,r4
-bt idle_bank_2_select_warm
+bt idle_pool_2_select_warm
 jmp @r3
 nop
-idle_bank_2_select_cold:
-mov.l @(cold_idle_bank_2_pointers,pc),r2
+idle_pool_2_select_cold:
+mov.l @(cold_idle_pool_2_pointers,pc),r2
 bra 0x000D2270
 nop
-idle_bank_2_select_warm:
-mov.l @(warm_idle_bank_2_pointers,pc),r2
+idle_pool_2_select_warm:
+mov.l @(warm_idle_pool_2_pointers,pc),r2
 bra 0x000D2270
 nop
 
 .org 0x000D23E0
-cold_idle_bank_2_base:
+cold_idle_pool_2_base:
 .long 0x00012196
-warm_idle_bank_2_base:
+warm_idle_pool_2_base:
 .long 0x0000934E
-idle_bank_2_stock_wrapper:
+idle_pool_2_stock_wrapper:
 .long 0x00026370
-cold_idle_bank_2_pointers:
+cold_idle_pool_2_pointers:
 .long 0x000D4040
-warm_idle_bank_2_pointers:
+warm_idle_pool_2_pointers:
 .long 0x000D35B8

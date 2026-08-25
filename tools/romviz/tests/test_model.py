@@ -84,7 +84,7 @@ def test_jk78c_model_includes_target_runtime_and_checksum_evidence():
     assert rom["metadata"]["ECU ID"] == "1JK78C"
     assert rom["metadata"]["MCU"] == "SH7058"
     assert any(
-        item["label"] == "Map 1 - Fuel Compensation - Main - Bank 1"
+        item["label"] == "Map 1 - Fuel Compensation - Main - Default"
         and item["start"] == 0x09EBA
         for item in rom["objects"]
     )

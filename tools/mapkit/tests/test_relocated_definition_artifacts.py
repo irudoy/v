@@ -30,23 +30,23 @@ TARGETS = {
 }
 
 JK78C_MAP_ADDRESSES = {
-    "Map 1 - Fuel Compensation - Main - Bank 1": "0x09EBA",
-    "Map 1 - Fuel Compensation - Main - Bank 2": "0x09FBA",
+    "Map 1 - Fuel Compensation - Main - Default": "0x09EBA",
+    "Map 1 - Fuel Compensation - Main - Alternate": "0x09FBA",
     "Map 1 - Engine Speed Limit - Fuel Cut Caps": "0x09040",
     "Map 1 - Engine Speed Limit - Fuel Cut Curves": "0x16BF4",
-    "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 1": "0x137E8",
-    "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 2": "0x137F0",
+    "Map 1 - Timing-State Addend - Warm DFCO Transition - Default": "0x137E8",
+    "Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate": "0x137F0",
     "Rolling Launch Minimum Engine Speed": "0x1E96A",
 }
 
 ONE_ND_MAP_ADDRESSES = {
     "MAF Factor": "0x08939",
-    "Map 1 - Fuel Compensation - Main - Bank 1": "0x0A1C0",
-    "Map 1 - Fuel Compensation - Main - Bank 2": "0x0A2C0",
+    "Map 1 - Fuel Compensation - Main - Default": "0x0A1C0",
+    "Map 1 - Fuel Compensation - Main - Alternate": "0x0A2C0",
     "Map 1 - Engine Speed Limit - Fuel Cut Caps": "0x091D2",
     "Map 1 - Engine Speed Limit - Fuel Cut Curves": "0x17202",
-    "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 1": "0x13C1A",
-    "Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 2": "0x13C22",
+    "Map 1 - Timing-State Addend - Warm DFCO Transition - Default": "0x13C1A",
+    "Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate": "0x13C22",
     "Rolling Launch Minimum Engine Speed": "0x133F6A",
 }
 
@@ -171,8 +171,8 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert "Map 2 - Engine Speed Limit - Fuel Cut Caps" in tables
     assert "Map 2 - Engine Speed Limit - Fuel Cut Curves" in tables
     assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
-    assert "Map 2 - Fuel Compensation - Main - Bank 1" in tables
-    assert "Map 2 - Fuel Compensation - Main - Bank 2" in tables
+    assert "Map 2 - Fuel Compensation - Main - Default" in tables
+    assert "Map 2 - Fuel Compensation - Main - Alternate" in tables
     assert tables["CAN Telemetry at Startup"].get(
         "storageaddress"
     ) == "0x1F803"
@@ -262,14 +262,14 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert "Map 2 - Engine Speed Limit - Fuel Cut Caps" in tables
         assert "Map 2 - Engine Speed Limit - Fuel Cut Curves" in tables
         assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
-        assert "Map 2 - Fuel Compensation - Main - Bank 1" in tables
-        assert "Map 2 - Fuel Compensation - Main - Bank 2" in tables
+        assert "Map 2 - Fuel Compensation - Main - Default" in tables
+        assert "Map 2 - Fuel Compensation - Main - Alternate" in tables
         assert (
-            "Map 2 - Timing-State Addend - Warm DFCO Transition - Bank 1"
+            "Map 2 - Timing-State Addend - Warm DFCO Transition - Default"
             in tables
         )
         assert (
-            "Map 2 - Timing-State Addend - Warm DFCO Transition - Bank 2"
+            "Map 2 - Timing-State Addend - Warm DFCO Transition - Alternate"
             in tables
         )
         for name, address in ONE_ND_MAP_ADDRESSES.items():

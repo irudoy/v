@@ -627,10 +627,10 @@ def validate_structure(layout):
             "high_octane_timing_state",
             "high_detonation_timing_state",
             "cold_idle_ignition_timing",
-            "idle_ignition_timing_bank_1",
-            "idle_ignition_timing_bank_2",
-            "fuel_compensation_main_bank_1",
-            "fuel_compensation_main_bank_2",
+            "idle_ignition_timing_default",
+            "idle_ignition_timing_alternate",
+            "fuel_compensation_main_default",
+            "fuel_compensation_main_alternate",
             "rev_limit_fuel_cut_caps",
             "rev_limit_fuel_cut_curves",
             "rev_limit_throttle_cut",
@@ -1080,7 +1080,7 @@ def validate_structure(layout):
         expected_assembled_regions.add("secondary_cvtc_target_adapter")
     elif layout.variant in VQ37_VARIANTS:
         expected_assembled_regions.remove("cvtc_target_adapter")
-        expected_assembled_regions.add("idle_ignition_bank_2_adapter")
+        expected_assembled_regions.add("idle_ignition_pool_2_adapter")
     if layout.assembled_region_keys != expected_assembled_regions:
         raise ValueError(
             "implemented assembly region set differs: "

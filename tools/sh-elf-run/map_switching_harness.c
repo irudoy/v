@@ -48,7 +48,9 @@
 #define FUEL_COMP_ADAPTER 0x000d2380U
 #define CVTC_TARGET_ADAPTER 0x000d23c0U
 #ifdef TARGET_VQ37
-#define IDLE_IGNITION_BANK_2_ADAPTER 0x000d23c0U
+/* VQ37 removes exhaust camshaft timing control, so the second idle-ignition
+   literal-pool copy reuses the canonical CVTC target adapter slot. */
+#define IDLE_IGNITION_POOL_2_ADAPTER 0x000d23c0U
 #endif
 #ifdef TARGET_DUAL_CVTC
 #define SECONDARY_CVTC_TARGET_ADAPTER 0x000d5000U
@@ -148,8 +150,11 @@ static const struct family adapter_families[] = {
          0x000d3400U},
     },
 #ifdef TARGET_VQ37
+    /* VQ37 reads a second 16x16 compensation surface through the same index
+       byte, axis pair, and interpolator as the default surface, so the target
+       renderer reuses the canonical exhaust-target allocation for it. */
     {
-        "fuel_compensation_main_bank_2", FUEL_COMP_ADAPTER,
+        "fuel_compensation_main_alternate", FUEL_COMP_ADAPTER,
         0x0000b33aU, 256U,
         {0x0000b33aU, 0x000d2d00U, 0x000d2e00U, 0x000d2f00U,
          0x000d3000U},
@@ -195,15 +200,19 @@ static const struct family adapter_families[] = {
          0x000d40b8U},
     },
 #ifdef TARGET_VQ37
+    /* The VQ37 idle-ignition function holds two literal-pool copies of the same
+       stock lookup pointer, and which branches each copy serves is image-
+       specific, so both copies are redirected and every reachable table is
+       registered under the copy that serves it. */
     {
-        "cold_idle_ignition_timing_bank_2",
-        IDLE_IGNITION_BANK_2_ADAPTER, 0x00012196U, 8U,
+        "cold_idle_ignition_timing_pool_2",
+        IDLE_IGNITION_POOL_2_ADAPTER, 0x00012196U, 8U,
         {0x00012196U, 0x000d4080U, 0x000d4088U, 0x000d4090U,
          0x000d4098U},
     },
     {
-        "idle_ignition_timing_bank_2",
-        IDLE_IGNITION_BANK_2_ADAPTER, 0x0000934eU, 8U,
+        "idle_ignition_timing_alternate",
+        IDLE_IGNITION_POOL_2_ADAPTER, 0x0000934eU, 8U,
         {0x0000934eU, 0x000d3500U, 0x000d3508U, 0x000d3510U,
          0x000d3518U},
     },
@@ -217,7 +226,7 @@ static const struct pass_through pass_throughs[] = {
     {"ignition_cold", IGNITION_ADAPTER, 0x0000991aU},
     {"fuel_compensation_unknown", FUEL_COMP_ADAPTER, 0x0000a29bU},
 #ifdef TARGET_VQ37
-    {"idle_ignition_bank_2_hidden", IDLE_IGNITION_BANK_2_ADAPTER,
+    {"idle_ignition_pool_2_hidden", IDLE_IGNITION_POOL_2_ADAPTER,
      0x000121a6U},
 #else
     {"cvtc_target_unknown", CVTC_TARGET_ADAPTER, 0x0000b33bU},

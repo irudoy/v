@@ -85,10 +85,10 @@ VQ37_MAP_FAMILY_KEYS = frozenset(
         "high_octane_timing_state",
         "high_detonation_timing_state",
         "cold_idle_ignition_timing",
-        "idle_ignition_timing_bank_1",
-        "idle_ignition_timing_bank_2",
-        "fuel_compensation_main_bank_1",
-        "fuel_compensation_main_bank_2",
+        "idle_ignition_timing_default",
+        "idle_ignition_timing_alternate",
+        "fuel_compensation_main_default",
+        "fuel_compensation_main_alternate",
         "rev_limit_fuel_cut_caps",
         "rev_limit_fuel_cut_curves",
         "rev_limit_throttle_cut",
@@ -132,10 +132,10 @@ VQ37_COMMON_MAP_HOOK_KEYS = frozenset(
         "ignition_lookup_2",
         "ignition_lookup_3",
         "ignition_lookup_4",
-        "fuel_compensation_lookup_bank_1",
-        "fuel_compensation_lookup_bank_2",
-        "idle_ignition_lookup_bank_1",
-        "idle_ignition_lookup_bank_2",
+        "fuel_compensation_lookup_startup",
+        "fuel_compensation_lookup_runtime",
+        "idle_ignition_lookup_pool_1",
+        "idle_ignition_lookup_pool_2",
         "rev_throttle_scalar_base",
         "cruise_feedback_serializer",
     }
@@ -843,10 +843,10 @@ def _map_family_sources(profile):
             "high_octane_timing_state": "high_octane_timing_state",
             "high_detonation_timing_state": "high_detonation_timing_state",
             "cold_idle_ignition_timing": "cold_idle_ignition_timing",
-            "idle_ignition_timing_bank_1": "idle_ignition_timing",
-            "idle_ignition_timing_bank_2": "idle_ignition_timing",
-            "fuel_compensation_main_bank_1": "fuel_compensation_main",
-            "fuel_compensation_main_bank_2": "fuel_compensation_main",
+            "idle_ignition_timing_default": "idle_ignition_timing",
+            "idle_ignition_timing_alternate": "idle_ignition_timing",
+            "fuel_compensation_main_default": "fuel_compensation_main",
+            "fuel_compensation_main_alternate": "fuel_compensation_main",
             "rev_limit_throttle_cut": "rev_limit_throttle_cut",
         }
     raise AddressProfileError(
@@ -981,16 +981,16 @@ def _validate_map_bindings(profile, map_layout):
                 )
                 for index in range(1, 5)
             },
-            "fuel_compensation_lookup_bank_1": _rebased(
+            "fuel_compensation_lookup_startup": _rebased(
                 code["fuel_compensation_adapter"].entry, rom_delta
             ),
-            "fuel_compensation_lookup_bank_2": _rebased(
+            "fuel_compensation_lookup_runtime": _rebased(
                 code["fuel_compensation_adapter"].entry, rom_delta
             ),
-            "idle_ignition_lookup_bank_1": _rebased(
+            "idle_ignition_lookup_pool_1": _rebased(
                 code["idle_ignition_adapter"].entry, rom_delta
             ),
-            "idle_ignition_lookup_bank_2": _rebased(
+            "idle_ignition_lookup_pool_2": _rebased(
                 code["cvtc_target_adapter"].entry, rom_delta
             ),
             "rev_fuel_cut_caps_base": _rebased(

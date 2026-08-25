@@ -90,14 +90,14 @@ VQ37_MAP_HOOK_KEYS = {
     "ignition_lookup_4e1c0_a": "ignition_lookup_2",
     "ignition_lookup_4e1c0_b": "ignition_lookup_3",
     "fuel_compensation_lookup_2c648": (
-        "fuel_compensation_lookup_bank_1"
+        "fuel_compensation_lookup_startup"
     ),
     "fuel_compensation_lookup_3be3c": (
-        "fuel_compensation_lookup_bank_2"
+        "fuel_compensation_lookup_runtime"
     ),
     "rev_throttle_scalar_base": "rev_throttle_scalar_base",
     "cruise_feedback_serializer": "cruise_feedback_serializer",
-    "idle_ignition_lookup": "idle_ignition_lookup_bank_1",
+    "idle_ignition_lookup": "idle_ignition_lookup_pool_1",
 }
 
 CANONICAL_MAP_SYMBOLS = {
@@ -326,8 +326,8 @@ def _address_mapping(profile):
             "high_octane_timing_state": "high_octane_timing_state",
             "high_detonation_timing_state": "high_detonation_timing_state",
             "cold_idle_ignition_timing": "cold_idle_ignition_timing",
-            "idle_ignition_timing": "idle_ignition_timing_bank_1",
-            "fuel_compensation_main": "fuel_compensation_main_bank_1",
+            "idle_ignition_timing": "idle_ignition_timing_default",
+            "fuel_compensation_main": "fuel_compensation_main_default",
             "rev_limit_throttle_cut": "rev_limit_throttle_cut",
         }
     for family in canonical_map.families:
@@ -346,16 +346,16 @@ def _address_mapping(profile):
             canonical_map.family_by_key[
                 "exhaust_cvtc_target"
             ].canonical_address,
-            family_targets["fuel_compensation_main_bank_2"],
-            f"{profile.rom}.fuel_compensation_main_bank_2",
+            family_targets["fuel_compensation_main_alternate"],
+            f"{profile.rom}.fuel_compensation_main_alternate",
         )
         _add_mapping(
             mapping,
             canonical_map.family_by_key[
                 "rev_limit_fuel_cut"
             ].canonical_address,
-            family_targets["idle_ignition_timing_bank_2"],
-            f"{profile.rom}.idle_ignition_timing_bank_2",
+            family_targets["idle_ignition_timing_alternate"],
+            f"{profile.rom}.idle_ignition_timing_alternate",
         )
     if "rev_limit_fuel_cut" in family_targets:
         _add_mapping(
@@ -689,7 +689,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 prototype,
                 code_regions=tuple(
                     (
-                        "idle_ignition_bank_2_adapter"
+                        "idle_ignition_pool_2_adapter"
                         if key == "cvtc_target_adapter"
                         else key
                     )
@@ -730,11 +730,11 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         ):
             code_regions.append(replace(
                 item,
-                key="idle_ignition_bank_2_adapter",
+                key="idle_ignition_pool_2_adapter",
                 span=map_switching_layout.AddressRange(
                     item.span.start + delta,
                     item.span.end + delta,
-                    "idle_ignition_bank_2_adapter",
+                    "idle_ignition_pool_2_adapter",
                 ),
                 entry=item.entry + delta,
             ))
@@ -850,8 +850,8 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         ))
     else:
         storage_keys = {
-            "idle_ignition_timing_bank_2": "rev_limit_fuel_cut",
-            "fuel_compensation_main_bank_2": "exhaust_cvtc_target",
+            "idle_ignition_timing_alternate": "rev_limit_fuel_cut",
+            "fuel_compensation_main_alternate": "exhaust_cvtc_target",
         }
         source_keys = {
             "over_run_fuel_hold": "over_run_fuel_hold",
@@ -863,10 +863,10 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             "high_octane_timing_state": "high_octane_timing_state",
             "high_detonation_timing_state": "high_detonation_timing_state",
             "cold_idle_ignition_timing": "cold_idle_ignition_timing",
-            "idle_ignition_timing_bank_1": "idle_ignition_timing",
-            "idle_ignition_timing_bank_2": "idle_ignition_timing",
-            "fuel_compensation_main_bank_1": "fuel_compensation_main",
-            "fuel_compensation_main_bank_2": "fuel_compensation_main",
+            "idle_ignition_timing_default": "idle_ignition_timing",
+            "idle_ignition_timing_alternate": "idle_ignition_timing",
+            "fuel_compensation_main_default": "fuel_compensation_main",
+            "fuel_compensation_main_alternate": "fuel_compensation_main",
         }
         for key, source_key in source_keys.items():
             source = base.family_by_key[source_key]
@@ -881,8 +881,8 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 pointer_table=storage.pointer_table + delta,
                 stock_container_start=canonical_address,
                 adapter=(
-                    "idle_ignition_bank_2_adapter"
-                    if key == "idle_ignition_timing_bank_2"
+                    "idle_ignition_pool_2_adapter"
+                    if key == "idle_ignition_timing_alternate"
                     else source.adapter
                 ),
             ))

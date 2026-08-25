@@ -20,8 +20,8 @@ engine name or similar graph structure does not permit address inheritance.
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | `7MFKAVN86` | Canonical JK08A model plus exact-image inheritance | 12 families | Canonical fuel-shadow actuator | Schema 2 | Six fields | JK08A has scoped vehicle evidence; other members inherit no hardware result |
 | `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including independent intake-cam and exhaust-cam target switching | Relocated fuel-shadow actuator | Schema 2, mailbox 24 | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
-| JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut registry | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
-| `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut registry | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
+| JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
+| `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ME3B` | None | None | None | None | None | Stock read only; no derived image exists |
 
 ## Diagnostic layer
@@ -75,24 +75,32 @@ TunerPro additionally publishes one group patch per DTC group; RomRaider has no
 construct for a switch spanning discontiguous ranges. Every group entry repeats
 an individual entry.
 
-VQ37 splits two canonical roles into parallel per-bank tables. One input index
-reaches two tables through shared axes and one interpolator with no branch, and
-the two results land in adjacent RAM bytes. Canonical `0x0A29A` becomes JK78C
-`0x09EBA` and `0x09FBA` writing `0xFFFF1E91` and `0xFFFF1E92`; canonical
-`0x1219E` becomes `0x137E8` and `0x137F0` writing `0xFFFF14E6` and `0xFFFF14E7`.
-The channel-to-bank assignment follows the ascending order of the two
-destination bytes and is not established from a consumer trace.
+VQ37 duplicates two canonical roles into a default and an alternate table.
+Neither pair carries an engine-bank identity: both members of each pair are read
+with the same index byte and the same interpolator, and a state selector picks
+one of them. Canonical `0x0A29A` reaches JK78C `0x09EBA` and 1ND `0x0A1C0`;
+canonical `0x1219E` reaches JK78C `0x137E8` and 1ND `0x13C1A`. The alternates
+`0x09FBA`, `0x137F0`, `0x0A2C0`, and `0x13C22` have no canonical source and are
+registered in `../defs/vq37-native-tables.toml` with exact stock values and
+accessor literal-pool bindings.
 
-The factory manual fixes bank identity for diagnostic codes but not for these
-two channels. It assigns bank 1 to the lower code of every VQ37 per-bank pair,
-including P1087 and P1088, P1089 and P1092, P1090 and P1093, and P100A and
-P100B, and the canonical pairs P0011 and P0021, P0031 and P0051, P0130 and
-P0150, and P0171 and P0174 follow the same order. The ROM descriptor table does
-not repeat that order: JK78C group `0x49` stores P1089 on even sub-indices and
-P1092 on odd, while group `0x37` stores P0021 below P0011 and group `0x3D`
-stores P0051 below P0031. Descriptor position therefore carries no bank
-convention, and promoting either duplicated table to a named bank requires a
-consumer trace from its destination byte.
+The compensation accessors publish four parallel channels. The two 16x16
+surfaces share index byte `0xFFFF22F8` and axes `0x13AF8` and `0x13B18` and
+write adjacent bytes `0xFFFF1E91` and `0xFFFF1E92`; the consumer at `0x40E86`
+selects one channel per state code and crossfades it against the previous
+state's channel by a normalized progress weight where `0x8000` is 1.0. The
+eight-point timing accessor `FUN_000644D0` reads index byte `0xFFFF11A2` on both
+branches and selects the alternate through bit 0 of `0xFFFF4525`, a latch on the
+u16 transition progress at `0xFFFF447E` that sets at `0x8000` and releases at
+`0x7300`.
+
+Bank identity is available from the ROM itself where it exists. The service-0x22
+DID tables bind per-bank RAM directly, and their ordering agrees with the factory
+manual rule that assigns bank 1 to the lower code of every per-bank DTC pair.
+The DTC descriptor table does not repeat that order: JK78C group `0x49` stores
+P1089 on even sub-indices and P1092 on odd, group `0x37` stores P0021 below
+P0011, and group `0x3D` stores P0051 below P0031. Descriptor position carries no
+bank convention, so a per-bank claim requires a DID binding or a consumer trace.
 
 The `8MFK` projections carry no unsupported source row. Every visible canonical
 map and required axis reaches a reviewed JK00C and JK00D address. The
@@ -134,6 +142,31 @@ inherited intake actual-angle DIDs at JK78C `0xFFFF239C` and `0xFFFF239D` and
 1ND `0xFFFE945D` and `0xFFFE945E` carry decompiler-resolved reads, and the
 two-bank arrays beside them carry resolved writes. The exhaust triple carries
 neither a read nor a write in either image.
+
+### VQ37 declares VVEL through its own DID tables
+
+The same publication tables carry the VVEL addition positively. JK78C family
+`0x11` holds 128 records against 124 on JK08A, and family `0x12` holds 95
+records reaching DID `0x125E` against 81 reaching `0x1250`. Every added
+populated slot belongs to VVEL, and JK08A declares none of them.
+
+| DID | Factory name | JK78C RAM | Width |
+| --- | --- | --- | ---: |
+| `0x117D` | VVEL SEN LEARN-B1 | `0xFFFF42FC` | 1 |
+| `0x117E` | VVEL SEN LEARN-B2 | `0xFFFF4300` | 1 |
+| `0x125A` | VVEL POSITION SEN-B1 | `0xFFFF42C0` | 2 |
+| `0x125B` | VVEL POSITION SEN-B2 | `0xFFFF42C2` | 2 |
+| `0x125D` | VVEL TIM-B1 | `0xFFFF276E` | 2 |
+| `0x125E` | VVEL TIM-B2 | `0xFFFF2770` | 2 |
+
+Slot `0x125C` at `0xFFFF443E` is populated and unnamed in the factory manual.
+`FUN_000EDF62` serves the VVEL TIM pair.
+
+These bindings also fix the ROM's own bank ordering convention. Across the 18
+populated bank-labelled DID pairs in JK78C and the 16 in JK08A, bank 1 is the
+lower RAM address without exception, which is the same order the factory manual
+uses for per-bank DTC pairs. The DID table therefore carries bank identity where
+the DTC descriptor table does not.
 
 Canonical exhaust-CVTC target surface `0x0B33A` is therefore an architectural
 removal on VQ37 rather than a relocated address. Interpolation contract

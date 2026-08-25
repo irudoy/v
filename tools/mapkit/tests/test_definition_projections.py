@@ -7,6 +7,7 @@ import pytest
 from tools.mapkit import definition_projections
 from tools.mapkit import rom as romkit
 from tools.mapkit import vq37_native_fuel_cut
+from tools.mapkit import vq37_native_tables
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -48,21 +49,21 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["map_families"] == 13
         assert values["native_maps"] == 0
         assert values["rolling_configuration"] == 0xE0660
-    assert stats["JK78C"]["mapped"] == 44
+    assert stats["JK78C"]["mapped"] == 43
     assert stats["JK78C"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["JK78C"]["checksum"] is True
     assert stats["JK78C"]["romraider_checksum"] is True
     assert stats["JK78C"]["map_families"] == 14
-    assert stats["JK78C"]["native_maps"] == 2
+    assert stats["JK78C"]["native_maps"] == 4
     assert stats["JK78C"]["rolling_configuration"] == 0x1E960
     for rom in ("1ND0A", "1ND3B"):
         values = stats[rom]
-        assert values["mapped"] == 44
+        assert values["mapped"] == 43
         assert values["unsupported"] == len(VQ37_UNSUPPORTED)
         assert values["checksum"] is True
         assert values["romraider_checksum"] is True
         assert values["map_families"] == 14
-        assert values["native_maps"] == 2
+        assert values["native_maps"] == 4
         assert values["rolling_configuration"] == 0x133F60
 
 
@@ -152,10 +153,10 @@ def test_runtime_definition_layouts_use_target_allocation():
         assert maps.slot_count == 5
         assert len(maps.families) == 14
         assert {
-            "fuel_compensation_main_bank_1",
-            "fuel_compensation_main_bank_2",
-            "idle_ignition_timing_bank_1",
-            "idle_ignition_timing_bank_2",
+            "fuel_compensation_main_default",
+            "fuel_compensation_main_alternate",
+            "idle_ignition_timing_default",
+            "idle_ignition_timing_alternate",
             "rev_limit_fuel_cut_caps",
             "rev_limit_fuel_cut_curves",
             "rev_limit_throttle_cut",
@@ -208,6 +209,54 @@ def _direct_scalar_model():
     }
 
 
+def _compensation_surface_model():
+    return {
+        "addr": "0000a29a",
+        "family": "direct-row-major",
+        "dims": 2,
+        "width": 16,
+        "height": 16,
+        "storagetype": "uint8",
+        "confidence": "code",
+        "role": "table",
+        "semantics": "Fuel compensation",
+        "units": "%",
+        "scale_expr": "x*0.78125",
+        "to_byte": "x/0.78125",
+        "scale_conf": "candidate",
+        "note": "Reviewed source model.",
+        "wrappers": [],
+        "kernels": [],
+        "steps": [],
+        "accessors": [],
+        "resolver_kinds": [],
+        "axis_x": ["00011cf0"],
+        "axis_y": ["00011d4c"],
+        "diagnostic_bindings": [],
+    }
+
+
+def _compensation_axis_models():
+    return {
+        address: {
+            "addr": address,
+            "kind": kind,
+            "len": 16,
+            "storagetype": "uint8",
+            "units": units,
+            "scale_expr": scale_expr,
+            "to_byte": to_byte,
+            "confidence": "candidate",
+            "scale_conf": "candidate",
+            "note": "Reviewed source axis.",
+        }
+        for address, kind, units, scale_expr, to_byte in (
+            ("00011cf0", "rpm", "RPM", "x*50", "x/50"),
+            ("00011d4c", "load", "%", "x*0.390625", "x/0.390625"),
+        )
+    }
+
+
 @pytest.mark.parametrize(
     ("rom", "target_address", "runtime_a_sum", "switch_count"),
     (
@@ -239,6 +288,7 @@ def test_projection_applies_target_map_checksums_and_switches(
     (
         "rom",
         "target_address",
+        "compensation_address",
         "checksum_verified",
         "romraider_checksum",
         "map_switching",
@@ -246,14 +296,15 @@ def test_projection_applies_target_map_checksums_and_switches(
         "switch_address",
     ),
     (
-        ("JK78C", "00008896", True, True, True, "0x861C", "0x1F803"),
-        ("1ND0A", "00008939", True, True, True, "0x8668", "0x134E03"),
-        ("1ND3B", "00008939", True, True, True, "0x8668", "0x134E03"),
+        ("JK78C", "00008896", "00009eba", True, True, True, "0x861C", "0x1F803"),
+        ("1ND0A", "00008939", "0000a1c0", True, True, True, "0x8668", "0x134E03"),
+        ("1ND3B", "00008939", "0000a1c0", True, True, True, "0x8668", "0x134E03"),
     ),
 )
 def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     rom,
     target_address,
+    compensation_address,
     checksum_verified,
     romraider_checksum,
     map_switching,
@@ -263,11 +314,14 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     projection = definition_projections.projection_for_rom(rom)
     result = definition_projections.apply_projection(
         projection,
-        {"00008a27": _direct_scalar_model()},
-        {},
+        {
+            "00008a27": _direct_scalar_model(),
+            "0000a29a": _compensation_surface_model(),
+        },
+        _compensation_axis_models(),
         _minimal_overrides(),
         romkit.load(rom),
-        required_maps={"00008a27"},
+        required_maps={"00008a27", "0000a29a"},
     )
 
     assert projection.checksum is checksum_verified
@@ -275,11 +329,21 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     native = vq37_native_fuel_cut.load_registry()[rom]
     caps_address = f"{native.caps_address:08x}"
     curves_address = f"{native.curves_address:08x}"
+    registered = vq37_native_tables.load_registry()[rom]
+    registered_addresses = {
+        f"{table.address:08x}" for table in registered.tables
+    }
     assert set(result.maps) == {
         target_address,
+        compensation_address,
         caps_address,
         curves_address,
-    }
+    } | registered_addresses
+    for table in registered.tables:
+        key = f"{table.address:08x}"
+        assert result.overrides["table"][key]["name"] == table.name
+        for axis in result.maps[key]["axis_x"] + result.maps[key]["axis_y"]:
+            assert axis in result.axes
     assert result.overrides["table"][caps_address]["name"] == (
         "Engine Speed Limit - Fuel Cut Caps"
     )

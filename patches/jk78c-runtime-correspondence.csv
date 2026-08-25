@@ -15,10 +15,10 @@ map,over_run_channel_multiplier,000129c0,00013e86,,,mapped,Homologous channel ac
 map,high_octane_timing_state,00009a1a,000096ca,,,mapped,Ignition selector preserves this branch and 16x16 geometry
 map,high_detonation_timing_state,00009b1a,000097ca,,,mapped,Ignition selector preserves this branch and 16x16 geometry
 map,cold_idle_ignition_timing,00012196,000137e0,,,mapped,Idle coordinator preserves the fallback-table role
-map,idle_ignition_timing,0001219e,000137e8,,bank_1,target-specific,First target bank preserves the warm-table role
-map,idle_ignition_timing,0001219e,000137f0,,bank_2,target-specific,Second target bank preserves the warm-table role
-map,fuel_compensation_main,0000a29a,00009eba,,bank_1,target-specific,First target bank preserves exact geometry and storage
-map,fuel_compensation_main,0000a29a,00009fba,,bank_2,target-specific,Second target bank preserves exact geometry and storage
+map,idle_ignition_timing,0001219e,000137e8,,default,target-specific,Default arm of the target state selector preserves the warm-table role
+map,fuel_compensation_main,0000a29a,00009eba,,default,target-specific,Default arm of the target state selector preserves exact geometry and storage
+map_native,idle_ignition_timing_alternate,,000137f0,,alternate,target-specific,Alternate arm of the target state selector shares the index byte and interpolator of the default table and has no source counterpart
+map_native,fuel_compensation_main_alternate,,00009fba,,alternate,target-specific,Alternate compensation channel shares the index byte and both axes and the interpolator of the default surface and has no source counterpart
 map,rev_limit_throttle_cut,0000942c,0000911e,,,mapped,Homologous request limiter preserves the 0x2580 scalar role
 map,rev_limit_fuel_cut,0000934e,,,,unsupported,Target uses interpolated curves and scalar caps instead of the source 2x2 table
 map_native,rev_limit_fuel_cut_caps,,00009040,,activation_release,target-specific,Adjacent uint16 caps limit the activation and release interpolation results
@@ -33,10 +33,10 @@ map_hook,ignition_lookup,00026230,00062f10,00028018,site_1,target-specific,Knock
 map_hook,ignition_lookup,00026230,00069db0,00028018,site_2,target-specific,First primary literal group calls the common ignition lookup
 map_hook,ignition_lookup,00026230,0006a058,00028018,site_3,target-specific,Second primary literal group calls the common ignition lookup
 map_hook,ignition_lookup,00026230,0006a1ac,00028018,site_4,target-specific,Final primary literal calls the common ignition lookup
-map_hook,fuel_compensation_lookup,000261f0,0002feb4,00027fd8,bank_1,target-specific,First target bank literal calls the common lookup
-map_hook,fuel_compensation_lookup,000261f0,00040f6c,00027fd8,bank_2,target-specific,Second target bank literal calls the common lookup
-map_hook,idle_ignition_lookup,00026370,000645e8,00028198,bank_1,target-specific,First target bank literal calls the exact idle lookup
-map_hook,idle_ignition_lookup,00026370,00064834,00028198,bank_2,target-specific,Second target bank literal calls the exact idle lookup
+map_hook,fuel_compensation_lookup,000261f0,0002feb4,00027fd8,startup,target-specific,Startup initializer literal calls the common lookup
+map_hook,fuel_compensation_lookup,000261f0,00040f6c,00027fd8,runtime,target-specific,Runtime coordinator literal calls the common lookup
+map_hook,idle_ignition_lookup,00026370,000645e8,00028198,pool_1,target-specific,First literal-pool copy of the exact idle lookup pointer serves the stock-inert branch
+map_hook,idle_ignition_lookup,00026370,00064834,00028198,pool_2,target-specific,Second literal-pool copy of the exact idle lookup pointer serves the default and alternate and fallback branches
 map_hook,rev_fuel_cut_caps_base,,0006b068,00009040,,target-specific,Native state-machine literal selects the adjacent activation and release scalar caps
 map_hook,rev_fuel_cut_release_cap_base,,0006b06c,00009042,,target-specific,Native state-machine release literal binds the second scalar cap independently
 map_hook,rev_fuel_cut_curves_base,,0006b070,00016bf4,,target-specific,Native state-machine literal selects both adjacent eight-point curves
@@ -50,7 +50,7 @@ map_symbol,startup_initializer,0002c648,0002f596,,,mapped,Instruction alignment 
 map_symbol,dfco_lookup,00026388,000281b0,,,mapped,Exact-byte target function serves both DFCO hooks
 map_symbol,ignition_lookup,00026230,00028018,,,mapped,Reviewed interpolation contract binds the common ignition lookup
 map_symbol,fuel_compensation_lookup,000261f0,00027fd8,,,mapped,Reviewed interpolation contract binds the common fuel lookup
-map_symbol,idle_ignition_lookup,00026370,00028198,,,mapped,Exact-byte target function serves both idle-bank hooks
+map_symbol,idle_ignition_lookup,00026370,00028198,,,mapped,Exact-byte target function serves both idle literal-pool hooks
 map_symbol,feedback_serializer,000c5372,000ed03c,,,mapped,Near-exact instruction sequence and dispatcher position bind the serializer
 map_symbol,feedback_status_byte,ffff3ada,ffff3d62,,,mapped,Serializer payload offset 0x2a places status at byte 5
 map_symbol,rev_fuel_cut_state_machine,,0006aeb8,,,target-specific,Exact 190-byte function is the third Boolean predicate aggregated by the final fuel-mask coordinator
@@ -162,6 +162,6 @@ telemetry,af_adjustment_b1_raw,ffff45a0,ffff490a,,,mapped,Aligned diagnostic poi
 telemetry,secondary_tps_b1_raw,ffff275e,ffff26b4,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,secondary_tps_b2_raw,ffff2864,ffff27b4,,,mapped,Aligned diagnostic pointer table preserves the bank-relative field
 telemetry,af_adjustment_b2_raw,ffff45a2,ffff490c,,,mapped,Aligned diagnostic pointer table and direct references agree
-capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel banks two warm-idle banks four ignition hooks native fuel-cut caps and curves and a throttle-scalar commit
+capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel compensation surfaces two warm-idle timing tables four ignition hooks native fuel-cut caps and curves and a throttle-scalar commit
 capability,rolling_launch,,,,,target-specific,Dedicated state requests all-cylinder cut after the stock index-31 coordinator without modifying VQ37 map storage
 capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type 03 feedback record and one unavailable Q8 field require explicit target bindings

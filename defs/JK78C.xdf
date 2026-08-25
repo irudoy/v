@@ -3485,8 +3485,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x82AA" flags="0x0">
-    <title>Map 1 - Fuel Compensation - Main - Bank 1</title>
-    <description>Exact JK78C. Address 0x9EBA; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 1. Common-definition Map 1 uses the canonical stock storage. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
+    <title>Map 1 - Fuel Compensation - Main - Default</title>
+    <description>Exact JK78C. Address 0x9EBA; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 1 uses the canonical stock storage. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector.</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -3527,8 +3527,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x3CF3" flags="0x0">
-    <title>Map 1 - Fuel Compensation - Main - Bank 2</title>
-    <description>Exact JK78C. Address 0x9FBA; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 2. Common-definition Map 1 uses the canonical stock storage. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
+    <title>Map 1 - Fuel Compensation - Main - Alternate</title>
+    <description>Exact JK78C. Address 0x9FBA; 16 rows x 16 columns; uint8; map confidence code. Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface. Common-definition Map 1 uses the canonical stock storage. Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal 0x2febc, accessor 0x40958 through literal 0x40f70. The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead.</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -8110,8 +8110,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xCE37" flags="0x0">
-    <title>Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 1</title>
-    <description>Exact JK78C. Address 0x137E8; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 1. Common-definition Map 1 uses the canonical stock storage. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <title>Map 1 - Timing-State Addend - Warm DFCO Transition - Default</title>
+    <description>Exact JK78C. Address 0x137E8; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Default. Common-definition Map 1 uses the canonical stock storage. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -8159,8 +8159,8 @@
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x15C6" flags="0x0">
-    <title>Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 2</title>
-    <description>Exact JK78C. Address 0x137F0; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 2. Common-definition Map 1 uses the canonical stock storage. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <title>Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate</title>
+    <description>Exact JK78C. Address 0x137F0; 1 rows x 8 columns; uint8; map confidence code. Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set. Common-definition Map 1 uses the canonical stock storage. Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal 0x6484c. Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear.</description>
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -8199,7 +8199,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x137F0" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Timing-state count [cand]</units>
+      <units>Timing-state count</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X-128">
@@ -8342,51 +8342,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xD80F" flags="0x0">
-    <title>Map 2 - Fuel Compensation - Main - Bank 2</title>
-    <description>Exact JK78C. Address 0x1D700; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 2. Common-definition Map 2 storage is projected from 0x9FBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
-    <CATEGORYMEM index="0" category="6" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <embedinfo type="1" />
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <MATH equation="X*0.390625">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedaddress="0x13AF8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <embedinfo type="1" />
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <MATH equation="X*50">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1D700" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
-      <decimalpl>2</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*0.78125">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0x3454" flags="0x0">
-    <title>Map 2 - Fuel Compensation - Main - Bank 1</title>
-    <description>Exact JK78C. Address 0x1DB00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 1. Common-definition Map 2 storage is projected from 0x9EBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
+    <title>Map 2 - Fuel Compensation - Main - Default</title>
+    <description>Exact JK78C. Address 0x1DB00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 2 storage is projected from 0x9EBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector.</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -8418,6 +8376,48 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1DB00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>% [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xD80F" flags="0x0">
+    <title>Map 2 - Fuel Compensation - Main - Alternate</title>
+    <description>Exact JK78C. Address 0x1D700; 16 rows x 16 columns; uint8; map confidence code. Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface. Common-definition Map 2 storage is projected from 0x9FBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal 0x2febc, accessor 0x40958 through literal 0x40f70. The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead.</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>QH0 Flow Quantity [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.390625">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13AF8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1D700" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>% [cand]</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
@@ -12967,58 +12967,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x9C88" flags="0x0">
-    <title>Map 2 - Timing-State Addend - Warm DFCO Transition - Bank 2</title>
-    <description>Exact JK78C. Address 0x1DF00; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 2. Common-definition Map 2 storage is projected from 0x137F0. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
-    <CATEGORYMEM index="0" category="13" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Engine Speed [RPM] (Candidate)</units>
-      <indexcount>8</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <LABEL index="1" value="400" />
-      <LABEL index="2" value="800" />
-      <LABEL index="3" value="1200" />
-      <LABEL index="4" value="1600" />
-      <LABEL index="5" value="2000" />
-      <LABEL index="6" value="2400" />
-      <LABEL index="7" value="2800" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1DF00" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Timing-state count [cand]</units>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X-128">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0x817D" flags="0x0">
-    <title>Map 2 - Timing-State Addend - Warm DFCO Transition - Bank 1</title>
-    <description>Exact JK78C. Address 0x1EAA0; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 1. Common-definition Map 2 storage is projected from 0x137E8. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <title>Map 2 - Timing-State Addend - Warm DFCO Transition - Default</title>
+    <description>Exact JK78C. Address 0x1EAA0; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Default. Common-definition Map 2 storage is projected from 0x137E8. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -13058,6 +13009,55 @@
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1EAA0" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>Timing-state count [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x9C88" flags="0x0">
+    <title>Map 2 - Timing-State Addend - Warm DFCO Transition - Alternate</title>
+    <description>Exact JK78C. Address 0x1DF00; 1 rows x 8 columns; uint8; map confidence code. Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set. Common-definition Map 2 storage is projected from 0x137F0. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal 0x6484c. Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear.</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1DF00" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Timing-state count</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X-128">
@@ -13200,51 +13200,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x9F32" flags="0x0">
-    <title>Map 3 - Fuel Compensation - Main - Bank 2</title>
-    <description>Exact JK78C. Address 0x1D800; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 2. Common-definition Map 3 storage is projected from 0x9FBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
-    <CATEGORYMEM index="0" category="6" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <embedinfo type="1" />
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <MATH equation="X*0.390625">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedaddress="0x13AF8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <embedinfo type="1" />
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <MATH equation="X*50">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1D800" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
-      <decimalpl>2</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*0.78125">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0x5E63" flags="0x0">
-    <title>Map 3 - Fuel Compensation - Main - Bank 1</title>
-    <description>Exact JK78C. Address 0x1DC00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 1. Common-definition Map 3 storage is projected from 0x9EBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
+    <title>Map 3 - Fuel Compensation - Main - Default</title>
+    <description>Exact JK78C. Address 0x1DC00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 3 storage is projected from 0x9EBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector.</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -13276,6 +13234,48 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1DC00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>% [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x9F32" flags="0x0">
+    <title>Map 3 - Fuel Compensation - Main - Alternate</title>
+    <description>Exact JK78C. Address 0x1D800; 16 rows x 16 columns; uint8; map confidence code. Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface. Common-definition Map 3 storage is projected from 0x9FBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal 0x2febc, accessor 0x40958 through literal 0x40f70. The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead.</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>QH0 Flow Quantity [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.390625">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13AF8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1D800" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>% [cand]</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
@@ -17825,58 +17825,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x14BA" flags="0x0">
-    <title>Map 3 - Timing-State Addend - Warm DFCO Transition - Bank 2</title>
-    <description>Exact JK78C. Address 0x1DF08; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 2. Common-definition Map 3 storage is projected from 0x137F0. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
-    <CATEGORYMEM index="0" category="13" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Engine Speed [RPM] (Candidate)</units>
-      <indexcount>8</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <LABEL index="1" value="400" />
-      <LABEL index="2" value="800" />
-      <LABEL index="3" value="1200" />
-      <LABEL index="4" value="1600" />
-      <LABEL index="5" value="2000" />
-      <LABEL index="6" value="2400" />
-      <LABEL index="7" value="2800" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1DF08" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Timing-state count [cand]</units>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X-128">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0x94F" flags="0x0">
-    <title>Map 3 - Timing-State Addend - Warm DFCO Transition - Bank 1</title>
-    <description>Exact JK78C. Address 0x1EAA8; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 1. Common-definition Map 3 storage is projected from 0x137E8. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <title>Map 3 - Timing-State Addend - Warm DFCO Transition - Default</title>
+    <description>Exact JK78C. Address 0x1EAA8; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Default. Common-definition Map 3 storage is projected from 0x137E8. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -17916,6 +17867,55 @@
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1EAA8" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>Timing-state count [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x14BA" flags="0x0">
+    <title>Map 3 - Timing-State Addend - Warm DFCO Transition - Alternate</title>
+    <description>Exact JK78C. Address 0x1DF08; 1 rows x 8 columns; uint8; map confidence code. Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set. Common-definition Map 3 storage is projected from 0x137F0. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal 0x6484c. Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear.</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1DF08" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Timing-state count</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X-128">
@@ -18058,51 +18058,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xF505" flags="0x0">
-    <title>Map 4 - Fuel Compensation - Main - Bank 2</title>
-    <description>Exact JK78C. Address 0x1D900; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 2. Common-definition Map 4 storage is projected from 0x9FBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
-    <CATEGORYMEM index="0" category="6" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <embedinfo type="1" />
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <MATH equation="X*0.390625">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedaddress="0x13AF8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <embedinfo type="1" />
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <MATH equation="X*50">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1D900" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
-      <decimalpl>2</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*0.78125">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0x48E6" flags="0x0">
-    <title>Map 4 - Fuel Compensation - Main - Bank 1</title>
-    <description>Exact JK78C. Address 0x1DD00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 1. Common-definition Map 4 storage is projected from 0x9EBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
+    <title>Map 4 - Fuel Compensation - Main - Default</title>
+    <description>Exact JK78C. Address 0x1DD00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 4 storage is projected from 0x9EBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector.</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -18134,6 +18092,48 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1DD00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>% [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xF505" flags="0x0">
+    <title>Map 4 - Fuel Compensation - Main - Alternate</title>
+    <description>Exact JK78C. Address 0x1D900; 16 rows x 16 columns; uint8; map confidence code. Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface. Common-definition Map 4 storage is projected from 0x9FBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal 0x2febc, accessor 0x40958 through literal 0x40f70. The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead.</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>QH0 Flow Quantity [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.390625">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13AF8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1D900" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>% [cand]</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
@@ -22683,58 +22683,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0xADC9" flags="0x0">
-    <title>Map 4 - Timing-State Addend - Warm DFCO Transition - Bank 2</title>
-    <description>Exact JK78C. Address 0x1DF10; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 2. Common-definition Map 4 storage is projected from 0x137F0. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
-    <CATEGORYMEM index="0" category="13" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Engine Speed [RPM] (Candidate)</units>
-      <indexcount>8</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <LABEL index="1" value="400" />
-      <LABEL index="2" value="800" />
-      <LABEL index="3" value="1200" />
-      <LABEL index="4" value="1600" />
-      <LABEL index="5" value="2000" />
-      <LABEL index="6" value="2400" />
-      <LABEL index="7" value="2800" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1DF10" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Timing-state count [cand]</units>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X-128">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0xD2BE" flags="0x0">
-    <title>Map 4 - Timing-State Addend - Warm DFCO Transition - Bank 1</title>
-    <description>Exact JK78C. Address 0x1EAB0; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 1. Common-definition Map 4 storage is projected from 0x137E8. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <title>Map 4 - Timing-State Addend - Warm DFCO Transition - Default</title>
+    <description>Exact JK78C. Address 0x1EAB0; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Default. Common-definition Map 4 storage is projected from 0x137E8. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -22774,6 +22725,55 @@
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1EAB0" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>Timing-state count [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xADC9" flags="0x0">
+    <title>Map 4 - Timing-State Addend - Warm DFCO Transition - Alternate</title>
+    <description>Exact JK78C. Address 0x1DF10; 1 rows x 8 columns; uint8; map confidence code. Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set. Common-definition Map 4 storage is projected from 0x137F0. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal 0x6484c. Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear.</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1DF10" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Timing-state count</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X-128">
@@ -22916,51 +22916,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x8A0D" flags="0x0">
-    <title>Map 5 - Fuel Compensation - Main - Bank 2</title>
-    <description>Exact JK78C. Address 0x1DA00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 2. Common-definition Map 5 storage is projected from 0x9FBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
-    <CATEGORYMEM index="0" category="6" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <embedinfo type="1" />
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <MATH equation="X*0.390625">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedaddress="0x13AF8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>RPM [cand]</units>
-      <indexcount>16</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <embedinfo type="1" />
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <MATH equation="X*50">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1DA00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
-      <decimalpl>2</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X*0.78125">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0x22D1" flags="0x0">
-    <title>Map 5 - Fuel Compensation - Main - Bank 1</title>
-    <description>Exact JK78C. Address 0x1DE00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Bank 1. Common-definition Map 5 storage is projected from 0x9EBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best bank accessor preserves geometry axes and lookup role.</description>
+    <title>Map 5 - Fuel Compensation - Main - Default</title>
+    <description>Exact JK78C. Address 0x1DE00; 16 rows x 16 columns; uint8; map confidence candidate. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 5 storage is projected from 0x9EBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-JK78C.definition-addresses.csv: mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector.</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -22992,6 +22950,48 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1DE00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>% [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x8A0D" flags="0x0">
+    <title>Map 5 - Fuel Compensation - Main - Alternate</title>
+    <description>Exact JK78C. Address 0x1DA00; 16 rows x 16 columns; uint8; map confidence code. Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface. Common-definition Map 5 storage is projected from 0x9FBA. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK78C target-native table at 0x9fba bound to accessor 0x2f596 through literal 0x2febc, accessor 0x40958 through literal 0x40f70. The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead.</description>
+    <CATEGORYMEM index="0" category="6" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13B18" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>QH0 Flow Quantity [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.390625">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x13AF8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1DA00" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>% [cand]</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
@@ -27541,58 +27541,9 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
-  <XDFTABLE uniqueid="0x25FB" flags="0x0">
-    <title>Map 5 - Timing-State Addend - Warm DFCO Transition - Bank 2</title>
-    <description>Exact JK78C. Address 0x1DF18; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 2. Common-definition Map 5 storage is projected from 0x137F0. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
-    <CATEGORYMEM index="0" category="13" />
-    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Engine Speed [RPM] (Candidate)</units>
-      <indexcount>8</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <LABEL index="1" value="400" />
-      <LABEL index="2" value="800" />
-      <LABEL index="3" value="1200" />
-      <LABEL index="4" value="1600" />
-      <LABEL index="5" value="2000" />
-      <LABEL index="6" value="2400" />
-      <LABEL index="7" value="2800" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
-      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
-      <units>Series</units>
-      <indexcount>1</indexcount>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <datatype>0</datatype>
-      <unittype>0</unittype>
-      <DALINK index="0" />
-      <LABEL index="0" value="0" />
-      <MATH equation="X">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-    <XDFAXIS id="z">
-      <EMBEDDEDDATA mmedaddress="0x1DF18" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Timing-state count [cand]</units>
-      <decimalpl>0</decimalpl>
-      <outputtype>1</outputtype>
-      <MATH equation="X-128">
-        <VAR id="X" />
-      </MATH>
-    </XDFAXIS>
-  </XDFTABLE>
   <XDFTABLE uniqueid="0x5A8C" flags="0x0">
-    <title>Map 5 - Timing-State Addend - Warm DFCO Transition - Bank 1</title>
-    <description>Exact JK78C. Address 0x1EAB8; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Bank 1. Common-definition Map 5 storage is projected from 0x137E8. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: target bank branch preserves the source warm-transition table role. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
+    <title>Map 5 - Timing-State Addend - Warm DFCO Transition - Default</title>
+    <description>Exact JK78C. Address 0x1EAB8; 1 rows x 8 columns; uint8; map confidence candidate. Warm DFCO-transition eight-point timing-state addend. FUN 0004afdc selects it only when ffff244f.bit2 is clear, warm latch ffff41de.bit5 is set, upstream DFCO mode ffff2458.bit5 is set, and transition timer ffff2590 is nonzero. Target variant: Default. Common-definition Map 5 storage is projected from 0x137E8. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear, ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it. Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing name, but no crank-referenced degree scale is established. Index: implicit eight-point axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector. Static diagnostic context: IGN TIMING [candidate, homologous_vq35hr, via map evidence: writes].</description>
     <CATEGORYMEM index="0" category="13" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -27632,6 +27583,55 @@
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1EAB8" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>Timing-state count [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X-128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x25FB" flags="0x0">
+    <title>Map 5 - Timing-State Addend - Warm DFCO Transition - Alternate</title>
+    <description>Exact JK78C. Address 0x1DF18; 1 rows x 8 columns; uint8; map confidence code. Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set. Common-definition Map 5 storage is projected from 0x137F0. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal 0x6484c. Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear.</description>
+    <CATEGORYMEM index="0" category="13" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM] (Candidate)</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="400" />
+      <LABEL index="2" value="800" />
+      <LABEL index="3" value="1200" />
+      <LABEL index="4" value="1600" />
+      <LABEL index="5" value="2000" />
+      <LABEL index="6" value="2400" />
+      <LABEL index="7" value="2800" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1DF18" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>Timing-state count</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X-128">

@@ -28,6 +28,7 @@ from patches import rom_checksums
 from patches import runtime_targets
 from tools.mapkit import rom as romkit
 from tools.mapkit import vq37_native_fuel_cut
+from tools.mapkit import vq37_native_tables
 
 
 DEFAULT_REGISTRY = ROOT / "defs" / "definition-projections.toml"
@@ -723,6 +724,17 @@ def apply_projection(
     except vq37_native_fuel_cut.NativeFuelCutError as error:
         raise DefinitionProjectionError(str(error)) from error
 
+    try:
+        projected_maps, projected_overrides = vq37_native_tables.apply_target(
+            projection.target,
+            projected_maps,
+            projected_axes,
+            projected_overrides,
+            image,
+        )
+    except vq37_native_tables.NativeTableError as error:
+        raise DefinitionProjectionError(str(error)) from error
+
     return AppliedAddressProjection(
         maps=projected_maps,
         axes=projected_axes,
@@ -807,6 +819,23 @@ def validate_registry(path=DEFAULT_REGISTRY):
             )
         except vq37_native_fuel_cut.NativeFuelCutError as error:
             raise DefinitionProjectionError(str(error)) from error
+        projected_axis_targets = {
+            binding.target: None
+            for binding in projection.bindings
+            if binding.entity == "Axis" and binding.mapped
+        }
+        try:
+            registered_maps, _registered_overrides = (
+                vq37_native_tables.apply_target(
+                    target,
+                    {},
+                    projected_axis_targets,
+                    {"table": {}},
+                    target_image,
+                )
+            )
+        except vq37_native_tables.NativeTableError as error:
+            raise DefinitionProjectionError(str(error)) from error
         stats[target] = {
             "bindings": len(projection.bindings),
             "mapped": sum(binding.mapped for binding in projection.bindings),
@@ -814,7 +843,7 @@ def validate_registry(path=DEFAULT_REGISTRY):
             "checksum": projection.checksum,
             "romraider_checksum": projection.romraider_checksum,
             "map_families": len(map_layout.families) if map_layout else 0,
-            "native_maps": len(native_maps),
+            "native_maps": len(native_maps) + len(registered_maps),
             "rolling_configuration": (
                 launch_layout.configuration.start if launch_layout else None
             ),

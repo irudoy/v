@@ -143,10 +143,12 @@ boundary.
 ## VQ37 projected variant
 
 JK78C, 1ND0A, and 1ND3B use fourteen target-specific families. The VQ37
-layout retains the four DFCO rows and two ignition surfaces, provides separate
-warm-idle and fuel-compensation families for both banks, and replaces the
-canonical 2x2 fuel-cut table with two uint16 caps plus independent eight-point
-activation and release curves. The throttle limiter remains one selected
+layout retains the four DFCO rows and two ignition surfaces, provides a default
+and an alternate family for both warm-idle timing and fuel compensation, and
+replaces the canonical 2x2 fuel-cut table with two uint16 caps plus independent
+eight-point activation and release curves. The duplicated pairs are read with
+one index byte through one interpolator and carry no engine-bank identity, so
+each family is named by the selector arm that reaches it. The throttle limiter remains one selected
 uint16 scalar. The source exhaust-CVTC 16x16 surface is not projected because
 the target uses a different branch-selected curve model whose exact editor
 binding is not established.

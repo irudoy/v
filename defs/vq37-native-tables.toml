@@ -1,0 +1,161 @@
+schema_version = 1
+
+# VQ37 registers two calibration tables that have no VQ35HR canonical source.
+# Each is the alternate arm of a state selector whose default arm carries the
+# projected canonical role, so neither table is a per-bank duplicate. Every
+# address, geometry, stock value block, and accessor literal-pool binding below
+# is verified against the exact stock image before the table reaches an editor
+# definition.
+
+[target.JK78C]
+stock_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
+
+[[target.JK78C.table]]
+id = "fuel_compensation_alternate"
+address = 0x00009FBA
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "53d88e8d171f5202d75375b237dce6208fb307a195d269608f9683580eaad255"
+pointer_bindings = [{ site = 0x0002FEBC, accessor = 0x0002F596 }, { site = 0x00040F70, accessor = 0x00040958 }]
+axis_x = 0x00013AF8
+axis_y = 0x00013B18
+name = "Fuel Compensation - Main - Alternate"
+category = "Fuelling / Compensation"
+order = 21
+format = "0.00"
+fine = 0.78125
+coarse = 3.125
+units = "%"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+semantics = "Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface."
+note = "The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead."
+
+[[target.JK78C.table]]
+id = "timing_state_addend_alternate"
+address = 0x000137F0
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "1d6b09db45855d2fc3ccb74dab92e6cce4ea8e504c6aaf6a0f8834215f03c8d9"
+pointer_bindings = [{ site = 0x0006484C, accessor = 0x000644D0 }]
+name = "Timing-State Addend - Warm DFCO Transition - Alternate"
+category = "Ignition Timing / State Corrections"
+order = 158
+format = "0"
+fine = 1
+coarse = 4
+units = "Timing-state count"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-128"
+to_byte = "x+128"
+static_axis_name = "Engine Speed [RPM] (Candidate)"
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
+note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."
+
+[target.1ND0A]
+stock_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
+
+[[target.1ND0A.table]]
+id = "fuel_compensation_alternate"
+address = 0x0000A2C0
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "53d88e8d171f5202d75375b237dce6208fb307a195d269608f9683580eaad255"
+pointer_bindings = [{ site = 0x00031164, accessor = 0x00030810 }, { site = 0x000454F8, accessor = 0x00044F1C }]
+axis_x = 0x00013F2A
+axis_y = 0x00013F4A
+name = "Fuel Compensation - Main - Alternate"
+category = "Fuelling / Compensation"
+order = 21
+format = "0.00"
+fine = 0.78125
+coarse = 3.125
+units = "%"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+semantics = "Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface."
+note = "The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead."
+
+[[target.1ND0A.table]]
+id = "timing_state_addend_alternate"
+address = 0x00013C22
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "1d6b09db45855d2fc3ccb74dab92e6cce4ea8e504c6aaf6a0f8834215f03c8d9"
+pointer_bindings = [{ site = 0x0006F6FC, accessor = 0x0006F37A }]
+name = "Timing-State Addend - Warm DFCO Transition - Alternate"
+category = "Ignition Timing / State Corrections"
+order = 158
+format = "0"
+fine = 1
+coarse = 4
+units = "Timing-state count"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-128"
+to_byte = "x+128"
+static_axis_name = "Engine Speed [RPM] (Candidate)"
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
+note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."
+
+[target.1ND3B]
+stock_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
+
+[[target.1ND3B.table]]
+id = "fuel_compensation_alternate"
+address = 0x0000A2C0
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "b89fac3f042148464b1112ef55418bd158afb6ac9d63defa3349455cd44d8bfa"
+pointer_bindings = [{ site = 0x00031164, accessor = 0x00030810 }, { site = 0x000454F8, accessor = 0x00044F1C }]
+axis_x = 0x00013F2A
+axis_y = 0x00013F4A
+name = "Fuel Compensation - Main - Alternate"
+category = "Fuelling / Compensation"
+order = 21
+format = "0.00"
+fine = 0.78125
+coarse = 3.125
+units = "%"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+semantics = "Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares the index byte, both axes, and the interpolator of the projected default surface, and the downstream state selector reads it in place of that surface."
+note = "The two 16x16 surfaces are read with the same index byte, the same axis pair, and the same interpolator in both accessors, so neither surface carries an engine-bank identity. The accessors publish four parallel compensation channels and the consumer selects one by a state code, then crossfades the value of the current state with the value of the previous state by a normalized progress weight where 0x8000 is 1.0. The default arm of that selector reads the projected canonical surface; this table is the arm the state code selects instead."
+
+[[target.1ND3B.table]]
+id = "timing_state_addend_alternate"
+address = 0x00013C22
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "1d6b09db45855d2fc3ccb74dab92e6cce4ea8e504c6aaf6a0f8834215f03c8d9"
+pointer_bindings = [{ site = 0x0006F6FC, accessor = 0x0006F37A }]
+name = "Timing-State Addend - Warm DFCO Transition - Alternate"
+category = "Ignition Timing / State Corrections"
+order = 158
+format = "0"
+fine = 1
+coarse = 4
+units = "Timing-state count"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-128"
+to_byte = "x+128"
+static_axis_name = "Engine Speed [RPM] (Candidate)"
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
+note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."

@@ -1,8 +1,8 @@
 entity,source,target,variant,status,sites,function_kinds,evidence
 Axis,00011ebe,000135b8,,homologous-call,1,instruction-aligned-homolog,target ignition accessor preserves the load-axis operand and 16-point geometry
 Axis,00011ece,000135c8,,homologous-call,1,instruction-aligned-homolog,target ignition accessor preserves the RPM-axis operand and 16-point geometry
-Axis,00011cf0,00013af8,,homologous-call,2,instruction-aligned-homolog,two target bank accessors share the reviewed 16-point X axis
-Axis,00011d4c,00013b18,,homologous-call,2,instruction-aligned-homolog,two target bank accessors share the reviewed 16-point Y axis
+Axis,00011cf0,00013af8,,homologous-call,2,instruction-aligned-homolog,both target compensation accessors share the reviewed 16-point X axis
+Axis,00011d4c,00013b18,,homologous-call,2,instruction-aligned-homolog,both target compensation accessors share the reviewed 16-point Y axis
 Axis,00011d0c,00013463,,homologous-call,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
 Axis,00014114,0001552c,,homologous-call,5,ordered-normalized-shape;ordered-unique-interpolation-call-signature,unique structural axis pair preserves interpolation-call order
 Axis,00014aba,00015cf2,,homologous-call,2,ordered-normalized-shape;ordered-unique-mapped-neighbor-fingerprint,unique structural axis pair preserves mapped neighbors
@@ -23,8 +23,7 @@ Map,00009534,000091ee,,homologous-call,4,normalized-function-reference,normalize
 Map,0000991a,000095ca,,homologous-call,1,unique-same-contract-accessor,unique same-contract accessor preserves the 16x16 cold ignition surface role
 Map,00009a1a,000096ca,,homologous-call,1,unique-same-contract-accessor,unique same-contract accessor preserves the first 16x16 ignition surface and operand order
 Map,00009b1a,000097ca,,homologous-call,1,unique-same-contract-accessor,unique same-contract accessor preserves the second 16x16 ignition surface and operand order
-Map,0000a29a,00009eba,bank_1,homologous-call,1,mutual-best-accessor-pair,mutual-best bank accessor preserves geometry axes and lookup role
-Map,0000a29a,00009fba,bank_2,homologous-call,1,mutual-best-accessor-pair,mutual-best bank accessor preserves geometry axes and lookup role
+Map,0000a29a,00009eba,default,homologous-call,1,mutual-best-accessor-pair,mutual-best accessor preserves geometry axes and lookup role on the default arm of the target state selector
 Map,0000ab5a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
 Map,0000b33a,,,unsupported,0,removed-subsystem,VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
 Map,0000b43a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in JK78C
@@ -33,8 +32,8 @@ Map,0000e98e,0000face,,homologous-exact-chain,5,ordered-normalized-shape;ordered
 Map,00010b8e,00011d4e,,homologous-call,1,ordered-normalized-shape,unique structural map pair preserves normalized geometry
 Map,0001108e,00011f4e,,homologous-call,1,exact-normalized-function-shape,exact normalized accessor shape preserves the direct-row-major table operand
 Map,00012196,000137e0,,homologous-call,1,instruction-aligned-homolog,homologous fallback branch preserves the default table role
-Map,0001219e,000137e8,bank_1,homologous-call,1,instruction-aligned-homolog,target bank branch preserves the source warm-transition table role
-Map,0001219e,000137f0,bank_2,homologous-call,1,instruction-aligned-homolog,target bank branch preserves the source warm-transition table role
+Map,000121a6,000137f8,,homologous-call,1,instruction-aligned-homolog,homologous early branch guarded by the same 0x4000 comparison preserves the stock-inert table role
+Map,0001219e,000137e8,default,homologous-call,1,instruction-aligned-homolog,instruction-aligned branch preserves the source warm-transition table role on the default arm of the target state selector
 Map,000124d2,00013a70,,homologous-call,1,unique-same-contract-accessor,unique state-machine accessor preserves the lookup role and geometry
 Map,000126e4,00013c5a,,homologous-exact-chain,1,coordinator-call-order;exact-bytes,homologous coordinator preserves lookup order and exact map bytes
 Map,00012718,00013c86,,homologous-exact-chain,1,coordinator-call-order;exact-bytes,homologous coordinator preserves lookup order and exact map bytes

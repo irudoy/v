@@ -1112,10 +1112,10 @@
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: first target bank
-         accessor preserves exact geometry and storage.
+         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: the accessor on the
+         default arm of the target state selector preserves exact geometry and storage.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Fuel Compensation - Main - Bank 1"
+    <table type="3D" name="Map 1 - Fuel Compensation - Main - Default"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0A1C0"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
@@ -1131,19 +1131,22 @@
       </table>
     </table>
 
-    <!-- 0x0A2C0  16x16 uint8  common-definition Map 1 storage projected from 0x0A2C0
-         [candidate]
+    <!-- 0x0A2C0  16x16 uint8  common-definition Map 1 storage projected from 0x0A2C0 [code]
          Map 1 uses canonical stock storage
+         canonical accessor 0x30810, 0x44F1C; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13F2A rpm [candidate]; X Axis 0x13F4A load
          [candidate]
-         The machine trace establishes the multiplicative role, while A2L and homolog EV18A
-         0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
-         This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: second target bank
-         accessor preserves exact geometry and storage.
+         Exact 1ND0A target-native table at 0xa2c0 bound to accessor 0x30810 through literal
+         0x31164, accessor 0x44f1c through literal 0x454f8. The two 16x16 surfaces are read with
+         the same index byte, the same axis pair, and the same interpolator in both accessors,
+         so neither surface carries an engine-bank identity. The accessors publish four parallel
+         compensation channels and the consumer selects one by a state code, then crossfades the
+         value of the current state with the value of the previous state by a normalized
+         progress weight where 0x8000 is 1.0. The default arm of that selector reads the
+         projected canonical surface; this table is the arm the state code selects instead.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 1 - Fuel Compensation - Main - Bank 2"
+    <table type="3D" name="Map 1 - Fuel Compensation - Main - Alternate"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0A2C0"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
@@ -1408,10 +1411,10 @@
          name, but no crank-referenced degree scale is established. Index: implicit eight-point
          axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
          ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: first target bank branch preserves the source warm-
-         transition table role.
+         JK08A-1ND.definition-addresses.csv: the branch on the default arm of the target state
+         selector preserves the source warm-transition table role.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 1"
+    <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x13C1A" sizex="8" endian="big">
       <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
@@ -1422,25 +1425,21 @@
       </table>
     </table>
 
-    <!-- 0x13C22  8 uint8  common-definition Map 1 storage projected from 0x13C22 [candidate]
+    <!-- 0x13C22  8 uint8  common-definition Map 1 storage projected from 0x13C22 [code]
          Map 1 uses canonical stock storage
+         canonical accessor 0x6F37A; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
-         The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
-         to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
-         ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
-         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: second target bank branch preserves the source
-         warm-transition table role.
+         scaling x-128 Timing-state count [code]
+         Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
+         0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
+         engine-bank identity. The selector is the transition-completion latch: it sets when the
+         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
+         is the branch taken while the latch is clear.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition - Bank 2"
+    <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x13C22" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -1523,7 +1522,7 @@
       </table>
     </table>
 
-    <!-- 0x132D00  16x16 uint8  common-definition Map 2 storage projected from 0x0A2C0
+    <!-- 0x133100  16x16 uint8  common-definition Map 2 storage projected from 0x0A1C0
          [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -1533,11 +1532,11 @@
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: second target bank
-         accessor preserves exact geometry and storage.
+         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: the accessor on the
+         default arm of the target state selector preserves exact geometry and storage.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Fuel Compensation - Main - Bank 2"
-           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x132D00"
+    <table type="3D" name="Map 2 - Fuel Compensation - Main - Default"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133100"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
@@ -1552,21 +1551,24 @@
       </table>
     </table>
 
-    <!-- 0x133100  16x16 uint8  common-definition Map 2 storage projected from 0x0A1C0
-         [candidate]
+    <!-- 0x132D00  16x16 uint8  common-definition Map 2 storage projected from 0x0A2C0 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
+         canonical accessor 0x30810, 0x44F1C; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13F2A rpm [candidate]; X Axis 0x13F4A load
          [candidate]
-         The machine trace establishes the multiplicative role, while A2L and homolog EV18A
-         0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
-         This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: first target bank
-         accessor preserves exact geometry and storage.
+         Exact 1ND0A target-native table at 0xa2c0 bound to accessor 0x30810 through literal
+         0x31164, accessor 0x44f1c through literal 0x454f8. The two 16x16 surfaces are read with
+         the same index byte, the same axis pair, and the same interpolator in both accessors,
+         so neither surface carries an engine-bank identity. The accessors publish four parallel
+         compensation channels and the consumer selects one by a state code, then crossfades the
+         value of the current state with the value of the previous state by a normalized
+         progress weight where 0x8000 is 1.0. The default arm of that selector reads the
+         projected canonical surface; this table is the arm the state code selects instead.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 2 - Fuel Compensation - Main - Bank 1"
-           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133100"
+    <table type="3D" name="Map 2 - Fuel Compensation - Main - Alternate"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x132D00"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
@@ -1825,33 +1827,6 @@
       </table>
     </table>
 
-    <!-- 0x133500  8 uint8  common-definition Map 2 storage projected from 0x13C22 [candidate]
-         Stock firmware does not reference this erased allocation; runtime use requires the
-         project map-switching patch
-         Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
-         The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
-         to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
-         ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
-         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: second target bank branch preserves the source
-         warm-transition table role.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition - Bank 2"
-           category="Ignition Timing//State Corrections" storagetype="uint8"
-           storageaddress="0x133500" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
-               fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
-        <data>0</data><data>400</data><data>800</data><data>1200</data>
-        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
-      </table>
-    </table>
-
     <!-- 0x1340A0  8 uint8  common-definition Map 2 storage projected from 0x13C1A [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -1865,13 +1840,36 @@
          name, but no crank-referenced degree scale is established. Index: implicit eight-point
          axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
          ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: first target bank branch preserves the source warm-
-         transition table role.
+         JK08A-1ND.definition-addresses.csv: the branch on the default arm of the target state
+         selector preserves the source warm-transition table role.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition - Bank 1"
+    <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1340A0" sizex="8" endian="big">
       <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0x133500  8 uint8  common-definition Map 2 storage projected from 0x13C22 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x6F37A; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Timing-state count [code]
+         Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
+         0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
+         engine-bank identity. The selector is the transition-completion latch: it sets when the
+         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
+         is the branch taken while the latch is clear.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition - Alternate"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
+           storageaddress="0x133500" sizex="8" endian="big">
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -1957,7 +1955,7 @@
       </table>
     </table>
 
-    <!-- 0x132E00  16x16 uint8  common-definition Map 3 storage projected from 0x0A2C0
+    <!-- 0x133200  16x16 uint8  common-definition Map 3 storage projected from 0x0A1C0
          [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -1967,11 +1965,11 @@
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: second target bank
-         accessor preserves exact geometry and storage.
+         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: the accessor on the
+         default arm of the target state selector preserves exact geometry and storage.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Fuel Compensation - Main - Bank 2"
-           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x132E00"
+    <table type="3D" name="Map 3 - Fuel Compensation - Main - Default"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133200"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
@@ -1986,21 +1984,24 @@
       </table>
     </table>
 
-    <!-- 0x133200  16x16 uint8  common-definition Map 3 storage projected from 0x0A1C0
-         [candidate]
+    <!-- 0x132E00  16x16 uint8  common-definition Map 3 storage projected from 0x0A2C0 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
+         canonical accessor 0x30810, 0x44F1C; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13F2A rpm [candidate]; X Axis 0x13F4A load
          [candidate]
-         The machine trace establishes the multiplicative role, while A2L and homolog EV18A
-         0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
-         This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: first target bank
-         accessor preserves exact geometry and storage.
+         Exact 1ND0A target-native table at 0xa2c0 bound to accessor 0x30810 through literal
+         0x31164, accessor 0x44f1c through literal 0x454f8. The two 16x16 surfaces are read with
+         the same index byte, the same axis pair, and the same interpolator in both accessors,
+         so neither surface carries an engine-bank identity. The accessors publish four parallel
+         compensation channels and the consumer selects one by a state code, then crossfades the
+         value of the current state with the value of the previous state by a normalized
+         progress weight where 0x8000 is 1.0. The default arm of that selector reads the
+         projected canonical surface; this table is the arm the state code selects instead.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 3 - Fuel Compensation - Main - Bank 1"
-           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133200"
+    <table type="3D" name="Map 3 - Fuel Compensation - Main - Alternate"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x132E00"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
@@ -2259,33 +2260,6 @@
       </table>
     </table>
 
-    <!-- 0x133508  8 uint8  common-definition Map 3 storage projected from 0x13C22 [candidate]
-         Stock firmware does not reference this erased allocation; runtime use requires the
-         project map-switching patch
-         Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
-         The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
-         to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
-         ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
-         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: second target bank branch preserves the source
-         warm-transition table role.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition - Bank 2"
-           category="Ignition Timing//State Corrections" storagetype="uint8"
-           storageaddress="0x133508" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
-               fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
-        <data>0</data><data>400</data><data>800</data><data>1200</data>
-        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
-      </table>
-    </table>
-
     <!-- 0x1340A8  8 uint8  common-definition Map 3 storage projected from 0x13C1A [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -2299,13 +2273,36 @@
          name, but no crank-referenced degree scale is established. Index: implicit eight-point
          axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
          ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: first target bank branch preserves the source warm-
-         transition table role.
+         JK08A-1ND.definition-addresses.csv: the branch on the default arm of the target state
+         selector preserves the source warm-transition table role.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition - Bank 1"
+    <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1340A8" sizex="8" endian="big">
       <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0x133508  8 uint8  common-definition Map 3 storage projected from 0x13C22 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x6F37A; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Timing-state count [code]
+         Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
+         0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
+         engine-bank identity. The selector is the transition-completion latch: it sets when the
+         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
+         is the branch taken while the latch is clear.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition - Alternate"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
+           storageaddress="0x133508" sizex="8" endian="big">
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -2391,7 +2388,7 @@
       </table>
     </table>
 
-    <!-- 0x132F00  16x16 uint8  common-definition Map 4 storage projected from 0x0A2C0
+    <!-- 0x133300  16x16 uint8  common-definition Map 4 storage projected from 0x0A1C0
          [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -2401,11 +2398,11 @@
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: second target bank
-         accessor preserves exact geometry and storage.
+         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: the accessor on the
+         default arm of the target state selector preserves exact geometry and storage.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Fuel Compensation - Main - Bank 2"
-           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x132F00"
+    <table type="3D" name="Map 4 - Fuel Compensation - Main - Default"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133300"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
@@ -2420,21 +2417,24 @@
       </table>
     </table>
 
-    <!-- 0x133300  16x16 uint8  common-definition Map 4 storage projected from 0x0A1C0
-         [candidate]
+    <!-- 0x132F00  16x16 uint8  common-definition Map 4 storage projected from 0x0A2C0 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
+         canonical accessor 0x30810, 0x44F1C; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13F2A rpm [candidate]; X Axis 0x13F4A load
          [candidate]
-         The machine trace establishes the multiplicative role, while A2L and homolog EV18A
-         0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
-         This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: first target bank
-         accessor preserves exact geometry and storage.
+         Exact 1ND0A target-native table at 0xa2c0 bound to accessor 0x30810 through literal
+         0x31164, accessor 0x44f1c through literal 0x454f8. The two 16x16 surfaces are read with
+         the same index byte, the same axis pair, and the same interpolator in both accessors,
+         so neither surface carries an engine-bank identity. The accessors publish four parallel
+         compensation channels and the consumer selects one by a state code, then crossfades the
+         value of the current state with the value of the previous state by a normalized
+         progress weight where 0x8000 is 1.0. The default arm of that selector reads the
+         projected canonical surface; this table is the arm the state code selects instead.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 4 - Fuel Compensation - Main - Bank 1"
-           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133300"
+    <table type="3D" name="Map 4 - Fuel Compensation - Main - Alternate"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x132F00"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
@@ -2693,33 +2693,6 @@
       </table>
     </table>
 
-    <!-- 0x133510  8 uint8  common-definition Map 4 storage projected from 0x13C22 [candidate]
-         Stock firmware does not reference this erased allocation; runtime use requires the
-         project map-switching patch
-         Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
-         The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
-         to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
-         ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
-         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: second target bank branch preserves the source
-         warm-transition table role.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition - Bank 2"
-           category="Ignition Timing//State Corrections" storagetype="uint8"
-           storageaddress="0x133510" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
-               fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
-        <data>0</data><data>400</data><data>800</data><data>1200</data>
-        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
-      </table>
-    </table>
-
     <!-- 0x1340B0  8 uint8  common-definition Map 4 storage projected from 0x13C1A [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -2733,13 +2706,36 @@
          name, but no crank-referenced degree scale is established. Index: implicit eight-point
          axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
          ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: first target bank branch preserves the source warm-
-         transition table role.
+         JK08A-1ND.definition-addresses.csv: the branch on the default arm of the target state
+         selector preserves the source warm-transition table role.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition - Bank 1"
+    <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1340B0" sizex="8" endian="big">
       <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0x133510  8 uint8  common-definition Map 4 storage projected from 0x13C22 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x6F37A; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Timing-state count [code]
+         Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
+         0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
+         engine-bank identity. The selector is the transition-completion latch: it sets when the
+         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
+         is the branch taken while the latch is clear.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition - Alternate"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
+           storageaddress="0x133510" sizex="8" endian="big">
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -2825,7 +2821,7 @@
       </table>
     </table>
 
-    <!-- 0x133000  16x16 uint8  common-definition Map 5 storage projected from 0x0A2C0
+    <!-- 0x133400  16x16 uint8  common-definition Map 5 storage projected from 0x0A1C0
          [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -2835,11 +2831,11 @@
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: second target bank
-         accessor preserves exact geometry and storage.
+         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: the accessor on the
+         default arm of the target state selector preserves exact geometry and storage.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Fuel Compensation - Main - Bank 2"
-           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133000"
+    <table type="3D" name="Map 5 - Fuel Compensation - Main - Default"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133400"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
@@ -2854,21 +2850,24 @@
       </table>
     </table>
 
-    <!-- 0x133400  16x16 uint8  common-definition Map 5 storage projected from 0x0A1C0
-         [candidate]
+    <!-- 0x133000  16x16 uint8  common-definition Map 5 storage projected from 0x0A2C0 [code]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
+         canonical accessor 0x30810, 0x44F1C; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
          scaling x*0.78125 % [candidate]; Y Axis 0x13F2A rpm [candidate]; X Axis 0x13F4A load
          [candidate]
-         The machine trace establishes the multiplicative role, while A2L and homolog EV18A
-         0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
-         This is neither a lambda target nor an AFR reciprocal. Definition address projected
-         from JK08A 0000a29a through JK08A-1ND.definition-addresses.csv: first target bank
-         accessor preserves exact geometry and storage.
+         Exact 1ND0A target-native table at 0xa2c0 bound to accessor 0x30810 through literal
+         0x31164, accessor 0x44f1c through literal 0x454f8. The two 16x16 surfaces are read with
+         the same index byte, the same axis pair, and the same interpolator in both accessors,
+         so neither surface carries an engine-bank identity. The accessors publish four parallel
+         compensation channels and the consumer selects one by a state code, then crossfades the
+         value of the current state with the value of the previous state by a normalized
+         progress weight where 0x8000 is 1.0. The default arm of that selector reads the
+         projected canonical surface; this table is the arm the state code selects instead.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Map 5 - Fuel Compensation - Main - Bank 1"
-           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133400"
+    <table type="3D" name="Map 5 - Fuel Compensation - Main - Alternate"
+           category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x133000"
            sizex="16" sizey="16" endian="big">
       <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
@@ -3127,33 +3126,6 @@
       </table>
     </table>
 
-    <!-- 0x133518  8 uint8  common-definition Map 5 storage projected from 0x13C22 [candidate]
-         Stock firmware does not reference this erased allocation; runtime use requires the
-         project map-switching patch
-         Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
-         The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
-         to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
-         ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
-         Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
-         measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: second target bank branch preserves the source
-         warm-transition table role.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition - Bank 2"
-           category="Ignition Timing//State Corrections" storagetype="uint8"
-           storageaddress="0x133518" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
-               fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
-        <data>0</data><data>400</data><data>800</data><data>1200</data>
-        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
-      </table>
-    </table>
-
     <!-- 0x1340B8  8 uint8  common-definition Map 5 storage projected from 0x13C1A [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -3167,13 +3139,36 @@
          name, but no crank-referenced degree scale is established. Index: implicit eight-point
          axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
          ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
-         JK08A-1ND.definition-addresses.csv: first target bank branch preserves the source warm-
-         transition table role.
+         JK08A-1ND.definition-addresses.csv: the branch on the default arm of the target state
+         selector preserves the source warm-transition table role.
          Analysis and method - defs/JK08A.notes.md -->
-    <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition - Bank 1"
+    <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1340B8" sizex="8" endian="big">
       <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+               fineincrement="1" coarseincrement="4"/>
+      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+        <data>0</data><data>400</data><data>800</data><data>1200</data>
+        <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
+      </table>
+    </table>
+
+    <!-- 0x133518  8 uint8  common-definition Map 5 storage projected from 0x13C22 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x6F37A; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-128 Timing-state count [code]
+         Exact 1ND0A target-native table at 0x13c22 bound to accessor 0x6f37a through literal
+         0x6f6fc. Both eight-point branches read the same index byte, so neither carries an
+         engine-bank identity. The selector is the transition-completion latch: it sets when the
+         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
+         is the branch taken while the latch is clear.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition - Alternate"
+           category="Ignition Timing//State Corrections" storagetype="uint8"
+           storageaddress="0x133518" sizex="8" endian="big">
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>

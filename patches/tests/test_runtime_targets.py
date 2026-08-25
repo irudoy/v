@@ -127,13 +127,13 @@ def test_vq37_target_has_complete_target_specific_runtime(rom):
         unit.key for unit in target.telemetry_layout.assembly_units
     }
     assert target.map_layout.family_by_key[
-        "fuel_compensation_main_bank_2"
+        "fuel_compensation_main_alternate"
     ].canonical_address == profile.map_family_by_key[
-        "fuel_compensation_main_bank_2"
+        "fuel_compensation_main_alternate"
     ]
     assert target.map_layout.family_by_key[
-        "idle_ignition_timing_bank_2"
-    ].adapter == "idle_ignition_bank_2_adapter"
+        "idle_ignition_timing_alternate"
+    ].adapter == "idle_ignition_pool_2_adapter"
     assert target.map_layout.family_by_key[
         "rev_limit_throttle_cut"
     ].runtime_shadow_address is None
@@ -181,8 +181,8 @@ def test_vq37_sources_encode_target_variants(rom):
     assert ".long 0xFFFF0C10" in limiter
     assert ".long 0xFFFF0C14" in limiter
     assert ".long 0xFFFF0C38" in limiter
-    assert "fuel_compensation_bank_2_base" in adapters
-    assert "idle_ignition_bank_2_adapter" in adapters
+    assert "fuel_compensation_alternate_base" in adapters
+    assert "idle_ignition_pool_2_adapter" in adapters
     assert "jmp @r0\nmov.l @r15+,r0" in completion
     assert "0xFFFF0DE0, 0xFFFF0DE1" in tables
     assert "rl_apply_fuel_overlay" not in rolling_engine

@@ -199,10 +199,10 @@ def _install_stock_stubs(fixture, target):
             "ignition_lookup_2",
             "ignition_lookup_3",
             "ignition_lookup_4",
-            "fuel_compensation_lookup_bank_1",
-            "fuel_compensation_lookup_bank_2",
-            "idle_ignition_lookup_bank_1",
-            "idle_ignition_lookup_bank_2",
+            "fuel_compensation_lookup_startup",
+            "fuel_compensation_lookup_runtime",
+            "idle_ignition_lookup_pool_1",
+            "idle_ignition_lookup_pool_2",
         }
     else:
         map_keys = {

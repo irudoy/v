@@ -167,8 +167,8 @@ The surface selector itself remains available at `0xFFFE9488`, where bit 6 is
 consumed by the target ignition and correction paths.
 
 The 1ND address profile binds fourteen switched families: four DFCO rows, two
-ignition surfaces, shared cold-idle timing, separate warm-idle timing for both
-banks, separate fuel compensation for both banks, native fuel-cut caps and
+ignition surfaces, shared cold-idle timing, default and alternate warm-idle
+timing, default and alternate fuel compensation, native fuel-cut caps and
 curves, and the throttle-limiter scalar. Custom CAN telemetry binds 62
 available schema fields. The unavailable knock timing field is encoded from
 cleared reserved RAM and remains identified as unavailable in metadata. 1ND0A
