@@ -94,6 +94,28 @@ branches and selects the alternate through bit 0 of `0xFFFF4525`, a latch on the
 u16 transition progress at `0xFFFF447E` that sets at `0x8000` and releases at
 `0x7300`.
 
+The state code is a status-block byte at `0xFFFFA22F`. `FUN_00054FD0` publishes
+it to `0xFFFF2808`, and `FUN_0004692A` reduces it to eight buckets: raw `5` maps
+to `2`, `3` to `3`, `10` to `4`, `12` to `5`, `13` to `6`, `14` to `7`, `15` to
+`8`, and every other raw value to `1`. `FUN_0004678C` derives the origin and
+destination buckets, the progress at `0xFFFF447E`, and the blend weight at
+`0xFFFF43F0`. Scheduler `FUN_00020F1A` copies the `0x6C`-byte block at
+`0xFFFF4468` to `0xFFFF43FC` and shuffles the current and previous copies, which
+places the origin bucket at `0xFFFF4414`, the destination bucket at
+`0xFFFF43EE`, and the applied weight at `0xFFFF43EC`. The compensation consumer
+maps bucket `2` to the alternate surface, bucket `8` to the separate table
+`0x13AE8`, and every other bucket to the default surface.
+
+Selection of the alternate compensation arm is a timed window rather than a
+temperature threshold. `FUN_00054A62` enters raw state `10` while `0xFFFFA30E`
+is set and raw state `5`, the only bucket-`2` state, while it is clear.
+`0xFFFFA30E` mirrors bit 1 of `0xFFFF23E5`, which `FUN_00080CEC` holds set only
+while bit 7 of `0xFFFF23EB` is set, tick counter `0xFFFF3754` is at most
+`ROM8[0x8B06]`, and bit 6 of `0xFFFF45C8` is clear. Stock JK78C `ROM8[0x8B06]`
+is `19`. No function in the state-machine group `0x53A7C..0x55800` reads the
+coolant byte `0xFFFF106F` that service-0x22 DID `0x1101` binds, and neither
+`FUN_00080CEC` nor the window-start condition in `FUN_000805E8` reads it.
+
 Bank identity is available from the ROM itself where it exists. The service-0x22
 DID tables bind per-bank RAM directly, and their ordering agrees with the factory
 manual rule that assigns bank 1 to the lower code of every per-bank DTC pair.
