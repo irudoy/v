@@ -141,16 +141,77 @@ records `10` through `16`, which `../defs/JK78C.dtc.csv` binds to P0306, P0305,
 P0304, P0303, P0302, P0301, and P0300, and only after the countdown at
 `0xFFFF255E`, reloaded from `ROM16[0x9286]`, reaches zero.
 
+Reset target `FUN_0002A7F4` is the only caller of `FUN_00020F1A` and runs it
+once per background-loop iteration. `FUN_00020F1A` clears bit 2 of
+`0xFFFF84B9` at the head of every pass and the loop then waits for that bit.
+Vector-120 handler `FUN_0002040C` sets it on every tenth entry, re-arming
+compare register `0xFFFFF4A2` by `320` counts each time and deriving one-,
+two-, four-, and ten-entry flags in the same byte. One window tick is therefore
+ten periods of that timer interrupt. The ATU-II channel clock that scales those
+`320` counts is not established, so the window has no absolute duration here.
+
+`FUN_0003B5F6` divides `0x01E84800` by crank period `0xFFFF11E8` and stores the
+clamped quotient as native speed word `0xFFFF1186`. `FUN_0003B87E` publishes
+the shifted forms `0xFFFF11D4` at shift `3`, `0xFFFF11DA` at shift `4`,
+`0xFFFF11E0` at shift `6`, and `0xFFFF11D1` at shift `8`; `FUN_0003B7EE` writes
+`0xFFFF11D6` at shift `6` and `FUN_0003B84C` writes `0xFFFF11D7` at shift `7`,
+both clamped to `255`. `FUN_00020F1A` copies `0x34` bytes from `0xFFFF11C0` to
+`0xFFFF118C`, so `0xFFFF11A2`, `0xFFFF11A3`, `0xFFFF11A6`, and `0xFFFF11AC`
+are the previous-cycle copies of `0xFFFF11D6`, `0xFFFF11D7`, `0xFFFF11DA`, and
+`0xFFFF11E0`. Service-0x22 DID `0x1201` binds `0xFFFF11E0` and
+`../defs/vq37-native-fuel-cut.toml` binds `0xFFFF11AC` as the native speed
+word, placing the shift-`6` form at `12.5 RPM` per count. Three axes agree:
+`FUN_00028198` spans `0` to `224` in steps of `32` for `0xFFFF11A2`,
+eight-point axis `0x13C6A` carries `32, 40, 48, 64, 80, 96, 112, 128` for
+`0xFFFF11A3`, and sixteen-point axis `0x151FC` carries `128` through `1792` for
+`0xFFFF11A6`, covering `0` to `2800 RPM`, `800` to `3200 RPM`, and `400` to
+`5600 RPM`. `0xFFFF11A2` therefore carries `12.5 RPM` per count and saturates
+at `3187.5 RPM`, and `0xFFFF11A3` carries `25 RPM` per count and saturates at
+`6375 RPM`.
+
 Both bit-7 producers are calibrated comparators with hysteresis.
-`FUN_00059C2C` interpolates coolant-indexed curve `0x13F88`, or `0x13F90` when
-bit 6 of `0xFFFF23C6` is set, over axis `0x14208`, compares `0xFFFF268C`
-against the result with retention offset `ROM8[0x85D6]`, and requires a second
-comparator on `0xFFFF11A2` against `0xFFFF226C` plus `ROM8[0x879D]` with band
-`ROM8[0x85D4]`. Stock `0x13F88` is `255, 255, 255, 255, 255, 130, 110, 90` and
-stock `0x13F90` is `90, 70, 50, 50, 50, 50, 50, 50`. `FUN_0005A0DA` compares
-`0xFFFF11A3` against `ROM8[0x8784]` plus three conditional adders that are all
-zero in stock, with band `ROM8[0x85D3]`, and additionally requires bit 6 of
-`0xFFFF23B8` set and bit 1 of `0xFFFF4573` clear.
+`FUN_00059C2C` reads `0xFFFF268C`, which `FUN_00020F1A` fills from
+`0xFFFF278A` through a `254`-byte copy from `0xFFFF26D6` to `0xFFFF25D8`.
+Service-0x22 DID `0x1106` binds `0xFFFF278A`, a pinned community source names
+that DID intake air temperature on the `raw - 50` degree Celsius scale that DID
+`0x1101` also carries, and both factory ESM packs list the matching `INT/A TEMP
+SE` monitor. The function interpolates coolant-indexed curve `0x13F88`, or
+`0x13F90` when bit 6 of `0xFFFF23C6` is set, over axis `0x14208` and compares
+the intake air byte against the result with retention offset `ROM8[0x85D6]`,
+which is `3 C`. Stock `0x13F88` is `255, 255, 255, 255, 255, 130, 110, 90`,
+unreachable at or below `80 C` coolant and then `80 C`, `60 C`, and `40 C`
+intake air at `90 C`, `100 C`, and `110 C` coolant; stock `0x13F90` is
+`90, 70, 50, 50, 50, 50, 50, 50`, which is `40 C` and `20 C` at `40 C` and
+`50 C` coolant and `0 C` from `60 C` coolant upward. A second comparator
+requires `0xFFFF11A2` above reference speed `0xFFFF226C` plus `ROM8[0x879D]`,
+which is `20` counts or `250 RPM`, with band `ROM8[0x85D4]`, which is `24`
+counts or `300 RPM`; `FUN_0005B418` writes `0xFFFF226C` in the same unit.
+`FUN_0005A0DA` compares `0xFFFF11A3` against `ROM8[0x8784]` plus three
+conditional adders that are all zero in stock, which is `40` counts or
+`1000 RPM`, with band `ROM8[0x85D3]`, which is `4` counts or `100 RPM`, and
+additionally requires bit 6 of `0xFFFF23B8` set and bit 1 of `0xFFFF4573`
+clear.
+
+`FUN_0004678C` passes the destination bucket, the origin bucket, normalized
+word `0xFFFF197A`, and speed word `0xFFFF11A6` to `FUN_000469E0`, which sets
+GBR to `0x151FC` and fills eight float slots at `0xFFFF9930`. Slot `+0x08`
+takes `0x1505C` interpolated over sixteen-point speed axis `0x151FC`, which
+spans `400` to `5600 RPM`. Slots `+0x0C` through `+0x20` take `0xDACE`,
+`0xDA4E`, `0xDB4E`, `0xD9CE`, `0xD94E`, and `0xDBCE`, six 8x8 surfaces on a
+`0x80` stride, each interpolated over its own eight-point speed axis in the
+block at `0x1521C` and its own normalized axis in the block at `0x1636A`.
+Slot `+0x04` takes the constant `100.0`. Two dispatches then copy the origin
+bucket's slot to `0xFFFF9930` and the destination bucket's slot to
+`0xFFFF9934`, taking bucket `8` from slot `+0x08`, buckets `7` down to `2`
+from slots `+0x0C` through `+0x20` in that order, and bucket `1` from the
+constant. Storage is uint16 scaled by `0.006103515625`, so `16384` is `100`
+percent, and `FUN_0004678C` clamps the blended float below `400` and
+republishes it at `0xFFFF310C` as that float times `163.84`, beside the
+normalized progress at `0xFFFF43F0` where `0x8000` is `1.0`. Stock `0xD94E`,
+`0xDA4E`, `0xDACE`, and `0xDB4E` are flat `100` percent, `0xD9CE` holds `112`
+percent across its first eight cells and `100` percent elsewhere, `0x1505C` is
+`110` percent at or below `1000 RPM` and `100` percent above, and bucket-`2`
+surface `0xDBCE`, the only shaped one, spans `82` to `102` percent.
 
 Bank identity is available from the ROM itself where it exists. The service-0x22
 DID tables bind per-bank RAM directly, and their ordering agrees with the factory
