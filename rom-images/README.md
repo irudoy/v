@@ -262,15 +262,35 @@ hardware and share exact executable ranges. Family classification is
 established by the byte measurements in `homology.toml` and `homology.csv`.
 
 Two family-to-MCU bindings are local facts: the `MEC100` images carry
-`SH705822N` and the `MEC108` image carries `SH705927N`. Public pinout
-references publish `MEC107` as an SH7059 design, and the `MEC105` series
-published for the 2008 Infiniti G37 belongs to the SH7058 model year that JK78C
-reads as. The five images without a recorded identifier therefore sit in a
-constrained band rather than at a known number: the SH7058 VQ25HR and VQ35HR
-images in `MEC100`, JK78C in `MEC105`, and the SH7059 `1ND` pair in `MEC107`.
-No public record pairs those exact part numbers with a hardware number, so no
-assignment is made. The JK00D and JK08A labels are readable on the owned
-hardware and would settle two of the five without any external source.
+`SH705822N` and the `MEC108` image carries `SH705927N`.
+
+The hardware family tracks the Nissan part-number block rather than the chassis
+or the engine. Catalog entries hold one family per block:
+
+| Part-number block | Hitachi family | Catalog application |
+| --- | --- | --- |
+| `JK6x` | `MEC100-0xx`, `MEC100-1xx` | 2007 Infiniti G35 3.5L |
+| `JK0x` | `MEC100-1xx` | JDM V36 Skyline, VQ25HR and VQ35HR |
+| `JK7x` | `MEC105-0xx` | 2008 Infiniti G37 3.7L |
+| `JJ5x`, `JU6x`, `JU7x` | `MEC107-2xx`, `MEC107-5xx` | 2009 Infiniti G37 3.7L |
+| `1ND` | `MEC107-7xx` | 2009 Infiniti G37 3.7L |
+| `1NJ` | `MEC109-6xx` | 2010 Infiniti G37 3.7L |
+| `1ME` | `MEC108-2xx` | Fuga Y51, VQ37VHR |
+
+A chassis-and-engine match constrains nothing on its own, because one chassis
+crosses families with the model year. The G37 3.7L moves from `MEC105` in 2008
+to `MEC107` in 2009 and `MEC109` in 2010, and a JDM CKV36 370GT with VQ37VHR is
+published at `MEC105-180 D1`.
+
+The five images without a recorded identifier therefore sit in a family band
+read from their part-number block: JK08A and JK00D in `MEC100-1xx`, JK78C in
+`MEC105-0xx`, and the `1ND` pair in `MEC107-7xx`. Nine catalog entries from
+`23710-1ND4C` through `23710-1ND8B` hold `MEC107-700 D1`, `MEC107-720 D1`, or
+`MEC107-740 D1`, which places the family but not the suffix. No public record
+pairs the exact part numbers `23710-1ND0A`, `23710-1ND3B`, `23710-JK78C`,
+`23710-JK08A`, or `23710-JK00D` with a hardware number, so no exact assignment
+is made. The JK00D and JK08A labels are readable on the owned hardware and
+would settle two of the five without any external source.
 
 ### Sources
 
@@ -290,6 +310,12 @@ hardware and would settle two of the five without any external source.
 - MEC107 published as an SH7059 design: https://ecu.design/ecu-pinout/pinout-hitachi-sh7059-mec107-nissan/
 - MEC100 published as an SH7058 design: https://ecu.design/ecu-pinout/pinout-hitachi-sh7058-mec100-nissan/
 - MEC105-0xx = 2008 Infiniti G37 3.7L hardware: https://mintt.com/23710-jk70c-2008-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play-mec105-012-a1.html
+- MEC105-180 D1 (JDM CKV36 370GT, VQ37VHR, AT): https://www.ebay.com/itm/274957220047
+- 1ND block = MEC107-7xx (23710-1ND7A, 2009 Infiniti G37): https://www.fs1inc.com/23710-1nd7a-2009-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play.html
+- 1ND block, MEC107-700 D1 variant (23710-1ND4C): https://mintt.com/23710-1nd4c-2009-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play-mec107-700-d1.html
+- 1ND block, MEC107-740 D1 variant (23710-1ND8A): https://mintt.com/23710-1nd8a-2009-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play-mec107-740-d1.html
+- 1NJ block = MEC109-6xx (23710-1NJ3C, 2010 Infiniti G37): https://www.fs1inc.com/23710-1nj3c-2010-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play-mec109-650-c2.html
+- MEC107-2xx block (23710-JJ50B, 2009 Infiniti G37): https://www.fs1inc.com/23710-jj50b-2009-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play.html
 - MEC108-270 C1 (Fuga KNY51, VQ37VHR, AT): https://jdmnewyork.com/products/jdm-subaru-legacy-b4-bm9-2-5l-automatic-ecu-engine-control-unit-22765ab032-ej25-copy
 - JK7x = 2008 Infiniti G37 3.7L: https://www.fs1inc.com/23710-jk78a-2008-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play.html
 - 23710 = Nissan ECM part-number prefix: https://parts.nissanusa.com/parts/nissan-engine-control-module-ecm-23710zv24a
