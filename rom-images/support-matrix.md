@@ -106,15 +106,51 @@ places the origin bucket at `0xFFFF4414`, the destination bucket at
 maps bucket `2` to the alternate surface, bucket `8` to the separate table
 `0x13AE8`, and every other bucket to the default surface.
 
-Selection of the alternate compensation arm is a timed window rather than a
-temperature threshold. `FUN_00054A62` enters raw state `10` while `0xFFFFA30E`
-is set and raw state `5`, the only bucket-`2` state, while it is clear.
+`FUN_00054E16` snapshots the machine inputs into `0xFFFFA204` onward, taking
+`0xFFFFA219` from `0xFFFF1066` and `0xFFFFA21A` from `0xFFFF1069`. Periodic
+runner `FUN_00020F1A` copies six bytes from `0xFFFF106A` to `0xFFFF1064` at the
+head of every pass, so `0xFFFF1069` is the previous-cycle copy of the coolant
+byte that service-0x22 DID `0x1101` binds. `FUN_00054B2C` takes the cold path
+while `0xFFFFA21A` is below `ROM8[0x84A6]` or `0xFFFFA219` is below
+`ROM8[0x84A4]`, the previous raw state is not `5`, `10`, `12`, or `13`, and, if
+the previous raw state is `4`, `0xFFFFA21A` is also below `ROM8[0x84A5]`. That
+path enters raw state `4` through `FUN_00054AC4` or raw state `3` through
+`FUN_00054AE8`. All three stock JK78C thresholds are `120`, the `70 C` grid
+point of coolant axis `0x14208`, which carries `90, 100, 110, 120, 130, 140,
+150, 160` for `40 C` through `110 C`.
+
+Above the threshold the machine resolves three booleans that `FUN_00054FD0`
+flattens next to the state block. `0xFFFFA311` mirrors bit 7 of `0xFFFF455B`
+and routes to raw state `13` when `0xFFFFA30F`, bit 6 of `0xFFFF23C6`, is set
+and to raw state `12` when it is clear. With `0xFFFFA311` clear, `0xFFFFA310`,
+bit 7 of `0xFFFF456F`, routes to raw state `15`. With both clear,
+`FUN_00054A62` enters raw state `10` while `0xFFFFA30E` is set and raw state
+`5`, the only bucket-`2` state, while it is clear. Raw states `3`, `4`, `10`,
+`12`, and `13` all reach the default surface, so the alternate surface is the
+fully qualified terminal state and the default surface covers every other
+condition.
+
 `0xFFFFA30E` mirrors bit 1 of `0xFFFF23E5`, which `FUN_00080CEC` holds set only
 while bit 7 of `0xFFFF23EB` is set, tick counter `0xFFFF3754` is at most
 `ROM8[0x8B06]`, and bit 6 of `0xFFFF45C8` is clear. Stock JK78C `ROM8[0x8B06]`
-is `19`. No function in the state-machine group `0x53A7C..0x55800` reads the
-coolant byte `0xFFFF106F` that service-0x22 DID `0x1101` binds, and neither
-`FUN_00080CEC` nor the window-start condition in `FUN_000805E8` reads it.
+is `19`. `FUN_0008110A` dispatches `FUN_00080CEC` from `FUN_000756DC`, entry
+`43` of the 144-entry periodic list at `0x21A4C` that `FUN_00020F1A` walks, so
+one tick is one pass of that list. `FUN_000805E8` sets bit 7 of `0xFFFF23EB`
+only while no pending `0x20` and no confirmed `0x40` status is present in DTC
+records `10` through `16`, which `../defs/JK78C.dtc.csv` binds to P0306, P0305,
+P0304, P0303, P0302, P0301, and P0300, and only after the countdown at
+`0xFFFF255E`, reloaded from `ROM16[0x9286]`, reaches zero.
+
+Both bit-7 producers are calibrated comparators with hysteresis.
+`FUN_00059C2C` interpolates coolant-indexed curve `0x13F88`, or `0x13F90` when
+bit 6 of `0xFFFF23C6` is set, over axis `0x14208`, compares `0xFFFF268C`
+against the result with retention offset `ROM8[0x85D6]`, and requires a second
+comparator on `0xFFFF11A2` against `0xFFFF226C` plus `ROM8[0x879D]` with band
+`ROM8[0x85D4]`. Stock `0x13F88` is `255, 255, 255, 255, 255, 130, 110, 90` and
+stock `0x13F90` is `90, 70, 50, 50, 50, 50, 50, 50`. `FUN_0005A0DA` compares
+`0xFFFF11A3` against `ROM8[0x8784]` plus three conditional adders that are all
+zero in stock, with band `ROM8[0x85D3]`, and additionally requires bit 6 of
+`0xFFFF23B8` set and bit 1 of `0xFFFF4573` clear.
 
 Bank identity is available from the ROM itself where it exists. The service-0x22
 DID tables bind per-bank RAM directly, and their ordering agrees with the factory
