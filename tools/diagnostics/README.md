@@ -75,9 +75,9 @@ uv run python tools/diagnostics/tuning_signal_coverage.py --format json
 ```
 
 Its source is `defs/JK08A.tuning-signals.toml`. The report distinguishes
-fixed-rate and rotating stream coverage, stock-CAN context, unresolved runtime
-semantics, and observations requiring new instrumentation or external
-measurement.
+fixed-rate and rotating stream coverage, stock-CAN context, quantities absent
+from the ECU, unresolved runtime semantics, and observations requiring new
+instrumentation or external measurement.
 
 ## Graph model
 

@@ -45,13 +45,14 @@ def test_summary_has_stable_coverage_counts():
     report = tuning_signal_coverage.summary(tuning_signal_coverage.load_catalog())
     assert report["signal_count"] == 36
     assert report["coverage"] == {
+        "absent": 1,
         "external": 1,
         "fixed": 19,
         "instrumentation": 1,
         "latched": 1,
         "rotating": 11,
         "stock-can": 1,
-        "unresolved": 2,
+        "unresolved": 1,
     }
 
 
