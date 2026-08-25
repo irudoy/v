@@ -66,6 +66,7 @@ engines.
 
 ## Entry points
 
+- New ROM intake: [`rom-images/new-rom-intake.md`](rom-images/new-rom-intake.md)
 - ROM identity and provenance: [`rom-images/README.md`](rom-images/README.md)
 - ROM family and support parity: [`rom-images/support-matrix.md`](rom-images/support-matrix.md)
 - Canonical annotations and generated definitions: [`defs/README.md`](defs/README.md)

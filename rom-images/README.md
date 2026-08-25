@@ -7,6 +7,10 @@ Original binaries (`*.bin`) are versioned in Git; duplicate archives are not
 stored. This file is the identification manifest. Dumps are identified by
 `sha256`.
 
+A previously unmodelled image enters the project through
+[`new-rom-intake.md`](new-rom-intake.md), which classifies it, selects a
+scenario branch, and states what that branch inherits and must recover.
+
 ## Layout and naming
 
 The top level contains only ECM part-number directories in `23710-XXXXX` format,

@@ -21,6 +21,7 @@ class RomImagesLayoutTest(unittest.TestCase):
             "README.md",
             "homology.csv",
             "homology.toml",
+            "new-rom-intake.md",
             "roms.csv",
             "support-matrix.md",
         }
