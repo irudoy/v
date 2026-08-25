@@ -10,8 +10,9 @@ engines.
   and SH7059 images. `JK08A` is the active hardware target and the canonical
   code profile for the exact JK00A/JK03A/JK03B/JK08A family.
 - The stock collection has two exact-code families, one near-code SH7058
-  family, and one distinct SH7058 image. Pairwise fixed-address and relocated
-  window measurements are reproducible from the tracked homology registry.
+  family, one distinct SH7058 image, and one distinct SH7059 image. Pairwise
+  fixed-address and relocated window measurements are reproducible from the
+  tracked homology registry.
 - The headless analysis path exports firmware structure from Ghidra, rebuilds a
   queryable Memgraph index from tracked inputs, and projects reviewed facts into
   RomRaider XML, TunerPro XDF, and a map ledger.
@@ -161,3 +162,9 @@ calibration families, target-native fuel-cut caps and curves, scalar
 throttle-limiter selection, Rolling Launch, custom CAN telemetry, checksum
 closure, and the executable gate. The two images retain independent stock and
 stage identities even though their executable ranges are exact.
+
+1ME3B is a registered stock identity only. The owned KY51 Fuga VQ37VHR read
+participates in the homology registry and ROM-atlas inputs, and it has no
+structural export, checksum layout, address profile, definition target, or
+executable coverage. Its declared family boundary forbids address inheritance
+from 1ND0A, 1ND3B, or JK78C.

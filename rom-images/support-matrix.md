@@ -12,6 +12,7 @@ engine name or similar graph structure does not permit address inheritance.
 | `8MFK` | JK00C, JK00D | SH7058, 1 MiB | Near-code lineage with insertions, deletions, and relocated storage | Independent address profiles and hook validation for each image |
 | JK78C | JK78C | SH7058, 1 MiB | Distinct VQ37 code base | Independent layout, checksum model, allocation, and payload lock |
 | `1ND` | 1ND0A, 1ND3B | SH7059, 1.5 MiB | Exact executable ranges within the pair; cross-generation homolog of JK78C | One shared executable layout with independent stock identities and stage hashes |
+| `1ME3B` | 1ME3B | SH7059, 1.5 MiB | Distinct VQ37 code base; shares the blocks below `0x008200` and a relocated diagnostic descriptor region with `1ND` | Independent recovery for every address; nothing is inherited from `1ND` or JK78C |
 
 ## Functional coverage
 
@@ -21,6 +22,7 @@ engine name or similar graph structure does not permit address inheritance.
 | `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including independent intake-cam and exhaust-cam target switching | Relocated fuel-shadow actuator | Schema 2, mailbox 24 | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut registry | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut registry | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
+| `1ME3B` | None | None | None | None | None | Stock read only; no derived image exists |
 
 ## Diagnostic layer
 
@@ -43,6 +45,14 @@ hold 35 codes rather than 36.
 The `1ND` layout declares one runtime domain, so it projects to a single `alt2`
 handler. Its boot and vector SUM16 domains end at `0x8200`, below the lowest
 published entity at `0x8524`, so no editor session can leave them stale.
+
+`1ME3B` has no diagnostic projection. Its descriptor region is byte-identical
+to `1ND0A` across 1,936 bytes at a constant `+0x164` relocation and carries the
+same VQ37 group `0x37` boundary, but no code, attribute-pointer, or Developer
+Immobilizer binding is recovered from the image. Its four SUM16 checksum
+domains reproduce at the `1ND` field addresses while the application XOR and
+SUM fields sit at `0x0096F4` and `0x0096FC`; no checksum layout is registered
+because the verifier functions are not located.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,

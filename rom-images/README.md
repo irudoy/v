@@ -52,7 +52,9 @@ uv run python -m unittest patches.tests.test_rom_images_layout -v
 
 `1ND0A` / `1ND3B` (1.5 MiB, SH7059, JDM) and `JK78C` (1.0 MiB, SH7058,
 USDM) are **VQ37VHR** images of the same engine across two ECU generations. They
-form a homolog pair for reverse engineering. `JK00A`, `JK03A`, `JK03B`, and
+form a homolog pair for reverse engineering. `1ME3B` (1.5 MiB, SH7059, JDM)
+is a third **VQ37VHR** image on the same MCU class as the `1ND` pair, but with
+an independent application layout. `JK00A`, `JK03A`, `JK03B`, and
 `JK08A` (1.0 MiB, SH7058, JDM) share their known executable ranges and form one
 cross-application exact-code family. JK00A is for the **VQ35HR** PV36 Skyline
 350GT; JK03A, JK03B, and JK08A are for the **VQ25HR** V36 Skyline 250GT. JK03A
@@ -71,6 +73,7 @@ Renesas datasheet
 
 | File | Size (bytes) | Flash / MCU | ECM part # | Vehicle | Engine | Market | Bus |
 |------|-------------:|-------------|------------|---------|--------|--------|-----|
+| `23710-1ME3B/11ME3B-20260825-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 (`SH705927N`) | 23710-1ME3B | KY51 Fuga | VQ37VHR | JDM | CAN |
 | `23710-1ND0A/11ND0A-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND0A | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
 | `23710-1ND3B/11ND3B-20260715-stock.bin` | 1,572,864 (0x180000) | 1.5 MiB / SH7059 * | 23710-1ND3B | V36 Skyline Coupe (CKV36) | VQ37VHR | JDM | CAN * |
 | `23710-JK00A/1JK00A-20260804-stock.bin` | 1,048,576 (0x100000) | 1.0 MiB / SH7058 (`SH705822N`) | 23710-JK00A | V36 Skyline 350GT (PV36; exact-part marketplace) | VQ35HR | JDM | CAN |
@@ -142,6 +145,20 @@ protocol. The same calibration, main number, and type occur as ROM strings at
 EEPROM read; this does not establish that the hardware lacks one. The directory
 README contains the complete local identification.
 
+`1ME3B` is an owned bench read dated 2026-08-25 from a physical ECU whose
+donor is a JDM KY51 Fuga with VQ37VHR. PCMFlash identification and ROM strings
+record calibration `11ME3B00000`, software `9FZ3V5DD1`, and type `SH705927N`;
+the ECU label records Hitachi hardware `MEC108-280 D1`, lot `0705`. The image
+shares the SH7059 class, the 1.5 MiB flash, and the blocks below `0x008200`
+with the `1ND` pair, but its application is independently laid out and reaches
+`0x139dc3` against `0x12c98f`. It reproduces the four `1ND` SUM16 checksum
+domains at their `1ND` field addresses and relocates the application XOR and
+SUM fields to `0x0096f4` and `0x0096fc`. Its diagnostic descriptor region is
+byte-identical to `1ND0A` across 1,936 bytes at a constant `+0x164`
+relocation and carries the VQ37 group `0x37` sequence without exhaust camshaft
+records. The directory README contains the complete identification and
+comparison evidence.
+
 `*` Flash sizes (1.0 / 1.5 MiB) and the **SH-2E** core are confirmed by the
 Renesas datasheet. The specific on-board chip model (SH7058 vs SH7059) and CAN
 bus are inferred from flash size and the Hitachi HR CAN ECU family; final
@@ -204,6 +221,11 @@ than human-only reference data. The label is empty for an image that is not
   confirm the part number, software identifier, calibration, SH7058 class,
   flash size, and CAN protocol, giving **high confidence**. The donor vehicle
   model and market are unknown; the external EEPROM was not read.
+- `1ME3B`: an owned physical ECU with a bench PCMFlash read. The part number,
+  calibration, software ID, MCU class, hardware identifier, and hashes have
+  local provenance. The donor JDM KY51 Fuga and its VQ37VHR engine are known
+  directly from the vehicle the ECU was removed from, giving **high
+  confidence**. The external EEPROM was not read.
 - The `1ND0A` vs `1ND3B` delta, including model year, trim, and revision, and
   their exact model years remain unknown.
 
@@ -243,7 +265,7 @@ The current separation between binary homology, definition parity, runtime
 features, verification, and hardware evidence is summarized in
 [`support-matrix.md`](support-matrix.md).
 
-The baseline identifies four implementation groups:
+The baseline identifies five implementation groups:
 
 | Group | Images | Classification | Builder and definition consequence |
 |---|---|---|---|
@@ -251,6 +273,7 @@ The baseline identifies four implementation groups:
 | SH7059 `1ND` | 1ND0A, 1ND3B | Exact code; 5,251 differing bytes are confined to `0x008200:0x01bdfc` | One SH7059 structural analysis and builder series can cover both images; the exact checksum layout is registered |
 | SH7058 `8MFK` | JK00C, JK00D | Near code with insertions, deletions, and relocations | Share semantic identifiers, but require address maps and independently validated patch points |
 | SH7058 JK78C | JK78C | Distinct code base in the current collection | Uses an independent layout, checksum model, audited allocation, target payloads, and executable gate |
+| SH7059 `1ME3B` | 1ME3B | Distinct code base in the current collection | Carries no registered checksum layout, address profile, or definition target; every address requires independent recovery |
 
 ### Exact-code families
 
@@ -309,10 +332,23 @@ relocated Map Switching, Rolling Launch, and CAN telemetry paths.
 ### Significantly different groups
 
 The conservative exact 64-byte window overlap is about 15 percent between the
-`7MFKAVN86` and `8MFK` families, about 8 percent between `8MFK` and JK78C, and
-about 1.3 percent between JK78C and the SH7059 `1ND` family. These values are
-not semantic similarity scores. They establish that same-address or raw byte
-inheritance is inappropriate.
+`7MFKAVN86` and `8MFK` families, about 8 percent between `8MFK` and JK78C,
+about 1.3 percent between JK78C and the SH7059 `1ND` family, and about 19
+percent between `1ME3B` and `1ND`. These values are not semantic similarity
+scores. They establish that same-address or raw byte inheritance is
+inappropriate.
+
+`1ME3B` shares the SH7059 class, the 1.5 MiB flash, and the blocks below
+`0x008200` with the `1ND` pair, but its executable region is a separate layout.
+`radiff2 6.1.6` reports Myers similarity `0.815` and edit distance `581,292`
+for `1ME3B` against `1ND0A`. The same metric reads `0.790` for the declared
+divergent JK08A and JK00D pair and `0.979` for the near-code JK00C and JK00D
+pair, so `1ME3B` sits in the divergent band. Two structures still carry across
+at relocated addresses: the four `1ND` SUM16 checksum domains reproduce at
+their `1ND` field addresses while the application XOR and SUM fields move from
+`0x009610` and `0x009618` to `0x0096f4` and `0x0096fc`, and the diagnostic
+descriptor region is byte-identical across 1,936 bytes at a constant `+0x164`
+relocation, placing `1ND0A` `0x01c558:0x01cce8` at `0x01c6bc:0x01ce4c`.
 
 JK78C and the `1ND` family form a useful VQ37VHR cross-generation homolog pair.
 Reviewed shared algorithms establish semantic correspondence, while each

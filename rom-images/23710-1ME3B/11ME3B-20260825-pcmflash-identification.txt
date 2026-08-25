@@ -1,0 +1,26 @@
+11ME3B_9FZ3V5DD1-20260825-205525
+
+Interface: Scanmatik - SM2 USB
+DLL: 1.0.0.124 (built 04.02.2025)
+Firmware: FW:1070 HW:02 SN:A111788
+Protocol: Nissan: EFI SH705927N (Hitachi SH7059/1.5MB)
+Reading data
+Passing Security Checks
+Identification
+Software: 11ME3B_9FZ3V5DD1
+Reading data
+Reading area 1
+Completion
+Completed successfully
+Interface: Scanmatik - SM2 USB
+DLL: 1.0.0.124 (built 04.02.2025)
+Firmware: FW:1070 HW:02 SN:A111788
+Protocol: Nissan: EFI SH705927N (Hitachi SH7059/1.5MB)
+Identification
+SW Version:	11ME3B00000
+VIN:	
+Base:	9FZ3V5DD1
+Part Number:	23710-1ME3B
+Protocol:	Hitachi CAN
+ECU: Nissan: EFI SH705927N (Hitachi SH7059/1.5MB)
+Completed

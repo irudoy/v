@@ -8,6 +8,7 @@ from tools.romviz import model
 
 
 REGISTERED_ROMS = (
+    "1ME3B",
     "1ND0A",
     "1ND3B",
     "JK00A",
@@ -45,17 +46,35 @@ def test_all_models_build_with_exact_registered_identities():
     by_id = {rom["id"]: rom for rom in atlas["roms"]}
 
     assert tuple(by_id) == REGISTERED_ROMS
+    assert by_id["1ME3B"]["size"] == 0x180000
     assert by_id["1ND0A"]["size"] == 0x180000
     assert by_id["1ND3B"]["size"] == 0x180000
     assert all(
         by_id[rom]["size"] == 0x100000
-        for rom in set(REGISTERED_ROMS) - {"1ND0A", "1ND3B"}
+        for rom in set(REGISTERED_ROMS) - {"1ME3B", "1ND0A", "1ND3B"}
     )
     assert by_id["JK78C"]["warnings"]
     assert by_id["JK78C"]["reviewedFunctions"] == 0
     assert by_id["JK78C"]["structuralFunctions"] == 2969
     for rom_id in ("JK78C", "1ND0A", "1ND3B"):
         assert by_id[rom_id]["counts"]["maps"] == 108
+
+
+def test_1me3b_model_is_a_stock_identity_without_an_annotation_layer():
+    rom = model.build_rom_model(model.resolve_manifest("1ME3B"))
+
+    assert rom["size"] == 0x180000
+    assert rom["metadata"]["ECU ID"] == "11ME3B"
+    assert rom["metadata"]["Engine"] == "VQ37VHR"
+    assert rom["metadata"]["MCU"] == "SH7059"
+    assert rom["objects"] == []
+    assert rom["counts"] == {}
+    assert rom["reviewedFunctions"] == 0
+    assert rom["structuralFunctions"] == 0
+    assert any(
+        "checksum layout is not registered" in warning
+        for warning in rom["warnings"]
+    )
 
 
 def test_jk78c_model_includes_target_runtime_and_checksum_evidence():

@@ -1,0 +1,13 @@
+schema_version = 2
+rom = "1ME3B"
+label = "23710-1ME3B"
+annotation_source = "stock image only; no structural export"
+image_registry = "rom-images/roms.csv"
+
+[metadata]
+ecuid = "11ME3B"
+make = "Nissan"
+model = "Fuga KY51"
+submodel = "VQ37VHR"
+memmodel = "SH7059"
+endian = "big"
