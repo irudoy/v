@@ -36,7 +36,7 @@
   </XDFHEADER>
   <XDFPATCH uniqueid="0x3B07" flags="0x0">
     <title>Developer Immobilizer</title>
-    <description>Exact JK03A only. Bit 0 enables ECM immobilizer enforcement. Vehicle start and operation verified. NATS DTC suppression is independent. Base state: Enabled (Stock). Patched state: Disabled (IMMO OFF).</description>
+    <description>Exact JK03A only. Bit 0 enables ECM immobilizer enforcement; clearing it bypasses the Developer Immobilizer transitions and releases the engine inhibit. NATS DTC suppression is independent. Hardware evidence covers a JK08A-derived image on a 23710-JK00D ECU; no other image carries a hardware result. Base state: Enabled (Stock). Patched state: Disabled (IMMO OFF).</description>
     <CATEGORYMEM index="0" category="18" />
     <XDFPATCHENTRY name="Developer Immobilizer" address="0x8725" datasize="0x1" patchdata="00" basedata="01" />
   </XDFPATCH>

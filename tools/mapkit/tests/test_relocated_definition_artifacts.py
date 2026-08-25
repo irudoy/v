@@ -11,6 +11,7 @@ TARGETS = {
         "intake_cvtc_target": "0x0B7BE",
         "exhaust_cvtc_target": "0x0B6BE",
         "switches": {
+            "Developer Immobilizer": "0x873F",
             "CAN Telemetry at Startup": "0xE1503",
             "Rolling Launch Require Accelerator Pedal": "0xE066C",
         },
@@ -84,13 +85,10 @@ def test_relocated_romraider_artifacts_keep_target_addresses_and_provenance():
         assert checksums["alt"].get("end") == "0x22628"
         assert checksums["alt2"].get("sumloc") == expected["checksum_sum"]
         assert checksums["alt2"].get("xorloc") == expected["checksum_xor"]
-        assert not any(name.startswith("DTC ") for name in tables)
+        assert sum(1 for name in tables if name.startswith("DTC ")) == 71
 
         for name, address in expected["switches"].items():
             assert tables[name].get("storageaddress") == address
-        if rom == "JK00C":
-            assert "Developer Immobilizer" not in tables
-
         assert (
             tables["Map 1 - Intake CVTC Target - Main"].get(
                 "storageaddress"
@@ -127,7 +125,7 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         assert header.findtext("deftitle") == f"{rom} - VQ HR ECU"
         assert f"defs/JK08A-{rom}.definition-addresses.csv" in description
         assert f"defs/{rom}-{rom}.definition-addresses.csv" not in description
-        assert f"defs/{rom}.dtc.csv" not in description
+        assert f"defs/{rom}.dtc.csv" in description
         assert len(root.findall("XDFTABLE")) == 105
         assert len(root.findall("XDFFLAG")) == 5
         assert root.find("XDFCHECKSUM") is None
@@ -160,8 +158,8 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 111
-    assert not any(name.startswith("DTC ") for name in tables)
+    assert len(target.findall("table")) == 181
+    assert sum(1 for name in tables if name.startswith("DTC ")) == 69
     assert tables["Rolling Launch Enable by Map"].get(
         "storageaddress"
     ) == "0x1E964"
@@ -191,10 +189,24 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert len(root.findall("XDFTABLE")) == 108
     patches = root.findall("XDFPATCH")
     patches_by_title = {patch.findtext("title"): patch for patch in patches}
-    assert set(patches_by_title) == {
+    non_dtc_patches = {
+        title
+        for title in patches_by_title
+        if not title.startswith(("DTC ", "Disable DTC group:"))
+    }
+    assert non_dtc_patches == {
+        "Developer Immobilizer",
         "CAN Telemetry at Startup",
         "Rolling Launch Require Accelerator Pedal",
     }
+    assert sum(
+        1 for title in patches_by_title if title.startswith("DTC ")
+    ) == 35
+    assert sum(
+        1
+        for title in patches_by_title
+        if title.startswith("Disable DTC group:")
+    ) == 6
     assert patches_by_title["CAN Telemetry at Startup"].find(
         "XDFPATCHENTRY"
     ).get("address") == "0x1F803"
@@ -225,9 +237,17 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert romid.findtext("memmodel") == "SH7059"
         assert romid.findtext("filesize") == "1536kb"
         assert romid.find("flashmethod") is None
-        assert target.findall("checksum") == []
-        assert len(target.findall("table")) == 111
-        assert not any(name.startswith("DTC ") for name in tables)
+        checksums = {
+            entry.get("type"): entry for entry in target.findall("checksum")
+        }
+        assert set(checksums) == {"alt2"}
+        assert checksums["alt2"].get("start") == "0x8200"
+        assert checksums["alt2"].get("end") == "0x180000"
+        assert checksums["alt2"].get("skiploc") == "0x20000"
+        assert checksums["alt2"].get("sumloc") == "0x9618"
+        assert checksums["alt2"].get("xorloc") == "0x9610"
+        assert len(target.findall("table")) == 181
+        assert sum(1 for name in tables if name.startswith("DTC ")) == 69
         assert tables["Rolling Launch Enable by Map"].get(
             "storageaddress"
         ) == "0x133F64"
@@ -266,10 +286,24 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         patches_by_title = {
             patch.findtext("title"): patch for patch in patches
         }
-        assert set(patches_by_title) == {
+        non_dtc_patches = {
+            title
+            for title in patches_by_title
+            if not title.startswith(("DTC ", "Disable DTC group:"))
+        }
+        assert non_dtc_patches == {
+            "Developer Immobilizer",
             "CAN Telemetry at Startup",
             "Rolling Launch Require Accelerator Pedal",
         }
+        assert sum(
+            1 for title in patches_by_title if title.startswith("DTC ")
+        ) == 35
+        assert sum(
+            1
+            for title in patches_by_title
+            if title.startswith("Disable DTC group:")
+        ) == 6
         entry = patches_by_title["CAN Telemetry at Startup"].find(
             "XDFPATCHENTRY"
         )
@@ -283,7 +317,10 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         } == {
             f"Map {slot} - Rolling Launch Enable" for slot in range(1, 6)
         }
-        assert "verified checksum implementation must correct" in description
+        assert (
+            "No editor-side checksum is declared; the flashing workflow "
+            "handles checksum correction." in description
+        )
         assert "no verified" not in description.lower()
         assert "defs/JK08A-1ND.definition-addresses.csv" in description
         for name, address in ONE_ND_MAP_ADDRESSES.items():

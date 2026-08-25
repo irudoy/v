@@ -22,6 +22,28 @@ engine name or similar graph structure does not permit address inheritance.
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut registry | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut registry | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 
+## Diagnostic layer
+
+| Family | DTC codes | Developer Immobilizer | Native RomRaider checksum |
+| --- | ---: | --- | --- |
+| `7MFKAVN86` | 36 | `0x8725` | `alt` and `alt2` |
+| JK00C | 36 | `0x873F` | `alt` and `alt2` |
+| JK00D | 36 | `0x8740` | `alt` and `alt2` |
+| JK78C | 35 | `0x861C` | `alt` and `alt2` |
+| `1ND` | 35 | `0x8668` | `alt2` |
+
+Each image stores its diagnostic descriptors as twelve-byte records followed
+immediately by one 32-bit attribute pointer per record. The pointer table is the
+ECU's own attribute reference and reproduces every canonical JK08A attribute
+address exactly, so a relocated binding is read out of the target image. A code
+is carried only when exactly one target record is byte-identical to the
+canonical record. VQ37 declares no P1422 record, which is why its registries
+hold 35 codes rather than 36.
+
+The `1ND` layout declares one runtime domain, so it projects to a single `alt2`
+handler. Its boot and vector SUM16 domains end at `0x8200`, below the lowest
+published entity at `0x8524`, so no editor session can leave them stale.
+
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,
 coordinator, scheduler pointer, calibration bytes, ROM pointers, and RAM bases
@@ -34,6 +56,22 @@ exact request value `0x003F`.
 Runtime capability does not imply complete source-map parity. Every visible
 canonical map and required axis either reaches a reviewed target address or is
 an established architectural removal. No canonical role is left unlocalised.
+
+RomRaider XML and TunerPro XDF publish the same entities on every ROM. The two
+formats use different constructs for one control: RomRaider models a reversible
+two-state range as a `Switch` table and TunerPro as an `XDFPATCH` entry, so
+parity is asserted over exact ROM ranges and their stock and patched bytes.
+TunerPro additionally publishes one group patch per DTC group; RomRaider has no
+construct for a switch spanning discontiguous ranges. Every group entry repeats
+an individual entry.
+
+VQ37 splits two canonical roles into parallel per-bank tables. One input index
+reaches two tables through shared axes and one interpolator with no branch, and
+the two results land in adjacent RAM bytes. Canonical `0x0A29A` becomes JK78C
+`0x09EBA` and `0x09FBA` writing `0xFFFF1E91` and `0xFFFF1E92`; canonical
+`0x1219E` becomes `0x137E8` and `0x137F0` writing `0xFFFF14E6` and `0xFFFF14E7`.
+The channel-to-bank assignment follows record order and is not established from
+a consumer trace.
 
 The `8MFK` projections carry no unsupported source row. Every visible canonical
 map and required axis reaches a reviewed JK00C and JK00D address. The

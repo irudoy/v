@@ -41,6 +41,7 @@ import csv
 from dataclasses import dataclass
 import html
 import os
+import re
 import sys
 import tempfile
 import textwrap
@@ -250,6 +251,35 @@ def static_axis_xml(values, name="Index", axis_type="Static X Axis",
 def hex_bytes(data):
     """Format bytes for descriptions and TableSwitch state data."""
     return " ".join(f"{byte:02X}" for byte in data)
+
+
+def require_checksum_coverage(rom, xml, checksums):
+    """Fail when a published entity lies outside every native checksum region.
+
+    Native RomRaider handlers recalculate only the regions their metadata
+    declares. An editable entity outside those regions would leave a stock
+    checksum field stale after an editor session.
+    """
+    regions = []
+    for entry in checksums:
+        try:
+            start = int(str(entry["start"]), 16)
+            end = int(str(entry["end"]), 16)
+        except (KeyError, TypeError, ValueError):
+            sys.exit(f"{rom}: checksum entry has no usable start and end")
+        regions.append((start, end))
+    outside = sorted({
+        address
+        for address in (
+            int(value, 16)
+            for value in re.findall(r'storageaddress="0x([0-9A-Fa-f]+)"', xml)
+        )
+        if not any(start <= address < end for start, end in regions)
+    })
+    if outside:
+        listed = ", ".join(f"0x{address:X}" for address in outside[:8])
+        sys.exit(f"{rom}: {len(outside)} definition entities lie outside every "
+                 f"native RomRaider checksum region: {listed}")
 
 
 def dtc_records(rom, image=None, manifest_path=None):
@@ -1275,6 +1305,8 @@ def emit_target(
 
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n' + "\n".join(head + body).rstrip()
            + "\n  </rom>\n</roms>\n")
+    if checksums:
+        require_checksum_coverage(rom, xml, checksums)
     with open(romraider_path, "w") as f:
         f.write(xml)
 

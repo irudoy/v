@@ -2,8 +2,11 @@ schema_version = 3
 
 # Relocated editor projections are SHA-bound and use reviewed address
 # correspondences. `checksum` records a verified project checksum layout;
-# `romraider_checksum` records whether native RomRaider metadata can represent
-# that complete layout. Runtime capabilities are independently gated.
+# `romraider_checksum` records whether native RomRaider handlers maintain every
+# checksum field a definition entity can invalidate. A layout domain without a
+# native handler is admissible only when its whole region lies below the lowest
+# published entity, and emit_def.py fails when any entity falls outside the
+# declared regions. Runtime capabilities are independently gated.
 # Projections are independent from exact-code inheritance.
 
 [projection.JK00D]
@@ -51,6 +54,7 @@ runtime allocation in patches/rom-address-profiles.toml.
 evidence = "Reviewed JK08A-to-JK00D correspondence composed with exact or normalized JK00D-to-JK00C functions, target references, stock bytes, and target axis geometry."
 
 [projection.JK00C.switch]
+developer_immobilizer = 0x0000873F
 can_telemetry_startup = 0x000E1503
 
 [projection.JK78C]
@@ -80,6 +84,7 @@ and does not reuse the VQ35HR fuel-shadow maps.
 evidence = "Reviewed structural function correspondence, interpolation-call order, exact storage anchors, target literals, target axis geometry, checksum code, runtime correspondence, and independently reproduced stock checksum values."
 
 [projection.JK78C.switch]
+developer_immobilizer = 0x0000861C
 can_telemetry_startup = 0x0001F803
 
 [projection.1ND0A]
@@ -88,7 +93,7 @@ source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b2
 target_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
 addresses = "JK08A-1ND.definition-addresses.csv"
 checksum = true
-romraider_checksum = false
+romraider_checksum = true
 map_switching = true
 rolling_launch = true
 comment = """
@@ -100,7 +105,10 @@ code confidence. Source tables whose VQ37 implementation changes geometry or
 removes the corresponding lookup are omitted explicitly. Exact target-native
 fuel-cut caps and activation/release curves are added from the SHA-bound VQ37
 registry. The project checksum implementation verifies and recalculates all
-six 1ND fields; RomRaider has no native metadata for this complete layout. Map
+six 1ND fields. The native RomRaider alt2 handler maintains the four fields a
+definition entity can invalidate: both primary SUM16 values and the runtime XOR
+and SUM pair. The boot and vector SUM16 domains end at 0x8200, below every
+published entity, so no editor session can leave them stale. Map
 2 through Map 5 storage, Rolling Launch controls, and the CAN Telemetry at
 Startup control use the validated 1ND runtime allocation in
 patches/rom-address-profiles.toml. The VQ37 Rolling Launch variant requests
@@ -110,6 +118,7 @@ reuse the VQ35HR fuel-shadow maps.
 evidence = "Reviewed JK78C-to-1ND0A structural functions, shared interpolation contracts, exact storage, selector branch order, target literals, and exact-code 1ND family evidence."
 
 [projection.1ND0A.switch]
+developer_immobilizer = 0x00008668
 can_telemetry_startup = 0x00134E03
 
 [projection.1ND3B]
@@ -118,7 +127,7 @@ source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b2
 target_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
 addresses = "JK08A-1ND.definition-addresses.csv"
 checksum = true
-romraider_checksum = false
+romraider_checksum = true
 map_switching = true
 rolling_launch = true
 comment = """
@@ -129,9 +138,10 @@ address-bearing consumers are byte-identical to 1ND0A; the exact target image
 retains independent calibration values and SHA binding. Homologous claims are
 downgraded to candidate confidence unless target-specific evidence keeps code
 confidence. The project checksum implementation verifies and recalculates all
-six 1ND fields; RomRaider has no native metadata for this complete layout.
-Exact target-native fuel-cut caps and activation/release curves are added from
-the independently SHA-bound 1ND3B image. Map 2 through Map 5 storage, Rolling
+six 1ND fields, and the native RomRaider alt2 handler maintains the four fields
+a definition entity can invalidate. Exact target-native fuel-cut caps and
+activation/release curves are added from the independently SHA-bound 1ND3B
+image. Map 2 through Map 5 storage, Rolling
 Launch controls, and the CAN Telemetry at Startup control use the validated
 1ND runtime allocation in patches/rom-address-profiles.toml. The VQ37 Rolling
 Launch variant requests all-cylinder fuel cut after the stock final-mask
@@ -140,4 +150,5 @@ coordinator and does not reuse the VQ35HR fuel-shadow maps.
 evidence = "Reviewed 1ND0A address projection composed only through exact 1ND0A-to-1ND3B executable ranges, identical address-bearing code, target geometry, and the independent stock-image hash."
 
 [projection.1ND3B.switch]
+developer_immobilizer = 0x00008668
 can_telemetry_startup = 0x00134E03

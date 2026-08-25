@@ -152,6 +152,19 @@ The native RomRaider handlers reproduce the layout in this order:
 The B fields are part of domain A, so the reverse order is incorrect.
 `defs/JK08A.xml` contains the handlers in `alt` -> `alt2` order.
 
+## RomRaider 1ND projection
+
+The SH7059 layout declares one runtime domain, so it projects to a single
+handler: `alt2` with `start=0x8200`, `end=0x180000`, `skiploc=0x20000`,
+`sumloc=0x9618`, and `xorloc=0x9610`. It writes Runtime A together with the
+calibration and application SUM16 values.
+
+The boot and vector SUM16 domains have no native handler. Both end at `0x8200`,
+and the lowest published 1ND entity is `0x8524`, so no editor session can reach
+their regions and leave a field stale. `tools/mapkit/emit_def.py` enforces the
+precondition: it fails when any published entity falls outside the declared
+checksum regions.
+
 ## TunerPro
 
 `defs/JK08A.xdf` intentionally contains no `XDFCHECKSUM`. The TunerPro artifact

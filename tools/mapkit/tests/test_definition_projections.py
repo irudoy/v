@@ -60,7 +60,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["mapped"] == 44
         assert values["unsupported"] == len(VQ37_UNSUPPORTED)
         assert values["checksum"] is True
-        assert values["romraider_checksum"] is False
+        assert values["romraider_checksum"] is True
         assert values["map_families"] == 14
         assert values["native_maps"] == 2
         assert values["rolling_configuration"] == 0x133F60
@@ -211,7 +211,7 @@ def _direct_scalar_model():
 @pytest.mark.parametrize(
     ("rom", "target_address", "runtime_a_sum", "switch_count"),
     (
-        ("JK00C", "00008a4c", "0x97A0", 1),
+        ("JK00C", "00008a4c", "0x97A0", 2),
         ("JK00D", "00008a4d", "0x97B0", 2),
     ),
 )
@@ -242,13 +242,13 @@ def test_projection_applies_target_map_checksums_and_switches(
         "checksum_verified",
         "romraider_checksum",
         "map_switching",
-        "switch_count",
+        "immobilizer_address",
         "switch_address",
     ),
     (
-        ("JK78C", "00008896", True, True, True, 1, "0x1F803"),
-        ("1ND0A", "00008939", True, False, True, 1, "0x134E03"),
-        ("1ND3B", "00008939", True, False, True, 1, "0x134E03"),
+        ("JK78C", "00008896", True, True, True, "0x861C", "0x1F803"),
+        ("1ND0A", "00008939", True, True, True, "0x8668", "0x134E03"),
+        ("1ND3B", "00008939", True, True, True, "0x8668", "0x134E03"),
     ),
 )
 def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
@@ -257,7 +257,7 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     checksum_verified,
     romraider_checksum,
     map_switching,
-    switch_count,
+    immobilizer_address,
     switch_address,
 ):
     projection = definition_projections.projection_for_rom(rom)
@@ -287,12 +287,13 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
         "Engine Speed Limit - Fuel Cut Curves"
     )
     assert ("checksum" in result.overrides) is romraider_checksum
-    assert len(result.overrides["switch"]) == switch_count
-    if switch_count:
-        assert result.overrides["switch"][0]["name"] == (
-            "CAN Telemetry at Startup"
-        )
-        assert result.overrides["switch"][0]["storageaddress"] == switch_address
+    switches = result.overrides["switch"]
+    assert [entry["name"] for entry in switches] == [
+        "CAN Telemetry at Startup",
+        "Developer Immobilizer",
+    ]
+    assert switches[0]["storageaddress"] == switch_address
+    assert switches[1]["storageaddress"] == immobilizer_address
     assert result.overrides["map_switching"] == {"enabled": map_switching}
     assert result.overrides["rolling_launch"] == {"enabled": True}
 

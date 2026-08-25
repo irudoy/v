@@ -47,7 +47,7 @@
 
     <table type="Switch" name="Developer Immobilizer" category="NATS//Immobilizer"
            storageaddress="0x08725" storagetype="uint8" sizex="1" endian="big" userlevel="5">
-      <description>Exact JK03B only. Bit 0 enables ECM immobilizer enforcement. Vehicle start and operation verified. NATS DTC suppression is independent.</description>
+      <description>Exact JK03B only. Bit 0 enables ECM immobilizer enforcement; clearing it bypasses the Developer Immobilizer transitions and releases the engine inhibit. NATS DTC suppression is independent. Hardware evidence covers a JK08A-derived image on a 23710-JK00D ECU; no other image carries a hardware result.</description>
       <state name="Enabled (Stock)" data="01"/>
       <state name="Disabled (IMMO OFF)" data="00"/>
     </table>

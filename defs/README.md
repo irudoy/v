@@ -23,6 +23,7 @@ presentation and generated output.
 | `JK08A.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims | yes |
 | `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | yes |
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
+| `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
@@ -216,6 +217,19 @@ coordinated native switches for descriptor and attribute ranges. TunerPro uses
 atomic individual and declared group patches. Duplicate public codes remain
 separate records when the ROM contains distinct paths. No implicit all-DTC
 control exists.
+
+Every image stores its descriptors as twelve-byte records followed immediately
+by one 32-bit attribute pointer per record. That pointer table is the ECU's own
+attribute reference: it reproduces all 36 canonical JK08A attribute addresses
+exactly. `../tools/mapkit/dtc_projection.py` therefore reads a target binding
+out of the target image instead of deriving it from an offset.
+
+A canonical record is carried to a relocated target only when exactly one target
+record is byte-identical to it, which fixes group, sub-index, monitor class,
+code, and trailing flag together. JK00C and JK00D carry all 36 codes; JK78C and
+`1ND` carry 35, because VQ37 declares no P1422 record. The exact-code members of
+`7MFKAVN86` reproduce the canonical registry from their own images and share it
+rather than tracking a copy.
 
 The Developer Immobilizer flag is a definition-controlled data edit, not a
 standalone instruction patch. Its execution path and safety boundary are in

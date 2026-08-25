@@ -72,6 +72,7 @@ setup:
 check:
 	$(PYTHON) patches/rom_address_profiles.py --check
 	$(PYTHON) patches/runtime_targets.py --check
+	$(PYTHON) tools/mapkit/dtc_projection.py
 	$(PYTHON) tools/mapkit/definition_projections.py --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
@@ -113,6 +114,7 @@ dashboard-package-macos:
 
 defs-generate:
 	@test -n "$(strip $(DEFS_ROM))" || { printf '%s\n' 'DEFS_ROM is required' >&2; exit 2; }
+	$(PYTHON) tools/mapkit/dtc_projection.py --write
 	$(PYTHON) tools/mapkit/emit_def.py "$(DEFS_ROM)"
 	$(PYTHON) tools/maps/build_tracker.py all
 	$(PYTHON) tools/mapkit/validate_map_switching.py

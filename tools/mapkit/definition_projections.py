@@ -374,6 +374,14 @@ def _select_axis_binding(rows, variant, map_source):
 
 
 def _target_checksums(rom, source_checksums):
+    """Project a verified checksum layout onto native RomRaider handlers.
+
+    The `alt2` handler maintains the runtime XOR and SUM pair together with both
+    primary SUM16 fields; `alt` maintains a second runtime pair when the layout
+    declares one. A layout domain outside that set is acceptable only when its
+    whole region lies below the editable floor, because no definition entity can
+    then invalidate its field.
+    """
     try:
         layout = rom_checksums.layout_for_rom(rom)
     except rom_checksums.ChecksumError as error:
@@ -383,26 +391,54 @@ def _target_checksums(rom, source_checksums):
         for entry in source_checksums
         if isinstance(entry, dict)
     }
-    runtime_b = {
-        "type": "alt",
-        "start": f"0x{layout.runtime_b_start:X}",
-        "end": f"0x{layout.runtime_b_end:X}",
-        "sumloc": f"0x{layout.runtime_b_sum_field:X}",
-        "xorloc": f"0x{layout.runtime_b_xor_field:X}",
-    }
-    runtime_a = {
+    runtime = {domain.key: domain for domain in layout.runtime32_domains}
+    if "runtime_a" not in runtime:
+        raise DefinitionProjectionError(
+            f"{rom}: checksum layout {layout.key} has no runtime_a domain"
+        )
+    entries = []
+    if "runtime_b" in runtime:
+        entries.append({
+            "type": "alt",
+            "start": f"0x{runtime['runtime_b'].start:X}",
+            "end": f"0x{runtime['runtime_b'].end:X}",
+            "sumloc": f"0x{runtime['runtime_b'].sum_field:X}",
+            "xorloc": f"0x{runtime['runtime_b'].xor_field:X}",
+        })
+    entries.append({
         "type": "alt2",
         "start": f"0x{layout.sum16_a_field:X}",
         "end": f"0x{layout.rom_size:X}",
         "skiploc": f"0x{layout.sum16_b_field:X}",
-        "sumloc": f"0x{layout.runtime_a_sum_field:X}",
-        "xorloc": f"0x{layout.runtime_a_xor_field:X}",
-    }
-    if comments.get("alt"):
-        runtime_b["comment"] = comments["alt"]
-    if comments.get("alt2"):
-        runtime_a["comment"] = comments["alt2"]
-    return [runtime_b, runtime_a]
+        "sumloc": f"0x{runtime['runtime_a'].sum_field:X}",
+        "xorloc": f"0x{runtime['runtime_a'].xor_field:X}",
+    })
+    for entry in entries:
+        comment = comments.get(entry["type"])
+        if comment:
+            entry["comment"] = comment
+    floor = layout.sum16_a_field
+    maintained = {"sum16_a", "sum16_b", "runtime_a"}
+    if "runtime_b" in runtime:
+        maintained.add("runtime_b")
+    for domain in layout.domains:
+        if domain.key in maintained:
+            continue
+        if domain.end > floor:
+            raise DefinitionProjectionError(
+                f"{rom}: checksum domain {domain.key} reaches "
+                f"0x{domain.end:X} above the editable floor 0x{floor:X} and "
+                "has no native RomRaider handler"
+            )
+    return entries
+
+
+def romraider_checksum_regions(rom):
+    """Return the ROM regions that native RomRaider checksum metadata covers."""
+    entries = _target_checksums(rom, [])
+    return tuple(
+        (int(entry["start"], 16), int(entry["end"], 16)) for entry in entries
+    )
 
 
 def _target_switches(projection, source_switches, image):

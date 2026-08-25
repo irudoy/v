@@ -14,6 +14,7 @@ not be edited by hand.
 | `defs/JK08A.axes.csv` | Canonical axis semantics and scaling evidence |
 | `defs/JK08A.interp.csv` | Registered interpolation families and resolver census contract |
 | `defs/JK08A.dtc.csv` | Addressed DTC descriptor and attribute controls |
+| `defs/<target>.dtc.csv` | Relocated DTC controls projected by `dtc_projection.py` |
 | `defs/JK08A.overrides.toml` | Editor names, categories, visibility, layout, scaling presentation, and native switches |
 | `defs/JK08A.diagnostic-bindings.csv` | Reviewed diagnostic context shown in projections |
 | `defs/rom-inheritance.toml` | Exact target-to-canonical source binding and SHA-256 evidence |
@@ -59,7 +60,13 @@ The generator validates the selected ROM identity, inheritance or relocated
 projection hashes, canonical graph facts, definition gate, applicable target
 DTC storage, presentation schema, and each capability enabled for a relocated
 target before writing either projection. The registry distinguishes a verified
-project checksum layout from complete native RomRaider checksum metadata.
+project checksum layout from native RomRaider metadata that maintains every
+checksum field a definition entity can invalidate. `alt2` covers the runtime
+XOR and SUM pair together with both primary SUM16 fields, and `alt` covers a
+second runtime pair when the layout declares one. A layout domain without a
+native handler is admissible only when its whole region lies below the lowest
+published entity, and the generator fails when any entity falls outside the
+declared regions.
 Native checksum metadata, map switching, Rolling Launch, and editor switches
 remain absent when the target registry does not declare their contracts.
 Target-specific wording uses only the explicit
