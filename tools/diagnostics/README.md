@@ -39,13 +39,19 @@ regeneration commands are documented in `../../refs/diagnostics/README.md`.
 All importers validate exact source revision or PDF identity where their source
 manifest provides one. `--check` parses and validates without replacing tracked
 outputs. Source-specific expected inventory is stored in each
-`source_pack.toml`, not duplicated here.
+`source_pack.toml`, not duplicated here. `extract_esm.py` reads dataset
+identity, vehicle identity, retained-document count, and its default output
+directory from the `--pack` source pack, so one extractor serves every retained
+ESM corpus.
 
 Examples:
 
 ```bash
 uv run python tools/diagnostics/extract_esm.py \
   refs/nissan-esm-2007-g35-sedan --check
+uv run python tools/diagnostics/extract_esm.py \
+  refs/nissan-esm-2013-g37-sedan \
+  --pack refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml --check
 uv run python tools/diagnostics/extract_rom_dtc.py --check
 uv run python tools/diagnostics/import_370z_logger.py \
   /path/to/370Z-CAN-Logger --check

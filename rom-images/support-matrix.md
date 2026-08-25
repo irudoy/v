@@ -80,8 +80,19 @@ reaches two tables through shared axes and one interpolator with no branch, and
 the two results land in adjacent RAM bytes. Canonical `0x0A29A` becomes JK78C
 `0x09EBA` and `0x09FBA` writing `0xFFFF1E91` and `0xFFFF1E92`; canonical
 `0x1219E` becomes `0x137E8` and `0x137F0` writing `0xFFFF14E6` and `0xFFFF14E7`.
-The channel-to-bank assignment follows record order and is not established from
-a consumer trace.
+The channel-to-bank assignment follows the ascending order of the two
+destination bytes and is not established from a consumer trace.
+
+The factory manual fixes bank identity for diagnostic codes but not for these
+two channels. It assigns bank 1 to the lower code of every VQ37 per-bank pair,
+including P1087 and P1088, P1089 and P1092, P1090 and P1093, and P100A and
+P100B, and the canonical pairs P0011 and P0021, P0031 and P0051, P0130 and
+P0150, and P0171 and P0174 follow the same order. The ROM descriptor table does
+not repeat that order: JK78C group `0x49` stores P1089 on even sub-indices and
+P1092 on odd, while group `0x37` stores P0021 below P0011 and group `0x3D`
+stores P0051 below P0031. Descriptor position therefore carries no bank
+convention, and promoting either duplicated table to a named bank requires a
+consumer trace from its destination byte.
 
 The `8MFK` projections carry no unsupported source row. Every visible canonical
 map and required axis reaches a reviewed JK00C and JK00D address. The

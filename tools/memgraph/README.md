@@ -74,7 +74,12 @@ the first graph write. `--export-dir` overrides the registered local Ghidra
 export only for an explicitly selected export.
 
 The diagnostic corpus must exist before a ROM ingest that loads diagnostic
-bindings. JK03A receives canonical semantic annotations through
+bindings. `ingest_diagnostics.py` owns the corpus and clears every
+`:DiagnosticBinding` node when it commits, so a corpus reload is followed by
+`load_diagnostic_bindings.py` for each bound ROM. Until that runs, definition
+projections omit their static diagnostic context and
+`tools/mapkit/validate_map_switching.py` reports a difference from the tracked
+common definitions. JK03A receives canonical semantic annotations through
 `defs/rom-inheritance.toml` but retains its own ROM measurements and graph
 layer.
 

@@ -118,16 +118,22 @@ transcriptions rather than the generated file.
 
 ## Nissan factory ESM stored locally
 
-A scoped subset of the 2007 Infiniti G35 Sedan factory service manual is stored
-under `nissan-esm-2007-g35-sedan/` as 29 original PDFs. It supports precise
+Two scoped factory service manuals are stored locally. Both support precise
 identification of ECU mechanics and logic through factory circuit diagrams,
 connector pinouts, diagnostic procedures, and system-operation descriptions.
-The retention boundary and recovery path for omitted manual modules are
-documented in `nissan-esm-2007-g35-sedan/README.md`.
+Each directory documents its own retention boundary and the recovery path for
+omitted manual modules.
 
-The machine-readable diagnostic projection is stored separately under
-`diagnostics/nissan-esm-2007-g35-sedan/`. Its scope, provenance contract, source
-revision, and completeness boundary are documented in `diagnostics/README.md`.
+| Manual | Directory | Retained PDFs | Engine |
+|---|---|---:|---|
+| 2007 Infiniti G35 Sedan | `nissan-esm-2007-g35-sedan/` | 29 | VQ35HR |
+| 2013 Infiniti G Sedan | `nissan-esm-2013-g37-sedan/` | 31 | VQ37VHR |
+
+The machine-readable diagnostic projections are stored separately under
+`diagnostics/nissan-esm-2007-g35-sedan/` and
+`diagnostics/nissan-esm-2013-g37-sedan/`. Their scope, provenance contract,
+source revision, and completeness boundary are documented in
+`diagnostics/README.md`.
 
 - **Nissan ESM - 2007 Infiniti G35 Sedan (V36), VQ35HR engine.** The retained
   factory-manual subset contains 29 PDFs selected for diagnostic, electrical,
@@ -168,3 +174,34 @@ revision, and completeness boundary are documented in `diagnostics/README.md`.
     blinking, and lamp logic.
   - `POWER CONTROL SYSTEM.pdf` and `STEERING CONTROL SYSTEM.pdf` - power and
     ignition modes and, where applicable, the steering lock.
+
+- **Nissan ESM - 2013 Infiniti G Sedan (V36), VQ37VHR engine.** Publication
+  `SM3E-1V36U0`, edition August 2012. The retained factory-manual subset
+  contains 31 PDFs. This is the exact factory manual for the engine and platform
+  behind ROMs `JK78C`, `1ND0A`, and `1ND3B`, so it is the authority for VQ37VHR
+  diagnostic names, per-bank identity, and VVEL system operation.
+  Repository path: `refs/nissan-esm-2013-g37-sedan/`.
+
+  Relevant sections:
+
+  - `ENGINE CONTROL SYSTEM.pdf` - VQ37VHR ECM. EC-136 states that the ECM
+    commands target valve lift to the VVEL control module and receives the
+    control shaft actual angle back over CAN, so the control shaft position
+    sensor is not a direct ECM input. EC-407 through EC-420 name every VVEL DTC
+    pair with its bank: P100A/P100B response at EC-407, P1087/P1088 small event
+    angle at EC-411, P1089/P1092 control shaft position sensor at EC-412, and
+    P1090/P1093 actuator motor at EC-416, with the lower code assigned to bank 1
+    in every pair. P1091 at EC-420 covers the shared actuator motor relay. The
+    ECM DTC index at EC-581 and EC-582 carries the same bank suffixes as the
+    Consult display names. EC-162 defines the `VVEL TIM-B1` and `VVEL TIM-B2`
+    monitors in `deg` of control shaft angle and the `VVEL POSITION SEN-B1` and
+    `-B2` monitors in volts. EC-30 specifies the control shaft position sensor
+    adjustment standard of 500 +/- 48 mV, taken at VVEL control module connector
+    E15 terminals 3 and 4 for bank 1 and terminals 5 and 6 for bank 2.
+  - `ENGINE MECHANICAL.pdf` - VVEL ladder assembly, actuator sub assembly, and
+    control shaft hardware, with per-bank part identification.
+  - `SECURITY CONTROL SYSTEM.pdf`, `BODY CONTROL SYSTEM.pdf`, and
+    `LAN SYSTEM.pdf` - the VQ37VHR generation of the NATS, BCM, and CAN topology
+    described for the 2007 manual above.
+  - `POWER SUPPLY, GROUND & CIRCUIT ELEMENTS.pdf` and `STARTING SYSTEM.pdf` -
+    connector pinout, power and ground circuits, and crank permission.

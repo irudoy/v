@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract diagnostic inventories from the 2007 Infiniti G35 Sedan ESM."""
+"""Extract diagnostic inventories from a Nissan factory ESM source pack."""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ import csv
 import re
 import subprocess
 import sys
+import tomllib
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
@@ -27,10 +29,42 @@ from catalog import (
 )
 
 
+DEFAULT_PACK = REFS / "nissan-esm-2007-g35-sedan" / "source_pack.toml"
 DATASET_ID = "nissan-esm-2007-g35-sedan-v1"
 VEHICLE_ID = "infiniti-g35-sedan-2007-usdm-vq35hr"
-DEFAULT_OUTPUT = REFS / "nissan-esm-2007-g35-sedan"
 EXPECTED_DOCUMENTS = 29
+
+
+@dataclass(frozen=True)
+class SourcePack:
+    """Dataset identity and retained-document count for one ESM corpus."""
+
+    path: Path
+    dataset_id: str
+    vehicle_id: str
+    expected_documents: int
+
+    @property
+    def output(self) -> Path:
+        return self.path.parent
+
+
+def load_pack(path: Path) -> SourcePack:
+    with path.open("rb") as source:
+        raw = tomllib.load(source)
+    missing = [
+        key
+        for key in ("id", "vehicle_id", "expected_documents")
+        if key not in raw
+    ]
+    if missing:
+        raise CatalogError(f"{path}: source pack omits {', '.join(missing)}")
+    return SourcePack(
+        path=path,
+        dataset_id=str(raw["id"]),
+        vehicle_id=str(raw["vehicle_id"]),
+        expected_documents=int(raw["expected_documents"]),
+    )
 
 DOCUMENT_FIELDS = (
     "id",
@@ -467,7 +501,11 @@ def canonical_ecu_key(name: str) -> str:
     return slug(name)
 
 
-def infer_ecu_id(document_title: str, text: str) -> str:
+def infer_ecu_id(
+    document_title: str,
+    text: str,
+    vehicle_id: str = VEHICLE_ID,
+) -> str:
     header_lines = [
         re.sub(r"\s+", " ", line.strip())
         for line in text.splitlines()
@@ -485,7 +523,7 @@ def infer_ecu_id(document_title: str, text: str) -> str:
                 top_line,
             )
         if explicit:
-            return f"{VEHICLE_ID}:{canonical_ecu_key(explicit.group(1))}"
+            return f"{vehicle_id}:{canonical_ecu_key(explicit.group(1))}"
 
     normalized = top_line.upper()
     for label, key in ECU_LABEL_ALIASES:
@@ -493,7 +531,7 @@ def infer_ecu_id(document_title: str, text: str) -> str:
             normalized == label
             or normalized.startswith(f"{label} (")
         ):
-            return f"{VEHICLE_ID}:{key}"
+            return f"{vehicle_id}:{key}"
 
     known = {
         "ENGINE CONTROL SYSTEM": "ecm",
@@ -508,7 +546,7 @@ def infer_ecu_id(document_title: str, text: str) -> str:
         "POWER SUPPLY, GROUND & CIRCUIT ELEMENTS": "power-distribution",
     }
     key = known.get(document_title.upper(), slug(document_title))
-    return f"{VEHICLE_ID}:{key}"
+    return f"{vehicle_id}:{key}"
 
 
 def parse_dtc_title(line: str, code: str) -> tuple[str, str]:
@@ -752,12 +790,12 @@ def dtc_definitions(fragment: dict[str, object]) -> list[dict[str, object]]:
         rows.append(
             {
                 "id": f"{fragment['id']}:{code.lower()}",
-                "dataset_id": DATASET_ID,
+                "dataset_id": fragment["dataset_id"],
                 "code": code,
                 "native_code": native,
                 "title": title,
                 "ecu_id": fragment["ecu_id"],
-                "vehicle_id": VEHICLE_ID,
+                "vehicle_id": fragment["vehicle_id"],
                 "applicability_status": "exact_manual",
                 "definition_kind": "dtc_index",
                 "source_fragment_id": fragment["id"],
@@ -956,6 +994,16 @@ def first_column_rows(text: str, width: int) -> list[dict[str, object]]:
                     consumed_until = following_index
                     continue
         first, embedded_unit = split_name_unit(first)
+        if (
+            rows
+            and index - last_row_line <= 3
+            and str(rows[-1]["name"]).endswith("-")
+            and re.fullmatch(r"B[12]", first)
+        ):
+            rows[-1]["name"] = f"{rows[-1]['name']}{first}"
+            rows[-1]["end_line"] = index
+            last_row_line = index
+            continue
         if not first or not valid_item_name(first):
             continue
         if any(character.islower() for character in first) and not embedded_unit:
@@ -1495,6 +1543,23 @@ def table_layout(
                 bullet_positions,
             ):
                 starts[field_index] = position
+        elif bullet_positions:
+            for field_index, position in zip(
+                semantic_indexes,
+                bullet_positions,
+            ):
+                starts[field_index] = position
+            dropped = set(semantic_indexes[len(bullet_positions) :])
+            fields = [
+                field
+                for index, field in enumerate(fields)
+                if index not in dropped
+            ]
+            starts = [
+                start
+                for index, start in enumerate(starts)
+                if index not in dropped
+            ]
     if kind == "data_monitor" and "remarks" in fields:
         remarks_index = fields.index("remarks")
         reference_starts = [
@@ -1643,8 +1708,12 @@ def semantic_cell_text(
             and not line[start - 1].isspace()
         ):
             token = re.search(r"\S+$", prefix)
-            if token:
-                start = early_start + token.start()
+            if not token:
+                return ""
+            candidate = early_start + token.start()
+            if candidate < 2 or line[candidate - 2 : candidate].strip():
+                return ""
+            start = candidate
     return line[start:end] if end is not None else line[start:]
 
 
@@ -3005,7 +3074,7 @@ def diagnostic_parameters(fragment: dict[str, object]) -> list[dict[str, object]
                 continue
             row = {
                 "id": f"{fragment['id']}:{keyed_slug(name)}",
-                "dataset_id": DATASET_ID,
+                "dataset_id": fragment["dataset_id"],
                 "name": name,
                 "ecu_id": fragment["ecu_id"],
                 "unit": unit,
@@ -3103,7 +3172,7 @@ def diagnostic_operations(fragment: dict[str, object]) -> list[dict[str, object]
         rows.append(
             {
                 "id": f"{fragment['id']}:{keyed_slug(name)}",
-                "dataset_id": DATASET_ID,
+                "dataset_id": fragment["dataset_id"],
                 "kind": kind,
                 "name": name,
                 "ecu_id": fragment["ecu_id"],
@@ -3202,9 +3271,9 @@ def can_signals(fragment: dict[str, object]) -> list[dict[str, object]]:
         result.append(
             {
                 "id": f"{fragment['id']}:{keyed_slug(name)}",
-                "dataset_id": DATASET_ID,
+                "dataset_id": fragment["dataset_id"],
                 "name": name,
-                "vehicle_id": VEHICLE_ID,
+                "vehicle_id": fragment["vehicle_id"],
                 "bus": "v36-primary-can",
                 "transmitters": sorted(routes["transmitters"]),
                 "receivers": sorted(routes["receivers"]),
@@ -3225,11 +3294,15 @@ def can_signals(fragment: dict[str, object]) -> list[dict[str, object]]:
     return result
 
 
-def build(source_root: Path) -> dict[str, list[dict[str, object]]]:
+def build(
+    source_root: Path,
+    pack: SourcePack,
+) -> dict[str, list[dict[str, object]]]:
     pdfs = sorted(source_root.glob("*.pdf"), key=lambda path: path.name.casefold())
-    if len(pdfs) != EXPECTED_DOCUMENTS:
+    if len(pdfs) != pack.expected_documents:
         raise CatalogError(
-            f"{source_root}: found {len(pdfs)} PDF files, expected {EXPECTED_DOCUMENTS}"
+            f"{source_root}: found {len(pdfs)} PDF files, "
+            f"expected {pack.expected_documents}"
         )
 
     documents = []
@@ -3252,10 +3325,10 @@ def build(source_root: Path) -> dict[str, list[dict[str, object]]]:
             )
         labels = [page_label(page) for page in pages]
         code = section_code(labels, path.stem)
-        document_id = f"{DATASET_ID}:{slug(path.stem)}"
+        document_id = f"{pack.dataset_id}:{slug(path.stem)}"
         document = {
             "id": document_id,
-            "dataset_id": DATASET_ID,
+            "dataset_id": pack.dataset_id,
             "filename": path.name,
             "title": path.stem,
             "section_code": code,
@@ -3307,15 +3380,15 @@ def build(source_root: Path) -> dict[str, list[dict[str, object]]]:
                 info_match = INFOID_RE.search(text)
                 fragment = {
                     "id": fid,
-                    "dataset_id": DATASET_ID,
+                    "dataset_id": pack.dataset_id,
                     "document_id": document_id,
                     "pdf_page": pdf_page,
                     "page_label": labels[pdf_page - 1],
                     "info_id": info_match.group(1) if info_match else "",
                     "kind": kind,
                     "heading": page_heading(text),
-                    "ecu_id": infer_ecu_id(path.stem, text),
-                    "vehicle_id": VEHICLE_ID,
+                    "ecu_id": infer_ecu_id(path.stem, text, pack.vehicle_id),
+                    "vehicle_id": pack.vehicle_id,
                     **(
                         {"page_start_kind": page_start_kind}
                         if page_start_kind
@@ -3352,7 +3425,7 @@ def build(source_root: Path) -> dict[str, list[dict[str, object]]]:
                     unparsed.append(
                         {
                             "id": f"{fid}:unparsed",
-                            "dataset_id": DATASET_ID,
+                            "dataset_id": pack.dataset_id,
                             "document_id": document_id,
                             "pdf_page": pdf_page,
                             "page_label": labels[pdf_page - 1],
@@ -3407,7 +3480,18 @@ def write(output: Path, catalog: dict[str, list[dict[str, object]]]) -> None:
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("source_root", type=Path)
-    result.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    result.add_argument(
+        "--pack",
+        type=Path,
+        default=DEFAULT_PACK,
+        help="source pack TOML that names the dataset and its output directory",
+    )
+    result.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="output directory; defaults to the source pack directory",
+    )
     result.add_argument("--check", action="store_true", help="extract without writing")
     return result
 
@@ -3416,8 +3500,9 @@ def main() -> int:
     args = parser().parse_args()
     source_root = args.source_root.expanduser().resolve()
     try:
-        catalog = build(source_root)
-    except (OSError, CatalogError) as error:
+        pack = load_pack(args.pack.expanduser().resolve())
+        catalog = build(source_root, pack)
+    except (OSError, CatalogError, tomllib.TOMLDecodeError) as error:
         print(error, file=sys.stderr)
         return 1
     print(
@@ -3431,11 +3516,12 @@ def main() -> int:
         f"unparsed={len(catalog['unparsed'])}"
     )
     if not args.check:
-        write(args.output, catalog)
+        output = args.output if args.output is not None else pack.output
+        write(output, catalog)
         try:
-            shown = args.output.relative_to(ROOT)
+            shown = output.relative_to(ROOT)
         except ValueError:
-            shown = args.output
+            shown = output
         print(f"Wrote {shown}")
     return 0
 

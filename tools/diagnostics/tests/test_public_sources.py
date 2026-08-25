@@ -41,10 +41,11 @@ class PublicCatalogTest(unittest.TestCase):
         for path in manifests:
             with path.open("rb") as source:
                 packs.append(tomllib.load(source))
-        self.assertEqual(6, len(packs))
+        self.assertEqual(7, len(packs))
         self.assertEqual(
             {
                 "nissan-esm-2007-g35-sedan-v1",
+                "nissan-esm-2013-g37-sedan-v1",
                 "vq-hr-sh7058-rom-dtc-v1",
                 "370z-can-logger-2025-07-05",
                 "obd2tools-d27c9a2",

@@ -9,13 +9,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 DIAGNOSTICS = ROOT / "refs" / "diagnostics" / "nissan-esm-2007-g35-sedan"
+VQ37_DIAGNOSTICS = ROOT / "refs" / "diagnostics" / "nissan-esm-2013-g37-sedan"
 sys.path.insert(0, str(ROOT / "tools" / "diagnostics"))
 
 import extract_esm  # noqa: E402
 
 
-def read_csv(name: str) -> list[dict[str, str]]:
-    with (DIAGNOSTICS / name).open(newline="", encoding="utf-8") as source:
+def read_csv(name: str, root: Path = DIAGNOSTICS) -> list[dict[str, str]]:
+    with (root / name).open(newline="", encoding="utf-8") as source:
         return list(csv.DictReader(source))
 
 
@@ -51,6 +52,64 @@ class EsmCatalogTest(unittest.TestCase):
             if row["code"] == "P0605" and row["ecu_id"].endswith(":ecm")
         )
         self.assertEqual("ECM", p0605["title"])
+
+    def test_vq37_corpus_counts_and_bank_labels(self) -> None:
+        documents = read_csv("documents.csv", VQ37_DIAGNOSTICS)
+        definitions = read_csv("dtc_definitions.csv", VQ37_DIAGNOSTICS)
+        parameters = read_csv("diagnostic_parameters.csv", VQ37_DIAGNOSTICS)
+        self.assertEqual(31, len(documents))
+        self.assertEqual(842, len(definitions))
+        self.assertEqual(1165, len(parameters))
+        ecm = {
+            row["code"]: row["title"]
+            for row in definitions
+            if row["ecu_id"].endswith(":ecm")
+        }
+        self.assertEqual(202, len(ecm))
+        self.assertEqual(
+            {
+                "P100A": "VVEL SYSTEM-B1",
+                "P100B": "VVEL SYSTEM-B2",
+                "P1087": "VVEL SYSTEM-B1",
+                "P1088": "VVEL SYSTEM-B2",
+                "P1089": "VVEL POS SEN/CIRC-B1",
+                "P1090": "VVEL ACTR MOT-B1",
+                "P1091": "VVEL ACTR MOT PWR",
+                "P1092": "VVEL POS SEN/CIRC-B2",
+                "P1093": "VVEL ACTR MOT-B2",
+                "P1608": "VVEL SENSOR POWER/CIRC",
+            },
+            {
+                code: title
+                for code, title in ecm.items()
+                if code
+                in {
+                    "P100A",
+                    "P100B",
+                    "P1087",
+                    "P1088",
+                    "P1089",
+                    "P1090",
+                    "P1091",
+                    "P1092",
+                    "P1093",
+                    "P1608",
+                }
+            },
+        )
+        self.assertNotIn("P1422", ecm)
+        monitors = {
+            row["name"]: (row["unit"], row["description"])
+            for row in parameters
+            if row["name"].startswith("VVEL")
+        }
+        self.assertEqual(
+            ("deg", "\u2022 Indicates [deg] of VVEL control shaft angle."),
+            monitors["VVEL TIM-B1"],
+        )
+        self.assertEqual(monitors["VVEL TIM-B1"], monitors["VVEL TIM-B2"])
+        self.assertEqual("V", monitors["VVEL POSITION SEN-B1"][0])
+        self.assertEqual("V", monitors["VVEL POSITION SEN-B2"][0])
 
     def test_ecm_manual_codes_are_in_jk08a(self) -> None:
         manual = {
@@ -143,8 +202,10 @@ class EsmCatalogTest(unittest.TestCase):
     def test_page_start_and_later_mode_tables_are_combined(self) -> None:
         fragment = {
             "id": "fixture:p0001:data_monitor",
+            "dataset_id": extract_esm.DATASET_ID,
             "kind": "data_monitor",
             "ecu_id": f"{extract_esm.VEHICLE_ID}:bcm",
+            "vehicle_id": extract_esm.VEHICLE_ID,
             "page_start_kind": "data_monitor",
             "text": "\n".join(
                 (
@@ -753,9 +814,11 @@ class EsmCatalogTest(unittest.TestCase):
     def test_dtc_index_parser_excludes_no_fault_code(self) -> None:
         fragment = {
             "id": "fixture:p1:dtc-index",
+            "dataset_id": extract_esm.DATASET_ID,
             "kind": "dtc_index",
             "text": "DTC Index INFOID:1\nP0000 NO DTC\nP0605 ECM\n",
             "ecu_id": "fixture:ecm",
+            "vehicle_id": extract_esm.VEHICLE_ID,
         }
         rows = extract_esm.dtc_definitions(fragment)
         self.assertEqual(["P0605"], [row["code"] for row in rows])

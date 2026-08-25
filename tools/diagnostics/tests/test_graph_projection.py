@@ -20,18 +20,18 @@ class DiagnosticProjectionTest(unittest.TestCase):
         cls.projection = ingest_diagnostics.collect_projection(cls.catalog)
 
     def test_dataset_and_projection_counts(self) -> None:
-        self.assertEqual(6, len(self.catalog.datasets))
+        self.assertEqual(7, len(self.catalog.datasets))
         expected = {
-            "SourcePack": 6,
-            "SourceDocument": 45,
-            "SourceFragment": 5138,
-            "DtcDefinition": 1635,
+            "SourcePack": 7,
+            "SourceDocument": 76,
+            "SourceFragment": 6286,
+            "DtcDefinition": 2477,
             "RomDtcDescriptor": 889,
-            "DiagnosticParameter": 2455,
-            "ParameterDefinition": 3773,
+            "DiagnosticParameter": 2560,
+            "ParameterDefinition": 4938,
             "DiagnosticRequest": 872,
-            "DiagnosticOperation": 356,
-            "CanSignalDefinition": 228,
+            "DiagnosticOperation": 680,
+            "CanSignalDefinition": 339,
             "CanFrameDefinition": 46,
             "CanSignalBinding": 10,
         }
