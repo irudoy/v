@@ -92,6 +92,9 @@ to the parts.nissanusa catalog.
 `ST95320-20260715-nats-sync.bin` (4,096 bytes, NATS
 synchronization/adaptation). The MCU (`SH705822N`), software (`7MFKAVN86`), and
 calibration (`1JK03A00000`) identify themselves through strings in the image.
+A dismantler listing for the exact part number records Hitachi hardware
+`MEC100-190` on a `DBA-V36` registered 2007/2 with the `VQ25-HRTM` engine,
+5AT `RE5R05A`, and FR drive.
 The immobilizer path is analyzed in
 `../patches/immo-off-developer-flag.md`. The directory README records the
 package relationship.
@@ -195,8 +198,10 @@ than human-only reference data. The label is empty for an image that is not
   p=150228: Skyline V36 VQ25HR 2WD 5AT, 23710-JK03A, software
   `7MFKAVN86`, 7058 MCU, and "ROM + SPI EEPROM". The part number, software, and
   calibration (`1JK03A00000`) are confirmed by strings inside the image, giving
-  **high confidence**. The `ST95320-20260715-nats-sync.bin` EEPROM dump is from
-  the same post.
+  **high confidence**. A dismantler listing for the exact part number carries
+  the same 2WD 5AT VQ25HR application and adds Hitachi hardware `MEC100-190` at
+  **marketplace-grade** confidence. The `ST95320-20260715-nats-sync.bin` EEPROM
+  dump is from the same post.
 - `JK08A`: an owned physical target ECU from a V36 Skyline 250GT. Local
   provenance confirms the part number and read method. ROM content confirms the
   software identifier, calibration, SH7058 class, and flash size, giving
@@ -230,6 +235,43 @@ than human-only reference data. The label is empty for an image that is not
 - The `1ND0A` vs `1ND3B` delta, including model year, trim, and revision, and
   their exact model years remain unknown.
 
+### Hitachi hardware identifiers
+
+The Hitachi hardware identifier is printed on the ECU label. It is independent
+of the Nissan `23710-` part number and of the flash content, and PCMFlash
+module 18 does not report it, so it is recorded only where a label or a listing
+for the exact part number carries it.
+
+| ROM | Hitachi hardware | Lot | Identifier source |
+| --- | --- | --- | --- |
+| JK00A | `MEC100-120 C1` | 7515 | ECU label, owned hardware |
+| JK00C | `MEC100-120 C1` | 6Z03 | ECU label, owned hardware |
+| JK03A | `MEC100-190` | not recorded | dismantler listing for the exact part number |
+| JK03B | `MEC100-191 A1` | 7911 | ECU label, owned hardware |
+| 1ME3B | `MEC108-280 D1` | 0705 | ECU label, owned hardware |
+| JK00D | not recorded | | owned hardware; the label is not transcribed |
+| JK08A | not recorded | | owned hardware; the label is not transcribed |
+| 1ND0A | not recorded | | forum package carries no label |
+| 1ND3B | not recorded | | forum package carries no label |
+| JK78C | not recorded | | catalog identification carries no label |
+
+The identifier does not determine flash content in either direction. JK00A and
+JK00C carry the same `MEC100-120 C1` hardware, hold different software
+identifiers, and are not an exact-code pair; JK00A and JK03B carry different
+hardware and share exact executable ranges. Family classification is
+established by the byte measurements in `homology.toml` and `homology.csv`.
+
+Two family-to-MCU bindings are local facts: the `MEC100` images carry
+`SH705822N` and the `MEC108` image carries `SH705927N`. Public pinout
+references publish `MEC107` as an SH7059 design, and the `MEC105` series
+published for the 2008 Infiniti G37 belongs to the SH7058 model year that JK78C
+reads as. The five images without a recorded identifier therefore sit in a
+constrained band rather than at a known number: the SH7058 VQ25HR and VQ35HR
+images in `MEC100`, JK78C in `MEC105`, and the SH7059 `1ND` pair in `MEC107`.
+No public record pairs those exact part numbers with a hardware number, so no
+assignment is made. The JK00D and JK08A labels are readable on the owned
+hardware and would settle two of the five without any external source.
+
 ### Sources
 
 - 1ND0A: https://www.romraider.com/forum/viewtopic.php?f=65&t=22253
@@ -243,6 +285,12 @@ than human-only reference data. The label is empty for an image that is not
 - JK03B (exact part, V36 2.5 AT, SH7058): https://otomotiv-forum.com/threads/chip-ttyuning-nissan-skyline-v36-at-2-5i-proshivka-yevro-2-tyun.63512/
 - MEC100-191 A1 (V36 250GT, VQ25HR, AT): https://yahoo.aleado.com/lot?auctionID=m403371593
 - MEC100-120 C1 (PV36 350GT, VQ35HR, AT): https://www.ebay.com/itm/284029944805
+- JK03A / MEC100-190 (exact part, DBA-V36 2007/2, VQ25-HRTM, 5AT RE5R05A, FR): https://autoparts.beforward.jp/detail/Computers---Sensors/Computers-Engine---ECU/PA33205361/
+- MEC100-191 (V36 2.5): https://www.ebay.com/itm/116037193818
+- MEC107 published as an SH7059 design: https://ecu.design/ecu-pinout/pinout-hitachi-sh7059-mec107-nissan/
+- MEC100 published as an SH7058 design: https://ecu.design/ecu-pinout/pinout-hitachi-sh7058-mec100-nissan/
+- MEC105-0xx = 2008 Infiniti G37 3.7L hardware: https://mintt.com/23710-jk70c-2008-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play-mec105-012-a1.html
+- MEC108-270 C1 (Fuga KNY51, VQ37VHR, AT): https://jdmnewyork.com/products/jdm-subaru-legacy-b4-bm9-2-5l-automatic-ecu-engine-control-unit-22765ab032-ej25-copy
 - JK7x = 2008 Infiniti G37 3.7L: https://www.fs1inc.com/23710-jk78a-2008-infiniti-g37-3-7l-pcm-engine-computer-ecm-ecu-programmed-plug-play.html
 - 23710 = Nissan ECM part-number prefix: https://parts.nissanusa.com/parts/nissan-engine-control-module-ecm-23710zv24a
 - Renesas SH7059 / SH7058S (SH-2E core, 1.5 / 1.0 MiB flash): https://www.renesas.com/en/document/mah/sh-2e-sh7059-f-ztattm-sh7058s-f-ztattm-hardware-manual
