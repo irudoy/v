@@ -85,7 +85,7 @@ left_family = "sh7059_1me3b"
 right_family = "sh7059_1nd"
 kind = "same-generation-divergent-code"
 direct_address_inheritance = false
-evidence = "Both families are SH7059 1.5 MiB images that share the boot and vector blocks below 0x008200 and the type string SH705927N at 0x0050d2. The four 1ND SUM16 domains reproduce exactly in 1ME3B at the same field addresses, while the runtime XOR and SUM fields move from 0x009610 and 0x009618 to 0x0096f4 and 0x0096fc. The diagnostic descriptor region is byte-identical across 1,936 bytes at a constant +0x164 relocation, placing 1ND0A 0x01c558:0x01cce8 at 0x01c6bc:0x01ce4c. Code windows and Myers similarity place the executable regions in separate layouts."
+evidence = "Both families are SH7059 1.5 MiB images that share the boot and vector blocks. Below 0x008200 1ME3B differs from 1ND0A at only 14 byte positions: a four-byte value at 0x005fe0, the stored SUM16 fields at 0x005ffe and 0x006efe, and the software identifier at 0x006f09. The four 1ND SUM16 domains reproduce exactly in 1ME3B at the same field addresses, while the runtime XOR and SUM fields move from 0x009610 and 0x009618 to 0x0096f4 and 0x0096fc. The diagnostic descriptor region is byte-identical across 1,936 bytes at a constant +0x164 relocation, placing 1ND0A 0x01c558:0x01cce8 at 0x01c6bc:0x01ce4c. Code windows and Myers similarity place the executable regions in separate layouts."
 
 [[relationship]]
 left_family = "sh7059_1me3b"

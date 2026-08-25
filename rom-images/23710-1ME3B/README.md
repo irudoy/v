@@ -17,8 +17,11 @@ The image confirms every identifier through its own strings: `SH705927N` at
 establish that the hardware lacks one.
 
 `1ME3B` is a distinct code base. It shares the SH7059 class, the 1.5 MiB
-flash, and the boot and vector blocks below `0x008200` with `1ND0A` and
-`1ND3B`, but its application layout is independent: programmed content reaches
+flash, and the boot and vector blocks with `1ND0A`: below `0x008200` the two
+images differ at only 14 byte positions, namely a four-byte value at
+`0x005FE0`, the stored SUM16 fields at `0x005FFE` and `0x006EFE`, and the
+software identifier at `0x006F09`. The application layout above that boundary
+is independent: programmed content reaches
 `0x139DC3` against `0x12C98F` in the `1ND` pair, symmetric exact 64-byte code
 windows cover 18.96 percent, and `radiff2 6.1.6` reports Myers similarity
 `0.815` with edit distance `581,292`.

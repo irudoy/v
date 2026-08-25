@@ -149,9 +149,10 @@ README contains the complete local identification.
 donor is a JDM KY51 Fuga with VQ37VHR. PCMFlash identification and ROM strings
 record calibration `11ME3B00000`, software `9FZ3V5DD1`, and type `SH705927N`;
 the ECU label records Hitachi hardware `MEC108-280 D1`, lot `0705`. The image
-shares the SH7059 class, the 1.5 MiB flash, and the blocks below `0x008200`
-with the `1ND` pair, but its application is independently laid out and reaches
-`0x139dc3` against `0x12c98f`. It reproduces the four `1ND` SUM16 checksum
+shares the SH7059 class, the 1.5 MiB flash, and the boot and vector blocks
+with the `1ND` pair, differing below `0x008200` at only 14 byte positions, but
+its application is independently laid out and reaches `0x139dc3` against
+`0x12c98f`. It reproduces the four `1ND` SUM16 checksum
 domains at their `1ND` field addresses and relocates the application XOR and
 SUM fields to `0x0096f4` and `0x0096fc`. Its diagnostic descriptor region is
 byte-identical to `1ND0A` across 1,936 bytes at a constant `+0x164`
@@ -338,8 +339,11 @@ percent between `1ME3B` and `1ND`. These values are not semantic similarity
 scores. They establish that same-address or raw byte inheritance is
 inappropriate.
 
-`1ME3B` shares the SH7059 class, the 1.5 MiB flash, and the blocks below
-`0x008200` with the `1ND` pair, but its executable region is a separate layout.
+`1ME3B` shares the SH7059 class, the 1.5 MiB flash, and the boot and vector
+blocks with the `1ND` pair; below `0x008200` it differs from 1ND0A at only 14
+byte positions, namely a four-byte value at `0x005fe0`, the stored SUM16 fields
+at `0x005ffe` and `0x006efe`, and the software identifier at `0x006f09`. Its
+executable region is a separate layout.
 `radiff2 6.1.6` reports Myers similarity `0.815` and edit distance `581,292`
 for `1ME3B` against `1ND0A`. The same metric reads `0.790` for the declared
 divergent JK08A and JK00D pair and `0.979` for the near-code JK00C and JK00D
