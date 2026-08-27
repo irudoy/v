@@ -134,7 +134,7 @@ condition.
 while bit 7 of `0xFFFF23EB` is set, tick counter `0xFFFF3754` is at most
 `ROM8[0x8B06]`, and bit 6 of `0xFFFF45C8` is clear. Stock JK78C `ROM8[0x8B06]`
 is `19`. `FUN_0008110A` dispatches `FUN_00080CEC` from `FUN_000756DC`, entry
-`43` of the 144-entry periodic list at `0x21A4C` that `FUN_00020F1A` walks, so
+`67` of the 144-entry periodic list at `0x21A4C` that `FUN_00020F1A` walks, so
 one tick is one pass of that list. `FUN_000805E8` sets bit 7 of `0xFFFF23EB`
 only while no pending `0x20` and no confirmed `0x40` status is present in DTC
 records `10` through `16`, which `../defs/JK78C.dtc.csv` binds to P0306, P0305,
@@ -212,6 +212,27 @@ normalized progress at `0xFFFF43F0` where `0x8000` is `1.0`. Stock `0xD94E`,
 percent across its first eight cells and `100` percent elsewhere, `0x1505C` is
 `110` percent at or below `1000 RPM` and `100` percent above, and bucket-`2`
 surface `0xDBCE`, the only shaped one, spans `82` to `102` percent.
+
+The percentage has one reader. `FUN_0004726C`, entry `44` of that same list and
+the immediate successor of `FUN_0004678C` at entry `43`, multiplies
+`0xFFFF310C` by `0xFFFF197A` and by the float constants `0x307FFFFF`,
+`0x42C80000`, and `0x4423D70A`, whose product is exactly `1/16384`, and
+saturates to `0xFFFF` once the intermediate exceeds `0x42C7FEF9`. It stores the
+result at `0xFFFF238A`, so `0xFFFF238A` is `0xFFFF197A` scaled by the blended
+percentage and equals `0xFFFF197A` at the neutral `100` percent; the three
+constants reproduce the reciprocal of the `163.84` storage scale independently
+of the map geometry. `FUN_0009248A` is the only writer of `0xFFFF197A`. It
+interpolates the long word at `0xFFFF18FC` over curve `0x16904` on
+thirty-two-point axis `0x16744`, or, above that axis top, the same word shifted
+right by four over curve `0x16944` on axis `0x16784`, and bounds the result by
+the ceiling it stores at `0xFFFF1A3A`. That ceiling is surface `0xFECE` over
+axes `0x16EC4` and `0x16B74`, indexed by speed word `0xFFFF11A6` and by curve
+`0x16864` of the byte at `0xFFFF10E5`, and is `0xFFFF` while bit 4 of
+`0xFFFF4573` is clear. `FUN_0009256C` folds the same `0xFFFF197A` against
+`0xFFFF1648` into `0xFFFF370E`. `0xFFFF238A` reaches `FUN_0002F596`,
+`FUN_00047CE8`, `FUN_0004C2B2`, `FUN_000518E6`, and `FUN_00054FD0`, the
+function that flattens the state block. Neither `0xFFFF197A` nor `0xFFFF238A`
+appears in the service-0x22 publication tables.
 
 Bank identity is available from the ROM itself where it exists. The service-0x22
 DID tables bind per-bank RAM directly, and their ordering agrees with the factory
