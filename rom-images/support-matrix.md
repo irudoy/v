@@ -234,6 +234,37 @@ axes `0x16EC4` and `0x16B74`, indexed by speed word `0xFFFF11A6` and by curve
 function that flattens the state block. Neither `0xFFFF197A` nor `0xFFFF238A`
 appears in the service-0x22 publication tables.
 
+`0xFFFF238A` is the load coordinate of the fuel path. `FUN_0002F596` reads its
+high byte as the second index of both selector arms: default surface `0x9EBA`
+and alternate surface `0x9FBA`, two 16x16 uint8 tables over engine-speed axis
+`0x13AF8`, which carries `200` to `1700 RPM` against `0xFFFF11E0`, and load axis
+`0x13B18`, which is the uniform sixteenth grid of full scale from `6.25` to
+`99.6` percent. The same function writes bucket-`8` table `0x13AE8` over speed
+axis `0x13B08` to `0xFFFF1E90`, the default value to `0xFFFF1E91`, the alternate
+value to `0xFFFF1E92`, the frozen copy to `0xFFFF1E93`, and Base Fuel Schedule
+`0xFFFF102E`, which service-0x22 DID `0x1208` publishes. Surface storage is
+uint8 with `128` as unity: the alternate exceeds the default by `28` counts, or
+`21.9` percent, in the corner of lowest speed and lowest load, stays within `3`
+counts over the rest of the field, and `0x13AE8` runs from `160` to `180`
+counts, or `1.25` to `1.41`. In `FUN_0004726C` the same coordinate carries
+sixteen-point axes `0x163FA` and `0x1641A`, the sixteenth grid of full scale
+with an inserted breakpoint at `22` percent, against speed axes `0x1518C`,
+`0x151CC`, and `0x161EA`, which all span `800` to `6800 RPM`, and curve
+`0x2342C` converts it to the index `1` through `16`.
+
+The coordinate is a ratio per revolution. `FUN_00021E0C` is the ROM unsigned
+divide, a `div0u` and eight-step `div1` sequence, and `FUN_000923CA` applies it
+twice to form `0xFFFF18FC` as `0xFFFF199C` times `262144` over `148` times
+`max(0xFFFF16AA, 32)`, where `148` is `ROM8[0x8B0D]`. `FUN_0003BB00` runs a
+second-order filter over speed word `0xFFFF11A6` into float `0xFFFF8548`, and
+`FUN_0003B990` scales that float by `0.32`, the reciprocal of the `3.125 RPM`
+count, saturating above `204800`, so `0xFFFF16AA` is filtered engine speed in
+the same unit as `0xFFFF11A6`. `FUN_00092044` forms `0xFFFF199C` as a saturated
+sum of terms that `FUN_000920EA`, `FUN_00092A80`, and `FUN_00060B08` produce.
+None of those reads mass airflow rate `0xFFFF3A9A`, MAF channels `0xFFFF1024`
+and `0xFFFF1026`, or Base Fuel Schedule `0xFFFF102E`, so the numerator is not
+the published airflow and the physical identity of the summed terms is open.
+
 Bank identity is available from the ROM itself where it exists. The service-0x22
 DID tables bind per-bank RAM directly, and their ordering agrees with the factory
 manual rule that assigns bank 1 to the lower code of every per-bank DTC pair.
