@@ -27,6 +27,8 @@ class WindowsPackageTest(unittest.TestCase):
                     prefix + "patches/can-telemetry-schema.json",
                     prefix + "tools/can_dashboard/app.py",
                     prefix + "tools/can_dashboard/recording.py",
+                    prefix + "tools/can_dashboard/sources.py",
+                    prefix + "tools/can_dashboard/widgets.py",
                     prefix + "tools/logs/can_telemetry.py",
                     prefix + "tools/logs/can_telemetry_schema.py",
                     prefix + "tools/logs/mlvlg.py",

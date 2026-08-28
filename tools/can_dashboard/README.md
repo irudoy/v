@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `2.0.0`.
+Current dashboard version: `3.0.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -20,7 +20,7 @@ producer hooks, RAM addresses, and mailbox ownership stay outside the host
 schema. `--schema` selects another compatible schema file. Listen-only mode
 suppresses CAN transmission and ACK participation. In active/ACK mode the only
 application frames sent by the dashboard are schema-declared START and STOP
-commands initiated by the corresponding buttons.
+commands initiated by the stream button.
 
 The version has one source in `tools/can_dashboard/__init__.py`. It is visible
 in the window title, main heading, Windows portable-package directory,
@@ -56,7 +56,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v2.0.0-windows.zip
+  --output tmp/vq-can-telemetry-v3.0.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -85,10 +85,10 @@ The bundled schema reserves `data_can_id + 1` for control, so the selectable
 data ID range is `0x001..0x7FE`. With the default data ID `0x6F0`, the control
 ID is `0x6F1`. The exact frames are:
 
-| Button | Payload |
+| Command | Payload |
 | --- | --- |
-| `Start stream` | `54 45 4C 32 02 01 B6 32` |
-| `Stop stream` | `54 45 4C 32 02 00 A6 13` |
+| START | `54 45 4C 32 02 01 B6 32` |
+| STOP | `54 45 4C 32 02 00 A6 13` |
 
 Both frames are standard 11-bit classical CAN with DLC 8. The last two bytes
 are CRC-16/CCITT-FALSE over the first six. START forces streaming on until ECU
@@ -96,10 +96,14 @@ reset even when the firmware definition flag disables startup streaming. STOP
 forces it off until reset. A running 11-frame group is allowed to finish before
 STOP becomes silent.
 
-The buttons require an active/ACK PCAN connection. The dashboard rejects them
-in listen-only, demo, and replay modes. `sent` means the PCAN driver accepted
-the transmit request; the protocol has no response frame, so reception of new
-telemetry after START is the end-to-end confirmation.
+A single stream button sends them. It offers START, switches to STOP once the
+driver confirms the START transmission, and returns to START when the source is
+stopped or replaced.
+
+The button requires an active/ACK PCAN connection. The dashboard rejects the
+command in listen-only, demo, and replay modes. `sent` means the PCAN driver
+accepted the transmit request; the protocol has no response frame, so reception
+of new telemetry after START is the end-to-end confirmation.
 
 ## Native macOS application
 
@@ -113,11 +117,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v2.0.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v3.0.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 2.0.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 3.0.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -209,6 +213,34 @@ network. Both values therefore display `--` and are stored as `NaN`. A real
 route requires a separately captured and decoded AV/navigation network or
 another GPS source. The logger never invents coordinates from vehicle speed.
 
+## Window layout
+
+The window opens inside the current screen and remains usable down to
+`560x460`. Header controls, status fields, and health counters flow into
+additional rows instead of leaving the window, hero cards and detail panels
+regrid into as many equal columns as the width allows, and the card and panel
+area scrolls vertically when the remaining height is short.
+
+`Connect`/`Disconnect` is one button that follows whether a source worker runs;
+`Demo` and `Replay` replace the running source directly. `Record MLG`/`Stop MLG`
+follows the recording state.
+
+The card and panel area answers both a mouse wheel and a trackpad gesture
+anywhere over its content. Tk reports trackpad scrolling as its own event, so
+each input is bound separately, and the scrollbar keeps its stock bindings.
+
+Every status value carries a title, shortens to the available width with a
+trailing ellipsis, and reports its title and full text on hover. A click copies
+the untruncated text to the clipboard. Detail-panel values behave the same way,
+so a long value cannot widen its column. The health counters below the panels
+are separate fields: producer tick, completed groups, schema mismatches, CAN
+error frames, producer snapshot overruns, producer transmit aborts, and
+telemetry status flags.
+
+Status and health fields reserve the width of their widest expected value, so
+live values change in place instead of shifting the fields beside them. A value
+longer than its reserve is elided, and hover and click still report it in full.
+
 ## Display semantics
 
 The decoder retains the latest values from the paired page-9 and page-10
@@ -275,6 +307,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 2.0.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 3.0.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

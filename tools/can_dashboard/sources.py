@@ -30,6 +30,7 @@ class SourceStatus:
 class ControlStatus:
     state: str
     detail: str
+    command: str | None = None
 
 
 @dataclass(frozen=True)
@@ -86,6 +87,7 @@ def _send_control_requests(bus, can_module, config, requests, emit):
             emit(ControlStatus(
                 "error",
                 "stream control requires an active/ACK connection",
+                request.command,
             ))
             continue
         try:
@@ -100,11 +102,13 @@ def _send_control_requests(bus, can_module, config, requests, emit):
             emit(ControlStatus(
                 "error",
                 f"telemetry {request.command.upper()} failed: {error}",
+                request.command,
             ))
             continue
         emit(ControlStatus(
             "sent",
             f"telemetry {request.command.upper()} sent on 0x{request.can_id:03X}",
+            request.command,
         ))
 
 

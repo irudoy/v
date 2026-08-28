@@ -33,6 +33,7 @@ SOURCE_FILES = (
     "tools/can_dashboard/model.py",
     "tools/can_dashboard/recording.py",
     "tools/can_dashboard/sources.py",
+    "tools/can_dashboard/widgets.py",
     "tools/can_dashboard/README.md",
 )
 

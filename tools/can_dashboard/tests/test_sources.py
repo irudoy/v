@@ -342,6 +342,75 @@ class DashboardPresentationTest(unittest.TestCase):
         )
         self.assertEqual(values[-1], "Control: START queued")
 
+    def test_stream_toggle_sends_the_pending_command(self):
+        dashboard, _values = self.control_dashboard(active=True)
+        dashboard.stream_command = "stop"
+        dashboard.stream_button = types.SimpleNamespace(
+            configure=lambda **options: None
+        )
+
+        dashboard.toggle_stream()
+
+        self.assertEqual(
+            dashboard.control_requests.get_nowait().command,
+            "stop",
+        )
+
+    def test_confirmed_stream_command_flips_the_button(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.events = app.queue.Queue()
+        dashboard.source_generation = 3
+        dashboard.stream_command = "start"
+        texts = []
+        dashboard.stream_button = types.SimpleNamespace(
+            configure=lambda **options: texts.append(options["text"])
+        )
+        dashboard.control_var = types.SimpleNamespace(set=lambda text: None)
+        dashboard.root = types.SimpleNamespace(after=lambda *arguments: None)
+        dashboard._refresh = lambda now: None
+        dashboard.events.put(app.SourceEnvelope(
+            3,
+            sources.ControlStatus(
+                "sent",
+                "telemetry START sent on 0x6F1",
+                "start",
+            ),
+        ))
+
+        dashboard._poll()
+
+        self.assertEqual(dashboard.stream_command, "stop")
+        self.assertEqual(texts, ["Stop stream"])
+
+    def test_source_toggle_connects_and_disconnects(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.worker = None
+        dashboard.start_pcan = mock.Mock()
+        dashboard.stop_source = mock.Mock()
+
+        dashboard.toggle_source()
+        dashboard.worker = types.SimpleNamespace(is_alive=lambda: True)
+        dashboard.toggle_source()
+
+        dashboard.start_pcan.assert_called_once_with()
+        dashboard.stop_source.assert_called_once_with()
+
+    def test_source_button_tracks_the_running_worker(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        texts = []
+        dashboard.source_button = types.SimpleNamespace(
+            configure=lambda **options: texts.append(options["text"])
+        )
+        dashboard.source_button_active = False
+        dashboard.worker = types.SimpleNamespace(is_alive=lambda: True)
+
+        dashboard._sync_source_button()
+        dashboard._sync_source_button()
+        dashboard.worker = None
+        dashboard._sync_source_button()
+
+        self.assertEqual(texts, ["Disconnect", "Connect"])
+
     def test_stream_control_requires_active_connection(self):
         dashboard, values = self.control_dashboard(active=False)
 

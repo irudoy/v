@@ -46,6 +46,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `maps/build_tracker.py` | Emit the reviewable map ledger projection |
 | `diagnostics/*.py` | Source-preserving diagnostic import and read-only query layer |
 | `can_dashboard/app.py` | Tkinter live view for strict custom telemetry and stock CAN context |
+| `can_dashboard/widgets.py` | Responsive flow, grid, scroll, and copyable status widgets |
 | `can_dashboard/package_windows.py` | Reproducible portable Windows source-package generator |
 | `can_dashboard/package_macos.py` | Native arm64 macOS application and ZIP generator |
 | `sh-elf-run/run.sh` | Repository-contained instruction execution gate |

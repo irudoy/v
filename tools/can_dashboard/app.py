@@ -37,6 +37,13 @@ from tools.can_dashboard.sources import (
     run_pcan,
     run_replay,
 )
+from tools.can_dashboard.widgets import (
+    Cluster,
+    FlowBar,
+    ResponsiveGrid,
+    ScrollableFrame,
+    StatusField,
+)
 from tools.logs import can_telemetry
 from tools.logs import can_telemetry_schema
 
@@ -53,6 +60,30 @@ RED = "#f85149"
 BLUE = "#58a6ff"
 CYAN = "#39c5cf"
 PURPLE = "#bc8cff"
+
+PREFERRED_WINDOW_WIDTH = 1520
+PREFERRED_WINDOW_HEIGHT = 920
+MIN_WINDOW_WIDTH = 560
+MIN_WINDOW_HEIGHT = 460
+HERO_MIN_WIDTH = 164
+HERO_SPARKLINE_WIDTH = 140
+PANEL_MIN_WIDTH = 268
+PANEL_VALUE_WIDTH = 150
+NOTEBOOK_TAB_PADDING = 8
+FOOTNOTE = (
+    "* Target-correlated or candidate transform. Timing is a software "
+    "command; injection is a compensated command, not a measured electrical "
+    "duration."
+)
+HEALTH_FIELDS = (
+    ("tick", "Producer tick counter", "tick=65535"),
+    ("groups", "Completed telemetry groups", "groups=9999999"),
+    ("mismatch", "Schema mismatches", "mismatch=9999"),
+    ("errors", "CAN error frames", "errors=9999"),
+    ("overrun", "Producer snapshot overruns", "overrun=9999"),
+    ("tx_abort", "Producer transmit aborts", "tx_abort=9999"),
+    ("flags", "Telemetry status flags", "flags=overrun_latched,abort_latched"),
+)
 
 
 @dataclass(frozen=True)
@@ -204,6 +235,7 @@ class Sparkline(tk.Canvas):
     def __init__(self, master, color=BLUE, **kwargs):
         super().__init__(
             master,
+            width=HERO_SPARKLINE_WIDTH,
             height=46,
             background=PANEL,
             highlightthickness=0,
@@ -299,13 +331,18 @@ class DataPanel(tk.Frame):
             ).grid(row=row, column=0, sticky="w", padx=(12, 6), pady=2)
             variable = tk.StringVar(value="--")
             self.variables[metric.key] = variable
-            tk.Label(
+            field = StatusField(
                 self,
-                textvariable=variable,
-                bg=PANEL,
-                fg=TEXT,
+                variable,
+                title=metric.label,
+                background=PANEL,
+                foreground=TEXT,
                 font=("Consolas", 10),
-            ).grid(row=row, column=1, sticky="e", padx=(6, 12), pady=2)
+                copy_feedback=GREEN,
+                anchor="e",
+                reserve=PANEL_VALUE_WIDTH,
+            )
+            field.grid(row=row, column=1, sticky="e", padx=(6, 12), pady=2)
 
     def set_value(self, key, value):
         self.variables[key].set(value)
@@ -333,8 +370,11 @@ class DashboardApp:
         self.recorder = None
         self.recording_started_monotonic = None
         self.last_ui_group = 0
+        self.stream_command = "start"
+        self.source_button_active = False
         self.hero_cards = {}
         self.data_panels = []
+        self.panel_grids = []
         self._build_window()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.after(50, self._poll)
@@ -350,155 +390,295 @@ class DashboardApp:
     def _build_window(self):
         self.root.title(f"{PRODUCT_NAME} v{__version__}")
         self.root.configure(bg=BG)
-        self.root.geometry("1520x920")
-        self.root.minsize(1180, 760)
+        self._apply_initial_geometry()
+        self._configure_styles()
+        self._build_header()
+        self._build_status_bar()
+        self._build_health_bar()
+        self._build_content()
+
+    def _apply_initial_geometry(self):
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        width = max(
+            MIN_WINDOW_WIDTH,
+            min(PREFERRED_WINDOW_WIDTH, screen_width - 80),
+        )
+        height = max(
+            MIN_WINDOW_HEIGHT,
+            min(PREFERRED_WINDOW_HEIGHT, screen_height - 120),
+        )
+        left = max(0, (screen_width - width) // 2)
+        top = max(0, (screen_height - height) // 3)
+        self.root.geometry(f"{width}x{height}+{left}+{top}")
+        self.root.minsize(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
+
+    def _configure_styles(self):
         style = ttk.Style(self.root)
         style.theme_use("clam")
         style.configure("TButton", font=("Segoe UI Semibold", 9), padding=(10, 6))
         style.configure("TCheckbutton", background=BG, foreground=TEXT)
+        style.configure(
+            "Dashboard.Vertical.TScrollbar",
+            background=PANEL_ALT,
+            troughcolor=BG,
+            bordercolor=BORDER,
+            arrowcolor=MUTED,
+            darkcolor=PANEL_ALT,
+            lightcolor=PANEL_ALT,
+        )
+        style.map(
+            "Dashboard.Vertical.TScrollbar",
+            background=[("active", BORDER)],
+        )
 
-        top = tk.Frame(self.root, bg=BG)
-        top.pack(fill="x", padx=14, pady=(12, 8))
-        tk.Label(
-            top,
+    def _build_header(self):
+        header = FlowBar(self.root, bg=BG, spacing_x=8, spacing_y=8)
+        header.pack(side="top", fill="x", padx=14, pady=(12, 8))
+        header.add(tk.Label(
+            header,
             text=f"{PRODUCT_NAME.upper()} v{__version__}",
             bg=BG,
             fg=TEXT,
             font=("Segoe UI Semibold", 17),
-        ).pack(side="left")
-        self.status_dot = tk.Label(top, text="●", bg=BG, fg=MUTED, font=("Segoe UI", 17))
-        self.status_dot.pack(side="left", padx=(18, 5))
-        self.status_var = tk.StringVar(value="DISCONNECTED")
-        tk.Label(
-            top,
-            textvariable=self.status_var,
+        ))
+
+        link = Cluster(header, bg=BG)
+        self.status_dot = tk.Label(
+            link,
+            text="\u25cf",
             bg=BG,
             fg=MUTED,
+            font=("Segoe UI", 17),
+        )
+        self.status_dot.pack(side="left", padx=(6, 5))
+        self.status_var = tk.StringVar(value="DISCONNECTED")
+        self.status_field = StatusField(
+            link,
+            self.status_var,
+            title="Link state",
+            background=BG,
+            foreground=MUTED,
             font=("Segoe UI Semibold", 10),
-        ).pack(side="left")
+            copy_feedback=GREEN,
+        )
+        self.status_field.pack(side="left")
+        header.add(link)
 
-        controls = tk.Frame(top, bg=BG)
-        controls.pack(side="right")
         self.channel_var = tk.StringVar(value=self.args.channel)
         self.can_id_var = tk.StringVar(value=f"0x{self.args.can_id:03X}")
         self.listen_only_var = tk.BooleanVar(value=not self.args.active)
-        self._control_entry(controls, "Channel", self.channel_var, 15)
-        self._control_entry(controls, "CAN ID", self.can_id_var, 8)
-        ttk.Checkbutton(
-            controls,
-            text="Listen-only",
-            variable=self.listen_only_var,
-        ).pack(side="left", padx=8)
-        ttk.Button(controls, text="Connect", command=self.start_pcan).pack(side="left", padx=3)
-        ttk.Button(controls, text="Demo", command=self.start_demo).pack(side="left", padx=3)
-        ttk.Button(controls, text="Replay", command=self.select_replay).pack(side="left", padx=3)
-        ttk.Button(controls, text="Disconnect", command=self.stop_source).pack(side="left", padx=3)
-        ttk.Button(
-            controls,
-            text="Start stream",
-            command=lambda: self.send_stream_command("start"),
-        ).pack(side="left", padx=(9, 3))
-        ttk.Button(
-            controls,
-            text="Stop stream",
-            command=lambda: self.send_stream_command("stop"),
-        ).pack(side="left", padx=3)
+        header.add(
+            self._control_entry(header, "Channel", self.channel_var, 15),
+            align="right",
+        )
+        header.add(
+            self._control_entry(header, "CAN ID", self.can_id_var, 8),
+            align="right",
+        )
+        header.add(
+            ttk.Checkbutton(
+                header,
+                text="Listen-only",
+                variable=self.listen_only_var,
+            ),
+            align="right",
+        )
+        self.source_button = ttk.Button(
+            header,
+            text="Connect",
+            command=self.toggle_source,
+        )
+        header.add(self.source_button, align="right")
+        header.add(
+            ttk.Button(header, text="Demo", command=self.start_demo),
+            align="right",
+        )
+        header.add(
+            ttk.Button(header, text="Replay", command=self.select_replay),
+            align="right",
+        )
+        self.stream_button = ttk.Button(
+            header,
+            text=self._stream_button_text(),
+            command=self.toggle_stream,
+        )
+        header.add(self.stream_button, align="right")
         self.record_button = ttk.Button(
-            controls,
+            header,
             text="Record MLG",
             command=self.toggle_recording,
         )
-        self.record_button.pack(side="left", padx=(9, 3))
+        header.add(self.record_button, align="right")
 
-        telemetry_bar = tk.Frame(self.root, bg=PANEL_ALT, highlightbackground=BORDER, highlightthickness=1)
-        telemetry_bar.pack(fill="x", padx=14, pady=(0, 9))
+    def _build_status_bar(self):
+        bar = FlowBar(
+            self.root,
+            bg=PANEL_ALT,
+            highlightbackground=BORDER,
+            highlightthickness=1,
+            spacing_x=14,
+            spacing_y=4,
+            pad_x=12,
+            pad_y=7,
+        )
+        bar.pack(side="top", fill="x", padx=14, pady=(0, 9))
         self.source_var = tk.StringVar(value="Source: not connected")
         self.schema_var = tk.StringVar(value="Schema: waiting")
         self.rate_var = tk.StringVar(value="Groups: 0.0 Hz | Frames: 0.0 Hz")
         self.loss_var = tk.StringVar(value="Loss: 0 | Incomplete: 0 | Malformed: 0")
         self.control_var = tk.StringVar(value="Control: idle")
         self.record_var = tk.StringVar(value="MLG: idle")
-        for variable, color in (
-            (self.source_var, TEXT),
-            (self.schema_var, AMBER),
-            (self.rate_var, CYAN),
-            (self.loss_var, MUTED),
+        for variable, title, color, align, sample in (
+            (
+                self.source_var,
+                "Telemetry source",
+                TEXT,
+                "left",
+                "Source: PCAN_USBBUS1, 500000 bit/s",
+            ),
+            (self.schema_var, "Wire schema state", AMBER, "left", "Schema: VERIFIED"),
+            (
+                self.rate_var,
+                "Group and frame rates",
+                CYAN,
+                "left",
+                "Groups: 100.0 Hz | Frames: 1000.0 Hz",
+            ),
+            (
+                self.loss_var,
+                "Loss and integrity counters",
+                MUTED,
+                "left",
+                "Loss: 0 | Incomplete: 0 | Malformed: 0 | Source drops: 0",
+            ),
+            (
+                self.control_var,
+                "Last stream command",
+                CYAN,
+                "right",
+                "Control error: connect PCAN first",
+            ),
+            (
+                self.record_var,
+                "MLG recording",
+                AMBER,
+                "right",
+                "MLG: recording telemetry.mlg",
+            ),
         ):
-            tk.Label(
-                telemetry_bar,
-                textvariable=variable,
-                bg=PANEL_ALT,
-                fg=color,
-                font=("Consolas", 9),
-            ).pack(side="left", padx=12, pady=7)
-        tk.Label(
-            telemetry_bar,
-            textvariable=self.record_var,
-            bg=PANEL_ALT,
-            fg=AMBER,
-            font=("Consolas", 9),
-        ).pack(side="right", padx=12, pady=7)
-        tk.Label(
-            telemetry_bar,
-            textvariable=self.control_var,
-            bg=PANEL_ALT,
-            fg=CYAN,
-            font=("Consolas", 9),
-        ).pack(side="right", padx=12, pady=7)
+            bar.add(
+                self._status_field(
+                    bar,
+                    variable,
+                    title,
+                    color,
+                    sample,
+                    anchor="e" if align == "right" else "w",
+                ),
+                align=align,
+            )
 
-        heroes = tk.Frame(self.root, bg=BG)
+    def _build_health_bar(self):
+        bar = FlowBar(
+            self.root,
+            bg=PANEL_ALT,
+            spacing_x=14,
+            spacing_y=4,
+            pad_x=12,
+            pad_y=6,
+        )
+        bar.pack(side="bottom", fill="x", padx=14, pady=(0, 8))
+        self.health_vars = {}
+        for key, title, sample in HEALTH_FIELDS:
+            variable = tk.StringVar(value=f"{key}=--")
+            self.health_vars[key] = variable
+            bar.add(self._status_field(bar, variable, title, MUTED, sample))
+
+    def _build_content(self):
+        content = ScrollableFrame(self.root, background=BG)
+        content.pack(side="top", fill="both", expand=True)
+        body = content.content
+
+        heroes = ResponsiveGrid(
+            body,
+            min_column_width=HERO_MIN_WIDTH,
+            spacing=5,
+            uniform="hero",
+            bg=BG,
+        )
         heroes.pack(fill="x", padx=14)
         colors = (GREEN, BLUE, PURPLE, CYAN, AMBER, RED, TEXT, BLUE)
-        for column, (metric, color) in enumerate(zip(HERO_METRICS, colors)):
-            heroes.columnconfigure(column, weight=1, uniform="hero")
-            card = HeroCard(heroes, metric, color)
-            card.grid(row=0, column=column, sticky="nsew", padx=(0 if column == 0 else 5, 0))
-            self.hero_cards[metric.key] = card
+        for metric, color in zip(HERO_METRICS, colors):
+            self.hero_cards[metric.key] = heroes.add(
+                HeroCard(heroes, metric, color)
+            )
 
-        notebook = ttk.Notebook(self.root)
+        notebook = ttk.Notebook(body)
         notebook.pack(fill="both", expand=True, padx=14, pady=9)
+        notebook.bind("<Configure>", self._layout_panel_grids, add="+")
         for tab_name, definitions in (
             ("Primary", PANELS),
             ("Extended", EXTENDED_PANELS),
         ):
-            panels = tk.Frame(notebook, bg=BG)
+            panels = ResponsiveGrid(
+                notebook,
+                min_column_width=PANEL_MIN_WIDTH,
+                spacing=6,
+                uniform="panel",
+                row_weight=1,
+                bg=BG,
+            )
             notebook.add(panels, text=tab_name)
-            for column in range(4):
-                panels.columnconfigure(column, weight=1, uniform="panel")
-            panels.rowconfigure(0, weight=1)
-            for column, (title, metrics) in enumerate(definitions):
-                panel = DataPanel(panels, title, metrics)
-                panel.grid(
-                    row=0,
-                    column=column,
-                    sticky="nsew",
-                    padx=(0 if column == 0 else 6, 0),
-                )
+            self.panel_grids.append(panels)
+            for title, metrics in definitions:
+                panel = panels.add(DataPanel(panels, title, metrics))
                 self.data_panels.append((panel, metrics))
 
-        self.health_var = tk.StringVar(value="No telemetry groups received")
-        tk.Label(
-            self.root,
-            textvariable=self.health_var,
-            bg=PANEL_ALT,
-            fg=MUTED,
-            font=("Consolas", 9),
-            anchor="w",
-        ).pack(fill="x", padx=14, pady=(0, 4), ipady=6)
-        tk.Label(
-            self.root,
-            text="* Target-correlated or candidate transform. Timing is a software command; injection is a compensated command, not a measured electrical duration.",
+        self.footnote = tk.Label(
+            body,
+            text=FOOTNOTE,
             bg=BG,
             fg=MUTED,
             font=("Segoe UI", 8),
             anchor="w",
-        ).pack(fill="x", padx=15, pady=(0, 8))
+            justify="left",
+        )
+        self.footnote.pack(fill="x", padx=15, pady=(0, 8))
+        self.footnote.bind("<Configure>", self._wrap_footnote, add="+")
+
+    def _layout_panel_grids(self, event):
+        for panels in self.panel_grids:
+            panels.layout(event.width - NOTEBOOK_TAB_PADDING)
+
+    def _wrap_footnote(self, event):
+        wrap = max(240, event.width - 4)
+        if wrap != self.footnote.cget("wraplength"):
+            self.footnote.configure(wraplength=wrap)
+
+    def _status_field(self, master, variable, title, color, sample, anchor="w"):
+        return StatusField(
+            master,
+            variable,
+            title=title,
+            background=PANEL_ALT,
+            foreground=color,
+            font=("Consolas", 9),
+            copy_feedback=GREEN,
+            anchor=anchor,
+            sample=sample,
+        )
 
     @staticmethod
     def _control_entry(parent, label, variable, width):
         group = tk.Frame(parent, bg=BG)
-        group.pack(side="left", padx=4)
-        tk.Label(group, text=label, bg=BG, fg=MUTED, font=("Segoe UI", 8)).pack(anchor="w")
+        tk.Label(
+            group,
+            text=label,
+            bg=BG,
+            fg=MUTED,
+            font=("Segoe UI", 8),
+        ).pack(anchor="w")
         tk.Entry(
             group,
             textvariable=variable,
@@ -509,6 +689,7 @@ class DashboardApp:
             relief="flat",
             font=("Consolas", 9),
         ).pack(ipady=4)
+        return group
 
     def _source_emitter(self):
         generation = self.source_generation
@@ -547,6 +728,22 @@ class DashboardApp:
         self.last_ui_group = 0
         self.source_drops = 0
 
+    def toggle_source(self):
+        if self.source_is_active():
+            self.stop_source()
+        else:
+            self.start_pcan()
+
+    def source_is_active(self):
+        return self.worker is not None and self.worker.is_alive()
+
+    def _sync_source_button(self):
+        active = self.source_is_active()
+        if active == self.source_button_active:
+            return
+        self.source_button_active = active
+        self.source_button.configure(text="Disconnect" if active else "Connect")
+
     def start_pcan(self):
         self.stop_source()
         can_id = self._selected_can_id()
@@ -580,6 +777,16 @@ class DashboardApp:
         )
         self._set_source_status("connecting", f"opening {channel}")
         self.worker.start()
+
+    def toggle_stream(self):
+        self.send_stream_command(self.stream_command)
+
+    def _stream_button_text(self):
+        return f"{self.stream_command.capitalize()} stream"
+
+    def _set_stream_command(self, command):
+        self.stream_command = command
+        self.stream_button.configure(text=self._stream_button_text())
 
     def send_stream_command(self, command):
         if (
@@ -759,6 +966,7 @@ class DashboardApp:
         self.worker = None
         self.control_requests = None
         self.pcan_active = False
+        self._set_stream_command("start")
         if self.source_state not in {"stopped", "error"}:
             self._set_source_status("stopped", "source stopped")
 
@@ -788,6 +996,10 @@ class DashboardApp:
             elif isinstance(event, ControlStatus):
                 prefix = "Control" if event.state == "sent" else "Control error"
                 self.control_var.set(f"{prefix}: {event.detail}")
+                if event.state == "sent" and event.command in {"start", "stop"}:
+                    self._set_stream_command(
+                        "stop" if event.command == "start" else "start"
+                    )
             elif isinstance(event, FrameRecord):
                 snapshot = self.model.process_frame(event)
                 if snapshot is not None and self.recorder is not None:
@@ -871,6 +1083,8 @@ class DashboardApp:
             state, color = "LIVE", GREEN
         self.status_var.set(state)
         self.status_dot.configure(fg=color)
+        self.status_field.set_foreground(color)
+        self._sync_source_button()
         self.schema_var.set(
             "Schema: VERIFIED" if self.model.schema_verified else "Schema: waiting"
         )
@@ -900,14 +1114,19 @@ class DashboardApp:
                 panel.set_value(metric.key, text)
 
         flags = self.model.telemetry_status_flags
-        health = (
-            f"tick={self.model.last_tick if self.model.last_tick is not None else '--'} | "
-            f"groups={stats.completed_groups} | schema_mismatch={stats.schema_mismatches} | "
-            f"error_frames={stats.error_frames} | overrun={self.model.raw.get('snapshot_overrun_count', '--')} | "
-            f"tx_abort={self.model.raw.get('tx_abort_count', '--')} | "
-            f"status_flags={','.join(name for name, active in flags.items() if active) or 'none'}"
+        active_flags = ",".join(
+            name for name, active in flags.items() if active
         )
-        self.health_var.set(health)
+        for key, value in (
+            ("tick", self.model.last_tick if self.model.last_tick is not None else "--"),
+            ("groups", stats.completed_groups),
+            ("mismatch", stats.schema_mismatches),
+            ("errors", stats.error_frames),
+            ("overrun", self.model.raw.get("snapshot_overrun_count", "--")),
+            ("tx_abort", self.model.raw.get("tx_abort_count", "--")),
+            ("flags", active_flags or "none"),
+        ):
+            self.health_vars[key].set(f"{key}={value}")
 
     def close(self):
         self.stop_source()
