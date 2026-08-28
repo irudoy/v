@@ -259,11 +259,57 @@ twice to form `0xFFFF18FC` as `0xFFFF199C` times `262144` over `148` times
 second-order filter over speed word `0xFFFF11A6` into float `0xFFFF8548`, and
 `FUN_0003B990` scales that float by `0.32`, the reciprocal of the `3.125 RPM`
 count, saturating above `204800`, so `0xFFFF16AA` is filtered engine speed in
-the same unit as `0xFFFF11A6`. `FUN_00092044` forms `0xFFFF199C` as a saturated
-sum of terms that `FUN_000920EA`, `FUN_00092A80`, and `FUN_00060B08` produce.
-None of those reads mass airflow rate `0xFFFF3A9A`, MAF channels `0xFFFF1024`
-and `0xFFFF1026`, or Base Fuel Schedule `0xFFFF102E`, so the numerator is not
-the published airflow and the physical identity of the summed terms is open.
+the same unit as `0xFFFF11A6`. `FUN_00092044`, entry `37` of the periodic list,
+forms `0xFFFF199C` as the saturated sum of `0xFFFF184A`, `0xFFFF1334`, and
+`0xFFFF132E`, which `FUN_00092A80`, `FUN_00060B08`, and `FUN_000920EA` produce.
+`FUN_00054FD0` is entry `98`, so the raw state code that entry `43` reduces to
+a bucket is the one the machine published on the previous pass.
+
+`0xFFFF199C` is a rate and `0xFFFF18FC` is the same quantity per revolution.
+`FUN_00092A80` performs the reverse conversion with the same tables and the
+same constants. `FUN_0009248A` calls interpolator `0x2834C` with value table
+`0x16904` and axis `0x16744`; `FUN_00092A80` calls it with those two arguments
+exchanged, so it maps the normalized domain back to the raw domain. The branch
+inverts with it: `FUN_0009248A` switches to the pair `0x16944` and `0x16784`
+above the top of axis `0x16744` and shifts its input right by four, and
+`FUN_00092A80` switches above `0x16904` element `31`, which is `64512`, and
+shifts its result left by four. Axis `0x16744` runs `0` to `45187` against
+curve `0x16904` `0` to `64512`, axis `0x16784` runs `2824` to `53333` against
+curve `0x16944` `64512` to `65535`, and `2824` is `45187` shifted right by
+four, so the two pairs are one continuous map of `0` through `853328` onto the
+full unsigned word. `FUN_00092A80` stores the recovered raw value as long word
+`0xFFFF182C`, multiplies it by `0xFFFF1710` and by `ROM8[0x8B0D]`, and takes
+the product shifted right by `18`, the reciprocal of the `262144` that
+`FUN_000923CA` multiplies in. It floors the result at `ROM16[0x14538]`, which
+is `32`, and stores it at `0xFFFF184A`. `FUN_00042CE8` writes `0xFFFF1710` as
+`0xFFFF11A6` bounded below by `32`, the same speed word and the same `100 RPM`
+floor that `FUN_000923CA` applies to `0xFFFF16AA`. The two functions therefore
+convert between a flow rate and a charge per revolution across the same unit
+constant, and the load coordinate is the per-revolution form of the rate that
+`0xFFFF199C` carries.
+
+The other two terms are additive rates. `FUN_00060B08` enters at `0x60B08` and
+runs the body at `0x60AA8`, where it forms `0xFFFF1DE0` from sixteen-point
+implicit curve `0x15A22` on a `4096` step, indexed by byte `0xFFFF1067` shifted
+left by eight, and `0xFFFF12E8` from sixteen-point table `0x15A42` over axis
+`0x15A62`, indexed by speed word `0xFFFF11AC`. Their saturated sum is
+`0xFFFF12E6`, and `0xFFFF1334` is that sum bounded above by `0xFFFF1332`. Stock
+`0x15A22` falls from `3398` at index `0` to `906` from index `10` upward, and
+stock `0x15A42` is zero through `192` counts, which is `2400 RPM`, and reaches
+`1579` at `608` counts, which is `7600 RPM`. `FUN_00020F1A` copies six bytes
+from `0xFFFF106A` to `0xFFFF1064` each pass, so `0xFFFF1067` is the
+previous-cycle copy of `0xFFFF106D`. `FUN_000920EA` writes `0xFFFF132E` as the
+smaller of `0xFFFF1330` and `0xFFFF133C`.
+
+`FUN_00092044` and `FUN_000923CA` both bypass the model while bit `2` of
+`0xFFFF2423` or bit `0` of `0xFFFF2427` is set, and each then sums two
+interpolations of thirty-two-point table `0x14538` over axis `0x167E4` at
+`0xFFFF43D8` and `0xFFFF43DA`. Element `0` of that same table is the floor
+`FUN_00092A80` applies. `FUN_000410CC` publishes mass airflow rate
+`0xFFFF3A9A`, which service-0x22 DID `0x1209` binds, from `0xFFFF104C`, so the
+sensor rate and the modelled numerator are separate channels. The physical
+medium behind `0xFFFF1978`, the normalized value `FUN_00092A80` reverses, is
+not established.
 
 Bank identity is available from the ROM itself where it exists. The service-0x22
 DID tables bind per-bank RAM directly, and their ordering agrees with the factory
