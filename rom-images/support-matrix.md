@@ -160,29 +160,42 @@ register. The neighbouring vectors belong to the same channel: `121` is
 `FUN_000316AC`, and `FUN_000873B8` reads `TCNT3` at `0xFFFFF4A0` and writes
 `GR3B` at `0xFFFFF4A4` and `TIOR3A` at `0xFFFFF4AB`.
 
-The channel clock has two prescaler stages. No instruction in the image writes
-`TCR3` at `0xFFFFF4AC`, so it holds its reset value `0x00`, which selects the
-internal clock with no second-stage division: `TCNT3` counts on the first-stage
-output that channels `0` to `5`, `8`, and `11` share. `PSCR1` at `0xFFFFF404`
-sets that stage, `0x00` passing the peripheral clock through and `0x1F`
-dividing it by `32`. The clock generator fixes the peripheral clock at twice
-the `EXTAL` input and the internal clock at eight times it, and neither ratio
-is under software control. `refs/nissanecu-wiki/Ecu_hw.md` records a `10 MHz`
-crystal for Nissan SH7058 boards, which places the peripheral clock at
-`20 MHz` as a candidate; this board is not measured.
+The channel clock is set once on the reset path. `FUN_0002A7F4` calls
+`FUN_0002A550` before it enters the background loop, and that call reaches
+`FUN_000293A6`, which stops every ATU-II counter in `FUN_00028F64`, programs
+every channel in `FUN_00029002`, and starts the unit in `FUN_00029374`. The
+start function writes `0x01` to `PSCR1` at `0xFFFFF404` and to `PSCR2`,
+`PSCR3`, and `PSCR4`, so the first stage shared by channels `0` to `5`, `8`,
+and `11` divides the peripheral clock by two. The configuration function
+writes `TCR3` at `0xFFFFF4AC` with `0x05`, which selects the internal clock
+with the second stage dividing by `32`, so `TCNT3` counts at one sixty-fourth
+of the peripheral clock. The same function writes `TIER3` at `0xFFFFF482` with
+`0x000B`, which enables `IME3A`, `IME3B`, and `IME3D` and leaves `IME3C`
+clear, accounting for exactly the three live vectors; `TMDR` at `0xFFFFF484`
+with `0x00`, which keeps channel `3` out of PWM mode; `TIOR3A` at `0xFFFFF4AB`
+with `0x12`, which makes `GR3A` and `GR3B` output-compare registers with
+counter clearing disabled; and `TIOR3B` at `0xFFFFF4AA` with `0x50`, which
+makes `GR3C` an output compare with compare-match disabled and `GR3D` a
+rising-edge input capture. `TCNT3` free-runs and wraps, so the handler's
+`320`-count reload of `GR3A` is modulo `65536`.
 
-The counter-start configuration is not present as a literal store. `TSTR1` at
-`0xFFFFF401` is written twice in the image, by `FUN_00002AC8` at `0x00002ADC`
-on the reset path and by `FUN_000F35A4` at `0x000F35F0`, and both write `0x0B`,
-which starts channels `0`, `1A`, and `1B`/`2B` and leaves `STR3` clear. `TSTR2`
-at `0xFFFFF400` and `TSTR3` at `0xFFFFF402` are never written, and `PSCR1` is
-written once, `0x1F` by `FUN_000F35A4`, which no call site in the export
-reaches. No pc-relative literal in the image loads `0xF400`, `0xF401`,
-`0xF402`, `0xF404`, or `0xF4AC`, and the sweep that establishes this covers
-every recovered function body and every gap between them. Channel 3 serves
-three live vectors, so the counter-start and first-stage divider the running
-ECU uses are set by a path this analysis does not reach, and the absolute
-period of the window stays open.
+`FUN_00029374` starts the counters with `0x73` to `TSTR1` at `0xFFFFF401`,
+`0x01` to `TSTR2` at `0xFFFFF400`, and `0x01` to `TSTR3` at `0xFFFFF402`. The
+`TSTR1` value sets `STR0`, `STR1A`, `STR3`, `STR4`, and `STR5`. The clock
+generator fixes the peripheral clock at twice the `EXTAL` input and the
+internal clock at eight times it, and neither ratio is under software control.
+`refs/nissanecu-wiki/Ecu_hw.md` records a `10 MHz` crystal for Nissan SH7058
+boards; this board is not measured. At that crystal `TCNT3` counts at
+`312.5 kHz`, one compare-match interval is `1.024 ms`, one background-loop
+pass is `10.24 ms`, and the `19`-tick window is `194.56 ms`.
+
+A second timer configuration belongs to the path that leaves the background
+loop. `FUN_00002B8E` reaches the `0x1F` write to `PSCR1` at `0x00002A2E`
+through `FUN_0000298A` and the `0x0B` write to `TSTR1` at `0x00002ADC` in
+`FUN_00002AC8`, then jumps to `0x00000DD0`. `FUN_0000261C` reaches
+`FUN_00002B8E` only after its `trapa` returns, and `FUN_0002A7F4` holds no
+`rte` and ends in an unconditional loop. `FUN_000F35A4` writes the same `0x1F`
+and `0x0B` pair and has no call site.
 
 `FUN_0003B5F6` divides `0x01E84800` by crank period `0xFFFF11E8` and stores the
 clamped quotient as native speed word `0xFFFF1186`. `FUN_0003B87E` publishes
