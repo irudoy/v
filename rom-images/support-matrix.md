@@ -147,8 +147,42 @@ once per background-loop iteration. `FUN_00020F1A` clears bit 2 of
 Vector-120 handler `FUN_0002040C` sets it on every tenth entry, re-arming
 compare register `0xFFFFF4A2` by `320` counts each time and deriving one-,
 two-, four-, and ten-entry flags in the same byte. One window tick is therefore
-ten periods of that timer interrupt. The ATU-II channel clock that scales those
-`320` counts is not established, so the window has no absolute duration here.
+ten periods of that timer interrupt.
+
+The interrupt is ATU-II channel 3 compare-match A. `FUN_0000261C` loads `VBR`
+with `0x00020004`, which places vector `120` at `0x000201E4`, and the Renesas
+interrupt map assigns that vector to `IMI3A`. The `trapa 0x3E` in the same
+function resolves through `0x000200FC` to `FUN_0002A7F4`, which confirms the
+base. `0xFFFFF4A2` is `GR3A`, and `FUN_0002040C` clears `IMF3A` by writing
+`0x7FFE` to sixteen-bit `TSR3` at `0xFFFFF480` before advancing the compare
+register. The neighbouring vectors belong to the same channel: `121` is
+`IMI3B` and reaches `FUN_0008756E`, `123` is `IMI3D` and reaches
+`FUN_000316AC`, and `FUN_000873B8` reads `TCNT3` at `0xFFFFF4A0` and writes
+`GR3B` at `0xFFFFF4A4` and `TIOR3A` at `0xFFFFF4AB`.
+
+The channel clock has two prescaler stages. No instruction in the image writes
+`TCR3` at `0xFFFFF4AC`, so it holds its reset value `0x00`, which selects the
+internal clock with no second-stage division: `TCNT3` counts on the first-stage
+output that channels `0` to `5`, `8`, and `11` share. `PSCR1` at `0xFFFFF404`
+sets that stage, `0x00` passing the peripheral clock through and `0x1F`
+dividing it by `32`. The clock generator fixes the peripheral clock at twice
+the `EXTAL` input and the internal clock at eight times it, and neither ratio
+is under software control. `refs/nissanecu-wiki/Ecu_hw.md` records a `10 MHz`
+crystal for Nissan SH7058 boards, which places the peripheral clock at
+`20 MHz` as a candidate; this board is not measured.
+
+The counter-start configuration is not present as a literal store. `TSTR1` at
+`0xFFFFF401` is written twice in the image, by `FUN_00002AC8` at `0x00002ADC`
+on the reset path and by `FUN_000F35A4` at `0x000F35F0`, and both write `0x0B`,
+which starts channels `0`, `1A`, and `1B`/`2B` and leaves `STR3` clear. `TSTR2`
+at `0xFFFFF400` and `TSTR3` at `0xFFFFF402` are never written, and `PSCR1` is
+written once, `0x1F` by `FUN_000F35A4`, which no call site in the export
+reaches. No pc-relative literal in the image loads `0xF400`, `0xF401`,
+`0xF402`, `0xF404`, or `0xF4AC`, and the sweep that establishes this covers
+every recovered function body and every gap between them. Channel 3 serves
+three live vectors, so the counter-start and first-stage divider the running
+ECU uses are set by a path this analysis does not reach, and the absolute
+period of the window stays open.
 
 `FUN_0003B5F6` divides `0x01E84800` by crank period `0xFFFF11E8` and stores the
 clamped quotient as native speed word `0xFFFF1186`. `FUN_0003B87E` publishes
