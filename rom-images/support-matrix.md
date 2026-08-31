@@ -262,8 +262,11 @@ count, saturating above `204800`, so `0xFFFF16AA` is filtered engine speed in
 the same unit as `0xFFFF11A6`. `FUN_00092044`, entry `37` of the periodic list,
 forms `0xFFFF199C` as the saturated sum of `0xFFFF184A`, `0xFFFF1334`, and
 `0xFFFF132E`, which `FUN_00092A80`, `FUN_00060B08`, and `FUN_000920EA` produce.
-`FUN_00054FD0` is entry `98`, so the raw state code that entry `43` reduces to
-a bucket is the one the machine published on the previous pass.
+`FUN_00093164` is entry `14`, `FUN_00092A80` is entry `26`, and `FUN_000923B4`,
+which calls `FUN_000923CA`, is entry `40`, so every producer in the chain runs
+ahead of its consumer inside one pass. `FUN_00054FD0` is entry `98`, so the raw
+state code that entry `43` reduces to a bucket is the one the machine published
+on the previous pass.
 
 `0xFFFF199C` is a rate and `0xFFFF18FC` is the same quantity per revolution.
 `FUN_00092A80` performs the reverse conversion with the same tables and the
@@ -307,9 +310,64 @@ interpolations of thirty-two-point table `0x14538` over axis `0x167E4` at
 `0xFFFF43D8` and `0xFFFF43DA`. Element `0` of that same table is the floor
 `FUN_00092A80` applies. `FUN_000410CC` publishes mass airflow rate
 `0xFFFF3A9A`, which service-0x22 DID `0x1209` binds, from `0xFFFF104C`, so the
-sensor rate and the modelled numerator are separate channels. The physical
-medium behind `0xFFFF1978`, the normalized value `FUN_00092A80` reverses, is
-not established.
+sensor rate and the modelled numerator are separate channels.
+
+`0xFFFF1978` is a bounded flow-potential coordinate. `FUN_00092C74` selects or
+blends the engine-speed row of sixteen-by-sixteen surface `0x0FACE` over byte
+axis `0x13463`, searches that row for bounded throttle request `0xFFFF19B0`
+plus `0x8000`, and returns the matching entry of coordinate table `0x1552C` as
+`0xFFFF197E`. `defs/JK08A-JK78C.definition-addresses.csv` binds `0x0FACE` to
+JK08A `0x0E98E`, `0x13463` to `0x11D0C`, and `0x1552C` to `0x14114`, which the
+JK08A catalog names the primary requested-torque conversion by QH0, its speed
+axis, and the QH0 flow-potential coordinate. `0x1552C` and `0x14114` hold the
+same sixteen words, `0` through `65535` on a grid that is dense at both ends,
+`0x13463` runs `800` to `7200 RPM` on the `3.125 RPM` count, and every row of
+`0x0FACE` increases monotonically, which the inverse search requires.
+
+`FUN_00092A80` bounds that coordinate between a ceiling and a floor before
+reversing it. It forms ceiling `0xFFFF1746` as the product of sixteen-point
+implicit curve `0x1629A` on a `4096` step at `min(0xFFFF1710 * 32, 65535)` and
+eight-point implicit curve `0x162BA` on an `8192` step at
+`min(floor(0xFFFF101E * 640 / 256) * 128, 65535)`, taken over `65536` with
+round-to-nearest. `ROM8[0x8968]` is `0x80`, which selects `0xFFFF101E` over
+`0xFFFF10BE` for the second curve. Stock `0x1629A` is `64848` at every point
+and the eight live cells of `0x162BA` are `65535`, so the stock ceiling is the
+constant `64847`, which is `98.95` percent of full scale. A nonzero
+`0xFFFF24F7` replaces it with `ROM16[0x90D0]`, and bit `5` of `0xFFFF44E5`
+replaces it with `ROM16[0x90CE]`; both ROM words are `0xFFFF` in stock, so
+neither substitution constrains the coordinate.
+
+`FUN_00093164` forms floor `0xFFFF1976` from the flow through the current
+throttle opening. It doubles the interpolation of throttle angle-to-area
+conversion `0x14538` over opening axis `0x167E4` at
+`min(0xFFFF1326 * 4, 65535)`, stores that rate at `0xFFFF1284`, and converts it
+with the exact formula `FUN_000923CA` applies to `0xFFFF199C`: `0xFFFF1828` is
+`0xFFFF1284` times `262144` over `148` times `0xFFFF1710`, using `FUN_00021E0C`
+twice and `ROM8[0x8B0D]` as the divisor. It maps that per-revolution value
+forward through the same `0x16744` and `0x16904` pair below `45187` and
+`0x16784` and `0x16944` pair above it that `FUN_0009248A` uses, and stores the
+result at `0xFFFF1976`. It then runs surface `0x0FACE` forward through
+two-dimensional interpolator `0x280C8` at the current speed and that floor, and
+stores the request that corresponds to it at `0xFFFF19A4`. `FUN_0009006C`
+writes `0xFFFF1326`; stock `ROM8[0x8871]` has bit `3` clear, so the written
+value is a direct copy of opening coordinate `0xFFFF11FA`. `0x14538` and
+`0x167E4` are the same conversion and axis that the substitute path
+interpolates at `0xFFFF43D8` and `0xFFFF43DA`.
+
+`FUN_00092A80` records both comparisons as latched bits. Bit `0` of
+`0xFFFF23E7` is set while `0xFFFF197E` plus `ROM16[0x8DEA]` reaches
+`0xFFFF1746`, and bit `7` of `0xFFFF23E6` is set while `0xFFFF1976` reaches it.
+Stock `ROM16[0x8DEA]` is `0`, so the first comparison carries no hysteresis,
+and stock `ROM16[0x8D2C]` is `0xFFFF`, which disables the alternate comparison
+against `0xFFFF11FA` and its `ROM16[0x8DAA]` offset. `0xFFFF1978` is
+`0xFFFF1976` while both bits are set and `min(0xFFFF1746, 0xFFFF197E)`
+otherwise, which is the ceiling clamped between the two limits whenever the
+floor does not exceed the request. The domain is therefore closed: `0x1552C`
+spans zero to full scale, `FUN_00092A80` converts a point in it to a rate
+through the angle-to-area constants, and `FUN_000923CA` converts the summed
+rate back to the same domain. The percent scale the JK08A catalog assigns
+`0x14114` remains a candidate; the normalized domain and the conversion between
+it and a rate are exact in this image.
 
 Bank identity is available from the ROM itself where it exists. The service-0x22
 DID tables bind per-bank RAM directly, and their ordering agrees with the factory
