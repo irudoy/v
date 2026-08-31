@@ -472,6 +472,7 @@ class DashboardPresentationTest(unittest.TestCase):
         )
 
     def test_recording_ignores_frames_received_before_start(self):
+        clock = app.RecordingClock(10.0)
         before = model.FrameRecord(
             0x6F0,
             bytes(8),
@@ -482,11 +483,109 @@ class DashboardPresentationTest(unittest.TestCase):
             bytes(8),
             received_monotonic=10.25,
         )
-        self.assertIsNone(app._recording_elapsed(before, 10.0, 11.0))
-        self.assertAlmostEqual(
-            app._recording_elapsed(after, 10.0, 11.0),
-            0.25,
+        later = model.FrameRecord(
+            0x6F0,
+            bytes(8),
+            received_monotonic=10.40,
         )
+        self.assertIsNone(clock.elapsed(before, 11.0))
+        self.assertAlmostEqual(clock.elapsed(after, 11.0), 0.25)
+        self.assertAlmostEqual(clock.elapsed(later, 11.0), 0.40)
+
+    def test_recording_separates_frames_dequeued_in_one_burst(self):
+        clock = app.RecordingClock(10.0)
+        burst = [
+            model.FrameRecord(
+                0x6F0,
+                bytes(8),
+                timestamp=1787740137.000000,
+                received_monotonic=10.5,
+            ),
+            model.FrameRecord(
+                0x6F0,
+                bytes(8),
+                timestamp=1787740137.000216,
+                received_monotonic=10.5,
+            ),
+            model.FrameRecord(
+                0x6F0,
+                bytes(8),
+                timestamp=1787740137.015000,
+                received_monotonic=10.5,
+            ),
+        ]
+        elapsed = [clock.elapsed(frame, 11.0) for frame in burst]
+
+        self.assertTrue(clock.source_clock)
+        self.assertAlmostEqual(elapsed[0], 0.5)
+        self.assertAlmostEqual(elapsed[1], 0.500216, places=6)
+        self.assertAlmostEqual(elapsed[2], 0.515, places=6)
+        ticks = [round(value * 100_000) for value in elapsed]
+        self.assertEqual(len(set(ticks)), len(ticks))
+
+    def test_recording_uses_the_host_clock_without_interface_time(self):
+        clock = app.RecordingClock(10.0)
+        first = model.FrameRecord(0x6F0, bytes(8), received_monotonic=10.5)
+        second = model.FrameRecord(0x6F0, bytes(8), received_monotonic=10.53)
+
+        self.assertAlmostEqual(clock.elapsed(first, 11.0), 0.5)
+        self.assertAlmostEqual(clock.elapsed(second, 11.0), 0.53)
+        self.assertFalse(clock.source_clock)
+
+    def test_recording_abandons_a_stepping_interface_clock(self):
+        clock = app.RecordingClock(10.0)
+        first = model.FrameRecord(
+            0x6F0,
+            bytes(8),
+            timestamp=0.0,
+            received_monotonic=10.5,
+        )
+        stepped = model.FrameRecord(
+            0x6F0,
+            bytes(8),
+            timestamp=1787740137.0,
+            received_monotonic=10.515,
+        )
+        after = model.FrameRecord(
+            0x6F0,
+            bytes(8),
+            timestamp=1787740137.015,
+            received_monotonic=10.53,
+        )
+
+        self.assertAlmostEqual(clock.elapsed(first, 11.0), 0.5)
+        self.assertAlmostEqual(clock.elapsed(stepped, 11.0), 0.515)
+        self.assertFalse(clock.source_clock)
+        self.assertAlmostEqual(clock.elapsed(after, 11.0), 0.53)
+
+    def test_recording_elapsed_never_decreases(self):
+        clock = app.RecordingClock(10.0)
+        frames = [
+            model.FrameRecord(
+                0x6F0,
+                bytes(8),
+                timestamp=100.0,
+                received_monotonic=10.5,
+            ),
+            model.FrameRecord(
+                0x6F0,
+                bytes(8),
+                timestamp=99.5,
+                received_monotonic=10.52,
+            ),
+            model.FrameRecord(
+                0x6F0,
+                bytes(8),
+                timestamp=99.6,
+                received_monotonic=10.54,
+            ),
+        ]
+        elapsed = [clock.elapsed(frame, 11.0) for frame in frames]
+
+        self.assertEqual(elapsed, sorted(elapsed))
+        self.assertFalse(clock.source_clock)
+        self.assertAlmostEqual(elapsed[1], 0.52)
+        self.assertAlmostEqual(elapsed[2], 0.54)
 
     def test_source_emitter_rejects_events_after_generation_change(self):
         dashboard = app.DashboardApp.__new__(app.DashboardApp)

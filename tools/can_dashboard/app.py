@@ -111,21 +111,73 @@ def _parse_standard_can_id(value: str) -> int:
     return can_id
 
 
-def _recording_elapsed(frame: FrameRecord, started: float, fallback: float):
-    event_time = (
-        frame.received_monotonic
-        if frame.received_monotonic is not None
-        else fallback
-    )
-    if (
-        not isinstance(started, (int, float))
-        or not isinstance(event_time, (int, float))
-        or not math.isfinite(started)
-        or not math.isfinite(event_time)
-        or event_time < started
-    ):
-        return None
-    return event_time - started
+RECORDING_CLOCK_TOLERANCE_SECONDS = 1.0
+
+
+def _finite(value) -> bool:
+    return isinstance(value, (int, float)) and math.isfinite(value)
+
+
+class RecordingClock:
+    """Elapsed seconds of one MLVLG recording, measured on the frame clock.
+
+    A data block carries a 10 us timestamp, so a record must hold the time its
+    frame reached the interface: the host dequeue time collapses a burst
+    drained from the driver queue onto a single tick. Elapsed time starts at
+    the offset of the first recorded frame from the recording start and then
+    advances by the interface step, or by the host receive step when the source
+    reports no frame time. An interface clock that steps backwards, or ahead of
+    the host clock by more than the queueing tolerance, is abandoned without
+    breaking elapsed time.
+    """
+
+    def __init__(self, started: float):
+        self.started = started
+        self.source_clock = False
+        self._source_time = None
+        self._host_time = None
+        self._elapsed = 0.0
+
+    def elapsed(self, frame: FrameRecord, fallback: float):
+        host_time = (
+            frame.received_monotonic
+            if _finite(frame.received_monotonic)
+            else fallback
+        )
+        if not _finite(self.started) or not _finite(host_time):
+            return None
+        if host_time < self.started:
+            return None
+        source_time = (
+            frame.timestamp
+            if _finite(frame.timestamp) and frame.timestamp >= 0.0
+            else None
+        )
+        if self._host_time is None:
+            self.source_clock = source_time is not None
+            self._source_time = source_time
+            self._host_time = host_time
+            self._elapsed = host_time - self.started
+            return self._elapsed
+        host_step = max(host_time - self._host_time, 0.0)
+        source_step = (
+            source_time - self._source_time
+            if self.source_clock
+            and source_time is not None
+            and self._source_time is not None
+            else None
+        )
+        if source_step is None:
+            step = host_step
+        elif 0.0 <= source_step <= host_step + RECORDING_CLOCK_TOLERANCE_SECONDS:
+            step = source_step
+        else:
+            self.source_clock = False
+            step = host_step
+        self._source_time = source_time
+        self._host_time = host_time
+        self._elapsed += step
+        return self._elapsed
 
 
 HERO_METRICS = (
@@ -368,7 +420,7 @@ class DashboardApp:
             args.schema,
         )
         self.recorder = None
-        self.recording_started_monotonic = None
+        self.recording_clock = None
         self.last_ui_group = 0
         self.stream_command = "start"
         self.source_button_active = False
@@ -920,7 +972,7 @@ class DashboardApp:
         except (OSError, ValueError) as error:
             self.record_var.set(f"MLG error: {error}")
             return
-        self.recording_started_monotonic = time.monotonic()
+        self.recording_clock = RecordingClock(time.monotonic())
         self.record_button.configure(text="Stop MLG")
         self.record_var.set(f"MLG: recording {output.name}")
 
@@ -929,7 +981,7 @@ class DashboardApp:
             return
         recorder = self.recorder
         self.recorder = None
-        self.recording_started_monotonic = None
+        self.recording_clock = None
         self.record_button.configure(text="Record MLG")
         try:
             summary = recorder.close()
@@ -1003,11 +1055,7 @@ class DashboardApp:
             elif isinstance(event, FrameRecord):
                 snapshot = self.model.process_frame(event)
                 if snapshot is not None and self.recorder is not None:
-                    elapsed = _recording_elapsed(
-                        event,
-                        self.recording_started_monotonic,
-                        now,
-                    )
+                    elapsed = self.recording_clock.elapsed(event, now)
                     if elapsed is None:
                         continue
                     try:
@@ -1015,7 +1063,7 @@ class DashboardApp:
                     except (OSError, ValueError) as error:
                         self.recorder.abort()
                         self.recorder = None
-                        self.recording_started_monotonic = None
+                        self.recording_clock = None
                         self.record_button.configure(text="Record MLG")
                         self.record_var.set(f"MLG error: {error}")
         self._refresh(now)

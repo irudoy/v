@@ -1,9 +1,12 @@
 """Minimal MLVLG v2 writer and structural validator.
 
-The wire format matches the logger implementation in
-``~/src/embedded/canlogger/firmware/Lib/mlvlg.c``. All integers and floating
-point values are stored in big-endian byte order. Data-block CRC is the
-unsigned byte sum of the record payload.
+The wire format follows "Binary MLG Logging (MLVLG) file format specification"
+Rev. 0.94 by Philip Tobin. All integers and floating point values are stored in
+big-endian byte order. A data block holds a 16-bit timestamp at 10 us per bit,
+a rolling record counter, and a CRC that is the unsigned byte sum of the record
+payload. The specification writes that counter as ``Counter % 255``; it rolls
+over an unsigned byte here, as in the rusEFI reference writer whose logs
+MegaLogViewer reads.
 """
 
 from __future__ import annotations

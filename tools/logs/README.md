@@ -260,12 +260,13 @@ with the same timestamp, applies every update, and emits a full MLG snapshot.
 Values not observed yet are stored as IEEE 754 `NaN`. Latitude and longitude
 are promoted to regular GPS fields when present.
 
-MLG has a 16-bit timestamp with 10 us resolution, so it wraps after about
-0.655 seconds. The converter inserts hold-last bridge records whenever source
-updates are farther than 0.3 seconds apart. The local UltraLog parser detects
-a wrap only when the raw timestamp drop exceeds 30,000 ticks; the 0.3-second
-limit guarantees a wrapped drop of at least 35,536 ticks. This preserves every
-source update without making elapsed time ambiguous to that parser.
+The MLVLG specification defines a 16-bit block timestamp at 10 us per bit, so
+it wraps after about 0.655 seconds. The converter inserts hold-last bridge
+records whenever source updates are farther than 0.3 seconds apart. The local
+UltraLog parser detects a wrap only when the raw timestamp drop exceeds 30,000
+ticks; the 0.3-second limit guarantees a wrapped drop of at least 35,536
+ticks. This preserves every source update without making elapsed time
+ambiguous to that parser.
 
 The first synthetic fields are:
 

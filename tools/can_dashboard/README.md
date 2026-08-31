@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `4.0.0`.
+Current dashboard version: `4.0.1`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -56,7 +56,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v4.0.0-windows.zip
+  --output tmp/vq-can-telemetry-v4.0.1-windows.zip
 ```
 
 On the Windows laptop:
@@ -117,11 +117,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v4.0.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v4.0.1-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 4.0.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 4.0.1 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -194,6 +194,15 @@ an explicit replacement confirmation in the UI and are rejected by `--record`.
 Frames already queued when recording starts update the display but are not
 written to the new file. The first MLG event therefore cannot predate the
 recording start or be collapsed onto elapsed time zero.
+
+A record carries the time its frame reached the interface, which the block
+timestamp resolves to 10 us. The PCAN clock is used whenever the driver reports
+one, and the host receive clock otherwise; elapsed time starts at the offset of
+the first recorded frame from the recording start. The host dequeue time alone
+collapses a burst drained from the driver queue onto a single tick and makes
+distinct snapshots share one timestamp. An interface clock that steps
+backwards, or ahead of the host clock by more than one second, is abandoned
+without breaking elapsed time.
 
 The `tuning` MLG schema has 81 channels: time, schema state, every fixed and
 rotating custom-telemetry field, a decoded high-detonation-surface selector,
@@ -317,6 +326,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 4.0.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 4.0.1 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.
