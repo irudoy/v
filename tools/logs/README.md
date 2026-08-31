@@ -217,7 +217,9 @@ replacement.
 
 MegaLogViewer evaluates a channel as `(raw + transform) * scale`, so a
 descriptor transform is expressed in raw counts rather than in engineering
-units. Recorded channels derive both numbers from the same calibrations the
+units. It also refuses to plot a channel whose name contains `*`: the channel
+is listed and selectable, and its graph stays empty, observed in MegaLogViewer
+MS Lite 4.6.09. Candidate transforms are therefore marked in the units. Recorded channels derive both numbers from the same calibrations the
 dashboard applies, and the recorder tests bind every channel value to the live
 engineering value across a raw range.
 

@@ -202,7 +202,9 @@ Decoded telemetry and context values use F32, so a rotating context that has
 not arrived yet can be represented as `NaN` rather than a fabricated zero.
 
 Channel names carry no candidate marker; the marker stays in the units, as it
-does on the display. MegaLogViewer evaluates a channel as
+does on the display. MegaLogViewer lists a channel whose name contains `*` but
+draws nothing when it is selected, observed in MegaLogViewer MS Lite 4.6.09, so
+a channel name holds identity only. MegaLogViewer evaluates a channel as
 `(raw + transform) * scale`, so descriptor transforms are expressed in raw
 counts. Both numbers are derived from the calibrations the dashboard applies to
 the same field, and the recorder tests bind every channel value to the live
