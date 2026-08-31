@@ -330,12 +330,60 @@ implicit curve `0x1629A` on a `4096` step at `min(0xFFFF1710 * 32, 65535)` and
 eight-point implicit curve `0x162BA` on an `8192` step at
 `min(floor(0xFFFF101E * 640 / 256) * 128, 65535)`, taken over `65536` with
 round-to-nearest. `ROM8[0x8968]` is `0x80`, which selects `0xFFFF101E` over
-`0xFFFF10BE` for the second curve. Stock `0x1629A` is `64848` at every point
-and the eight live cells of `0x162BA` are `65535`, so the stock ceiling is the
-constant `64847`, which is `98.95` percent of full scale. A nonzero
-`0xFFFF24F7` replaces it with `ROM16[0x90D0]`, and bit `5` of `0xFFFF44E5`
-replaces it with `ROM16[0x90CE]`; both ROM words are `0xFFFF` in stock, so
-neither substitution constrains the coordinate.
+`0xFFFF10BE` for the second curve. Wrapper `0x2821C` clamps its index at
+`61440` and returns element `15` above that, and wrapper `0x28200` clamps its
+index at `57344` and returns element `7` above that, so the first curve spans
+`0` to `1920` counts of `0xFFFF1710` in `128`-count steps and the second spans
+`0` to `448` counts of the selected word in `64`-count steps. Stock `0x1629A`
+is `64848` at every point and the eight live cells of `0x162BA` are `65535`, so
+the stock ceiling is the constant `64847`, which is `98.95` percent of full
+scale. A nonzero `0xFFFF24F7` replaces it with `ROM16[0x90D0]`, and bit `5` of
+`0xFFFF44E5` replaces it with `ROM16[0x90CE]`; both ROM words are `0xFFFF` in
+stock, so neither substitution constrains the coordinate.
+
+The second ceiling axis is vehicle speed. No instruction in the image writes
+`0xFFFF101E` or `0xFFFF10BE`. Both are scheduler snapshots that `FUN_00020F1A`
+refreshes at the head of each pass, calling block copiers `0x225C0` and
+`0x22164` with destination in `r1`, source in `r2`, and length in `r0`. Those
+calls include `0xFFFF1014` from `0xFFFF1020` for `12` bytes and `0xFFFF1084`
+from `0xFFFF1104` for `128` bytes, so `0xFFFF101E` is the previous-cycle copy
+of `0xFFFF102A` and `0xFFFF10BE` is the previous-cycle copy of `0xFFFF113E`.
+The service-0x22 pointer table at `0x22918`, mirrored at `0x25DF0`, holds one
+long word per data identifier at `base + (DID & 0xFF) * 4`. It binds `0x1204`,
+`0x1205`, and `0x1208` to `0xFFFF1024`, `0xFFFF1026`, and `0xFFFF102E`, the
+mass-airflow and Base Fuel Schedule words that
+`patches/jk78c-runtime-correspondence.csv` carries, and `0x1209` to
+`0xFFFF3A9A`; the same table binds `0x121A` to `0xFFFF113E`. Three independent
+public parameter sets under `refs/diagnostics/public/` name DID `0x121A`
+vehicle speed. Every row among them that carries a conversion reads two
+big-endian bytes at `0.1 km/h` per count, and the `ecudocs-p32m` structured
+profile labels it `MM_HRVSP`.
+
+The two selectable words are separate speed sources on one scale.
+`FUN_000934E0` writes `0xFFFF113E` as `0xFFFF1F20` times `ROM16[0x8FAA]`
+shifted right by `16`, and stock `ROM16[0x8FAA]` is `21883`, which is
+`0.33392`. The other source arrives over CAN. `FUN_000EBF88` assembles the
+big-endian pair at `0xFFFF3DBB` of a received frame, treats `0xFFFF` as
+invalid, divides the raw word by `10`, and stores the result at `0xFFFF1128`;
+its gates are bit `3` of `ROM8[0x831D]`, `ROM8[0x8323]` equal to `2`, and
+`ROM8[0x883B]` equal to `0`, and stock `0x3B`, `0x02`, and `0x00` pass all
+three. `FUN_0003D9FE` publishes zero below `20` counts of `0xFFFF1128` and
+otherwise runs the lag `(current + 15 * previous) / 16` with a one-count
+minimum rise into `0xFFFF114A`, then returns that word times `10` over `25`.
+`FUN_0003DA90` stores the return at `0xFFFF102A`, so `0xFFFF101E` counts
+`0.25 km/h`. The `640 / 256` the ceiling path applies to it is exactly `2.5`,
+which returns it to the `0.1 km/h` count `0xFFFF10BE` already carries, so both
+sources index `0x162BA` on one axis. Its eight breakpoints are `0`, `6.4`,
+`12.8`, `19.2`, `25.6`, `32.0`, `38.4`, and `44.8 km/h`, and the `20`-count
+entry gate is a `2.0 km/h` stopped-vehicle threshold.
+
+`FUN_0003DADC` publishes the same filtered word as a byte. `0xFFFF1028` is
+`min(255, 0xFFFF114A / 20)`, which counts `2 km/h`, and its snapshot
+`0xFFFF101C` is the vehicle-speed input that `FUN_00067F5E`, `FUN_0008EDC6`,
+`FUN_00090C9C`, `FUN_00090DCA`, `FUN_00090F3A`, `FUN_000911A2`, and
+`FUN_000CE068` read. JK08A carries mass airflow at `0xFFFF101C` and
+`0xFFFF101E`, which this image publishes from `0xFFFF1024` and `0xFFFF1026`, so
+the two RAM layouts do not agree at this pair.
 
 `FUN_00093164` forms floor `0xFFFF1976` from the flow through the current
 throttle opening. It doubles the interpolation of throttle angle-to-area
