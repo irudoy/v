@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `3.0.0`.
+Current dashboard version: `4.0.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -56,7 +56,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v3.0.0-windows.zip
+  --output tmp/vq-can-telemetry-v4.0.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -117,11 +117,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v3.0.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v4.0.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 3.0.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 4.0.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -195,23 +195,31 @@ Frames already queued when recording starts update the display but are not
 written to the new file. The first MLG event therefore cannot predate the
 recording start or be collapsed onto elapsed time zero.
 
-The `tuning` MLG schema has 83 channels: time, schema state, every fixed and
+The `tuning` MLG schema has 81 channels: time, schema state, every fixed and
 rotating custom-telemetry field, a decoded high-detonation-surface selector,
-stock CAN RPM, vehicle speed, selector code, ASCD input, dashboard state, and
-`gps_lat`/`gps_lon`. Candidate transforms retain `*` in their field names.
+stock CAN RPM, vehicle speed, selector code, ASCD input, and dashboard state.
 Decoded telemetry and context values use F32, so a rotating context that has
 not arrived yet can be represented as `NaN` rather than a fabricated zero.
+
+Channel names carry no candidate marker; the marker stays in the units, as it
+does on the display. MegaLogViewer evaluates a channel as
+`(raw + transform) * scale`, so descriptor transforms are expressed in raw
+counts. Both numbers are derived from the calibrations the dashboard applies to
+the same field, and the recorder tests bind every channel value to the live
+engineering value. `tools/logs/mlg_restamp.py` applies a corrected field table
+to files recorded earlier without rewriting their data.
 
 MLG has a wrapping 16-bit 10-us block timestamp. A hold-last bridge record is
 inserted when complete snapshots are more than 0.3 seconds apart, which keeps
 the wrap sequence unambiguous to the local UltraLog parser. Normal divisor-1
 traffic needs no bridge records.
 
-The dashboard declares `gps_lat` and `gps_lon` for Track Map compatibility,
-but no geographic-coordinate signal is verified on the captured primary CAN
-network. Both values therefore display `--` and are stored as `NaN`. A real
-route requires a separately captured and decoded AV/navigation network or
-another GPS source. The logger never invents coordinates from vehicle speed.
+No geographic-coordinate signal is verified on the captured primary CAN
+network. The display keeps latitude and longitude slots that read `--`, and the
+recording declares no GPS channels rather than storing channels that hold only
+`NaN`. A real route requires a separately captured and decoded AV/navigation
+network or another GPS source. The logger never invents coordinates from
+vehicle speed.
 
 ## Window layout
 
@@ -307,6 +315,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 3.0.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 4.0.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

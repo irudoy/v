@@ -144,6 +144,58 @@ def encode_field(field: FieldSpec) -> bytes:
     return result
 
 
+def decode_text(raw: bytes) -> str:
+    return raw.split(b"\x00", 1)[0].decode("ascii", "replace")
+
+
+def decode_field(descriptor: bytes) -> FieldSpec:
+    if len(descriptor) != MLG_FIELD_SIZE:
+        raise MlvlgError(
+            f"MLVLG field descriptor must be {MLG_FIELD_SIZE} bytes"
+        )
+    field_type = descriptor[0]
+    if field_type not in FIELD_STRUCTS:
+        raise MlvlgError(f"unsupported MLVLG field type {field_type}")
+    name_end = 1 + MLG_FIELD_NAME_SIZE
+    units_end = name_end + MLG_FIELD_UNITS_SIZE
+    scaling_end = units_end + struct.calcsize(">Bffb")
+    display_style, scale, transform, digits = struct.unpack(
+        ">Bffb", descriptor[units_end:scaling_end]
+    )
+    return FieldSpec(
+        name=decode_text(descriptor[1:name_end]),
+        units=decode_text(descriptor[name_end:units_end]),
+        category=decode_text(descriptor[scaling_end:MLG_FIELD_SIZE]),
+        field_type=field_type,
+        display_style=display_style,
+        scale=scale,
+        transform=transform,
+        digits=digits,
+    )
+
+
+def read_fields(path: Path) -> tuple[FieldSpec, ...]:
+    """Return the field descriptors declared by an MLVLG header."""
+
+    data = Path(path).read_bytes()
+    if len(data) < MLG_HEADER_SIZE:
+        raise MlvlgError(f"{path}: truncated MLVLG header")
+    field_count = struct.unpack(">H", data[22:MLG_HEADER_SIZE])[0]
+    end = MLG_HEADER_SIZE + field_count * MLG_FIELD_SIZE
+    if len(data) < end:
+        raise MlvlgError(f"{path}: truncated MLVLG field descriptors")
+    return tuple(
+        decode_field(
+            data[
+                MLG_HEADER_SIZE
+                + index * MLG_FIELD_SIZE : MLG_HEADER_SIZE
+                + (index + 1) * MLG_FIELD_SIZE
+            ]
+        )
+        for index in range(field_count)
+    )
+
+
 def record_length(fields: Iterable[FieldSpec]) -> int:
     return sum(field.data_size for field in fields)
 

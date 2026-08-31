@@ -379,81 +379,89 @@ class Decoder:
         )
 
 
+@dataclass(frozen=True)
+class Calibration:
+    """Affine conversion of one raw telemetry field to engineering units."""
+
+    target: str
+    factor: float = 1.0
+    offset: float = 0.0
+
+    def apply(self, raw):
+        return raw * self.factor + self.offset
+
+
+RAW_CALIBRATIONS = {
+    "rpm_raw": Calibration("rpm", 12.5),
+    "maf_b1_raw": Calibration("maf_b1_v", 1 / 200),
+    "maf_b2_raw": Calibration("maf_b2_v", 1 / 200),
+    "maf_total_raw": Calibration("maf_total_g_s", 1 / 100),
+    "bfs_raw": Calibration("bfs_ms", 1 / 2048),
+    "af_state_factor_raw": Calibration("af_state_factor", 1 / 16384),
+    "intake_cvtc_duty_b1_raw": Calibration(
+        "intake_cvtc_duty_b1_percent", 100 / 256
+    ),
+    "intake_cvtc_duty_b2_raw": Calibration(
+        "intake_cvtc_duty_b2_percent", 100 / 256
+    ),
+    "engine_torque_state_raw": Calibration("engine_torque_state_nm", 0.1),
+    "intake_cvtc_duty_b1_word_raw": Calibration(
+        "intake_cvtc_duty_b1_word_percent", 100 / 1024
+    ),
+    "intake_cvtc_duty_b2_word_raw": Calibration(
+        "intake_cvtc_duty_b2_word_percent", 100 / 1024
+    ),
+    "exhaust_cvtc_duty_b1_word_raw": Calibration(
+        "exhaust_cvtc_duty_b1_word_percent", 100 / 1024
+    ),
+    "exhaust_cvtc_duty_b2_word_raw": Calibration(
+        "exhaust_cvtc_duty_b2_word_percent", 100 / 1024
+    ),
+    "battery_voltage_raw": Calibration("battery_voltage_v", 0.08),
+    "intake_cvtc_actual_b1_raw": Calibration(
+        "intake_cvtc_actual_b1_deg_ca", 0.5, -64
+    ),
+    "intake_cvtc_actual_b2_raw": Calibration(
+        "intake_cvtc_actual_b2_deg_ca", 0.5, -64
+    ),
+    "exhaust_cvtc_actual_b1_raw": Calibration(
+        "exhaust_cvtc_actual_b1_deg_ca", 0.5, -64
+    ),
+    "exhaust_cvtc_actual_b2_raw": Calibration(
+        "exhaust_cvtc_actual_b2_deg_ca", 0.5, -64
+    ),
+    "intake_cvtc_target_raw": Calibration(
+        "intake_cvtc_target_deg_ca", 0.5, -64
+    ),
+    "exhaust_cvtc_target_raw": Calibration(
+        "exhaust_cvtc_target_deg_ca", 0.5, -64
+    ),
+    "calculated_load_raw": Calibration("calculated_load_percent", 100 / 255),
+    "stft_b1_raw": Calibration("stft_b1_percent", 1 / 256, -100),
+    "stft_b2_raw": Calibration("stft_b2_percent", 1 / 256, -100),
+    "ltft_b1_raw": Calibration("ltft_b1_percent", 1 / 256, -100),
+    "ltft_b2_raw": Calibration("ltft_b2_percent", 1 / 256, -100),
+    "coolant_raw": Calibration("coolant_deg_c", 1.0, -50),
+    "iat_raw": Calibration("iat_deg_c", 1.0, -50),
+}
+RAW_CALIBRATIONS.update(
+    {
+        f"injection_{index}_raw": Calibration(f"injection_{index}_ms", 1 / 100)
+        for index in range(6)
+    }
+)
+
+
 def engineering_values(snapshot):
     """Return only physical transforms explicitly declared by the schema."""
     if not snapshot.schema_verified:
         raise DecodeError("wire schema is not verified for this snapshot")
     raw = snapshot.fields
-    result = {}
-    direct = {
-        "rpm_raw": ("rpm", 12.5),
-        "maf_b1_raw": ("maf_b1_v", 1 / 200),
-        "maf_b2_raw": ("maf_b2_v", 1 / 200),
-        "maf_total_raw": ("maf_total_g_s", 1 / 100),
-        "bfs_raw": ("bfs_ms", 1 / 2048),
-        "af_state_factor_raw": ("af_state_factor", 1 / 16384),
-        "intake_cvtc_duty_b1_raw": (
-            "intake_cvtc_duty_b1_percent", 100 / 256
-        ),
-        "intake_cvtc_duty_b2_raw": (
-            "intake_cvtc_duty_b2_percent", 100 / 256
-        ),
-        "engine_torque_state_raw": ("engine_torque_state_nm", 0.1),
-        "intake_cvtc_duty_b1_word_raw": (
-            "intake_cvtc_duty_b1_word_percent", 100 / 1024
-        ),
-        "intake_cvtc_duty_b2_word_raw": (
-            "intake_cvtc_duty_b2_word_percent", 100 / 1024
-        ),
-        "exhaust_cvtc_duty_b1_word_raw": (
-            "exhaust_cvtc_duty_b1_word_percent", 100 / 1024
-        ),
-        "exhaust_cvtc_duty_b2_word_raw": (
-            "exhaust_cvtc_duty_b2_word_percent", 100 / 1024
-        ),
-        "battery_voltage_raw": ("battery_voltage_v", 0.08),
+    return {
+        calibration.target: calibration.apply(raw[name])
+        for name, calibration in RAW_CALIBRATIONS.items()
+        if name in raw
     }
-    for name, (target, factor) in direct.items():
-        if name in raw:
-            result[target] = raw[name] * factor
-    affine = {
-        "intake_cvtc_actual_b1_raw": (
-            "intake_cvtc_actual_b1_deg_ca", 0.5, -64
-        ),
-        "intake_cvtc_actual_b2_raw": (
-            "intake_cvtc_actual_b2_deg_ca", 0.5, -64
-        ),
-        "exhaust_cvtc_actual_b1_raw": (
-            "exhaust_cvtc_actual_b1_deg_ca", 0.5, -64
-        ),
-        "exhaust_cvtc_actual_b2_raw": (
-            "exhaust_cvtc_actual_b2_deg_ca", 0.5, -64
-        ),
-        "intake_cvtc_target_raw": (
-            "intake_cvtc_target_deg_ca", 0.5, -64
-        ),
-        "exhaust_cvtc_target_raw": (
-            "exhaust_cvtc_target_deg_ca", 0.5, -64
-        ),
-        "calculated_load_raw": (
-            "calculated_load_percent", 100 / 255, 0
-        ),
-        "stft_b1_raw": ("stft_b1_percent", 1 / 256, -100),
-        "stft_b2_raw": ("stft_b2_percent", 1 / 256, -100),
-        "ltft_b1_raw": ("ltft_b1_percent", 1 / 256, -100),
-        "ltft_b2_raw": ("ltft_b2_percent", 1 / 256, -100),
-    }
-    for name, (target, factor, offset) in affine.items():
-        if name in raw:
-            result[target] = raw[name] * factor + offset
-    for index in range(6):
-        name = f"injection_{index}_raw"
-        if name in raw:
-            result[f"injection_{index}_ms"] = raw[name] / 100
-    for name, target in (("coolant_raw", "coolant_deg_c"), ("iat_raw", "iat_deg_c")):
-        if name in raw:
-            result[target] = raw[name] - 50
-    return result
 
 
 def parse_candump_line(line):

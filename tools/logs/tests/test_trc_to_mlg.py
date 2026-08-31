@@ -39,59 +39,38 @@ def write_trace(path):
     Path(path).write_text("\n".join(lines) + "\n", encoding="ascii")
 
 
-def read_names_and_gps(path):
+def read_field_names(path):
     data = Path(path).read_bytes()
     header = struct.unpack(">6sHIIIHH", data[:mlvlg.MLG_HEADER_SIZE])
-    record_length = header[-2]
     field_count = header[-1]
     offset = mlvlg.MLG_HEADER_SIZE
     names = []
-    types = []
     for _ in range(field_count):
         descriptor = data[offset : offset + mlvlg.MLG_FIELD_SIZE]
-        types.append(descriptor[0])
         names.append(
             descriptor[1:35].split(b"\x00", 1)[0].decode("ascii")
         )
         offset += mlvlg.MLG_FIELD_SIZE
-    gps_indices = (names.index("gps_lat"), names.index("gps_lon"))
-    gps_values = []
-    while offset < len(data):
-        payload = data[offset + 4 : offset + 4 + record_length]
-        values = []
-        value_offset = 0
-        for field_type in types:
-            format_string = mlvlg.FIELD_STRUCTS[field_type]
-            size = struct.calcsize(format_string)
-            values.append(
-                struct.unpack(
-                    format_string,
-                    payload[value_offset : value_offset + size],
-                )[0]
-            )
-            value_offset += size
-        gps_values.append(tuple(values[index] for index in gps_indices))
-        offset += 4 + record_length + 1
-    return header, names, gps_values
+    return header, names
 
 
 class TrcToMlgTest(unittest.TestCase):
-    def test_conversion_preserves_snapshots_and_declares_empty_gps(self):
+    def test_conversion_preserves_snapshots_and_field_identity(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "capture.trc"
             output = Path(directory) / "capture.mlg"
             write_trace(source)
             summary = trc_to_mlg.convert_trace(source, output)
             validation = mlvlg.validate_mlg(output)
-            header, names, gps_values = read_names_and_gps(output)
+            header, names = read_field_names(output)
 
         self.assertEqual(summary.complete_snapshots, 8)
         self.assertEqual(summary.source_frames, 128)
         self.assertEqual(summary.telemetry_frames, 88)
         self.assertEqual(summary.mlg_records, 8)
         self.assertEqual(summary.bridge_records, 0)
-        self.assertEqual(summary.mlg_fields, 83)
-        self.assertEqual(validation.record_length, 332)
+        self.assertEqual(summary.mlg_fields, 81)
+        self.assertEqual(validation.record_length, 324)
         self.assertEqual(validation.data_records, 8)
         self.assertEqual(header[0], b"MLVLG\x00")
         expected_start = math.floor(
@@ -109,14 +88,11 @@ class TrcToMlgTest(unittest.TestCase):
         )
         self.assertEqual(header[2], expected_start)
         self.assertAlmostEqual(summary.first_snapshot_offset_ms, 1001.5)
-        self.assertIn("Vehicle speed*", names)
+        self.assertIn("Vehicle speed", names)
         self.assertIn("Knock timing state", names)
         self.assertIn("High-detonation surface selected", names)
-        self.assertIn("gps_lat", names)
-        self.assertIn("gps_lon", names)
-        self.assertTrue(
-            all(math.isnan(lat) and math.isnan(lon) for lat, lon in gps_values)
-        )
+        self.assertNotIn("gps_lat", names)
+        self.assertNotIn("gps_lon", names)
 
     def test_force_cannot_overwrite_source_trace(self):
         with tempfile.TemporaryDirectory() as directory:

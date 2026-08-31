@@ -51,26 +51,28 @@ DASHBOARD_STATE_CODES = {
     0x72: "ASCD STATE 7",
 }
 
-DASHBOARD_AFFINE_TRANSFORMS = {
-    "timing_command_deg": ("final_timing_raw", 1, 0),
-    "knock_timing_state": ("knock_timing_state_raw", 1 / 256, 0),
-    "app1_v": ("app1_raw", 1 / 200, 0),
-    "app2_v": ("app2_raw", 1 / 200, 0),
-    "tps_b1_v": ("tps_b1_raw", 1 / 200, 0),
-    "tps_b2_v": ("tps_b2_raw", 1 / 200, 0),
-    "fuel_temperature_deg_c": (
-        "fuel_temperature_did_source_raw", 1, -50
+DASHBOARD_CALIBRATIONS = {
+    "final_timing_raw": can_telemetry.Calibration("timing_command_deg"),
+    "knock_timing_state_raw": can_telemetry.Calibration(
+        "knock_timing_state", 1 / 256
     ),
-    "oil_temperature_deg_c": (
-        "oil_temperature_did_source_raw", 1, -50
+    "app1_raw": can_telemetry.Calibration("app1_v", 1 / 200),
+    "app2_raw": can_telemetry.Calibration("app2_v", 1 / 200),
+    "tps_b1_raw": can_telemetry.Calibration("tps_b1_v", 1 / 200),
+    "tps_b2_raw": can_telemetry.Calibration("tps_b2_v", 1 / 200),
+    "fuel_temperature_did_source_raw": can_telemetry.Calibration(
+        "fuel_temperature_deg_c", 1.0, -50
+    ),
+    "oil_temperature_did_source_raw": can_telemetry.Calibration(
+        "oil_temperature_deg_c", 1.0, -50
     ),
 }
 
 
 def _dashboard_engineering_values(raw):
     values = {
-        target: raw[source] * factor + offset
-        for target, (source, factor, offset) in DASHBOARD_AFFINE_TRANSFORMS.items()
+        calibration.target: calibration.apply(raw[source])
+        for source, calibration in DASHBOARD_CALIBRATIONS.items()
         if source in raw
     }
     if "knock_surface_state" in raw:

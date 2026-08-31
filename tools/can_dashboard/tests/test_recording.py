@@ -9,6 +9,12 @@ from tools.can_dashboard import model, recording
 from tools.logs import mlvlg
 
 
+try:
+    from tools.can_dashboard import app
+except ImportError:  # pragma: no cover - Tk is unavailable
+    app = None
+
+
 def feed_group(dashboard, group, base_time):
     snapshot = None
     for index, frame in enumerate(group):
@@ -88,7 +94,7 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
             self.assertEqual(summary.event_records, 0)
             self.assertEqual(summary.output_size, len(b"existing recording"))
 
-    def test_records_complete_schema_context_and_gps_contract(self):
+    def test_records_complete_schema_and_stock_context(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         with tempfile.TemporaryDirectory() as directory:
@@ -108,9 +114,6 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
                     elapsed,
                 )
                 self.assertIsNotNone(snapshot)
-                if tick == 8:
-                    dashboard.gps_lat = 43.115536
-                    dashboard.gps_lon = 131.885485
                 recorder.append(dashboard, elapsed)
             summary = recorder.close()
             validation = mlvlg.validate_mlg(output)
@@ -119,36 +122,36 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertEqual(summary.event_records, 8)
         self.assertEqual(summary.bridge_records, 0)
         self.assertEqual(validation.data_records, 8)
-        self.assertEqual(validation.fields, 83)
+        self.assertEqual(validation.fields, 81)
         self.assertEqual(header[2], 1_776_000_000)
         names = [name for _, name in fields]
-        self.assertIn("Vehicle speed*", names)
+        self.assertIn("Vehicle speed", names)
         self.assertIn("Stock CAN RPM", names)
-        self.assertIn("Intake CVTC target*", names)
-        self.assertIn("Exhaust CVTC target*", names)
+        self.assertIn("Intake CVTC target", names)
+        self.assertIn("Exhaust CVTC target", names)
         self.assertIn("Knock timing state", names)
         self.assertIn("High-detonation surface selected", names)
-        self.assertIn("gps_lat", names)
-        self.assertIn("gps_lon", names)
-        self.assertTrue(math.isnan(records[0]["gps_lat"]))
-        self.assertTrue(math.isnan(records[0]["gps_lon"]))
+        self.assertNotIn("gps_lat", names)
+        self.assertNotIn("gps_lon", names)
+        self.assertEqual([name for name in names if "*" in name], [])
         cvtc_specs = {
             binding.spec.name: binding.spec
             for binding in recorder.bindings
             if binding.spec.name in {
-                "Intake CVTC actual B1*",
-                "Intake CVTC target*",
-                "Exhaust CVTC target*",
+                "Intake CVTC actual B1",
+                "Intake CVTC target",
+                "Exhaust CVTC target",
             }
         }
         self.assertEqual(set(cvtc_specs), {
-            "Intake CVTC actual B1*",
-            "Intake CVTC target*",
-            "Exhaust CVTC target*",
+            "Intake CVTC actual B1",
+            "Intake CVTC target",
+            "Exhaust CVTC target",
         })
         for spec in cvtc_specs.values():
             self.assertEqual(spec.scale, 0.5)
-            self.assertEqual(spec.transform, -64.0)
+            self.assertEqual(spec.transform, -128.0)
+            self.assertEqual(spec.units, "degCA*")
         knock_specs = {
             binding.spec.name: binding.spec
             for binding in recorder.bindings
@@ -165,15 +168,15 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
             mlvlg.MLG_ON_OFF,
         )
         self.assertEqual(
-            records[-1]["Intake CVTC actual B1*"],
+            records[-1]["Intake CVTC actual B1"],
             dashboard.raw["intake_cvtc_actual_b1_raw"],
         )
         self.assertEqual(
-            records[-1]["Intake CVTC target*"],
+            records[-1]["Intake CVTC target"],
             dashboard.raw["intake_cvtc_target_raw"],
         )
         self.assertEqual(
-            records[-1]["Exhaust CVTC target*"],
+            records[-1]["Exhaust CVTC target"],
             dashboard.raw["exhaust_cvtc_target_raw"],
         )
         self.assertEqual(
@@ -184,8 +187,6 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
             records[-1]["High-detonation surface selected"],
             0,
         )
-        self.assertAlmostEqual(records[-1]["gps_lat"], 43.115536, places=5)
-        self.assertAlmostEqual(records[-1]["gps_lon"], 131.885485, places=5)
         self.assertGreater(records[-1]["Stock CAN RPM"], 0)
 
     def test_inserts_hold_last_records_for_timestamp_wrap_detection(self):
@@ -239,6 +240,69 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
 
             self.assertFalse(output.exists())
             self.assertFalse(temporary.exists())
+
+
+class MlgCalibrationGateTest(unittest.TestCase):
+    """Bind recorded channel values to the values the dashboard displays."""
+
+    RAW_PROBES = (0, 1, 37, 64, 128, 200, 255, 1024, 25_600, 27_069, 65_535)
+
+    def setUp(self):
+        self.bindings = recording.build_bindings("tuning")
+
+    def test_every_declared_calibration_reaches_a_recorded_channel(self):
+        calibrated = {
+            binding.source
+            for binding in self.bindings
+            if binding.source in recording.MLG_CALIBRATIONS
+        }
+        self.assertEqual(calibrated, set(recording.MLG_CALIBRATIONS))
+
+    def test_channel_values_equal_dashboard_engineering_values(self):
+        for binding in self.bindings:
+            calibration = recording.MLG_CALIBRATIONS.get(binding.source)
+            if calibration is None:
+                self.assertEqual(binding.spec.scale, 1.0)
+                self.assertEqual(binding.spec.transform, 0.0)
+                continue
+            spec = binding.spec
+            for raw in self.RAW_PROBES:
+                with self.subTest(field=spec.name, raw=raw):
+                    # MegaLogViewer evaluates (raw + transform) * scale.
+                    self.assertAlmostEqual(
+                        (raw + spec.transform) * spec.scale,
+                        calibration.apply(raw),
+                        places=6,
+                    )
+
+    def test_channel_names_carry_no_candidate_marker(self):
+        for binding in self.bindings:
+            with self.subTest(field=binding.spec.name):
+                self.assertNotIn("*", binding.spec.name)
+
+    @unittest.skipIf(app is None, "Tk is unavailable")
+    def test_candidate_marker_matches_the_dashboard_units(self):
+        metrics = {metric.key: metric for metric in app.HERO_METRICS}
+        for _title, panel in app.PANELS + app.EXTENDED_PANELS:
+            metrics.update({metric.key: metric for metric in panel})
+        compared = 0
+        for binding in self.bindings:
+            calibration = recording.MLG_CALIBRATIONS.get(binding.source)
+            key = (
+                calibration.target
+                if calibration is not None
+                else binding.source
+            )
+            metric = metrics.get(key)
+            if metric is None:
+                continue
+            compared += 1
+            with self.subTest(field=binding.spec.name):
+                self.assertEqual(
+                    "*" in binding.spec.units,
+                    "*" in metric.unit,
+                )
+        self.assertGreater(compared, 50)
 
 
 if __name__ == "__main__":

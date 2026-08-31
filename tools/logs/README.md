@@ -198,21 +198,46 @@ than assigned an implicit daylight-saving fold. Existing outputs are rejected
 unless `--force` is supplied, and the output path may never resolve to the
 source trace.
 
-The `tuning` output contains 83 fields: `Date`, `Elapsed`, schema state, every
-fixed and rotating telemetry value, five stock-CAN context values, and the GPS
-contract fields `gps_lat` and `gps_lon`. Missing rotating contexts use IEEE 754
-`NaN`. Candidate engineering transforms remain marked with `*`.
+The `tuning` output contains 81 fields: `Date`, `Elapsed`, schema state, every
+fixed and rotating telemetry value, and five stock-CAN context values. Missing
+rotating contexts use IEEE 754 `NaN`. Candidate engineering transforms carry
+`*` in the channel units, matching the dashboard.
 
 No verified latitude or longitude encoding exists in the captured primary CAN
-traffic. The GPS fields are still declared so the local UltraLog Track Map
-detects the schema, but every sample remains `NaN`; the converter does not
-fabricate a route. A later verified AV/navigation or external GPS decoder can
-populate the same fields without changing their MLG contract.
+traffic, so this converter and the dashboard recorder declare no GPS channels.
+`csv_to_mlg.py` still emits `gps_lat` and `gps_lon` for CONSULT recordings that
+carry coordinates, and a later verified AV/navigation or external GPS decoder
+restores the same field contract here.
 
-`mlvlg.py` is the common big-endian MLVLG v2 encoder and structural validator
-used by this converter, the live dashboard recorder, and `csv_to_mlg.py`. It
-checks header layout, descriptor-derived record size, block counters, complete
-records, and payload CRC before an atomic output replacement.
+`mlvlg.py` is the common big-endian MLVLG v2 encoder, decoder, and structural
+validator used by this converter, the live dashboard recorder, and
+`csv_to_mlg.py`. It checks header layout, descriptor-derived record size, block
+counters, complete records, and payload CRC before an atomic output
+replacement.
+
+MegaLogViewer evaluates a channel as `(raw + transform) * scale`, so a
+descriptor transform is expressed in raw counts rather than in engineering
+units. Recorded channels derive both numbers from the same calibrations the
+dashboard applies, and the recorder tests bind every channel value to the live
+engineering value across a raw range.
+
+## MLG field restamping
+
+`mlg_restamp.py` rewrites the field descriptors of an existing MLVLG file from
+the current telemetry field table. Channel identity, units, display digits,
+category, and MegaLogViewer scaling live in the header, so a recording adopts
+corrected calibrations without touching its data blocks. Field types and record
+layout are preserved, and a channel the current table does not declare keeps
+its recorded descriptor.
+
+```bash
+python3 tools/logs/mlg_restamp.py --dry-run tmp/*.mlg
+python3 tools/logs/mlg_restamp.py tmp/*.mlg
+```
+
+Channels are matched by name with the candidate marker removed, so a log
+written before the marker moved from names to units is still recognised. The
+rewritten file is validated before it atomically replaces the original.
 
 The current decoder and converter intentionally reject historical schema-1
 `core32` and `wide54` captures. Those logs require a repository revision whose

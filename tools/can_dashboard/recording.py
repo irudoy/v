@@ -10,6 +10,7 @@ import tempfile
 
 from tools.logs import mlvlg
 from tools.logs import can_telemetry
+from tools.can_dashboard import model
 
 
 DEFAULT_SCHEMA = can_telemetry.DEFAULT_SCHEMA
@@ -39,193 +40,134 @@ class RecordingSummary:
         return self.event_records + self.bridge_records
 
 
+# Field identity for the MLVLG header. Scale and transform never appear here:
+# they are derived from the calibrations the dashboard itself applies, so a
+# recorded channel cannot drift away from the live value. An asterisk in the
+# units marks a candidate transform, exactly as the dashboard marks it.
 RAW_FIELD_DISPLAY = {
-    "tick16": ("Telemetry tick", "", 1.0, 0.0, 0, "Transport"),
-    "rpm_raw": ("Engine speed", "rpm", 12.5, 0.0, 0, "Engine"),
-    "final_timing_raw": (
-        "Timing command*", "deg", 1.0, 0.0, 0, "Ignition"
-    ),
-    "apc_command_raw": ("APC command", "", 1.0, 0.0, 0, "Throttle"),
-    "fuel_inhibit_mask": (
-        "Fuel inhibit mask", "", 1.0, 0.0, 0, "Injection"
-    ),
-    "maf_b1_raw": ("MAF bank 1*", "V", 1 / 200, 0.0, 3, "Air"),
-    "maf_b2_raw": ("MAF bank 2*", "V", 1 / 200, 0.0, 3, "Air"),
-    "maf_total_raw": (
-        "Total airflow*", "g/s", 1 / 100, 0.0, 2, "Air"
-    ),
-    "front_oxygen_sensor_b1_raw": (
-        "Front O2 sensor B1", "raw", 1.0, 0.0, 0, "Fuel"
-    ),
-    "bfs_raw": (
-        "Base fuel schedule*", "ms", 1 / 2048, 0.0, 3, "Fuel"
-    ),
-    "front_oxygen_sensor_b2_raw": (
-        "Front O2 sensor B2", "raw", 1.0, 0.0, 0, "Fuel"
-    ),
-    "telemetry_status": (
-        "Telemetry status", "raw", 1.0, 0.0, 0, "Transport"
-    ),
-    "knock_timing_state_raw": (
-        "Knock timing state", "state", 1 / 256, 0.0, 3, "Knock"
-    ),
-    "knock_surface_state": (
-        "Knock surface state", "raw", 1.0, 0.0, 0, "Knock"
-    ),
-    "knock_count_latched": (
-        "Knock interval count", "", 1.0, 0.0, 0, "Knock"
-    ),
-    "knock_channel_mask_latched": (
-        "Knock channel mask", "raw", 1.0, 0.0, 0, "Knock"
-    ),
-    "app1_raw": ("APP 1*", "V", 1 / 200, 0.0, 3, "Throttle"),
-    "app2_raw": ("APP 2*", "V", 1 / 200, 0.0, 3, "Throttle"),
-    "tps_b1_raw": ("TPS bank 1*", "V", 1 / 200, 0.0, 3, "Throttle"),
-    "absolute_throttle_raw": (
-        "Absolute throttle", "raw", 1.0, 0.0, 0, "Throttle"
-    ),
-    "tps_b2_raw": ("TPS bank 2*", "V", 1 / 200, 0.0, 3, "Throttle"),
+    "tick16": ("Telemetry tick", "", 0, "Transport"),
+    "rpm_raw": ("Engine speed", "rpm", 0, "Engine"),
+    "final_timing_raw": ("Timing command", "deg*", 0, "Ignition"),
+    "apc_command_raw": ("APC command", "raw", 0, "Throttle"),
+    "fuel_inhibit_mask": ("Fuel inhibit mask", "", 0, "Injection"),
+    "maf_b1_raw": ("MAF bank 1", "V*", 3, "Air"),
+    "maf_b2_raw": ("MAF bank 2", "V*", 3, "Air"),
+    "maf_total_raw": ("Total airflow", "g/s*", 2, "Air"),
+    "front_oxygen_sensor_b1_raw": ("Front O2 sensor B1", "raw", 0, "Fuel"),
+    "bfs_raw": ("Base fuel schedule", "ms*", 3, "Fuel"),
+    "front_oxygen_sensor_b2_raw": ("Front O2 sensor B2", "raw", 0, "Fuel"),
+    "telemetry_status": ("Telemetry status", "raw", 0, "Transport"),
+    "knock_timing_state_raw": ("Knock timing state", "state", 3, "Knock"),
+    "knock_surface_state": ("Knock surface state", "raw", 0, "Knock"),
+    "knock_count_latched": ("Knock interval count", "", 0, "Knock"),
+    "knock_channel_mask_latched": ("Knock channel mask", "raw", 0, "Knock"),
+    "app1_raw": ("APP 1", "V*", 3, "Throttle"),
+    "app2_raw": ("APP 2", "V*", 3, "Throttle"),
+    "tps_b1_raw": ("TPS bank 1", "V*", 3, "Throttle"),
+    "absolute_throttle_raw": ("Absolute throttle", "raw", 0, "Throttle"),
+    "tps_b2_raw": ("TPS bank 2", "V*", 3, "Throttle"),
     "intake_cvtc_actual_b1_raw": (
-        "Intake CVTC actual B1*", "degCA", 0.5, -64.0, 1, "CVTC"
+        "Intake CVTC actual B1", "degCA*", 1, "CVTC"
     ),
     "intake_cvtc_actual_b2_raw": (
-        "Intake CVTC actual B2*", "degCA", 0.5, -64.0, 1, "CVTC"
+        "Intake CVTC actual B2", "degCA*", 1, "CVTC"
     ),
-    "intake_cvtc_target_raw": (
-        "Intake CVTC target*", "degCA", 0.5, -64.0, 1, "CVTC"
-    ),
-    "exhaust_cvtc_target_raw": (
-        "Exhaust CVTC target*", "degCA", 0.5, -64.0, 1, "CVTC"
-    ),
-    "calculated_load_raw": (
-        "Calculated load", "%", 100 / 255, 0.0, 1, "Engine"
-    ),
+    "intake_cvtc_target_raw": ("Intake CVTC target", "degCA*", 1, "CVTC"),
+    "exhaust_cvtc_target_raw": ("Exhaust CVTC target", "degCA*", 1, "CVTC"),
+    "calculated_load_raw": ("Calculated load", "%", 1, "Engine"),
     "throttle_request_bounded_raw": (
-        "Bounded throttle request", "raw", 1.0, 0.0, 0, "Throttle"
+        "Bounded throttle request", "raw", 0, "Throttle"
     ),
-    "engine_torque_state_raw": (
-        "Engine torque state*", "Nm", 0.1, 0.0, 1, "Engine"
-    ),
+    "engine_torque_state_raw": ("Engine torque state", "Nm*", 1, "Engine"),
     "injection_timing_state_raw": (
-        "Injection timing state", "raw", 1.0, 0.0, 0, "Injection"
+        "Injection timing state", "raw", 0, "Injection"
     ),
     "exhaust_cvtc_actual_b1_raw": (
-        "Exhaust CVTC actual B1*", "degCA", 0.5, -64.0, 1, "CVTC"
+        "Exhaust CVTC actual B1", "degCA*", 1, "CVTC"
     ),
     "exhaust_cvtc_actual_b2_raw": (
-        "Exhaust CVTC actual B2*", "degCA", 0.5, -64.0, 1, "CVTC"
+        "Exhaust CVTC actual B2", "degCA*", 1, "CVTC"
     ),
     "throttle_target_shared_raw": (
-        "Shared throttle target", "raw", 1.0, 0.0, 0, "Throttle"
+        "Shared throttle target", "raw", 0, "Throttle"
     ),
     "throttle_target_channel_0_raw": (
-        "Throttle target channel 0", "raw", 1.0, 0.0, 0, "Throttle"
+        "Throttle target channel 0", "raw", 0, "Throttle"
     ),
     "throttle_target_channel_1_raw": (
-        "Throttle target channel 1", "raw", 1.0, 0.0, 0, "Throttle"
+        "Throttle target channel 1", "raw", 0, "Throttle"
     ),
-    "coolant_raw": ("Coolant", "degC", 1.0, -50.0, 0, "Temperature"),
-    "iat_raw": ("Intake air", "degC", 1.0, -50.0, 0, "Temperature"),
+    "coolant_raw": ("Coolant", "degC*", 0, "Temperature"),
+    "iat_raw": ("Intake air", "degC*", 0, "Temperature"),
     "fuel_temperature_did_source_raw": (
-        "Fuel temperature*", "degC", 1.0, -50.0, 0, "Temperature"
+        "Fuel temperature", "degC*", 0, "Temperature"
     ),
     "oil_temperature_did_source_raw": (
-        "Oil temperature*", "degC", 1.0, -50.0, 0, "Temperature"
+        "Oil temperature", "degC*", 0, "Temperature"
     ),
-    "af_state_factor_raw": (
-        "A/F state factor", "", 1 / 16384, 0.0, 4, "Fuel"
-    ),
-    "stft_b1_raw": (
-        "STFT bank 1", "%", 1 / 256, -25600.0, 2, "Fuel"
-    ),
-    "stft_b2_raw": (
-        "STFT bank 2", "%", 1 / 256, -25600.0, 2, "Fuel"
-    ),
-    "intake_cvtc_duty_b1_raw": (
-        "CVTC duty B1", "%", 100 / 256, 0.0, 1, "CVTC"
-    ),
-    "intake_cvtc_duty_b2_raw": (
-        "CVTC duty B2", "%", 100 / 256, 0.0, 1, "CVTC"
-    ),
-    "ltft_b1_raw": (
-        "LTFT bank 1", "%", 1 / 256, -25600.0, 2, "Fuel"
-    ),
-    "ltft_b2_raw": (
-        "LTFT bank 2", "%", 1 / 256, -25600.0, 2, "Fuel"
-    ),
-    "timing_state_2023_raw": (
-        "Timing state 2023", "raw", 1.0, 0.0, 0, "Ignition"
-    ),
-    "timing_state_564c_raw": (
-        "Timing state 564C", "raw", 1.0, 0.0, 0, "Ignition"
-    ),
-    "protocol_version": (
-        "Protocol version", "", 1.0, 0.0, 0, "Transport"
-    ),
-    "profile_id": ("Profile ID", "", 1.0, 0.0, 0, "Transport"),
-    "profile_crc16": (
-        "Profile CRC16", "raw", 1.0, 0.0, 0, "Transport"
-    ),
-    "snapshot_overrun_count": (
-        "Snapshot overrun count", "", 1.0, 0.0, 0, "Transport"
-    ),
-    "tx_abort_count": (
-        "TX abort count", "", 1.0, 0.0, 0, "Transport"
-    ),
+    "af_state_factor_raw": ("A/F state factor", "", 4, "Fuel"),
+    "stft_b1_raw": ("STFT bank 1", "%", 2, "Fuel"),
+    "stft_b2_raw": ("STFT bank 2", "%", 2, "Fuel"),
+    "intake_cvtc_duty_b1_raw": ("CVTC duty B1", "%", 1, "CVTC"),
+    "intake_cvtc_duty_b2_raw": ("CVTC duty B2", "%", 1, "CVTC"),
+    "ltft_b1_raw": ("LTFT bank 1", "%", 2, "Fuel"),
+    "ltft_b2_raw": ("LTFT bank 2", "%", 2, "Fuel"),
+    "timing_state_2023_raw": ("Timing state 2023", "raw", 0, "Ignition"),
+    "timing_state_564c_raw": ("Timing state 564C", "raw", 0, "Ignition"),
+    "protocol_version": ("Protocol version", "", 0, "Transport"),
+    "profile_id": ("Profile ID", "", 0, "Transport"),
+    "profile_crc16": ("Profile CRC16", "raw", 0, "Transport"),
+    "snapshot_overrun_count": ("Snapshot overrun count", "", 0, "Transport"),
+    "tx_abort_count": ("TX abort count", "", 0, "Transport"),
     "intake_cvtc_duty_b1_word_raw": (
-        "Intake CVTC duty B1 word*", "%", 100 / 1024, 0.0, 1, "CVTC"
+        "Intake CVTC duty B1 word", "%*", 1, "CVTC"
     ),
     "intake_cvtc_duty_b2_word_raw": (
-        "Intake CVTC duty B2 word*", "%", 100 / 1024, 0.0, 1, "CVTC"
+        "Intake CVTC duty B2 word", "%*", 1, "CVTC"
     ),
     "manifold_pressure_1116_raw": (
-        "Manifold pressure 0x1116", "raw", 1.0, 0.0, 0, "Air"
+        "Manifold pressure 0x1116", "raw", 0, "Air"
     ),
     "manifold_pressure_112a_raw": (
-        "Manifold pressure 0x112A", "raw", 1.0, 0.0, 0, "Air"
+        "Manifold pressure 0x112A", "raw", 0, "Air"
     ),
     "exhaust_cvtc_duty_b1_word_raw": (
-        "Exhaust CVTC duty B1 word*", "%", 100 / 1024, 0.0, 1, "CVTC"
+        "Exhaust CVTC duty B1 word", "%*", 1, "CVTC"
     ),
     "exhaust_cvtc_duty_b2_word_raw": (
-        "Exhaust CVTC duty B2 word*", "%", 100 / 1024, 0.0, 1, "CVTC"
+        "Exhaust CVTC duty B2 word", "%*", 1, "CVTC"
     ),
-    "atmospheric_pressure_raw": (
-        "Atmospheric pressure", "raw", 1.0, 0.0, 0, "Air"
-    ),
-    "battery_voltage_raw": (
-        "Battery voltage*", "V", 0.08, 0.0, 2, "Context"
-    ),
-    "front_af_sensor_b1_word_raw": (
-        "Front A/F sensor B1", "raw", 1.0, 0.0, 0, "Fuel"
-    ),
-    "front_af_sensor_b2_word_raw": (
-        "Front A/F sensor B2", "raw", 1.0, 0.0, 0, "Fuel"
-    ),
-    "af_adjustment_b1_raw": (
-        "A/F adjustment B1", "raw", 1.0, 0.0, 0, "Fuel"
-    ),
-    "af_adjustment_b2_raw": (
-        "A/F adjustment B2", "raw", 1.0, 0.0, 0, "Fuel"
-    ),
-    "secondary_tps_b1_raw": (
-        "Secondary TPS B1", "raw", 1.0, 0.0, 0, "Throttle"
-    ),
-    "secondary_tps_b2_raw": (
-        "Secondary TPS B2", "raw", 1.0, 0.0, 0, "Throttle"
-    ),
+    "atmospheric_pressure_raw": ("Atmospheric pressure", "raw", 0, "Air"),
+    "battery_voltage_raw": ("Battery voltage", "V*", 2, "Context"),
+    "front_af_sensor_b1_word_raw": ("Front A/F sensor B1", "raw", 0, "Fuel"),
+    "front_af_sensor_b2_word_raw": ("Front A/F sensor B2", "raw", 0, "Fuel"),
+    "af_adjustment_b1_raw": ("A/F adjustment B1", "raw", 0, "Fuel"),
+    "af_adjustment_b2_raw": ("A/F adjustment B2", "raw", 0, "Fuel"),
+    "secondary_tps_b1_raw": ("Secondary TPS B1", "raw", 0, "Throttle"),
+    "secondary_tps_b2_raw": ("Secondary TPS B2", "raw", 0, "Throttle"),
+}
+
+MLG_CALIBRATIONS = {
+    **can_telemetry.RAW_CALIBRATIONS,
+    **model.DASHBOARD_CALIBRATIONS,
 }
 
 
+def mlg_scaling(source: str) -> tuple[float, float]:
+    """Return the MLVLG scale and transform for one raw telemetry field.
+
+    MegaLogViewer evaluates ``(raw + transform) * scale``, so the transform is
+    expressed in raw counts rather than in engineering units.
+    """
+
+    calibration = MLG_CALIBRATIONS.get(source)
+    if calibration is None:
+        return 1.0, 0.0
+    return calibration.factor, calibration.offset / calibration.factor
+
+
 def _injection_display(index: int):
-    return (
-        f"Injection calc {index}*",
-        "ms",
-        1 / 100,
-        0.0,
-        2,
-        "Injection",
-    )
+    return (f"Injection calc {index}", "ms*", 2, "Injection")
 
 
 def _raw_binding(name: str) -> FieldBinding:
@@ -233,8 +175,9 @@ def _raw_binding(name: str) -> FieldBinding:
     if display is None and name.startswith("injection_") and name.endswith("_raw"):
         display = _injection_display(int(name.split("_")[1]))
     if display is None:
-        display = (name, "raw", 1.0, 0.0, 0, "Telemetry")
-    field_name, units, scale, transform, digits, category = display
+        display = (name, "raw", 0, "Telemetry")
+    field_name, units, digits, category = display
+    scale, transform = mlg_scaling(name)
     return FieldBinding(
         spec=mlvlg.FieldSpec(
             name=field_name,
@@ -320,8 +263,8 @@ def build_bindings(
             ),
             FieldBinding(
                 mlvlg.FieldSpec(
-                    "Vehicle speed*",
-                    "km/h",
+                    "Vehicle speed",
+                    "km/h*",
                     "Context",
                     mlvlg.MLG_F32,
                     digits=2,
@@ -352,20 +295,6 @@ def build_bindings(
                     digits=0,
                 ),
                 "dashboard_state_raw",
-                "attribute",
-            ),
-            FieldBinding(
-                mlvlg.FieldSpec(
-                    "gps_lat", "deg", "GPS", mlvlg.MLG_F32, digits=6
-                ),
-                "gps_lat",
-                "attribute",
-            ),
-            FieldBinding(
-                mlvlg.FieldSpec(
-                    "gps_lon", "deg", "GPS", mlvlg.MLG_F32, digits=6
-                ),
-                "gps_lon",
                 "attribute",
             ),
         )
