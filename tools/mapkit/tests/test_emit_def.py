@@ -722,7 +722,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                 axis = table.find("./table[@type='Static X Axis']")
                 self.assertEqual(
                     axis.get("name"),
-                    "Engine Speed [RPM] (Candidate)",
+                    "Engine Speed [RPM]",
                 )
                 self.assertEqual(
                     [int(cell.text) for cell in axis.findall("./data")],

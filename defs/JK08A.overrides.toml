@@ -1385,7 +1385,7 @@ order = 155
 format = "0"
 fine = 1
 coarse = 4
-static_axis_name = "Engine Speed [RPM] (Candidate)"
+static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 
 [table.0001219e]
@@ -1396,7 +1396,7 @@ order = 156
 format = "0"
 fine = 1
 coarse = 4
-static_axis_name = "Engine Speed [RPM] (Candidate)"
+static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 
 [table.000121a6]

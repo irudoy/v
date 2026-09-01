@@ -454,7 +454,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                 x_axis = table.find("./XDFAXIS[@id='x']")
                 self.assertEqual(
                     x_axis.findtext("./units"),
-                    "Engine Speed [RPM] (Candidate)",
+                    "Engine Speed [RPM]",
                 )
                 self.assertEqual(
                     [int(label.get("value")) for label in x_axis.findall("./LABEL")],

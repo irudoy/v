@@ -1496,7 +1496,7 @@
            storageaddress="0x14493" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -1522,7 +1522,7 @@
            storageaddress="0x1449B" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -1914,7 +1914,7 @@
            storageaddress="0xE0780" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -1941,7 +1941,7 @@
            storageaddress="0xE07A0" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -2335,7 +2335,7 @@
            storageaddress="0xE0788" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -2362,7 +2362,7 @@
            storageaddress="0xE07A8" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -2756,7 +2756,7 @@
            storageaddress="0xE0790" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -2783,7 +2783,7 @@
            storageaddress="0xE07B0" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -3177,7 +3177,7 @@
            storageaddress="0xE0798" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -3204,7 +3204,7 @@
            storageaddress="0xE07B8" sizex="8" endian="big">
       <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM] (Candidate)" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>

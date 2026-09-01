@@ -130,6 +130,24 @@ bit 7 of `0xFFFF456F`, routes to raw state `15`. With both clear,
 fully qualified terminal state and the default surface covers every other
 condition.
 
+The machine carries two pass counters and no absolute-time input.
+`FUN_00054FD0` is entry `98` of the same 144-entry periodic list, so the
+resolver runs once per background-loop pass. `FUN_000546BA` increments
+`0xFFFFA220` with saturation at `0xFFFF`; `FUN_000543EC` clears it in the same
+block that writes raw state `2` to `0xFFFFA22F`, and `FUN_00054C5A` clears it
+together with `0xFFFFA21E`, `0xFFFFA222`, and `0xFFFFA226`. `FUN_00053C3E`
+admits raw state `13` on its second cold path only while `0xFFFFA220` is below
+`ROM16[0x9194]`, which is `2000` passes or `20.48 s`. `FUN_00053E6A`
+increments `0xFFFFA224` while `0xFFFFA30A` is zero and releases at
+`ROM8[0x848C]`, which is `70` passes or `0.717 s`. Those are the only
+timer-shaped thresholds among the calibration scalars the machine reads, and
+every remaining input is a coolant comparison, one of the three calibrated
+comparators with hysteresis, or the `19`-tick window at `ROM8[0x8B06]`. The
+vendor cam-map chain recorded in `../refs/vendor/facts.csv` places a
+`First Idle` selection about `40 s` after start, which is about `3906` passes
+at this cadence; no threshold of that order exists, so that chain does not
+describe this machine. Its `70 C` boundary is the one element that matches.
+
 `0xFFFFA30E` mirrors bit 1 of `0xFFFF23E5`, which `FUN_00080CEC` holds set only
 while bit 7 of `0xFFFF23EB` is set, tick counter `0xFFFF3754` is at most
 `ROM8[0x8B06]`, and bit 6 of `0xFFFF45C8` is clear. Stock JK78C `ROM8[0x8B06]`
@@ -215,6 +233,19 @@ eight-point axis `0x13C6A` carries `32, 40, 48, 64, 80, 96, 112, 128` for
 `5600 RPM`. `0xFFFF11A2` therefore carries `12.5 RPM` per count and saturates
 at `3187.5 RPM`, and `0xFFFF11A3` carries `25 RPM` per count and saturates at
 `6375 RPM`.
+
+`FUN_00028198` therefore places the eight-point static axis of both timing
+branches at `0`, `400`, `800`, `1200`, `1600`, `2000`, `2400`, and
+`2800 RPM`. The 1ND pair carries the same construction. Its interpolator at
+`0x287B4` is byte-identical to `FUN_00028198`, saturation literal `0x00E0`
+included; accessor `0x0006F37A` reads index byte `0xFFFE81AC` and passes it to
+that interpolator with table `0x13C22`; neighbouring eight-point axis `0x140D4`
+repeats `32, 40, 48, 64, 80, 96, 112, 128`; and
+`../defs/vq37-native-fuel-cut.toml` binds `0xFFFE81B6`, the same `+0xA` offset
+from the index byte, as the native speed word with the same `612` and `596`
+caps. Index byte and speed word therefore sit at one constant `0x8FF6` offset
+from their JK78C counterparts, and both eight-point tables hold identical stock
+bytes.
 
 Both bit-7 producers are calibrated comparators with hysteresis.
 `FUN_00059C2C` reads `0xFFFF268C`, which `FUN_00020F1A` fills from
