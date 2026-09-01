@@ -228,14 +228,21 @@ electrical content of the private bus.
 
 ## Calibration boundary
 
-No map-consuming function reads any RAM cell written by the six HCAN0 receive
-handlers. The 691 interpolation-addressed tables of the exact ROM and the
-handlers' 36 destination cells have an empty intersection. HCAN0 traffic
-reaches diagnostic status bytes, the identifier publication tables, and the
-telemetry staging block written by `FUN_000CC1FE`, and nothing else.
+The six HCAN0 receive handlers write 36 RAM cells. Twenty-four of them are read
+by functions outside the handler set, and one, `0xFFFF44EF`, is read by five of
+the 378 functions that call the interpolation library. `0xFFFF44EF` is a
+status-group byte written from many unrelated functions across the image, and
+the handler sets a bit in it rather than publishing a measurement. The
+remaining HCAN0 destinations reach diagnostic status bytes, the identifier
+publication tables, and the telemetry staging block written by `FUN_000CC1FE`.
 
-The exact ROM therefore contains no calibration surface bound to the private
-bus, and no calibrated target is transmitted on it.
+No calibrated value is transmitted on the private bus: payload bytes 0 through 3
+of frame `0x22B` have no producer, and bytes 4 through 7 carry status bits.
+
+The census behind these counts covers interpolation-addressed tables. The
+`direct-row-major` and `direct-scalar` families of the map inventory are
+addressed without the library and lie outside it, so the count constrains
+library-addressed calibration and leaves direct addressing open.
 
 ## Diagnostic descriptors
 

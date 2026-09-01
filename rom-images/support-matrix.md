@@ -569,17 +569,24 @@ populated slot belongs to VVEL, and JK08A declares none of them.
 
 Slot `0x125C` at `0xFFFF443E` is populated and unnamed in the factory manual.
 The same word supplies payload bytes 0 and 1 of frame `0x22B`, the only frame
-the ECM transmits on its private VVEL bus, so the slot publishes the command
-half of the VVEL loop rather than a measurement. No ROM instruction writes that
-word, and it lies inside a declared zero-fill range, so the DID and the frame
-both carry zero. `FUN_000EDF62` serves the VVEL TIM pair. The controllers, the
-mailbox tables, and the rest of the private bus are in
-`../defs/JK78C.can.md`.
+the ECM transmits on its private VVEL bus; bytes 2 and 3 come from
+`0xFFFF5D36`. No ROM instruction writes either word. A scan of every SH-2 store
+form that unrolls register constants through `mov`, `add`, and the sign- and
+zero-extension forms finds no producer while resolving the handler write at
+`0x000EDCA8` to `0xFFFF42B5`. `0xFFFF443E` occurs in the image only in the two
+DID address tables at `0x00022A88` and `0x00025F60` and in the literal pool of
+the transmit builder at `0x000EE6E0`. Both cells lie inside declared zero-fill
+ranges, so the DID and the frame carry zero. `FUN_000EDF62` serves the VVEL TIM
+pair. The controllers, the mailbox tables, and the rest of the private bus are
+in `../defs/JK78C.can.md`.
 
-The receive handlers of that bus reach diagnostic status bytes, DID
-publication, and the telemetry staging block only. No map-consuming function
-reads a cell they write, so the exact JK78C image declares VVEL as a monitoring
-and diagnostic subsystem and carries no VVEL calibration surface.
+The VVEL calibration surface of the image is unbound. JK78C carries 691
+interpolation-addressed tables against 436 in JK08A. Eighty-four of them, in
+`0x00017600..0x0001B800`, reproduce the exact contents of tables in
+`0x0000B000..0x00017600`, 73 of those with non-constant content, so the image
+holds a second copy of part of its calibration set. The vendor-documented VVEL
+duration and control-shaft limit tables are not located in that surface, and the
+census covers interpolation addressing only.
 
 These bindings also fix the ROM's own bank ordering convention. Across the 18
 populated bank-labelled DID pairs in JK78C and the 16 in JK08A, bank 1 is the
