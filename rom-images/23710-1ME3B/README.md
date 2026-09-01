@@ -45,9 +45,56 @@ is uniform only inside the 1,936-byte window: across the 31 codes shared with
 `-1`, `0`, and `+1`. Each binding is therefore read from this image through the
 record and its own attribute pointer rather than derived from an offset.
 
-The image has no registered checksum layout, address profile, Ghidra export,
-Memgraph layer, or definition target. Its declared family boundary forbids
-address inheritance from any other image in the collection.
+## Structure export and cross-ROM correspondence
+
+Headless recovery folds 82,820 instructions in 578 regions into functions with
+no failure, leaving 2,320 functions, 3,695 resolved call edges, 97,939
+peripheral and RAM references, and 445,342 instructions. The Memgraph structure
+layer holds 2,320 `Func` nodes, 13,464 `Reg` nodes, and 55,608 `USES` edges.
+
+Whole-function hashes pair this image with `1ND0A` far more strongly than with
+JK78C. Counting only hashes that are unique on both sides, `1ND0A` gives 1,021
+instruction-shape pairs and 636 exact-byte pairs, while JK78C gives 146 and
+136. Shape equality folds literal values and symbol addresses and keeps the
+instruction and register shape, so it survives relocation and recalibration
+that exact bytes do not.
+
+The pairing is a relocation map rather than one shift. Across the 636
+exact-byte pairs, 97 functions keep their `1ND0A` address and the largest
+remaining groups sit at `+0x3010` with 46, `+0x5F94` with 44, `+0x3E58` with
+43, `+0x3E60` with 33, and `+0x3E70` with 31 functions. These pairs are
+correspondence candidates for review and carry no semantic claim.
+
+## Calibration access library
+
+The `1ND` calibration access library does not carry across. Of the 64 `1ND0A`
+functions in `0x028390:0x02928C`, 58 have no structural homolog in this image,
+and they include all 13 registry kernels and all 36 registry wrappers. Code
+immediately around that block does carry across at constant relocations:
+`0x0283D4` at `+0x5D4`, `0x0289C0` and `0x028A08` at `+0x297C`, and `0x0291EC`
+onward at `+0x2D50`. The absence is therefore a property of the library, not of
+the region.
+
+The replacement occupies `0x028980:0x02BF60` and holds 37 functions and 13,472
+bytes with no `1ND0A` structural homolog. Every one of them is a call-graph
+leaf. `1ND0A` reaches the same behaviour through a wrapper that calls a kernel
+which may call a shared tail, in 58 functions and 3,572 bytes. This image fuses
+each access into one self-contained function and unrolls the axis search, which
+accounts for the size. `0x02A9F4`, with 62 callers, clamps an eight-point uint8
+table at index `0xE0`, splits index and fraction, loads both neighbouring
+cells, interpolates with `mul.l` and `shlr16`, and returns the last cell from
+the `rts` delay slot. `0x02AF88`, with 66 callers, opens with a sixteen-point
+uint16 axis search unrolled from offset `0x1E` downward.
+
+`FindInterpCore.java` does not locate this library. Its signature is a
+literal-pool slot plus two levels of indirection, which a fused leaf does not
+use. Its highest-ranked candidates in this image, `0x037378` and `0x03CF10`,
+are a byte-queue emitter that appends to `0xFFFEDC26` under the counter at
+`0xFFFEDD2A`.
+
+The image has no registered checksum layout, address profile, interpolation
+registry, or definition target. Its declared family boundary forbids address
+inheritance from any other image in the collection.
 
 Identity and stock hashes are authoritative in `../roms.csv` and
 `../README.md`; family classification and pairwise measurements are in

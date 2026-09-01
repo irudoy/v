@@ -171,6 +171,16 @@ stage: `FindInterpCore.java`, `MapInventory.java`,
 target interpolation registry and correspondence review. This is the full cost
 that JK78C paid.
 
+The first script in that stage assumes the library is reached through a
+literal-pool slot and two levels of indirection. A library that fuses wrapper,
+kernel, and axis search into one self-contained leaf per access does not carry
+that signature, and `FindInterpCore.java` then ranks unrelated indirect-call
+layers instead. 1ME3B is such an image: its library was located from call-graph
+in-degree together with leaf status, and the measurement is in
+`23710-1ME3B/README.md`. Treat an empty or implausible core ranking as a
+statement about the calling convention, not as evidence that the image has no
+library.
+
 Three levers reduce the remaining work and are worth measuring first, because
 they hold even when no code relocates. Values below are the 1ME3B measurements.
 
