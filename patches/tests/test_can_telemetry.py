@@ -24,7 +24,7 @@ class CanTelemetryContractTest(unittest.TestCase):
                 for item in self.manifest.profiles
             ),
             (
-                ("tuning", 1, 11, 0x75BF),
+                ("tuning", 3, 11, 0x01A3),
             ),
         )
         self.assertEqual(len(self.manifest.fields), 40)

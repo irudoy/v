@@ -119,18 +119,14 @@ RAW_FIELD_DISPLAY = {
     "profile_crc16": ("Profile CRC16", "raw", 0, "Transport"),
     "snapshot_overrun_count": ("Snapshot overrun count", "", 0, "Transport"),
     "tx_abort_count": ("TX abort count", "", 0, "Transport"),
-    "intake_cvtc_duty_b1_word_raw": (
-        "Intake CVTC duty B1 word", "%*", 1, "CVTC"
+    "intake_cvtc_duty_command_b1_raw": (
+        "Intake CVTC duty command B1", "%", 1, "CVTC"
     ),
-    "intake_cvtc_duty_b2_word_raw": (
-        "Intake CVTC duty B2 word", "%*", 1, "CVTC"
+    "intake_cvtc_duty_command_b2_raw": (
+        "Intake CVTC duty command B2", "%", 1, "CVTC"
     ),
-    "manifold_pressure_1116_raw": (
-        "Manifold pressure 0x1116", "raw", 0, "Air"
-    ),
-    "manifold_pressure_112a_raw": (
-        "Manifold pressure 0x112A", "raw", 0, "Air"
-    ),
+    "ltft_learned_b1_raw": ("LTFT learned bank 1", "%", 2, "Fuel"),
+    "ltft_adjustment_b1_raw": ("LTFT adjustment bank 1", "%", 2, "Fuel"),
     "exhaust_cvtc_duty_b1_word_raw": (
         "Exhaust CVTC duty B1 word", "%*", 1, "CVTC"
     ),

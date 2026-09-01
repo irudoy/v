@@ -45,8 +45,10 @@ The rotating contexts provide:
 
 - coolant, intake-air, fuel, and oil temperature sources;
 - the upstream Q14 fuel multiplier, STFT, and LTFT;
-- low-resolution intake CVTC duty and high-resolution intake and exhaust duty;
-- manifold and atmospheric pressure plus battery voltage;
+- the bank 1 long-term trim learned and adjustment summands;
+- intake CVTC solenoid duty commands, the low-resolution intake duty
+  monitor pair, and high-resolution exhaust duty;
+- atmospheric pressure and battery voltage;
 - higher-resolution front A/F sensor words and both adjustment integrators;
 - secondary throttle feedback for both banks;
 - two timing state bytes and the in-band transport identity and counters.
@@ -95,7 +97,7 @@ not established by the current evidence.
 
 ## Transport boundary
 
-Schema 2 uses protocol version 2, profile ID 1, generated CRC16 `0x75BF`, one
+Schema 2 uses protocol version 2, profile ID 3, generated CRC16 `0x01A3`, one
 build-selected standard data CAN ID on physical mailbox 26, and the adjacent
 control ID on polled receive mailbox 31. The data ID range is `0x001..0x7FE`;
 the control ID is always `data_can_id + 1`.

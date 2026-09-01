@@ -26,7 +26,7 @@ state_address = 0xFFFF5E00
 
 [[profile]]
 name = "tuning"
-id = 1
+id = 3
 page_count = 11
 
 [[field]]
@@ -636,39 +636,39 @@ scale = "saturating count"
 [[context]]
 page = 10
 tag = 0
-name = "intake_cvtc_duty_and_manifold_pressure"
+name = "intake_cvtc_duty_command_and_trim_terms"
 
 [[context.field]]
-name = "intake_cvtc_duty_b1_word_raw"
-width = 2
-source = 0xFFFF1AB0
-kind = "ecu_ram"
-signed = false
-scale = "candidate raw * 100 / 1024 percent"
-
-[[context.field]]
-name = "intake_cvtc_duty_b2_word_raw"
-width = 2
-source = 0xFFFF1AB2
-kind = "ecu_ram"
-signed = false
-scale = "candidate raw * 100 / 1024 percent"
-
-[[context.field]]
-name = "manifold_pressure_1116_raw"
+name = "intake_cvtc_duty_command_b1_raw"
 width = 1
-source = 0xFFFF118A
+source = 0xFFFF23B4
 kind = "ecu_ram"
 signed = false
-scale = "diagnostic-evidence candidate"
+scale = "raw * 39 / 100 percent"
 
 [[context.field]]
-name = "manifold_pressure_112a_raw"
+name = "intake_cvtc_duty_command_b2_raw"
 width = 1
-source = 0xFFFF16D2
+source = 0xFFFF23B5
 kind = "ecu_ram"
 signed = false
-scale = "diagnostic-evidence candidate"
+scale = "raw * 39 / 100 percent"
+
+[[context.field]]
+name = "ltft_learned_b1_raw"
+width = 2
+source = 0xFFFF2306
+kind = "ecu_ram"
+signed = false
+scale = "Q8.8 percent"
+
+[[context.field]]
+name = "ltft_adjustment_b1_raw"
+width = 2
+source = 0xFFFF5648
+kind = "ecu_ram"
+signed = false
+scale = "Q8.8 percent"
 
 [[context]]
 page = 10

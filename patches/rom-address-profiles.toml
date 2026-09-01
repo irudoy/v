@@ -192,10 +192,10 @@ ltft_b1_raw = 0xFFFF237E
 ltft_b2_raw = 0xFFFF2380
 timing_state_2023_raw = 0xFFFF209A
 timing_state_564c_raw = 0xFFFF56D8
-intake_cvtc_duty_b1_word_raw = 0xFFFF1B10
-intake_cvtc_duty_b2_word_raw = 0xFFFF1B12
-manifold_pressure_1116_raw = 0xFFFF1194
-manifold_pressure_112a_raw = 0xFFFF1720
+intake_cvtc_duty_command_b1_raw = 0xFFFF2438
+intake_cvtc_duty_command_b2_raw = 0xFFFF2439
+ltft_learned_b1_raw = 0xFFFF2382
+ltft_adjustment_b1_raw = 0xFFFF56D4
 exhaust_cvtc_duty_b1_word_raw = 0xFFFF1B0C
 exhaust_cvtc_duty_b2_word_raw = 0xFFFF1B0E
 atmospheric_pressure_raw = 0xFFFF4724
@@ -407,10 +407,10 @@ ltft_b1_raw = 0xFFFF2376
 ltft_b2_raw = 0xFFFF2378
 timing_state_2023_raw = 0xFFFF2092
 timing_state_564c_raw = 0xFFFF56C4
-intake_cvtc_duty_b1_word_raw = 0xFFFF1B08
-intake_cvtc_duty_b2_word_raw = 0xFFFF1B0A
-manifold_pressure_1116_raw = 0xFFFF1194
-manifold_pressure_112a_raw = 0xFFFF171C
+intake_cvtc_duty_command_b1_raw = 0xFFFF2430
+intake_cvtc_duty_command_b2_raw = 0xFFFF2431
+ltft_learned_b1_raw = 0xFFFF237A
+ltft_adjustment_b1_raw = 0xFFFF56C0
 exhaust_cvtc_duty_b1_word_raw = 0xFFFF1B04
 exhaust_cvtc_duty_b2_word_raw = 0xFFFF1B06
 atmospheric_pressure_raw = 0xFFFF4710
@@ -452,7 +452,11 @@ injected_ram_start = 0xFFFF0C00
 injected_ram_end = 0xFFFF0F00
 map_variant = "sh7059-1nd"
 telemetry_completion_variant = "mailbox26-tail-chain"
-telemetry_unavailable = ["knock_timing_state_raw"]
+telemetry_unavailable = [
+    "knock_timing_state_raw",
+    "intake_cvtc_duty_command_b1_raw",
+    "intake_cvtc_duty_command_b2_raw",
+]
 telemetry_zero_source = 0xFFFF0DE0
 
 [profile.1ND0A.capabilities]
@@ -622,10 +626,8 @@ ltft_b1_raw = 0xFFFE9302
 ltft_b2_raw = 0xFFFE9304
 timing_state_2023_raw = 0xFFFE900E
 timing_state_564c_raw = 0xFFFECFE8
-intake_cvtc_duty_b1_word_raw = 0xFFFE8B14
-intake_cvtc_duty_b2_word_raw = 0xFFFE8B16
-manifold_pressure_1116_raw = 0xFFFE817E
-manifold_pressure_112a_raw = 0xFFFE8732
+ltft_learned_b1_raw = 0xFFFE9306
+ltft_adjustment_b1_raw = 0xFFFECFE4
 exhaust_cvtc_duty_b1_word_raw = 0xFFFE8B10
 exhaust_cvtc_duty_b2_word_raw = 0xFFFE8B12
 atmospheric_pressure_raw = 0xFFFEBC54
@@ -643,7 +645,7 @@ free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovere
 maps = "Reviewed cross-generation interpolation correspondence, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ND bank structure bind fourteen supported families."
 rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
-telemetry = "Sixty-two ECU sources are bound by aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state is encoded from cleared reserved RAM and remains explicitly unavailable in metadata."
+telemetry = "Sixty ECU sources are bound by aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state and the two intake solenoid duty command cells are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
 
 [profile.1ND3B]
 inherits = "1ND0A"
@@ -834,10 +836,10 @@ ltft_b1_raw = 0xFFFF225A
 ltft_b2_raw = 0xFFFF225C
 timing_state_2023_raw = 0xFFFF1F76
 timing_state_564c_raw = 0xFFFF5BE4
-intake_cvtc_duty_b1_word_raw = 0xFFFF1A8C
-intake_cvtc_duty_b2_word_raw = 0xFFFF1A8E
-manifold_pressure_1116_raw = 0xFFFF1176
-manifold_pressure_112a_raw = 0xFFFF16E0
+intake_cvtc_duty_command_b1_raw = 0xFFFF2308
+intake_cvtc_duty_command_b2_raw = 0xFFFF2309
+ltft_learned_b1_raw = 0xFFFF225E
+ltft_adjustment_b1_raw = 0xFFFF5BE0
 exhaust_cvtc_duty_b1_word_raw = 0xFFFF1A88
 exhaust_cvtc_duty_b2_word_raw = 0xFFFF1A8A
 atmospheric_pressure_raw = 0xFFFF48BC

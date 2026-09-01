@@ -148,10 +148,10 @@ telemetry,ltft_b1_raw,ffff2302,ffff225a,,,mapped,Aligned diagnostic pointer tabl
 telemetry,ltft_b2_raw,ffff2304,ffff225c,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,timing_state_2023_raw,ffff2023,ffff1f76,,,mapped,Aligned diagnostic pointer table preserves the field position
 telemetry,timing_state_564c_raw,ffff564c,ffff5be4,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,intake_cvtc_duty_b1_word_raw,ffff1ab0,ffff1a8c,,,mapped,Aligned diagnostic pointer table preserves the word position
-telemetry,intake_cvtc_duty_b2_word_raw,ffff1ab2,ffff1a8e,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
-telemetry,manifold_pressure_1116_raw,ffff118a,ffff1176,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,manifold_pressure_112a_raw,ffff16d2,ffff16e0,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,ffff2308,,,mapped,Target ATU-II channel-7 duty programming reads this cell before writing buffer register fffff592
+telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,ffff2309,,,mapped,The same function reads the adjacent cell before writing buffer register fffff590
+telemetry,ltft_learned_b1_raw,ffff2306,ffff225e,,,mapped,The target long-term trim publisher reads this base with the doubled bank index as the first summand
+telemetry,ltft_adjustment_b1_raw,ffff5648,ffff5be0,,,mapped,The same publisher reads this base as the second summand before the 0x6400 neutral correction
 telemetry,exhaust_cvtc_duty_b1_word_raw,ffff1aac,ffff1a88,,,mapped,Aligned diagnostic pointer table preserves the word position
 telemetry,exhaust_cvtc_duty_b2_word_raw,ffff1aae,ffff1a8a,,,mapped,Aligned diagnostic pointer table preserves the adjacent word
 telemetry,atmospheric_pressure_raw,ffff4544,ffff48bc,,,mapped,Aligned diagnostic pointer table and direct references agree

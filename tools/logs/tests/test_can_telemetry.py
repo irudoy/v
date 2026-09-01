@@ -116,9 +116,9 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertFalse(temperature.schema_verified)
         self.assertEqual(
             temperature.context_name,
-            "temperatures_af + intake_cvtc_duty_and_manifold_pressure",
+            "temperatures_af + intake_cvtc_duty_command_and_trim_terms",
         )
-        self.assertIn("manifold_pressure_1116_raw", temperature.fields)
+        self.assertIn("ltft_learned_b1_raw", temperature.fields)
         with self.assertRaises(can_telemetry.DecodeError):
             can_telemetry.engineering_values(temperature)
 
@@ -150,10 +150,14 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             health.fields["engine_torque_state_raw"] * 0.1,
         )
         self.assertAlmostEqual(
-            physical["intake_cvtc_duty_b1_word_percent"],
-            verified_temperature.fields["intake_cvtc_duty_b1_word_raw"]
-            * 100
-            / 1024,
+            physical["intake_cvtc_duty_command_b1_percent"],
+            verified_temperature.fields["intake_cvtc_duty_command_b1_raw"]
+            * 39
+            / 100,
+        )
+        self.assertAlmostEqual(
+            physical["ltft_learned_b1_percent"],
+            verified_temperature.fields["ltft_learned_b1_raw"] / 256 - 100,
         )
 
         trims = feed_group(

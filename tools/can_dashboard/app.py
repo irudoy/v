@@ -259,14 +259,14 @@ EXTENDED_PANELS = (
     ("CVTC detail", (
         Metric("exhaust_cvtc_actual_b1_deg_ca", "Exhaust CVTC actual B1", "degCA*", 1),
         Metric("exhaust_cvtc_actual_b2_deg_ca", "Exhaust CVTC actual B2", "degCA*", 1),
-        Metric("intake_cvtc_duty_b1_word_percent", "Intake CVTC duty B1 word", "%*", 1),
-        Metric("intake_cvtc_duty_b2_word_percent", "Intake CVTC duty B2 word", "%*", 1),
+        Metric("intake_cvtc_duty_command_b1_percent", "Intake CVTC duty command B1", "%", 1),
+        Metric("intake_cvtc_duty_command_b2_percent", "Intake CVTC duty command B2", "%", 1),
         Metric("exhaust_cvtc_duty_b1_word_percent", "Exhaust CVTC duty B1 word", "%*", 1),
         Metric("exhaust_cvtc_duty_b2_word_percent", "Exhaust CVTC duty B2 word", "%*", 1),
     )),
-    ("Pressure and sensors", (
-        Metric("manifold_pressure_1116_raw", "Manifold pressure 0x1116", "raw", 0),
-        Metric("manifold_pressure_112a_raw", "Manifold pressure 0x112A", "raw", 0),
+    ("Trims, pressure, and sensors", (
+        Metric("ltft_learned_b1_percent", "LTFT learned bank 1", "%", 2),
+        Metric("ltft_adjustment_b1_percent", "LTFT adjustment bank 1", "%", 2),
         Metric("atmospheric_pressure_raw", "Atmospheric pressure", "raw", 0),
         Metric("battery_voltage_v", "Battery voltage", "V*", 2),
         Metric("front_af_sensor_b1_word_raw", "Front A/F sensor B1", "raw", 0),

@@ -135,16 +135,16 @@ The 16-byte configuration contains:
 | 0 | 2 | magic `0x4354` |
 | 2 | 1 | protocol version `2` |
 | 3 | 1 | enable byte `0` or `1` |
-| 4 | 1 | profile ID `1` |
+| 4 | 1 | profile ID `3` |
 | 5 | 1 | page count `11` |
 | 6 | 1 | tick divisor `1..255` |
 | 7 | 1 | reserved zero |
 | 8 | 2 | standard CAN ID |
-| 10 | 2 | profile CRC16 `0x75BF` |
+| 10 | 2 | profile CRC16 `0x01A3` |
 | 12 | 4 | integrity word `0x54454C32` (`TEL2`) |
 
 The only profile name is `tuning`. The default disabled bytes are
-`43 54 02 00 01 0B 01 00 06 F0 75 BF 54 45 4C 32`.
+`43 54 02 00 03 0B 01 00 06 F0 01 A3 54 45 4C 32`.
 
 Firmware validates every field before incrementing the telemetry tick,
 touching the queue, or accepting a control command. The builder independently
@@ -228,13 +228,13 @@ rate is `24.4140625 Hz`.
 
 | Tag | Page 9 bytes 2..7 | Page 10 bytes 2..7 |
 | ---: | --- | --- |
-| 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | high-resolution intake duty B1/B2 `FFFF1AB0/1AB2`, manifold pressure bytes `FFFF118A/16D2` |
+| 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | intake duty commands B1/B2 `FFFF23B4/23B5`, LTFT learned B1 `FFFF2306`, LTFT adjustment B1 `FFFF5648` |
 | 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, atmosphere `FFFF4544`, battery `FFFF1188` |
 | 2 | LTFT B1/B2 `FFFF2302/2304`, timing states `FFFF2023/564C` | front A/F words `FFFF2780/2782`, adjustment state B1 `FFFF45A0` |
 | 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, adjustment state B2 `FFFF45A2` |
 
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2, profile ID 1, and CRC `0x75BF`. A later mismatch disables conversions again.
+2, profile ID 3, and CRC `0x01A3`. A later mismatch disables conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
@@ -303,7 +303,7 @@ banks, source table, payload, decoder, and total load. A schema 2 image remains
 ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 
 - eleven ordered pages and exact tick continuity;
-- version 2, profile ID 1, and CRC `0x75BF` health identity;
+- version 2, profile ID 3, and CRC `0x01A3` health identity;
 - no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
 - acceptable stock-frame cadence and whole-bus utilization.
 
@@ -328,7 +328,7 @@ The locked software result is:
 - 647 injected instructions and 680 data bytes;
 - ten executable entries and 62 dynamic telemetry cases;
 - composition SHA-256
-  `afb4a85e799b017a50d436859322a6f23b8544d06e59070834f1ef77c1144747`;
+  `7054b6331b482d13d24184ff93789999dc525898f1072a78809d9345f4d8013d`;
 - 1,723 changed bytes inside a 3,484-byte declared write set.
 
 This gate proves the bounded software contract. It does not replace physical

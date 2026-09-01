@@ -325,7 +325,7 @@ def load_manifest(path=DEFAULT_SOURCE):
     profile_raw = raw["profile"]
     if tuple(item.get("name") for item in profile_raw) != PROFILE_NAMES:
         raise ValueError("profile names or order differ")
-    expected_profiles = (("tuning", 1, 11),)
+    expected_profiles = (("tuning", 3, 11),)
     profiles = []
     for index, (item, expected) in enumerate(zip(profile_raw, expected_profiles)):
         _require_keys(item, {"name", "id", "page_count"}, (), f"profile[{index}]")

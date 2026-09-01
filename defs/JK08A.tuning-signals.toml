@@ -143,6 +143,19 @@ evidence = "exact-code"
 note = "The stream carries complete Q8.8-percent words instead of the high-byte-only service-0x22 representation."
 
 [[signal]]
+id = "long_fuel_trim_terms"
+domain = "fuel"
+label = "Bank 1 long-term trim summands"
+priority = "high"
+coverage = "rotating"
+current_fields = ["ltft_learned_b1_raw", "ltft_adjustment_b1_raw"]
+sources = [0xFFFF2306, 0xFFFF5648]
+widths = [2, 2]
+dids = []
+evidence = "exact-code"
+note = "Diagnostic long-term trim is the selected learned cell plus the adjustment term minus neutral 0x6400, so the pair separates the learned grid value from the running adjustment."
+
+[[signal]]
 id = "final_ignition_coordinate"
 domain = "ignition"
 label = "Final ignition software coordinate"
@@ -270,7 +283,20 @@ sources = [0xFFFF2440, 0xFFFF2441]
 widths = [1, 1]
 dids = [0x1138, 0x1139]
 evidence = "exact-code"
-note = "The byte channels are present once per four scheduler passes; higher-resolution intake duty words remain absent."
+note = "The byte channels are present once per four scheduler passes and share their conversion with the solenoid command pair."
+
+[[signal]]
+id = "intake_cvtc_duty_command"
+domain = "cvtc"
+label = "Intake CVTC solenoid duty command"
+priority = "high"
+coverage = "rotating"
+current_fields = ["intake_cvtc_duty_command_b1_raw", "intake_cvtc_duty_command_b2_raw"]
+sources = [0xFFFF23B4, 0xFFFF23B5]
+widths = [1, 1]
+dids = []
+evidence = "exact-code"
+note = "FUN 000bead0 converts both bytes into ATU-II channel-7 buffer registers, so percent is raw * 39 / 100 against the programmed cycle."
 
 [[signal]]
 id = "temperatures"
@@ -291,12 +317,12 @@ domain = "air"
 label = "Manifold and atmospheric pressure"
 priority = "high"
 coverage = "rotating"
-current_fields = ["manifold_pressure_1116_raw", "manifold_pressure_112a_raw", "atmospheric_pressure_raw"]
+current_fields = ["atmospheric_pressure_raw"]
 sources = [0xFFFF118A, 0xFFFF4544, 0xFFFF16D2]
 widths = [1, 1, 1]
 dids = [0x1116, 0x1129, 0x112A]
 evidence = "exact-code+homologous-diagnostic"
-note = "Service 0x22 exposes two MAP-labelled bytes and one atmospheric-pressure byte. Their conversions and the distinction between DIDs 0x1116 and 0x112A need target validation."
+note = "Service 0x22 exposes two MAP-labelled bytes and one atmospheric-pressure byte. The target has no manifold-pressure sensor and both MAP-labelled bytes hold zero, so only the atmospheric byte is streamed."
 
 [[signal]]
 id = "battery_voltage"
@@ -392,15 +418,15 @@ note = "Both exhaust actual-position bytes are carried every scheduler pass."
 [[signal]]
 id = "high_resolution_cvtc_duty"
 domain = "cvtc"
-label = "High-resolution intake and exhaust CVTC duty"
+label = "High-resolution exhaust CVTC duty"
 priority = "high"
 coverage = "rotating"
-current_fields = ["intake_cvtc_duty_b1_word_raw", "intake_cvtc_duty_b2_word_raw", "exhaust_cvtc_duty_b1_word_raw", "exhaust_cvtc_duty_b2_word_raw"]
+current_fields = ["exhaust_cvtc_duty_b1_word_raw", "exhaust_cvtc_duty_b2_word_raw"]
 sources = [0xFFFF1AB0, 0xFFFF1AB2, 0xFFFF1AAC, 0xFFFF1AAE]
 widths = [2, 2, 2, 2]
 dids = [0x122D, 0x122E, 0x122F, 0x1230]
 evidence = "exact-code"
-note = "All four high-resolution duty words are carried once per four scheduler passes; the low-resolution intake bytes remain available in the other context page."
+note = "Only entries 0 and 1 of the duty word array are written, so DIDs 0x122D and 0x122E publish two words that no producer maintains and only the exhaust pair is streamed."
 
 [[signal]]
 id = "injection_timing_state"

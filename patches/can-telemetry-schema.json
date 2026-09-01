@@ -158,31 +158,31 @@
         {
           "fields": [
             {
-              "name": "intake_cvtc_duty_b1_word_raw",
-              "scale": "candidate raw * 100 / 1024 percent",
-              "signed": false,
-              "width": 2
-            },
-            {
-              "name": "intake_cvtc_duty_b2_word_raw",
-              "scale": "candidate raw * 100 / 1024 percent",
-              "signed": false,
-              "width": 2
-            },
-            {
-              "name": "manifold_pressure_1116_raw",
-              "scale": "diagnostic-evidence candidate",
+              "name": "intake_cvtc_duty_command_b1_raw",
+              "scale": "raw * 39 / 100 percent",
               "signed": false,
               "width": 1
             },
             {
-              "name": "manifold_pressure_112a_raw",
-              "scale": "diagnostic-evidence candidate",
+              "name": "intake_cvtc_duty_command_b2_raw",
+              "scale": "raw * 39 / 100 percent",
               "signed": false,
               "width": 1
+            },
+            {
+              "name": "ltft_learned_b1_raw",
+              "scale": "Q8.8 percent",
+              "signed": false,
+              "width": 2
+            },
+            {
+              "name": "ltft_adjustment_b1_raw",
+              "scale": "Q8.8 percent",
+              "signed": false,
+              "width": 2
             }
           ],
-          "name": "intake_cvtc_duty_and_manifold_pressure",
+          "name": "intake_cvtc_duty_command_and_trim_terms",
           "page": 10,
           "tag": 0
         },
@@ -268,7 +268,7 @@
           "tag": 3
         }
       ],
-      "crc16_ccitt_false": "0x75BF",
+      "crc16_ccitt_false": "0x01A3",
       "fields": [
         {
           "name": "tick16",
@@ -591,7 +591,7 @@
           "width": 1
         }
       ],
-      "id": 1,
+      "id": 3,
       "name": "tuning",
       "page_count": 11
     }

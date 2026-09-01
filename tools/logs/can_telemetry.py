@@ -405,11 +405,11 @@ RAW_CALIBRATIONS = {
         "intake_cvtc_duty_b2_percent", 100 / 256
     ),
     "engine_torque_state_raw": Calibration("engine_torque_state_nm", 0.1),
-    "intake_cvtc_duty_b1_word_raw": Calibration(
-        "intake_cvtc_duty_b1_word_percent", 100 / 1024
+    "intake_cvtc_duty_command_b1_raw": Calibration(
+        "intake_cvtc_duty_command_b1_percent", 39 / 100
     ),
-    "intake_cvtc_duty_b2_word_raw": Calibration(
-        "intake_cvtc_duty_b2_word_percent", 100 / 1024
+    "intake_cvtc_duty_command_b2_raw": Calibration(
+        "intake_cvtc_duty_command_b2_percent", 39 / 100
     ),
     "exhaust_cvtc_duty_b1_word_raw": Calibration(
         "exhaust_cvtc_duty_b1_word_percent", 100 / 1024
@@ -441,6 +441,12 @@ RAW_CALIBRATIONS = {
     "stft_b2_raw": Calibration("stft_b2_percent", 1 / 256, -100),
     "ltft_b1_raw": Calibration("ltft_b1_percent", 1 / 256, -100),
     "ltft_b2_raw": Calibration("ltft_b2_percent", 1 / 256, -100),
+    "ltft_learned_b1_raw": Calibration(
+        "ltft_learned_b1_percent", 1 / 256, -100
+    ),
+    "ltft_adjustment_b1_raw": Calibration(
+        "ltft_adjustment_b1_percent", 1 / 256, -100
+    ),
     "coolant_raw": Calibration("coolant_deg_c", 1.0, -50),
     "iat_raw": Calibration("iat_deg_c", 1.0, -50),
 }

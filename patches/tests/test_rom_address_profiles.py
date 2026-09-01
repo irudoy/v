@@ -111,7 +111,11 @@ def test_1nd_profiles_share_exact_code_and_complete_runtime_capabilities(profile
     assert one.rolling_symbol_by_key["scheduler_table"] == 0x0002205C
     assert one.rolling_symbol_by_key["vehicle_speed"] == 0xFFFE8104
     assert one.rolling_symbol_by_key["fuel_cut_coordinator"] == 0x000760CC
-    assert one.telemetry_unavailable == ("knock_timing_state_raw",)
+    assert one.telemetry_unavailable == (
+        "intake_cvtc_duty_command_b1_raw",
+        "intake_cvtc_duty_command_b2_raw",
+        "knock_timing_state_raw",
+    )
     assert "knock_timing_state_raw" not in one.telemetry_source_by_name
     assert one.telemetry_zero_source == 0xFFFF0DE0
 
