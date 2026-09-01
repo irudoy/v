@@ -54,8 +54,11 @@ def test_all_models_build_with_exact_registered_identities():
         for rom in set(REGISTERED_ROMS) - {"1ME3B", "1ND0A", "1ND3B"}
     )
     assert by_id["JK78C"]["warnings"]
+    # The structural layer comes from an untracked Ghidra export, so its exact
+    # size follows the analyst's project rather than any repository artifact.
+    # The durable claim is that JK78C carries structure and no review.
     assert by_id["JK78C"]["reviewedFunctions"] == 0
-    assert by_id["JK78C"]["structuralFunctions"] == 2969
+    assert by_id["JK78C"]["structuralFunctions"] > 0
     for rom_id in ("JK78C", "1ND0A", "1ND3B"):
         assert by_id[rom_id]["counts"]["maps"] == 108
 
