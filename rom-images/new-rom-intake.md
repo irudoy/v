@@ -65,7 +65,7 @@ declarations in `homology.toml`. Recorded bands from the current collection:
 | `distinct-code` | Myers 0.790 to 0.815, symmetric exact 64-byte code windows near 19 percent | 1ME3B against 1ND0A |
 
 Both MCU classes place the calibration region at `0x008200:0x020000`. An image
-that does not is a Step 5 case.
+that does not is a Branch E case.
 
 ### Interpolation-library relocation
 
@@ -105,7 +105,7 @@ Declare the tracked registry as the `dtc` layer of the atlas manifest. Every
 registered image does, so the atlas diagnostics layer is populated before any
 structure is recovered.
 
-An image where the tool cannot locate a descriptor run is a Step 5 case.
+An image where the tool cannot locate a descriptor run is a Branch E case.
 
 ## Step 3 - Select the branch
 
