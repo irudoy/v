@@ -535,6 +535,73 @@ ascd_byte_offset = 3
 ascd_resume_code = 0x10
 ascd_resume_status = "operator-confirmed live observation outside the saved trace"
 
+[can_telemetry.schema2_tuning_drives]
+recorded_on = "2026-08-26"
+software_status = "pass"
+hardware_status = "pass"
+hardware_scope = "three road drives with moving load, wide-open throttle, decel, and stationary idle"
+acceptance_status = "complete for schema 2 transport and channel coverage"
+additional_hardware_validation_required = false
+can_id = 0x6F0
+tick_divisor = 1
+schema_version = 2
+protocol_version = 2
+profile = "tuning"
+profile_id = 1
+profile_crc16 = 0x75BF
+recorder = "tools/can_dashboard"
+recorder_schema_verified_value = 1
+telemetry_status_max = 0
+snapshot_overrun_count_max = 0
+tx_abort_count_max = 0
+measured_tick_period_ms = [10.2429, 10.2426, 10.2420]
+result = "every transport counter stays at zero across 138,485 records and the reported profile CRC matches the tracked tuning profile"
+
+[[can_telemetry.schema2_captures]]
+capture_name = "2026-08-26_20-28-50_vq-can-telemetry-v2.0.0.mlg"
+capture_sha256 = "bd0320f0d358f04cbcd82f28b9cc1b935cd7a3f683056c4bef7c8fcc2040e756"
+record_count = 72634
+span_seconds = 743.969
+peak_engine_speed_rpm = 7738
+knock_retard_record_count = 0
+
+[[can_telemetry.schema2_captures]]
+capture_name = "2026-08-26_22-40-01_vq-can-telemetry-v2.0.0.mlg"
+capture_sha256 = "902e4d25501b8c7bfe4a32ac8e96917472746330bfab97c1ddbdb9e089ce1612"
+record_count = 23036
+span_seconds = 235.938
+peak_engine_speed_rpm = 3700
+knock_retard_record_count = 749
+
+[[can_telemetry.schema2_captures]]
+capture_name = "2026-08-26_23-03-50_vq-can-telemetry-v2.0.0.mlg"
+capture_sha256 = "a310dd13655e9ea99e7cd628bd7a80d329c648084f43914bcc4ff7050f5177cd"
+record_count = 42815
+span_seconds = 438.500
+peak_engine_speed_rpm = 7725
+knock_retard_record_count = 0
+
+[can_telemetry.schema2_channel_coverage]
+recorded_on = "2026-08-26"
+knock_timing_state = "active; 749 records reach -2.40 degCA minimum at 1200..3200 rpm in the 22-40-01 capture and none in the other two"
+high_detonation_surface_selected = "constant zero in all three captures, so surface 0x9b1a is never selected"
+intake_cvtc_duty_word_channels = "constant zero; sources ffff1ab0 and ffff1ab2 are unwritten slots of the exhaust duty array"
+manifold_pressure_channels = "constant zero; no manifold-pressure sensor is fitted"
+long_term_fuel_trim = "exactly neutral 0x6400 on both banks in all three captures, against 0x661A and 0x659A in the 2026-08-20 capture"
+front_o2_sensor_channels = "constant zero; the front sensors are wideband and report through ffff2780 and ffff2782"
+cvtc_duty_monitor_pair = "active over 0..78.5 percent and correlates 0.76..0.88 with intake actual angle against 0.35..0.64 with exhaust actual angle"
+
+[can_telemetry.schema2_cvtc_tracking]
+recorded_on = "2026-08-26"
+tool = "steady-target comparison over captures retimed by tools/logs/mlg_retime.py"
+steady_target_hold_seconds = 1.0
+steady_sample_count = [56338, 15210, 34790]
+exhaust_mean_error_bank1_degca = [-0.288, -0.836, -0.103]
+exhaust_mean_error_bank2_degca = [-0.682, -2.836, -0.119]
+exhaust_bank_difference_at_least_5_degca_percent = [11.712, 30.318, 7.500]
+intake_bank_difference_at_least_5_degca_percent = [2.437, 1.762, 0.519]
+result = "exhaust actual tracks target within a degree on average while the two exhaust banks separate far more than the two intake banks; the separation is not explained by the target, which is common to both banks"
+
 [passive_can]
 recorded_on = "2026-08-16"
 format = "PEAK PCAN-View TRC 1.1"
