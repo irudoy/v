@@ -71,6 +71,96 @@ conversion is target-code-proven. The definition and dashboard use the latter
 as a visibly marked candidate because it agrees with the matching HR cam-map
 encoding.
 
+## Solenoid output stage
+
+Both cam-phaser solenoids are driven by ATU-II channel 7 in PWM mode. The
+hardware manual assigns the channel-7 block as cycle registers `CYLR7A..CYLR7D`
+at `0xFFFFF588..0xFFFFF58E` and buffer registers `BFR7A..BFR7D` at
+`0xFFFFF590..0xFFFFF596`. Application code programs the buffer register; the
+timer transfers it into the duty register at the cycle boundary.
+
+| Channel | Cycle register | Buffer register | Path | Source cell |
+|---|---:|---:|---|---:|
+| 7A | `0xFFFFF588` | `0xFFFFF590` | intake, second cell | `0xFFFF23B5` |
+| 7B | `0xFFFFF58A` | `0xFFFFF592` | intake, first cell | `0xFFFF23B4` |
+| 7C | `0xFFFFF58C` | `0xFFFFF594` | exhaust bank 2 | `0xFFFF1AAE` |
+| 7D | `0xFFFFF58E` | `0xFFFFF596` | exhaust bank 1 | `0xFFFF1AAC` |
+
+Exhaust bank identity is exact through the service-0x22 pointer table. The
+intake pair carries no diagnostic identity, so its bank order follows the
+adjacent-pair convention of `0xFFFF2442`/`0xFFFF2443` and
+`0xFFFF2440`/`0xFFFF2441` rather than a code proof.
+
+`FUN 000CD75C` programs both cycle pairs from adjacent period bytes
+`ROM8[0x8DFC] = 33` for the intake pair and `ROM8[0x8DFD] = 32` for the exhaust
+pair, each multiplied by 125:
+
+```text
+CYLR7A = CYLR7B = 125 * ROM8[0x8DFC] = 4125 counts
+CYLR7C = CYLR7D = 125 * ROM8[0x8DFD] = 4000 counts
+```
+
+`FUN 000BEAD0` converts the two intake duty bytes with the same period byte
+through signed division helper `0x00021BBC`:
+
+```text
+BFR7B = uint8[ffff23b4] * ROM8[0x8DFC] * 39 / 80
+BFR7A = uint8[ffff23b5] * ROM8[0x8DFC] * 39 / 80
+```
+
+`FUN 000C2152` converts the two exhaust duty words with the exhaust period byte
+through helper `0x00022508`:
+
+```text
+BFR7D = uint16[ffff1aac] * ROM8[0x8DFD] * 125 / 1024
+BFR7C = uint16[ffff1aae] * ROM8[0x8DFD] * 125 / 1024
+```
+
+Dividing each result by its own cycle register gives the exact duty fractions
+`uint8/256.41` for the intake bytes and `uint16/1024` for the exhaust words.
+The engineering conversions are therefore code-proven:
+
+```text
+intake_percent  = uint8[ffff23b4|ffff23b5] * 39 / 100
+exhaust_percent = uint16[ffff1aac|ffff1aae] * 100 / 1024
+```
+
+Byte `0xFFFF4247` bit 0 selects the computed intake path and byte `0xFFFF4251`
+bit 0 selects the computed exhaust path. With the intake bit clear,
+`FUN 000BEAD0` drives fixed fractions while saturated engine-speed byte
+`0xFFFF11EA` is positive, and zero otherwise:
+
+```text
+BFR7B = 825  = 20 percent of 4125
+BFR7A = 1238 = 30 percent of 4125
+```
+
+## Exhaust duty word array
+
+`FUN 000C2040` takes the bank index in `r4` and reaches its per-bank words
+through window base `0xFFFF128C`:
+
+| Offset | Address | Role |
+|---:|---:|---|
+| `0x818` | `0xFFFF1AA4 + 4*b` | longword controller state |
+| `0x820` | `0xFFFF1AAC + 2*b` | published exhaust duty word |
+| `0x828` | `0xFFFF1AB4 + 2*b` | previous exhaust duty word |
+| `0x890` | `0xFFFF1B1C + b` | control-mode byte |
+| `0x9E4` | `0xFFFF1C70 + 2*b` | duty request clamped to 1024 |
+
+The word arrays at `0x820` and `0x828` are eight bytes apart and hold four
+slots each, of which the application uses two. Dispatcher `0x000C2220` is the
+only caller and invokes `FUN 000C2040` exactly twice, with `r4 = 0` and
+`r4 = 1`, so the store at `0x000C213E` can only reach `0xFFFF1AAC` and
+`0xFFFF1AAE`. Slots `0xFFFF1AB0` and `0xFFFF1AB2` are never written.
+
+The service-0x22 pointer table nevertheless publishes those two slots as DIDs
+`0x122D` and `0x122E`, named `VTC DTY IN B1` and `VTC DTY IN B2` by structured
+Nissan diagnostics. Both DIDs therefore return the RAM initialization value for
+the whole life of the image, and intake duty is not reachable through them. The
+live intake command is the byte pair `0xFFFF23B4` and `0xFFFF23B5`, and its
+diagnostic companion pair is `0xFFFF2440` and `0xFFFF2441`.
+
 ## Exact target surfaces
 
 | Family | Role | Map | Geometry | RPM axis | Load axis | Raw result |
