@@ -245,6 +245,27 @@ The current decoder and converter intentionally reject historical schema-1
 `core32` and `wide54` captures. Those logs require a repository revision whose
 generated schema matches their recorded profile CRC.
 
+## MLG record retiming
+
+`mlg_retime.py` rebuilds record times from the `Telemetry tick` channel. The
+producer emits one telemetry group per tick at a fixed period, so the tick is
+the sample index of a recording: a host clock that stamps a frame when the
+application dequeues it collapses a drained burst onto one 10 us block
+timestamp, and the tick index restores the true spacing.
+
+```bash
+python3 tools/logs/mlg_retime.py --dry-run tmp/drive.mlg
+python3 tools/logs/mlg_retime.py tmp/drive.mlg --output tmp/drive-retimed.mlg
+```
+
+The tool writes a new file and never edits the source. Block timestamps and the
+`Date` and `Elapsed` channels follow the tick index; every other recorded value
+is copied unchanged. The tick period is measured across the log unless
+`--period-ms` provides it, and the first record keeps its recorded offset from
+the start of the recording, so the reconstructed span matches the recorded one.
+A log whose records repeat a tick, such as one holding bridge records, is
+refused: the tick index cannot order them.
+
 ## Diagnostic CSV to MLG
 
 `csv_to_mlg.py` converts semicolon-delimited, long-form diagnostic logs to
