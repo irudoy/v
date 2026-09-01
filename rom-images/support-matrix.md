@@ -568,7 +568,18 @@ populated slot belongs to VVEL, and JK08A declares none of them.
 | `0x125E` | VVEL TIM-B2 | `0xFFFF2770` | 2 |
 
 Slot `0x125C` at `0xFFFF443E` is populated and unnamed in the factory manual.
-`FUN_000EDF62` serves the VVEL TIM pair.
+The same word supplies payload bytes 0 and 1 of frame `0x22B`, the only frame
+the ECM transmits on its private VVEL bus, so the slot publishes the command
+half of the VVEL loop rather than a measurement. No ROM instruction writes that
+word, and it lies inside a declared zero-fill range, so the DID and the frame
+both carry zero. `FUN_000EDF62` serves the VVEL TIM pair. The controllers, the
+mailbox tables, and the rest of the private bus are in
+`../defs/JK78C.can.md`.
+
+The receive handlers of that bus reach diagnostic status bytes, DID
+publication, and the telemetry staging block only. No map-consuming function
+reads a cell they write, so the exact JK78C image declares VVEL as a monitoring
+and diagnostic subsystem and carries no VVEL calibration surface.
 
 These bindings also fix the ROM's own bank ordering convention. Across the 18
 populated bank-labelled DID pairs in JK78C and the 16 in JK08A, bank 1 is the
