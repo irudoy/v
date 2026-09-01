@@ -159,6 +159,9 @@ while each definition remains bound to its independent stock image hash.
   validation-copy terminology, and the non-tuning visibility boundary.
 - `JK08A.can.md` models the exact HCAN1 mailbox table, stock transmit pipeline,
   payload boundaries, and safe extension mailbox.
+- `JK78C.can.md` models the two exact HCAN controllers, the private-bus
+  mailbox table, receive signal placement, transmit composition, and the
+  calibration boundary of the private bus.
 
 These documents explain complete relationships and safety boundaries. Addressed
 claims and evidence remain in the CSV layer rather than being copied into prose.
