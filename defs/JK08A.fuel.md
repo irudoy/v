@@ -321,6 +321,40 @@ The startup-only `offset_b = 0x8000` makes the last correction neutral in the
 analyzed application. `0xFFFF2436` is both a common additive term in normal
 base calculation and the direct value selected for masked channels.
 
+### Long-term trim publication and neutralization
+
+`FUN 00057B26` takes the bank index in `r4` and publishes the LTFT diagnostic
+word from the selected learned cell and the adjustment term:
+
+```text
+raw_b = uint16[0xFFFF2306 + 2*b] + uint16[0xFFFF5648 + 2*b] - 0x6400
+```
+
+Limiting is skipped when bit `b` of `0xFFFF230E` is set, or when
+`uint16[0xFFFF15FC] <= uint16[0xFFFF15FE]`. Otherwise the word is clamped
+between two adjacent ROM bytes scaled to Q8.8 percent:
+
+```text
+raw_b = min(max(raw_b, ROM8[0x8E5B] << 8), ROM8[0x8E5A] << 8)
+ROM8[0x8E5B] = 90, ROM8[0x8E5A] = 110
+```
+
+Four independent conditions replace the result with exactly neutral `0x6400`
+before the store to `0xFFFF2302 + 2*b`:
+
+```text
+FUN 00025E20(0x0129) != 0
+uint8[0xFFFF41B5].bit0 set
+uint8[0xFFFF41FA].bit0 clear and uint8[0xFFFF248B].bit1 set
+uint8[0xFFFF249C].bit6 set and uint8[0xFFFF248B].bit0 set
+```
+
+The published word is therefore either a clamped learned value inside
+`90..110` percent or exactly `100.000` percent. A capture that reads exactly
+`0x6400` does not by itself distinguish a neutralized publication from a
+learned grid that still holds its initialization value; `0xFFFF2306` and
+`0xFFFF5648` separate the two cases.
+
 ## Six-channel compensated pulse words
 
 `FUN_0004ECAC` calls `FUN_0004EAD4` for the two parity bases and then invokes
