@@ -164,8 +164,10 @@ domains at their `1ND` field addresses and relocates the application XOR and
 SUM fields to `0x0096f4` and `0x0096fc`. Its diagnostic descriptor region is
 byte-identical to `1ND0A` across 1,936 bytes at a constant `+0x164`
 relocation and carries the VQ37 group `0x37` sequence without exhaust camshaft
-records. The directory README contains the complete identification and
-comparison evidence.
+records. That region holds 334 descriptor records at `0x1bf58` and their
+attribute pointers at `0x1cf00`, from which `../defs/1ME3B.dtc.csv` carries 34
+codes. The directory README contains the complete identification and comparison
+evidence.
 
 `*` Flash sizes (1.0 / 1.5 MiB) and the **SH-2E** core are confirmed by the
 Renesas datasheet. The specific on-board chip model (SH7058 vs SH7059) and CAN

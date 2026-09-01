@@ -60,6 +60,7 @@ warning in the atlas.
 | JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, composed production runtime profiles, and target checksum layouts |
 | 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure, reviewed shared definition addresses, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
 | JK78C | Target Ghidra structure, reviewed target definition addresses, composed production runtime profile, complete checksum layout, and stock-image metrics |
+| 1ME3B | Projected DTC records and attributes read from the stock image; every other layer is undeclared and warned about |
 
 The exact JK00A/JK03A/JK03B/JK08A family uses one canonical annotation layer
 because its declared executable address ranges are byte-identical. Only the

@@ -17,8 +17,9 @@ Intake ends in one of two complete states.
   a definition target, and a generated XML/XDF pair. Runtime capabilities are
   independently gated and may follow later.
 - **Registered stock identity.** The image has provenance, a hash, a declared
-  family boundary, and ROM-atlas participation, and nothing else. `1ME3B` holds
-  this state.
+  family boundary, ROM-atlas participation, and whatever the Step 2 measurements
+  carry without an analysis layer, which today means the DTC registry. `1ME3B`
+  holds this state.
 
 A definition published on candidate-grade evidence is not a third state.
 

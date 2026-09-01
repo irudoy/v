@@ -23,7 +23,7 @@ presentation and generated output.
 | `JK08A.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims | yes |
 | `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | yes |
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | yes |
-| `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
+| `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | yes |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
@@ -228,9 +228,19 @@ out of the target image instead of deriving it from an offset.
 A canonical record is carried to a relocated target only when exactly one target
 record is byte-identical to it, which fixes group, sub-index, monitor class,
 code, and trailing flag together. JK00C and JK00D carry all 36 codes; JK78C and
-`1ND` carry 35, because VQ37 declares no P1422 record. The exact-code members of
-`7MFKAVN86` reproduce the canonical registry from their own images and share it
-rather than tracking a copy.
+`1ND` carry 35, because VQ37 declares no P1422 record; 1ME3B carries 34, because
+it declares no P0443 record either. The exact-code members of `7MFKAVN86`
+reproduce the canonical registry from their own images and share it rather than
+tracking a copy.
+
+Byte identity carries a record across a relocation that is not uniform. The
+projection needs no address model: it locates the descriptor run and the pointer
+table in the target image and matches records. 1ME3B is the case that separates
+the two, and it also shows that this registry precedes every other analysis
+layer. Its 334 descriptor records at `0x1bf58` hold the 31 codes it shares with
+the 331 records of `1ND0A` at three different relocations and at index offsets
+of `-1`, `0`, and `+1`, and it carries no structural export, checksum layout, or
+definition target.
 
 The Developer Immobilizer flag is a definition-controlled data edit, not a
 standalone instruction patch. Its execution path and safety boundary are in

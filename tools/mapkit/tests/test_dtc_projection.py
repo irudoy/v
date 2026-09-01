@@ -15,6 +15,15 @@ EXPECTED_CODE_COUNT = {
     "JK78C": 35,
     "1ND0A": 35,
     "1ND3B": 35,
+    "1ME3B": 34,
+}
+EXPECTED_ABSENT = {
+    "JK00C": [],
+    "JK00D": [],
+    "JK78C": ["P1422"],
+    "1ND0A": ["P1422"],
+    "1ND3B": ["P1422"],
+    "1ME3B": ["P0443", "P1422"],
 }
 ATTRIBUTE_ALPHABET = {"00a0", "0030", "00b0", "0000"}
 
@@ -69,8 +78,13 @@ def test_exact_code_members_reproduce_the_canonical_registry(rom, source):
     assert not (DEFS / f"{rom}.dtc.csv").exists()
 
 
-def test_p1422_is_absent_from_vq37():
-    """VQ37 declares no P1422 record, so the code is dropped rather than guessed."""
-    for rom in ("JK78C", "1ND0A", "1ND3B"):
-        _, dropped = dtc_projection.project(rom)
-        assert [code for code, _, _ in dropped] == ["P1422"]
+@pytest.mark.parametrize("rom", sorted(EXPECTED_ABSENT))
+def test_absent_codes_are_dropped_rather_than_guessed(rom, source):
+    """A code without exactly one byte-identical target record is dropped.
+
+    Every VQ37 image declares no P1422 record, and 1ME3B additionally declares
+    no P0443 record.
+    """
+    rows, data = source
+    _, dropped = dtc_projection.project(rom, source_rows=rows, source=data)
+    assert sorted(code for code, _, _ in dropped) == EXPECTED_ABSENT[rom]

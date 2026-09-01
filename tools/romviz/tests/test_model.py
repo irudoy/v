@@ -60,15 +60,22 @@ def test_all_models_build_with_exact_registered_identities():
         assert by_id[rom_id]["counts"]["maps"] == 108
 
 
-def test_1me3b_model_is_a_stock_identity_without_an_annotation_layer():
+def test_1me3b_model_carries_the_projected_diagnostic_layer_alone():
+    """The projection is the one layer a stock identity holds without analysis."""
     rom = model.build_rom_model(model.resolve_manifest("1ME3B"))
 
     assert rom["size"] == 0x180000
     assert rom["metadata"]["ECU ID"] == "11ME3B"
     assert rom["metadata"]["Engine"] == "VQ37VHR"
     assert rom["metadata"]["MCU"] == "SH7059"
-    assert rom["objects"] == []
-    assert rom["counts"] == {}
+    assert rom["counts"] == {"diagnostics": 68}
+    assert {item["kind"] for item in rom["objects"]} == {
+        "dtc-record", "dtc-attribute"
+    }
+    assert all(
+        item["source"].startswith("defs/1ME3B.dtc.csv:")
+        for item in rom["objects"]
+    )
     assert rom["reviewedFunctions"] == 0
     assert rom["structuralFunctions"] == 0
     assert any(

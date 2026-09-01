@@ -36,6 +36,15 @@ across 1,936 bytes at a constant `+0x164` relocation, placing `1ND0A`
 sequence that ends at sub-index `02` and continues with group `0x38`, so this
 image has the VQ37 architecture without exhaust camshaft timing control.
 
+The descriptor region holds 334 twelve-byte records at `0x01BF58` followed by
+their 334 attribute pointers at `0x01CF00`, against 331 records at `0x01BE00`
+in `1ND0A`. `../../defs/1ME3B.dtc.csv` carries 34 canonical codes out of it;
+`P0443` and `P1422` have no byte-identical record in this image. The relocation
+is uniform only inside the 1,936-byte window: across the 31 codes shared with
+`1ND0A` the records sit at `+0x14C`, `+0x158`, and `+0x164`, at index offsets of
+`-1`, `0`, and `+1`. Each binding is therefore read from this image through the
+record and its own attribute pointer rather than derived from an offset.
+
 The image has no registered checksum layout, address profile, Ghidra export,
 Memgraph layer, or definition target. Its declared family boundary forbids
 address inheritance from any other image in the collection.

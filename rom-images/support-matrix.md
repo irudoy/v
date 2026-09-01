@@ -33,6 +33,7 @@ engine name or similar graph structure does not permit address inheritance.
 | JK00D | 36 | `0x8740` | `alt` and `alt2` |
 | JK78C | 35 | `0x861C` | `alt` and `alt2` |
 | `1ND` | 35 | `0x8668` | `alt2` |
+| `1ME3B` | 34 | Not located | None registered |
 
 Each image stores its diagnostic descriptors as twelve-byte records followed
 immediately by one 32-bit attribute pointer per record. The pointer table is the
@@ -40,19 +41,25 @@ ECU's own attribute reference and reproduces every canonical JK08A attribute
 address exactly, so a relocated binding is read out of the target image. A code
 is carried only when exactly one target record is byte-identical to the
 canonical record. VQ37 declares no P1422 record, which is why its registries
-hold 35 codes rather than 36.
+hold 35 codes rather than 36, and `1ME3B` declares no P0443 record either,
+which is why it holds 34.
 
 The `1ND` layout declares one runtime domain, so it projects to a single `alt2`
 handler. Its boot and vector SUM16 domains end at `0x8200`, below the lowest
 published entity at `0x8524`, so no editor session can leave them stale.
 
-`1ME3B` has no diagnostic projection. Its descriptor region is byte-identical
-to `1ND0A` across 1,936 bytes at a constant `+0x164` relocation and carries the
-same VQ37 group `0x37` boundary, but no code, attribute-pointer, or Developer
-Immobilizer binding is recovered from the image. Its four SUM16 checksum
-domains reproduce at the `1ND` field addresses while the application XOR and
-SUM fields sit at `0x0096F4` and `0x0096FC`; no checksum layout is registered
-because the verifier functions are not located.
+`1ME3B` holds this diagnostic registry and no other analysis layer. Its 334
+descriptor records start at `0x1BF58` and its attribute pointers at `0x1CF00`,
+against 331 records at `0x1BE00` for `1ND0A`. A 1,936-byte window of that region
+is byte-identical to `1ND0A` at a constant `+0x164` relocation, but the run as a
+whole is not: the 31 codes the two images share sit at relocations of `+0x14C`,
+`+0x158`, and `+0x164` and at index offsets of `-1`, `0`, and `+1`. Byte
+identity of the record is what carries the binding, so the projection needs no
+address model. The image carries the same VQ37 group `0x37` boundary, and no
+Developer Immobilizer site is located in it. Its four SUM16 checksum domains
+reproduce at the `1ND` field addresses while the application XOR and SUM fields
+sit at `0x0096F4` and `0x0096FC`; no checksum layout is registered because the
+verifier functions are not located.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,
