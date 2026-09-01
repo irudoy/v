@@ -84,6 +84,26 @@ def test_1me3b_model_carries_the_projected_diagnostic_layer_alone():
     )
 
 
+@pytest.mark.parametrize("rom_id", REGISTERED_ROMS)
+def test_every_registered_rom_carries_its_dtc_registry(rom_id):
+    """The DTC layer precedes analysis, so no target leaves it undeclared."""
+    manifest = model._load_manifest(model.resolve_manifest(rom_id))
+    registry = manifest["dtc"]
+    rows = model._read_csv(model._repo_path(registry))
+    rom = model.build_rom_model(model.resolve_manifest(rom_id))
+    by_id = {item["id"]: item for item in rom["objects"]}
+
+    assert rows
+    for row in rows:
+        record = int(row["record_addr"], 16)
+        attribute = int(row["attribute_addr"], 16)
+        for kind, address in (("dtc-record", record), ("dtc-attribute", attribute)):
+            item = by_id[f"{kind}:{row['index']}:{address:08x}"]
+            assert item["layer"] == "diagnostics"
+            assert item["source"] == f"{registry}:{row['_line']}"
+            assert row["dtc"] in item["label"]
+
+
 def test_jk78c_model_includes_target_runtime_and_checksum_evidence():
     rom = model.build_rom_model(model.resolve_manifest("JK78C"))
     by_id = {item["id"]: item for item in rom["objects"]}

@@ -101,6 +101,10 @@ codes. This works before any structural export exists and is independent of the
 branch: 1ME3B carries 34 codes with `P0443` and `P1422` absent while holding no
 other analysis layer.
 
+Declare the tracked registry as the `dtc` layer of the atlas manifest. Every
+registered image does, so the atlas diagnostics layer is populated before any
+structure is recovered.
+
 An image where the tool cannot locate a descriptor run is a Step 5 case.
 
 ## Step 3 - Select the branch

@@ -57,10 +57,15 @@ warning in the atlas.
 | ROM family | Current atlas evidence |
 |---|---|
 | JK00A, JK03A, JK03B, JK08A | Exact-code JK08A function, map, axis, diagnostic, DTC, definition-control, composed-runtime, and checksum evidence with target identity |
-| JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, composed production runtime profiles, and target checksum layouts |
-| 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure, reviewed shared definition addresses, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
-| JK78C | Target Ghidra structure, reviewed target definition addresses, composed production runtime profile, complete checksum layout, and stock-image metrics |
+| JK00C, JK00D | Target Ghidra structure, generated target-specific definition addresses, projected DTC registry, composed production runtime profiles, and target checksum layouts |
+| 1ND0A, 1ND3B | Exact-family 1ND0A Ghidra structure, reviewed shared definition addresses, projected DTC registry, composed production runtime profiles, target identity, checksum layout, and stock-image metrics |
+| JK78C | Target Ghidra structure, reviewed target definition addresses, projected DTC registry, composed production runtime profile, complete checksum layout, and stock-image metrics |
 | 1ME3B | Projected DTC records and attributes read from the stock image; every other layer is undeclared and warned about |
+
+Every registered image declares its DTC registry, so the diagnostics layer is
+populated independently of how much structure a target carries. The reviewed
+`diagnostic-binding` objects stay exclusive to the exact JK08A family, which is
+the only one with a tracked binding registry.
 
 The exact JK00A/JK03A/JK03B/JK08A family uses one canonical annotation layer
 because its declared executable address ranges are byte-identical. Only the
