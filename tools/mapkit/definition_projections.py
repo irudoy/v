@@ -725,12 +725,14 @@ def apply_projection(
         raise DefinitionProjectionError(str(error)) from error
 
     try:
-        projected_maps, projected_overrides = vq37_native_tables.apply_target(
-            projection.target,
-            projected_maps,
-            projected_axes,
-            projected_overrides,
-            image,
+        projected_maps, projected_axes, projected_overrides = (
+            vq37_native_tables.apply_target(
+                projection.target,
+                projected_maps,
+                projected_axes,
+                projected_overrides,
+                image,
+            )
         )
     except vq37_native_tables.NativeTableError as error:
         raise DefinitionProjectionError(str(error)) from error
@@ -825,7 +827,7 @@ def validate_registry(path=DEFAULT_REGISTRY):
             if binding.entity == "Axis" and binding.mapped
         }
         try:
-            registered_maps, _registered_overrides = (
+            registered_maps, _registered_axes, _registered_overrides = (
                 vq37_native_tables.apply_target(
                     target,
                     {},

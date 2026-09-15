@@ -29,7 +29,7 @@ presentation and generated output.
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | yes |
 | `JK08A-*.definition-addresses.csv` | Reviewed source-to-target map and axis addresses | yes |
 | `vq37-native-fuel-cut.toml` | Exact VQ37 coordinator, state-machine, pointer, cap, curve, and RAM bindings | yes |
-| `vq37-native-tables.toml` | Exact VQ37 calibration tables that have no canonical source, with stock value and accessor bindings | yes |
+| `vq37-native-tables.toml` | Exact VQ37 calibration tables and axes that have no canonical source, with stock value and accessor bindings and declared absent roles | yes |
 | `rom-identities.toml` | Target-specific RomRaider and TunerPro identity metadata | yes |
 | `JK08A.maps.csv` | Catalog ledger projected from Memgraph | no, regenerate |
 | `<ROM>.xml` | Target-specific RomRaider definition projection | no, regenerate |
@@ -104,9 +104,12 @@ RomRaider checksum handling, fourteen-family target-specific Map Switching,
 Rolling Launch, and the CAN telemetry startup switch from the validated runtime
 profile. The target-native fuel-cut projection adds the adjacent activation and
 release caps plus the two independent eight-point curves used by the exact
-190-byte state machine. The XML/XDF files expose editor controls; the unified
-builder remains responsible for runtime composition and complete checksum
-closure.
+190-byte state machine. The target-native table registry adds the two
+alternate selector arms and the VVEL target set modelled in `JK78C.vvel.md`:
+sixteen duration, intake-CVTC, shaft-angle, and monitor tables with fifteen
+exact axes, each bound to the literal pool of its reading function. The
+XML/XDF files expose editor controls; the unified builder remains responsible
+for runtime composition and complete checksum closure.
 
 `JK08A-1ND.definition-addresses.csv` projects the same reviewed VQ37 semantic
 set to the SH7059 1ND layout. It records 31 target maps, thirteen axes, and five
@@ -120,7 +123,12 @@ telemetry startup switch. The project checksum implementation covers their six
 checksum fields, but native RomRaider checksum metadata cannot represent the
 complete layout. Their target-native fuel-cut maps, Rolling Launch controls,
 and exact scheduler-to-coordinator bindings are shared at the same addresses,
-while each definition remains bound to its independent stock image hash.
+while each definition remains bound to its independent stock image hash. The
+1ND VVEL registry carries fifteen target-native tables and fourteen axes at
+shared addresses: the 1ND resolver indexes the hot-intake idle surfaces by two
+temperature-coded bytes instead of engine speed and torque, reads a mode 14
+surface that JK78C replaces with a constant, and has no floor curves and no
+demand axis, which the registry declares as absent roles.
 
 ## Evidence specifications
 

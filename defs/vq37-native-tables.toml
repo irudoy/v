@@ -1,11 +1,14 @@
-schema_version = 1
+schema_version = 2
 
-# VQ37 registers two calibration tables that have no VQ35HR canonical source.
-# Each is the alternate arm of a state selector whose default arm carries the
-# projected canonical role, so neither table is a per-bank duplicate. Every
-# address, geometry, stock value block, and accessor literal-pool binding below
-# is verified against the exact stock image before the table reaches an editor
-# definition.
+# VQ37 calibration tables and axes that have no VQ35HR canonical source. Two
+# tables are the alternate arms of state selectors whose default arms carry the
+# projected canonical role. The VVEL target surfaces, curves, and axes are the
+# stock inputs of the VVEL selector modelled in JK78C.vvel.md. Every address,
+# geometry, stock value block, and accessor literal-pool binding below is
+# verified against the exact stock image before the entity reaches an editor
+# definition. A pointer binding with an offset names a base literal that the
+# accessor displaces; a role that a target does not carry is declared under
+# its absent table with the code fact that removes it.
 
 [target.JK78C]
 stock_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
@@ -58,6 +61,665 @@ static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."
 
+[[target.JK78C.table]]
+id = "vvel_duration_running"
+address = 0x00016BB4
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "efa6584b0ab1af4e685d001e933671d6a091d6d24038525b8a30afa3dc2c4cc3"
+pointer_bindings = [{ site = 0x00056680, accessor = 0x000564A4 }, { site = 0x00056F78, accessor = 0x00056DCA }]
+axis_x = 0x00016CA4
+name = "VVEL Duration Target - Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 10
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.005"
+to_byte = "x/0.005"
+semantics = "Mode 15 duration target of the VVEL selector: the normal running mode above idle without a hot-intake or throttled request. The resolver interpolates it by engine speed and scales the count by the float literal 0.005 before the selector publishes the command."
+note = "Read by the resolver FUN_000564A4 at callsite 0x5658C and by FUN_00056DCA at 0x56E1E, both through the 16-point uint16 wrapper 0x28320 indexed by 0xFFFF11A6 (3.125 RPM per count). The 0.005 factor is the float literal 0x3BA3D70A at 0x56690; the unit of the scaled duration is a vendor-catalog candidate. Mode assignment and selector logic are in JK78C.vvel.md."
+
+[[target.JK78C.table]]
+id = "vvel_duration_throttled"
+address = 0x00016D14
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "cb346ae6c7e9b6bd904c3d8f8e0a28da3049a49ef0affb4843654f99427ce01c"
+pointer_bindings = [{ site = 0x000569CC, accessor = 0x000564A4 }, { site = 0x0006645C, accessor = 0x000657E4 }, { site = 0x00066698, accessor = 0x000657E4 }]
+axis_x = 0x00016C84
+name = "VVEL Duration Target - Throttled"
+category = "Variable Valve Timing / VVEL Duration"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 4 duration target of the VVEL selector: the throttled mode requested while brake-booster vacuum is insufficient or the booster sensor is abnormal, and the cold path after 2000 passes with the 0xFFFF23B8.bit6 condition. Interpolated by engine speed and scaled by 0.05."
+note = "Read by the resolver FUN_000564A4 at callsite 0x566BA through the 16-point uint16 wrapper 0x28320 indexed by 0xFFFF11A6, and by FUN_000657E4 at three callsites with the same axis. The resolver loads the literal from the pool at 0x569CC that follows FUN_0005693A. The 0.05 factor is the float literal 0x3D4CCCCC; the duration unit is a vendor-catalog candidate."
+
+[[target.JK78C.table]]
+id = "vvel_duration_hot_intake_idle"
+address = 0x0000E1CE
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "57beb1a5c79e973d38b00f4c7e989d5e689e6d778b021bf4bcf238d1c2694ae4"
+pointer_bindings = [{ site = 0x000566A0, accessor = 0x000564A4 }]
+axis_x = 0x000160CA
+axis_y = 0x000160DA
+name = "VVEL Duration Target - Hot Intake Idle"
+category = "Variable Valve Timing / VVEL Duration"
+order = 12
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 12 duration surface of the VVEL selector: hot-intake idle (0xFFFF455B.bit7) with the high-detonation state 0xFFFF23C6.bit6 clear. The mode value is the maximum of this surface and the eight-point floor 0x0001600A, scaled by 0.05."
+note = "Read by the resolver FUN_000564A4 at callsite 0x565D8 through the 8x8 uint16 wrapper 0x28058 with r7 = 0xFFFF11A6 on the first axis and the stack coordinate max(0, torque word 0xFFFF2E26) on the second axis. Both axes are reached from the GBR base literal 0x00015FFA at 0x56678. Stock values are identical to the knock surface 0x0000E24E."
+
+[[target.JK78C.table]]
+id = "vvel_duration_hot_intake_idle_knock"
+address = 0x0000E24E
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "57beb1a5c79e973d38b00f4c7e989d5e689e6d778b021bf4bcf238d1c2694ae4"
+pointer_bindings = [{ site = 0x000566AC, accessor = 0x000564A4 }]
+axis_x = 0x000160CA
+axis_y = 0x000160DA
+name = "VVEL Duration Target - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 13 duration surface of the VVEL selector: hot-intake idle with the high-detonation state 0xFFFF23C6.bit6 set. The mode value is the maximum of this surface and the eight-point floor 0x0001601A, scaled by 0.05."
+note = "Read by the resolver FUN_000564A4 at callsite 0x5664A through the 8x8 uint16 wrapper 0x28058 with the same coordinates and axes as the mode 12 surface 0x0000E1CE. Stock values are identical to that surface; only the knock state selects between them."
+
+[[target.JK78C.table]]
+id = "vvel_duration_hot_intake_idle_floor"
+address = 0x0001600A
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "9398c8b3675e44535712a1a906d7a5575de7c47736d26e02b6cf4ef8c8cbae2b"
+pointer_bindings = [{ site = 0x00056678, accessor = 0x000564A4, offset = 0x10 }]
+axis_x = 0x00015FFA
+name = "VVEL Duration Floor - Hot Intake Idle"
+category = "Variable Valve Timing / VVEL Duration"
+order = 14
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Eight-point lower bound of the mode 12 duration: the resolver takes the maximum of this curve and the surface 0x0000E1CE. Stock values are 900 = 45.0 at every point."
+note = "Read by the resolver FUN_000564A4 at callsite 0x5655E through the 8-point uint16 wrapper 0x282F4 as GBR + 0x10 with the axis at GBR + 0; GBR holds the literal 0x00015FFA loaded at 0x564BC from 0x56678. The coordinate is the demand word 0xFFFF2350 (DID 0x1218)."
+
+[[target.JK78C.table]]
+id = "vvel_duration_hot_intake_idle_knock_floor"
+address = 0x0001601A
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "9398c8b3675e44535712a1a906d7a5575de7c47736d26e02b6cf4ef8c8cbae2b"
+pointer_bindings = [{ site = 0x00056678, accessor = 0x000564A4, offset = 0x20 }]
+axis_x = 0x00015FFA
+name = "VVEL Duration Floor - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 15
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Eight-point lower bound of the mode 13 duration: the resolver takes the maximum of this curve and the surface 0x0000E24E. Stock values are 900 = 45.0 at every point."
+note = "Read by the resolver FUN_000564A4 at callsite 0x5656C through the 8-point uint16 wrapper 0x282F4 as GBR + 0x20 with the axis at GBR + 0 and the demand coordinate 0xFFFF2350."
+
+[[target.JK78C.table]]
+id = "vvel_duration_cold"
+address = 0x00016A54
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "e4214ab769fbe05887c354a1a46b577c8fe1214c5ece367a7b61a1ecf67d4ef0"
+pointer_bindings = [{ site = 0x00056C88, accessor = 0x00056A14 }]
+axis_x = 0x00016AC4
+name = "VVEL Duration Target - Cold"
+category = "Variable Valve Timing / VVEL Duration"
+order = 17
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 3 duration target of the VVEL selector: the cold branch taken while the coolant snapshot 0xFFFFA21A or the selected-temperature snapshot 0xFFFFA219 is below 70 degC. Interpolated by coolant temperature and scaled by 0.05."
+note = "Read by FUN_00056A14 at callsite 0x56A2A through the 8-point uint16 wrapper 0x282F4; the base literal 0x00016A54 at 0x56C88 also reaches the axis at + 0x70 and the cold CVTC curve at + 0x40. The coordinate is the coolant byte 0xFFFF1069 (degC + 50)."
+
+[[target.JK78C.table]]
+id = "vvel_duration_startup"
+address = 0x00015E32
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "59f01f9ab3630858371c0e27ddaf600697811be33293879b6f7744e60914be2f"
+pointer_bindings = [{ site = 0x00056CB8, accessor = 0x00056AB4 }]
+axis_x = 0x00017204
+name = "VVEL Duration Target - Start-up"
+category = "Variable Valve Timing / VVEL Duration"
+order = 18
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Start-up duration 0xFFFFA194 used by modes 2 and 11: the curve by the selected temperature 0xFFFF1066 while 0xFFFF45CA.bit1 is clear, scaled by 0.05. With the bit set a ramp between ROM16[0x91C6] and ROM16[0x91C8] replaces the curve."
+note = "Read by FUN_00056AB4 at callsite 0x56B7E through the 16-point uint16 wrapper 0x28320; the literal pool at 0x56CB8 follows FUN_00056BAA. The axis 0x00017204 = 10..160 is -40..110 degC."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_target_running"
+address = 0x00016DC4
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "5ebf36d992e5a44f00f256ae0f1a669759d024f838f38c28769d339356b316a4"
+pointer_bindings = [{ site = 0x0005668C, accessor = 0x000564A4 }]
+axis_x = 0x00016E74
+name = "Intake CVTC Target - Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 30
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 15 intake-cam target of the VVEL selector: the VTC half of the normal running pair, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count."
+note = "Read by the resolver FUN_000564A4 at callsite 0x565A6 through the 16-point uint16 wrapper 0x28320 indexed by 0xFFFF11A6 and converted with the float literals 0xC6800000 (-16384) and 0x3F000000 (0.5). Degrees of cam advance are a vendor-catalog candidate for the scaled value."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_target_throttled"
+address = 0x000108CE
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "92b3753163193a5162924ee4b9d7b807b2bc4d3561261f4a616874f88900ee97"
+pointer_bindings = [{ site = 0x000569D4, accessor = 0x000564A4 }]
+axis_x = 0x00016DE4
+axis_y = 0x00016E04
+name = "Intake CVTC Target - Throttled"
+category = "Variable Valve Timing / Intake Cam"
+order = 31
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 4 intake-cam target of the VVEL selector: the VTC half of the throttled pair, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count."
+note = "Read by the resolver FUN_000564A4 at callsite 0x566DE through the 16x16 uint16 wrapper 0x28090 with r7 = 0xFFFF11A6 on the first axis and the load fraction 0xFFFF238A on the second axis; the literals are in the pool at 0x569D4 that follows FUN_0005693A."
+
+[[target.JK78C.table]]
+id = "intake_cvtc_target_cold"
+address = 0x00016A94
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "dc2e5119d42ab6d773c018a71adc526577a05e8303bb16d4da7ee81759a88cc2"
+pointer_bindings = [{ site = 0x00056C88, accessor = 0x00056A14, offset = 0x40 }]
+axis_x = 0x00016AC4
+name = "Intake CVTC Target - Cold"
+category = "Variable Valve Timing / Intake Cam"
+order = 32
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 3 intake-cam target of the VVEL selector, interpolated by coolant temperature and gated by the flag 0xFFFFA362 with hysteresis ROM8[0x8AA7] = 53 and ROM8[0x8AA8] = 0. Stock values are 0x8000 = 0 at every point."
+note = "Read by FUN_00056A14 at callsite 0x56A4A through the 8-point uint16 wrapper 0x282F4 as the base literal 0x00016A54 + 0x40 with the axis at + 0x70."
+
+[[target.JK78C.table]]
+id = "vvel_command_shaft_angle"
+address = 0x000156FC
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "4ccd8e6f42bcc430605452446549dffd7251db7f25afd11bb64830781f7fa787"
+pointer_bindings = [{ site = 0x00055858, accessor = 0x00054FD0 }, { site = 0x000569F4, accessor = 0x0005693A }, { site = 0x0004D58C, accessor = 0x0004D3CE, offset = 0x20 }]
+axis_x = 0x000156DC
+name = "VVEL Command Word - Shaft Angle Conversion"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 10
+format = "0"
+fine = 1
+coarse = 64
+units = "count"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x"
+to_byte = "x"
+semantics = "Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the command-word domain (values). The task reads it in both directions: angle to command for the bound words that form 0xFFFF44AA, and command to angle with the roles of axis and values exchanged."
+note = "Read by the task FUN_00054FD0 at callsites 0x556E2 and 0x55776, by FUN_0005693A at 0x56952 for the filtered actual duration 0xFFFFA180, and by FUN_0004D3CE at 0x4D3F0 and 0x4D40C through the 16-point uint16 wrapper 0x28320. FUN_0004D3CE reaches it as GBR + 0x20 from the literal 0x000156DC at 0x4D58C. The command-word unit is stored raw; DID 0x125C publishes the latched command 0xFFFF443E."
+
+[[target.JK78C.table]]
+id = "vvel_shaft_angle_limit_engine_speed"
+address = 0x000160BA
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "713c9b7dec0d9e352c7c719aea4e7dea593216a86266c92d18bd5aeacf7f245d"
+pointer_bindings = [{ site = 0x000552AC, accessor = 0x00054FD0 }]
+axis_x = 0x00016D64
+name = "VVEL Shaft Angle Limit - Engine Speed"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Engine-speed curve of the shaft-angle bound applied in the task before the command conversion: the bound word is the curve value minus abs(0xFFFF5E8E). Values are in the shaft-angle domain of axis 0x000156DC."
+note = "Read by the task FUN_00054FD0 at callsite 0x550EC through the 8-point uint16 wrapper 0x282F4 indexed by 0xFFFF11A6 into 0xFFFF31BA. The 1/512 degree domain follows from the conversion pair; the bound composition is in JK78C.vvel.md."
+
+[[target.JK78C.table]]
+id = "vvel_shaft_angle_limit_cvtc"
+address = 0x00016A74
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "b7ae4d2b5c542d4ee7b35ffcd84c59fbe109532cf205e0470d740cd271eddb44"
+pointer_bindings = [{ site = 0x000555B0, accessor = 0x00054FD0 }]
+axis_x = 0x00016D94
+name = "VVEL Shaft Angle Limit - Intake CVTC Angle"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 12
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Intake-cam-angle curve of the shaft-angle bound applied in the task before the command conversion: the bound falls from 31.0 degrees at zero advance to 12.8 degrees at 75 degrees of advance. Values are in the shaft-angle domain of axis 0x000156DC."
+note = "Read by the task FUN_00054FD0 at callsite 0x552EA through the 16-point uint16 wrapper 0x28320 indexed by min(0xFFFF23A0, 0xFFFF23A2), the lower of the two bank cam-angle words in the 0x8000-centered domain."
+
+[[target.JK78C.table]]
+id = "vvel_shaft_angle_monitor_floor_a"
+address = 0x0001609A
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "55f381113d10047c858029d602dbb011d7fff94d4d6bacccddecfa15751a0485"
+pointer_bindings = [{ site = 0x00055294, accessor = 0x00054FD0 }]
+axis_x = 0x0001528C
+name = "VVEL Shaft Angle Monitor Floor - A"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "First engine-speed floor of the expected control-shaft angle: FUN_000BF0C0 and FUN_000BF122 take the maximum of this curve, the floor B curve, and two RAM words, then subtract the measured angle 0xFFFF2670 and clamp at zero into 0xFFFF2B2E."
+note = "Read by the task FUN_00054FD0 at callsite 0x550C0 through the 8-point uint16 wrapper 0x282F4 indexed by 0xFFFF11A6 into 0xFFFF3276. The subtraction from the 1/512 degree angle word 0xFFFF2670 fixes the domain."
+
+[[target.JK78C.table]]
+id = "vvel_shaft_angle_monitor_floor_b"
+address = 0x000160AA
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a36cab967fd9646c8fb61c6f17ef2a219e3ec10c409a4d9afe3125b270c0a565"
+pointer_bindings = [{ site = 0x000552A4, accessor = 0x00054FD0 }]
+axis_x = 0x00016D54
+name = "VVEL Shaft Angle Monitor Floor - B"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 14
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Second engine-speed floor of the expected control-shaft angle, combined with floor A by maximum in FUN_000BF0C0 and FUN_000BF122 before the deficit against the measured angle 0xFFFF2670 is formed."
+note = "Read by the task FUN_00054FD0 at callsite 0x550D6 through the 8-point uint16 wrapper 0x282F4 indexed by 0xFFFF11A6 into 0xFFFF3278."
+
+[[target.JK78C.axis]]
+id = "vvel_duration_running_axis"
+address = 0x00016CA4
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x00056684, accessor = 0x000564A4 }, { site = 0x00056F7C, accessor = 0x00056DCA }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; the coordinate is 0xFFFF11A6 at 3.125 RPM per count."
+
+[[target.JK78C.axis]]
+id = "vvel_duration_throttled_axis"
+address = 0x00016C84
+length = 16
+storagetype = "uint16"
+values_sha256 = "2ec737296509786b6f1996f00861bfe9f369b865342f74b197c2c8cf182bbd79"
+pointer_bindings = [{ site = 0x000569D0, accessor = 0x000564A4 }, { site = 0x00066450, accessor = 0x000657E4 }, { site = 0x00066688, accessor = 0x000657E4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 600..7200 RPM of the throttled duration curve; the coordinate is 0xFFFF11A6."
+
+[[target.JK78C.axis]]
+id = "vvel_duration_hot_intake_idle_axis_x"
+address = 0x000160CA
+length = 8
+storagetype = "uint16"
+values_sha256 = "747813ca536e7ffbf0a9ac465a541b93469f7daac2155b3ecbbd54c29ae5faf9"
+pointer_bindings = [{ site = 0x00056678, accessor = 0x000564A4, offset = 0xD0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "First axis of the hot-intake idle surfaces, 400..2000 RPM, reached as GBR + 0xD0 from the literal 0x00015FFA; the coordinate is 0xFFFF11A6 in r7."
+
+[[target.JK78C.axis]]
+id = "vvel_duration_hot_intake_idle_axis_y"
+address = 0x000160DA
+length = 8
+storagetype = "uint16"
+values_sha256 = "b6304af64557f91c3376be87edc085743dda835134ec43539a28d93d16ff3f9c"
+pointer_bindings = [{ site = 0x00056678, accessor = 0x000564A4, offset = 0xE0 }]
+name = "Target Torque [Nm]"
+kind = "raw"
+format = "0.0"
+fine = 0.1
+coarse = 1
+units = "Nm"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.1"
+to_byte = "x/0.1"
+note = "Second axis of the hot-intake idle surfaces, stock points 250..2000, reached as GBR + 0xE0 from the literal 0x00015FFA; the coordinate is max(0, 0xFFFF2E26) in the stack slot. 0.1 Nm per count is a catalog candidate for that word."
+
+[[target.JK78C.axis]]
+id = "vvel_duration_hot_intake_idle_floor_axis"
+address = 0x00015FFA
+length = 8
+storagetype = "uint16"
+values_sha256 = "922d87abf7599e1c87c77f4791a716d240c7337d4006cd9daa3974f5bca177b4"
+pointer_bindings = [{ site = 0x00056678, accessor = 0x000564A4 }]
+name = "Demand [%]"
+kind = "raw"
+format = "0.0"
+fine = 0.125
+coarse = 1
+units = "%"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x/8"
+to_byte = "x*8"
+note = "Eight-point axis 100..800 of the two floor curves, the GBR base of the resolver; the coordinate is the demand word 0xFFFF2350 published by DID 0x1218. 1/8 percent per count is a catalog candidate."
+
+[[target.JK78C.axis]]
+id = "vvel_cold_axis"
+address = 0x00016AC4
+length = 8
+storagetype = "uint16"
+values_sha256 = "f8cac5dea1d97daf5ae73d8a74a86afce6c0f8f86fac01708ffd5aa9dbe7f7da"
+pointer_bindings = [{ site = 0x00056C88, accessor = 0x00056A14, offset = 0x70 }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold CVTC curves, reached as the base literal 0x00016A54 + 0x70; the coordinate is 0xFFFF1069."
+
+[[target.JK78C.axis]]
+id = "vvel_duration_startup_axis"
+address = 0x00017204
+length = 16
+storagetype = "uint16"
+values_sha256 = "c8820f9b479976924db67046e7a3d2f31e51bb1423cf6e161724fa64b76e53f7"
+pointer_bindings = [{ site = 0x00056CBC, accessor = 0x00056AB4 }]
+name = "Selected Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; the coordinate is the selected temperature 0xFFFF1066."
+
+[[target.JK78C.axis]]
+id = "intake_cvtc_target_running_axis"
+address = 0x00016E74
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x00056694, accessor = 0x000564A4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 400..7200 RPM of the running CVTC curve; the coordinate is 0xFFFF11A6."
+
+[[target.JK78C.axis]]
+id = "intake_cvtc_target_throttled_axis_x"
+address = 0x00016DE4
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x000569D8, accessor = 0x000564A4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "First axis of the throttled CVTC surface, 800..6800 RPM; the coordinate is 0xFFFF11A6 in r7."
+
+[[target.JK78C.axis]]
+id = "intake_cvtc_target_throttled_axis_y"
+address = 0x00016E04
+length = 16
+storagetype = "uint16"
+values_sha256 = "4783f1edeb4b3edf7fd68c242b0bb93b6dd1e4118fefc824123745ecb3080aa3"
+pointer_bindings = [{ site = 0x000569DC, accessor = 0x000564A4 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+units = "%"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/655.35"
+to_byte = "x*655.35"
+note = "Second axis of the throttled CVTC surface, 4100..65535 = 6.3..100 percent of the load fraction 0xFFFF238A in the stack slot."
+
+[[target.JK78C.axis]]
+id = "vvel_shaft_angle_axis"
+address = 0x000156DC
+length = 16
+storagetype = "uint16"
+values_sha256 = "74a1b7f68b2b7518cb72ff4370b4fafa34a6ecca1f42bf0ed24252ced20f3455"
+pointer_bindings = [{ site = 0x00055854, accessor = 0x00054FD0 }, { site = 0x000569F8, accessor = 0x0005693A }, { site = 0x0004D58C, accessor = 0x0004D3CE }]
+name = "VVEL Shaft Angle [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+note = "Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command conversion; the same block serves as the value array when the task converts a command word back to an angle. FUN_0004D3CE loads it into GBR from 0x4D58C."
+
+[[target.JK78C.axis]]
+id = "vvel_shaft_angle_limit_engine_speed_axis"
+address = 0x00016D64
+length = 8
+storagetype = "uint16"
+values_sha256 = "e4bdbdfc5d12460a9e0cf0b14d2cb512b67679cbe59ec3da3911879dff692e3b"
+pointer_bindings = [{ site = 0x000552B0, accessor = 0x00054FD0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 2000..7200 RPM of the engine-speed shaft-angle limit; the coordinate is 0xFFFF11A6."
+
+[[target.JK78C.axis]]
+id = "vvel_shaft_angle_limit_cvtc_axis"
+address = 0x00016D94
+length = 16
+storagetype = "uint16"
+values_sha256 = "568d73971957b35505b76d3143b4ab683aa70d0714fcd92dfa617b95e387a971"
+pointer_bindings = [{ site = 0x000555B4, accessor = 0x00054FD0 }]
+name = "Intake CVTC Angle [degCA]"
+kind = "raw"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+note = "Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees of the CVTC shaft-angle limit; the coordinate is min(0xFFFF23A0, 0xFFFF23A2)."
+
+[[target.JK78C.axis]]
+id = "vvel_shaft_angle_monitor_floor_a_axis"
+address = 0x0001528C
+length = 8
+storagetype = "uint16"
+values_sha256 = "fc97a1199fc2013f4017ced65800feb862ff87d7332460d9f0eca983eba100ad"
+pointer_bindings = [{ site = 0x00055298, accessor = 0x00054FD0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 1200..6400 RPM of monitor floor A; the coordinate is 0xFFFF11A6."
+
+[[target.JK78C.axis]]
+id = "vvel_shaft_angle_monitor_floor_b_axis"
+address = 0x00016D54
+length = 8
+storagetype = "uint16"
+values_sha256 = "dcbf1b7591112b03a116bc0d85cbe33260d5140226c4e4a51a3ab8491e2119c3"
+pointer_bindings = [{ site = 0x000552A8, accessor = 0x00054FD0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 2400..7200 RPM of monitor floor B; the coordinate is 0xFFFF11A6."
+
+[target.JK78C.absent]
+vvel_duration_mode_14 = "The JK78C resolver FUN_000564A4 stores the constant 50.0 for mode 14 and reads no table for it; JK78C.vvel.md lists the mode."
+
 [target.1ND0A]
 stock_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
 
@@ -109,6 +771,626 @@ static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."
 
+[[target.1ND0A.table]]
+id = "vvel_duration_running"
+address = 0x000171C2
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "408d3107edf372cbb012cb37caaac2f43c18a67413c333bf033d2ad4031cacf3"
+pointer_bindings = [{ site = 0x0005F764, accessor = 0x0005F468 }, { site = 0x0005FE5C, accessor = 0x0005FD88 }]
+axis_x = 0x000172B2
+name = "VVEL Duration Target - Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 10
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.005"
+to_byte = "x/0.005"
+semantics = "Mode 15 duration target of the VVEL selector: the normal running mode above idle without a hot-intake or throttled request. The resolver interpolates it by engine speed and scales the count by the float literal 0.005 before the selector publishes the command."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the scaled duration is a vendor-catalog candidate."
+
+[[target.1ND0A.table]]
+id = "vvel_duration_throttled"
+address = 0x00017302
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "cb346ae6c7e9b6bd904c3d8f8e0a28da3049a49ef0affb4843654f99427ce01c"
+pointer_bindings = [{ site = 0x0005F780, accessor = 0x0005F468 }, { site = 0x00071030, accessor = 0x00070514 }, { site = 0x000712B8, accessor = 0x00070514 }]
+axis_x = 0x00017292
+name = "VVEL Duration Target - Throttled"
+category = "Variable Valve Timing / VVEL Duration"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 4 duration target of the VVEL selector: the throttled mode and the late cold path. Interpolated by engine speed and scaled by 0.05."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C and by FUN_00070514 at three callsites; the 0.05 factor is the float literal 0x3D4CCCCC at 0x5F784. Stock bytes are identical to JK78C 0x00016D14."
+
+[[target.1ND0A.table]]
+id = "vvel_duration_hot_intake_idle"
+address = 0x0000E748
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5402146fdf7fde4efc0446a2d5cda5dafbe4b32e27e92872328814ff66e80dfe"
+pointer_bindings = [{ site = 0x0005F7A0, accessor = 0x0005F468 }, { site = 0x0007129C, accessor = 0x00070514 }]
+axis_x = 0x000166D8
+axis_y = 0x000166C8
+name = "VVEL Duration Target - Hot Intake Idle"
+category = "Variable Valve Timing / VVEL Duration"
+order = 12
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 12 duration surface of the VVEL selector: hot-intake idle with the high-detonation state clear. The 1ND resolver stores the surface value directly; there is no floor lookup. Stock values are 1000 = 50.0 at every cell."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F664 through the 8x8 uint16 wrapper 0x28674 with two byte coordinates: r7 is the byte 0xFFFE8073 and the stack slot is the byte 0xFFFE9796. FUN_00070514 reads the surface at 0x7106A and 0x71132 with the same axes. JK78C indexes its surface 0x0000E1CE by engine speed and torque instead."
+
+[[target.1ND0A.table]]
+id = "vvel_duration_hot_intake_idle_knock"
+address = 0x0000E7C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5402146fdf7fde4efc0446a2d5cda5dafbe4b32e27e92872328814ff66e80dfe"
+pointer_bindings = [{ site = 0x0005F7A8, accessor = 0x0005F468 }, { site = 0x000712A4, accessor = 0x00070514 }]
+axis_x = 0x000166D8
+axis_y = 0x000166C8
+name = "VVEL Duration Target - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 13 duration surface of the VVEL selector: hot-intake idle with the high-detonation state set. Stock values are 1000 = 50.0 at every cell."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode 12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A."
+
+[[target.1ND0A.table]]
+id = "vvel_duration_mode_14"
+address = 0x0000E6C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "2152827feddc353df94a7b70201acf5088e9d81673b148447a13e7b19bc4556d"
+pointer_bindings = [{ site = 0x0005F7AC, accessor = 0x0005F468 }]
+axis_x = 0x000166D8
+axis_y = 0x000166C8
+name = "VVEL Duration Target - Mode 14"
+category = "Variable Valve Timing / VVEL Duration"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 14 duration surface of the VVEL selector, interpolated with the coordinates and axes of the hot-intake idle surfaces. Stock values are 960 = 48.0 at every cell. The condition that selects mode 14 is not located in either VQ37 image."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 uint16 wrapper 0x28674 and stored at the mode 14 pair slot. JK78C stores the constant 50.0 for this mode and carries no table."
+
+[[target.1ND0A.table]]
+id = "vvel_duration_cold"
+address = 0x00017062
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "e4214ab769fbe05887c354a1a46b577c8fe1214c5ece367a7b61a1ecf67d4ef0"
+pointer_bindings = [{ site = 0x0005F7B4, accessor = 0x0005F468 }]
+axis_x = 0x000170D2
+name = "VVEL Duration Target - Cold"
+category = "Variable Valve Timing / VVEL Duration"
+order = 17
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 3 duration target of the VVEL selector: the cold branch. Interpolated by a coolant-coded byte and scaled by 0.05."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F6D2 through the 8-point uint16 wrapper 0x28910 with its own literal pool words for the curve and the axis. Stock bytes are identical to JK78C 0x00016A54."
+
+[[target.1ND0A.table]]
+id = "vvel_duration_startup"
+address = 0x00016440
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "59f01f9ab3630858371c0e27ddaf600697811be33293879b6f7744e60914be2f"
+pointer_bindings = [{ site = 0x0005FB08, accessor = 0x0005F9F0 }]
+axis_x = 0x00017812
+name = "VVEL Duration Target - Start-up"
+category = "Variable Valve Timing / VVEL Duration"
+order = 18
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Start-up duration used by modes 2 and 11: the curve by the selected temperature, scaled by 0.05, with the same ramp alternative as JK78C."
+note = "Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_target_running"
+address = 0x000173C2
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "b551da66ff44dc0b8f3623dfaf2b9ce88fe0ea54a5a250b4c4b9279aa3942a53"
+pointer_bindings = [{ site = 0x0005F770, accessor = 0x0005F468 }]
+axis_x = 0x00017472
+name = "Intake CVTC Target - Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 30
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 15 intake-cam target of the VVEL selector, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F5F6 through the 16-point uint16 wrapper 0x2893C and converted with the float literals 0xC6800000 and 0x3F000000. The stock curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_target_throttled"
+address = 0x00010D48
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "92b3753163193a5162924ee4b9d7b807b2bc4d3561261f4a616874f88900ee97"
+pointer_bindings = [{ site = 0x0005F790, accessor = 0x0005F468 }]
+axis_x = 0x000173E2
+axis_y = 0x00017402
+name = "Intake CVTC Target - Throttled"
+category = "Variable Valve Timing / Intake Cam"
+order = 31
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 4 intake-cam target of the VVEL selector, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F636 through the 16x16 uint16 wrapper 0x286AC with r7 on the first axis and the stack coordinate on the second axis. Stock bytes are identical to JK78C 0x000108CE."
+
+[[target.1ND0A.table]]
+id = "intake_cvtc_target_cold"
+address = 0x000170A2
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "dc2e5119d42ab6d773c018a71adc526577a05e8303bb16d4da7ee81759a88cc2"
+pointer_bindings = [{ site = 0x0005F7BC, accessor = 0x0005F468 }]
+axis_x = 0x000170D2
+name = "Intake CVTC Target - Cold"
+category = "Variable Valve Timing / Intake Cam"
+order = 32
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 3 intake-cam target of the VVEL selector, interpolated by the coolant-coded byte of the cold axis. Stock values are 0x8000 = 0 at every point."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F6EC through the 8-point uint16 wrapper 0x28910 with its own literal pool word. Stock bytes are identical to JK78C 0x00016A94."
+
+[[target.1ND0A.table]]
+id = "vvel_command_shaft_angle"
+address = 0x00015C22
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "4ccd8e6f42bcc430605452446549dffd7251db7f25afd11bb64830781f7fa787"
+pointer_bindings = [{ site = 0x0005E9B4, accessor = 0x0005E2A0 }, { site = 0x0005F588, accessor = 0x0005F468 }, { site = 0x0005531C, accessor = 0x0005514A }]
+axis_x = 0x00015C02
+name = "VVEL Command Word - Shaft Angle Conversion"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 10
+format = "0"
+fine = 1
+coarse = 64
+units = "count"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x"
+to_byte = "x"
+semantics = "Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the command-word domain (values), read in both directions by the task."
+note = "Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC."
+
+[[target.1ND0A.table]]
+id = "vvel_shaft_angle_limit_engine_speed"
+address = 0x000166B8
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "713c9b7dec0d9e352c7c719aea4e7dea593216a86266c92d18bd5aeacf7f245d"
+pointer_bindings = [{ site = 0x0005E5A4, accessor = 0x0005E2A0 }]
+axis_x = 0x00017352
+name = "VVEL Shaft Angle Limit - Engine Speed"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Engine-speed curve of the shaft-angle bound applied in the task before the command conversion. Values are in the shaft-angle domain of axis 0x00015C02."
+note = "Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA."
+
+[[target.1ND0A.table]]
+id = "vvel_shaft_angle_limit_cvtc"
+address = 0x00017082
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "b7ae4d2b5c542d4ee7b35ffcd84c59fbe109532cf205e0470d740cd271eddb44"
+pointer_bindings = [{ site = 0x0005E5C0, accessor = 0x0005E2A0 }]
+axis_x = 0x00017392
+name = "VVEL Shaft Angle Limit - Intake CVTC Angle"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 12
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Intake-cam-angle curve of the shaft-angle bound applied in the task before the command conversion. Values are in the shaft-angle domain of axis 0x00015C02."
+note = "Read by the task FUN_0005E2A0 at callsite 0x5E4D8 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00016A74."
+
+[[target.1ND0A.table]]
+id = "vvel_shaft_angle_monitor_floor_a"
+address = 0x00016698
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "55f381113d10047c858029d602dbb011d7fff94d4d6bacccddecfa15751a0485"
+pointer_bindings = [{ site = 0x0005E58C, accessor = 0x0005E2A0 }]
+axis_x = 0x000157B2
+name = "VVEL Shaft Angle Monitor Floor - A"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "First engine-speed floor of the expected control-shaft angle used by the shaft-angle deficit monitors."
+note = "Read by the task FUN_0005E2A0 at callsite 0x5E350 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x0001609A; the JK78C monitor pair FUN_000BF0C0 and FUN_000BF122 fixes the domain."
+
+[[target.1ND0A.table]]
+id = "vvel_shaft_angle_monitor_floor_b"
+address = 0x000166A8
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a36cab967fd9646c8fb61c6f17ef2a219e3ec10c409a4d9afe3125b270c0a565"
+pointer_bindings = [{ site = 0x0005E59C, accessor = 0x0005E2A0 }]
+axis_x = 0x00017342
+name = "VVEL Shaft Angle Monitor Floor - B"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 14
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Second engine-speed floor of the expected control-shaft angle used by the shaft-angle deficit monitors."
+note = "Read by the task FUN_0005E2A0 at callsite 0x5E360 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160AA."
+
+[[target.1ND0A.axis]]
+id = "vvel_duration_running_axis"
+address = 0x000172B2
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x0005F760, accessor = 0x0005F468 }, { site = 0x0005FE58, accessor = 0x0005FD88 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; stock bytes are identical to JK78C 0x00016CA4."
+
+[[target.1ND0A.axis]]
+id = "vvel_duration_throttled_axis"
+address = 0x00017292
+length = 16
+storagetype = "uint16"
+values_sha256 = "2ec737296509786b6f1996f00861bfe9f369b865342f74b197c2c8cf182bbd79"
+pointer_bindings = [{ site = 0x0005F77C, accessor = 0x0005F468 }, { site = 0x00071024, accessor = 0x00070514 }, { site = 0x000712AC, accessor = 0x00070514 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 600..7200 RPM of the throttled duration curve; stock bytes are identical to JK78C 0x00016C84."
+
+[[target.1ND0A.axis]]
+id = "vvel_duration_hot_intake_idle_axis_x"
+address = 0x000166D8
+length = 8
+storagetype = "uint16"
+values_sha256 = "5c91c681c9b1f0034ec7be986ed0af109b9e6868b2028eba7cede14e996d4a97"
+pointer_bindings = [{ site = 0x0005F79C, accessor = 0x0005F468 }, { site = 0x00071298, accessor = 0x00070514 }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "First axis of the hot-intake idle and mode 14 surfaces, stock points 90..160. The r7 coordinate is the byte 0xFFFE8073, which the snapshot copy FUN_0005E1CA stores at the slot that JK78C fills from the coolant byte 0xFFFF1069; degC + 50 coding is a candidate from that pairing."
+
+[[target.1ND0A.axis]]
+id = "vvel_duration_hot_intake_idle_axis_y"
+address = 0x000166C8
+length = 8
+storagetype = "uint16"
+values_sha256 = "5c91c681c9b1f0034ec7be986ed0af109b9e6868b2028eba7cede14e996d4a97"
+pointer_bindings = [{ site = 0x0005F798, accessor = 0x0005F468 }, { site = 0x00071294, accessor = 0x00070514 }]
+name = "Second Temperature Coordinate [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "Second axis of the hot-intake idle and mode 14 surfaces, stock points 90..160. The stack coordinate is the byte 0xFFFE9796 pushed by the task FUN_0005E2A0; its physical source is not bound, and degC + 50 coding is a candidate from the stock points."
+
+[[target.1ND0A.axis]]
+id = "vvel_cold_axis"
+address = 0x000170D2
+length = 8
+storagetype = "uint16"
+values_sha256 = "f8cac5dea1d97daf5ae73d8a74a86afce6c0f8f86fac01708ffd5aa9dbe7f7da"
+pointer_bindings = [{ site = 0x0005F7B0, accessor = 0x0005F468 }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold CVTC curves; stock bytes are identical to JK78C 0x00016AC4."
+
+[[target.1ND0A.axis]]
+id = "vvel_duration_startup_axis"
+address = 0x00017812
+length = 16
+storagetype = "uint16"
+values_sha256 = "c8820f9b479976924db67046e7a3d2f31e51bb1423cf6e161724fa64b76e53f7"
+pointer_bindings = [{ site = 0x0005FB04, accessor = 0x0005F9F0 }]
+name = "Selected Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; stock bytes are identical to JK78C 0x00017204."
+
+[[target.1ND0A.axis]]
+id = "intake_cvtc_target_running_axis"
+address = 0x00017472
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x0005F76C, accessor = 0x0005F468 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 400..7200 RPM of the running CVTC curve; stock bytes are identical to JK78C 0x00016E74."
+
+[[target.1ND0A.axis]]
+id = "intake_cvtc_target_throttled_axis_x"
+address = 0x000173E2
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x0005F78C, accessor = 0x0005F468 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "First axis of the throttled CVTC surface, 800..6800 RPM; stock bytes are identical to JK78C 0x00016DE4."
+
+[[target.1ND0A.axis]]
+id = "intake_cvtc_target_throttled_axis_y"
+address = 0x00017402
+length = 16
+storagetype = "uint16"
+values_sha256 = "4783f1edeb4b3edf7fd68c242b0bb93b6dd1e4118fefc824123745ecb3080aa3"
+pointer_bindings = [{ site = 0x0005F788, accessor = 0x0005F468 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+units = "%"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/655.35"
+to_byte = "x*655.35"
+note = "Second axis of the throttled CVTC surface, 4100..65535 = 6.3..100 percent; stock bytes are identical to JK78C 0x00016E04."
+
+[[target.1ND0A.axis]]
+id = "vvel_shaft_angle_axis"
+address = 0x00015C02
+length = 16
+storagetype = "uint16"
+values_sha256 = "74a1b7f68b2b7518cb72ff4370b4fafa34a6ecca1f42bf0ed24252ced20f3455"
+pointer_bindings = [{ site = 0x0005E9B8, accessor = 0x0005E2A0 }, { site = 0x0005F584, accessor = 0x0005F468 }, { site = 0x00055318, accessor = 0x0005514A }]
+name = "VVEL Shaft Angle [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+note = "Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command conversion, also the value array of the reverse lookup; stock bytes are identical to JK78C 0x000156DC."
+
+[[target.1ND0A.axis]]
+id = "vvel_shaft_angle_limit_engine_speed_axis"
+address = 0x00017352
+length = 8
+storagetype = "uint16"
+values_sha256 = "e4bdbdfc5d12460a9e0cf0b14d2cb512b67679cbe59ec3da3911879dff692e3b"
+pointer_bindings = [{ site = 0x0005E5A0, accessor = 0x0005E2A0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 2000..7200 RPM of the engine-speed shaft-angle limit; stock bytes are identical to JK78C 0x00016D64."
+
+[[target.1ND0A.axis]]
+id = "vvel_shaft_angle_limit_cvtc_axis"
+address = 0x00017392
+length = 16
+storagetype = "uint16"
+values_sha256 = "568d73971957b35505b76d3143b4ab683aa70d0714fcd92dfa617b95e387a971"
+pointer_bindings = [{ site = 0x0005E5BC, accessor = 0x0005E2A0 }]
+name = "Intake CVTC Angle [degCA]"
+kind = "raw"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+note = "Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees of the CVTC shaft-angle limit; stock bytes are identical to JK78C 0x00016D94."
+
+[[target.1ND0A.axis]]
+id = "vvel_shaft_angle_monitor_floor_a_axis"
+address = 0x000157B2
+length = 8
+storagetype = "uint16"
+values_sha256 = "fc97a1199fc2013f4017ced65800feb862ff87d7332460d9f0eca983eba100ad"
+pointer_bindings = [{ site = 0x0005E588, accessor = 0x0005E2A0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 1200..6400 RPM of monitor floor A; stock bytes are identical to JK78C 0x0001528C."
+
+[[target.1ND0A.axis]]
+id = "vvel_shaft_angle_monitor_floor_b_axis"
+address = 0x00017342
+length = 8
+storagetype = "uint16"
+values_sha256 = "dcbf1b7591112b03a116bc0d85cbe33260d5140226c4e4a51a3ab8491e2119c3"
+pointer_bindings = [{ site = 0x0005E598, accessor = 0x0005E2A0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 2400..7200 RPM of monitor floor B; stock bytes are identical to JK78C 0x00016D54."
+
+[target.1ND0A.absent]
+vvel_duration_hot_intake_idle_floor = "The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a floor lookup; its literal pool holds no eight-point floor curve and no demand axis."
+vvel_duration_hot_intake_idle_knock_floor = "The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a floor lookup; its literal pool holds no eight-point floor curve and no demand axis."
+vvel_duration_hot_intake_idle_floor_axis = "The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a floor lookup; its literal pool holds no eight-point floor curve and no demand axis."
+
 [target.1ND3B]
 stock_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
 
@@ -159,3 +1441,623 @@ static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
 note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_running"
+address = 0x000171C2
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "408d3107edf372cbb012cb37caaac2f43c18a67413c333bf033d2ad4031cacf3"
+pointer_bindings = [{ site = 0x0005F764, accessor = 0x0005F468 }, { site = 0x0005FE5C, accessor = 0x0005FD88 }]
+axis_x = 0x000172B2
+name = "VVEL Duration Target - Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 10
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.005"
+to_byte = "x/0.005"
+semantics = "Mode 15 duration target of the VVEL selector: the normal running mode above idle without a hot-intake or throttled request. The resolver interpolates it by engine speed and scales the count by the float literal 0.005 before the selector publishes the command."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the scaled duration is a vendor-catalog candidate. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_throttled"
+address = 0x00017302
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "cb346ae6c7e9b6bd904c3d8f8e0a28da3049a49ef0affb4843654f99427ce01c"
+pointer_bindings = [{ site = 0x0005F780, accessor = 0x0005F468 }, { site = 0x00071030, accessor = 0x00070514 }, { site = 0x000712B8, accessor = 0x00070514 }]
+axis_x = 0x00017292
+name = "VVEL Duration Target - Throttled"
+category = "Variable Valve Timing / VVEL Duration"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 4 duration target of the VVEL selector: the throttled mode and the late cold path. Interpolated by engine speed and scaled by 0.05."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C and by FUN_00070514 at three callsites; the 0.05 factor is the float literal 0x3D4CCCCC at 0x5F784. Stock bytes are identical to JK78C 0x00016D14. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_hot_intake_idle"
+address = 0x0000E748
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5402146fdf7fde4efc0446a2d5cda5dafbe4b32e27e92872328814ff66e80dfe"
+pointer_bindings = [{ site = 0x0005F7A0, accessor = 0x0005F468 }, { site = 0x0007129C, accessor = 0x00070514 }]
+axis_x = 0x000166D8
+axis_y = 0x000166C8
+name = "VVEL Duration Target - Hot Intake Idle"
+category = "Variable Valve Timing / VVEL Duration"
+order = 12
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 12 duration surface of the VVEL selector: hot-intake idle with the high-detonation state clear. The 1ND resolver stores the surface value directly; there is no floor lookup. Stock values are 1000 = 50.0 at every cell."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F664 through the 8x8 uint16 wrapper 0x28674 with two byte coordinates: r7 is the byte 0xFFFE8073 and the stack slot is the byte 0xFFFE9796. FUN_00070514 reads the surface at 0x7106A and 0x71132 with the same axes. JK78C indexes its surface 0x0000E1CE by engine speed and torque instead. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_hot_intake_idle_knock"
+address = 0x0000E7C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5402146fdf7fde4efc0446a2d5cda5dafbe4b32e27e92872328814ff66e80dfe"
+pointer_bindings = [{ site = 0x0005F7A8, accessor = 0x0005F468 }, { site = 0x000712A4, accessor = 0x00070514 }]
+axis_x = 0x000166D8
+axis_y = 0x000166C8
+name = "VVEL Duration Target - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 13 duration surface of the VVEL selector: hot-intake idle with the high-detonation state set. Stock values are 1000 = 50.0 at every cell."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode 12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_mode_14"
+address = 0x0000E6C8
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "2152827feddc353df94a7b70201acf5088e9d81673b148447a13e7b19bc4556d"
+pointer_bindings = [{ site = 0x0005F7AC, accessor = 0x0005F468 }]
+axis_x = 0x000166D8
+axis_y = 0x000166C8
+name = "VVEL Duration Target - Mode 14"
+category = "Variable Valve Timing / VVEL Duration"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 14 duration surface of the VVEL selector, interpolated with the coordinates and axes of the hot-intake idle surfaces. Stock values are 960 = 48.0 at every cell. The condition that selects mode 14 is not located in either VQ37 image."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 uint16 wrapper 0x28674 and stored at the mode 14 pair slot. JK78C stores the constant 50.0 for this mode and carries no table. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_cold"
+address = 0x00017062
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "e4214ab769fbe05887c354a1a46b577c8fe1214c5ece367a7b61a1ecf67d4ef0"
+pointer_bindings = [{ site = 0x0005F7B4, accessor = 0x0005F468 }]
+axis_x = 0x000170D2
+name = "VVEL Duration Target - Cold"
+category = "Variable Valve Timing / VVEL Duration"
+order = 17
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Mode 3 duration target of the VVEL selector: the cold branch. Interpolated by a coolant-coded byte and scaled by 0.05."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F6D2 through the 8-point uint16 wrapper 0x28910 with its own literal pool words for the curve and the axis. Stock bytes are identical to JK78C 0x00016A54. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_duration_startup"
+address = 0x00016440
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "59f01f9ab3630858371c0e27ddaf600697811be33293879b6f7744e60914be2f"
+pointer_bindings = [{ site = 0x0005FB08, accessor = 0x0005F9F0 }]
+axis_x = 0x00017812
+name = "VVEL Duration Target - Start-up"
+category = "Variable Valve Timing / VVEL Duration"
+order = 18
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.05"
+to_byte = "x/0.05"
+semantics = "Start-up duration used by modes 2 and 11: the curve by the selected temperature, scaled by 0.05, with the same ramp alternative as JK78C."
+note = "Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_target_running"
+address = 0x000173C2
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "b551da66ff44dc0b8f3623dfaf2b9ce88fe0ea54a5a250b4c4b9279aa3942a53"
+pointer_bindings = [{ site = 0x0005F770, accessor = 0x0005F468 }]
+axis_x = 0x00017472
+name = "Intake CVTC Target - Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 30
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 15 intake-cam target of the VVEL selector, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F5F6 through the 16-point uint16 wrapper 0x2893C and converted with the float literals 0xC6800000 and 0x3F000000. The stock curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_target_throttled"
+address = 0x00010D48
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "92b3753163193a5162924ee4b9d7b807b2bc4d3561261f4a616874f88900ee97"
+pointer_bindings = [{ site = 0x0005F790, accessor = 0x0005F468 }]
+axis_x = 0x000173E2
+axis_y = 0x00017402
+name = "Intake CVTC Target - Throttled"
+category = "Variable Valve Timing / Intake Cam"
+order = 31
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 4 intake-cam target of the VVEL selector, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F636 through the 16x16 uint16 wrapper 0x286AC with r7 on the first axis and the stack coordinate on the second axis. Stock bytes are identical to JK78C 0x000108CE. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "intake_cvtc_target_cold"
+address = 0x000170A2
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "dc2e5119d42ab6d773c018a71adc526577a05e8303bb16d4da7ee81759a88cc2"
+pointer_bindings = [{ site = 0x0005F7BC, accessor = 0x0005F468 }]
+axis_x = 0x000170D2
+name = "Intake CVTC Target - Cold"
+category = "Variable Valve Timing / Intake Cam"
+order = 32
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+semantics = "Mode 3 intake-cam target of the VVEL selector, interpolated by the coolant-coded byte of the cold axis. Stock values are 0x8000 = 0 at every point."
+note = "Read by the resolver FUN_0005F468 at callsite 0x5F6EC through the 8-point uint16 wrapper 0x28910 with its own literal pool word. Stock bytes are identical to JK78C 0x00016A94. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_command_shaft_angle"
+address = 0x00015C22
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "4ccd8e6f42bcc430605452446549dffd7251db7f25afd11bb64830781f7fa787"
+pointer_bindings = [{ site = 0x0005E9B4, accessor = 0x0005E2A0 }, { site = 0x0005F588, accessor = 0x0005F468 }, { site = 0x0005531C, accessor = 0x0005514A }]
+axis_x = 0x00015C02
+name = "VVEL Command Word - Shaft Angle Conversion"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 10
+format = "0"
+fine = 1
+coarse = 64
+units = "count"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x"
+to_byte = "x"
+semantics = "Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the command-word domain (values), read in both directions by the task."
+note = "Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_shaft_angle_limit_engine_speed"
+address = 0x000166B8
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "713c9b7dec0d9e352c7c719aea4e7dea593216a86266c92d18bd5aeacf7f245d"
+pointer_bindings = [{ site = 0x0005E5A4, accessor = 0x0005E2A0 }]
+axis_x = 0x00017352
+name = "VVEL Shaft Angle Limit - Engine Speed"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Engine-speed curve of the shaft-angle bound applied in the task before the command conversion. Values are in the shaft-angle domain of axis 0x00015C02."
+note = "Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_shaft_angle_limit_cvtc"
+address = 0x00017082
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "b7ae4d2b5c542d4ee7b35ffcd84c59fbe109532cf205e0470d740cd271eddb44"
+pointer_bindings = [{ site = 0x0005E5C0, accessor = 0x0005E2A0 }]
+axis_x = 0x00017392
+name = "VVEL Shaft Angle Limit - Intake CVTC Angle"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 12
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Intake-cam-angle curve of the shaft-angle bound applied in the task before the command conversion. Values are in the shaft-angle domain of axis 0x00015C02."
+note = "Read by the task FUN_0005E2A0 at callsite 0x5E4D8 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00016A74. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_shaft_angle_monitor_floor_a"
+address = 0x00016698
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "55f381113d10047c858029d602dbb011d7fff94d4d6bacccddecfa15751a0485"
+pointer_bindings = [{ site = 0x0005E58C, accessor = 0x0005E2A0 }]
+axis_x = 0x000157B2
+name = "VVEL Shaft Angle Monitor Floor - A"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "First engine-speed floor of the expected control-shaft angle used by the shaft-angle deficit monitors."
+note = "Read by the task FUN_0005E2A0 at callsite 0x5E350 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x0001609A; the JK78C monitor pair FUN_000BF0C0 and FUN_000BF122 fixes the domain. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.table]]
+id = "vvel_shaft_angle_monitor_floor_b"
+address = 0x000166A8
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a36cab967fd9646c8fb61c6f17ef2a219e3ec10c409a4d9afe3125b270c0a565"
+pointer_bindings = [{ site = 0x0005E59C, accessor = 0x0005E2A0 }]
+axis_x = 0x00017342
+name = "VVEL Shaft Angle Monitor Floor - B"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 14
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+semantics = "Second engine-speed floor of the expected control-shaft angle used by the shaft-angle deficit monitors."
+note = "Read by the task FUN_0005E2A0 at callsite 0x5E360 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160AA. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_duration_running_axis"
+address = 0x000172B2
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x0005F760, accessor = 0x0005F468 }, { site = 0x0005FE58, accessor = 0x0005FD88 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 400..7200 RPM of the running duration curve; stock bytes are identical to JK78C 0x00016CA4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_duration_throttled_axis"
+address = 0x00017292
+length = 16
+storagetype = "uint16"
+values_sha256 = "2ec737296509786b6f1996f00861bfe9f369b865342f74b197c2c8cf182bbd79"
+pointer_bindings = [{ site = 0x0005F77C, accessor = 0x0005F468 }, { site = 0x00071024, accessor = 0x00070514 }, { site = 0x000712AC, accessor = 0x00070514 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 600..7200 RPM of the throttled duration curve; stock bytes are identical to JK78C 0x00016C84. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_duration_hot_intake_idle_axis_x"
+address = 0x000166D8
+length = 8
+storagetype = "uint16"
+values_sha256 = "5c91c681c9b1f0034ec7be986ed0af109b9e6868b2028eba7cede14e996d4a97"
+pointer_bindings = [{ site = 0x0005F79C, accessor = 0x0005F468 }, { site = 0x00071298, accessor = 0x00070514 }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "First axis of the hot-intake idle and mode 14 surfaces, stock points 90..160. The r7 coordinate is the byte 0xFFFE8073, which the snapshot copy FUN_0005E1CA stores at the slot that JK78C fills from the coolant byte 0xFFFF1069; degC + 50 coding is a candidate from that pairing. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_duration_hot_intake_idle_axis_y"
+address = 0x000166C8
+length = 8
+storagetype = "uint16"
+values_sha256 = "5c91c681c9b1f0034ec7be986ed0af109b9e6868b2028eba7cede14e996d4a97"
+pointer_bindings = [{ site = 0x0005F798, accessor = 0x0005F468 }, { site = 0x00071294, accessor = 0x00070514 }]
+name = "Second Temperature Coordinate [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "Second axis of the hot-intake idle and mode 14 surfaces, stock points 90..160. The stack coordinate is the byte 0xFFFE9796 pushed by the task FUN_0005E2A0; its physical source is not bound, and degC + 50 coding is a candidate from the stock points. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_cold_axis"
+address = 0x000170D2
+length = 8
+storagetype = "uint16"
+values_sha256 = "f8cac5dea1d97daf5ae73d8a74a86afce6c0f8f86fac01708ffd5aa9dbe7f7da"
+pointer_bindings = [{ site = 0x0005F7B0, accessor = 0x0005F468 }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "Eight-point coolant axis 20..90 = -30..40 degC of the cold duration and cold CVTC curves; stock bytes are identical to JK78C 0x00016AC4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_duration_startup_axis"
+address = 0x00017812
+length = 16
+storagetype = "uint16"
+values_sha256 = "c8820f9b479976924db67046e7a3d2f31e51bb1423cf6e161724fa64b76e53f7"
+pointer_bindings = [{ site = 0x0005FB04, accessor = 0x0005F9F0 }]
+name = "Selected Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "Sixteen-point axis 10..160 = -40..110 degC of the start-up duration curve; stock bytes are identical to JK78C 0x00017204. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "intake_cvtc_target_running_axis"
+address = 0x00017472
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x0005F76C, accessor = 0x0005F468 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Sixteen-point engine-speed axis 400..7200 RPM of the running CVTC curve; stock bytes are identical to JK78C 0x00016E74. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "intake_cvtc_target_throttled_axis_x"
+address = 0x000173E2
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x0005F78C, accessor = 0x0005F468 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "First axis of the throttled CVTC surface, 800..6800 RPM; stock bytes are identical to JK78C 0x00016DE4. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "intake_cvtc_target_throttled_axis_y"
+address = 0x00017402
+length = 16
+storagetype = "uint16"
+values_sha256 = "4783f1edeb4b3edf7fd68c242b0bb93b6dd1e4118fefc824123745ecb3080aa3"
+pointer_bindings = [{ site = 0x0005F788, accessor = 0x0005F468 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+units = "%"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/655.35"
+to_byte = "x*655.35"
+note = "Second axis of the throttled CVTC surface, 4100..65535 = 6.3..100 percent; stock bytes are identical to JK78C 0x00016E04. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_shaft_angle_axis"
+address = 0x00015C02
+length = 16
+storagetype = "uint16"
+values_sha256 = "74a1b7f68b2b7518cb72ff4370b4fafa34a6ecca1f42bf0ed24252ced20f3455"
+pointer_bindings = [{ site = 0x0005E9B8, accessor = 0x0005E2A0 }, { site = 0x0005F584, accessor = 0x0005F468 }, { site = 0x00055318, accessor = 0x0005514A }]
+name = "VVEL Shaft Angle [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+units = "deg"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
+note = "Control-shaft angle axis 0..15536 = 0..30.3 degrees of the command conversion, also the value array of the reverse lookup; stock bytes are identical to JK78C 0x000156DC. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_shaft_angle_limit_engine_speed_axis"
+address = 0x00017352
+length = 8
+storagetype = "uint16"
+values_sha256 = "e4bdbdfc5d12460a9e0cf0b14d2cb512b67679cbe59ec3da3911879dff692e3b"
+pointer_bindings = [{ site = 0x0005E5A0, accessor = 0x0005E2A0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 2000..7200 RPM of the engine-speed shaft-angle limit; stock bytes are identical to JK78C 0x00016D64. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_shaft_angle_limit_cvtc_axis"
+address = 0x00017392
+length = 16
+storagetype = "uint16"
+values_sha256 = "568d73971957b35505b76d3143b4ab683aa70d0714fcd92dfa617b95e387a971"
+pointer_bindings = [{ site = 0x0005E5BC, accessor = 0x0005E2A0 }]
+name = "Intake CVTC Angle [degCA]"
+kind = "raw"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+units = "degCA"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "(x-32768)*0.5"
+to_byte = "x*2+32768"
+note = "Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees of the CVTC shaft-angle limit; stock bytes are identical to JK78C 0x00016D94. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_shaft_angle_monitor_floor_a_axis"
+address = 0x000157B2
+length = 8
+storagetype = "uint16"
+values_sha256 = "fc97a1199fc2013f4017ced65800feb862ff87d7332460d9f0eca983eba100ad"
+pointer_bindings = [{ site = 0x0005E588, accessor = 0x0005E2A0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 1200..6400 RPM of monitor floor A; stock bytes are identical to JK78C 0x0001528C. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[[target.1ND3B.axis]]
+id = "vvel_shaft_angle_monitor_floor_b_axis"
+address = 0x00017342
+length = 8
+storagetype = "uint16"
+values_sha256 = "dcbf1b7591112b03a116bc0d85cbe33260d5140226c4e4a51a3ab8491e2119c3"
+pointer_bindings = [{ site = 0x0005E598, accessor = 0x0005E2A0 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "Eight-point engine-speed axis 2400..7200 RPM of monitor floor B; stock bytes are identical to JK78C 0x00016D54. 1ND3B shares the 1ND0A code layout and its stock bytes at this address."
+
+[target.1ND3B.absent]
+vvel_duration_hot_intake_idle_floor = "The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a floor lookup; its literal pool holds no eight-point floor curve and no demand axis."
+vvel_duration_hot_intake_idle_knock_floor = "The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a floor lookup; its literal pool holds no eight-point floor curve and no demand axis."
+vvel_duration_hot_intake_idle_floor_axis = "The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a floor lookup; its literal pool holds no eight-point floor curve and no demand axis."

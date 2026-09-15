@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Load exact VQ37 target-native calibration tables for editor definitions."""
+"""Load exact VQ37 target-native calibration tables and axes for editor definitions."""
 
 from __future__ import annotations
 
@@ -15,9 +15,13 @@ from tools.mapkit import rom as romkit
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REGISTRY = ROOT / "defs" / "vq37-native-tables.toml"
+SCHEMA_VERSION = 2
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 IDENTIFIER_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 SUPPORTED_TARGETS = frozenset({"JK78C", "1ND0A", "1ND3B"})
+TARGET_FIELDS = frozenset({"stock_sha256", "table"})
+OPTIONAL_TARGET_FIELDS = frozenset({"axis", "absent"})
+AXIS_KINDS = frozenset({"rpm", "load", "temp", "raw"})
 REQUIRED_TABLE_FIELDS = frozenset({
     "id",
     "address",
@@ -46,6 +50,27 @@ OPTIONAL_TABLE_FIELDS = frozenset({
     "static_axis_name",
     "static_axis",
 })
+REQUIRED_AXIS_FIELDS = frozenset({
+    "id",
+    "address",
+    "length",
+    "storagetype",
+    "values_sha256",
+    "pointer_bindings",
+    "name",
+    "kind",
+    "format",
+    "fine",
+    "coarse",
+    "units",
+    "confidence",
+    "scale_conf",
+    "scale_expr",
+    "to_byte",
+    "note",
+})
+POINTER_FIELDS = frozenset({"site", "accessor"})
+OPTIONAL_POINTER_FIELDS = frozenset({"offset"})
 
 
 class NativeTableError(ValueError):
@@ -56,6 +81,7 @@ class NativeTableError(ValueError):
 class PointerBinding:
     site: int
     accessor: int
+    offset: int = 0
 
 
 @dataclass(frozen=True)
@@ -87,10 +113,33 @@ class NativeTable:
 
 
 @dataclass(frozen=True)
+class NativeAxis:
+    identifier: str
+    address: int
+    length: int
+    storagetype: str
+    values_sha256: str
+    pointer_bindings: tuple[PointerBinding, ...]
+    name: str
+    kind: str
+    format: str
+    fine: float
+    coarse: float
+    units: str
+    confidence: str
+    scale_conf: str
+    scale_expr: str
+    to_byte: str
+    note: str
+
+
+@dataclass(frozen=True)
 class Target:
     rom: str
     stock_sha256: str
     tables: tuple[NativeTable, ...]
+    axes: tuple[NativeAxis, ...]
+    absent: dict[str, str]
 
 
 def _address(value, context):
@@ -128,48 +177,77 @@ def _address_key(address):
     return f"{address:08x}"
 
 
-def _parse_table(row, context):
+def _identifier(row, context):
+    identifier = _text(row["id"], f"{context}.id")
+    if not IDENTIFIER_RE.fullmatch(identifier):
+        raise NativeTableError(f"{context}.id is not a lowercase identifier")
+    return identifier
+
+
+def _fields(row, context, required, optional):
     if not isinstance(row, dict):
-        raise NativeTableError(f"{context}: table is not a mapping")
+        raise NativeTableError(f"{context}: entry is not a mapping")
     actual = set(row)
-    missing = REQUIRED_TABLE_FIELDS - actual
-    extra = actual - REQUIRED_TABLE_FIELDS - OPTIONAL_TABLE_FIELDS
+    missing = required - actual
+    extra = actual - required - optional
     if missing or extra:
         raise NativeTableError(
             f"{context}: fields differ; missing={sorted(missing)}; "
             f"extra={sorted(extra)}"
         )
-    identifier = _text(row["id"], f"{context}.id")
-    if not IDENTIFIER_RE.fullmatch(identifier):
-        raise NativeTableError(f"{context}.id is not a lowercase identifier")
-    context = f"{context} {identifier}"
-    if not SHA256_RE.fullmatch(str(row["values_sha256"])):
-        raise NativeTableError(f"{context}.values_sha256: invalid SHA-256")
-    width = row["width"]
-    height = row["height"]
-    for key, value in (("width", width), ("height", height)):
-        if type(value) is not int or value <= 0:
-            raise NativeTableError(f"{context}.{key} is invalid")
-    storagetype = _text(row["storagetype"], f"{context}.storagetype")
+
+
+def _sha256(value, context):
+    if not SHA256_RE.fullmatch(str(value)):
+        raise NativeTableError(f"{context}: invalid SHA-256")
+    return value
+
+
+def _storagetype(value, context):
+    storagetype = _text(value, context)
     if storagetype not in romkit.ELEM:
-        raise NativeTableError(f"{context}.storagetype is unsupported")
-    order = row["order"]
-    if type(order) is not int or order < 0:
-        raise NativeTableError(f"{context}.order is invalid")
-    raw_pointers = row["pointer_bindings"]
+        raise NativeTableError(f"{context} is unsupported")
+    return storagetype
+
+
+def _pointers(raw_pointers, context):
     if not isinstance(raw_pointers, list) or not raw_pointers:
         raise NativeTableError(f"{context}.pointer_bindings is empty")
     pointers = []
     for index, pointer in enumerate(raw_pointers):
         pointer_context = f"{context}.pointer_bindings[{index}]"
-        if not isinstance(pointer, dict) or set(pointer) != {"site", "accessor"}:
+        if not isinstance(pointer, dict):
             raise NativeTableError(f"{pointer_context}: fields differ")
+        actual = set(pointer)
+        if POINTER_FIELDS - actual or actual - POINTER_FIELDS - OPTIONAL_POINTER_FIELDS:
+            raise NativeTableError(f"{pointer_context}: fields differ")
+        offset = pointer.get("offset", 0)
+        if type(offset) is not int or offset < 0:
+            raise NativeTableError(f"{pointer_context}.offset is invalid")
         pointers.append(PointerBinding(
             site=_address(pointer["site"], f"{pointer_context}.site"),
             accessor=_address(pointer["accessor"], f"{pointer_context}.accessor"),
+            offset=offset,
         ))
-    if len({pointer.site for pointer in pointers}) != len(pointers):
+    # One literal pool word may reach several entities by displacement, so a
+    # binding is unique by site and offset rather than by site alone.
+    if len({(pointer.site, pointer.offset) for pointer in pointers}) != len(pointers):
         raise NativeTableError(f"{context}.pointer_bindings repeat a site")
+    return tuple(pointers)
+
+
+def _parse_table(row, context):
+    _fields(row, context, REQUIRED_TABLE_FIELDS, OPTIONAL_TABLE_FIELDS)
+    identifier = _identifier(row, context)
+    context = f"{context} {identifier}"
+    width = row["width"]
+    height = row["height"]
+    for key, value in (("width", width), ("height", height)):
+        if type(value) is not int or value <= 0:
+            raise NativeTableError(f"{context}.{key} is invalid")
+    order = row["order"]
+    if type(order) is not int or order < 0:
+        raise NativeTableError(f"{context}.order is invalid")
     axes = {}
     for key in ("axis_x", "axis_y"):
         value = row.get(key)
@@ -177,10 +255,10 @@ def _parse_table(row, context):
             () if value is None
             else (_address(value, f"{context}.{key}"),)
         )
-    if bool(axes["axis_x"]) != bool(axes["axis_y"]):
+    if height > 1 and bool(axes["axis_x"]) != bool(axes["axis_y"]):
         raise NativeTableError(f"{context}: axis pair is incomplete")
-    if axes["axis_x"] and height == 1:
-        raise NativeTableError(f"{context}: one-dimensional table declares axes")
+    if height == 1 and axes["axis_y"]:
+        raise NativeTableError(f"{context}: one-dimensional table declares axis_y")
     static_axis = row.get("static_axis")
     static_axis_name = row.get("static_axis_name")
     if (static_axis is None) != (static_axis_name is None):
@@ -210,9 +288,9 @@ def _parse_table(row, context):
         address=_address(row["address"], f"{context}.address"),
         width=width,
         height=height,
-        storagetype=storagetype,
-        values_sha256=row["values_sha256"],
-        pointer_bindings=tuple(pointers),
+        storagetype=_storagetype(row["storagetype"], f"{context}.storagetype"),
+        values_sha256=_sha256(row["values_sha256"], f"{context}.values_sha256"),
+        pointer_bindings=_pointers(row["pointer_bindings"], context),
         axis_x=axes["axis_x"],
         axis_y=axes["axis_y"],
         name=_text(row["name"], f"{context}.name"),
@@ -233,8 +311,102 @@ def _parse_table(row, context):
     )
 
 
+def _parse_axis(row, context):
+    _fields(row, context, REQUIRED_AXIS_FIELDS, frozenset())
+    identifier = _identifier(row, context)
+    context = f"{context} {identifier}"
+    length = row["length"]
+    if type(length) is not int or length <= 1:
+        raise NativeTableError(f"{context}.length is invalid")
+    kind = _text(row["kind"], f"{context}.kind")
+    if kind not in AXIS_KINDS:
+        raise NativeTableError(f"{context}.kind must be one of {sorted(AXIS_KINDS)}")
+    return NativeAxis(
+        identifier=identifier,
+        address=_address(row["address"], f"{context}.address"),
+        length=length,
+        storagetype=_storagetype(row["storagetype"], f"{context}.storagetype"),
+        values_sha256=_sha256(row["values_sha256"], f"{context}.values_sha256"),
+        pointer_bindings=_pointers(row["pointer_bindings"], context),
+        name=_text(row["name"], f"{context}.name"),
+        kind=kind,
+        format=_text(row["format"], f"{context}.format"),
+        fine=_number(row["fine"], f"{context}.fine"),
+        coarse=_number(row["coarse"], f"{context}.coarse"),
+        units=_text(row["units"], f"{context}.units"),
+        confidence=_evidence(row["confidence"], f"{context}.confidence"),
+        scale_conf=_evidence(row["scale_conf"], f"{context}.scale_conf"),
+        scale_expr=_text(row["scale_expr"], f"{context}.scale_expr"),
+        to_byte=_text(row["to_byte"], f"{context}.to_byte"),
+        note=_text(row["note"], f"{context}.note"),
+    )
+
+
+def _parse_absent(raw, context):
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict) or not raw:
+        raise NativeTableError(f"{context}.absent is not a mapping of roles")
+    absent = {}
+    for identifier, reason in raw.items():
+        if not IDENTIFIER_RE.fullmatch(str(identifier)):
+            raise NativeTableError(
+                f"{context}.absent.{identifier} is not a lowercase identifier"
+            )
+        absent[identifier] = _text(reason, f"{context}.absent.{identifier}")
+    return absent
+
+
+def _parse_target(rom, row, context):
+    if not isinstance(row, dict):
+        raise NativeTableError(f"{context}: target is not a mapping")
+    actual = set(row)
+    missing = TARGET_FIELDS - actual
+    extra = actual - TARGET_FIELDS - OPTIONAL_TARGET_FIELDS
+    if missing or extra:
+        raise NativeTableError(
+            f"{context}: fields differ; missing={sorted(missing)}; "
+            f"extra={sorted(extra)}"
+        )
+    raw_tables = row["table"]
+    if not isinstance(raw_tables, list) or not raw_tables:
+        raise NativeTableError(f"{context}: no tables")
+    tables = tuple(
+        _parse_table(entry, f"{context}.table[{index}]")
+        for index, entry in enumerate(raw_tables)
+    )
+    raw_axes = row.get("axis", [])
+    if not isinstance(raw_axes, list):
+        raise NativeTableError(f"{context}: axis is not a list")
+    axes = tuple(
+        _parse_axis(entry, f"{context}.axis[{index}]")
+        for index, entry in enumerate(raw_axes)
+    )
+    entities = (*tables, *axes)
+    identifiers = [entity.identifier for entity in entities]
+    if len(set(identifiers)) != len(identifiers):
+        raise NativeTableError(f"{context}: identifiers repeat")
+    if len({table.address for table in tables}) != len(tables):
+        raise NativeTableError(f"{context}: table addresses repeat")
+    if len({axis.address for axis in axes}) != len(axes):
+        raise NativeTableError(f"{context}: axis addresses repeat")
+    absent = _parse_absent(row.get("absent"), context)
+    overlap = set(absent) & set(identifiers)
+    if overlap:
+        raise NativeTableError(
+            f"{context}: absent roles are present: {sorted(overlap)}"
+        )
+    return Target(
+        rom=rom,
+        stock_sha256=_sha256(row["stock_sha256"], f"{context}.stock_sha256"),
+        tables=tables,
+        axes=axes,
+        absent=absent,
+    )
+
+
 def load_registry(path=DEFAULT_REGISTRY):
-    """Return the validated target-native table registry keyed by ROM."""
+    """Return the validated target-native registry keyed by ROM."""
     path = Path(path)
     try:
         with path.open("rb") as source:
@@ -243,7 +415,10 @@ def load_registry(path=DEFAULT_REGISTRY):
         raise NativeTableError(
             f"native table registry cannot be read: {path}"
         ) from error
-    if set(document) != {"schema_version", "target"} or document["schema_version"] != 1:
+    if (
+        set(document) != {"schema_version", "target"}
+        or document["schema_version"] != SCHEMA_VERSION
+    ):
         raise NativeTableError(f"{path}: unsupported registry schema")
     rows = document["target"]
     if not isinstance(rows, dict) or set(rows) != SUPPORTED_TARGETS:
@@ -252,45 +427,25 @@ def load_registry(path=DEFAULT_REGISTRY):
             f"{path}: target set differs; "
             f"actual={actual} expected={sorted(SUPPORTED_TARGETS)}"
         )
-    result = {}
-    identifier_sets = {}
-    for rom, row in rows.items():
-        context = f"{path} [target.{rom}]"
-        if not isinstance(row, dict) or set(row) != {"stock_sha256", "table"}:
-            actual = set(row) if isinstance(row, dict) else set()
-            raise NativeTableError(
-                f"{context}: fields differ; "
-                f"missing={sorted({'stock_sha256', 'table'} - actual)}; "
-                f"extra={sorted(actual - {'stock_sha256', 'table'})}"
-            )
-        if not SHA256_RE.fullmatch(str(row["stock_sha256"])):
-            raise NativeTableError(f"{context}.stock_sha256: invalid SHA-256")
-        raw_tables = row["table"]
-        if not isinstance(raw_tables, list) or not raw_tables:
-            raise NativeTableError(f"{context}: no tables")
-        tables = tuple(
-            _parse_table(entry, f"{context}.table[{index}]")
-            for index, entry in enumerate(raw_tables)
-        )
-        identifiers = {table.identifier for table in tables}
-        if len(identifiers) != len(tables):
-            raise NativeTableError(f"{context}: table identifiers repeat")
-        if len({table.address for table in tables}) != len(tables):
-            raise NativeTableError(f"{context}: table addresses repeat")
-        identifier_sets[rom] = identifiers
-        result[rom] = Target(
-            rom=rom,
-            stock_sha256=row["stock_sha256"],
-            tables=tables,
-        )
-    # Every VQ37 image carries the same architectural insertion, so a target
-    # that omits one of the registered roles is stale rather than different.
-    expected = set.union(*identifier_sets.values())
-    for rom, identifiers in identifier_sets.items():
-        if identifiers != expected:
+    result = {
+        rom: _parse_target(rom, row, f"{path} [target.{rom}]")
+        for rom, row in rows.items()
+    }
+    # Every VQ37 image is reviewed against the same role set. A role that a
+    # target neither carries nor declares absent with a reason is stale rather
+    # than different, and an absence that no target contradicts is stale too.
+    present = {
+        rom: {entity.identifier for entity in (*target.tables, *target.axes)}
+        for rom, target in result.items()
+    }
+    expected = set.union(*present.values())
+    for rom, target in result.items():
+        covered = present[rom] | set(target.absent)
+        if covered != expected:
             raise NativeTableError(
                 f"{path} [target.{rom}]: roles differ; "
-                f"missing={sorted(expected - identifiers)}"
+                f"missing={sorted(expected - covered)}; "
+                f"unknown={sorted(covered - expected)}"
             )
     return result
 
@@ -314,13 +469,31 @@ def _model(table, note):
         "wrappers": [],
         "kernels": [],
         "steps": [],
-        "accessors": [
+        "accessors": sorted({
             _address_key(pointer.accessor) for pointer in table.pointer_bindings
-        ],
+        }),
         "resolver_kinds": ["reviewed-target"],
         "axis_x": [_address_key(address) for address in table.axis_x],
         "axis_y": [_address_key(address) for address in table.axis_y],
         "diagnostic_bindings": [],
+    }
+
+
+def _axis_model(axis, values, note):
+    return {
+        "addr": _address_key(axis.address),
+        "kind": axis.kind,
+        "units": axis.units,
+        "scale_expr": axis.scale_expr,
+        "to_byte": axis.to_byte,
+        "scale_conf": axis.scale_conf,
+        "scale_evidence": "registry:target-native",
+        "storagetype": axis.storagetype,
+        "len": axis.length,
+        "confidence": axis.confidence,
+        "note": note,
+        "values": list(values),
+        "monotonic": True,
     }
 
 
@@ -340,11 +513,68 @@ def _presentation(table):
     return override
 
 
+def _axis_presentation(axis):
+    return {
+        "name": axis.name,
+        "format": axis.format,
+        "fine": axis.fine,
+        "coarse": axis.coarse,
+    }
+
+
+def _sorted_bindings(bindings):
+    return sorted(bindings, key=lambda pointer: (pointer.site, pointer.offset))
+
+
+def _describe_bindings(rom, entity, address, bindings, note):
+    return (
+        f"Exact {rom} target-native {entity} at {address:#x} bound to "
+        + ", ".join(
+            f"accessor {pointer.accessor:#x} through literal {pointer.site:#x}"
+            + (f" + {pointer.offset:#x}" if pointer.offset else "")
+            for pointer in _sorted_bindings(bindings)
+        )
+        + f". {note}"
+    )
+
+
+def _verify_block(rom, image, key, address, length, storagetype, expected_sha256):
+    element = romkit.ELEM[storagetype]
+    end = address + length * element
+    if end > len(image.data):
+        raise NativeTableError(f"{rom}: native entity {key} is outside the stock image")
+    block = image.data[address:end]
+    if hashlib.sha256(block).hexdigest() != expected_sha256:
+        raise NativeTableError(f"{rom}: native entity {key} values differ")
+    values = image.values(key, length, storagetype)
+    if romkit.erased(values, storagetype):
+        raise NativeTableError(f"{rom}: native entity {key} is erased")
+    return values
+
+
+def _verify_bindings(rom, image, address, bindings):
+    for pointer in bindings:
+        actual = int.from_bytes(image.data[pointer.site : pointer.site + 4], "big")
+        if actual + pointer.offset != address:
+            raise NativeTableError(
+                f"{rom}: pointer at {pointer.site:#x} is {actual:#x}"
+                + (f" + {pointer.offset:#x}" if pointer.offset else "")
+                + f", expected {address:#x}"
+            )
+        # SH-2 PC-relative loads reach forward only, so a valid literal
+        # pool site always follows its accessor entry point.
+        if not pointer.accessor < pointer.site < len(image.data) - 4:
+            raise NativeTableError(
+                f"{rom}: pointer site {pointer.site:#x} does not follow "
+                f"accessor {pointer.accessor:#x}"
+            )
+
+
 def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
-    """Append exact target-native VQ37 tables to a projected editor model."""
+    """Append exact target-native VQ37 tables and axes to a projected editor model."""
     target = load_registry(path).get(rom)
     if target is None:
-        return maps, overrides
+        return maps, axes, overrides
     if image.rom != rom:
         raise NativeTableError(
             f"native table target is {rom}, image is {image.rom}"
@@ -356,45 +586,44 @@ def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
         )
 
     result_maps = copy.deepcopy(maps)
+    result_axes = copy.deepcopy(axes)
     result_overrides = copy.deepcopy(overrides)
     tables = result_overrides.setdefault("table", {})
     if not isinstance(tables, dict):
         raise NativeTableError("definition table overrides must be a table")
+    axis_overrides = result_overrides.setdefault("axis", {})
+    if not isinstance(axis_overrides, dict):
+        raise NativeTableError("definition axis overrides must be a table")
+
+    for axis in target.axes:
+        key = _address_key(axis.address)
+        values = _verify_block(
+            rom, image, key, axis.address, axis.length, axis.storagetype,
+            axis.values_sha256,
+        )
+        if not romkit.monotone(values):
+            raise NativeTableError(f"{rom}: native axis {key} is not monotone")
+        _verify_bindings(rom, image, axis.address, axis.pointer_bindings)
+        if key in result_axes or key in axis_overrides:
+            raise NativeTableError(
+                f"{rom}: native axis {key} collides with the projection"
+            )
+        result_axes[key] = _axis_model(
+            axis, values,
+            _describe_bindings(rom, "axis", axis.address, axis.pointer_bindings, axis.note),
+        )
+        axis_overrides[key] = _axis_presentation(axis)
 
     for table in target.tables:
         key = _address_key(table.address)
-        length = table.width * table.height
-        element = romkit.ELEM[table.storagetype]
-        end = table.address + length * element
-        if end > len(image.data):
-            raise NativeTableError(
-                f"{rom}: native table {key} is outside the stock image"
-            )
-        block = image.data[table.address : end]
-        if hashlib.sha256(block).hexdigest() != table.values_sha256:
-            raise NativeTableError(f"{rom}: native table {key} values differ")
-        values = image.values(key, length, table.storagetype)
-        if romkit.erased(values, table.storagetype):
-            raise NativeTableError(f"{rom}: native table {key} is erased")
-        for pointer in table.pointer_bindings:
-            actual = int.from_bytes(
-                image.data[pointer.site : pointer.site + 4], "big"
-            )
-            if actual != table.address:
-                raise NativeTableError(
-                    f"{rom}: pointer at {pointer.site:#x} is {actual:#x}, "
-                    f"expected {table.address:#x}"
-                )
-            # SH-2 PC-relative loads reach forward only, so a valid literal
-            # pool site always follows its accessor entry point.
-            if not pointer.accessor < pointer.site < len(image.data) - 4:
-                raise NativeTableError(
-                    f"{rom}: pointer site {pointer.site:#x} does not follow "
-                    f"accessor {pointer.accessor:#x}"
-                )
+        _verify_block(
+            rom, image, key, table.address, table.width * table.height,
+            table.storagetype, table.values_sha256,
+        )
+        _verify_bindings(rom, image, table.address, table.pointer_bindings)
         for axis in table.axis_x + table.axis_y:
             axis_key = _address_key(axis)
-            if axis_key not in axes:
+            if axis_key not in result_axes:
                 raise NativeTableError(
                     f"{rom}: native table {key} uses unprojected axis {axis_key}"
                 )
@@ -402,15 +631,11 @@ def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
             raise NativeTableError(
                 f"{rom}: native table {key} collides with the projection"
             )
-        note = (
-            f"Exact {rom} target-native table at {table.address:#x} bound to "
-            + ", ".join(
-                f"accessor {pointer.accessor:#x} through literal "
-                f"{pointer.site:#x}"
-                for pointer in table.pointer_bindings
-            )
-            + f". {table.note}"
+        result_maps[key] = _model(
+            table,
+            _describe_bindings(rom, "table", table.address, table.pointer_bindings, table.note),
         )
-        result_maps[key] = _model(table, note)
         tables[key] = _presentation(table)
-    return result_maps, result_overrides
+    if not axis_overrides:
+        result_overrides.pop("axis")
+    return result_maps, result_axes, result_overrides

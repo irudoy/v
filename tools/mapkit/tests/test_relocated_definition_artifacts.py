@@ -158,7 +158,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 181
+    assert len(target.findall("table")) == 197
     assert sum(1 for name in tables if name.startswith("DTC ")) == 69
     assert tables["Rolling Launch Enable by Map"].get(
         "storageaddress"
@@ -186,7 +186,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 108
+    assert len(root.findall("XDFTABLE")) == 124
     patches = root.findall("XDFPATCH")
     patches_by_title = {patch.findtext("title"): patch for patch in patches}
     non_dtc_patches = {
@@ -246,7 +246,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 181
+        assert len(target.findall("table")) == 196
         assert sum(1 for name in tables if name.startswith("DTC ")) == 69
         assert tables["Rolling Launch Enable by Map"].get(
             "storageaddress"
@@ -281,7 +281,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 108
+        assert len(root.findall("XDFTABLE")) == 123
         patches = root.findall("XDFPATCH")
         patches_by_title = {
             patch.findtext("title"): patch for patch in patches

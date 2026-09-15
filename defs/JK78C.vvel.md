@@ -274,6 +274,13 @@ Candidate scales: `0xFFFF2E26` as target torque at 0.1 Nm per count (axis
 and the VTC float as degrees of intake-cam advance, both taken from vendor
 documentation and not from the code.
 
+Every surface, curve, and axis in the table above is registered in
+`vq37-native-tables.toml` with its exact stock block hash, literal-pool
+bindings, editor name, and scale, and reaches the JK78C definition through that
+registry. The 1ND targets register the same roles at their own addresses; their
+resolver indexes the hot-intake idle surfaces by two temperature-coded bytes,
+reads a mode 14 surface, and carries no floor curves.
+
 ## Vendor correspondence
 
 Vendor definitions describe a three-dimensional main duration surface over

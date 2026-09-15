@@ -31,6 +31,9 @@
     <CATEGORY index="0x14" name="Rolling Launch / Map Enable" />
     <CATEGORY index="0x15" name="Rolling Launch / RPM Hold" />
     <CATEGORY index="0x16" name="Torque Model / Engine Torque" />
+    <CATEGORY index="0x17" name="Variable Valve Timing / Intake Cam" />
+    <CATEGORY index="0x18" name="Variable Valve Timing / VVEL Duration" />
+    <CATEGORY index="0x19" name="Variable Valve Timing / VVEL Shaft Angle" />
   </XDFHEADER>
   <XDFPATCH uniqueid="0x1E66" flags="0x0">
     <title>CAN Telemetry at Startup</title>
@@ -471,6 +474,90 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x350A" flags="0x0">
+    <title>VVEL Command Word - Shaft Angle Conversion</title>
+    <description>Exact 1ND0A. Address 0x15C22; 1 rows x 16 columns; uint16; map confidence code. Conversion between the VVEL control-shaft angle (axis, 1/512 degree) and the command-word domain (values), read in both directions by the task. Exact 1ND0A target-native table at 0x15c22 bound to accessor 0x5514a through literal 0x5531c, accessor 0x5e2a0 through literal 0x5e9b4, accessor 0x5f468 through literal 0x5f588. Read by the task FUN_0005E2A0 at callsites 0x5E886 and 0x5E8F4, by the resolver FUN_0005F468 at 0x5F51A and 0x5F52E, and by FUN_0005514A at 0x55168 and 0x55188 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x000156FC.</description>
+    <CATEGORYMEM index="0" category="26" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x15C02" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>deg</units>
+      <indexcount>16</indexcount>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X/512">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x15C22" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x6B4A" flags="0x0">
+    <title>VVEL Duration Target - Running</title>
+    <description>Exact 1ND0A. Address 0x171C2; 1 rows x 16 columns; uint16; map confidence code. Mode 15 duration target of the VVEL selector: the normal running mode above idle without a hot-intake or throttled request. The resolver interpolates it by engine speed and scales the count by the float literal 0.005 before the selector publishes the command. Exact 1ND0A target-native table at 0x171c2 bound to accessor 0x5f468 through literal 0x5f764, accessor 0x5fd88 through literal 0x5fe5c. Read by the resolver FUN_0005F468 at callsite 0x5F5DE and by FUN_0005FD88 through the 16-point uint16 wrapper 0x2893C; the 0.005 factor is the float literal 0x3BA3D70A at 0x5F768. Six of the sixteen stock points differ from the JK78C curve 0x00016BB4 at the same axis; the unit of the scaled duration is a vendor-catalog candidate.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x172B2" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x171C2" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>3</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.005">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x57FC" flags="0x0">
     <title>Stationary Limiter Readiness Threshold</title>
     <description>Exact 1ND0A. Address 0x8F74; 1 rows x 1 columns; uint16; map confidence candidate. Calibrated inclusive readiness threshold for stationary rev-limiter accumulator ffff16a6. FUN 0004f324 sets readiness bit 4 of ffff247f when the accumulator is greater than or equal to this scalar and its secondary gate passes. The stock value is 381 accumulator counts. The threshold controls readiness for stationary fuel-cut/restore hysteresis 000085d9/000085da. Definition address projected from JK08A 0000911c through JK08A-1ND.definition-addresses.csv: homologous readiness state machine preserves the 0x04b0 threshold role.</description>
@@ -509,6 +596,132 @@
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xC2F5" flags="0x0">
+    <title>VVEL Shaft Angle Limit - Engine Speed</title>
+    <description>Exact 1ND0A. Address 0x166B8; 1 rows x 8 columns; uint16; map confidence code. Engine-speed curve of the shaft-angle bound applied in the task before the command conversion. Values are in the shaft-angle domain of axis 0x00015C02. Exact 1ND0A target-native table at 0x166b8 bound to accessor 0x5e2a0 through literal 0x5e5a4. Read by the task FUN_0005E2A0 at callsite 0x5E378 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160BA.</description>
+    <CATEGORYMEM index="0" category="26" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17352" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x166B8" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/512">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xB1B3" flags="0x0">
+    <title>VVEL Duration Target - Throttled</title>
+    <description>Exact 1ND0A. Address 0x17302; 1 rows x 16 columns; uint16; map confidence code. Mode 4 duration target of the VVEL selector: the throttled mode and the late cold path. Interpolated by engine speed and scaled by 0.05. Exact 1ND0A target-native table at 0x17302 bound to accessor 0x5f468 through literal 0x5f780, accessor 0x70514 through literal 0x71030, accessor 0x70514 through literal 0x712b8. Read by the resolver FUN_0005F468 at callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C and by FUN_00070514 at three callsites; the 0.05 factor is the float literal 0x3D4CCCCC at 0x5F784. Stock bytes are identical to JK78C 0x00016D14.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17292" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x17302" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xDBEC" flags="0x0">
+    <title>VVEL Duration Target - Hot Intake Idle</title>
+    <description>Exact 1ND0A. Address 0xE748; 8 rows x 8 columns; uint16; map confidence code. Mode 12 duration surface of the VVEL selector: hot-intake idle with the high-detonation state clear. The 1ND resolver stores the surface value directly; there is no floor lookup. Stock values are 1000 = 50.0 at every cell. Exact 1ND0A target-native table at 0xe748 bound to accessor 0x5f468 through literal 0x5f7a0, accessor 0x70514 through literal 0x7129c. Read by the resolver FUN_0005F468 at callsite 0x5F664 through the 8x8 uint16 wrapper 0x28674 with two byte coordinates: r7 is the byte 0xFFFE8073 and the stack slot is the byte 0xFFFE9796. FUN_00070514 reads the surface at 0x7106A and 0x71132 with the same axes. JK78C indexes its surface 0x0000E1CE by engine speed and torque instead.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x166C8" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x166D8" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xE748" mmedelementsizebits="16" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -570,6 +783,300 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x85E2" flags="0x0">
+    <title>VVEL Shaft Angle Limit - Intake CVTC Angle</title>
+    <description>Exact 1ND0A. Address 0x17082; 1 rows x 16 columns; uint16; map confidence code. Intake-cam-angle curve of the shaft-angle bound applied in the task before the command conversion. Values are in the shaft-angle domain of axis 0x00015C02. Exact 1ND0A target-native table at 0x17082 bound to accessor 0x5e2a0 through literal 0x5e5c0. Read by the task FUN_0005E2A0 at callsite 0x5E4D8 through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00016A74.</description>
+    <CATEGORYMEM index="0" category="26" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17392" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degCA [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="(X-32768)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x17082" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/512">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x107F" flags="0x0">
+    <title>VVEL Duration Target - Hot Intake Idle, Knock</title>
+    <description>Exact 1ND0A. Address 0xE7C8; 8 rows x 8 columns; uint16; map confidence code. Mode 13 duration surface of the VVEL selector: hot-intake idle with the high-detonation state set. Stock values are 1000 = 50.0 at every cell. Exact 1ND0A target-native table at 0xe7c8 bound to accessor 0x5f468 through literal 0x5f7a8, accessor 0x70514 through literal 0x712a4. Read by the resolver FUN_0005F468 at callsite 0x5F688 through the 8x8 uint16 wrapper 0x28674 with the same byte coordinates and axes as the mode 12 surface 0x0000E748, and by FUN_00070514 at 0x7108E and 0x7115A.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x166C8" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x166D8" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xE7C8" mmedelementsizebits="16" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x466A" flags="0x0">
+    <title>VVEL Shaft Angle Monitor Floor - A</title>
+    <description>Exact 1ND0A. Address 0x16698; 1 rows x 8 columns; uint16; map confidence code. First engine-speed floor of the expected control-shaft angle used by the shaft-angle deficit monitors. Exact 1ND0A target-native table at 0x16698 bound to accessor 0x5e2a0 through literal 0x5e58c. Read by the task FUN_0005E2A0 at callsite 0x5E350 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x0001609A; the JK78C monitor pair FUN_000BF0C0 and FUN_000BF122 fixes the domain.</description>
+    <CATEGORYMEM index="0" category="26" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x157B2" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x16698" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/512">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x9136" flags="0x0">
+    <title>VVEL Shaft Angle Monitor Floor - B</title>
+    <description>Exact 1ND0A. Address 0x166A8; 1 rows x 8 columns; uint16; map confidence code. Second engine-speed floor of the expected control-shaft angle used by the shaft-angle deficit monitors. Exact 1ND0A target-native table at 0x166a8 bound to accessor 0x5e2a0 through literal 0x5e59c. Read by the task FUN_0005E2A0 at callsite 0x5E360 through the 8-point uint16 wrapper 0x28910. Stock bytes are identical to JK78C 0x000160AA.</description>
+    <CATEGORYMEM index="0" category="26" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17342" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x166A8" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/512">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x7A48" flags="0x0">
+    <title>VVEL Duration Target - Mode 14</title>
+    <description>Exact 1ND0A. Address 0xE6C8; 8 rows x 8 columns; uint16; map confidence code. Mode 14 duration surface of the VVEL selector, interpolated with the coordinates and axes of the hot-intake idle surfaces. Stock values are 960 = 48.0 at every cell. The condition that selects mode 14 is not located in either VQ37 image. Exact 1ND0A target-native table at 0xe6c8 bound to accessor 0x5f468 through literal 0x5f7ac. Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 uint16 wrapper 0x28674 and stored at the mode 14 pair slot. JK78C stores the constant 50.0 for this mode and carries no table.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x166C8" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x166D8" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xE6C8" mmedelementsizebits="16" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xA86C" flags="0x0">
+    <title>VVEL Duration Target - Cold</title>
+    <description>Exact 1ND0A. Address 0x17062; 1 rows x 8 columns; uint16; map confidence code. Mode 3 duration target of the VVEL selector: the cold branch. Interpolated by a coolant-coded byte and scaled by 0.05. Exact 1ND0A target-native table at 0x17062 bound to accessor 0x5f468 through literal 0x5f7b4. Read by the resolver FUN_0005F468 at callsite 0x5F6D2 through the 8-point uint16 wrapper 0x28910 with its own literal pool words for the curve and the axis. Stock bytes are identical to JK78C 0x00016A54.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x170D2" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x17062" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x647B" flags="0x0">
+    <title>VVEL Duration Target - Start-up</title>
+    <description>Exact 1ND0A. Address 0x16440; 1 rows x 16 columns; uint16; map confidence code. Start-up duration used by modes 2 and 11: the curve by the selected temperature, scaled by 0.05, with the same ramp alternative as JK78C. Exact 1ND0A target-native table at 0x16440 bound to accessor 0x5f9f0 through literal 0x5fb08. Read by FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00015E32.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17812" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x16440" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xD9EA" flags="0x0">
     <title>Injection Pulse Channel Multiplier</title>
     <description>Exact 1ND0A. Address 0x14324; 1 rows x 6 columns; uint8; map confidence candidate. Six-channel injection-pulse multiplier indexed directly by channel number 0..5. For a positive calculated pulse, FUN_0004eba2 multiplies by the selected byte, shifts the product right by 7, saturates to uint16, and writes the raw and transformed six-channel output arrays. All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in override mask ffff22e0 bypasses this multiplier and selects word ffff2436. The trace proves channel indexing but does not establish the physical cylinder order; presentation labels remain generic channel numbers. Definition address projected from JK08A 000129c0 through JK08A-1ND.definition-addresses.csv: homologous channel accessor preserves the six exact unity-multiplier bytes. Static diagnostic context: INJ PULSE-B1 [code, homologous_vq35hr, via map evidence: writes].</description>
@@ -613,6 +1120,132 @@
       <decimalpl>4</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X/128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xBF24" flags="0x0">
+    <title>Intake CVTC Target - Running</title>
+    <description>Exact 1ND0A. Address 0x173C2; 1 rows x 16 columns; uint16; map confidence code. Mode 15 intake-cam target of the VVEL selector, interpolated by engine speed. Zero at raw 0x8000, 0.5 per count. Exact 1ND0A target-native table at 0x173c2 bound to accessor 0x5f468 through literal 0x5f770. Read by the resolver FUN_0005F468 at callsite 0x5F5F6 through the 16-point uint16 wrapper 0x2893C and converted with the float literals 0xC6800000 and 0x3F000000. The stock curve peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17472" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x173C2" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degCA [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-32768)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x9D25" flags="0x0">
+    <title>Intake CVTC Target - Throttled</title>
+    <description>Exact 1ND0A. Address 0x10D48; 16 rows x 16 columns; uint16; map confidence code. Mode 4 intake-cam target of the VVEL selector, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per count. Exact 1ND0A target-native table at 0x10d48 bound to accessor 0x5f468 through literal 0x5f790. Read by the resolver FUN_0005F468 at callsite 0x5F636 through the 16x16 uint16 wrapper 0x286AC with r7 on the first axis and the stack coordinate on the second axis. Stock bytes are identical to JK78C 0x000108CE.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17402" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>%</units>
+      <indexcount>16</indexcount>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X/655.35">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x173E2" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x10D48" mmedelementsizebits="16" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degCA [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-32768)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x63FF" flags="0x0">
+    <title>Intake CVTC Target - Cold</title>
+    <description>Exact 1ND0A. Address 0x170A2; 1 rows x 8 columns; uint16; map confidence code. Mode 3 intake-cam target of the VVEL selector, interpolated by the coolant-coded byte of the cold axis. Stock values are 0x8000 = 0 at every point. Exact 1ND0A target-native table at 0x170a2 bound to accessor 0x5f468 through literal 0x5f7bc. Read by the resolver FUN_0005F468 at callsite 0x5F6EC through the 8-point uint16 wrapper 0x28910 with its own literal pool word. Stock bytes are identical to JK78C 0x00016A94.</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x170D2" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x170A2" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degCA [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-32768)*0.5">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
