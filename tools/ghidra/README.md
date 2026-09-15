@@ -63,7 +63,7 @@ preflight before graph writes; see `../memgraph/README.md`.
 |---|---|---|
 | Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `ExportFunctionTokens`, `RecoverFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
 | Map discovery | `FindInterpCore`, `MapInventory`, `DirectLookupInventory`, `ResolveAccessors`, `ScanFlags` | Discover interpolation families, operands, accessors, axes, and local selectors |
-| Diagnostics | `ExportDiagnosticRefs`, `ScanImmoAnchors`, `TraceRamAccesses` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
+| Diagnostics | `ExportDiagnosticRefs`, `ScanImmoAnchors`, `TraceRamAccesses`, `InventoryGbrAccesses`, `InventoryPointerArgs` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
 | Inspection | `InspectAddress`, `DumpListing`, `DumpFuncListing`, `DecompileFuncs`, `FindTableRefs`, `FindPoolWords` | Inspect ownership, references, functions, listings, pools, and decompilation |
 | Patch construction | `AuditFreeRegion`, `AssembleSh2` | Prove erased envelopes and assemble bounded Ghidra payload fixtures |
 | P-code execution | `EmulateThrottleLimiter`, `EmulateMapSwitching*` | Execute stock limiter behavior and reconstruct current map-switching behavior in Ghidra |
@@ -122,6 +122,17 @@ incoming and outgoing fingerprint against at least two mapped neighbors.
 Structural map and axis candidates use wrapper-local call order, not equal
 instruction ordinals. This mode remains a candidate generator and does not
 promote graph similarity into semantic inheritance.
+
+## RAM writer instruments
+
+`TraceRamAccesses.java` resolves constant addresses through the decompiler,
+`InventoryGbrAccesses.java` resolves GBR-relative accesses through the nearest
+`ldc` site, and `InventoryPointerArgs.java` joins pool-constant call arguments
+with parameter-relative stores. None of them sees a block copy whose address or
+length is built by register arithmetic: on JK78C the periodic-list walker
+`FUN_00020F1A` latches whole RAM blocks through `FUN_00022164` and
+`FUN_000225C0`, so a cell without a direct static writer is checked against its
+copy groups before any other conclusion.
 
 ## Address inspection
 

@@ -200,31 +200,67 @@ moving the previous contents of `0xFFFF423C` to `0xFFFF423E`. `FUN_000EDF62`
 reads that pair together with `0xFFFF41AC` and `0xFFFF41AE` and publishes them
 through the diagnostic identifier tables.
 
-## Unwritten transmit fields
+## Producers of the transmit words
 
-No ROM instruction writes `0xFFFF443E` or `0xFFFF5D36`. Both cells lie inside
-the zero-filled RAM ranges declared at ROM `0x0002266C`
-(`0xFFFF2564..0xFFFF4876`) and ROM `0x0002268C` (`0xFFFF4878..0xFFFF6524`).
-Payload bytes 0 through 3 of frame `0x22B` therefore leave the ECM as the
-zero-initialized value.
+Both command words are latched copies made by `FUN_00020F1A`, the walker of the
+periodic pointer list at `0x00021A4C` (144 entries). The main loop
+`FUN_0002A7F4` calls it once per tick flag (bit 2 of `0xFFFF84B9`). With the
+interrupt mask raised it copies input blocks before the walk and output blocks
+after it through the block-copy helpers `FUN_00022164` and `FUN_000225C0`
+(`r1` destination, `r2` source, `r0` length in bytes).
 
-Three independent passes establish the absence of a producer:
+| Copy site | Destination | Source | Length | Position |
+| --- | --- | --- | ---: | --- |
+| `0x00021004` | `0xFFFF2588..0xFFFF25A7` | `0xFFFF25A8..0xFFFF25C7` | `0x20` | before the walk |
+| `0x00021026` | `0xFFFF25D8..0xFFFF26D5` | `0xFFFF26D6..0xFFFF27D3` | `0xFE` | before the walk |
+| `0x00021362` | `0xFFFF43FC..0xFFFF4467` | `0xFFFF4468..0xFFFF44D3` | `0x6C` | after the walk |
+| `0x0002136C` | `0xFFFF5BE4..0xFFFF5D3B` | `0xFFFF5D3C..0xFFFF5E93` | `0x158` | after the walk |
 
-- the Ghidra decompiler SSA trace over all 3015 defined functions reports the
-  two cells only as reads, at `0x000EE63A` and `0x000EE664`;
-- the same trace's unresolved pointer-expression set contains no write whose
-  anchor can reach either cell;
-- a whole-ROM linear constant-tracking scan covering direct, displacement,
-  indexed, and GBR-relative forms, including every region no function covers,
-  finds no write.
+The length of the last copy is built as `mov #0x56,r0; shll2 r0`. The copies
+fix three bindings:
 
-The homologous 1ND0A cell `0xFFFEB73A` shows the same pattern: two reads in the
-transmit builders at `0x00118282` and `0x00118BF0`, and no write.
+- `0xFFFF443E` is the copy of `0xFFFF44AA`;
+- `0xFFFF5D36` is the copy of `0xFFFF5E8E`;
+- `0xFFFF2670` and `0xFFFF2672`, the inputs of `FUN_0004C2B2`, are the copies of
+  the VVEL TIM pair `0xFFFF276E` and `0xFFFF2770` written by `FUN_000EDF62`.
 
-Confirming the transmitted content on a vehicle requires a bus capture of frame
-`0x22B` or the CONSULT-III Plus value published from `0xFFFF423C`. Static
-analysis establishes the instruction set that reaches the payload, not the
-electrical content of the private bus.
+`0xFFFF44AA` is the VVEL command word. `FUN_00054FD0`, entry 98 of the periodic
+list, writes it at `0x0005576C` and clears `0xFFFF44AC`. The value is the target
+control-shaft angle in 1/512 degree units passed through the angle-to-command
+curve (axis `0x000156DC`, values `0x000156FC`, lookup `FUN_00028320`) and
+limited by four bound words computed earlier in the task; the reverse lookup of
+the stored command lands in `0xFFFF35BA`. The target angle comes from
+`FUN_000564A4`, which reads the maps `0x0000E1CE` and `0x0000E24E` (8x8 uint16,
+axes `0x000160CA` and `0x000160DA`), `0x000108CE` (16x16 uint16, axes
+`0x00016DE4` and `0x00016E04`) and the curves `0x0001600A`, `0x0001601A`,
+`0x00016BB4`, `0x00016D14`, `0x00016DC4`. The task itself reads the curves
+`0x0001609A`, `0x000160AA`, `0x000160BA`, `0x00016A74`, and its inputs include
+the latched VVEL TIM pair at `0xFFFF25D8 + 0x98` and `+ 0x9A`. The same curve
+pair serves both directions: `FUN_0004D3CE` converts the received angle into
+model units for `FUN_0004C2B2`, and `FUN_00054FD0` converts the target angle
+into the command.
+
+`0xFFFF5E8E` is a signed 16-bit integrator of the bank difference.
+`FUN_00080ED6(bank)` forms `0xFFFF194C` and `0xFFFF194E` from
+`0xFFFF1A48[bank]`, which tracks `0xFFFF2238[bank]`, plus `0xFFFF225A[bank]`,
+minus `0x6400`, saturated to `0..0xFFFF`. `FUN_00080FEC` stores the difference
+of the two words in `0xFFFF1464` and its product with ROM `0x00008EC2`
+(`0x0106`) in `0xFFFF1A5C`. `FUN_00081040` adds `0xFFFF1A5C` to `0xFFFF5E8E`
+and saturates at +-ROM `0x00008FFE` (811) while bit 0 of `0xFFFF23E5` is set.
+`FUN_00081126`, reached from entry 67 of the periodic list (`FUN_000756DC`),
+runs this chain while bit 7 of ROM `0x00008957` (`0x3A`) is clear and otherwise
+writes ROM `0x00008C6C` (0) into `0xFFFF5E8E`.
+
+The transmit builder reads the two latched words at `0x000EE63A` and
+`0x000EE664`. Confirming the transmitted content on a vehicle requires a bus
+capture of frame `0x22B` or the CONSULT-III Plus value published from
+`0xFFFF423C`.
+
+The decompiler SSA trace, the GBR inventory, the pointer-argument join, and the
+`FUN_000225C0` destination ranges do not reach either word: the block copies
+pass their addresses and lengths in registers built by arithmetic, and the
+helper body is an unrolled jump table. A cell without a direct static writer is
+checked against the copy groups of `FUN_00020F1A` before any other conclusion.
 
 ## Calibration boundary
 
@@ -236,8 +272,11 @@ the handler sets a bit in it rather than publishing a measurement. The
 remaining HCAN0 destinations reach diagnostic status bytes, the identifier
 publication tables, and the telemetry staging block written by `FUN_000CC1FE`.
 
-No calibrated value is transmitted on the private bus: payload bytes 0 through 3
-of frame `0x22B` have no producer, and bytes 4 through 7 carry status bits.
+Payload bytes 0 through 3 of frame `0x22B` carry the calibrated command word
+and the bank integrator described above; bytes 4 through 7 carry status bits.
+The VVEL TIM pair written by `FUN_000EDF62` reaches the interpolation consumers
+`FUN_0004C2B2` and `FUN_00054FD0` through the latch at `0xFFFF2670` and
+`0xFFFF2672`, outside the direct-read census above.
 
 The census behind these counts covers interpolation-addressed tables. The
 `direct-row-major` and `direct-scalar` families of the map inventory are

@@ -568,25 +568,31 @@ populated slot belongs to VVEL, and JK08A declares none of them.
 | `0x125E` | VVEL TIM-B2 | `0xFFFF2770` | 2 |
 
 Slot `0x125C` at `0xFFFF443E` is populated and unnamed in the factory manual.
-The same word supplies payload bytes 0 and 1 of frame `0x22B`, the only frame
-the ECM transmits on its private VVEL bus; bytes 2 and 3 come from
-`0xFFFF5D36`. No ROM instruction writes either word. A scan of every SH-2 store
-form that unrolls register constants through `mov`, `add`, and the sign- and
-zero-extension forms finds no producer while resolving the handler write at
-`0x000EDCA8` to `0xFFFF42B5`. `0xFFFF443E` occurs in the image only in the two
-DID address tables at `0x00022A88` and `0x00025F60` and in the literal pool of
-the transmit builder at `0x000EE6E0`. Both cells lie inside declared zero-fill
-ranges, so the DID and the frame carry zero. `FUN_000EDF62` serves the VVEL TIM
-pair. The controllers, the mailbox tables, and the rest of the private bus are
-in `../defs/JK78C.can.md`.
+The word is the latched copy of `0xFFFF44AA`, the VVEL command word that
+`FUN_00054FD0` derives from the target control-shaft angle through the
+angle-to-command curve `0x000156DC`/`0x000156FC`, and it supplies payload
+bytes 0 and 1 of frame `0x22B`, the only frame the ECM transmits on its private
+VVEL bus. Bytes 2 and 3 come from `0xFFFF5D36`, the latched copy of the bank
+difference integrator `0xFFFF5E8E`. The latch is the periodic-list walker
+`FUN_00020F1A`, which copies `0xFFFF4468..0xFFFF44D3` to `0xFFFF43FC` and
+`0xFFFF5D3C..0xFFFF5E93` to `0xFFFF5BE4` after every walk through the
+block-copy helper `FUN_00022164`. `0xFFFF443E` occurs in the image only in the
+two DID address tables at `0x00022A88` and `0x00025F60` and in the literal pool
+of the transmit builder at `0x000EE6E0`; the copy reaches it by address
+arithmetic. `FUN_000EDF62` serves the VVEL TIM pair, and the same walker latches
+that pair into `0xFFFF2670`/`0xFFFF2672` for the target task. The controllers,
+the mailbox tables, the producers of the words, and the rest of the private bus
+are in `../defs/JK78C.can.md`.
 
-The VVEL calibration surface of the image is unbound. JK78C carries 691
-interpolation-addressed tables against 436 in JK08A. Eighty-four of them, in
-`0x00017600..0x0001B800`, reproduce the exact contents of tables in
-`0x0000B000..0x00017600`, 73 of those with non-constant content, so the image
-holds a second copy of part of its calibration set. The vendor-documented VVEL
-duration and control-shaft limit tables are not located in that surface, and the
-census covers interpolation addressing only.
+The VVEL target computation is bound to code. `FUN_000564A4`, called by the
+target task, reads the maps `0x0000E1CE` and `0x0000E24E` (8x8) and
+`0x000108CE` (16x16) with five curves, and the task reads four more curves and
+the conversion pair. Their vendor names (duration main, WOT, overrun, shaft
+limits) are not assigned yet. JK78C carries 691 interpolation-addressed tables
+against 436 in JK08A. Eighty-four of them, in `0x00017600..0x0001B800`,
+reproduce the exact contents of tables in `0x0000B000..0x00017600`, 73 of those
+with non-constant content, so the image holds a second copy of part of its
+calibration set. The census covers interpolation addressing only.
 
 These bindings also fix the ROM's own bank ordering convention. Across the 18
 populated bank-labelled DID pairs in JK78C and the 16 in JK08A, bank 1 is the
