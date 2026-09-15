@@ -587,8 +587,10 @@ are in `../defs/JK78C.can.md`.
 The VVEL target computation is bound to code. `FUN_000564A4`, called by the
 target task, reads the maps `0x0000E1CE` and `0x0000E24E` (8x8) and
 `0x000108CE` (16x16) with five curves, and the task reads four more curves and
-the conversion pair. Their vendor names (duration main, WOT, overrun, shaft
-limits) are not assigned yet. JK78C carries 691 interpolation-addressed tables
+the conversion pair. The mode machine at `0xFFFFA22F` selects one of fifteen
+target pairs, and `../defs/JK78C.vvel.md` records the selection conditions,
+the sensor bindings, and the stored scales; vendor table names remain
+unassigned. JK78C carries 691 interpolation-addressed tables
 against 436 in JK08A. Eighty-four of them, in `0x00017600..0x0001B800`,
 reproduce the exact contents of tables in `0x0000B000..0x00017600`, 73 of those
 with non-constant content, so the image holds a second copy of part of its

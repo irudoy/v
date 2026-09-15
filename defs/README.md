@@ -162,6 +162,10 @@ while each definition remains bound to its independent stock image hash.
 - `JK78C.can.md` models the two exact HCAN controllers, the private-bus
   mailbox table, receive signal placement, transmit composition, and the
   calibration boundary of the private bus.
+- `JK78C.vvel.md` models the VVEL target task, the fifteen-mode target
+  selector, the exact sensor and diagnostic bindings of the selector inputs,
+  the MAP and brake-booster pressure channel, and the unit boundary of the
+  target surfaces.
 
 These documents explain complete relationships and safety boundaries. Addressed
 claims and evidence remain in the CSV layer rather than being copied into prose.

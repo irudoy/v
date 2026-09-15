@@ -238,7 +238,8 @@ axes `0x000160CA` and `0x000160DA`), `0x000108CE` (16x16 uint16, axes
 the latched VVEL TIM pair at `0xFFFF25D8 + 0x98` and `+ 0x9A`. The same curve
 pair serves both directions: `FUN_0004D3CE` converts the received angle into
 model units for `FUN_0004C2B2`, and `FUN_00054FD0` converts the target angle
-into the command.
+into the command. The mode machine that selects the target, its sensor
+bindings, and the stored scales are in `JK78C.vvel.md`.
 
 `0xFFFF5E8E` is a signed 16-bit integrator of the bank difference.
 `FUN_00080ED6(bank)` forms `0xFFFF194C` and `0xFFFF194E` from
