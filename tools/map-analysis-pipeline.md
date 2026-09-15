@@ -71,7 +71,9 @@ Ghidra projects and export directories remain machine-local. Scripts under
 | `flags.csv` | `ScanFlags.java` | Local bit-test and branch candidates around selected code paths |
 | `diagnostic_refs.csv` | `ExportDiagnosticRefs.java` | Semantic-free 16-bit diagnostic-reference review input |
 
-`RecoverFuncs.java` may persist reviewed missing entries before export.
+`RecoverFuncs.java` may persist reviewed missing entries before export;
+`AnalyzeFuncs.java` then analyzes the bodies it disassembled so their
+references reach `xrefs.csv`.
 `ResolveAccessors.java` also recovers an unmarked function in memory when a
 registered callsite otherwise lacks a decompiler function.
 

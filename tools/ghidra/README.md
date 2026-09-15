@@ -50,9 +50,13 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
   -postScript ExportFunctionTokens.java <export-dir>
 ```
 
-`RecoverFuncs.java` and `RenameFuncs.java` intentionally mutate the local
-Ghidra project and must run without `-readOnly`. `symbols.csv` is the tracked
-function-name registry. Export after those mutations persist successfully.
+`RecoverFuncs.java`, `AnalyzeFuncs.java`, and `RenameFuncs.java` intentionally
+mutate the local Ghidra project and must run without `-readOnly`. A seed that
+`RecoverFuncs.java` disassembles itself carries no operand references until
+`AnalyzeFuncs.java` runs the program analyzers over the created bodies; without
+that pass `xrefs.csv` lists no RAM or peripheral access for the recovered
+functions. `symbols.csv` is the tracked function-name registry. Export after
+those mutations persist successfully.
 
 The complete ROM loader performs header, foreign-key, address, and source-model
 preflight before graph writes; see `../memgraph/README.md`.
@@ -61,7 +65,7 @@ preflight before graph writes; see `../memgraph/README.md`.
 
 | Group | Scripts | Purpose |
 |---|---|---|
-| Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `ExportFunctionTokens`, `RecoverFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
+| Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `ExportFunctionTokens`, `RecoverFuncs`, `AnalyzeFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
 | Map discovery | `FindInterpCore`, `MapInventory`, `DirectLookupInventory`, `ResolveAccessors`, `ScanFlags` | Discover interpolation families, operands, accessors, axes, and local selectors |
 | Diagnostics | `ExportDiagnosticRefs`, `ScanImmoAnchors`, `TraceRamAccesses`, `InventoryGbrAccesses`, `InventoryPointerArgs` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
 | Inspection | `InspectAddress`, `DumpListing`, `DumpFuncListing`, `DecompileFuncs`, `FindTableRefs`, `FindPoolWords` | Inspect ownership, references, functions, listings, pools, and decompilation |
