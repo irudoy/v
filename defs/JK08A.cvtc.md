@@ -66,10 +66,14 @@ depend on map geometry or address-free catalog naming.
 
 The structured diagnostic profile defines `raw*2-256 degCA` for DIDs
 `0x1164..0x1166`, while the HR A2L and measured community definitions use
-`raw*0.5-64 degCA`. Identity and bank are exact, but neither physical angle
-conversion is target-code-proven. The definition and dashboard use the latter
-as a visibly marked candidate because it agrees with the matching HR cam-map
-encoding.
+`raw*0.5-64 degCA`. Identity and bank are exact, and the code path under
+"Cam edge phase bytes" proves the latter: one count of the actual bytes is
+0.5 crank degrees of cam edge phase relative to the learned rest edge. The
+monitor forms its gap `0xFFFF1476 + b` as target minus actual in the same raw
+units at `0x8F496`, so target `0xFFFF2327` and the surfaces behind it share
+the conversion. The definition rows of `0xB33A`, `0xB2FA`, and `0xAB4A` in
+`defs/JK08A.findings.csv` still carry the candidate scale confidence; the
+crank-wheel origin of the absolute angle remains open.
 
 ## Solenoid output stage
 
@@ -858,8 +862,9 @@ following remain unresolved:
 
 Static DID and DTC paths establish the intake/exhaust target distinction even
 where downstream conditioning makes a map replay differ from the published
-byte. The capture does not establish the candidate degree-per-byte conversion,
-electrical valve command, or physical camshaft angle at the crankshaft.
+byte. The capture does not establish the electrical valve command or the physical
+camshaft angle at the crankshaft; the degree-per-byte conversion rests on the
+code path under "Cam edge phase bytes", not on the capture.
 
 CAN telemetry schema 2 names the two sources `intake_cvtc_target_raw` and
 `exhaust_cvtc_target_raw`, matching their recovered common-target roles. The
