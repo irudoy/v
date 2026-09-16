@@ -356,13 +356,16 @@ ffff246c bit 2 = (ffff24a9 & 0x48) == 0x48                  coolant window, 0xBF
 
 Bit 0 of `0xFFFF248B`, stored at `0xBF852`, is the electrical enable. It
 requires battery snapshot `0xFFFF1108` above `ROM8[0x8E0A] = 125` and at most
-`ROM8[0x8E07] = 200`, driver status `0xFFFF850C` bits 5 and 6 clear, a zero
-result from crank and cam sensor fault predicate `FUN 00025E4E` (stored
-P0335, P0340, or P0345), `0xFFFF244F` bit 5 set, and the stored-fault bit of
-`FUN 00025E20` clear for the P0014/P0024 extension slots `0x14F..0x152` and the
-P0078/P0084 records `0x43` and `0x44`. With `ROM8[0x8616]` bit 0 clear it also
-requires the P0197, P0198, and P0196 records `0xDD`, `0xDE`, and `0xE4` clear;
-stock JK08A sets that bit.
+`ROM8[0x8E07] = 200`, driver status `0xFFFF850C` bits 5 and 6 clear (the
+edge-count anomaly flags of `FUN 000C22DC`, see "Driver status and edge-count
+monitor"), a zero result from crank and cam sensor fault predicate
+`FUN 00025E4E` (stored P0335, P0340, or P0345), `0xFFFF244F` bit 5 set, and
+the stored-fault bit of `FUN 00025E20` clear for the P0014/P0024 extension
+slots `0x14F..0x152` and the P0078/P0084 records `0x43` and `0x44`.
+`ROM8[0x8616]` bit 0 is the oil-temperature sensor configuration bit: the test
+at `0xBF80E` is `tst #1; bt 0xBF842`, which skips the block while the bit is
+clear, and stock JK08A holds `0x01`, so the enable also requires the P0197,
+P0198, and P0196 records `0xDD`, `0xDE`, and `0xE4` clear.
 
 Two latches in `0xFFFF248C` follow the window flags against their prior-cycle
 copies in `0xFFFF246F`, which the scheduler refreshes at `0x2105A`. Bit 6 sets
@@ -382,14 +385,39 @@ bit 2 = bit 0
     and ffff41be bit 6, ffff41d1 bit 7, ffff41d0 bit 0 clear
     and ffff2f64 bits 0 and 1 clear
     and ffff14b8 bits 0 and 1 clear
-    and (ROM8[0x8616] bit 0 or (ffff246c bit 3 and ffff248c bit 7))
+    and (ffff246c bit 3 and ffff248c bit 7 clear)      with ROM8[0x8616] bit 0 set (stock 0x01)
 ```
 
-Every term is a code fact. The writers of `0xFFFF850C` bits 5 and 6,
-`0xFFFF249C` bit 6, and the five inhibit bits are outside this section, and
-whether another writer of `0xFFFF248C` clears bit 6 before a `0xFFFF2458`
-bit 5 event is not decoded, so the steady-state value of the coolant-window
-term is not established from the static listing alone.
+Every term is a code fact. The test of `ROM8[0x8616]` bit 0 at `0xBF974`
+passes the oil-temperature term while the bit is clear; with the stock value
+the term requires oil-temperature flag `0xFFFF246C` bit 3 set and latch
+`0xFFFF248C` bit 7 clear, so the operating enable waits, after the oil
+temperature has reached raw 110 (60 degC), for the first pass on which
+`0xFFFF2458` bit 5 and low-speed flag `0xFFFF24AA` bit 7 are both set.
+`FUN 000BF630` is the only writer of `0xFFFF248C` bits 6 and 7: the other
+writers of the byte in the export, `FUN 0004C4CC` and `FUN 0004C9D2` (bits 4
+and 5), `FUN 0004C536` (bits 0 to 2), and `FUN 0004C6BA` (bit 3), leave both
+latches alone, so bit 6 stays set from the rising edge of the coolant window
+until `0xFFFF2458` bit 5 clears it, and the steady-state value of the
+coolant-window term follows the physical identity of that bit, which is not
+established. The writers of the five inhibit bits are outside this section.
+
+`0xFFFF249C` bit 6 is written by `FUN 0002E466`, reached from `FUN 0002E66C`
+and `FUN 000CA79E`. It sets at `0x2E5EC` while service-0x30 Output Control
+IOLID `0x1D` is active (`0xFFFF99C7` bit 4), `0xFFFF248B` bit 0 and
+`0xFFFF244F` bit 1 are set, vehicle-speed byte `0xFFFF110E` is at most
+`ROM8[0x89F1] = 2`, and raw coolant `0xFFFF1071` lies in `ROM8[0x89F3] = 110
+.. ROM8[0x89F2] = 170`; the same path stores the requested offset
+`0xFFFF1706 = clamp(int8(0xFFFF9940), ROM8[0x873E] = -20 .. ROM8[0x873F] =
+20)` at `0x2E612`, and the bit clears at `0x2E61C` otherwise. `0xFFFF9940` is
+the IOLID `0x1D` value byte of handler `FUN 00030C4C` (`0xFFFF9923 + n`) and
+`0xFFFF99C7` bit 4 its active flag; `FUN 000BFE88` reads the offset at
+`0xC04DA` while the bit is set and adds it to the exhaust target. The bit is
+therefore the CONSULT active-test request for the exhaust cam at standstill,
+and it bypasses the coolant-window term for the duration of the test. The
+VTC channel enabled by `0xFFFF248B` bit 1 runs through the same function
+with IOLIDs `0x19` and `0x1A` (`0xFFFF41FA` bit 0, `0xFFFF41FB` bit 7,
+offsets `0xFFFF1704` and `0xFFFF1705`).
 
 ### State machine
 
@@ -414,10 +442,18 @@ at `0xC1EE2`. Stock curve values are `0x66, 0x66, 0x66, 0x6A, 0x71, 0x7B,
 gain rises from 102 to 128 counts across the coordinate. `0xFFFF2772` is the
 previous-pass snapshot of engine-oil-temperature byte `0xFFFF2876`, the source
 of DID `0x111F`: scheduler `FUN 00020DFE` copies the `0x104`-byte block
-`0xFFFF277E..0xFFFF2881` to `0xFFFF267A..0xFFFF277D` at `0x20FCC`. With
-`ROM8[0x8616]` bit 0 set, as in stock JK08A, producer `FUN 0003EB84` skips the
-sensor path and writes zero at `0x3ECAE`, so the coordinate is constantly
-zero and the gain stays at 102.
+`0xFFFF277E..0xFFFF2881` to `0xFFFF267A..0xFFFF277D` at `0x20FCC`.
+`ROM8[0x8616]` bit 0 selects the sensor path of producer `FUN 0003EB84`
+(`tst #1; bf` at `0x3EB96`): with the bit set, as in stock JK08A, the function
+filters ADC sample `0xFFFF1D5C` into word `0xFFFF1F92` and raw byte
+`0xFFFF117B`, converts it through curve `0x12C6E` into `0xFFFF1F94`, and
+publishes it in `0xFFFF2876`, directly while `0xFFFF4183` bit 7 is set and
+otherwise rising at once and falling only after a drop of two or more counts;
+a raw byte outside `3..241` or a stored P0197, P0198, or P0196 record sets
+`0xFFFF4182` bit 7 and publishes `0xFF`. With the bit clear the function
+writes zero at `0x3ECAE`. The stock coordinate therefore follows the engine
+oil temperature, and the gain is 102 up to raw 100 (50 degC) and 128 from raw
+135 (85 degC).
 
 With `ROM8[0x8615]` bit 3 set, the stock branch scales the bank error word
 that `FUN 000C1152` wrote to `0xFFFF1B18 + 2b`:
@@ -486,7 +522,23 @@ BFR7D = 1250 = 50 percent of 2500
 
 `FUN 000CD75C`, reached from `0x0002E81A` and `0x000306F8`, clears bit 0 at
 `0xCD76E` while it programs both cycle pairs from `ROM8[0x8DFC]` and
-`ROM8[0x8DFD]`.
+`ROM8[0x8DFD]`, and zeroes the checksum state `0xFFFF30F8`, `0xFFFF3084`, and
+`0xFFFF30B0` with `0xFFFF41DE` bit 2. The only setter is memory task
+`FUN 000CD85C`, which scheduler task `FUN 0002E8D2` (periodic list entry
+`0x21AA0`) calls with request byte `0xFFFF40BE` while pending flag
+`0xFFFF41DE` bit 0 is set (`tst #1; bt exit` at `0x2E8F2`): request 3
+executes `or #1` into `0xFFFF4251` at `0xCDD4E` (`cmp/eq #3` at `0xCDD40`),
+and the task clears the pending flag when a pass completes. Requests 1 and 2
+are the ROM sum and compare passes (`0xFFFF3324`, `0xFFFF31F8` against
+`ROM32[0x96D4]`, `ROM32[0x96DC]`, `ROM16[0x5FFE]`, `ROM16[0x6EFE]`). The
+request byte is the sub-function byte `0xFFFF8005` of manufacturer
+diagnostic service `0xA0`: dispatcher `FUN 0002F928` routes the service to
+handler `FUN 000306F8` at `0x2FA78`, and the handler copies an accepted code
+into `0xFFFF40BE` (`0x309CA` for codes 1, 2, and 3) and sets the pending
+flag at `0x309D6`; initialization path `FUN 0002E81A` resets the byte to
+zero at `0x2E890`. The computed duty path is therefore a state requested
+over the diagnostic link, and the fixed 60/50 percent fractions are the
+default after every reset.
 
 ### Cam edge phase bytes
 
@@ -517,11 +569,120 @@ bank 2, so the six bytes hold the last three edges per bank. The interval
 words are also stored at `0xFFFF1A80` and `0xFFFF1A82` and the segment at
 `0xFFFF16F2` through window base `0xFFFF128C`.
 
-One phase unit is one twentieth of an engine-event segment. The stock rest
-values `ROM8[0x831D] = ROM8[0x831E] = 88` correspond to 8 units past the start
-of segment 4. The physical degree scale of the phase follows the
-event-interval scale of `0xFFFF22BC` from `FUN 0002B768`, which is not
-resolved.
+One phase unit is 0.5 degrees of crankshaft rotation. `FUN 0002718A` writes
+`TCR1A = 5` at `0x271EC` and `TCR4 = 5` at `0x272C0`, so channels 1A and 4
+count `phi'/32`, and zeroes `TCNT1A` at `0x271BE` and `TCNT4` at `0x272A4`
+while `TSTR1` is zero; `FUN 000274AC` writes `PSCR1 = 1` (`phi' = Pphi/2 =
+10 MHz`) and starts both counters together with `TSTR1 = 0x73` at `0x274C0`.
+The channel-4 captures and crank reference `0xFFFF158A` (the GR1E or GR1F
+capture stored by `FUN 0002B768` at `0x2B7CC`) therefore count the same
+3.2 us clock and their difference is a time. `FUN 0002B768` forms the
+engine-event timestamp from `TCNT0` (`phi'`) and the capture, divides the
+wrap-corrected difference to the previous event by 32 into `0xFFFF11FC`
+(3.2 us units) and by 12 into `0xFFFF22BC`. `FUN 00038272` publishes
+`0xFFFF1196 = 32000000 / 0xFFFF11FC` at `0x38282`, and `0xFFFF1196` is the
+`RPM * 5.12` engine-speed word (`0xFFFF11E6 = 0xFFFF1196 >> 8` in RPM/50),
+so the interval is `6250000 / RPM` counts, one third of a revolution or 120
+crank degrees, and `0xFFFF22BC` is 10 crank degrees, one tooth of the crank
+wheel. `20 * interval / 0xFFFF22BC` is the crank angle of the cam edge after
+the last crank reference in 0.5-degree units, and `20 * segment` places that
+reference `10 * segment` degrees after the event origin. The stock rest
+values `ROM8[0x831D] = ROM8[0x831E] = 88` are 44 crank degrees after the
+event origin, and the phase reaches at most 240 units.
+
+`FUN 000BFC2E`, called from coordinator `FUN 000C21E6` at `0xC220C` and
+`0xC2212` with the channel in `r4`, turns the phase into the published
+actual-position bytes `0xFFFF2324` and `0xFFFF2325` (DID `0x1164` and
+`0x1165`). It returns at `0xBFC50` while `0xFFFF850C` bit `5 + ch` is set.
+Otherwise it forms the deviations of the last three edges from the learned
+rest edge `0xFFFF479B + ch`:
+
+```text
+d0   = clamp_u8(ffff11c8[ch] - ffff479b[ch] + 128)          -> ffff1c88 + ch
+d1   = clamp_u8(ffff11ca[ch] - ffff479b[ch] + 128)          -> ffff1c8a + ch
+d2   = clamp_u8(ffff11cc[ch] - ffff479b[ch] + 128)          -> ffff1c8c + ch
+calc = (d0 + d1 + d2) / 3           ROM8[0x8615] bit 1 set (stock 0xAB)
+calc = d0                           otherwise
+x    = interp(0x12F7E over axis 0x12F6E by ffff11ae)         -> ffff160e
+out  = 128 + round((x * (calc - 128) + (256 - x) * (ffff232a[ch] - 128)) / 256)
+uint8[ffff2324 + ch] = clamp_u8(out)                         at 0xBFDAE
+```
+
+`0xFFFF11CA..0xFFFF11CD` are the scheduler snapshots of the older edges
+`0xFFFF1202..0xFFFF1205`, and `0xFFFF232A` and `0xFFFF232B` are the
+previous-pass copies of the two output bytes made at `0x21310`. Curve
+`0x12F7E` holds `0xCD` at 800 RPM and `0xFF` from 1600 RPM over axis
+`0x12F6E` (`0x10..0x80` RPM/50), so the output is a first-order filter that
+passes 255/256 of each new sample above 1600 RPM. One count of DID `0x1164`
+is therefore 0.5 crank degrees of the exhaust-cam edge relative to the
+learned rest edge, which is the community definition `raw * 0.5 - 64`
+degrees of crankshaft.
+
+`FUN 000BFAD4`, called from the same coordinator at `0xC21FE`, learns the rest
+edge. While `0xFFFF246B` bit 4 is set it forms `0xFFFF1376 = 128 +
+clamp(ROM8[0x831D] - 0xFFFF11C8, -40..40)` at `0xBFB4A` and `0xFFFF1377` from
+`ROM8[0x831E]` and `0xFFFF11C9` at `0xBFB98`, with `ROM8[0x8834] = 40`, and
+sets `0xFFFF2495` bit 3 when a deviation reaches the bound; while bit 4 is
+clear it clears that flag instead. It then stores the learned edges
+`0xFFFF479B = clamp_u8(ROM8[0x831D] - 0xFFFF1376 + 128)` at `0xBFBF8` and
+`0xFFFF479C` at `0xBFC1C` and sets `0xFFFF2475` bit 1 at `0xBFC20` when
+`0xFFFF2495` bit 3 is clear, `0xFFFF24A8` bits 7 and 4 are set, and either
+`0xFFFF246B` bit 4 has just fallen (prior-cycle `0xFFFF246E` bit 4 set) or it
+is set with `0xFFFF2535 == 0`. Within the +/-40 band the learned edge equals
+the measured phase, so the actual-position bytes read 128 at the learned rest
+while the P0014/P0024 rest window `88 +/- 34` of `FUN 00090256` applies to
+the raw phase snapshot. `FUN 000BCED0` initializes `0xFFFF1376`,
+`0xFFFF1377`, `0xFFFF2324`, and `0xFFFF2325` to `0x80`.
+
+### Driver status and edge-count monitor
+
+`FUN 000C22DC`, called from engine-event driver `FUN 00029588`, maintains
+driver status `0xFFFF850C` and indicator byte `0xFFFF850D` from the per-bank
+edge counters of the capture handlers: `FUN 000C2DE0` increments `0xFFFF4072`
+with saturation at `0xC2E8E` on every bank-1 edge while `0xFFFF4120` bit 0 or
+`0xFFFF4121` bit 0 is set, and `FUN 000C2C58` increments `0xFFFF4073` at
+`0xC2D5A` for bank 2 with bit 1 of the same bytes. `0xFFFF4120` and
+`0xFFFF4121` are the scheduler copies of arm bytes `0xFFFF4178` and
+`0xFFFF4179` (block `0xFFFF4124..0xFFFF417B -> 0xFFFF40CC..0xFFFF4123` at
+`0x2132C`). The bank-1 count is judged while cylinder index `0xFFFF11DE` is
+2, 4, or 6, after the bank-1 window has closed, and zeroed otherwise at
+`0xC24AA`; bank 2 is judged while the index is 1, 3, or 5.
+
+```text
+count == 1                     -> clear ffff850c bit 5, clear ffff850d bits 6 and 4
+count == 0 and ffff4120 bit 0  -> set ffff850c bit 5, set ffff850d bit 6,
+                                  ffff408c += 1 (saturating);
+                                  at >= ROM8[0x8E21] = 10 set ffff850c bit 3
+count >= 2 and ffff4121 bit 0  -> set ffff850c bit 5, set ffff850d bit 4,
+                                  ffff408e += 1; at >= 10 set ffff850c bit 1
+both arm bits clear            -> clear ffff850c bit 5 and the indicators
+```
+
+Bank 2 mirrors the table with `0xFFFF850C` bit 6, arm bits 1, indicators
+`0xFFFF850D` bits 7 and 5, counters `0xFFFF408D` and `0xFFFF408F`, and result
+bits 4 and 2. A reset request in `0xFFFF850C` bit 7 clears the indicators,
+zeroes the counters whose result bit is clear, zeroes both edge counts, and
+clears bit 7 at `0xC23F6`. Bits 5 and 6 are therefore the per-bank edge-count
+anomaly flags: no edge or more than one edge in the last window while the
+corresponding path is armed. They inhibit the phase-byte update in the
+capture handlers, the actual-position update in `FUN 000BFC2E`, and the
+electrical enable; the ten-window results in bits 3, 4, 1, and 2 are the
+position-sensor fault results that the table under "Diagnostic monitor"
+lists.
+
+`FUN 00090086` (path A) and `FUN 0009018C` (path B), called from
+`FUN 0008F168` with the bank in `r4` and the enable flag in `r5`, arm the
+counters and judge the indicators. With the enable set they set the bank bit
+of `0xFFFF4178` or `0xFFFF4179` (`0x900D2` and `0x900F4` for path A) and,
+when both arm bytes were clear for the bank, raise reset request
+`0xFFFF850C` bit 7 (`0x900D8`, `0x901DE`) under interrupt mask. While the
+indicator bit (`0xFFFF850D` bit `6 + b` for path A, bit `4 + b` for path B) is
+clear they reload timer `0xFFFF43BE + b` with `ROM8[0x8E23] = 100`; when the
+indicator is set and the timer has expired they set the judged latch
+(`0xFFFF3580` at `0x9011C`, `0xFFFF3581` at `0x90222`), which routes to
+P1078/P1084. A clear enable clears the arm bit (`0x90168`) and reloads the
+timer, and a set judged latch clears the arm bit at `0x90182`. Reset helper
+`FUN 0008FC6A` clears both arm bytes.
 
 ### Diagnostic monitor
 
@@ -566,8 +727,8 @@ before calling the five helpers for bank 0 and then for bank 1:
 
 | Helper | Judged latch | Result byte | Indices | Codes |
 |---|---|---|---|---|
-| `FUN 00090086` | `0xFFFF3580` bits 0, 1 | driver status `0xFFFF850C` bits 3, 4 | `0x84`, `0x85` | P1078, P1084 position sensor path A |
-| `FUN 0009018C` | `0xFFFF3581` bits 0, 1 | driver status `0xFFFF850C` bits 1, 2 | `0x86`, `0x87` | P1078, P1084 position sensor path B |
+| `FUN 00090086` | `0xFFFF3580` bits 0, 1 | no-edge indicator `0xFFFF850D` bits 6, 7 with timer `0xFFFF43BE + b` | `0x84`, `0x85` | P1078, P1084 position sensor path A |
+| `FUN 0009018C` | `0xFFFF3581` bits 0, 1 | extra-edge indicator `0xFFFF850D` bits 4, 5 with timer `0xFFFF43BE + b` | `0x86`, `0x87` | P1078, P1084 position sensor path B |
 | `FUN 00090256` | `0xFFFF3582` bits 0, 1 | `0xFFFF358B` bits 0, 1 | `0xD2`, `0xD3` | P0014, P0024 rest position |
 | `FUN 000904C2` | `0xFFFF3583` bits 0, 1 | `0xFFFF358C` bits 0, 1 | `0xD2`, `0xD3` | P0014, P0024 target tracking |
 | `FUN 00090642` | `0xFFFF3584` bits 0, 1 | `0xFFFF358D` bits 0, 1 | `0x43`, `0x44` | P0078, P0084 magnet retarder circuit |
@@ -623,7 +784,12 @@ b] + 128)` at `0x8F4EC` and `0x8F524`, and `FUN 000BFC2E`, `FUN 00090BD2`,
 
 `FUN 000904C2` counts `0xFFFF1998 + b` while `0xFFFF84C3` bit 7 is set,
 zeroes it while `0xFFFF1994` exceeds `ROM8[0x8E43] = 2`, and marks the
-evaluation as running in `0xFFFF359A`. While the counter is at most
+evaluation as running in `0xFFFF359A`. `0xFFFF84C3` is the scheduler's
+snapshot of tick-flag byte `0xFFFF84C4` (`0x20EE6`), which base-tick handler
+`FUN 0002040C` marks with bit 7 on every 1.024 ms interrupt at `0x20734` and
+which the scheduler then reloads from `0xFFFF84BB` at `0x20EF0`; the bit is
+set on every scheduler pass, so the counter advances once per 10.24 ms pass
+and the 60-sample window is about 0.61 s. While the counter is at most
 `0xFFFF13A8`, a gap `0xFFFF1476 + b` inside `128 - ROM8[0x894F] .. 128 +
 ROM8[0x894D]`, both 34, latches the bank bit of `0xFFFF3598`; a gap outside it
 sets the pending bit in `0xFFFF1478` unless the pass bit is already latched.
@@ -666,25 +832,25 @@ hardware.
 ### Evidence boundary of the controller
 
 The state machine, the arithmetic, the stores, the scheduler snapshots, the
-enable coordinator, the capture handlers, and the descriptor routing are
-exact code facts read from the whole-program export and the headless
-listings. The following remain unresolved:
+enable coordinator, the capture handlers, the timer configuration, the
+actual-position producer, the rest-edge learning, the edge-count monitor, and
+the descriptor routing are exact code facts read from the whole-program
+export and the headless listings. `FUN 000BF630` has one caller,
+`FUN 000C21E6` at `0xC21F2`. The 0.5-degree phase unit rests on the
+`phi'/32` configuration of both counters, on `Pphi = 20 MHz` established from
+CAN timestamps, and on the `RPM * 5.12` identity of `0xFFFF1196`. The
+following remain unresolved:
 
-- the physical scale of the cam edge phase bytes, which follows the
-  event-interval scale of `0xFFFF22BC` from `FUN 0002B768`, and the on-car
-  edge value with both cams at their stops;
-- the writers of `0xFFFF850C` bits 5 and 6, which inhibit the edge-phase
-  updates and the electrical enable, and of `0xFFFF249C` bit 6, which
-  bypasses the coolant-window term of the operating enable;
-- whether a writer outside `FUN 000BF630` clears latch `0xFFFF248C` bit 6
-  while `0xFFFF2458` bit 5 stays clear, which decides the steady-state value
-  of the coolant-window term;
-- the reading of `ROM8[0x8616]` bit 0 as the absence of an oil-temperature
-  sensor, which is inferred from the zero store in `FUN 0003EB84` and the
-  bypassed P0196, P0197, and P0198 records;
-- the callers of `FUN 000BF630` and the setter of `0xFFFF4251` bit 0;
-- the meaning of `0xFFFF84C3` bit 7 as the sample-count condition of
-  `FUN 000904C2`.
+- the on-car phase value with both cams at their stops, which is a RAM read of
+  `0xFFFF1200`/`0xFFFF1201` or of the learned edges `0xFFFF479B`/`0xFFFF479C`;
+- the physical identity of `0xFFFF2458` bit 5 and `0xFFFF24A8` bit 7, which
+  decide the steady state of coolant-window latch `0xFFFF248C` bit 6 and the
+  rest-edge learning gate;
+- the crank-wheel origin of the engine-event segment, which fixes the
+  absolute angle of the 44-degree stock rest value;
+- the decrement cadence of timer `0xFFFF43BE + b`, the internals of
+  `FUN 00090642` beyond its entry gate, and the tester-side meaning of
+  service `0xA0` request 3.
 
 ## Evidence boundary
 
