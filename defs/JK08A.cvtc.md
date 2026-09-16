@@ -125,10 +125,11 @@ intake_percent  = uint8[ffff23b4|ffff23b5] * 39 / 100
 exhaust_percent = uint16[ffff1aac|ffff1aae] * 100 / 1024
 ```
 
-Byte `0xFFFF4247` bit 0 selects the computed intake path and byte `0xFFFF4251`
-bit 0 selects the computed exhaust path. With the intake bit clear,
-`FUN 000BEACE` drives fixed fractions while saturated engine-speed byte
-`0xFFFF11EA` is positive, and zero otherwise:
+Byte `0xFFFF4247` bit 0 selects the fixed intake test fractions and byte
+`0xFFFF4251` bit 0 the fixed exhaust test fractions; both bits are clear in
+normal operation and the computed words are driven. With the intake bit set
+(`tst #1; bt` at `0xBEAE0`), `FUN 000BEACE` drives fixed fractions while
+saturated engine-speed byte `0xFFFF11EA` is positive, and zero otherwise:
 
 ```text
 BFR7B = 825  = 20 percent of 4125
@@ -509,11 +510,12 @@ word is below 26 counts.
 
 ### Output and hardware fallback
 
-`FUN 000C2152` reads `0xFFFF4251` bit 0. With the bit set it programs
-`BFR7D` and `BFR7C` from the two published words as described under
-"Solenoid output stage". With the bit clear it reprograms the cycle registers
-`CYLR7C = CYLR7D = 2500` and drives fixed fractions while `0xFFFF11BC` is
-non-zero, and zero otherwise:
+`FUN 000C2152` reads `0xFFFF4251` bit 0 (`tst #1; bf 0xC21B4` at `0xC215C`).
+With the bit clear, the state after every reset, it programs `BFR7D` and
+`BFR7C` from the two published words as described under "Solenoid output
+stage". With the bit set it reprograms the cycle registers `CYLR7C = CYLR7D
+= 2500` and drives fixed fractions while `0xFFFF11BC` is non-zero, and zero
+otherwise:
 
 ```text
 BFR7C = 1500 = 60 percent of 2500
@@ -536,8 +538,8 @@ diagnostic service `0xA0`: dispatcher `FUN 0002F928` routes the service to
 handler `FUN 000306F8` at `0x2FA78`, and the handler copies an accepted code
 into `0xFFFF40BE` (`0x309CA` for codes 1, 2, and 3) and sets the pending
 flag at `0x309D6`; initialization path `FUN 0002E81A` resets the byte to
-zero at `0x2E890`. The computed duty path is therefore a state requested
-over the diagnostic link, and the fixed 60/50 percent fractions are the
+zero at `0x2E890`. The fixed 60/50 percent fractions are therefore an actuator-test state
+requested over the diagnostic link, and the computed duty path is the
 default after every reset.
 
 ### Cam edge phase bytes
@@ -824,8 +826,8 @@ On that path the monitor behaves as follows:
 - The position sensor paths judge driver status `0xFFFF850C` independently of
   the target and are not affected by the calibration change.
 
-Executable alternatives, such as forcing mode 0 in `FUN 000C1DEC` or clearing
-`0xFFFF4251` bit 0, replace instruction bytes and therefore require the
+Executable alternatives, such as forcing mode 0 in `FUN 000C1DEC` or zeroing
+the published duty words, replace instruction bytes and therefore require the
 `tools/sh-elf-run` gate before any image built from them is eligible for
 hardware.
 
