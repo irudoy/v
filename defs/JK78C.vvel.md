@@ -48,8 +48,33 @@ resolver call, and the command word. `FUN_00054E16` copies the machine inputs
 into `0xFFFFA204` onward: `0xFFFFA204` from `0xFFFF2672`, `0xFFFFA206` from
 `0xFFFF2670`, `0xFFFFA208` from `0xFFFF10B6`, `0xFFFFA212` from
 `0xFFFF455B.bit7`, `0xFFFFA213` from `0xFFFF4565.bit6`, `0xFFFFA214` from
-`0xFFFF23B8.bit6`, `0xFFFFA219` from `0xFFFF1066`, and `0xFFFFA21A` from
-`0xFFFF1069`.
+`0xFFFF23B8.bit6`, `0xFFFFA215` from `0xFFFF23C4.bit6`, `0xFFFFA216` from
+`0xFFFF4577.bit0`, `0xFFFFA217` from `0xFFFF4578.bit6`, `0xFFFFA218` from
+`0xFFFF4578.bit7`, `0xFFFFA219` from `0xFFFF1066`, and `0xFFFFA21A` from
+`0xFFFF1069`. `FUN_00054FD0` fills the monitor bytes `0xFFFFA308` from
+`0xFFFF44DF.bit6`, `0xFFFFA309` from `0xFFFF44DF.bit7`, and `0xFFFFA30A`
+from `0xFFFF23AF.bit4`.
+
+`0xFFFF23B8.bit6` is the per-pass latch that `FUN_00020F1A` takes from
+`0xFFFF23B9.bit6` at `0x000210A0`. `FUN_0008D710`, the eighth step of the
+chain `FUN_0008D004` (pointer 23 of the list at `0x00021940`), is the only
+producer of `0xFFFF23B9.bit6`. The bit is set when `0xFFFF23B1.bit6` or
+`0xFFFF2422.bit7` is set and `FUN_000AE5F2` passes, or when the readiness
+test fails: with `0xFFFF45BC.bit1`, `0xFFFF45C0.bit0`, and `0xFFFF24F7` all
+clear the test is `0xFFFF44DA.bit2` clear (`0xFFFF23C1 & 0x30` = 0),
+otherwise `0xFFFF45A0.bit7` clear (the word `0xFFFF43D0` above 0 under the
+`0xFFFF45C0.bit6` and `ROM8[0x8968]` gates). `FUN_000AE5F2` passes when
+`0xFFFF44DF.bit6` is clear, `0xFFFF23AF.bit4` is set, and not
+(`0xFFFF4500.bit0` set, `0xFFFF451D.bit2` clear, `0xFFFF36FA` and
+`0xFFFF36FB` both below 20). `0xFFFF4573.bit1` is written only by
+`FUN_00054FD0` at `0x000554C2` from the byte output of the resolver
+`FUN_000564A4`, which `FUN_00056DCA` forms as the idle-model engagement
+flag: mode byte 5, model state `0xFFFFA367` = 0, the model counter
+`0xFFFFA369` at or above `ROM8[0x8B07]` = 1, the scaled demand margin at or
+above `ROM8[0x8B05]` = 20, and the model duration at or below curve
+`0x00016C64` (stock 21504 at every point); or the model latch `0xFFFFA368`
+set with `0xFFFFA36B` = 0. Mode 15 requires that flag clear, so the
+above-idle condition excludes passes on which the idle model is engaged.
 
 ## Exact diagnostic bindings
 
@@ -163,15 +188,37 @@ and 547 are stored values only.
 
 The mode byte `0xFFFFA22F` (previous value `0xFFFFA294`, published to
 `0xFFFF2808` and `0xFFFF2830`) is the VVEL and VTC control mode. Entry
-functions write it: `FUN_00054CAA` mode 1, `FUN_000543EA` modes 2 and 11,
-`FUN_00054AE8` mode 3, `FUN_00054AC4` mode 4, `FUN_00054A62` modes 5 and 10,
-`FUN_00054AAC` mode 12, `FUN_00054A4A` mode 13, `FUN_00054A94` mode 15. No
-entry function for modes 6, 7, 8, 9, and 14 is located; the resolver still
-computes their pairs. `FUN_000546BA` dispatches events: `0xE` and `0x15` to
-mode 4, `0xF` to 15, 5, or 10, `0x14` to 12 or 13, and switches between 5 and
-10 on the learning-window flag. `FUN_0005461A` maps `0x10`/`0x12` to 12 or 13,
-`0x11`/`0x13` to 15, 5, or 10, `0xD` to 3, and 5 to 4; otherwise it defers to
-the cold and warm resolvers `FUN_00053C3E` and `FUN_00053D06`.
+functions write it: `FUN_000575E2` mode 1 at initialization, `FUN_00054CAA`
+mode 0 at machine reset, `FUN_000543EA` modes 2 and 11, `FUN_000542FA` modes
+2 and 6, `FUN_00054AE8` mode 3, `FUN_00054AC4` mode 4, `FUN_00054A62` modes 5
+and 10, `FUN_00054C5A` modes 7 and 8, `FUN_00054918` modes 7, 8, and 9,
+`FUN_00054AAC` mode 12, `FUN_00054A4A` mode 13, `FUN_00054A94` mode 15. The
+image holds no write of the value 14: mode 14 is unreachable and the resolver
+computes its pair as dead data. `FUN_000546BA` dispatches events: `0xE` and
+`0x15` to mode 4, `0xF` to 15, 5, or 10, `0x14` to 12 or 13, and switches
+between 5 and 10 on the learning-window flag. `FUN_0005461A` maps `0x10`/`0x12`
+to 12 or 13, `0x11`/`0x13` to 15, 5, or 10, `0xD` to 3, and 5 to 4; otherwise
+it defers to the cold and warm resolvers `FUN_00053C3E` and `FUN_00053D06`.
+
+Modes 6 through 9 are the fail-safe branch over the snapshot flags
+`0xFFFFA216`, `0xFFFFA217`, and `0xFFFFA218` and the monitor bytes
+`0xFFFFA308`, `0xFFFFA309`, and `0xFFFFA30A`. `FUN_00053B0C` raises event
+10 while any fail-safe flag is set, and event 4 while all three are clear
+and either `0xFFFFA274` = 1 with the word `0xFFFFA21E` at or above
+`ROM16[0x8E2C]` = 5, `0xFFFFA308` clear, and `0xFFFFA309` set, or
+`0xFFFFA309` clear with `0xFFFFA208 / 4` below `ROM8[0x8495]` = 32.
+`FUN_00053A7C` raises event `0xB` while `0xFFFFA309` is set, `0xFFFFA22B` = 1
+or `0xFFFFA308` is set, and a fail-safe flag is set. `FUN_000542FA` enters
+mode 6 on event 4 (previous mode to `0xFFFFA294`, counter `0xFFFFA21C`
+cleared) and calls `FUN_00054C5A` on events 10 and 11, which enters mode 8
+when `0xFFFFA217` or `0xFFFFA218` is set and mode 7 otherwise.
+`FUN_00054918` moves mode 7 or 8 to mode 9 on event 8, raised by
+`FUN_00053DC6` on the same monitor test with `0xFFFFA28C`, `0xFFFFA222`,
+`0xFFFFA308`, and `0xFFFFA309`; returns to 7 or 8 on event 6 while
+`0xFFFFA22B` = 1 and `0xFFFFA309` is set; and leaves through
+`FUN_000543EA(7)` while `0xFFFFA30A` is clear. `FUN_00053EEA` writes
+`0xFFFFA22B`; `FUN_00053BB0` and `FUN_00053E18` keep the internal timers
+`0xFFFFA274` and `0xFFFFA28C`.
 
 The pass counter `0xFFFFA220` saturates at `0xFFFF`; the mode-2 entry clears
 it. Stock `ROM16[0x9194]` = 2000 passes bounds the second cold path.
@@ -183,14 +230,14 @@ it. Stock `ROM16[0x9194]` = 2000 passes bounds the second cold path.
 | 3 | `0x00016A54` by coolant `0xFFFF1069`, `* 0.05` | `0x00016A94`, gated by flag `0xFFFFA362` with hysteresis `ROM8[0x8AA7]` = 53 and `ROM8[0x8AA8]` = 0 | cold branch: `0xFFFFA21A` below `ROM8[0x84A6]` or `0xFFFFA219` below `ROM8[0x84A4]`, all stock 120 = 70 degC |
 | 4 | `0x00016D14` by `0xFFFF11A6`, `* 0.05` (stock 50..72) | `0x000108CE` by `0xFFFF11A6` and load `0xFFFF238A`, `(raw - 0x8000) / 2` | throttled mode: `0xFFFF4565.bit6`, or the cold path with `0xFFFF23B8.bit6` after 2000 passes |
 | 5 | idle model `0xFFFFA1B0` (`FUN_00056BAA` chain) | `450 + ROM16[0x8D8E] / 512 - (0xFFFFA1B8 + 0xFFFFA1BC) / 2` | warm, `0xFFFF455B.bit7`, `0xFFFF4565.bit6`, and `0xFFFF456F.bit7` clear, learning window closed |
-| 6 | 28.5 | 0 | no entry located |
-| 7 | `ROM16[0x927A] * 0.05` = 50.0 | 0 | no entry located |
-| 8 | filtered actual duration `0xFFFFA180` | 0 | no entry located |
-| 9 | 50.0 while `0xFFFF4577.bit0`, else `0xFFFFA180` | 0 | fail-safe value; no entry located |
+| 6 | 28.5 | 0 | `FUN_000542FA` on event 4: fail-safe flags clear, monitor test of `FUN_00053B0C` |
+| 7 | `ROM16[0x927A] * 0.05` = 50.0 | 0 | `FUN_00054C5A` on events 10 and 11: `0xFFFF4577.bit0` set, `0xFFFF4578.bit6` and `.bit7` clear |
+| 8 | filtered actual duration `0xFFFFA180` | 0 | `FUN_00054C5A` on events 10 and 11: `0xFFFF4578.bit6` or `.bit7` set |
+| 9 | 50.0 while `0xFFFF4577.bit0`, else `0xFFFFA180` | 0 | `FUN_00054918` on event 8 from mode 7 or 8: monitor test of `FUN_00053DC6` |
 | 10 | `ROM16[0x9006] * 0.05` = 28.5 | `(ROM16[0x9008] - 0x8000) / 2` = 0 | as mode 5 with the learning window `0xFFFF23E5.bit1` open |
 | 12 | `max(0x0000E1CE, 0x0001600A) * 0.05` | 0 | hot-intake idle `0xFFFF455B.bit7`, knock state `0xFFFF23C6.bit6` clear |
 | 13 | `max(0x0000E24E, 0x0001601A) * 0.05` | 0 | hot-intake idle with the knock state set |
-| 14 | 50.0 | 0 | no entry located |
+| 14 | 50.0 | 0 | unreachable: no write of 14 to `0xFFFFA22F` |
 | 15 | `0x00016BB4` by `0xFFFF11A6`, `* 0.005` (stock 33..72) | `0x00016DC4` by `0xFFFF11A6`, `(raw - 0x8000) / 2` | warm, above idle `0xFFFF456F.bit7`, no hot-intake or throttled request |
 
 `FUN_000557B2` selects pair `m` of the fifteen at `0xFFFFA124 + 8 * (m - 1)`
@@ -278,8 +325,10 @@ Every surface, curve, and axis in the table above is registered in
 `vq37-native-tables.toml` with its exact stock block hash, literal-pool
 bindings, editor name, and scale, and reaches the JK78C definition through that
 registry. The 1ND targets register the same roles at their own addresses; their
-resolver indexes the hot-intake idle surfaces by two temperature-coded bytes,
-reads a mode 14 surface, and carries no floor curves.
+resolver indexes the hot-intake idle surfaces by coolant temperature and
+intake air temperature (degC + 50), reads a mode 14 surface that its machine
+selects on the hot-intake idle request with the knock state set and the idle
+target at or above 650 RPM, and carries no floor curves.
 
 ## Vendor correspondence
 
@@ -299,10 +348,12 @@ Code-exact: the mode machine, the fifteen target pairs, the selector
 conditions, the DID bindings, the descriptor records P010A and P0555, and the
 stored scales listed as code-proven.
 
-Open: the physical names of `0xFFFF23B8.bit6`, `0xFFFF4573.bit1`,
-`0xFFFF1078`, and `0xFFFF107E`; the physical unit of the scaled pressure words;
-whether `0xFFFF1CE2` (DID `0x1116` source through `FUN_0004185A`) and
-`0xFFFF256E` sample the same MAP input; the entries of modes 6, 7, 8, 9, and
-14; the candidate scales above; and the agreement of the computed command with
-DID `0x125C` on live data. The pass period follows the vector-120 handler and
+Open: the physical names of the `0xFFFF23B9.bit6` predicate cells
+(`0xFFFF23B1.bit6`, `0xFFFF2422.bit7`, `0xFFFF23C1`, `0xFFFF43D0`,
+`0xFFFF45BC.bit1`, `0xFFFF45C0.bit0`, `0xFFFF24F7`), none of which is a DID
+source; the physical names of `0xFFFF1078` and `0xFFFF107E`; the physical
+unit of the scaled pressure words; whether `0xFFFF1CE2` (DID `0x1116` source
+through `FUN_0004185A`) and `0xFFFF256E` sample the same MAP input; the
+candidate scales above; and the agreement of the computed command with DID
+`0x125C` on live data. The pass period follows the vector-120 handler and
 is not measured on this target.

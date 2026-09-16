@@ -285,7 +285,10 @@ counts or `300 RPM`; `FUN_0005B418` writes `0xFFFF226C` in the same unit.
 conditional adders that are all zero in stock, which is `40` counts or
 `1000 RPM`, with band `ROM8[0x85D3]`, which is `4` counts or `100 RPM`, and
 additionally requires bit 6 of `0xFFFF23B8` set and bit 1 of `0xFFFF4573`
-clear.
+clear. `0xFFFF23B8.bit6` is the per-pass latch of `0xFFFF23B9.bit6`, which
+`FUN_0008D710` produces; `0xFFFF4573.bit1` is the idle-model engagement flag
+that `FUN_00054FD0` stores from the resolver output. `defs/JK78C.vvel.md`
+carries both predicates.
 
 `FUN_0004678C` passes the destination bucket, the origin bucket, normalized
 word `0xFFFF197A`, and speed word `0xFFFF11A6` to `FUN_000469E0`, which sets

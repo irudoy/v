@@ -813,10 +813,11 @@
          Exact 1ND3B target-native table at 0xe748 bound to accessor 0x5f468 through literal
          0x5f7a0, accessor 0x70514 through literal 0x7129c. Read by the resolver FUN_0005F468 at
          callsite 0x5F664 through the 8x8 uint16 wrapper 0x28674 with two byte coordinates: r7
-         is the byte 0xFFFE8073 and the stack slot is the byte 0xFFFE9796. FUN_00070514 reads
-         the surface at 0x7106A and 0x71132 with the same axes. JK78C indexes its surface
-         0x0000E1CE by engine speed and torque instead. 1ND3B shares the 1ND0A code layout and
-         its stock bytes at this address.
+         is the byte 0xFFFE8073 (coolant temperature latch, DID 0x1101) and the stack slot is
+         the byte 0xFFFE9796 (intake air temperature latch, DID 0x1106), both degC + 50.
+         FUN_00070514 reads the surface at 0x7106A and 0x71132 with the same axes. JK78C indexes
+         its surface 0x0000E1CE by engine speed and torque instead. 1ND3B shares the 1ND0A code
+         layout and its stock bytes at this address.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="VVEL Duration Target - Hot Intake Idle"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
@@ -953,9 +954,10 @@
          [candidate]
          Exact 1ND3B target-native table at 0xe6c8 bound to accessor 0x5f468 through literal
          0x5f7ac. Read by the resolver FUN_0005F468 at callsite 0x5F6AC through the 8x8 uint16
-         wrapper 0x28674 and stored at the mode 14 pair slot. JK78C stores the constant 50.0 for
-         this mode and carries no table. 1ND3B shares the 1ND0A code layout and its stock bytes
-         at this address.
+         wrapper 0x28674 and stored at the mode 14 pair slot. The 1ND0A mode byte is 0xFFFEF4D0,
+         published to 0xFFFE992C and 0xFFFEF5D0. JK78C stores the constant 50.0 for this mode
+         and carries no table. 1ND3B shares the 1ND0A code layout and its stock bytes at this
+         address.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="VVEL Duration Target - Mode 14"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
