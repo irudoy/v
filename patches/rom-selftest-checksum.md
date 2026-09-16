@@ -162,7 +162,8 @@ at `0x0001A88C` indexed by descriptor status group: bit 7 of `[0x0001A8B1]`
 (group `0x25`, stock `0xEF`), or bit 7 of `[0x0001A8B2]` (group `0x26`, stock
 `0x10`), or `[0x0001729F]` (stock `0x00`) not equal to `0x55`. The second is
 bit 7 of `0xFFFF44DF`, the walker's copy of `0xFFFF44E0` taken before the
-walk. Group `0x25` holds the eight `P0605` descriptors at indices 111 to 117;
+walk; the writers of that bit are listed in `../defs/JK78C.can.md` under
+recovered periodic entries. Group `0x25` holds the eight `P0605` descriptors at indices 111 to 117;
 index `0x6F` is the record at `0x0001BCE0` with group `0x25`, bit 7, code
 `P0605`, byte-identical to the JK08A record at index `0x75` that the JK08A
 verifier `0x021714` raises.

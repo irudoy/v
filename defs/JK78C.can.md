@@ -347,8 +347,26 @@ else:                          0xFFFF11F5 = min(255, 0xFFFF11F5 + 1)
 
 `FUN_00020F1A` copies `0xFFFF11F5` to `0xFFFF11F4` at `0x00020FD8` before
 the walk, so `0xFFFF11F4` is the value the periodic entries read. The cell is
-a saturating count of walks since bit 4 of `0xFFFF2421` was last set. The
-writer of that bit and the consumers of `0xFFFF11F4` are not established.
+a saturating count of walks since bit 4 of `0xFFFF2421` was last set.
+
+No function in the structural export writes bit 4 of `0xFFFF2421`: the only
+writer of the byte is the RAM initializer `FUN_0002F596`, which sets bit 3 at
+`0x0002F8F4`, no literal in the image names `0xFFFF2421`, and the GBR access
+inventory holds no site that reaches it. In the stock image the count is never
+reset and saturates at 255. The sole reader of `0xFFFF11F4` is
+`FUN_0006D7E8` (entry 50 of the list at `0x00021A4C`), which at `0x0006D94C`
+requires `0xFFFF11F4 >= ROM8[0x000085B4]` before it refreshes a load-indexed
+byte factor; the stock threshold is `0x00`, so the gate is always open.
+
+`FUN_00020A3C` walks the 68-entry array at `0x0002191C` in a `dt` loop at
+`0x00020CEC` and the three-entry sublist at `0x00021A40` afterwards. Bit 7 of
+`0xFFFF44E0`, whose walker copy `0xFFFF44DF` gates the Runtime A scanner, has
+three writers: `FUN_0003BD78` (entry 16 of that array) writes it equal to the
+state longword `0xFFFF3C18` being 1 at `0x0003C0A6`; `FUN_0003C348`, called
+by `FUN_00029B38`, sets it when bit 4 of port L data register PLDR
+(`0xFFFFF75E`) reads 1; `FUN_0003C394` (entry 17) rewrites the byte with bit 6
+recomputed and bit 7 preserved. The meaning of state 1 of `0xFFFF3C18` is not
+established.
 
 ## Hardware boundary
 
