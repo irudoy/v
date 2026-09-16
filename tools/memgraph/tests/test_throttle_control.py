@@ -146,7 +146,7 @@ class ThrottleControlContractTest(unittest.TestCase):
             "ffff3480": ("ffff4162", "ffff19c6"),
             "ffff3484": ("ffff4162", "ffff19c6"),
             "ffff4162": ("stock-lifecycle", "ffff41a6"),
-            "ffff418f": ("no runtime bit-4 producer", "zero"),
+            "ffff418f": ("ffff419b", "byte 4", "0x174"),
             "ffff41a6": ("ffff4252", "ffff4413", "bit 3"),
             "ffff4252": ("current gear", "target gear", "stock-lifecycle"),
             "ffff4253": ("bit 6", "inhibit"),
@@ -164,7 +164,7 @@ class ThrottleControlContractTest(unittest.TestCase):
         for token in (
             "0x44 -> 0x34 -> 0x33",
             "0x22 -> 0x32 -> 0x33",
-            "secondary candidate is calculated but cannot constrain",
+            "secondary candidate constrains `ffff19c6` only after such a pass",
             "calibration-only `0x942c` a/b test is isolated",
         ):
             with self.subTest(contract_token=token):

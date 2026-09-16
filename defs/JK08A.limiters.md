@@ -152,8 +152,9 @@ target transitions prove target-first field ordering for both shift directions.
 The optional forced-neutral override is not a stock upshift gate. Selected
 producer `FUN_00077892` sets it for any target/current mismatch only when
 `0xFFFF418F.bit4` is set and its independent inhibit aggregate is clear.
-Startup clears bit 4 and no runtime producer exists, so the override remains
-clear in the recovered stock lifecycle.
+Bit 4 is the scheduler latch of `0xFFFF419B.bit4`, which `FUN_0007724C` sets
+when TCM field `0xFFFF3A2E` (CAN `0x174` byte 4 bits 5 through 7) equals 3;
+whether the TCM transmits that value is a live-capture question.
 
 The full state machine, calibration inventory, exact integer boundaries, and
 auxiliary outputs are specified in

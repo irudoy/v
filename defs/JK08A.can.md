@@ -129,6 +129,11 @@ The following payload claims are sufficiently narrow for use as cross-checks:
   Values 1 through 7 become zero-based indices 0 through 6; every other value
   becomes zero. `FUN_000C47EA` publishes the live pair and `FUN_00020DFE`
   snapshots it for request-limiter use.
+- `0x174` byte 4 bits 5 through 7 are a TCM status field published to
+  `0xFFFF3A2E` by `FUN_000C47EA`; `FUN_0007724C` maps value 3 to
+  `0xFFFF419B.bit4`, the source of transition-neutralizer latch
+  `0xFFFF418F.bit4`. Byte 4 bits 0 through 3 and byte 5 bits 6 and 7 feed two
+  further status bytes. The field meaning is not established.
 - `0x177` byte 2 bits 0 through 2 are a zero-based TCM gear-phase index decoded
   by `FUN_000C4ACE`. Higher bits are independent status flags.
 
