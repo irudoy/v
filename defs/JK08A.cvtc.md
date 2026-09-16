@@ -100,7 +100,7 @@ CYLR7A = CYLR7B = 125 * ROM8[0x8DFC] = 4125 counts
 CYLR7C = CYLR7D = 125 * ROM8[0x8DFD] = 4000 counts
 ```
 
-`FUN 000BEAD0` converts the two intake duty bytes with the same period byte
+`FUN 000BEACE` converts the two intake duty bytes with the same period byte
 through signed division helper `0x00021BBC`:
 
 ```text
@@ -127,7 +127,7 @@ exhaust_percent = uint16[ffff1aac|ffff1aae] * 100 / 1024
 
 Byte `0xFFFF4247` bit 0 selects the computed intake path and byte `0xFFFF4251`
 bit 0 selects the computed exhaust path. With the intake bit clear,
-`FUN 000BEAD0` drives fixed fractions while saturated engine-speed byte
+`FUN 000BEACE` drives fixed fractions while saturated engine-speed byte
 `0xFFFF11EA` is positive, and zero otherwise:
 
 ```text
