@@ -117,17 +117,17 @@ evidence = "exact-code+homologous-diagnostic"
 note = "Exact DID bindings identify these as Heated Oxygen Sensor 1 bank 1 and bank 2 bytes. Physical conversion is unresolved."
 
 [[signal]]
-id = "fuel_multiplier_factor"
+id = "commanded_mixture"
 domain = "fuel"
-label = "Upstream fuel multiplier factor"
-priority = "high"
+label = "Commanded mixture"
+priority = "core"
 coverage = "rotating"
 current_fields = ["af_state_factor_raw"]
 sources = [0xFFFF22E8]
 widths = [2]
 dids = [0x1134]
 evidence = "exact-code"
-note = "The full Q14 word is streamed once per four scheduler passes. DID 0x1134 publishes only its high byte. It is not a verified physical AFR, lambda, or target-lambda value."
+note = "Q14 fuel-multiplier command against the stoichiometric base schedule, streamed once per four scheduler passes: 0x4000 is the closed-loop stoichiometric target and target map 0xA9AA supplies 128..149 (1.00..1.16) through stage 0x5594A, the sole stock writer. DID 0x1134 publishes only the high byte. Commanded lambda = 16384/x; the gasoline AFR scale 1881.6/(x/128) of the public HR A2L remains a candidate."
 
 [[signal]]
 id = "fuel_trims"
@@ -453,19 +453,6 @@ widths = []
 dids = []
 evidence = "passive-can"
 note = "The dashboard and MLG recorder already decode these values from stock CAN frames 0x280, 0x421, 0x239, and 0x551 without consuming custom telemetry bytes."
-
-[[signal]]
-id = "commanded_mixture"
-domain = "fuel"
-label = "Commanded mixture or target lambda"
-priority = "core"
-coverage = "unresolved"
-current_fields = []
-sources = []
-widths = []
-dids = []
-evidence = "research-requirement"
-note = "No verified persistent JK08A source has been established. The Q14 word at ffff22e8 is an upstream fuel multiplier and must not be relabelled as target lambda."
 
 [[signal]]
 id = "fuel_pressure"

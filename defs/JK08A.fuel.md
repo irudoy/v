@@ -163,6 +163,80 @@ The corrected schedule is rate-adjusted and optionally blended with the prior
 sample. RPM curve `0x12C9E` normally caps the result before it is written to
 `0xFFFF1026`; an alternate mode uses direct grid `0x974E`.
 
+## Commanded mixture
+
+`FUN_0005594A`, the second stage of `FUN_00057608`, is the only stock writer of
+the commanded-mixture word `0xFFFF22E8`. The alternate writer `FUN_00055596`
+is reached only when `ROM8[0x8B42]` bit 0 or `ROM8[0x8B34]` bit 4 is set;
+stock holds both clear.
+
+The target byte is a Q7 fuel-multiplier command against the stoichiometric base
+schedule, `128` = closed-loop stoichiometric target:
+
+```text
+wot   = 0xFFFF2468.bit3            # 0xFFFF3528 >= 200 (+8 hysteresis), ~70 deg TVO
+load  = wot ? 0xFF : uint8[0xFFFF102C]
+m     = map8x8(0xA9AA; rpm axis 0x11CC0 vs uint16[0xFFFF11BC], load axis 0x11AC7)
+if 0xFFFF2466.bit6:                # high-detonation surface selected
+    t = map1D(0x12552 on uint8[0xFFFF11AE], axis 0x11CD8)
+    m = sat_u8(128 + ((m - 128) * t >> 7))
+rich  = 0xFFFF24A2.bit7            # m + (rich ? 1 : 0) >= ROM8[0x8B9B] = 130
+0xFFFF15EB = rich ? m : 128
+```
+
+`0xFFFF3528` is `min(255, uint16[0xFFFF40C6] * 0x505B >> 16)` from
+`FUN_00054EB8`, the first stage of the coordinator. The 70-degree figure
+inherits the candidate `0.0275` degree scale of axis `0x155A0`.
+
+Request byte `0xFFFF1411` and state byte `0xFFFF1410` select how the word
+moves toward the target: `8` while coolant `0xFFFF1071` is below
+`ROM8[0x8CF8] = 115` (`0xFFFF24A4` bit 5), `1` when `m == 128`, otherwise
+`2..7` from the engine-speed band flags of `0xFFFF2493` (`0xFFFF11AE` against
+`ROM8[0x87D4] = 44` and `ROM8[0x87D3] = 72`, i.e. 2200 and 3600 rpm), the
+wide-open latch, and `0xFFFF2485` bit 6. The ramp uses the previous-pass
+snapshot `0xFFFF1278`, which `FUN_00020DFE` copies from `0xFFFF123A` in the
+`0x3E`-byte block `0xFFFF120E -> 0xFFFF124C`:
+
+```text
+prev   = uint16[0xFFFF1278]
+target = uint8[0xFFFF15EB] << 7
+down   = max(0x4000, prev - ROM8[0x849B] * 8)      # 304 per pass
+up     = min(target, prev + ROM8[0x849C] * 8)      # 384 per pass
+state 1        -> 0x4000
+state 4, 5     -> target
+state 2, 3, 6  -> ramp (kick-off ROM8[0x8B9C] << 7 = 0x4100,
+                        floor ROM16[0x929C] = 0x4000, direct target
+                        once 0xFFFF2485.bit5 reports arrival)
+0xFFFF123A = min(value, target)
+0xFFFF2485.bit5 = (0xFFFF123A == target)
+```
+
+`FUN_0005651C` forms the second word `0xFFFF123C` under gates that stock
+constants neutralize (`0x11EDE` flat 254, `ROM8[0x87D9] = 0`, ramp toward
+`ROM16[0x8F86] = 0x4000`), so it stays at `0x4000`. The final publication:
+
+```text
+v = max(uint16[0xFFFF123A], uint16[0xFFFF123C])
+if uint8[0xFFFF2700] < 32:            # interval-derived rpm/12.5 byte, 400 rpm
+    0xFFFF2531 = ROM8[0x87D6] = 2
+if uint8[0xFFFF2700] < 32 or 0xFFFF2531 != 0:
+    v = 0x4000
+if 0xFFFF4252.bit1:
+    v = min(v, ROM16[0x94EC] = 0xFFFF)
+0xFFFF22E8 = v
+```
+
+`0xFFFF2700` is the scheduler snapshot of `0xFFFF2804`, the median-of-three
+quotient `41666 / uint16[0xFFFF22BC]` from `FUN_0003DF2C`, whose diagnostic
+substitute `0xFFFF11EA` fixes the representation as rpm/12.5.
+
+Three 2026-08-26 vehicle recordings agree with this chain: the streamed word is
+always a multiple of 128 within `16384..19072`, settled values match the
+`0xA9AA` lookup in 98.3..100 percent of records, and both STFT words stay at
+neutral `0x6400` whenever the command exceeds `0x4000`. Commanded lambda is
+`16384 / raw`; the public HR A2L names `0xA9AA` `Target AFR Map (8x8)` with
+gasoline scale `1881.6 / x`, which remains a candidate.
+
 ## Fuel multiplier and full-inhibit behavior
 
 `FUN_00057608` calls the current fuel-multiplier stages in this fixed order:

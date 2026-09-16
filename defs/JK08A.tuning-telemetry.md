@@ -76,9 +76,11 @@ target validation before their engineering units are treated as measured fact.
 
 ## Remaining semantic gaps
 
-No verified persistent JK08A RAM source currently represents commanded mixture
-or target lambda. `FFFF22E8` is a code-proven upstream Q14 fuel multiplier; a
-service-0x22 label does not establish AFR or target-lambda semantics.
+Commanded mixture is the Q14 word `FFFF22E8`: stage `0x5594A` forms it from
+target mixture map `0xA9AA`, and `0x4000` is the closed-loop stoichiometric
+target. Commanded lambda is `16384 / raw`. The gasoline AFR scale
+`1881.6 / (raw / 128)` of the public HR A2L remains a candidate until a
+wideband correlation is recorded.
 
 The reviewed code and diagnostic layers do not establish a fuel-pressure
 source or confirm that this ECU has a pressure sensor represented in software.

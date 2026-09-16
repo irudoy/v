@@ -24,7 +24,7 @@ def test_catalog_separates_current_coverage_from_instrumentation():
     catalog = tuning_signal_coverage.load_catalog()
     assert catalog.by_id["pressure_context"].coverage == "rotating"
     assert catalog.by_id["throttle_request_path"].coverage == "fixed"
-    assert catalog.by_id["commanded_mixture"].coverage == "unresolved"
+    assert catalog.by_id["commanded_mixture"].coverage == "rotating"
     assert catalog.by_id["knock_margin"].coverage == "instrumentation"
     assert catalog.by_id["physical_spark_angle"].coverage == "external"
 
@@ -43,7 +43,7 @@ def test_catalog_did_bindings_include_high_value_gaps():
 
 def test_summary_has_stable_coverage_counts():
     report = tuning_signal_coverage.summary(tuning_signal_coverage.load_catalog())
-    assert report["signal_count"] == 38
+    assert report["signal_count"] == 37
     assert report["coverage"] == {
         "absent": 1,
         "external": 1,
@@ -52,7 +52,6 @@ def test_summary_has_stable_coverage_counts():
         "latched": 1,
         "rotating": 13,
         "stock-can": 1,
-        "unresolved": 1,
     }
 
 
