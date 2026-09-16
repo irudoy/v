@@ -5,7 +5,11 @@
 // r4/r5/r6 table and axis operands from pre-call register setup on a best-effort
 // basis.
 //
-// Usage (headless): -postScript MapInventory.java <out_dir> <kernel_hex>
+// A fused entry (wrapper, kernel, and axis search in one leaf, reached by jsr through a
+// pool word) has no wrapper level. The `fused` token takes the entry as its own wrapper,
+// its call references as the sites, and the pool word the site loaded as the slot.
+//
+// Usage (headless): -postScript MapInventory.java <out_dir> <kernel_hex> [fused]
 // Output: map_inventory.csv (wrapper,slot,from,from_func,reftype,is_call,r4,r5,r6).
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
@@ -35,6 +39,7 @@ public class MapInventory extends GhidraScript {
         String[] a = getScriptArgs();
         String outDir = a[0];
         long kernel = Long.parseLong(a[1], 16);
+        boolean fused = a.length > 2 && a[2].equals("fused");
 
         Memory mem = currentProgram.getMemory();
         Listing listing = currentProgram.getListing();
@@ -57,7 +62,15 @@ public class MapInventory extends GhidraScript {
 
         // 2. Wrappers whose functions reference a slot.
         Map<Function, Address> wrappers = new LinkedHashMap<>();
+        if (fused) {
+            Function leaf = fm.getFunctionAt(toAddr(kernel));
+            if (leaf == null)
+                throw new IllegalStateException("fused entry " + Long.toHexString(kernel)
+                        + " is not a function entry");
+            wrappers.put(leaf, null);
+        }
         for (Address slot : slots) {
+            if (fused) break;
             ReferenceIterator ri = rm.getReferencesTo(slot);
             while (ri.hasNext()) {
                 Reference r = ri.next();
@@ -81,8 +94,9 @@ public class MapInventory extends GhidraScript {
                 boolean isCall = r.getReferenceType().isCall();
                 long[] regs = {-1, -1, -1};
                 try { regs = backtrack(listing, mem, from); } catch (Exception ex) { /* best-effort */ }
+                Address slot = fused ? poolSlot(listing, from, slots) : e.getValue();
                 w.println(String.format("%s,%s,%s,%s,%s,%b,%s,%s,%s",
-                        wentry, e.getValue(), from,
+                        wentry, slot == null ? "" : slot, from,
                         ff == null ? "?" : ff.getEntryPoint().toString(),
                         r.getReferenceType().getName(), isCall,
                         hx(regs[0]), hx(regs[1]), hx(regs[2])));
@@ -96,6 +110,20 @@ public class MapInventory extends GhidraScript {
     }
 
     String hx(long v) { return v == -1 ? "" : String.format("%08x", v); }
+
+    // Fused mode: the pool word holding the entry address that the site loaded, within the
+    // backtrack window.
+    Address poolSlot(Listing listing, Address site, List<Address> slots) {
+        Instruction cur = listing.getInstructionContaining(site);
+        for (int k = 0; k < 15 && cur != null; k++) {
+            for (Reference r : cur.getReferencesFrom()) {
+                Address to = r.getToAddress();
+                if (to != null && slots.contains(to)) return to;
+            }
+            cur = listing.getInstructionBefore(cur.getAddress());
+        }
+        return null;
+    }
 
     // Walk back up to 14 instructions and recover the nearest PC-relative load
     // into r4/r5/r6.

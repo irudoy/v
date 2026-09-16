@@ -19,7 +19,8 @@ Intake ends in one of two complete states.
 - **Registered stock identity.** The image has provenance, a hash, a declared
   family boundary, ROM-atlas participation, and whatever the Step 2 measurements
   carry without an analysis layer, which today means the DTC registry. `1ME3B`
-  holds this state.
+  holds this state, with a registered checksum layout and an interpolation
+  registry with its census on top of it and no definition target.
 
 A definition published on candidate-grade evidence is not a third state.
 
@@ -181,6 +182,16 @@ in-degree together with leaf status, and the measurement is in
 statement about the calling convention, not as evidence that the image has no
 library.
 
+A fused library is registered with `kernel` equal to `wrapper` per leaf and
+censused with the `fused` token of `ResolveAccessors.java`, which takes the
+call references to the leaf as the sites. Leaf geometry is read from the leaf
+itself: the unrolled axis search gives point count and axis element, the cell
+loads give storage type, the row stride gives the second dimension, and an
+implicit leaf gives its step from the index shift and its point count from the
+clamp. The 1ME3B leaves reproduce the `1ND` contract vocabulary exactly, so a
+registry row can be checked against the sibling's rows even though no code
+relocates.
+
 Three levers reduce the remaining work and are worth measuring first, because
 they hold even when no code relocates. Values below are the 1ME3B measurements.
 
@@ -193,7 +204,10 @@ they hold even when no code relocates. Values below are the 1ME3B measurements.
 - Checksum domains reproduce at the sibling's field addresses. The four `1ND`
   SUM16 domains hold in 1ME3B at the same field addresses and the runtime XOR
   and SUM fields move to `0x0096F4` and `0x0096FC`, which reduces the checksum
-  stage to locating the two verifier functions.
+  stage to locating the verifier functions. In 1ME3B the incremental SUM16
+  verifier is byte-identical to the `1ND` one at the same address, the runtime
+  accumulators read the same exclusions from the moved fields, and the layout
+  is registered as `sh7059_1me3b`.
 
 ### Branch E - unclassified
 

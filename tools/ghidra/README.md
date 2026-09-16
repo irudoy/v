@@ -166,6 +166,24 @@ missing census, unsupported branching alignment, an accessor absent from the
 exported function set, or a target image that does not match its registry.
 Algorithm and ingestion details are in `../map-analysis-pipeline.md`.
 
+A library that fuses wrapper, kernel, and axis search into one self-contained
+leaf per access has no wrapper level: callers load the leaf address from a
+literal-pool word and `jsr` it. The `fused` token after the entry address
+selects the direct census in both `ResolveAccessors.java` and
+`MapInventory.java`: the entry is its own wrapper, the sites are the call
+references to the entry, and the slot is the pool word the site loaded. The
+registry declares such an entry with `kernel` equal to `wrapper`. 1ME3B is the
+precedent; its 34 registered leaves are censused with
+
+```bash
+tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
+  -process 11ME3B-20260825-stock.bin -noanalysis -readOnly \
+  -scriptPath tools/ghidra \
+  -postScript ResolveAccessors.java ~/tools/ghidra-projects/export-1ME3B 2a9f4 fused
+```
+
+repeated per registry row.
+
 ## Stock throttle-limiter p-code coverage
 
 `EmulateThrottleLimiter.java` SHA-locks the stock JK08A ROM and executes the

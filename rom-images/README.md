@@ -354,7 +354,7 @@ The baseline identifies five implementation groups:
 | SH7059 `1ND` | 1ND0A, 1ND3B | Exact code; 5,251 differing bytes are confined to `0x008200:0x01bdfc` | One SH7059 structural analysis and builder series can cover both images; the exact checksum layout is registered |
 | SH7058 `8MFK` | JK00C, JK00D | Near code with insertions, deletions, and relocations | Share semantic identifiers, but require address maps and independently validated patch points |
 | SH7058 JK78C | JK78C | Distinct code base in the current collection | Uses an independent layout, checksum model, audited allocation, target payloads, and executable gate |
-| SH7059 `1ME3B` | 1ME3B | Distinct code base in the current collection | Carries no registered checksum layout, address profile, or definition target; every address requires independent recovery |
+| SH7059 `1ME3B` | 1ME3B | Distinct code base in the current collection | Carries a registered checksum layout and a fused interpolation registry with its census; no address profile or definition target, and every address requires independent recovery |
 
 ### Exact-code families
 

@@ -46,6 +46,20 @@ is uniform only inside the 1,936-byte window: across the 31 codes shared with
 record and its own attribute pointer rather than derived from an offset.
 
 ## Structure export and cross-ROM correspondence
+## Checksum verification
+
+`../../patches/checksum-layouts.toml` registers the image as layout
+`sh7059_1me3b` with the `1ND` domain geometry and the runtime fields at
+`0x0096F4` and `0x0096FC`. The verifiers are located in the image. `0x002C60`
+is byte-identical to the `1ND` function and incrementally verifies the
+`0x008200` and `0x020000` SUM16 fields. `0x021A78` and `0x021B8E` accumulate
+the application XOR and SUM over `0x008200:0x180000` in the runtime, skipping
+the `0x008200` word, both fields, and the `0x020000` word; `0x021C74` compares
+the accumulators with the two fields. `0x013339C` compares the same two fields
+and the `0x005FFE` and `0x006EFE` SUM16 fields with values it computes itself,
+as `0x12604C` does in `1ND0A`. The stock image reproduces all six fields under
+the registered layout.
+
 
 Headless recovery folds 82,820 instructions in 578 regions into functions with
 no failure, leaving 2,320 functions, 3,695 resolved call edges, 97,939
@@ -75,16 +89,62 @@ immediately around that block does carry across at constant relocations:
 onward at `+0x2D50`. The absence is therefore a property of the library, not of
 the region.
 
-The replacement occupies `0x028980:0x02BF60` and holds 37 functions and 13,472
-bytes with no `1ND0A` structural homolog. Every one of them is a call-graph
-leaf. `1ND0A` reaches the same behaviour through a wrapper that calls a kernel
+The replacement occupies `0x028980:0x02BF60` and holds 42 functions and 13,710
+bytes with no `1ND0A` structural homolog; 41 of them are call-graph leaves.
+`1ND0A` reaches the same behaviour through a wrapper that calls a kernel
 which may call a shared tail, in 58 functions and 3,572 bytes. This image fuses
 each access into one self-contained function and unrolls the axis search, which
-accounts for the size. `0x02A9F4`, with 62 callers, clamps an eight-point uint8
-table at index `0xE0`, splits index and fraction, loads both neighbouring
-cells, interpolates with `mul.l` and `shlr16`, and returns the last cell from
-the `rts` delay slot. `0x02AF88`, with 66 callers, opens with a sixteen-point
-uint16 axis search unrolled from offset `0x1E` downward.
+accounts for the size. Callers load a leaf address from a literal-pool word and
+`jsr` it, so no wrapper level and no shared kernel exist.
+
+`../../defs/1ME3B.interp.csv` registers 34 leaves with `kernel` equal to
+`wrapper`. Their geometry is read from the leaf code: the unrolled axis search
+gives point count and axis element (a byte axis clamps at `points - 1`, a word
+axis at `2 * (points - 1)`), the cell loads give the storage type, the row
+stride before `mulu.w` gives the second dimension, and an implicit leaf gives
+its step from the index shift and its point count from the input clamp. The
+argument convention is `r4` table, `r5` first axis, `r6` second axis, `r7`
+first input, and the second input on the stack; a one-dimensional explicit leaf
+takes its input in `r6`, and an implicit leaf takes its raw input in `r5`. The
+34 contracts reproduce the `1ND0A` registry vocabulary exactly: the eight
+implicit geometries (4 points at step 64, 8 at 32, 16 at 16, 32 at 8, 4 at
+16384, 8 at 8192, 16 at 4096, and 64 at 256), the six explicit one-dimensional
+contracts, and the ten explicit two-dimensional contracts, including the mixed
+`uint8` and `uint16` axis pairs. Seven registered leaves are byte-identical
+copies of another leaf (`0x02B3B0`, `0x02B5A4`, `0x02B878`, `0x02BBA4`,
+`0x02BBF8`, `0x02BCD4`, and `0x02BE20`), each with its own callers.
+
+Variants inside one contract are properties of the leaf rather than of the
+registry row. `0x028C8C`, `0x0291DC`, `0x0293D8`, `0x0298B4`, and `0x029BA8`
+compare a `uint16` input with `uint8` first-axis values scaled by four, and
+`0x02A388` with its copy scales them by sixteen. `0x0293D8` and `0x029BA8`
+mask every cell with `0x7F`. `0x02A6B4` treats cells at or above `0x80` as
+sentinels. `0x02B0D4` and its copy search 32 points through a partitioned
+rather than linear comparison chain.
+
+Eight functions in the range are outside the registry vocabulary. `0x0289A8`
+reads an 8x8 `uint8` table at the raw inputs shifted right by five without
+interpolation, `0x028C30` reads a 4x4 `uint8` table at the floor indices of two
+`uint8` axes without interpolation, and `0x0289CC` interpolates an 8x8
+`uint16` table over two implicit axes at step 8192, a two-dimensional implicit
+form the registry does not express. `0x02AC3C` is the 16-point step-16
+implicit leaf over `int8` cells, biased by `0x80` around the interpolation.
+`0x02B33C` is a signed fixed-point multiply with a shift count, `0x02B384` a
+saturating add, and `0x02BF3C` with `0x02BF58` a byte sum over RAM
+`0xFFFEBD88:0xFFFEDB11` against fields at `0xFFFEDB14` and `0xFFFEDB16`.
+
+The fused census (`ResolveAccessors.java` with the `fused` token, one run per
+registry row) resolves 1,053 call sites in 1,098 rows, the excess being
+selector branches. Data flow recovers a ROM base at all but three sites; the
+linear backtrack agrees at 625 rows, is superseded at 371, and conflicts at 23.
+The layer holds 768 tables and 457 axes, 561 tables through explicit axes and
+207 through implicit ones, all between `0x009924` and `0x025490` with seven
+above `0x020000`. One table is read by two leaves of equal geometry. The
+largest contracts by table count are the 8-point `uint8` implicit leaf
+`0x02A9F4` with 95 tables, the 16-point `uint16` explicit leaf `0x02AF88` with
+92, the 8-point `uint16` explicit leaf `0x02AEAC` with 90, and the 8-point
+`uint8` explicit leaf `0x02AC9C` with 82. The census is a candidate layer: it
+establishes address, geometry, and consumer path, not semantics.
 
 `FindInterpCore.java` does not locate this library. Its signature is a
 literal-pool slot plus two levels of indirection, which a fused leaf does not
@@ -92,9 +152,9 @@ use. Its highest-ranked candidates in this image, `0x037378` and `0x03CF10`,
 are a byte-queue emitter that appends to `0xFFFEDC26` under the counter at
 `0xFFFEDD2A`.
 
-The image has no registered checksum layout, address profile, interpolation
-registry, or definition target. Its declared family boundary forbids address
-inheritance from any other image in the collection.
+The image has no address profile, correspondence registry, or definition
+target. Its declared family boundary forbids address inheritance from any
+other image in the collection.
 
 Identity and stock hashes are authoritative in `../roms.csv` and
 `../README.md`; family classification and pairwise measurements are in

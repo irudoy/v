@@ -53,8 +53,16 @@
 // This applies only when every operand phi belongs to the same block and has equal length.
 // Otherwise, alignment is unsupported and the fallback leaves the site as one row.
 //
+// Fused entries. A library can fuse wrapper, kernel, and axis search into one self-contained
+// leaf per access (1ME3B). Callers load the leaf address from a literal-pool word and jsr it,
+// so the three-level census would take every caller for a wrapper and look for calls to the
+// callers. The `fused` token selects the direct census: the entry is its own wrapper, the sites
+// are the call references to the entry, and the slot is the pool word holding the entry
+// address that the site loaded (the backtrack window), or empty when none is found.
+// The registry declares such an entry with kernel == wrapper.
+//
 // Headless invocation:
-//   -postScript ResolveAccessors.java <out_dir> <kernel_hex> [byte_copy_helper_hex ...]
+//   -postScript ResolveAccessors.java <out_dir> <kernel_hex> [fused] [byte_copy_helper_hex ...]
 // Output: accessors.<kernel>.csv, one file per census. Several table-access cores exist
 // (JK03A: 0x26944 for byte axes, 0x26984 and 0x26b84 for word axes). Run the script for
 // each core; the loader builds the calibration layer from all censuses together. Therefore,
@@ -135,7 +143,10 @@ public class ResolveAccessors extends GhidraScript {
         String[] a = getScriptArgs();
         String outDir = a[0];
         long kernel = Long.parseLong(a[1], 16);
-        for (int i = 2; i < a.length; i++) copyHelpers.add(Long.parseLong(a[i], 16));
+        int next = 2;
+        boolean fused = a.length > 2 && a[2].equals("fused");
+        if (fused) next = 3;
+        for (int i = next; i < a.length; i++) copyHelpers.add(Long.parseLong(a[i], 16));
 
         listing = currentProgram.getListing();
         mem = currentProgram.getMemory();
@@ -148,10 +159,24 @@ public class ResolveAccessors extends GhidraScript {
         rCopySrc = currentProgram.getRegister("r2");
 
         List<Address> slots = findSlots(kernel);
-        Map<Function, Address> wrappers = findWrappers(slots);
-        List<Site> sites = collectSites(wrappers);
-        println("VQ_RES input: slots=" + slots.size() + " wrappers=" + wrappers.size()
-                + " call_sites=" + sites.size() + " copy_helpers=" + copyHelpers.size());
+        Map<Function, Address> wrappers;
+        List<Site> sites;
+        if (fused) {
+            Function leaf = fm.getFunctionAt(toAddr(kernel));
+            if (leaf == null)
+                throw new IllegalStateException("fused entry " + Long.toHexString(kernel)
+                        + " is not a function entry");
+            wrappers = new LinkedHashMap<>();
+            wrappers.put(leaf, null);
+            sites = collectSites(wrappers);
+            for (Site s : sites) s.slot = poolSlot(s.at, slots);
+        } else {
+            wrappers = findWrappers(slots);
+            sites = collectSites(wrappers);
+        }
+        println("VQ_RES input: mode=" + (fused ? "fused" : "wrapper") + " slots=" + slots.size()
+                + " wrappers=" + wrappers.size() + " call_sites=" + sites.size()
+                + " copy_helpers=" + copyHelpers.size());
 
         int recovered = recoverFuncs(sites);
         println("VQ_RES recovered functions: " + recovered);
@@ -261,6 +286,23 @@ public class ResolveAccessors extends GhidraScript {
             }
         }
         return out;
+    }
+
+    // Fused mode: the pool word holding the entry address that the site loaded. The same
+    // 14-instruction window as backtrack; a site whose register load lies further back has
+    // no slot.
+    Address poolSlot(Address site, List<Address> slots) {
+        Instruction ins = listing.getInstructionContaining(site);
+        if (ins == null) return null;
+        Instruction cur = ins;
+        for (int k = 0; k < 15 && cur != null; k++) {
+            for (Reference r : cur.getReferencesFrom()) {
+                Address to = r.getToAddress();
+                if (to != null && slots.contains(to)) return to;
+            }
+            cur = listing.getInstructionBefore(cur.getAddress());
+        }
+        return null;
     }
 
     // Condition A: CALLIND arguments recovered by the decompiler as ordered call inputs
@@ -671,7 +713,7 @@ public class ResolveAccessors extends GhidraScript {
                 long[] d = rows.get(i);
                 w.println(String.format(
                         "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                        khex, s.wrapper, s.slot, s.accessor, s.at, s.fsrc,
+                        khex, s.wrapper, s.slot == null ? "" : s.slot, s.accessor, s.at, s.fsrc,
                         hx(s.bt[0]), hx(s.bt[1]), hx(s.bt[2]),
                         hx(d[0]), hx(d[1]), hx(d[2]), hx(d[3]),
                         s.kind[0], s.kind[1], s.kind[2], s.kind[3], vd,

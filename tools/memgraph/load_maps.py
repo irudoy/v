@@ -31,7 +31,8 @@
 # Registry (one entry per row):
 #   family       - explicit axis (breakpoint array in ROM, pointer in r5/r6) or implicit
 #                  axis (no array; points 0..N-1 at uniform raw-input steps);
-#   kernel       - shared entry engine and census filename;
+#   kernel       - shared entry engine and census filename; a fused entry (wrapper, kernel,
+#                  and axis search in one leaf, as in 1ME3B) names itself here;
 #   wrapper      - address of the entry itself;
 #   width/height - axis point count; empty height means a one-dimensional entry;
 #   step         - implicit-axis step (implicit only);
@@ -338,12 +339,15 @@ def build(rows):
         kern, w, family = r["kernel"], r["wrapper"], r["family"]
         g = geometry(r)
 
-        interps.setdefault(kern, {"addr": kern, "role": "kernel", "family": None,
-                                  "slot": "", "dims": None, "width": None,
-                                  "height": None, "step": None, "limit": None,
-                                  "storagetype": None})
-        interps.setdefault(w, dict(g, addr=w, role="wrapper", family=family,
-                                   slot=r["slot"]))
+        # A fused entry is its own core: one node carries the geometry and no :KERNEL
+        # relationship exists.
+        if kern != w:
+            interps.setdefault(kern, {"addr": kern, "role": "kernel", "family": None,
+                                      "slot": "", "dims": None, "width": None,
+                                      "height": None, "step": None, "limit": None,
+                                      "storagetype": None})
+        interps.setdefault(w, dict(g, addr=w, role="fused" if kern == w else "wrapper",
+                                   family=family, slot=r["slot"]))
         kernels[w] = kern
 
         # An axis is an object only in the explicit-axis model. A bank axis is arithmetic,
@@ -760,7 +764,7 @@ def main():
             MATCH (w:Interp {rom:$rom, addr:r.wrapper}), (k:Interp {rom:$rom, addr:r.kernel})
             MERGE (w)-[:KERNEL]->(k)
             """,
-            rows=[{"wrapper": w, "kernel": k} for w, k in sorted(kernels.items())],
+            rows=[{"wrapper": w, "kernel": k} for w, k in sorted(kernels.items()) if w != k],
             rom=rom,
         )
         s.run(

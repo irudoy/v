@@ -13,6 +13,7 @@ presentation and generated output.
 | `JK00D.interp.csv` | JK00D interpolation entries and recovered geometry | yes |
 | `JK78C.interp.csv` | SH7058 VQ37 interpolation entries and recovered geometry | yes |
 | `1ND0A.interp.csv` | SH7059 1ND interpolation entries and recovered geometry | yes |
+| `1ME3B.interp.csv` | SH7059 1ME3B fused interpolation leaves and recovered geometry | yes |
 | `JK08A-JK00D.interp-correspondence.csv` | Reviewed cross-family interpolation wrapper pairs | yes |
 | `JK08A-JK78C.interp-correspondence.csv` | Reviewed VQ25-to-VQ37 interpolation wrapper pairs and explicit source-only contracts | yes |
 | `JK08A-1ND0A.interp-correspondence.csv` | Reviewed cross-generation interpolation wrapper pairs and explicit source-only contracts | yes |
@@ -94,6 +95,16 @@ addresses. Its 33 mapped JK08A contracts, one explicit source-only contract,
 and three VQ37-only contracts are recorded independently. Equal wrapper bytes
 and reviewed library order establish the contract registry; they do not by
 themselves establish map semantics or equal calibration geometry.
+
+`1ME3B.interp.csv` registers a library that fuses wrapper, kernel, and axis
+search into one leaf per access, so every row names the leaf as both `kernel`
+and `wrapper`. Its 34 rows are read from the leaf code and reproduce the 1ND0A
+contract vocabulary without any shared code; seven rows are byte-identical
+copies of another leaf with their own callers. The census runs
+`ResolveAccessors.java` in `fused` mode per row. No correspondence registry
+exists for it: the contracts are equal in geometry, storage, and axis types,
+but pairing them with 1ND0A entries requires a reviewed accessor-level
+comparison rather than equal wrapper bytes.
 
 `JK08A-JK78C.definition-addresses.csv` projects 29 visible source-map roles to
 31 JK78C tables, including explicit bank variants, and records five source

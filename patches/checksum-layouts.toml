@@ -191,3 +191,45 @@ sum_field = 0x009618
 start = 0x008200
 end = 0x180000
 exclusions = [0x008200, 0x009610, 0x009618, 0x020000]
+
+[layout.sh7059_1me3b]
+roms = ["1ME3B"]
+rom_size = 0x180000
+recalculation_order = ["runtime_a", "sum16_a", "sum16_b", "boot_sum16", "vector_sum16"]
+evidence = "Function 0x2c60, byte-identical to the 1ND verifier, incrementally verifies the 0x8200 and 0x20000 SUM16 fields. Functions 0x21a78 and 0x21b8e accumulate the application XOR and SUM over 0x8200:0x180000 while skipping the 0x8200 word, both fields, and the 0x20000 word; 0x21c74 compares the accumulators with the fields at 0x96f4 and 0x96fc. Function 0x13339c compares those two fields and the 0x5ffe and 0x6efe SUM16 fields with independently computed values. The stock image reproduces all six fields."
+
+[[layout.sh7059_1me3b.sum16]]
+key = "sum16_a"
+field = 0x008200
+start = 0x008202
+end = 0x020000
+exclusions = []
+
+[[layout.sh7059_1me3b.sum16]]
+key = "sum16_b"
+field = 0x020000
+start = 0x020002
+end = 0x180000
+exclusions = []
+
+[[layout.sh7059_1me3b.sum16]]
+key = "boot_sum16"
+field = 0x005FFE
+start = 0x000000
+end = 0x005FFE
+exclusions = []
+
+[[layout.sh7059_1me3b.sum16]]
+key = "vector_sum16"
+field = 0x006EFE
+start = 0x006000
+end = 0x008200
+exclusions = [0x006EFE]
+
+[[layout.sh7059_1me3b.runtime32]]
+key = "runtime_a"
+xor_field = 0x0096F4
+sum_field = 0x0096FC
+start = 0x008200
+end = 0x180000
+exclusions = [0x008200, 0x0096F4, 0x0096FC, 0x020000]

@@ -33,7 +33,7 @@ engine name or similar graph structure does not permit address inheritance.
 | JK00D | 36 | `0x8740` | `alt` and `alt2` |
 | JK78C | 35 | `0x861C` | `alt` and `alt2` |
 | `1ND` | 35 | `0x8668` | `alt2` |
-| `1ME3B` | 34 | Not located | None registered |
+| `1ME3B` | 34 | Not located | Layout `sh7059_1me3b` registered; no definition target |
 
 Each image stores its diagnostic descriptors as twelve-byte records followed
 immediately by one 32-bit attribute pointer per record. The pointer table is the
@@ -58,8 +58,11 @@ identity of the record is what carries the binding, so the projection needs no
 address model. The image carries the same VQ37 group `0x37` boundary, and no
 Developer Immobilizer site is located in it. Its four SUM16 checksum domains
 reproduce at the `1ND` field addresses while the application XOR and SUM fields
-sit at `0x0096F4` and `0x0096FC`; no checksum layout is registered because the
-verifier functions are not located.
+sit at `0x0096F4` and `0x0096FC`; the verifier functions are located and the
+layout is registered as `sh7059_1me3b`, which projects to a single `alt2`
+handler once a definition target exists. Its calibration access library is
+registered in `../defs/1ME3B.interp.csv` as 34 fused leaves and censused to
+768 tables and 457 axes at candidate confidence.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,
