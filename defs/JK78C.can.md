@@ -361,12 +361,28 @@ byte factor; the stock threshold is `0x00`, so the gate is always open.
 `FUN_00020A3C` walks the 68-entry array at `0x0002191C` in a `dt` loop at
 `0x00020CEC` and the three-entry sublist at `0x00021A40` afterwards. Bit 7 of
 `0xFFFF44E0`, whose walker copy `0xFFFF44DF` gates the Runtime A scanner, has
-three writers: `FUN_0003BD78` (entry 16 of that array) writes it equal to the
-state longword `0xFFFF3C18` being 1 at `0x0003C0A6`; `FUN_0003C348`, called
-by `FUN_00029B38`, sets it when bit 4 of port L data register PLDR
-(`0xFFFFF75E`) reads 1; `FUN_0003C394` (entry 17) rewrites the byte with bit 6
-recomputed and bit 7 preserved. The meaning of state 1 of `0xFFFF3C18` is not
-established.
+three writers. `FUN_0003BD78` (entry 16 of that array) writes it at
+`0x0003C0A6` from the state longword `0xFFFF3C18`: bit 7 is clear in state 1
+and set in states 0 and 2. The state follows bit 4 of port L data register
+PLDR (`0xFFFFF75E`, pin PL4/ADTRG0, package pin 220), read at `0x0003BFD0`.
+State 0 moves to 2 when the pin reads 0 and loads the countdown byte
+`0xFFFF251F` with 5; state 2 returns to 0 when the pin reads 1 and moves to 1
+when the countdown reaches 0; state 1 returns to 0 when the pin reads 1. The
+vector-120 handler `FUN_0002040C` decrements every non-zero byte of
+`0xFFFF24C1..0xFFFF2538` on each tenth tick (prescaler `0xFFFFADC0`), so
+state 1 is PL4 held low for 50 ticks, and bit 7 of `0xFFFF44E0` is PL4 high or
+low for less than that debounce. `FUN_0003C348`, called by `FUN_00029B38`,
+sets the bit when PL4 reads 1; `FUN_0003C394` (entry 17) rewrites the byte
+with bit 6 recomputed and bit 7 preserved.
+
+PL4 is the run-enable input of the firmware: the reset path `FUN_0002A7F4`
+spins at `0x0002A854` until the pin reads 1, `FUN_00028C44` skips its block
+while the pin reads 0, and the shutdown sequence `FUN_0002A3D8` ends in
+`FUN_0002986C`, which toggles PL5 (the watchdog output that the vector-120
+handler toggles through `FUN_000296D6`) until PL4 reads 1 and then re-enters
+the reset path through the vector at `VBR + 0xFC` (`FUN_00021CC4`). No static
+reference reaches `FUN_0002A3D8` in the structural export. The signal on pin
+220 is not traced on the board.
 
 ## Hardware boundary
 
