@@ -205,6 +205,24 @@ format = "0.0"
 fine = 0.5
 coarse = 2.0
 
+[table.0000b2fa]
+name = "Exhaust CVTC Target - Cold"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 11
+emit = true
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[table.0000ab4a]
+name = "Exhaust CVTC Target Correction - High-Detonation State"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 12
+emit = true
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
 [table.0000b43a]
 name = "Intake CVTC Target - Main"
 category = "Variable Valve Timing / Intake Cam"

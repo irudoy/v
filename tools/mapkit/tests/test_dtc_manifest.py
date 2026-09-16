@@ -16,7 +16,7 @@ class DtcManifestTest(unittest.TestCase):
             cls.rows = list(csv.DictReader(source))
 
     def test_expected_inventory_size_and_unique_indices(self):
-        self.assertEqual(len(self.rows), 36)
+        self.assertEqual(len(self.rows), 48)
         indices = [int(row["index"]) for row in self.rows]
         self.assertEqual(len(indices), len(set(indices)))
 

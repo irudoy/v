@@ -38,14 +38,14 @@ image has the VQ37 architecture without exhaust camshaft timing control.
 
 The descriptor region holds 334 twelve-byte records at `0x01BF58` followed by
 their 334 attribute pointers at `0x01CF00`, against 331 records at `0x01BE00`
-in `1ND0A`. `../../defs/1ME3B.dtc.csv` carries 34 canonical codes out of it;
-`P0443` and `P1422` have no byte-identical record in this image. The relocation
-is uniform only inside the 1,936-byte window: across the 31 codes shared with
+in `1ND0A`. `../../defs/1ME3B.dtc.csv` carries 38 canonical codes out of it;
+`P0443`, `P1422`, and the eight exhaust valve timing records have no
+byte-identical record in this image. The relocation
+is uniform only inside the 1,936-byte window: across the 38 codes shared with
 `1ND0A` the records sit at `+0x14C`, `+0x158`, and `+0x164`, at index offsets of
 `-1`, `0`, and `+1`. Each binding is therefore read from this image through the
 record and its own attribute pointer rather than derived from an offset.
 
-## Structure export and cross-ROM correspondence
 ## Checksum verification
 
 `../../patches/checksum-layouts.toml` registers the image as layout
@@ -60,6 +60,7 @@ and the `0x005FFE` and `0x006EFE` SUM16 fields with values it computes itself,
 as `0x12604C` does in `1ND0A`. The stock image reproduces all six fields under
 the registered layout.
 
+## Structure export and cross-ROM correspondence
 
 Headless recovery folds 82,820 instructions in 578 regions into functions with
 no failure, leaving 2,320 functions, 3,695 resolved call edges, 97,939

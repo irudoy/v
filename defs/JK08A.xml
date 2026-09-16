@@ -269,6 +269,130 @@
       <state name="Disabled" data="00 00"/>
     </table>
 
+    <table type="Switch" name="DTC P0075 [index 50] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x195B8" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 50 (intake_vtc): Intake valve timing control solenoid valve circuit bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="13 04 00 00 00 00 00 75 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0075 [index 50] - 2/2 Attribute" category="Diagnostics//DTC"
+           storageaddress="0x162B6" storagetype="uint8" sizey="2" endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 50 (intake_vtc): Intake valve timing control solenoid valve circuit bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0081 [index 51] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x195C4" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 51 (intake_vtc): Intake valve timing control solenoid valve circuit bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="13 03 00 00 00 00 00 81 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0081 [index 51] - 2/2 Attribute" category="Diagnostics//DTC"
+           storageaddress="0x162B8" storagetype="uint8" sizey="2" endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 51 (intake_vtc): Intake valve timing control solenoid valve circuit bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0078 [index 67] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x19684" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 67 (exhaust_vtc): Exhaust valve timing control magnet retarder circuit bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="16 01 00 00 00 00 00 78 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0078 [index 67] - 2/2 Attribute" category="Diagnostics//DTC"
+           storageaddress="0x162CE" storagetype="uint8" sizey="2" endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 67 (exhaust_vtc): Exhaust valve timing control magnet retarder circuit bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0084 [index 68] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x19690" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 68 (exhaust_vtc): Exhaust valve timing control magnet retarder circuit bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="16 00 00 00 00 00 00 84 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0084 [index 68] - 2/2 Attribute" category="Diagnostics//DTC"
+           storageaddress="0x162D0" storagetype="uint8" sizey="2" endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 68 (exhaust_vtc): Exhaust valve timing control magnet retarder circuit bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1078 [index 132] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x19990" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 132 (exhaust_vtc): Exhaust valve timing control position sensor path A bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="29 07 00 00 00 00 10 78 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1078 [index 132] - 2/2 Attribute"
+           category="Diagnostics//DTC" storageaddress="0x162C6" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 132 (exhaust_vtc): Exhaust valve timing control position sensor path A bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="02 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1084 [index 133] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x1999C" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 133 (exhaust_vtc): Exhaust valve timing control position sensor path A bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="29 06 00 00 00 00 10 84 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1084 [index 133] - 2/2 Attribute"
+           category="Diagnostics//DTC" storageaddress="0x162C8" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 133 (exhaust_vtc): Exhaust valve timing control position sensor path A bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="02 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1078 [index 134] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x199A8" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 134 (exhaust_vtc): Exhaust valve timing control position sensor path B bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="29 05 00 00 00 00 10 78 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1078 [index 134] - 2/2 Attribute"
+           category="Diagnostics//DTC" storageaddress="0x162CA" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 134 (exhaust_vtc): Exhaust valve timing control position sensor path B bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="02 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1084 [index 135] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x199B4" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 135 (exhaust_vtc): Exhaust valve timing control position sensor path B bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="29 04 00 00 00 00 10 84 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P1084 [index 135] - 2/2 Attribute"
+           category="Diagnostics//DTC" storageaddress="0x162CC" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 135 (exhaust_vtc): Exhaust valve timing control position sensor path B bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="02 A0"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
     <table type="Switch" name="DTC P0139 [index 167] - 1/2 Descriptor"
            category="Diagnostics//DTC" storageaddress="0x19B34" storagetype="uint8" sizey="12"
            endian="big" userlevel="5">
@@ -509,6 +633,70 @@
       <state name="Disabled" data="00 00"/>
     </table>
 
+    <table type="Switch" name="DTC P0011 [index 208] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x19D20" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 208 (intake_vtc): Intake valve timing control performance bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="37 03 00 00 00 00 00 11 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0011 [index 208] - 2/2 Attribute"
+           category="Diagnostics//DTC" storageaddress="0x162AE" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 208 (intake_vtc): Intake valve timing control performance bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 20"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0021 [index 209] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x19D2C" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 209 (intake_vtc): Intake valve timing control performance bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="37 02 00 00 00 00 00 21 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0021 [index 209] - 2/2 Attribute"
+           category="Diagnostics//DTC" storageaddress="0x162B0" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 209 (intake_vtc): Intake valve timing control performance bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 20"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0014 [index 210] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x19D38" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 210 (exhaust_vtc): Exhaust valve timing control performance bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="37 01 00 00 00 00 00 14 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0014 [index 210] - 2/2 Attribute"
+           category="Diagnostics//DTC" storageaddress="0x162AA" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 210 (exhaust_vtc): Exhaust valve timing control performance bank 1. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 20"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0024 [index 211] - 1/2 Descriptor"
+           category="Diagnostics//DTC" storageaddress="0x19D44" storagetype="uint8" sizey="12"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 211 (exhaust_vtc): Exhaust valve timing control performance bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="37 00 00 00 00 00 00 24 00 00 00 00"/>
+      <state name="Disabled" data="00 00 00 00 00 00 00 00 00 00 00 00"/>
+    </table>
+
+    <table type="Switch" name="DTC P0024 [index 211] - 2/2 Attribute"
+           category="Diagnostics//DTC" storageaddress="0x162AC" storagetype="uint8" sizey="2"
+           endian="big" userlevel="5">
+      <description>Exact JK08A only. Internal DTC record 211 (exhaust_vtc): Exhaust valve timing control performance bank 2. Set both the Descriptor and Attribute controls to the same state before saving. DTC suppression does not disable the physical monitor.</description>
+      <state name="Enabled (Stock)" data="00 20"/>
+      <state name="Disabled" data="00 00"/>
+    </table>
+
     <table type="Switch" name="DTC P0452 [index 212] - 1/2 Descriptor"
            category="Diagnostics//DTC" storageaddress="0x19D50" storagetype="uint8" sizey="12"
            endian="big" userlevel="5">
@@ -699,6 +887,34 @@
       </table>
     </table>
 
+    <!-- 0x0B2FA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
+         accessor 0xBFDC0; r4 operand: pool
+         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12EC2 rpm [code]; X Axis 0x12EA2 load
+         [code]
+         static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
+         map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
+         indexed_by]
+         The code path proves the exhaust-target subsystem and centered representation. The
+         precise cold/fallback operating-mode name and 0.5 degCA-per-count conversion remain
+         homologous candidates. Stock cells are all 128, so this surface requests neutral
+         exhaust timing wherever selected. Result disposition: consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Exhaust CVTC Target - Cold"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0x0B2FA" sizex="8" sizey="8" endian="big">
+      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12EA2"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12EC2" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x0B53A  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
          accessor 0xBDA64; r4 operand: pool
          scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12ECA rpm [code]; X Axis 0x12EAA load
@@ -724,6 +940,36 @@
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x12ECA" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0AB4A  4x4 uint8  map [code]; entry 0x26084 (explicit, core 0x26944)
+         accessor 0xBFDC0; r4 operand: pool
+         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F96 rpm [code]; X Axis 0x12F8E load
+         [code]
+         static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence:
+         indexed_by]
+         Code proves centered subtractive arithmetic and the exact 4x4 lookup. The correction is
+         subtracted from the 0000b33a output in the same centered raw units before coolant
+         selection, so it shares the exhaust-target conversion. The subsystem identity follows
+         from the downstream ffff2327 binding to exhaust-target DID 0x1166 and exhaust-VTC
+         control and DTC consumers. The homologous HR A2L uses 0.5 degCA per centered count for
+         cam-timing maps; the physical correction (raw-128)*0.5 degCA remains a homologous
+         candidate. Result disposition: consumer.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Exhaust CVTC Target Correction - High-Detonation State"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0x0AB4A" sizex="4" sizey="4" endian="big">
+      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F8E"
+             sizex="4" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x12F96" sizey="4" endian="big">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>

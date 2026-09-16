@@ -22,6 +22,8 @@ DTC_GROUP_CATEGORY = "Diagnostics / DTC / Disable Groups"
 DTC_GROUP_NAMES = {
     "catalyst": "Catalyst",
     "evap": "EVAP",
+    "exhaust_vtc": "Exhaust VTC",
+    "intake_vtc": "Intake VTC",
     "manufacturer_specific": "Manufacturer Specific",
     "misfire": "Misfire",
     "nats": "NATS",

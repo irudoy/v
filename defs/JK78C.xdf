@@ -150,6 +150,20 @@
     <XDFPATCHENTRY name="P0447 [48] descriptor" address="0x1B9EC" datasize="0xC" patchdata="000000000000000000000000" basedata="100708000000044700000000" />
     <XDFPATCHENTRY name="P0447 [48] attribute" address="0x17360" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
+  <XDFPATCH uniqueid="0xE9B4" flags="0x0">
+    <title>DTC P0075 [index 49] - Intake valve timing control solenoid valve circuit bank 1</title>
+    <description>Exact JK78C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0075 [49] descriptor" address="0x1B9F8" datasize="0xC" patchdata="000000000000000000000000" basedata="130400000000007500000000" />
+    <XDFPATCHENTRY name="P0075 [49] attribute" address="0x175BE" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x6051" flags="0x0">
+    <title>DTC P0081 [index 50] - Intake valve timing control solenoid valve circuit bank 2</title>
+    <description>Exact JK78C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0081 [50] descriptor" address="0x1BA04" datasize="0xC" patchdata="000000000000000000000000" basedata="130300000000008100000000" />
+    <XDFPATCHENTRY name="P0081 [50] attribute" address="0x175C0" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
   <XDFPATCH uniqueid="0x358F" flags="0x0">
     <title>DTC P0139 [index 156] - Slow response bank 1 sensor 2</title>
     <description>Exact JK78C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
@@ -255,6 +269,20 @@
     <XDFPATCHENTRY name="P0445 [188] descriptor" address="0x1C07C" datasize="0xC" patchdata="000000000000000000000000" basedata="360106000000044500000000" />
     <XDFPATCHENTRY name="P0445 [188] attribute" address="0x173B8" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
+  <XDFPATCH uniqueid="0x1BAF" flags="0x0">
+    <title>DTC P0011 [index 194] - Intake valve timing control performance bank 1</title>
+    <description>Exact JK78C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0011 [194] descriptor" address="0x1C0C4" datasize="0xC" patchdata="000000000000000000000000" basedata="370300000000001100000000" />
+    <XDFPATCHENTRY name="P0011 [194] attribute" address="0x175B2" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x2B39" flags="0x0">
+    <title>DTC P0021 [index 195] - Intake valve timing control performance bank 2</title>
+    <description>Exact JK78C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0021 [195] descriptor" address="0x1C0D0" datasize="0xC" patchdata="000000000000000000000000" basedata="370200000000002100000000" />
+    <XDFPATCHENTRY name="P0021 [195] attribute" address="0x175B4" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
   <XDFPATCH uniqueid="0x7A83" flags="0x0">
     <title>DTC P0452 [index 196] - Pressure sensor low</title>
     <description>Exact JK78C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
@@ -336,6 +364,19 @@
     <XDFPATCHENTRY name="P0456 [200] attribute" address="0x173CC" datasize="0x2" patchdata="0000" basedata="00A0" />
     <XDFPATCHENTRY name="P0442 [202] descriptor" address="0x1C124" datasize="0xC" patchdata="000000000000000000000000" basedata="390509000000044210000000" />
     <XDFPATCHENTRY name="P0442 [202] attribute" address="0x173C6" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0xFD39" flags="0x0">
+    <title>Disable DTC group: Intake VTC (4 records)</title>
+    <description>Exact JK78C only. Atomically disables these records: P0075 [49], P0081 [50], P0011 [194], P0021 [195]. The patch contains every mutable descriptor and attribute range for the group and does not disable physical monitors. It overlaps the corresponding individual DTC patches; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="1" />
+    <XDFPATCHENTRY name="P0075 [49] descriptor" address="0x1B9F8" datasize="0xC" patchdata="000000000000000000000000" basedata="130400000000007500000000" />
+    <XDFPATCHENTRY name="P0075 [49] attribute" address="0x175BE" datasize="0x2" patchdata="0000" basedata="00A0" />
+    <XDFPATCHENTRY name="P0081 [50] descriptor" address="0x1BA04" datasize="0xC" patchdata="000000000000000000000000" basedata="130300000000008100000000" />
+    <XDFPATCHENTRY name="P0081 [50] attribute" address="0x175C0" datasize="0x2" patchdata="0000" basedata="00A0" />
+    <XDFPATCHENTRY name="P0011 [194] descriptor" address="0x1C0C4" datasize="0xC" patchdata="000000000000000000000000" basedata="370300000000001100000000" />
+    <XDFPATCHENTRY name="P0011 [194] attribute" address="0x175B2" datasize="0x2" patchdata="0000" basedata="00A0" />
+    <XDFPATCHENTRY name="P0021 [195] descriptor" address="0x1C0D0" datasize="0xC" patchdata="000000000000000000000000" basedata="370200000000002100000000" />
+    <XDFPATCHENTRY name="P0021 [195] attribute" address="0x175B4" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
   <XDFPATCH uniqueid="0x5AF" flags="0x0">
     <title>Disable DTC group: Misfire (7 records)</title>

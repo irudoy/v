@@ -40,6 +40,9 @@ DEFAULT_VISIBLE_TABLES = {
         "Variable Valve Timing / Intake Cam",
     "Intake CVTC Target - Main": "Variable Valve Timing / Intake Cam",
     "Intake CVTC Target - Cold": "Variable Valve Timing / Intake Cam",
+    "Exhaust CVTC Target - Cold": "Variable Valve Timing / Exhaust Cam",
+    "Exhaust CVTC Target Correction - High-Detonation State":
+        "Variable Valve Timing / Exhaust Cam",
     "Requested Torque Conversion by QH0 - Primary":
         "Electronic Throttle Control / Requested Torque",
     "Engine Torque Surface": "Torque Model / Engine Torque",
@@ -110,15 +113,15 @@ class TunerProDtcPatchModelTest(unittest.TestCase):
         )
 
     def test_inventory_has_individual_and_group_scopes_without_all_patch(self):
-        self.assertEqual(len(self.individual), 36)
-        self.assertEqual(len(self.groups), 7)
+        self.assertEqual(len(self.individual), 48)
+        self.assertEqual(len(self.groups), 9)
         self.assertEqual(
             sum(len(patch["entries"]) for patch in self.individual),
-            71,
+            95,
         )
         self.assertEqual(
             sum(len(patch["entries"]) for patch in self.groups),
-            71,
+            95,
         )
         self.assertFalse(any("all" in patch["key"] for patch in self.groups))
 
@@ -126,6 +129,8 @@ class TunerProDtcPatchModelTest(unittest.TestCase):
         expected = {
             "catalyst": (2, 4),
             "evap": (13, 26),
+            "exhaust_vtc": (8, 16),
+            "intake_vtc": (4, 8),
             "manufacturer_specific": (1, 2),
             "misfire": (7, 14),
             "nats": (1, 1),
@@ -359,8 +364,8 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
-        self.assertEqual(len(patches), 46)
-        self.assertEqual(len(tables), 101)
+        self.assertEqual(len(patches), 60)
+        self.assertEqual(len(tables), 103)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 
@@ -372,11 +377,11 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             patch for patch in patches
             if self.patch_category(patch) == tunerpro.DTC_GROUP_CATEGORY
         ]
-        self.assertEqual(len(individual), 36)
-        self.assertEqual(len(groups), 7)
+        self.assertEqual(len(individual), 48)
+        self.assertEqual(len(groups), 9)
         self.assertEqual(
             sum(len(patch.findall("./XDFPATCHENTRY")) for patch in groups),
-            71,
+            95,
         )
         self.assertFalse(any(
             "Disable all" in (patch.findtext("./title") or "")

@@ -259,7 +259,9 @@ Map,00009284,0000930e,,reviewed-target,1,exact-bytes;normalized-shape,target lit
 Map,00009534,000095e8,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
 Map,0001108e,00012e12,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
 Map,000129c0,00014d45,,reviewed-target,1,exact-bytes;normalized-shape,target literals and reviewed homologous consumer topology
+Map,0000ab4a,0000aece,,reviewed-target,1,normalized-shape,exhaust-cam correction table in the stock exhaust CVTC descriptor block at 0x000C5B4C; 4x4 operand of target exhaust accessor 000c5a44 at callsite 000c5ade
 Map,0000ab5a,0000aede,,reviewed-target,1,normalized-shape,intake-cam correction table in the stock intake CVTC descriptor block at 0x000C386C
+Map,0000b2fa,0000b67e,,reviewed-target,1,normalized-shape,cold exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C; 8x8 operand of target exhaust accessor 000c5a44 at callsite 000c5a92
 Map,0000b33a,0000b6be,,reviewed-target,1,normalized-shape,warm exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C beside the cold exhaust target and the exhaust correction table
 Map,0000b43a,0000b7be,,reviewed-target,1,normalized-shape,warm intake-cam target in the stock intake CVTC descriptor block at 0x000C386C beside the cold intake target and the intake correction table
 Map,0000b53a,0000b8be,,reviewed-target,1,normalized-shape,cold intake-cam target in the stock intake CVTC descriptor block at 0x000C386C
@@ -275,5 +277,9 @@ Axis,00012eca,00015257,,reviewed-target,1,normalized-shape,engine-speed axis ope
 Axis,00012eaa,00015237,,reviewed-target,1,normalized-shape,load axis operand at the cold intake-target interpolation callsite
 Axis,00012f9a,00015327,,reviewed-target,1,normalized-shape,engine-speed axis operand at the intake-correction interpolation callsite
 Axis,00012f92,0001531f,,reviewed-target,1,normalized-shape,load axis operand at the intake-correction interpolation callsite
+Axis,00012ec2,0001524f,,reviewed-target,1,normalized-shape,engine-speed axis operand at the cold exhaust-target interpolation callsite
+Axis,00012ea2,0001522f,,reviewed-target,1,normalized-shape,load axis operand at the cold exhaust-target interpolation callsite
+Axis,00012f96,00015323,,reviewed-target,1,normalized-shape,engine-speed axis operand at the exhaust-correction interpolation callsite
+Axis,00012f8e,0001531b,,reviewed-target,1,normalized-shape,load axis operand at the exhaust-correction interpolation callsite
 Axis,00011cf0,00013fb5,,reviewed-target,1,normalized-shape,target-specific interpolation operands and bank topology
 Axis,00011d4c,00014019,,reviewed-target,1,normalized-shape,target-specific interpolation operands and bank topology

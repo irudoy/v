@@ -149,6 +149,62 @@
     <XDFPATCHENTRY name="P0447 [49] descriptor" address="0x1C72C" datasize="0xC" patchdata="000000000000000000000000" basedata="100708000000044700000000" />
     <XDFPATCHENTRY name="P0447 [49] attribute" address="0x184F0" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
+  <XDFPATCH uniqueid="0x6051" flags="0x0">
+    <title>DTC P0075 [index 50] - Intake valve timing control solenoid valve circuit bank 1</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0075 [50] descriptor" address="0x1C738" datasize="0xC" patchdata="000000000000000000000000" basedata="130400000000007500000000" />
+    <XDFPATCHENTRY name="P0075 [50] attribute" address="0x18764" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x50C7" flags="0x0">
+    <title>DTC P0081 [index 51] - Intake valve timing control solenoid valve circuit bank 2</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0081 [51] descriptor" address="0x1C744" datasize="0xC" patchdata="000000000000000000000000" basedata="130300000000008100000000" />
+    <XDFPATCHENTRY name="P0081 [51] attribute" address="0x18766" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0xF78B" flags="0x0">
+    <title>DTC P0078 [index 64] - Exhaust valve timing control magnet retarder circuit bank 1</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0078 [64] descriptor" address="0x1C7E0" datasize="0xC" patchdata="000000000000000000000000" basedata="160100000000007800000000" />
+    <XDFPATCHENTRY name="P0078 [64] attribute" address="0x1877C" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0xC71D" flags="0x0">
+    <title>DTC P0084 [index 65] - Exhaust valve timing control magnet retarder circuit bank 2</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0084 [65] descriptor" address="0x1C7EC" datasize="0xC" patchdata="000000000000000000000000" basedata="160000000000008400000000" />
+    <XDFPATCHENTRY name="P0084 [65] attribute" address="0x1877E" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0xBED9" flags="0x0">
+    <title>DTC P1078 [index 129] - Exhaust valve timing control position sensor path A bank 1</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P1078 [129] descriptor" address="0x1CAEC" datasize="0xC" patchdata="000000000000000000000000" basedata="290700000000107800000000" />
+    <XDFPATCHENTRY name="P1078 [129] attribute" address="0x18774" datasize="0x2" patchdata="0000" basedata="02A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x373C" flags="0x0">
+    <title>DTC P1084 [index 130] - Exhaust valve timing control position sensor path A bank 2</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P1084 [130] descriptor" address="0x1CAF8" datasize="0xC" patchdata="000000000000000000000000" basedata="290600000000108400000000" />
+    <XDFPATCHENTRY name="P1084 [130] attribute" address="0x18776" datasize="0x2" patchdata="0000" basedata="02A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x7AA" flags="0x0">
+    <title>DTC P1078 [index 131] - Exhaust valve timing control position sensor path B bank 1</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P1078 [131] descriptor" address="0x1CB04" datasize="0xC" patchdata="000000000000000000000000" basedata="290500000000107800000000" />
+    <XDFPATCHENTRY name="P1078 [131] attribute" address="0x18778" datasize="0x2" patchdata="0000" basedata="02A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x5610" flags="0x0">
+    <title>DTC P1084 [index 132] - Exhaust valve timing control position sensor path B bank 2</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P1084 [132] descriptor" address="0x1CB10" datasize="0xC" patchdata="000000000000000000000000" basedata="290400000000108400000000" />
+    <XDFPATCHENTRY name="P1084 [132] attribute" address="0x1877A" datasize="0x2" patchdata="0000" basedata="02A0" />
+  </XDFPATCH>
   <XDFPATCH uniqueid="0x760" flags="0x0">
     <title>DTC P0139 [index 164] - Slow response bank 1 sensor 2</title>
     <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
@@ -254,6 +310,34 @@
     <XDFPATCHENTRY name="P0445 [199] descriptor" address="0x1CE34" datasize="0xC" patchdata="000000000000000000000000" basedata="360106000000044500000000" />
     <XDFPATCHENTRY name="P0445 [199] attribute" address="0x18548" datasize="0x2" patchdata="0000" basedata="00A0" />
   </XDFPATCH>
+  <XDFPATCH uniqueid="0x2E29" flags="0x0">
+    <title>DTC P0011 [index 205] - Intake valve timing control performance bank 1</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0011 [205] descriptor" address="0x1CE7C" datasize="0xC" patchdata="000000000000000000000000" basedata="370300000000001100000000" />
+    <XDFPATCHENTRY name="P0011 [205] attribute" address="0x1875C" datasize="0x2" patchdata="0000" basedata="0020" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x7F93" flags="0x0">
+    <title>DTC P0021 [index 206] - Intake valve timing control performance bank 2</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0021 [206] descriptor" address="0x1CE88" datasize="0xC" patchdata="000000000000000000000000" basedata="370200000000002100000000" />
+    <XDFPATCHENTRY name="P0021 [206] attribute" address="0x1875E" datasize="0x2" patchdata="0000" basedata="0020" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x4F05" flags="0x0">
+    <title>DTC P0014 [index 207] - Exhaust valve timing control performance bank 1</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0014 [207] descriptor" address="0x1CE94" datasize="0xC" patchdata="000000000000000000000000" basedata="370100000000001400000000" />
+    <XDFPATCHENTRY name="P0014 [207] attribute" address="0x18758" datasize="0x2" patchdata="0000" basedata="0020" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0x5294" flags="0x0">
+    <title>DTC P0024 [index 208] - Exhaust valve timing control performance bank 2</title>
+    <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="2" />
+    <XDFPATCHENTRY name="P0024 [208] descriptor" address="0x1CEA0" datasize="0xC" patchdata="000000000000000000000000" basedata="370000000000002400000000" />
+    <XDFPATCHENTRY name="P0024 [208] attribute" address="0x1875A" datasize="0x2" patchdata="0000" basedata="0020" />
+  </XDFPATCH>
   <XDFPATCH uniqueid="0x6202" flags="0x0">
     <title>DTC P0452 [index 209] - Pressure sensor low</title>
     <description>Exact JK00C only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
@@ -342,6 +426,40 @@
     <XDFPATCHENTRY name="P0456 [213] attribute" address="0x1855C" datasize="0x2" patchdata="0000" basedata="00A0" />
     <XDFPATCHENTRY name="P0442 [215] descriptor" address="0x1CEF4" datasize="0xC" patchdata="000000000000000000000000" basedata="390509000000044210000000" />
     <XDFPATCHENTRY name="P0442 [215] attribute" address="0x18556" datasize="0x2" patchdata="0000" basedata="00A0" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0xBDB" flags="0x0">
+    <title>Disable DTC group: Exhaust VTC (8 records)</title>
+    <description>Exact JK00C only. Atomically disables these records: P0078 [64], P0084 [65], P1078 [129], P1084 [130], P1078 [131], P1084 [132], P0014 [207], P0024 [208]. The patch contains every mutable descriptor and attribute range for the group and does not disable physical monitors. It overlaps the corresponding individual DTC patches; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="1" />
+    <XDFPATCHENTRY name="P0078 [64] descriptor" address="0x1C7E0" datasize="0xC" patchdata="000000000000000000000000" basedata="160100000000007800000000" />
+    <XDFPATCHENTRY name="P0078 [64] attribute" address="0x1877C" datasize="0x2" patchdata="0000" basedata="00A0" />
+    <XDFPATCHENTRY name="P0084 [65] descriptor" address="0x1C7EC" datasize="0xC" patchdata="000000000000000000000000" basedata="160000000000008400000000" />
+    <XDFPATCHENTRY name="P0084 [65] attribute" address="0x1877E" datasize="0x2" patchdata="0000" basedata="00A0" />
+    <XDFPATCHENTRY name="P1078 [129] descriptor" address="0x1CAEC" datasize="0xC" patchdata="000000000000000000000000" basedata="290700000000107800000000" />
+    <XDFPATCHENTRY name="P1078 [129] attribute" address="0x18774" datasize="0x2" patchdata="0000" basedata="02A0" />
+    <XDFPATCHENTRY name="P1084 [130] descriptor" address="0x1CAF8" datasize="0xC" patchdata="000000000000000000000000" basedata="290600000000108400000000" />
+    <XDFPATCHENTRY name="P1084 [130] attribute" address="0x18776" datasize="0x2" patchdata="0000" basedata="02A0" />
+    <XDFPATCHENTRY name="P1078 [131] descriptor" address="0x1CB04" datasize="0xC" patchdata="000000000000000000000000" basedata="290500000000107800000000" />
+    <XDFPATCHENTRY name="P1078 [131] attribute" address="0x18778" datasize="0x2" patchdata="0000" basedata="02A0" />
+    <XDFPATCHENTRY name="P1084 [132] descriptor" address="0x1CB10" datasize="0xC" patchdata="000000000000000000000000" basedata="290400000000108400000000" />
+    <XDFPATCHENTRY name="P1084 [132] attribute" address="0x1877A" datasize="0x2" patchdata="0000" basedata="02A0" />
+    <XDFPATCHENTRY name="P0014 [207] descriptor" address="0x1CE94" datasize="0xC" patchdata="000000000000000000000000" basedata="370100000000001400000000" />
+    <XDFPATCHENTRY name="P0014 [207] attribute" address="0x18758" datasize="0x2" patchdata="0000" basedata="0020" />
+    <XDFPATCHENTRY name="P0024 [208] descriptor" address="0x1CEA0" datasize="0xC" patchdata="000000000000000000000000" basedata="370000000000002400000000" />
+    <XDFPATCHENTRY name="P0024 [208] attribute" address="0x1875A" datasize="0x2" patchdata="0000" basedata="0020" />
+  </XDFPATCH>
+  <XDFPATCH uniqueid="0xFD39" flags="0x0">
+    <title>Disable DTC group: Intake VTC (4 records)</title>
+    <description>Exact JK00C only. Atomically disables these records: P0075 [50], P0081 [51], P0011 [205], P0021 [206]. The patch contains every mutable descriptor and attribute range for the group and does not disable physical monitors. It overlaps the corresponding individual DTC patches; use individual or group scope consistently.</description>
+    <CATEGORYMEM index="0" category="1" />
+    <XDFPATCHENTRY name="P0075 [50] descriptor" address="0x1C738" datasize="0xC" patchdata="000000000000000000000000" basedata="130400000000007500000000" />
+    <XDFPATCHENTRY name="P0075 [50] attribute" address="0x18764" datasize="0x2" patchdata="0000" basedata="00A0" />
+    <XDFPATCHENTRY name="P0081 [51] descriptor" address="0x1C744" datasize="0xC" patchdata="000000000000000000000000" basedata="130300000000008100000000" />
+    <XDFPATCHENTRY name="P0081 [51] attribute" address="0x18766" datasize="0x2" patchdata="0000" basedata="00A0" />
+    <XDFPATCHENTRY name="P0011 [205] descriptor" address="0x1CE7C" datasize="0xC" patchdata="000000000000000000000000" basedata="370300000000001100000000" />
+    <XDFPATCHENTRY name="P0011 [205] attribute" address="0x1875C" datasize="0x2" patchdata="0000" basedata="0020" />
+    <XDFPATCHENTRY name="P0021 [206] descriptor" address="0x1CE88" datasize="0xC" patchdata="000000000000000000000000" basedata="370200000000002100000000" />
+    <XDFPATCHENTRY name="P0021 [206] attribute" address="0x1875E" datasize="0x2" patchdata="0000" basedata="0020" />
   </XDFPATCH>
   <XDFPATCH uniqueid="0x4C4C" flags="0x0">
     <title>Disable DTC group: Manufacturer Specific (1 record)</title>
@@ -529,6 +647,48 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0xF7E8" flags="0x0">
+    <title>Exhaust CVTC Target - Cold</title>
+    <description>Exact JK00C. Address 0xB67E; 8 rows x 8 columns; uint8; map confidence code. Cold/fallback exhaust-CVTC target surface. FUN 000bfdc0 writes its centered uint8 result to ffff1c5f; FUN 000bfe88 selects or blends it with warm/main result ffff1c5d and conditions the result into exhaust target ffff2327. The code path proves the exhaust-target subsystem and centered representation. The precise cold/fallback operating-mode name and 0.5 degCA-per-count conversion remain homologous candidates. Stock cells are all 128, so this surface requests neutral exhaust timing wherever selected. Result disposition: consumer. Definition address projected from JK08A 0000b2fa through JK08A-JK00C.definition-addresses.csv: cold exhaust-cam target in the stock exhaust CVTC descriptor block at 0x000C5B4C; 8x8 operand of target exhaust accessor 000c5a44 at callsite 000c5a92. Static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1522F" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Normalized BFS [%]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1524F" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xB67E" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degCA [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-128)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x73F3" flags="0x0">
     <title>Intake CVTC Target - Cold</title>
     <description>Exact JK00C. Address 0xB8BE; 8 rows x 8 columns; uint8; map confidence code. Cold intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c and writes ffff1c5e. FUN 000bdc66 uses it at raw coolant &lt;=106 and blends it with warm/main target 0000b43a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Code proves the cold intake-cam target role, raw coolant selection, centered byte representation, and column coordinate at raw*100/128 percent of the fixed BFS reference. The target-vehicle capture remains entirely above the warm threshold and does not dynamically validate this surface or the coolant blend. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain source-derived candidates. Result disposition: consumer. Definition address projected from JK08A 0000b53a through JK08A-JK00C.definition-addresses.csv: cold intake-cam target in the stock intake CVTC descriptor block at 0x000C386C. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
@@ -564,6 +724,48 @@
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xB8BE" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>degrees [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="(X-128)*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x50BF" flags="0x0">
+    <title>Exhaust CVTC Target Correction - High-Detonation State</title>
+    <description>Exact JK00C. Address 0xAECE; 4 rows x 4 columns; uint8; map confidence code. Conditional subtractive correction of the warm/main exhaust-CVTC target. When ffff2466 bit 6 is set, ffff1c5d = clamp_u8(out_b33a - out_ab4a + 128); otherwise ffff1c5d = out_b33a. Raw 128 is zero correction. Code proves centered subtractive arithmetic and the exact 4x4 lookup. The correction is subtracted from the 0000b33a output in the same centered raw units before coolant selection, so it shares the exhaust-target conversion. The subsystem identity follows from the downstream ffff2327 binding to exhaust-target DID 0x1166 and exhaust-VTC control and DTC consumers. The homologous HR A2L uses 0.5 degCA per centered count for cam-timing maps; the physical correction (raw-128)*0.5 degCA remains a homologous candidate. Result disposition: consumer. Definition address projected from JK08A 0000ab4a through JK08A-JK00C.definition-addresses.csv: exhaust-cam correction table in the stock exhaust CVTC descriptor block at 0x000C5B4C; 4x4 operand of target exhaust accessor 000c5a44 at callsite 000c5ade. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="24" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1531B" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Normalized BFS [%]</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x15323" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>4</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xAECE" mmedelementsizebits="8" mmedrowcount="4" mmedcolcount="4" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degCA [cand]</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">

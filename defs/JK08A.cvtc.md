@@ -92,12 +92,12 @@ adjacent-pair convention of `0xFFFF2442`/`0xFFFF2443` and
 `0xFFFF2440`/`0xFFFF2441` rather than a code proof.
 
 `FUN 000CD75C` programs both cycle pairs from adjacent period bytes
-`ROM8[0x8DFC] = 33` for the intake pair and `ROM8[0x8DFD] = 32` for the exhaust
+`ROM8[0x8DFC] = 33` for the intake pair and `ROM8[0x8DFD] = 20` for the exhaust
 pair, each multiplied by 125:
 
 ```text
 CYLR7A = CYLR7B = 125 * ROM8[0x8DFC] = 4125 counts
-CYLR7C = CYLR7D = 125 * ROM8[0x8DFD] = 4000 counts
+CYLR7C = CYLR7D = 125 * ROM8[0x8DFD] = 2500 counts
 ```
 
 `FUN 000BEACE` converts the two intake duty bytes with the same period byte

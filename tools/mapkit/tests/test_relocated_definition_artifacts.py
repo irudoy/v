@@ -10,6 +10,8 @@ TARGETS = {
         "checksum_xor": "0x9798",
         "intake_cvtc_target": "0x0B7BE",
         "exhaust_cvtc_target": "0x0B6BE",
+        "exhaust_cvtc_cold": "0x0B67E",
+        "exhaust_cvtc_correction": "0x0AECE",
         "switches": {
             "Developer Immobilizer": "0x873F",
             "CAN Telemetry at Startup": "0xE1503",
@@ -21,6 +23,8 @@ TARGETS = {
         "checksum_xor": "0x97A8",
         "intake_cvtc_target": "0x0B7CE",
         "exhaust_cvtc_target": "0x0B6CE",
+        "exhaust_cvtc_cold": "0x0B68E",
+        "exhaust_cvtc_correction": "0x0AEDE",
         "switches": {
             "Developer Immobilizer": "0x8740",
             "CAN Telemetry at Startup": "0xE1503",
@@ -85,7 +89,7 @@ def test_relocated_romraider_artifacts_keep_target_addresses_and_provenance():
         assert checksums["alt"].get("end") == "0x22628"
         assert checksums["alt2"].get("sumloc") == expected["checksum_sum"]
         assert checksums["alt2"].get("xorloc") == expected["checksum_xor"]
-        assert sum(1 for name in tables if name.startswith("DTC ")) == 71
+        assert sum(1 for name in tables if name.startswith("DTC ")) == 95
 
         for name, address in expected["switches"].items():
             assert tables[name].get("storageaddress") == address
@@ -103,6 +107,12 @@ def test_relocated_romraider_artifacts_keep_target_addresses_and_provenance():
         )
         assert "Intake CVTC Target - Cold" in tables
         assert "Intake CVTC Target Correction - High-Detonation State" in tables
+        assert tables["Exhaust CVTC Target - Cold"].get(
+            "storageaddress"
+        ) == expected["exhaust_cvtc_cold"]
+        assert tables[
+            "Exhaust CVTC Target Correction - High-Detonation State"
+        ].get("storageaddress") == expected["exhaust_cvtc_correction"]
         assert "Stationary Engine Speed Limit" in tables
         assert "Stationary Limiter Readiness Threshold" in tables
         assert "Stationary Limiter Readiness Step" in tables
@@ -126,7 +136,7 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         assert f"defs/JK08A-{rom}.definition-addresses.csv" in description
         assert f"defs/{rom}-{rom}.definition-addresses.csv" not in description
         assert f"defs/{rom}.dtc.csv" in description
-        assert len(root.findall("XDFTABLE")) == 105
+        assert len(root.findall("XDFTABLE")) == 107
         assert len(root.findall("XDFFLAG")) == 5
         assert root.find("XDFCHECKSUM") is None
 
@@ -158,8 +168,8 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 197
-    assert sum(1 for name in tables if name.startswith("DTC ")) == 69
+    assert len(target.findall("table")) == 205
+    assert sum(1 for name in tables if name.startswith("DTC ")) == 77
     assert tables["Rolling Launch Enable by Map"].get(
         "storageaddress"
     ) == "0x1E964"
@@ -201,12 +211,12 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     }
     assert sum(
         1 for title in patches_by_title if title.startswith("DTC ")
-    ) == 35
+    ) == 39
     assert sum(
         1
         for title in patches_by_title
         if title.startswith("Disable DTC group:")
-    ) == 6
+    ) == 7
     assert patches_by_title["CAN Telemetry at Startup"].find(
         "XDFPATCHENTRY"
     ).get("address") == "0x1F803"
@@ -246,8 +256,8 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 196
-        assert sum(1 for name in tables if name.startswith("DTC ")) == 69
+        assert len(target.findall("table")) == 204
+        assert sum(1 for name in tables if name.startswith("DTC ")) == 77
         assert tables["Rolling Launch Enable by Map"].get(
             "storageaddress"
         ) == "0x133F64"
@@ -298,12 +308,12 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         }
         assert sum(
             1 for title in patches_by_title if title.startswith("DTC ")
-        ) == 35
+        ) == 39
         assert sum(
             1
             for title in patches_by_title
             if title.startswith("Disable DTC group:")
-        ) == 6
+        ) == 7
         entry = patches_by_title["CAN Telemetry at Startup"].find(
             "XDFPATCHENTRY"
         )

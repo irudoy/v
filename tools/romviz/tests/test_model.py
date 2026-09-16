@@ -74,7 +74,7 @@ def test_1me3b_model_carries_the_projected_diagnostic_layer_alone():
     assert rom["metadata"]["ECU ID"] == "11ME3B"
     assert rom["metadata"]["Engine"] == "VQ37VHR"
     assert rom["metadata"]["MCU"] == "SH7059"
-    assert rom["counts"] == {"diagnostics": 68}
+    assert rom["counts"] == {"diagnostics": 76}
     assert {item["kind"] for item in rom["objects"]} == {
         "dtc-record", "dtc-attribute"
     }
@@ -159,7 +159,7 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
     rom = model.build_rom_model(model.resolve_manifest("JK08A"))
 
     assert rom["size"] == 0x100000
-    assert rom["reviewedFunctions"] == 589
+    assert rom["reviewedFunctions"] == 592
     assert rom["structuralFunctions"] >= rom["reviewedFunctions"]
     assert rom["counts"]["maps"] == 512
     assert rom["counts"]["axes"] == 76

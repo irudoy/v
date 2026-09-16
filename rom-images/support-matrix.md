@@ -40,9 +40,9 @@ immediately by one 32-bit attribute pointer per record. The pointer table is the
 ECU's own attribute reference and reproduces every canonical JK08A attribute
 address exactly, so a relocated binding is read out of the target image. A code
 is carried only when exactly one target record is byte-identical to the
-canonical record. VQ37 declares no P1422 record, which is why its registries
-hold 35 codes rather than 36, and `1ME3B` declares no P0443 record either,
-which is why it holds 34.
+canonical record. VQ37 declares no P1422 record and no exhaust valve timing
+records, which is why its registries hold 39 codes rather than 48, and `1ME3B`
+declares no P0443 record either, which is why it holds 38.
 
 The `1ND` layout declares one runtime domain, so it projects to a single `alt2`
 handler. Its boot and vector SUM16 domains end at `0x8200`, below the lowest
@@ -605,10 +605,11 @@ lower RAM address without exception, which is the same order the factory manual
 uses for per-bank DTC pairs. The DID table therefore carries bank identity where
 the DTC descriptor table does not.
 
-Canonical exhaust-CVTC target surface `0x0B33A` is therefore an architectural
-removal on VQ37 rather than a relocated address. Interpolation contract
-`0x261B8` is the only canonical contract with no VQ37 library homolog, and it
-serves only the cam-target calculators.
+The canonical exhaust-CVTC surfaces `0x0B2FA`, `0x0B33A`, and `0x0AB4A` are
+therefore an architectural removal on VQ37 rather than relocated addresses.
+All three are read only by the exhaust-target calculator. Interpolation
+contract `0x261B8` is the only canonical contract with no VQ37 library
+homolog, and it serves only the cam-target calculators.
 
 The three canonical intake-CVTC source slots `0x0AB5A`, `0x0B43A`, and
 `0x0B53A` are explicit no-op dispatcher slots in the reviewed VQ37 topology.

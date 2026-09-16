@@ -48,6 +48,9 @@ DEFAULT_VISIBLE_TABLES = {
         "Variable Valve Timing / Intake Cam",
     "Intake CVTC Target - Main": "Variable Valve Timing / Intake Cam",
     "Intake CVTC Target - Cold": "Variable Valve Timing / Intake Cam",
+    "Exhaust CVTC Target - Cold": "Variable Valve Timing / Exhaust Cam",
+    "Exhaust CVTC Target Correction - High-Detonation State":
+        "Variable Valve Timing / Exhaust Cam",
     "Requested Torque Conversion by QH0 - Primary":
         "Electronic Throttle Control / Requested Torque",
     "Engine Torque Surface": "Torque Model / Engine Torque",
@@ -428,8 +431,8 @@ class EmitDefSwitchTest(unittest.TestCase):
 class EmitDefDtcSwitchTest(unittest.TestCase):
     def test_dtc_manifest_emits_paired_descriptor_attribute_switches(self):
         switches = emit_def.dtc_switches("JK08A")
-        self.assertEqual(len(switches), 71)
-        self.assertEqual(len({switch["name"] for switch in switches}), 71)
+        self.assertEqual(len(switches), 95)
+        self.assertEqual(len({switch["name"] for switch in switches}), 95)
         self.assertEqual({switch["category"] for switch in switches},
                          {"Diagnostics / DTC"})
 
@@ -501,7 +504,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             if table.get("category") == ROMRAIDER_DTC_CATEGORY
         }
         self.assertEqual(set(actual), set(expected))
-        self.assertEqual(len(actual), 71)
+        self.assertEqual(len(actual), 95)
         self.assertEqual(
             set(switches) - set(actual),
             {

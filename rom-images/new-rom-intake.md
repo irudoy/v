@@ -99,8 +99,8 @@ The projection locates the descriptor records and the attribute pointer table
 in the candidate image and carries a canonical record only when exactly one
 target record is byte-identical. It reports the carried count and the absent
 codes. This works before any structural export exists and is independent of the
-branch: 1ME3B carries 34 codes with `P0443` and `P1422` absent while holding no
-other analysis layer.
+branch: 1ME3B carries 38 codes with `P0443`, `P1422`, and the exhaust valve
+timing codes absent while holding no other analysis layer.
 
 Declare the tracked registry as the `dtc` layer of the atlas manifest. Every
 registered image does, so the atlas diagnostics layer is populated before any
@@ -158,7 +158,7 @@ most expensive stage.
 Deliverables are the same list as Branch B. The correspondence registry is
 compact because the semantic set is already reviewed on the sibling:
 `JK08A-1ND.definition-addresses.csv` covers 31 target maps, thirteen axes, and
-five explicitly unsupported source maps.
+seven explicitly unsupported source maps.
 
 Equal wrapper bytes establish the contract registry. They do not by themselves
 establish map semantics or equal calibration geometry.

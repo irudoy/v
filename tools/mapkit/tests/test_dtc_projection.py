@@ -10,22 +10,23 @@ from tools.mapkit import rom as romkit
 
 DEFS = Path(dtc_projection.DEFS)
 EXPECTED_CODE_COUNT = {
-    "JK00C": 36,
-    "JK00D": 36,
-    "JK78C": 35,
-    "1ND0A": 35,
-    "1ND3B": 35,
-    "1ME3B": 34,
+    "JK00C": 48,
+    "JK00D": 48,
+    "JK78C": 39,
+    "1ND0A": 39,
+    "1ND3B": 39,
+    "1ME3B": 38,
 }
+EXHAUST_VTC_CODES = ["P0014", "P0024", "P0078", "P0084", "P1078", "P1078", "P1084", "P1084"]
 EXPECTED_ABSENT = {
     "JK00C": [],
     "JK00D": [],
-    "JK78C": ["P1422"],
-    "1ND0A": ["P1422"],
-    "1ND3B": ["P1422"],
-    "1ME3B": ["P0443", "P1422"],
+    "JK78C": EXHAUST_VTC_CODES + ["P1422"],
+    "1ND0A": EXHAUST_VTC_CODES + ["P1422"],
+    "1ND3B": EXHAUST_VTC_CODES + ["P1422"],
+    "1ME3B": ["P0014", "P0024", "P0078", "P0084", "P0443", "P1078", "P1078", "P1084", "P1084", "P1422"],
 }
-ATTRIBUTE_ALPHABET = {"00a0", "0030", "00b0", "0000"}
+ATTRIBUTE_ALPHABET = {"00a0", "0030", "00b0", "0020", "02a0", "0000"}
 
 
 @pytest.fixture(scope="module")
@@ -82,8 +83,9 @@ def test_exact_code_members_reproduce_the_canonical_registry(rom, source):
 def test_absent_codes_are_dropped_rather_than_guessed(rom, source):
     """A code without exactly one byte-identical target record is dropped.
 
-    Every VQ37 image declares no P1422 record, and 1ME3B additionally declares
-    no P0443 record.
+    Every VQ37 image declares no P1422 record and none of the eight exhaust
+    valve timing records (the VQ37VHR has no exhaust cam phasing), and 1ME3B
+    additionally declares no P0443 record.
     """
     rows, data = source
     _, dropped = dtc_projection.project(rom, source_rows=rows, source=data)

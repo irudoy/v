@@ -13,6 +13,8 @@ index,dtc,record_addr,attribute_addr,stock_attribute,disabled_attribute,group,co
 46,P0448,0001b9d4,0001735e,00a0,0000,evap,code,Vent control circuit short
 47,P0455,0001b9e0,000173de,00a0,0000,evap,code,Gross leak
 48,P0447,0001b9ec,00017360,00a0,0000,evap,code,Vent control circuit open
+49,P0075,0001b9f8,000175be,00a0,0000,intake_vtc,code,Intake valve timing control solenoid valve circuit bank 1
+50,P0081,0001ba04,000175c0,00a0,0000,intake_vtc,code,Intake valve timing control solenoid valve circuit bank 2
 156,P0139,0001befc,00017468,00a0,0000,rear_o2,code,Slow response bank 1 sensor 2
 157,P0159,0001bf08,00017478,00a0,0000,rear_o2,code,Slow response bank 2 sensor 2
 158,P0138,0001bf14,00017462,00a0,0000,rear_o2,code,High voltage path A bank 1 sensor 2
@@ -28,6 +30,8 @@ index,dtc,record_addr,attribute_addr,stock_attribute,disabled_attribute,group,co
 181,P0451,0001c028,000173ce,00a0,0000,evap,code,Pressure sensor range or performance
 187,P0444,0001c070,000173b6,00a0,0000,evap,code,Purge control valve circuit open
 188,P0445,0001c07c,000173b8,00a0,0000,evap,code,Purge control valve circuit short
+194,P0011,0001c0c4,000175b2,00a0,0000,intake_vtc,code,Intake valve timing control performance bank 1
+195,P0021,0001c0d0,000175b4,00a0,0000,intake_vtc,code,Intake valve timing control performance bank 2
 196,P0452,0001c0dc,000173b0,00a0,0000,evap,code,Pressure sensor low
 197,P0453,0001c0e8,000173ae,00a0,0000,evap,code,Pressure sensor high
 198,P0441,0001c0f4,000173be,00a0,0000,evap,code,Incorrect purge flow

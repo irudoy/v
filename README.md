@@ -168,7 +168,7 @@ stage identities even though their executable ranges are exact.
 
 1ME3B is a registered stock identity. The owned KY51 Fuga VQ37VHR read
 participates in the homology registry, the ROM atlas, and the DTC projection,
-which carries 34 codes read out of the image itself. It has no structural
+which carries 38 codes read out of the image itself. It has no structural
 export, checksum layout, address profile, definition target, or executable
 coverage, and its declared family boundary forbids address inheritance from
 1ND0A, 1ND3B, or JK78C.

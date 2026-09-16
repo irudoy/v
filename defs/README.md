@@ -107,8 +107,9 @@ but pairing them with 1ND0A entries requires a reviewed accessor-level
 comparison rather than equal wrapper bytes.
 
 `JK08A-JK78C.definition-addresses.csv` projects 29 visible source-map roles to
-31 JK78C tables, including explicit bank variants, and records five source
-maps as unsupported. The unsupported entries cover removed dispatcher slots
+31 JK78C tables, including explicit bank variants, and records seven source
+maps as unsupported. The unsupported entries cover removed dispatcher slots,
+the three exhaust-cam surfaces of the removed exhaust valve timing subsystem,
 and target algorithms whose table geometry differs. Thirteen reviewed axis
 pairs complete the emitted geometry. The JK78C registry enables native
 RomRaider checksum handling, fourteen-family target-specific Map Switching,
@@ -123,8 +124,8 @@ XML/XDF files expose editor controls; the unified builder remains responsible
 for runtime composition and complete checksum closure.
 
 `JK08A-1ND.definition-addresses.csv` projects the same reviewed VQ37 semantic
-set to the SH7059 1ND layout. It records 31 target maps, thirteen axes, and five
-explicitly unsupported source maps. The projection is established from
+set to the SH7059 1ND layout. It records 31 target maps, thirteen axes, and
+seven explicitly unsupported source maps. The projection is established from
 reviewed JK78C-to-1ND0A structural functions, exact storage, interpolation-call
 order, selector branches, and target literals. 1ND3B reuses the address layout
 because all address-bearing executable code is byte-identical to 1ND0A, while
@@ -247,15 +248,16 @@ control exists.
 
 Every image stores its descriptors as twelve-byte records followed immediately
 by one 32-bit attribute pointer per record. That pointer table is the ECU's own
-attribute reference: it reproduces all 36 canonical JK08A attribute addresses
+attribute reference: it reproduces all 48 canonical JK08A attribute addresses
 exactly. `../tools/mapkit/dtc_projection.py` therefore reads a target binding
 out of the target image instead of deriving it from an offset.
 
 A canonical record is carried to a relocated target only when exactly one target
 record is byte-identical to it, which fixes group, sub-index, monitor class,
-code, and trailing flag together. JK00C and JK00D carry all 36 codes; JK78C and
-`1ND` carry 35, because VQ37 declares no P1422 record; 1ME3B carries 34, because
-it declares no P0443 record either. The exact-code members of `7MFKAVN86`
+code, and trailing flag together. JK00C and JK00D carry all 48 codes; JK78C and
+`1ND` carry 39, because VQ37 declares no P1422 record and none of the eight
+exhaust valve timing records; 1ME3B carries 38, because it declares no P0443
+record either. The exact-code members of `7MFKAVN86`
 reproduce the canonical registry from their own images and share it rather than
 tracking a copy.
 

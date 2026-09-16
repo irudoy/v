@@ -13,6 +13,14 @@ index,dtc,record_addr,attribute_addr,stock_attribute,disabled_attribute,group,co
 47,P0448,0001c714,000184ee,00a0,0000,evap,code,Vent control circuit short
 48,P0455,0001c720,0001856e,00a0,0000,evap,code,Gross leak
 49,P0447,0001c72c,000184f0,00a0,0000,evap,code,Vent control circuit open
+50,P0075,0001c738,00018764,00a0,0000,intake_vtc,code,Intake valve timing control solenoid valve circuit bank 1
+51,P0081,0001c744,00018766,00a0,0000,intake_vtc,code,Intake valve timing control solenoid valve circuit bank 2
+64,P0078,0001c7e0,0001877c,00a0,0000,exhaust_vtc,code,Exhaust valve timing control magnet retarder circuit bank 1
+65,P0084,0001c7ec,0001877e,00a0,0000,exhaust_vtc,code,Exhaust valve timing control magnet retarder circuit bank 2
+129,P1078,0001caec,00018774,02a0,0000,exhaust_vtc,code,Exhaust valve timing control position sensor path A bank 1
+130,P1084,0001caf8,00018776,02a0,0000,exhaust_vtc,code,Exhaust valve timing control position sensor path A bank 2
+131,P1078,0001cb04,00018778,02a0,0000,exhaust_vtc,code,Exhaust valve timing control position sensor path B bank 1
+132,P1084,0001cb10,0001877a,02a0,0000,exhaust_vtc,code,Exhaust valve timing control position sensor path B bank 2
 164,P0139,0001cc90,000185f6,00a0,0000,rear_o2,code,Slow response bank 1 sensor 2
 165,P0159,0001cc9c,00018606,00a0,0000,rear_o2,code,Slow response bank 2 sensor 2
 166,P0138,0001cca8,000185f0,00a0,0000,rear_o2,code,High voltage path A bank 1 sensor 2
@@ -28,6 +36,10 @@ index,dtc,record_addr,attribute_addr,stock_attribute,disabled_attribute,group,co
 192,P0451,0001cde0,0001855e,00a0,0000,evap,code,Pressure sensor range or performance
 198,P0444,0001ce28,00018546,00a0,0000,evap,code,Purge control valve circuit open
 199,P0445,0001ce34,00018548,00a0,0000,evap,code,Purge control valve circuit short
+205,P0011,0001ce7c,0001875c,0020,0000,intake_vtc,code,Intake valve timing control performance bank 1
+206,P0021,0001ce88,0001875e,0020,0000,intake_vtc,code,Intake valve timing control performance bank 2
+207,P0014,0001ce94,00018758,0020,0000,exhaust_vtc,code,Exhaust valve timing control performance bank 1
+208,P0024,0001cea0,0001875a,0020,0000,exhaust_vtc,code,Exhaust valve timing control performance bank 2
 209,P0452,0001ceac,00018540,00a0,0000,evap,code,Pressure sensor low
 210,P0453,0001ceb8,0001853e,00a0,0000,evap,code,Pressure sensor high
 211,P0441,0001cec4,0001854e,00a0,0000,evap,code,Incorrect purge flow
