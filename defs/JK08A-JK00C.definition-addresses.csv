@@ -5,6 +5,7 @@ Axis,0001199e,00013c22,,homologous-exact-chain,10,exact-bytes;normalized-shape,r
 Axis,000119ae,00013c32,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,000119b2,00013c36,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011a55,00013cda,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011ac7,00013d64,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
 Axis,00011b47,00013dec,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011b7b,00013e20,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011bbb,00013e60,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
@@ -15,6 +16,8 @@ Axis,00011bdb,00013e88,,homologous-exact-chain,2,normalized-shape,reviewed JK08A
 Axis,00011be3,00013e90,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011beb,00013e98,,homologous-exact-chain,1,normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011bfb,00013ea8,,homologous-exact-chain,1,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
+Axis,00011cc0,00013f85,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
+Axis,00011cd8,00013f9d,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
 Axis,00011d0c,00013fd9,,homologous-exact-chain,4,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011d24,00013ff1,,homologous-exact-chain,2,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
 Axis,00011ebe,0001419b,,homologous-exact-chain,7,exact-bytes;normalized-shape,reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C interpolation operands
@@ -268,7 +271,9 @@ Map,0000b53a,0000b8be,,reviewed-target,1,normalized-shape,cold intake-cam target
 Map,000085d9,000085e4,,reviewed-target,2,normalized-shape,stationary rev-limiter activation and release thresholds read at both comparison sites of target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
 Map,00008fdc,00009030,,reviewed-target,2,normalized-shape,accelerator-pedal activation and release thresholds read at both comparison sites of target function 00048adc which is the reviewed homolog of JK08A FUN 00047a56
 Map,0000911c,00009174,,reviewed-target,1,normalized-shape,stationary rev-limiter readiness threshold literal in target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
+Map,0000a9aa,0000ad2e,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
 Map,000124d2,000147cf,,reviewed-target,1,normalized-shape,stationary rev-limiter step table literal preceding reviewed interpolation entry 00026f8c in target function 00050c9a which is the reviewed homolog of JK08A FUN 0004f324
+Map,00012552,0001487f,,reviewed-target,1,exact-bytes;normalized-shape,coordinator 00057608 matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and carries this literal at the homologous lookup site; storage contents equal the JK00D target
 Axis,00012f2e,000152bb,,reviewed-target,1,normalized-shape,engine-speed axis operand at the warm exhaust-target interpolation callsite
 Axis,00012f0e,0001529b,,reviewed-target,1,normalized-shape,load axis operand at the warm exhaust-target interpolation callsite
 Axis,00012f3e,000152cb,,reviewed-target,1,normalized-shape,engine-speed axis operand at the warm intake-target interpolation callsite

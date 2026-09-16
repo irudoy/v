@@ -16,6 +16,8 @@ def romraider_category(category):
 COMMON_TABLES = {
     "Developer Immobilizer": "NATS / Immobilizer",
     "MAF Factor": "Fuelling / MAF Scaling",
+    "Target Mixture - Main": "Fuelling / Target Mixture",
+    "Target Mixture Multiplier - High-Detonation State": "Fuelling / Target Mixture",
     "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
     "Internal Load Normalization Reference": "Fuelling / Load Model",
     "Ignition Timing Surface - Cold State":

@@ -1014,6 +1014,52 @@
       </table>
     </table>
 
+    <!-- 0x0AD2E  8x8 uint8  map [code]
+         scaling x/128 ratio [code]; Y Axis 0x13F85 rpm [code]; X Axis 0x13D64 load [code]
+         Public HR A2L name Target AFR Map (8x8) with gasoline scale 1881.6/x on axes Cylinder
+         Filling Up Efficiency (x*0.78125 percent) and Engine Speed (x*50); the AFR scale is a
+         candidate, the Q7 ratio and the stoichiometric neutral are code. Three 2026-08-26
+         vehicle recordings match the lookup in 98.3..100 percent of settled records. Result
+         disposition: consumer. Definition address projected from JK08A 0000a9aa through
+         JK08A-JK00C.definition-addresses.csv: coordinator 00057608 matches 00059528 exact-
+         bytes; its second call 00057884 is the target mixture stage and carries this literal at
+         the homologous lookup site; storage contents equal the JK00D target.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Target Mixture - Main" category="Fuelling//Target Mixture"
+           storagetype="uint8" storageaddress="0x0AD2E" sizex="8" sizey="8" endian="big">
+      <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.000"
+               fineincrement="0.0078125" coarseincrement="0.0625"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13D64"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13F85" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x1487F  8 uint8  map [code]
+         scaling x/128 ratio [code]; axis 0x13F9D rpm [code]
+         Public HR A2L name Target AFR Table (High Detonation). The physical purpose follows the
+         consumer chain 0005594a -> ffff15eb -> ffff22e8. Definition address projected from
+         JK08A 00012552 through JK08A-JK00C.definition-addresses.csv: coordinator 00057608
+         matches 00059528 exact-bytes; its second call 00057884 is the target mixture stage and
+         carries this literal at the homologous lookup site; storage contents equal the JK00D
+         target.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Target Mixture Multiplier - High-Detonation State"
+           category="Fuelling//Target Mixture" storagetype="uint8" storageaddress="0x1487F"
+           sizex="8" endian="big">
+      <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.000"
+               fineincrement="0.0078125" coarseincrement="0.0625"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13F9D" sizex="8" endian="big">
+        <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x095E8  1 uint16  map [code]
          scaling x/2048 BFS [candidate]
          Stock scaler is 0x6a5a, or 27226. The exact arithmetic proves its common fixed-

@@ -5,6 +5,7 @@ Axis,0001199e,00013c32,,homologous-call,10,normalized-shape,unique call-ordinal 
 Axis,000119ae,00013c42,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,000119b2,00013c46,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011a55,00013cea,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00011ac7,00013d74,,reviewed-target,1,exact-bytes;normalized-shape,"coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 is the target mixture stage, equal to the JK00C stage 00057884 except one displacement word, and carries this literal at the homologous lookup site"
 Axis,00011b47,00013dfc,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011b7b,00013e30,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011bbb,00013e70,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
@@ -15,6 +16,8 @@ Axis,00011bdb,00013e98,,homologous-call,2,normalized-shape,unique call-ordinal o
 Axis,00011be3,00013ea0,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011beb,00013ea8,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011bfb,00013eb8,,homologous-call,1,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
+Axis,00011cc0,00013f95,,reviewed-target,1,exact-bytes;normalized-shape,"coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 is the target mixture stage, equal to the JK00C stage 00057884 except one displacement word, and carries this literal at the homologous lookup site"
+Axis,00011cd8,00013fad,,reviewed-target,1,exact-bytes;normalized-shape,"coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 is the target mixture stage, equal to the JK00C stage 00057884 except one displacement word, and carries this literal at the homologous lookup site"
 Axis,00011d0c,00013fe9,,homologous-call,4,exact-bytes;normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011d24,00014001,,homologous-call,2,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
 Axis,00011ebe,000141ab,,homologous-call,7,normalized-shape,unique call-ordinal operands through reviewed interpolation-wrapper correspondence
@@ -269,7 +272,9 @@ Map,0000b53a,0000b8ce,,reviewed-target,1,normalized-shape,cold intake-cam target
 Map,000085d9,000085e4,,reviewed-target,2,normalized-shape,stationary rev-limiter activation and release thresholds read at both comparison sites of target function 00050c96 which is the reviewed homolog of JK08A FUN 0004f324
 Map,00008fdc,0000903e,,reviewed-target,2,normalized-shape,accelerator-pedal activation and release thresholds read at both comparison sites of target function 00048ae0 which is the reviewed homolog of JK08A FUN 00047a56
 Map,0000911c,00009182,,reviewed-target,1,normalized-shape,stationary rev-limiter readiness threshold literal in target function 00050c96 which is the reviewed homolog of JK08A FUN 0004f324
+Map,0000a9aa,0000ad3e,,reviewed-target,1,exact-bytes;normalized-shape,"coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 is the target mixture stage, equal to the JK00C stage 00057884 except one displacement word, and carries this literal at the homologous lookup site"
 Map,000124d2,000147ef,,reviewed-target,1,normalized-shape,stationary rev-limiter step table literal preceding reviewed interpolation entry 00026f8c in target function 00050c96 which is the reviewed homolog of JK08A FUN 0004f324
+Map,00012552,0001489f,,reviewed-target,1,exact-bytes;normalized-shape,"coordinator 00057608 matches 00059524 exact-bytes; its second call 00057880 is the target mixture stage, equal to the JK00C stage 00057884 except one displacement word, and carries this literal at the homologous lookup site"
 Axis,00012f2e,000152db,,reviewed-target,1,normalized-shape,engine-speed axis operand at the warm exhaust-target interpolation callsite
 Axis,00012f0e,000152bb,,reviewed-target,1,normalized-shape,load axis operand at the warm exhaust-target interpolation callsite
 Axis,00012f3e,000152eb,,reviewed-target,1,normalized-shape,engine-speed axis operand at the warm intake-target interpolation callsite

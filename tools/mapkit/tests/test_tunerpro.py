@@ -10,6 +10,8 @@ XDF = ROOT / "defs" / "JK08A.xdf"
 
 COMMON_TABLES = {
     "MAF Factor": "Fuelling / MAF Scaling",
+    "Target Mixture - Main": "Fuelling / Target Mixture",
+    "Target Mixture Multiplier - High-Detonation State": "Fuelling / Target Mixture",
     "Base Fuel Schedule K-Value": "Fuelling / MAF Scaling",
     "Internal Load Normalization Reference": "Fuelling / Load Model",
     "Ignition Timing Surface - Cold State":
@@ -365,7 +367,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 60)
-        self.assertEqual(len(tables), 103)
+        self.assertEqual(len(tables), 105)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 

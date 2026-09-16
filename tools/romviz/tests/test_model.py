@@ -162,7 +162,7 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
     assert rom["reviewedFunctions"] == 592
     assert rom["structuralFunctions"] >= rom["reviewedFunctions"]
     assert rom["counts"]["maps"] == 512
-    assert rom["counts"]["axes"] == 76
+    assert rom["counts"]["axes"] == 79
 
     by_id = {item["id"]: item for item in rom["objects"]}
     assert by_id["definition-switch:0:00008725"]["label"] == "Developer Immobilizer"

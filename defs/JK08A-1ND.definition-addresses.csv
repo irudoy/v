@@ -24,6 +24,7 @@ Map,0000991a,00009880,,homologous-call,6,homologous-selector;shared-explicit-con
 Map,00009a1a,00009980,,homologous-call,4,homologous-selector;selector-branch-order,target ignition selector preserves the first source branch as branch 1
 Map,00009b1a,00009a80,,homologous-call,4,homologous-selector;selector-branch-order,target ignition selector preserves the second source branch as branch 0
 Map,0000a29a,0000a1c0,default,homologous-exact-chain,2,exact-storage;ordered-exact-map-storage-anchor,the accessor on the default arm of the target state selector preserves exact geometry and storage
+Map,0000a9aa,,,unsupported,0,no-homolog,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and neither the map nor its axes 00011cc0 and 00011ac7 recur as exact storage in the target image"
 Map,0000ab4a,,,unsupported,0,removed-subsystem,exhaust-cam correction table is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
 Map,0000ab5a,,,unsupported,0,removed-dispatch-slot,homologous intake dispatcher slot is a no-op in the VQ37 implementation
 Map,0000b2fa,,,unsupported,0,removed-subsystem,cold exhaust-cam target is read only by the removed exhaust-target calculator; VQ37 removes exhaust camshaft timing control together with its P0014 and P0024 descriptor records so no target byte is produced for the homologous DID slot
@@ -37,6 +38,7 @@ Map,00012196,00013c12,,homologous-call,1,homologous-coordinator;selector-branch-
 Map,000121a6,00013c2a,,homologous-call,1,homologous-coordinator;selector-branch-order,homologous early branch guarded by the same 0x4000 comparison preserves the stock-inert table role
 Map,0001219e,00013c1a,default,homologous-call,1,homologous-coordinator;selector-branch-order,the branch on the default arm of the target state selector preserves the source warm-transition table role
 Map,000124d2,00013ea2,,homologous-exact-chain,2,normalized-function-sequence;exact-storage,homologous state-machine accessor preserves geometry and exact table bytes
+Map,00012552,,,unsupported,0,no-homolog,"mixture stage 0005594a and its coordinator 00057608 have no exact-bytes or normalized-shape candidate in the target export, and the multiplier does not recur as exact storage in the target image"
 Map,000126e4,000140c4,,homologous-call,2,shared-implicit-contract;paired-consumer,homologous DFCO coordinator preserves the held-request table role and near-exact calibration shape
 Map,00012718,00014104,,homologous-call,2,shared-implicit-contract;paired-consumer,homologous DFCO coordinator preserves the rising-edge table role and near-exact calibration shape
 Map,00012818,000141d4,,homologous-exact-chain,2,shared-implicit-contract;exact-storage,homologous restore coordinator preserves the lower table role and exact table bytes

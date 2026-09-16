@@ -196,6 +196,24 @@ format = "0.00"
 fine = 0.78125
 coarse = 3.125
 
+[table.0000a9aa]
+name = "Target Mixture - Main"
+category = "Fuelling / Target Mixture"
+order = 30
+emit = true
+format = "0.000"
+fine = 0.0078125
+coarse = 0.0625
+
+[table.00012552]
+name = "Target Mixture Multiplier - High-Detonation State"
+category = "Fuelling / Target Mixture"
+order = 31
+emit = true
+format = "0.000"
+fine = 0.0078125
+coarse = 0.0625
+
 [table.0000b33a]
 name = "Exhaust CVTC Target - Main"
 category = "Variable Valve Timing / Exhaust Cam"
