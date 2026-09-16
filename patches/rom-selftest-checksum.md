@@ -139,6 +139,57 @@ The Runtime B literal identifies `0x022602` as the final covered byte, so the
 last aligned word starts at `0x022600`. All six stock references reproduce by
 independent calculation.
 
+### Runtime A background scanner
+
+JK78C verifies Runtime A incrementally from the periodic list at `0x00021A4C`
+walked by `FUN_00020F1A`. Entry 141 is `FUN_000214D4`, 228 bytes, which is
+reached only through that list. The exact-code function group is:
+
+| Function | Role |
+|---|---|
+| `0x0216FC` | Initializer: writes the scan cursor `0xFFFF2B10` |
+| `0x0214D4` | Periodic entry: gate, chunk scan, end-of-pass sequence |
+| `0x0215B8` | Single-longword step, same skips and end handling, no `0x0216D8` call |
+| `0x02164E` | Comparison: accumulators against `[0x0093D4]` and `[0x0093DC]`, mismatch to bit 3 of `0xFFFF4568` |
+| `0x021680` | Fault latch: bit 7 of `0xFFFF4565` = mismatch and bit 0 of `0xFFFF4564` |
+| `0x0216A8` | Bit 0 of `0xFFFF4564` = mismatch of the completed pass |
+| `0x0216C4` | With bit 7 of `0xFFFF4565` set, jumps to the fault-state dispatcher `0x09DFA8` with descriptor index `0x6F` in `r4` |
+| `0x02162C` | Latch: `0xFFFF2A2C` <- `0xFFFF3350`, `0xFFFF2A30` <- `0xFFFF34E8`, then clears both accumulators |
+| `0x0216D8` | Sets bit 2 of `0xFFFF4564` unless the pass mismatched with bit 7 of `0xFFFF4564` clear |
+
+The gate is the conjunction of two conditions. The first reads the byte table
+at `0x0001A88C` indexed by descriptor status group: bit 7 of `[0x0001A8B1]`
+(group `0x25`, stock `0xEF`), or bit 7 of `[0x0001A8B2]` (group `0x26`, stock
+`0x10`), or `[0x0001729F]` (stock `0x00`) not equal to `0x55`. The second is
+bit 7 of `0xFFFF44DF`, the walker's copy of `0xFFFF44E0` taken before the
+walk. Group `0x25` holds the eight `P0605` descriptors at indices 111 to 117;
+index `0x6F` is the record at `0x0001BCE0` with group `0x25`, bit 7, code
+`P0605`, byte-identical to the JK08A record at index `0x75` that the JK08A
+verifier `0x021714` raises.
+
+With bit 2 of `0xFFFF4564` clear the entry scans one chunk per call: from the
+cursor for `[0x000215EC]` = `0x5E6C` bytes, clamped at
+`[0x000226BC] + 1` = `0x100000`, skipping the longwords at `0x0093D4`,
+`0x0093DC`, `0x008200`, and `0x020000`, XOR into `0xFFFF3350` and sum into
+`0xFFFF34E8`. Reaching `0x100000` runs the sequence `0x02164E`, `0x021680`,
+`0x0216A8`, `0x0216C4`, `0x02162C`, `0x0216D8` and reloads the cursor from
+`[0x000226B8]` = `0x008204`. With bit 2 set the entry calls `0x0215B8` four
+times, one longword per call, so a completed first pass continues at a
+reduced rate. `0x0216FC` initializes the cursor from the same literal,
+`0x008204`. A full pass covers `[0x008204, 0x100000)` in 43 chunks.
+
+The chunk region and exclusions are the `sh7058_jk78c` Runtime A domain. The
+skip at `0x008200` lies below the region start and never matches from a
+cursor initialized at `0x008204`. Independent recalculation over
+`[0x008204, 0x100000)` with the exclusions reproduces `E1E877CF` and
+`0AF99D87`.
+
+The JK08A homologs are `0x02167A` (scanner, cursor `0xFFFF2FF4`, accumulators
+`0xFFFF3000` and `0xFFFF3008`, gate bit 7 of `0xFFFF4184`), `0x021714`
+(verifier, fault index `0x75`) and `0x021774` (epilogue latching
+`0xFFFF2B1C` and `0xFFFF2B20`). JK08A scans Runtime B in the background;
+JK78C scans Runtime A.
+
 ## RomRaider 7MFKAVN86 projection
 
 The native RomRaider handlers reproduce the layout in this order:

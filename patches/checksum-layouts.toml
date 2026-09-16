@@ -118,7 +118,7 @@ exclusions = []
 roms = ["JK78C"]
 rom_size = 0x100000
 recalculation_order = ["runtime_b", "runtime_a", "sum16_a", "sum16_b"]
-evidence = "JK78C checksum initializers and verifiers at 0x216fc..0x2187c retain the SH7058 four-domain algorithm, bind Runtime A fields 0x93d4/0x93dc and Runtime B fields 0x20408/0x20404, and bind the final Runtime B byte at 0x22602. All six stock references reproduce independently."
+evidence = "JK78C checksum initializers and verifiers at 0x216fc..0x2187c retain the SH7058 four-domain algorithm, bind Runtime A fields 0x93d4/0x93dc and Runtime B fields 0x20408/0x20404, and bind the final Runtime B byte at 0x22602. All six stock references reproduce independently. Runtime A is also verified incrementally by periodic entry 0x214d4 (cursor 0xffff2b10, accumulators 0xffff3350/0xffff34e8, chunk 0x5e6c bytes, exclusions 0x93d4, 0x93dc, 0x8200, 0x20000), which raises descriptor index 0x6f (P0605) on mismatch."
 
 [[layout.sh7058_jk78c.sum16]]
 key = "sum16_a"

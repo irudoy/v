@@ -325,6 +325,31 @@ Records 286, 289, 290, and 292 in the same groups carry `P1608`, `P1607`,
 enable state; the enable state lives in the separate attribute array reached
 through `JK78C.dtc.csv`.
 
+## Recovered periodic entries
+
+Two periodic entry points were not functions in the structural export and are
+recovered with `RecoverFuncs.java` and `AnalyzeFuncs.java`.
+
+`FUN_000214D4`, entry 141 of the list at `0x00021A4C`, is the incremental
+Runtime A ROM self-test scanner. Its function group, cells, gate, and fault
+channel are documented in `../patches/rom-selftest-checksum.md` under the
+JK78C exact-code layout.
+
+`FUN_0006D9C2`, 52 bytes, is the third element of the three-entry sublist at
+`0x00021A40` (`0x077202`, `0x09C760`, `0x06D9C2`) walked by `FUN_00020A3C`.
+It is gated by bit 3 of ROM byte `0x00008B10` (stock `0x1E`, active) and
+maintains the byte `0xFFFF11F5`:
+
+```text
+if bit 4 of 0xFFFF2421 is set: 0xFFFF11F5 = 0
+else:                          0xFFFF11F5 = min(255, 0xFFFF11F5 + 1)
+```
+
+`FUN_00020F1A` copies `0xFFFF11F5` to `0xFFFF11F4` at `0x00020FD8` before
+the walk, so `0xFFFF11F4` is the value the periodic entries read. The cell is
+a saturating count of walks since bit 4 of `0xFFFF2421` was last set. The
+writer of that bit and the consumers of `0xFFFF11F4` are not established.
+
 ## Hardware boundary
 
 Static analysis does not establish bus wiring, module participation, physical
