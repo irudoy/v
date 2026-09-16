@@ -337,3 +337,45 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             assert _xdf_table_address(xdf_tables[name]) == address.replace(
                 "0x0", "0x"
             )
+
+
+def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation():
+    target, tables = _xml_tables("1ME3B")
+    romid = target.find("romid")
+
+    assert romid.findtext("xmlid") == "1ME3B"
+    assert romid.findtext("internalidstring") == "1ME3B"
+    assert romid.findtext("ecuid") == "11ME3B"
+    assert romid.findtext("caseid") == "9FZ3V5DD1"
+    assert romid.findtext("memmodel") == "SH7059"
+    assert romid.findtext("filesize") == "1536kb"
+    assert romid.find("flashmethod") is None
+    checksums = {
+        entry.get("type"): entry for entry in target.findall("checksum")
+    }
+    assert set(checksums) == {"alt2"}
+    assert checksums["alt2"].get("start") == "0x8200"
+    assert checksums["alt2"].get("end") == "0x180000"
+    assert checksums["alt2"].get("skiploc") == "0x20000"
+    assert checksums["alt2"].get("sumloc") == "0x96FC"
+    assert checksums["alt2"].get("xorloc") == "0x96F4"
+    assert len(target.findall("table")) == 101
+    assert sum(1 for name in tables if name.startswith("DTC ")) == 75
+    assert tables["MAF Factor"].get("storageaddress") == "0x08965"
+    assert tables["Fuel Compensation - Main - Default"].get(
+        "storageaddress"
+    ) == "0x0A0F4"
+    assert tables["Base Fuel Schedule K-Value"].get("storageaddress") == "0x09170"
+    assert not any(name.startswith("Map 1 -") for name in tables)
+    assert not any(name.startswith("Map 2 -") for name in tables)
+    assert "Rolling Launch Enable by Map" not in tables
+    assert "CAN Telemetry at Startup" not in tables
+    assert "Developer Immobilizer" not in tables
+    assert not any("Ignition Timing" in name for name in tables)
+
+    root = ET.parse(DEFS / "1ME3B.xdf").getroot()
+    xdf_tables = _xdf_tables(root)
+    assert len(root.findall("XDFTABLE")) == 26
+    assert root.find("XDFCHECKSUM") is None
+    assert _xdf_table_address(xdf_tables["MAF Factor"]) == "0x8965"
+    assert not root.findall("XDFFLAG")

@@ -153,9 +153,36 @@ use. Its highest-ranked candidates in this image, `0x037378` and `0x03CF10`,
 are a byte-queue emitter that appends to `0xFFFEDC26` under the counter at
 `0xFFFEDD2A`.
 
-The image has no address profile, correspondence registry, or definition
-target. Its declared family boundary forbids address inheritance from any
-other image in the collection.
+## Definition correspondence
+
+`../../defs/JK08A-1ME3B.definition-addresses.csv` binds the reviewed `1ND`
+semantic set to this image, and `../../defs/definition-projections.toml`
+publishes `../../defs/1ME3B.xml` and `../../defs/1ME3B.xdf` from it. Every
+row is established through the `1ND0A` structural export, because no code
+relocates from any modelled ROM: an exact-bytes or normalized-shape function
+pair that reads the target address at the same call ordinal, or a target
+function that reproduces the `1ND0A` reader's operand set, selector arms, and
+call order; the fused leaf whose contract equals the `1ND0A` wrapper; exact
+target storage; and target literals. The registry holds 40 mapped rows, 27
+maps and thirteen axes, and twelve unsupported source maps.
+
+The three canonical ignition surfaces are unsupported. The ignition
+coordinator `0x0797CC` reproduces only the mode-selected half of `1ND0A`
+`0x074D98`, with its own surfaces `0x00A344`, `0x00A444`, and the 8x8 group;
+the trio path that `1ND0A` gates by `0x008A2B` bit 5 and `0xFFFE9488` bit 6
+has no counterpart, no function selects three 16x16 surfaces through one gate,
+and the trio bytes do not recur in the image. The ignition axes `0x013716` and
+`0x013726` remain bound because the coordinator reads them. `0x071D64` reads a
+fourth 16x16 surface `0x00A774` with axis copies at `0x013599` and `0x0135A9`;
+it has no `1ND0A` counterpart and no canonical role.
+
+The MAF factor `0x008965` holds the value 133 and is read by `0x045634`,
+`0x04570A`, and `0x048298`; the last combines it with the K-value `0x009170`,
+the `0x9F38` reference `0x0094D4`, and the value-3 scalar `0x00885C` exactly as
+the `1ND0A` consumer `0x0C188C` combines its four scalars. The projection
+declares checksum support over the `sh7059_1me3b` layout and no runtime
+allocation. The image has no address profile, and its declared family boundary
+forbids address inheritance from any other image in the collection.
 
 Identity and stock hashes are authoritative in `../roms.csv` and
 `../README.md`; family classification and pairwise measurements are in

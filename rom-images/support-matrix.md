@@ -12,7 +12,7 @@ engine name or similar graph structure does not permit address inheritance.
 | `8MFK` | JK00C, JK00D | SH7058, 1 MiB | Near-code lineage with insertions, deletions, and relocated storage | Independent address profiles and hook validation for each image |
 | JK78C | JK78C | SH7058, 1 MiB | Distinct VQ37 code base | Independent layout, checksum model, allocation, and payload lock |
 | `1ND` | 1ND0A, 1ND3B | SH7059, 1.5 MiB | Exact executable ranges within the pair; cross-generation homolog of JK78C | One shared executable layout with independent stock identities and stage hashes |
-| `1ME3B` | 1ME3B | SH7059, 1.5 MiB | Distinct VQ37 code base; shares the blocks below `0x008200` and a relocated diagnostic descriptor region with `1ND` | Independent recovery for every address; nothing is inherited from `1ND` or JK78C |
+| `1ME3B` | 1ME3B | SH7059, 1.5 MiB | Distinct VQ37 code base with a fused interpolation library; shares the blocks below `0x008200` and a relocated diagnostic descriptor region with `1ND` | Independent recovery for every address through reviewed `1ND0A` structural correspondence; nothing is inherited from `1ND` or JK78C |
 
 ## Functional coverage
 
@@ -22,7 +22,7 @@ engine name or similar graph structure does not permit address inheritance.
 | `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including independent intake-cam and exhaust-cam target switching | Relocated fuel-shadow actuator | Schema 2, mailbox 24 | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
-| `1ME3B` | None | None | None | None | None | Stock read only; no derived image exists |
+| `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence | None | None | None | Six fields in the project checksum model; no builder target | Stock read only; no derived image exists |
 
 ## Diagnostic layer
 
@@ -33,7 +33,7 @@ engine name or similar graph structure does not permit address inheritance.
 | JK00D | 36 | `0x8740` | `alt` and `alt2` |
 | JK78C | 35 | `0x861C` | `alt` and `alt2` |
 | `1ND` | 35 | `0x8668` | `alt2` |
-| `1ME3B` | 34 | Not located | Layout `sh7059_1me3b` registered; no definition target |
+| `1ME3B` | 34 | Not located | `alt2` |
 
 Each image stores its diagnostic descriptors as twelve-byte records followed
 immediately by one 32-bit attribute pointer per record. The pointer table is the
@@ -48,7 +48,8 @@ The `1ND` layout declares one runtime domain, so it projects to a single `alt2`
 handler. Its boot and vector SUM16 domains end at `0x8200`, below the lowest
 published entity at `0x8524`, so no editor session can leave them stale.
 
-`1ME3B` holds this diagnostic registry and no other analysis layer. Its 334
+`1ME3B` holds this diagnostic registry beside its own structural export, its
+interpolation registry, and its definition projection. Its 334
 descriptor records start at `0x1BF58` and its attribute pointers at `0x1CF00`,
 against 331 records at `0x1BE00` for `1ND0A`. A 1,936-byte window of that region
 is byte-identical to `1ND0A` at a constant `+0x164` relocation, but the run as a
@@ -60,9 +61,15 @@ Developer Immobilizer site is located in it. Its four SUM16 checksum domains
 reproduce at the `1ND` field addresses while the application XOR and SUM fields
 sit at `0x0096F4` and `0x0096FC`; the verifier functions are located and the
 layout is registered as `sh7059_1me3b`, which projects to a single `alt2`
-handler once a definition target exists. Its calibration access library is
-registered in `../defs/1ME3B.interp.csv` as 34 fused leaves and censused to
-768 tables and 457 axes at candidate confidence.
+handler. Its calibration access library is registered in
+`../defs/1ME3B.interp.csv` as 34 fused leaves and censused to 768 tables and
+457 axes at candidate confidence. `../defs/JK08A-1ME3B.definition-addresses.csv`
+binds the reviewed VQ37 semantic set to 27 of those tables and thirteen axes
+through `1ND0A` structural correspondence and records twelve source maps as
+unsupported: the nine VQ37 rows and the three canonical ignition surfaces,
+whose gated stock-inert selector path the `1ME3B` ignition coordinator does not
+carry. The definition declares no Map Switching, Rolling Launch, or CAN
+telemetry.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,

@@ -18,9 +18,10 @@ Intake ends in one of two complete states.
   independently gated and may follow later.
 - **Registered stock identity.** The image has provenance, a hash, a declared
   family boundary, ROM-atlas participation, and whatever the Step 2 measurements
-  carry without an analysis layer, which today means the DTC registry. `1ME3B`
-  holds this state, with a registered checksum layout and an interpolation
-  registry with its census on top of it and no definition target.
+  carry without an analysis layer, which today means the DTC registry. No
+  image holds this state today; `1ME3B` passed through it with a registered
+  checksum layout and an interpolation registry on top of the diagnostic layer
+  before its correspondence registry and definition target were published.
 
 A definition published on candidate-grade evidence is not a third state.
 
@@ -115,7 +116,7 @@ An image where the tool cannot locate a descriptor run is a Branch E case.
 | Declared executable ranges byte-identical to a canonical ROM | A | JK00A, JK03A, JK03B |
 | Same lineage, relocations and insertions, address inheritance invalid | B | JK00C, JK00D |
 | Divergent code, interpolation library relocates from a modelled ROM | C | 1ND0A, 1ND3B |
-| Divergent code, no library relocates | D | JK78C, and 1ME3B today |
+| Divergent code, no library relocates | D | JK78C, 1ME3B |
 | Signals conflict or no signal applies | E | none |
 
 ### Branch A - exact-code member of a modelled family
@@ -191,6 +192,20 @@ implicit leaf gives its step from the index shift and its point count from the
 clamp. The 1ME3B leaves reproduce the `1ND` contract vocabulary exactly, so a
 registry row can be checked against the sibling's rows even though no code
 relocates.
+
+The correspondence registry of a fused-library image is established through
+the nearest modelled image rather than through the canonical ROM.
+`JK08A-1ME3B.definition-addresses.csv` carries the reviewed `1ND` semantic set
+to 1ME3B: every source map and axis is bound through a 1ND0A structural
+function match that reads the target address at the same call ordinal, or
+through a target function that reproduces the 1ND0A reader's operand set,
+selector arms, and call order, always through the leaf whose contract equals
+the 1ND0A wrapper and always at exact target storage. The registry records 40
+mapped rows and twelve unsupported source maps: the nine VQ37 rows plus the
+three canonical ignition surfaces, because the target ignition coordinator
+carries only its mode-selected surfaces and no function reproduces the gated
+stock-inert trio path of 1ND0A. The projection declares checksum support and
+no runtime allocation.
 
 Three levers reduce the remaining work and are worth measuring first, because
 they hold even when no code relocates. Values below are the 1ME3B measurements.

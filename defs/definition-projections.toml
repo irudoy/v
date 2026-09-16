@@ -152,3 +152,32 @@ evidence = "Reviewed 1ND0A address projection composed only through exact 1ND0A-
 [projection.1ND3B.switch]
 developer_immobilizer = 0x00008668
 can_telemetry_startup = 0x00134E03
+
+[projection.1ME3B]
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
+addresses = "JK08A-1ME3B.definition-addresses.csv"
+checksum = true
+romraider_checksum = true
+map_switching = false
+rolling_launch = false
+comment = """
+The definition uses JK08A as the canonical semantic and presentation source.
+Every emitted stock map and axis is relocated through the SHA-bound reviewed
+correspondence in defs/JK08A-1ME3B.definition-addresses.csv, which is
+established through the 1ND0A structural export: matched consumer functions,
+interpolation-call ordinals, contract-equal fused leaves, exact target storage,
+selector branches, and target literals. No code relocates from any modelled
+ROM. Homologous claims are downgraded to candidate confidence unless
+target-specific evidence keeps code confidence. Source tables whose 1ME3B
+implementation changes geometry, removes the subsystem, or keeps no gated
+selector path are omitted explicitly; the three canonical ignition surfaces are
+among them because the target coordinator carries only its mode-selected
+surfaces. The project and native RomRaider checksum contracts cover all six
+1ME3B checksum fields. The image has no runtime allocation: Map Switching,
+Rolling Launch, and CAN telemetry are not declared.
+"""
+evidence = "Reviewed structural function correspondence against 1ND0A, interpolation-call order, contract-equal fused leaves, exact storage anchors, target literals, target axis geometry, checksum code, and independently reproduced stock checksum values."
+
+[projection.1ME3B.switch]

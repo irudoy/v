@@ -166,9 +166,11 @@ throttle-limiter selection, Rolling Launch, custom CAN telemetry, checksum
 closure, and the executable gate. The two images retain independent stock and
 stage identities even though their executable ranges are exact.
 
-1ME3B is a registered stock identity. The owned KY51 Fuga VQ37VHR read
-participates in the homology registry, the ROM atlas, and the DTC projection,
-which carries 38 codes read out of the image itself. It has no structural
-export, checksum layout, address profile, definition target, or executable
-coverage, and its declared family boundary forbids address inheritance from
-1ND0A, 1ND3B, or JK78C.
+1ME3B is the owned KY51 Fuga VQ37VHR read. It participates in the homology
+registry, the ROM atlas, the DTC projection, which carries 38 codes read out
+of the image itself, the registered `sh7059_1me3b` checksum layout, and
+all-target definition generation through a SHA-bound projection established by
+1ND0A structural correspondence over its own fused interpolation library. It
+has no address profile, runtime allocation, or executable coverage, and its
+declared family boundary forbids address inheritance from 1ND0A, 1ND3B, or
+JK78C.

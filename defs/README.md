@@ -101,10 +101,13 @@ search into one leaf per access, so every row names the leaf as both `kernel`
 and `wrapper`. Its 34 rows are read from the leaf code and reproduce the 1ND0A
 contract vocabulary without any shared code; seven rows are byte-identical
 copies of another leaf with their own callers. The census runs
-`ResolveAccessors.java` in `fused` mode per row. No correspondence registry
-exists for it: the contracts are equal in geometry, storage, and axis types,
-but pairing them with 1ND0A entries requires a reviewed accessor-level
-comparison rather than equal wrapper bytes.
+`ResolveAccessors.java` in `fused` mode per row. No interpolation
+correspondence registry exists for it: the contracts are equal in geometry,
+storage, and axis types, but pairing them with 1ND0A entries requires a
+reviewed accessor-level comparison rather than equal wrapper bytes. That
+comparison is recorded per map and axis in
+`JK08A-1ME3B.definition-addresses.csv`, which names the leaf beside each
+target address.
 
 `JK08A-JK78C.definition-addresses.csv` projects 29 visible source-map roles to
 31 JK78C tables, including explicit bank variants, and records seven source
@@ -141,6 +144,22 @@ shared addresses: the 1ND resolver indexes the hot-intake idle surfaces by two
 temperature-coded bytes instead of engine speed and torque, reads a mode 14
 surface that JK78C replaces with a constant, and has no floor curves and no
 demand axis, which the registry declares as absent roles.
+
+`JK08A-1ME3B.definition-addresses.csv` projects the same reviewed VQ37
+semantic set to the fused-library 1ME3B image. It records 27 target maps,
+thirteen axes, and twelve explicitly unsupported source maps. No code relocates
+from any modelled ROM, so every row is established through the 1ND0A
+structural export: exact-bytes or normalized-shape function pairs that read
+the target address at the same call ordinal, target functions that reproduce
+the 1ND0A reader's operand set, selector arms, and call order, the fused leaf
+whose contract equals the 1ND0A wrapper, exact target storage, and target
+literals. The unsupported rows are the nine VQ37 rows and the three canonical
+ignition surfaces: the target ignition coordinator `0x0797CC` carries only its
+mode-selected surfaces and no target function reproduces the gated stock-inert
+trio path of 1ND0A `0x074D98`. The projection declares checksum support with
+native RomRaider metadata over the `sh7059_1me3b` layout and no runtime
+allocation: Map Switching, Rolling Launch, and the CAN telemetry switch are
+absent from the definition.
 
 ## Evidence specifications
 

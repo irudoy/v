@@ -12,7 +12,7 @@ from tools.mapkit import vq37_native_tables
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
-TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B")
+TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
 SH7058_HR_UNSUPPORTED = frozenset()
 JK78C_UNSUPPORTED = {
     "0000934e",
@@ -26,6 +26,7 @@ JK78C_UNSUPPORTED = {
     "00012552",
 }
 VQ37_UNSUPPORTED = JK78C_UNSUPPORTED
+ONE_ME3B_UNSUPPORTED = VQ37_UNSUPPORTED | {"0000991a", "00009a1a", "00009b1a"}
 
 
 def test_registry_binds_relocated_targets_without_a_default():
@@ -39,6 +40,7 @@ def test_registry_binds_relocated_targets_without_a_default():
     assert projections["JK00D"].unsupported_maps == SH7058_HR_UNSUPPORTED
     for rom in ("JK78C", "1ND0A", "1ND3B"):
         assert projections[rom].unsupported_maps == VQ37_UNSUPPORTED
+    assert projections["1ME3B"].unsupported_maps == ONE_ME3B_UNSUPPORTED
 
 
 def test_complete_registry_validation_covers_every_target_capability_set():
@@ -69,6 +71,13 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["map_families"] == 14
         assert values["native_maps"] == 19
         assert values["rolling_configuration"] == 0x133F60
+    assert stats["1ME3B"]["mapped"] == 40
+    assert stats["1ME3B"]["unsupported"] == len(ONE_ME3B_UNSUPPORTED)
+    assert stats["1ME3B"]["checksum"] is True
+    assert stats["1ME3B"]["romraider_checksum"] is True
+    assert stats["1ME3B"]["map_families"] == 0
+    assert stats["1ME3B"]["native_maps"] == 0
+    assert stats["1ME3B"]["rolling_configuration"] is None
 
 
 CVTC_TARGET_CORRESPONDENCE = {

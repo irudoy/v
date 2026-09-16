@@ -66,25 +66,44 @@ def test_all_models_build_with_exact_registered_identities():
         assert by_id[rom_id]["counts"]["maps"] == 123
 
 
-def test_1me3b_model_carries_the_projected_diagnostic_layer_alone():
-    """The projection is the one layer a stock identity holds without analysis."""
+def test_1me3b_model_carries_definition_structure_and_checksum_layers():
+    """The Branch D image publishes its projection beside its own structure."""
     rom = model.build_rom_model(model.resolve_manifest("1ME3B"))
 
     assert rom["size"] == 0x180000
     assert rom["metadata"]["ECU ID"] == "11ME3B"
     assert rom["metadata"]["Engine"] == "VQ37VHR"
     assert rom["metadata"]["MCU"] == "SH7059"
-    assert rom["counts"] == {"diagnostics": 76}
-    assert {item["kind"] for item in rom["objects"]} == {
-        "dtc-record", "dtc-attribute"
+    assert rom["counts"]["diagnostics"] == 76
+    assert rom["counts"]["maps"] == 26
+    assert rom["counts"]["axes"] == 11
+    assert rom["counts"]["patches"] == 75
+    assert rom["counts"]["integrity"] == 11
+    assert {
+        item["id"]
+        for item in rom["objects"]
+        if item["kind"] == "checksum-field"
+    } == {
+        "checksum-field:boot_sum16",
+        "checksum-field:vector_sum16",
+        "checksum-field:sum16_a",
+        "checksum-field:sum16_b",
+        "checksum-field:runtime_a_xor",
+        "checksum-field:runtime_a_sum",
     }
+    maf_factor = next(
+        item for item in rom["objects"] if item["label"] == "MAF Factor"
+    )
+    assert maf_factor["start"] == 0x8965
+    assert maf_factor["source"] == "defs/1ME3B.xml"
     assert all(
         item["source"].startswith("defs/1ME3B.dtc.csv:")
         for item in rom["objects"]
+        if item["kind"] in {"dtc-record", "dtc-attribute"}
     )
     assert rom["reviewedFunctions"] == 0
-    assert rom["structuralFunctions"] == 0
-    assert any(
+    assert rom["structuralFunctions"] > 0
+    assert not any(
         "checksum layout is not registered" in warning
         for warning in rom["warnings"]
     )

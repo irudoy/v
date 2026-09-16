@@ -18,8 +18,11 @@ ROMS = (
     "JK78C",
     "1ND0A",
     "1ND3B",
+    "1ME3B",
 )
-RELOCATED_ROMS = frozenset({"JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B"})
+RELOCATED_ROMS = frozenset(
+    {"JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B"}
+)
 
 
 class DefinitionTargetsTest(unittest.TestCase):
