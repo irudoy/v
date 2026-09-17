@@ -259,7 +259,8 @@ intake-selected byte is copied to scratch `0xFFFF1BEE` and continues through
 mode, rate, and offset logic before `0xFFFF2326`. The exhaust-selected byte
 continues through an independent set of mode, rate, and offset constraints
 before `0xFFFF2327` at `0xC0CEE`. Either conditioned target can differ from the
-immediate map lookup or be replaced with neutral `0x80`.
+immediate map lookup or be replaced with neutral `0x80`. The exhaust stages
+are listed under "Standstill override and slew" below.
 
 ## Target-vehicle replay
 
@@ -301,6 +302,57 @@ and the duty stage `FUN 000C2040`. After both banks it calls output converter
 error stage: stock `0xAB` has the bit set, so `FUN 000C1152` runs and
 `FUN 000C0D90` does not.
 
+### Standstill override and slew
+
+`FUN 000BFE88` conditions the coolant-selected exhaust byte before the demand
+comparison. Three hysteresis flags precede a map-independent override:
+
+```text
+ffff24ab bit 0 = uint8[ffff11ae] + (bit 0 ? ROM8[0x86E1] = 4 : 0) >= ROM8[0x8E3B] = 36
+                 engine speed at or above 1800 RPM, released below 1600 RPM    stored at 0xBFEE4
+ffff24ab bit 1 = uint8[ffff11ae] - (bit 1 ? ROM8[0x86E1] = 4 : 0) <= ROM8[0x8E3A] = 80
+                 engine speed at or below 4000 RPM, released above 4200 RPM    stored at 0xBFF14
+ffff24ac bit 7 = uint8[ffff110e] - (bit 7 ? ROM8[0x86E8] = 1 : 0) <= ROM8[0x8E3C] = 2
+                 coarse vehicle speed at or below 2 counts, released above 3   stored at 0xBFF4E
+ffff246c bit 1 = ffff248b bit 2 && ffff24ab bit 0 && ffff24ab bit 1
+                 && ffff24ac bit 7 && ffff244f bit 2                          stored at 0xC017E
+```
+
+Bit 1 of `0xFFFF24AB` and bit 7 of `0xFFFF24AC` come from comparator
+`FUN 000259D0`, which subtracts the hysteresis offset only while the flag is
+already set. The override stage at `0xC018E..0xC01F4` then selects the byte
+stored to `0xFFFF137E`:
+
+```text
+ffff248b bit 2 clear              latch ffff2478 bit 4 cleared at 0xC018C, byte = map
+ffff246c bit 1 set, latch clear   byte = clamp_u8(ROM8[0x8E36] + 128) = 168 (+20 degCA);
+                                  with ffff24d3 bit 4 set the latch is set at 0xC01C8
+                                  instead and byte = 128
+ffff246f bit 1 set                byte = 128 on the pass after the predicate falls
+latch set                         byte = previous ffff137e
+otherwise                         byte = coolant-selected map value
+```
+
+`0xFFFF246F` is the scheduler's prior-cycle copy of `0xFFFF246C`. The
+override commands 20 degrees of exhaust retard whenever the engine passes
+1800 RPM with the vehicle at rest while the operational enable is set,
+independently of surfaces `0xB33A`, `0xB2FA`, and `0xAB4A`; it ends when the
+engine speed leaves the window, the vehicle moves, or `0xFFFF244F` bit 2
+clears. `0xFFFF24D3` bit 4 is written at `0xC0A0A` from `0xFFFF247E` bit 0
+together with the published target above 128 or counter `0xFFFF1C74` at most
+2; `0xFFFF247E` bit 0 is set at `0xC098A` when countdown `0xFFFF25E7` reads
+zero, and the countdown is reloaded with `ROM8[0x8CBF] = 50` at `0xBFFBC`
+while byte `0xFFFF1240` or `0xFFFF1241` lies outside `+/- ROM8[0x8E16] = 6`.
+
+After the limiter for bytes at or above `ROM8[0x8DE4] = 190` (counter
+`0xFFFF1954`, bound `ROM8[0x8E1E] = 120`), the slew stage at
+`0xC045A..0xC04B4` bounds the increase of the byte over the previous
+`0xFFFF1C90`. The step, stored to `0xFFFF1995`, is `ROM8[0x830A] = 4` times
+`0xFFFF11C0` while `0xFFFF2482` bit 1 marks a byte at or above the
+previous-pass value `0xFFFF125A`, and `ROM8[0x84F3] = 20` times `0xFFFF11C0`
+otherwise. The 2026-09-17 captures show the override rising by 4 counts per
+scheduler tick, which corresponds to `0xFFFF11C0 = 1`.
+
 ### Demand flag and bank enable
 
 `FUN 000BFE88` writes the coolant-selected exhaust target to `0xFFFF1C90` at
@@ -332,6 +384,12 @@ when `0xFFFF1952` is at least the bound, and zeroes `0xFFFF1953` at `0xC0920`.
 On each clear, when the matching bit of `0xFFFF1284` is set and engine-speed
 byte `0xFFFF11AE` lies inside `ROM8[0x8E15] = 44 .. ROM8[0x8E14] = 80`
 (2200 to 4000 RPM), the function also sets the bank bit of `0xFFFF1C7E`.
+
+While bit 3 is clear and either enable bit is still set, the published
+target is held at `clamp_u8(ROM8[0x8DCB] - ROM8[0x86F4] + 128) = 140` at
+`0xC07EA..0xC081E`; once both enable bits are clear it becomes
+`clamp_u8(ROM8[0x8E38] + 128) = 128` at `0xC0820`. This hold is the +6 degCA
+plateau that follows each override release in the 2026-09-17 captures.
 
 `0xFFFF1284` is the previous-pass snapshot of `0xFFFF1246`. Scheduler
 `FUN 00020DFE` copies the `0x3E`-byte block `0xFFFF120E..0xFFFF124B` to
@@ -806,17 +864,30 @@ and `0xD3` for bank 2, while a pending bit without a pass sets the bank bit of
 
 ### Disable path
 
-The calibration-only path keeps every exhaust target below the entry
-threshold. With surfaces `0xB33A` and `0xB2FA` at `0x80` and correction
-`0xAB4A` at `0x80`, `0xFFFF1C90` stays at 128, bit 3 of `0xFFFF24A7` is never
-set, `0xFFFF1246` keeps bits 0 and 1 clear, both control-mode bytes stay in
-mode 0, `P` and the published duty words stay at zero, and `BFR7C` and
-`BFR7D` hold zero. The conditioned target `0xFFFF2327` sits at `0x80`.
+The calibration-only path keeps every map-derived exhaust target below the
+entry threshold. With surfaces `0xB33A` and `0xB2FA` at `0x80` and correction
+`0xAB4A` at `0x80`, `0xFFFF1C90` stays at 128 outside the standstill
+override, bit 3 of `0xFFFF24A7` stays clear, `0xFFFF1246` keeps bits 0 and 1
+clear, both control-mode bytes stay in mode 0, `P` and the published duty
+words stay at zero, and `BFR7C` and `BFR7D` hold zero. The conditioned
+target `0xFFFF2327` sits at `0x80`.
+
+The standstill override is outside that path. With `0xFFFF246C` bit 1 set it
+writes `ROM8[0x8E36] + 128 = 168` to `0xFFFF137E` regardless of the
+surfaces, the demand flag sets, both banks energize, and the target returns
+through the 140 hold to 128 once the predicate falls. The 2026-09-17
+captures of a Map 3 image with all three surfaces neutral show eight such
+excursions, each starting as the engine passed 1800 RPM at rest or while
+creeping and ending on pedal release, on vehicle motion, or above 4200 RPM.
+Calibration byte `ROM8[0x8E36]` is single-copy and not a Map Switching
+family; a value of 0 makes the override command 128 on every map slot and
+leaves the rest of the path unchanged.
 
 On that path the monitor behaves as follows:
 
-- The target-tracking pair is never enabled, because it requires
-  `0xFFFF2327 != 0x80`, so `FUN 000904C2` runs its reset path.
+- The target-tracking pair is enabled only during the standstill override,
+  because it requires `0xFFFF2327 != 0x80`; otherwise `FUN 000904C2` runs
+  its reset path.
 - The magnet retarder circuit pair is never judged, because `FUN 00090642`
   returns while the published duty word is zero.
 - The rest-position pair is enabled by the neutral target and compares
@@ -856,7 +927,11 @@ following remain unresolved:
   absolute angle of the 44-degree stock rest value;
 - the decrement cadence of timer `0xFFFF43BE + b`, the internals of
   `FUN 00090642` beyond its entry gate, and the tester-side meaning of
-  service `0xA0` request 3.
+  service `0xA0` request 3;
+- the physical meaning of `0xFFFF244F` bit 2 in the standstill predicate,
+  the decrement site of countdown `0xFFFF25E7`, the identity of bytes
+  `0xFFFF1240` and `0xFFFF1241`, and the purpose of the 20-degree standstill
+  override.
 
 ## Evidence boundary
 
