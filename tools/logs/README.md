@@ -145,9 +145,9 @@ common conditioned targets.
 The audit validates only paths exercised by the capture. A warm-engine log with
 the correction selector clear cannot validate the cold surface, coolant blend,
 or conditional correction. Agreement in raw software coordinates also does not
-prove the physical camshaft response. The exhaust degree conversion is
-code-proven through the exhaust monitor and the 0.5-degree edge-phase count;
-the intake conversion remains a candidate.
+prove the physical camshaft response. Both degree conversions are code-proven
+through the 0.5-degree edge-phase count of the capture handlers and the
+raw-unit comparison of target and actual bytes.
 
 ## JK08A ignition timing-state audit
 

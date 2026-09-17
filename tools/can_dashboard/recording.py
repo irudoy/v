@@ -67,12 +67,12 @@ RAW_FIELD_DISPLAY = {
     "absolute_throttle_raw": ("Absolute throttle", "raw", 0, "Throttle"),
     "tps_b2_raw": ("TPS bank 2", "V*", 3, "Throttle"),
     "intake_cvtc_actual_b1_raw": (
-        "Intake CVTC actual B1", "degCA*", 1, "CVTC"
+        "Intake CVTC actual B1", "degCA", 1, "CVTC"
     ),
     "intake_cvtc_actual_b2_raw": (
-        "Intake CVTC actual B2", "degCA*", 1, "CVTC"
+        "Intake CVTC actual B2", "degCA", 1, "CVTC"
     ),
-    "intake_cvtc_target_raw": ("Intake CVTC target", "degCA*", 1, "CVTC"),
+    "intake_cvtc_target_raw": ("Intake CVTC target", "degCA", 1, "CVTC"),
     "exhaust_cvtc_target_raw": ("Exhaust CVTC target", "degCA", 1, "CVTC"),
     "calculated_load_raw": ("Calculated load", "%", 1, "Engine"),
     "throttle_request_bounded_raw": (

@@ -67,7 +67,7 @@ class MlgRestampTest(unittest.TestCase):
             self.assertIn("Intake CVTC actual B1", names)
             self.assertIn("gps_lat", names)
             for field in fields:
-                if field.units == "degCA*":
+                if field.units == "degCA":
                     self.assertEqual(field.transform, -128.0)
             self.assertEqual(data_blocks(log), before_blocks)
             mlvlg.validate_mlg(log)

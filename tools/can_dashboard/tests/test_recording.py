@@ -135,8 +135,8 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertNotIn("gps_lon", names)
         self.assertEqual([name for name in names if "*" in name], [])
         cvtc_units = {
-            "Intake CVTC actual B1": "degCA*",
-            "Intake CVTC target": "degCA*",
+            "Intake CVTC actual B1": "degCA",
+            "Intake CVTC target": "degCA",
             "Exhaust CVTC actual B1": "degCA",
             "Exhaust CVTC actual B2": "degCA",
             "Exhaust CVTC target": "degCA",

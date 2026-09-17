@@ -842,8 +842,7 @@
 
     <!-- 0x0B43A  16x16 uint8  map [code]; entry 0x261B8 (explicit, core 0x26944)
          accessor 0xBDA64; r4 operand: slice
-         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12F3E rpm [code]; X Axis 0x12F1E load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12F3E rpm [code]; X Axis 0x12F1E load [code]
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
          The intake-cam target identity is code-proven by its placement in two-channel CVTC
@@ -852,17 +851,20 @@
          replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-
          interpolation order, and scheduler alignment. With downstream neutralization excluded,
          prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw
-         for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
-         conversion remain catalog candidates: the 2026-09-17 dashboard recordings keep both
-         actual intake bytes ffff2442/ffff2443 within two counts of a target unchanged for 100
-         records in 95 to 100 percent of 13,202 to 43,264 samples per bank, which proves shared
-         raw units with the target but not the degree scale of the intake edge phase. Result
-         disposition: consumer.
+         for 33,122. One count is 0.5 crank degrees: channel-1A capture handlers 0002a5cc and
+         0002a36a form the intake edge phases ffff22cc/ffff22cd as 20*ffff13b2 +
+         floor(20*interval/ffff22bc) minus 60 or 20 through signed divider 00021bbc, where
+         ffff22bc is 10 crank degrees; FUN 000bd9f0 publishes the actual bytes ffff2442/ffff2443
+         as 128 + rest edge - edge phase, and FUN 0004d2a6 subtracts them from common target
+         ffff2326 in the same raw units. The 2026-09-17 dashboard recordings keep both actual
+         intake bytes within two counts of a target unchanged for 100 records in 95 to 100
+         percent of 13,202 to 43,264 samples per bank. The Cylinder Filling physical name and
+         the crank-wheel origin of the absolute angle remain open. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake CVTC Target - Main"
            category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0x0B43A" sizex="16" sizey="16" endian="big">
-      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F1E"
              sizex="16" endian="big">
@@ -922,21 +924,22 @@
 
     <!-- 0x0B53A  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
          accessor 0xBDA64; r4 operand: pool
-         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12ECA rpm [code]; X Axis 0x12EAA load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12ECA rpm [code]; X Axis 0x12EAA load [code]
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
          Code proves the cold intake-cam target role, raw coolant selection, centered byte
          representation, and column coordinate at raw*100/128 percent of the fixed BFS
          reference. The target-vehicle capture remains entirely above the warm threshold and
-         does not dynamically validate this surface or the coolant blend. The Cylinder Filling
-         physical name and 0.5 degree-per-byte output conversion remain source-derived
-         candidates. Result disposition: consumer.
+         does not dynamically validate this surface or the coolant blend. The output conversion
+         (x-128)*0.5 crank degrees follows the intake edge-phase unit shared with 0000b43a: the
+         cold target enters the same ffff2326 path that FUN 0004d2a6 compares with actual bytes
+         ffff2442/ffff2443. The Cylinder Filling physical name remains a source-derived
+         candidate. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake CVTC Target - Cold"
            category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0x0B53A" sizex="8" sizey="8" endian="big">
-      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12EAA"
              sizex="8" endian="big">
@@ -981,20 +984,20 @@
 
     <!-- 0x0AB5A  4x4 uint8  map [code]; entry 0x26084 (explicit, core 0x26944)
          accessor 0xBDA64; r4 operand: pool
-         scaling (x-128)*0.5 degrees [candidate]; Y Axis 0x12F9A rpm [code]; X Axis 0x12F92 load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12F9A rpm [code]; X Axis 0x12F92 load [code]
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
          Code proves the conditional intake-cam correction path and centered raw arithmetic. The
          target-vehicle capture contains zero samples with ffff2466.bit6 set, so this branch has
-         no dynamic validation. The high-detonation meaning of the selector, the Cylinder
-         Filling axis name, and the 0.5 degree-per-byte conversion remain catalog candidates.
-         Result disposition: consumer.
+         no dynamic validation. The correction is subtracted from the 0000b43a output count for
+         count, so it carries the intake edge-phase unit of 0.5 crank degrees per count. The
+         high-detonation meaning of the selector and the Cylinder Filling axis name remain
+         catalog candidates. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake CVTC Target Correction - High-Detonation State"
            category="Variable Valve Timing//Intake Cam" storagetype="uint8"
            storageaddress="0x0AB5A" sizex="4" sizey="4" endian="big">
-      <scaling units="degrees [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F92"
              sizex="4" endian="big">

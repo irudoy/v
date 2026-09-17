@@ -76,6 +76,15 @@ standstill override scalar `0x8E36` in `defs/JK08A.findings.csv` carry this
 conversion at code confidence; the crank-wheel origin of the absolute angle
 remains open.
 
+The intake pair `0xFFFF2442`/`0xFFFF2443` (`0xFFFF2442` is DID `0x1135`)
+shares the unit. The channel-1A handlers form the intake edge phases
+`0xFFFF22CC`/`0xFFFF22CD` with the same divider and the same 20-count selector
+step in 0.5 crank degrees, `FUN 000BD9F0` centers each actual byte on its rest
+edge, and `FUN 0004D2A6` subtracts the actual bytes from common target
+`0xFFFF2326` in raw units. The definition rows of `0xB43A`, `0xB53A`, and
+`0xAB5A` carry `(x-128)*0.5` crank degrees at code confidence; the intake sign
+is advance positive.
+
 ## Solenoid output stage
 
 Both cam-phaser solenoids are driven by ATU-II channel 7 in PWM mode. The
@@ -667,6 +676,45 @@ the last crank reference in 0.5-degree units, and `20 * segment` places that
 reference `10 * segment` degrees after the event origin. The stock rest
 values `ROM8[0x831D] = ROM8[0x831E] = 88` are 44 crank degrees after the
 event origin, and the phase reaches at most 240 units.
+
+The intake cams use the same arithmetic on ATU-II channel 1A. `FUN 0002A5CC`
+serves the bank-1 capture GR1F at `0xFFFFF44E` and `FUN 0002A36A` the bank-2
+capture GR1E at `0xFFFFF44C`. Each handler stores the interval to crank
+reference `0xFFFF158A` (`0xFFFF22C8` at `0x2A6D0`, `0xFFFF22CA` at `0x2A41E`),
+divides `20 * interval` by `0xFFFF22BC` through the same signed divider
+`0x00021BBC` (`0x2A6F4`, `0x2A442`), and forms the running phase
+
+```text
+phase = 20 * ffff13b2 + floor(20 * interval / uint16[ffff22bc]) - 60    ffff13b2 < 8
+phase = 20 * ffff13b2 + floor(20 * interval / uint16[ffff22bc]) - 20    ffff13b2 >= 8
+```
+
+clamped at zero, into `0xFFFF22D2` (`0x2A746`) or `0xFFFF22D3` (`0x2A47E`).
+The running byte becomes the edge phase `0xFFFF22CC` at `0x2A75E` while event
+state `0xFFFF13C8` is 2, 4, or 6, and `0xFFFF22CD` at `0x2A496` while it is
+1, 3, or 5. Both passes require `0xFFFF84FF` bit 7 set and their edge count
+(`0xFFFF1391`, `0xFFFF1390`) equal to 1, are gated by bit 7 of status bytes
+`0xFFFF8509` and `0xFFFF8504`, and shift the previous accepted values into
+`0xFFFF22CE`/`0xFFFF22D0` and `0xFFFF22CF`/`0xFFFF22D1` on every processed
+capture. One count is therefore 0.5 crank degrees on the intake phase axis as
+well; the selector offsets differ from the exhaust segment mapping, so the two
+axes have different origins. The stock rest values
+`ROM8[0x831C] = ROM8[0x8321] = 140` are the phase of selector 8 at zero
+interval.
+
+`FUN 000BD9F0` publishes the actual intake bytes at `0xBDA34` as
+
+```text
+uint8[ffff2442] = clamp_u8(0x80 + ffff4799 - ffff22cc)
+uint8[ffff2443] = clamp_u8(0x80 + ffff479a - ffff22cd)
+```
+
+or neutral `0x80` under the hardware-control mask. An edge earlier than the
+rest edge reads above `0x80`, so the intake sign is advance positive, the
+opposite of the exhaust pair. `FUN 0004D2A6` subtracts these bytes from
+common target `0xFFFF2326` in raw units at `0x4D31E`, `0x4D32A`, and
+`0x4D356`, so the target and the surfaces `0xB43A`, `0xB53A`, and `0xAB5A`
+carry the same 0.5 crank degrees per count.
 
 `FUN 000BFC2E`, called from coordinator `FUN 000C21E6` at `0xC220C` and
 `0xC2212` with the channel in `r4`, turns the phase into the published

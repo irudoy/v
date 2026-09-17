@@ -612,7 +612,7 @@ profile_crc16 = 0x01A3
 steady_input_hold_records = 6
 steady_target_hold_records = 100
 capture_name = ["2026-09-17_17-10-15_vq-can-telemetry-v4.0.1.mlg", "2026-09-17_17-44-20_vq-can-telemetry-v4.0.1.mlg", "2026-09-17_18-02-32_vq-can-telemetry-v4.0.1.mlg"]
-capture_sha256 = ["41e0010c1c56d02f35400e1cf5310a9caf5c7ba43e01a05291058ddf1f925504", "2e142f567cd24e253f5fc837d6a5906812b1fabfa59e549d230005fba5026677", "00ed2bc88f54e1f7b61c56e15c3587e21836a697f8c91b9cd3dba55d7ca09643"]
+capture_sha256 = ["0f06c7aaba53734429037c0660a86f110191b3a9fcb323bca7678ceaf9978fc1", "6980e230653447bd0e696d0ad2192da49d91c7c774d31d00870da0201c0e8088", "7445efdf82be5deedc40b7f5ae013d42e7434a873698583aaf43453f64dff014"]
 capture_descriptors = "restamped by tools/logs/mlg_restamp.py after the unit closure; data blocks unchanged"
 map_slot = [1, 3, 3]
 calibration_image_sha256 = ["ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23", "25a514ac08cf1a3e03e6f8f5d25ec41206bb9cf864353dc36f1f501f740a2fcf", "25a514ac08cf1a3e03e6f8f5d25ec41206bb9cf864353dc36f1f501f740a2fcf"]
@@ -661,7 +661,7 @@ ltft_values = [0x6400, 0x6400, 0x6400]
 coolant_raw_range = [[141, 141], [138, 147], [142, 151]]
 iat_raw_range = [[79, 92], [79, 106], [78, 89]]
 battery_raw_range = [[150, 169], [157, 180], [154, 168]]
-result = "stock RPM, the duty monitor and command pairs, steady-target tracking of both cam families, the MAF transfer chain, Calculated Load, the BFS producer, pulse linearity, and the final-timing to APC identity hold in raw units on the running engine; the exhaust conversion of 0.5 degCA per count is fixed by code, while the intake conversion, the g/s airflow scale, and the millisecond fuel scales remain candidates; the stock Map 1 exhaust actual bytes overshoot the low-speed retard target by 9 to 45 counts"
+result = "stock RPM, the duty monitor and command pairs, steady-target tracking of both cam families, the MAF transfer chain, Calculated Load, the BFS producer, pulse linearity, and the final-timing to APC identity hold in raw units on the running engine; both cam conversions of 0.5 degCA per count are fixed by code, while the g/s airflow scale and the millisecond fuel scales remain candidates; the stock Map 1 exhaust actual bytes overshoot the low-speed retard target by 9 to 45 counts"
 
 [passive_can]
 recorded_on = "2026-08-16"

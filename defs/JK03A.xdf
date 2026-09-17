@@ -608,7 +608,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x229B" flags="0x0">
     <title>Intake CVTC Target - Main</title>
-    <description>Exact JK03A. Address 0xB43A; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares common reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-interpolation order, and scheduler alignment. With downstream neutralization excluded, prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain catalog candidates: the 2026-09-17 dashboard recordings keep both actual intake bytes ffff2442/ffff2443 within two counts of a target unchanged for 100 records in 95 to 100 percent of 13,202 to 43,264 samples per bank, which proves shared raw units with the target but not the degree scale of the intake edge phase. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <description>Exact JK03A. Address 0xB43A; 16 rows x 16 columns; uint8; map confidence code. Warm/main intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c, optionally applies conditional correction 0000ab5a around raw center 128, and writes ffff1c5c. FUN 000bdc66 uses it above raw coolant 131 and blends it with cold target 0000b53a between raw coolant 106 and 131 before the result enters the intake CVTC target path. The intake-cam target identity is code-proven by its placement in two-channel CVTC dispatcher 000bd170, the coolant target selector, and the consumer that compares common reference ffff2326 with both intake-cam timing channels. A 35,808-sample target-vehicle replay validates the exact warm raw lookup, normalized-BFS coordinate, byte-interpolation order, and scheduler alignment. With downstream neutralization excluded, prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw for 33,122. One count is 0.5 crank degrees: channel-1A capture handlers 0002a5cc and 0002a36a form the intake edge phases ffff22cc/ffff22cd as 20*ffff13b2 + floor(20*interval/ffff22bc) minus 60 or 20 through signed divider 00021bbc, where ffff22bc is 10 crank degrees; FUN 000bd9f0 publishes the actual bytes ffff2442/ffff2443 as 128 + rest edge - edge phase, and FUN 0004d2a6 subtracts them from common target ffff2326 in the same raw units. The 2026-09-17 dashboard recordings keep both actual intake bytes within two counts of a target unchanged for 100 records in 95 to 100 percent of 13,202 to 43,264 samples per bank. The Cylinder Filling physical name and the crank-wheel origin of the absolute angle remain open. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="26" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F1E" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -640,7 +640,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xB43A" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>degrees [cand]</units>
+      <units>degCA</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">
@@ -734,7 +734,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x48AC" flags="0x0">
     <title>Intake CVTC Target - Cold</title>
-    <description>Exact JK03A. Address 0xB53A; 8 rows x 8 columns; uint8; map confidence code. Cold intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c and writes ffff1c5e. FUN 000bdc66 uses it at raw coolant &lt;=106 and blends it with warm/main target 0000b43a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Code proves the cold intake-cam target role, raw coolant selection, centered byte representation, and column coordinate at raw*100/128 percent of the fixed BFS reference. The target-vehicle capture remains entirely above the warm threshold and does not dynamically validate this surface or the coolant blend. The Cylinder Filling physical name and 0.5 degree-per-byte output conversion remain source-derived candidates. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <description>Exact JK03A. Address 0xB53A; 8 rows x 8 columns; uint8; map confidence code. Cold intake-cam target surface. FUN 000bda64 interpolates it by RPM/50 byte ffff11ae and Q7 normalized-BFS scheduler snapshot ffff102c and writes ffff1c5e. FUN 000bdc66 uses it at raw coolant &lt;=106 and blends it with warm/main target 0000b43a between raw coolant 106 and 131 before the result enters the intake CVTC target path. Code proves the cold intake-cam target role, raw coolant selection, centered byte representation, and column coordinate at raw*100/128 percent of the fixed BFS reference. The target-vehicle capture remains entirely above the warm threshold and does not dynamically validate this surface or the coolant blend. The output conversion (x-128)*0.5 crank degrees follows the intake edge-phase unit shared with 0000b43a: the cold target enters the same ffff2326 path that FUN 0004d2a6 compares with actual bytes ffff2442/ffff2443. The Cylinder Filling physical name remains a source-derived candidate. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="26" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12EAA" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -766,7 +766,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xB53A" mmedelementsizebits="8" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>degrees [cand]</units>
+      <units>degCA</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">
@@ -818,7 +818,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x78F1" flags="0x0">
     <title>Intake CVTC Target Correction - High-Detonation State</title>
-    <description>Exact JK03A. Address 0xAB5A; 4 rows x 4 columns; uint8; map confidence code. Conditional intake-cam target correction. When ffff2466.bit6 is set, FUN 000bda64 calculates clamp_u8(output_0000b43a - output_0000ab5a + 128); when the bit is clear, it bypasses this map. The corrected target is written to ffff1c5c and enters the intake CVTC target path. Code proves the conditional intake-cam correction path and centered raw arithmetic. The target-vehicle capture contains zero samples with ffff2466.bit6 set, so this branch has no dynamic validation. The high-detonation meaning of the selector, the Cylinder Filling axis name, and the 0.5 degree-per-byte conversion remain catalog candidates. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
+    <description>Exact JK03A. Address 0xAB5A; 4 rows x 4 columns; uint8; map confidence code. Conditional intake-cam target correction. When ffff2466.bit6 is set, FUN 000bda64 calculates clamp_u8(output_0000b43a - output_0000ab5a + 128); when the bit is clear, it bypasses this map. The corrected target is written to ffff1c5c and enters the intake CVTC target path. Code proves the conditional intake-cam correction path and centered raw arithmetic. The target-vehicle capture contains zero samples with ffff2466.bit6 set, so this branch has no dynamic validation. The correction is subtracted from the 0000b43a output count for count, so it carries the intake edge-phase unit of 0.5 crank degrees per count. The high-detonation meaning of the selector and the Cylinder Filling axis name remain catalog candidates. Result disposition: consumer. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="26" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x12F92" mmedelementsizebits="8" mmedcolcount="4" mmedmajorstridebits="8" mmedminorstridebits="0" />
@@ -850,7 +850,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xAB5A" mmedelementsizebits="8" mmedrowcount="4" mmedcolcount="4" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>degrees [cand]</units>
+      <units>degCA</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="(X-128)*0.5">
