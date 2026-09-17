@@ -995,6 +995,89 @@
       </table>
     </table>
 
+    <!-- 0x08E83  1 uint8  map [code]
+         scaling x*0.5 degCA [candidate]
+         Stock value 40 is +20 degCA of exhaust retard. The byte is added to the 128 center in
+         the same raw units as surface 0000b33a, so it shares the candidate 0.5 degCA-per-count
+         conversion. It is single-copy and not a Map Switching family, so a change applies to
+         every map slot. The 2026-09-17 captures of a Map 3 image with neutral surfaces show the
+         override as eight excursions to raw 168 starting as the engine passed 1800 RPM at rest.
+         Definition address projected from JK08A 00008e36 through JK08A-JK00D.definition-
+         addresses.csv: unique 8-byte constant block 28 14 00 00 50 24 02 02 at 0x008E83
+         referenced as literal 0x00008E83 by the target exhaust CVTC conditioner 000c5ba0 that
+         follows the target exhaust accessor 000c5a80; byte 0 is read at 000c5eae through the
+         pool slot 000c6054 as the source conditioner 000bfe88 reads byte 0 at 000c01a4 through
+         000c0290.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Exhaust CVTC Target - Standstill Override"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0x08E83" sizex="1" endian="big">
+      <scaling units="degCA [cand]" expression="x*0.5" to_byte="x/0.5" format="0.0"
+               fineincrement="0.5" coarseincrement="2.0"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>Target</data>
+      </table>
+    </table>
+
+    <!-- 0x08E88  1 uint8  map [code]
+         scaling x*50 RPM [code]
+         Stock value 36 is 1800 RPM with release below 1600 RPM. The flag is one input of
+         override predicate ffff246c bit 1. Definition address projected from JK08A 00008e3b
+         through JK08A-JK00D.definition-addresses.csv: byte 5 of the unique 8-byte constant
+         block at 0x008E83; read by the target exhaust CVTC conditioner 000c5ba0 at 000c5be6
+         through the pool slot 000c5df0 as the source conditioner 000bfe88 reads byte 5 at
+         000bfece through 000c0034.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Exhaust CVTC Standstill Override - RPM Floor"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0x08E88" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
+               coarseincrement="200"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>RPM</data>
+      </table>
+    </table>
+
+    <!-- 0x08E87  1 uint8  map [code]
+         scaling x*50 RPM [code]
+         Stock value 80 is 4000 RPM with release above 4200 RPM. The flag is one input of
+         override predicate ffff246c bit 1. Definition address projected from JK08A 00008e3a
+         through JK08A-JK00D.definition-addresses.csv: byte 4 of the unique 8-byte constant
+         block at 0x008E83; read by the target exhaust CVTC conditioner 000c5ba0 at 000c5bfe
+         through the pool slot 000c5df0 as the source conditioner 000bfe88 reads byte 4 at
+         000bfee6 through 000c0034.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Exhaust CVTC Standstill Override - RPM Ceiling"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0x08E87" sizex="1" endian="big">
+      <scaling units="RPM" expression="x*50" to_byte="x/50" format="0" fineincrement="50"
+               coarseincrement="200"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>RPM</data>
+      </table>
+    </table>
+
+    <!-- 0x08E89  1 uint8  map [code]
+         scaling x raw
+         Stock value 2 with release above 3 counts of coarse vehicle-speed byte ffff110e, whose
+         km/h value per count is not established; the 2026-09-17 captures release the override
+         between 8 and 9 km/h of the dashboard speed channel. The flag is one input of override
+         predicate ffff246c bit 1. Definition address projected from JK08A 00008e3c through
+         JK08A-JK00D.definition-addresses.csv: byte 6 of the unique 8-byte constant block at
+         0x008E83; read by the target exhaust CVTC conditioner 000c5ba0 at 000c5c32 through the
+         pool slot 000c5df0 as the source conditioner 000bfe88 reads byte 6 at 000bff1e through
+         000c0034.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="Exhaust CVTC Standstill Override - Speed Threshold"
+           category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
+           storageaddress="0x08E89" sizex="1" endian="big">
+      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="1"/>
+      <table type="Static X Axis" name="Selector" sizex="1">
+        <data>Counts</data>
+      </table>
+    </table>
+
     <!-- 0x14D65  6 uint8  map [code]
          scaling x/128 ratio [code]
          All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in

@@ -15,6 +15,10 @@ DEFS = ROOT / "defs"
 TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
 SH7058_HR_UNSUPPORTED = frozenset()
 JK78C_UNSUPPORTED = {
+    "00008e36",
+    "00008e3a",
+    "00008e3b",
+    "00008e3c",
     "0000934e",
     "0000a9aa",
     "0000ab4a",

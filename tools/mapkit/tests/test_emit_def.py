@@ -53,6 +53,14 @@ DEFAULT_VISIBLE_TABLES = {
     "Exhaust CVTC Target - Cold": "Variable Valve Timing / Exhaust Cam",
     "Exhaust CVTC Target Correction - High-Detonation State":
         "Variable Valve Timing / Exhaust Cam",
+    "Exhaust CVTC Target - Standstill Override":
+        "Variable Valve Timing / Exhaust Cam",
+    "Exhaust CVTC Standstill Override - RPM Floor":
+        "Variable Valve Timing / Exhaust Cam",
+    "Exhaust CVTC Standstill Override - RPM Ceiling":
+        "Variable Valve Timing / Exhaust Cam",
+    "Exhaust CVTC Standstill Override - Speed Threshold":
+        "Variable Valve Timing / Exhaust Cam",
     "Requested Torque Conversion by QH0 - Primary":
         "Electronic Throttle Control / Requested Torque",
     "Engine Torque Surface": "Torque Model / Engine Torque",

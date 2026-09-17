@@ -180,7 +180,7 @@ def test_jk08a_model_covers_reviewed_sources_and_composed_patches():
     assert rom["size"] == 0x100000
     assert rom["reviewedFunctions"] == 609
     assert rom["structuralFunctions"] >= rom["reviewedFunctions"]
-    assert rom["counts"]["maps"] == 512
+    assert rom["counts"]["maps"] == 516
     assert rom["counts"]["axes"] == 79
 
     by_id = {item["id"]: item for item in rom["objects"]}

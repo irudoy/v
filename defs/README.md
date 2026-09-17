@@ -110,10 +110,11 @@ comparison is recorded per map and axis in
 target address.
 
 `JK08A-JK78C.definition-addresses.csv` projects 29 visible source-map roles to
-31 JK78C tables, including explicit bank variants, and records seven source
+31 JK78C tables, including explicit bank variants, and records thirteen source
 maps as unsupported. The unsupported entries cover removed dispatcher slots,
-the three exhaust-cam surfaces of the removed exhaust valve timing subsystem,
-and target algorithms whose table geometry differs. Thirteen reviewed axis
+the three exhaust-cam surfaces and the four standstill exhaust-VTC override
+constants of the removed exhaust valve timing subsystem, and target
+algorithms whose table geometry differs. Thirteen reviewed axis
 pairs complete the emitted geometry. The JK78C registry enables native
 RomRaider checksum handling, fourteen-family target-specific Map Switching,
 Rolling Launch, and the CAN telemetry startup switch from the validated runtime
@@ -128,7 +129,7 @@ for runtime composition and complete checksum closure.
 
 `JK08A-1ND.definition-addresses.csv` projects the same reviewed VQ37 semantic
 set to the SH7059 1ND layout. It records 31 target maps, thirteen axes, and
-seven explicitly unsupported source maps. The projection is established from
+thirteen explicitly unsupported source maps. The projection is established from
 reviewed JK78C-to-1ND0A structural functions, exact storage, interpolation-call
 order, selector branches, and target literals. 1ND3B reuses the address layout
 because all address-bearing executable code is byte-identical to 1ND0A, while
@@ -147,13 +148,13 @@ demand axis, which the registry declares as absent roles.
 
 `JK08A-1ME3B.definition-addresses.csv` projects the same reviewed VQ37
 semantic set to the fused-library 1ME3B image. It records 27 target maps,
-thirteen axes, and twelve explicitly unsupported source maps. No code relocates
+thirteen axes, and sixteen explicitly unsupported source maps. No code relocates
 from any modelled ROM, so every row is established through the 1ND0A
 structural export: exact-bytes or normalized-shape function pairs that read
 the target address at the same call ordinal, target functions that reproduce
 the 1ND0A reader's operand set, selector arms, and call order, the fused leaf
 whose contract equals the 1ND0A wrapper, exact target storage, and target
-literals. The unsupported rows are the nine VQ37 rows and the three canonical
+literals. The unsupported rows are the thirteen VQ37 rows and the three canonical
 ignition surfaces: the target ignition coordinator `0x0797CC` carries only its
 mode-selected surfaces and no target function reproduces the gated stock-inert
 trio path of 1ND0A `0x074D98`. The projection declares checksum support with

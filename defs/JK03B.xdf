@@ -915,6 +915,174 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x4D8D" flags="0x0">
+    <title>Exhaust CVTC Target - Standstill Override</title>
+    <description>Exact JK03B. Address 0x8E36; 1 rows x 1 columns; uint8; map confidence code. Standstill exhaust-VTC override target. While ffff246c bit 1 is set (operational enable, engine speed between ROM8[0x8e3b] and ROM8[0x8e3a], coarse vehicle speed at or below ROM8[0x8e3c], ffff244f bit 2) and latch ffff2478 bit 4 is clear, FUN 000bfe88 writes clamp_u8(ROM8[0x8e36]+128) to ffff137e at 000c01f4 in place of the coolant-selected map byte; the demand flag, both bank enables, and the duty controller then follow it. Raw 0 is no override. Stock value 40 is +20 degCA of exhaust retard. The byte is added to the 128 center in the same raw units as surface 0000b33a, so it shares the candidate 0.5 degCA-per-count conversion. It is single-copy and not a Map Switching family, so a change applies to every map slot. The 2026-09-17 captures of a Map 3 image with neutral surfaces show the override as eight excursions to raw 168 starting as the engine passed 1800 RPM at rest.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Selector</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Target" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x8E36" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>degCA [cand]</units>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.5">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xD860" flags="0x0">
+    <title>Exhaust CVTC Standstill Override - RPM Floor</title>
+    <description>Exact JK03B. Address 0x8E3B; 1 rows x 1 columns; uint8; map confidence code. Engine-speed floor of the standstill exhaust-VTC override. FUN 000bfe88 sets ffff24ab bit 0 at 000bfee4 when engine-speed byte ffff11ae reaches this value and clears it when the byte plus hysteresis ROM8[0x86e1]=4 falls below it. Stock value 36 is 1800 RPM with release below 1600 RPM. The flag is one input of override predicate ffff246c bit 1. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Selector</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="RPM" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x8E3B" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x89DA" flags="0x0">
+    <title>Exhaust CVTC Standstill Override - RPM Ceiling</title>
+    <description>Exact JK03B. Address 0x8E3A; 1 rows x 1 columns; uint8; map confidence code. Engine-speed ceiling of the standstill exhaust-VTC override. Hysteresis comparator 000259d0 sets ffff24ab bit 1 while engine-speed byte ffff11ae is at or below this value and clears it above the value plus ROM8[0x86e1]=4; FUN 000bfe88 stores the flag at 000bff14. Stock value 80 is 4000 RPM with release above 4200 RPM. The flag is one input of override predicate ffff246c bit 1. Static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence: indexed_by].</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Selector</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="RPM" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x8E3A" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xE8F6" flags="0x0">
+    <title>Exhaust CVTC Standstill Override - Speed Threshold</title>
+    <description>Exact JK03B. Address 0x8E3C; 1 rows x 1 columns; uint8; map confidence code. Vehicle-speed threshold of the standstill exhaust-VTC override. Hysteresis comparator 000259d0 sets ffff24ac bit 7 while coarse vehicle-speed byte ffff110e is at or below this value and clears it above the value plus ROM8[0x86e8]=1; FUN 000bfe88 stores the flag at 000bff4e. Stock value 2 with release above 3 counts of coarse vehicle-speed byte ffff110e, whose km/h value per count is not established; the 2026-09-17 captures release the override between 8 and 9 km/h of the dashboard speed channel. The flag is one input of override predicate ffff246c bit 1.</description>
+    <CATEGORYMEM index="0" category="25" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Selector</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="Counts" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x8E3C" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>raw</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xABEC" flags="0x0">
     <title>Injection Pulse Channel Multiplier</title>
     <description>Exact JK03B. Address 0x129C0; 1 rows x 6 columns; uint8; map confidence code. Six-channel injection-pulse multiplier indexed directly by channel number 0..5. For a positive calculated pulse, FUN_0004eba2 multiplies by the selected byte, shifts the product right by 7, saturates to uint16, and writes the raw and transformed six-channel output arrays. All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in override mask ffff22e0 bypasses this multiplier and selects word ffff2436. The trace proves channel indexing but does not establish the physical cylinder order; presentation labels remain generic channel numbers. Static diagnostic context: INJ PULSE-B1 [code, homologous_vq35hr, via map evidence: writes].</description>

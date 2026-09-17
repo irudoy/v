@@ -241,6 +241,46 @@ format = "0.0"
 fine = 0.5
 coarse = 2.0
 
+[table.00008e36]
+name = "Exhaust CVTC Target - Standstill Override"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 13
+emit = true
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+static_axis = ["Target"]
+
+[table.00008e3b]
+name = "Exhaust CVTC Standstill Override - RPM Floor"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 14
+emit = true
+format = "0"
+fine = 50
+coarse = 200
+static_axis = ["RPM"]
+
+[table.00008e3a]
+name = "Exhaust CVTC Standstill Override - RPM Ceiling"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 15
+emit = true
+format = "0"
+fine = 50
+coarse = 200
+static_axis = ["RPM"]
+
+[table.00008e3c]
+name = "Exhaust CVTC Standstill Override - Speed Threshold"
+category = "Variable Valve Timing / Exhaust Cam"
+order = 16
+emit = true
+format = "0"
+fine = 1
+coarse = 1
+static_axis = ["Counts"]
+
 [table.0000b43a]
 name = "Intake CVTC Target - Main"
 category = "Variable Valve Timing / Intake Cam"
