@@ -853,7 +853,11 @@
          interpolation order, and scheduler alignment. With downstream neutralization excluded,
          prior-snapshot alignment is exact for 32,256 of 33,839 comparisons and within one raw
          for 33,122. The Cylinder Filling physical name and 0.5 degree-per-byte output
-         conversion remain catalog candidates. Result disposition: consumer.
+         conversion remain catalog candidates: the 2026-09-17 dashboard recordings keep both
+         actual intake bytes ffff2442/ffff2443 within two counts of a target unchanged for 100
+         records in 95 to 100 percent of 13,202 to 43,264 samples per bank, which proves shared
+         raw units with the target but not the degree scale of the intake edge phase. Result
+         disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake CVTC Target - Main"
            category="Variable Valve Timing//Intake Cam" storagetype="uint8"
@@ -889,20 +893,21 @@
 
     <!-- 0x0B2FA  8x8 uint8  map [code]; entry 0x26140 (explicit, core 0x26944)
          accessor 0xBFDC0; r4 operand: pool
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12EC2 rpm [code]; X Axis 0x12EA2 load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12EC2 rpm [code]; X Axis 0x12EA2 load [code]
          static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
          map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
          The code path proves the exhaust-target subsystem and centered representation. The
-         precise cold/fallback operating-mode name and 0.5 degCA-per-count conversion remain
-         homologous candidates. Stock cells are all 128, so this surface requests neutral
-         exhaust timing wherever selected. Result disposition: consumer.
+         conversion follows from monitor 0008f168, which compares target ffff2327 in raw units
+         with the actual bytes ffff2324/ffff2325 that FUN 000bfc2e writes in counts of 0.5 crank
+         degrees relative to the learned rest edge. The precise cold/fallback operating-mode
+         name remains a homologous candidate. Stock cells are all 128, so this surface requests
+         neutral exhaust timing wherever selected. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Exhaust CVTC Target - Cold"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0x0B2FA" sizex="8" sizey="8" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12EA2"
              sizex="8" endian="big">
@@ -946,22 +951,22 @@
 
     <!-- 0x0AB4A  4x4 uint8  map [code]; entry 0x26084 (explicit, core 0x26944)
          accessor 0xBFDC0; r4 operand: pool
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F96 rpm [code]; X Axis 0x12F8E load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12F96 rpm [code]; X Axis 0x12F8E load [code]
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
          Code proves centered subtractive arithmetic and the exact 4x4 lookup. The correction is
          subtracted from the 0000b33a output in the same centered raw units before coolant
-         selection, so it shares the exhaust-target conversion. The subsystem identity follows
-         from the downstream ffff2327 binding to exhaust-target DID 0x1166 and exhaust-VTC
-         control and DTC consumers. The homologous HR A2L uses 0.5 degCA per centered count for
-         cam-timing maps; the physical correction (raw-128)*0.5 degCA remains a homologous
-         candidate. Result disposition: consumer.
+         selection, so it shares the exhaust-target conversion of 0.5 crank degrees per count
+         relative to the learned rest edge, which monitor 0008f168 fixes by comparing target
+         ffff2327 with the actual bytes ffff2324/ffff2325 of FUN 000bfc2e. The subsystem
+         identity follows from the downstream ffff2327 binding to exhaust-target DID 0x1166 and
+         exhaust-VTC control and DTC consumers. The homologous HR A2L uses the same 0.5 degCA
+         per centered count for cam-timing maps. Result disposition: consumer.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Exhaust CVTC Target Correction - High-Detonation State"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0x0AB4A" sizex="4" sizey="4" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F8E"
              sizex="4" endian="big">
@@ -1027,18 +1032,20 @@
 
     <!-- 0x08E36  1 uint8  map [code]
          accessor 0xBFE88; r4 operand: manual
-         scaling x*0.5 degCA [candidate]
+         scaling x*0.5 degCA [code]
          Stock value 40 is +20 degCA of exhaust retard. The byte is added to the 128 center in
-         the same raw units as surface 0000b33a, so it shares the candidate 0.5 degCA-per-count
-         conversion. It is single-copy and not a Map Switching family, so a change applies to
-         every map slot. The 2026-09-17 captures of a Map 3 image with neutral surfaces show the
-         override as eight excursions to raw 168 starting as the engine passed 1800 RPM at rest.
+         the same raw units as surface 0000b33a and target ffff2327, so it carries the code-
+         proven 0.5 crank degrees per count of the actual bytes that monitor 0008f168 compares
+         with the target. It is single-copy and not a Map Switching family, so a change applies
+         to every map slot. The 2026-09-17 captures of a Map 3 image with neutral surfaces show
+         the override as eight excursions to raw 168 starting as the engine passed 1800 RPM at
+         rest.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Exhaust CVTC Target - Standstill Override"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0x08E36" sizex="1" endian="big">
-      <scaling units="degCA [cand]" expression="x*0.5" to_byte="x/0.5" format="0.0"
-               fineincrement="0.5" coarseincrement="2.0"/>
+      <scaling units="degCA" expression="x*0.5" to_byte="x/0.5" format="0.0" fineincrement="0.5"
+               coarseincrement="2.0"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>Target</data>
       </table>
@@ -1561,8 +1568,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load [code]
          static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
          map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
@@ -1570,16 +1576,24 @@
          diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
          target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
          monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes.
+         centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes
+         ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned
+         rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over
+         the 120-degree event interval), and monitor 0008f168 forms the tracking gap
+         clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so
+         the target and this surface are (raw-128)*0.5 crank degrees relative to the learned
+         rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of
+         35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16
+         unchanged-input cycles; remaining differences are downstream mode, rate, and offset
+         conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual
+         bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229
+         and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge
+         remains open. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0x0B33A" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
@@ -1935,8 +1949,7 @@
          project map-switching patch
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load [code]
          static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
          map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
@@ -1944,16 +1957,24 @@
          diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
          target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
          monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes.
+         centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes
+         ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned
+         rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over
+         the 120-degree event interval), and monitor 0008f168 forms the tracking gap
+         clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so
+         the target and this surface are (raw-128)*0.5 crank degrees relative to the learned
+         rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of
+         35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16
+         unchanged-input cycles; remaining differences are downstream mode, rate, and offset
+         conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual
+         bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229
+         and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge
+         remains open. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xD2D00" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
@@ -2320,8 +2341,7 @@
          project map-switching patch
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load [code]
          static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
          map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
@@ -2329,16 +2349,24 @@
          diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
          target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
          monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes.
+         centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes
+         ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned
+         rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over
+         the 120-degree event interval), and monitor 0008f168 forms the tracking gap
+         clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so
+         the target and this surface are (raw-128)*0.5 crank degrees relative to the learned
+         rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of
+         35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16
+         unchanged-input cycles; remaining differences are downstream mode, rate, and offset
+         conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual
+         bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229
+         and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge
+         remains open. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xD2E00" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
@@ -2705,8 +2733,7 @@
          project map-switching patch
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load [code]
          static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
          map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
@@ -2714,16 +2741,24 @@
          diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
          target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
          monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes.
+         centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes
+         ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned
+         rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over
+         the 120-degree event interval), and monitor 0008f168 forms the tracking gap
+         clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so
+         the target and this surface are (raw-128)*0.5 crank degrees relative to the learned
+         rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of
+         35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16
+         unchanged-input cycles; remaining differences are downstream mode, rate, and offset
+         conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual
+         bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229
+         and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge
+         remains open. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xD2F00" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">
@@ -3090,8 +3125,7 @@
          project map-switching patch
          canonical accessor 0xBFDC0; r4 operand: slice
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling (x-128)*0.5 degCA [candidate]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load
-         [code]
+         scaling (x-128)*0.5 degCA [code]; Y Axis 0x12F2E rpm [code]; X Axis 0x12F0E load [code]
          static diagnostic context: CID=1166H_T_VTC_ANGL_EX [code, nissan_family_candidate, via
          map evidence: writes]; ENG SPEED [code, homologous_vq35hr, via axis evidence:
          indexed_by]
@@ -3099,16 +3133,24 @@
          diagnostics name that DID T_VTC_ANGL_EX; exact control and DTC paths consume the same
          target in P1078/P1084 exhaust-timing-sensor and P0014/P0024 exhaust-VTC-control
          monitors. This closes the subsystem identity independently of map geometry. Code proves
-         centered raw arithmetic; the homologous HR A2L and community diagnostics supply the
-         candidate 0.5 degCA-per-count conversion. Target-vehicle replay of the warm path
-         matches ffff2327 exactly in 26,344 of 35,807 prior-snapshot comparisons and in 4,838 of
-         5,366 active samples after 16 unchanged-input cycles; remaining differences are
-         downstream mode, rate, and offset conditioning. Result disposition: writes.
+         centered raw arithmetic and the conversion: FUN 000bfc2e writes actual bytes
+         ffff2324/ffff2325 at 000bfdae as 128 plus the filtered edge deviation from the learned
+         rest edge in counts of 0.5 crank degrees (channel-4 captures on the 3.2 us clock over
+         the 120-degree event interval), and monitor 0008f168 forms the tracking gap
+         clamp_u8(ffff2327 - ffff2324 + 128) at 0008f496 and 0008f4bc in the same raw units, so
+         the target and this surface are (raw-128)*0.5 crank degrees relative to the learned
+         rest edge. Target-vehicle replay of the warm path matches ffff2327 exactly in 26,344 of
+         35,807 prior-snapshot comparisons and in 4,838 of 5,366 active samples after 16
+         unchanged-input cycles; remaining differences are downstream mode, rate, and offset
+         conditioning. The 2026-09-17 dashboard recordings of a Map 3 image keep both actual
+         bytes within two counts of a target unchanged for 100 records in 98 percent of 83,229
+         and 34,026 samples per bank. The absolute crank-wheel origin of the learned rest edge
+         remains open. Result disposition: writes.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Exhaust CVTC Target - Main"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"
            storageaddress="0xD3000" sizex="16" sizey="16" endian="big">
-      <scaling units="degCA [cand]" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
+      <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x12F0E"
              sizex="16" endian="big">

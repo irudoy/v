@@ -477,6 +477,26 @@ contract is established, but its physical purpose remains unresolved.
 `FUN_000521A8` takes the maximum of all six transformed words and
 `0xFFFF241C`, then derives scalar bytes `0xFFFF23BF` and `0xFFFF23F0`.
 
+## Active-vehicle reproduction
+
+The dashboard recordings of 2026-09-17 (`tools/logs/mlg_relation_audit.py`,
+statistics in `patches/hardware-results.toml`) reproduce the chain on the
+running engine in raw units. At steady MAF inputs the published total word
+equals `floor(105 * (A + B) / 256)` exactly in 57 to 85 percent of records and
+within one count in 62 to 93 percent, with the median ratio of the total to
+`A + B` at `105/256`. Base Fuel Schedule matches the primary-branch producer
+with `Q = A + B` and `N = 2 * rpm_raw` at a median ratio of 0.98 to 0.99
+(p5 0.87 to 0.94, p95 1.01 to 1.04). The J1979 Calculated Load byte matches
+its formula from the prior record exactly in 77 to 80 percent of records and
+within one count in 95 to 97 percent. Each closed-loop pulse word is linear
+in `BFS * STFT / 0x6400 / 20.48` with slope 0.87 to 0.89 and an additive 42 to
+53 raw at correlation 0.99 on both banks; the slope below unity and the
+additive term are the `0xFFFF165E` gain and the battery-dependent
+`0xFFFF2436` base, which the profile does not stream. The factor 20.48 is the
+exact ratio of the `raw/2048 ms` BFS scale to the `raw/100 ms` pulse scale
+under unity gains, so the two candidate millisecond scales are mutually
+consistent; neither is proven against an electrical measurement.
+
 ## Override word
 
 `FUN_00056FC0` uses `FUN_000224F8`, whose exact leaf contract is arithmetic

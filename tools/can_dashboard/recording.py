@@ -73,7 +73,7 @@ RAW_FIELD_DISPLAY = {
         "Intake CVTC actual B2", "degCA*", 1, "CVTC"
     ),
     "intake_cvtc_target_raw": ("Intake CVTC target", "degCA*", 1, "CVTC"),
-    "exhaust_cvtc_target_raw": ("Exhaust CVTC target", "degCA*", 1, "CVTC"),
+    "exhaust_cvtc_target_raw": ("Exhaust CVTC target", "degCA", 1, "CVTC"),
     "calculated_load_raw": ("Calculated load", "%", 1, "Engine"),
     "throttle_request_bounded_raw": (
         "Bounded throttle request", "raw", 0, "Throttle"
@@ -83,10 +83,10 @@ RAW_FIELD_DISPLAY = {
         "Injection timing state", "raw", 0, "Injection"
     ),
     "exhaust_cvtc_actual_b1_raw": (
-        "Exhaust CVTC actual B1", "degCA*", 1, "CVTC"
+        "Exhaust CVTC actual B1", "degCA", 1, "CVTC"
     ),
     "exhaust_cvtc_actual_b2_raw": (
-        "Exhaust CVTC actual B2", "degCA*", 1, "CVTC"
+        "Exhaust CVTC actual B2", "degCA", 1, "CVTC"
     ),
     "throttle_target_shared_raw": (
         "Shared throttle target", "raw", 0, "Throttle"
@@ -128,10 +128,10 @@ RAW_FIELD_DISPLAY = {
     "ltft_learned_b1_raw": ("LTFT learned bank 1", "%", 2, "Fuel"),
     "ltft_adjustment_b1_raw": ("LTFT adjustment bank 1", "%", 2, "Fuel"),
     "exhaust_cvtc_duty_b1_word_raw": (
-        "Exhaust CVTC duty B1 word", "%*", 1, "CVTC"
+        "Exhaust CVTC duty B1 word", "%", 1, "CVTC"
     ),
     "exhaust_cvtc_duty_b2_word_raw": (
-        "Exhaust CVTC duty B2 word", "%*", 1, "CVTC"
+        "Exhaust CVTC duty B2 word", "%", 1, "CVTC"
     ),
     "atmospheric_pressure_raw": ("Atmospheric pressure", "raw", 0, "Air"),
     "battery_voltage_raw": ("Battery voltage", "V*", 2, "Context"),

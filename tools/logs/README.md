@@ -145,7 +145,9 @@ common conditioned targets.
 The audit validates only paths exercised by the capture. A warm-engine log with
 the correction selector clear cannot validate the cold surface, coolant blend,
 or conditional correction. Agreement in raw software coordinates also does not
-prove the candidate degree conversion or physical camshaft response.
+prove the physical camshaft response. The exhaust degree conversion is
+code-proven through the exhaust monitor and the 0.5-degree edge-phase count;
+the intake conversion remains a candidate.
 
 ## JK08A ignition timing-state audit
 
@@ -222,6 +224,47 @@ is listed and selectable, and its graph stays empty, observed in MegaLogViewer
 MS Lite 4.6.09. Candidate transforms are therefore marked in the units. Recorded channels derive both numbers from the same calibrations the
 dashboard applies, and the recorder tests bind every channel value to the live
 engineering value across a raw range.
+
+## JK08A MLG relation audit
+
+`mlg_relation_audit.py` replays the code-level relations between the raw
+channels of a dashboard MLVLG recording. Channels are matched to their wire
+sources through the recorder field table, so any recording with the schema-2
+`tuning` layout is accepted, and every replay constant, curve, and axis is
+read from the calibration image. The relations are:
+
+- stock CAN RPM against the RPM/12.5 word;
+- the intake-VTC duty monitor pair against the duty command pair;
+- intake and exhaust actual positions against a target unchanged for the
+  selected number of records;
+- the published total-airflow word against `floor(105 * (A + B) / 256)` of
+  the two MAF transfer outputs at steady sensor inputs;
+- the J1979 Calculated Load byte against its exact formula for the same and
+  the prior record;
+- Base Fuel Schedule against the primary-branch producer with `Q = A + B` and
+  `N = 2 * rpm_raw` at steady inputs;
+- each closed-loop compensated pulse word as a linear fit against
+  `BFS * STFT / 0x6400 / 20.48`;
+- the `110 - final timing = APC command` identity, the fuel-inhibit mask
+  values, the `-307` and `+13` steps of the knock timing state, the
+  high-detonation selector, long-term trim values, and raw sensor ranges.
+
+```bash
+python3 tools/logs/mlg_relation_audit.py \
+  --calibration-image tmp/1JK08A-tune-v2-2.bin \
+  tmp/2026-09-17_17-44-20_vq-can-telemetry-v4.0.1.mlg
+```
+
+Without `--calibration-image`, the tool uses the hash-verified registered
+JK08A stock ROM. `--hold` sets the number of unchanged prior records that
+qualify a steady input (default 6) and `--target-hold` the steady-target
+window (default 100). The output is one `key = value` line per statistic in
+TOML syntax, so a run can be carried into `patches/hardware-results.toml`.
+
+Every relation is evaluated in raw software units. Agreement proves that the
+recorded channels are the quantities the code connects; it does not prove a
+physical unit, and the injection fit reports the gain and additive term of
+the pulse chain rather than an electrical pulse width.
 
 ## MLG field restamping
 

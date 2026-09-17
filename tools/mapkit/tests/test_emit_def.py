@@ -657,7 +657,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             if table.get("name") == slot_name(1, "Exhaust CVTC Target - Main")
         )
         scale = table.find("./scaling")
-        self.assertEqual(scale.get("units"), "degCA [cand]")
+        self.assertEqual(scale.get("units"), "degCA")
         self.assertEqual(scale.get("expression"), "(x-128)*0.5")
         self.assertEqual(scale.get("to_byte"), "x*2+128")
         self.assertEqual(scale.get("format"), "0.0")

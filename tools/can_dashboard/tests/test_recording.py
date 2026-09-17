@@ -134,24 +134,41 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertNotIn("gps_lat", names)
         self.assertNotIn("gps_lon", names)
         self.assertEqual([name for name in names if "*" in name], [])
+        cvtc_units = {
+            "Intake CVTC actual B1": "degCA*",
+            "Intake CVTC target": "degCA*",
+            "Exhaust CVTC actual B1": "degCA",
+            "Exhaust CVTC actual B2": "degCA",
+            "Exhaust CVTC target": "degCA",
+        }
         cvtc_specs = {
             binding.spec.name: binding.spec
             for binding in recorder.bindings
-            if binding.spec.name in {
-                "Intake CVTC actual B1",
-                "Intake CVTC target",
-                "Exhaust CVTC target",
-            }
+            if binding.spec.name in cvtc_units
         }
-        self.assertEqual(set(cvtc_specs), {
-            "Intake CVTC actual B1",
-            "Intake CVTC target",
-            "Exhaust CVTC target",
-        })
-        for spec in cvtc_specs.values():
+        self.assertEqual(set(cvtc_specs), set(cvtc_units))
+        for name, spec in cvtc_specs.items():
             self.assertEqual(spec.scale, 0.5)
             self.assertEqual(spec.transform, -128.0)
-            self.assertEqual(spec.units, "degCA*")
+            self.assertEqual(spec.units, cvtc_units[name])
+        duty_specs = {
+            binding.spec.name: binding.spec
+            for binding in recorder.bindings
+            if binding.spec.name in {
+                "CVTC duty B1",
+                "Intake CVTC duty command B1",
+                "Exhaust CVTC duty B1 word",
+            }
+        }
+        self.assertEqual(duty_specs["CVTC duty B1"].scale, 0.39)
+        self.assertEqual(
+            duty_specs["Intake CVTC duty command B1"].scale, 0.39
+        )
+        self.assertEqual(duty_specs["CVTC duty B1"].units, "%")
+        self.assertEqual(
+            duty_specs["Exhaust CVTC duty B1 word"].scale, 100 / 1024
+        )
+        self.assertEqual(duty_specs["Exhaust CVTC duty B1 word"].units, "%")
         knock_specs = {
             binding.spec.name: binding.spec
             for binding in recorder.bindings

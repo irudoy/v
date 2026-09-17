@@ -348,7 +348,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             if table.findtext("./title") == slot_name(1, "Exhaust CVTC Target - Main")
         )
         axis = table.find("./XDFAXIS[@id='z']")
-        self.assertEqual(axis.findtext("./units"), "degCA [cand]")
+        self.assertEqual(axis.findtext("./units"), "degCA")
         self.assertEqual(axis.findtext("./decimalpl"), "1")
         self.assertEqual(axis.find("./MATH").get("equation"), "(X-128)*0.5")
 

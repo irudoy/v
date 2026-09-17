@@ -71,9 +71,10 @@ The structured diagnostic profile defines `raw*2-256 degCA` for DIDs
 0.5 crank degrees of cam edge phase relative to the learned rest edge. The
 monitor forms its gap `0xFFFF1476 + b` as target minus actual in the same raw
 units at `0x8F496`, so target `0xFFFF2327` and the surfaces behind it share
-the conversion. The definition rows of `0xB33A`, `0xB2FA`, and `0xAB4A` in
-`defs/JK08A.findings.csv` still carry the candidate scale confidence; the
-crank-wheel origin of the absolute angle remains open.
+the conversion. The definition rows of `0xB33A`, `0xB2FA`, `0xAB4A`, and the
+standstill override scalar `0x8E36` in `defs/JK08A.findings.csv` carry this
+conversion at code confidence; the crank-wheel origin of the absolute angle
+remains open.
 
 ## Solenoid output stage
 
@@ -237,9 +238,22 @@ else:
 
 The 0xB33A identity is code-proven by its path into DID 0x1166 and the exhaust
 control and DTC consumers. The HR A2L defines a matching 16x16 `Exhaust Cam
-Timing Map` with `(raw-128)*0.5 deg`; this conversion remains homologous for
-JK08A. Stock 0xB2FA is neutral 128 throughout. Its cold/fallback name describes
-the exact coolant-selector role without asserting a catalog title.
+Timing Map` with `(raw-128)*0.5 deg`, and the same conversion is code-proven
+for JK08A: the surfaces feed target `0xFFFF2327`, monitor `FUN 0008F168`
+compares that target in raw units with the actual bytes `0xFFFF2324` and
+`0xFFFF2325`, and `FUN 000BFC2E` writes those bytes in counts of 0.5 crank
+degrees relative to the learned rest edge (see "Cam edge phase bytes"). Stock
+0xB2FA is neutral 128 throughout. Its cold/fallback name describes the exact
+coolant-selector role without asserting a catalog title.
+
+The dashboard recordings of 2026-09-17 (`tools/logs/mlg_relation_audit.py`)
+show the closed loop on the running engine. With a Map 3 image whose surfaces
+are neutral, both actual bytes stay within two counts of a target that has
+been unchanged for 100 records in 98 percent of 83,229 and 34,026 samples per
+bank. With the stock Map 1 image the same share is 77 to 78 percent: at 700 to
+1300 RPM the actual bytes exceed the target of 140 by 9 to 45 counts while
+the duty words hold 400 to 700 of 1024, so the stock retard request overshoots
+at low speed rather than lagging.
 
 ## Coolant selection and conditioning
 

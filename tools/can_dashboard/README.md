@@ -141,10 +141,13 @@ with CRUISE, so it is not labeled CRUISE-only. The correct CRUISE-only state
 remains pending a passive stock-state correlation.
 
 Schema 2 names `0xFFFF2326` as `intake_cvtc_target_raw` and `0xFFFF2327` as
-`exhaust_cvtc_target_raw`, matching their recovered common-target roles. The
-displayed `(raw-128)*0.5 degCA` conversion remains a homologous candidate and
-is marked with `*`. Actual intake and exhaust positions for both banks are
-present in the current profile.
+`exhaust_cvtc_target_raw`, matching their recovered common-target roles.
+Actual intake and exhaust positions for both banks are present in the current
+profile. The displayed `(raw-128)*0.5 degCA` conversion is code-proven for the
+exhaust target and actual positions: the exhaust monitor compares them in raw
+units with the cam edge phase that the capture path counts in 0.5 crank
+degrees. The intake target and actual positions carry the same conversion as
+a homologous candidate and keep the `*` marker.
 
 ## Direct repository run
 
@@ -282,6 +285,10 @@ or diagnostic semantic bindings. The current conversions are:
 | APC command | `apc_command_raw` byte | raw | effective software command consumed by the APC scheduler; normal-path timing coordinate is `110 - raw` |
 | knock timing state | `0xFFFF121A` signed word | `raw / 256 state` | exact Q8 software state; its physical unit remains unresolved |
 | active hot surface | `0xFFFF2466.bit6` | clear = High Octane, set = High Detonation | exact selector; other bits in the byte have separate roles |
+| exhaust CVTC target and actual B1/B2 | `0xFFFF2327`, `0xFFFF2324..2325` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count; recordings keep the actual bytes within two counts of a steady target in 98 percent of Map 3 samples |
+| intake CVTC target and actual B1/B2 | `0xFFFF2326`, `0xFFFF2442..2443` | `(raw - 128) * 0.5 degCA` | homologous candidate; recordings prove shared raw units with the target, not the degree scale |
+| intake CVTC duty monitor and command B1/B2 | `0xFFFF2440..2441`, `0xFFFF23B4..23B5` | `raw * 39 / 100 percent` | code-proven ATU-II conversion of the command; the monitor pair matches the command within three counts in 80 percent of active records with a mean difference below 0.2 count |
+| exhaust CVTC duty B1/B2 words | `0xFFFF1AAC`, `0xFFFF1AAE` | `raw * 100 / 1024 percent` | code-proven output-stage conversion |
 
 The MLG descriptor applies the exact Q8 scale to `Knock timing state` and keeps
 the original `Knock surface state` bitfield. The additional

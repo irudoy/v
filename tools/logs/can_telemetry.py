@@ -399,10 +399,10 @@ RAW_CALIBRATIONS = {
     "bfs_raw": Calibration("bfs_ms", 1 / 2048),
     "af_state_factor_raw": Calibration("af_state_factor", 1 / 16384),
     "intake_cvtc_duty_b1_raw": Calibration(
-        "intake_cvtc_duty_b1_percent", 100 / 256
+        "intake_cvtc_duty_b1_percent", 39 / 100
     ),
     "intake_cvtc_duty_b2_raw": Calibration(
-        "intake_cvtc_duty_b2_percent", 100 / 256
+        "intake_cvtc_duty_b2_percent", 39 / 100
     ),
     "engine_torque_state_raw": Calibration("engine_torque_state_nm", 0.1),
     "intake_cvtc_duty_command_b1_raw": Calibration(
