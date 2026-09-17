@@ -89,13 +89,16 @@ under Lima or Colima can split IPv4 and IPv6 `localhost` traffic between two
 independent databases. The complete startup, recovery, and ingestion contract
 is in `memgraph/README.md`.
 
-## Interactive accelerators
+## Headless inspection
 
-The production pipeline does not require a GUI. GhydraMCP can accelerate live
-decompilation and xref inspection when Ghidra CodeBrowser is open, but it does
-not provide the complete low-level API required by the headless exporters and
-operand resolver. The project-scoped `mcp-memgraph` server is read-only and is
-suitable for headless queries after tracked loaders build the graph.
+The pipeline does not use a Ghidra GUI. Function decompilation and listings on
+demand come from `ghidra/decompile.sh`, which runs headless Ghidra against the
+local project and caches its output in the machine-local export directory; a
+request for functions that are not cached yet completes in seconds. The
+GhydraMCP bridge only reaches a CodeBrowser window that is already open and is
+not part of the workflow. The project-scoped `mcp-memgraph` server is
+read-only and is suitable for headless queries after tracked loaders build
+the graph.
 
 ## Data boundaries
 

@@ -27,6 +27,23 @@ tools/ghidra/headless-analyze.sh ~/tools/ghidra-projects vq-hr \
 `-process` accepts the program name stored inside the Ghidra project, not a ROM
 filesystem path. Ghidra projects and export directories remain outside Git.
 
+## On-demand decompilation and listings
+
+`decompile.sh` decompiles functions and, with `-l`, dumps their complete
+listings without a GUI. The ROM key selects the Ghidra program (the file name
+of the registered stock image), outputs land in `~/tools/ghidra-projects/
+export-<ROM>/` as `decomp_<addr>.c` and `funclisting_<addr>.txt`, cached files
+are reused, and the output paths are printed:
+
+```bash
+tools/ghidra/decompile.sh -l 0002a5cc 0002a36a
+tools/ghidra/decompile.sh -r JK00C -o /tmp/inspect 000bfe88
+```
+
+`-f` reruns Ghidra for files that already exist. The script wraps
+`DecompileFuncs.java` and `DumpFuncListing.java`; the project location and
+name follow `GHIDRA_PROJECT_DIR` and `GHIDRA_PROJECT_NAME` when set.
+
 ## Canonical structure exports
 
 `ExportGraph.java` writes `funcs.csv` and `calls.csv`.
