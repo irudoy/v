@@ -260,8 +260,12 @@ zero. Measured whole-bus load is 57.185% to 69.437% on average, with a
 Frame `0x280` bytes 4 and 5 form a big-endian moving quantity. The homologous
 Z34 formula `raw / 100 km/h` yields 0.00 to 68.54 km/h in this target capture
 and returns to zero at the operator-confirmed stationary end. This establishes
-the target field location and zero state. The physical scale remains a
-candidate until a synchronized independent speed reference is recorded.
+the target field location and zero state. The firmware confirms the scale:
+`FUN_000C4506` divides the word by 10 into `0xFFFF113C`, `FUN_0003A174`
+filters it into `0xFFFF115E`, `FUN_0003A254` divides that by 20 into
+`0xFFFF118E`, and J1979 Mode 01 PID `0x0D` returns twice that byte as km/h, so
+the word is km/h*100 by the ECU's declaration. A synchronized independent
+speed reference remains a hardware check of the vehicle, not of the scale.
 
 ### Navigation-coordinate boundary
 

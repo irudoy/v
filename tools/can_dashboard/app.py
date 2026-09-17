@@ -182,12 +182,12 @@ class RecordingClock:
 
 HERO_METRICS = (
     Metric("rpm", "ENGINE SPEED", "RPM", 0),
-    Metric("vehicle_speed_kmh", "VEHICLE SPEED", "km/h*", 1),
+    Metric("vehicle_speed_kmh", "VEHICLE SPEED", "km/h", 1),
     Metric("calculated_load_percent", "CALCULATED LOAD", "%", 1),
-    Metric("timing_command_deg", "TIMING COMMAND", "deg*", 0),
-    Metric("maf_total_g_s", "TOTAL AIRFLOW", "g/s*", 2),
+    Metric("timing_command_deg", "TIMING COMMAND", "degBTDC", 0),
+    Metric("maf_total_g_s", "TOTAL AIRFLOW", "g/s", 2),
     Metric("injection_average_ms", "INJECTION CALC", "ms*", 2),
-    Metric("coolant_deg_c", "COOLANT", "degC*", 0),
+    Metric("coolant_deg_c", "COOLANT", "degC", 0),
     Metric("gear", "SELECTOR", "", 0),
 )
 
@@ -210,7 +210,7 @@ PANELS = (
         Metric("app2_v", "APP 2", "V*", 3),
         Metric("tps_b1_v", "TPS bank 1", "V*", 3),
         Metric("tps_b2_v", "TPS bank 2", "V*", 3),
-        Metric("absolute_throttle_raw", "Absolute throttle", "raw", 0),
+        Metric("absolute_throttle_percent", "Absolute throttle", "%", 1),
         Metric("intake_cvtc_actual_b1_deg_ca", "Intake CVTC actual B1", "degCA", 1),
         Metric("intake_cvtc_actual_b2_deg_ca", "Intake CVTC actual B2", "degCA", 1),
         Metric("intake_cvtc_target_deg_ca", "Intake CVTC target", "degCA", 1),
@@ -232,7 +232,7 @@ PANELS = (
         Metric("knock_channel_mask_latched", "Knock channel mask", "", 0, True),
     )),
     ("Temperatures and context", (
-        Metric("iat_deg_c", "Intake air", "degC*", 0),
+        Metric("iat_deg_c", "Intake air", "degC", 0),
         Metric("fuel_temperature_deg_c", "Fuel temperature", "degC*", 0),
         Metric("oil_temperature_deg_c", "Oil temperature", "degC*", 0),
         Metric("timing_state_2023_raw", "Timing state 2023", "", 0, True),

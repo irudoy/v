@@ -275,12 +275,15 @@ or diagnostic semantic bindings. The current conversions are:
 
 | Display | Source | Conversion | Evidence boundary |
 | --- | --- | --- | --- |
-| vehicle speed | `0x280` bytes 4..5 | big-endian `raw / 100 km/h` | target field and zero state confirmed; scale remains homologous |
+| vehicle speed | `0x280` bytes 4..5 | big-endian `raw / 100 km/h` | target field and zero state confirmed; the firmware divides the word by 10, filters it, divides by 20, and publishes twice that byte as J1979 PID 0x0D km/h |
 | APP 1/2 | telemetry words | `raw / 200 V` | homologous formula and near-adjacent target agreement |
 | TPS bank 1/2 | telemetry words | `raw / 200 V` | near-adjacent target agreement |
 | fuel/oil temperature | telemetry bytes | `raw - 50 degC` | current producer DID bindings plus homologous profile; oil agrees on target |
 | short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |
-| timing coordinate | `final_timing_raw` signed byte | `raw deg` | upstream stock coordinate during a Rolling Launch late override; not a measured spark angle |
+| timing coordinate | `final_timing_raw` signed byte | `raw degBTDC` | J1979 PID 0x0E publishes `110 - apc_command` as degrees before TDC, which is this coordinate on the normal path; upstream stock coordinate during a Rolling Launch late override, not a measured spark angle |
+| total airflow | `0xFFFF3852` word | `raw / 100 g/s` | J1979 PID 0x10 publishes the same `105 * 0xFFFF105C / 256` product as g/s*100; the ECU's airflow model, not a hardware measurement |
+| coolant and intake air | `0xFFFF1079`, `0xFFFF2837` | `raw - 50 degC` | J1979 PIDs 0x05 and 0x0F publish the same `0x12DEA` transfer codes minus 10 as `A - 40` degC |
+| absolute throttle | `0xFFFF1075` byte | `raw * 100 / 255 percent` | J1979 PID 0x11 returns the byte as `A * 100 / 255` percent |
 | APC command | `apc_command_raw` byte | raw | effective software command consumed by the APC scheduler; normal-path timing coordinate is `110 - raw` |
 | knock timing state | `0xFFFF121A` signed word | `raw / 256 state` | exact Q8 software state; its physical unit remains unresolved |
 | active hot surface | `0xFFFF2466.bit6` | clear = High Octane, set = High Detonation | exact selector; other bits in the byte have separate roles |

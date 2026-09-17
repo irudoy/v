@@ -112,9 +112,14 @@ writes the result to `0xFFFF1E44`, and writes one quarter of it to
 `0xFFFF1E40`.
 
 Exact DID `0x1208` identifies `0xFFFF1026` as Base Fuel Schedule. The
-homologous structured-profile conversion `raw/2048 ms`, the `ms/kg` K-Value
-unit, and the `kg/hr` MAF Factor unit are dimensionally consistent with the
-code, but remain candidate engineering scales until hardware validation.
+homologous structured-profile conversion `raw/2048 ms` and the `ms/kg` K-Value
+unit are dimensionally consistent with the code, but remain candidate
+engineering scales until hardware validation. The airflow entering the
+producer is declared by the ECU itself: J1979 Mode 01 PID `0x10` publishes
+`105 * 0xFFFF105C / 256` as g/s*100, so one count of the total is
+`105 / 25600` g/s. The `kg/hr` MAF Factor unit with scale `x * 0.0001` gives
+0.0109 kg/hr per count against 0.01477 kg/hr from that declaration; the
+discrepancy is recorded at the finding.
 
 ## Fuel Compensation Main to BFS
 

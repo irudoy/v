@@ -60,6 +60,9 @@ DASHBOARD_CALIBRATIONS = {
     "app2_raw": can_telemetry.Calibration("app2_v", 1 / 200),
     "tps_b1_raw": can_telemetry.Calibration("tps_b1_v", 1 / 200),
     "tps_b2_raw": can_telemetry.Calibration("tps_b2_v", 1 / 200),
+    "absolute_throttle_raw": can_telemetry.Calibration(
+        "absolute_throttle_percent", 100 / 255
+    ),
     "fuel_temperature_did_source_raw": can_telemetry.Calibration(
         "fuel_temperature_deg_c", 1.0, -50
     ),

@@ -70,9 +70,13 @@ analysis:
 | fuel correction | Q14 factor, STFT, LTFT, adjustment B1/B2 | oxygen-sensor bytes and front A/F words |
 | torque | bounded throttle request and target path | signed torque state `FFFF18CC` |
 
-The exact source identity is stronger than the physical conversion. Fields
-marked as candidates by the dashboard and MLG schema still require synchronized
-target validation before their engineering units are treated as measured fact.
+The exact source identity is stronger than the physical conversion. The
+airflow, coolant, intake-air, timing, vehicle-speed, and absolute-throttle
+units are the ECU's own J1979 Mode 01 declarations, recorded in the
+diagnostics note; they describe the firmware model, not a hardware measurement.
+Fields marked as candidates by the dashboard and MLG schema still require
+synchronized target validation before their engineering units are treated as
+measured fact.
 
 ## Remaining semantic gaps
 

@@ -870,11 +870,15 @@
          representation, and cross-ROM literal-pool signature and distinguishes it from K-Value.
          Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132
          for JK00D. The engineering unit and multiplier remain source-derived pending hardware
-         validation. Definition address projected from JK08A 00008a27 through
-         JK08A-1ME3B.definition-addresses.csv: the value-133 factor is read by 00045634 0004570a
-         and 00048298 and 00048298 combines it with the K-value 00009170 the 0x9f38 reference
-         000094d4 and the value-3 scalar 0000885c exactly as the 1ND0A consumer 000c188c
-         combines 00008939 with 00009106 0000940a and 00008838.
+         validation. J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]/25600 g/s per count of the
+         total quantity that the Base Fuel Schedule producer reproduces from A+B, which is
+         0.01477 kg/hr per count with stock 105, while F*0.0001 gives 0.0109 kg/hr per count;
+         the A2L unit of F does not match the ECU's declared airflow. Definition address
+         projected from JK08A 00008a27 through JK08A-1ME3B.definition-addresses.csv: the
+         value-133 factor is read by 00045634 0004570a and 00048298 and 00048298 combines it
+         with the K-value 00009170 the 0x9f38 reference 000094d4 and the value-3 scalar 0000885c
+         exactly as the 1ND0A consumer 000c188c combines 00008939 with 00009106 0000940a and
+         00008838.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Factor" category="Fuelling//MAF Scaling" storagetype="uint8"
            storageaddress="0x08965" sizex="1" endian="big">
@@ -1040,21 +1044,24 @@
     </table>
 
     <!-- 0x15916  64 uint16  map [candidate]
-         scaling x raw
+         scaling x*0.0041015625 g/s [candidate]
          Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing
          ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS
          A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous
          profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at
          candidate scale. Stock outputs are strictly positive, so the contribution denominator
          A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer.
-         Definition address projected from JK08A 000141f4 through JK08A-1ME3B.definition-
-         addresses.csv: the target 0004656a of 550 bytes as 1ND0A 00042f50 reads the exact
-         64-point table first and 00015996 second through the 64-point implicit leaf 0002abec.
+         One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into
+         ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with
+         the stock factor 105; a changed factor changes the declared conversion. Definition
+         address projected from JK08A 000141f4 through JK08A-1ME3B.definition-addresses.csv: the
+         target 0004656a of 550 bytes as 1ND0A 00042f50 reads the exact 64-point table first and
+         00015996 second through the 64-point implicit leaf 0002abec.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Sensor Transfer - Bank 2" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x15916" sizex="64" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="256"/>
+      <scaling units="g/s [cand]" expression="x*0.0041015625" to_byte="x/0.0041015625"
+               format="0" fineincrement="1" coarseincrement="256"/>
       <table type="Static X Axis" name="MAF Sensor Voltage [V, cand]" sizex="64">
         <data>0.0</data><data>0.08</data><data>0.16</data><data>0.24</data>
         <data>0.32</data><data>0.4</data><data>0.48</data><data>0.56</data>
@@ -1076,21 +1083,24 @@
     </table>
 
     <!-- 0x15996  64 uint16  map [candidate]
-         scaling x raw
+         scaling x*0.0041015625 g/s [candidate]
          Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing
          ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS
          A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous
          profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at
          candidate scale. Stock outputs are strictly positive, so the contribution denominator
          A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer.
-         Definition address projected from JK08A 00014274 through JK08A-1ME3B.definition-
-         addresses.csv: the target 0004656a of 550 bytes as 1ND0A 00042f50 reads the exact
-         64-point table second after 00015916 through the 64-point implicit leaf 0002abec.
+         One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into
+         ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with
+         the stock factor 105; a changed factor changes the declared conversion. Definition
+         address projected from JK08A 00014274 through JK08A-1ME3B.definition-addresses.csv: the
+         target 0004656a of 550 bytes as 1ND0A 00042f50 reads the exact 64-point table second
+         after 00015916 through the 64-point implicit leaf 0002abec.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Sensor Transfer - Bank 1" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x15996" sizex="64" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="256"/>
+      <scaling units="g/s [cand]" expression="x*0.0041015625" to_byte="x/0.0041015625"
+               format="0" fineincrement="1" coarseincrement="256"/>
       <table type="Static X Axis" name="MAF Sensor Voltage [V, cand]" sizex="64">
         <data>0.0</data><data>0.08</data><data>0.16</data><data>0.24</data>
         <data>0.32</data><data>0.4</data><data>0.48</data><data>0.56</data>

@@ -52,8 +52,9 @@ The exact cam-timing pointer bindings currently are:
 `FUN_0008F168` independently consumes the actual and target exhaust values in
 the monitor paths associated with P1078/P1084 and P0014/P0024. This closes the
 subsystem identity without relying on a community label. The centered-byte
-arithmetic is exact; the `raw * 0.5 - 64 degCA` conversion remains homologous
-candidate evidence because public profiles disagree on the multiplier.
+arithmetic and the `(raw - 128) * 0.5 degCA` conversion are exact: the
+channel-1A capture handlers count the cam edge phases in 0.5 crank degrees, as
+recorded in the CVTC note.
 
 Exact pointer identity does not establish an ECM terminal, peripheral channel,
 or physical unit. Those remain separate claims and are not promoted by name
@@ -88,6 +89,43 @@ table extent before calculating a record address. Unsupported low bytes can
 therefore index records in an adjacent ROM table. This is read-side aliasing,
 not evidence that the resulting DID is declared or semantically valid. Runtime
 profiles use only inventoried DIDs and never rely on that behavior.
+
+## J1979 Mode 01 publication
+
+`FUN_00035856`, reached from `FUN_00035634` while the session selector
+`0xFFFF8491` equals 1, answers J1979 Mode 01 requests. Each PID converter is
+exact code, and the standard definition of the PID fixes the engineering scale
+that the ECU declares for the internal source. The declared scales are the
+ECU's own conversions, not hardware measurements: the airflow is the firmware
+model of the transfer curves, and the temperatures are transfer codes of the
+ADC samples. PID `0x01` masks `0xFFFF493E`, and PID `0x03` returns the
+fuel-system status bytes `0xFFFF3F2C` and `0xFFFF3F2D`.
+
+| PID | Source | Exact arithmetic | J1979 definition | Declared internal scale |
+|---|---|---|---|---|
+| `0x04` | `0xFFFF413E` | byte unchanged | `A * 100 / 255` percent load | 100/255 percent per count |
+| `0x05` | `0xFFFF3FA4` | byte unchanged; `FUN_0008092E` forms the snapshot as `max(lookup(0x12DEA, 0xFFFF1186) - 10, 0)` | `A - 40` degC | the lookup output `0xFFFF1079` is `degC + 50` |
+| `0x06`..`0x09` | `0xFFFF22DC`, `0xFFFF2302`, `0xFFFF22DE`, `0xFFFF2304` | `min(255, floor(word / 200))` | `(A - 128) * 100 / 128` percent trim | Q8.8 percent words: STFT bank 1, LTFT bank 1, STFT bank 2, LTFT bank 2 |
+| `0x0B` | `0xFFFF16D2` word | `floor((word * 118 + 98304) / 65536)` | `A` kPa | word is `(kPa - 1.5) * 65536 / 118` |
+| `0x0C` | `0xFFFF11F4` word | `min(65535, 50 * word)` as two bytes | `(256 A + B) / 4` RPM | 12.5 RPM per count |
+| `0x0D` | `0xFFFF118E` | `min(255, 2 * byte)` | `A` km/h | 2 km/h per count; the chain is CAN `0x280` bytes 4..5 (km/h*100) -> `0xFFFF113C` (/10) -> `0xFFFF115E` (filter) -> /20 |
+| `0x0E` | `0xFFFF2022` | `clamp((110 - byte) * 2, -128..127) + 128` with `ROM8[0x83D5] = 110` | `A / 2 - 64` degrees before TDC | `110 - raw` is crank degrees of advance, and `0xFFFF11D4` is degBTDC |
+| `0x0F` | `0xFFFF3F41` | byte unchanged; `FUN_0003D832` copies lane 0 of `0xFFFF3F42`, where `FUN_0003D4A8` writes `max(lookup(0x12DEA, uint8(0xFFFF1D58 >> 2)) - 10, 0)` | `A - 40` degC | the transfer code is `degC + 50`, and AN1 lane 0 is the intake-air-temperature channel |
+| `0x10` | `0xFFFF105C` word | `(105 * word) >> 8` as two bytes with `ROM8[0x83EC] = 105`; DID `0x1209` word `0xFFFF3852` is the same product | `(256 A + B) / 100` g/s | 105/25600 g/s per count of the total, and `0xFFFF3852` is g/s*100 |
+| `0x11` | `0xFFFF1075` | byte unchanged | `A * 100 / 255` percent | absolute throttle, 100/255 percent per count |
+| `0x13` | `ROM8[0x8936]` | byte unchanged | oxygen sensors present | stock 0: no sensors declared |
+| `0x14`..`0x19` | `0xFFFF1D44 / 5`, `0xFFFF118C`, `0xFFFF1D46 / 5`, `0xFFFF118D` with the bank trims | helper `FUN_000357DC` | `A * 0.005` V and trim | inactive: the helper answers negatively while `ROM8[0x8936]` is zero |
+| `0x1C` | `ROM8[0x8696]` | byte unchanged | OBD standard | stock 0 |
+| `0x21` | `0xFFFF560C` longword | `floor(value / 2548)`, `0xFFFF` from `0x09F3F60C` | km with MIL on | 1/2548 km per count |
+
+The trim division by 200 converts internal percent*256 into the J1979 byte
+domain, where 100 percent is raw 128, and independently establishes the
+identities and scale of DIDs `0x1123` through `0x1126`. The airflow declaration
+is the reference for the MAF transfer curves `0x14274` and `0x141F4`: their
+outputs sum into `0xFFFF105C`, so one output count is `105 / 25600` g/s with
+the stock factor. The A2L unit of `MAF Factor` (`x * 0.0001` kg/hr) yields
+0.0109 kg/hr per count of the same total against 0.01477 kg/hr from the PID
+declaration; the discrepancy is recorded at the finding.
 
 ## Dynamic local-identifier streaming
 
@@ -189,11 +227,15 @@ timestamps before engine use.
 
 ## Intake-air-temperature and P0128 model
 
-The exact DID table points the reviewed intake-air-temperature DID to an
-AN1-derived runtime byte. The scheduler copies that byte into the previous-cycle
-snapshot consumed by the P0128 thermostat model. Homologous measured Nissan
-diagnostics provide the `raw - 50` temperature conversion; the firmware trace
-establishes the byte flow but not target-ECU terminal continuity.
+The exact DID table points the reviewed intake-air-temperature DID to
+`0xFFFF2837`, the `0x12DEA` transfer code of the filtered AN1 lane-0 sample.
+J1979 Mode 01 PID `0x0F` returns `0xFFFF3F41`, the same transfer code of the
+unfiltered lane-0 sample minus 10, and the standard defines the PID as `A - 40`
+degC, so the ECU declares the code as `degC + 50` and the `raw - 50` conversion
+of the DID follows from code. Homologous measured Nissan diagnostics agree. The
+scheduler copies the DID byte into the previous-cycle snapshot consumed by the
+P0128 thermostat model; the firmware trace establishes the byte flow but not
+target-ECU terminal continuity.
 
 The P0128 model contains several map-weighted balance terms. Their exact
 arithmetic and DTC association are recorded in the map, function, variable, and

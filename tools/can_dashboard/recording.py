@@ -47,12 +47,12 @@ class RecordingSummary:
 RAW_FIELD_DISPLAY = {
     "tick16": ("Telemetry tick", "", 0, "Transport"),
     "rpm_raw": ("Engine speed", "rpm", 0, "Engine"),
-    "final_timing_raw": ("Timing command", "deg*", 0, "Ignition"),
+    "final_timing_raw": ("Timing command", "degBTDC", 0, "Ignition"),
     "apc_command_raw": ("APC command", "raw", 0, "Throttle"),
     "fuel_inhibit_mask": ("Fuel inhibit mask", "", 0, "Injection"),
     "maf_b1_raw": ("MAF bank 1", "V*", 3, "Air"),
     "maf_b2_raw": ("MAF bank 2", "V*", 3, "Air"),
-    "maf_total_raw": ("Total airflow", "g/s*", 2, "Air"),
+    "maf_total_raw": ("Total airflow", "g/s", 2, "Air"),
     "front_oxygen_sensor_b1_raw": ("Front O2 sensor B1", "raw", 0, "Fuel"),
     "bfs_raw": ("Base fuel schedule", "ms*", 3, "Fuel"),
     "front_oxygen_sensor_b2_raw": ("Front O2 sensor B2", "raw", 0, "Fuel"),
@@ -64,7 +64,7 @@ RAW_FIELD_DISPLAY = {
     "app1_raw": ("APP 1", "V*", 3, "Throttle"),
     "app2_raw": ("APP 2", "V*", 3, "Throttle"),
     "tps_b1_raw": ("TPS bank 1", "V*", 3, "Throttle"),
-    "absolute_throttle_raw": ("Absolute throttle", "raw", 0, "Throttle"),
+    "absolute_throttle_raw": ("Absolute throttle", "%", 1, "Throttle"),
     "tps_b2_raw": ("TPS bank 2", "V*", 3, "Throttle"),
     "intake_cvtc_actual_b1_raw": (
         "Intake CVTC actual B1", "degCA", 1, "CVTC"
@@ -97,8 +97,8 @@ RAW_FIELD_DISPLAY = {
     "throttle_target_channel_1_raw": (
         "Throttle target channel 1", "raw", 0, "Throttle"
     ),
-    "coolant_raw": ("Coolant", "degC*", 0, "Temperature"),
-    "iat_raw": ("Intake air", "degC*", 0, "Temperature"),
+    "coolant_raw": ("Coolant", "degC", 0, "Temperature"),
+    "iat_raw": ("Intake air", "degC", 0, "Temperature"),
     "fuel_temperature_did_source_raw": (
         "Fuel temperature", "degC*", 0, "Temperature"
     ),
@@ -260,7 +260,7 @@ def build_bindings(
             FieldBinding(
                 mlvlg.FieldSpec(
                     "Vehicle speed",
-                    "km/h*",
+                    "km/h",
                     "Context",
                     mlvlg.MLG_F32,
                     digits=2,

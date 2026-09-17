@@ -1138,9 +1138,12 @@
          representation, and cross-ROM literal-pool signature and distinguishes it from K-Value.
          Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132
          for JK00D. The engineering unit and multiplier remain source-derived pending hardware
-         validation. Definition address projected from JK08A 00008a27 through
-         JK08A-JK78C.definition-addresses.csv: normalized homologous consumers reference the
-         target MAF factor scalar.
+         validation. J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]/25600 g/s per count of the
+         total quantity that the Base Fuel Schedule producer reproduces from A+B, which is
+         0.01477 kg/hr per count with stock 105, while F*0.0001 gives 0.0109 kg/hr per count;
+         the A2L unit of F does not match the ECU's declared airflow. Definition address
+         projected from JK08A 00008a27 through JK08A-JK78C.definition-addresses.csv: normalized
+         homologous consumers reference the target MAF factor scalar.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Factor" category="Fuelling//MAF Scaling" storagetype="uint8"
            storageaddress="0x08896" sizex="1" endian="big">
@@ -1346,20 +1349,23 @@
     </table>
 
     <!-- 0x1559C  64 uint16  map [candidate]
-         scaling x raw
+         scaling x*0.0041015625 g/s [candidate]
          Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing
          ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS
          A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous
          profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at
          candidate scale. Stock outputs are strictly positive, so the contribution denominator
          A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer.
-         Definition address projected from JK08A 000141f4 through JK08A-JK78C.definition-
-         addresses.csv: unique structural pair preserves interpolation-call order.
+         One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into
+         ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with
+         the stock factor 105; a changed factor changes the declared conversion. Definition
+         address projected from JK08A 000141f4 through JK08A-JK78C.definition-addresses.csv:
+         unique structural pair preserves interpolation-call order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Sensor Transfer - Bank 2" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x1559C" sizex="64" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="256"/>
+      <scaling units="g/s [cand]" expression="x*0.0041015625" to_byte="x/0.0041015625"
+               format="0" fineincrement="1" coarseincrement="256"/>
       <table type="Static X Axis" name="MAF Sensor Voltage [V, cand]" sizex="64">
         <data>0.0</data><data>0.08</data><data>0.16</data><data>0.24</data>
         <data>0.32</data><data>0.4</data><data>0.48</data><data>0.56</data>
@@ -1381,20 +1387,23 @@
     </table>
 
     <!-- 0x1561C  64 uint16  map [candidate]
-         scaling x raw
+         scaling x*0.0041015625 g/s [candidate]
          Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing
          ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS
          A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous
          profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at
          candidate scale. Stock outputs are strictly positive, so the contribution denominator
          A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer.
-         Definition address projected from JK08A 00014274 through JK08A-JK78C.definition-
-         addresses.csv: unique structural pair preserves interpolation-call order.
+         One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into
+         ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with
+         the stock factor 105; a changed factor changes the declared conversion. Definition
+         address projected from JK08A 00014274 through JK08A-JK78C.definition-addresses.csv:
+         unique structural pair preserves interpolation-call order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Sensor Transfer - Bank 1" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x1561C" sizex="64" endian="big">
-      <scaling units="raw" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="256"/>
+      <scaling units="g/s [cand]" expression="x*0.0041015625" to_byte="x/0.0041015625"
+               format="0" fineincrement="1" coarseincrement="256"/>
       <table type="Static X Axis" name="MAF Sensor Voltage [V, cand]" sizex="64">
         <data>0.0</data><data>0.08</data><data>0.16</data><data>0.24</data>
         <data>0.32</data><data>0.4</data><data>0.48</data><data>0.56</data>

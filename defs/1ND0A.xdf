@@ -1335,7 +1335,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x87C8" flags="0x0">
     <title>MAF Factor</title>
-    <description>Exact 1ND0A. Address 0x8939; 1 rows x 1 columns; uint8; map confidence candidate. Unsigned airflow-unit scalar in the primary Base Fuel Schedule calculation. With Q=uint32[ffff1e38], F=ROM8[0x8a27], K=ROM16[0x9284], E=ROM8[0x88fb], and engine-speed count N, FUN 0003b75c forms min(floor(floor(F*K*Q/256)/(E*N)),0x726f9) before the final fixed-point conversion to ffff1e40. Stock F is 109. The A2L MAF Factor entry matches the byte's operational position, representation, and cross-ROM literal-pool signature and distinguishes it from K-Value. Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132 for JK00D. The engineering unit and multiplier remain source-derived pending hardware validation. Definition address projected from JK08A 00008a27 through JK08A-1ND.definition-addresses.csv: target Base Fuel Schedule consumer uses the independently recorded value 133.</description>
+    <description>Exact 1ND0A. Address 0x8939; 1 rows x 1 columns; uint8; map confidence candidate. Unsigned airflow-unit scalar in the primary Base Fuel Schedule calculation. With Q=uint32[ffff1e38], F=ROM8[0x8a27], K=ROM16[0x9284], E=ROM8[0x88fb], and engine-speed count N, FUN 0003b75c forms min(floor(floor(F*K*Q/256)/(E*N)),0x726f9) before the final fixed-point conversion to ffff1e40. Stock F is 109. The A2L MAF Factor entry matches the byte's operational position, representation, and cross-ROM literal-pool signature and distinguishes it from K-Value. Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132 for JK00D. The engineering unit and multiplier remain source-derived pending hardware validation. J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]/25600 g/s per count of the total quantity that the Base Fuel Schedule producer reproduces from A+B, which is 0.01477 kg/hr per count with stock 105, while F*0.0001 gives 0.0109 kg/hr per count; the A2L unit of F does not match the ECU's declared airflow. Definition address projected from JK08A 00008a27 through JK08A-1ND.definition-addresses.csv: target Base Fuel Schedule consumer uses the independently recorded value 133.</description>
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -3781,7 +3781,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x8D71" flags="0x0">
     <title>MAF Sensor Transfer - Bank 2</title>
-    <description>Exact 1ND0A. Address 0x15AC2; 1 rows x 64 columns; uint16; map confidence candidate. Bank 2 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-2 preprocessed sample ffff1e4a, writes uint16 output B to ffff1056, and copies it to working value ffff105a. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. Definition address projected from JK08A 000141f4 through JK08A-1ND.definition-addresses.csv: unique structural pair preserves interpolation-call order. Static diagnostic context: Mass Airflow Sensor Bank 2 [code, homologous_community].</description>
+    <description>Exact 1ND0A. Address 0x15AC2; 1 rows x 64 columns; uint16; map confidence candidate. Bank 2 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-2 preprocessed sample ffff1e4a, writes uint16 output B to ffff1056, and copies it to working value ffff105a. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN15 through ffff1d64, diagnostic word ffff101e, preprocessing ffff1e4a, this curve, and total-MAF DID 0x1209. Exact DID 0x1205 names the channel MAS A/F SE-B2. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with the stock factor 105; a changed factor changes the declared conversion. Definition address projected from JK08A 000141f4 through JK08A-1ND.definition-addresses.csv: unique structural pair preserves interpolation-call order. Static diagnostic context: Mass Airflow Sensor Bank 2 [code, homologous_community].</description>
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -3876,17 +3876,17 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x15AC2" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="64" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>raw</units>
+      <units>g/s [cand]</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X">
+      <MATH equation="X*0.0041015625">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xF8BB" flags="0x0">
     <title>MAF Sensor Transfer - Bank 1</title>
-    <description>Exact 1ND0A. Address 0x15B42; 1 rows x 64 columns; uint16; map confidence candidate. Bank 1 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-1 preprocessed sample ffff1e48, writes uint16 output A to ffff1054, and copies it to working value ffff1058. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. Definition address projected from JK08A 00014274 through JK08A-1ND.definition-addresses.csv: unique structural pair preserves interpolation-call order. Static diagnostic context: Mass Airflow Sensor Bank 1 [code, homologous_community].</description>
+    <description>Exact 1ND0A. Address 0x15B42; 1 rows x 64 columns; uint16; map confidence candidate. Bank 1 MAF sensor transfer curve. FUN 0003a904 looks it up from the low 12 bits of bank-1 preprocessed sample ffff1e48, writes uint16 output A to ffff1054, and copies it to working value ffff1058. The same value enters total-MAF producer 0003b27e and the paired contribution calculation in 0003b520. Exact code traces SH7058 AN4 through ffff1d62, diagnostic word ffff101c, preprocessing ffff1e48, this curve, and total-MAF DID 0x1209. Exact DID 0x1204 names the channel MAS A/F SE-B1. The implicit code axis advances by 16 input counts per cell; homologous profiles convert one count to 0.005 V, yielding the cataloged 0.00..5.04 V axis at candidate scale. Stock outputs are strictly positive, so the contribution denominator A+B is nonzero. This branch does not produce ffff3a76. Result disposition: consumer. One count of the output is 105/25600 g/s: the bank outputs sum through ffff1df4 into ffff105c, and J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]*ffff105c/256 as g/s*100 with the stock factor 105; a changed factor changes the declared conversion. Definition address projected from JK08A 00014274 through JK08A-1ND.definition-addresses.csv: unique structural pair preserves interpolation-call order. Static diagnostic context: Mass Airflow Sensor Bank 1 [code, homologous_community].</description>
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -3981,10 +3981,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x15B42" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="64" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>raw</units>
+      <units>g/s [cand]</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X">
+      <MATH equation="X*0.0041015625">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
