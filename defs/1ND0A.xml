@@ -1170,10 +1170,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 0000991a through JK08A-1ND.definition-addresses.csv: target
-         ignition coordinator references this surface on every unselected cold-state path.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 0000991a through
+         JK08A-1ND.definition-addresses.csv: target ignition coordinator references this surface
+         on every unselected cold-state path.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Ignition Timing Surface - Cold State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -1698,10 +1699,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009a1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the first source branch as branch 1.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009a1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the first source
+         branch as branch 1.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -1760,10 +1762,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009b1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the second source branch as branch 0.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009b1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the second
+         source branch as branch 0.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -2153,10 +2156,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009a1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the first source branch as branch 1.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009a1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the first source
+         branch as branch 1.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -2216,10 +2220,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009b1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the second source branch as branch 0.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009b1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the second
+         source branch as branch 0.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -2615,10 +2620,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009a1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the first source branch as branch 1.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009a1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the first source
+         branch as branch 1.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -2678,10 +2684,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009b1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the second source branch as branch 0.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009b1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the second
+         source branch as branch 0.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -3077,10 +3084,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009a1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the first source branch as branch 1.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009a1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the first source
+         branch as branch 1.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -3140,10 +3148,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009b1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the second source branch as branch 0.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009b1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the second
+         source branch as branch 0.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -3539,10 +3548,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009a1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the first source branch as branch 1.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009a1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the first source
+         branch as branch 1.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
@@ -3602,10 +3612,11 @@
          ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
          ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
          result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
-         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
-         adjustment. The physical spark angle remains a hardware item. Definition address
-         projected from JK08A 00009b1a through JK08A-1ND.definition-addresses.csv: target
-         ignition selector preserves the second source branch as branch 0.
+         coefficient is 1, so one raw count is one crank degree while the field stays above
+         threshold ffff11af, and raw 64 is the zero adjustment. The physical spark angle remains
+         a hardware item. Definition address projected from JK08A 00009b1a through
+         JK08A-1ND.definition-addresses.csv: target ignition selector preserves the second
+         source branch as branch 0.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
