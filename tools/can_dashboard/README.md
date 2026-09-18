@@ -276,8 +276,9 @@ or diagnostic semantic bindings. The current conversions are:
 | Display | Source | Conversion | Evidence boundary |
 | --- | --- | --- | --- |
 | vehicle speed | `0x280` bytes 4..5 | big-endian `raw / 100 km/h` | target field and zero state confirmed; the firmware divides the word by 10, filters it, divides by 20, and publishes twice that byte as J1979 PID 0x0D km/h |
-| APP 1/2 | telemetry words | `raw / 200 V` | homologous formula and near-adjacent target agreement |
-| TPS bank 1/2 | telemetry words | `raw / 200 V` | near-adjacent target agreement |
+| APP 1/2 | telemetry words | `raw / 200 V` | ten-bit ADC counts; range monitors accept 60..964 and 60..1000 counts, which is 0.30..4.82 V and 0.30..5.00 V against factory bands of 0.5..1.0 V released and 4.2..4.8 V depressed; a 5.0 V full-scale reading would fault sensors inside those bands |
+| TPS bank 1/2 | telemetry words | `raw / 200 V` | ten-bit ADC counts; range monitors accept 60..964 counts, which is 0.30..4.82 V against factory terminal criteria of more than 0.36 V released and less than 4.75 V depressed |
+| MAF bank 1/2 | `0xFFFF101C`, `0xFFFF101E` | `raw / 200 V` | ten-bit ADC counts with a unit-nominal Q1.15 trim; the calibration sequence centres on 900 counts, which is 4.50 V, and recordings read 0.425 V with the engine stopped against an expected 0.4 V |
 | fuel/oil temperature | telemetry bytes | `raw - 50 degC` | current producer DID bindings plus homologous profile; oil agrees on target |
 | short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |
 | timing coordinate | `final_timing_raw` signed byte | `raw degBTDC` | J1979 PID 0x0E publishes `110 - apc_command` as degrees before TDC, which is this coordinate on the normal path; upstream stock coordinate during a Rolling Launch late override, not a measured spark angle |

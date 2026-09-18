@@ -225,6 +225,66 @@ vehicle's KWP framing, selected SCI baud rate, adapter turnaround, or achieved
 cadence. Those remain bench measurements using raw request and response
 timestamps before engine use.
 
+## Analog sensor count domain and voltage scale
+
+The on-chip A/D unit returns ten-bit results left-aligned in a sixteen-bit
+register. Samplers `FUN_0002862C` and `FUN_000280D8` shift each aligned result
+right by six, so every analog diagnostic word is an unsigned count in
+`0..1023`. Three reviewed transforms sit on top of that domain:
+
+- `FUN_0003C408` multiplies the MAF samples by Q1.15 coefficient `0xFFFF4970`,
+  saturates to `0xFFFF`, and adds one when the sample is full scale `0x03FF`,
+  so the published span is `0..1024`;
+- `FUN_0003E4CC` subtracts the paired throttle samples from `0x0400`, which
+  inverts throttle-position sensor 2 about the same full scale;
+- the second accelerator-pedal word carries twice its sample, which the factory
+  parameter list states as internal conversion of the sensor 2 signal.
+
+No reviewed instruction converts any of these words to volts. The Mode 01
+dispatcher ends at PID `0x21` and declares no voltage PID, and the oxygen
+sensor voltage PIDs stay inactive while `ROM8[0x8936]` is zero. The unit is
+therefore a property of the display, and the ROM range limits fix it against
+the factory reference values.
+
+| Monitor | Word | Accepted counts | At 5 mV per count |
+| --- | --- | --- | --- |
+| `0x000A7040` | `0xFFFF269E` | `ROM16[0x8FFC] = 60` .. `ROM16[0x8FF8] = 964` | 0.30 .. 4.82 V |
+| `0x000A70F0` | `0xFFFF26A2` | `ROM16[0x8FFC] = 60` .. `ROM16[0x8FFA] = 1000` | 0.30 .. 5.00 V |
+| `0x000A7418` | `0xFFFF2756`, `0xFFFF2758` | `ROM16[0x9550] = 60` .. `ROM16[0x954E] = 964` | 0.30 .. 4.82 V |
+| `0x000A75C0` | `0xFFFF275E`, `0xFFFF2760` | `ROM16[0x9550] = 60` .. `ROM16[0x954E] = 964` | 0.30 .. 4.82 V |
+
+The factory documents give the matching acceptance bands: accelerator-pedal
+sensor 1 reads 0.5 .. 1.0 V released and 4.2 .. 4.8 V depressed, pedal sensor 2
+reads half of that at the ECM terminal and the same band on the display,
+throttle-position sensor 1 stays above 0.36 V released and below 4.75 V
+depressed, and the paired sensor 2 mirrors those two criteria.
+
+At 5 mV per count every limit sits just outside its band: 4.82 V clears the
+4.8 V pedal maximum and the 4.75 V throttle maximum, 5.00 V is exactly twice
+the 2.5 V terminal maximum of pedal sensor 2, and 0.30 V clears the 0.36 V
+released minimum from below. A reference of 5.0 V over the full ten-bit span
+puts the same limits at 4.707 V, 4.707 V, and 4.883 V, which are inside the
+factory bands; the ECU would then set P2123, P0223, or P2128 on a vehicle whose
+readings the factory tables call normal. Two further constants agree with 5 mV
+per count: the `0x0400` complement spans 5.12 V, and the two mirrored throttle
+criteria span 5.11 V; the MAF calibration sequence `FUN_000662F6` and
+`FUN_0006635C` returns stock coefficient `0x8000` at an eight-sample average of
+900 counts and accepts 856 .. 944 counts, which is a design point of 4.50 V
+with a symmetric window of 4.28 .. 4.72 V.
+
+Target-vehicle recordings agree with the same reading. The released pedal words
+hold 151 counts, or 0.755 V against the 0.5 .. 1.0 V band, and reach 940 counts
+at full stroke, or 4.70 V against the 4.2 .. 4.8 V band. The MAF words read 85
+counts with the engine stopped, or 0.425 V against an expected 0.4 V, and 197
+.. 241 counts at warm idle, or 0.99 .. 1.21 V against the 0.8 .. 1.1 V band of
+the homologous 3.5-litre engine.
+
+The scale is therefore `V = raw / 200` for the pedal, throttle, and MAF
+diagnostic words. It is established from ROM constants and factory
+specifications, not from firmware arithmetic, and it implies a ten-bit span of
+5.12 V referred to the ECM terminal. A pin-referred measurement on the target
+ECU remains the open hardware item.
+
 ## Intake-air-temperature and P0128 model
 
 The exact DID table points the reviewed intake-air-temperature DID to
