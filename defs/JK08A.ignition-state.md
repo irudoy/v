@@ -8,11 +8,14 @@ in selected timing state, knock feedback, and the final ignition-command path.
 They are not direct commanded spark-angle tables.
 
 The low seven bits form the interpolated timing-state value. Bit 7 is an
-independent pass-through flag that enables a knock-state path. The homologous
-HR A2L and UpRev vocabulary identifies the low field as a timing trim relative
-to calculated MBT and supplies the candidate `x - 64` degree conversion. Exact
-JK08A code proves the relative state flow and one-count arithmetic, but it does
-not prove a physical crank-angle scale or measured spark timing.
+independent pass-through flag that enables a knock-state path. Exact JK08A code
+proves the `x - 64` crank-degree scale of the low field: compositor
+`0x0004BDC2` centers it at 64 beside the computed base angle `0xFFFF23F1`,
+every later term enters the final coordinate `0xFFFF11D4` with coefficient 1,
+and J1979 Mode 01 PID `0x0E` publishes that coordinate as degrees before TDC.
+The homologous HR A2L and UpRev vocabulary names the field a timing trim
+relative to calculated MBT. Physical spark timing on the crankshaft remains a
+hardware measurement.
 
 ## Coordinates and interpolation
 
@@ -85,9 +88,33 @@ ffff23bd = max(ffff12de - ffff11af, 0)
 ```
 
 The normal branch of compositor `0x0004BDC2` includes `0xFFFF23BD` linearly in
-the signed state written to `0xFFFF1830`. This proves that the active low-seven
-field reaches the timing-state calculation. The surrounding terms, limits,
-and mode selection prevent treating one surface cell as the final command.
+the signed state written to `0xFFFF1830`. The chain from that state to the
+final software coordinate is exact:
+
+```text
+ffff1830 = clamp_s8(ffff23f1 + ffff23bd - ffff23c5 - ffff12dc - ffff15ea
+                    - 128 + ffff1a7d + ffff134a)
+         = ffff23f1 + (max(low7 - ffff11af, 0) - 64) + (ffff1a7d - 64)
+           - ffff23c5 - ffff12dc - ffff15ea + ffff134a
+ffff2404 = ffff1830                          # latch 0x0004C136, normal gates
+ffff2378 = ffff2404 of the previous pass     # scheduler 0x00020DFE block copy
+ffff12d6 = clamp_s8(ffff2378 + ffff11d6 + ffff2356 - ffff1ff6)   # 0x0004D99C
+ffff11da = clamp(ffff12d6 + ffff564c, -7, 50)   # 0x0004DBE8, ffff564c gated
+ffff11d4 = rate-limited and bounded ffff11da    # 0x0004DBE8
+```
+
+Every coefficient of the map field along this chain is 1, and J1979 Mode 01
+PID `0x0E` publishes `0xFFFF11D4` as `A/2 - 64` degrees before TDC. One raw
+count of the low-seven field is therefore one crank degree while the field
+stays above threshold `0xFFFF11AF`, and raw `64` is the zero adjustment
+relative to the base angle and the other terms. The cam
+term `0xFFFF1A7D` is centered at 64. The retard terms `0xFFFF23C5`,
+`0xFFFF12DC`, `0xFFFF15EA`, and `0xFFFF11F9` are neutral at zero. The mode
+offset `0xFFFF564C` lies within `-5..0` and is added only while the warm,
+mid-RPM, mid-load window flags in `0xFFFF5B31` are clear. Threshold
+`0xFFFF11AF` is the scheduler snapshot of `0xFFFF11E7`, a rate-limited follower
+of `0xFFFF2363` written by `0x0004E0C2`. The surrounding terms, limits, and
+mode selection prevent treating one surface cell as the final command.
 
 Map bit 7 is consumed independently. Coordinator `0x000493E8` copies active
 sample bit 7 into `0xFFFF2494.bit6`, which participates in the eligibility
@@ -183,9 +210,10 @@ map-difference branch.
 
 - Edit the low-seven timing field and bit-7 enable field through their masked
   views so one edit preserves the other field.
-- Raising a low-seven value is a relative timing-state change under the
-  candidate `x - 64` trim convention, not a request for that absolute spark
-  angle.
+- Raising a low-seven value by one count advances the final software
+  coordinate by one crank degree, subject to the retard terms, the `-7..50`
+  clamp, the rate limiter, and the mode bounds; it is not a request for an
+  absolute spark angle.
 - `0x9A1A` affects both the active high-octane sample and the reference used
   against `0x9B1A`; `0x9B1A` affects the active sample only when the selector is
   set.

@@ -677,10 +677,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                 table = by_name[name]
                 scale = table.find("./scaling")
                 self.assertEqual(table.get("mask"), "7F")
-                self.assertEqual(
-                    scale.get("units"),
-                    "Timing adjustment (deg) [cand]",
-                )
+                self.assertEqual(scale.get("units"), "deg")
                 self.assertEqual(scale.get("expression"), "x-64")
                 self.assertEqual(scale.get("to_byte"), "x+64")
 
@@ -726,10 +723,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
                     "Ignition Timing//State Corrections",
                 )
                 scale = table.find("./scaling")
-                self.assertEqual(
-                    scale.get("units"),
-                    "Timing-state count",
-                )
+                self.assertEqual(scale.get("units"), "deg")
                 self.assertEqual(scale.get("expression"), "x-128")
                 self.assertEqual(scale.get("to_byte"), "x+128")
                 axis = table.find("./table[@type='Static X Axis']")

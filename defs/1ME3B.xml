@@ -1122,23 +1122,27 @@
     </table>
 
     <!-- 0x13A1E  8 uint8  map [candidate]
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The separate constant path selects raw 0x9e, or +30 counts, when ffff22ff=3 and
          ffff2458.bit7=1. Target-vehicle A/B evidence isolates 00012196 during matched warm
          deceleration: a 16-count slot difference at 4000..4400 RPM produced the same 16-count
          median final-coordinate shift with no corresponding fuel-word shift. This proves one-
          for-one software-coordinate propagation and makes the catalog Cold Idle qualifier
-         nonexclusive. A crank-referenced degree scale remains unverified. Index: implicit 1D-8
-         over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
-         writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196
-         through JK08A-1ME3B.definition-addresses.csv: the target coordinator 0007323e of 1450
-         bytes reads the exact table at ordinal 186 on the fallback arm of the selector that
-         1ND0A 0006f37a of 1454 bytes resolves at the same ordinal.
+         nonexclusive. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit 1D-8 over ffff11b2
+         with nodes 0,32,...224 and saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196 through
+         JK08A-1ME3B.definition-addresses.csv: the target coordinator 0007323e of 1450 bytes
+         reads the exact table at ordinal 186 on the fallback arm of the selector that 1ND0A
+         0006f37a of 1454 bytes resolves at the same ordinal.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Timing-State Addend - Default/Post-Transition"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x13A1E" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -1147,15 +1151,19 @@
     </table>
 
     <!-- 0x13A26  8 uint8  map [candidate]
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
          Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
          measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
+         name. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit eight-point axis
+         over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511,
+         site 0004b0d0). Definition address projected from JK08A 0001219e through
          JK08A-1ME3B.definition-addresses.csv: the target coordinator 0007323e reads the exact
          table at ordinal 120 on the default arm and 00013a2e at ordinal 154 on the alternate
          arm exactly as 1ND0A 0006f37a reads 00013c1a and 00013c22.
@@ -1163,7 +1171,7 @@
     <table type="2D" name="Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x13A26" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>

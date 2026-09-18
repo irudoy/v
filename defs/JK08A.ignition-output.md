@@ -59,7 +59,10 @@ while the calculated injection words and Base Fuel Schedule remain effectively
 unchanged. This establishes one-for-one software-coordinate propagation in the
 observed state and disproves an exclusive cold-idle qualifier. The A2L names
 `Cold Idle Ignition Timing`, `Idle Ignition Timing`, and `Idle Timing (Lean)`
-remain catalog provenance. A crank-referenced degree scale remains unverified.
+remain catalog provenance. The coefficient-1 chain from `0xFFFF23EE` through
+`0xFFFF1830`, `0xFFFF2404`, `0xFFFF2378`, `0xFFFF12D6`, and `0xFFFF11DA` to
+`0xFFFF11D4`, together with the J1979 PID `0x0E` declaration of that
+coordinate, makes one count of these maps one crank degree.
 
 ## Final command and diagnostic coordinate
 
@@ -71,10 +74,30 @@ Engine-event dispatcher `0x0004E162` executes this fixed order:
 ```
 
 `0x0004DBE8` performs the final stock timing arbitration and writes signed byte
-`0xFFFF11D4`. Its normal map/state clamp uses stock ROM bounds
-`ROM8[0x821E] = 50` and `ROM8[0x8221] = 0xF9`, where `0xF9` is `-7` as `int8`.
-Additional diagnostic and fallback modes can use other boundaries, so this is
-the normal-mode envelope rather than a universal final range.
+`0xFFFF11D4`. Its input sum is
+
+```text
+ffff11da = clamp(ffff12d6 + ffff564c, ROM8[0x8221], ROM8[0x821E])
+```
+
+with stock bounds `ROM8[0x821E] = 50` and `ROM8[0x8221] = 0xF9`, where `0xF9`
+is `-7` as `int8`. `0xFFFF12D6` is the engine-event correction of
+`0x0004D99C`, which carries the previous-pass timing state `0xFFFF2378`, the
+negated retard request `0xFFFF11D6`, the bounded correction `0xFFFF2356`, and
+the scaled `0x147DA` subtraction. `0xFFFF564C` is the `-5..0` mode offset of
+`0x0004AAD0`, added only while bits 1..5 of mode byte `0xFFFF5B31` are clear:
+coolant raw at or above 110, RPM/25 within `ROM8[0x8897]..ROM8[0x8896] =
+48..128`, and load within `ROM8[0x8768]..ROM8[0x8767] = 64..96`, each with
+hysteresis. The sum then moves from the previous `0xFFFF11D4` by at most
+`ROM8[0x828A..0x828E] = 4` counts upward per pass (`15` in the flagged modes)
+and `ROM8[0x8291] = 15` downward, is re-clamped to `-7..50`, is bounded below
+by `-(129 - coolant raw)` while coolant raw is below 130 and above by
+`ROM8[0x83D5] - 40 = 70`, and is written to `0xFFFF11D4`. Stock
+`ROM8[0x8B34] = 0x81` has bit 4 clear, which skips the override branch. Every
+term enters with coefficient 1, so the coordinate is crank degrees as declared
+by J1979 PID `0x0E`. Additional diagnostic and fallback modes can use other
+boundaries, so `-7..50` is the normal-mode envelope rather than a universal
+final range.
 
 On the normal path `0x0004DF82` computes:
 

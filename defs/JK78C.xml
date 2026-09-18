@@ -1174,20 +1174,30 @@
     </table>
 
     <!-- 0x095CA  16x16 uint8  map [candidate]
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
          The table is homologous to EV18A 0x9976 with a constant layout offset of +0x5c across
          the trio. Finisher 000267cc interpolates only bits 0..6 and copies bit 7 from the
-         lower-left selected cell. Code proves relative state flow, but not a direct final angle
-         or physical crank-angle scale. Definition address projected from JK08A 0000991a through
-         JK08A-JK78C.definition-addresses.csv: unique same-contract accessor preserves the 16x16
-         cold ignition surface role.
+         lower-left selected cell. The low-seven field is a crank-degree adjustment added to the
+         computed base angle ffff23f1, not a direct absolute spark angle. The unit closure is
+         the arithmetic chain to the J1979 PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at
+         0004af84; ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-
+         ffff15ea-128+ffff1a7d+ffff134a) at 0004bee2, where ffff1a7d is centered at 64 so the
+         map field enters as low7-64 beside base angle ffff23f1; ffff2404=ffff1830 at 0004c17a;
+         scheduler 00020dfe copies ffff2404 to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
+         projected from JK08A 0000991a through JK08A-JK78C.definition-addresses.csv: unique
+         same-contract accessor preserves the 16x16 cold ignition surface role.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Ignition Timing Surface - Cold State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x095CA" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -1692,19 +1702,30 @@
          [candidate]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
-         The code-proven correction path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 ->
-         ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
-         JK08A code does not prove this surface as a direct final angle. Definition address
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
+         The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
+         adjustment added to the computed base angle ffff23f1, not a direct absolute spark
+         angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
+         0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID
+         0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
          projected from JK08A 00009a1a through JK08A-JK78C.definition-addresses.csv: unique
          same-contract accessor preserves the first 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x096CA" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -1743,20 +1764,30 @@
          [candidate]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
-         selector for a later pass. A code-proven correction path exists through ffff22fa; code
-         does not prove this surface as a direct final angle. The physical name and scale match
-         homolog EV18A 0x9b76. Definition address projected from JK08A 00009b1a through
-         JK08A-JK78C.definition-addresses.csv: unique same-contract accessor preserves the
-         second 16x16 ignition surface and operand order.
+         selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
+         seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
+         a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979
+         PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
+         projected from JK08A 00009b1a through JK08A-JK78C.definition-addresses.csv: unique
+         same-contract accessor preserves the second 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x097CA" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -1794,22 +1825,26 @@
     <!-- 0x137E0  8 uint8  common-definition Map 1 storage projected from 0x137E0 [candidate]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The separate constant path selects raw 0x9e, or +30 counts, when ffff22ff=3 and
          ffff2458.bit7=1. Target-vehicle A/B evidence isolates 00012196 during matched warm
          deceleration: a 16-count slot difference at 4000..4400 RPM produced the same 16-count
          median final-coordinate shift with no corresponding fuel-word shift. This proves one-
          for-one software-coordinate propagation and makes the catalog Cold Idle qualifier
-         nonexclusive. A crank-referenced degree scale remains unverified. Index: implicit 1D-8
-         over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
-         writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196
-         through JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the
-         default table role.
+         nonexclusive. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit 1D-8 over ffff11b2
+         with nodes 0,32,...224 and saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196 through
+         JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the default
+         table role.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - Timing-State Addend - Default/Post-Transition"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x137E0" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -1820,22 +1855,26 @@
     <!-- 0x137E8  8 uint8  common-definition Map 1 storage projected from 0x137E8 [candidate]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
          Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
          measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
+         name. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit eight-point axis
+         over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511,
+         site 0004b0d0). Definition address projected from JK08A 0001219e through
          JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source
          warm-transition table role on the default arm of the target state selector.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x137E8" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -2118,19 +2157,30 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
-         The code-proven correction path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 ->
-         ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
-         JK08A code does not prove this surface as a direct final angle. Definition address
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
+         The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
+         adjustment added to the computed base angle ffff23f1, not a direct absolute spark
+         angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
+         0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID
+         0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
          projected from JK08A 00009a1a through JK08A-JK78C.definition-addresses.csv: unique
          same-contract accessor preserves the first 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x1CF00" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2170,20 +2220,30 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
-         selector for a later pass. A code-proven correction path exists through ffff22fa; code
-         does not prove this surface as a direct final angle. The physical name and scale match
-         homolog EV18A 0x9b76. Definition address projected from JK08A 00009b1a through
-         JK08A-JK78C.definition-addresses.csv: unique same-contract accessor preserves the
-         second 16x16 ignition surface and operand order.
+         selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
+         seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
+         a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979
+         PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
+         projected from JK08A 00009b1a through JK08A-JK78C.definition-addresses.csv: unique
+         same-contract accessor preserves the second 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x1D300" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2222,22 +2282,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The separate constant path selects raw 0x9e, or +30 counts, when ffff22ff=3 and
          ffff2458.bit7=1. Target-vehicle A/B evidence isolates 00012196 during matched warm
          deceleration: a 16-count slot difference at 4000..4400 RPM produced the same 16-count
          median final-coordinate shift with no corresponding fuel-word shift. This proves one-
          for-one software-coordinate propagation and makes the catalog Cold Idle qualifier
-         nonexclusive. A crank-referenced degree scale remains unverified. Index: implicit 1D-8
-         over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
-         writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196
-         through JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the
-         default table role.
+         nonexclusive. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit 1D-8 over ffff11b2
+         with nodes 0,32,...224 and saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196 through
+         JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the default
+         table role.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - Timing-State Addend - Default/Post-Transition"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1EA80" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -2249,22 +2313,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
          Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
          measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
+         name. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit eight-point axis
+         over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511,
+         site 0004b0d0). Definition address projected from JK08A 0001219e through
          JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source
          warm-transition table role on the default arm of the target state selector.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1EAA0" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -2551,19 +2619,30 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
-         The code-proven correction path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 ->
-         ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
-         JK08A code does not prove this surface as a direct final angle. Definition address
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
+         The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
+         adjustment added to the computed base angle ffff23f1, not a direct absolute spark
+         angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
+         0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID
+         0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
          projected from JK08A 00009a1a through JK08A-JK78C.definition-addresses.csv: unique
          same-contract accessor preserves the first 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x1D000" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2603,20 +2682,30 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
-         selector for a later pass. A code-proven correction path exists through ffff22fa; code
-         does not prove this surface as a direct final angle. The physical name and scale match
-         homolog EV18A 0x9b76. Definition address projected from JK08A 00009b1a through
-         JK08A-JK78C.definition-addresses.csv: unique same-contract accessor preserves the
-         second 16x16 ignition surface and operand order.
+         selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
+         seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
+         a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979
+         PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
+         projected from JK08A 00009b1a through JK08A-JK78C.definition-addresses.csv: unique
+         same-contract accessor preserves the second 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x1D400" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -2655,22 +2744,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The separate constant path selects raw 0x9e, or +30 counts, when ffff22ff=3 and
          ffff2458.bit7=1. Target-vehicle A/B evidence isolates 00012196 during matched warm
          deceleration: a 16-count slot difference at 4000..4400 RPM produced the same 16-count
          median final-coordinate shift with no corresponding fuel-word shift. This proves one-
          for-one software-coordinate propagation and makes the catalog Cold Idle qualifier
-         nonexclusive. A crank-referenced degree scale remains unverified. Index: implicit 1D-8
-         over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
-         writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196
-         through JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the
-         default table role.
+         nonexclusive. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit 1D-8 over ffff11b2
+         with nodes 0,32,...224 and saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196 through
+         JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the default
+         table role.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - Timing-State Addend - Default/Post-Transition"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1EA88" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -2682,22 +2775,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
          Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
          measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
+         name. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit eight-point axis
+         over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511,
+         site 0004b0d0). Definition address projected from JK08A 0001219e through
          JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source
          warm-transition table role on the default arm of the target state selector.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1EAA8" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -2984,19 +3081,30 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
-         The code-proven correction path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 ->
-         ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
-         JK08A code does not prove this surface as a direct final angle. Definition address
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
+         The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
+         adjustment added to the computed base angle ffff23f1, not a direct absolute spark
+         angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
+         0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID
+         0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
          projected from JK08A 00009a1a through JK08A-JK78C.definition-addresses.csv: unique
          same-contract accessor preserves the first 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x1D100" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -3036,20 +3144,30 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
-         selector for a later pass. A code-proven correction path exists through ffff22fa; code
-         does not prove this surface as a direct final angle. The physical name and scale match
-         homolog EV18A 0x9b76. Definition address projected from JK08A 00009b1a through
-         JK08A-JK78C.definition-addresses.csv: unique same-contract accessor preserves the
-         second 16x16 ignition surface and operand order.
+         selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
+         seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
+         a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979
+         PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
+         projected from JK08A 00009b1a through JK08A-JK78C.definition-addresses.csv: unique
+         same-contract accessor preserves the second 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x1D500" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -3088,22 +3206,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The separate constant path selects raw 0x9e, or +30 counts, when ffff22ff=3 and
          ffff2458.bit7=1. Target-vehicle A/B evidence isolates 00012196 during matched warm
          deceleration: a 16-count slot difference at 4000..4400 RPM produced the same 16-count
          median final-coordinate shift with no corresponding fuel-word shift. This proves one-
          for-one software-coordinate propagation and makes the catalog Cold Idle qualifier
-         nonexclusive. A crank-referenced degree scale remains unverified. Index: implicit 1D-8
-         over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
-         writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196
-         through JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the
-         default table role.
+         nonexclusive. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit 1D-8 over ffff11b2
+         with nodes 0,32,...224 and saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196 through
+         JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the default
+         table role.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - Timing-State Addend - Default/Post-Transition"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1EA90" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -3115,22 +3237,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
          Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
          measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
+         name. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit eight-point axis
+         over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511,
+         site 0004b0d0). Definition address projected from JK08A 0001219e through
          JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source
          warm-transition table role on the default arm of the target state selector.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1EAB0" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -3417,19 +3543,30 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
-         The code-proven correction path is ffff22fa -> 0004d99c -> ffff12d6 -> 0004dbe8 ->
-         ffff11d4 -> 0004df82. The physical name and x-64 scale match homolog EV18A 0x9a76, but
-         JK08A code does not prove this surface as a direct final angle. Definition address
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
+         The physical name matches homolog EV18A 0x9a76. The low-seven field is a crank-degree
+         adjustment added to the computed base angle ffff23f1, not a direct absolute spark
+         angle; coordinator 000493e8 also forms the conditional signed Q8 difference against
+         0x9B1A from the same field. The unit closure is the arithmetic chain to the J1979 PID
+         0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
          projected from JK08A 00009a1a through JK08A-JK78C.definition-addresses.csv: unique
          same-contract accessor preserves the first 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Ignition Timing Surface - High-Octane State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x1D200" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -3469,20 +3606,30 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-64 Timing adjustment (deg) [candidate]; Y Axis 0x135C8 rpm [candidate]; X
-         Axis 0x135B8 load [candidate]
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
          Knock evaluation 0004a238 and coordinator 000493e8 form the state loop that updates the
-         selector for a later pass. A code-proven correction path exists through ffff22fa; code
-         does not prove this surface as a direct final angle. The physical name and scale match
-         homolog EV18A 0x9b76. Definition address projected from JK08A 00009b1a through
-         JK08A-JK78C.definition-addresses.csv: unique same-contract accessor preserves the
-         second 16x16 ignition surface and operand order.
+         selector for a later pass. The physical name matches homolog EV18A 0x9b76. The low-
+         seven field is a crank-degree adjustment added to the computed base angle ffff23f1, not
+         a direct absolute spark angle. The unit closure is the arithmetic chain to the J1979
+         PID 0x0E coordinate: ffff23bd=max(low7-ffff11af,0) at 0004af84;
+         ffff1830=clamp_s8(ffff23f1+ffff23bd-ffff23c5-ffff12dc-ffff15ea-128+ffff1a7d+ffff134a)
+         at 0004bee2, where ffff1a7d is centered at 64 so the map field enters as low7-64 beside
+         base angle ffff23f1; ffff2404=ffff1830 at 0004c17a; scheduler 00020dfe copies ffff2404
+         to snapshot ffff2378 at 00021314..00021318;
+         ffff12d6=clamp_s8(ffff2378+ffff11d6+ffff2356-ffff1ff6) at 0004db8c;
+         ffff11da=clamp(ffff12d6+gated ffff564c,-7,50) at 0004dcf6; the rate-limited and bounded
+         result is ffff11d4 at 0004df64, which PID 0x0E publishes as A/2-64 degBTDC. Every
+         coefficient is 1, so one raw count is one crank degree and raw 64 is the zero
+         adjustment. The physical spark angle remains a hardware item. Definition address
+         projected from JK08A 00009b1a through JK08A-JK78C.definition-addresses.csv: unique
+         same-contract accessor preserves the second 16x16 ignition surface and operand order.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Ignition Timing Surface - High-Detonation State"
            category="Ignition Timing//State Surfaces" storagetype="uint8"
            storageaddress="0x1D600" sizex="16" sizey="16" endian="big" mask="7F">
-      <scaling units="Timing adjustment (deg) [cand]" expression="x-64" to_byte="x+64"
-               format="0" fineincrement="1" coarseincrement="4"/>
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
              sizex="16" endian="big">
         <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
@@ -3521,22 +3668,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The separate constant path selects raw 0x9e, or +30 counts, when ffff22ff=3 and
          ffff2458.bit7=1. Target-vehicle A/B evidence isolates 00012196 during matched warm
          deceleration: a 16-count slot difference at 4000..4400 RPM produced the same 16-count
          median final-coordinate shift with no corresponding fuel-word shift. This proves one-
          for-one software-coordinate propagation and makes the catalog Cold Idle qualifier
-         nonexclusive. A crank-referenced degree scale remains unverified. Index: implicit 1D-8
-         over ffff11b2 with nodes 0,32,...224 and saturation at element 7. Result disposition:
-         writes (RAM ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196
-         through JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the
-         default table role.
+         nonexclusive. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit 1D-8 over ffff11b2
+         with nodes 0,32,...224 and saturation at element 7. Result disposition: writes (RAM
+         ffff1511, site 0004b0d0). Definition address projected from JK08A 00012196 through
+         JK08A-JK78C.definition-addresses.csv: homologous fallback branch preserves the default
+         table role.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - Timing-State Addend - Default/Post-Transition"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1EA98" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -3548,22 +3699,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 deg [candidate]
          The warm latch sets at raw coolant 110 and remains set down to raw 106, corresponding
          to 60 and 56 deg C under the exact diagnostic conversion. While ffff2458.bit5 is clear,
          ffff2590 reloads to 85; once the bit is set, the periodic scheduler decrements it.
          Selection therefore lasts for at most 85 scheduler counts, or 870.4 ms at the target-
          measured 10.24 ms period. A2L homology identifies the historical Idle Ignition Timing
-         name, but no crank-referenced degree scale is established. Index: implicit eight-point
-         axis over ffff11b2 with saturation at element 7. Result disposition: writes (RAM
-         ffff1511, site 0004b0d0). Definition address projected from JK08A 0001219e through
+         name. The alternate compositor branch of 0004bdc2 forms
+         ffff1830=clamp_s8(ffff1a7d+ffff23ee-ffff23c5-64) at 0004be82 and shares the ffff2404 ->
+         ffff2378 -> ffff12d6 -> ffff11da -> ffff11d4 chain of coefficient 1 with the low-seven
+         surfaces, and J1979 PID 0x0E publishes ffff11d4 as A/2-64 degBTDC, so one count of this
+         map is one crank degree of the declared coordinate. Index: implicit eight-point axis
+         over ffff11b2 with saturation at element 7. Result disposition: writes (RAM ffff1511,
+         site 0004b0d0). Definition address projected from JK08A 0001219e through
          JK08A-JK78C.definition-addresses.csv: instruction-aligned branch preserves the source
          warm-transition table role on the default arm of the target state selector.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition - Default"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x1EAB8" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="deg [cand]" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
