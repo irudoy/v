@@ -10,11 +10,12 @@ words, and the shared fuel-output inhibit mask. The complete source and
 precedence model for that mask is maintained in
 [`JK08A.fuel-inhibit.md`](JK08A.fuel-inhibit.md).
 
-No road log or bench observation is used here. Arithmetic, RAM data flow,
-scheduler ordering, diagnostic bindings, and ATU-II register use are
-code-proven. Engineering conversions derived from homologous definitions and
-the physical connection between calculated pulse arrays and injector terminals
-remain hardware-validation items.
+Arithmetic, RAM data flow, scheduler ordering, diagnostic bindings, and ATU-II
+register use are code-proven, and the code path from the compensated pulse
+words to the ATU-II one-shot outputs fixes their millisecond scale. Road-log
+statistics appear only where they bound a scale that code leaves open. The
+physical connection between the scheduled durations and the injector terminals
+remains a hardware-validation item.
 
 ## Periodic ordering
 
@@ -455,8 +456,9 @@ saturation. All six stock multipliers are `0x80`, or unity in Q1.7.
 
 The raw result is written to `0xFFFF23C8 + 2*i`. Exact DID `0x1206` returns the
 first word, and the VQ35HR factory manual identifies the corresponding monitor
-as actual compensated injection pulse width for bank 1. The homologous
-`raw/100 ms` conversion remains candidate for JK08A.
+as actual compensated injection pulse width for bank 1. One count is 10 us, so
+the conversion is `ms = raw / 100`; the derivation is in
+[Injection-pulse time scale](#injection-pulse-time-scale).
 
 Each raw word also passes through `FUN_0005B7EC`. With stock coefficients:
 
@@ -477,10 +479,11 @@ For the stock coefficients `y1 = x`, so the transform simplifies to:
 max(x, sat_u16(floor((13656*x + 425000) / 16384)))
 ```
 
-The transformed six-word array begins at `0xFFFF23D4`. Its exact numeric
-contract is established, but its physical purpose remains unresolved.
-`FUN_000521A8` takes the maximum of all six transformed words and
-`0xFFFF241C`, then derives scalar bytes `0xFFFF23BF` and `0xFFFF23F0`.
+The transformed six-word array begins at `0xFFFF23D4`. It is the duration the
+scheduler programs into the ATU-II one-shot outputs, so `FUN_0005B7EC` is the
+final minimum-pulse enforcement before the hardware. `FUN_000521A8` takes the
+maximum of all six transformed words and `0xFFFF241C`, then derives scalar
+bytes `0xFFFF23BF` and `0xFFFF23F0`.
 
 ## Active-vehicle reproduction
 
@@ -498,9 +501,9 @@ in `BFS * STFT / 0x6400 / 20.48` with slope 0.87 to 0.89 and an additive 42 to
 53 raw at correlation 0.99 on both banks; the slope below unity and the
 additive term are the `0xFFFF165E` gain and the battery-dependent
 `0xFFFF2436` base, which the profile does not stream. The factor 20.48 is the
-exact ratio of the `raw/2048 ms` BFS scale to the `raw/100 ms` pulse scale
-under unity gains, so the two candidate millisecond scales are mutually
-consistent; neither is proven against an electrical measurement.
+ratio of the candidate `raw/2048 ms` BFS scale to the established
+`raw/100 ms` pulse scale, so the measured slope is the chain gain between the
+schedule and the injector command in physical units.
 
 ## Override word
 
@@ -517,41 +520,137 @@ The word is added to both normal parity-base calculations and directly replaces
 the parity base for a channel selected by `0xFFFF22E0`. Its physical unit and
 sensor interpretation require hardware validation.
 
-## Hardware-output boundary
+## Duration path to the ATU-II outputs
 
-The aggregate mask has a separate code-proven path to the six ATU-II one-shot
-outputs:
+Both pulse producers reach the same six ATU-II channel-8 one-shot outputs
+through `FUN_0002C13C`, which takes an aggregate channel mask and a pointer to
+six consecutive duration words.
+
+The main path carries the transformed array through the scheduler snapshot:
 
 ```text
-0xFFFF22E0
-  -> per-channel eligibility and fallback selection
-  -> FUN_0002C13C
-  -> ATU-II DCNT8A..DCNT8F and DSTR
+0xFFFF23C8 + 2*i    raw compensated pulse words, DID 0x1206
+  -> FUN_0005B7EC   affine minimum-pulse floor
+0xFFFF23D4 + 2*i    transformed pulse words
+  -> FUN_00020DFE   periodic 140-byte copy of 0xFFFF23BC to 0xFFFF2330
+0xFFFF2348 + 2*i    snapshot of the transformed words
+  -> FUN_00054D3E   source selection and per-channel lower bound
+0xFFFF224E + 2*i    scheduled durations
+  -> FUN_0002C13C   ATU-II DCNT8A..DCNT8F and DSTR
 ```
 
-`FUN_0002C13C` substitutes fallback word `0xFFFF23AA` for a masked channel or a
-channel retained in rotating history `0xFFFF1935`, scales its selected duration
-by `800/256`, adds it to the corresponding channel-8 down-counter, and starts
-the selected one-shot output.
+At `0x21314` `FUN_00020DFE` calls byte copier `FUN_00022558` with source
+`0xFFFF23BC`, destination `0xFFFF2330`, and length `0x8C`, so every word of
+producer block `0xFFFF23BC..0xFFFF2447` has a snapshot 140 bytes below it.
+`0xFFFF2348` is the snapshot of `0xFFFF23D4`, `0xFFFF2390` of `0xFFFF241C`, and
+`0xFFFF23AA` of override word `0xFFFF2436`.
 
-A complete application-code p-code census found no software consumer that
-connects raw pulse array `0xFFFF23C8..0xFFFF23D3` to this ATU-II source path.
-The only resolved read of `0xFFFF23C8` outside its producer is the diagnostic
-response path. The only runtime consumer of transformed array
-`0xFFFF23D4..0xFFFF23DF` is the maximum/scalar calculation in
-`FUN_000521A8`. Fixed event words used by the ATU-II path also have no resolved
-application-code writer beyond startup-range handling.
+`FUN_00054D3E` selects what fills the duration array:
 
-The following claims are therefore distinct:
+| Condition | Six words filled from |
+| --- | --- |
+| `0xFFFF418C.bit1` set or `0xFFFF24A0.bit6` clear | `0xFFFF23AA` |
+| `param_1 == 0` | `0xFFFF238A` |
+| `param_1` in 1, 2, 4 | start word selected by `param_1` |
+| otherwise | `0xFFFF2348 + 2*i`, floored at `0xFFFF2390` |
 
-- Code proves the complete main fuel arithmetic through six raw and six
-  transformed pulse words.
-- Code proves a shared inhibit/fallback path from `0xFFFF22E0` to six ATU-II
-  one-shot outputs.
-- Static analysis does not yet prove that either pulse array is the duration
-  source consumed by `FUN_0002C13C`.
-- Physical injector closure, pulse-width units, terminal ordering, and any
-  hidden peripheral or transfer mechanism require bench or engine validation.
+The start branch compares `uint16[0xFFFF23AA] + (ROM16[0x94E8] * 100 >> 8)`
+against `0xFFFF2388`, conditionally subtracts `0xFFFF238A` from `0xFFFF2386`,
+and floors the result at `0xFFFF238C`, `0xFFFF238E`, or `0xFFFF2392` for
+`param_1` 1, 2, and 4.
+
+The three functions that pass `0xFFFF224E` to `FUN_0002C13C` (`FUN_00029588`,
+`FUN_0002BE40`, `FUN_00054A44`) each refill it through `FUN_00054D3E` first.
+The fourth caller, `FUN_00051F1E`, passes `0xFFFF1568` with mask `0xFFFF1220`.
+That array is the mask-gated per-channel path: `FUN_00051A98` writes
+`0xFFFF155C + 2*i` and stores `FUN_0005B7EC` of that word to
+`0xFFFF1568 + 2*i`. For channel `i` its stock branch is:
+
+```text
+base = arithmetic_shift6(uint8[0xFFFF152C] * uint8[0xFFFF1527])
+base = max(0, base +/- uint8[0xFFFF15D8])   sign from 0xFFFF2484.bit0
+add  = 0x32 if bit i of uint8[0xFFFF1574] else 0
+q    = sat_u16((int16[0xFFFF142E + 2*i] * (base + add)) >> 10)
+q    = sat_u16((uint16[0xFFFF165E] * q) >> 13)
+0xFFFF155C + 2*i = sat_u16(q + uint16[0xFFFF2436])
+```
+
+`FUN_0002C13C` gates on `0xFFFF4184.bit7` and, per channel `i`:
+
+```text
+d = duration[i]
+if bit i of 0xFFFF22E0 or of history 0xFFFF1935:
+    d = uint16[0xFFFF23AA]; set bit i of 0xFFFF1935
+if bit i of DSTR is already set:
+    d = max(0, d - uint16[0xFFFF23AA])
+c = sat_u16((800 * d) >> 8)
+if 0xFFFF4251.bit0: c = 1000
+DCNT8x += c with interrupts masked; set bit i of DSTR
+```
+
+Substituting the injector opening time for an inhibited channel and removing it
+again when a pulse is already in flight are consistent only if the duration
+words and `0xFFFF23AA` share one unit.
+
+## Injection-pulse time scale
+
+The ATU-II programming fixes that unit absolutely.
+
+`FUN_000274AC` writes `PSCR1 = 1` at `0xFFFFF404`, so the prescaler output is
+`phi' = Pphi / 2`. `FUN_0002718A` writes `TCR8 = 0x55` at `0xFFFFF668`, so
+`CKSELA = 5` selects `phi' / 32` for down-counters `DCNT8A..DCNT8H`. The six
+injector channels count at `Pphi / 64`. With `Pphi = 20 MHz` established from
+the target CAN base interval in [`JK08A.dfco.md`](JK08A.dfco.md), one counter
+step is `3.2 us`.
+
+`FUN_0002C13C` programs `DCNT8x += sat_u16(800 * d / 256)`, so one duration
+count is `3.125` counter steps:
+
+```text
+t = d * (800 / 256) * (64 / Pphi) = d * 200 / Pphi = d * 10 us
+```
+
+Every word on both duration paths is therefore in `10 us` units, full scale
+`655.35 ms`:
+
+| Word | Content |
+| --- | --- |
+| `0xFFFF23C8 + 2*i` | compensated pulse, DID `0x1206`, `ms = raw / 100` |
+| `0xFFFF23D4 + 2*i` | the same words after the minimum-pulse floor |
+| `0xFFFF224E + 2*i` | scheduled duration |
+| `0xFFFF155C + 2*i`, `0xFFFF1568 + 2*i` | mask-gated per-channel path |
+| `0xFFFF2436`, `0xFFFF23AA` | injector opening time |
+| `0xFFFF241C`, `0xFFFF2390` | minimum pulse |
+| `0xFFFF2412..0xFFFF241E` | start durations |
+| `0xFFFF191C`, `0xFFFF191E` | parity pulse bases |
+| `0xFFFF1876`, `0xFFFF18C0`, `0xFFFF18C2` | common and bank precursors |
+
+The forced value `1000` behind `0xFFFF4251.bit0` is `3.2 ms` expressed in
+counter steps, not a duration word.
+
+Independent magnitudes agree with the scale:
+
+- Override word `0xFFFF2436` holds `70` counts, `0.70 ms`, at battery snapshot
+  `0xFFFF1108 = 175` and moves `92/128` counts per byte. Under the source-bound
+  `0.08 V/count` conversion that byte is `14.0 V` and the slope is `0.09 ms/V`;
+  over the recorded byte range `157..180` the word spans `0.66..0.82 ms`. That
+  is the opening time of a port injector.
+- The stock `FUN_0005B7EC` floor `max(x, 0.8335*x + 25.94)` enforces a minimum
+  pulse of `0.26 ms` and stops acting at `1.56 ms`.
+- Precursor minimum `ROM16[0x94E8] = 170` is `1.70 ms`. The recordings of
+  2026-09-17 give warm-idle medians of `3.53`, `3.60`, and `3.62 ms` and a
+  maximum of `14.08 ms` at `3587.5 rpm`, which is 42 percent of the `33.4 ms`
+  engine cycle at that speed.
+
+Base Fuel Schedule keeps its candidate `raw / 2048 ms` scale. No ROM constant
+fixes a reference value for the product of the gains between the schedule and
+the pulse words: common gain `0xFFFF165E` reaches at most
+`floor(255 * 13972 / 256) = 13918` against the `16384` that would make its
+stage unity, so code alone cannot close the schedule. The recorded relation
+bounds it instead. With the pulse scale absolute, the measured chain gain is
+`0.88` under `raw / 2048 ms`, `0.44` under `raw / 1024 ms`, and `1.76` under
+`raw / 4096 ms`. Only the near-unity value matches a chain whose recovered
+stages are unity-normalized.
 
 ## Hardware validation priorities
 
@@ -563,9 +662,10 @@ The minimum controlled validation set is:
    verify the expected multiplicative movement in BFS and pulse duration.
 3. Trigger DFCO and RPM cut conditions separately and compare
    `0xFFFF22E0`-equivalent behavior with all six electrical outputs.
-4. Determine whether the ATU-II duration source is populated by an unresolved
-   interrupt, transfer engine, peripheral side effect, or code outside the
-   recovered application data flow.
+4. Measure injector-terminal pulse width against exact DID `0x1206` at several
+   battery voltages to confirm the `10 us` duration count and the modeled
+   opening time `0xFFFF2436`, and record the terminal order of the six
+   channel-8 outputs.
 5. Retain Map 1 storage for the DFCO held-request and intermediate-restore
    thresholds until FAIL-BOOT is fixed and base map switching is confirmed on
    hardware; only then add Map 1-5 Hold and Intermediate support.

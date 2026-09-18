@@ -279,6 +279,8 @@ or diagnostic semantic bindings. The current conversions are:
 | APP 1/2 | telemetry words | `raw / 200 V` | ten-bit ADC counts; range monitors accept 60..964 and 60..1000 counts, which is 0.30..4.82 V and 0.30..5.00 V against factory bands of 0.5..1.0 V released and 4.2..4.8 V depressed; a 5.0 V full-scale reading would fault sensors inside those bands |
 | TPS bank 1/2 | telemetry words | `raw / 200 V` | ten-bit ADC counts; range monitors accept 60..964 counts, which is 0.30..4.82 V against factory terminal criteria of more than 0.36 V released and less than 4.75 V depressed |
 | MAF bank 1/2 | `0xFFFF101C`, `0xFFFF101E` | `raw / 200 V` | ten-bit ADC counts with a unit-nominal Q1.15 trim; the calibration sequence centres on 900 counts, which is 4.50 V, and recordings read 0.425 V with the engine stopped against an expected 0.4 V |
+| injection pulse 1..6 | `0xFFFF23C8..0xFFFF23D3` | `raw / 100 ms` | one count is 10 us: the ATU-II channel-8 down-counters run at `Pphi / 64` and the scheduler adds `800 * raw / 256` steps; a compensated software command, not a measured injector-open duration |
+| Base Fuel Schedule | `0xFFFF1026` | candidate `raw / 2048 ms` | exact DID 0x1208 binding and homologous profile; the recorded ratio to the injection pulse is 0.88 under this scale and 0.44 or 1.76 under the adjacent power-of-two scales |
 | fuel/oil temperature | telemetry bytes | `raw - 50 degC` | current producer DID bindings plus homologous profile; oil agrees on target |
 | short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |
 | timing coordinate | `final_timing_raw` signed byte | `raw degBTDC` | J1979 PID 0x0E publishes `110 - apc_command` as degrees before TDC, which is this coordinate on the normal path; upstream stock coordinate during a Rolling Launch late override, not a measured spark angle |
@@ -300,10 +302,9 @@ plotting and filtering without discarding the raw byte.
 
 The CarScanner comparison follows the CAN recording rather than sharing a
 clock with it. It corroborates transforms but cannot prove equality for values
-that can change between captures. Injection values use the declared candidate
-`raw / 100 ms` transform but are compensated software commands, not verified
-electrical injector-open durations. Timing is also a software command, not a
-measured spark angle. The current top-card label `Timing command` names
+that can change between captures. Injection values are compensated software
+commands rather than verified electrical injector-open durations, and timing is
+a software command, not a measured spark angle. The current top-card label `Timing command` names
 `final_timing_raw`; during a Rolling Launch late override it is the upstream
 stock coordinate rather than the effective command. The detailed `APC command`
 field carries the effective command.

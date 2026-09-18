@@ -341,9 +341,12 @@ code-proven places:
 
 The SH7059 manual identifies those registers as six ATU-II one-shot outputs.
 This closes the static path from DFCO state to the injector-output scheduling
-peripheral. Physical cylinder order, the exact electrical output behavior, and
-the relationship between fallback/override words and a diagnostic injector-time
-display require bench or engine validation.
+peripheral. Fallback word `0xFFFF23AA` is the scheduler snapshot of injector
+opening time `0xFFFF2436`, so an inhibited channel is commanded a pulse that
+delivers no fuel, and the 800/256 factor places every duration word on the same
+`10 us` scale as the diagnostic injection-pulse words; the derivation is in
+[`JK08A.fuel.md`](JK08A.fuel.md). Physical cylinder order and the exact
+electrical output behavior require bench or engine validation.
 
 ## Calibration inventory
 
