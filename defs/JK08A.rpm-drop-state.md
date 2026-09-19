@@ -8,8 +8,8 @@ The code establishes an RPM-domain Boolean gate. It does not establish an
 initial ignition-retard quantity, and the address-free A2L family match is not
 used as semantic evidence.
 
-The downstream state participates in DFCO and several other coordinators. The
-physical identity of the SH7058 PH9 input remains unresolved, so the
+The downstream state participates in DFCO and several other coordinators, and
+the byte magnitude carries no information beyond zero versus nonzero, so the
 calibration stays hidden from tuning-editor output.
 
 ## Current engine-speed word
@@ -72,15 +72,31 @@ else:
 ```
 
 `FUN_00038618` copies SH7058 `PHDR.PH9DR` to `0xFFFF2451.bit7` with direct
-polarity. PH9 is MCU pin 74. Its ECM terminal and physical switch identity are
-not established.
+polarity. PH9 is MCU pin 74. The diagnostic status packer `FUN_0002E0D4` copies
+`0xFFFF2451.bit7` to bit 2 of `0xFFFF3345` at `0x0002E27C..0x0002E286`, and the
+service-0x22 table publishes that byte as DID `0x1305` with support mask `0x44`:
+
+```text
+ROM32[0x22A08] = 0xFFFF3345
+ROM32[0x22A0C] = 0x00011E44
+ROM8 [0x11E44] = 0x44
+```
+
+A structured Nissan diagnostic profile names DID `0x1305` bit 2 `BRAKE SW`, and
+the VQ35HR factory manual defines `BRAKE SW` as the ON/OFF condition of the stop
+lamp switch signal. The ECM terminal of PH9 is not established.
+
+The same packer copies `0xFFFF2459.bit5` to bit 0 of the DID `0x1302` byte
+`0xFFFF3342` at `0x0002E154..0x0002E162`. The profile names that bit
+`CLSD THL POS`, which the factory manual defines as the idle position computed
+by the ECM from the accelerator pedal position sensor signal.
 
 All four stock cells at `0x1202E` equal 200. The magnitude is never used after
 the lookup: zero and nonzero are the only operational classes. Stock JK08A
-therefore requires the PH9-derived bit to publish the RPM-drop value while the
-upstream mode bit is set. Replacing 200 with any other nonzero byte has no
-effect; replacing a cell with zero bypasses that PH9 requirement for the
-corresponding pre-mode RPM range.
+therefore requires the PH9-derived `BRAKE SW` bit to publish the RPM-drop value
+while the `CLSD THL POS` bit `0xFFFF2459.bit5` is set. Replacing 200 with any
+other nonzero byte has no effect; replacing a cell with zero bypasses that PH9
+requirement for the corresponding pre-mode RPM range.
 
 ## Scheduled state and DFCO use
 
@@ -111,7 +127,6 @@ exact Boolean-gate role. It is hidden from RomRaider and TunerPro because:
 
 - its old Initial Retard Quantity identity is contradicted by the machine path;
 - byte magnitude is irrelevant beyond zero versus nonzero;
-- the PH9 physical input identity is unresolved;
 - changing a cell to zero alters DFCO-related state selection and multiple
   other consumers.
 

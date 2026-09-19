@@ -104,7 +104,7 @@ confidence = "code"
 scale_conf = "candidate"
 scale_expr = "x*0.05"
 to_byte = "x/0.05"
-semantics = "Mode 4 duration target of the VVEL selector: the throttled mode requested while brake-booster vacuum is insufficient or the booster sensor is abnormal, and the cold path after 2000 passes with the 0xFFFF23B8.bit6 condition. Interpolated by engine speed and scaled by 0.05."
+semantics = "Mode 4 duration target of the VVEL selector: the throttled mode requested while brake-booster vacuum is insufficient or the booster sensor is abnormal, and the cold path after 2000 passes with the CLSD THL POS condition 0xFFFF23B8.bit6 (DID 0x1302 bit 0). Interpolated by engine speed and scaled by 0.05."
 note = "Read by the resolver FUN_000564A4 at callsite 0x566BA through the 16-point uint16 wrapper 0x28320 indexed by 0xFFFF11A6, and by FUN_000657E4 at three callsites with the same axis. The resolver loads the literal from the pool at 0x569CC that follows FUN_0005693A. The 0.05 factor is the float literal 0x3D4CCCCC; the duration unit is a vendor-catalog candidate."
 
 [[target.JK78C.table]]

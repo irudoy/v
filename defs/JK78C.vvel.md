@@ -25,7 +25,7 @@ background-loop pass; a pass is the tick of every counter below.
 ```text
 coolant ffff1069, IAT ffff268c,
 idle target ffff226c, RPM/12.5 ffff11a2 --> FUN 00059c2c --> ffff455b.bit7 (hot-intake idle)
-RPM/25 ffff11a3, ffff23b8.bit6, ffff4573.bit1 --> FUN 0005a0da --> ffff456f.bit7 (above idle)
+RPM/25 ffff11a3, CLSD THL POS ffff23b8.bit6, ffff4573.bit1 --> FUN 0005a0da --> ffff456f.bit7 (above idle)
 MAP ffff375e, booster ffff2666, speed ffff10fc --> FUN 0005a314 --> ffff4565.bit6 (throttled)
 knock state ffff23c6.bit6, learning window ffff23e5.bit1, fail-safe ffff4577.bit0
         |
@@ -58,12 +58,17 @@ from `0xFFFF23AF.bit4`.
 `0xFFFF23B8.bit6` is the per-pass latch that `FUN_00020F1A` takes from
 `0xFFFF23B9.bit6` at `0x000210A0`. `FUN_0008D710`, the eighth step of the
 chain `FUN_0008D004` (pointer 23 of the list at `0x00021940`), is the only
-producer of `0xFFFF23B9.bit6`. The bit is set when `0xFFFF23B1.bit6` or
+producer of `0xFFFF23B9.bit6`. The diagnostic status packer `FUN_00031A0C`
+copies the same bit to bit 0 of `0xFFFF34EC`, the DID `0x1302` byte
+(`ROM32[0x22AA4]`, support mask `ROM8[0x1354B]` = `0x3F`). A structured Nissan
+diagnostic profile names that bit `CLSD THL POS`, which the factory manual
+defines as the idle position computed by the ECM from the accelerator pedal
+position sensor signal. The bit is set when `0xFFFF23B1.bit6` or
 `0xFFFF2422.bit7` is set and `FUN_000AE5F2` passes, or when the readiness
 test fails: with `0xFFFF45BC.bit1`, `0xFFFF45C0.bit0`, and `0xFFFF24F7` all
 clear the test is `0xFFFF44DA.bit2` clear (`0xFFFF23C1 & 0x30` = 0),
-otherwise `0xFFFF45A0.bit7` clear (the word `0xFFFF43D0` above 0 under the
-`0xFFFF45C0.bit6` and `ROM8[0x8968]` gates). `FUN_000AE5F2` passes when
+otherwise `0xFFFF45A0.bit7` clear (the bit sets at `0xFFFF43D0` = 0 and
+clears above 4, under the `0xFFFF45C0.bit6` and `ROM8[0x8968]` gates). `FUN_000AE5F2` passes when
 `0xFFFF44DF.bit6` is clear, `0xFFFF23AF.bit4` is set, and not
 (`0xFFFF4500.bit0` set, `0xFFFF451D.bit2` clear, `0xFFFF36FA` and
 `0xFFFF36FB` both below 20). `0xFFFF4573.bit1` is written only by
@@ -75,6 +80,69 @@ above `ROM8[0x8B05]` = 20, and the model duration at or below curve
 `0x00016C64` (stock 21504 at every point); or the model latch `0xFFFFA368`
 set with `0xFFFFA36B` = 0. Mode 15 requires that flag clear, so the
 above-idle condition excludes passes on which the idle model is engaged.
+
+The predicate cells resolve as follows.
+
+- `0xFFFF23B1.bit6` is the direct copy of `PHDR` bit 1 (`0xFFFFF72C`, PH1)
+  that the input sampler `FUN_0003BD78` takes at `0x0003BE74`. `FUN_00031A0C`
+  copies it to bit 2 of `0xFFFF34EF`, the DID `0x1305` byte
+  (`ROM32[0x22ABC]`, support mask `ROM8[0x1354E]` = `0x54`). The profile names
+  that bit `BRAKE SW`, which the factory manual defines as the condition of
+  the stop lamp switch signal.
+- `0xFFFF2422.bit7` latches `0xFFFF2428.bit7` through the block copy
+  `0xFFFF241D <- 0xFFFF2423`. `FUN_000AF340` sets it when `FUN_000AE5F2`
+  passes, `0xFFFF23AF.bit0` is set, and either `0xFFFF45C6.bit4` with
+  `0xFFFF450D.bit0` or both bits of `0xFFFF4514 & 0x30` are set.
+  `FUN_000AE65E` forms those bits from the fault-status bytes of the two
+  accelerator pedal sensors: `0xFFFF4514.bit5` from bit 7 of `0xFFFF6102` or
+  `0xFFFF6105`, `0xFFFF4514.bit4` from bit 7 of `0xFFFF6108` or `0xFFFF610B`,
+  and `0xFFFF45C6.bit4` from bit 7 of any of those bytes or `0xFFFF610E`. The
+  term asserts the status on an accelerator pedal sensor fault.
+- `0xFFFF23AF` is the per-pass latch of `0xFFFF23B1` (`0x0002108A`), so
+  `0xFFFF23AF.bit4` follows the flag that `FUN_00029404` sets for codes 2..4
+  of its state machine. `0xFFFF44DF` is the per-pass latch of `0xFFFF44E0`
+  (`0x00021246`).
+- `0xFFFF23C1.bit5` and `0xFFFF23C1.bit4` are the released-pedal flags of the
+  two accelerator pedal sensors. `FUN_00091F68` copies the sensor word
+  `0xFFFF3850` to `0xFFFF26F6` (the DID `0x120D` source through the latch
+  `0xFFFF25F8`) and sets bit 5 while that word is at or below the learned
+  released word `0xFFFF5AB6` plus `ROM16[0x8F0A]` = 16 plus 6, or plus 10
+  while `0xFFFF240F.bit4` holds the previous result. `FUN_0008CF40` does the
+  same for bit 4 with the word `0xFFFF26FA` (DID `0x120E`, latch
+  `0xFFFF25FC`), the learned word `0xFFFF5AB8`, and `0xFFFF240F.bit3`. Either
+  flag clears when its word leaves `[ROM16[0x8D40], ROM16[0x8D3C]]` =
+  `[60, 964]` or a fault-status byte of its sensor has bit 7 set.
+- `0xFFFF45BC.bit1`, `0xFFFF45C0.bit0`, and `0xFFFF24F7` select the second
+  test while a request bound or the shift window is active. `0xFFFF45BC.bit1`
+  latches `0xFFFF45C6.bit1`, which `FUN_0009ABB0` copies from
+  `0xFFFF23F9.bit4` on stock (`ROM8[0x8383]` = `0x2C`, bit 1 clear); the
+  request stages `FUN_0009474C` and `FUN_00094AAC` set `0xFFFF23F9.bit4` when
+  a lower bound raises the signed request (`ROM8[0x894F]` = `0x49`,
+  `0xFFFF44E5.bit5` set). `0xFFFF45C0.bit0` latches `0xFFFF45CA.bit0`, which
+  `FUN_00098CA0` sets when the signed request `0xFFFF2390` is below the
+  bounded lower-path request. `0xFFFF24F7` is the shift-window byte of
+  `FUN_0009832C`: `0xFF` while `0xFFFF44E9 & 0x60` is nonzero or
+  `0xFFFF45CA.bit6` is set and the pass counter `0xFFFF36B5` is at or below
+  the window byte `0xFFFF36B4`, otherwise 0. `FUN_00096CE0` sets
+  `0xFFFF45CA.bit6` while the index bytes `0xFFFF1076` and `0xFFFF1077`
+  differ with `0xFFFF45CA.bit2` clear.
+- `0xFFFF43D0` latches `0xFFFF43DC` through the block copy
+  `0xFFFF43C8 <- 0xFFFF43D4`. `FUN_000902E0` writes it as a quarter of the
+  demanded throttle-angle word: curve `0x000167E4` over axis `0x00014538`,
+  the area-to-angle direction of the pair, evaluated at half the demand-area
+  word `0xFFFF184A` of `FUN_00092A80`. The curve starts at 0, so the second
+  test reads a zero demanded angle as the closed position and releases it
+  above 4.
+- `0xFFFF1078` latches `0xFFFF107B`, and `0xFFFF107E` holds the previous-pass
+  `0xFFFF1078` (block copies `0xFFFF107C <- 0xFFFF1076` and
+  `0xFFFF1076 <- 0xFFFF1079`, three bytes each, in that order).
+  `FUN_0008D970` writes `0xFFFF107B` as the throttle-opening byte: `0x505B`
+  / 65536 of the throttle-angle word `0xFFFF4260` above the reference word
+  `0xFFFF2854`, saturated at 255 (`ROM8[0x8954]` = `0x02`, bit 0 clear), or
+  `ROM8[0x8557]` = 10 while `0xFFFF45C7.bit7` is set. `FUN_000433BC` forms
+  `0xFFFF4260` from the two selected throttle sensor words: each passes
+  through the angle-to-area direction of the same curve pair, and the mean
+  area returns through the area-to-angle direction.
 
 ## Exact diagnostic bindings
 
@@ -348,11 +416,10 @@ Code-exact: the mode machine, the fifteen target pairs, the selector
 conditions, the DID bindings, the descriptor records P010A and P0555, and the
 stored scales listed as code-proven.
 
-Open: the physical names of the `0xFFFF23B9.bit6` predicate cells
-(`0xFFFF23B1.bit6`, `0xFFFF2422.bit7`, `0xFFFF23C1`, `0xFFFF43D0`,
-`0xFFFF45BC.bit1`, `0xFFFF45C0.bit0`, `0xFFFF24F7`), none of which is a DID
-source; the physical names of `0xFFFF1078` and `0xFFFF107E`; the physical
-unit of the scaled pressure words; whether `0xFFFF1CE2` (DID `0x1116` source
+Open: the ECM terminal of the PH1 input behind `0xFFFF23B1.bit6`; the
+physical unit of the signed request words behind `0xFFFF45C0.bit0` and
+`0xFFFF23F9.bit4`; the source of the index bytes `0xFFFF1076` and
+`0xFFFF1077`; the physical unit of the scaled pressure words; whether `0xFFFF1CE2` (DID `0x1116` source
 through `FUN_0004185A`) and `0xFFFF256E` sample the same MAP input; the
 candidate scales above; and the agreement of the computed command with DID
 `0x125C` on live data. The pass period follows the vector-120 handler and
