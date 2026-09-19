@@ -270,8 +270,8 @@ Schema-dependent conversions stay disabled until the in-band health context
 matches protocol version, profile ID, and CRC16. Stale context values remain
 visible while their update cadence is one quarter of the snapshot rate.
 
-Fields marked with `*` use target-correlated transforms, candidate transforms,
-or diagnostic semantic bindings. The current conversions are:
+A field marked with `*` uses a candidate transform; engine torque state at
+`raw * 0.1 Nm` is the only one. The current conversions are:
 
 | Display | Source | Conversion | Evidence boundary |
 | --- | --- | --- | --- |
@@ -280,7 +280,7 @@ or diagnostic semantic bindings. The current conversions are:
 | TPS bank 1/2 | telemetry words | `raw / 200 V` | ten-bit ADC counts; range monitors accept 60..964 counts, which is 0.30..4.82 V against factory terminal criteria of more than 0.36 V released and less than 4.75 V depressed |
 | MAF bank 1/2 | `0xFFFF101C`, `0xFFFF101E` | `raw / 200 V` | ten-bit ADC counts with a unit-nominal Q1.15 trim; the calibration sequence centres on 900 counts, which is 4.50 V, and recordings read 0.425 V with the engine stopped against an expected 0.4 V |
 | injection pulse 1..6 | `0xFFFF23C8..0xFFFF23D3` | `raw / 100 ms` | one count is 10 us: the ATU-II channel-8 down-counters run at `Pphi / 64` and the scheduler adds `800 * raw / 256` steps; a compensated software command, not a measured injector-open duration |
-| Base Fuel Schedule | `0xFFFF1026` | candidate `raw / 2048 ms` | exact DID 0x1208 binding and homologous profile; the recorded ratio to the injection pulse is 0.88 under this scale and 0.44 or 1.76 under the adjacent power-of-two scales |
+| Base Fuel Schedule | `0xFFFF1026` | `raw / 2048 ms` | the fixed normalizers between the schedule and the 10 us pulse word multiply to `(1/8) * (100/256) = 100/2048`; the pulse additionally carries the common gain of 0.75..0.85, both trims, and the injector opening time, and a replay of that chain reproduces the recorded pulse with a median ratio of 1.000 |
 | fuel/oil temperature | `0xFFFF1074`, `0xFFFF2876` | `raw - 50 degC` | outputs of thermistor table `0x12DEA` and of the byte-identical oil curve `0x12C6E`, whose code J1979 PIDs 0x05 and 0x0F declare as `degC + 50`; the factory sensor tables give 20.5 and 52 degC at their 20 and 50 degC reference voltages |
 | battery voltage | `0xFFFF1188` byte | `raw * 0.08 V` | ten-bit sample shifted right by two; the ROM limits 125, 131, 137, and 200 of the DTC monitors are the factory test conditions of 10, 10.5, 11, and 16 V; established from ROM constants and factory specifications, not from firmware arithmetic |
 | short/long fuel trim | telemetry Q8.8 words | `raw / 256 - 100 percent` | exact neutral representation and target diagnostic agreement |

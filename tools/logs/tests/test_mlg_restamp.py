@@ -7,8 +7,32 @@ from tools.can_dashboard import recording
 from tools.logs import mlg_restamp, mlvlg
 
 
+# Channels whose units carried the candidate marker in version 4.0.1
+# recordings and whose scales are fixed by code.
+MARKED_UNITS_4_0_1 = frozenset(
+    {
+        "MAF bank 1",
+        "MAF bank 2",
+        "Base fuel schedule",
+        "APP 1",
+        "APP 2",
+        "TPS bank 1",
+        "TPS bank 2",
+        "Fuel temperature",
+        "Oil temperature",
+        "Battery voltage",
+    }
+    | {f"Injection calc {index}" for index in range(6)}
+)
+
+
 def stale_specs():
-    """Return the field table as version 2.0.0 recordings declared it."""
+    """Return the field table as earlier recordings declared it.
+
+    Version 2.0.0 carried the candidate marker in the channel name and a
+    degCA transform of -64; version 4.0.1 carried the marker in the units of
+    scales that code fixes.
+    """
 
     specs = []
     for binding in recording.build_bindings("tuning"):
@@ -19,6 +43,8 @@ def stale_specs():
                 name=spec.name + "*",
                 units=spec.units.replace("*", ""),
             )
+        elif spec.name in MARKED_UNITS_4_0_1:
+            spec = replace(spec, units=spec.units + "*")
         if spec.units == "degCA":
             spec = replace(spec, transform=-64.0)
         specs.append(spec)
@@ -69,6 +95,9 @@ class MlgRestampTest(unittest.TestCase):
             for field in fields:
                 if field.units == "degCA":
                     self.assertEqual(field.transform, -128.0)
+                if field.name in MARKED_UNITS_4_0_1:
+                    self.assertNotIn("*", field.units)
+            self.assertTrue(MARKED_UNITS_4_0_1 <= set(names))
             self.assertEqual(data_blocks(log), before_blocks)
             mlvlg.validate_mlg(log)
 

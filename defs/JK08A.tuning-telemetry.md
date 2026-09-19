@@ -70,13 +70,21 @@ analysis:
 | fuel correction | Q14 factor, STFT, LTFT, adjustment B1/B2 | oxygen-sensor bytes and front A/F words |
 | torque | bounded throttle request and target path | signed torque state `FFFF18CC` |
 
-The exact source identity is stronger than the physical conversion. The
-airflow, coolant, intake-air, timing, vehicle-speed, and absolute-throttle
+The airflow, coolant, intake-air, timing, vehicle-speed, and absolute-throttle
 units are the ECU's own J1979 Mode 01 declarations, recorded in the
 diagnostics note; they describe the firmware model, not a hardware measurement.
-Fields marked as candidates by the dashboard and MLG schema still require
-synchronized target validation before their engineering units are treated as
-measured fact.
+Code and ROM constants fix the remaining closed scales: MAF, pedal, and
+throttle sensor voltage at `raw / 200 V`, Base Fuel Schedule at
+`raw / 2048 ms`, the injection words at `raw / 100 ms`, CVTC targets and
+positions at `raw * 0.5 - 64 degCA`, the intake duty command at
+`raw * 39 / 100 percent`, exhaust duty at `raw * 100 / 1024 percent`, fuel and
+oil temperature at `raw - 50 degC`, and battery voltage at `raw * 0.08 V`. The
+intake duty monitor pair `FFFF2440/2441` keeps the command conversion as a
+candidate because no code path proves the two pairs identical. Engine torque
+state, atmospheric pressure, the front A/F words, and both adjustment states
+keep candidate or unresolved conversions; the dashboard and MLG schema mark
+the torque conversion as a candidate, and it requires synchronized target
+validation before its engineering unit is treated as measured fact.
 
 ## Remaining semantic gaps
 
@@ -97,13 +105,17 @@ The final ignition coordinate and APC command are software values. Neither is
 independent feedback of spark delivery relative to the crankshaft. A physical
 spark-angle claim requires external crank-referenced measurement.
 
-The six injection words are compensated software calculations. Their equality
-to electrical injector-open duration and their physical cylinder ordering are
-not established by the current evidence.
+The six injection words are compensated software calculations, and word `i`
+belongs to cylinder `i + 1` by code. Their equality to electrical
+injector-open duration is not measured at the injector terminals.
+
+Injection timing state `FFFF162E` has no runtime producer in JK08A and reads
+zero. The live end-of-injection angle word is `FFFF192E`, which schema 2 does
+not carry.
 
 ## Transport boundary
 
-Schema 2 uses protocol version 2, profile ID 3, generated CRC16 `0x01A3`, one
+Schema 2 uses protocol version 2, profile ID 3, generated CRC16 `0x6F62`, one
 build-selected standard data CAN ID on physical mailbox 26, and the adjacent
 control ID on polled receive mailbox 31. The data ID range is `0x001..0x7FE`;
 the control ID is always `data_can_id + 1`.

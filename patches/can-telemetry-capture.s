@@ -172,7 +172,7 @@ telemetry_config_magic:
 telemetry_config_can_id_max:
 .word 0x07FE
 telemetry_config_crc:
-.word 0x01A3
+.word 0x6F62
 
 .org 0x000D4500
 // Always construct nine fixed pages and both rotating context pages.

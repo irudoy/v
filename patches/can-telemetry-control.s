@@ -234,4 +234,4 @@ telemetry_control_config_magic:
 telemetry_control_data_can_id_max:
 .word 0x07FE
 telemetry_control_profile_crc:
-.word 0x01A3
+.word 0x6F62

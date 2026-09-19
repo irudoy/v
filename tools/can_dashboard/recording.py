@@ -50,22 +50,22 @@ RAW_FIELD_DISPLAY = {
     "final_timing_raw": ("Timing command", "degBTDC", 0, "Ignition"),
     "apc_command_raw": ("APC command", "raw", 0, "Throttle"),
     "fuel_inhibit_mask": ("Fuel inhibit mask", "", 0, "Injection"),
-    "maf_b1_raw": ("MAF bank 1", "V*", 3, "Air"),
-    "maf_b2_raw": ("MAF bank 2", "V*", 3, "Air"),
+    "maf_b1_raw": ("MAF bank 1", "V", 3, "Air"),
+    "maf_b2_raw": ("MAF bank 2", "V", 3, "Air"),
     "maf_total_raw": ("Total airflow", "g/s", 2, "Air"),
     "front_oxygen_sensor_b1_raw": ("Front O2 sensor B1", "raw", 0, "Fuel"),
-    "bfs_raw": ("Base fuel schedule", "ms*", 3, "Fuel"),
+    "bfs_raw": ("Base fuel schedule", "ms", 3, "Fuel"),
     "front_oxygen_sensor_b2_raw": ("Front O2 sensor B2", "raw", 0, "Fuel"),
     "telemetry_status": ("Telemetry status", "raw", 0, "Transport"),
     "knock_timing_state_raw": ("Knock timing state", "state", 3, "Knock"),
     "knock_surface_state": ("Knock surface state", "raw", 0, "Knock"),
     "knock_count_latched": ("Knock interval count", "", 0, "Knock"),
     "knock_channel_mask_latched": ("Knock channel mask", "raw", 0, "Knock"),
-    "app1_raw": ("APP 1", "V*", 3, "Throttle"),
-    "app2_raw": ("APP 2", "V*", 3, "Throttle"),
-    "tps_b1_raw": ("TPS bank 1", "V*", 3, "Throttle"),
+    "app1_raw": ("APP 1", "V", 3, "Throttle"),
+    "app2_raw": ("APP 2", "V", 3, "Throttle"),
+    "tps_b1_raw": ("TPS bank 1", "V", 3, "Throttle"),
     "absolute_throttle_raw": ("Absolute throttle", "%", 1, "Throttle"),
-    "tps_b2_raw": ("TPS bank 2", "V*", 3, "Throttle"),
+    "tps_b2_raw": ("TPS bank 2", "V", 3, "Throttle"),
     "intake_cvtc_actual_b1_raw": (
         "Intake CVTC actual B1", "degCA", 1, "CVTC"
     ),
@@ -100,10 +100,10 @@ RAW_FIELD_DISPLAY = {
     "coolant_raw": ("Coolant", "degC", 0, "Temperature"),
     "iat_raw": ("Intake air", "degC", 0, "Temperature"),
     "fuel_temperature_did_source_raw": (
-        "Fuel temperature", "degC*", 0, "Temperature"
+        "Fuel temperature", "degC", 0, "Temperature"
     ),
     "oil_temperature_did_source_raw": (
-        "Oil temperature", "degC*", 0, "Temperature"
+        "Oil temperature", "degC", 0, "Temperature"
     ),
     "af_state_factor_raw": ("A/F state factor", "", 4, "Fuel"),
     "stft_b1_raw": ("STFT bank 1", "%", 2, "Fuel"),
@@ -134,7 +134,7 @@ RAW_FIELD_DISPLAY = {
         "Exhaust CVTC duty B2 word", "%", 1, "CVTC"
     ),
     "atmospheric_pressure_raw": ("Atmospheric pressure", "raw", 0, "Air"),
-    "battery_voltage_raw": ("Battery voltage", "V*", 2, "Context"),
+    "battery_voltage_raw": ("Battery voltage", "V", 2, "Context"),
     "front_af_sensor_b1_word_raw": ("Front A/F sensor B1", "raw", 0, "Fuel"),
     "front_af_sensor_b2_word_raw": ("Front A/F sensor B2", "raw", 0, "Fuel"),
     "af_adjustment_b1_raw": ("A/F adjustment B1", "raw", 0, "Fuel"),
@@ -163,7 +163,7 @@ def mlg_scaling(source: str) -> tuple[float, float]:
 
 
 def _injection_display(index: int):
-    return (f"Injection calc {index}", "ms*", 2, "Injection")
+    return (f"Injection calc {index}", "ms", 2, "Injection")
 
 
 def _raw_binding(name: str) -> FieldBinding:

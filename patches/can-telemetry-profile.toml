@@ -93,7 +93,7 @@ source = 0xFFFF101C
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 200 V"
+scale = "raw / 200 V"
 
 [[field]]
 name = "maf_b2_raw"
@@ -104,7 +104,7 @@ source = 0xFFFF101E
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 200 V"
+scale = "raw / 200 V"
 
 [[field]]
 name = "maf_total_raw"
@@ -115,7 +115,7 @@ source = 0xFFFF3852
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 100 g/s"
+scale = "raw / 100 g/s"
 
 [[field]]
 name = "front_oxygen_sensor_b1_raw"
@@ -137,7 +137,7 @@ source = 0xFFFF1026
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 2048 ms"
+scale = "raw / 2048 ms"
 
 [[field]]
 name = "front_oxygen_sensor_b2_raw"
@@ -159,7 +159,7 @@ source = 0xFFFF23C8
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 100 ms"
+scale = "raw / 100 ms"
 
 [[field]]
 name = "injection_1_raw"
@@ -170,7 +170,7 @@ source = 0xFFFF23CA
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 100 ms"
+scale = "raw / 100 ms"
 
 [[field]]
 name = "injection_2_raw"
@@ -181,7 +181,7 @@ source = 0xFFFF23CC
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 100 ms"
+scale = "raw / 100 ms"
 
 [[field]]
 name = "injection_3_raw"
@@ -192,7 +192,7 @@ source = 0xFFFF23CE
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 100 ms"
+scale = "raw / 100 ms"
 
 [[field]]
 name = "injection_4_raw"
@@ -203,7 +203,7 @@ source = 0xFFFF23D0
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 100 ms"
+scale = "raw / 100 ms"
 
 [[field]]
 name = "telemetry_status"
@@ -225,7 +225,7 @@ source = 0xFFFF23D2
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw / 100 ms"
+scale = "raw / 100 ms"
 
 [[field]]
 name = "knock_timing_state_raw"
@@ -280,7 +280,7 @@ source = 0xFFFF269E
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw / 200 V"
 
 [[field]]
 name = "app2_raw"
@@ -291,7 +291,7 @@ source = 0xFFFF26A2
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw / 200 V"
 
 [[field]]
 name = "tps_b1_raw"
@@ -302,7 +302,7 @@ source = 0xFFFF2756
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw / 200 V"
 
 [[field]]
 name = "absolute_throttle_raw"
@@ -313,7 +313,7 @@ source = 0xFFFF1075
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw * 100 / 255 percent"
 
 [[field]]
 name = "tps_b2_raw"
@@ -324,7 +324,7 @@ source = 0xFFFF285C
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw / 200 V"
 
 [[field]]
 name = "intake_cvtc_actual_b1_raw"
@@ -335,7 +335,7 @@ source = 0xFFFF2442
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.5 - 64 degCA"
+scale = "raw * 0.5 - 64 degCA"
 
 [[field]]
 name = "intake_cvtc_actual_b2_raw"
@@ -346,7 +346,7 @@ source = 0xFFFF2443
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.5 - 64 degCA"
+scale = "raw * 0.5 - 64 degCA"
 
 [[field]]
 name = "intake_cvtc_target_raw"
@@ -357,7 +357,7 @@ source = 0xFFFF2326
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw * 0.5 - 64 degCA"
 
 [[field]]
 name = "exhaust_cvtc_target_raw"
@@ -368,7 +368,7 @@ source = 0xFFFF2327
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw * 0.5 - 64 degCA"
 
 [[field]]
 name = "calculated_load_raw"
@@ -412,7 +412,7 @@ source = 0xFFFF162E
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "unresolved software timing coordinate"
+scale = "raw diagnostic word; JK08A has no runtime producer"
 
 [[field]]
 name = "exhaust_cvtc_actual_b1_raw"
@@ -423,7 +423,7 @@ source = 0xFFFF2324
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.5 - 64 degCA"
+scale = "raw * 0.5 - 64 degCA"
 
 [[field]]
 name = "throttle_target_shared_raw"
@@ -467,7 +467,7 @@ source = 0xFFFF2325
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.5 - 64 degCA"
+scale = "raw * 0.5 - 64 degCA"
 
 [[context]]
 page = 9
@@ -480,7 +480,7 @@ width = 1
 source = 0xFFFF1079
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw - 50 degC"
+scale = "raw - 50 degC"
 
 [[context.field]]
 name = "iat_raw"
@@ -488,7 +488,7 @@ width = 1
 source = 0xFFFF2837
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw - 50 degC"
+scale = "raw - 50 degC"
 
 [[context.field]]
 name = "fuel_temperature_did_source_raw"
@@ -496,7 +496,7 @@ width = 1
 source = 0xFFFF1074
 kind = "ecu_ram"
 signed = false
-scale = "diagnostic-evidence candidate"
+scale = "raw - 50 degC"
 
 [[context.field]]
 name = "oil_temperature_did_source_raw"
@@ -504,7 +504,7 @@ width = 1
 source = 0xFFFF2876
 kind = "ecu_ram"
 signed = false
-scale = "diagnostic-evidence candidate"
+scale = "raw - 50 degC"
 
 [[context.field]]
 name = "af_state_factor_raw"
@@ -541,7 +541,7 @@ width = 1
 source = 0xFFFF2440
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 100 / 256 percent"
+scale = "candidate raw * 39 / 100 percent"
 
 [[context.field]]
 name = "intake_cvtc_duty_b2_raw"
@@ -549,7 +549,7 @@ width = 1
 source = 0xFFFF2441
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 100 / 256 percent"
+scale = "candidate raw * 39 / 100 percent"
 
 [[context]]
 page = 9
@@ -681,7 +681,7 @@ width = 2
 source = 0xFFFF1AAC
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 100 / 1024 percent"
+scale = "raw * 100 / 1024 percent"
 
 [[context.field]]
 name = "exhaust_cvtc_duty_b2_word_raw"
@@ -689,7 +689,7 @@ width = 2
 source = 0xFFFF1AAE
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 100 / 1024 percent"
+scale = "raw * 100 / 1024 percent"
 
 [[context.field]]
 name = "atmospheric_pressure_raw"
@@ -705,7 +705,7 @@ width = 1
 source = 0xFFFF1188
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 0.08 V"
+scale = "raw * 0.08 V"
 
 [[context]]
 page = 10
@@ -747,7 +747,7 @@ width = 2
 source = 0xFFFF275E
 kind = "ecu_ram"
 signed = false
-scale = "unresolved physical conversion"
+scale = "raw / 200 V"
 
 [[context.field]]
 name = "secondary_tps_b2_raw"
@@ -755,7 +755,7 @@ width = 2
 source = 0xFFFF2864
 kind = "ecu_ram"
 signed = false
-scale = "unresolved physical conversion"
+scale = "raw / 200 V"
 
 [[context.field]]
 name = "af_adjustment_b2_raw"

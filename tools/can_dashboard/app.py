@@ -71,7 +71,7 @@ PANEL_MIN_WIDTH = 268
 PANEL_VALUE_WIDTH = 150
 NOTEBOOK_TAB_PADDING = 8
 FOOTNOTE = (
-    "* Target-correlated or candidate transform. Timing is a software "
+    "* Candidate transform. Timing is a software "
     "command; injection is a compensated command, not a measured electrical "
     "duration."
 )
@@ -186,16 +186,16 @@ HERO_METRICS = (
     Metric("calculated_load_percent", "CALCULATED LOAD", "%", 1),
     Metric("timing_command_deg", "TIMING COMMAND", "degBTDC", 0),
     Metric("maf_total_g_s", "TOTAL AIRFLOW", "g/s", 2),
-    Metric("injection_average_ms", "INJECTION CALC", "ms*", 2),
+    Metric("injection_average_ms", "INJECTION CALC", "ms", 2),
     Metric("coolant_deg_c", "COOLANT", "degC", 0),
     Metric("gear", "SELECTOR", "", 0),
 )
 
 PANELS = (
     ("Air and fuel", (
-        Metric("maf_b1_v", "MAF bank 1", "V*", 3),
-        Metric("maf_b2_v", "MAF bank 2", "V*", 3),
-        Metric("bfs_ms", "BFS", "ms*", 3),
+        Metric("maf_b1_v", "MAF bank 1", "V", 3),
+        Metric("maf_b2_v", "MAF bank 2", "V", 3),
+        Metric("bfs_ms", "BFS", "ms", 3),
         Metric("front_oxygen_sensor_b1_raw", "Front O2 sensor B1", "raw", 0),
         Metric("front_oxygen_sensor_b2_raw", "Front O2 sensor B2", "raw", 0),
         Metric("af_state_factor", "A/F state factor", "", 4),
@@ -206,10 +206,10 @@ PANELS = (
     )),
     ("Ignition, throttle, and CVTC", (
         Metric("apc_command_raw", "APC command", "raw", 0),
-        Metric("app1_v", "APP 1", "V*", 3),
-        Metric("app2_v", "APP 2", "V*", 3),
-        Metric("tps_b1_v", "TPS bank 1", "V*", 3),
-        Metric("tps_b2_v", "TPS bank 2", "V*", 3),
+        Metric("app1_v", "APP 1", "V", 3),
+        Metric("app2_v", "APP 2", "V", 3),
+        Metric("tps_b1_v", "TPS bank 1", "V", 3),
+        Metric("tps_b2_v", "TPS bank 2", "V", 3),
         Metric("absolute_throttle_percent", "Absolute throttle", "%", 1),
         Metric("intake_cvtc_actual_b1_deg_ca", "Intake CVTC actual B1", "degCA", 1),
         Metric("intake_cvtc_actual_b2_deg_ca", "Intake CVTC actual B2", "degCA", 1),
@@ -219,12 +219,12 @@ PANELS = (
         Metric("intake_cvtc_duty_b2_percent", "CVTC duty B2", "%", 1),
     )),
     ("Injection and knock", (
-        Metric("injection_0_ms", "Injection calc 0", "ms*", 2),
-        Metric("injection_1_ms", "Injection calc 1", "ms*", 2),
-        Metric("injection_2_ms", "Injection calc 2", "ms*", 2),
-        Metric("injection_3_ms", "Injection calc 3", "ms*", 2),
-        Metric("injection_4_ms", "Injection calc 4", "ms*", 2),
-        Metric("injection_5_ms", "Injection calc 5", "ms*", 2),
+        Metric("injection_0_ms", "Injection calc 0", "ms", 2),
+        Metric("injection_1_ms", "Injection calc 1", "ms", 2),
+        Metric("injection_2_ms", "Injection calc 2", "ms", 2),
+        Metric("injection_3_ms", "Injection calc 3", "ms", 2),
+        Metric("injection_4_ms", "Injection calc 4", "ms", 2),
+        Metric("injection_5_ms", "Injection calc 5", "ms", 2),
         Metric("fuel_inhibit_mask", "Fuel inhibit mask", "", 0, True),
         Metric("knock_timing_state", "Knock timing state", "state", 3),
         Metric("knock_surface_mode", "Active hot surface"),
@@ -233,8 +233,8 @@ PANELS = (
     )),
     ("Temperatures and context", (
         Metric("iat_deg_c", "Intake air", "degC", 0),
-        Metric("fuel_temperature_deg_c", "Fuel temperature", "degC*", 0),
-        Metric("oil_temperature_deg_c", "Oil temperature", "degC*", 0),
+        Metric("fuel_temperature_deg_c", "Fuel temperature", "degC", 0),
+        Metric("oil_temperature_deg_c", "Oil temperature", "degC", 0),
         Metric("timing_state_2023_raw", "Timing state 2023", "", 0, True),
         Metric("timing_state_564c_raw", "Timing state 564C", "", 0, True),
         Metric("stock_rpm", "Stock CAN RPM", "RPM", 0),
@@ -268,7 +268,7 @@ EXTENDED_PANELS = (
         Metric("ltft_learned_b1_percent", "LTFT learned bank 1", "%", 2),
         Metric("ltft_adjustment_b1_percent", "LTFT adjustment bank 1", "%", 2),
         Metric("atmospheric_pressure_raw", "Atmospheric pressure", "raw", 0),
-        Metric("battery_voltage_v", "Battery voltage", "V*", 2),
+        Metric("battery_voltage_v", "Battery voltage", "V", 2),
         Metric("front_af_sensor_b1_word_raw", "Front A/F sensor B1", "raw", 0),
         Metric("front_af_sensor_b2_word_raw", "Front A/F sensor B2", "raw", 0),
     )),

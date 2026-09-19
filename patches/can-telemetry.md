@@ -140,11 +140,11 @@ The 16-byte configuration contains:
 | 6 | 1 | tick divisor `1..255` |
 | 7 | 1 | reserved zero |
 | 8 | 2 | standard CAN ID |
-| 10 | 2 | profile CRC16 `0x01A3` |
+| 10 | 2 | profile CRC16 `0x6F62` |
 | 12 | 4 | integrity word `0x54454C32` (`TEL2`) |
 
 The only profile name is `tuning`. The default disabled bytes are
-`43 54 02 00 03 0B 01 00 06 F0 01 A3 54 45 4C 32`.
+`43 54 02 00 03 0B 01 00 06 F0 6F 62 54 45 4C 32`.
 
 Firmware validates every field before incrementing the telemetry tick,
 touching the queue, or accepting a control command. The builder independently
@@ -214,10 +214,21 @@ Pages 0 through 8 are captured at every published snapshot.
 | 7 | bounded throttle request `FFFF19C6`; engine torque state `FFFF18CC`; injection timing state `FFFF162E`; exhaust actual B1 `FFFF2324` |
 | 8 | shared throttle target `FFFF19B2`; channel targets `FFFF28BC/28BE`; exhaust actual B2 `FFFF2325` |
 
-The six injection words are calculated software values. Their physical
-cylinder order and equality to electrical injector-open duration remain
-unverified. The timing fields are software coordinates rather than an
-independent crank-referenced spark measurement.
+The six injection words are calculated software values at `raw / 100 ms`, and
+word `i` belongs to cylinder `i + 1` by code. Equality to electrical
+injector-open duration is not measured at the injector terminals. Injection
+timing state `FFFF162E` has no runtime producer in JK08A and reads zero. The
+timing fields are software coordinates rather than an independent
+crank-referenced spark measurement.
+
+A scale string without the word `candidate` is fixed by code, by ROM constants
+against factory limits, or by the ECU's own J1979 declaration: MAF voltage and
+airflow, Base Fuel Schedule at `raw / 2048 ms`, the injection words, CVTC
+targets and positions, the intake duty command, the exhaust duty words, the
+four temperatures, battery voltage, absolute throttle, and the pedal and
+throttle sensor voltages. The intake duty monitor pair, engine torque state,
+atmospheric pressure, the front A/F words, and both adjustment states keep
+candidate or unresolved conversions.
 
 ### Rotating context pages
 
@@ -234,7 +245,7 @@ rate is `24.4140625 Hz`.
 | 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, adjustment state B2 `FFFF45A2` |
 
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2, profile ID 3, and CRC `0x01A3`. A later mismatch disables conversions again.
+2, profile ID 3, and CRC `0x6F62`. A later mismatch disables conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
@@ -303,7 +314,7 @@ banks, source table, payload, decoder, and total load. A schema 2 image remains
 ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 
 - eleven ordered pages and exact tick continuity;
-- version 2, profile ID 3, and CRC `0x01A3` health identity;
+- version 2, profile ID 3, and CRC `0x6F62` health identity;
 - no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
 - acceptable stock-frame cadence and whole-bus utilization.
 
@@ -328,7 +339,7 @@ The locked software result is:
 - 647 injected instructions and 680 data bytes;
 - ten executable entries and 62 dynamic telemetry cases;
 - composition SHA-256
-  `7054b6331b482d13d24184ff93789999dc525898f1072a78809d9345f4d8013d`;
+  `989b5452a695e38afca839ba6b8be524d55c3110bffe7b3f707f76e8ad288fda`;
 - 1,723 changed bytes inside a 3,484-byte declared write set.
 
 This gate proves the bounded software contract. It does not replace physical
