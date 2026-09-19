@@ -85,12 +85,57 @@ class StartSignalTemperatureSelectorTest(unittest.TestCase):
         )
         self.assertIn("rom_const:000229f0=ffff3342", start["evidence"])
 
-    def test_zero_branch_is_a_sentinel_not_a_temperature(self):
-        for address in ("ffff107e", "ffff1080"):
+    def test_hold_branch_reads_the_previous_pass_image_of_the_selected_pair(self):
+        # Entry 24 of the 69-entry periodic table is the coordinator.
+        self.assertEqual(u32be(self.rom, 0x21834 + 4 * 24), 0x000394B8)
+        # jsr @r5 with mov #8,r0 in the delay slot: copy 0xFFFF1072..0xFFFF1079.
+        self.assertEqual(self.rom[0x20CBA:0x20CBE], bytes.fromhex("450be008"))
+        self.assertEqual(u32be(self.rom, 0x20E6C), 0xFFFF107A)
+        self.assertEqual(u32be(self.rom, 0x20E70), 0x00022558)
+        self.assertEqual(u32be(self.rom, 0x20E74), 0xFFFF1072)
+        # mov.b @(0xc,gbr),r0 and mov.b @(0xe,gbr),r0 with GBR = 0xFFFF1072.
+        self.assertEqual(u32be(self.rom, 0x396DC), 0xFFFF1072)
+        self.assertEqual(self.rom[0x39510:0x39512], bytes.fromhex("c40c"))
+        self.assertEqual(self.rom[0x39514:0x39516], bytes.fromhex("c40e"))
+        expected_units = {
+            "ffff1076": "degC+50",
+            "ffff107e": "degC+50",
+            "ffff106e": "degC+50",
+            "ffff1078": "normalized coolant index",
+            "ffff1080": "normalized coolant index",
+            "ffff1070": "normalized coolant index",
+        }
+        for address, units in expected_units.items():
             with self.subTest(address=address):
-                self.assertEqual(self.vars[address]["units"], "sentinel")
-        self.assertIn("must not be rendered as `-50 deg C`", self.contract)
-        self.assertIn("post-start or low-voltage-transition qualifier", self.contract)
+                self.assertEqual(self.vars[address]["units"], units)
+        for address in ("ffff107e", "ffff1080"):
+            with self.subTest(image=address):
+                self.assertIn("Previous-pass image", self.vars[address]["semantics"])
+                self.assertIn("writes:000209d8@structural", self.vars[address]["evidence"])
+        self.assertIn("00020cba", self.funcs["000209d8"]["semantics"])
+        self.assertIn("previous-pass image of the selected pair", self.contract)
+        self.assertIn("coolant temperature at engine", self.contract)
+
+    def test_readiness_latches_match_factory_driving_pattern_a(self):
+        # mov #0x20,r2: RPM/12.5 of 400 rpm; mov #0x14,r2: rise of 20 counts;
+        # mov #0x78,r6: raw coolant of 70 deg C.
+        self.assertEqual(self.rom[0x804E8:0x804EA], bytes.fromhex("e220"))
+        self.assertEqual(self.rom[0x8055A:0x8055C], bytes.fromhex("e214"))
+        self.assertEqual(self.rom[0x80576:0x80578], bytes.fromhex("e678"))
+        updater = self.funcs["000804ce"]
+        self.assertIn("start-latched raw coolant ffff106e", updater["semantics"])
+        self.assertIn("spec:esm-2013-g-ec150-driving-pattern-a", updater["evidence"])
+        self.assertIn("driving pattern A", self.contract)
+
+    def test_coolant_fail_safe_ramp_spans_raw_90_to_130(self):
+        # add #0x5a,r6 and mov #-0x7e,r5: min(90 + counter, 130).
+        self.assertEqual(self.rom[0x395FA:0x395FC], bytes.fromhex("e582"))
+        self.assertEqual(self.rom[0x395FE:0x39600], bytes.fromhex("765a"))
+        # mov #6,r2: countdown reload.
+        self.assertEqual(self.rom[0x395EC:0x395EE], bytes.fromhex("e206"))
+        ramp = self.funcs["000395ae"]
+        self.assertIn("min(90 + counter, 130)", ramp["semantics"])
+        self.assertIn("245.8 s", ramp["note"])
 
     def test_target_observations_keep_their_timing_boundary(self):
         telemetry = self.hardware["can_telemetry"]["current_wide54_divisor1"]

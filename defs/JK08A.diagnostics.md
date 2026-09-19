@@ -294,7 +294,7 @@ count is four ten-bit counts, or 20 mV under the scale of the previous section.
 
 | Channel | Sample | Input byte | Table | Transfer code | Published byte |
 | --- | --- | --- | --- | --- | --- |
-| coolant | `0xFFFF1D60`, AN0 mux code 000 | `0xFFFF1186` | `0x12DEA` | `0xFFFF1079` | DID `0x1101`; PID `0x05` as code - 10 |
+| coolant | `0xFFFF1D60`, AN0 mux code 000 | `0xFFFF1186` | `0x12DEA` | `0xFFFF1187` | DID `0x1101` byte `0xFFFF1079`; PID `0x05` as code - 10 |
 | intake air | `0xFFFF1D58`, AN1 lane 0 | shifted in place | `0x12DEA` | `0xFFFF2838`, `0xFFFF3F42` | DID `0x1106`; PID `0x0F` as code - 10 |
 | fuel | `0xFFFF100A`, AN0 mux code 111 | `0xFFFF1178` | `0x12DEA` | `0xFFFF1F89` | DID `0x1104` byte `0xFFFF1074` |
 | engine oil | `0xFFFF1D5C`, AN0 mux code 010 | `0xFFFF117B` | `0x12C6E` | `0xFFFF1F94` | DID `0x111F` byte `0xFFFF2876` |
@@ -325,6 +325,20 @@ bit 1 is set. The oil producer publishes `0xFF` while the input byte is outside
 `3..241` or a P0197, P0198, or P0196 record is stored, and zero while
 `ROM8[0x8616]` bit 0 is clear.
 
+Coolant coordinator `FUN_000394B8` publishes DID `0x1101` byte `0xFFFF1079` the
+same way. Transfer code `0xFFFF1187` from `FUN_00039550` passes limiter
+`FUN_00039588` against previous byte `0xFFFF1081` while the input byte is within
+`3..241`, and service-0x30 value byte `0xFFFF9924` replaces it while active bit
+`0xFFFF99C4` bit 0 is set. Outside the input range the coordinator sets
+`0xFFFF2461` bit 6 and publishes fail-safe ramp `FUN_000395AE`:
+`min(90 + n, 130)`. Step counter `n` at `0xFFFF1F8C` is zero while `0xFFFF2451`
+bit 5 is clear and otherwise rises by one per six ticks of the 1.024 s
+countdown `0xFFFF24F7`, so the ramp covers its 40 counts in 245.8 s. The factory
+fail-safe table for P0117 and P0118 gives 40 degC at ignition ON or START,
+80 degC after about four minutes, and a time-dependent value between them. The
+ramp therefore fixes `degC = raw - 50` at one degC per count without reference
+to the thermistor table.
+
 The factory thermistor reference tables agree with the table at 20 mV per
 input count:
 
@@ -353,7 +367,7 @@ procedure:
 | Constant | Value | Compared byte | Under `degC + 50` | Factory procedure |
 | --- | --- | --- | --- | --- |
 | `ROM8[0x8CDA]` | 130 | coolant latch `0xFFFF5508`, at least | 80 degC | coolant above 80 degC before the soak |
-| `ROM8[0x8CDB]` | 90 | selected temperature `0xFFFF106E` and second byte `0xFFFF452C`, at most | 40 degC | coolant and intake air below 40 degC |
+| `ROM8[0x8CDB]` | 90 | start-latched coolant `0xFFFF106E` and second byte `0xFFFF452C`, at most | 40 degC | coolant and intake air below 40 degC |
 | `ROM8[0x8CC9]` | 6 | absolute difference of the two, below | 6 degC | difference within 6 degC |
 | `ROM8[0x8964]` | 170 | oil snapshot `0xFFFF2772`, above | 120 degC | fault criterion |
 | `ROM16[0x9372]` | 300 | ticks of `0xFFFF84C3` bit 6 | | idle for 5 minutes |

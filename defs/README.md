@@ -190,7 +190,8 @@ absent from the definition.
   lookup, evaluator outputs, and the unreferenced neighboring calibration bank.
 - `JK08A.ignition-output.md` models the final timing and APC output boundary.
 - `JK08A.start-signal-temperature-selector.md` models the computed START
-  SIGNAL, battery-voltage acquisition, and selected-temperature sentinel.
+  SIGNAL, battery-voltage acquisition, and the coolant temperature latched at
+  engine start.
 - `JK08A.diagnostics.md` models diagnostic publication and monitor boundaries.
 - `JK08A.tuning-telemetry.md` defines schema-2 custom-CAN coverage, stock-CAN
   context, closed-loop observation groups, and measurements that still require

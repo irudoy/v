@@ -274,16 +274,18 @@ and ETC ACTR-B2 respectively.
 
 The first latch proves that engine-running speed has been reached. The third is
 a coolant warm-up latch. The second compares exact raw coolant snapshot
-`0xFFFF1071` with selected-temperature snapshot `0xFFFF106E`; the selected
-value equals coolant while computed START SIGNAL is set and battery-voltage raw
-is below 100. When that condition ends, selector `0x0003967A` returns coolant
-once, sets its transition latch, and then publishes the stock-lifecycle zero
-sentinel. At 0.08 V per count of DID `0x1103`, raw 100 is 8.00 V.
-Consequently bit 4 is a post-start or low-voltage-transition qualifier rather
-than a comparison with a second physical temperature. The zero sentinel has no
-coolant scale and must not be rendered as `-50 deg C`. These bits latch until
-diagnostic reset service `0x00080B54` clears them. The complete source and DID
-chain is specified in `JK08A.start-signal-temperature-selector.md`.
+`0xFFFF1071` with selected-temperature snapshot `0xFFFF106E`, the coolant
+temperature latched at engine start. The selected value equals coolant while
+computed START SIGNAL is set and battery-voltage raw is below 100. When that
+condition ends, selector `0x0003967A` returns coolant once, sets its transition
+latch, and then holds the selection through the previous-pass image of the
+pair. At 0.08 V per count of DID `0x1103`, raw 100 is 8.00 V. Bit 4 is
+therefore a coolant rise of 20 deg C after engine start. Together the three
+latches are the engine-speed and coolant conditions of factory driving
+pattern A: 400 rpm, a rise of 20 deg C after engine start, and 70 deg C. These
+bits latch until diagnostic reset service `0x00080B54` clears them. The
+complete source and DID chain is specified in
+`JK08A.start-signal-temperature-selector.md`.
 
 `0x0007D856` resets `0xFFFF4B0E` only when the critical diagnostic aggregate
 bit is clear. While that bit is set, it increments the counter with saturation

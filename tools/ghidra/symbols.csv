@@ -45,7 +45,7 @@ addr,name,note
 0002e0d4,diagnostic_status_dids_1302_1306_pack,Pack diagnostic status bytes for DIDs 0x1302 through 0x1306
 00038128,battery_adc_hysteresis_state_update,Update battery ADC threshold state with raw hysteresis
 00038d44,computed_start_signal_state_update,Compute START SIGNAL and mirror it into runtime and diagnostic status bits
-000394b8,selected_temperature_pair_update,Publish coolant or the stock zero-sentinel temperature pair
+000394b8,selected_temperature_pair_update,Publish coolant and latch the start-temperature pair
 0003967a,start_low_voltage_temperature_selector,Select coolant during low-voltage START SIGNAL and manage the transition latch
 00039a9e,battery_voltage_publish,Convert the AN0 mux battery sample and publish DID 0x1103 raw voltage
 0002be40,injector_event_isr,Per-channel injector event handler and DFCO release-history update

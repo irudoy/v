@@ -1,8 +1,9 @@
 # JK08A computed START SIGNAL and selected-temperature gate
 
 This specification binds the selected-temperature path to its exact runtime
-and diagnostic identities. The alternate branch is a zero sentinel, not a
-second physical temperature sensor.
+and diagnostic identities. The selected pair is the engine coolant temperature
+latched at engine start. Its hold branch re-reads the previous-pass image of
+the pair, not a second physical temperature sensor.
 
 ## Battery-voltage identity
 
@@ -82,7 +83,7 @@ Its complete state transition is:
 |---|:---:|:---:|---|
 | `S = 1` and `B < 100` | 0 | 1 | current coolant |
 | condition false and `L = 0` | 1 | 1 | current coolant once |
-| condition false and `L = 1` | 1 | 0 | zero sentinel |
+| condition false and `L = 1` | 1 | 0 | selected pair of the previous pass |
 
 Raw 100 belongs to the condition-false branch. At 0.08 V per count the
 continuously selected coolant case is exactly computed START SIGNAL ON with
@@ -93,14 +94,62 @@ Coordinator `0x000394B8` maps the return value to these bytes:
 | Return | Raw byte | Normalized byte | Meaning |
 |:---:|---:|---:|---|
 | 1 | `0xFFFF1079` | `0xFFFF1077` | current engine coolant |
-| 0 | `0xFFFF107E` | `0xFFFF1080` | stock lifecycle zero sentinel |
+| 0 | `0xFFFF107E` | `0xFFFF1080` | previous-pass image of the selected pair |
 
-The normal initializer clears the fallback bytes, recovery paths clear them,
-and the whole-application writer audit finds no runtime producer. A raw zero
-from this branch must not be rendered as `-50 deg C`; the coolant conversion
-does not apply to the sentinel.
+## Previous-pass block
 
-## Diagnostic-readiness consequence
+The coordinator is entry 24 of the 69-entry periodic table at `0x21834`.
+Dispatcher `0x000209D8` runs the table while `0xFFFF84B9.bit4` is pending;
+periodic handler `0x0002040C` sets that bit every tenth base interrupt, the
+10.24 ms cadence of the snapshot scheduler. After the last entry the dispatcher
+calls block-copy helper `0x00022558`:
+
+```text
+0x00020CAE  r1 = ROM32[0x20E6C] = 0xFFFF107A    # destination
+0x00020CB8  r2 = ROM32[0x20E74] = 0xFFFF1072    # source
+0x00020CBA  jsr 0x00022558
+0x00020CBC  r0 = 8                              # length, delay slot
+```
+
+Every byte of `0xFFFF1072..0xFFFF1079` therefore has a previous-pass image in
+`0xFFFF107A..0xFFFF1081`:
+
+| Current | Image | Content | Reader of the image |
+|---:|---:|---|---|
+| `0xFFFF1072` | `0xFFFF107A` | RPM-drop publication byte | none |
+| `0xFFFF1073` | `0xFFFF107B` | start-latched fuel temperature | hold branch of `0x00039788` |
+| `0xFFFF1074` | `0xFFFF107C` | fuel temperature, DID `0x1104` | fall-rate limiter `0x00039874` |
+| `0xFFFF1075` | `0xFFFF107D` | absolute throttle byte | `0x00037C1A` |
+| `0xFFFF1076` | `0xFFFF107E` | selected raw temperature | hold branch of `0x000394B8` |
+| `0xFFFF1077` | `0xFFFF107F` | normalized coolant index | `0x00038618` |
+| `0xFFFF1078` | `0xFFFF1080` | selected normalized temperature | hold branch of `0x000394B8` |
+| `0xFFFF1079` | `0xFFFF1081` | engine coolant, DID `0x1101` | fall-rate limiter `0x00039588` |
+
+The helper writes through its destination pointer, so the image block has no
+literal-address store. Startup initializer `0x00027C50` and clear services
+`0x0002FC24` and `0x00034B70` zero it inside their RAM spans.
+
+The hold branch keeps the selected pair at the value of its last coolant
+selection. RAM initialization clears `L`, so the first pass selects coolant
+once, before the hold branch first reads the image. A computed START SIGNAL
+interval with battery voltage below 8.00 V tracks coolant and ends with one
+more selection. The selected pair is the engine coolant temperature at engine
+start: the raw byte has the coolant scale `deg C = raw - 50`, and the
+normalized byte has the normalized coolant scale of `0x00039634`.
+
+Two more gates repeat the state machine with their own latches:
+
+| Gate | Latch | Selected byte | Source | Image on the hold branch |
+|---|---|---:|---:|---:|
+| `0x0003967A` | `0xFFFF24BE.bit6` | `0xFFFF1076`, `0xFFFF1078` | `0xFFFF1079`, `0xFFFF1077` | `0xFFFF107E`, `0xFFFF1080` |
+| `0x0003972A` | `0xFFFF4238.bit1` | `0xFFFF39AE` | `0xFFFF1079` | `0xFFFF39BE` |
+| `0x00039902` | `0xFFFF24BD.bit5` | `0xFFFF1073` | `0xFFFF1074` | `0xFFFF107B` |
+
+The image `0xFFFF39BE` comes from the 16-byte copy `0xFFFF39A4..0xFFFF39B3`
+to `0xFFFF39B4..0xFFFF39C3`, which the same dispatcher branch performs at
+`0x00020CE6`.
+
+## Start-temperature consumers
 
 `0x000804CE` sets `0xFFFF422F.bit4` once:
 
@@ -109,16 +158,21 @@ uint8[0xFFFF1071] - uint8[0xFFFF106E] >= 20
 ```
 
 The first operand is the periodic raw-coolant snapshot. The second is the
-periodic selected-raw snapshot. While the primary pair is selected, the two
-values are equal. After the transition to the zero sentinel, ordinary coolant
-raw values at or above 20 satisfy the difference test. This latch is therefore
-a post-start or low-voltage-transition qualifier, not evidence of a second
-physical temperature.
+periodic snapshot of the selected raw byte, the coolant temperature at engine
+start. The same function sets `0xFFFF422E.bit7` once RPM/12.5 reaches `0x20`
+and `0xFFFF422F.bit5` once raw coolant reaches `0x78`. Under
+`deg C = raw - 50` the three latches are an engine speed of 400 rpm, a coolant
+rise of 20 deg C after engine start, and a coolant temperature of 70 deg C.
+The 2013 G factory manual defines driving pattern A by the same three
+conditions and the ignition switch turned from ON to OFF. The match binds
+`0xFFFF106E` to the coolant temperature at engine start and confirms one
+deg C per count of the raw coolant byte.
 
-The P030 counting-readiness path also consumes the selected pair. On the zero
-sentinel branch, `0xFFFF106E = 0` fails its minimum raw threshold of 40 and
-the normalized zero index selects lower-threshold value 255. The branch is an
-inhibit state, not a physical-temperature observation.
+The P030 counting-readiness path consumes the selected pair as a start
+temperature. It requires `0xFFFF106E >= 40`, a start temperature of at least
+-10 deg C, and takes the lower coolant threshold from map `0x12DE2` at
+`min(2 * 0xFFFF1070, 255)`. From a start temperature of -10 deg C the stock
+cells return raw 43, a current coolant temperature of at least -7 deg C.
 
 ## Evidence boundary
 
@@ -127,5 +181,5 @@ control-module voltage 13.92 V and `[NC] Starter` value 0 at hot idle. The
 second observation is consistent with computed START SIGNAL being OFF but is
 not proven to be the same DID. Neither observation is synchronized with the
 CAN capture or a cranking transition. A synchronized cranking capture would
-verify transition timing on the target; it is not required to distinguish the
-zero sentinel from a second temperature sensor.
+verify transition timing on the target; the start-latch identity of the
+selected pair does not depend on it.
