@@ -6,8 +6,9 @@ value, so a recording can be replayed against the exact JK08A formulas that
 connect those values: stock CAN RPM against the RPM/12.5 word, the intake-VTC
 duty monitor pair against the duty command pair, cam-position bytes against
 their common targets, the MAF transfer chain, the J1979 Calculated Load byte,
-the Base Fuel Schedule producer, the compensated injection words, and the
-final timing to APC command identity. Every relation is evaluated in raw
+the Base Fuel Schedule producer, the compensated injection words, the code
+chain from the schedule to the pulse words, and the final timing to APC
+command identity. Every relation is evaluated in raw
 software units; the audit does not prove any physical unit.
 """
 
@@ -50,6 +51,29 @@ BFS_E_ADDRESS = 0x88FB
 BFS_FIXED_LIMIT = 0x726F9
 BFS_OUTPUT_FACTOR = 9163
 BFS_SPEED_FLOOR = 64
+PULSE_GAIN_LOAD_CURVE_ADDRESS = 0x129E2
+PULSE_GAIN_SPEED_CURVE_ADDRESS = 0x129F2
+PULSE_GAIN_CURVE_POINTS = 16
+PULSE_GAIN_CURVE_STEP = 16
+PULSE_GAIN_CURVE_LIMIT = 240
+PULSE_GAIN_PRESSURE_ADDRESS = 0x93C6
+PULSE_GAIN_PRESSURE_SLOPE_ADDRESS = 0x89FE
+PULSE_GAIN_PRESSURE_DIVISOR = 0xCA99
+PULSE_GAIN_RATIO_FLOOR_ADDRESS = 0x83C4
+PULSE_GAIN_TEMPERATURE_FLOOR_ADDRESS = 0x83C5
+PULSE_GAIN_TEMPERATURE_CEILING_ADDRESS = 0x83C6
+PULSE_GAIN_TEMPERATURE_NUMERATOR = 0x12A00
+PULSE_GAIN_TEMPERATURE_OFFSET = 0xDF
+PULSE_GAIN_RAIL_ADDRESS = 0x8AE7
+PULSE_GAIN_AFFINE_SLOPE = 5259
+PULSE_GAIN_AFFINE_OFFSET = 0x128500
+PULSE_GAIN_AFFINE_DIVISOR = 10000
+PULSE_GAIN_SCALAR_ADDRESS = 0x9332
+PULSE_PRECURSOR_FLOOR_ADDRESS = 0x94E8
+PULSE_OPENING_SLOPE_ADDRESS = 0x84F6
+PULSE_OPENING_BASE_ADDRESS = 0x8C9E
+PULSE_OPENING_BATTERY_REFERENCE = 175
+TRIM_NEUTRAL_SUM = 0xC800
 STFT_NEUTRAL = 0x6400
 AF_STATE_NEUTRAL = 0x4000
 APC_COMMAND_BASE = 110
@@ -74,6 +98,18 @@ class RelationCalibration:
     bfs_e: int
     load_scaler: int
     calculated_load_reference: tuple[int, ...]
+    pulse_gain_load_curve: tuple[int, ...]
+    pulse_gain_speed_curve: tuple[int, ...]
+    pulse_gain_pressure: int
+    pulse_gain_pressure_slope: int
+    pulse_gain_ratio_floor: int
+    pulse_gain_temperature_floor: int
+    pulse_gain_temperature_ceiling: int
+    pulse_gain_rail: int
+    pulse_gain_scalar: int
+    pulse_precursor_floor: int
+    pulse_opening_slope: int
+    pulse_opening_base: int
 
 
 @dataclass(frozen=True)
@@ -119,6 +155,40 @@ def load_calibration(
                 "uint16",
             )
         ),
+        pulse_gain_load_curve=tuple(
+            image.values(
+                PULSE_GAIN_LOAD_CURVE_ADDRESS, PULSE_GAIN_CURVE_POINTS, "uint8"
+            )
+        ),
+        pulse_gain_speed_curve=tuple(
+            image.values(
+                PULSE_GAIN_SPEED_CURVE_ADDRESS, PULSE_GAIN_CURVE_POINTS, "uint8"
+            )
+        ),
+        pulse_gain_pressure=image.values(
+            PULSE_GAIN_PRESSURE_ADDRESS, 1, "uint16"
+        )[0],
+        pulse_gain_pressure_slope=image.values(
+            PULSE_GAIN_PRESSURE_SLOPE_ADDRESS, 1, "uint8"
+        )[0],
+        pulse_gain_ratio_floor=image.values(
+            PULSE_GAIN_RATIO_FLOOR_ADDRESS, 1, "uint8"
+        )[0],
+        pulse_gain_temperature_floor=image.values(
+            PULSE_GAIN_TEMPERATURE_FLOOR_ADDRESS, 1, "uint8"
+        )[0],
+        pulse_gain_temperature_ceiling=image.values(
+            PULSE_GAIN_TEMPERATURE_CEILING_ADDRESS, 1, "uint8"
+        )[0],
+        pulse_gain_rail=image.values(PULSE_GAIN_RAIL_ADDRESS, 1, "uint8")[0],
+        pulse_gain_scalar=image.values(PULSE_GAIN_SCALAR_ADDRESS, 1, "uint16")[0],
+        pulse_precursor_floor=image.values(
+            PULSE_PRECURSOR_FLOOR_ADDRESS, 1, "uint16"
+        )[0],
+        pulse_opening_slope=image.values(
+            PULSE_OPENING_SLOPE_ADDRESS, 1, "uint8"
+        )[0],
+        pulse_opening_base=image.values(PULSE_OPENING_BASE_ADDRESS, 1, "uint8")[0],
     )
 
 
@@ -147,6 +217,83 @@ def bfs_reference_raw(
     )
     fixed = min(fixed, BFS_FIXED_LIMIT)
     return fixed * BFS_OUTPUT_FACTOR // 65536
+
+
+def common_pulse_gain_raw(
+    calibration: RelationCalibration,
+    bfs_raw: int,
+    intake_temperature_raw: int,
+    speed_byte: int,
+) -> int:
+    """Return common Q14 gain 0xFFFF165E of FUN_00053698.
+
+    The stage is reproduced for the stock configuration in which the pressure
+    slope byte is zero, so the pressure word equals its ROM reference.
+    """
+    if calibration.pulse_gain_pressure_slope:
+        raise ValueError("a nonzero pressure slope needs unstreamed word 0xFFFF4524")
+    pressure = calibration.pulse_gain_pressure
+    ratio = (pressure << 8) // PULSE_GAIN_PRESSURE_DIVISOR
+    ratio = min(max(ratio, calibration.pulse_gain_ratio_floor), 0x100)
+    temperature = PULSE_GAIN_TEMPERATURE_NUMERATOR // (
+        intake_temperature_raw + PULSE_GAIN_TEMPERATURE_OFFSET
+    )
+    temperature = min(
+        max(temperature, calibration.pulse_gain_temperature_floor + 0x80),
+        calibration.pulse_gain_temperature_ceiling + 0x80,
+    )
+    load = min(0xFF, ((bfs_raw * ratio >> 8) * temperature) >> 15)
+    fraction = min(
+        0xFF,
+        interpolate_implicit_u16(
+            calibration.pulse_gain_load_curve,
+            min(load, PULSE_GAIN_CURVE_LIMIT),
+            PULSE_GAIN_CURVE_STEP,
+        )
+        + interpolate_implicit_u16(
+            calibration.pulse_gain_speed_curve,
+            min(speed_byte, PULSE_GAIN_CURVE_LIMIT),
+            PULSE_GAIN_CURVE_STEP,
+        ),
+    )
+    difference = min(0xFFFF, pressure * (0x100 - fraction) >> 8)
+    denominator = (calibration.pulse_gain_rail << 10) + difference
+    quotient = (
+        min(0xFF, (calibration.pulse_gain_rail << 18) // denominator)
+        if denominator
+        else 0
+    )
+    factor = min(
+        0xFF,
+        (quotient * PULSE_GAIN_AFFINE_SLOPE + PULSE_GAIN_AFFINE_OFFSET)
+        // PULSE_GAIN_AFFINE_DIVISOR,
+    )
+    return factor * calibration.pulse_gain_scalar >> 8
+
+
+def pulse_reference_raw(
+    calibration: RelationCalibration,
+    bfs_raw: int,
+    gain_raw: int,
+    stft_raw: int,
+    ltft_raw: int,
+    battery_raw: int,
+) -> int:
+    """Return the closed-loop pulse word for unity multipliers and no transient.
+
+    The published multiplier is 0x4000, the bank multiplier and the third trim
+    word are 0x6400, and signed transient word 0xFFFF2300 is zero.
+    """
+    scheduled = bfs_raw * AF_STATE_NEUTRAL >> 17
+    precursor = min(0xFFFF, scheduled * gain_raw >> 14)
+    precursor = max(precursor, calibration.pulse_precursor_floor)
+    delta = max(0, stft_raw + ltft_raw + STFT_NEUTRAL - TRIM_NEUTRAL_SUM)
+    opening = (
+        (PULSE_OPENING_BATTERY_REFERENCE - battery_raw)
+        * calibration.pulse_opening_slope
+        >> 7
+    ) + calibration.pulse_opening_base
+    return min(0xFFFF, (precursor * delta >> 16) + max(0, opening))
 
 
 def _sha256_file(path: Path) -> str:
@@ -452,6 +599,84 @@ def audit_injection_fit(recording_: Recording) -> dict:
     return result
 
 
+def audit_injection_chain(
+    recording_: Recording,
+    calibration: RelationCalibration,
+    hold: int,
+    tolerance: float = 0.02,
+) -> dict:
+    """Replay the code chain from Base Fuel Schedule to both bank pulse words.
+
+    A record qualifies when the schedule stays within the tolerance over the
+    previous hold records, which keeps signed transient word 0xFFFF2300 and the
+    rate-limited fuel multiplier out of the comparison.
+    """
+    if calibration.pulse_gain_pressure_slope:
+        return {}
+    names = (
+        "bfs_raw",
+        "af_state_factor_raw",
+        "fuel_inhibit_mask",
+        "iat_raw",
+        "rpm_raw",
+        "battery_voltage_raw",
+    )
+    columns = {name: _ints(recording_, name) for name in names}
+    if any(column is None for column in columns.values()):
+        return {}
+    bfs = columns["bfs_raw"]
+    result = {}
+    for bank, channel in ((1, 0), (2, 1)):
+        stft = _ints(recording_, f"stft_b{bank}_raw")
+        ltft = _ints(recording_, f"ltft_b{bank}_raw")
+        pulse = _ints(recording_, f"injection_{channel}_raw")
+        if stft is None or ltft is None or pulse is None:
+            continue
+        ratios = []
+        gains = []
+        within_two_percent = 0
+        for index in range(hold, len(bfs)):
+            if (
+                columns["af_state_factor_raw"][index] != AF_STATE_NEUTRAL
+                or columns["fuel_inhibit_mask"][index] != 0
+                or pulse[index] <= 0
+            ):
+                continue
+            window = bfs[index - hold : index + 1]
+            if max(window) - min(window) > tolerance * window[-1]:
+                continue
+            gain = common_pulse_gain_raw(
+                calibration,
+                bfs[index],
+                columns["iat_raw"][index],
+                min(0xFF, columns["rpm_raw"][index] >> 1),
+            )
+            reference = pulse_reference_raw(
+                calibration,
+                bfs[index],
+                gain,
+                stft[index],
+                ltft[index],
+                columns["battery_voltage_raw"][index],
+            )
+            ratios.append(pulse[index] / reference)
+            gains.append(gain / 16384)
+            within_two_percent += abs(pulse[index] - reference) <= 0.02 * reference
+        prefix = f"injection_b{bank}_chain"
+        result[f"{prefix}_sample_count"] = len(ratios)
+        if not ratios:
+            continue
+        result[f"{prefix}_over_reference_median"] = statistics.median(ratios)
+        result[f"{prefix}_over_reference_p5"] = percentile_nearest_rank(ratios, 5)
+        result[f"{prefix}_over_reference_p95"] = percentile_nearest_rank(ratios, 95)
+        result[f"{prefix}_within_two_percent_share"] = _share(
+            within_two_percent, len(ratios)
+        )
+        result[f"{prefix}_gain_median"] = statistics.median(gains)
+        result[f"{prefix}_gain_range"] = [min(gains), max(gains)]
+    return result
+
+
 def audit_timing_command(recording_: Recording) -> dict:
     final = _ints(recording_, "final_timing_raw")
     command = _ints(recording_, "apc_command_raw")
@@ -500,6 +725,7 @@ def audit_states(recording_: Recording) -> dict:
         ("iat_raw", "iat_raw_range"),
         ("battery_voltage_raw", "battery_raw_range"),
         ("atmospheric_pressure_raw", "atmospheric_raw_range"),
+        ("injection_timing_state_raw", "injection_timing_state_raw_range"),
     ):
         column = _ints(recording_, source)
         if column:
@@ -513,6 +739,7 @@ def audit_recording(
     *,
     hold: int = 6,
     target_hold: int = 100,
+    schedule_hold: int = 50,
 ) -> dict:
     result = {
         "capture_name": recording_.path.name,
@@ -521,6 +748,7 @@ def audit_recording(
         "record_count": recording_.record_count,
         "steady_input_hold_records": hold,
         "steady_target_hold_records": target_hold,
+        "steady_schedule_hold_records": schedule_hold,
     }
     result.update(audit_stock_rpm(recording_))
     result.update(audit_duty_pairs(recording_))
@@ -529,6 +757,7 @@ def audit_recording(
     result.update(audit_calculated_load(recording_, calibration))
     result.update(audit_bfs_producer(recording_, calibration, hold))
     result.update(audit_injection_fit(recording_))
+    result.update(audit_injection_chain(recording_, calibration, schedule_hold))
     result.update(audit_timing_command(recording_))
     result.update(audit_states(recording_))
     return result
@@ -553,6 +782,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--calibration-image", type=Path)
     parser.add_argument("--hold", type=int, default=6)
     parser.add_argument("--target-hold", type=int, default=100)
+    parser.add_argument("--schedule-hold", type=int, default=50)
     args = parser.parse_args(argv)
     calibration = load_calibration(args.rom, args.calibration_image)
     for index, log in enumerate(args.logs):
@@ -563,6 +793,7 @@ def main(argv: list[str] | None = None) -> int:
             calibration,
             hold=args.hold,
             target_hold=args.target_hold,
+            schedule_hold=args.schedule_hold,
         )
         for key, value in result.items():
             print(f"{key} = {format_value(value)}")

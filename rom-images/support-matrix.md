@@ -66,8 +66,8 @@ handler. Its calibration access library is registered in
 `../defs/1ME3B.interp.csv` as 34 fused leaves and censused to 768 tables and
 457 axes at candidate confidence. `../defs/JK08A-1ME3B.definition-addresses.csv`
 binds the reviewed VQ37 semantic set to 27 of those tables and thirteen axes
-through `1ND0A` structural correspondence and records sixteen source maps as
-unsupported: the thirteen VQ37 rows and the three canonical ignition surfaces,
+through `1ND0A` structural correspondence and records eighteen source maps as
+unsupported: the fifteen VQ37 rows and the three canonical ignition surfaces,
 whose gated stock-inert selector path the `1ME3B` ignition coordinator does not
 carry. `../defs/vq37-native-tables.toml` registers twenty-five further tables
 and twenty-two axes at code confidence: the two alternate selector arms and the

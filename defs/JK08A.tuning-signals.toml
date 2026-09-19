@@ -62,7 +62,7 @@ sources = [0xFFFF1026]
 widths = [2]
 dids = [0x1208]
 evidence = "exact-code"
-note = "The internal base schedule is available at full rate; its raw/2048 ms conversion remains a candidate."
+note = "The internal base schedule is available at full rate. One count is 1/2048 ms in the time base of the injection-pulse words: the stage normalizers between the schedule and the 10 us pulse words multiply to exactly 100/2048."
 
 [[signal]]
 id = "calculated_load"
@@ -439,7 +439,7 @@ sources = [0xFFFF162E]
 widths = [2]
 dids = [0x1131, 0x1132, 0x1133, 0x113D]
 evidence = "exact-code"
-note = "Four declared DIDs publish the same high byte of one internal word. Its exact physical timing interpretation remains unresolved."
+note = "Four declared DIDs publish the high byte of word 0xFFFF162E, which has no runtime producer: the startup initializer clears it and no other code accesses it, so the DIDs and the streamed field read constant zero. The live end-of-injection angle is word 0xFFFF192E."
 
 [[signal]]
 id = "vehicle_context"

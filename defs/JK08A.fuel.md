@@ -14,8 +14,9 @@ Arithmetic, RAM data flow, scheduler ordering, diagnostic bindings, and ATU-II
 register use are code-proven, and the code path from the compensated pulse
 words to the ATU-II one-shot outputs fixes their millisecond scale. The same
 path places each pulse by crank angle from the injection-end delay tables.
-Road-log statistics appear only where they bound a scale that code leaves
-open. The physical connection between the scheduled durations and the injector
+The same arithmetic fixes one Base Fuel Schedule count at `1/2048 ms`.
+Road-log statistics reproduce the code chain on the running engine. The
+physical connection between the scheduled durations and the injector
 terminals remains a hardware-validation item.
 
 ## Periodic ordering
@@ -113,10 +114,12 @@ The fallback branch looks up uint16 table `0x15630` by normalized coolant,
 writes the result to `0xFFFF1E44`, and writes one quarter of it to
 `0xFFFF1E40`.
 
-Exact DID `0x1208` identifies `0xFFFF1026` as Base Fuel Schedule. The
-homologous structured-profile conversion `raw/2048 ms` and the `ms/kg` K-Value
-unit are dimensionally consistent with the code, but remain candidate
-engineering scales until hardware validation. The airflow entering the
+Exact DID `0x1208` identifies `0xFFFF1026` as Base Fuel Schedule. One count of
+the word is `1/2048 ms` in the time base of the injection-pulse words, as
+derived under [Injection-pulse time scale](#injection-pulse-time-scale); the
+homologous structured-profile conversion `raw/2048 ms` agrees with it. The
+`ms/kg` K-Value unit is dimensionally consistent with the code and remains a
+candidate engineering scale. The airflow entering the
 producer is declared by the ECU itself: J1979 Mode 01 PID `0x10` publishes
 `105 * 0xFFFF105C / 256` as g/s*100, so one count of the total is
 `105 / 25600` g/s. The `kg/hr` MAF Factor unit with scale `x * 0.0001` gives
@@ -290,19 +293,56 @@ mask to the main pulse precursor.
 
 ## Common gain and transient additive term
 
-`FUN_00053698`, table index 39, recalculates on alternating invocations. It
-uses current BFS and maps `0x129E2` and `0x129F2`, saturates their byte sum at
-255, and applies complement multiplier `256 - sum`. Its terminal calculation
-writes:
+`FUN_00053698`, table index 39, recalculates on alternating invocations gated
+by `0xFFFF2485.bit3`:
 
 ```text
-0xFFFF165E = floor(uint8[0xFFFF160D] *
-                   ROM16[0x9332] / 256)
-ROM16[0x9332] = 13972
+P = ROM16[0x93C6] + arithmetic_shift7(ROM8[0x89FE] * uint16[0xFFFF4524])
+P = 51865 when FUN_00025E20(-1) is nonzero
+0xFFFF517C = sat_u16(P)
+R = clamp(floor(256 * P / 51865), ROM8[0x83C4], 256)
+
+b = uint8[0xFFFF2733], or ROM8[0x8B51] when FUN_00025E20(0x125) is nonzero
+T = clamp(floor(76288 / (b + 223)), ROM8[0x83C5] + 128, ROM8[0x83C6] + 128)
+
+0xFFFF13B1 = min(255, ((uint16[0xFFFF1024] * R >> 8) * T) >> 15)
+0xFFFF17BA = curve 0x129E2 at 0xFFFF13B1
+0xFFFF17BB = curve 0x129F2 at engine-speed byte 0xFFFF11B3
+0xFFFF17B9 = min(255, 0xFFFF17BA + 0xFFFF17BB)
+0xFFFF31D8 = sat_u16(P * (256 - 0xFFFF17B9) >> 8)
+
+K = ROM8[0x8AE7]
+0xFFFF17EE = min(255, floor((K << 18) / ((K << 10) + 0xFFFF31D8)))
+0xFFFF160D = min(255, floor((0xFFFF17EE * 5259 + 0x128500) / 10000))
+0xFFFF165E = floor(uint8[0xFFFF160D] * ROM16[0x9332] / 256)
 ```
 
+Stock constants are `ROM16[0x93C6] = 51865`, `ROM8[0x89FE] = 0`,
+`ROM8[0x83C4] = 128`, `ROM8[0x83C5] = 51`, `ROM8[0x83C6] = 215`,
+`ROM8[0x8B51] = 75`, `K = 175`, and `ROM16[0x9332] = 13972`. The zero slope
+byte makes `P` the constant 51865 and `R = 256`, so the gain depends only on
+Base Fuel Schedule, intake-temperature byte `0xFFFF2733`, and engine-speed
+byte `0xFFFF11B3`. Both curves are 16-point implicit-axis `uint8` tables of
+primitive `FUN_00026388`.
+
 `0xFFFF165E` is the common Q14 gain consumed by the next current-pass pulse
-stage. Its physical compensation identity remains unresolved.
+stage. Ratio byte `0xFFFF17EE` spans `198..255`, factor byte `0xFFFF160D`
+spans `225..255`, and the gain spans `12280..13917`, which is
+`0.7495..0.8494` of unity `16384`. `ROM16[0x9332] / 16384 = 0.8528` is a fixed
+calibration scalar.
+
+The stage has the form of an injector differential-pressure correction.
+`0xFFFF17EE` is `256 * C / (C + V)` with `C = K << 10 = 179200`, and the affine
+map to `0xFFFF160D` sends 256 to 256 and stays within 0.4 count of
+`256 * sqrt(x / 256)` before the integer floor, so `0xFFFF160D / 256`
+approximates `sqrt(C / (C + V))`. With one count of `C`, `P`, and `V` read as
+`1/512 kPa`, `C` is `350.0 kPa`, the fuel-pressure specification of the
+homologous VQ35HR service manual, `P = 51865` is `101.30 kPa`, and
+`V = P * (1 - 0xFFFF17B9 / 256)` is the modelled manifold depression that adds
+to the differential pressure of a rail regulated against atmosphere. With the
+ECU-declared `degC = raw - 50` temperature scale, `b + 223` is kelvin and
+`T = 256 * 298 / kelvin`. This physical reading is a candidate; the arithmetic
+is exact.
 
 Within table-index-41 coordinator `FUN_000522C4`, `FUN_000528BE` selects byte
 `0xFFFF150A` from map `0x12176` or constant 64 and calls `FUN_00052902`.
@@ -398,6 +438,14 @@ if I_b != 0:
 
 0xFFFF191C + 2*b = min(v, 65535)
 ```
+
+All three trim words are Q8.8 percent with neutral `0x6400`, so the neutral
+delta is `0x6400` and the neutral stage factor is `0x6400 / 65536 = 100 / 256`.
+Third trim array `0xFFFF2A24` is initialized to `0x6400` by `FUN_0002C648` and
+reset to it by `FUN_0005B708`. `FUN_0005B534` steps each bank word by
+ROM-defined increments inside `ROM8[0x82E4] << 8 .. ROM8[0x82E5] << 8`, stock
+90 to 110 percent, and otherwise ramps it toward `0x6400`; the physical source
+of this correction is unresolved.
 
 The startup-only `offset_b = 0x8000` makes the last correction neutral in the
 analyzed application. `0xFFFF2436` is both a common additive term in normal
@@ -498,14 +546,28 @@ within one count in 62 to 93 percent, with the median ratio of the total to
 with `Q = A + B` and `N = 2 * rpm_raw` at a median ratio of 0.98 to 0.99
 (p5 0.87 to 0.94, p95 1.01 to 1.04). The J1979 Calculated Load byte matches
 its formula from the prior record exactly in 77 to 80 percent of records and
-within one count in 95 to 97 percent. Each closed-loop pulse word is linear
-in `BFS * STFT / 0x6400 / 20.48` with slope 0.87 to 0.89 and an additive 42 to
-53 raw at correlation 0.99 on both banks; the slope below unity and the
-additive term are the `0xFFFF165E` gain and the battery-dependent
-`0xFFFF2436` base, which the profile does not stream. The factor 20.48 is the
-ratio of the candidate `raw/2048 ms` BFS scale to the established
-`raw/100 ms` pulse scale, so the measured slope is the chain gain between the
-schedule and the injector command in physical units.
+within one count in 95 to 97 percent.
+
+The same audit replays the code chain from the schedule to both bank pulse
+words. For each closed-loop record whose schedule stays within 2 percent over
+the previous 50 records it rebuilds common gain `0xFFFF165E` from the recorded
+schedule, intake-temperature byte, and engine speed, applies the unity
+multiplier `0x4000`, the recorded short-term and long-term trims with the
+third trim at neutral, and the opening time from the recorded battery byte:
+
+| Recording | Records | Median pulse / replay | p5 | p95 | Within 2 percent | Median gain |
+|---|---|---|---|---|---|---|
+| 17-10-15 | 6270 | 1.000 | 0.991 | 1.011 | 97 to 98 percent | 0.7928 |
+| 17-44-20 | 19654 | 1.000 | 0.984 | 1.018 | 92 to 93 percent | 0.7928 |
+| 18-02-32 | 7560 | 1.000 | 0.975 | 1.022 | 87 to 91 percent | 0.7728 |
+
+The replayed gain spans `0.766..0.849`, inside the code range. A free linear
+fit of each closed-loop pulse word against `BFS * STFT / 0x6400 / 20.48` gives
+slope 0.87 to 0.89 and an additive 42 to 53 raw at correlation 0.99 on both
+banks. The gain rises with load, so that fit reports a slope above the local
+gain and an intercept below the 66 to 87 count opening time; the replay with
+the code-defined gain and intercept removes both offsets. The factor 20.48 is
+the ratio of the `raw/2048 ms` BFS scale to the `raw/100 ms` pulse scale.
 
 ## Override word
 
@@ -644,15 +706,26 @@ Independent magnitudes agree with the scale:
   maximum of `14.08 ms` at `3587.5 rpm`, which is 42 percent of the `33.4 ms`
   engine cycle at that speed.
 
-Base Fuel Schedule keeps its candidate `raw / 2048 ms` scale. No ROM constant
-fixes a reference value for the product of the gains between the schedule and
-the pulse words: common gain `0xFFFF165E` reaches at most
-`floor(255 * 13972 / 256) = 13918` against the `16384` that would make its
-stage unity, so code alone cannot close the schedule. The recorded relation
-bounds it instead. With the pulse scale absolute, the measured chain gain is
-`0.88` under `raw / 2048 ms`, `0.44` under `raw / 1024 ms`, and `1.76` under
-`raw / 4096 ms`. Only the near-unity value matches a chain whose recovered
-stages are unity-normalized.
+The same arithmetic fixes the Base Fuel Schedule scale at `raw / 2048 ms`.
+Every stage between the schedule and the pulse words carries its own
+normalizer:
+
+```text
+FUN_0004E974   S * M / 131072        M = 0x4000 at unity          1/8
+FUN_0004E974   H * B / 0x6400        B = 0x6400 at unity          1
+FUN_0004E974   X * G / 16384         G = common gain 0xFFFF165E   G/16384
+FUN_0004EAD4   I * trim / 65536      trim = 0x6400 at neutral     100/256
+```
+
+The product of the fixed normalizers is `(1/8) * (100/256) = 100/2048`, so at
+unity multipliers, unity gain, and neutral trims the pulse before opening time
+is `floor(BFS * 100 / 2048)` counts of 10 us: one schedule count is
+`1/2048 ms` of pulse. Common gain `G / 16384` is the only factor that never
+reaches unity; its code range `0.7495..0.8494` is the ratio of the delivered
+pulse to the schedule. The adjacent scales `raw / 1024 ms` and `raw / 4096 ms`
+would need a gain of `0.39` or `1.57`, outside that range. The chain replay
+under [Active-vehicle reproduction](#active-vehicle-reproduction) reproduces
+the recorded pulse words at a median ratio of `1.000`.
 
 ## Injection timing
 
@@ -694,6 +767,17 @@ cells, 532 crank degrees; the conditional table holds 160..200, 640..800 crank
 degrees. A whole-ROM scan finds `FUN_000521A8` as the only reader of
 `0xFFFF192E`. The pulse angle comes from the longest of the six pulses, so the
 end delay is exact for that channel.
+
+Diagnostic word `0xFFFF162E` is outside this path. Both service-`0x22` pointer
+tables return its high byte as DIDs `0x1131`, `0x1132`, `0x1133`, and
+`0x113D`, which public definitions name fuel-injection timing. The word has no
+runtime producer: startup initializer `FUN_00027C50` clears it, and a
+whole-program p-code scan with computed-address candidates, a
+constant-propagation sweep of register-relative accesses, and the block-copy
+groups of scheduler walkers `FUN_00020DFE` and `FUN_000209D8` find no other
+access. The four DIDs publish a constant zero, and all 143961 records of the
+2026-09-17 recordings stream 0. The live end-of-injection angle is
+`0xFFFF192E`.
 
 `FUN_00054A44` is entry 1 of the ten-entry engine-event task table at `0x21B5C`
 and runs from feeder `FUN_000208F8` on every engine event. With `n` the

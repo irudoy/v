@@ -64,13 +64,34 @@ def synthetic_values(calibration, index):
     return values
 
 
-def write_synthetic_log(path, calibration, records=300):
+def chain_values(calibration, index):
+    """Return one record whose pulse words follow the code chain exactly."""
+    values = synthetic_values(calibration, index)
+    gain = mlg_relation_audit.common_pulse_gain_raw(
+        calibration,
+        values["bfs_raw"],
+        values["iat_raw"],
+        min(0xFF, values["rpm_raw"] >> 1),
+    )
+    for bank, channel in ((1, 0), (2, 1)):
+        values[f"injection_{channel}_raw"] = mlg_relation_audit.pulse_reference_raw(
+            calibration,
+            values["bfs_raw"],
+            gain,
+            values[f"stft_b{bank}_raw"],
+            values[f"ltft_b{bank}_raw"],
+            values["battery_voltage_raw"],
+        )
+    return values
+
+
+def write_synthetic_log(path, calibration, records=300, producer=synthetic_values):
     bindings = recording.build_bindings("tuning")
     specs = [binding.spec for binding in bindings]
     with path.open("wb") as stream:
         writer = mlvlg.StreamWriter(stream, specs, 1_789_600_000)
         for index in range(records):
-            values = synthetic_values(calibration, index)
+            values = producer(calibration, index)
             row = []
             for binding in bindings:
                 if binding.source == "date":
@@ -188,6 +209,85 @@ class MlgRelationAuditTest(unittest.TestCase):
         self.assertEqual(result["ltft_b1_values"], [0x6400])
         self.assertEqual(result["coolant_raw_range"], [141, 141])
         self.assertEqual(result["battery_raw_range"], [165, 165])
+
+    def test_pulse_chain_constants_are_read_from_the_registered_image(self):
+        calibration = self.calibration
+        self.assertEqual(
+            calibration.pulse_gain_load_curve,
+            (34, 54, 74, 94, 114, 134, 154, 174, 194, 214, 234, 255, 255, 255, 255, 255),
+        )
+        self.assertEqual(
+            calibration.pulse_gain_speed_curve,
+            (33, 26, 18, 14, 11, 11, 5, 4, 8, 3, 0, 0, 0, 0, 0, 0),
+        )
+        self.assertEqual(
+            (
+                calibration.pulse_gain_pressure,
+                calibration.pulse_gain_pressure_slope,
+                calibration.pulse_gain_ratio_floor,
+                calibration.pulse_gain_temperature_floor,
+                calibration.pulse_gain_temperature_ceiling,
+                calibration.pulse_gain_rail,
+                calibration.pulse_gain_scalar,
+            ),
+            (51865, 0, 128, 51, 215, 175, 13972),
+        )
+        self.assertEqual(
+            calibration.pulse_gain_pressure,
+            mlg_relation_audit.PULSE_GAIN_PRESSURE_DIVISOR,
+        )
+        self.assertEqual(
+            (
+                calibration.pulse_precursor_floor,
+                calibration.pulse_opening_slope,
+                calibration.pulse_opening_base,
+            ),
+            (170, 92, 70),
+        )
+
+    def test_common_gain_and_pulse_reference_follow_the_stage_arithmetic(self):
+        calibration = self.calibration
+        gain = mlg_relation_audit.common_pulse_gain_raw
+        self.assertEqual(gain(calibration, 6631, 97, 26), 12935)
+        self.assertEqual(gain(calibration, 0, 75, 0), 12607)
+        self.assertEqual(gain(calibration, 20000, 60, 120), 13808)
+        self.assertEqual(gain(calibration, 65535, 75, 255), 255 * 13972 >> 8)
+
+        pulse = mlg_relation_audit.pulse_reference_raw
+        self.assertEqual(pulse(calibration, 6631, 12935, 27412, 25600, 165), 350)
+        self.assertEqual(pulse(calibration, 6631, 12935, 25600, 25600, 175), 325)
+        # Below the precursor floor the pulse is floor * 100 / 256 plus opening time.
+        self.assertEqual(pulse(calibration, 1000, 12935, 25600, 25600, 175), 136)
+        # At unity gain and neutral trims the chain is the schedule over 20.48.
+        for bfs in (4096, 8192, 20480):
+            self.assertEqual(
+                pulse(calibration, bfs, 16384, 25600, 25600, 175) - 70,
+                bfs * 100 // 2048,
+            )
+
+    def test_chain_recording_matches_the_reference_exactly(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "chain.mlg"
+            write_synthetic_log(log, self.calibration, producer=chain_values)
+            result = mlg_relation_audit.audit_recording(
+                mlg_relation_audit.read_recording(log),
+                self.calibration,
+                hold=6,
+                target_hold=20,
+                schedule_hold=5,
+            )
+
+        self.assertEqual(result["steady_schedule_hold_records"], 5)
+        for bank in (1, 2):
+            prefix = f"injection_b{bank}_chain"
+            self.assertGreater(result[f"{prefix}_sample_count"], 100)
+            self.assertEqual(result[f"{prefix}_over_reference_median"], 1.0)
+            self.assertEqual(result[f"{prefix}_over_reference_p5"], 1.0)
+            self.assertEqual(result[f"{prefix}_over_reference_p95"], 1.0)
+            self.assertEqual(result[f"{prefix}_within_two_percent_share"], 1.0)
+            low, high = result[f"{prefix}_gain_range"]
+            self.assertGreaterEqual(low, 225 * 13972 // 256 / 16384)
+            self.assertLessEqual(high, 255 * 13972 // 256 / 16384)
 
     def test_channel_names_with_stale_marker_still_resolve(self):
         with tempfile.TemporaryDirectory() as directory:

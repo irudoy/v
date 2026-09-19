@@ -25,9 +25,10 @@ MAF ADC channels
   -> newest Base Fuel Schedule ffff1026
 ```
 
-Exact DID `0x1208` identifies `ffff1026` as Base Fuel Schedule. Its
-`raw / 2048 ms` conversion remains a homologous diagnostic candidate; the
-load-coordinate ratios do not depend on that physical conversion.
+Exact DID `0x1208` identifies `ffff1026` as Base Fuel Schedule. One count is
+`1/2048 ms` in the time base of the injection-pulse words, as derived in
+[`JK08A.fuel.md`](JK08A.fuel.md); the load-coordinate ratios do not depend on
+that physical conversion.
 
 ## Internal map coordinate
 
@@ -55,7 +56,7 @@ normalized_BFS_percent = raw * 100 / 128
 Raw 128 means that Base Fuel Schedule equals the `0x9534` reference. Raw 255
 is the saturated representation and corresponds to 199.21875% of that
 reference. This is a normalized Base Fuel Schedule ratio, independent of the
-candidate physical BFS unit.
+physical BFS unit. Reference `0x6A5A` is `27226 / 2048 = 13.29 ms`.
 
 ## Scheduler snapshot
 
