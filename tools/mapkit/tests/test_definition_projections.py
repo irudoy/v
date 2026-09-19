@@ -66,7 +66,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
     assert stats["JK78C"]["checksum"] is True
     assert stats["JK78C"]["romraider_checksum"] is True
     assert stats["JK78C"]["map_families"] == 14
-    assert stats["JK78C"]["native_maps"] == 25
+    assert stats["JK78C"]["native_maps"] == 27
     assert stats["JK78C"]["rolling_configuration"] == 0x1E960
     for rom in ("1ND0A", "1ND3B"):
         values = stats[rom]
@@ -75,14 +75,14 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["checksum"] is True
         assert values["romraider_checksum"] is True
         assert values["map_families"] == 14
-        assert values["native_maps"] == 22
+        assert values["native_maps"] == 28
         assert values["rolling_configuration"] == 0x133F60
     assert stats["1ME3B"]["mapped"] == 40
     assert stats["1ME3B"]["unsupported"] == len(ONE_ME3B_UNSUPPORTED)
     assert stats["1ME3B"]["checksum"] is True
     assert stats["1ME3B"]["romraider_checksum"] is True
     assert stats["1ME3B"]["map_families"] == 0
-    assert stats["1ME3B"]["native_maps"] == 25
+    assert stats["1ME3B"]["native_maps"] == 31
     assert stats["1ME3B"]["rolling_configuration"] is None
 
 
@@ -272,6 +272,8 @@ def _compensation_axis_models():
         for address, kind, units, scale_expr, to_byte in (
             ("00011cf0", "rpm", "RPM", "x*50", "x/50"),
             ("00011d4c", "load", "%", "x*0.390625", "x/0.390625"),
+            ("00011ece", "rpm", "RPM", "x*50", "x/50"),
+            ("00011ebe", "load", "Normalized BFS [%]", "x*0.78125", "x/0.78125"),
         )
     }
 

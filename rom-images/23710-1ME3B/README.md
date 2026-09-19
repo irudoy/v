@@ -172,7 +172,14 @@ coordinator `0x0797CC` reproduces only the mode-selected half of `1ND0A`
 the trio path that `1ND0A` gates by `0x008A2B` bit 5 and `0xFFFE9488` bit 6
 has no counterpart, no function selects three 16x16 surfaces through one gate,
 and the trio bytes do not recur in the image. The ignition axes `0x013716` and
-`0x013726` remain bound because the coordinator reads them. `0x071D64` reads a
+`0x013726` remain bound because the coordinator reads them. The target-native
+table registry publishes the six executed surfaces: `0x00A344` for state codes
+2 and 8, `0x00A444` for state code 1, and the 8x8 surfaces `0x00A544`,
+`0x00A644`, `0x00A5C4`, and `0x00A604` for state codes 3, 4, 5, and 6 with 7
+over the axes `0x013DCE` and `0x013DC6`. The mapper `0x050310` derives the
+state code from the VVEL mode, and the 8x8 alternate `0x00A584` of the
+reference sample stays unpublished because its gate `ROM8[0x8659]` = `0x42`
+leaves bit 0 clear. `0x071D64` reads a
 fourth 16x16 surface `0x00A774` with axis copies at `0x013599` and `0x0135A9`;
 it has no `1ND0A` counterpart and no canonical role.
 

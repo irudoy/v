@@ -61,7 +61,33 @@ VVEL_AXIS_ROLES = {
     "vvel_shaft_angle_monitor_floor_a_second_axis",
     "vvel_shaft_angle_monitor_floor_b_second_axis",
 }
-ROLES = SELECTOR_ROLES | VVEL_TABLE_ROLES | VVEL_AXIS_ROLES
+# The executed surfaces of the mode-selected half of the ignition coordinator.
+IGNITION_PAIR_ROLES = {
+    "ignition_surface_hot",
+    "ignition_surface_cold",
+}
+# JK78C selects between the pair by coolant temperature and carries no
+# state-code dispatch, so the 8x8 surfaces and their axes exist on 1ND and
+# 1ME3B only.
+IGNITION_STATE_TABLE_ROLES = {
+    "ignition_surface_state_3",
+    "ignition_surface_state_4",
+    "ignition_surface_state_5",
+    "ignition_surface_state_6_7",
+}
+IGNITION_STATE_AXIS_ROLES = {
+    "ignition_state_surface_axis_x",
+    "ignition_state_surface_axis_y",
+}
+IGNITION_STATE_ROLES = IGNITION_STATE_TABLE_ROLES | IGNITION_STATE_AXIS_ROLES
+IGNITION_TABLE_ROLES = IGNITION_PAIR_ROLES | IGNITION_STATE_TABLE_ROLES
+ROLES = (
+    SELECTOR_ROLES
+    | VVEL_TABLE_ROLES
+    | VVEL_AXIS_ROLES
+    | IGNITION_TABLE_ROLES
+    | IGNITION_STATE_AXIS_ROLES
+)
 # The stepped approach to the throttled duration and the start-up blend target
 # exist only in the 1ME3B resolver.
 ONE_ME3B_ONLY_ROLES = {
@@ -79,7 +105,7 @@ STATE_WORD_PAIR_ROLES = {
     "vvel_duration_model_hot_intake_idle_axis_y",
 }
 ABSENT = {
-    "JK78C": {"vvel_duration_mode_14"} | ONE_ME3B_ONLY_ROLES,
+    "JK78C": {"vvel_duration_mode_14"} | ONE_ME3B_ONLY_ROLES | IGNITION_STATE_ROLES,
     "1ND0A": {
         "vvel_duration_hot_intake_idle_floor",
         "vvel_duration_hot_intake_idle_knock_floor",
@@ -117,7 +143,7 @@ def _edited_registry(tmp_path, old, new):
 def test_registry_requires_the_complete_vq37_target_set(tmp_path):
     path = tmp_path / "native.toml"
     path.write_text(
-        "schema_version = 2\n[target.JK78C]\n",
+        "schema_version = 3\n[target.JK78C]\n",
         encoding="utf-8",
     )
 
@@ -137,8 +163,8 @@ def test_registry_declares_every_role_on_every_target():
         tables = {table.identifier for table in target.tables}
         axes = {axis.identifier for axis in target.axes}
 
-        assert tables <= SELECTOR_ROLES | VVEL_TABLE_ROLES
-        assert axes <= VVEL_AXIS_ROLES
+        assert tables <= SELECTOR_ROLES | VVEL_TABLE_ROLES | IGNITION_TABLE_ROLES
+        assert axes <= VVEL_AXIS_ROLES | IGNITION_STATE_AXIS_ROLES
         assert set(target.absent) == ABSENT[rom]
         assert tables | axes | set(target.absent) == ROLES
         for reason in target.absent.values():
@@ -199,7 +225,7 @@ def test_registry_binds_the_1me3b_roles_to_undisplaced_literals():
     identifiers = {e.identifier for e in (*target.tables, *target.axes)}
     assert identifiers == {
         e.identifier for e in (*reference.tables, *reference.axes)
-    } | ONE_ME3B_ONLY_ROLES
+    } | ONE_ME3B_ONLY_ROLES | IGNITION_STATE_ROLES
     assert all(
         pointer.offset == 0
         for entity in (*target.tables, *target.axes)
@@ -269,6 +295,33 @@ def test_registry_rejects_a_negative_pointer_offset(tmp_path):
         vq37_native_tables.load_registry(path)
 
 
+def test_registry_masks_only_the_ignition_timing_field():
+    for rom, target in vq37_native_tables.load_registry().items():
+        for table in target.tables:
+            expected = "7F" if table.identifier in IGNITION_TABLE_ROLES else ""
+            assert table.mask == expected, (rom, table.identifier)
+
+
+@pytest.mark.parametrize(
+    ("mask", "message"),
+    [
+        ("7G", "is not a hexadecimal string"),
+        ("00", "is not a contiguous partial bit field of uint8"),
+        ("FF", "is not a contiguous partial bit field of uint8"),
+        ("5A", "is not a contiguous partial bit field of uint8"),
+    ],
+)
+def test_registry_rejects_an_invalid_table_mask(tmp_path, mask, message):
+    path = _edited_registry(
+        tmp_path,
+        'mask = "7F"\nname = "Ignition Timing Surface - Hot Coolant"',
+        f'mask = "{mask}"\nname = "Ignition Timing Surface - Hot Coolant"',
+    )
+
+    with pytest.raises(vq37_native_tables.NativeTableError, match=message):
+        vq37_native_tables.load_registry(path)
+
+
 def test_apply_target_publishes_every_registered_table_and_axis():
     for rom in TARGETS:
         target = vq37_native_tables.load_registry()[rom]
@@ -298,6 +351,7 @@ def test_apply_target_publishes_every_registered_table_and_axis():
             )
             assert overrides["table"][key]["name"] == table.name
             assert overrides["table"][key]["emit"] is True
+            assert overrides["table"][key].get("mask", "") == table.mask
             assert model["accessors"] == sorted({
                 f"{pointer.accessor:08x}"
                 for pointer in table.pointer_bindings
@@ -365,6 +419,21 @@ def test_apply_target_rejects_a_projection_collision():
     ):
         vq37_native_tables.apply_target(
             rom, occupied, _projected_axes(target), {"table": {}}, image
+        )
+
+
+def test_apply_target_rejects_a_repeated_table_name():
+    rom = "JK78C"
+    target = vq37_native_tables.load_registry()[rom]
+    image = romkit.load(rom)
+    projected = {"table": {"0000ffff": {"name": target.tables[0].name}}}
+
+    with pytest.raises(
+        vq37_native_tables.NativeTableError,
+        match="repeats the table name",
+    ):
+        vq37_native_tables.apply_target(
+            rom, {}, _projected_axes(target), projected, image
         )
 
 

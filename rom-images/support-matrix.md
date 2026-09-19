@@ -69,8 +69,10 @@ binds the reviewed VQ37 semantic set to 27 of those tables and thirteen axes
 through `1ND0A` structural correspondence and records eighteen source maps as
 unsupported: the fifteen VQ37 rows and the three canonical ignition surfaces,
 whose gated stock-inert selector path the `1ME3B` ignition coordinator does not
-carry. `../defs/vq37-native-tables.toml` registers twenty-five further tables
-and twenty-two axes at code confidence: the two alternate selector arms and the
+carry. `../defs/vq37-native-tables.toml` registers thirty-one further tables
+and twenty-four axes at code confidence: the two alternate selector arms, the
+six mode-selected ignition surfaces of that coordinator with their two 8x8
+axes, and the
 VVEL target set of the resolver `0x062FAC`, which carries the JK78C role set
 with floor curves and a constant mode 14 pair, the second copies of the
 shaft-angle conversion and monitor floors, the hot-intake idle pair of the
@@ -109,6 +111,20 @@ one of them. Canonical `0x0A29A` reaches JK78C `0x09EBA`, 1ND `0x0A1C0`, and
 `0x0A1F4`, and `0x13A2E` have no canonical source and are registered in
 `../defs/vq37-native-tables.toml` with exact stock values and accessor
 literal-pool bindings.
+
+The stock VQ37 configuration executes the mode-selected half of the ignition
+coordinator. JK78C `0x069AB8` picks the 16x16 surface `0x0A10A` or `0x0A20A`
+by coolant temperature. 1ND `0x074D98` and 1ME3B `0x0797CC` pick one of two
+16x16 and four 8x8 surfaces by the state code derived from the VVEL mode:
+`0x0A410`, `0x0A510`, `0x0A610`, `0x0A710`, `0x0A690`, and `0x0A6D0` on 1ND and
+`0x0A344`, `0x0A444`, `0x0A544`, `0x0A644`, `0x0A5C4`, and `0x0A604` on 1ME3B.
+These surfaces have no canonical source and are registered in
+`../defs/vq37-native-tables.toml` with a `7F` timing-field mask. The canonical
+ignition trio reaches three byte-identical copies in the gated coordinator half
+of JK78C and 1ND, which the stock configuration bytes `0x8965` and `0x8A2B`
+(`0xBA`, bit 5 set) leave unexecuted. The Map Switching ignition families of
+both runtime targets are bound to those copies, so slot selection does not
+reach the executed ignition surfaces on the stock configuration.
 
 The compensation accessors publish four parallel channels. The two 16x16
 surfaces share index byte `0xFFFF22F8` and axes `0x13AF8` and `0x13B18` and

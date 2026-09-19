@@ -3801,6 +3801,2138 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x1C5D" flags="0x0">
+    <title>Ignition Timing Surface - Hot Coolant</title>
+    <description>Exact JK78C. Address 0xA10A; 16 rows x 16 columns; uint8; map confidence code. Hot-coolant ignition surface of the mode-selected half of the ignition coordinator FUN_00069AB8, the half that stock ROM8[0x8965] = 0xBA (bit 5 set) executes. The coolant byte 0xFFFF1069 above ROM8[0x8AC1] selects the hot-coolant surface and at or below ROM8[0x8AC2] the cold-coolant surface; between the two thresholds the coordinator interpolates the low-seven fields of both surfaces. Both stock thresholds hold 120 (70 degC), so the stock image has no blend band. The low seven bits carry the timing field and bit 7 passes to the coordinator output beside it. This view edits mask 0x7F and preserves the other bits in each cell. Exact JK78C target-native table at 0xa10a bound to accessor 0x69ab8 through literal 0x6a078, accessor 0x69ab8 through literal 0x6a1bc. Byte-identical to the 1ND0A surface 0xA410 and the 1ME3B surface 0xA344. The projected JK08A surfaces 0x95CA, 0x96CA, and 0x97CA are three byte-identical copies in the gated half of the same coordinator, which the stock configuration byte leaves unexecuted.</description>
+    <CATEGORYMEM index="0" category="14" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x135B8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Normalized BFS [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x135C8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xA10A" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+      <MATH row="1" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA10A" />
+      </MATH>
+      <MATH row="1" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA10B" />
+      </MATH>
+      <MATH row="1" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA10C" />
+      </MATH>
+      <MATH row="1" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA10D" />
+      </MATH>
+      <MATH row="1" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA10E" />
+      </MATH>
+      <MATH row="1" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA10F" />
+      </MATH>
+      <MATH row="1" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA110" />
+      </MATH>
+      <MATH row="1" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA111" />
+      </MATH>
+      <MATH row="1" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA112" />
+      </MATH>
+      <MATH row="1" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA113" />
+      </MATH>
+      <MATH row="1" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA114" />
+      </MATH>
+      <MATH row="1" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA115" />
+      </MATH>
+      <MATH row="1" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA116" />
+      </MATH>
+      <MATH row="1" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA117" />
+      </MATH>
+      <MATH row="1" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA118" />
+      </MATH>
+      <MATH row="1" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA119" />
+      </MATH>
+      <MATH row="2" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA11A" />
+      </MATH>
+      <MATH row="2" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA11B" />
+      </MATH>
+      <MATH row="2" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA11C" />
+      </MATH>
+      <MATH row="2" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA11D" />
+      </MATH>
+      <MATH row="2" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA11E" />
+      </MATH>
+      <MATH row="2" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA11F" />
+      </MATH>
+      <MATH row="2" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA120" />
+      </MATH>
+      <MATH row="2" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA121" />
+      </MATH>
+      <MATH row="2" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA122" />
+      </MATH>
+      <MATH row="2" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA123" />
+      </MATH>
+      <MATH row="2" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA124" />
+      </MATH>
+      <MATH row="2" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA125" />
+      </MATH>
+      <MATH row="2" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA126" />
+      </MATH>
+      <MATH row="2" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA127" />
+      </MATH>
+      <MATH row="2" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA128" />
+      </MATH>
+      <MATH row="2" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA129" />
+      </MATH>
+      <MATH row="3" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA12A" />
+      </MATH>
+      <MATH row="3" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA12B" />
+      </MATH>
+      <MATH row="3" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA12C" />
+      </MATH>
+      <MATH row="3" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA12D" />
+      </MATH>
+      <MATH row="3" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA12E" />
+      </MATH>
+      <MATH row="3" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA12F" />
+      </MATH>
+      <MATH row="3" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA130" />
+      </MATH>
+      <MATH row="3" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA131" />
+      </MATH>
+      <MATH row="3" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA132" />
+      </MATH>
+      <MATH row="3" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA133" />
+      </MATH>
+      <MATH row="3" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA134" />
+      </MATH>
+      <MATH row="3" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA135" />
+      </MATH>
+      <MATH row="3" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA136" />
+      </MATH>
+      <MATH row="3" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA137" />
+      </MATH>
+      <MATH row="3" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA138" />
+      </MATH>
+      <MATH row="3" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA139" />
+      </MATH>
+      <MATH row="4" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA13A" />
+      </MATH>
+      <MATH row="4" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA13B" />
+      </MATH>
+      <MATH row="4" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA13C" />
+      </MATH>
+      <MATH row="4" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA13D" />
+      </MATH>
+      <MATH row="4" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA13E" />
+      </MATH>
+      <MATH row="4" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA13F" />
+      </MATH>
+      <MATH row="4" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA140" />
+      </MATH>
+      <MATH row="4" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA141" />
+      </MATH>
+      <MATH row="4" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA142" />
+      </MATH>
+      <MATH row="4" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA143" />
+      </MATH>
+      <MATH row="4" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA144" />
+      </MATH>
+      <MATH row="4" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA145" />
+      </MATH>
+      <MATH row="4" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA146" />
+      </MATH>
+      <MATH row="4" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA147" />
+      </MATH>
+      <MATH row="4" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA148" />
+      </MATH>
+      <MATH row="4" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA149" />
+      </MATH>
+      <MATH row="5" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA14A" />
+      </MATH>
+      <MATH row="5" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA14B" />
+      </MATH>
+      <MATH row="5" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA14C" />
+      </MATH>
+      <MATH row="5" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA14D" />
+      </MATH>
+      <MATH row="5" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA14E" />
+      </MATH>
+      <MATH row="5" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA14F" />
+      </MATH>
+      <MATH row="5" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA150" />
+      </MATH>
+      <MATH row="5" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA151" />
+      </MATH>
+      <MATH row="5" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA152" />
+      </MATH>
+      <MATH row="5" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA153" />
+      </MATH>
+      <MATH row="5" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA154" />
+      </MATH>
+      <MATH row="5" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA155" />
+      </MATH>
+      <MATH row="5" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA156" />
+      </MATH>
+      <MATH row="5" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA157" />
+      </MATH>
+      <MATH row="5" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA158" />
+      </MATH>
+      <MATH row="5" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA159" />
+      </MATH>
+      <MATH row="6" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA15A" />
+      </MATH>
+      <MATH row="6" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA15B" />
+      </MATH>
+      <MATH row="6" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA15C" />
+      </MATH>
+      <MATH row="6" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA15D" />
+      </MATH>
+      <MATH row="6" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA15E" />
+      </MATH>
+      <MATH row="6" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA15F" />
+      </MATH>
+      <MATH row="6" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA160" />
+      </MATH>
+      <MATH row="6" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA161" />
+      </MATH>
+      <MATH row="6" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA162" />
+      </MATH>
+      <MATH row="6" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA163" />
+      </MATH>
+      <MATH row="6" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA164" />
+      </MATH>
+      <MATH row="6" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA165" />
+      </MATH>
+      <MATH row="6" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA166" />
+      </MATH>
+      <MATH row="6" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA167" />
+      </MATH>
+      <MATH row="6" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA168" />
+      </MATH>
+      <MATH row="6" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA169" />
+      </MATH>
+      <MATH row="7" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA16A" />
+      </MATH>
+      <MATH row="7" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA16B" />
+      </MATH>
+      <MATH row="7" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA16C" />
+      </MATH>
+      <MATH row="7" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA16D" />
+      </MATH>
+      <MATH row="7" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA16E" />
+      </MATH>
+      <MATH row="7" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA16F" />
+      </MATH>
+      <MATH row="7" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA170" />
+      </MATH>
+      <MATH row="7" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA171" />
+      </MATH>
+      <MATH row="7" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA172" />
+      </MATH>
+      <MATH row="7" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA173" />
+      </MATH>
+      <MATH row="7" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA174" />
+      </MATH>
+      <MATH row="7" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA175" />
+      </MATH>
+      <MATH row="7" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA176" />
+      </MATH>
+      <MATH row="7" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA177" />
+      </MATH>
+      <MATH row="7" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA178" />
+      </MATH>
+      <MATH row="7" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA179" />
+      </MATH>
+      <MATH row="8" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA17A" />
+      </MATH>
+      <MATH row="8" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA17B" />
+      </MATH>
+      <MATH row="8" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA17C" />
+      </MATH>
+      <MATH row="8" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA17D" />
+      </MATH>
+      <MATH row="8" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA17E" />
+      </MATH>
+      <MATH row="8" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA17F" />
+      </MATH>
+      <MATH row="8" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA180" />
+      </MATH>
+      <MATH row="8" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA181" />
+      </MATH>
+      <MATH row="8" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA182" />
+      </MATH>
+      <MATH row="8" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA183" />
+      </MATH>
+      <MATH row="8" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA184" />
+      </MATH>
+      <MATH row="8" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA185" />
+      </MATH>
+      <MATH row="8" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA186" />
+      </MATH>
+      <MATH row="8" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA187" />
+      </MATH>
+      <MATH row="8" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA188" />
+      </MATH>
+      <MATH row="8" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA189" />
+      </MATH>
+      <MATH row="9" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA18A" />
+      </MATH>
+      <MATH row="9" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA18B" />
+      </MATH>
+      <MATH row="9" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA18C" />
+      </MATH>
+      <MATH row="9" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA18D" />
+      </MATH>
+      <MATH row="9" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA18E" />
+      </MATH>
+      <MATH row="9" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA18F" />
+      </MATH>
+      <MATH row="9" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA190" />
+      </MATH>
+      <MATH row="9" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA191" />
+      </MATH>
+      <MATH row="9" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA192" />
+      </MATH>
+      <MATH row="9" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA193" />
+      </MATH>
+      <MATH row="9" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA194" />
+      </MATH>
+      <MATH row="9" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA195" />
+      </MATH>
+      <MATH row="9" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA196" />
+      </MATH>
+      <MATH row="9" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA197" />
+      </MATH>
+      <MATH row="9" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA198" />
+      </MATH>
+      <MATH row="9" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA199" />
+      </MATH>
+      <MATH row="10" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA19A" />
+      </MATH>
+      <MATH row="10" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA19B" />
+      </MATH>
+      <MATH row="10" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA19C" />
+      </MATH>
+      <MATH row="10" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA19D" />
+      </MATH>
+      <MATH row="10" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA19E" />
+      </MATH>
+      <MATH row="10" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA19F" />
+      </MATH>
+      <MATH row="10" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A0" />
+      </MATH>
+      <MATH row="10" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A1" />
+      </MATH>
+      <MATH row="10" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A2" />
+      </MATH>
+      <MATH row="10" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A3" />
+      </MATH>
+      <MATH row="10" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A4" />
+      </MATH>
+      <MATH row="10" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A5" />
+      </MATH>
+      <MATH row="10" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A6" />
+      </MATH>
+      <MATH row="10" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A7" />
+      </MATH>
+      <MATH row="10" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A8" />
+      </MATH>
+      <MATH row="10" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1A9" />
+      </MATH>
+      <MATH row="11" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1AA" />
+      </MATH>
+      <MATH row="11" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1AB" />
+      </MATH>
+      <MATH row="11" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1AC" />
+      </MATH>
+      <MATH row="11" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1AD" />
+      </MATH>
+      <MATH row="11" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1AE" />
+      </MATH>
+      <MATH row="11" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1AF" />
+      </MATH>
+      <MATH row="11" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B0" />
+      </MATH>
+      <MATH row="11" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B1" />
+      </MATH>
+      <MATH row="11" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B2" />
+      </MATH>
+      <MATH row="11" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B3" />
+      </MATH>
+      <MATH row="11" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B4" />
+      </MATH>
+      <MATH row="11" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B5" />
+      </MATH>
+      <MATH row="11" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B6" />
+      </MATH>
+      <MATH row="11" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B7" />
+      </MATH>
+      <MATH row="11" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B8" />
+      </MATH>
+      <MATH row="11" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1B9" />
+      </MATH>
+      <MATH row="12" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1BA" />
+      </MATH>
+      <MATH row="12" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1BB" />
+      </MATH>
+      <MATH row="12" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1BC" />
+      </MATH>
+      <MATH row="12" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1BD" />
+      </MATH>
+      <MATH row="12" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1BE" />
+      </MATH>
+      <MATH row="12" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1BF" />
+      </MATH>
+      <MATH row="12" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C0" />
+      </MATH>
+      <MATH row="12" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C1" />
+      </MATH>
+      <MATH row="12" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C2" />
+      </MATH>
+      <MATH row="12" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C3" />
+      </MATH>
+      <MATH row="12" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C4" />
+      </MATH>
+      <MATH row="12" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C5" />
+      </MATH>
+      <MATH row="12" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C6" />
+      </MATH>
+      <MATH row="12" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C7" />
+      </MATH>
+      <MATH row="12" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C8" />
+      </MATH>
+      <MATH row="12" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1C9" />
+      </MATH>
+      <MATH row="13" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1CA" />
+      </MATH>
+      <MATH row="13" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1CB" />
+      </MATH>
+      <MATH row="13" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1CC" />
+      </MATH>
+      <MATH row="13" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1CD" />
+      </MATH>
+      <MATH row="13" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1CE" />
+      </MATH>
+      <MATH row="13" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1CF" />
+      </MATH>
+      <MATH row="13" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D0" />
+      </MATH>
+      <MATH row="13" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D1" />
+      </MATH>
+      <MATH row="13" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D2" />
+      </MATH>
+      <MATH row="13" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D3" />
+      </MATH>
+      <MATH row="13" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D4" />
+      </MATH>
+      <MATH row="13" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D5" />
+      </MATH>
+      <MATH row="13" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D6" />
+      </MATH>
+      <MATH row="13" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D7" />
+      </MATH>
+      <MATH row="13" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D8" />
+      </MATH>
+      <MATH row="13" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1D9" />
+      </MATH>
+      <MATH row="14" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1DA" />
+      </MATH>
+      <MATH row="14" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1DB" />
+      </MATH>
+      <MATH row="14" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1DC" />
+      </MATH>
+      <MATH row="14" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1DD" />
+      </MATH>
+      <MATH row="14" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1DE" />
+      </MATH>
+      <MATH row="14" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1DF" />
+      </MATH>
+      <MATH row="14" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E0" />
+      </MATH>
+      <MATH row="14" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E1" />
+      </MATH>
+      <MATH row="14" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E2" />
+      </MATH>
+      <MATH row="14" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E3" />
+      </MATH>
+      <MATH row="14" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E4" />
+      </MATH>
+      <MATH row="14" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E5" />
+      </MATH>
+      <MATH row="14" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E6" />
+      </MATH>
+      <MATH row="14" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E7" />
+      </MATH>
+      <MATH row="14" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E8" />
+      </MATH>
+      <MATH row="14" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1E9" />
+      </MATH>
+      <MATH row="15" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1EA" />
+      </MATH>
+      <MATH row="15" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1EB" />
+      </MATH>
+      <MATH row="15" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1EC" />
+      </MATH>
+      <MATH row="15" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1ED" />
+      </MATH>
+      <MATH row="15" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1EE" />
+      </MATH>
+      <MATH row="15" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1EF" />
+      </MATH>
+      <MATH row="15" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F0" />
+      </MATH>
+      <MATH row="15" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F1" />
+      </MATH>
+      <MATH row="15" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F2" />
+      </MATH>
+      <MATH row="15" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F3" />
+      </MATH>
+      <MATH row="15" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F4" />
+      </MATH>
+      <MATH row="15" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F5" />
+      </MATH>
+      <MATH row="15" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F6" />
+      </MATH>
+      <MATH row="15" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F7" />
+      </MATH>
+      <MATH row="15" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F8" />
+      </MATH>
+      <MATH row="15" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1F9" />
+      </MATH>
+      <MATH row="16" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1FA" />
+      </MATH>
+      <MATH row="16" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1FB" />
+      </MATH>
+      <MATH row="16" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1FC" />
+      </MATH>
+      <MATH row="16" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1FD" />
+      </MATH>
+      <MATH row="16" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1FE" />
+      </MATH>
+      <MATH row="16" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA1FF" />
+      </MATH>
+      <MATH row="16" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA200" />
+      </MATH>
+      <MATH row="16" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA201" />
+      </MATH>
+      <MATH row="16" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA202" />
+      </MATH>
+      <MATH row="16" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA203" />
+      </MATH>
+      <MATH row="16" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA204" />
+      </MATH>
+      <MATH row="16" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA205" />
+      </MATH>
+      <MATH row="16" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA206" />
+      </MATH>
+      <MATH row="16" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA207" />
+      </MATH>
+      <MATH row="16" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA208" />
+      </MATH>
+      <MATH row="16" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA209" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xA204" flags="0x0">
+    <title>Ignition Timing Surface - Cold Coolant</title>
+    <description>Exact JK78C. Address 0xA20A; 16 rows x 16 columns; uint8; map confidence code. Cold-coolant ignition surface of the mode-selected half of the ignition coordinator FUN_00069AB8, the half that stock ROM8[0x8965] = 0xBA (bit 5 set) executes. The coolant byte 0xFFFF1069 above ROM8[0x8AC1] selects the hot-coolant surface and at or below ROM8[0x8AC2] the cold-coolant surface; between the two thresholds the coordinator interpolates the low-seven fields of both surfaces. Both stock thresholds hold 120 (70 degC), so the stock image has no blend band. The low seven bits carry the timing field and bit 7 passes to the coordinator output beside it. This view edits mask 0x7F and preserves the other bits in each cell. Exact JK78C target-native table at 0xa20a bound to accessor 0x69ab8 through literal 0x6a074, accessor 0x69ab8 through literal 0x6a198. Byte-identical to the 1ND0A surface 0xA510 and the 1ME3B surface 0xA444. The projected JK08A surfaces 0x95CA, 0x96CA, and 0x97CA are three byte-identical copies in the gated half of the same coordinator, which the stock configuration byte leaves unexecuted.</description>
+    <CATEGORYMEM index="0" category="14" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x135B8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>Normalized BFS [%] [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x135C8" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>16</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0xA20A" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+      <MATH row="1" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA20A" />
+      </MATH>
+      <MATH row="1" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA20B" />
+      </MATH>
+      <MATH row="1" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA20C" />
+      </MATH>
+      <MATH row="1" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA20D" />
+      </MATH>
+      <MATH row="1" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA20E" />
+      </MATH>
+      <MATH row="1" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA20F" />
+      </MATH>
+      <MATH row="1" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA210" />
+      </MATH>
+      <MATH row="1" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA211" />
+      </MATH>
+      <MATH row="1" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA212" />
+      </MATH>
+      <MATH row="1" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA213" />
+      </MATH>
+      <MATH row="1" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA214" />
+      </MATH>
+      <MATH row="1" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA215" />
+      </MATH>
+      <MATH row="1" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA216" />
+      </MATH>
+      <MATH row="1" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA217" />
+      </MATH>
+      <MATH row="1" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA218" />
+      </MATH>
+      <MATH row="1" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA219" />
+      </MATH>
+      <MATH row="2" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA21A" />
+      </MATH>
+      <MATH row="2" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA21B" />
+      </MATH>
+      <MATH row="2" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA21C" />
+      </MATH>
+      <MATH row="2" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA21D" />
+      </MATH>
+      <MATH row="2" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA21E" />
+      </MATH>
+      <MATH row="2" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA21F" />
+      </MATH>
+      <MATH row="2" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA220" />
+      </MATH>
+      <MATH row="2" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA221" />
+      </MATH>
+      <MATH row="2" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA222" />
+      </MATH>
+      <MATH row="2" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA223" />
+      </MATH>
+      <MATH row="2" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA224" />
+      </MATH>
+      <MATH row="2" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA225" />
+      </MATH>
+      <MATH row="2" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA226" />
+      </MATH>
+      <MATH row="2" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA227" />
+      </MATH>
+      <MATH row="2" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA228" />
+      </MATH>
+      <MATH row="2" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA229" />
+      </MATH>
+      <MATH row="3" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA22A" />
+      </MATH>
+      <MATH row="3" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA22B" />
+      </MATH>
+      <MATH row="3" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA22C" />
+      </MATH>
+      <MATH row="3" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA22D" />
+      </MATH>
+      <MATH row="3" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA22E" />
+      </MATH>
+      <MATH row="3" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA22F" />
+      </MATH>
+      <MATH row="3" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA230" />
+      </MATH>
+      <MATH row="3" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA231" />
+      </MATH>
+      <MATH row="3" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA232" />
+      </MATH>
+      <MATH row="3" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA233" />
+      </MATH>
+      <MATH row="3" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA234" />
+      </MATH>
+      <MATH row="3" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA235" />
+      </MATH>
+      <MATH row="3" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA236" />
+      </MATH>
+      <MATH row="3" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA237" />
+      </MATH>
+      <MATH row="3" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA238" />
+      </MATH>
+      <MATH row="3" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA239" />
+      </MATH>
+      <MATH row="4" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA23A" />
+      </MATH>
+      <MATH row="4" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA23B" />
+      </MATH>
+      <MATH row="4" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA23C" />
+      </MATH>
+      <MATH row="4" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA23D" />
+      </MATH>
+      <MATH row="4" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA23E" />
+      </MATH>
+      <MATH row="4" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA23F" />
+      </MATH>
+      <MATH row="4" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA240" />
+      </MATH>
+      <MATH row="4" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA241" />
+      </MATH>
+      <MATH row="4" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA242" />
+      </MATH>
+      <MATH row="4" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA243" />
+      </MATH>
+      <MATH row="4" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA244" />
+      </MATH>
+      <MATH row="4" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA245" />
+      </MATH>
+      <MATH row="4" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA246" />
+      </MATH>
+      <MATH row="4" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA247" />
+      </MATH>
+      <MATH row="4" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA248" />
+      </MATH>
+      <MATH row="4" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA249" />
+      </MATH>
+      <MATH row="5" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA24A" />
+      </MATH>
+      <MATH row="5" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA24B" />
+      </MATH>
+      <MATH row="5" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA24C" />
+      </MATH>
+      <MATH row="5" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA24D" />
+      </MATH>
+      <MATH row="5" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA24E" />
+      </MATH>
+      <MATH row="5" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA24F" />
+      </MATH>
+      <MATH row="5" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA250" />
+      </MATH>
+      <MATH row="5" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA251" />
+      </MATH>
+      <MATH row="5" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA252" />
+      </MATH>
+      <MATH row="5" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA253" />
+      </MATH>
+      <MATH row="5" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA254" />
+      </MATH>
+      <MATH row="5" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA255" />
+      </MATH>
+      <MATH row="5" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA256" />
+      </MATH>
+      <MATH row="5" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA257" />
+      </MATH>
+      <MATH row="5" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA258" />
+      </MATH>
+      <MATH row="5" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA259" />
+      </MATH>
+      <MATH row="6" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA25A" />
+      </MATH>
+      <MATH row="6" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA25B" />
+      </MATH>
+      <MATH row="6" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA25C" />
+      </MATH>
+      <MATH row="6" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA25D" />
+      </MATH>
+      <MATH row="6" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA25E" />
+      </MATH>
+      <MATH row="6" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA25F" />
+      </MATH>
+      <MATH row="6" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA260" />
+      </MATH>
+      <MATH row="6" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA261" />
+      </MATH>
+      <MATH row="6" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA262" />
+      </MATH>
+      <MATH row="6" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA263" />
+      </MATH>
+      <MATH row="6" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA264" />
+      </MATH>
+      <MATH row="6" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA265" />
+      </MATH>
+      <MATH row="6" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA266" />
+      </MATH>
+      <MATH row="6" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA267" />
+      </MATH>
+      <MATH row="6" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA268" />
+      </MATH>
+      <MATH row="6" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA269" />
+      </MATH>
+      <MATH row="7" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA26A" />
+      </MATH>
+      <MATH row="7" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA26B" />
+      </MATH>
+      <MATH row="7" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA26C" />
+      </MATH>
+      <MATH row="7" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA26D" />
+      </MATH>
+      <MATH row="7" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA26E" />
+      </MATH>
+      <MATH row="7" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA26F" />
+      </MATH>
+      <MATH row="7" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA270" />
+      </MATH>
+      <MATH row="7" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA271" />
+      </MATH>
+      <MATH row="7" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA272" />
+      </MATH>
+      <MATH row="7" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA273" />
+      </MATH>
+      <MATH row="7" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA274" />
+      </MATH>
+      <MATH row="7" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA275" />
+      </MATH>
+      <MATH row="7" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA276" />
+      </MATH>
+      <MATH row="7" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA277" />
+      </MATH>
+      <MATH row="7" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA278" />
+      </MATH>
+      <MATH row="7" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA279" />
+      </MATH>
+      <MATH row="8" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA27A" />
+      </MATH>
+      <MATH row="8" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA27B" />
+      </MATH>
+      <MATH row="8" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA27C" />
+      </MATH>
+      <MATH row="8" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA27D" />
+      </MATH>
+      <MATH row="8" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA27E" />
+      </MATH>
+      <MATH row="8" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA27F" />
+      </MATH>
+      <MATH row="8" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA280" />
+      </MATH>
+      <MATH row="8" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA281" />
+      </MATH>
+      <MATH row="8" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA282" />
+      </MATH>
+      <MATH row="8" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA283" />
+      </MATH>
+      <MATH row="8" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA284" />
+      </MATH>
+      <MATH row="8" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA285" />
+      </MATH>
+      <MATH row="8" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA286" />
+      </MATH>
+      <MATH row="8" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA287" />
+      </MATH>
+      <MATH row="8" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA288" />
+      </MATH>
+      <MATH row="8" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA289" />
+      </MATH>
+      <MATH row="9" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA28A" />
+      </MATH>
+      <MATH row="9" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA28B" />
+      </MATH>
+      <MATH row="9" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA28C" />
+      </MATH>
+      <MATH row="9" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA28D" />
+      </MATH>
+      <MATH row="9" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA28E" />
+      </MATH>
+      <MATH row="9" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA28F" />
+      </MATH>
+      <MATH row="9" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA290" />
+      </MATH>
+      <MATH row="9" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA291" />
+      </MATH>
+      <MATH row="9" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA292" />
+      </MATH>
+      <MATH row="9" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA293" />
+      </MATH>
+      <MATH row="9" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA294" />
+      </MATH>
+      <MATH row="9" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA295" />
+      </MATH>
+      <MATH row="9" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA296" />
+      </MATH>
+      <MATH row="9" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA297" />
+      </MATH>
+      <MATH row="9" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA298" />
+      </MATH>
+      <MATH row="9" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA299" />
+      </MATH>
+      <MATH row="10" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA29A" />
+      </MATH>
+      <MATH row="10" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA29B" />
+      </MATH>
+      <MATH row="10" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA29C" />
+      </MATH>
+      <MATH row="10" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA29D" />
+      </MATH>
+      <MATH row="10" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA29E" />
+      </MATH>
+      <MATH row="10" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA29F" />
+      </MATH>
+      <MATH row="10" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A0" />
+      </MATH>
+      <MATH row="10" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A1" />
+      </MATH>
+      <MATH row="10" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A2" />
+      </MATH>
+      <MATH row="10" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A3" />
+      </MATH>
+      <MATH row="10" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A4" />
+      </MATH>
+      <MATH row="10" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A5" />
+      </MATH>
+      <MATH row="10" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A6" />
+      </MATH>
+      <MATH row="10" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A7" />
+      </MATH>
+      <MATH row="10" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A8" />
+      </MATH>
+      <MATH row="10" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2A9" />
+      </MATH>
+      <MATH row="11" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2AA" />
+      </MATH>
+      <MATH row="11" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2AB" />
+      </MATH>
+      <MATH row="11" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2AC" />
+      </MATH>
+      <MATH row="11" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2AD" />
+      </MATH>
+      <MATH row="11" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2AE" />
+      </MATH>
+      <MATH row="11" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2AF" />
+      </MATH>
+      <MATH row="11" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B0" />
+      </MATH>
+      <MATH row="11" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B1" />
+      </MATH>
+      <MATH row="11" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B2" />
+      </MATH>
+      <MATH row="11" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B3" />
+      </MATH>
+      <MATH row="11" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B4" />
+      </MATH>
+      <MATH row="11" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B5" />
+      </MATH>
+      <MATH row="11" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B6" />
+      </MATH>
+      <MATH row="11" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B7" />
+      </MATH>
+      <MATH row="11" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B8" />
+      </MATH>
+      <MATH row="11" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2B9" />
+      </MATH>
+      <MATH row="12" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2BA" />
+      </MATH>
+      <MATH row="12" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2BB" />
+      </MATH>
+      <MATH row="12" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2BC" />
+      </MATH>
+      <MATH row="12" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2BD" />
+      </MATH>
+      <MATH row="12" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2BE" />
+      </MATH>
+      <MATH row="12" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2BF" />
+      </MATH>
+      <MATH row="12" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C0" />
+      </MATH>
+      <MATH row="12" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C1" />
+      </MATH>
+      <MATH row="12" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C2" />
+      </MATH>
+      <MATH row="12" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C3" />
+      </MATH>
+      <MATH row="12" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C4" />
+      </MATH>
+      <MATH row="12" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C5" />
+      </MATH>
+      <MATH row="12" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C6" />
+      </MATH>
+      <MATH row="12" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C7" />
+      </MATH>
+      <MATH row="12" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C8" />
+      </MATH>
+      <MATH row="12" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2C9" />
+      </MATH>
+      <MATH row="13" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2CA" />
+      </MATH>
+      <MATH row="13" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2CB" />
+      </MATH>
+      <MATH row="13" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2CC" />
+      </MATH>
+      <MATH row="13" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2CD" />
+      </MATH>
+      <MATH row="13" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2CE" />
+      </MATH>
+      <MATH row="13" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2CF" />
+      </MATH>
+      <MATH row="13" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D0" />
+      </MATH>
+      <MATH row="13" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D1" />
+      </MATH>
+      <MATH row="13" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D2" />
+      </MATH>
+      <MATH row="13" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D3" />
+      </MATH>
+      <MATH row="13" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D4" />
+      </MATH>
+      <MATH row="13" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D5" />
+      </MATH>
+      <MATH row="13" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D6" />
+      </MATH>
+      <MATH row="13" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D7" />
+      </MATH>
+      <MATH row="13" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D8" />
+      </MATH>
+      <MATH row="13" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2D9" />
+      </MATH>
+      <MATH row="14" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2DA" />
+      </MATH>
+      <MATH row="14" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2DB" />
+      </MATH>
+      <MATH row="14" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2DC" />
+      </MATH>
+      <MATH row="14" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2DD" />
+      </MATH>
+      <MATH row="14" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2DE" />
+      </MATH>
+      <MATH row="14" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2DF" />
+      </MATH>
+      <MATH row="14" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E0" />
+      </MATH>
+      <MATH row="14" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E1" />
+      </MATH>
+      <MATH row="14" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E2" />
+      </MATH>
+      <MATH row="14" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E3" />
+      </MATH>
+      <MATH row="14" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E4" />
+      </MATH>
+      <MATH row="14" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E5" />
+      </MATH>
+      <MATH row="14" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E6" />
+      </MATH>
+      <MATH row="14" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E7" />
+      </MATH>
+      <MATH row="14" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E8" />
+      </MATH>
+      <MATH row="14" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2E9" />
+      </MATH>
+      <MATH row="15" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2EA" />
+      </MATH>
+      <MATH row="15" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2EB" />
+      </MATH>
+      <MATH row="15" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2EC" />
+      </MATH>
+      <MATH row="15" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2ED" />
+      </MATH>
+      <MATH row="15" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2EE" />
+      </MATH>
+      <MATH row="15" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2EF" />
+      </MATH>
+      <MATH row="15" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F0" />
+      </MATH>
+      <MATH row="15" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F1" />
+      </MATH>
+      <MATH row="15" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F2" />
+      </MATH>
+      <MATH row="15" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F3" />
+      </MATH>
+      <MATH row="15" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F4" />
+      </MATH>
+      <MATH row="15" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F5" />
+      </MATH>
+      <MATH row="15" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F6" />
+      </MATH>
+      <MATH row="15" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F7" />
+      </MATH>
+      <MATH row="15" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F8" />
+      </MATH>
+      <MATH row="15" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2F9" />
+      </MATH>
+      <MATH row="16" col="1" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2FA" />
+      </MATH>
+      <MATH row="16" col="2" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2FB" />
+      </MATH>
+      <MATH row="16" col="3" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2FC" />
+      </MATH>
+      <MATH row="16" col="4" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2FD" />
+      </MATH>
+      <MATH row="16" col="5" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2FE" />
+      </MATH>
+      <MATH row="16" col="6" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA2FF" />
+      </MATH>
+      <MATH row="16" col="7" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA300" />
+      </MATH>
+      <MATH row="16" col="8" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA301" />
+      </MATH>
+      <MATH row="16" col="9" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA302" />
+      </MATH>
+      <MATH row="16" col="10" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA303" />
+      </MATH>
+      <MATH row="16" col="11" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA304" />
+      </MATH>
+      <MATH row="16" col="12" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA305" />
+      </MATH>
+      <MATH row="16" col="13" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA306" />
+      </MATH>
+      <MATH row="16" col="14" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA307" />
+      </MATH>
+      <MATH row="16" col="15" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA308" />
+      </MATH>
+      <MATH row="16" col="16" equation="(((X-(B&amp;128))/1))-64">
+        <VAR id="X" />
+        <VAR id="B" type="address" address="0xA309" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x367" flags="0x0">
     <title>Knock Threshold by Evaluator Channel</title>
     <description>Exact JK78C. Address 0x11F4E; 6 rows x 16 columns; uint16; map confidence candidate. Knock Slice Map: per-evaluator-channel knock threshold by engine speed. A calculated metric exceeding the interpolated threshold contributes to increasing the knock count. 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 points along axis 0x15340, and stores the threshold for comparison in 0004a238. Stock rows 3 and 5 are all 0xffff. Value 0xffff is the uint16 upper bound and makes exceeding the threshold practically impossible. The catalog identifies the rows as cylinders, but exact code does not establish their physical cylinder or sensor order. Definition address projected from JK08A 0001108e through JK08A-JK78C.definition-addresses.csv: exact normalized accessor shape preserves the direct-row-major table operand.</description>

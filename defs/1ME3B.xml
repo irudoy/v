@@ -1490,6 +1490,160 @@
       </table>
     </table>
 
+    <!-- 0x0A344  16x16 uint8  map [code]
+         accessor 0x797CC; r4 operand: reviewed-target
+         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
+         [candidate]
+         Exact 1ME3B target-native table at 0xa344 bound to accessor 0x797cc through literal
+         0x79cb0, accessor 0x797cc through literal 0x79e20. Byte-identical to the JK78C hot-
+         coolant surface 0xA10A. The literal words 0x79424, 0x796F0, 0x799A0 hold the same
+         address; the structure export recovers no instruction that reads them.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Ignition Timing Surface - VVEL State Codes 2 and 8"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A344" sizex="16" sizey="16" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0A444  16x16 uint8  map [code]
+         accessor 0x797CC; r4 operand: reviewed-target
+         scaling x-64 deg [candidate]; Y Axis 0x13726 rpm [candidate]; X Axis 0x13716 load
+         [candidate]
+         Exact 1ME3B target-native table at 0xa444 bound to accessor 0x797cc through literal
+         0x79ca8. Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words
+         0x7941C, 0x7971C hold the same address; the structure export recovers no instruction
+         that reads them.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Ignition Timing Surface - VVEL State Code 1"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A444" sizex="16" sizey="16" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13716"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13726" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0A544  8x8 uint8  map [code]
+         accessor 0x797CC; r4 operand: reviewed-target
+         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
+         [candidate]
+         Exact 1ME3B target-native table at 0xa544 bound to accessor 0x797cc through literal
+         0x799d8. Byte-identical to the 1ND0A surface 0xA610. The 8x8 lookup 0x000293D8 serves
+         the four state-code surfaces of this coordinator. The literal words 0x79410 hold the
+         same address; the structure export recovers no instruction that reads them.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Ignition Timing Surface - VVEL State Code 3"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A544" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13DCE" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x0A644  8x8 uint8  map [code]
+         accessor 0x797CC; r4 operand: reviewed-target
+         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
+         [candidate]
+         Exact 1ME3B target-native table at 0xa644 bound to accessor 0x797cc through literal
+         0x799d4. Byte-identical to the 1ND0A surface 0xA710. The 8x8 lookup 0x000293D8 serves
+         the four state-code surfaces of this coordinator. The literal words 0x7940C hold the
+         same address; the structure export recovers no instruction that reads them.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Ignition Timing Surface - VVEL State Code 4"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A644" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13DCE" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x0A5C4  8x8 uint8  map [code]
+         accessor 0x797CC; r4 operand: reviewed-target
+         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
+         [candidate]
+         Exact 1ME3B target-native table at 0xa5c4 bound to accessor 0x797cc through literal
+         0x799d0. Byte-identical to the 1ND0A surface 0xA690. The 8x8 lookup 0x000293D8 serves
+         the four state-code surfaces of this coordinator. The literal words 0x79408 hold the
+         same address; the structure export recovers no instruction that reads them.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Ignition Timing Surface - VVEL State Code 5"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A5C4" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13DCE" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x0A604  8x8 uint8  map [code]
+         accessor 0x797CC; r4 operand: reviewed-target
+         scaling x-64 deg [candidate]; Y Axis 0x13DCE rpm [candidate]; X Axis 0x13DC6 load
+         [candidate]
+         Exact 1ME3B target-native table at 0xa604 bound to accessor 0x797cc through literal
+         0x799cc. Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves
+         the four state-code surfaces of this coordinator. The literal words 0x79400 hold the
+         same address; the structure export recovers no instruction that reads them.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Ignition Timing Surface - VVEL State Codes 6 and 7"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A604" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13DC6"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13DCE" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
     <!-- 0x11DFC  16x6 uint16  map [candidate]
          scaling x*0.0015259 knock strength [candidate]
          00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 points

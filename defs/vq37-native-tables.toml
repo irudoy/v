@@ -1,4 +1,4 @@
-schema_version = 2
+schema_version = 3
 
 # VQ37 calibration tables and axes that have no VQ35HR canonical source. Two
 # tables are the alternate arms of state selectors whose default arms carry the
@@ -549,6 +549,56 @@ to_byte = "x/0.05"
 semantics = "Duration word surface of the state-code dispatcher FUN_000657E4 for state codes 6 and 7; 1ME3B assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14 in FUN_00050310. Stock values span 900..1180 = 45.0..59.0."
 note = "Read by FUN_000657E4 at callsites 0x664B8 and 0x66578, where r4 holds the surface selected before the call through the 8x8 uint16 wrapper 0x28058 with the coordinates and axes of the state code 5 surface 0x000102CE."
 
+[[target.JK78C.table]]
+id = "ignition_surface_hot"
+address = 0x0000A10A
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "7e7239e9845a7ee1dcd4c5e5de3ae44c08772cca719d96484e562c578f28aeb8"
+pointer_bindings = [{ site = 0x0006A078, accessor = 0x00069AB8 }, { site = 0x0006A1BC, accessor = 0x00069AB8 }]
+axis_x = 0x000135C8
+axis_y = 0x000135B8
+mask = "7F"
+name = "Ignition Timing Surface - Hot Coolant"
+category = "Ignition Timing / State Surfaces"
+order = 103
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Hot-coolant ignition surface of the mode-selected half of the ignition coordinator FUN_00069AB8, the half that stock ROM8[0x8965] = 0xBA (bit 5 set) executes. The coolant byte 0xFFFF1069 above ROM8[0x8AC1] selects the hot-coolant surface and at or below ROM8[0x8AC2] the cold-coolant surface; between the two thresholds the coordinator interpolates the low-seven fields of both surfaces. Both stock thresholds hold 120 (70 degC), so the stock image has no blend band. The low seven bits carry the timing field and bit 7 passes to the coordinator output beside it."
+note = "Byte-identical to the 1ND0A surface 0xA410 and the 1ME3B surface 0xA344. The projected JK08A surfaces 0x95CA, 0x96CA, and 0x97CA are three byte-identical copies in the gated half of the same coordinator, which the stock configuration byte leaves unexecuted."
+
+[[target.JK78C.table]]
+id = "ignition_surface_cold"
+address = 0x0000A20A
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "ddbaaab85c587d22d5e8ab8d8acb06554c5710ede32e47d8c5c1eba8aba97602"
+pointer_bindings = [{ site = 0x0006A074, accessor = 0x00069AB8 }, { site = 0x0006A198, accessor = 0x00069AB8 }]
+axis_x = 0x000135C8
+axis_y = 0x000135B8
+mask = "7F"
+name = "Ignition Timing Surface - Cold Coolant"
+category = "Ignition Timing / State Surfaces"
+order = 104
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Cold-coolant ignition surface of the mode-selected half of the ignition coordinator FUN_00069AB8, the half that stock ROM8[0x8965] = 0xBA (bit 5 set) executes. The coolant byte 0xFFFF1069 above ROM8[0x8AC1] selects the hot-coolant surface and at or below ROM8[0x8AC2] the cold-coolant surface; between the two thresholds the coordinator interpolates the low-seven fields of both surfaces. Both stock thresholds hold 120 (70 degC), so the stock image has no blend band. The low seven bits carry the timing field and bit 7 passes to the coordinator output beside it."
+note = "Byte-identical to the 1ND0A surface 0xA510 and the 1ME3B surface 0xA444. The projected JK08A surfaces 0x95CA, 0x96CA, and 0x97CA are three byte-identical copies in the gated half of the same coordinator, which the stock configuration byte leaves unexecuted."
+
 [[target.JK78C.axis]]
 id = "vvel_duration_running_axis"
 address = 0x00016CA4
@@ -935,6 +985,12 @@ vvel_duration_throttled_ramp_delay = "The JK78C resolver FUN_000564A4 stores the
 vvel_duration_throttled_ramp_delay_axis = "The JK78C resolver FUN_000564A4 stores the throttled curve value directly, without a stepped approach or a delay curve; the stock image holds no copy of the 1ME3B curve bytes."
 vvel_duration_startup_blend = "The JK78C start-up function FUN_00056AB4 ramps between ROM16[0x91C6] and ROM16[0x91C8] and reads no blend curve; the stock image holds no copy of the 1ME3B curve bytes."
 vvel_duration_startup_blend_axis = "The JK78C start-up function FUN_00056AB4 ramps between ROM16[0x91C6] and ROM16[0x91C8] and reads no blend curve; the stock image holds no copy of the 1ME3B curve bytes."
+ignition_surface_state_3 = "The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface bytes."
+ignition_surface_state_4 = "The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface bytes."
+ignition_surface_state_5 = "The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface bytes."
+ignition_surface_state_6_7 = "The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface bytes."
+ignition_state_surface_axis_x = "The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface bytes."
+ignition_state_surface_axis_y = "The JK78C ignition coordinator FUN_00069AB8 selects between the hot-coolant and cold-coolant 16x16 surfaces by the coolant byte 0xFFFF1069 and has no state-code dispatch; the stock image holds no copy of the 1ND0A 8x8 surface bytes."
 
 [target.1ND0A]
 stock_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
@@ -1405,6 +1461,156 @@ to_byte = "x*512"
 semantics = "Second copy of monitor floor B: FUN_0006275C interpolates it by the word 0xFFFE81C8 into 0xFFFEAA78, one of the four floor words 0xFFFEA422, 0xFFFEA424, 0xFFFEAA76, and 0xFFFEAA78 whose maximum the deficit monitors FUN_000DFFE6 compare with the measured control-shaft angle."
 note = "Read by FUN_0006275C at callsite 0x62768 through the 8-point uint16 wrapper 0x28910. No direct call reaches the reader; its entry address is the word at 0x221D4 of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x000166A8."
 
+[[target.1ND0A.table]]
+id = "ignition_surface_hot"
+address = 0x0000A410
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "7e7239e9845a7ee1dcd4c5e5de3ae44c08772cca719d96484e562c578f28aeb8"
+pointer_bindings = [{ site = 0x00074FD0, accessor = 0x00074D98 }, { site = 0x0007528C, accessor = 0x00074D98 }, { site = 0x00075580, accessor = 0x00074D98 }]
+axis_x = 0x0001399A
+axis_y = 0x0001398A
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Codes 2 and 8"
+category = "Ignition Timing / State Surfaces"
+order = 103
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state codes 2 and 8, VVEL modes 5 and 15, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the JK78C hot-coolant surface 0xA10A. The projected JK08A surfaces 0x9880, 0x9980, and 0x9A80 are three byte-identical copies in the gated half of the same coordinator, which the stock configuration byte leaves unexecuted."
+
+[[target.1ND0A.table]]
+id = "ignition_surface_cold"
+address = 0x0000A510
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "ddbaaab85c587d22d5e8ab8d8acb06554c5710ede32e47d8c5c1eba8aba97602"
+pointer_bindings = [{ site = 0x00074FC8, accessor = 0x00074D98 }, { site = 0x000752B4, accessor = 0x00074D98 }]
+axis_x = 0x0001399A
+axis_y = 0x0001398A
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 1"
+category = "Ignition Timing / State Surfaces"
+order = 104
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 1, every VVEL mode outside 3, 5, 10, 12, 13, 14, and 15, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the JK78C cold-coolant surface 0xA20A. The projected JK08A surfaces 0x9880, 0x9980, and 0x9A80 are three byte-identical copies in the gated half of the same coordinator, which the stock configuration byte leaves unexecuted."
+
+[[target.1ND0A.table]]
+id = "ignition_surface_state_3"
+address = 0x0000A610
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "a27804b2883903fa5b1acaf477a095288b619d62ea385207733a9f433d04dd8a"
+pointer_bindings = [{ site = 0x00074FBC, accessor = 0x00074D98 }]
+axis_x = 0x00013FE2
+axis_y = 0x00013FDA
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 3"
+category = "Ignition Timing / State Surfaces"
+order = 105
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 3, VVEL mode 3, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ME3B surface 0xA544. The 8x8 lookup 0x000285B4 serves the four state-code surfaces of this coordinator."
+
+[[target.1ND0A.table]]
+id = "ignition_surface_state_4"
+address = 0x0000A710
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "76b89e0e76619403086773d13888cf3b8c09890794cb3b745584511aff3f03df"
+pointer_bindings = [{ site = 0x00074FB8, accessor = 0x00074D98 }]
+axis_x = 0x00013FE2
+axis_y = 0x00013FDA
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 4"
+category = "Ignition Timing / State Surfaces"
+order = 106
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 4, VVEL mode 10, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ME3B surface 0xA644. The 8x8 lookup 0x000285B4 serves the four state-code surfaces of this coordinator."
+
+[[target.1ND0A.table]]
+id = "ignition_surface_state_5"
+address = 0x0000A690
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2ada2354a2ee575fc97b83e2233b989a0ac02c8bd6c2545ad39fcdec61a0cd31"
+pointer_bindings = [{ site = 0x00074FB4, accessor = 0x00074D98 }]
+axis_x = 0x00013FE2
+axis_y = 0x00013FDA
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 5"
+category = "Ignition Timing / State Surfaces"
+order = 107
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 5, VVEL mode 12, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ME3B surface 0xA5C4. The 8x8 lookup 0x000285B4 serves the four state-code surfaces of this coordinator."
+
+[[target.1ND0A.table]]
+id = "ignition_surface_state_6_7"
+address = 0x0000A6D0
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2ada2354a2ee575fc97b83e2233b989a0ac02c8bd6c2545ad39fcdec61a0cd31"
+pointer_bindings = [{ site = 0x00074FAC, accessor = 0x00074D98 }]
+axis_x = 0x00013FE2
+axis_y = 0x00013FDA
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Codes 6 and 7"
+category = "Ignition Timing / State Surfaces"
+order = 108
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state codes 6 and 7, VVEL modes 13 and 14, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves the four state-code surfaces of this coordinator."
+
 [[target.1ND0A.axis]]
 id = "vvel_duration_running_axis"
 address = 0x000172B2
@@ -1727,6 +1933,44 @@ scale_conf = "candidate"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Eight-point engine-speed axis 2400..7200 RPM of the second copy of monitor floor B; the coordinate is the word 0xFFFE81C8, and the count weight rests on the byte identity with the primary axis. Stock bytes are identical to the primary axis 0x00017342."
+
+[[target.1ND0A.axis]]
+id = "ignition_state_surface_axis_x"
+address = 0x00013FE2
+length = 8
+storagetype = "uint8"
+values_sha256 = "46cabb9bfdf92bb9768bd0ae596094bd1fde4258538d02dc9c7c45f5e9537e4b"
+pointer_bindings = [{ site = 0x00074FA8, accessor = 0x00074D98 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 50
+coarse = 200
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*50"
+to_byte = "x/50"
+note = "First axis of the four 8x8 state-code ignition surfaces, 400..6800 RPM; the lookup receives the same engine-speed word as the 16x16 surfaces."
+
+[[target.1ND0A.axis]]
+id = "ignition_state_surface_axis_y"
+address = 0x00013FDA
+length = 8
+storagetype = "uint8"
+values_sha256 = "99fe7eccef5c45430c4b312b31709947a61a28b6fcfd6e8313c14e6b70fe6502"
+pointer_bindings = [{ site = 0x00074FA4, accessor = 0x00074D98 }]
+name = "Engine Load"
+kind = "load"
+format = "0"
+fine = 0.78125
+coarse = 3.125
+units = "Normalized BFS [%]"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+note = "Second axis of the four 8x8 state-code ignition surfaces; the lookup receives the same load byte as the 16x16 surfaces."
 
 [target.1ND0A.absent]
 vvel_duration_hot_intake_idle_floor = "The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a floor lookup; its literal pool holds no eight-point floor curve and no demand axis."
@@ -2210,6 +2454,156 @@ to_byte = "x*512"
 semantics = "Second copy of monitor floor B: FUN_0006275C interpolates it by the word 0xFFFE81C8 into 0xFFFEAA78, one of the four floor words 0xFFFEA422, 0xFFFEA424, 0xFFFEAA76, and 0xFFFEAA78 whose maximum the deficit monitors FUN_000DFFE6 compare with the measured control-shaft angle."
 note = "Read by FUN_0006275C at callsite 0x62768 through the 8-point uint16 wrapper 0x28910. No direct call reaches the reader; its entry address is the word at 0x221D4 of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x000166A8."
 
+[[target.1ND3B.table]]
+id = "ignition_surface_hot"
+address = 0x0000A410
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "7e7239e9845a7ee1dcd4c5e5de3ae44c08772cca719d96484e562c578f28aeb8"
+pointer_bindings = [{ site = 0x00074FD0, accessor = 0x00074D98 }, { site = 0x0007528C, accessor = 0x00074D98 }, { site = 0x00075580, accessor = 0x00074D98 }]
+axis_x = 0x0001399A
+axis_y = 0x0001398A
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Codes 2 and 8"
+category = "Ignition Timing / State Surfaces"
+order = 103
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state codes 2 and 8, VVEL modes 5 and 15, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the JK78C hot-coolant surface 0xA10A. The projected JK08A surfaces 0x9880, 0x9980, and 0x9A80 are three byte-identical copies in the gated half of the same coordinator, which the stock configuration byte leaves unexecuted."
+
+[[target.1ND3B.table]]
+id = "ignition_surface_cold"
+address = 0x0000A510
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "ddbaaab85c587d22d5e8ab8d8acb06554c5710ede32e47d8c5c1eba8aba97602"
+pointer_bindings = [{ site = 0x00074FC8, accessor = 0x00074D98 }, { site = 0x000752B4, accessor = 0x00074D98 }]
+axis_x = 0x0001399A
+axis_y = 0x0001398A
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 1"
+category = "Ignition Timing / State Surfaces"
+order = 104
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 1, every VVEL mode outside 3, 5, 10, 12, 13, 14, and 15, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the JK78C cold-coolant surface 0xA20A. The projected JK08A surfaces 0x9880, 0x9980, and 0x9A80 are three byte-identical copies in the gated half of the same coordinator, which the stock configuration byte leaves unexecuted."
+
+[[target.1ND3B.table]]
+id = "ignition_surface_state_3"
+address = 0x0000A610
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "a27804b2883903fa5b1acaf477a095288b619d62ea385207733a9f433d04dd8a"
+pointer_bindings = [{ site = 0x00074FBC, accessor = 0x00074D98 }]
+axis_x = 0x00013FE2
+axis_y = 0x00013FDA
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 3"
+category = "Ignition Timing / State Surfaces"
+order = 105
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 3, VVEL mode 3, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ME3B surface 0xA544. The 8x8 lookup 0x000285B4 serves the four state-code surfaces of this coordinator."
+
+[[target.1ND3B.table]]
+id = "ignition_surface_state_4"
+address = 0x0000A710
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "76b89e0e76619403086773d13888cf3b8c09890794cb3b745584511aff3f03df"
+pointer_bindings = [{ site = 0x00074FB8, accessor = 0x00074D98 }]
+axis_x = 0x00013FE2
+axis_y = 0x00013FDA
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 4"
+category = "Ignition Timing / State Surfaces"
+order = 106
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 4, VVEL mode 10, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ME3B surface 0xA644. The 8x8 lookup 0x000285B4 serves the four state-code surfaces of this coordinator."
+
+[[target.1ND3B.table]]
+id = "ignition_surface_state_5"
+address = 0x0000A690
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2ada2354a2ee575fc97b83e2233b989a0ac02c8bd6c2545ad39fcdec61a0cd31"
+pointer_bindings = [{ site = 0x00074FB4, accessor = 0x00074D98 }]
+axis_x = 0x00013FE2
+axis_y = 0x00013FDA
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 5"
+category = "Ignition Timing / State Surfaces"
+order = 107
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 5, VVEL mode 12, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ME3B surface 0xA5C4. The 8x8 lookup 0x000285B4 serves the four state-code surfaces of this coordinator."
+
+[[target.1ND3B.table]]
+id = "ignition_surface_state_6_7"
+address = 0x0000A6D0
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2ada2354a2ee575fc97b83e2233b989a0ac02c8bd6c2545ad39fcdec61a0cd31"
+pointer_bindings = [{ site = 0x00074FAC, accessor = 0x00074D98 }]
+axis_x = 0x00013FE2
+axis_y = 0x00013FDA
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Codes 6 and 7"
+category = "Ignition Timing / State Surfaces"
+order = 108
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state codes 6 and 7, VVEL modes 13 and 14, of the mode-selected half of the ignition coordinator FUN_00074D98, the half that stock ROM8[0x8A2B] = 0xBA (bit 5 set) executes. Stock ROM8[0x8A2C] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB6DE, which the mapper FUN_0004C4B8 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB6DC, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves the four state-code surfaces of this coordinator."
+
 [[target.1ND3B.axis]]
 id = "vvel_duration_running_axis"
 address = 0x000172B2
@@ -2532,6 +2926,44 @@ scale_conf = "candidate"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "Eight-point engine-speed axis 2400..7200 RPM of the second copy of monitor floor B; the coordinate is the word 0xFFFE81C8, and the count weight rests on the byte identity with the primary axis. Stock bytes are identical to the primary axis 0x00017342."
+
+[[target.1ND3B.axis]]
+id = "ignition_state_surface_axis_x"
+address = 0x00013FE2
+length = 8
+storagetype = "uint8"
+values_sha256 = "46cabb9bfdf92bb9768bd0ae596094bd1fde4258538d02dc9c7c45f5e9537e4b"
+pointer_bindings = [{ site = 0x00074FA8, accessor = 0x00074D98 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 50
+coarse = 200
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*50"
+to_byte = "x/50"
+note = "First axis of the four 8x8 state-code ignition surfaces, 400..6800 RPM; the lookup receives the same engine-speed word as the 16x16 surfaces."
+
+[[target.1ND3B.axis]]
+id = "ignition_state_surface_axis_y"
+address = 0x00013FDA
+length = 8
+storagetype = "uint8"
+values_sha256 = "99fe7eccef5c45430c4b312b31709947a61a28b6fcfd6e8313c14e6b70fe6502"
+pointer_bindings = [{ site = 0x00074FA4, accessor = 0x00074D98 }]
+name = "Engine Load"
+kind = "load"
+format = "0"
+fine = 0.78125
+coarse = 3.125
+units = "Normalized BFS [%]"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+note = "Second axis of the four 8x8 state-code ignition surfaces; the lookup receives the same load byte as the 16x16 surfaces."
 
 [target.1ND3B.absent]
 vvel_duration_hot_intake_idle_floor = "The 1ND resolver FUN_0005F468 stores the hot-intake idle surfaces without a floor lookup; its literal pool holds no eight-point floor curve and no demand axis."
@@ -3131,6 +3563,156 @@ to_byte = "x/0.05"
 semantics = "Blend target of the start-up duration: with the request argument set, FUN_0006375E publishes w * ROM16[0x94A8] + (1 - w) * this curve, scaled by 0.05, in place of the start-up curve 0x000163E4. Stock values are 1300 = 65.0 at every point."
 note = "Read by FUN_0006375E at callsite 0x63866 through the 8-point uint16 leaf 0x2AEAC indexed by the low byte of its stack argument, the byte that indexes the cold duration curve 0x000170F6 in the resolver FUN_00062FAC. The weight w moves by ROM16[0x9474] / 32768 per pass within 0..1."
 
+[[target.1ME3B.table]]
+id = "ignition_surface_hot"
+address = 0x0000A344
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "7e7239e9845a7ee1dcd4c5e5de3ae44c08772cca719d96484e562c578f28aeb8"
+pointer_bindings = [{ site = 0x00079CB0, accessor = 0x000797CC }, { site = 0x00079E20, accessor = 0x000797CC }]
+axis_x = 0x00013726
+axis_y = 0x00013716
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Codes 2 and 8"
+category = "Ignition Timing / State Surfaces"
+order = 103
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state codes 2 and 8, VVEL modes 5 and 15, of the mode-selected half of the ignition coordinator FUN_000797CC, the only half this coordinator carries. Stock ROM8[0x8A7D] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB826, which the mapper FUN_00050310 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB824, where 0x8000 is 1.0."
+note = "Byte-identical to the JK78C hot-coolant surface 0xA10A. The literal words 0x79424, 0x796F0, 0x799A0 hold the same address; the structure export recovers no instruction that reads them."
+
+[[target.1ME3B.table]]
+id = "ignition_surface_cold"
+address = 0x0000A444
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "ddbaaab85c587d22d5e8ab8d8acb06554c5710ede32e47d8c5c1eba8aba97602"
+pointer_bindings = [{ site = 0x00079CA8, accessor = 0x000797CC }]
+axis_x = 0x00013726
+axis_y = 0x00013716
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 1"
+category = "Ignition Timing / State Surfaces"
+order = 104
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 1, every VVEL mode outside 3, 5, 10, 12, 13, 14, and 15, of the mode-selected half of the ignition coordinator FUN_000797CC, the only half this coordinator carries. Stock ROM8[0x8A7D] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB826, which the mapper FUN_00050310 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB824, where 0x8000 is 1.0."
+note = "Byte-identical to the JK78C cold-coolant surface 0xA20A. The literal words 0x7941C, 0x7971C hold the same address; the structure export recovers no instruction that reads them."
+
+[[target.1ME3B.table]]
+id = "ignition_surface_state_3"
+address = 0x0000A544
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "a27804b2883903fa5b1acaf477a095288b619d62ea385207733a9f433d04dd8a"
+pointer_bindings = [{ site = 0x000799D8, accessor = 0x000797CC }]
+axis_x = 0x00013DCE
+axis_y = 0x00013DC6
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 3"
+category = "Ignition Timing / State Surfaces"
+order = 105
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 3, VVEL mode 3, of the mode-selected half of the ignition coordinator FUN_000797CC, the only half this coordinator carries. Stock ROM8[0x8A7D] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB826, which the mapper FUN_00050310 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB824, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ND0A surface 0xA610. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this coordinator. The literal words 0x79410 hold the same address; the structure export recovers no instruction that reads them."
+
+[[target.1ME3B.table]]
+id = "ignition_surface_state_4"
+address = 0x0000A644
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "76b89e0e76619403086773d13888cf3b8c09890794cb3b745584511aff3f03df"
+pointer_bindings = [{ site = 0x000799D4, accessor = 0x000797CC }]
+axis_x = 0x00013DCE
+axis_y = 0x00013DC6
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 4"
+category = "Ignition Timing / State Surfaces"
+order = 106
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 4, VVEL mode 10, of the mode-selected half of the ignition coordinator FUN_000797CC, the only half this coordinator carries. Stock ROM8[0x8A7D] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB826, which the mapper FUN_00050310 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB824, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ND0A surface 0xA710. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this coordinator. The literal words 0x7940C hold the same address; the structure export recovers no instruction that reads them."
+
+[[target.1ME3B.table]]
+id = "ignition_surface_state_5"
+address = 0x0000A5C4
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2ada2354a2ee575fc97b83e2233b989a0ac02c8bd6c2545ad39fcdec61a0cd31"
+pointer_bindings = [{ site = 0x000799D0, accessor = 0x000797CC }]
+axis_x = 0x00013DCE
+axis_y = 0x00013DC6
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 5"
+category = "Ignition Timing / State Surfaces"
+order = 107
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state code 5, VVEL mode 12, of the mode-selected half of the ignition coordinator FUN_000797CC, the only half this coordinator carries. Stock ROM8[0x8A7D] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB826, which the mapper FUN_00050310 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB824, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ND0A surface 0xA690. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this coordinator. The literal words 0x79408 hold the same address; the structure export recovers no instruction that reads them."
+
+[[target.1ME3B.table]]
+id = "ignition_surface_state_6_7"
+address = 0x0000A604
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2ada2354a2ee575fc97b83e2233b989a0ac02c8bd6c2545ad39fcdec61a0cd31"
+pointer_bindings = [{ site = 0x000799CC, accessor = 0x000797CC }]
+axis_x = 0x00013DCE
+axis_y = 0x00013DC6
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Codes 6 and 7"
+category = "Ignition Timing / State Surfaces"
+order = 108
+format = "0"
+fine = 1
+coarse = 4
+units = "deg"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-64"
+to_byte = "x+64"
+semantics = "Ignition surface for state codes 6 and 7, VVEL modes 13 and 14, of the mode-selected half of the ignition coordinator FUN_000797CC, the only half this coordinator carries. Stock ROM8[0x8A7D] = 0x1C (bit 3 set) selects the surface by the state-code byte 0xFFFEB826, which the mapper FUN_00050310 derives from the VVEL mode: mode 5 gives code 2, mode 3 code 3, mode 10 code 4, mode 12 code 5, mode 13 code 6, mode 14 code 7, mode 15 code 8, and every other mode code 1. The coordinator takes the low seven bits of the lookup and crossfades the previous and current state values by the progress word 0xFFFEB824, where 0x8000 is 1.0."
+note = "Byte-identical to the 1ND0A surface 0xA6D0. The 8x8 lookup 0x000293D8 serves the four state-code surfaces of this coordinator. The literal words 0x79400 hold the same address; the structure export recovers no instruction that reads them."
+
 [[target.1ME3B.axis]]
 id = "vvel_duration_running_axis"
 address = 0x00017366
@@ -3548,6 +4130,44 @@ scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "Eight-point axis 100..170 = 50..120 degC of the start-up blend target; the coordinate is the coolant-coded byte of the cold duration curve."
+
+[[target.1ME3B.axis]]
+id = "ignition_state_surface_axis_x"
+address = 0x00013DCE
+length = 8
+storagetype = "uint8"
+values_sha256 = "46cabb9bfdf92bb9768bd0ae596094bd1fde4258538d02dc9c7c45f5e9537e4b"
+pointer_bindings = [{ site = 0x000799C8, accessor = 0x000797CC }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 50
+coarse = 200
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*50"
+to_byte = "x/50"
+note = "First axis of the four 8x8 state-code ignition surfaces, 400..6800 RPM; the lookup receives the same engine-speed word as the 16x16 surfaces. The literal words 0x793FC hold the same address; the structure export recovers no instruction that reads them."
+
+[[target.1ME3B.axis]]
+id = "ignition_state_surface_axis_y"
+address = 0x00013DC6
+length = 8
+storagetype = "uint8"
+values_sha256 = "99fe7eccef5c45430c4b312b31709947a61a28b6fcfd6e8313c14e6b70fe6502"
+pointer_bindings = [{ site = 0x000799C4, accessor = 0x000797CC }]
+name = "Engine Load"
+kind = "load"
+format = "0"
+fine = 0.78125
+coarse = 3.125
+units = "Normalized BFS [%]"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+note = "Second axis of the four 8x8 state-code ignition surfaces; the lookup receives the same load byte as the 16x16 surfaces. The literal words 0x793F8 hold the same address; the structure export recovers no instruction that reads them."
 
 [target.1ME3B.absent]
 vvel_duration_mode_14 = "The 1ME3B resolver FUN_00062FAC stores the constant 50.0, the float literal 0x42480000 at 0x63448, in pair 13 of its output and reads no table for it; its two 8x8 calls read the hot-intake idle surfaces."

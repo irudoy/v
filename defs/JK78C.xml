@@ -1357,6 +1357,58 @@
       </table>
     </table>
 
+    <!-- 0x0A10A  16x16 uint8  map [code]
+         accessor 0x69AB8; r4 operand: reviewed-target
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
+         Exact JK78C target-native table at 0xa10a bound to accessor 0x69ab8 through literal
+         0x6a078, accessor 0x69ab8 through literal 0x6a1bc. Byte-identical to the 1ND0A surface
+         0xA410 and the 1ME3B surface 0xA344. The projected JK08A surfaces 0x95CA, 0x96CA, and
+         0x97CA are three byte-identical copies in the gated half of the same coordinator, which
+         the stock configuration byte leaves unexecuted.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Ignition Timing Surface - Hot Coolant"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A10A" sizex="16" sizey="16" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x135C8" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x0A20A  16x16 uint8  map [code]
+         accessor 0x69AB8; r4 operand: reviewed-target
+         scaling x-64 deg [candidate]; Y Axis 0x135C8 rpm [candidate]; X Axis 0x135B8 load
+         [candidate]
+         Exact JK78C target-native table at 0xa20a bound to accessor 0x69ab8 through literal
+         0x6a074, accessor 0x69ab8 through literal 0x6a198. Byte-identical to the 1ND0A surface
+         0xA510 and the 1ME3B surface 0xA444. The projected JK08A surfaces 0x95CA, 0x96CA, and
+         0x97CA are three byte-identical copies in the gated half of the same coordinator, which
+         the stock configuration byte leaves unexecuted.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Ignition Timing Surface - Cold Coolant"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A20A" sizex="16" sizey="16" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x135B8"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x135C8" sizey="16" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
     <!-- 0x11F4E  16x6 uint16  map [candidate]
          scaling x*0.0015259 knock strength [candidate]
          00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 points

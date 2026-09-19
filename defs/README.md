@@ -129,7 +129,15 @@ twenty-one duration, intake-CVTC, shaft-angle, and monitor tables with twenty
 exact axes, each bound to the literal pool of its reading function. The set
 includes the byte-identical second copies of the shaft-angle conversion and of
 both monitor floors, and the hot-intake idle pair of the state-code dispatcher
-`0x0657E4`. The
+`0x0657E4`. The registry also publishes the two 16x16 ignition surfaces that
+the stock configuration executes, `0x00A10A` and `0x00A20A`: stock
+`ROM8[0x8965]` = `0xBA` sends the ignition coordinator `0x069AB8` through its
+mode-selected half, which picks the surface by the coolant byte against the
+thresholds `0x008AC1` and `0x008AC2`. The projected canonical trio `0x0095CA`,
+`0x0096CA`, and `0x0097CA` holds three byte-identical copies in the gated half
+that the stock byte leaves unexecuted. A registry table may declare a `mask`, a
+contiguous partial bit field of its cell; the ignition surfaces carry `7F`
+because the low seven bits hold the timing field. The
 XML/XDF files expose editor controls; the unified builder remains responsible
 for runtime composition and complete checksum closure.
 
@@ -153,7 +161,17 @@ surface that JK78C replaces with a constant, and has no floor curves and no
 demand axis, which the registry declares as absent roles. The 1ND state-code
 dispatcher `0x070514` reads the resolver surfaces in place of a separate
 hot-intake idle pair, so that pair is absent too; the second copies of the
-shaft-angle conversion and of both monitor floors are present.
+shaft-angle conversion and of both monitor floors are present. The registry
+also publishes the six ignition surfaces that the stock 1ND configuration
+executes: stock `ROM8[0x8A2B]` = `0xBA` and `ROM8[0x8A2C]` = `0x1C` send the
+ignition coordinator `0x074D98` through its mode-selected half with state-code
+selection, and the mapper `0x04C4B8` derives the state code from the VVEL mode.
+State codes 2 and 8 read the 16x16 surface `0x00A410`, state code 1 reads
+`0x00A510`, and state codes 3, 4, 5, and 6 with 7 read the 8x8 surfaces
+`0x00A610`, `0x00A710`, `0x00A690`, and `0x00A6D0` over the native axes
+`0x013FE2` and `0x013FDA`. The projected canonical trio `0x009880`, `0x009980`,
+and `0x009A80` holds three byte-identical copies in the gated half that the
+stock byte leaves unexecuted.
 
 `JK08A-1ME3B.definition-addresses.csv` projects the same reviewed VQ37
 semantic set to the fused-library 1ME3B image. It records 27 target maps,
@@ -170,9 +188,14 @@ trio path of 1ND0A `0x074D98`. The projection declares checksum support with
 native RomRaider metadata over the `sh7059_1me3b` layout and no runtime
 allocation: Map Switching, Rolling Launch, and the CAN telemetry switch are
 absent from the definition. The target-native table registry adds the two
-alternate selector arms and the VVEL target set to the 1ME3B definition:
-twenty-five tables and twenty-two axes, each bound to an undisplaced
-literal-pool word of its reading function. Two curves exist only in this image
+alternate selector arms, the VVEL target set, and the six executed ignition
+surfaces to the 1ME3B definition: thirty-one tables and twenty-four axes, each
+bound to an undisplaced literal-pool word of its reading function. The ignition
+surfaces are the mode-selected set of the coordinator `0x0797CC`: the 16x16
+surfaces `0x00A344` and `0x00A444` over the projected ignition axes and the 8x8
+surfaces `0x00A544`, `0x00A644`, `0x00A5C4`, and `0x00A604` over the native
+axes `0x013DCE` and `0x013DC6`, selected by the state code that the mapper
+`0x050310` derives from the VVEL mode. Two curves exist only in this image
 and are declared absent on the other three: the delay curve `0x01457A` of the
 stepped approach to the throttled duration and the start-up blend target
 `0x017136`. The 1ME3B resolver `0x062FAC` carries the JK78C

@@ -168,7 +168,17 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 210
+    assert len(target.findall("table")) == 212
+    assert len(tables) == 212
+    assert tables["Ignition Timing Surface - Hot Coolant"].get(
+        "storageaddress"
+    ) == "0x0A10A"
+    assert tables["Ignition Timing Surface - Cold Coolant"].get(
+        "storageaddress"
+    ) == "0x0A20A"
+    assert tables["Ignition Timing Surface - Cold State"].get(
+        "storageaddress"
+    ) == "0x095CA"
     assert sum(1 for name in tables if name.startswith("DTC ")) == 77
     assert tables["Rolling Launch Enable by Map"].get(
         "storageaddress"
@@ -196,7 +206,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 129
+    assert len(root.findall("XDFTABLE")) == 131
     patches = root.findall("XDFPATCH")
     patches_by_title = {patch.findtext("title"): patch for patch in patches}
     non_dtc_patches = {
@@ -256,7 +266,14 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 207
+        assert len(target.findall("table")) == 213
+        assert len(tables) == 213
+        assert tables["Ignition Timing Surface - VVEL State Code 1"].get(
+            "storageaddress"
+        ) == "0x0A510"
+        assert tables["Ignition Timing Surface - VVEL State Codes 6 and 7"].get(
+            "storageaddress"
+        ) == "0x0A6D0"
         assert sum(1 for name in tables if name.startswith("DTC ")) == 77
         assert tables["Rolling Launch Enable by Map"].get(
             "storageaddress"
@@ -291,7 +308,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 126
+        assert len(root.findall("XDFTABLE")) == 132
         patches = root.findall("XDFPATCH")
         patches_by_title = {
             patch.findtext("title"): patch for patch in patches
@@ -359,7 +376,7 @@ def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation()
     assert checksums["alt2"].get("skiploc") == "0x20000"
     assert checksums["alt2"].get("sumloc") == "0x96FC"
     assert checksums["alt2"].get("xorloc") == "0x96F4"
-    assert len(target.findall("table")) == 127
+    assert len(target.findall("table")) == 133
     assert sum(1 for name in tables if name.startswith("DTC ")) == 75
     assert tables["MAF Factor"].get("storageaddress") == "0x08965"
     assert tables["Fuel Compensation - Main - Default"].get(
@@ -380,11 +397,20 @@ def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation()
     assert "Rolling Launch Enable by Map" not in tables
     assert "CAN Telemetry at Startup" not in tables
     assert tables["Developer Immobilizer"].get("storageaddress") == "0x8671"
-    assert not any("Ignition Timing" in name for name in tables)
+    assert not any(
+        name.endswith(("Cold State", "High-Octane State", "High-Detonation State"))
+        for name in tables
+    )
+    hot = tables["Ignition Timing Surface - VVEL State Codes 2 and 8"]
+    assert hot.get("storageaddress") == "0x0A344"
+    assert hot.get("mask") == "7F"
+    assert tables["Ignition Timing Surface - VVEL State Code 3"].get(
+        "storageaddress"
+    ) == "0x0A544"
 
     root = ET.parse(DEFS / "1ME3B.xdf").getroot()
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 51
+    assert len(root.findall("XDFTABLE")) == 57
     assert root.find("XDFCHECKSUM") is None
     assert _xdf_table_address(xdf_tables["MAF Factor"]) == "0x8965"
     assert not root.findall("XDFFLAG")

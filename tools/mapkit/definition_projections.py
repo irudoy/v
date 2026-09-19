@@ -515,6 +515,14 @@ def apply_projection(
         for key in ("axis_x", "axis_y")
         for address in maps[binding.source].get(key, [])
     }
+    # A target-native table may index a canonical axis that no visible source
+    # map of this target needs; the axis correspondence row still projects it.
+    native_axis_targets = vq37_native_tables.table_axis_keys(projection.target)
+    needed_axes |= {
+        binding.source
+        for binding in mapped_rows
+        if binding.entity == "Axis" and binding.target in native_axis_targets
+    }
     # Direct-row-major tables can expose an operand that is represented as a
     # reviewed static axis rather than an :Axis fact. Such rows are not needed
     # by the target editor model.

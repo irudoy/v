@@ -15,7 +15,7 @@ from tools.mapkit import rom as romkit
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_REGISTRY = ROOT / "defs" / "vq37-native-tables.toml"
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 IDENTIFIER_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 SUPPORTED_TARGETS = frozenset({"JK78C", "1ND0A", "1ND3B", "1ME3B"})
@@ -47,6 +47,7 @@ REQUIRED_TABLE_FIELDS = frozenset({
 OPTIONAL_TABLE_FIELDS = frozenset({
     "axis_x",
     "axis_y",
+    "mask",
     "static_axis_name",
     "static_axis",
 })
@@ -108,6 +109,7 @@ class NativeTable:
     to_byte: str
     static_axis_name: str
     static_axis: tuple[int, ...]
+    mask: str
     semantics: str
     note: str
 
@@ -236,6 +238,22 @@ def _pointers(raw_pointers, context):
     return tuple(pointers)
 
 
+def _mask(value, storagetype, context):
+    """Return the uppercase contiguous bit-field mask of a table, or ""."""
+    if value is None:
+        return ""
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9A-Fa-f]+", value):
+        raise NativeTableError(f"{context} is not a hexadecimal string")
+    bits = 8 * romkit.ELEM[storagetype]
+    field = int(value, 16)
+    low = field & -field
+    if not 0 < field < (1 << bits) - 1 or (field // low) & (field // low + 1):
+        raise NativeTableError(
+            f"{context} is not a contiguous partial bit field of uint{bits}"
+        )
+    return value.upper()
+
+
 def _parse_table(row, context):
     _fields(row, context, REQUIRED_TABLE_FIELDS, OPTIONAL_TABLE_FIELDS)
     identifier = _identifier(row, context)
@@ -283,12 +301,14 @@ def _parse_table(row, context):
         raise NativeTableError(f"{context}: static axis overlaps a graph axis")
     if not axes["axis_x"] and not static_axis:
         raise NativeTableError(f"{context}: no axis is declared")
+    storagetype = _storagetype(row["storagetype"], f"{context}.storagetype")
+    mask = _mask(row.get("mask"), storagetype, f"{context}.mask")
     return NativeTable(
         identifier=identifier,
         address=_address(row["address"], f"{context}.address"),
         width=width,
         height=height,
-        storagetype=_storagetype(row["storagetype"], f"{context}.storagetype"),
+        storagetype=storagetype,
         values_sha256=_sha256(row["values_sha256"], f"{context}.values_sha256"),
         pointer_bindings=_pointers(row["pointer_bindings"], context),
         axis_x=axes["axis_x"],
@@ -306,6 +326,7 @@ def _parse_table(row, context):
         to_byte=_text(row["to_byte"], f"{context}.to_byte"),
         static_axis_name=static_axis_name,
         static_axis=static_axis,
+        mask=mask,
         semantics=_text(row["semantics"], f"{context}.semantics"),
         note=_text(row["note"], f"{context}.note"),
     )
@@ -510,6 +531,8 @@ def _presentation(table):
     if table.static_axis:
         override["static_axis_name"] = table.static_axis_name
         override["static_axis"] = list(table.static_axis)
+    if table.mask:
+        override["mask"] = table.mask
     return override
 
 
@@ -570,6 +593,18 @@ def _verify_bindings(rom, image, address, bindings):
             )
 
 
+def table_axis_keys(rom, path=DEFAULT_REGISTRY):
+    """Return the address keys of every axis that a native table of the ROM indexes."""
+    target = load_registry(path).get(rom)
+    if target is None:
+        return frozenset()
+    return frozenset(
+        _address_key(axis)
+        for table in target.tables
+        for axis in table.axis_x + table.axis_y
+    )
+
+
 def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
     """Append exact target-native VQ37 tables and axes to a projected editor model."""
     target = load_registry(path).get(rom)
@@ -614,8 +649,18 @@ def apply_target(rom, maps, axes, overrides, image, path=DEFAULT_REGISTRY):
         )
         axis_overrides[key] = _axis_presentation(axis)
 
+    names = {
+        override.get("name")
+        for override in tables.values()
+        if isinstance(override, dict)
+    }
     for table in target.tables:
         key = _address_key(table.address)
+        if table.name in names:
+            raise NativeTableError(
+                f"{rom}: native table {key} repeats the table name {table.name!r}"
+            )
+        names.add(table.name)
         _verify_block(
             rom, image, key, table.address, table.width * table.height,
             table.storagetype, table.values_sha256,
