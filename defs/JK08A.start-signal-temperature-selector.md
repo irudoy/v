@@ -33,8 +33,10 @@ ROM32[0x226B8] = 0xFFFF1188             # DID 0x1103
 A homologous measured diagnostic definition identifies DID `0x1103` as
 battery voltage with `V = raw * 0.08`. This gives the selector threshold raw
 100 an engineering value of 8.00 V. The exact JK08A response identity is
-code-proven; the scale remains source-bound and hardware-corroborated rather
-than independently derived from the conversion helpers.
+code-proven. The conversion helpers leave the byte equal to the ten-bit sample
+shifted right by two, and the ROM limits of the DTC monitors reproduce the
+factory battery-voltage test conditions of 10, 10.5, 11, and 16 V at 0.08 V per
+count; `JK08A.diagnostics.md` derives the scale.
 
 ## Computed START SIGNAL identity
 
@@ -82,9 +84,9 @@ Its complete state transition is:
 | condition false and `L = 0` | 1 | 1 | current coolant once |
 | condition false and `L = 1` | 1 | 0 | zero sentinel |
 
-Raw 100 belongs to the condition-false branch. Under the source-bound voltage
-conversion, the continuously selected coolant case is exactly computed START
-SIGNAL ON with battery voltage below 8.00 V.
+Raw 100 belongs to the condition-false branch. At 0.08 V per count the
+continuously selected coolant case is exactly computed START SIGNAL ON with
+battery voltage below 8.00 V.
 
 Coordinator `0x000394B8` maps the return value to these bytes:
 
@@ -125,6 +127,5 @@ control-module voltage 13.92 V and `[NC] Starter` value 0 at hot idle. The
 second observation is consistent with computed START SIGNAL being OFF but is
 not proven to be the same DID. Neither observation is synchronized with the
 CAN capture or a cranking transition. A synchronized cranking capture would
-verify transition timing and the source-bound 0.08 V/count scale on the target;
-it is not required to distinguish the zero sentinel from a second temperature
-sensor.
+verify transition timing on the target; it is not required to distinguish the
+zero sentinel from a second temperature sensor.

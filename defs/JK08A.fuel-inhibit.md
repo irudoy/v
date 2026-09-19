@@ -116,8 +116,9 @@ retain at raw >= 180
 clear below raw 180
 ```
 
-The homologous diagnostic conversion `deg C = raw - 50` gives candidate
-boundaries of 140 and 130 deg C. The function reports exact descriptor index 2,
+The `deg C + 50` coding that the ECU declares for the coolant byte through
+J1979 PID `0x05` puts the boundaries at 140 and 130 deg C. The function reports
+exact descriptor index 2,
 whose JK08A record at `0x19378` contains P1217 `ENG OVER TEMP`.
 
 The final fuel-inhibit state additionally requires the internal P1217 phase
@@ -277,7 +278,7 @@ a coolant warm-up latch. The second compares exact raw coolant snapshot
 value equals coolant while computed START SIGNAL is set and battery-voltage raw
 is below 100. When that condition ends, selector `0x0003967A` returns coolant
 once, sets its transition latch, and then publishes the stock-lifecycle zero
-sentinel. Under the source-bound DID-0x1103 conversion, raw 100 is 8.00 V.
+sentinel. At 0.08 V per count of DID `0x1103`, raw 100 is 8.00 V.
 Consequently bit 4 is a post-start or low-voltage-transition qualifier rather
 than a comparison with a second physical temperature. The zero sentinel has no
 coolant scale and must not be rendered as `-50 deg C`. These bits latch until

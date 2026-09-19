@@ -285,6 +285,126 @@ specifications, not from firmware arithmetic, and it implies a ten-bit span of
 5.12 V referred to the ECM terminal. A pin-referred measurement on the target
 ECU remains the open hardware item.
 
+## Thermistor transfer code of the fuel and oil temperatures
+
+Every reviewed temperature channel shifts its ten-bit sample right by two and
+passes the byte through implicit-axis primitive `FUN_000263A0`: 32 points, a
+step of 8 input counts, an input limit of 248, and a uint8 output. One input
+count is four ten-bit counts, or 20 mV under the scale of the previous section.
+
+| Channel | Sample | Input byte | Table | Transfer code | Published byte |
+| --- | --- | --- | --- | --- | --- |
+| coolant | `0xFFFF1D60`, AN0 mux code 000 | `0xFFFF1186` | `0x12DEA` | `0xFFFF1079` | DID `0x1101`; PID `0x05` as code - 10 |
+| intake air | `0xFFFF1D58`, AN1 lane 0 | shifted in place | `0x12DEA` | `0xFFFF2838`, `0xFFFF3F42` | DID `0x1106`; PID `0x0F` as code - 10 |
+| fuel | `0xFFFF100A`, AN0 mux code 111 | `0xFFFF1178` | `0x12DEA` | `0xFFFF1F89` | DID `0x1104` byte `0xFFFF1074` |
+| engine oil | `0xFFFF1D5C`, AN0 mux code 010 | `0xFFFF117B` | `0x12C6E` | `0xFFFF1F94` | DID `0x111F` byte `0xFFFF2876` |
+
+Curve `0x12C6E` equals table `0x12DEA` byte for byte over all 32 points:
+
+```text
+255 241 200 174 160 149 141 134 128 122 118 113 109 105 101  97
+ 93  90  86  82  78  74  70  66  61  57  51  45  38  27   8   0
+```
+
+J1979 Mode 01 PIDs `0x05` and `0x0F` publish the `0x12DEA` output minus 10
+under the standard definition `A - 40` degC, so the ECU declares the output
+code as `degC + 50`. The fuel byte is an output of that table and the oil byte
+an output of an identical table through the same primitive, so
+`degC = raw - 50` holds for DIDs `0x1104` and `0x111F` by code. Mode 01 itself
+declares no oil-temperature or fuel-temperature PID.
+
+Fuel publisher `FUN_00039788` and oil producer `FUN_0003EB84` filter the
+sample through `FUN_0003A5E0` and publish the code through the same limiter: a
+higher code is taken at once, the previous byte is held while the code plus two
+exceeds it, and a larger drop publishes the code plus two. The previous fuel
+byte `0xFFFF107C` is the copy of `0xFFFF1074` that dispatcher `FUN_000209D8`
+makes at `0x00020CBA`, after periodic table `0x21834`, through the eight-byte
+block `0xFFFF1072..0xFFFF1079 -> 0xFFFF107A..0xFFFF1081`. The fuel publisher
+substitutes service-0x30 value byte `0xFFFF992D` while active bit `0xFFFF99C5`
+bit 1 is set. The oil producer publishes `0xFF` while the input byte is outside
+`3..241` or a P0197, P0198, or P0196 record is stored, and zero while
+`ROM8[0x8616]` bit 0 is clear.
+
+The factory thermistor reference tables agree with the table at 20 mV per
+input count:
+
+| Factory reference | Voltage | Factory degC | Code | `code - 50` |
+| --- | --- | --- | --- | --- |
+| coolant, engine oil | 4.4 V | -10 | 41.5 | -8.5 |
+| coolant, fuel tank, engine oil | 3.5 V | 20 | 70.5 | 20.5 |
+| intake air | 3.3 V | 25 | 75.5 | 25.5 |
+| coolant, fuel tank, engine oil | 2.2 V | 50 | 102 | 52 |
+| intake air | 1.2 V | 80 | 131 | 81 |
+| coolant, engine oil | 0.9 V | 90 | 144 | 94 |
+| engine oil | 0.6 V | 110 | 163.5 | 113.5 |
+
+The factory voltages carry one decimal place, which is 2.5 degC at the 90 degC
+point and 4.4 degC at the 110 degC point of the table.
+
+The oil-temperature monitors use the same coding. `FUN_00099E00` reports P0197
+while snapshot `0xFFFF10FB` of the input byte is below 3 and P0198 while it is
+242 or above, which is an input below 0.06 V or from 4.84 V; `ROM8[0x18701] =
+0x03` enables both. It calls rationality monitors `FUN_00099EFE` and
+`FUN_0009A0D4`, which report descriptor `0xE4`, P0196, only while
+`ROM8[0x18702]` bit 2 is set. The stock byte is `0xF9`, so JK08A skips both,
+while their constants remain in the image and follow the factory confirmation
+procedure:
+
+| Constant | Value | Compared byte | Under `degC + 50` | Factory procedure |
+| --- | --- | --- | --- | --- |
+| `ROM8[0x8CDA]` | 130 | coolant latch `0xFFFF5508`, at least | 80 degC | coolant above 80 degC before the soak |
+| `ROM8[0x8CDB]` | 90 | selected temperature `0xFFFF106E` and second byte `0xFFFF452C`, at most | 40 degC | coolant and intake air below 40 degC |
+| `ROM8[0x8CC9]` | 6 | absolute difference of the two, below | 6 degC | difference within 6 degC |
+| `ROM8[0x8964]` | 170 | oil snapshot `0xFFFF2772`, above | 120 degC | fault criterion |
+| `ROM16[0x9372]` | 300 | ticks of `0xFFFF84C3` bit 6 | | idle for 5 minutes |
+| `ROM8[0x8CD9]`, `ROM8[0x8962]`, `ROM8[0x8963]` | 100, 50, 6 | coolant above, oil below, oil span below | 50 degC, 0 degC, 6 degC | stuck-low criterion of `FUN_00099EFE` |
+
+## Battery-voltage scale
+
+`FUN_00039A9E` publishes DID `0x1103` byte `0xFFFF1188`. It copies the phase-2
+AN0 mux sample `0xFFFF1D6E`, selector code 001, to `0xFFFF1FC4`, stores the
+sample shifted right by two in `0xFFFF1FC6`, passes that byte through guard
+`FUN_00067188` and Q1.15 scaler `FUN_000671D8` with coefficient `0xFFFF4970`,
+the trim shared with the MAF words, and saturates the result to 255. With the
+stock coefficient `0x8000` the byte equals the sample shifted right by two, so
+one count is 20 mV at the converter input. Scheduler `FUN_00020DFE` copies the
+byte to snapshot `0xFFFF1108`, which the DTC monitors read.
+
+No reviewed instruction converts the byte to volts, and Mode 01 declares no
+module-voltage PID. The scale follows from the limits that the monitors apply
+to the snapshot. Five constants dominate the comparisons that the reading
+functions apply to the two bytes: 100, 125, 131, 137, and 200. They are the
+integer parts of 8, 10, 10.5, 11, and 16 times 12.5, and constants 50, 75, 112,
+150, 163, and 175 sit on the same 12.5-count lattice at 4, 6, 9, 12, 13, and
+14 V.
+
+| Monitor | DTCs | Accepted byte | At 0.08 V per count | Factory test condition |
+| --- | --- | --- | --- | --- |
+| `FUN_000995C4` | P0011, P0021 | `ROM8[0x8E0A] = 125 <` byte `<= ROM8[0x8E07] = 200` | 10.00 .. 16.00 V | between 10 V and 16 V |
+| `FUN_0008F168` | P0014, P0024 | `ROM8[0x8E0B] = 125 <` byte `<= ROM8[0x8E08] = 203`, and `137 <` byte `<= 200` | 10.00 .. 16.24 V | between 10 V and 16 V |
+| `FUN_00093C40` | P0031, P0051, P0052 | `ROM8[0x82B4] = 131 <=` byte `< 200` | 10.48 .. 16.00 V | between 10.5 V and 16 V |
+| `FUN_0009426E` | P0130, P0150 | `137 <=` byte `< 200` | 10.96 .. 16.00 V | more than 11 V |
+| `FUN_0009678C` | P2A00 | `137 <=` byte `< 200` | 10.96 .. 16.00 V | more than 11 V |
+| `FUN_000AC0D4` | P0462, P0463 | `137 <=` byte `< 200` | 10.96 .. 16.00 V | more than 11 V |
+| `FUN_000A40F4` | P0506, P0507 | byte `>= 100` and byte `>= 137` | from 8.00 V and from 10.96 V | more than 11 V |
+| `FUN_00099EFE`, `FUN_0009A0D4` | P0196 | byte `> 137` | above 10.96 V | more than 11 V |
+
+A scale of 20 V over 255 counts puts the same limits at 9.80, 10.27, 10.75, and
+15.69 V and meets none of the factory values. The monitors of the accelerator
+pedal and throttle position sensors accept the byte from 100, or 8.00 V, where
+the factory procedure asks for more than 10 V, and `FUN_0008B93A` accepts
+`131 <=` byte `< 200` for P0038 where the factory procedure states between 11 V
+and 16 V; the factory condition is the narrower one in both cases.
+
+The scale is therefore `V = raw * 0.08` for DID `0x1103`. It is established
+from ROM constants and factory specifications, not from firmware arithmetic.
+Against 20 mV per count at the converter input it implies a 4:1 divider between
+the battery terminal and the multiplexer input, and a full-scale byte of
+20.40 V. Target recordings hold 157 .. 180 counts, or 12.56 .. 14.40 V, around
+a diagnostic reading of 13.92 V. Raw 100, the limit of the computed START
+SIGNAL gates, is 8.00 V. A pin-referred measurement on the target ECU remains
+the open hardware item.
+
 ## Intake-air-temperature and P0128 model
 
 The exact DID table points the reviewed intake-air-temperature DID to

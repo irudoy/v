@@ -631,8 +631,8 @@ counter steps, not a duration word.
 Independent magnitudes agree with the scale:
 
 - Override word `0xFFFF2436` holds `70` counts, `0.70 ms`, at battery snapshot
-  `0xFFFF1108 = 175` and moves `92/128` counts per byte. Under the source-bound
-  `0.08 V/count` conversion that byte is `14.0 V` and the slope is `0.09 ms/V`;
+  `0xFFFF1108 = 175` and moves `92/128` counts per byte. At `0.08 V` per count
+  that byte is `14.0 V` and the slope is `0.09 ms/V`;
   over the recorded byte range `157..180` the word spans `0.66..0.82 ms`. That
   is the opening time of a port injector.
 - The stock `FUN_0005B7EC` floor `max(x, 0.8335*x + 25.94)` enforces a minimum
