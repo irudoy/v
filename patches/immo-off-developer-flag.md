@@ -125,8 +125,9 @@ GBR-relative literal, which a search for the absolute address does not see:
 
 `FUN_000EA0A0` and `FUN_000F68B8` have equal instruction-shape hashes and read
 the flag at instruction ordinal 31 of 130 bytes. Each image therefore carries
-eleven consumers of the flag, the same count as JK03A / JK08A, and no `1ME3B`
-literal pool holds `0x8668`. The site is a code fact of the target image; the
+eleven bit-0 read sites of the flag, nine through literal-pool words and two
+GBR-relative, against the eleven literal-pool loaders of JK03A / JK08A, and no
+`1ME3B` literal pool holds `0x8668`. The site is a code fact of the target image; the
 engine-inhibit path behind it is inherited from the `1ND` state machine by
 pairing and carries no hardware result.
 
