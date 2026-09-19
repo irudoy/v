@@ -12,10 +12,11 @@ precedence model for that mask is maintained in
 
 Arithmetic, RAM data flow, scheduler ordering, diagnostic bindings, and ATU-II
 register use are code-proven, and the code path from the compensated pulse
-words to the ATU-II one-shot outputs fixes their millisecond scale. Road-log
-statistics appear only where they bound a scale that code leaves open. The
-physical connection between the scheduled durations and the injector terminals
-remains a hardware-validation item.
+words to the ATU-II one-shot outputs fixes their millisecond scale. The same
+path places each pulse by crank angle from the injection-end delay tables.
+Road-log statistics appear only where they bound a scale that code leaves
+open. The physical connection between the scheduled durations and the injector
+terminals remains a hardware-validation item.
 
 ## Periodic ordering
 
@@ -651,6 +652,91 @@ bounds it instead. With the pulse scale absolute, the measured chain gain is
 `0.88` under `raw / 2048 ms`, `0.44` under `raw / 1024 ms`, and `1.76` under
 `raw / 4096 ms`. Only the near-unity value matches a chain whose recovered
 stages are unity-normalized.
+
+## Injection timing
+
+Each pulse is placed by crank angle. The delay runs from the reference engine
+event of the scheduled cylinder to the end of the pulse:
+
+```text
+0x12302, 0x1230A             injection-end delay tables, 4 crank degrees per count
+  -> FUN_00056BD0            0xFFFF192E = 2 * min(y, 209), 2 crank degrees per count
+  -> FUN_000521A8            start delay = end delay - pulse angle
+0xFFFF23F0, 0xFFFF23BF       lead in 120-degree events, start angle / 4
+  -> FUN_00020DFE            snapshots 0xFFFF2364 and 0xFFFF2333
+  -> FUN_00054A44            slot selection on every engine event
+  -> FUN_0002B64A            ATU-II GR1A compare for the start angle
+  -> FUN_0002BE40            compare-match handler fires the pending channel mask
+```
+
+`FUN_000521A8` takes the longest of the six transformed pulse words and floor
+`0xFFFF241C`, in `10 us` counts, and the engine-speed word in RPM/12.5
+(`0xFFFF11BC`, or `0xFFFF10CA` while `0xFFFF4184.bit6` is set):
+
+```text
+k = ((speed << 4) * ROM32[0x522A8]) >> 16      ROM32[0x522A8] = 0xC49B
+p = min((k * pulse) >> 16, 255)                pulse angle, 4 crank degrees per count
+E = uint16[0xFFFF192E]
+d = 2 * E - 4 * p  if E >= 2 * p  else 0       start delay, crank degrees
+d = max(d - ROM8[0x83EA], 0)                   only while 0xFFFF24C9.bit5 is set; stock 30
+0xFFFF23F0 = d / 120                           forced to 3 while 0xFFFF4251.bit0 is set
+0xFFFF23BF = clamp(d % 120, 4, 116) / 4
+```
+
+Three constants fix the angle domain. `p = rpm * t * 1.49998` while the crank
+turns `rpm * t * 6` degrees, so one count of `p` is 4 crank degrees. Divisor 120
+is the engine-event spacing of a six-cylinder four-stroke engine. `FUN_0002B64A`
+splits the same angle by the 10-degree crank tooth. One count of `0xFFFF192E`
+is therefore 2 crank degrees and one cell count of tables `0x12302` and
+`0x1230A` is 4 crank degrees. The stock base table holds 133 in all eight
+cells, 532 crank degrees; the conditional table holds 160..200, 640..800 crank
+degrees. A whole-ROM scan finds `FUN_000521A8` as the only reader of
+`0xFFFF192E`. The pulse angle comes from the longest of the six pulses, so the
+end delay is exact for that channel.
+
+`FUN_00054A44` is entry 1 of the ten-entry engine-event task table at `0x21B5C`
+and runs from feeder `FUN_000208F8` on every engine event. With `n` the
+engine-event cylinder index `0xFFFF11DE` in 1..6:
+
+```text
+lead = 0xFFFF2364 if 0xFFFF8513.bit5 else 3
+slot = (n - 1 - lead) mod 6                                    0xFFFF20B4
+if 0xFFFF84EC.bit7:                        delayed start of the previous event still pending
+    refill 0xFFFF224E; fire mask 0xFFFF2228; clear TIER1A bit 0
+delta = 0xFFFF221D - lead
+delta == 0: accept slot only if slot == (0xFFFF221E + 1) mod 6
+delta >  0: advance 0xFFFF221E through delta skipped slots, fire their masks at once, accept slot
+delta <  0: accept no slot
+0xFFFF2228 = ROM8[0x22695 + slot] if a slot is accepted else 0     cells 02 04 08 10 20 01
+0xFFFF221D = lead
+FUN_0002B64A(0x34 if 0xFFFF4251.bit0 else 4 * 0xFFFF2333)
+```
+
+The body after the slot calculation runs only while bits 7..5 of `0xFFFF8513`
+are all set. Engine-event driver `FUN_00029588` sets bit 6 after the first
+grouped pulse, whose masks come from `ROM8[0x226A2 + n]` (`00 18 30 21 03 06
+0C`), and bit 5 once start-event count `0xFFFF2298` reaches 4. While P0335
+fallback snapshot `0xFFFF24C9.bit5` is set and `0xFFFF8513.bit4` is clear, the
+sequencer sets bits 7..4 itself and seeds `0xFFFF221E` with the slot before
+the current one and `0xFFFF221D` with the lead. Every fired mask is ORed into `0xFFFF20B5`,
+`0xFFFF157E`, and `0xFFFF16FE`, removed from DFCO fallback history
+`0xFFFF1935`, and, with stock `ROM8[0x8D92]` bit 3 set, ORed into `0xFFFF14C3`
+and `0xFFFF14C2`.
+
+`FUN_0002B64A` sets pending flag `0xFFFF84EC.bit7`, splits its angle by ten
+through `FUN_00028E7C` into tooth count `0xFFFF13B8` and remainder
+`0xFFFF193B`, and, when the count is zero, writes
+`GR1A = 0xFFFF158A + 0xFFFF22BC * remainder / 10`, or `TCNT1A + 2` when that
+instant has passed. `0xFFFF22BC` is the time of one 10-degree crank tooth in
+`3.2 us` channel-1 counts and `0xFFFF158A` is the crank reference capture of
+the current event. It then clears `TSR1A` bit 0 and sets `TIER1A` bit 0. In
+P0335 fallback (`0xFFFF24C9.bit6`) an angle of 120 or more becomes count 1
+with remainder `angle - 120`. Handler `FUN_0002BE40` clears the pending flag
+and fires mask `0xFFFF2228` on the compare match.
+
+The crank angle of the reference event relative to TDC of the scheduled
+cylinder and the channel-to-cylinder order remain unresolved, so the tables fix
+the end of injection relative to that event only.
 
 ## Hardware validation priorities
 

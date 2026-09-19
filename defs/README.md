@@ -165,7 +165,8 @@ absent from the definition.
 ## Evidence specifications
 
 - `JK08A.notes.md` is a compact routing and evidence index, not a batch journal.
-- `JK08A.fuel.md` models the main fuel calculation and calculated pulse words.
+- `JK08A.fuel.md` models the main fuel calculation, calculated pulse words, and
+  crank-angle placement of the injection pulses.
 - `JK08A.load.md` separates the internal normalized-BFS map coordinate from
   J1979 Calculated Load and records their exact producers and scheduling.
 - `JK08A.maf-range-monitor.md` models the paired P0101/P010B range-performance
