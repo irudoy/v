@@ -359,12 +359,21 @@ def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation()
     assert checksums["alt2"].get("skiploc") == "0x20000"
     assert checksums["alt2"].get("sumloc") == "0x96FC"
     assert checksums["alt2"].get("xorloc") == "0x96F4"
-    assert len(target.findall("table")) == 102
+    assert len(target.findall("table")) == 120
     assert sum(1 for name in tables if name.startswith("DTC ")) == 75
     assert tables["MAF Factor"].get("storageaddress") == "0x08965"
     assert tables["Fuel Compensation - Main - Default"].get(
         "storageaddress"
     ) == "0x0A0F4"
+    assert tables["Fuel Compensation - Main - Alternate"].get(
+        "storageaddress"
+    ) == "0x0A1F4"
+    assert tables["VVEL Duration Target - Running"].get(
+        "storageaddress"
+    ) == "0x17276"
+    assert tables["VVEL Duration Target - Hot Intake Idle"].get(
+        "storageaddress"
+    ) == "0x0E17C"
     assert tables["Base Fuel Schedule K-Value"].get("storageaddress") == "0x09170"
     assert not any(name.startswith("Map 1 -") for name in tables)
     assert not any(name.startswith("Map 2 -") for name in tables)
@@ -375,7 +384,7 @@ def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation()
 
     root = ET.parse(DEFS / "1ME3B.xdf").getroot()
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 26
+    assert len(root.findall("XDFTABLE")) == 44
     assert root.find("XDFCHECKSUM") is None
     assert _xdf_table_address(xdf_tables["MAF Factor"]) == "0x8965"
     assert not root.findall("XDFFLAG")

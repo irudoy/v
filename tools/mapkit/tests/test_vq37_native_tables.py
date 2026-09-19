@@ -6,7 +6,7 @@ from tools.mapkit import rom as romkit
 from tools.mapkit import vq37_native_tables
 
 
-TARGETS = ("JK78C", "1ND0A", "1ND3B")
+TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
 SELECTOR_ROLES = {
     "fuel_compensation_alternate",
     "timing_state_addend_alternate",
@@ -57,6 +57,7 @@ ABSENT = {
     },
 }
 ABSENT["1ND3B"] = ABSENT["1ND0A"]
+ABSENT["1ME3B"] = ABSENT["JK78C"]
 
 
 def _projected_axes(target):
@@ -158,6 +159,29 @@ def test_registry_shares_the_1nd_layout_between_1nd0a_and_1nd3b():
 
     assert layouts["1ND0A"] == layouts["1ND3B"]
     assert registry["1ND0A"].stock_sha256 != registry["1ND3B"].stock_sha256
+
+
+def test_registry_binds_the_1me3b_roles_to_undisplaced_literals():
+    registry = vq37_native_tables.load_registry()
+    target = registry["1ME3B"]
+    reference = registry["JK78C"]
+
+    assert {t.identifier for t in target.tables} == {
+        t.identifier for t in reference.tables
+    }
+    assert {a.identifier for a in target.axes} == {
+        a.identifier for a in reference.axes
+    }
+    assert all(
+        pointer.offset == 0
+        for entity in (*target.tables, *target.axes)
+        for pointer in entity.pointer_bindings
+    )
+    floors = {
+        t.identifier: t for t in target.tables if t.identifier.endswith("_floor")
+    }
+    assert {t.address for t in floors.values()} == {0x165DC, 0x165EC}
+    assert all(t.axis_x == (0x165CC,) for t in floors.values())
 
 
 def test_registry_rejects_a_missing_role_declaration(tmp_path):

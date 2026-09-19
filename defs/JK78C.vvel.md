@@ -396,7 +396,11 @@ registry. The 1ND targets register the same roles at their own addresses; their
 resolver indexes the hot-intake idle surfaces by coolant temperature and
 intake air temperature (degC + 50), reads a mode 14 surface that its machine
 selects on the hot-intake idle request with the knock state set and the idle
-target at or above 650 RPM, and carries no floor curves.
+target at or above 650 RPM, and carries no floor curves. 1ME3B registers the
+JK78C role set at its own addresses: its resolver `0x062FAC` keeps the
+engine-speed and torque axes, holds 50.0 at every point of both floor curves,
+stores the constant 50.0 for mode 14, reads the cold pair and the shaft-angle
+conversion inline, and leaves the throttled pair to `0x063534`.
 
 ## Vendor correspondence
 

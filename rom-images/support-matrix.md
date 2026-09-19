@@ -22,7 +22,7 @@ engine name or similar graph structure does not permit address inheritance.
 | `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including independent intake-cam and exhaust-cam target switching | Relocated fuel-shadow actuator | Schema 2, mailbox 24 | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
-| `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence | None | None | None | Six fields in the project checksum model; no builder target | Stock read only; no derived image exists |
+| `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence plus native table registry | None | None | None | Six fields in the project checksum model; no builder target | Stock read only; no derived image exists |
 
 ## Diagnostic layer
 
@@ -69,8 +69,11 @@ binds the reviewed VQ37 semantic set to 27 of those tables and thirteen axes
 through `1ND0A` structural correspondence and records sixteen source maps as
 unsupported: the thirteen VQ37 rows and the three canonical ignition surfaces,
 whose gated stock-inert selector path the `1ME3B` ignition coordinator does not
-carry. The definition declares no Map Switching, Rolling Launch, or CAN
-telemetry.
+carry. `../defs/vq37-native-tables.toml` registers eighteen further tables and
+fifteen axes at code confidence: the two alternate selector arms and the VVEL
+target set of the resolver `0x062FAC`, which carries the JK78C role set with
+floor curves and a constant mode 14 pair. The definition declares no Map
+Switching, Rolling Launch, or CAN telemetry.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,
@@ -96,11 +99,12 @@ an individual entry.
 VQ37 duplicates two canonical roles into a default and an alternate table.
 Neither pair carries an engine-bank identity: both members of each pair are read
 with the same index byte and the same interpolator, and a state selector picks
-one of them. Canonical `0x0A29A` reaches JK78C `0x09EBA` and 1ND `0x0A1C0`;
-canonical `0x1219E` reaches JK78C `0x137E8` and 1ND `0x13C1A`. The alternates
-`0x09FBA`, `0x137F0`, `0x0A2C0`, and `0x13C22` have no canonical source and are
-registered in `../defs/vq37-native-tables.toml` with exact stock values and
-accessor literal-pool bindings.
+one of them. Canonical `0x0A29A` reaches JK78C `0x09EBA`, 1ND `0x0A1C0`, and
+1ME3B `0x0A0F4`; canonical `0x1219E` reaches JK78C `0x137E8`, 1ND `0x13C1A`, and
+1ME3B `0x13A26`. The alternates `0x09FBA`, `0x137F0`, `0x0A2C0`, `0x13C22`,
+`0x0A1F4`, and `0x13A2E` have no canonical source and are registered in
+`../defs/vq37-native-tables.toml` with exact stock values and accessor
+literal-pool bindings.
 
 The compensation accessors publish four parallel channels. The two 16x16
 surfaces share index byte `0xFFFF22F8` and axes `0x13AF8` and `0x13B18` and

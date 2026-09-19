@@ -160,7 +160,15 @@ mode-selected surfaces and no target function reproduces the gated stock-inert
 trio path of 1ND0A `0x074D98`. The projection declares checksum support with
 native RomRaider metadata over the `sh7059_1me3b` layout and no runtime
 allocation: Map Switching, Rolling Launch, and the CAN telemetry switch are
-absent from the definition.
+absent from the definition. The target-native table registry adds the two
+alternate selector arms and the VVEL target set to the 1ME3B definition:
+eighteen tables and fifteen axes, each bound to an undisplaced literal-pool
+word of its reading function. The 1ME3B resolver `0x062FAC` carries the JK78C
+role set, with the JK78C engine-speed and torque axes on the hot-intake idle
+surfaces, two floor curves over the demand axis, and the constant 50.0 in the
+mode 14 pair. It reads the shaft-angle conversion and the cold pair inline and
+leaves the throttled pair to `0x063534`, which publishes the throttled duration
+as the curve value or as a stepped approach to it from 50.0.
 
 ## Evidence specifications
 
@@ -289,8 +297,8 @@ table in the target image and matches records. 1ME3B is the case that separates
 the two, and it also shows that this registry precedes every other analysis
 layer. Its 334 descriptor records at `0x1bf58` hold the 31 codes it shares with
 the 331 records of `1ND0A` at three different relocations and at index offsets
-of `-1`, `0`, and `+1`, and it carries no structural export, checksum layout, or
-definition target.
+of `-1`, `0`, and `+1`, and the projection matches them without reference to the
+structural export, checksum layout, or definition correspondence of the image.
 
 The Developer Immobilizer flag is a definition-controlled data edit, not a
 standalone instruction patch. Its execution path and safety boundary are in

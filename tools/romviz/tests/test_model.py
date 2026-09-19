@@ -75,8 +75,8 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers():
     assert rom["metadata"]["Engine"] == "VQ37VHR"
     assert rom["metadata"]["MCU"] == "SH7059"
     assert rom["counts"]["diagnostics"] == 76
-    assert rom["counts"]["maps"] == 26
-    assert rom["counts"]["axes"] == 11
+    assert rom["counts"]["maps"] == 44
+    assert rom["counts"]["axes"] == 26
     assert rom["counts"]["patches"] == 76
     assert rom["counts"]["integrity"] == 11
     assert {
@@ -102,6 +102,13 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers():
         if item["label"] == "Developer Immobilizer"
     )
     assert immobilizer["start"] == 0x8671
+    running_duration = next(
+        item
+        for item in rom["objects"]
+        if item["label"] == "VVEL Duration Target - Running"
+    )
+    assert running_duration["start"] == 0x17276
+    assert running_duration["source"] == "defs/1ME3B.xml"
     assert all(
         item["source"].startswith("defs/1ME3B.dtc.csv:")
         for item in rom["objects"]
