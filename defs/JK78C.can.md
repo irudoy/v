@@ -80,6 +80,32 @@ The record tables are contiguous: `0x000094C2` is `0x0000944A + 120`.
 | 29 | `0x94BA` | 2 | RX | 0 | `0x000` |
 | 30 | `0x94BE` | 2 | RX | 0 | `0x000` |
 
+## HCAN1 dispatch branches without a stock record
+
+The HCAN1 receive dispatcher `FUN_000EB58C` walks the 30 records of
+`0x0000944A`, selects the receive records with pending data, and branches on
+the record word `STDID << 5`. Six of its comparands have no receive record in
+the stock table, so their handlers are not reached:
+
+| Comparand | Standard ID | Handler |
+| ---: | ---: | --- |
+| `0x2E80` | `0x174` | `FUN_000EC214` |
+| `0x2EC0` | `0x176` | `FUN_000EC5E8` |
+| `0x2EE0` | `0x177` | `FUN_000EC674` |
+| `0x34A0` | `0x1A5` | `FUN_000EC8B0` |
+| `0xAC00` | `0x560` | `FUN_000EC99E` |
+| `0x5600` | `0x2B0` | `FUN_000ECABC` |
+
+`FUN_000EC214` reads the shadow payload `0xFFFF3DA3..0xFFFF3DA8` of record 11,
+physical mailbox 12, which the stock table leaves inactive. It decodes byte 3
+of frame `0x174`: the low nibble becomes the current-gear index `0xFFFF1079`
+and the high nibble the target-gear index `0xFFFF107A`, values 1 through 7 as
+indices 0 through 6 and every other value as zero, with `0xFFFF2410.bit0` set
+while the two differ. Byte 4 bits 5 through 7 go to `0xFFFF3C90`. The only
+other writer of the two gear bytes, `FUN_000EDB00`, stores zero in both when
+`0xFFFF45BC.bit0` is set. The periodic walker `FUN_00020F1A` latches the pair
+into `0xFFFF1076` and `0xFFFF1077`.
+
 ## HCAN0 mailbox records
 
 Mailboxes 8 through 30 are inactive.

@@ -125,7 +125,15 @@ The predicate cells resolve as follows.
   `0xFFFF45CA.bit6` is set and the pass counter `0xFFFF36B5` is at or below
   the window byte `0xFFFF36B4`, otherwise 0. `FUN_00096CE0` sets
   `0xFFFF45CA.bit6` while the index bytes `0xFFFF1076` and `0xFFFF1077`
-  differ with `0xFFFF45CA.bit2` clear.
+  differ with `0xFFFF45CA.bit2` clear. The two bytes latch `0xFFFF1079` and
+  `0xFFFF107A`, the zero-based current-gear and target-gear indices that
+  `FUN_000EC214` decodes from byte 3 of the transmission frame `0x174` (low
+  and high nibble, values 1 through 7, every other value as zero). The HCAN1
+  dispatcher `FUN_000EB58C` calls that parser only for a receive record with
+  standard ID `0x174`; the record table `0x0000944A` holds none, and the only
+  other writer, `FUN_000EDB00`, stores zero in both bytes. No reachable store
+  makes the two bytes differ, so this term leaves `0xFFFF45CA.bit6` clear on
+  the stock image.
 - `0xFFFF43D0` latches `0xFFFF43DC` through the block copy
   `0xFFFF43C8 <- 0xFFFF43D4`. `FUN_000902E0` writes it as a quarter of the
   demanded throttle-angle word: curve `0x000167E4` over axis `0x00014538`,
@@ -422,8 +430,7 @@ stored scales listed as code-proven.
 
 Open: the ECM terminal of the PH1 input behind `0xFFFF23B1.bit6`; the
 physical unit of the signed request words behind `0xFFFF45C0.bit0` and
-`0xFFFF23F9.bit4`; the source of the index bytes `0xFFFF1076` and
-`0xFFFF1077`; the physical unit of the scaled pressure words; whether `0xFFFF1CE2` (DID `0x1116` source
+`0xFFFF23F9.bit4`; the physical unit of the scaled pressure words; whether `0xFFFF1CE2` (DID `0x1116` source
 through `FUN_0004185A`) and `0xFFFF256E` sample the same MAP input; the
 candidate scales above; and the agreement of the computed command with DID
 `0x125C` on live data. The pass period follows the vector-120 handler and
