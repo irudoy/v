@@ -69,10 +69,14 @@ binds the reviewed VQ37 semantic set to 27 of those tables and thirteen axes
 through `1ND0A` structural correspondence and records sixteen source maps as
 unsupported: the thirteen VQ37 rows and the three canonical ignition surfaces,
 whose gated stock-inert selector path the `1ME3B` ignition coordinator does not
-carry. `../defs/vq37-native-tables.toml` registers eighteen further tables and
-fifteen axes at code confidence: the two alternate selector arms and the VVEL
-target set of the resolver `0x062FAC`, which carries the JK78C role set with
-floor curves and a constant mode 14 pair. The definition declares no Map
+carry. `../defs/vq37-native-tables.toml` registers twenty-five further tables
+and twenty-two axes at code confidence: the two alternate selector arms and the
+VVEL target set of the resolver `0x062FAC`, which carries the JK78C role set
+with floor curves and a constant mode 14 pair, the second copies of the
+shaft-angle conversion and monitor floors, the hot-intake idle pair of the
+state-code dispatcher `0x07448C`, and the two curves that only this image
+holds, the throttled ramp delay `0x01457A` and the start-up blend target
+`0x017136`. The definition declares no Map
 Switching, Rolling Launch, or CAN telemetry.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with

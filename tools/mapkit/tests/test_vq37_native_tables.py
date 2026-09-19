@@ -21,6 +21,10 @@ VVEL_TABLE_ROLES = {
     "vvel_duration_mode_14",
     "vvel_duration_cold",
     "vvel_duration_startup",
+    "vvel_duration_model_hot_intake_idle",
+    "vvel_duration_model_hot_intake_idle_knock",
+    "vvel_duration_throttled_ramp_delay",
+    "vvel_duration_startup_blend",
     "intake_cvtc_target_running",
     "intake_cvtc_target_throttled",
     "intake_cvtc_target_cold",
@@ -29,6 +33,9 @@ VVEL_TABLE_ROLES = {
     "vvel_shaft_angle_limit_cvtc",
     "vvel_shaft_angle_monitor_floor_a",
     "vvel_shaft_angle_monitor_floor_b",
+    "vvel_command_shaft_angle_second",
+    "vvel_shaft_angle_monitor_floor_a_second",
+    "vvel_shaft_angle_monitor_floor_b_second",
 }
 VVEL_AXIS_ROLES = {
     "vvel_duration_running_axis",
@@ -38,6 +45,10 @@ VVEL_AXIS_ROLES = {
     "vvel_duration_hot_intake_idle_floor_axis",
     "vvel_cold_axis",
     "vvel_duration_startup_axis",
+    "vvel_duration_model_hot_intake_idle_axis_x",
+    "vvel_duration_model_hot_intake_idle_axis_y",
+    "vvel_duration_throttled_ramp_delay_axis",
+    "vvel_duration_startup_blend_axis",
     "intake_cvtc_target_running_axis",
     "intake_cvtc_target_throttled_axis_x",
     "intake_cvtc_target_throttled_axis_y",
@@ -46,18 +57,37 @@ VVEL_AXIS_ROLES = {
     "vvel_shaft_angle_limit_cvtc_axis",
     "vvel_shaft_angle_monitor_floor_a_axis",
     "vvel_shaft_angle_monitor_floor_b_axis",
+    "vvel_shaft_angle_second_axis",
+    "vvel_shaft_angle_monitor_floor_a_second_axis",
+    "vvel_shaft_angle_monitor_floor_b_second_axis",
 }
 ROLES = SELECTOR_ROLES | VVEL_TABLE_ROLES | VVEL_AXIS_ROLES
+# The stepped approach to the throttled duration and the start-up blend target
+# exist only in the 1ME3B resolver.
+ONE_ME3B_ONLY_ROLES = {
+    "vvel_duration_throttled_ramp_delay",
+    "vvel_duration_throttled_ramp_delay_axis",
+    "vvel_duration_startup_blend",
+    "vvel_duration_startup_blend_axis",
+}
+# The 1ND state-code dispatcher reads the resolver surfaces in place of a
+# separate hot-intake idle pair.
+STATE_WORD_PAIR_ROLES = {
+    "vvel_duration_model_hot_intake_idle",
+    "vvel_duration_model_hot_intake_idle_knock",
+    "vvel_duration_model_hot_intake_idle_axis_x",
+    "vvel_duration_model_hot_intake_idle_axis_y",
+}
 ABSENT = {
-    "JK78C": {"vvel_duration_mode_14"},
+    "JK78C": {"vvel_duration_mode_14"} | ONE_ME3B_ONLY_ROLES,
     "1ND0A": {
         "vvel_duration_hot_intake_idle_floor",
         "vvel_duration_hot_intake_idle_knock_floor",
         "vvel_duration_hot_intake_idle_floor_axis",
-    },
+    } | STATE_WORD_PAIR_ROLES | ONE_ME3B_ONLY_ROLES,
+    "1ME3B": {"vvel_duration_mode_14"},
 }
 ABSENT["1ND3B"] = ABSENT["1ND0A"]
-ABSENT["1ME3B"] = ABSENT["JK78C"]
 
 
 def _projected_axes(target):
@@ -166,12 +196,10 @@ def test_registry_binds_the_1me3b_roles_to_undisplaced_literals():
     target = registry["1ME3B"]
     reference = registry["JK78C"]
 
-    assert {t.identifier for t in target.tables} == {
-        t.identifier for t in reference.tables
-    }
-    assert {a.identifier for a in target.axes} == {
-        a.identifier for a in reference.axes
-    }
+    identifiers = {e.identifier for e in (*target.tables, *target.axes)}
+    assert identifiers == {
+        e.identifier for e in (*reference.tables, *reference.axes)
+    } | ONE_ME3B_ONLY_ROLES
     assert all(
         pointer.offset == 0
         for entity in (*target.tables, *target.axes)

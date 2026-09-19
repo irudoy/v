@@ -958,6 +958,49 @@
       </table>
     </table>
 
+    <!-- 0x1B738  16 uint16  map [code]
+         accessor 0x5C7D4; r4 operand: reviewed-target
+         scaling x count [code]; axis 0x1B718 raw [code]
+         Exact 1ME3B target-native table at 0x1b738 bound to accessor 0x5c7d4 through literal
+         0x5c974. Read by FUN_0005C7D4 at callsites 0x5C7E6 and 0x5C7FA through the 16-point
+         uint16 leaf 0x2BCD4; the primary conversion 0x00015A76 goes through the leaf 0x2AF88.
+         FUN_0005BB04 is the only caller and the only reader of the float. The two argument
+         words are the measured angles that the deficit monitors FUN_000EB19A subtract from the
+         floor maximum. Stock bytes are identical to the primary table 0x00015A76.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Command Word - Shaft Angle Conversion, Second Copy"
+           category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
+           storageaddress="0x1B738" sizex="16" endian="big">
+      <scaling units="count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="64"/>
+      <table type="X Axis" name="VVEL Shaft Angle [deg]" storagetype="uint16"
+             storageaddress="0x1B718" sizex="16" endian="big">
+        <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00"
+                 fineincrement="0.05" coarseincrement="0.5"/>
+      </table>
+    </table>
+
+    <!-- 0x1B9B8  8 uint16  map [code]
+         accessor 0x66C30; r4 operand: reviewed-target
+         scaling x/512 deg [code]; axis 0x1B438 rpm [candidate]
+         Exact 1ME3B target-native table at 0x1b9b8 bound to accessor 0x66c30 through literal
+         0x66c60. Read by FUN_00066C30 at callsite 0x66C3C through the 8-point uint16 leaf
+         0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x22240 of
+         a function-pointer list. The maximum with the primary floor words fixes the 1/512
+         degree domain. Stock bytes are identical to the primary table 0x0001668C.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Shaft Angle Monitor Floor - A, Second Copy"
+           category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
+           storageaddress="0x1B9B8" sizex="8" endian="big">
+      <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00" fineincrement="0.05"
+               coarseincrement="0.5"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x1B438" sizex="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
+      </table>
+    </table>
+
     <!-- 0x170F6  8 uint16  map [code]
          accessor 0x62FAC; r4 operand: reviewed-target
          scaling x*0.05 deg [candidate]; axis 0x17176 temp [code]
@@ -976,6 +1019,27 @@
              storageaddress="0x17176" sizex="8" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
                  coarseincrement="5"/>
+      </table>
+    </table>
+
+    <!-- 0x1B9C8  8 uint16  map [code]
+         accessor 0x66C18; r4 operand: reviewed-target
+         scaling x/512 deg [code]; axis 0x1BD98 rpm [candidate]
+         Exact 1ME3B target-native table at 0x1b9c8 bound to accessor 0x66c18 through literal
+         0x66c50. Read by FUN_00066C18 at callsite 0x66C24 through the 8-point uint16 leaf
+         0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x2223C of
+         a function-pointer list. The maximum with the primary floor words fixes the 1/512
+         degree domain. Stock bytes are identical to the primary table 0x0001669C.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Shaft Angle Monitor Floor - B, Second Copy"
+           category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
+           storageaddress="0x1B9C8" sizex="8" endian="big">
+      <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00" fineincrement="0.05"
+               coarseincrement="0.5"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x1BD98" sizex="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -999,6 +1063,37 @@
              storageaddress="0x178D6" sizex="16" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
                  coarseincrement="5"/>
+      </table>
+    </table>
+
+    <!-- 0x1027C  8x8 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x*0.05 deg [candidate]; Y Axis 0x173B6 rpm [code]; X Axis 0x173A6 load
+         [candidate]
+         Exact 1ME3B target-native table at 0x1027c bound to accessor 0x7448c through literal
+         0x75244. Read by FUN_0007448C at callsites 0x750AE and 0x75176 through the 8x8 uint16
+         leaf 0x29EC0 with r7 = min(0xFFFF, 0xFFFE819E << 2), the 12.5 RPM per count engine-
+         speed word in the 3.125 RPM domain on the first axis and the stack coordinate the load
+         byte 0xFFFE8034 << 8, the byte that indexes the ignition mode surfaces in FUN_000797CC
+         on the second axis. The same dispatcher takes the throttled curve 0x000173D6 for state
+         codes 1 and 3, so the word shares the 0.05 domain of that curve. The resolver pair of
+         modes 12 and 13 is a separate pair of surfaces with its own axes.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="VVEL Duration State Word - Hot Intake Idle"
+           category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
+           storageaddress="0x1027C" sizex="8" sizey="8" endian="big">
+      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
+               fineincrement="0.05" coarseincrement="0.5"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x173A6"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
+                 coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x173B6" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -1026,6 +1121,32 @@
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x13D06" sizey="16" endian="big">
         <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x102FC  8x8 uint16  map [code]
+         accessor 0x7448C; r4 operand: reviewed-target
+         scaling x*0.05 deg [candidate]; Y Axis 0x173B6 rpm [code]; X Axis 0x173A6 load
+         [candidate]
+         Exact 1ME3B target-native table at 0x102fc bound to accessor 0x7448c through literal
+         0x7524c. Read by FUN_0007448C at callsites 0x750CC and 0x75198 through the 8x8 uint16
+         leaf 0x29EC0 with the coordinates and axes of the state code 5 surface 0x0001027C.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="VVEL Duration State Word - Hot Intake Idle, Knock"
+           category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
+           storageaddress="0x102FC" sizex="8" sizey="8" endian="big">
+      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
+               fineincrement="0.05" coarseincrement="0.5"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x173A6"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
+                 coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x173B6" sizey="8" endian="big">
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -1066,6 +1187,27 @@
       </table>
     </table>
 
+    <!-- 0x1457A  8 uint8  map [code]
+         accessor 0x63534; r4 operand: reviewed-target
+         scaling x count [code]; axis 0x14582 temp [code]
+         Exact 1ME3B target-native table at 0x1457a bound to accessor 0x63534 through literal
+         0x637bc. Read by FUN_00063534 at callsite 0x6355C through the 8-point uint8 leaf
+         0x2AC9C indexed by its first byte argument, the byte that the resolver FUN_00062FAC
+         also passes to FUN_0006375E as the start-up curve coordinate. The time weight of one
+         count of the helper argument is not bound to a published parameter.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Duration Throttled - Ramp Delay"
+           category="Variable Valve Timing//VVEL Duration" storagetype="uint8"
+           storageaddress="0x1457A" sizex="8" endian="big">
+      <scaling units="count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="5"/>
+      <table type="X Axis" name="Selected Temperature [degC]" storagetype="uint8"
+             storageaddress="0x14582" sizex="8" endian="big">
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
+      </table>
+    </table>
+
     <!-- 0x14190  6 uint8  map [candidate]
          scaling x/128 ratio [candidate]
          All six stock cells are 128, so every channel uses multiplier 1.0. A set bit in
@@ -1082,6 +1224,27 @@
       <table type="Static X Axis" name="Channel" sizex="6">
         <data>1</data><data>2</data><data>3</data><data>4</data>
         <data>5</data><data>6</data>
+      </table>
+    </table>
+
+    <!-- 0x17136  8 uint16  map [code]
+         accessor 0x6375E; r4 operand: reviewed-target
+         scaling x*0.05 deg [candidate]; axis 0x17186 temp [code]
+         Exact 1ME3B target-native table at 0x17136 bound to accessor 0x6375e through literal
+         0x639d0. Read by FUN_0006375E at callsite 0x63866 through the 8-point uint16 leaf
+         0x2AEAC indexed by the low byte of its stack argument, the byte that indexes the cold
+         duration curve 0x000170F6 in the resolver FUN_00062FAC. The weight w moves by
+         ROM16[0x9474] / 32768 per pass within 0..1.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Duration Target - Start-up Blend"
+           category="Variable Valve Timing//VVEL Duration" storagetype="uint16"
+           storageaddress="0x17136" sizex="8" endian="big">
+      <scaling units="deg [cand]" expression="x*0.05" to_byte="x/0.05" format="0.00"
+               fineincrement="0.05" coarseincrement="0.5"/>
+      <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint16"
+             storageaddress="0x17186" sizex="8" endian="big">
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
       </table>
     </table>
 

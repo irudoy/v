@@ -125,8 +125,11 @@ profile. The target-native fuel-cut projection adds the adjacent activation and
 release caps plus the two independent eight-point curves used by the exact
 190-byte state machine. The target-native table registry adds the two
 alternate selector arms and the VVEL target set modelled in `JK78C.vvel.md`:
-sixteen duration, intake-CVTC, shaft-angle, and monitor tables with fifteen
-exact axes, each bound to the literal pool of its reading function. The
+twenty-one duration, intake-CVTC, shaft-angle, and monitor tables with twenty
+exact axes, each bound to the literal pool of its reading function. The set
+includes the byte-identical second copies of the shaft-angle conversion and of
+both monitor floors, and the hot-intake idle pair of the state-code dispatcher
+`0x0657E4`. The
 XML/XDF files expose editor controls; the unified builder remains responsible
 for runtime composition and complete checksum closure.
 
@@ -143,11 +146,14 @@ checksum fields, but native RomRaider checksum metadata cannot represent the
 complete layout. Their target-native fuel-cut maps, Rolling Launch controls,
 and exact scheduler-to-coordinator bindings are shared at the same addresses,
 while each definition remains bound to its independent stock image hash. The
-1ND VVEL registry carries fifteen target-native tables and fourteen axes at
+1ND VVEL registry carries eighteen target-native tables and seventeen axes at
 shared addresses: the 1ND resolver indexes the hot-intake idle surfaces by two
 temperature-coded bytes instead of engine speed and torque, reads a mode 14
 surface that JK78C replaces with a constant, and has no floor curves and no
-demand axis, which the registry declares as absent roles.
+demand axis, which the registry declares as absent roles. The 1ND state-code
+dispatcher `0x070514` reads the resolver surfaces in place of a separate
+hot-intake idle pair, so that pair is absent too; the second copies of the
+shaft-angle conversion and of both monitor floors are present.
 
 `JK08A-1ME3B.definition-addresses.csv` projects the same reviewed VQ37
 semantic set to the fused-library 1ME3B image. It records 27 target maps,
@@ -165,8 +171,11 @@ native RomRaider metadata over the `sh7059_1me3b` layout and no runtime
 allocation: Map Switching, Rolling Launch, and the CAN telemetry switch are
 absent from the definition. The target-native table registry adds the two
 alternate selector arms and the VVEL target set to the 1ME3B definition:
-eighteen tables and fifteen axes, each bound to an undisplaced literal-pool
-word of its reading function. The 1ME3B resolver `0x062FAC` carries the JK78C
+twenty-five tables and twenty-two axes, each bound to an undisplaced
+literal-pool word of its reading function. Two curves exist only in this image
+and are declared absent on the other three: the delay curve `0x01457A` of the
+stepped approach to the throttled duration and the start-up blend target
+`0x017136`. The 1ME3B resolver `0x062FAC` carries the JK78C
 role set, with the JK78C engine-speed and torque axes on the hot-intake idle
 surfaces, two floor curves over the demand axis, and the constant 50.0 in the
 mode 14 pair. It reads the shaft-angle conversion and the cold pair inline and

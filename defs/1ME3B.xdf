@@ -1013,6 +1013,90 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x5C22" flags="0x0">
+    <title>VVEL Command Word - Shaft Angle Conversion, Second Copy</title>
+    <description>Exact 1ME3B. Address 0x1B738; 1 rows x 16 columns; uint16; map confidence code. Second copy of the shaft-angle conversion, read only by FUN_0005C7D4: it converts the two measured control-shaft angle words 0xFFFE97A6 and 0xFFFE97A8 to the command-word domain and publishes the mean of the two results times 1/512 as the float 0xFFFEF1A8 for FUN_0005BB04. Exact 1ME3B target-native table at 0x1b738 bound to accessor 0x5c7d4 through literal 0x5c974. Read by FUN_0005C7D4 at callsites 0x5C7E6 and 0x5C7FA through the 16-point uint16 leaf 0x2BCD4; the primary conversion 0x00015A76 goes through the leaf 0x2AF88. FUN_0005BB04 is the only caller and the only reader of the float. The two argument words are the measured angles that the deficit monitors FUN_000EB19A subtract from the floor maximum. Stock bytes are identical to the primary table 0x00015A76.</description>
+    <CATEGORYMEM index="0" category="19" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1B718" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>deg</units>
+      <indexcount>16</indexcount>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X/512">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1B738" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x1D3D" flags="0x0">
+    <title>VVEL Shaft Angle Monitor Floor - A, Second Copy</title>
+    <description>Exact 1ME3B. Address 0x1B9B8; 1 rows x 8 columns; uint16; map confidence code. Second copy of monitor floor A: FUN_00066C30 interpolates it by the word 0xFFFE81B0 into 0xFFFEABA4, one of the four floor words 0xFFFEA4DE, 0xFFFEA4E0, 0xFFFEABA4, and 0xFFFEABA6 whose maximum the deficit monitors FUN_000EB19A compare with the measured control-shaft angle. Exact 1ME3B target-native table at 0x1b9b8 bound to accessor 0x66c30 through literal 0x66c60. Read by FUN_00066C30 at callsite 0x66C3C through the 8-point uint16 leaf 0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x22240 of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x0001668C.</description>
+    <CATEGORYMEM index="0" category="19" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1B438" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1B9B8" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/512">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x3121" flags="0x0">
     <title>VVEL Duration Target - Cold</title>
     <description>Exact 1ME3B. Address 0x170F6; 1 rows x 8 columns; uint16; map confidence code. Mode 3 duration target of the VVEL resolver: the cold pair. Interpolated by a coolant-coded byte and scaled by 0.05. Exact 1ME3B target-native table at 0x170f6 bound to accessor 0x62fac through literal 0x63434. Read by the resolver FUN_00062FAC at callsite 0x6320E through the 8-point uint16 leaf 0x2AEAC with its own literal pool words for the curve and the axis; the value goes to pair 2 of the output. JK78C reads its curve in the separate function FUN_00056A14. Stock bytes are identical to JK78C 0x00016A54.</description>
@@ -1055,6 +1139,48 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x2C7C" flags="0x0">
+    <title>VVEL Shaft Angle Monitor Floor - B, Second Copy</title>
+    <description>Exact 1ME3B. Address 0x1B9C8; 1 rows x 8 columns; uint16; map confidence code. Second copy of monitor floor B: FUN_00066C18 interpolates it by the word 0xFFFE81B0 into 0xFFFEABA6, one of the four floor words 0xFFFEA4DE, 0xFFFEA4E0, 0xFFFEABA4, and 0xFFFEABA6 whose maximum the deficit monitors FUN_000EB19A compare with the measured control-shaft angle. Exact 1ME3B target-native table at 0x1b9c8 bound to accessor 0x66c18 through literal 0x66c50. Read by FUN_00066C18 at callsite 0x66C24 through the 8-point uint16 leaf 0x2AEAC. No direct call reaches the reader; its entry address is the word at 0x2223C of a function-pointer list. The maximum with the primary floor words fixes the 1/512 degree domain. Stock bytes are identical to the primary table 0x0001669C.</description>
+    <CATEGORYMEM index="0" category="19" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x1BD98" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1B9C8" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X/512">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0xDAF2" flags="0x0">
     <title>VVEL Duration Target - Start-up</title>
     <description>Exact 1ME3B. Address 0x163E4; 1 rows x 16 columns; uint16; map confidence code. Start-up duration of the mode 2 and mode 11 pairs: the curve by a temperature byte, scaled by 0.05. With the request argument set, a weighted mix of ROM16[0x94A8] and the eight-point curve 0x00017136 replaces the curve. Exact 1ME3B target-native table at 0x163e4 bound to accessor 0x6375e through literal 0x639e4. Read by FUN_0006375E at callsite 0x63894 through the 16-point uint16 leaf 0x2AF88; the resolver FUN_00062FAC copies the result from 0xFFFEF468 to pairs 1 and 10 of its output. With the request argument set, FUN_0006375E publishes w * ROM16[0x94A8] + (1 - w) * curve 0x00017136 over axis 0x00017186, scaled by 0.05, where the weight w moves by ROM16[0x9474] / 32768 per pass within 0..1; JK78C ramps between two ROM words instead. Stock bytes are identical to JK78C 0x00015E32.</description>
@@ -1089,6 +1215,48 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x163E4" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x1498" flags="0x0">
+    <title>VVEL Duration State Word - Hot Intake Idle</title>
+    <description>Exact 1ME3B. Address 0x1027C; 8 rows x 8 columns; uint16; map confidence code. Duration word surface of the state-code dispatcher FUN_0007448C for state code 5; FUN_00050310 assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14. The dispatcher evaluates the state bytes 0xFFFEB826 and 0xFFFEB8DC in turn and publishes the duration word 0xFFFE821E. Stock values are 1000 = 50.0 at every cell. Exact 1ME3B target-native table at 0x1027c bound to accessor 0x7448c through literal 0x75244. Read by FUN_0007448C at callsites 0x750AE and 0x75176 through the 8x8 uint16 leaf 0x29EC0 with r7 = min(0xFFFF, 0xFFFE819E &lt;&lt; 2), the 12.5 RPM per count engine-speed word in the 3.125 RPM domain on the first axis and the stack coordinate the load byte 0xFFFE8034 &lt;&lt; 8, the byte that indexes the ignition mode surfaces in FUN_000797CC on the second axis. The same dispatcher takes the throttled curve 0x000173D6 for state codes 1 and 3, so the word shares the 0.05 domain of that curve. The resolver pair of modes 12 and 13 is a separate pair of surfaces with its own axes.</description>
+    <CATEGORYMEM index="0" category="18" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x173A6" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Normalized BFS [%] [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.0030517578125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x173B6" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1027C" mmedelementsizebits="16" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
       <units>deg [cand]</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
@@ -1139,6 +1307,48 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x788D" flags="0x0">
+    <title>VVEL Duration State Word - Hot Intake Idle, Knock</title>
+    <description>Exact 1ME3B. Address 0x102FC; 8 rows x 8 columns; uint16; map confidence code. Duration word surface of the state-code dispatcher FUN_0007448C for state codes 6 and 7; FUN_00050310 assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14. Stock values are 1000 = 50.0 at every cell. Exact 1ME3B target-native table at 0x102fc bound to accessor 0x7448c through literal 0x7524c. Read by FUN_0007448C at callsites 0x750CC and 0x75198 through the 8x8 uint16 leaf 0x29EC0 with the coordinates and axes of the state code 5 surface 0x0001027C.</description>
+    <CATEGORYMEM index="0" category="18" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x173A6" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>Normalized BFS [%] [cand]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>1</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*0.0030517578125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x173B6" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>RPM</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X*3.125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x102FC" mmedelementsizebits="16" mmedrowcount="8" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x43F4" flags="0x0">
     <title>Fuel Compensation - Main - Alternate</title>
     <description>Exact 1ME3B. Address 0xA1F4; 16 rows x 16 columns; uint8; map confidence code. Alternate multiplicative fuel correction with raw 128 = 100% as neutral. It shares both coordinates, both axes, and the interpolator of the projected default surface 0x0000A0F4, and the state selector in FUN_000486E0 reads it in place of that surface for state code 2. Exact 1ME3B target-native table at 0xa1f4 bound to accessor 0x3357c through literal 0x33ed8, accessor 0x486e0 through literal 0x48b7c. Read by FUN_0003357C at callsite 0x33CEC and by FUN_000486E0 at 0x48A10 through the 16x16 uint8 leaf 0x298B4, in each accessor directly after the default surface 0x0000A0F4 with the same coordinates and the same axis pair 0x00013D06 and 0x00013D26, so neither surface carries an engine-bank identity. Both accessors store the default result in the channel byte 0xFFFE8ED6, this surface in 0xFFFE8ED7, and the curve 0x00013CF6 over axis 0x00013D16 in 0xFFFE8ED5. FUN_0003357C initializes the output byte 0xFFFE8ED4 and the held byte 0xFFFE8ED8 with the default channel. FUN_000486E0 selects a channel by a state code, where code 2 selects this surface, code 8 selects the curve, and every other code selects the default surface. It publishes in 0xFFFE8ED4 the crossfade of the channel of state byte 0xFFFEB822, weighted by the word 0xFFFEB820, against the channel of state byte 0xFFFEB850, or against the held output while the transition flag 0xFFFEBA3A.bit0 is set; the literal 0x8000 at 0x48B90 is weight 1.0. The call pair reproduces the 1ND0A accessors FUN_00030810 and FUN_00044F1C. Thirteen of the 256 stock cells differ from the JK78C surface 0x00009FBA.</description>
@@ -1177,6 +1387,48 @@
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.78125">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xF466" flags="0x0">
+    <title>VVEL Duration Throttled - Ramp Delay</title>
+    <description>Exact 1ME3B. Address 0x1457A; 1 rows x 8 columns; uint8; map confidence code. Delay curve of the stepped approach to the throttled duration: FUN_00063534 multiplies the value by 100 and passes it to the delay helper FUN_0002861E, which gates the offset that steps toward the curve 0x000173D6. Stock values fall from 30 at -30 degC to 0 at 40 degC. Exact 1ME3B target-native table at 0x1457a bound to accessor 0x63534 through literal 0x637bc. Read by FUN_00063534 at callsite 0x6355C through the 8-point uint8 leaf 0x2AC9C indexed by its first byte argument, the byte that the resolver FUN_00062FAC also passes to FUN_0006375E as the start-up curve coordinate. The time weight of one count of the helper argument is not bound to a published parameter.</description>
+    <CATEGORYMEM index="0" category="18" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x14582" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
+      <units>degC</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1457A" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>count</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -1224,6 +1476,48 @@
       <decimalpl>4</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X/128">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0xF207" flags="0x0">
+    <title>VVEL Duration Target - Start-up Blend</title>
+    <description>Exact 1ME3B. Address 0x17136; 1 rows x 8 columns; uint16; map confidence code. Blend target of the start-up duration: with the request argument set, FUN_0006375E publishes w * ROM16[0x94A8] + (1 - w) * this curve, scaled by 0.05, in place of the start-up curve 0x000163E4. Stock values are 1300 = 65.0 at every point. Exact 1ME3B target-native table at 0x17136 bound to accessor 0x6375e through literal 0x639d0. Read by FUN_0006375E at callsite 0x63866 through the 8-point uint16 leaf 0x2AEAC indexed by the low byte of its stack argument, the byte that indexes the cold duration curve 0x000170F6 in the resolver FUN_00062FAC. The weight w moves by ROM16[0x9474] / 32768 per pass within 0..1.</description>
+    <CATEGORYMEM index="0" category="18" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedaddress="0x17186" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
+      <units>degC</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <embedinfo type="1" />
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <MATH equation="X-50">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x17136" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg [cand]</units>
+      <decimalpl>2</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*0.05">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

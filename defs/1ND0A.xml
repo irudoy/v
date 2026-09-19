@@ -942,6 +942,29 @@
       </table>
     </table>
 
+    <!-- 0x1B65E  16 uint16  map [code]
+         accessor 0x58964; r4 operand: reviewed-target
+         scaling x count [code]; axis 0x1B63E raw [code]
+         Exact 1ND0A target-native table at 0x1b65e bound to accessor 0x58964 through literal
+         0x58b04. Read by FUN_00058964 at callsites 0x58976 and 0x5898A through the 16-point
+         uint16 wrapper 0x28B2C of the kernel 0x28FC8; the primary conversion 0x00015C22 goes
+         through the wrapper 0x2893C. FUN_00057C94 is the only caller and the only reader of the
+         float. The two argument words are the measured angles that the deficit monitors
+         FUN_000DFFE6 subtract from the floor maximum. Stock bytes are identical to the primary
+         table 0x00015C22.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Command Word - Shaft Angle Conversion, Second Copy"
+           category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
+           storageaddress="0x1B65E" sizex="16" endian="big">
+      <scaling units="count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="64"/>
+      <table type="X Axis" name="VVEL Shaft Angle [deg]" storagetype="uint16"
+             storageaddress="0x1B63E" sizex="16" endian="big">
+        <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00"
+                 fineincrement="0.05" coarseincrement="0.5"/>
+      </table>
+    </table>
+
     <!-- 0x0E6C8  8x8 uint16  map [code]
          accessor 0x5F468; r4 operand: reviewed-target
          scaling x*0.05 deg [candidate]; Y Axis 0x166D8 temp [candidate]; X Axis 0x166C8 temp
@@ -969,6 +992,27 @@
       </table>
     </table>
 
+    <!-- 0x1B8DE  8 uint16  map [code]
+         accessor 0x62774; r4 operand: reviewed-target
+         scaling x/512 deg [code]; axis 0x1B35E rpm [candidate]
+         Exact 1ND0A target-native table at 0x1b8de bound to accessor 0x62774 through literal
+         0x627a4. Read by FUN_00062774 at callsite 0x62780 through the 8-point uint16 wrapper
+         0x28910. No direct call reaches the reader; its entry address is the word at 0x221D8 of
+         a function-pointer list. The maximum with the primary floor words fixes the 1/512
+         degree domain. Stock bytes are identical to the primary table 0x00016698.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Shaft Angle Monitor Floor - A, Second Copy"
+           category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
+           storageaddress="0x1B8DE" sizex="8" endian="big">
+      <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00" fineincrement="0.05"
+               coarseincrement="0.5"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x1B35E" sizex="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
+      </table>
+    </table>
+
     <!-- 0x17062  8 uint16  map [code]
          accessor 0x5F468; r4 operand: reviewed-target
          scaling x*0.05 deg [candidate]; axis 0x170D2 temp [code]
@@ -986,6 +1030,27 @@
              storageaddress="0x170D2" sizex="8" endian="big">
         <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
                  coarseincrement="5"/>
+      </table>
+    </table>
+
+    <!-- 0x1B8EE  8 uint16  map [code]
+         accessor 0x6275C; r4 operand: reviewed-target
+         scaling x/512 deg [code]; axis 0x1BC3E rpm [candidate]
+         Exact 1ND0A target-native table at 0x1b8ee bound to accessor 0x6275c through literal
+         0x62794. Read by FUN_0006275C at callsite 0x62768 through the 8-point uint16 wrapper
+         0x28910. No direct call reaches the reader; its entry address is the word at 0x221D4 of
+         a function-pointer list. The maximum with the primary floor words fixes the 1/512
+         degree domain. Stock bytes are identical to the primary table 0x000166A8.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="VVEL Shaft Angle Monitor Floor - B, Second Copy"
+           category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
+           storageaddress="0x1B8EE" sizex="8" endian="big">
+      <scaling units="deg" expression="x/512" to_byte="x*512" format="0.00" fineincrement="0.05"
+               coarseincrement="0.5"/>
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
+             storageaddress="0x1BC3E" sizex="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 

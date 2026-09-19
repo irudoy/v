@@ -410,6 +410,31 @@ engine-speed and torque axes, holds 50.0 at every point of both floor curves,
 stores the constant 50.0 for mode 14, reads the cold pair and the shaft-angle
 conversion inline, and leaves the throttled pair to `0x063534`.
 
+The registry also carries the tables that stand beside the resolver set. All
+four images hold byte-identical second copies of the shaft-angle conversion
+and of both monitor floors. In JK78C `FUN_0004FCB8` converts the two measured
+angle words `0xFFFF2670` and `0xFFFF2672` through the copy `0x0001B00A` over
+`0x0001AFEA` and publishes the mean of the two results times 1/512 as the
+float `0xFFFF9E98` for `FUN_0004F3FE`. `FUN_00059B82` and `FUN_00059B64`,
+entries `0x00021BC0` and `0x00021BBC` of a function-pointer list, interpolate
+the floor copies `0x0001B28A` and `0x0001B29A` by the word `0xFFFF11BC` into
+`0xFFFF380A` and `0xFFFF380C`; the deficit monitors `FUN_000BF0C0` and
+`FUN_000BF122` take the maximum of those two words and the primary floor words
+`0xFFFF3276` and `0xFFFF3278`. `0xFFFF11BC` latches
+`0xFFFF11F0 = (12000000 / (ROM8[0x87AB] * period 0xFFFF2230)) >> 1` with
+`ROM8[0x87AB] = 3`, which equals the `2000000 / period` form of the primary
+coordinate `0xFFFF11A6` for a second period measurement.
+
+The state-code dispatcher `FUN_000657E4` reads its own hot-intake idle pair
+`0x000102CE` (state code 5) and `0x0001034E` (state codes 6 and 7) over the
+axes `0x00016CF4` and `0x00016CE4`, with `min(0xFFFF, 0xFFFF11AC << 2)` and
+the load byte `0xFFFF1032 << 8` as coordinates, for the state bytes
+`0xFFFF43F2` and `0xFFFF4480`, and publishes the duration word `0xFFFF122C`.
+1ME3B carries the same pair in `FUN_0007448C`; the 1ND dispatcher
+`FUN_00070514` reads the resolver surfaces at those positions. The delay curve
+of the stepped throttled approach and the start-up blend target exist only in
+1ME3B.
+
 ## Vendor correspondence
 
 Vendor definitions describe a three-dimensional main duration surface over
