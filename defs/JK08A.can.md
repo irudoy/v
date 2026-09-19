@@ -133,12 +133,113 @@ The following payload claims are sufficiently narrow for use as cross-checks:
   `0xFFFF3A2E` by `FUN_000C47EA`; `FUN_0007724C` maps value 3 to
   `0xFFFF419B.bit4`, the source of transition-neutralizer latch
   `0xFFFF418F.bit4`. Byte 4 bits 0 through 3 and byte 5 bits 6 and 7 feed two
-  further status bytes. The field meaning is not established.
+  further status bytes. The moving-load capture `new-log-full.trc` holds value
+  3 for 850 ms inside one closed-pedal 4-3 downshift and value 0 everywhere
+  else, including the 19 other gear changes. The field meaning is not
+  established.
 - `0x177` byte 2 bits 0 through 2 are a zero-based TCM gear-phase index decoded
   by `FUN_000C4ACE`. Higher bits are independent status flags.
 
+- `0x180` bytes 2 through 4 and `0x160` bytes 0 through 2 carry four 12-bit
+  torque-domain words; the next section gives their code path.
+- `0x160` byte 3 with the top two bits of byte 4 is ten-bit word `0xFFFF40D2`,
+  and byte 5 with the top two bits of byte 6 is its bitwise complement
+  `0xFFFF3D6E`.
+- `0x182` byte 4 is `min(255, trunc(255 * m / 727))` with
+  `m = max(u16[0xFFFF40C6], u16[0xFFFF40E4])` and divisor `ROM16[0x8FF0]`;
+  `0xFFFF40C6` is the common opening-coordinate monitor and `0xFFFF40E4` is the
+  scheduler latch of `0xFFFF413C`. Byte 3 would carry
+  `max(0, s16[0xFFFF18DC]) >> 3`, but stock `ROM8[0x8B32].bit0 = 0` leaves it
+  zero.
+- `0x182` and `0x1F9` carry no 12-bit torque word. `0x1F9` byte 6 is
+  `0xFFFF2332`, the scheduler latch of `0xFFFF23BE`, and the low seven bits of
+  byte 7 are `0xFFFF2366`, the latch of `0xFFFF23F2`.
+
 Other field names require a code trace or a synchronized vehicle capture.
 Geometry copied from a Z34 frame list is not exact JK08A evidence.
+
+## Torque words in frames `0x160` and `0x180`
+
+`FUN_00079E70` packs the torque-domain words for CAN. `FUN_00079DE4`, entry 58
+of the 69-entry pending-task table at `0x00021834`, runs TCM status decoder
+`FUN_0007724C`, `FUN_00078A86`, and `FUN_00079824`, then branches through the
+trampoline at `0x0007A050` into the packer. Every packed word is
+
+```text
+word = clamp(trunc0(source / 5) + 800, 0, 4094)
+```
+
+The division is runtime helper `0x00021BBC` with divisor 5. Code 4095 is the
+explicit invalid value that `0xFFFF4221.bit2` selects for the two actual-torque
+words. One CAN count is five raw torque counts and count 800 is zero.
+
+| Packed word | Frame field | Source |
+| --- | --- | --- |
+| `0xFFFF3F96` | `0x180` byte 2, byte 3 bits 7..4 | `0xFFFF2380`, latch of net engine torque `0xFFFF240C` |
+| `0xFFFF3F90` | `0x180` byte 3 bits 3..0, byte 4 | `0xFFFF4108`, latch of pre-limiter request `0xFFFF4160` |
+| `0xFFFF3FA0` | `0x160` byte 0, byte 1 bits 7..4 | `0xFFFF4106`, latch of limited request `0xFFFF415E` |
+| `0xFFFF3F98` | `0x160` byte 1 bits 3..0, byte 2 | `max(min(0xFFFF23A8, 0xFFFF2382), 0xFFFF2374)`, latches of `0xFFFF2434`, parallel net torque `0xFFFF240E`, and `0xFFFF2400` |
+| `0xFFFF3F9C` | no stock serializer | `0xFFFF237C + 0xFFFF2384`, latches of base term `0xFFFF2408` and accessory sum `0xFFFF2410` |
+
+The latches belong to two scheduler block copies of `FUN_00020DFE`: 140 bytes
+`0xFFFF23BC -> 0xFFFF2330` at `0x00021318` and 88 bytes
+`0xFFFF4124 -> 0xFFFF40CC` at `0x0002132C`. While `ROM8[0x870C].bit7` and
+`0xFFFF4248.bit1` are both set, the source of `0xFFFF3FA0` becomes the maximum
+of `0xFFFF4106` and `0xFFFF410A`, the latch of transmission request candidate
+`0xFFFF4162`. Stock `ROM8[0x870C] = 0x44` leaves that branch disabled.
+
+The static path from Engine Torque Map `0x10B8E` to frame `0x180` is:
+
+1. `FUN_00065928` writes centered map result `0xFFFF18CA`.
+2. `FUN_000659AE` adds base term `0xFFFF2408` and writes state `0xFFFF18CC`.
+3. `FUN_00065B08` applies the spark-efficiency factor
+   `(256 - F(retard)) / 256` and writes `0xFFFF18CE`. The retard is base
+   ignition angle `0xFFFF23F1` minus `0xFFFF11A2`, the latch of clamped timing
+   sum `0xFFFF11DA`. `F` is table `0x11D24` over axis `0x1199E`.
+4. `FUN_00065CD8` scales by `(6 - n) / 6`, where `n` is the inhibited-cylinder
+   count of `FUN_00065D42`, subtracts `0xFFFF2408` and RPM-curve correction
+   `0xFFFF14E2`, and writes `0xFFFF18D0`.
+5. `FUN_00065DE4` filters the result into `0xFFFF18D2`.
+6. `FUN_00065E2C` subtracts accessory sum `0xFFFF2410` and writes `0xFFFF240C`.
+7. The scheduler latch `0xFFFF2380`, packer `FUN_00079E70`, and serializer
+   `FUN_000C577A` deliver the word to bytes 2 and 3.
+
+Stages 3 through 6 run inside `FUN_00065E54`, entry 96 of the 124-entry
+periodic table. The parallel channel `FUN_00065860` repeats stages 3 through 6
+with the factor evaluated at latched timing-state byte `0xFFFF2404` and writes
+`0xFFFF240E`.
+
+`FUN_00079030` writes both request words. `0xFFFF4160` is duplicated selection
+`0xFFFF2438` and `0xFFFF415E` is the minimum of its two bounded request paths;
+both are clamped to `[0xFFFF413A, 0xFFFF4138]`. They share the packing of net
+engine torque, so the signed request coordinate of `FUN_00079030` is a torque
+request in the raw units of `0xFFFF18CC`.
+
+The moving-load capture `new-log-full.trc`, registered in
+`../patches/hardware-results.toml`, contains 35,810 complete samples:
+
+| Word | Range in counts | Idle median |
+| --- | ---: | ---: |
+| `0x180` actual torque | 653..1252 | 820 |
+| `0x180` pre-limiter request | 773..1293 | 811 |
+| `0x160` limited request | 773..1293 | |
+| `0x160` parallel actual torque | 653..1252 | |
+
+- The two actual-torque words differ in 508 samples that form 11 intervals,
+  all inside gear changes reported by `0x174` byte 3. In every interval the
+  `0x180` word falls below the `0x160` word, by 13 to 194 counts at the deepest
+  sample, while the two request words stay equal. The spark-efficiency stage
+  of the `0x180` channel is therefore the path that lowers reported torque
+  during a gear change.
+- The limited request is below the pre-limiter request in 121 samples that
+  form five intervals in second gear between 3666 and 4303 RPM, outside gear
+  changes, and never above it.
+- Closed-pedal samples above 2000 RPM have a median actual-torque word of 724
+  counts and a minimum of 694.
+
+Candidate physical scale `0.1 Nm` per raw count gives `0.5 Nm` per CAN count
+and a capture span of -73.5..226 Nm. No tracked source declares the CAN scale,
+so the physical unit remains a candidate.
 
 ## Passive vehicle capture evidence
 
