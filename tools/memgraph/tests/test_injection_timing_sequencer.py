@@ -49,19 +49,27 @@ class InjectionTimingSequencerTest(unittest.TestCase):
         self.assertEqual(self.vars["ffff23bf"]["units"], "4 degCA")
         self.assertEqual(self.vars["ffff192e"]["units"], "2 degCA")
 
-    def test_end_delay_tables_carry_the_crank_degree_scale(self):
+    def test_end_of_injection_tables_carry_the_intake_tdc_coordinate(self):
         self.assertEqual(self.rom[0x12302:0x1230A], bytes([133] * 8))
         self.assertEqual(
             self.rom[0x1230A:0x12312], bytes.fromhex("a0a0a0a5aab9c8c8")
         )
+        # Reference tooth 7 is 110 degrees before compression TDC of event
+        # cylinder c0 and the injected cylinder c0 + 1 fires 120 degrees later.
+        self.assertEqual(self.rom[0x83D5], 110)
+        offset = 360 - (110 + 120) - 720
+        self.assertEqual(offset, -590)
+        self.assertEqual(133 * 4 + offset, -58)
         for address in ("00012302", "0001230a"):
             with self.subTest(table=address):
                 row = self.findings[address]
-                self.assertEqual(row["units"], "degCA")
-                self.assertEqual(row["scale_expr"], "x*4")
-                self.assertEqual(row["to_byte"], "x/4")
+                self.assertEqual(row["units"], "deg after intake TDC")
+                self.assertEqual(row["scale_expr"], "x*4-590")
+                self.assertEqual(row["to_byte"], "(x+590)/4")
                 self.assertEqual(row["scale_conf"], "code")
                 self.assertIn("consumer:000521a8@structural", row["scale_evidence"])
+                self.assertIn("consumer:00054a44@structural", row["scale_evidence"])
+                self.assertIn("not measured electrically", row["note"])
 
     def test_sequencer_is_an_engine_event_task_with_a_default_lead_of_three(self):
         self.assertEqual(u32be(self.rom, 0x21B5C + 4 * 1), 0x00054A44)

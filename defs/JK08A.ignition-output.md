@@ -16,9 +16,11 @@ P0335-driven APC fallback scheduler whose physical angle behavior is not part
 of the normal contract.
 
 Static analysis proves command construction, ordering, byte ranges, both APC
-compare paths, and diagnostic publication. It does not prove the physical spark
-edge, external driver polarity, or actual crank angle. Those properties require
-a timing light and a controlled bench or engine test.
+compare paths, diagnostic publication, the crank reference tooth of the command,
+and the output edge that carries the spark. It does not prove the external
+driver stage or the mechanical offset between the crank sensor and the signal
+plate. Those properties require a timing light and a controlled bench or engine
+test.
 
 ## Timing-state selector
 
@@ -232,8 +234,41 @@ both stock compare schedulers without a newly introduced `uint8` wrap.
 
 The SH7058 hardware manual proves that the selected low `POPCR` bit drives the
 PULS output high on a `GR11A` compare and the selected high `POPCR` bit drives
-it low on a `GR11B` compare. It does not identify the external ignition-driver
-polarity or which physical transition is the spark event on JK08A.
+it low on a `GR11B` compare.
+
+## Crank reference and output edges
+
+The command is the delay in crank degrees after tooth 7 of the crank signal
+plate, the last tooth before the two-missing-teeth gap. The ICI0A handler
+(vector 84, prologue `0x28EA2`, body `FUN_00029588`) counts ten teeth per 120
+crank degrees in `0xFFFF13B2`; on tooth 7 it copies the identified cylinder to
+event index `0xFFFF11DE`, forms set mask `0xFFFF13BD = 1 << (index - 1)`, and
+runs the engine-event tasks that build the command. `0x0002A892` splits the
+command by ten, `FUN_00028DC8` converts the 10-degree steps into tooth events
+across the gap, and the handler prologue decrements tooth count `0xFFFF1558` on
+every later tooth. At zero it writes
+`GR11A = 0xFFFF158A + 0xFFFF22BC * remainder / 10` from the tooth capture and
+the 10-degree interval and enables the set action of the mask. Command 95
+becomes six tooth events to tooth 3 plus 15 degrees.
+
+With `ROM8[0x83D5] = 110` the command is `110 - advance`, so tooth 7 is 110
+degrees before compression TDC of the event cylinder and TDC falls on tooth 6.
+The event index is the cylinder number of the P0301..P0306 descriptors; the
+derivation through the misfire interval attribution is in
+[`JK08A.fuel.md`](JK08A.fuel.md).
+
+The ignition advance moves only the `GR11A` set edge, so that edge is the spark.
+`0x0004E080` places the `GR11B` reset edge `120 - 0xFFFF237A` degrees after the
+primary command, which is `0xFFFF237A` degrees before the set edge of the next
+cylinder, and reset mask `0xFFFF13D1 = ROM8[0x22687 + 0xFFFF13D3]` addresses
+that next cylinder (`0xFFFF13D3 = ROM8[0x22680 + 0xFFFF13C9]`, the successor of
+the current cylinder). The low state of a PULS pin is therefore the dwell of
+its cylinder and `0xFFFF237A` is the dwell angle in crank degrees. The pin scans
+at `0x0002A05E` and `0x0002BCEA` read PULS0..4 from `PDDR` bits 8..12 and PULS5
+from `PBDR` bit 15, skip the all-high idle state, and record the number of the
+first low pin in `0xFFFF13D2`. Bit `c - 1` of both masks addresses cylinder
+`c`. The external driver stage and the
+cylinder-to-pin continuity are hardware boundaries.
 
 ## Acceptance boundary
 
@@ -248,6 +283,7 @@ Static support for Rolling RPM Hold retard requires all of these conditions:
 - commands above `117` remain rejected until separate hardware validation.
 
 Target-vehicle telemetry establishes software command direction and late-hook
-placement inside the accepted `110..117` range. A timing-light measurement is
-still required before interpreting the command as actual crank angle or
-extending the accepted range beyond `117`.
+placement inside the accepted `110..117` range. The firmware coordinate places
+the spark `command - 110` degrees after compression TDC. A timing-light
+measurement is still required to bind that coordinate to the mechanical crank
+angle before extending the accepted range beyond `117`.

@@ -59,6 +59,8 @@ DEFAULT_VISIBLE_TABLES = {
     "Stationary Limiter Readiness Step":
         "Limiters / Engine Speed / Stationary",
     "Injection Pulse Channel Multiplier": "Fuelling / Injection",
+    "End of Injection Angle - Base": "Fuelling / Injection",
+    "End of Injection Angle - Conditional": "Fuelling / Injection",
     "Throttle Angle-to-Area Conversion - Primary":
         "Electronic Throttle Control / Throttle Geometry",
     "Engine Torque Correction Coefficient vs RPM":
@@ -372,7 +374,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
         self.assertEqual(len(patches), 60)
-        self.assertEqual(len(tables), 109)
+        self.assertEqual(len(tables), 111)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
 

@@ -164,7 +164,7 @@ pair that reads the target address at the same call ordinal, or a target
 function that reproduces the `1ND0A` reader's operand set, selector arms, and
 call order; the fused leaf whose contract equals the `1ND0A` wrapper; exact
 target storage; and target literals. The registry holds 40 mapped rows, 27
-maps and thirteen axes, and sixteen unsupported source maps.
+maps and thirteen axes, and eighteen unsupported source maps.
 
 The three canonical ignition surfaces are unsupported. The ignition
 coordinator `0x0797CC` reproduces only the mode-selected half of `1ND0A`

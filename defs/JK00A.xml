@@ -1128,6 +1128,56 @@
       </table>
     </table>
 
+    <!-- 0x12302  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
+         accessor 0x56BD0; r4 operand: pool
+         scaling x*4-590 deg after intake TDC [code]
+         The normal branch forms ffff192e=2*min(lookup+uint8[ffff340c],209) in 2 crank degrees
+         per count, so one cell count is 4 crank degrees; the stock delay is 532 degrees and
+         saturation is 836. FUN 000521a8 subtracts the pulse angle from that delay and splits
+         the result by 120 into the injection lead and the start angle. Sequencer 00054a44
+         schedules channel bit (ffff11de - lead) mod 6 against tooth 7 of that event index, 110
+         degrees before compression TDC of the cylinder with that number; channel bit k drives
+         the injector of cylinder k + 1, so the reference tooth is 130 degrees after intake TDC
+         of the injected cylinder. The channel order rests on the Power Balance bit assignment
+         of the Nissan-family diagnostic profile applied to the same six-channel mask and is not
+         measured electrically; the mechanical offset between the crank sensor and the signal
+         plate remains a hardware boundary.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="End of Injection Angle - Base" category="Fuelling//Injection"
+           storagetype="uint8" storageaddress="0x12302" sizex="8" endian="big">
+      <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
+               fineincrement="4" coarseincrement="20"/>
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+        <data>0</data><data>800</data><data>1600</data><data>2400</data>
+        <data>3200</data><data>4000</data><data>4800</data><data>5600</data>
+      </table>
+    </table>
+
+    <!-- 0x1230A  8 uint8  map [code]; entry 0x26370 (implicit, core 0x26A80)
+         accessor 0x56BD0; r4 operand: pool
+         scaling x*4-590 deg after intake TDC [code]
+         The special branch forms ffff192e=2*min(lookup,209) in 2 crank degrees per count, so
+         one cell count is 4 crank degrees; cells 160..200 give 640..800 crank degrees and do
+         not reach saturation. FUN 000521a8 subtracts the pulse angle from that delay and splits
+         the result by 120 into the injection lead and the start angle. Sequencer 00054a44
+         schedules channel bit (ffff11de - lead) mod 6 against tooth 7 of that event index, 110
+         degrees before compression TDC of the cylinder with that number; channel bit k drives
+         the injector of cylinder k + 1, so the reference tooth is 130 degrees after intake TDC
+         of the injected cylinder. The channel order rests on the Power Balance bit assignment
+         of the Nissan-family diagnostic profile applied to the same six-channel mask and is not
+         measured electrically; the mechanical offset between the crank sensor and the signal
+         plate remains a hardware boundary.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="2D" name="End of Injection Angle - Conditional" category="Fuelling//Injection"
+           storagetype="uint8" storageaddress="0x1230A" sizex="8" endian="big">
+      <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
+               fineincrement="4" coarseincrement="20"/>
+      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+        <data>0</data><data>800</data><data>1600</data><data>2400</data>
+        <data>3200</data><data>4000</data><data>4800</data><data>5600</data>
+      </table>
+    </table>
+
     <!-- 0x0A9AA  8x8 uint8  map [code]; entry 0x26178 (explicit, core 0x26944)
          accessor 0x5594A; r4 operand: pool
          scaling x/128 ratio [code]; Y Axis 0x11CC0 rpm [code]; X Axis 0x11AC7 load [code]

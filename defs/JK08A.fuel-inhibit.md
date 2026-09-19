@@ -398,8 +398,10 @@ the aggregate input unchanged.
 The VQ35HR factory ESM defines CONSULT-III `POWER BALANCE` as cutting each
 injector signal one at a time. A structured Nissan-family diagnostic profile
 defines IOLID `0x0C` bits 1, 2, 4, 8, 16, and 32 as cylinders 1 through 6.
-This establishes the diagnostic function of the replacement. The electrical
-JK08A channel-to-cylinder order remains a hardware-validation boundary.
+This establishes the diagnostic function of the replacement and assigns mask
+bit `k` to cylinder `k + 1`; the injection-timing coordinates that follow from
+this assignment are in [`JK08A.fuel.md`](JK08A.fuel.md). The assignment is not
+measured electrically.
 
 ## ETC-actuator-fault auxiliary mask
 
@@ -436,7 +438,8 @@ calls, their stock constants and state transitions, replacement precedence,
 and the final six-bit mask. Remaining boundaries are:
 
 - originating module and bus-level identity of internal CAN key `0x2EE0`;
-- target channel-to-cylinder order and electrical injector behavior.
+- electrical confirmation of the channel-to-cylinder order and injector
+  behavior.
 
 Execution outside the analyzed application or an external debug bus master
 could alter internal RAM, but no such configuration path is present in the

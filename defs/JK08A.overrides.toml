@@ -1566,22 +1566,24 @@ fine = 1
 coarse = 16
 
 [table.00012302]
-name = "Injection End Delay Base - degCA (0x12302)"
-category = "Internal Calculations"
-emit = false
-order = 167
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+static_axis_name = "Engine Speed [RPM]"
+static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
 format = "0"
-fine = 1
-coarse = 16
+fine = 4
+coarse = 20
 
 [table.0001230a]
-name = "Injection End Delay Conditional - degCA (0x1230A)"
-category = "Internal Calculations"
-emit = false
-order = 168
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+static_axis_name = "Engine Speed [RPM]"
+static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
 format = "0"
-fine = 1
-coarse = 16
+fine = 4
+coarse = 20
 
 [table.00012342]
 name = "Saturating Sum Addend A - raw u8 (0x12342)"

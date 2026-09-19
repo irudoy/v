@@ -354,8 +354,9 @@ Y_common = trunc_toward_zero((H + A) * G / 16384)
 ```
 
 `0xFFFF24A1.bit0` records whether the common result was raised to the minimum.
-The code establishes two bank-indexed precursors but does not establish the
-physical cylinder ordering of the later parity channels.
+The code establishes two bank-indexed precursors. Channel index `i` of the later
+parity channels carries cylinder `i + 1`, as derived under
+[Injection timing](#injection-timing).
 
 ## Closed-loop trims and two parity bases
 
@@ -734,9 +735,79 @@ P0335 fallback (`0xFFFF24C9.bit6`) an angle of 120 or more becomes count 1
 with remainder `angle - 120`. Handler `FUN_0002BE40` clears the pending flag
 and fires mask `0xFFFF2228` on the compare match.
 
-The crank angle of the reference event relative to TDC of the scheduled
-cylinder and the channel-to-cylinder order remain unresolved, so the tables fix
-the end of injection relative to that event only.
+### Reference tooth and cylinder order
+
+The reference engine event is tooth 7 of the crank signal plate. The plate
+carries ten teeth at 10-degree pitch per 120 crank degrees with two missing
+teeth between tooth 7 and tooth 8. The ICI0A input-capture handler (vector 84,
+prologue `0x28EA2`, body `FUN_00029588`) runs on every tooth:
+
+```text
+0xFFFF158A = OSBR1                                 tooth capture, 3.2 us counts
+0xFFFF22BA = capture - previous capture            tooth interval
+0xFFFF196C = min(255, 64 * previous / current)     gap ratio, 192 on tooth 9
+ratio > ROM8[0x8C89] = 118 and count >= 8          sets gap flag 0xFFFF84E9.bit7
+next tooth: 0xFFFF13B4 = count; 0xFFFF13B2 = 0     sets sync flag 0xFFFF8501.bit7
+tooth 8 with sync: 0xFFFF22BC = interval / 3       multiplier 0x5555 >> 16
+other teeth:       0xFFFF22BC = interval           time of 10 crank degrees
+```
+
+Relative to tooth 7, teeth 8, 9, 0, 1, 2, 3, 4, 5, 6, and 7 follow at 30, 40,
+50, 60, 70, 80, 90, 100, 110, and 120 degrees. Normalizer `FUN_00028DC8`
+converts a count of 10-degree steps into a count of tooth events and is exact
+for this layout only: from tooth 7 it maps 1 and 2 to zero events with 10 and
+20 degrees added to the remainder, 3..12 to `count - 2`, 13 and 14 to ten
+events with the same remainders, and 15..24 to `count - 4`.
+
+Tooth 4 identifies the cylinder from the cam edge counts and tooth 7 copies it
+to event index `0xFFFF11DE` before feeder `FUN_000208F8` runs the engine-event
+tasks. Ignition command `ROM8[0x83D5] - advance = 110 - advance` is the delay in
+crank degrees after that tooth, so tooth 7 is 110 degrees before compression
+TDC of the event cylinder and TDC falls on tooth 6. The event index is the
+cylinder number. The misfire interval captured on tooth 9 of event index `c`
+spans 50..170 degrees after compression TDC of index `c - 2`; detection core
+`FUN_00085A70` tests interval `T[n-7]`, which is congruent to `T[n-1]` and lies
+on the expansion stroke of index `c - 3`, and charges it to cylinder number
+`ROM8[0x2265C + c] = c + 3` modulo six. `FUN_00084AA4` and reporter
+`FUN_00084CD0` report counter element 1 as P0301 and element 6 as P0306. The
+index advances 1-2-3-4-5-6, the firing order.
+
+The sequencer accepts channel bit `(n - lead) mod 6`, whose reference event is
+tooth 7 of event index `c0 = n - lead`. Channel bit `k` drives the injector of
+cylinder `k + 1`: service 0x30 IOLID `0x0C` Power Balance replaces the same
+six-channel mask bit for bit, and the Nissan-family diagnostic profile assigns
+its bits 1, 2, 4, 8, 16, and 32 to cylinders 1 through 6. The injected cylinder
+`c0 + 1` fires 120 degrees after cylinder `c0`, so the reference tooth is 230
+degrees before its compression TDC and 130 degrees after its intake TDC:
+
+```text
+end of injection = 130 + D degrees after intake TDC
+                 = D - 590 degrees after the following intake TDC
+0x12302   133 counts, 532 degrees       58 degrees before intake TDC
+0x1230A   160..200 counts, 640..800     50..210 degrees after intake TDC
+saturation 209 counts, 836 degrees      246 degrees after intake TDC
+```
+
+The start delay is never negative, so a pulse starts no earlier than 130
+degrees after the preceding intake TDC of its cylinder. `FUN_00056BD0` selects
+table `0x1230A` while `0xFFFF2484` bits 4 and 5 and warm latch
+`0xFFFF41D0.bit1` are all set; the latch sets at raw coolant
+`ROM8[0x8770] = 120`, 70 deg C, and releases below 115. The base path adds
+`uint8[0xFFFF340C]` to the table value.
+
+While bits 7..6 of `0xFFFF8513` are set and bit 5 is clear, the lead is 3 and
+the tooth-9 path of `FUN_00029588` programs the delayed start with angle
+`ROM8[0x8D5F] = 0`, or `ROM8[0x8D60] = 92` while `0xFFFF24CA.bit1` is set. The
+pulse then starts 190 or 98 degrees before intake TDC of the injected cylinder.
+The first grouped pulse on tooth 4 opens channel bits `j + 2` and `j + 3` of
+current cylinder `j` from `ROM8[0x226A2 + j]`. These are cylinders `j + 3` and
+`j + 4`, 20 and 140 degrees before their intake TDC: the two cylinders whose
+start-phase injection instant has passed and whose intake stroke has not begun.
+
+The angles are firmware coordinates. The mechanical offset between the crank
+sensor and the signal plate is a hardware boundary, and the injector channel
+order rests on the family Power Balance bit assignment and is not measured
+electrically.
 
 ## Hardware validation priorities
 
@@ -750,8 +821,8 @@ The minimum controlled validation set is:
    `0xFFFF22E0`-equivalent behavior with all six electrical outputs.
 4. Measure injector-terminal pulse width against exact DID `0x1206` at several
    battery voltages to confirm the `10 us` duration count and the modeled
-   opening time `0xFFFF2436`, and record the terminal order of the six
-   channel-8 outputs.
+   opening time `0xFFFF2436`, and confirm that channel-8 output `i` drives
+   the injector of cylinder `i + 1`.
 5. Retain Map 1 storage for the DFCO held-request and intermediate-restore
    thresholds until FAIL-BOOT is fixed and base map switching is confirmed on
    hardware; only then add Map 1-5 Hold and Intermediate support.

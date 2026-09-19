@@ -159,7 +159,7 @@ most expensive stage.
 Deliverables are the same list as Branch B. The correspondence registry is
 compact because the semantic set is already reviewed on the sibling:
 `JK08A-1ND.definition-addresses.csv` covers 31 target maps, thirteen axes, and
-thirteen explicitly unsupported source maps.
+fifteen explicitly unsupported source maps.
 
 Equal wrapper bytes establish the contract registry. They do not by themselves
 establish map semantics or equal calibration geometry.
@@ -201,7 +201,7 @@ function match that reads the target address at the same call ordinal, or
 through a target function that reproduces the 1ND0A reader's operand set,
 selector arms, and call order, always through the leaf whose contract equals
 the 1ND0A wrapper and always at exact target storage. The registry records 40
-mapped rows and sixteen unsupported source maps: the thirteen VQ37 rows plus the
+mapped rows and eighteen unsupported source maps: the fifteen VQ37 rows plus the
 three canonical ignition surfaces, because the target ignition coordinator
 carries only its mode-selected surfaces and no function reproduces the gated
 stock-inert trio path of 1ND0A. The projection declares checksum support and

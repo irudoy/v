@@ -4,8 +4,8 @@ from tools.mapkit import presentation_audit
 def test_canonical_presentation_is_clean_and_explicit():
     report = presentation_audit.audit()
     assert report.canonical_table_count == 210
-    assert report.visible_table_count == 42
-    assert report.hidden_table_count == 168
+    assert report.visible_table_count == 44
+    assert report.hidden_table_count == 166
     assert report.masked_view_count == 3
     assert report.switchable_family_count == 12
 

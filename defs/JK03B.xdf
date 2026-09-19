@@ -1130,6 +1130,104 @@
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
+  <XDFTABLE uniqueid="0x4181" flags="0x0">
+    <title>End of Injection Angle - Base</title>
+    <description>Exact JK03B. Address 0x12302; 1 rows x 8 columns; uint8; map confidence code. Base end-of-injection angle, indexed by engine-speed byte ffff11b3 in RPM/25: uint16[ffff192e] = 2*min(lookup_u8(00012302, uint8[ffff11b3]) + uint8[ffff340c], 209) is the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. The reference tooth is 130 degrees after intake TDC of the injected cylinder, so a cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC; all 8 cells equal 133, 58 degrees before intake TDC. The normal branch forms ffff192e=2*min(lookup+uint8[ffff340c],209) in 2 crank degrees per count, so one cell count is 4 crank degrees; the stock delay is 532 degrees and saturation is 836. FUN 000521a8 subtracts the pulse angle from that delay and splits the result by 120 into the injection lead and the start angle. Sequencer 00054a44 schedules channel bit (ffff11de - lead) mod 6 against tooth 7 of that event index, 110 degrees before compression TDC of the cylinder with that number; channel bit k drives the injector of cylinder k + 1, so the reference tooth is 130 degrees after intake TDC of the injected cylinder. The channel order rests on the Power Balance bit assignment of the Nissan-family diagnostic profile applied to the same six-channel mask and is not measured electrically; the mechanical offset between the crank sensor and the signal plate remains a hardware boundary.</description>
+    <CATEGORYMEM index="0" category="8" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="800" />
+      <LABEL index="2" value="1600" />
+      <LABEL index="3" value="2400" />
+      <LABEL index="4" value="3200" />
+      <LABEL index="5" value="4000" />
+      <LABEL index="6" value="4800" />
+      <LABEL index="7" value="5600" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x12302" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg after intake TDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*4-590">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
+  <XDFTABLE uniqueid="0x41CF" flags="0x0">
+    <title>End of Injection Angle - Conditional</title>
+    <description>Exact JK03B. Address 0x1230A; 1 rows x 8 columns; uint8; map confidence code. Conditionally selected end-of-injection angle, indexed by engine-speed byte ffff11b3 in RPM/25: interpolated value y forms uint16[ffff192e] = 2*min(y, 209), the delay in 2 crank degrees per count from the reference tooth of the scheduled channel to the end of the pulse. FUN 00056bd0 selects it while ffff2484 bits 4 and 5 and warm latch ffff41d0.bit1 are all set; the latch sets at raw coolant ffff1071 &gt;= ROM8[00008770] = 120, 70 deg C, and releases below 115. A cell of x counts ends the pulse 4*x - 590 degrees after the following intake TDC; cells 160..200 give 50..210 degrees after intake TDC. The special branch forms ffff192e=2*min(lookup,209) in 2 crank degrees per count, so one cell count is 4 crank degrees; cells 160..200 give 640..800 crank degrees and do not reach saturation. FUN 000521a8 subtracts the pulse angle from that delay and splits the result by 120 into the injection lead and the start angle. Sequencer 00054a44 schedules channel bit (ffff11de - lead) mod 6 against tooth 7 of that event index, 110 degrees before compression TDC of the cylinder with that number; channel bit k drives the injector of cylinder k + 1, so the reference tooth is 130 degrees after intake TDC of the injected cylinder. The channel order rests on the Power Balance bit assignment of the Nissan-family diagnostic profile applied to the same six-channel mask and is not measured electrically; the mechanical offset between the crank sensor and the signal plate remains a hardware boundary.</description>
+    <CATEGORYMEM index="0" category="8" />
+    <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Engine Speed [RPM]</units>
+      <indexcount>8</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <LABEL index="1" value="800" />
+      <LABEL index="2" value="1600" />
+      <LABEL index="3" value="2400" />
+      <LABEL index="4" value="3200" />
+      <LABEL index="5" value="4000" />
+      <LABEL index="6" value="4800" />
+      <LABEL index="7" value="5600" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="y" uniqueid="0x0" flags="0x0">
+      <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
+      <units>Series</units>
+      <indexcount>1</indexcount>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <datatype>0</datatype>
+      <unittype>0</unittype>
+      <DALINK index="0" />
+      <LABEL index="0" value="0" />
+      <MATH equation="X">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+    <XDFAXIS id="z">
+      <EMBEDDEDDATA mmedaddress="0x1230A" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
+      <units>deg after intake TDC</units>
+      <decimalpl>0</decimalpl>
+      <outputtype>1</outputtype>
+      <MATH equation="X*4-590">
+        <VAR id="X" />
+      </MATH>
+    </XDFAXIS>
+  </XDFTABLE>
   <XDFTABLE uniqueid="0x21F0" flags="0x0">
     <title>Target Mixture - Main</title>
     <description>Exact JK03B. Address 0xA9AA; 8 rows x 8 columns; uint8; map confidence code. Target mixture map: Q7 fuel-multiplier command against the stoichiometric base schedule (commanded equivalence ratio x/128), 128 = closed-loop stoichiometric target, 149 = 1.16. Stage 0005594a looks it up on engine speed (axis 00011cc0, rpm/50 against word ffff11bc) and load (axis 00011ac7, normalized BFS Q7 from ffff102c, or 0xff while wide-open latch ffff2468 bit 3 holds), scales the deviation from 128 by 00012552 when ffff2466 bit 6 selects the high-detonation surface, and publishes the byte as ffff15eb and, through enrichment latch ffff24a2 bit 7 and the ramp of ffff123a, as commanded mixture ffff22e8 = byte &lt;&lt; 7. Public HR A2L name Target AFR Map (8x8) with gasoline scale 1881.6/x on axes Cylinder Filling Up Efficiency (x*0.78125 percent) and Engine Speed (x*50); the AFR scale is a candidate, the Q7 ratio and the stoichiometric neutral are code. Three 2026-08-26 vehicle recordings match the lookup in 98.3..100 percent of settled records. Result disposition: consumer.</description>

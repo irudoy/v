@@ -13,7 +13,7 @@ from tools.mapkit import vq37_native_tables
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
 TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
-SH7058_HR_UNSUPPORTED = frozenset()
+SH7058_HR_UNSUPPORTED = frozenset({"00012302", "0001230a"})
 JK78C_UNSUPPORTED = {
     "00008e36",
     "00008e3a",
@@ -27,6 +27,8 @@ JK78C_UNSUPPORTED = {
     "0000b33a",
     "0000b43a",
     "0000b53a",
+    "00012302",
+    "0001230a",
     "00012552",
 }
 VQ37_UNSUPPORTED = JK78C_UNSUPPORTED

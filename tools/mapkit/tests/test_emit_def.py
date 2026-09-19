@@ -67,6 +67,8 @@ DEFAULT_VISIBLE_TABLES = {
     "Stationary Limiter Readiness Step":
         "Limiters / Engine Speed / Stationary",
     "Injection Pulse Channel Multiplier": "Fuelling / Injection",
+    "End of Injection Angle - Base": "Fuelling / Injection",
+    "End of Injection Angle - Conditional": "Fuelling / Injection",
     "Throttle Angle-to-Area Conversion - Primary":
         "Electronic Throttle Control / Throttle Geometry",
     "Engine Torque Correction Coefficient vs RPM":
@@ -388,7 +390,7 @@ class DefinitionPresentationPolicyTest(unittest.TestCase):
             for address, entry in overrides["table"].items()
             if entry.get("emit") is False
         }
-        self.assertEqual(len(explicitly_hidden), 168)
+        self.assertEqual(len(explicitly_hidden), 166)
         self.assertIn("000094b2", explicitly_hidden)
         self.assertTrue(all(
             entry.get("category") in internal_hidden_categories
