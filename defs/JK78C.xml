@@ -1893,8 +1893,8 @@
          Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal
          0x6484c. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
-         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
-         is the branch taken while the latch is clear.
+         normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300),
+         and the default arm is the branch taken while the latch is clear.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
@@ -2354,8 +2354,8 @@
          Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal
          0x6484c. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
-         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
-         is the branch taken while the latch is clear.
+         normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300),
+         and the default arm is the branch taken while the latch is clear.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
@@ -2818,8 +2818,8 @@
          Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal
          0x6484c. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
-         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
-         is the branch taken while the latch is clear.
+         normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300),
+         and the default arm is the branch taken while the latch is clear.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
@@ -3282,8 +3282,8 @@
          Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal
          0x6484c. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
-         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
-         is the branch taken while the latch is clear.
+         normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300),
+         and the default arm is the branch taken while the latch is clear.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
@@ -3746,8 +3746,8 @@
          Exact JK78C target-native table at 0x137f0 bound to accessor 0x644d0 through literal
          0x6484c. Both eight-point branches read the same index byte, so neither carries an
          engine-bank identity. The selector is the transition-completion latch: it sets when the
-         normalized transition progress reaches 1.0 and releases at 0.891, and the default arm
-         is the branch taken while the latch is clear.
+         normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300),
+         and the default arm is the branch taken while the latch is clear.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"

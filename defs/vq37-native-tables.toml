@@ -59,7 +59,7 @@ to_byte = "x+128"
 static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
-note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."
+note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
 
 [[target.JK78C.table]]
 id = "vvel_duration_running"
@@ -769,7 +769,7 @@ to_byte = "x+128"
 static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
-note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."
+note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
 
 [[target.1ND0A.table]]
 id = "vvel_duration_running"
@@ -1440,7 +1440,7 @@ to_byte = "x+128"
 static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 semantics = "Alternate warm DFCO-transition eight-point timing-state addend. It shares the index byte and the interpolator of the projected default table and is selected when the transition-completion latch is set."
-note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 and releases at 0.891, and the default arm is the branch taken while the latch is clear."
+note = "Both eight-point branches read the same index byte, so neither carries an engine-bank identity. The selector is the transition-completion latch: it sets when the normalized transition progress reaches 1.0 (0x8000) and releases below 0.898 (0x7300), and the default arm is the branch taken while the latch is clear."
 
 [[target.1ND3B.table]]
 id = "vvel_duration_running"
