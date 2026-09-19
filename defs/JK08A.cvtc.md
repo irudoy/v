@@ -484,9 +484,67 @@ temperature has reached raw 110 (60 degC), for the first pass on which
 writers of the byte in the export, `FUN 0004C4CC` and `FUN 0004C9D2` (bits 4
 and 5), `FUN 0004C536` (bits 0 to 2), and `FUN 0004C6BA` (bit 3), leave both
 latches alone, so bit 6 stays set from the rising edge of the coolant window
-until `0xFFFF2458` bit 5 clears it, and the steady-state value of the
-coolant-window term follows the physical identity of that bit, which is not
-established. The writers of the five inhibit bits are outside this section.
+until `0xFFFF2458` bit 5 clears it.
+
+`0xFFFF2458` bit 5 is the scheduled copy of `0xFFFF2459` bit 5, which status
+packer `FUN 0002E0D4` publishes as DID `0x1302` bit 0, `CLSD THL POS`: the
+idle position that the ECM computes from the accelerator pedal position sensor
+signal. The operating enable therefore holds only while the pedal is off its
+idle position. A coolant window that opens with the pedal applied sets latch
+bit 6 and blocks the coolant term until the first pass with the pedal at idle,
+and oil-temperature latch bit 7 releases on the first pass with the pedal at
+idle while low-speed flag `0xFFFF24AA` bit 7 is set.
+
+### Inhibit terms of the operating enable
+
+The five inhibit terms of bit 2 resolve to two attribute-class fault polls and
+three terms that stock JK08A never sets.
+
+- `0xFFFF41BE` bit 6 is written only by `FUN 0008C24E` (`0x8C266` set,
+  `0x8C268` clear) from `FUN 0008C396(0x0100)`. The poll walks all `0x129`
+  descriptor records and returns 1 when any record has a mask bit set in its
+  attribute word (pointer table `0x1A14C`) and bit 7 set in byte 1 of its
+  runtime record `0xFFFF5718 + 3*index`, the stored-fault bit of
+  `FUN 0008C2D2`. Attribute bit 8 is carried by 36 stock records: twenty
+  `P0605` records and `P0120`, `P0643`, `P1123`, `P1127`, `P1129`, `P1233`
+  (two), `P1236`, `P1238`, `P1290`, `P2100`, `P2101` (two), `P2103`, `P2118`,
+  and `P2119`.
+- `0xFFFF41D1` bit 7 is written only by `FUN 0008C272` (`0x8C28C`), which sets
+  bits 7, 2, and 0 together while event byte `0xFFFF48E0` is nonzero.
+  `FUN 0008C2D2` sets that byte at `0x8C326` when the record it stores has
+  attribute bit 10, and stage 3 of summary pass `FUN 0008C65C` clears it once
+  `FUN 0008C396(0x0400)` finds no stored record of the class. Attribute bit 10
+  is carried by the six mass-airflow records `P0101`, `P0102`, `P0103`
+  (indices `0xBA..0xBC`) and `P010B`, `P010C`, `P010D` (indices `0x07..0x09`).
+- `0xFFFF41D0` bit 0 has no setter in the image. The writers of the byte
+  handle bits 1 to 7 (`FUN 00056BD0` bit 1, `FUN 000473AC` bits 2 and 3,
+  `FUN 000A40F4` and `FUN 000A454E` bits 4 and 5, `FUN 000A2094`,
+  `FUN 000A2254`, and `FUN 000A3BA8` bit 6, `FUN 000A3F96` and
+  `FUN 000A407A` bit 7), so the term is inert.
+- `0xFFFF2F64` bits 0 and 1 are the per-bank judged flags of `FUN 00090D54`,
+  the `P1080`/`P1086` path (records `0x88` and `0x89`). With `0xFFFF4184`
+  bit 7 and `0xFFFF24AB` bit 3 set it flags a cam edge phase snapshot
+  `0xFFFF11C8 + b` at or below `ROM8[0x8E32] = 254` once timer
+  `0xFFFF25F0 + b` has expired and reports through `FUN 0007D8B8`. Family
+  entry `FUN 00090E5E` calls it only under `ROM8[0x186F2]` bits 5 and 4
+  (`0x90EC6`, `0x90ED6`); the stock byte is `0x07`, so the function never runs
+  and the bits stay clear.
+- `0xFFFF14B8` bits 0 and 1 are the per-bank flags of `FUN 00090BD2`, a third
+  `P0014`/`P0024` path. With `0xFFFF24A7` bit 4 set, a neutral conditioned
+  target `0xFFFF2327`, the bank bit of `0xFFFF48DF`, and a zero duty word it
+  flags a cam edge phase that exceeds the high byte of reference word
+  `0xFFFF5578 + 2b` by at least `ROM8[0x895E] = 254`, and once timer
+  `0xFFFF2539 + b` (`ROM8[0x88D2] = 5`) has expired it stores record `0xD2` or
+  `0xD3` through `FUN 0008C2D2` and `FUN 0007D8B8`. `FUN 00090E5E` calls it
+  only under `ROM8[0x186F1]` bits 3 and 2 (`0x90E80`, `0x90E90`); the stock
+  byte is `0xF0`, so the function never runs and the bits stay clear.
+
+`FUN 00090E02`, which `FUN 00090E5E` calls while `0xFFFF424F` bit 2 is set,
+clears both flag pairs and reloads their timers. `FUN 00090E5E` also forms
+`0xFFFF24AB` bit 3 as engine-speed byte `0xFFFF11B2` at least
+`ROM8[0x8E33] = 0`, which holds on every pass. On stock JK08A the inhibit
+terms therefore reduce to a stored fault of the attribute-bit-8 group or of
+the mass-airflow group.
 
 `0xFFFF249C` bit 6 is written by `FUN 0002E466`, reached from `FUN 0002E66C`
 and `FUN 000CA79E`. It sets at `0x2E5EC` while service-0x30 Output Control
@@ -760,6 +818,21 @@ while the P0014/P0024 rest window `88 +/- 34` of `FUN 00090256` applies to
 the raw phase snapshot. `FUN 000BCED0` initializes `0xFFFF1376`,
 `0xFFFF1377`, `0xFFFF2324`, and `0xFFFF2325` to `0x80`.
 
+`FUN 000BF9B0`, called from the same coordinator, writes both learning gates.
+`0xFFFF24A8` bit 7 (`0xBFA3C` set, `0xBFA8A` clear) requires electrical enable
+`0xFFFF248B` bit 0, coolant flags `0xFFFF24A9` bits 3 and 6, driver status
+`0xFFFF850C` bits 5 and 6 clear, a zero result of `FUN 00025E4E`, inhibit
+`0xFFFF41BE` bit 6 clear, and `0xFFFF24AA` bit 0, which comparator
+`0x000259D0` holds while engine-speed byte `0xFFFF11B2` is at most
+`ROM8[0x8E1B] = 80` (1000 RPM, release above 1200 RPM). With that gate set,
+`0xFFFF246B` bit 4 sets while the conditioned target `0xFFFF2327` is `0x80`,
+both duty words `0xFFFF1AAC` and `0xFFFF1AAE` are zero, and timer `0xFFFF2536`
+has expired; while that timer runs the bit is clear and only `0xFFFF2535`
+reloads from `ROM8[0x883D] = 10`. With the gate clear, the target off neutral,
+or a duty word nonzero, the bit clears and both timers reload, `0xFFFF2536`
+from `ROM8[0x883F] = 10`. A set bit leaves `0xFFFF2535` running, which is the
+settle delay of the learner.
+
 ### Driver status and edge-count monitor
 
 `FUN 000C22DC`, called from engine-event driver `FUN 00029588`, maintains
@@ -968,6 +1041,44 @@ the published duty words, replace instruction bytes and therefore require the
 `tools/sh-elf-run` gate before any image built from them is eligible for
 hardware.
 
+### Registry suppression
+
+The DTC registry switch of `JK08A.dtc.csv` zeroes the twelve descriptor bytes
+and the attribute word of a record. For the exhaust records that removes the
+published code and the attribute classes: `0x0020` for P0014/P0024 and
+P1080/P1086, `0x00A0` for P0078/P0084, and `0x02A0` for P1078/P1084. None of
+them carries attribute bit 8 or bit 10, so no exhaust record feeds the inhibit
+polls of the operating enable. The monitor and the runtime record stay active:
+
+- `FUN 0008C2D2` sets the stored-fault bit without reading the descriptor. It
+  reads the attribute word only for class event bytes `0xFFFF48E0` (bit 10)
+  and `0xFFFF48E2` (bit 13).
+- `FUN 0007D8B8` routes a record whose descriptor byte 8 bit 6 and attribute
+  bit 6 are clear to default handler `FUN 0007E334`, which updates bits 0, 1,
+  5, and 6 of record byte 2 from the record alone. The descriptor enters only
+  through the code comparison that selects the argument of `FUN 0007E560`,
+  and attribute bit 7 gates only the call of `0x0008C900` on confirmation.
+
+Consumers that address the records by index therefore keep their behaviour.
+`0x25E20` tests the stored-fault bit and `0x259E4` tests bits 5 and 6 of
+record byte 2.
+
+| Consumer | Predicate and indices | Effect of a set record |
+|---|---|---|
+| `FUN 000BF630` | `0x25E20`: `0x14F..0x152`, `0x43`, `0x44` | electrical enable `0xFFFF248B` bit 0 clears |
+| `FUN 0004D2A6` | `0x25E20`: `0x14B..0x152` | ignition cam-deviation correction `0xFFFF1A7D` takes fallback `ROM8[0x8DCC]`, `ROM8[0x8DCD]`, or `0x40`, all 64 on stock |
+| `FUN 000995C4` | `0x25E20`: `0x151`, `0x152` | the P0011/P0021 monitor (records `0xD0`, `0xD1`) does not evaluate |
+| `FUN 0008F168` | `0x25E20`: `0x14F`, `0x151`, `0x152` | the exhaust performance pairs do not evaluate |
+| `FUN 00090A84` | `0x25E20` and `0x259E4`: `0x84..0x87` | the enable argument of `FUN 000907E8` is 0 |
+| `FUN 000420B8` | `0x259E4`: `0x43`, `0x44`, `0x151`, `0x152`, `0x84..0x89`, `0xD0..0xD3` | arm bit `0xFFFF2497` bit 5 is withheld |
+| `FUN 0009BDD0` | `0x259E4`: `0x43`, `0x44`, `0x84..0x88`, `0x14F`, `0x151`, `0x152` | the per-bank entry gate fails |
+
+Registry suppression is a reporting control. On the calibration-only path the
+target-tracking pair, the circuit pair, and the two masked paths are not
+judged, so the rest-position pair of `FUN 00090256` is the single path that
+can set records `0xD2` and `0xD3` and their extension slots; while it passes,
+none of the consumers above changes state.
+
 ### Evidence boundary of the controller
 
 The state machine, the arithmetic, the stores, the scheduler snapshots, the
@@ -982,9 +1093,10 @@ following remain unresolved:
 
 - the on-car phase value with both cams at their stops, which is a RAM read of
   `0xFFFF1200`/`0xFFFF1201` or of the learned edges `0xFFFF479B`/`0xFFFF479C`;
-- the physical identity of `0xFFFF2458` bit 5 and `0xFFFF24A8` bit 7, which
-  decide the steady state of coolant-window latch `0xFFFF248C` bit 6 and the
-  rest-edge learning gate;
+- the writers of mask byte `0xFFFF48DF` (`FUN 00090884`) and of reference
+  word `0xFFFF5578`, which matter only to the masked third P0014/P0024 path,
+  the function armed by `0xFFFF2497` bit 5, and the monitor behind
+  `FUN 0009BDD0`;
 - the crank-wheel origin of the engine-event segment, which fixes the
   absolute angle of the 44-degree stock rest value;
 - the decrement cadence of timer `0xFFFF43BE + b`, the internals of
