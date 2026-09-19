@@ -19,8 +19,10 @@
      selector path are omitted explicitly; the three canonical ignition surfaces are
      among them because the target coordinator carries only its mode-selected
      surfaces. The project and native RomRaider checksum contracts cover all six
-     1ME3B checksum fields. The image has no runtime allocation: Map Switching,
-     Rolling Launch, and CAN telemetry are not declared. -->
+     1ME3B checksum fields. The Developer Immobilizer control addresses the
+     configuration byte that the eleven target consumers of the 1ND0A flag read.
+     The image has no runtime allocation: Map Switching, Rolling Launch, and CAN
+     telemetry are not declared. -->
 <roms>
   <rom>
     <romid>
@@ -45,6 +47,13 @@
          mandatory because the checksum B fields are inside domain A. -->
     <checksum type="alt2" start="0x8200" end="0x180000" skiploc="0x20000" sumloc="0x96FC"
               xorloc="0x96F4"/>
+
+    <table type="Switch" name="Developer Immobilizer" category="NATS//Immobilizer"
+           storageaddress="0x8671" storagetype="uint8" sizex="1" endian="big" userlevel="5">
+      <description>Exact 1ME3B only. Bit 0 enables ECM immobilizer enforcement; clearing it bypasses the Developer Immobilizer transitions and releases the engine inhibit. NATS DTC suppression is independent. Hardware evidence covers a JK08A-derived image on a 23710-JK00D ECU; no other image carries a hardware result.</description>
+      <state name="Enabled (Stock)" data="01"/>
+      <state name="Disabled (IMMO OFF)" data="00"/>
+    </table>
 
     <table type="Switch" name="DTC P0306 [index 10] - 1/2 Descriptor"
            category="Diagnostics//DTC" storageaddress="0x1BFD0" storagetype="uint8" sizey="12"

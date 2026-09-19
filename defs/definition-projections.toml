@@ -175,9 +175,12 @@ implementation changes geometry, removes the subsystem, or keeps no gated
 selector path are omitted explicitly; the three canonical ignition surfaces are
 among them because the target coordinator carries only its mode-selected
 surfaces. The project and native RomRaider checksum contracts cover all six
-1ME3B checksum fields. The image has no runtime allocation: Map Switching,
-Rolling Launch, and CAN telemetry are not declared.
+1ME3B checksum fields. The Developer Immobilizer control addresses the
+configuration byte that the eleven target consumers of the 1ND0A flag read.
+The image has no runtime allocation: Map Switching, Rolling Launch, and CAN
+telemetry are not declared.
 """
 evidence = "Reviewed structural function correspondence against 1ND0A, interpolation-call order, contract-equal fused leaves, exact storage anchors, target literals, target axis geometry, checksum code, and independently reproduced stock checksum values."
 
 [projection.1ME3B.switch]
+developer_immobilizer = 0x00008671

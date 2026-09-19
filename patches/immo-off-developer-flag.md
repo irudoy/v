@@ -24,6 +24,7 @@ One bit changes. The flasher corrects checksums while writing.
 | JK00D | `0x8740` | `0x01` | `0x00` | four homologous consumers |
 | JK78C | `0x861C` | `0x01` | `0x00` | homologous configuration block |
 | 1ND0A / 1ND3B | `0x8668` | `0x01` | `0x00` | homologous configuration block and state machine |
+| 1ME3B | `0x8671` | `0x01` | `0x00` | 1ND0A configuration block and eleven paired consumers |
 
 Each site is bound to its independently analyzed ROM. An offset is not
 transferred directly between independent builds. Every site above is published
@@ -84,6 +85,50 @@ The main state machine widens the byte through `extu.b` before the bit test
 instead of loading it into `R0` directly. The remaining three sites match the
 JK03A / JK08A instruction sequence. Each flag carries eleven literal-pool
 references across the image, the same count as JK03A / JK08A.
+
+## 1ME3B site
+
+`1ME3B` relocates no code from any modelled ROM, so its site is bound through
+the `1ND0A` flag in three independent ways.
+
+The 24 configuration bytes at `1ND0A` `0x8660..0x8677`
+(`00 FF 00 0A 0A 05 18 05 01 05 64 50 46 28 2D 28 C8 7D AA 82 00 64 00 C8`)
+occur exactly once in `1ME3B`, at `0x8669`. The flag byte `0x8668` of that
+window lands on `0x8671`, which holds `0x01`.
+
+Nine literal-pool words hold the flag address in each image, and each word has
+one `mov.l @(disp,pc)` loader. The loaders pair in address order, and the
+instruction words that follow each pair are equal apart from PC-relative
+displacements: a byte read and a bit-0 test.
+
+| `1ND0A` loader | `1ME3B` loader | Test after the load |
+|---------------:|---------------:|---------------------|
+| `0x10D176` | `0x118F1C` | `mov.b @r2,r0; and #1,r0` |
+| `0x10D2E6` | `0x11908A` | `tst.b #1,@(r0,gbr)` with GBR loaded with 0 |
+| `0x10D592` | `0x119340` | `mov.b @r2,r0; and #1,r0` |
+| `0x11B632` | `0x127C3E` | `mov.b @r6,r0; tst #1,r0` |
+| `0x11BEFC` | `0x1285A0` | `mov.b @r6,r0; tst #1,r0` |
+| `0x11CD7A` | `0x1295E6` | `mov.b @r6,r0; and #1,r0` |
+| `0x11D7E6` | `0x12A216` | `mov.b @r1,r0; and #1,r0` |
+| `0x11DEA6` | `0x12A8D6` | `mov #1,r4; mov.b @r1,r0; and #1,r0` |
+| `0x11E1F4` | `0x12AC2C` | `mov #1,r5; mov.b @r1,r0; and #1,r0` |
+
+Two further consumers reach the byte through `tst.b #1,@(r0,gbr)` with a
+GBR-relative literal, which a search for the absolute address does not see:
+
+| Image | Function | GBR | Literal | Effective address |
+|-------|----------|----:|--------:|------------------:|
+| `1ND0A` | `FUN_000EA0A0`, load `0xEA0DC` | `0xFFFEB7ED` | `0x0001CE7B` | `0x8668` |
+| `1ME3B` | `FUN_000F68B8`, load `0xF68F4` | `0xFFFEB94D` | `0x0001CD24` | `0x8671` |
+| `1ND0A` | `FUN_0010C764`, load `0x10C9A6` | `0xFFFEB7EE` | `0x0001CE7A` | `0x8668` |
+| `1ME3B` | `FUN_001184C8`, load `0x1186F6` | `0xFFFEB954` | `0x0001CD1D` | `0x8671` |
+
+`FUN_000EA0A0` and `FUN_000F68B8` have equal instruction-shape hashes and read
+the flag at instruction ordinal 31 of 130 bytes. Each image therefore carries
+eleven consumers of the flag, the same count as JK03A / JK08A, and no `1ME3B`
+literal pool holds `0x8668`. The site is a code fact of the target image; the
+engine-inhibit path behind it is inherited from the `1ND` state machine by
+pairing and carries no hardware result.
 
 ## Adjacent NATS states
 

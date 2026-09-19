@@ -77,7 +77,7 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers():
     assert rom["counts"]["diagnostics"] == 76
     assert rom["counts"]["maps"] == 26
     assert rom["counts"]["axes"] == 11
-    assert rom["counts"]["patches"] == 75
+    assert rom["counts"]["patches"] == 76
     assert rom["counts"]["integrity"] == 11
     assert {
         item["id"]
@@ -96,6 +96,12 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers():
     )
     assert maf_factor["start"] == 0x8965
     assert maf_factor["source"] == "defs/1ME3B.xml"
+    immobilizer = next(
+        item
+        for item in rom["objects"]
+        if item["label"] == "Developer Immobilizer"
+    )
+    assert immobilizer["start"] == 0x8671
     assert all(
         item["source"].startswith("defs/1ME3B.dtc.csv:")
         for item in rom["objects"]

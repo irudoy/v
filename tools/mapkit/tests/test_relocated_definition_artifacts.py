@@ -359,7 +359,7 @@ def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation()
     assert checksums["alt2"].get("skiploc") == "0x20000"
     assert checksums["alt2"].get("sumloc") == "0x96FC"
     assert checksums["alt2"].get("xorloc") == "0x96F4"
-    assert len(target.findall("table")) == 101
+    assert len(target.findall("table")) == 102
     assert sum(1 for name in tables if name.startswith("DTC ")) == 75
     assert tables["MAF Factor"].get("storageaddress") == "0x08965"
     assert tables["Fuel Compensation - Main - Default"].get(
@@ -370,7 +370,7 @@ def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation()
     assert not any(name.startswith("Map 2 -") for name in tables)
     assert "Rolling Launch Enable by Map" not in tables
     assert "CAN Telemetry at Startup" not in tables
-    assert "Developer Immobilizer" not in tables
+    assert tables["Developer Immobilizer"].get("storageaddress") == "0x8671"
     assert not any("Ignition Timing" in name for name in tables)
 
     root = ET.parse(DEFS / "1ME3B.xdf").getroot()

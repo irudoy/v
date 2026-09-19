@@ -22,8 +22,15 @@
     <CATEGORY index="0xB" name="Ignition Timing / State Corrections" />
     <CATEGORY index="0xC" name="Limiters / Engine Speed / Driving" />
     <CATEGORY index="0xD" name="Limiters / Engine Speed / Stationary" />
-    <CATEGORY index="0xE" name="Torque Model / Engine Torque" />
+    <CATEGORY index="0xE" name="NATS / Immobilizer" />
+    <CATEGORY index="0xF" name="Torque Model / Engine Torque" />
   </XDFHEADER>
+  <XDFPATCH uniqueid="0x5AE3" flags="0x0">
+    <title>Developer Immobilizer</title>
+    <description>Exact 1ME3B only. Bit 0 enables ECM immobilizer enforcement; clearing it bypasses the Developer Immobilizer transitions and releases the engine inhibit. NATS DTC suppression is independent. Hardware evidence covers a JK08A-derived image on a 23710-JK00D ECU; no other image carries a hardware result. Base state: Enabled (Stock). Patched state: Disabled (IMMO OFF).</description>
+    <CATEGORYMEM index="0" category="15" />
+    <XDFPATCHENTRY name="Developer Immobilizer" address="0x8671" datasize="0x1" patchdata="00" basedata="01" />
+  </XDFPATCH>
   <XDFPATCH uniqueid="0xA555" flags="0x0">
     <title>DTC P0306 [index 10] - Cylinder 6 misfire detected</title>
     <description>Exact 1ME3B only. Applying this patch suppresses the DTC descriptor and its mutable attribute as one operation. It does not disable the physical monitor. This patch overlaps its DTC group patch; use individual or group scope consistently.</description>
@@ -1610,7 +1617,7 @@
   <XDFTABLE uniqueid="0x3158" flags="0x0">
     <title>Engine Torque Surface</title>
     <description>Exact 1ME3B. Address 0x11BFC; 16 rows x 16 columns; uint16; map confidence candidate. Offset-binary Engine Torque surface. FUN 00065928 indexes rows by current rotational-speed coordinate ffff11b6 and columns by q=min(65535,trunc(u16[ffff1024]*40960/ROM16[00009534])), then writes signed result lookup-32768 to ffff18ca. FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08 consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The column axis is copied from ROM 0002378c to a stack buffer before interpolation. Multiplying its runtime coordinate by 100/40960 gives the exact normalized ratio 100*BFS/ROM16[00009534]; stored points 0..0xf000 therefore represent 0..150 percent of the fixed BFS reference. The VQ35HR JK00D homolog uses the byte-identical function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6; its larger scaler and torque range provide independent family evidence. The Cylinder Filling physical name and x*0.1 Nm output scale match the HR A2L Engine Torque Map and require hardware validation; the normalized column scale itself is code-proven. Result disposition: consumer. Definition address projected from JK08A 00010b8e through JK08A-1ME3B.definition-addresses.csv: the target torque coordinator 000980fe reads the exact engine-torque surface with the exact axis 000162b4 through the 16x16 uint16 leaf 0002a0b4 with the operand set of 1ND0A 00092456.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x24DA8" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>Normalized BFS [%] [cand]</units>
@@ -1652,7 +1659,7 @@
   <XDFTABLE uniqueid="0x2AFA" flags="0x0">
     <title>Engine Torque Base Term vs RPM</title>
     <description>Exact 1ME3B. Address 0x16D06; 1 rows x 8 columns; uint16; map confidence candidate. RPM-indexed unsigned base term in the engine-torque calculation. FUN 00065c26 writes lookup M to ffff18c4 and calculates ffff2408=sat_u16(M-D+C), where D is proportional to current Base Fuel Schedule divided by ROM16[00009534] and C is a calibrated nonnegative correction. FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine Torque Map 00010b8e. This continuous path establishes a common internal torque domain. In stock JK08A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer. Definition address projected from JK08A 000154a0 through JK08A-1ME3B.definition-addresses.csv: normalized-shape pair 000920fa/00097d8c reads the exact eight-word base table at the same call ordinal through 0002aeac.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16264" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>RPM [cand]</units>
@@ -1694,7 +1701,7 @@
   <XDFTABLE uniqueid="0x4C35" flags="0x0">
     <title>Engine Torque Correction Coefficient vs RPM</title>
     <description>Exact 1ME3B. Address 0x163B4; 1 rows x 8 columns; uint16; map confidence candidate. RPM-indexed unsigned coefficient for a bounded engine-torque correction. FUN 000658a4 multiplies the interpolated value by a nonnegative byte difference, divides by 256, and writes the result to ffff14e2 for the downstream torque-state arithmetic. The direct scratch copy ffff14e4 has no external reader, but the same live lookup result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN 00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-binary Engine Torque Map 00010b8e. The continuous consumer path assigns an engine-torque correction role. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer. Definition address projected from JK08A 00014c1a through JK08A-1ME3B.definition-addresses.csv: exact-bytes pair 00091d2c/000979cc reads the exact eight-word coefficient table at the same call ordinal through 0002aeac.</description>
-    <CATEGORYMEM index="0" category="15" />
+    <CATEGORYMEM index="0" category="16" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16264" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
       <units>RPM [cand]</units>
