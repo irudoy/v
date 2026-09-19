@@ -254,7 +254,12 @@ EXTENDED_PANELS = (
         Metric("throttle_target_shared_raw", "Shared throttle target", "raw", 0),
         Metric("throttle_target_channel_0_raw", "Throttle target channel 0", "raw", 0),
         Metric("throttle_target_channel_1_raw", "Throttle target channel 1", "raw", 0),
-        Metric("injection_timing_state_raw", "Injection timing state", "raw", 0),
+        Metric(
+            "injection_end_angle_deg",
+            "End of injection after intake TDC",
+            "degATDC",
+            0,
+        ),
     )),
     ("CVTC detail", (
         Metric("exhaust_cvtc_actual_b1_deg_ca", "Exhaust CVTC actual B1", "degCA", 1),

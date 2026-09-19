@@ -12,10 +12,17 @@ profile identity. It contains no ROM name, producer RAM address, physical
 mailbox, or patch location. Host tools load that file directly and do not import
 the JK08A producer manifest. The producer binding retains the exact ROM, RAM,
 hook, source-address, and mailbox constraints required to build safe firmware.
-Profile CRC canonicalization likewise excludes ROM identity, source addresses,
-and producer storage kinds. Two producers implementing the same field names,
-placement, widths, signedness, scales, contexts, and protocol version therefore
-publish the same wire identity.
+The profile CRC covers the wire layout alone: protocol version, profile ID,
+page count, the page, offset, width, and signedness of every fixed field, and
+the page, tag, and ordered widths and signedness of every context. ROM
+identity, source addresses, producer storage kinds, field names, context
+names, and scale strings are outside it, so a renamed field or a restated
+scale keeps the CRC and the firmware bytes. The profile ID states which
+quantity each slot carries: a slot that carries a different quantity takes a
+new profile ID, and the producer test suite pins one digest of the
+slot-to-field assignment per profile ID. Two producers implementing the same
+placement, widths, signedness, contexts, profile ID, and protocol version
+therefore publish the same wire identity.
 
 The endpoint is disabled by default. The complete software gate passes, but
 schema 2 has not been tested in the target vehicle. The recorded schema 1
@@ -135,16 +142,16 @@ The 16-byte configuration contains:
 | 0 | 2 | magic `0x4354` |
 | 2 | 1 | protocol version `2` |
 | 3 | 1 | enable byte `0` or `1` |
-| 4 | 1 | profile ID `3` |
+| 4 | 1 | profile ID `4` |
 | 5 | 1 | page count `11` |
 | 6 | 1 | tick divisor `1..255` |
 | 7 | 1 | reserved zero |
 | 8 | 2 | standard CAN ID |
-| 10 | 2 | profile CRC16 `0x6F62` |
+| 10 | 2 | profile CRC16 `0xDB63` |
 | 12 | 4 | integrity word `0x54454C32` (`TEL2`) |
 
 The only profile name is `tuning`. The default disabled bytes are
-`43 54 02 00 03 0B 01 00 06 F0 6F 62 54 45 4C 32`.
+`43 54 02 00 04 0B 01 00 06 F0 DB 63 54 45 4C 32`.
 
 Firmware validates every field before incrementing the telemetry tick,
 touching the queue, or accepting a control command. The builder independently
@@ -211,24 +218,29 @@ Pages 0 through 8 are captured at every published snapshot.
 | 4 | `injection_5_raw` `FFFF23D2`; `knock_timing_state_raw` `FFFF121A`; `knock_surface_state` `FFFF2466`; latched knock count and channel mask |
 | 5 | `app1_raw` `FFFF269E`; `app2_raw` `FFFF26A2`; `tps_b1_raw` `FFFF2756`; `absolute_throttle_raw` `FFFF1075` |
 | 6 | `tps_b2_raw` `FFFF285C`; intake actual B1/B2 `FFFF2442/2443`; intake target `FFFF2326`; exhaust target `FFFF2327`; calculated load `FFFF413E` |
-| 7 | bounded throttle request `FFFF19C6`; engine torque state `FFFF18CC`; injection timing state `FFFF162E`; exhaust actual B1 `FFFF2324` |
+| 7 | bounded throttle request `FFFF19C6`; engine torque state `FFFF18CC`; end-of-injection angle word `FFFF192E`; exhaust actual B1 `FFFF2324` |
 | 8 | shared throttle target `FFFF19B2`; channel targets `FFFF28BC/28BE`; exhaust actual B2 `FFFF2325` |
 
 The six injection words are calculated software values at `raw / 100 ms`, and
 word `i` belongs to cylinder `i + 1` by code. Equality to electrical
-injector-open duration is not measured at the injector terminals. Injection
-timing state `FFFF162E` has no runtime producer in JK08A and reads zero. The
-timing fields are software coordinates rather than an independent
-crank-referenced spark measurement.
+injector-open duration is not measured at the injector terminals. The
+end-of-injection angle word holds `2 * min(y, 209)` from `FUN_00056BD0`;
+`raw * 2` is the delay in crank degrees after the reference tooth of the
+scheduled cylinder, and the JK08A end of injection lies `raw * 2 - 590` degrees
+after intake TDC of the injected cylinder. JK00C, JK00D, JK78C, and 1ND bind
+the word that their homologous stage writes with the same 209-count clamp:
+`FFFF1992`, `FFFF1996`, `FFFF192A`, and `FFFE89A2`; their intake-TDC anchor is
+not established. The timing fields are software coordinates rather than an
+independent crank-referenced spark measurement.
 
 A scale string without the word `candidate` is fixed by code, by ROM constants
 against factory limits, or by the ECU's own J1979 declaration: MAF voltage and
-airflow, Base Fuel Schedule at `raw / 2048 ms`, the injection words, CVTC
-targets and positions, the intake duty command, the exhaust duty words, the
-four temperatures, battery voltage, absolute throttle, and the pedal and
-throttle sensor voltages. The intake duty monitor pair, engine torque state,
-atmospheric pressure, the front A/F words, and both adjustment states keep
-candidate or unresolved conversions.
+airflow, Base Fuel Schedule at `raw / 2048 ms`, the injection words, the
+end-of-injection angle, CVTC targets and positions, the intake duty command,
+the exhaust duty words, the four temperatures, battery voltage, absolute
+throttle, and the pedal and throttle sensor voltages. The intake duty monitor
+pair, engine torque state, atmospheric pressure, the front A/F words, and both
+adjustment states keep candidate or unresolved conversions.
 
 ### Rotating context pages
 
@@ -239,13 +251,17 @@ rate is `24.4140625 Hz`.
 
 | Tag | Page 9 bytes 2..7 | Page 10 bytes 2..7 |
 | ---: | --- | --- |
-| 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | intake duty commands B1/B2 `FFFF23B4/23B5`, LTFT learned B1 `FFFF2306`, LTFT adjustment B1 `FFFF5648` |
-| 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, atmosphere `FFFF4544`, battery `FFFF1188` |
+| 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | atmosphere `FFFF4544`, battery `FFFF1188`, LTFT learned B1 `FFFF2306`, LTFT adjustment B1 `FFFF5648` |
+| 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, intake duty commands B1/B2 `FFFF23B4/23B5` |
 | 2 | LTFT B1/B2 `FFFF2302/2304`, timing states `FFFF2023/564C` | front A/F words `FFFF2780/2782`, adjustment state B1 `FFFF45A0` |
 | 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, adjustment state B2 `FFFF45A2` |
 
+Tag 1 carries the intake duty monitor pair on page 9 and the intake duty
+command pair on page 10, so one capture pass samples both pairs and a recording
+compares them byte for byte.
+
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2, profile ID 3, and CRC `0x6F62`. A later mismatch disables conversions again.
+2, profile ID 4, and CRC `0xDB63`. A later mismatch disables conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
@@ -314,7 +330,7 @@ banks, source table, payload, decoder, and total load. A schema 2 image remains
 ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 
 - eleven ordered pages and exact tick continuity;
-- version 2, profile ID 3, and CRC `0x6F62` health identity;
+- version 2, profile ID 4, and CRC `0xDB63` health identity;
 - no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
 - acceptable stock-frame cadence and whole-bus utilization.
 
@@ -331,15 +347,16 @@ both banks, all pages, all eight context records, queue boundaries, latest-wins
 replacement, preemption, TXACK, ABACK, simultaneous mailbox-26/mailbox-28
 flags, both HCAN1 initialization hooks, startup-disabled START, startup-enabled
 STOP, divisor restart, invalid payloads, invalid DLC, remote frames, corrupt
-configuration, active-group stop, corrupt-state fail-closed behavior, a real
-`TRAPA` exception entry, and the exact ISR `RTE`.
+configuration, rejection of profile IDs 0, 3, and 5 by the capture entry and of
+profile ID 3 by the control receiver, active-group stop, corrupt-state
+fail-closed behavior, a real `TRAPA` exception entry, and the exact ISR `RTE`.
 
 The locked software result is:
 
 - 647 injected instructions and 680 data bytes;
-- ten executable entries and 62 dynamic telemetry cases;
+- ten executable entries and 64 dynamic telemetry cases;
 - composition SHA-256
-  `989b5452a695e38afca839ba6b8be524d55c3110bffe7b3f707f76e8ad288fda`;
+  `6840dcb0ab44ed97e39f0ff1c5d6ea862442dd5ad99b67f34aa92f683dfe3c13`;
 - 1,723 changed bytes inside a 3,484-byte declared write set.
 
 This gate proves the bounded software contract. It does not replace physical

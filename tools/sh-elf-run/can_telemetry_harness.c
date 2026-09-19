@@ -52,8 +52,8 @@ extern void invoke_exception_probe(uint32_t *registers);
 static size_t case_count;
 
 static const uint8_t configuration[16] = {
-    0x43, 0x54, 0x02, 0x01, 0x03, 0x0b, 0x01, 0x00,
-    0x06, 0xf0, 0x6f, 0x62, 0x54, 0x45, 0x4c, 0x32,
+    0x43, 0x54, 0x02, 0x01, 0x04, 0x0b, 0x01, 0x00,
+    0x06, 0xf0, 0xdb, 0x63, 0x54, 0x45, 0x4c, 0x32,
 };
 
 static volatile uint8_t *ram_pointer(uint32_t original)
@@ -350,6 +350,7 @@ enum config_mutation {
     CONFIG_DISABLED,
     CONFIG_ENABLE_INVALID,
     CONFIG_PROFILE_ZERO,
+    CONFIG_PROFILE_PREVIOUS,
     CONFIG_PROFILE_HIGH,
     CONFIG_PAGE_COUNT,
     CONFIG_DIVISOR,
@@ -380,8 +381,11 @@ static void mutate_configuration(enum config_mutation mutation)
     case CONFIG_PROFILE_ZERO:
         config[4] = 0;
         break;
+    case CONFIG_PROFILE_PREVIOUS:
+        config[4] = 3;
+        break;
     case CONFIG_PROFILE_HIGH:
-        config[4] = 2;
+        config[4] = 5;
         break;
     case CONFIG_PAGE_COUNT:
         config[5] = 10;
@@ -533,6 +537,20 @@ static int run_control_cases(void)
     if (read_u16(ram_pointer(RXPR1)) != MAILBOX31_MASK)
         return fail_value(
             "control-invalid-config", "rxpr",
+            read_u16(ram_pointer(RXPR1)), MAILBOX31_MASK);
+
+    count_case();
+    reset_case();
+    rom_pointer(CONFIG)[4] = 3;
+    seed_control_command(start_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (ram_pointer(TELEMETRY_STATE)[11] != 0)
+        return fail_value(
+            "control-previous-profile", "override",
+            ram_pointer(TELEMETRY_STATE)[11], 0);
+    if (read_u16(ram_pointer(RXPR1)) != MAILBOX31_MASK)
+        return fail_value(
+            "control-previous-profile", "rxpr",
             read_u16(ram_pointer(RXPR1)), MAILBOX31_MASK);
 
     count_case();

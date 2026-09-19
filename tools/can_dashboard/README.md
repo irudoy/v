@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `4.0.1`.
+Current dashboard version: `5.0.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -56,7 +56,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v4.0.1-windows.zip
+  --output tmp/vq-can-telemetry-v5.0.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -117,11 +117,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v4.0.1-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v5.0.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 4.0.1 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 5.0.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -267,8 +267,12 @@ longer than its reserve is elided, and hover and click still report it in full.
 The decoder retains the latest values from the paired page-9 and page-10
 contexts for all four tags.
 Schema-dependent conversions stay disabled until the in-band health context
-matches protocol version, profile ID, and CRC16. Stale context values remain
-visible while their update cadence is one quarter of the snapshot rate.
+matches protocol version, profile ID, and CRC16. The bundled schema declares
+profile ID 4 with CRC16 `0xDB63`; a producer that reports another profile ID
+or CRC keeps raw values only, because its slots carry other quantities. The
+CRC covers the wire layout alone, so a restated field name or scale string
+leaves it unchanged. Stale context values remain visible while their update
+cadence is one quarter of the snapshot rate.
 
 A field marked with `*` uses a candidate transform; engine torque state at
 `raw * 0.1 Nm` is the only one. The current conversions are:
@@ -293,8 +297,9 @@ A field marked with `*` uses a candidate transform; engine torque state at
 | active hot surface | `0xFFFF2466.bit6` | clear = High Octane, set = High Detonation | exact selector; other bits in the byte have separate roles |
 | exhaust CVTC target and actual B1/B2 | `0xFFFF2327`, `0xFFFF2324..2325` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count; recordings keep the actual bytes within two counts of a steady target in 98 percent of Map 3 samples |
 | intake CVTC target and actual B1/B2 | `0xFFFF2326`, `0xFFFF2442..2443` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count, advance positive; recordings keep the actual bytes within two counts of a steady target in 95 to 100 percent of samples |
-| intake CVTC duty monitor and command B1/B2 | `0xFFFF2440..2441`, `0xFFFF23B4..23B5` | `raw * 39 / 100 percent` | code-proven ATU-II conversion of the command; the monitor pair matches the command within three counts in 80 percent of active records with a mean difference below 0.2 count |
+| intake CVTC duty monitor and command B1/B2 | `0xFFFF2440..2441`, `0xFFFF23B4..23B5` | `raw * 39 / 100 percent` | code-proven ATU-II conversion of the command; both pairs share context tag 1 and come from one capture pass; profile 3 recordings, which sampled the pairs one pass apart, keep the monitor within three counts of the command in 80 percent of active records with a mean difference below 0.2 count |
 | exhaust CVTC duty B1/B2 words | `0xFFFF1AAC`, `0xFFFF1AAE` | `raw * 100 / 1024 percent` | code-proven output-stage conversion |
+| end of injection after intake TDC | `0xFFFF192E` word | `raw * 2 - 590 degATDC` | the word holds `2 * min(y, 209)` and `raw * 2` is the code-proven delay in crank degrees after the reference tooth; the intake-TDC anchor rests on the JK08A reference-tooth and cylinder-order analysis and is a firmware coordinate, not a measured injector event; other ROM targets stream their homologous word without an established anchor |
 
 The MLG descriptor applies the exact Q8 scale to `Knock timing state` and keeps
 the original `Knock surface state` bitfield. The additional
@@ -338,6 +343,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 4.0.1 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 5.0.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

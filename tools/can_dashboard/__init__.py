@@ -2,4 +2,4 @@
 
 PRODUCT_NAME = "VQ CAN Telemetry"
 PRODUCT_SLUG = "vq-can-telemetry"
-__version__ = "4.0.1"
+__version__ = "5.0.0"

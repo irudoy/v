@@ -429,17 +429,30 @@ evidence = "exact-code"
 note = "Only entries 0 and 1 of the duty word array are written, so DIDs 0x122D and 0x122E publish two words that no producer maintains and only the exhaust pair is streamed."
 
 [[signal]]
+id = "injection_end_angle"
+domain = "fuel"
+label = "End-of-injection angle"
+priority = "medium"
+coverage = "fixed"
+current_fields = ["injection_end_angle_raw"]
+sources = [0xFFFF192E]
+widths = [2]
+dids = []
+evidence = "exact-code"
+note = "FUN 00056BD0 stores 2*min(y, 209) from tables 0x12302 and 0x1230A, and FUN 000521A8 reads raw*2 as the injection-end delay in crank degrees after the reference tooth of the scheduled cylinder. The end of injection lies raw*2 - 590 degrees after intake TDC of the injected cylinder. No service-0x22 DID publishes the word."
+
+[[signal]]
 id = "injection_timing_state"
 domain = "fuel"
 label = "Injection timing state"
-priority = "medium"
-coverage = "fixed"
-current_fields = ["injection_timing_state_raw"]
+priority = "research"
+coverage = "absent"
+current_fields = []
 sources = [0xFFFF162E]
 widths = [2]
 dids = [0x1131, 0x1132, 0x1133, 0x113D]
 evidence = "exact-code"
-note = "Four declared DIDs publish the high byte of word 0xFFFF162E, which has no runtime producer: the startup initializer clears it and no other code accesses it, so the DIDs and the streamed field read constant zero. The live end-of-injection angle is word 0xFFFF192E."
+note = "Four declared DIDs publish the high byte of word 0xFFFF162E, which has no runtime producer: the startup initializer clears it and no other code accesses it, so the DIDs read constant zero and the word is not streamed. The live end-of-injection angle is signal injection_end_angle."
 
 [[signal]]
 id = "vehicle_context"

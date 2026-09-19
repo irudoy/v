@@ -47,7 +47,8 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         document = json.loads(
             can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8")
         )
-        document["profiles"][0]["fields"][0]["name"] = "changed_tick"
+        field = document["profiles"][0]["fields"][0]
+        field["signed"] = not field["signed"]
         with tempfile.TemporaryDirectory() as directory:
             schema_path = Path(directory) / "changed-schema.json"
             schema_path.write_text(
@@ -58,6 +59,24 @@ class CanTelemetryDecoderTest(unittest.TestCase):
                 "CRC16 does not match",
             ):
                 can_telemetry.Decoder("tuning", 0x6F0, schema_path)
+
+    def test_schema_crc_accepts_restated_names_and_scales(self):
+        document = json.loads(
+            can_telemetry.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+        field = document["profiles"][0]["fields"][-1]
+        field["name"] = "restated_" + field["name"]
+        field["scale"] = "restated"
+        with tempfile.TemporaryDirectory() as directory:
+            schema_path = Path(directory) / "restated-schema.json"
+            schema_path.write_text(
+                json.dumps(document), encoding="utf-8"
+            )
+            decoder = can_telemetry.Decoder("tuning", 0x6F0, schema_path)
+        self.assertEqual(
+            decoder.profile["_crc16"],
+            can_telemetry.Decoder("tuning", 0x6F0).profile["_crc16"],
+        )
 
     def test_external_schema_identity_does_not_require_a_rom_manifest(self):
         document = json.loads(
@@ -102,7 +121,7 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertEqual(snapshot.fields["rpm_raw"], 0x0304)
         self.assertEqual(snapshot.fields["final_timing_raw"], 5)
         self.assertEqual(snapshot.fields["injection_0_raw"], 0x1213)
-        self.assertIn("injection_timing_state_raw", snapshot.fields)
+        self.assertIn("injection_end_angle_raw", snapshot.fields)
         self.assertIn("throttle_request_bounded_raw", snapshot.fields)
         with self.assertRaises(can_telemetry.DecodeError):
             can_telemetry.engineering_values(snapshot)
@@ -116,7 +135,7 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertFalse(temperature.schema_verified)
         self.assertEqual(
             temperature.context_name,
-            "temperatures_af + intake_cvtc_duty_command_and_trim_terms",
+            "temperatures_af + pressure_voltage_and_trim_terms",
         )
         self.assertIn("ltft_learned_b1_raw", temperature.fields)
         with self.assertRaises(can_telemetry.DecodeError):
@@ -150,10 +169,8 @@ class CanTelemetryDecoderTest(unittest.TestCase):
             health.fields["engine_torque_state_raw"] * 0.1,
         )
         self.assertAlmostEqual(
-            physical["intake_cvtc_duty_command_b1_percent"],
-            verified_temperature.fields["intake_cvtc_duty_command_b1_raw"]
-            * 39
-            / 100,
+            physical["battery_voltage_v"],
+            verified_temperature.fields["battery_voltage_raw"] * 0.08,
         )
         self.assertAlmostEqual(
             physical["ltft_learned_b1_percent"],
@@ -167,6 +184,26 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertAlmostEqual(
             trim_physical["stft_b1_percent"],
             trims.fields["stft_b1_raw"] / 256 - 100,
+        )
+        self.assertEqual(
+            trims.context_name,
+            "short_fuel_trim_cvtc_duty"
+            " + exhaust_cvtc_duty_and_intake_duty_command",
+        )
+        for bank in (1, 2):
+            self.assertAlmostEqual(
+                trim_physical[f"intake_cvtc_duty_b{bank}_percent"],
+                trims.fields[f"intake_cvtc_duty_b{bank}_raw"] * 39 / 100,
+            )
+            self.assertAlmostEqual(
+                trim_physical[f"intake_cvtc_duty_command_b{bank}_percent"],
+                trims.fields[f"intake_cvtc_duty_command_b{bank}_raw"]
+                * 39
+                / 100,
+            )
+        self.assertAlmostEqual(
+            fixed_physical["injection_end_angle_deg"],
+            health.fields["injection_end_angle_raw"] * 2 - 590,
         )
 
     def test_health_mismatch_is_rejected(self):

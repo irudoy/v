@@ -304,10 +304,20 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+# Channels of telemetry profile 3 recordings whose slot carries another
+# quantity in the current profile.
+PROFILE_3_CHANNEL_SOURCES = {
+    "Injection timing state": "injection_timing_state_raw",
+}
+
+
 def _source_by_channel_name() -> dict[str, str]:
     return {
-        binding.spec.name: binding.source
-        for binding in recording.build_bindings("tuning")
+        **PROFILE_3_CHANNEL_SOURCES,
+        **{
+            binding.spec.name: binding.source
+            for binding in recording.build_bindings("tuning")
+        },
     }
 
 
@@ -438,6 +448,9 @@ def audit_duty_pairs(recording_: Recording) -> dict:
         differences = [m - c for m, c in pairs]
         result[f"{prefix}_monitor_minus_command_mean"] = statistics.fmean(
             differences
+        )
+        result[f"{prefix}_equal_share"] = _share(
+            sum(1 for value in differences if value == 0), len(differences)
         )
         result[f"{prefix}_within_three_share"] = _share(
             sum(1 for value in differences if abs(value) <= DUTY_TOLERANCE),
@@ -726,6 +739,7 @@ def audit_states(recording_: Recording) -> dict:
         ("battery_voltage_raw", "battery_raw_range"),
         ("atmospheric_pressure_raw", "atmospheric_raw_range"),
         ("injection_timing_state_raw", "injection_timing_state_raw_range"),
+        ("injection_end_angle_raw", "injection_end_angle_raw_range"),
     ):
         column = _ints(recording_, source)
         if column:

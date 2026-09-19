@@ -776,8 +776,9 @@ whole-program p-code scan with computed-address candidates, a
 constant-propagation sweep of register-relative accesses, and the block-copy
 groups of scheduler walkers `FUN_00020DFE` and `FUN_000209D8` find no other
 access. The four DIDs publish a constant zero, and all 143961 records of the
-2026-09-17 recordings stream 0. The live end-of-injection angle is
-`0xFFFF192E`.
+2026-09-17 recordings, made with telemetry profile 3, stream 0. The live
+end-of-injection angle is `0xFFFF192E`, which telemetry profile 4 streams in
+place of the diagnostic word.
 
 `FUN_00054A44` is entry 1 of the ten-entry engine-event task table at `0x21B5C`
 and runs from feeder `FUN_000208F8` on every engine event. With `n` the

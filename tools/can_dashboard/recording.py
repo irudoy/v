@@ -79,8 +79,8 @@ RAW_FIELD_DISPLAY = {
         "Bounded throttle request", "raw", 0, "Throttle"
     ),
     "engine_torque_state_raw": ("Engine torque state", "Nm*", 1, "Engine"),
-    "injection_timing_state_raw": (
-        "Injection timing state", "raw", 0, "Injection"
+    "injection_end_angle_raw": (
+        "End of injection after intake TDC", "degATDC", 0, "Injection"
     ),
     "exhaust_cvtc_actual_b1_raw": (
         "Exhaust CVTC actual B1", "degCA", 1, "CVTC"

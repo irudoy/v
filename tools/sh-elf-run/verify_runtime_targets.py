@@ -540,7 +540,7 @@ def _run_harnesses(target, fixture, build_dir):
             rom_object,
             (invoke, exception),
             build_dir,
-            "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=62 entries=10 "
+            "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=64 entries=10 "
             "profiles=1 contexts=8 isr_rte=5",
             defines=can_defines,
         )

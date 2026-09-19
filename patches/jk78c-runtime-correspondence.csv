@@ -129,7 +129,7 @@ telemetry,exhaust_cvtc_target_raw,ffff2327,ffff23a4,,,mapped,Aligned diagnostic 
 telemetry,calculated_load_raw,ffff413e,ffff448c,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,throttle_request_bounded_raw,ffff19c6,ffff19b0,,,mapped,Three-generation homologous fail-safe branch reads this bounded request
 telemetry,engine_torque_state_raw,ffff18cc,ffff18d0,,,mapped,Homologous torque functions write this state at aligned call order
-telemetry,injection_timing_state_raw,ffff162e,ffff1646,,,mapped,Aligned diagnostic pointer table preserves the field position
+telemetry,injection_end_angle_raw,ffff192e,ffff192a,,,mapped,Homologous end-of-injection stage 000730cc stores the doubled 209-count clamp to this word
 telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,ffff239e,,,mapped,Aligned diagnostic pointer table preserves the channel byte
 telemetry,throttle_target_shared_raw,ffff19b2,ffff199e,,,mapped,Producer limiter and external consumer bind the shared target
 telemetry,throttle_target_channel_0_raw,ffff28bc,ffff43d8,,,mapped,Homologous channel limiter writes channel zero with a two-byte stride

@@ -3,8 +3,11 @@
 # The generator expands every multi-byte field to byte-source pointers used by
 # the SH-2E capture loop and emits a ROM-neutral host decoder schema. Producer
 # addresses, mailbox ownership, and ROM identity are not part of the host
-# contract or profile CRC. Runtime arbitrary-address interpretation is
-# intentionally unsupported.
+# contract. The profile CRC covers the wire layout alone: protocol version,
+# profile ID, page count, and the placement, width, and signedness of every
+# slot. Names and scale strings are outside it, and a slot that carries a
+# different quantity takes a new profile ID. Runtime arbitrary-address
+# interpretation is intentionally unsupported.
 
 schema_version = 2
 rom = "JK08A"
@@ -26,7 +29,7 @@ state_address = 0xFFFF5E00
 
 [[profile]]
 name = "tuning"
-id = 3
+id = 4
 page_count = 11
 
 [[field]]
@@ -404,15 +407,15 @@ signed = true
 scale = "candidate raw * 0.1 Nm"
 
 [[field]]
-name = "injection_timing_state_raw"
+name = "injection_end_angle_raw"
 page = 7
 offset = 5
 width = 2
-source = 0xFFFF162E
+source = 0xFFFF192E
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw diagnostic word; JK08A has no runtime producer"
+scale = "raw * 2 degCA after the reference engine event; JK08A raw * 2 - 590 deg after intake TDC"
 
 [[field]]
 name = "exhaust_cvtc_actual_b1_raw"
@@ -636,23 +639,23 @@ scale = "saturating count"
 [[context]]
 page = 10
 tag = 0
-name = "intake_cvtc_duty_command_and_trim_terms"
+name = "pressure_voltage_and_trim_terms"
 
 [[context.field]]
-name = "intake_cvtc_duty_command_b1_raw"
+name = "atmospheric_pressure_raw"
 width = 1
-source = 0xFFFF23B4
+source = 0xFFFF4544
 kind = "ecu_ram"
 signed = false
-scale = "raw * 39 / 100 percent"
+scale = "diagnostic-evidence candidate"
 
 [[context.field]]
-name = "intake_cvtc_duty_command_b2_raw"
+name = "battery_voltage_raw"
 width = 1
-source = 0xFFFF23B5
+source = 0xFFFF1188
 kind = "ecu_ram"
 signed = false
-scale = "raw * 39 / 100 percent"
+scale = "raw * 0.08 V"
 
 [[context.field]]
 name = "ltft_learned_b1_raw"
@@ -673,7 +676,7 @@ scale = "Q8.8 percent"
 [[context]]
 page = 10
 tag = 1
-name = "exhaust_cvtc_duty_pressure_and_voltage"
+name = "exhaust_cvtc_duty_and_intake_duty_command"
 
 [[context.field]]
 name = "exhaust_cvtc_duty_b1_word_raw"
@@ -692,20 +695,20 @@ signed = false
 scale = "raw * 100 / 1024 percent"
 
 [[context.field]]
-name = "atmospheric_pressure_raw"
+name = "intake_cvtc_duty_command_b1_raw"
 width = 1
-source = 0xFFFF4544
+source = 0xFFFF23B4
 kind = "ecu_ram"
 signed = false
-scale = "diagnostic-evidence candidate"
+scale = "raw * 39 / 100 percent"
 
 [[context.field]]
-name = "battery_voltage_raw"
+name = "intake_cvtc_duty_command_b2_raw"
 width = 1
-source = 0xFFFF1188
+source = 0xFFFF23B5
 kind = "ecu_ram"
 signed = false
-scale = "raw * 0.08 V"
+scale = "raw * 39 / 100 percent"
 
 [[context]]
 page = 10

@@ -1,4 +1,6 @@
 from dataclasses import replace
+import copy
+import hashlib
 import json
 import unittest
 
@@ -8,6 +10,15 @@ from patches import can_telemetry_compose
 from patches import can_telemetry_layout
 from patches import can_telemetry_profile
 from patches import jk08a_runtime_reservations
+from tools.logs import can_telemetry_schema
+
+
+# The profile CRC covers byte placement alone, so the profile ID is the only
+# wire-level statement of which quantity each slot carries. One digest of the
+# slot-to-field assignment is pinned per profile ID.
+SLOT_ASSIGNMENT_SHA256 = {
+    4: "3e03c72b5d80187d2335f3ea42996aab9b48c3e0e09c4fc11fe7a6b6405e11fd",
+}
 
 
 class CanTelemetryContractTest(unittest.TestCase):
@@ -24,7 +35,7 @@ class CanTelemetryContractTest(unittest.TestCase):
                 for item in self.manifest.profiles
             ),
             (
-                ("tuning", 3, 11, 0x6F62),
+                ("tuning", 4, 11, 0xDB63),
             ),
         )
         self.assertEqual(len(self.manifest.fields), 40)
@@ -81,6 +92,98 @@ class CanTelemetryContractTest(unittest.TestCase):
             host_fields.extend(context["fields"])
         self.assertTrue(host_fields)
         self.assertTrue(all("source" not in field for field in host_fields))
+
+    def test_profile_crc_covers_the_wire_layout_alone(self):
+        document = json.loads(
+            can_telemetry_profile.DEFAULT_SCHEMA.read_text(encoding="utf-8")
+        )
+        version = document["protocol_version"]
+        profile = document["profiles"][0]
+        expected = self.manifest.profiles[0].crc16
+        self.assertEqual(
+            can_telemetry_schema.profile_crc16(profile, version), expected
+        )
+
+        relabelled = copy.deepcopy(profile)
+        relabelled["name"] = "relabelled"
+        for field in relabelled["fields"]:
+            field["name"] += "_renamed"
+            field["scale"] = "restated"
+        for context in relabelled["contexts"]:
+            context["name"] += "_renamed"
+            for field in context["fields"]:
+                field["name"] += "_renamed"
+                field["scale"] = "restated"
+        relabelled["fields"].reverse()
+        self.assertEqual(
+            can_telemetry_schema.profile_crc16(relabelled, version), expected
+        )
+
+        def mutated(change):
+            candidate = copy.deepcopy(profile)
+            change(candidate)
+            return can_telemetry_schema.profile_crc16(candidate, version)
+
+        wide = next(
+            index for index, field in enumerate(profile["fields"])
+            if field["width"] == 2
+        )
+        mutations = {
+            "id": lambda item: item.update(id=item["id"] + 1),
+            "page_count": lambda item: item.update(
+                page_count=item["page_count"] - 1
+            ),
+            "width": lambda item: item["fields"][wide].update(width=1),
+            "offset": lambda item: item["fields"][wide].update(
+                offset=item["fields"][wide]["offset"] + 1
+            ),
+            "signed": lambda item: item["fields"][wide].update(
+                signed=not item["fields"][wide]["signed"]
+            ),
+            "context_width": lambda item: item["contexts"][0]["fields"][
+                0
+            ].update(width=item["contexts"][0]["fields"][0]["width"] + 1),
+            "context_order": lambda item: item["contexts"].reverse(),
+        }
+        for name, change in mutations.items():
+            with self.subTest(mutation=name):
+                self.assertNotEqual(mutated(change), expected)
+        self.assertNotEqual(
+            can_telemetry_schema.profile_crc16(profile, version + 1), expected
+        )
+
+    def test_slot_assignment_is_pinned_to_the_profile_id(self):
+        for profile in self.manifest.profiles:
+            assignment = {
+                "fields": sorted(
+                    [field.page, field.offset, field.name]
+                    for field in self.manifest.fields
+                    if profile.name in field.profiles
+                ),
+                "contexts": [
+                    [
+                        context.page,
+                        context.tag,
+                        [field.name for field in context.fields],
+                    ]
+                    for context in self.manifest.contexts
+                ],
+            }
+            digest = hashlib.sha256(
+                json.dumps(
+                    assignment, sort_keys=True, separators=(",", ":")
+                ).encode("utf-8")
+            ).hexdigest()
+            self.assertEqual(
+                digest,
+                SLOT_ASSIGNMENT_SHA256.get(profile.profile_id),
+                f"the slot assignment of profile ID {profile.profile_id} "
+                "differs from the pinned one. The profile CRC covers byte "
+                "placement alone, so a slot that carries a different "
+                "quantity requires a new profile ID with its own digest; "
+                "only a rename of the same quantity replaces the digest "
+                "under the same ID.",
+            )
 
     def test_configuration_round_trip_and_mailbox_encoding(self):
         cases = (

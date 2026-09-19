@@ -355,7 +355,7 @@ class DemoGenerator:
             "calculated_load_raw": load * 255 / 100,
             "throttle_request_bounded_raw": 900 + 2400 * wave,
             "engine_torque_state_raw": (45 + 210 * wave) * 10,
-            "injection_timing_state_raw": 320 + 180 * wave,
+            "injection_end_angle_raw": 266 + 134 * wave,
             "exhaust_cvtc_actual_b1_raw": (2 + 18 * wave + 64) * 2,
             "throttle_target_shared_raw": 1000 + 2600 * wave,
             "throttle_target_channel_0_raw": 1050 + 2550 * wave,

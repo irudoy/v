@@ -23,10 +23,8 @@ def crc16_ccitt_false(data):
 
 def _field_contract(field, *, fixed):
     result = {
-        "name": field["name"],
         "width": field["width"],
         "signed": field["signed"],
-        "scale": field["scale"],
     }
     if fixed:
         result["page"] = field["page"]
@@ -35,21 +33,27 @@ def _field_contract(field, *, fixed):
 
 
 def canonical_profile(profile, protocol_version):
-    """Return the producer-independent profile identity document."""
+    """Return the wire-layout identity document covered by the profile CRC.
+
+    Field names, context names, and scale strings are outside the document:
+    the CRC identifies byte placement, and the profile ID identifies which
+    quantity each slot carries.
+    """
     return {
         "protocol_version": protocol_version,
-        "name": profile["name"],
         "id": profile["id"],
         "page_count": profile["page_count"],
-        "fields": [
-            _field_contract(field, fixed=True)
-            for field in profile["fields"]
-        ],
+        "fields": sorted(
+            (
+                _field_contract(field, fixed=True)
+                for field in profile["fields"]
+            ),
+            key=lambda item: (item["page"], item["offset"]),
+        ),
         "contexts": [
             {
                 "page": context["page"],
                 "tag": context["tag"],
-                "name": context["name"],
                 "fields": [
                     _field_contract(field, fixed=False)
                     for field in context["fields"]

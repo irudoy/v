@@ -164,6 +164,8 @@ class MlgRelationAuditTest(unittest.TestCase):
 
         self.assertEqual(result["intake_duty_b1_nonzero_pair_count"], 300)
         self.assertEqual(result["intake_duty_b1_monitor_minus_command_mean"], 0)
+        self.assertEqual(result["intake_duty_b1_equal_share"], 1.0)
+        self.assertEqual(result["intake_duty_b2_equal_share"], 0.0)
         self.assertEqual(result["intake_duty_b1_within_three_share"], 1.0)
         self.assertAlmostEqual(result["intake_duty_b1_correlation"], 1.0)
         self.assertEqual(result["intake_duty_b2_monitor_minus_command_mean"], 1)

@@ -158,14 +158,14 @@
         {
           "fields": [
             {
-              "name": "intake_cvtc_duty_command_b1_raw",
-              "scale": "raw * 39 / 100 percent",
+              "name": "atmospheric_pressure_raw",
+              "scale": "diagnostic-evidence candidate",
               "signed": false,
               "width": 1
             },
             {
-              "name": "intake_cvtc_duty_command_b2_raw",
-              "scale": "raw * 39 / 100 percent",
+              "name": "battery_voltage_raw",
+              "scale": "raw * 0.08 V",
               "signed": false,
               "width": 1
             },
@@ -182,7 +182,7 @@
               "width": 2
             }
           ],
-          "name": "intake_cvtc_duty_command_and_trim_terms",
+          "name": "pressure_voltage_and_trim_terms",
           "page": 10,
           "tag": 0
         },
@@ -201,19 +201,19 @@
               "width": 2
             },
             {
-              "name": "atmospheric_pressure_raw",
-              "scale": "diagnostic-evidence candidate",
+              "name": "intake_cvtc_duty_command_b1_raw",
+              "scale": "raw * 39 / 100 percent",
               "signed": false,
               "width": 1
             },
             {
-              "name": "battery_voltage_raw",
-              "scale": "raw * 0.08 V",
+              "name": "intake_cvtc_duty_command_b2_raw",
+              "scale": "raw * 39 / 100 percent",
               "signed": false,
               "width": 1
             }
           ],
-          "name": "exhaust_cvtc_duty_pressure_and_voltage",
+          "name": "exhaust_cvtc_duty_and_intake_duty_command",
           "page": 10,
           "tag": 1
         },
@@ -268,7 +268,7 @@
           "tag": 3
         }
       ],
-      "crc16_ccitt_false": "0x6F62",
+      "crc16_ccitt_false": "0xDB63",
       "fields": [
         {
           "name": "tick16",
@@ -543,10 +543,10 @@
           "width": 2
         },
         {
-          "name": "injection_timing_state_raw",
+          "name": "injection_end_angle_raw",
           "offset": 5,
           "page": 7,
-          "scale": "raw diagnostic word; JK08A has no runtime producer",
+          "scale": "raw * 2 degCA after the reference engine event; JK08A raw * 2 - 590 deg after intake TDC",
           "signed": false,
           "width": 2
         },
@@ -591,7 +591,7 @@
           "width": 1
         }
       ],
-      "id": 3,
+      "id": 4,
       "name": "tuning",
       "page_count": 11
     }

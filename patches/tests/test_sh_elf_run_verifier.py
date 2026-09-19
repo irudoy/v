@@ -397,7 +397,7 @@ mov #0x5,r1
         self.assertIn("verify_can_telemetry.verify", source)
         self.assertIn("can_telemetry_cases", source)
         self.assertIn("can_telemetry_harness.c", verifier)
-        self.assertIn("cases=62", verifier)
+        self.assertIn("cases=64", verifier)
         self.assertIn("trapa #0x40", exception)
         self.assertIn("entries=10", harness)
 

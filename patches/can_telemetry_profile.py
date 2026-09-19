@@ -192,37 +192,41 @@ def _parse_field(raw, *, context, page_field):
 
 
 def _canonical_profile(raw, fields, contexts, protocol_version):
-    selected = []
-    for field in fields:
-        if raw["name"] not in field.profiles:
-            continue
-        selected.append({
-            "name": field.name,
-            "page": field.page,
-            "offset": field.offset,
-            "width": field.width,
-            "signed": field.signed,
-            "scale": field.scale,
-        })
-    context_rows = []
-    for context in contexts:
-        context_rows.append({
+    """Return the wire-layout identity document covered by the profile CRC.
+
+    The document holds what decides the byte placement of a value: protocol
+    version, profile ID, page count, the page, offset, width, and signedness of
+    every fixed field, and the page, tag, and ordered widths and signedness of
+    every context. Field names, context names, scale strings, and producer
+    addresses stay outside, so a renamed field or a restated scale keeps the
+    CRC. A slot that carries a different quantity takes a new profile ID.
+    """
+    selected = sorted(
+        (
+            {
+                "page": field.page,
+                "offset": field.offset,
+                "width": field.width,
+                "signed": field.signed,
+            }
+            for field in fields
+            if raw["name"] in field.profiles
+        ),
+        key=lambda item: (item["page"], item["offset"]),
+    )
+    context_rows = [
+        {
             "page": context.page,
             "tag": context.tag,
-            "name": context.name,
             "fields": [
-                {
-                    "name": field.name,
-                    "width": field.width,
-                    "signed": field.signed,
-                    "scale": field.scale,
-                }
+                {"width": field.width, "signed": field.signed}
                 for field in context.fields
             ],
-        })
+        }
+        for context in contexts
+    ]
     return {
         "protocol_version": protocol_version,
-        "name": raw["name"],
         "id": raw["id"],
         "page_count": raw["page_count"],
         "fields": selected,
@@ -325,7 +329,7 @@ def load_manifest(path=DEFAULT_SOURCE):
     profile_raw = raw["profile"]
     if tuple(item.get("name") for item in profile_raw) != PROFILE_NAMES:
         raise ValueError("profile names or order differ")
-    expected_profiles = (("tuning", 3, 11),)
+    expected_profiles = (("tuning", 4, 11),)
     profiles = []
     for index, (item, expected) in enumerate(zip(profile_raw, expected_profiles)):
         _require_keys(item, {"name", "id", "page_count"}, (), f"profile[{index}]")

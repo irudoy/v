@@ -405,6 +405,7 @@ RAW_CALIBRATIONS = {
         "intake_cvtc_duty_b2_percent", 39 / 100
     ),
     "engine_torque_state_raw": Calibration("engine_torque_state_nm", 0.1),
+    "injection_end_angle_raw": Calibration("injection_end_angle_deg", 2, -590),
     "intake_cvtc_duty_command_b1_raw": Calibration(
         "intake_cvtc_duty_command_b1_percent", 39 / 100
     ),

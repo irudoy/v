@@ -32,8 +32,8 @@ The fixed pages provide:
   and calculated load;
 - final ignition coordinate, APC command, ignition state, knock state, and
   latched knock interval count and channel mask;
-- all six calculated injection words, injection timing state, and the final
-  fuel-output inhibit mask;
+- all six calculated injection words, the end-of-injection angle word, and the
+  final fuel-output inhibit mask;
 - both front heated-oxygen-sensor bytes;
 - both accelerator channels, primary throttle feedback, absolute throttle,
   bounded request, shared target, and both final channel targets;
@@ -46,8 +46,9 @@ The rotating contexts provide:
 - coolant, intake-air, fuel, and oil temperature sources;
 - the upstream Q14 fuel multiplier, STFT, and LTFT;
 - the bank 1 long-term trim learned and adjustment summands;
-- intake CVTC solenoid duty commands, the low-resolution intake duty
-  monitor pair, and high-resolution exhaust duty;
+- intake CVTC solenoid duty commands and the low-resolution intake duty
+  monitor pair under one tag, so both pairs come from the same scheduler pass,
+  and high-resolution exhaust duty;
 - atmospheric pressure and battery voltage;
 - higher-resolution front A/F sensor words and both adjustment integrators;
 - secondary throttle feedback for both banks;
@@ -78,7 +79,9 @@ throttle sensor voltage at `raw / 200 V`, Base Fuel Schedule at
 `raw / 2048 ms`, the injection words at `raw / 100 ms`, CVTC targets and
 positions at `raw * 0.5 - 64 degCA`, the intake duty command at
 `raw * 39 / 100 percent`, exhaust duty at `raw * 100 / 1024 percent`, fuel and
-oil temperature at `raw - 50 degC`, and battery voltage at `raw * 0.08 V`. The
+oil temperature at `raw - 50 degC`, battery voltage at `raw * 0.08 V`, and the
+end-of-injection angle at `raw * 2 - 590` degrees after intake TDC of the
+injected cylinder. The
 intake duty monitor pair `FFFF2440/2441` keeps the command conversion as a
 candidate because no code path proves the two pairs identical. Engine torque
 state, atmospheric pressure, the front A/F words, and both adjustment states
@@ -109,15 +112,25 @@ The six injection words are compensated software calculations, and word `i`
 belongs to cylinder `i + 1` by code. Their equality to electrical
 injector-open duration is not measured at the injector terminals.
 
-Injection timing state `FFFF162E` has no runtime producer in JK08A and reads
-zero. The live end-of-injection angle word is `FFFF192E`, which schema 2 does
-not carry.
+The end-of-injection angle word `FFFF192E` is a firmware coordinate:
+`FUN_00056BD0` stores `2 * min(y, 209)` from tables `0x12302` and `0x1230A`,
+and `raw * 2` is the delay in crank degrees after the reference tooth of the
+scheduled cylinder. The intake-TDC anchor of `-590` degrees rests on the JK08A
+reference-tooth and cylinder-order analysis; the mechanical offset between the
+crank sensor and the signal plate is a hardware boundary. JK00C, JK00D, JK78C,
+and 1ND bind the word their homologous stage writes, and their intake-TDC
+anchor is not established. Diagnostic word `FFFF162E` behind DIDs `0x1131`,
+`0x1132`, `0x1133`, and `0x113D` has no runtime producer in JK08A, reads zero,
+and is not streamed.
 
 ## Transport boundary
 
-Schema 2 uses protocol version 2, profile ID 3, generated CRC16 `0x6F62`, one
+Schema 2 uses protocol version 2, profile ID 4, generated CRC16 `0xDB63`, one
 build-selected standard data CAN ID on physical mailbox 26, and the adjacent
-control ID on polled receive mailbox 31. The data ID range is `0x001..0x7FE`;
+control ID on polled receive mailbox 31. The CRC covers the wire layout alone:
+protocol version, profile ID, page count, and the placement, width, and
+signedness of every slot. Field names and scale strings are outside it, and a
+slot that carries a different quantity takes a new profile ID. The data ID range is `0x001..0x7FE`;
 the control ID is always `data_can_id + 1`.
 
 Configuration byte `0x000D4E03` controls streaming at startup and is exposed in

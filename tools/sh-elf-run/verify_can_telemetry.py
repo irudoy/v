@@ -31,7 +31,7 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "989b5452a695e38afca839ba6b8be524d55c3110bffe7b3f707f76e8ad288fda"
+    "6840dcb0ab44ed97e39f0ff1c5d6ea862442dd5ad99b67f34aa92f683dfe3c13"
 )
 EXPECTED_COMPOSITION_CHANGED_BYTES = 1723
 EXPECTED_COMPOSITION_WRITE_BYTES = 3484
@@ -261,7 +261,7 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=180,
     )
     marker = (
-        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=62 entries=10 "
+        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=64 entries=10 "
         "profiles=1 contexts=8 isr_rte=5"
     )
     if marker not in result.stdout:
