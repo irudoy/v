@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.1.2`.
+Current dashboard version: `8.2.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.1.2-windows.zip
+  --output tmp/vq-can-telemetry-v8.2.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.1.2-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.2.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.1.2 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.2.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -203,8 +203,7 @@ snapshot to one UDP endpoint. The `FEED` button opens its dialog:
 | --- | --- |
 | `PUBLISH` | turns the feed on and off; lit while on |
 | `UDP ENDPOINT` | `HOST:PORT` or a port alone, `127.0.0.1:47809` by default |
-| `100 % LOAD, MS` | the load reference in milliseconds, as RomRaider shows the table `Fuelling / Load Model / Internal Load Normalization Reference` of the flashed ROM; stock JK08A shows `13.294` |
-| `INSTALL PLUGIN` | writes the RomRaider plugin file for the typed endpoint; the caption beside it reports whether the file is installed for this endpoint |
+| `INSTALL PLUGIN` | writes the RomRaider plugin file for the typed endpoint; the caption beside it reports whether the file is installed for this endpoint, out of date, or not installed |
 
 `APPLY` restarts the feed with these values and stores them in the settings
 file, so the feed state returns on the next start. `FEED` stays lit while the
@@ -213,39 +212,42 @@ receiver without CAN hardware. One datagram is sent per 50 ms UI poll that
 completed at least one snapshot. The payload is ASCII:
 
 ```text
-RRUDP1 rpm=2512.5 load=43.75 bfs_ms=5.81543 timing_deg=24 ...
+RRUDP1 rpm=2512.5 bfs_ms=5.81543 timing_deg=24 ...
 ```
 
 The first token names the format and its version. Every other token is
 `key=value` with a finite decimal value of seven significant digits. A channel
 without a finite value is left out, and the receiver keeps its previous value.
 Nothing is sent until the wire schema is verified. The `Feed` status field
-reports the endpoint, the datagram count, a missing load reference, and the
-last send error.
+reports the endpoint, the datagram count, and the last send error.
 
-The load reference is the Base Fuel Schedule at 100 percent internal load, the
-ROM-specific calibration word that the ECU divides Base Fuel Schedule by. One
-word is 1/2048 ms; stock JK08A holds 27226 at `ROM16[0x9534]`, which is
-13.294 ms. The `load` channel reconstructs the coordinate that the ECU indexes
-its maps by:
+The `load` channel is derived, and the datagram leaves it out. It is the
+coordinate that the ECU indexes its maps by: a Q7 ratio of the Base Fuel
+Schedule word to a ROM-specific reference word, saturated at one byte. One word
+of either operand is 1/2048 ms; stock JK08A holds 27226 at `ROM16[0x9534]`,
+which RomRaider shows as 13.294 in the table `Fuelling / Load Model / Internal
+Load Normalization Reference`. The plugin file states the arithmetic and binds
+`reference` to that table:
 
-```text
-load = min(255, floor(bfs_raw * 128 / RAW)) * 100 / 128
+```properties
+udp.item.2.expression=min(255, floor(round(bfs_ms*2048)*128/reference))*100/128
+udp.item.2.table.reference=Internal Load Normalization Reference
 ```
 
-The host schema stays ROM-neutral, so the reference is a stored setting rather
-than a schema field. Without a reference the feed runs and leaves `load` out.
-A reference that differs from the running calibration shifts `load` on every
-load axis.
+RomRaider evaluates the expression with the stored word of the ROM open in its
+editor, so the host schema and the dashboard settings stay ROM-neutral and no
+calibration value is typed by hand. The value follows the image in the editor:
+a ROM other than the flashed one shifts `load` on every load axis, and with no
+ROM open `VQ Engine Load` reads 0. The `VQ CAN Telemetry` entry of the Logger
+`Plugins` menu shows the reference word and the ROM file it comes from.
 
-Two options override the stored feed for one run without changing the
-settings file: `--publish-udp [HOST:]PORT` turns the feed on at that endpoint,
-and `--bfs-reference RAW` sets the reference word in decimal or `0x` form.
+`--publish-udp [HOST:]PORT` turns the feed on at that endpoint for one run
+without changing the settings file.
 
 | Key | RomRaider Logger ID | Units | Source |
 | --- | --- | --- | --- |
 | `rpm` | `X_VQ_Engine_Speed` | RPM | `rpm_raw * 12.5` |
-| `load` | `X_VQ_Engine_Load` | % | reconstructed internal load coordinate |
+| `load` | `X_VQ_Engine_Load` | % | derived by RomRaider from `bfs_ms` and the reference word of the open ROM |
 | `bfs_ms` | `X_VQ_Base_Fuel_Schedule` | ms | `bfs_raw / 2048` |
 | `timing_deg` | `X_VQ_Timing_Command` | degBTDC | `final_timing_raw` |
 | `maf_g_s` | `X_VQ_Total_Airflow` | g/s | `maf_total_raw / 100` |
@@ -264,10 +266,12 @@ plugin file declares the same channel table and the listening endpoint, so
 the dashboard writes it: `INSTALL PLUGIN` in the `FEED` dialog places
 `vq-telemetry.plugin` in the per-user RomRaider folder,
 `~/.RomRaider/plugins` (`%USERPROFILE%\.RomRaider\plugins` on Windows), which
-a RomRaider build with the UDP data source reads beside its own `plugins`
-folder when Logger starts. `python3 -m tools.can_dashboard.live_feed
---write-plugin PATH [--endpoint [HOST:]PORT]` writes the same file to any
-other path.
+a RomRaider build whose UDP data source supports derived items reads beside
+its own `plugins` folder when Logger starts. The file is out of date after an
+endpoint change and after a dashboard update that changes the channel table;
+`INSTALL PLUGIN` replaces it, and Logger reads it at its next start.
+`python3 -m tools.can_dashboard.live_feed --write-plugin PATH [--endpoint
+[HOST:]PORT]` writes the same file to any other path.
 
 RomRaider derives a Logger ID from the item name as `X_` plus
 the name with underscores for spaces. A table axis whose definition carries
@@ -520,6 +524,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.1.2 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

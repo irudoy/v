@@ -26,12 +26,11 @@ FILE_NAME = "settings.json"
 
 @dataclass(frozen=True)
 class FeedSettings:
-    """Live value feed: whether it publishes, where, and the load reference."""
+    """Live value feed: whether it publishes and where."""
 
     enabled: bool = False
     host: str = live_feed.DEFAULT_HOST
     port: int = live_feed.DEFAULT_PORT
-    bfs_reference: int | None = None
 
 
 @dataclass(frozen=True)
@@ -80,16 +79,10 @@ def normalize_feed(document):
     port = document.get("port")
     if type(port) is not int or not 1 <= port <= 0xFFFF:
         port = defaults.port
-    reference = document.get("bfs_reference")
-    try:
-        reference = live_feed.validate_bfs_reference(reference)
-    except ValueError:
-        reference = None
     return FeedSettings(
         enabled=document.get("enabled") is True,
         host=host.strip(),
         port=port,
-        bfs_reference=reference,
     )
 
 
@@ -138,7 +131,6 @@ def save(path, settings):
             "enabled": settings.feed.enabled,
             "host": settings.feed.host,
             "port": settings.feed.port,
-            "bfs_reference": settings.feed.bfs_reference,
         },
     }
     handle, temporary = tempfile.mkstemp(

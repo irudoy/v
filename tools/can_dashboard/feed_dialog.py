@@ -9,23 +9,24 @@ from tools.can_dashboard.settings import FeedSettings
 from tools.can_dashboard.widgets import ToolButton
 
 
-REFERENCE_TABLE = "Fuelling / Load Model / Internal Load Normalization Reference"
+REFERENCE_TABLE = f"Fuelling / Load Model / {live_feed.LOAD_REFERENCE_TABLE}"
 INTRODUCTION = (
     "RomRaider Logger receives these values and Overlay Log outlines the "
     "table cell at the live engine speed and load."
 )
-REFERENCE_HINT = (
-    f"The value of the RomRaider table {REFERENCE_TABLE} in the flashed ROM. "
-    "Without it the feed leaves VQ Engine Load out."
+LOAD_HINT = (
+    "RomRaider computes VQ Engine Load itself from the table "
+    f"{REFERENCE_TABLE} of the ROM open in its editor."
 )
 PLUGIN_HINT = (
     "RomRaider learns the parameters from this file when Logger starts. "
-    "Install it once, and again after the endpoint changes."
+    "Install it once, and again when it reads out of date: after the "
+    "endpoint changes or after a dashboard update."
 )
 # Plugin file state -> (caption, color role).
 PLUGIN_STATES = {
     "current": ("installed for this endpoint", "ok"),
-    "outdated": ("installed for other settings", "error"),
+    "outdated": ("out of date, install again", "error"),
     "missing": ("not installed", "error"),
     None: ("", "muted"),
 }
@@ -35,49 +36,14 @@ def endpoint_text(host, port):
     return f"{host}:{port}"
 
 
-def reference_text(bfs_reference):
-    """Show the reference as RomRaider shows its table: milliseconds.
-
-    RomRaider shows three decimals. One word is 1/2048 ms, so a fourth decimal
-    is added when the word needs it to read back unchanged.
-    """
-    if bfs_reference is None:
-        return ""
-    milliseconds = live_feed.reference_ms(bfs_reference)
-    for digits in (3, 4):
-        text = f"{milliseconds:.{digits}f}"
-        if round(float(text) * live_feed.BFS_RAW_PER_MS) == bfs_reference:
-            break
-    return text
-
-
-def parse_reference(text):
-    """Return the reference word of the typed milliseconds; empty is none."""
-    text = text.strip().replace(",", ".")
-    if not text:
-        return None
-    try:
-        milliseconds = float(text)
-    except ValueError as error:
-        raise ValueError(
-            "load reference is not a number of milliseconds"
-        ) from error
-    return live_feed.reference_from_ms(milliseconds)
-
-
-def parse_form(enabled, endpoint, reference):
+def parse_form(enabled, endpoint):
     """Build feed settings from the dialog fields or raise ValueError."""
     host, port = live_feed.parse_endpoint(endpoint)
-    return FeedSettings(
-        enabled=bool(enabled),
-        host=host,
-        port=port,
-        bfs_reference=parse_reference(reference),
-    )
+    return FeedSettings(enabled=bool(enabled), host=host, port=port)
 
 
 class FeedDialog(tk.Toplevel):
-    """One place for the feed: the switch, the endpoint, the load reference."""
+    """One place for the feed: the switch, the endpoint, the plugin file."""
 
     def __init__(
         self,
@@ -103,9 +69,6 @@ class FeedDialog(tk.Toplevel):
         self.enabled = feed.enabled
         self.endpoint_var = tk.StringVar(
             self, value=endpoint_text(feed.host, feed.port)
-        )
-        self.reference_var = tk.StringVar(
-            self, value=reference_text(feed.bfs_reference)
         )
         self.message_var = tk.StringVar(self)
         self.plugin_var = tk.StringVar(self)
@@ -142,10 +105,7 @@ class FeedDialog(tk.Toplevel):
         self.endpoint_entry = self._field(
             form, 0, "UDP ENDPOINT", self.endpoint_var, fonts
         )
-        self.reference_entry = self._field(
-            form, 1, "100 % LOAD, MS", self.reference_var, fonts
-        )
-        self._note(REFERENCE_HINT, fonts["label"], colors["muted"]).pack(
+        self._note(LOAD_HINT, fonts["label"], colors["muted"]).pack(
             fill="x", padx=12, pady=(6, 0)
         )
 
@@ -249,11 +209,7 @@ class FeedDialog(tk.Toplevel):
         self.message_label.configure(fg=self._colors[role])
 
     def _form(self):
-        return parse_form(
-            self.enabled,
-            self.endpoint_var.get(),
-            self.reference_var.get(),
-        )
+        return parse_form(self.enabled, self.endpoint_var.get())
 
     def toggle_enabled(self):
         self.enabled = not self.enabled

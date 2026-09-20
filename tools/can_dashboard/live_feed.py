@@ -3,13 +3,17 @@
 One ASCII datagram carries the values of the latest complete schema-verified
 snapshot:
 
-    RRUDP1 rpm=2512.5 load=43.75 bfs_ms=5.81543 ...
+    RRUDP1 rpm=2512.5 bfs_ms=5.81543 timing_deg=24 ...
 
 The first token names the format and its version. Every other token is
 ``key=value`` with a finite decimal value; a channel without a finite value is
 left out of the datagram, and the receiver keeps its previous value. The
 receiver is a RomRaider Logger external data source that is configured by the
 plugin file this module writes, so both sides share one channel table.
+
+A derived channel depends on the calibration, so the datagram leaves it out:
+the plugin file states its arithmetic, and RomRaider evaluates it with the
+table values of the ROM open in its editor.
 """
 
 from __future__ import annotations
@@ -26,12 +30,12 @@ DEFAULT_PORT = 47809
 DATASOURCE_CLASS = "com.romraider.logger.external.udp.plugin.UdpDataSource"
 DATASOURCE_NAME = "VQ CAN Telemetry"
 LOAD_KEY = "load"
-# The internal map coordinate is a Q7 ratio of Base Fuel Schedule to a fixed
-# ROM reference, saturated at one byte. Raw 128 is 100 percent.
-LOAD_RAW_FULL_SCALE = 128
-LOAD_RAW_LIMIT = 255
-# The reference is a Base Fuel Schedule word; editors show it in milliseconds.
-BFS_RAW_PER_MS = 2048
+# The internal map coordinate is a Q7 ratio of the Base Fuel Schedule word to
+# a ROM reference word, saturated at one byte; raw 128 is 100 percent. The
+# datagram carries the schedule in milliseconds, 2048 words each.
+LOAD_EXPRESSION = "min(255, floor(round(bfs_ms*2048)*128/reference))*100/128"
+# RomRaider name of the ROM table that holds the reference word.
+LOAD_REFERENCE_TABLE = "Internal Load Normalization Reference"
 # RomRaider keeps its per-user files in this folder of the home directory and
 # reads external data source plugin files from its plugins folder.
 ROMRAIDER_USER_DIRECTORY = ".RomRaider"
@@ -51,6 +55,8 @@ class FeedChannel:
     maximum: float
     step: float
     source: str | None = None
+    expression: str | None = None
+    tables: tuple[tuple[str, str], ...] = ()
 
     @property
     def logger_id(self):
@@ -60,7 +66,17 @@ class FeedChannel:
 
 CHANNELS = (
     FeedChannel("rpm", "VQ Engine Speed", "RPM", "0", 0, 8000, 1000, "rpm"),
-    FeedChannel(LOAD_KEY, "VQ Engine Load", "%", "0.00", 0, 200, 20),
+    FeedChannel(
+        LOAD_KEY,
+        "VQ Engine Load",
+        "%",
+        "0.00",
+        0,
+        200,
+        20,
+        expression=LOAD_EXPRESSION,
+        tables=(("reference", LOAD_REFERENCE_TABLE),),
+    ),
     FeedChannel(
         "bfs_ms", "VQ Base Fuel Schedule", "ms", "0.000", 0, 20, 2, "bfs_ms"
     ),
@@ -134,60 +150,15 @@ CHANNELS = (
 )
 
 
-def validate_bfs_reference(value):
-    """Return a Base Fuel Schedule reference that fits the ROM word."""
-    if type(value) is not int or not 1 <= value <= 0xFFFF:
-        raise ValueError("BFS reference must be in 1..65535")
-    return value
-
-
-def reference_from_ms(milliseconds):
-    """Return the reference word of a Base Fuel Schedule in milliseconds."""
-    if (
-        isinstance(milliseconds, bool)
-        or not isinstance(milliseconds, (int, float))
-        or not math.isfinite(milliseconds)
-    ):
-        raise ValueError("load reference must be a number of milliseconds")
-    raw = round(milliseconds * BFS_RAW_PER_MS)
-    if not 1 <= raw <= 0xFFFF:
-        limit = 0xFFFF / BFS_RAW_PER_MS
-        raise ValueError(f"load reference must be above 0 and below {limit:.3f} ms")
-    return raw
-
-
-def reference_ms(bfs_reference):
-    """Return the reference word as the milliseconds an editor shows."""
-    return validate_bfs_reference(bfs_reference) / BFS_RAW_PER_MS
-
-
-def engine_load_percent(bfs_raw, bfs_reference):
-    """Reconstruct the internal load coordinate the ECU indexes its maps by."""
-    raw = min(
-        LOAD_RAW_LIMIT,
-        bfs_raw * LOAD_RAW_FULL_SCALE // bfs_reference,
-    )
-    return raw * 100 / LOAD_RAW_FULL_SCALE
-
-
-def feed_values(model, bfs_reference=None):
-    """Return the finite channel values of a schema-verified model.
-
-    The load coordinate needs the ROM reference; without one it is left out.
-    """
+def feed_values(model):
+    """Return the finite channel values of a schema-verified model."""
     if not model.schema_verified:
         return {}
     values = {}
     for channel in CHANNELS:
-        if channel.key == LOAD_KEY:
-            bfs_raw = model.raw.get("bfs_raw")
-            value = (
-                None
-                if bfs_raw is None or bfs_reference is None
-                else engine_load_percent(bfs_raw, bfs_reference)
-            )
-        else:
-            value = model.engineering.get(channel.source)
+        if channel.source is None:
+            continue
+        value = model.engineering.get(channel.source)
         if isinstance(value, (int, float)) and math.isfinite(value):
             values[channel.key] = float(value)
     return values
@@ -219,6 +190,10 @@ def plugin_properties(host=DEFAULT_HOST, port=DEFAULT_PORT):
             f"{channel.step:g}",
         )
         lines.append(f"udp.item.{index}=" + "|".join(fields))
+        if channel.expression is not None:
+            lines.append(f"udp.item.{index}.expression={channel.expression}")
+        for variable, table in channel.tables:
+            lines.append(f"udp.item.{index}.table.{variable}={table}")
     return "\n".join(lines) + "\n"
 
 
@@ -267,13 +242,8 @@ def parse_endpoint(text):
 class LiveFeed:
     """Send the latest model values to one UDP endpoint."""
 
-    def __init__(self, host, port, bfs_reference=None, sock=None):
+    def __init__(self, host, port, sock=None):
         self.endpoint = (host, port)
-        self.bfs_reference = (
-            None
-            if bfs_reference is None
-            else validate_bfs_reference(bfs_reference)
-        )
         self.sent = 0
         self.errors = 0
         self.last_error = None
@@ -281,7 +251,7 @@ class LiveFeed:
 
     def publish(self, model):
         """Send one datagram; return whether the model had values to send."""
-        values = feed_values(model, self.bfs_reference)
+        values = feed_values(model)
         if not values:
             return False
         try:
@@ -296,8 +266,6 @@ class LiveFeed:
     def status(self):
         host, port = self.endpoint
         text = f"udp {host}:{port}, {self.sent} sent"
-        if self.bfs_reference is None:
-            text += ", no load reference"
         if self.errors:
             text += f", {self.errors} errors: {self.last_error}"
         return text

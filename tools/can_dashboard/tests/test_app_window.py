@@ -228,24 +228,17 @@ class DashboardWindowTest(unittest.TestCase):
         self.assertIs(dashboard.feed_dialog, dialog)
         dialog.toggle_enabled()
         dialog.endpoint_var.set("127.0.0.1:5000")
-        dialog.reference_var.set("13.294")
         dialog.apply()
 
         self.assertFalse(dialog.winfo_exists())
         self.assertEqual(dashboard.feed.endpoint, ("127.0.0.1", 5000))
-        self.assertEqual(dashboard.feed.bfs_reference, 27226)
         self.assertTrue(dashboard.feed_button.lit)
         self.assertEqual(
             dashboard.feed_var.get(), "Feed: udp 127.0.0.1:5000, 0 sent"
         )
         self.assertEqual(
             self.stored()["feed"],
-            {
-                "enabled": True,
-                "host": "127.0.0.1",
-                "port": 5000,
-                "bfs_reference": 27226,
-            },
+            {"enabled": True, "host": "127.0.0.1", "port": 5000},
         )
 
     def test_a_stored_feed_runs_on_the_next_start(self):
@@ -254,19 +247,46 @@ class DashboardWindowTest(unittest.TestCase):
             settings.Settings(
                 "dark",
                 app.DEFAULT_HERO_KEYS,
-                settings.FeedSettings(True, "127.0.0.1", 5000, 27226),
+                settings.FeedSettings(True, "127.0.0.1", 5000),
             ),
         )
         dashboard = self.dashboard()
         self.assertEqual(dashboard.feed.endpoint, ("127.0.0.1", 5000))
-        self.assertEqual(dashboard.feed.bfs_reference, 27226)
         self.assertTrue(dashboard.feed_button.lit)
+
+    def test_a_stored_load_reference_is_dropped(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.path.write_text(
+            json.dumps(
+                {
+                    "version": settings.SETTINGS_VERSION,
+                    "theme": "dark",
+                    "hero": list(app.DEFAULT_HERO_KEYS),
+                    "feed": {
+                        "enabled": True,
+                        "host": "127.0.0.1",
+                        "port": 5000,
+                        "bfs_reference": 27226,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        dashboard = self.dashboard()
+        self.assertEqual(dashboard.feed.endpoint, ("127.0.0.1", 5000))
+        dashboard.toggle_theme()
+        self.assertEqual(
+            self.stored()["feed"],
+            {"enabled": True, "host": "127.0.0.1", "port": 5000},
+        )
 
     def test_the_feed_dialog_turns_the_feed_off(self):
         dashboard = self.dashboard()
         dashboard.apply_feed(settings.FeedSettings(True, "127.0.0.1", 5000))
         running = dashboard.feed
-        self.assertIn("no load reference", dashboard.feed_var.get())
+        self.assertEqual(
+            dashboard.feed_var.get(), "Feed: udp 127.0.0.1:5000, 0 sent"
+        )
 
         dashboard.apply_feed(settings.FeedSettings(False, "127.0.0.1", 5000))
 
@@ -278,9 +298,7 @@ class DashboardWindowTest(unittest.TestCase):
 
     def test_the_feed_survives_a_theme_change(self):
         dashboard = self.dashboard()
-        dashboard.apply_feed(
-            settings.FeedSettings(True, "127.0.0.1", 5000, 27226)
-        )
+        dashboard.apply_feed(settings.FeedSettings(True, "127.0.0.1", 5000))
         running = dashboard.feed
         dashboard.toggle_theme()
         self.assertIs(dashboard.feed, running)
@@ -288,36 +306,28 @@ class DashboardWindowTest(unittest.TestCase):
         self.assertEqual(self.stored()["feed"]["port"], 5000)
         self.assertEqual(self.stored()["theme"], "light")
 
-    def test_command_line_overrides_run_without_being_stored(self):
-        dashboard = self.dashboard(
-            "--bfs-reference", "0x6A5A", publish_udp=("127.0.0.1", 5001)
-        )
+    def test_the_command_line_endpoint_runs_without_being_stored(self):
+        dashboard = self.dashboard(publish_udp=("127.0.0.1", 5001))
         self.assertEqual(dashboard.feed.endpoint, ("127.0.0.1", 5001))
-        self.assertEqual(dashboard.feed.bfs_reference, 27226)
         self.assertEqual(dashboard.settings.feed, settings.FeedSettings())
         dashboard.toggle_theme()
         self.assertEqual(
             self.stored()["feed"],
-            {
-                "enabled": False,
-                "host": "127.0.0.1",
-                "port": 47809,
-                "bfs_reference": None,
-            },
+            {"enabled": False, "host": "127.0.0.1", "port": 47809},
         )
 
-    def test_the_endpoint_override_keeps_the_stored_reference(self):
+    def test_the_endpoint_override_turns_a_stored_feed_on(self):
         settings.save(
             self.path,
             settings.Settings(
                 "dark",
                 app.DEFAULT_HERO_KEYS,
-                settings.FeedSettings(False, "127.0.0.1", 5000, 27226),
+                settings.FeedSettings(False, "127.0.0.1", 5000),
             ),
         )
         dashboard = self.dashboard(publish_udp=("127.0.0.1", 5001))
         self.assertEqual(dashboard.feed.endpoint, ("127.0.0.1", 5001))
-        self.assertEqual(dashboard.feed.bfs_reference, 27226)
+        self.assertFalse(dashboard.settings.feed.enabled)
 
 
 if __name__ == "__main__":

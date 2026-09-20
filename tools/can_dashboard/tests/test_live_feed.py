@@ -4,12 +4,30 @@ import socket
 import tempfile
 import types
 import unittest
+import xml.etree.ElementTree as ElementTree
 
 from tools.can_dashboard import app, live_feed, model
 from tools.logs import can_telemetry
 
+DEFINITIONS = Path(__file__).resolve().parents[3] / "defs"
 # Stock JK08A ROM16[0x9534], the Base Fuel Schedule at raw load 128.
 JK08A_BFS_REFERENCE = 27226
+
+
+def romraider_load(bfs_raw, reference):
+    """Evaluate the plugin-file expression as RomRaider does.
+
+    The datagram carries the schedule as text with seven significant digits,
+    and the table variable holds the ROM word.
+    """
+    names = {
+        "bfs_ms": float(f"{bfs_raw / 2048:.7g}"),
+        "reference": float(reference),
+        "floor": math.floor,
+        "round": lambda value: math.floor(value + 0.5),
+        "min": min,
+    }
+    return eval(live_feed.LOAD_EXPRESSION, {"__builtins__": {}}, names)
 
 
 def verified_model():
@@ -36,8 +54,17 @@ class ChannelTableTest(unittest.TestCase):
         for channel in live_feed.CHANNELS:
             if channel.key == live_feed.LOAD_KEY:
                 self.assertIsNone(channel.source)
+                self.assertEqual(
+                    channel.expression, live_feed.LOAD_EXPRESSION
+                )
+                self.assertEqual(
+                    channel.tables,
+                    (("reference", live_feed.LOAD_REFERENCE_TABLE),),
+                )
             else:
                 self.assertIn(channel.source, targets)
+                self.assertIsNone(channel.expression)
+                self.assertEqual(channel.tables, ())
 
     def test_keys_and_logger_ids_are_unique_wire_safe_tokens(self):
         keys = [channel.key for channel in live_feed.CHANNELS]
@@ -58,7 +85,7 @@ class ChannelTableTest(unittest.TestCase):
 
 class EngineLoadTest(unittest.TestCase):
     def test_reference_is_raw_128_and_one_code_is_0_78125_percent(self):
-        load = live_feed.engine_load_percent
+        load = romraider_load
         self.assertEqual(load(JK08A_BFS_REFERENCE, JK08A_BFS_REFERENCE), 100.0)
         self.assertEqual(load(0, JK08A_BFS_REFERENCE), 0.0)
         one_code = -(-JK08A_BFS_REFERENCE // 128)
@@ -67,51 +94,54 @@ class EngineLoadTest(unittest.TestCase):
 
     def test_coordinate_saturates_at_raw_255(self):
         self.assertEqual(
-            live_feed.engine_load_percent(0xFFFF, JK08A_BFS_REFERENCE),
-            255 * 100 / 128,
+            romraider_load(0xFFFF, JK08A_BFS_REFERENCE), 255 * 100 / 128
         )
 
-    def test_reference_must_fit_the_rom_word(self):
-        for value in (0, -1, 0x10000, 27226.0, True):
-            with self.assertRaises(ValueError):
-                live_feed.validate_bfs_reference(value)
-        self.assertEqual(live_feed.validate_bfs_reference(27226), 27226)
+    def test_expression_is_the_integer_arithmetic_of_the_ecu(self):
+        for reference in (JK08A_BFS_REFERENCE, 1, 12345, 0xFFFF):
+            changed = [
+                bfs_raw
+                for bfs_raw in range(0x10000)
+                if romraider_load(bfs_raw, reference)
+                != min(255, bfs_raw * 128 // reference) * 100 / 128
+            ]
+            self.assertEqual(changed, [], reference)
 
-    def test_editor_milliseconds_name_the_reference_word(self):
-        self.assertEqual(
-            live_feed.BFS_RAW_PER_MS
-            * can_telemetry.RAW_CALIBRATIONS["bfs_raw"].factor,
-            1,
-        )
-        shown = f"{live_feed.reference_ms(JK08A_BFS_REFERENCE):.3f}"
-        self.assertEqual(shown, "13.294")
-        self.assertEqual(
-            live_feed.reference_from_ms(float(shown)), JK08A_BFS_REFERENCE
-        )
-        self.assertEqual(live_feed.reference_from_ms(1), 2048)
+    def test_expression_reads_the_schedule_the_datagram_carries(self):
+        sources = {channel.key: channel.source for channel in live_feed.CHANNELS}
+        self.assertEqual(sources["bfs_ms"], "bfs_ms")
+        calibration = can_telemetry.RAW_CALIBRATIONS["bfs_raw"]
+        self.assertEqual(calibration.target, "bfs_ms")
+        self.assertEqual(calibration.factor * 2048, 1)
+        self.assertIn("bfs_ms*2048", live_feed.LOAD_EXPRESSION)
 
-    def test_milliseconds_outside_the_rom_word_are_rejected(self):
-        for value in (0, -1, 32, math.nan, math.inf, True, "13.294", None):
-            with self.assertRaises(ValueError):
-                live_feed.reference_from_ms(value)
+    def test_definitions_hold_the_reference_word_under_the_table_name(self):
+        bound = 0
+        for path in sorted(DEFINITIONS.glob("*.xml")):
+            tables = list(ElementTree.parse(path).getroot().iter("table"))
+            ids = {channel.logger_id for channel in live_feed.CHANNELS}
+            if not any(table.get("logparam") in ids for table in tables):
+                continue
+            bound += 1
+            references = [
+                table
+                for table in tables
+                if table.get("name") == live_feed.LOAD_REFERENCE_TABLE
+            ]
+            with self.subTest(definition=path.name):
+                self.assertEqual(len(references), 1)
+                reference = references[0]
+                self.assertEqual(reference.get("storagetype"), "uint16")
+                self.assertEqual(reference.get("endian"), "big")
+                self.assertEqual(reference.get("sizex"), "1")
+                self.assertEqual(
+                    reference.find("scaling").get("expression"), "x/2048"
+                )
+        self.assertGreater(bound, 0)
 
 
 class FeedValuesTest(unittest.TestCase):
-    def test_verified_model_yields_engineering_values_and_derived_load(self):
-        dashboard = verified_model()
-        values = live_feed.feed_values(dashboard, JK08A_BFS_REFERENCE)
-        self.assertEqual(
-            list(values), [channel.key for channel in live_feed.CHANNELS]
-        )
-        self.assertEqual(values["rpm"], dashboard.raw["rpm_raw"] * 12.5)
-        self.assertEqual(values["coolant_c"], 90)
-        self.assertEqual(
-            values["load"],
-            min(255, dashboard.raw["bfs_raw"] * 128 // JK08A_BFS_REFERENCE)
-            * 0.78125,
-        )
-
-    def test_load_needs_the_reference_and_the_other_values_do_not(self):
+    def test_verified_model_yields_the_engineering_values(self):
         dashboard = verified_model()
         values = live_feed.feed_values(dashboard)
         self.assertEqual(
@@ -122,29 +152,29 @@ class FeedValuesTest(unittest.TestCase):
                 if channel.key != live_feed.LOAD_KEY
             ],
         )
+        self.assertEqual(values["rpm"], dashboard.raw["rpm_raw"] * 12.5)
+        self.assertEqual(values["coolant_c"], 90)
+        self.assertEqual(values["bfs_ms"], dashboard.raw["bfs_raw"] / 2048)
 
     def test_unverified_model_yields_nothing(self):
         dashboard = verified_model()
         dashboard.schema_verified = False
-        self.assertEqual(
-            live_feed.feed_values(dashboard, JK08A_BFS_REFERENCE), {}
-        )
+        self.assertEqual(live_feed.feed_values(dashboard), {})
 
     def test_missing_and_non_finite_values_are_left_out(self):
         dashboard = verified_model()
         dashboard.engineering["rpm"] = math.nan
         del dashboard.engineering["coolant_deg_c"]
-        del dashboard.raw["bfs_raw"]
-        values = live_feed.feed_values(dashboard, JK08A_BFS_REFERENCE)
-        for key in ("rpm", "coolant_c", "load"):
+        values = live_feed.feed_values(dashboard)
+        for key in ("rpm", "coolant_c"):
             self.assertNotIn(key, values)
         self.assertIn("iat_c", values)
 
 
 class EncodingTest(unittest.TestCase):
     def test_datagram_is_magic_and_key_value_tokens(self):
-        payload = live_feed.encode({"rpm": 2512.5, "load": 43.75})
-        self.assertEqual(payload, b"RRUDP1 rpm=2512.5 load=43.75")
+        payload = live_feed.encode({"rpm": 2512.5, "bfs_ms": 5.8125})
+        self.assertEqual(payload, b"RRUDP1 rpm=2512.5 bfs_ms=5.8125")
 
     def test_values_keep_seven_significant_digits(self):
         payload = live_feed.encode({"bfs_ms": 1 / 3, "rpm": 12750.0})
@@ -173,9 +203,7 @@ class LiveFeedTest(unittest.TestCase):
         self.addCleanup(receiver.close)
         receiver.bind(("127.0.0.1", 0))
         receiver.settimeout(2.0)
-        feed = live_feed.LiveFeed(
-            "127.0.0.1", receiver.getsockname()[1], JK08A_BFS_REFERENCE
-        )
+        feed = live_feed.LiveFeed("127.0.0.1", receiver.getsockname()[1])
         self.addCleanup(feed.close)
         dashboard = verified_model()
 
@@ -187,25 +215,14 @@ class LiveFeedTest(unittest.TestCase):
         self.assertEqual(
             float(received["rpm"]), dashboard.raw["rpm_raw"] * 12.5
         )
-        self.assertEqual(feed.sent, 1)
-        self.assertIn("1 sent", feed.status())
-        self.assertNotIn("no load reference", feed.status())
-
-    def test_feed_without_a_reference_runs_and_says_so(self):
-        sent = []
-        sock = types.SimpleNamespace(
-            sendto=lambda payload, endpoint: sent.append(payload),
-            close=lambda: None,
+        self.assertEqual(
+            round(float(received["bfs_ms"]) * 2048), dashboard.raw["bfs_raw"]
         )
-        feed = live_feed.LiveFeed("127.0.0.1", 47809, sock=sock)
-        self.assertTrue(feed.publish(verified_model()))
-        keys = [
-            token.split("=")[0]
-            for token in sent[0].decode("ascii").split(" ")[1:]
-        ]
-        self.assertIn("rpm", keys)
-        self.assertNotIn(live_feed.LOAD_KEY, keys)
-        self.assertIn("no load reference", feed.status())
+        self.assertNotIn(live_feed.LOAD_KEY, received)
+        self.assertEqual(feed.sent, 1)
+        self.assertEqual(
+            feed.status(), f"udp 127.0.0.1:{receiver.getsockname()[1]}, 1 sent"
+        )
 
     def test_unverified_model_sends_nothing(self):
         sent = []
@@ -213,7 +230,7 @@ class LiveFeedTest(unittest.TestCase):
             sendto=lambda payload, endpoint: sent.append(payload),
             close=lambda: None,
         )
-        feed = live_feed.LiveFeed("127.0.0.1", 47809, 27226, sock=sock)
+        feed = live_feed.LiveFeed("127.0.0.1", 47809, sock=sock)
         dashboard = verified_model()
         dashboard.schema_verified = False
         self.assertFalse(feed.publish(dashboard))
@@ -224,7 +241,7 @@ class LiveFeedTest(unittest.TestCase):
             raise OSError("network is down")
 
         sock = types.SimpleNamespace(sendto=fail, close=lambda: None)
-        feed = live_feed.LiveFeed("127.0.0.1", 47809, 27226, sock=sock)
+        feed = live_feed.LiveFeed("127.0.0.1", 47809, sock=sock)
         self.assertTrue(feed.publish(verified_model()))
         self.assertEqual((feed.sent, feed.errors), (0, 1))
         self.assertIn("1 errors: network is down", feed.status())
@@ -252,6 +269,35 @@ class PluginFileTest(unittest.TestCase):
             items[0], ["rpm", "VQ Engine Speed", "RPM", "0", "0", "8000", "1000"]
         )
         self.assertTrue(all(len(item) == 7 for item in items))
+
+    def test_plugin_file_derives_the_load_from_the_open_rom(self):
+        lines = live_feed.plugin_properties().splitlines()
+        index = 1 + [channel.key for channel in live_feed.CHANNELS].index(
+            live_feed.LOAD_KEY
+        )
+        derived = [
+            line for line in lines if line.startswith(f"udp.item.{index}.")
+        ]
+        self.assertEqual(
+            derived,
+            [
+                f"udp.item.{index}.expression="
+                "min(255, floor(round(bfs_ms*2048)*128/reference))*100/128",
+                f"udp.item.{index}.table.reference="
+                "Internal Load Normalization Reference",
+            ],
+        )
+        others = [
+            line
+            for line in lines
+            if line.startswith("udp.item.")
+            and line.split("=", 1)[0].count(".") > 2
+            and line not in derived
+        ]
+        self.assertEqual(others, [])
+        for line in lines:
+            self.assertNotIn("\\", line)
+            self.assertEqual(line, line.strip())
 
     def test_the_plugin_file_lives_in_the_per_user_romraider_folder(self):
         self.assertEqual(
@@ -302,20 +348,15 @@ class DashboardArgumentsTest(unittest.TestCase):
     def test_feed_is_off_by_default(self):
         args = app.build_parser().parse_args([])
         self.assertIsNone(args.publish_udp)
-        self.assertIsNone(args.bfs_reference)
 
-    def test_reference_accepts_hexadecimal(self):
-        args = app.build_parser().parse_args(
-            ["--publish-udp", "47809", "--bfs-reference", "0x6A5A"]
-        )
-        self.assertEqual(args.bfs_reference, JK08A_BFS_REFERENCE)
+    def test_the_load_reference_is_not_an_argument(self):
+        with self.assertRaises(SystemExit):
+            app.build_parser().parse_args(["--bfs-reference", "27226"])
 
     def test_invalid_overrides_are_rejected_before_the_window_opens(self):
         for argv in (
-            ["--publish-udp", "47809", "--bfs-reference", "0"],
-            ["--publish-udp", "0", "--bfs-reference", "27226"],
+            ["--publish-udp", "0"],
             ["--publish-udp", "host:"],
-            ["--bfs-reference", "65536"],
         ):
             with self.assertRaises(SystemExit):
                 app.main(argv)

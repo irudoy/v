@@ -35,11 +35,7 @@ from tools.can_dashboard.model import (
     DashboardModel,
     FrameRecord,
 )
-from tools.can_dashboard.live_feed import (
-    LiveFeed,
-    parse_endpoint,
-    validate_bfs_reference,
-)
+from tools.can_dashboard.live_feed import LiveFeed, parse_endpoint
 from tools.can_dashboard.recording import TelemetryMlgRecorder
 from tools.can_dashboard.sources import (
     ControlRequest,
@@ -1032,11 +1028,8 @@ class DashboardApp:
         )
         bar.pack(side="top", fill="x", padx=12, pady=(0, 7))
         for name, title, role, align, sample in STATUS_FIELDS:
-            if name == "feed_var":
-                if self.feed is None:
-                    sample = self.feed_var.get()
-                elif self.feed.bfs_reference is None:
-                    sample += ", no load reference"
+            if name == "feed_var" and self.feed is None:
+                sample = self.feed_var.get()
             bar.add(
                 self._status_field(
                     bar,
@@ -1223,8 +1216,6 @@ class DashboardApp:
         if self.args.publish_udp is not None:
             host, port = self.args.publish_udp
             feed = replace(feed, enabled=True, host=host, port=port)
-        if self.args.bfs_reference is not None:
-            feed = replace(feed, bfs_reference=self.args.bfs_reference)
         return feed
 
     def _restart_feed(self):
@@ -1236,7 +1227,7 @@ class DashboardApp:
             self.feed_var.set("Feed: off")
             return
         try:
-            self.feed = LiveFeed(feed.host, feed.port, feed.bfs_reference)
+            self.feed = LiveFeed(feed.host, feed.port)
         except OSError as error:
             self.feed_var.set(f"Feed: {error}")
             return
@@ -1850,13 +1841,6 @@ def build_parser():
         help="send live engineering values to this UDP endpoint in this run, "
         "whatever the stored feed setting says",
     )
-    parser.add_argument(
-        "--bfs-reference",
-        type=lambda value: int(value, 0),
-        metavar="RAW",
-        help="raw Base Fuel Schedule at 100 percent internal load, for this "
-        "run instead of the stored feed setting",
-    )
     return parser
 
 
@@ -1873,8 +1857,6 @@ def main(argv=None):
     try:
         if args.publish_udp is not None:
             args.publish_udp = parse_endpoint(args.publish_udp)
-        if args.bfs_reference is not None:
-            validate_bfs_reference(args.bfs_reference)
     except ValueError as error:
         raise SystemExit(str(error)) from error
     if args.pcan_driver_check:
