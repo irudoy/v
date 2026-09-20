@@ -403,9 +403,13 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.source_generation = 3
         dashboard.stream_command = "start"
         texts = []
-        dashboard.stream_button = types.SimpleNamespace(
-            configure=lambda **options: texts.append(options["text"])
-        )
+        lit = []
+
+        def configure(**options):
+            texts.append(options["text"])
+            lit.append(options["lit"])
+
+        dashboard.stream_button = types.SimpleNamespace(configure=configure)
         dashboard.control_var = types.SimpleNamespace(set=lambda text: None)
         dashboard.root = types.SimpleNamespace(after=lambda *arguments: None)
         dashboard._refresh = lambda now: None
@@ -421,7 +425,8 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard._poll()
 
         self.assertEqual(dashboard.stream_command, "stop")
-        self.assertEqual(texts, ["Stop stream"])
+        self.assertEqual(texts, [app.STREAM_CAPTIONS["stop"]])
+        self.assertEqual(lit, [True])
 
     def test_source_toggle_connects_and_disconnects(self):
         dashboard = app.DashboardApp.__new__(app.DashboardApp)
@@ -439,9 +444,13 @@ class DashboardPresentationTest(unittest.TestCase):
     def test_source_button_tracks_the_running_worker(self):
         dashboard = app.DashboardApp.__new__(app.DashboardApp)
         texts = []
-        dashboard.source_button = types.SimpleNamespace(
-            configure=lambda **options: texts.append(options["text"])
-        )
+        lit = []
+
+        def configure(**options):
+            texts.append(options["text"])
+            lit.append(options["lit"])
+
+        dashboard.source_button = types.SimpleNamespace(configure=configure)
         dashboard.source_button_active = False
         dashboard.worker = types.SimpleNamespace(is_alive=lambda: True)
 
@@ -450,7 +459,8 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.worker = None
         dashboard._sync_source_button()
 
-        self.assertEqual(texts, ["Disconnect", "Connect"])
+        self.assertEqual(texts, ["DISCONNECT", "CONNECT"])
+        self.assertEqual(lit, [True, False])
 
     def test_stream_control_requires_active_connection(self):
         dashboard, values = self.control_dashboard(active=False)
@@ -458,7 +468,7 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.send_stream_command("stop")
 
         self.assertTrue(dashboard.control_requests.empty())
-        self.assertIn("Active/ACK enabled", values[-1])
+        self.assertIn("ACK enabled", values[-1])
 
     def test_cvtc_target_labels_match_recovered_roles(self):
         metrics = {

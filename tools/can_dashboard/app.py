@@ -13,7 +13,7 @@ import sys
 import threading
 import time
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, font as tkfont, messagebox, ttk
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,6 +21,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
+from tools.can_dashboard import settings as dashboard_settings
+from tools.can_dashboard.hero_picker import HeroChoice, HeroPicker
 from tools.can_dashboard.model import (
     DEFAULT_BITRATE,
     DEFAULT_CAN_ID,
@@ -45,36 +47,149 @@ from tools.can_dashboard.sources import (
 from tools.can_dashboard.widgets import (
     Cluster,
     FlowBar,
+    HeroRow,
     ResponsiveGrid,
     ScrollableFrame,
     StatusField,
+    ToolButton,
+    Tooltip,
+    elide,
+    hero_value_size,
 )
 from tools.logs import can_telemetry
 from tools.logs import can_telemetry_schema
 
 
-BG = "#0d1117"
-PANEL = "#161b22"
-PANEL_ALT = "#1d2430"
-BORDER = "#30363d"
-TEXT = "#e6edf3"
-MUTED = "#8b949e"
-GREEN = "#3fb950"
-AMBER = "#d29922"
-RED = "#f85149"
-BLUE = "#58a6ff"
-CYAN = "#39c5cf"
-PURPLE = "#bc8cff"
+@dataclass(frozen=True)
+class Palette:
+    """Colors of one theme; `traces` colors the hero cards by position."""
+
+    name: str
+    bg: str
+    panel: str
+    panel_alt: str
+    border: str
+    text: str
+    muted: str
+    heading: str
+    green: str
+    amber: str
+    red: str
+    blue: str
+    cyan: str
+    traces: tuple
+    button_face: str
+    button_hover: str
+    lit_text: str
+
+    def button_colors(self):
+        return {
+            "face": self.button_face,
+            "hover": self.button_hover,
+            "text": self.text,
+            "border": self.border,
+            "focus": self.blue,
+            "lit": self.green,
+            "record": self.red,
+            "lit_text": self.lit_text,
+        }
+
+    def tooltip_options(self):
+        return {
+            "background": self.panel_alt,
+            "foreground": self.text,
+            "border": self.border,
+            "font": ui_font(9),
+        }
+
+
+DARK = Palette(
+    name="dark",
+    bg="#000000",
+    panel="#0b0b0b",
+    panel_alt="#161616",
+    border="#363636",
+    text="#f5f5f5",
+    muted="#a3a3a3",
+    heading="#ffb000",
+    green="#2fd35a",
+    amber="#ffb000",
+    red="#ff453a",
+    blue="#4da3ff",
+    cyan="#00d0d8",
+    traces=(
+        "#ffd400",
+        "#00d8ff",
+        "#ff4fd8",
+        "#35e06f",
+        "#ff8a1f",
+        "#5c9dff",
+        "#ff5a4f",
+        "#f5f5f5",
+    ),
+    button_face="#161616",
+    button_hover="#2a2a2a",
+    lit_text="#000000",
+)
+LIGHT = Palette(
+    name="light",
+    bg="#ffffff",
+    panel="#f2f2f2",
+    panel_alt="#e4e4e4",
+    border="#8c8c8c",
+    text="#000000",
+    muted="#404040",
+    heading="#0b3d91",
+    green="#087a2c",
+    amber="#8a5200",
+    red="#c4141b",
+    blue="#0b57d0",
+    cyan="#006d77",
+    traces=(
+        "#8a6500",
+        "#00708c",
+        "#a3158c",
+        "#087a2c",
+        "#b84a00",
+        "#0b57d0",
+        "#c4141b",
+        "#000000",
+    ),
+    button_face="#e4e4e4",
+    button_hover="#d0d0d0",
+    lit_text="#ffffff",
+)
+PALETTES = {palette.name: palette for palette in (DARK, LIGHT)}
+
+if sys.platform == "darwin":
+    FONT_UI, FONT_UI_BOLD, FONT_MONO = "Helvetica Neue", None, "Menlo"
+elif sys.platform.startswith("win"):
+    FONT_UI, FONT_UI_BOLD, FONT_MONO = "Segoe UI", "Segoe UI Semibold", "Consolas"
+else:
+    FONT_UI, FONT_UI_BOLD, FONT_MONO = "DejaVu Sans", None, "DejaVu Sans Mono"
+
+
+def ui_font(size, bold=False):
+    if not bold:
+        return (FONT_UI, size)
+    if FONT_UI_BOLD is not None:
+        return (FONT_UI_BOLD, size)
+    return (FONT_UI, size, "bold")
+
+
+def mono_font(size, bold=False):
+    return (FONT_MONO, size, "bold") if bold else (FONT_MONO, size)
+
 
 PREFERRED_WINDOW_WIDTH = 1520
 PREFERRED_WINDOW_HEIGHT = 920
 MIN_WINDOW_WIDTH = 560
 MIN_WINDOW_HEIGHT = 460
-HERO_MIN_WIDTH = 164
-HERO_SPARKLINE_WIDTH = 140
+HERO_PAD = 8
+HERO_SPARKLINE_HEIGHT = 34
+HERO_UNIT_GAP = 5
 PANEL_MIN_WIDTH = 268
 PANEL_VALUE_WIDTH = 150
-NOTEBOOK_TAB_PADDING = 8
 FOOTNOTE = (
     "* Candidate transform. Timing is a software "
     "command; injection is a compensated command, not a measured electrical "
@@ -249,6 +364,7 @@ PANELS = (
         Metric("timing_state_2023_raw", "Timing state 2023", "", 0, True),
         Metric("timing_state_564c_raw", "Timing state 564C", "", 0, True),
         Metric("stock_rpm", "Stock CAN RPM", "RPM", 0),
+        Metric("gear", "Selector"),
         Metric("ascd_button", "ASCD input"),
         Metric("dashboard_state", "Dashboard state"),
         Metric("context_name", "Last context"),
@@ -299,18 +415,47 @@ EXTENDED_PANELS = (
 )
 
 
+TABS = (
+    ("Primary", PANELS),
+    ("Extended", EXTENDED_PANELS),
+)
+DEFAULT_HERO_KEYS = tuple(
+    metric.key for metric in HERO_METRICS if metric.key != "gear"
+)
+
+
+def _hero_catalog():
+    """Every metric a hero card can show, the dedicated hero metrics first."""
+    metrics = {metric.key: metric for metric in HERO_METRICS}
+    choices = [
+        HeroChoice(metric.key, metric.label.title(), "Summary")
+        for metric in HERO_METRICS
+    ]
+    for _tab, panels in TABS:
+        for title, panel_metrics in panels:
+            for metric in panel_metrics:
+                if metric.key in metrics:
+                    continue
+                metrics[metric.key] = metric
+                choices.append(HeroChoice(metric.key, metric.label, title))
+    return metrics, tuple(choices)
+
+
+HERO_CATALOG, HERO_CHOICES = _hero_catalog()
+
+
 class Sparkline(tk.Canvas):
-    def __init__(self, master, color=BLUE, **kwargs):
+    def __init__(self, master, color, palette, history=None):
         super().__init__(
             master,
-            width=HERO_SPARKLINE_WIDTH,
-            height=46,
-            background=PANEL,
+            width=1,
+            height=HERO_SPARKLINE_HEIGHT,
+            background=palette.panel,
             highlightthickness=0,
-            **kwargs,
         )
         self.color = color
-        self.values = deque(maxlen=180)
+        self.baseline = palette.border
+        self.values = history if history is not None else deque(maxlen=180)
         self.bind("<Configure>", lambda _event: self.redraw())
 
     def push(self, value):
@@ -322,7 +467,7 @@ class Sparkline(tk.Canvas):
         self.delete("all")
         width = max(1, self.winfo_width())
         height = max(1, self.winfo_height())
-        self.create_line(0, height - 1, width, height - 1, fill=BORDER)
+        self.create_line(0, height - 1, width, height - 1, fill=self.baseline)
         if len(self.values) < 2:
             return
         low = min(self.values)
@@ -340,80 +485,196 @@ class Sparkline(tk.Canvas):
 
 
 class HeroCard(tk.Frame):
-    def __init__(self, master, metric, color):
-        super().__init__(master, bg=PANEL, highlightbackground=BORDER, highlightthickness=1)
+    """Headline value with a trace; it shrinks with the width it is given.
+
+    The value font follows the card width, the title and the value elide, and
+    the unit hides when a full-width sample of the value leaves no room.
+    """
+
+    def __init__(self, master, metric, color, palette, history=None):
+        super().__init__(
+            master,
+            bg=palette.panel,
+            highlightbackground=palette.border,
+            highlightthickness=1,
+        )
         self.metric = metric
-        self.value_var = tk.StringVar(value="--")
-        self.unit_var = tk.StringVar(value=metric.unit)
-        tk.Label(
+        self._title = metric.label.upper()
+        self._value = "--"
+        self._width = 0
+        self._unit_shown = bool(metric.unit)
+        self._title_font = tkfont.Font(root=master, font=ui_font(8, bold=True))
+        self._value_font = tkfont.Font(root=master, font=mono_font(22, bold=True))
+        self._unit_font = tkfont.Font(root=master, font=ui_font(8))
+        self.title_label = tk.Label(
             self,
-            text=metric.label,
-            bg=PANEL,
-            fg=MUTED,
-            font=("Segoe UI Semibold", 9),
-        ).pack(anchor="w", padx=12, pady=(10, 0))
-        value_row = tk.Frame(self, bg=PANEL)
-        value_row.pack(fill="x", padx=12)
-        tk.Label(
+            text=self._title,
+            bg=palette.panel,
+            fg=palette.muted,
+            font=self._title_font,
+            anchor="w",
+        )
+        self.title_label.pack(fill="x", padx=HERO_PAD, pady=(6, 0))
+        value_row = tk.Frame(self, bg=palette.panel)
+        value_row.pack(fill="x", padx=HERO_PAD)
+        self.value_label = tk.Label(
             value_row,
-            textvariable=self.value_var,
-            bg=PANEL,
+            text=self._value,
+            bg=palette.panel,
             fg=color,
-            font=("Segoe UI Semibold", 23),
-        ).pack(side="left")
-        tk.Label(
+            font=self._value_font,
+            anchor="w",
+        )
+        self.value_label.pack(side="left")
+        self.unit_label = tk.Label(
             value_row,
-            textvariable=self.unit_var,
-            bg=PANEL,
-            fg=MUTED,
-            font=("Segoe UI", 9),
-        ).pack(side="left", padx=(6, 0), pady=(10, 0))
-        self.sparkline = Sparkline(self, color=color)
-        self.sparkline.pack(fill="x", padx=8, pady=(0, 7))
+            text=metric.unit,
+            bg=palette.panel,
+            fg=palette.muted,
+            font=self._unit_font,
+        )
+        if self._unit_shown:
+            self.unit_label.pack(side="left", padx=(HERO_UNIT_GAP, 0), pady=(6, 0))
+        self.sparkline = Sparkline(self, color, palette, history)
+        self.sparkline.pack(fill="x", padx=6, pady=(0, 6))
+        self.tooltip = Tooltip(
+            self.title_label,
+            self.tooltip_text,
+            **palette.tooltip_options(),
+        )
+        self.bind("<Configure>", self._on_configure, add="+")
+
+    @property
+    def value_size(self):
+        return int(self._value_font.cget("size"))
+
+    def tooltip_text(self):
+        unit = f" [{self.metric.unit}]" if self.metric.unit else ""
+        return f"{self._title}{unit}\n{self._value}"
+
+    @property
+    def unit_shown(self):
+        return self._unit_shown
+
+    def _sample(self):
+        metric = self.metric
+        if metric.hexadecimal:
+            return "0xFFFF"
+        return "8888" + ("." + "8" * metric.digits if metric.digits else "")
+
+    def _on_configure(self, event):
+        if event.widget is self and event.width != self._width:
+            self.fit(event.width)
+
+    def fit(self, width):
+        self._width = width
+        inner = max(1, width - 2 * HERO_PAD - 2)
+        size = hero_value_size(width)
+        if size != self.value_size:
+            self._value_font.configure(size=size)
+        self.title_label.configure(
+            text=elide(self._title, self._title_font.measure, inner)
+        )
+        needed = (
+            self._value_font.measure(self._sample())
+            + HERO_UNIT_GAP
+            + self._unit_font.measure(self.metric.unit)
+        )
+        unit_shown = bool(self.metric.unit) and needed <= inner
+        if unit_shown != self._unit_shown:
+            self._unit_shown = unit_shown
+            if unit_shown:
+                self.unit_label.pack(
+                    side="left",
+                    padx=(HERO_UNIT_GAP, 0),
+                    pady=(6, 0),
+                )
+            else:
+                self.unit_label.pack_forget()
+        self._show_value()
+
+    def _show_value(self):
+        available = 0
+        if self._width:
+            available = max(1, self._width - 2 * HERO_PAD - 2)
+            if self._unit_shown:
+                available -= HERO_UNIT_GAP + self._unit_font.measure(
+                    self.metric.unit
+                )
+        self.value_label.configure(
+            text=elide(self._value, self._value_font.measure, available)
+        )
 
     def update_value(self, text, numeric=None):
-        self.value_var.set(text)
+        if text != self._value:
+            self._value = text
+            self._show_value()
         if numeric is not None:
             self.sparkline.push(numeric)
 
 
 class DataPanel(tk.Frame):
-    def __init__(self, master, title, metrics):
-        super().__init__(master, bg=PANEL, highlightbackground=BORDER, highlightthickness=1)
+    def __init__(self, master, title, metrics, palette):
+        super().__init__(
+            master,
+            bg=palette.panel,
+            highlightbackground=palette.border,
+            highlightthickness=1,
+        )
         self.variables = {}
         tk.Label(
             self,
             text=title.upper(),
-            bg=PANEL,
-            fg=BLUE,
-            font=("Segoe UI Semibold", 10),
-        ).grid(row=0, column=0, columnspan=2, sticky="w", padx=12, pady=(10, 8))
+            bg=palette.panel,
+            fg=palette.heading,
+            font=ui_font(9, bold=True),
+        ).grid(row=0, column=0, columnspan=2, sticky="w", padx=10, pady=(8, 6))
         self.columnconfigure(0, weight=1)
         for row, metric in enumerate(metrics, start=1):
             tk.Label(
                 self,
                 text=metric.label,
-                bg=PANEL,
-                fg=MUTED,
-                font=("Segoe UI", 9),
-            ).grid(row=row, column=0, sticky="w", padx=(12, 6), pady=2)
-            variable = tk.StringVar(value="--")
+                bg=palette.panel,
+                fg=palette.muted,
+                font=ui_font(9),
+            ).grid(row=row, column=0, sticky="w", padx=(10, 6), pady=1)
+            variable = tk.StringVar(self, value="--")
             self.variables[metric.key] = variable
             field = StatusField(
                 self,
                 variable,
                 title=metric.label,
-                background=PANEL,
-                foreground=TEXT,
-                font=("Consolas", 10),
-                copy_feedback=GREEN,
+                background=palette.panel,
+                foreground=palette.text,
+                font=mono_font(10),
+                copy_feedback=palette.green,
                 anchor="e",
                 reserve=PANEL_VALUE_WIDTH,
+                tooltip_options=palette.tooltip_options(),
             )
-            field.grid(row=row, column=1, sticky="e", padx=(6, 12), pady=2)
+            field.grid(row=row, column=1, sticky="e", padx=(6, 10), pady=1)
 
     def set_value(self, key, value):
         self.variables[key].set(value)
+
+
+STATUS_FIELDS = (
+    ("source_var", "Telemetry source", "text", "left",
+     "Source: PCAN_USBBUS1, 500000 bit/s"),
+    ("schema_var", "Wire schema state", "amber", "left", "Schema: VERIFIED"),
+    ("rate_var", "Group and frame rates", "cyan", "left",
+     "Groups: 100.0 Hz | Frames: 1000.0 Hz"),
+    ("loss_var", "Loss and integrity counters", "muted", "left",
+     "Loss: 0 | Incomplete: 0 | Malformed: 0 | Source drops: 0"),
+    ("control_var", "Last stream command", "cyan", "right",
+     "Control: START queued"),
+    ("record_var", "MLG recording", "amber", "right", "MLG: recording"),
+    ("feed_var", "Live value feed", "muted", "right",
+     "Feed: udp 127.0.0.1:47809, 999999 sent"),
+)
+STREAM_CAPTIONS = {"start": "\u25b6 STREAM", "stop": "\u25a0 STREAM"}
+RECORD_CAPTIONS = {False: "\u25cf REC", True: "\u25a0 REC"}
+THEME_CAPTIONS = {"dark": "LIGHT", "light": "DARK"}
 
 
 class DashboardApp:
@@ -442,10 +703,24 @@ class DashboardApp:
             self.feed = LiveFeed(*args.publish_udp, args.bfs_reference)
         self.last_ui_group = 0
         self.stream_command = "start"
-        self.source_button_active = False
+        self.source_button_active = None
+        self.settings_path = getattr(args, "settings", None)
+        self.settings = dashboard_settings.load(
+            self.settings_path,
+            catalog=HERO_CATALOG,
+            default_hero=DEFAULT_HERO_KEYS,
+        )
+        self.palette = PALETTES[self.settings.theme]
+        self.hero_history = {}
         self.hero_cards = {}
         self.data_panels = []
         self.panel_grids = []
+        self.tab_buttons = []
+        self.active_tab = 0
+        self.picker = None
+        self._create_variables()
+        self.root.title(f"{PRODUCT_NAME} v{__version__}")
+        self._apply_initial_geometry()
         self._build_window()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.after(50, self._poll)
@@ -458,15 +733,45 @@ class DashboardApp:
         if args.record is not None:
             self.root.after(500, lambda: self.start_recording(args.record))
 
+    def _create_variables(self):
+        """Own every displayed value outside the widgets.
+
+        A theme change rebuilds the widgets; the values survive it here.
+        """
+        self.status_var = tk.StringVar(self.root, value="DISCONNECTED")
+        self.channel_var = tk.StringVar(self.root, value=self.args.channel)
+        self.can_id_var = tk.StringVar(self.root, value=f"0x{self.args.can_id:03X}")
+        self.active_var = tk.BooleanVar(self.root, value=not self.args.listen_only)
+        self.source_var = tk.StringVar(self.root, value="Source: not connected")
+        self.schema_var = tk.StringVar(self.root, value="Schema: waiting")
+        self.rate_var = tk.StringVar(self.root, value="Groups: 0.0 Hz | Frames: 0.0 Hz")
+        self.loss_var = tk.StringVar(self.root, value="Loss: 0 | Incomplete: 0 | Malformed: 0")
+        self.control_var = tk.StringVar(self.root, value="Control: idle")
+        self.record_var = tk.StringVar(self.root, value="MLG: idle")
+        self.feed_var = tk.StringVar(self.root, value="Feed: off")
+        self.health_vars = {
+            key: tk.StringVar(self.root, value=f"{key}=--")
+            for key, _title, _sample in HEALTH_FIELDS
+        }
+
     def _build_window(self):
-        self.root.title(f"{PRODUCT_NAME} v{__version__}")
-        self.root.configure(bg=BG)
-        self._apply_initial_geometry()
+        """Build every widget in the current palette, replacing older ones."""
+        for child in self.root.winfo_children():
+            child.destroy()
+        self.hero_cards = {}
+        self.data_panels = []
+        self.panel_grids = []
+        self.tab_buttons = []
+        self.picker = None
+        self.source_button_active = None
+        self.root.configure(bg=self.palette.bg)
         self._configure_styles()
         self._build_header()
         self._build_status_bar()
         self._build_health_bar()
         self._build_content()
+        self._sync_source_button()
+        self._sync_record_button()
 
     def _apply_initial_geometry(self):
         screen_width = self.root.winfo_screenwidth()
@@ -485,173 +790,167 @@ class DashboardApp:
         self.root.minsize(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
 
     def _configure_styles(self):
+        palette = self.palette
         style = ttk.Style(self.root)
         style.theme_use("clam")
-        style.configure("TButton", font=("Segoe UI Semibold", 9), padding=(10, 6))
-        style.configure("TCheckbutton", background=BG, foreground=TEXT)
         style.configure(
             "Dashboard.Vertical.TScrollbar",
-            background=PANEL_ALT,
-            troughcolor=BG,
-            bordercolor=BORDER,
-            arrowcolor=MUTED,
-            darkcolor=PANEL_ALT,
-            lightcolor=PANEL_ALT,
+            background=palette.panel_alt,
+            troughcolor=palette.bg,
+            bordercolor=palette.border,
+            arrowcolor=palette.muted,
+            darkcolor=palette.panel_alt,
+            lightcolor=palette.panel_alt,
         )
         style.map(
             "Dashboard.Vertical.TScrollbar",
-            background=[("active", BORDER)],
+            background=[("active", palette.border)],
+        )
+
+    def _tool_button(self, master, text, command, tooltip, **options):
+        return ToolButton(
+            master,
+            text=text,
+            command=command,
+            colors=self.palette.button_colors(),
+            tooltip=tooltip,
+            tooltip_options=self.palette.tooltip_options(),
+            font=ui_font(9, bold=True),
+            **options,
         )
 
     def _build_header(self):
-        header = FlowBar(self.root, bg=BG, spacing_x=8, spacing_y=8)
-        header.pack(side="top", fill="x", padx=14, pady=(12, 8))
+        palette = self.palette
+        header = FlowBar(self.root, bg=palette.bg, spacing_x=5, spacing_y=5)
+        header.pack(side="top", fill="x", padx=12, pady=(7, 5))
         header.add(tk.Label(
             header,
-            text=f"{PRODUCT_NAME.upper()} v{__version__}",
-            bg=BG,
-            fg=TEXT,
-            font=("Segoe UI Semibold", 17),
+            text=f"{PRODUCT_NAME.upper()} {__version__}",
+            bg=palette.bg,
+            fg=palette.muted,
+            font=ui_font(10, bold=True),
         ))
 
-        link = Cluster(header, bg=BG)
+        link = Cluster(header, bg=palette.bg)
         self.status_dot = tk.Label(
             link,
             text="\u25cf",
-            bg=BG,
-            fg=MUTED,
-            font=("Segoe UI", 17),
+            bg=palette.bg,
+            fg=palette.muted,
+            font=ui_font(11),
         )
-        self.status_dot.pack(side="left", padx=(6, 5))
-        self.status_var = tk.StringVar(value="DISCONNECTED")
+        self.status_dot.pack(side="left", padx=(6, 4))
         self.status_field = StatusField(
             link,
             self.status_var,
             title="Link state",
-            background=BG,
-            foreground=MUTED,
-            font=("Segoe UI Semibold", 10),
-            copy_feedback=GREEN,
+            background=palette.bg,
+            foreground=palette.muted,
+            font=ui_font(10, bold=True),
+            copy_feedback=palette.green,
+            tooltip_options=palette.tooltip_options(),
         )
         self.status_field.pack(side="left")
         header.add(link)
 
-        self.channel_var = tk.StringVar(value=self.args.channel)
-        self.can_id_var = tk.StringVar(value=f"0x{self.args.can_id:03X}")
-        self.active_var = tk.BooleanVar(value=not self.args.listen_only)
         header.add(
-            self._control_entry(header, "Channel", self.channel_var, 15),
+            self._control_entry(header, "CH", self.channel_var, 13),
             align="right",
         )
         header.add(
-            self._control_entry(header, "CAN ID", self.can_id_var, 8),
+            self._control_entry(header, "ID", self.can_id_var, 6),
             align="right",
         )
-        header.add(
-            ttk.Checkbutton(
-                header,
-                text="Active/ACK",
-                variable=self.active_var,
-            ),
-            align="right",
-        )
-        self.source_button = ttk.Button(
+        self.active_button = self._tool_button(
             header,
-            text="Connect",
-            command=self.toggle_source,
+            "ACK",
+            self.toggle_active,
+            "Active/ACK PCAN state: the adapter acknowledges frames and can "
+            "send START and STOP. Off selects listen-only. It applies at the "
+            "next connect.",
+            lit=self.active_var.get(),
+        )
+        header.add(self.active_button, align="right")
+        self.source_button = self._tool_button(
+            header,
+            "CONNECT",
+            self.toggle_source,
+            "Open or close the PCAN channel",
         )
         header.add(self.source_button, align="right")
         header.add(
-            ttk.Button(header, text="Demo", command=self.start_demo),
+            self._tool_button(
+                header,
+                "DEMO",
+                self.start_demo,
+                "Run the deterministic demo source",
+            ),
             align="right",
         )
         header.add(
-            ttk.Button(header, text="Replay", command=self.select_replay),
+            self._tool_button(
+                header,
+                "REPLAY",
+                self.select_replay,
+                "Replay a PEAK TRC 1.1 or compact candump log",
+            ),
             align="right",
         )
-        self.stream_button = ttk.Button(
+        self.stream_button = self._tool_button(
             header,
-            text=self._stream_button_text(),
-            command=self.toggle_stream,
+            self._stream_button_text(),
+            self.toggle_stream,
+            "Send START or STOP to the ECU telemetry stream",
+            lit=self.stream_command == "stop",
         )
         header.add(self.stream_button, align="right")
-        self.record_button = ttk.Button(
+        self.record_button = self._tool_button(
             header,
-            text="Record MLG",
-            command=self.toggle_recording,
+            RECORD_CAPTIONS[False],
+            self.toggle_recording,
+            "Record the telemetry to an MLG file",
+            lit_role="record",
         )
         header.add(self.record_button, align="right")
+        header.add(
+            self._tool_button(
+                header,
+                "CARDS",
+                self.open_hero_picker,
+                "Choose the cards of the top row",
+            ),
+            align="right",
+        )
+        self.theme_button = self._tool_button(
+            header,
+            THEME_CAPTIONS[palette.name],
+            self.toggle_theme,
+            "Switch between the dark theme and the daylight theme",
+        )
+        header.add(self.theme_button, align="right")
 
     def _build_status_bar(self):
+        palette = self.palette
         bar = FlowBar(
             self.root,
-            bg=PANEL_ALT,
-            highlightbackground=BORDER,
+            bg=palette.panel_alt,
+            highlightbackground=palette.border,
             highlightthickness=1,
             spacing_x=14,
             spacing_y=4,
-            pad_x=12,
-            pad_y=7,
+            pad_x=10,
+            pad_y=4,
         )
-        bar.pack(side="top", fill="x", padx=14, pady=(0, 9))
-        self.source_var = tk.StringVar(value="Source: not connected")
-        self.schema_var = tk.StringVar(value="Schema: waiting")
-        self.rate_var = tk.StringVar(value="Groups: 0.0 Hz | Frames: 0.0 Hz")
-        self.loss_var = tk.StringVar(value="Loss: 0 | Incomplete: 0 | Malformed: 0")
-        self.control_var = tk.StringVar(value="Control: idle")
-        self.record_var = tk.StringVar(value="MLG: idle")
-        self.feed_var = tk.StringVar(value="Feed: off")
-        for variable, title, color, align, sample in (
-            (
-                self.source_var,
-                "Telemetry source",
-                TEXT,
-                "left",
-                "Source: PCAN_USBBUS1, 500000 bit/s",
-            ),
-            (self.schema_var, "Wire schema state", AMBER, "left", "Schema: VERIFIED"),
-            (
-                self.rate_var,
-                "Group and frame rates",
-                CYAN,
-                "left",
-                "Groups: 100.0 Hz | Frames: 1000.0 Hz",
-            ),
-            (
-                self.loss_var,
-                "Loss and integrity counters",
-                MUTED,
-                "left",
-                "Loss: 0 | Incomplete: 0 | Malformed: 0 | Source drops: 0",
-            ),
-            (
-                self.control_var,
-                "Last stream command",
-                CYAN,
-                "right",
-                "Control error: connect PCAN first",
-            ),
-            (
-                self.record_var,
-                "MLG recording",
-                AMBER,
-                "right",
-                "MLG: recording telemetry.mlg",
-            ),
-            (
-                self.feed_var,
-                "Live value feed",
-                MUTED,
-                "right",
-                "Feed: udp 127.0.0.1:47809, 999999 sent",
-            ),
-        ):
+        bar.pack(side="top", fill="x", padx=12, pady=(0, 7))
+        for name, title, role, align, sample in STATUS_FIELDS:
+            if name == "feed_var" and self.feed is None:
+                sample = self.feed_var.get()
             bar.add(
                 self._status_field(
                     bar,
-                    variable,
+                    getattr(self, name),
                     title,
-                    color,
+                    getattr(palette, role),
                     sample,
                     anchor="e" if align == "right" else "w",
                 ),
@@ -659,76 +958,178 @@ class DashboardApp:
             )
 
     def _build_health_bar(self):
+        palette = self.palette
         bar = FlowBar(
             self.root,
-            bg=PANEL_ALT,
+            bg=palette.panel_alt,
             spacing_x=14,
             spacing_y=4,
-            pad_x=12,
-            pad_y=6,
+            pad_x=10,
+            pad_y=4,
         )
-        bar.pack(side="bottom", fill="x", padx=14, pady=(0, 8))
-        self.health_vars = {}
+        bar.pack(side="bottom", fill="x", padx=12, pady=(0, 7))
         for key, title, sample in HEALTH_FIELDS:
-            variable = tk.StringVar(value=f"{key}=--")
-            self.health_vars[key] = variable
-            bar.add(self._status_field(bar, variable, title, MUTED, sample))
+            bar.add(
+                self._status_field(
+                    bar,
+                    self.health_vars[key],
+                    title,
+                    palette.muted,
+                    sample,
+                )
+            )
 
     def _build_content(self):
-        content = ScrollableFrame(self.root, background=BG)
+        palette = self.palette
+        content = ScrollableFrame(self.root, background=palette.bg)
         content.pack(side="top", fill="both", expand=True)
         body = content.content
 
-        heroes = ResponsiveGrid(
-            body,
-            min_column_width=HERO_MIN_WIDTH,
-            spacing=5,
-            uniform="hero",
-            bg=BG,
-        )
-        heroes.pack(fill="x", padx=14)
-        colors = (GREEN, BLUE, PURPLE, CYAN, AMBER, RED, TEXT, BLUE)
-        for metric, color in zip(HERO_METRICS, colors):
-            self.hero_cards[metric.key] = heroes.add(
-                HeroCard(heroes, metric, color)
-            )
+        self.hero_row = HeroRow(body, spacing=6, bg=palette.bg)
+        self.hero_row.pack(fill="x", padx=12 - self.hero_row.margin)
+        self._build_hero_cards()
 
-        notebook = ttk.Notebook(body)
-        notebook.pack(fill="both", expand=True, padx=14, pady=9)
-        notebook.bind("<Configure>", self._layout_panel_grids, add="+")
-        for tab_name, definitions in (
-            ("Primary", PANELS),
-            ("Extended", EXTENDED_PANELS),
-        ):
+        tabs = tk.Frame(body, bg=palette.bg)
+        tabs.pack(fill="x", padx=12, pady=(7, 0))
+        host = tk.Frame(body, bg=palette.bg)
+        host.pack(fill="both", expand=True, padx=12, pady=(4, 7))
+        host.bind("<Configure>", self._layout_panel_grids, add="+")
+        for index, (tab_name, definitions) in enumerate(TABS):
+            button = self._tool_button(
+                tabs,
+                tab_name.upper(),
+                lambda index=index: self.select_tab(index),
+                f"Show the {tab_name.lower()} panels",
+                pady=2,
+            )
+            button.pack(side="left", padx=(0, 4))
+            self.tab_buttons.append(button)
             panels = ResponsiveGrid(
-                notebook,
+                host,
                 min_column_width=PANEL_MIN_WIDTH,
                 spacing=6,
                 uniform="panel",
                 row_weight=1,
-                bg=BG,
+                bg=palette.bg,
             )
-            notebook.add(panels, text=tab_name)
             self.panel_grids.append(panels)
             for title, metrics in definitions:
-                panel = panels.add(DataPanel(panels, title, metrics))
+                panel = panels.add(DataPanel(panels, title, metrics, palette))
                 self.data_panels.append((panel, metrics))
+        self.select_tab(self.active_tab)
 
         self.footnote = tk.Label(
             body,
             text=FOOTNOTE,
-            bg=BG,
-            fg=MUTED,
-            font=("Segoe UI", 8),
+            bg=palette.bg,
+            fg=palette.muted,
+            font=ui_font(8),
             anchor="w",
             justify="left",
         )
-        self.footnote.pack(fill="x", padx=15, pady=(0, 8))
+        self.footnote.pack(fill="x", padx=13, pady=(0, 6))
         self.footnote.bind("<Configure>", self._wrap_footnote, add="+")
+
+    def _build_hero_cards(self):
+        """Fill the hero row with the configured cards, in their order."""
+        for card in self.hero_cards.values():
+            card.destroy()
+        keys = self.settings.hero
+        self.hero_history = {
+            key: self.hero_history.get(key, deque(maxlen=180)) for key in keys
+        }
+        traces = self.palette.traces
+        self.hero_cards = {
+            key: HeroCard(
+                self.hero_row,
+                HERO_CATALOG[key],
+                traces[index % len(traces)],
+                self.palette,
+                self.hero_history[key],
+            )
+            for index, key in enumerate(keys)
+        }
+        self.hero_row.set_cards(tuple(self.hero_cards.values()))
+        if not keys:
+            self.hero_row.configure(height=1)
+
+    def select_tab(self, index):
+        self.active_tab = index
+        for position, panels in enumerate(self.panel_grids):
+            if position == index:
+                panels.pack(fill="both", expand=True)
+            else:
+                panels.pack_forget()
+        for position, button in enumerate(self.tab_buttons):
+            button.configure(lit=position == index)
+
+    def _store_settings(self, **changes):
+        """Adopt changed settings and write them when a file is configured."""
+        self.settings = dashboard_settings.Settings(**{
+            "theme": self.settings.theme,
+            "hero": self.settings.hero,
+            **changes,
+        })
+        if self.settings_path is None:
+            return
+        try:
+            dashboard_settings.save(self.settings_path, self.settings)
+        except OSError as error:
+            messagebox.showwarning(
+                "Settings were not saved",
+                f"{self.settings_path}\n{error}",
+            )
+
+    def toggle_theme(self):
+        name = "light" if self.palette.name == "dark" else "dark"
+        self._store_settings(theme=name)
+        self.palette = PALETTES[name]
+        self._build_window()
+
+    def toggle_active(self):
+        self.active_var.set(not self.active_var.get())
+        self.active_button.configure(lit=self.active_var.get())
+
+    def open_hero_picker(self):
+        if self.picker is not None and self.picker.winfo_exists():
+            self.picker.lift()
+            return
+        palette = self.palette
+        self.picker = HeroPicker(
+            self.root,
+            choices=HERO_CHOICES,
+            selected=self.settings.hero,
+            defaults=DEFAULT_HERO_KEYS,
+            limit=dashboard_settings.HERO_LIMIT,
+            colors={
+                "bg": palette.bg,
+                "panel": palette.panel,
+                "border": palette.border,
+                "text": palette.text,
+                "muted": palette.muted,
+                "heading": palette.heading,
+                "select": palette.blue,
+                "select_text": palette.lit_text,
+            },
+            button_colors=palette.button_colors(),
+            fonts={
+                "label": ui_font(9),
+                "heading": ui_font(9, bold=True),
+                "list": ui_font(10),
+                "button": ui_font(9, bold=True),
+            },
+            on_apply=self.apply_hero_keys,
+            tooltip_options=palette.tooltip_options(),
+        )
+
+    def apply_hero_keys(self, keys):
+        keys = dashboard_settings.normalize_hero(keys, HERO_CATALOG)
+        self._store_settings(hero=keys)
+        self._build_hero_cards()
 
     def _layout_panel_grids(self, event):
         for panels in self.panel_grids:
-            panels.layout(event.width - NOTEBOOK_TAB_PADDING)
+            panels.layout(event.width)
 
     def _wrap_footnote(self, event):
         wrap = max(240, event.width - 4)
@@ -740,34 +1141,38 @@ class DashboardApp:
             master,
             variable,
             title=title,
-            background=PANEL_ALT,
+            background=self.palette.panel_alt,
             foreground=color,
-            font=("Consolas", 9),
-            copy_feedback=GREEN,
+            font=mono_font(9),
+            copy_feedback=self.palette.green,
             anchor=anchor,
             sample=sample,
+            tooltip_options=self.palette.tooltip_options(),
         )
 
-    @staticmethod
-    def _control_entry(parent, label, variable, width):
-        group = tk.Frame(parent, bg=BG)
+    def _control_entry(self, parent, label, variable, width):
+        palette = self.palette
+        group = tk.Frame(parent, bg=palette.bg)
         tk.Label(
             group,
             text=label,
-            bg=BG,
-            fg=MUTED,
-            font=("Segoe UI", 8),
-        ).pack(anchor="w")
+            bg=palette.bg,
+            fg=palette.muted,
+            font=ui_font(8, bold=True),
+        ).pack(side="left", padx=(0, 4))
         tk.Entry(
             group,
             textvariable=variable,
             width=width,
-            bg=PANEL_ALT,
-            fg=TEXT,
-            insertbackground=TEXT,
+            bg=palette.panel_alt,
+            fg=palette.text,
+            insertbackground=palette.text,
             relief="flat",
-            font=("Consolas", 9),
-        ).pack(ipady=4)
+            highlightthickness=1,
+            highlightbackground=palette.border,
+            highlightcolor=palette.blue,
+            font=mono_font(9),
+        ).pack(side="left", ipady=2)
         return group
 
     def _source_emitter(self):
@@ -821,7 +1226,17 @@ class DashboardApp:
         if active == self.source_button_active:
             return
         self.source_button_active = active
-        self.source_button.configure(text="Disconnect" if active else "Connect")
+        self.source_button.configure(
+            text="DISCONNECT" if active else "CONNECT",
+            lit=active,
+        )
+
+    def _sync_record_button(self):
+        recording = self.recorder is not None
+        self.record_button.configure(
+            text=RECORD_CAPTIONS[recording],
+            lit=recording,
+        )
 
     def start_pcan(self):
         self.stop_source()
@@ -861,11 +1276,14 @@ class DashboardApp:
         self.send_stream_command(self.stream_command)
 
     def _stream_button_text(self):
-        return f"{self.stream_command.capitalize()} stream"
+        return STREAM_CAPTIONS[self.stream_command]
 
     def _set_stream_command(self, command):
         self.stream_command = command
-        self.stream_button.configure(text=self._stream_button_text())
+        self.stream_button.configure(
+            text=self._stream_button_text(),
+            lit=command == "stop",
+        )
 
     def send_stream_command(self, command):
         if (
@@ -877,7 +1295,7 @@ class DashboardApp:
             return
         if not self.pcan_active:
             self.control_var.set(
-                "Control error: reconnect with Active/ACK enabled"
+                "Control error: reconnect with ACK enabled"
             )
             return
         try:
@@ -1000,7 +1418,7 @@ class DashboardApp:
             self.record_var.set(f"MLG error: {error}")
             return
         self.recording_clock = RecordingClock(time.monotonic())
-        self.record_button.configure(text="Stop MLG")
+        self._sync_record_button()
         self.record_var.set(f"MLG: recording {output.name}")
 
     def stop_recording(self):
@@ -1009,7 +1427,7 @@ class DashboardApp:
         recorder = self.recorder
         self.recorder = None
         self.recording_clock = None
-        self.record_button.configure(text="Record MLG")
+        self._sync_record_button()
         try:
             summary = recorder.close()
         except (OSError, ValueError) as error:
@@ -1093,7 +1511,7 @@ class DashboardApp:
                         self.recorder.abort()
                         self.recorder = None
                         self.recording_clock = None
-                        self.record_button.configure(text="Record MLG")
+                        self._sync_record_button()
                         self.record_var.set(f"MLG error: {error}")
         if new_snapshot and self.feed is not None:
             self.feed.publish(self.model)
@@ -1149,18 +1567,19 @@ class DashboardApp:
     def _refresh(self, now):
         stats = self.model.stats(now)
         age = stats.last_snapshot_age
+        palette = self.palette
         if self.source_state == "error":
-            state, color = "ERROR", RED
+            state, color = "ERROR", palette.red
         elif self.source_state not in {"connected"}:
-            state, color = self.source_state.upper(), MUTED
+            state, color = self.source_state.upper(), palette.muted
         elif age is None:
-            state, color = f"WAITING FOR 0x{self.model.can_id:03X}", AMBER
+            state, color = f"WAITING FOR 0x{self.model.can_id:03X}", palette.amber
         elif age > 0.5:
-            state, color = f"STALE {age:.1f}s", RED
+            state, color = f"STALE {age:.1f}s", palette.red
         elif not self.model.schema_verified:
-            state, color = "WAITING FOR HEALTH CONTEXT", AMBER
+            state, color = "WAITING FOR HEALTH CONTEXT", palette.amber
         else:
-            state, color = "LIVE", GREEN
+            state, color = "LIVE", palette.green
         self.status_var.set(state)
         self.status_dot.configure(fg=color)
         self.status_field.set_foreground(color)
@@ -1178,9 +1597,9 @@ class DashboardApp:
 
         new_group = stats.completed_groups != self.last_ui_group
         self.last_ui_group = stats.completed_groups
-        for metric in HERO_METRICS:
-            value = self._metric_value(metric.key)
-            card = self.hero_cards[metric.key]
+        for key, card in self.hero_cards.items():
+            metric = card.metric
+            value = self._metric_value(key)
             card.update_value(
                 self._format(metric, value),
                 value if new_group and isinstance(value, (int, float)) else None,
@@ -1255,6 +1674,11 @@ def build_parser():
         action="store_true",
         help=argparse.SUPPRESS,
     )
+    parser.add_argument(
+        "--settings",
+        type=Path,
+        help="presentation settings file (default: the per-user file)",
+    )
     parser.add_argument("--replay", type=Path)
     parser.add_argument("--replay-speed", type=float, default=1.0)
     parser.add_argument("--no-auto-connect", action="store_true")
@@ -1304,6 +1728,12 @@ def main(argv=None):
     if args.smoke_test:
         args.demo = True
         args.no_auto_connect = True
+        args.settings = None
+    elif args.settings is None:
+        args.settings = dashboard_settings.default_path(
+            PRODUCT_NAME,
+            PRODUCT_SLUG,
+        )
     root = tk.Tk()
     dashboard = DashboardApp(root, args)
     if args.smoke_test:

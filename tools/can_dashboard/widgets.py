@@ -70,6 +70,18 @@ def responsive_columns(count, minimum_width, available, spacing):
     return max(1, min(count, int(columns)))
 
 
+HERO_VALUE_SIZES = ((170, 22), (130, 18), (100, 15), (76, 12))
+HERO_VALUE_SIZE_FLOOR = 10
+
+
+def hero_value_size(width):
+    """Return the value font size a hero card of this pixel width uses."""
+    for minimum, size in HERO_VALUE_SIZES:
+        if width >= minimum:
+            return size
+    return HERO_VALUE_SIZE_FLOOR
+
+
 class Tooltip:
     """Hover bubble that reports the full text behind a widget."""
 
@@ -170,6 +182,7 @@ class StatusField(tk.Label):
         anchor="w",
         sample=None,
         reserve=0,
+        tooltip_options=None,
     ):
         super().__init__(
             master,
@@ -193,7 +206,11 @@ class StatusField(tk.Label):
         self._trace = variable.trace_add("write", self._on_variable)
         self.bind("<Button-1>", self.copy, add="+")
         self.bind("<Destroy>", self._on_destroy, add="+")
-        self.tooltip = Tooltip(self, self.tooltip_text)
+        self.tooltip = Tooltip(
+            self,
+            self.tooltip_text,
+            **(tooltip_options or {}),
+        )
         self.set_text(variable.get())
 
     def _on_variable(self, *_args):
@@ -318,7 +335,8 @@ class FlowBar(tk.Frame):
 
     def _flush(self):
         self._pending = None
-        self.layout(self.winfo_width())
+        if self.winfo_exists():
+            self.layout(self.winfo_width())
 
     def layout(self, available):
         if not self._items or available <= 1:
@@ -425,7 +443,8 @@ class ResponsiveGrid(tk.Frame):
 
     def _flush(self):
         self._pending = None
-        self.layout(self.winfo_width())
+        if self.winfo_exists():
+            self.layout(self.winfo_width())
 
     @property
     def columns(self):
@@ -469,6 +488,151 @@ class ResponsiveGrid(tk.Frame):
             )
         for row in range(rows):
             self.rowconfigure(row, weight=self._row_weight)
+
+
+class ToolButton(tk.Label):
+    """Flat toolbar button with a lit state, drawn the same on every OS.
+
+    A native button ignores its colors on macOS, so the button is a label.
+    `configure` accepts `lit` beside the label options; a lit button reports
+    an active link, stream, recording, or mode.
+    """
+
+    def __init__(
+        self,
+        master,
+        *,
+        text,
+        command,
+        colors,
+        tooltip=None,
+        tooltip_options=None,
+        font=("Segoe UI Semibold", 9),
+        lit_role="lit",
+        lit=False,
+        padx=8,
+        pady=3,
+    ):
+        self._colors = dict(colors)
+        self._lit_role = lit_role
+        self._lit = bool(lit)
+        self._hover = False
+        self._command = command
+        super().__init__(
+            master,
+            text=text,
+            font=font,
+            padx=padx,
+            pady=pady,
+            cursor="hand2",
+            takefocus=1,
+            highlightthickness=1,
+        )
+        self._paint()
+        self.bind("<Button-1>", self._on_click, add="+")
+        self.bind("<Return>", self._on_click, add="+")
+        self.bind("<space>", self._on_click, add="+")
+        self.bind("<Enter>", self._on_enter, add="+")
+        self.bind("<Leave>", self._on_leave, add="+")
+        self.tooltip = (
+            Tooltip(self, tooltip, **(tooltip_options or {}))
+            if tooltip
+            else None
+        )
+
+    @property
+    def lit(self):
+        return self._lit
+
+    def configure(self, cnf=None, **options):
+        lit = options.pop("lit", None)
+        result = None
+        if cnf is not None or options or lit is None:
+            result = super().configure(cnf, **options)
+        if lit is not None and bool(lit) != self._lit:
+            self._lit = bool(lit)
+            self._paint()
+        return result
+
+    config = configure
+
+    def invoke(self):
+        return self._command()
+
+    def _paint(self):
+        colors = self._colors
+        if self._lit:
+            background = colors[self._lit_role]
+            foreground = colors["lit_text"]
+            border = background
+        else:
+            background = colors["hover" if self._hover else "face"]
+            foreground = colors["text"]
+            border = colors["border"]
+        super().configure(
+            bg=background,
+            fg=foreground,
+            highlightbackground=border,
+            highlightcolor=colors["focus"],
+        )
+
+    def _on_click(self, _event=None):
+        self.invoke()
+        return "break"
+
+    def _on_enter(self, _event=None):
+        self._hover = True
+        self._paint()
+
+    def _on_leave(self, _event=None):
+        self._hover = False
+        self._paint()
+
+
+class HeroRow(tk.Frame):
+    """Single row of equal cards that shrink instead of wrapping.
+
+    Every card carries half of the gap on each side, so equal columns give
+    equal cards; `margin` is the width the row adds beyond its outer cards.
+    """
+
+    def __init__(self, master, *, spacing=6, min_card_width=48, **kwargs):
+        super().__init__(master, **kwargs)
+        self._spacing = spacing
+        self._min_card_width = min_card_width
+        self._cards = ()
+        self._columns = 0
+
+    @property
+    def cards(self):
+        return self._cards
+
+    @property
+    def margin(self):
+        return self._spacing // 2
+
+    def set_cards(self, cards):
+        for card in self._cards:
+            if card not in cards and card.winfo_exists():
+                card.grid_forget()
+        self._cards = tuple(cards)
+        for column in range(max(self._columns, len(self._cards))):
+            used = column < len(self._cards)
+            self.columnconfigure(
+                column,
+                weight=1 if used else 0,
+                uniform="hero" if used else "",
+                minsize=self._min_card_width if used else 0,
+            )
+        self._columns = len(self._cards)
+        self.rowconfigure(0, weight=1)
+        for column, card in enumerate(self._cards):
+            card.grid(
+                row=0,
+                column=column,
+                sticky="nsew",
+                padx=(self.margin, self._spacing - self.margin),
+            )
 
 
 class ScrollableFrame(tk.Frame):

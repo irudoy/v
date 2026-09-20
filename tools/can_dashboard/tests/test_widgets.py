@@ -323,3 +323,160 @@ class ScrollableFrameTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HeroValueSizeTest(unittest.TestCase):
+    def test_wide_cards_use_the_largest_value_font(self):
+        self.assertEqual(widgets.hero_value_size(400), 22)
+        self.assertEqual(widgets.hero_value_size(170), 22)
+
+    def test_value_font_steps_down_with_the_card_width(self):
+        sizes = [widgets.hero_value_size(width) for width in (169, 129, 99, 75)]
+        self.assertEqual(sizes, [18, 15, 12, widgets.HERO_VALUE_SIZE_FLOOR])
+
+    def test_value_font_never_grows_as_the_card_narrows(self):
+        sizes = [widgets.hero_value_size(width) for width in range(300, 0, -1)]
+        self.assertEqual(sizes, sorted(sizes, reverse=True))
+
+
+BUTTON_COLORS = {
+    "face": "#161616",
+    "hover": "#262626",
+    "text": "#f5f5f5",
+    "border": "#363636",
+    "focus": "#4da3ff",
+    "lit": "#2fd35a",
+    "record": "#ff453a",
+    "lit_text": "#000000",
+}
+
+
+@unittest.skipUnless(TK_AVAILABLE, "Tk display is unavailable")
+class ToolButtonTest(unittest.TestCase):
+    def setUp(self):
+        self.calls = []
+        self.button = widgets.ToolButton(
+            ROOT,
+            text="CONNECT",
+            command=lambda: self.calls.append("pressed"),
+            colors=BUTTON_COLORS,
+            tooltip="Open the PCAN channel",
+        )
+        self.addCleanup(self.button.destroy)
+
+    def test_invoke_runs_the_command(self):
+        self.button.invoke()
+        self.assertEqual(self.calls, ["pressed"])
+
+    def test_unlit_button_uses_the_face_colors(self):
+        self.assertFalse(self.button.lit)
+        self.assertEqual(self.button.cget("bg"), BUTTON_COLORS["face"])
+        self.assertEqual(self.button.cget("fg"), BUTTON_COLORS["text"])
+
+    def test_lit_state_arrives_with_the_label_options(self):
+        self.button.configure(text="DISCONNECT", lit=True)
+        self.assertTrue(self.button.lit)
+        self.assertEqual(self.button.cget("text"), "DISCONNECT")
+        self.assertEqual(self.button.cget("bg"), BUTTON_COLORS["lit"])
+        self.assertEqual(self.button.cget("fg"), BUTTON_COLORS["lit_text"])
+        self.button.config(lit=False)
+        self.assertEqual(self.button.cget("bg"), BUTTON_COLORS["face"])
+
+    def test_lit_role_selects_the_lit_color(self):
+        record = widgets.ToolButton(
+            ROOT,
+            text="REC",
+            command=lambda: None,
+            colors=BUTTON_COLORS,
+            lit_role="record",
+            lit=True,
+        )
+        self.addCleanup(record.destroy)
+        self.assertEqual(record.cget("bg"), BUTTON_COLORS["record"])
+
+    def test_hover_never_repaints_a_lit_button(self):
+        self.button.configure(lit=True)
+        self.button._on_enter()
+        self.assertEqual(self.button.cget("bg"), BUTTON_COLORS["lit"])
+        self.button.configure(lit=False)
+        self.assertEqual(self.button.cget("bg"), BUTTON_COLORS["hover"])
+        self.button._on_leave()
+        self.assertEqual(self.button.cget("bg"), BUTTON_COLORS["face"])
+
+
+@unittest.skipUnless(TK_AVAILABLE, "Tk display is unavailable")
+class HeroRowTest(unittest.TestCase):
+    def setUp(self):
+        self.window = tk.Toplevel(ROOT)
+        self.addCleanup(self.window.destroy)
+        self.row = widgets.HeroRow(self.window, spacing=6, min_card_width=40)
+        self.row.pack(fill="x")
+
+    def cards(self, count):
+        return [
+            tk.Frame(self.row, width=300, height=60) for _index in range(count)
+        ]
+
+    def show(self, width):
+        self.window.geometry(f"{width}x200")
+        self.window.deiconify()
+        self.window.update_idletasks()
+        self.window.update()
+
+    def test_cards_share_one_row_at_every_width(self):
+        cards = self.cards(9)
+        self.row.set_cards(cards)
+        for width in (1400, 700, 420):
+            with self.subTest(width=width):
+                self.show(width)
+                self.assertEqual({card.winfo_y() for card in cards}, {0})
+                rows = {int(card.grid_info()["row"]) for card in cards}
+                self.assertEqual(rows, {0})
+
+    def test_cards_keep_equal_widths(self):
+        cards = self.cards(7)
+        self.row.set_cards(cards)
+        self.show(1000)
+        widths = [card.winfo_width() for card in cards]
+        self.assertLessEqual(max(widths) - min(widths), 1)
+
+    def test_fewer_cards_release_their_columns(self):
+        cards = self.cards(6)
+        self.row.set_cards(cards)
+        self.row.set_cards(cards[:2])
+        self.show(800)
+        self.assertEqual(self.row.cards, tuple(cards[:2]))
+        self.assertEqual(cards[3].winfo_manager(), "")
+        self.assertGreater(cards[0].winfo_width(), 300)
+        self.assertEqual(int(self.row.columnconfigure(4)["weight"]), 0)
+
+    def test_destroyed_cards_are_replaced_without_an_error(self):
+        first = self.cards(3)
+        self.row.set_cards(first)
+        for card in first:
+            card.destroy()
+        second = self.cards(4)
+        self.row.set_cards(second)
+        self.assertEqual(self.row.cards, tuple(second))
+
+    def test_an_empty_row_is_accepted(self):
+        self.row.set_cards(self.cards(2))
+        self.row.set_cards(())
+        self.assertEqual(self.row.cards, ())
+
+
+@unittest.skipUnless(TK_AVAILABLE, "Tk display is unavailable")
+class TooltipOptionsTest(unittest.TestCase):
+    def test_status_field_forwards_the_tooltip_colors(self):
+        variable = tk.StringVar(master=ROOT, value="Schema: VERIFIED")
+        field = widgets.StatusField(
+            ROOT,
+            variable,
+            title="Wire schema state",
+            background="#ffffff",
+            foreground="#000000",
+            tooltip_options={"background": "#f2f2f2", "foreground": "#000000"},
+        )
+        self.addCleanup(field.destroy)
+        self.assertEqual(field.tooltip.background, "#f2f2f2")
+        self.assertEqual(field.tooltip.foreground, "#000000")

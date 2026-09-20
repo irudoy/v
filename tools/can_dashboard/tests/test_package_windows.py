@@ -25,8 +25,10 @@ class WindowsPackageTest(unittest.TestCase):
                     prefix + "requirements.txt",
                     prefix + "patches/can-telemetry-schema.json",
                     prefix + "tools/can_dashboard/app.py",
+                    prefix + "tools/can_dashboard/hero_picker.py",
                     prefix + "tools/can_dashboard/live_feed.py",
                     prefix + "tools/can_dashboard/recording.py",
+                    prefix + "tools/can_dashboard/settings.py",
                     prefix + "tools/can_dashboard/sources.py",
                     prefix + "tools/can_dashboard/widgets.py",
                     prefix + "tools/logs/can_telemetry.py",
@@ -82,6 +84,16 @@ class WindowsPackageTest(unittest.TestCase):
             first_package = output.read_bytes()
             package_windows.build_package(output, force=True)
             self.assertEqual(output.read_bytes(), first_package)
+
+    def test_every_runtime_module_of_the_dashboard_is_packaged(self):
+        directory = Path(package_windows.__file__).parent
+        modules = {
+            f"tools/can_dashboard/{path.name}"
+            for path in directory.glob("*.py")
+            if not path.name.startswith("package_")
+        }
+        self.assertTrue(modules)
+        self.assertEqual(modules - set(package_windows.SOURCE_FILES), set())
 
 
 if __name__ == "__main__":

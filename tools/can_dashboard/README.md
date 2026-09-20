@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `7.1.0`.
+Current dashboard version: `8.0.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -24,10 +24,10 @@ stream button. The firmware keeps startup streaming disabled by default, so
 START is the normal way to begin a capture. Listen-only mode suppresses CAN
 transmission and ACK participation. The application connects at start, so
 `--listen-only` selects that mode from the first connection; in the window,
-disconnect, clear the visible `Active/ACK` control, and connect again.
+disconnect, switch the lit `ACK` button off, and connect again.
 
 The version has one source in `tools/can_dashboard/__init__.py`. It is visible
-in the window title, main heading, Windows portable-package directory,
+in the window title, window header, Windows portable-package directory,
 `VERSION.txt`, and macOS `Info.plist`. Semantic-version major changes denote an
 incompatible UI, CLI, or MLG contract; minor changes add compatible
 functionality; patch changes preserve both contracts.
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v7.1.0-windows.zip
+  --output tmp/vq-can-telemetry-v8.0.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -99,9 +99,9 @@ reset even when the firmware definition flag disables startup streaming. STOP
 forces it off until reset. A running 11-frame group is allowed to finish before
 STOP becomes silent.
 
-A single stream button sends them. It offers START, switches to STOP once the
-driver confirms the START transmission, and returns to START when the source is
-stopped or replaced.
+A single `STREAM` button sends them. It offers START, lights up and switches to
+STOP once the driver confirms the START transmission, and returns to START
+when the source is stopped or replaced.
 
 The button requires an active/ACK PCAN connection. The dashboard rejects the
 command in listen-only, demo, and replay modes. `sent` means the PCAN driver
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v7.1.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.0.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 7.1.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.0.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -134,7 +134,7 @@ ZIP and revalidates the archived application before accepting the package.
 On the target Mac, install MacCAN `libPCBUSB` 0.13, extract the ZIP, and open
 `VQ CAN Telemetry.app`. No Python installation or shell launcher is needed.
 The main source starts in active/ACK mode. For a listen-only connection,
-disconnect, clear the visible `Active/ACK` control, and connect again, or
+disconnect, switch the lit `ACK` button off, and connect again, or
 start the application with `open -a "VQ CAN Telemetry" --args --listen-only`. A downloaded
 ad-hoc-signed build is not notarized, so the first launch may require Finder's
 Open action after the archive source and SHA-256 are verified.
@@ -169,6 +169,7 @@ py -3.11 -m tools.can_dashboard.app --replay capture.log
 py -3.11 -m tools.can_dashboard.app --listen-only
 py -3.11 -m tools.can_dashboard.app --channel PCAN_USBBUS2
 py -3.11 -m tools.can_dashboard.app --record drive.mlg
+py -3.11 -m tools.can_dashboard.app --settings bench-settings.json
 ```
 
 On macOS with `libPCBUSB` already installed, the equivalent repository run is:
@@ -260,9 +261,10 @@ resampled copy, and the MLG recording stays the reference log.
 
 ## MLG recording
 
-`Record MLG` selects a destination and starts an atomic MLVLG v2 recording.
-Only complete strict telemetry snapshots produce records. `Stop MLG`, source
-stop, source replacement, and window close finalize and validate the file.
+The `REC` button selects a destination and starts an atomic MLVLG v2 recording;
+it stays lit while the recording runs. Only complete strict telemetry snapshots
+produce records. A second press, source stop, source replacement, and window
+close finalize and validate the file.
 No new output is left when no complete snapshot was received; an existing file
 selected for replacement remains unchanged in that case. Existing files require
 an explicit replacement confirmation in the UI and are rejected by `--record`.
@@ -311,14 +313,61 @@ vehicle speed.
 ## Window layout
 
 The window opens inside the current screen and remains usable down to
-`560x460`. Header controls, status fields, and health counters flow into
-additional rows instead of leaving the window, hero cards and detail panels
-regrid into as many equal columns as the width allows, and the card and panel
-area scrolls vertically when the remaining height is short.
+`560x460`. The header is one compact row: product name with version, source
+state, channel and data-ID entries, and the tool buttons. Header controls,
+status fields, and health counters flow into additional rows instead of
+leaving the window, detail panels regrid into as many equal columns as the
+width allows, and the card and panel area scrolls vertically when the
+remaining height is short. `PRIMARY` and `EXTENDED` select the panel set.
 
-`Connect`/`Disconnect` is one button that follows whether a source worker runs;
-`Demo` and `Replay` replace the running source directly. `Record MLG`/`Stop MLG`
-follows the recording state.
+Tool buttons are flat labels with a lit state, drawn the same on every
+platform:
+
+| Button | Function | Lit |
+| --- | --- | --- |
+| `ACK` | selects the active/ACK state for the next PCAN connection | active/ACK selected |
+| `CONNECT` / `DISCONNECT` | one button that follows whether a source worker runs | source running |
+| `DEMO`, `REPLAY` | replace the running source directly | never |
+| `STREAM` | sends START, then STOP once START is confirmed | STOP offered |
+| `REC` | starts and stops the MLG recording | recording |
+| `CARDS` | opens the hero-row card dialog | never |
+| `LIGHT` / `DARK` | switches to the named color theme | never |
+
+### Hero row
+
+The top row shows the chosen metrics as cards with a value, a unit, and a
+trace of the last 180 snapshots. The cards always share one row: they split
+the width equally and shrink with the window. A narrowing card steps its value
+font down from 22 pt to 10 pt, drops the unit, and elides the title; hover over
+the title reports the full title, the unit, and the value.
+
+`CARDS` opens a dialog with the available metrics on the left and the shown
+cards, left to right, on the right. Every metric of the primary and extended
+panels can be a card, and the row holds 0 to 12 cards. `DEFAULTS` restores
+engine speed, vehicle speed, calculated load, timing command, total airflow,
+calculated injection, and coolant temperature. The selector position is a row
+of the `Temperatures and context` panel and remains available as a card.
+
+### Themes and settings
+
+The dark theme is a black high-contrast scheme; the light theme is a white
+scheme for daylight. The theme button rebuilds the window in the other theme
+and leaves the source, the recording, and the displayed values in place.
+
+The theme and the card list persist in a per-user JSON file:
+
+| Platform | File |
+| --- | --- |
+| macOS | `~/Library/Application Support/VQ CAN Telemetry/settings.json` |
+| Windows | `%APPDATA%\VQ CAN Telemetry\settings.json` |
+| other | `$XDG_CONFIG_HOME/vq-can-telemetry/settings.json`, `~/.config` by default |
+
+`--settings PATH` selects another file. A missing or damaged file gives the
+defaults, unknown metric keys are dropped, and every change replaces the file
+atomically. The file holds presentation choices only and never connection
+parameters. `--smoke-test` reads and writes no settings file.
+
+### Scrolling and status fields
 
 The card and panel area answers both a mouse wheel and a trackpad gesture
 anywhere over its content. Tk reports trackpad scrolling as its own event, so
@@ -332,8 +381,8 @@ are separate fields: producer tick, completed groups, schema mismatches, CAN
 error frames, producer snapshot overruns, producer transmit aborts, and
 telemetry status flags.
 
-Status and health fields reserve the width of their widest expected value, so
-live values change in place instead of shifting the fields beside them. A value
+Status and health fields reserve the width of their usual value, so live
+values change in place instead of shifting the fields beside them. A value
 longer than its reserve is elided, and hover and click still report it in full.
 
 ## Display semantics
@@ -432,6 +481,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 7.1.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.0.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.
