@@ -54,6 +54,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `sh-elf-run/run-npkern.sh` | Optional exact-revision external npkern gate |
 | `romviz/build.py` | Self-contained interactive ROM address-space atlas generator |
 | `rom_homology.py` | Validate declared ROM families and regenerate pairwise homology measurements |
+| `version_index.py` | Hold the deployment table to the version pins builds, containers, and wrappers execute |
 
 The full Python contract is configured in `../pyproject.toml` and runs with
 `uv run pytest -q`. JavaScript tests belong to the pin tracer and are documented
@@ -61,18 +62,24 @@ there. Firmware execution tests belong to `sh-elf-run/README.md`.
 
 ## Local deployment
 
-This table is the single project record for machine-local tool versions and
-locations. Narrow tool documents describe usage but do not duplicate versions.
+This table is the single project record for machine-local component versions
+and locations. Narrow tool documents describe usage but do not name versions.
+`version_index.py --check` reads every pin below from the file that executes it
+and fails when the table or another tool document carries a different value.
 
 | Component | Version | Local location or source |
 |---|---|---|
-| Ghidra | 12.1.2 with JDK 21 and ARM native libraries | Homebrew; `$(brew --prefix ghidra)/libexec` |
+| Ghidra | 12.1.2 with JDK 21 and ARM native libraries | Homebrew; `$(brew --prefix ghidra)/libexec`; pinned in `ghidra/headless-analyze.sh` |
 | Ghidra project | Local project | `~/tools/ghidra-projects/vq-hr` |
 | Memgraph MAGE | 3.11.0 | `memgraph/docker-compose.yml` |
-| Memgraph Lab | Compose image | `memgraph/docker-compose.yml` |
-| `mcp-memgraph` | 0.2.0 | Project-scoped local MCP configuration |
-| GNU SH toolchain | simulator 16.3, GCC 13.3.0, binutils 2.44 | Image built from `sh-elf-run/Dockerfile` |
+| Memgraph Lab | 3.11.0 | `memgraph/docker-compose.yml` |
+| `mcp-memgraph` | 0.4.1 | `../.mcp.json`; machine-local and untracked, so the gate checks it only where it exists |
+| GNU SH toolchain | GCC 13.3.0, binutils 2.44, GDB SH simulator | Image built from `sh-elf-run/Dockerfile` |
 | Python | 3.11 | `../pyproject.toml` and `../uv.lock` |
+| CAN dashboard | 8.2.4 | `can_dashboard/__init__.py` |
+| PyInstaller | 6.21.0 | `can_dashboard/requirements-macos-build.txt` |
+| `python-can` | 4.6.1 | The three `can_dashboard/requirements-*.txt` pins |
+| `tzdata` | 2026.3 | `can_dashboard/requirements-windows.txt` |
 | External npkern source | Revision locked by `run-npkern.sh` | Default `../../oss/npkern` |
 
 ## Local services and ports

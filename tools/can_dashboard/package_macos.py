@@ -21,13 +21,15 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
+from tools.version_index import requirement_pin
 
 
 APP_NAME = PRODUCT_NAME
 APP_BUNDLE_NAME = f"{APP_NAME}.app"
 BUNDLE_IDENTIFIER = "com.github.irudoy.vhrev.vq-can-telemetry"
 TARGET_ARCHITECTURE = "arm64"
-PYINSTALLER_VERSION = "6.21.0"
+BUILD_REQUIREMENTS = "tools/can_dashboard/requirements-macos-build.txt"
+PYINSTALLER_VERSION = requirement_pin(BUILD_REQUIREMENTS, "pyinstaller")
 ENTRY_POINT = ROOT / "tools/can_dashboard/app.py"
 DATA_FILES = (
     (ROOT / "patches/can-telemetry-profile.toml", "patches"),

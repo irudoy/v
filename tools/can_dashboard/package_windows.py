@@ -15,6 +15,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
+from tools.version_index import python_version
+
+PYTHON_VERSION = python_version()
 
 PACKAGE_ROOT = f"{PRODUCT_SLUG}-v{__version__}"
 SOURCE_FILES = (
@@ -42,16 +45,16 @@ SOURCE_FILES = (
     "tools/can_dashboard/README.md",
 )
 
-INSTALL_CMD = r"""@echo off
+INSTALL_CMD = rf"""@echo off
 setlocal
 cd /d "%~dp0"
 where py >nul 2>nul
 if errorlevel 1 (
-  echo Python launcher was not found. Install 64-bit Python 3.11 from python.org.
+  echo Python launcher was not found. Install 64-bit Python {PYTHON_VERSION} from python.org.
   pause
   exit /b 1
 )
-py -3.11 -m venv .venv
+py -{PYTHON_VERSION} -m venv .venv
 if errorlevel 1 goto :failed
 ".venv\Scripts\python.exe" -m pip install --upgrade pip
 if errorlevel 1 goto :failed

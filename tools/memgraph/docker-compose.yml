@@ -38,7 +38,7 @@ services:
     restart: unless-stopped
 
   lab:
-    image: memgraph/lab:latest
+    image: memgraph/lab:3.11.0   # pinned to the database release
     container_name: vq-memgraph-lab
     ports:
       - "127.0.0.1:3100:3000"   # web UI: http://localhost:3100

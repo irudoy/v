@@ -12,6 +12,21 @@
 #     -import rom-images/23710-1ND0A/11ND0A-20260715-stock.bin \
 #     -processor "SuperH:BE:32:SH-2A" -loader BinaryLoader -loader-baseAddr 0x0
 set -euo pipefail
+
+# The tracked exports, symbol names, and decompiler output belong to one Ghidra
+# release. An unnoticed upgrade changes them silently, so the installation is
+# pinned here and `tools/README.md` carries the same version under a gate.
+GHIDRA_VERSION=12.1.2
+
+GHIDRA_HOME="$(brew --prefix ghidra)/libexec"
+INSTALLED="$(sed -n 's/^application\.version=//p' \
+  "$GHIDRA_HOME/Ghidra/application.properties")"
+if [ "$INSTALLED" != "$GHIDRA_VERSION" ]; then
+  echo "Ghidra $GHIDRA_VERSION is required, found ${INSTALLED:-none}." >&2
+  echo "Reanalyze the project and update the pin before using the exports." >&2
+  exit 1
+fi
+
 JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
 export JAVA_HOME
-exec "$(brew --prefix ghidra)/libexec/support/analyzeHeadless" "$@"
+exec "$GHIDRA_HOME/support/analyzeHeadless" "$@"

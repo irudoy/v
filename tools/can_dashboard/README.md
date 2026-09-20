@@ -1,7 +1,5 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.2.4`.
-
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
 it loads the selected wire-schema JSON and never imports a firmware manifest,
@@ -26,18 +24,20 @@ transmission and ACK participation. The application connects at start, so
 `--listen-only` selects that mode from the first connection; in the window,
 disconnect, switch the lit `ACK` button off, and connect again.
 
-The version has one source in `tools/can_dashboard/__init__.py`. It is visible
-in the window title, window header, Windows portable-package directory,
-`VERSION.txt`, and macOS `Info.plist`. Semantic-version major changes denote an
+The version has one source in `tools/can_dashboard/__init__.py` and is
+published, with the pinned dependency versions, in the deployment table of
+[`../README.md`](../README.md#local-deployment). It is visible in the window
+title, window header, Windows portable-package directory, `VERSION.txt`, and
+macOS `Info.plist`. Semantic-version major changes denote an
 incompatible UI, CLI, or MLG contract; minor changes add compatible
 functionality; patch changes preserve both contracts.
 
 The Windows driver package installs the PCAN-Basic DLL in the system directory.
-The dashboard accesses it through `python-can` 4.6.1. PEAK documents the
+The dashboard accesses it through `python-can`. PEAK documents the
 PCAN-Basic DLL as the supported interface between an application and the device
 driver, and `python-can` documents `PCAN_USBBUS1`, passive state, and
 `500000 bit/s` for this adapter. The portable package also installs `tzdata`
-2026.3 so IANA timezones used by the TRC converter are available on Windows.
+so IANA timezones used by the TRC converter are available on Windows.
 
 On macOS, `python-can` uses the third-party MacCAN `libPCBUSB` user-space
 driver. Version 0.13 supports PCAN-USB on Intel and Apple silicon. The dashboard
@@ -60,14 +60,15 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.2.4-windows.zip
+  --output tmp/vq-can-telemetry-windows.zip
 ```
 
 On the Windows laptop:
 
 1. Install the current PEAK PCAN-USB driver and verify the adapter with
    PCAN-View at `500 kbit/s`.
-2. Install 64-bit Python 3.11 from python.org with the `py` launcher.
+2. Install 64-bit Python from python.org with the `py` launcher. `install.cmd`
+   names the required version and stops without it.
 3. Extract the complete ZIP to a writable directory.
 4. Run `install.cmd` once. It creates `.venv` and installs `python-can`.
 5. Run `run-dashboard.cmd`. It opens the adapter in active/ACK mode, which
@@ -120,11 +121,12 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.2.4-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-macos-arm64.zip` for transfer.
 
-The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
-the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.2.4 in `Info.plist`, and applies an
+The build uses the PyInstaller pinned in `requirements-macos-build.txt` in
+`onedir`, `windowed` mode. It embeds the tested Python/Tk runtime and all
+Python dependencies, preserves bundle symlinks in the ZIP, records the
+dashboard version in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -574,6 +576,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.4 does not
+mailbox-26 operation, and the earlier bus-load level. The dashboard does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

@@ -71,6 +71,7 @@ setup:
 	$(UV) sync --frozen
 
 check:
+	$(PYTHON) tools/version_index.py --check
 	$(PYTHON) patches/rom_address_profiles.py --check
 	$(PYTHON) patches/runtime_targets.py --check
 	$(PYTHON) tools/mapkit/dtc_projection.py
