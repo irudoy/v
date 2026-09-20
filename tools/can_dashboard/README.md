@@ -59,9 +59,11 @@ than being replaced by a normal stopped state.
 Build the ignored transfer archive from the repository root:
 
 ```bash
-python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-windows.zip
+make dashboard-package
 ```
+
+The target writes an ignored `tmp/` archive whose name carries the dashboard
+version. `CAN_DASHBOARD_OUTPUT=<path>` selects another path.
 
 On the Windows laptop:
 
@@ -118,10 +120,10 @@ root:
 make dashboard-package-macos
 ```
 
-The target writes:
-
-- `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-macos-arm64.zip` for transfer.
+The target writes `tmp/VQ CAN Telemetry.app` for direct local use and an
+ignored `tmp/` ZIP for transfer whose name carries the dashboard version and
+the arm64 architecture. `CAN_DASHBOARD_MACOS_APP_OUTPUT=<path>` and
+`CAN_DASHBOARD_MACOS_OUTPUT=<path>` select other paths.
 
 The build uses the PyInstaller pinned in `requirements-macos-build.txt` in
 `onedir`, `windowed` mode. It embeds the tested Python/Tk runtime and all
@@ -321,14 +323,12 @@ Decoded telemetry and context values use F32, so a rotating context that has
 not arrived yet can be represented as `NaN` rather than a fabricated zero.
 
 Channel names carry no candidate marker; the marker stays in the units, as it
-does on the display. MegaLogViewer lists a channel whose name contains `*` but
-draws nothing when it is selected, observed in MegaLogViewer MS Lite 4.6.09, so
-a channel name holds identity only. MegaLogViewer evaluates a channel as
-`(raw + transform) * scale`, so descriptor transforms are expressed in raw
-counts. Both numbers are derived from the calibrations the dashboard applies to
-the same field, and the recorder tests bind every channel value to the live
-engineering value. `tools/logs/mlg_restamp.py` applies a corrected field table
-to files recorded earlier without rewriting their data.
+does on the display, under the MegaLogViewer naming and scaling rules in
+[`../logs/README.md`](../logs/README.md#peak-trc-telemetry-to-mlg). Both
+numbers are derived from the calibrations the dashboard applies to the same
+field, and the recorder tests bind every channel value to the live engineering
+value. `tools/logs/mlg_restamp.py` applies a corrected field table to files
+recorded earlier without rewriting their data.
 
 MLG has a wrapping 16-bit 10-us block timestamp. A hold-last bridge record is
 inserted when complete snapshots are more than 0.3 seconds apart, which keeps

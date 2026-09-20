@@ -19,6 +19,11 @@ The registered `sh7058_jk78c` series contains JK78C. It uses an independent
 SH7058 address profile, independently assembled target payloads, Map Switching,
 Rolling Launch, and custom CAN telemetry.
 Every member retains its own stock identity, calibration, and checksum layout.
+
+The `apply_*.py` scripts are isolated diagnostic stages for one runtime each.
+They are not the production image workflow, and the composition and assembly
+modules behind them operate in memory without a flashable output path.
+
 The command has two selection modes:
 
 ```bash

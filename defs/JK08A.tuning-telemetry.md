@@ -103,19 +103,16 @@ The reviewed code and diagnostic layers do not establish a fuel-pressure
 source or confirm that this ECU has a pressure sensor represented in software.
 
 Knock margin fields `knock_margin_min_ch1_raw` through
-`knock_margin_min_ch6_raw` are firmware instrumentation of the slice evaluator
-at `0x0004A238`. The evaluator leaves the offset-binary metric of the evaluated
-channel at `int32[FFFF21D8 + 4 * (channel - 1)]` and its threshold at
-`uint16[FFFF2144 + 2 * (channel - 1)]`, and every evaluation overwrites the
-pair of its channel. The wrapper behind the only literal of the evaluator
-repeats the stock comparison after each evaluation and keeps the per-channel
-minimum of `threshold - metric` as a signed word. A negative value is an
-evaluation that the stock comparison counts as a knock event, limited at
-`-32768`. Context tag 4 publishes the six minimums and rearms them with
-`32767`, which stands for an interval without an evaluation of the channel or
-a margin of 32767 or more. Stock threshold rows 3 and 5 hold `0xFFFF`, so
-their channels report `32767` until the metric exceeds 32768 units. The metric
-is a summed and gain-scaled sensor difference in evaluator units without a
+`knock_margin_min_ch6_raw` publish the per-channel minimum of
+`threshold - metric` as a signed word in evaluator units, latched by the
+mechanism in
+[`../patches/can-telemetry.md`](../patches/can-telemetry.md#knock-margin-latches).
+A negative value is an evaluation that the stock comparison counts as a knock
+event, limited at `-32768`. Context tag 4 publishes the six minimums and
+rearms them with `32767`, which stands for an interval without an evaluation
+of the channel or a margin of 32767 or more. Stock threshold rows 3 and 5 hold
+`0xFFFF`, so their channels report `32767` until the metric exceeds 32768
+units. The metric is a summed and gain-scaled sensor difference without a
 physical conversion, and the channel-to-cylinder assignment is not
 established. A tag-4 group that the queue replaces, preempts, or discards
 before transmission takes its minimums with it.

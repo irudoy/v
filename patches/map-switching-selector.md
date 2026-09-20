@@ -317,12 +317,9 @@ It is not required for normal selection or feedback.
 `build_rom.py` is the production entry point. It composes the current
 Map Switching, Rolling Launch, and CAN telemetry runtimes, applies a local
 calibration profile, recalculates checksums, and verifies a closed write set.
-`apply_map_switching.py` is an isolated diagnostic stage and is not the
-production image workflow.
-
-The pure composition modules intentionally do not create flashable files. They
-bind exact input identity, anchors, hooks, layouts, assembly payload digests,
-and allowed write ranges. The production checksum dependency order is:
+The pure composition modules bind exact input identity, anchors, hooks,
+layouts, assembly payload digests, and allowed write ranges. The production
+checksum dependency order is:
 
 ```text
 self-test B -> self-test A -> SUM16 A -> SUM16 B

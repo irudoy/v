@@ -351,10 +351,8 @@ Switching composition, applies the target-specific Rolling Launch stage with
 the selected profile, adds the CAN telemetry layer, recalculates all checksum
 domains, and verifies the final closed write set.
 
-`apply_rolling_launch.py` is an isolated diagnostic stage. The composition and
-assembly modules operate in memory and do not expose a flashable output path.
-They require the exact base composition and bind every byte to the declared
-layout and payload manifests.
+The composition and assembly modules require the exact base composition and
+bind every byte to the declared layout and payload manifests.
 
 The canonical runtime uses `0xFFFF5D40..0xFFFF5D54` for active state. VQ37
 uses the projected `0xFFFF0C40..0xFFFF0C58` range. The cross-runtime ledger

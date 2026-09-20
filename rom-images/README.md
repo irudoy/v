@@ -346,15 +346,10 @@ The current separation between binary homology, definition parity, runtime
 features, verification, and hardware evidence is summarized in
 [`support-matrix.md`](support-matrix.md).
 
-The baseline identifies five implementation groups:
-
-| Group | Images | Classification | Builder and definition consequence |
-|---|---|---|---|
-| SH7058 `7MFKAVN86` | JK00A, JK03A, JK03B, JK08A | Exact code; differences are confined to `0x008200:0x020000` | One same-address series profile can cover all four images while reading calibration values from the selected image |
-| SH7059 `1ND` | 1ND0A, 1ND3B | Exact code; 5,251 differing bytes are confined to `0x008200:0x01bdfc` | One SH7059 structural analysis and builder series can cover both images; the exact checksum layout is registered |
-| SH7058 `8MFK` | JK00C, JK00D | Near code with insertions, deletions, and relocations | Share semantic identifiers, but require address maps and independently validated patch points |
-| SH7058 JK78C | JK78C | Distinct code base in the current collection | Uses an independent layout, checksum model, audited allocation, target payloads, and executable gate |
-| SH7059 `1ME3B` | 1ME3B | Distinct code base in the current collection | Carries a registered checksum layout, a fused interpolation registry with its census, a SHA-bound definition target established through `1ND0A` structural correspondence, and its own address profile and builder target; every address in that profile is independently recovered rather than inherited |
+The baseline identifies five implementation groups, tabulated with their
+address policy and builder consequence in
+[`support-matrix.md`](support-matrix.md#family-baseline). The measurements
+below state what the homology registry reads for each group.
 
 ### Exact-code families
 

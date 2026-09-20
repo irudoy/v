@@ -158,22 +158,10 @@ into additional graph edges merely to materialize a vocabulary join.
 
 The global diagnostic corpus and address-free reference catalogs are loaded
 independently of a specific ROM. A complete target-ROM ingest then runs in one
-fixed owner order:
-
-```text
-load_graph.py
-  -> load_xrefs.py
-  -> load_maps.py
-  -> load_code.py
-  -> load_diagnostic_bindings.py
-  -> provenance_report.py audit
-```
-
-`tools/memgraph/ingest.py <rom> --strict --dry-run` validates all tracked
-sources, exact image bindings, export headers, foreign keys, censuses, geometry,
-inheritance, diagnostic claims, and provenance before the first graph mutation.
-Run without `--dry-run` only after preflight passes. The operational contract is
-in `tools/memgraph/README.md`.
+fixed owner order, which `tools/memgraph/ingest.py` executes after a strict
+preflight of every tracked source. The order, the preflight scope, and the
+operational contract are in
+[`memgraph/README.md`](memgraph/README.md).
 
 Each loader owns and replaces its graph scope. Direct edits in Memgraph or Lab
 are not durable and must not be used to preserve project knowledge.
@@ -289,39 +277,14 @@ nonempty semantics, complete geometry, usable scaling, confidence at least
 static labels, an override that replaces a recovered fact, an unknown override
 address, or an explicitly visible table that fails a gate stops generation.
 
-`presentation.default_emit` controls default visibility. `emit = false` hides a
-research table from editor output without removing its graph or ledger facts.
-Candidate semantic and scaling claims are labeled in generated descriptions;
-functional categories never encode confidence.
-
-RomRaider `Overlay Log` follows a Logger parameter along an axis that names it
-in `logparam`. `[logparam.<operand>]` in the presentation layer declares the
-Logger ID and the axis units for one runtime lookup operand. An axis receives
-the attribute only when code establishes its scaling, its scale evidence names
-exactly that one `indexed_by` operand without an offset, and its units equal the
-declared units. A relocated axis whose scaling confidence falls below `code`,
-an axis with several operands, and an axis without a recorded operand stay
-without live data. A three-dimensional table supports the overlay only when
-both of its axes name a parameter. TunerPro XDF has no counterpart and is
-unchanged by the declaration.
-
-DTC records are checked against the exact stock descriptor and attribute bytes.
-RomRaider receives coordinated native switches; TunerPro receives atomic
-patches for individual records and declared groups. There is no implicit
-all-DTC patch.
-
-The map-switching projection reuses canonical Map 1 storage and adds only the
-reserved Map 2 through Map 5 editor views declared by the current layout. The
-Rolling Launch projection exposes only validated configuration controls. These
-editor-only copies do not create speculative canonical `Map` nodes and do not
-create another ROM identity.
-
 `tools/maps/build_tracker.py` renders `defs/<rom>.maps.csv` from the graph as a
 reviewable catalog snapshot. Open work is represented by its role, confidence,
 and empty semantics; no parallel status field is maintained. The ledger, XML,
 and XDF must never be edited manually.
 
-Detailed commands and invariants are in `tools/mapkit/README.md`.
+The commands, the presentation and Logger declarations, the DTC switch and
+patch policy, the map-switching and Rolling Launch projections, and the
+complete invariant list are in [`mapkit/README.md`](mapkit/README.md).
 
 ## Reproducibility invariants
 

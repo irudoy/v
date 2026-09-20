@@ -104,6 +104,9 @@ exclusions without requiring a running graph:
 uv run python tools/mapkit/presentation_audit.py
 ```
 
+`make check` runs the same audit as `--check`, which prints one status line and
+fails on the same violations.
+
 Validate the live graph model against both tracked common definition files
 without writing a ROM:
 
@@ -162,18 +165,38 @@ reference, including the baseline lookup and downstream target projection.
 - Relocated definitions retain canonical provenance while applying only
   explicit target-address bindings.
 - XML and XDF are rendered from the same in-memory model in one invocation.
-- A RomRaider axis names a Logger parameter in `logparam` only when code
-  establishes its scaling, its scale evidence names exactly one `indexed_by`
-  operand declared under `[logparam.<operand>]`, and its units equal the
-  declared units. The declared IDs are parameters of the CAN dashboard live
-  value feed.
+- `[logparam.<operand>]` in the presentation layer declares the Logger ID and
+  the axis units for one runtime lookup operand. A RomRaider axis names a
+  Logger parameter in `logparam` only when code establishes its scaling, its
+  scale evidence names exactly that one `indexed_by` operand without an offset,
+  and its units equal the declared units. The declared IDs are parameters of
+  the CAN dashboard live value feed.
 - Canonical category paths use ` / ` internally. RomRaider XML renders those
   paths with its `//` hierarchy separator, while TunerPro retains flat category
   names.
 - Map slots remain in their canonical functional categories and use the slot
   number in the editor name; each target retains its own ROM identity.
+- `presentation.default_emit` sets default visibility, and `emit = false` hides
+  a research table from editor output without removing its graph or ledger
+  facts. Candidate semantic and scaling claims are labeled in generated
+  descriptions; functional categories never encode confidence.
 - Hidden or unresolved maps remain in the graph and ledger unless their source
   facts are removed. Visibility is a presentation decision, not deletion.
+- RomRaider `Overlay Log` follows a Logger parameter along an axis that names
+  it in `logparam`. A relocated axis whose scaling confidence falls below
+  `code`, an axis with several operands, and an axis without a recorded operand
+  stay without live data. A three-dimensional table supports the overlay only
+  when both of its axes name a parameter. TunerPro XDF has no counterpart and
+  is unchanged by the declaration.
+- DTC records are checked against the exact stock descriptor and attribute
+  bytes. RomRaider receives coordinated native switches and TunerPro receives
+  atomic patches for individual records and declared groups; there is no
+  implicit all-DTC patch.
+- The map-switching projection reuses canonical Map 1 storage and adds only the
+  reserved Map 2 through Map 5 editor views declared by the current layout, and
+  the Rolling Launch projection exposes only validated configuration controls.
+  These editor-only copies create neither speculative canonical `Map` nodes nor
+  another ROM identity.
 - Generated counts are reported by the command rather than copied into this
   document.
 

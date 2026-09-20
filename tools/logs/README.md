@@ -393,5 +393,5 @@ CRC before it replaces the temporary output.
 ## Tests
 
 ```bash
-python3 -m unittest discover -s tools/logs/tests -v
+uv run pytest -q tools/logs/tests
 ```

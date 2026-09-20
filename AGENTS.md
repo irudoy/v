@@ -41,6 +41,22 @@ target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
 - Software gates complement static auditing and hardware validation; they do
   not replace either.
 
+## Gates and commits
+
+- `make check` validates tracked sources and projections, `make test` runs the
+  Python and pin-tracer contracts, and `make verify-firmware` runs the
+  repository-contained GNU SH-2E execution gate. `make verify` runs all three.
+- Run `make check` and the tests covering the changed subsystem before every
+  commit. Run `make verify` before committing a change to instruction bytes,
+  address profiles, or runtime allocation.
+- A version, count, or identity that a document publishes belongs under a gate
+  that reads it from the file the project executes. Add the gate with the fact.
+- Commit locally on `master` as soon as the gates covering a step pass, without
+  waiting for a separate instruction. Leave unrelated worktree content and
+  other sessions' changes unstaged.
+- Commit messages state the change itself in the present tense and carry no
+  agent, tool, model, or session attribution.
+
 ## Authorized project operations
 
 - Tracked Memgraph loaders and migrations may change project graph data or
@@ -53,17 +69,12 @@ target is the owned `23710-JK08A` ECU from a V36 Skyline 250GT.
 
 ## Memgraph backup
 
-- Check backup status only after a task changes Memgraph data or graph schema:
-
-  `python3 tools/memgraph/backup.py --status`
-
-- If the result says `due=true`, run:
-
-  `python3 tools/memgraph/backup.py --if-due`
-
-- Use `--force` only for an explicit user request for an immediate backup.
-- Do not run an automatic backup check for source, documentation, or other
-  local file changes that leave the graph unchanged.
+- Check the backup interval only after a task changes Memgraph data or graph
+  schema, and create the backup when the check reports one is due.
+- Do not run an automatic check for source, documentation, or other local file
+  changes that leave the graph unchanged.
+- Force an immediate backup only on an explicit user request.
+- The commands and the backup contract are in `tools/memgraph/README.md`.
 
 ## Working conventions
 
