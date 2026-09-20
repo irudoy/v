@@ -31,15 +31,21 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "6840dcb0ab44ed97e39f0ff1c5d6ea862442dd5ad99b67f34aa92f683dfe3c13"
+    "e5c7657bba8edc825333e5ee15c3577c2f8b43027bceb979fea17db5ad4d69d6"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 1723
-EXPECTED_COMPOSITION_WRITE_BYTES = 3484
-EXPECTED_INSTRUCTION_COUNT = 647
-EXPECTED_CODE_ENTRY_COUNT = 10
-EXPECTED_DYNAMIC_CASES = 62
+EXPECTED_COMPOSITION_CHANGED_BYTES = 1922
+EXPECTED_COMPOSITION_WRITE_BYTES = 3488
+EXPECTED_INSTRUCTION_COUNT = 720
+EXPECTED_CODE_ENTRY_COUNT = 11
+EXPECTED_DYNAMIC_CASES = 76
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
+# Simulator-only staging block of the knock evaluator stub inside the test RAM
+# window: destination address, 32-bit value, call count.
+EVALUATOR_STAGE_ADDRESS = 0x0100FF00
+EVALUATOR_STUB_CODE = bytes.fromhex(
+    "d105621253112232501270011102e4ffe5ffe6ff000be7ff"
+)
 TRAPA_VECTOR_ADDRESS = 0x00000100
 
 
@@ -104,8 +110,23 @@ def require_composition(layout, blobs):
     return result
 
 
+def knock_evaluator_stub(address):
+    """Build the simulator-only stand-in of the stock knock slice evaluator.
+
+    The stub stores the staged value at the staged destination, counts the
+    call, overwrites r0 through r7, and returns. The harness stages the
+    offset-binary metric of the evaluated channel, so a wrapper that reads the
+    channel state before the stock call observes the stale metric instead.
+    """
+    if address % 4:
+        raise VerificationError(
+            f"knock evaluator stub is not aligned at {address:#x}"
+        )
+    return EVALUATOR_STUB_CODE + EVALUATOR_STAGE_ADDRESS.to_bytes(4, "big")
+
+
 def install_stock_return_stubs(fixture, layout):
-    """Stub only the four external stock callees reached by this gate."""
+    """Stub only the five external stock callees reached by this gate."""
     hooks = layout.hook_by_key
     targets = {
         hooks["coherent_snapshot_call"].stock,
@@ -121,7 +142,14 @@ def install_stock_return_stubs(fixture, layout):
     for address in targets:
         stub = RETURN_ONE_STUB if address == 0x000C338A else RETURN_STUB
         fixture[address : address + len(stub)] = stub
-    return len(targets)
+    evaluator = hooks["knock_margin_latch"].stock
+    if evaluator != 0x0004A238 or evaluator in targets:
+        raise VerificationError(
+            f"knock evaluator stub target differs: {evaluator:#x}"
+        )
+    stub = knock_evaluator_stub(evaluator)
+    fixture[evaluator : evaluator + len(stub)] = stub
+    return len(targets) + 1
 
 
 def relocate_telemetry_ram_literals(fixture, parsed_by_unit):
@@ -261,8 +289,8 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         timeout=180,
     )
     marker = (
-        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=64 entries=10 "
-        "profiles=1 contexts=8 isr_rte=5"
+        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=78 entries=11 "
+        "profiles=1 contexts=10 isr_rte=5"
     )
     if marker not in result.stdout:
         raise VerificationError(

@@ -69,8 +69,8 @@ class TrcToMlgTest(unittest.TestCase):
         self.assertEqual(summary.telemetry_frames, 88)
         self.assertEqual(summary.mlg_records, 8)
         self.assertEqual(summary.bridge_records, 0)
-        self.assertEqual(summary.mlg_fields, 81)
-        self.assertEqual(validation.record_length, 324)
+        self.assertEqual(summary.mlg_fields, 87)
+        self.assertEqual(validation.record_length, 348)
         self.assertEqual(validation.data_records, 8)
         self.assertEqual(header[0], b"MLVLG\x00")
         expected_start = math.floor(

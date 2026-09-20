@@ -14,6 +14,7 @@
 #define STARTUP_WRAPPER 0x000d42f0U
 #define CAPTURE 0x000d4340U
 #define BUILD_BANK 0x000d4500U
+#define KNOCK_MARGIN_WRAPPER 0x000d4600U
 #define REQUEST_PAGE 0x000d4700U
 #define SLE1_ISR 0x000d4800U
 #define COMPLETION 0x000d4900U
@@ -21,6 +22,14 @@
 #define CONTROL_POLL 0x000d4ea0U
 #define KNOCK_COUNT 0xffff2142U
 #define KNOCK_MASK 0xffff2150U
+#define KNOCK_SELECTOR 0x00008b3dU
+#define KNOCK_CHANNEL_PRIMARY 0xffff11deU
+#define KNOCK_CHANNEL_ALTERNATE 0xffff2143U
+#define KNOCK_METRIC 0xffff21d8U
+#define KNOCK_THRESHOLD 0xffff2144U
+#define KNOCK_MARGIN_STATE 16U
+#define KNOCK_MARGIN_IDLE 32767U
+#define EVALUATOR_STAGE 0x0100ff00U
 #define TXPR1 0xffffd820U
 #define TXACK1 0xffffd830U
 #define ABACK1 0xffffd838U
@@ -50,10 +59,11 @@ extern uint32_t invoke_r0(uint32_t entry);
 extern void invoke_exception_probe(uint32_t *registers);
 
 static size_t case_count;
+static uint8_t margin_snapshot[12];
 
 static const uint8_t configuration[16] = {
-    0x43, 0x54, 0x02, 0x01, 0x04, 0x0b, 0x01, 0x00,
-    0x06, 0xf0, 0xdb, 0x63, 0x54, 0x45, 0x4c, 0x32,
+    0x43, 0x54, 0x02, 0x01, 0x05, 0x0b, 0x01, 0x00,
+    0x06, 0xf0, 0xe1, 0x44, 0x54, 0x45, 0x4c, 0x32,
 };
 
 static volatile uint8_t *ram_pointer(uint32_t original)
@@ -103,6 +113,14 @@ static void write_u16(volatile uint8_t *target, uint16_t value)
     target[1] = (uint8_t)value;
 }
 
+static void write_u32(volatile uint8_t *target, uint32_t value)
+{
+    target[0] = (uint8_t)(value >> 24);
+    target[1] = (uint8_t)(value >> 16);
+    target[2] = (uint8_t)(value >> 8);
+    target[3] = (uint8_t)value;
+}
+
 static int fail_value(
     const char *name, const char *field, uint32_t actual, uint32_t expected)
 {
@@ -145,7 +163,7 @@ static void seed_sources(void)
 {
     size_t index;
 
-    for (index = 0; index < 111; ++index) {
+    for (index = 0; index < 123; ++index) {
         uint32_t address = read_u32(rom_pointer(TABLE + index * 4));
         volatile uint8_t *target =
             (volatile uint8_t *)(uintptr_t)address;
@@ -220,7 +238,9 @@ static int verify_bank(const char *name, uint32_t bank, uint8_t context)
     for (offset = 0; offset < 6; ++offset) {
         uint32_t source = read_u32(
             rom_pointer(TABLE + (63 + context * 6 + offset) * 4));
-        uint8_t expected = ((volatile uint8_t *)(uintptr_t)source)[0];
+        uint8_t expected = context == 4
+            ? margin_snapshot[offset]
+            : ((volatile uint8_t *)(uintptr_t)source)[0];
         if (actual[74 + offset] != expected)
             return fail_value(
                 name, "context_9_source", actual[74 + offset], expected);
@@ -231,8 +251,10 @@ static int verify_bank(const char *name, uint32_t bank, uint8_t context)
         return fail_value(name, "context_10_tag", actual[81], context);
     for (offset = 0; offset < 6; ++offset) {
         uint32_t source = read_u32(
-            rom_pointer(TABLE + (87 + context * 6 + offset) * 4));
-        uint8_t expected = ((volatile uint8_t *)(uintptr_t)source)[0];
+            rom_pointer(TABLE + (93 + context * 6 + offset) * 4));
+        uint8_t expected = context == 4
+            ? margin_snapshot[6 + offset]
+            : ((volatile uint8_t *)(uintptr_t)source)[0];
         if (actual[82 + offset] != expected)
             return fail_value(
                 name, "context_10_source", actual[82 + offset], expected);
@@ -312,10 +334,14 @@ static int run_wrapper_cases(void)
     fill_bytes(ram_pointer(0xffff5df0U), 0x120, 0xa5);
     (void)invoke_r4(STARTUP_WRAPPER, 0);
     for (index = 0; index < TELEMETRY_ACTIVE_SIZE; ++index) {
-        if (ram_pointer(TELEMETRY_STATE)[index] != 0)
+        uint8_t expected = 0;
+
+        if (index >= KNOCK_MARGIN_STATE && index < KNOCK_MARGIN_STATE + 12)
+            expected = (index & 1U) ? 0xff : 0x7f;
+        if (ram_pointer(TELEMETRY_STATE)[index] != expected)
             return fail_value(
                 "startup", "active_clear",
-                ram_pointer(TELEMETRY_STATE)[index], 0);
+                ram_pointer(TELEMETRY_STATE)[index], expected);
     }
     for (index = 0; index < 16; ++index) {
         if (ram_pointer(0xffff5df0U)[index] != 0xa5)
@@ -382,10 +408,10 @@ static void mutate_configuration(enum config_mutation mutation)
         config[4] = 0;
         break;
     case CONFIG_PROFILE_PREVIOUS:
-        config[4] = 3;
+        config[4] = 4;
         break;
     case CONFIG_PROFILE_HIGH:
-        config[4] = 5;
+        config[4] = 6;
         break;
     case CONFIG_PAGE_COUNT:
         config[5] = 10;
@@ -541,7 +567,7 @@ static int run_control_cases(void)
 
     count_case();
     reset_case();
-    rom_pointer(CONFIG)[4] = 3;
+    rom_pointer(CONFIG)[4] = 4;
     seed_control_command(start_command, 8);
     (void)invoke_r4(CONTROL_POLL, 0);
     if (ram_pointer(TELEMETRY_STATE)[11] != 0)
@@ -670,19 +696,39 @@ static int run_direct_entry_cases(void)
     volatile uint8_t *state;
     uint8_t context;
 
-    for (context = 0; context < 4; ++context) {
+    for (context = 0; context < 5; ++context) {
+        size_t index;
+
         count_case();
         reset_case();
         state = ram_pointer(TELEMETRY_STATE);
         state[6] = context;
         write_u16(state + 8, (uint16_t)(0x1000U + context));
+        for (index = 0; index < 12; ++index) {
+            state[KNOCK_MARGIN_STATE + index] =
+                (uint8_t)(0x91U + index * 13U);
+            margin_snapshot[index] = state[KNOCK_MARGIN_STATE + index];
+        }
         (void)invoke_r4(BUILD_BANK, (uint32_t)(uintptr_t)ram_pointer(BANK_A));
         if (!verify_bank("direct-build", BANK_A, context))
             return 0;
-        if (state[6] != (uint8_t)((context + 1) & 3))
+        if (state[6] != (uint8_t)((context + 1) % 5))
             return fail_value(
                 "direct-build", "context_next", state[6],
-                (uint8_t)((context + 1) & 3));
+                (uint8_t)((context + 1) % 5));
+        for (index = 0; index < 12; ++index) {
+            uint8_t expected = margin_snapshot[index];
+
+            if (context == 4)
+                expected = (index & 1U) ? 0xff : 0x7f;
+            if (state[KNOCK_MARGIN_STATE + index] != expected)
+                return fail_value(
+                    "direct-build", "margin_rearm",
+                    state[KNOCK_MARGIN_STATE + index], expected);
+        }
+        if (state[KNOCK_MARGIN_STATE - 1] != 0
+                || state[KNOCK_MARGIN_STATE + 12] != 0)
+            return fail_value("direct-build", "margin_guard", 1, 0);
     }
 
     count_case();
@@ -718,6 +764,130 @@ static int run_direct_entry_cases(void)
     if (!expect_bytes(
             "request-b", "mailbox", ram_pointer(MAILBOX_DATA),
             ram_pointer(BANK_B) + 32, 8))
+        return 0;
+    return 1;
+}
+
+static int run_margin_case(
+    const char *name,
+    int selector,
+    uint8_t primary,
+    uint8_t alternate,
+    uint8_t channel,
+    uint16_t threshold,
+    uint32_t metric,
+    uint16_t before,
+    uint16_t expected)
+{
+    volatile uint8_t *state;
+    volatile uint8_t *stage = (volatile uint8_t *)(uintptr_t)EVALUATOR_STAGE;
+    uint8_t stock_selector = rom_pointer(KNOCK_SELECTOR)[0];
+    size_t index;
+
+    count_case();
+    reset_case();
+    state = ram_pointer(TELEMETRY_STATE);
+    for (index = 0; index < 6; ++index) {
+        write_u16(state + KNOCK_MARGIN_STATE + index * 2, before);
+        write_u16(ram_pointer(KNOCK_THRESHOLD) + index * 2, 0);
+        write_u32(ram_pointer(KNOCK_METRIC) + index * 4, 0xffffffffU);
+    }
+    if (selector >= 0)
+        rom_pointer(KNOCK_SELECTOR)[0] = (uint8_t)selector;
+    ram_pointer(KNOCK_CHANNEL_PRIMARY)[0] = primary;
+    ram_pointer(KNOCK_CHANNEL_ALTERNATE)[0] = alternate;
+    if (channel >= 1 && channel <= 6) {
+        write_u16(
+            ram_pointer(KNOCK_THRESHOLD) + (channel - 1U) * 2, threshold);
+        write_u32(
+            stage,
+            (uint32_t)(uintptr_t)(
+                ram_pointer(KNOCK_METRIC) + (channel - 1U) * 4));
+    } else {
+        write_u32(stage, EVALUATOR_STAGE + 12U);
+    }
+    write_u32(stage + 4, metric);
+    write_u32(stage + 8, 0);
+    (void)invoke_r4(KNOCK_MARGIN_WRAPPER, 0);
+    rom_pointer(KNOCK_SELECTOR)[0] = stock_selector;
+    if (read_u32(stage + 8) != 1)
+        return fail_value(name, "stock_calls", read_u32(stage + 8), 1);
+    for (index = 0; index < 6; ++index) {
+        uint16_t actual = read_u16(state + KNOCK_MARGIN_STATE + index * 2);
+        uint16_t wanted = index + 1U == channel ? expected : before;
+
+        if (actual != wanted)
+            return fail_value(name, "latch", actual, wanted);
+    }
+    if (state[KNOCK_MARGIN_STATE - 1] != 0
+            || state[KNOCK_MARGIN_STATE + 12] != 0)
+        return fail_value(name, "guard", 1, 0);
+    return 1;
+}
+
+/*
+ * The simulator-only evaluator stub stores the staged offset-binary metric
+ * before it returns, so every expected latch proves that the wrapper reads
+ * the channel state after the stock call. The stale metric seeded by the case
+ * would otherwise saturate the latch at -32768.
+ */
+static int run_knock_margin_cases(void)
+{
+    uint8_t stock_selector = rom_pointer(KNOCK_SELECTOR)[0];
+    uint8_t stock_primary = (stock_selector & 8U) ? 2 : 5;
+    uint8_t stock_alternate = (stock_selector & 8U) ? 5 : 2;
+
+    if (!run_margin_case(
+            "margin-channel-zero", 0, 0, 3, 0, 0, 0x80000000U,
+            KNOCK_MARGIN_IDLE, KNOCK_MARGIN_IDLE))
+        return 0;
+    if (!run_margin_case(
+            "margin-channel-high", 0, 7, 3, 0, 0, 0x80000000U,
+            KNOCK_MARGIN_IDLE, KNOCK_MARGIN_IDLE))
+        return 0;
+    if (!run_margin_case(
+            "margin-primary-positive", 0, 1, 4, 1, 1000,
+            0x80000000U + 400U, KNOCK_MARGIN_IDLE, 600))
+        return 0;
+    if (!run_margin_case(
+            "margin-alternate-boundary", 8, 2, 6, 6, 5000,
+            0x80000000U + 5000U, KNOCK_MARGIN_IDLE, 0))
+        return 0;
+    if (!run_margin_case(
+            "margin-stock-selector", -1, stock_primary, stock_alternate, 5,
+            900, 0x80000000U - 100U, KNOCK_MARGIN_IDLE, 1000))
+        return 0;
+    if (!run_margin_case(
+            "margin-exceeded", 0, 3, 1, 3, 1000,
+            0x80000000U + 1500U, 600, (uint16_t)-500))
+        return 0;
+    if (!run_margin_case(
+            "margin-exceeded-saturated", 0, 4, 1, 4, 0,
+            0xffffffffU, (uint16_t)-500, (uint16_t)-32768))
+        return 0;
+    if (!run_margin_case(
+            "margin-exceeded-edge", 8, 1, 4, 4, 0,
+            0x80000000U + 32767U, (uint16_t)-500, (uint16_t)-32767))
+        return 0;
+    if (!run_margin_case(
+            "margin-keeps-lower", 0, 2, 1, 2, 1000,
+            0x80000000U + 400U, 100, 100))
+        return 0;
+    if (!run_margin_case(
+            "margin-takes-lower", 8, 1, 5, 5, 1000,
+            0x80000000U + 900U, 600, 100))
+        return 0;
+    if (!run_margin_case(
+            "margin-signed-keep", 0, 6, 1, 6, 1000,
+            0x80000000U + 400U, (uint16_t)-500, (uint16_t)-500))
+        return 0;
+    if (!run_margin_case(
+            "margin-signed-take", 0, 6, 1, 6, 1000,
+            0x80000000U + 2000U, (uint16_t)-500, (uint16_t)-1000))
+        return 0;
+    if (!run_margin_case(
+            "margin-wide-positive", 0, 1, 2, 1, 65535,
+            0U, 600, 600))
         return 0;
     return 1;
 }
@@ -940,6 +1110,8 @@ int main(void)
         return 1;
     if (!run_direct_entry_cases())
         return 1;
+    if (!run_knock_margin_cases())
+        return 1;
     if (!run_completion_cases())
         return 1;
     if (!run_abort_cases())
@@ -947,8 +1119,8 @@ int main(void)
     if (!run_isr_cases())
         return 1;
     printf(
-        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=%lu entries=10 "
-        "profiles=1 contexts=8 isr_rte=5\n",
+        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=%lu entries=11 "
+        "profiles=1 contexts=10 isr_rte=5\n",
         (unsigned long)case_count);
     return 0;
 }

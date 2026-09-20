@@ -122,7 +122,7 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
         self.assertEqual(summary.event_records, 8)
         self.assertEqual(summary.bridge_records, 0)
         self.assertEqual(validation.data_records, 8)
-        self.assertEqual(validation.fields, 81)
+        self.assertEqual(validation.fields, 87)
         self.assertEqual(header[2], 1_776_000_000)
         names = [name for _, name in fields]
         self.assertIn("Vehicle speed", names)

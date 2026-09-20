@@ -61,6 +61,12 @@ RAW_FIELD_DISPLAY = {
     "knock_surface_state": ("Knock surface state", "raw", 0, "Knock"),
     "knock_count_latched": ("Knock interval count", "", 0, "Knock"),
     "knock_channel_mask_latched": ("Knock channel mask", "raw", 0, "Knock"),
+    **{
+        f"knock_margin_min_ch{channel}_raw": (
+            f"Knock margin ch {channel}", "raw", 0, "Knock"
+        )
+        for channel in range(1, 7)
+    },
     "app1_raw": ("APP 1", "V", 3, "Throttle"),
     "app2_raw": ("APP 2", "V", 3, "Throttle"),
     "tps_b1_raw": ("TPS bank 1", "V", 3, "Throttle"),

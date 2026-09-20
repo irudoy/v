@@ -227,7 +227,7 @@ class BuildRomTest(unittest.TestCase):
                     result.rolling_instruction_count,
                     872 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 878,
                 )
-                self.assertEqual(result.telemetry_instruction_count, 617)
+                self.assertEqual(result.telemetry_instruction_count, 690)
                 self.assertEqual(
                     target.map_layout.variant,
                     (

@@ -139,6 +139,21 @@ Rolling Launch wraps the JK78C final-mask coordinator without replacing stock
 inhibit contributions. Telemetry uses mailbox 26 and a register-preserving
 completion wrapper that tail-chains to the complete stock ISR.
 
+Every telemetry target binds the knock margin wrapper to its own slice
+evaluator through hook `knock_margin_latch`, the only literal of that
+evaluator, and reads the target selector byte, both channel bytes, the metric
+array, and the threshold array through profile symbols. The wrapper tests
+selector bit 3 at run time, so one source serves the stock primary selection
+of JK08A and the stock alternate selection of the other targets:
+
+| Target | Evaluator | Literal | Selector byte and stock value | Channel primary, alternate | Metric base | Threshold base |
+| --- | ---: | ---: | --- | --- | ---: | ---: |
+| JK08A | `0x04A238` | `0x04A9C0` | `0x8B3D` = `0x82` | `FFFF11DE`, `FFFF2143` | `FFFF21D8` | `FFFF2144` |
+| JK00C | `0x04B27C` | `0x04BA04` | `0x8B70` = `0x8A` | `FFFF11EE`, `FFFF21B3` | `FFFF2248` | `FFFF21B4` |
+| JK00D | `0x04B280` | `0x04BA08` | `0x8B71` = `0x8A` | `FFFF11EE`, `FFFF21BB` | `FFFF2250` | `FFFF21BC` |
+| JK78C | `0x063AC8` | `0x06429C` | `0x8965` = `0xBA` | `FFFF11C8`, `FFFF2097` | `FFFF212C` | `FFFF2098` |
+| 1ND0A, 1ND3B | `0x06EA18` | `0x06F17C` | `0x8A2B` = `0xBA` | `FFFE81D6`, `FFFE9137` | `FFFE91CC` | `FFFE9138` |
+
 `runtime_targets.py` renders every target source through explicit stock and RAM
 bindings. `runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
 the capability-specific stage hashes for each exact relocated stock image.

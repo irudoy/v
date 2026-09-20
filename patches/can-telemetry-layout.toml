@@ -9,7 +9,7 @@ rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 base_composition_sha256 = "d15c8c3c3e0a9232218612f2a914e328ec9f63041d50e6a8b763262fd00f554c"
-expected_composition_sha256 = "6840dcb0ab44ed97e39f0ff1c5d6ea862442dd5ad99b67f34aa92f683dfe3c13"
+expected_composition_sha256 = "e5c7657bba8edc825333e5ee15c3577c2f8b43027bceb979fea17db5ad4d69d6"
 free_rom_start = 0x000D4280
 free_rom_end = 0x000E1C2A
 owned_rom_start = 0x000D4280
@@ -68,8 +68,14 @@ entry = 0x000D4340
 [[code_region]]
 key = "build_bank"
 start = 0x000D4500
-end = 0x000D4700
+end = 0x000D4600
 entry = 0x000D4500
+
+[[code_region]]
+key = "knock_margin_wrapper"
+start = 0x000D4600
+end = 0x000D4700
+entry = 0x000D4600
 
 [[code_region]]
 key = "request_page"
@@ -108,9 +114,9 @@ start = 0x000D4280
 end = 0x000D4340
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "0afa4bede57778db5f6584507641c3d70b9d2361940ec20d04ed492dcc86ee1d"
-instruction_count = 41
-data_bytes = 36
+expected_sha256 = "0f64789960fd5225cd8935da8315c29e23d29a84b8e5897bfd33500fbf6e5009"
+instruction_count = 48
+data_bytes = 42
 code_regions = ["main_wrapper", "knock_wrapper", "startup_wrapper"]
 
 [[assembly_unit]]
@@ -120,10 +126,10 @@ start = 0x000D4340
 end = 0x000D4800
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "81280c98ecec16b951ea9c509861c93f1bb5ac9266280c32ffa7ae2c4378294c"
-instruction_count = 239
-data_bytes = 64
-code_regions = ["capture", "build_bank", "request_page"]
+expected_sha256 = "ebf01f150d3896804cf944e4639677553cc4f5c5b99b1fadea0d54aeaf957f4d"
+instruction_count = 305
+data_bytes = 100
+code_regions = ["capture", "build_bank", "knock_margin_wrapper", "request_page"]
 
 [[assembly_unit]]
 key = "completion"
@@ -144,9 +150,9 @@ start = 0x000D4C00
 end = 0x000D4E00
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "cac85d0261a042e24352a5a7d399ce2864c5e9dd705f821ce47201a2f3f46e82"
+expected_sha256 = "c997707ccaac7ae62d5a6580c129a802600736d50be9978886aeabb9760fbb04"
 instruction_count = 0
-data_bytes = 444
+data_bytes = 492
 code_regions = []
 
 [[assembly_unit]]
@@ -156,7 +162,7 @@ start = 0x000D4E10
 end = 0x000D5000
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "74e4ceea48257b086d13ab449f0e1e0f502c86c3562b1a73096b0db5f94050cf"
+expected_sha256 = "ef58a6196f4bff0d2eb60eb9e47d1754cb8930a4833c6b3911eeddaeb94cb01d"
 instruction_count = 152
 data_bytes = 80
 code_regions = ["hcan1_init_wrapper", "control_poll"]
@@ -178,12 +184,20 @@ replacement = 0x000D42B0
 purpose = "Latch the completed knock interval before the displaced coordinator consumes and clears its count."
 
 [[hook]]
+key = "knock_margin_latch"
+address = 0x0004A9C0
+width = 4
+stock = 0x0004A238
+replacement = 0x000D4600
+purpose = "Run the stock knock slice evaluator and latch the per-channel minimum of threshold minus metric from the values it leaves in RAM."
+
+[[hook]]
 key = "startup_state_clear"
 address = 0x00027D28
 width = 4
 stock = 0x000D38A0
 replacement = 0x000D42F0
-purpose = "Clear active telemetry RAM before continuing the existing Rolling Launch and map-switching startup chain."
+purpose = "Clear active telemetry RAM and arm the knock margin latches before continuing the existing Rolling Launch and map-switching startup chain."
 
 [[hook]]
 key = "hcan1_sle1_vector"

@@ -230,6 +230,12 @@ PANELS = (
         Metric("knock_surface_mode", "Active hot surface"),
         Metric("knock_count_latched", "Knock interval count", "", 0),
         Metric("knock_channel_mask_latched", "Knock channel mask", "", 0, True),
+        Metric("knock_margin_min_ch1_raw", "Knock margin ch 1", "raw", 0),
+        Metric("knock_margin_min_ch2_raw", "Knock margin ch 2", "raw", 0),
+        Metric("knock_margin_min_ch3_raw", "Knock margin ch 3", "raw", 0),
+        Metric("knock_margin_min_ch4_raw", "Knock margin ch 4", "raw", 0),
+        Metric("knock_margin_min_ch5_raw", "Knock margin ch 5", "raw", 0),
+        Metric("knock_margin_min_ch6_raw", "Knock margin ch 6", "raw", 0),
     )),
     ("Temperatures and context", (
         Metric("iat_deg_c", "Intake air", "degC", 0),

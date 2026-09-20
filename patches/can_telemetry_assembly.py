@@ -25,6 +25,7 @@ SOURCE_LABELS = {
     "startup_wrapper": "telemetry_startup_wrapper",
     "capture": "telemetry_capture",
     "build_bank": "telemetry_build_bank",
+    "knock_margin_wrapper": "telemetry_knock_margin_wrapper",
     "request_page": "telemetry_request_page",
     "sle1_isr": "telemetry_sle1_isr",
     "completion": "telemetry_handle_completion",
@@ -115,6 +116,7 @@ def _expected_long_literals():
             "telemetry_knock_stock": 0x000493E8,
             "telemetry_startup_state": 0xFFFF5E00,
             "telemetry_startup_stock": 0x000D38A0,
+            "telemetry_startup_margin_latch": 0xFFFF5E10,
         },
         "capture": {
             "telemetry_capture_config": 0x000D4E00,
@@ -125,7 +127,15 @@ def _expected_long_literals():
             "telemetry_build_state": 0xFFFF5E00,
             "telemetry_page_table": 0x000D4C00,
             "telemetry_context_page_9_table": 0x000D4CFC,
-            "telemetry_context_page_10_table": 0x000D4D5C,
+            "telemetry_context_page_10_table": 0x000D4D74,
+            "telemetry_margin_stock": 0x0004A238,
+            "telemetry_margin_selector": 0x00008B3D,
+            "telemetry_margin_channel_alternate": 0xFFFF2143,
+            "telemetry_margin_channel_primary": 0xFFFF11DE,
+            "telemetry_margin_metric": 0xFFFF21D8,
+            "telemetry_margin_threshold": 0xFFFF2144,
+            "telemetry_margin_bias": 0x80000000,
+            "telemetry_margin_latch": 0xFFFF5E10,
             "telemetry_request_state": 0xFFFF5E00,
             "telemetry_request_bank_a_literal": 0xFFFF5E20,
             "telemetry_request_bank_b": 0xFFFF5E78,
@@ -180,16 +190,26 @@ def _validate_wrappers(parsed):
         raise ValueError("main telemetry wrapper ABI differs")
     if texts.count("jsr @r0") != 5 or texts.count("lds.l @r15+,pr") != 3:
         raise ValueError("wrapper call or PR preservation count differs")
-    if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 1:
-        raise ValueError("startup clear loop differs")
+    if texts.count("mov.l r0,@r1") != 1 or texts.count("dt r2") != 2:
+        raise ValueError("startup clear or knock margin arm loop differs")
     if "mov #0x40,r2" not in texts:
         raise ValueError("startup does not clear exactly 256 active RAM bytes")
+    clear = texts.index("mov.l r0,@r1")
+    arm = [
+        "mov.l @(telemetry_startup_margin_latch,pc),r1",
+        "mov.w @(telemetry_startup_margin_idle,pc),r0",
+        "mov #0x6,r2", "mov.w r0,@r1", "add 0x2,r1", "dt r2",
+        "bf telemetry_startup_margin_loop",
+        "mov.l @(telemetry_startup_stock,pc),r0",
+    ]
+    if texts[clear + 4 : clear + 4 + len(arm)] != arm:
+        raise ValueError("startup does not arm exactly six knock margin latches")
 
 
 def _validate_capture(parsed):
     texts = _texts(parsed)
-    if texts[0] != "sts.l pr,@-r15" or texts.count("lds.l @r15+,pr") != 1:
-        raise ValueError("capture does not preserve PR")
+    if texts[0] != "sts.l pr,@-r15" or texts.count("lds.l @r15+,pr") != 2:
+        raise ValueError("capture or knock margin wrapper does not preserve PR")
     if texts.count("bsr telemetry_build_bank") != 2:
         raise ValueError("capture bank-build publication paths differ")
     if texts.count("bsr telemetry_request_page") != 1:
@@ -206,14 +226,42 @@ def _validate_capture(parsed):
             raise ValueError(
                 f"capture configuration guard lacks {required}"
             )
-    if texts.count("mov.b @r4+,r0") != 1 or texts.count("dt r2") != 4:
+    if texts.count("mov.b @r4+,r0") != 1 or texts.count("dt r2") != 5:
         raise ValueError("bounded snapshot or mailbox copy loops differ")
+    rearm = [
+        "mov r6,r0", "cmp/eq 0x4,r0", "bf telemetry_build_context_advance",
+        "mov.w @(telemetry_build_margin_idle,pc),r1", "mov r3,r5",
+        "add 0x10,r5", "mov #0x6,r2", "mov.w r1,@r5", "add 0x2,r5", "dt r2",
+        "bf telemetry_build_margin_rearm_loop", "add 0x1,r6",
+    ]
+    if texts.count("mov.w r1,@r5") != 1:
+        raise ValueError("knock margin rearm loop differs")
+    start = texts.index("mov.w r1,@r5") - 7
+    if texts[start : start + len(rearm)] != rearm:
+        raise ValueError("knock margin rearm is not bound to context 4")
+    wrapper = texts.index("sts.l pr,@-r15", 1)
+    if texts[wrapper : wrapper + 4] != [
+        "sts.l pr,@-r15", "mov.l @(telemetry_margin_stock,pc),r0",
+        "jsr @r0", "nop",
+    ]:
+        raise ValueError("knock margin wrapper does not run stock first")
+    if texts.count("jsr @r0") != 1 or texts.count("sts.l pr,@-r15") != 2:
+        raise ValueError("knock margin wrapper call graph differs")
+    if (
+        texts.count("mov.w r2,@(r0,r1)") != 1
+        or texts.count("cmp/hi r2,r7") != 1
+        or texts.count("cmp/hs r5,r2") != 1
+    ):
+        raise ValueError("knock margin comparison or latch write differs")
     for required in (
         "telemetry_capture_due", "telemetry_capture_busy_bank",
         "telemetry_capture_idle", "telemetry_build_page_loop",
         "telemetry_build_context_page_9_byte_loop",
         "telemetry_build_context_page_10_byte_loop",
         "telemetry_request_copy_loop",
+        "telemetry_margin_primary_channel", "telemetry_margin_exceeded",
+        "telemetry_margin_negative", "telemetry_margin_compare",
+        "telemetry_margin_return",
     ):
         if required not in parsed.labels:
             raise ValueError(f"capture lacks {required}")

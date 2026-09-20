@@ -59,6 +59,27 @@ on the established metric path.
 The event count influences the timing-state coordinator described in
 `JK08A.ignition-state.md`. It is not itself a commanded retard value.
 
+## Margin telemetry
+
+The evaluator leaves both comparison operands in RAM: the offset-binary metric
+of the evaluated channel at `int32[0xFFFF21D8 + 4 * (channel - 1)]` and its
+threshold at `uint16[0xFFFF2144 + 2 * (channel - 1)]`. The stock comparison is
+`threshold + 0x80000000 < metric` on unsigned 32-bit values. Every evaluation
+overwrites the pair of its channel, so a pointer sampled at the snapshot rate
+misses the evaluations between two snapshots.
+
+The custom CAN telemetry wraps the evaluator behind its only reference, literal
+`0x0004A9C0` in `FUN_0004A8D4`. The caller reads no register that the evaluator
+leaves, so the wrapper calls the stock evaluator first and then repeats the
+channel selection and the comparison on the stored operands. It keeps the
+per-channel minimum of `threshold - metric` as a signed word at
+`0xFFFF5E10 + 2 * (channel - 1)`. An exceedance yields a negative margin
+limited at `-32768`. Context tag 4 of the `tuning` profile publishes the six
+minimums and rearms them with `32767`, which stands for an interval without an
+evaluation of the channel or a margin of 32767 or more. A row of `0xFFFF`
+thresholds therefore reports `32767` until its metric exceeds 32768 evaluator
+units. `patches/can-telemetry.md` defines the wire contract.
+
 ## Unreferenced bank at 0x10F8E
 
 `0x10F8E..0x1104D` is another 192-byte, 6x16 `uint16` array. It resembles the

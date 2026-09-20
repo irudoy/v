@@ -1,6 +1,6 @@
 // Generated from can-telemetry-profile.toml. Do not edit.
 // The capture loop consumes 63 fixed page-byte pointers followed by
-// two sets of four six-byte context pointer groups.
+// two sets of five six-byte context pointer groups.
 
 .org 0x000D4C00
 telemetry_page_source_table:
@@ -19,9 +19,11 @@ telemetry_context_page_9_source_table:
 .long 0xFFFF22DC, 0xFFFF22DD, 0xFFFF22DE, 0xFFFF22DF, 0xFFFF2440, 0xFFFF2441
 .long 0xFFFF2302, 0xFFFF2303, 0xFFFF2304, 0xFFFF2305, 0xFFFF2023, 0xFFFF564C
 .long 0x000D4E02, 0x000D4E04, 0x000D4E0A, 0x000D4E0B, 0xFFFF5E0E, 0xFFFF5E0F
+.long 0xFFFF5E10, 0xFFFF5E11, 0xFFFF5E12, 0xFFFF5E13, 0xFFFF5E14, 0xFFFF5E15
 
 telemetry_context_page_10_source_table:
 .long 0xFFFF4544, 0xFFFF1188, 0xFFFF2306, 0xFFFF2307, 0xFFFF5648, 0xFFFF5649
 .long 0xFFFF1AAC, 0xFFFF1AAD, 0xFFFF1AAE, 0xFFFF1AAF, 0xFFFF23B4, 0xFFFF23B5
 .long 0xFFFF2780, 0xFFFF2781, 0xFFFF2782, 0xFFFF2783, 0xFFFF45A0, 0xFFFF45A1
 .long 0xFFFF275E, 0xFFFF275F, 0xFFFF2864, 0xFFFF2865, 0xFFFF45A2, 0xFFFF45A3
+.long 0xFFFF5E16, 0xFFFF5E17, 0xFFFF5E18, 0xFFFF5E19, 0xFFFF5E1A, 0xFFFF5E1B

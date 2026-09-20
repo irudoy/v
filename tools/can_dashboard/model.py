@@ -51,6 +51,14 @@ DASHBOARD_STATE_CODES = {
     0x72: "ASCD STATE 7",
 }
 
+# A knock margin latch that reports the idle value saw no evaluation of its
+# channel between two captures of its context, or a margin that the signed
+# word cannot hold. The model keeps the last evaluated margin of that channel.
+KNOCK_MARGIN_IDLE = 0x7FFF
+KNOCK_MARGIN_FIELDS = tuple(
+    f"knock_margin_min_ch{channel}_raw" for channel in range(1, 7)
+)
+
 DASHBOARD_CALIBRATIONS = {
     "final_timing_raw": can_telemetry.Calibration("timing_command_deg"),
     "knock_timing_state_raw": can_telemetry.Calibration(
@@ -205,8 +213,13 @@ class DashboardModel:
         self._snapshot_times.append(now)
         self.schema_verified = snapshot.schema_verified
         self.context_name = snapshot.context_name
-        self.raw.update(snapshot.fields)
-        for name in snapshot.fields:
+        fields = {
+            name: value
+            for name, value in snapshot.fields.items()
+            if name not in KNOCK_MARGIN_FIELDS or value != KNOCK_MARGIN_IDLE
+        }
+        self.raw.update(fields)
+        for name in fields:
             self.updated_at[name] = now
         if self.schema_verified:
             retained = replace(snapshot, fields=dict(self.raw), schema_verified=True)
@@ -304,6 +317,9 @@ class DemoGenerator:
             (item["page"], item["tag"]): item
             for item in self.profile["contexts"]
         }
+        self.context_count = 1 + max(
+            tag for _page, tag in self.context_by_page_and_tag
+        )
 
     @staticmethod
     def _encode(payload, offset, field, value):
@@ -397,6 +413,16 @@ class DemoGenerator:
             "secondary_tps_b1_raw": 280 + 2450 * wave,
             "secondary_tps_b2_raw": 290 + 2430 * wave,
             "af_adjustment_b2_raw": 0x4000 + 380 * math.sin(elapsed + 0.2),
+            **{
+                name: (
+                    KNOCK_MARGIN_IDLE
+                    if index == 5 and wave < 0.5
+                    else -120 - 40 * index
+                    if index == 2 and wave > 0.94
+                    else 900 - 650 * wave + 35 * index
+                )
+                for index, name in enumerate(KNOCK_MARGIN_FIELDS)
+            },
         }
 
     def group(self, tick, elapsed=None):
@@ -413,7 +439,7 @@ class DemoGenerator:
                 field,
                 values[field["name"]],
             )
-        context_tag = (tick - 1) & 0x03
+        context_tag = (tick - 1) % self.context_count
         for page in (9, 10):
             pages[page][1] = context_tag
             offset = 2

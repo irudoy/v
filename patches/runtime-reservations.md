@@ -28,7 +28,7 @@ silently available to a patch.
 
 CAN telemetry schema 2 uses the complete active 256-byte RAM allocation. Its
 two 88-byte frame banks end at `0xFFFF5ED0`; the remaining active bytes contain
-state, event, and cleared reserve records. The generated 444-byte pointer table
+state, event, and cleared reserve records. The generated 492-byte pointer table
 fits `0x000D4C00..0x000D4E00`, and the 16-byte configuration remains at
 `0x000D4E00`. The adjacent future ROM and RAM ranges remain erased and are not
 part of the schema 2 write set.

@@ -90,6 +90,7 @@ rolling_symbol,stock_ignition_consumer,0002a892,0002e464,,,mapped,Final ignition
 rolling_symbol,fuel_cut_coordinator,,000760cc,,,target-specific,Complete recovered function aggregates stock conditions before its sole final-mask store
 can_hook,coherent_snapshot_call,00028090,0002fe08,00020cf4,,mapped,Caller literal binds the coherent snapshot boundary
 can_hook,knock_interval_latch,00021a70,00022184,0006d948,,target-specific,Entry 75 of the periodic task list at 0x22058 is the only literal of the target knock coordinator that consumes and clears the event count
+can_hook,knock_margin_latch,0004a9c0,0006f17c,0006ea18,,mapped,Literal 0x6f17c is the only reference of the target slice evaluator and its caller sets every register it reads after the call
 can_hook,startup_state_clear,00027d28,0002b398,00030810,,mapped,Telemetry clear can chain from the startup literal
 can_hook,hcan1_sle1_vector,000203a0,000203a0,0011b334,,mapped,SLE1 vector stores the complete stock ISR entry
 can_hook,hcan1_primary_init,0002d7fc,00031ce4,0011363c,,mapped,Primary HCAN1 caller literal binds the initializer
@@ -98,6 +99,11 @@ can_symbol,coherent_snapshot,00020dfe,00020cf4,,,mapped,Exact target snapshot fu
 can_symbol,knock_function,000493e8,0006d948,,,target-specific,Target coordinator reads the saturating event count at 0x6dede and 0x6df20 and clears it at 0x6df4a
 can_symbol,knock_count,ffff2142,fffe9136,,,mapped,Target knock event function updates this saturating counter
 can_symbol,knock_mask,ffff2150,fffe9144,,,mapped,Target knock event function sets and clears this channel mask
+can_symbol,knock_selector_config,00008b3d,00008a2b,,,mapped,Target evaluator tests bit 3 of this byte and stock value 0xBA selects the alternate channel byte
+can_symbol,knock_channel_primary,ffff11de,fffe81d6,,,mapped,Target evaluator reads this channel byte while selector bit 3 is clear
+can_symbol,knock_channel_alternate,ffff2143,fffe9137,,,mapped,Target evaluator reads this channel byte while selector bit 3 is set
+can_symbol,knock_metric_base,ffff21d8,fffe91cc,,,mapped,Target evaluator stores the offset-binary metric of channel n at base plus 4 * (n - 1)
+can_symbol,knock_threshold_base,ffff2144,fffe9138,,,mapped,Target threshold lookup stores the threshold of channel n at base plus 2 * (n - 1)
 can_symbol,hcan1_init,000c338a,0011363c,,,mapped,Primary and recovery callers share this initializer
 can_symbol,stock_sle1_isr,000c7914,0011b334,,,mapped,Vector target supplies the complete ISR tail-chain entry
 can_symbol,feedback_config_record,00009766,00009768,a308aa20,,target-specific,Type A3 record selects the 0x551 serializer

@@ -23,7 +23,7 @@ cmp/hi r1,r0
 bt telemetry_capture_return
 mov.b @(0x4,r4),r0
 extu.b r0,r5
-cmp/eq 0x4,r0
+cmp/eq 0x5,r0
 bf telemetry_capture_return
 mov #0xB,r6
 telemetry_capture_check_pages:
@@ -172,7 +172,7 @@ telemetry_config_magic:
 telemetry_config_can_id_max:
 .word 0x07FE
 telemetry_config_crc:
-.word 0xDB63
+.word 0xE144
 
 .org 0x000D4500
 // Always construct nine fixed pages and both rotating context pages.
@@ -210,7 +210,7 @@ mov.b r0,@r4
 add 0x1,r4
 mov.b @(0x6,r3),r0
 extu.b r0,r6
-mov #0x4,r1
+mov #0x5,r1
 cmp/hs r1,r6
 bf telemetry_build_context_valid
 mov #0x0,r6
@@ -265,8 +265,24 @@ mov.b r0,@r4
 add 0x1,r4
 dt r2
 bf telemetry_build_context_page_10_byte_loop
+
+// Context 4 carries the knock margin minimums. Rearm all six latches right
+// after their copy; interrupts stay masked, so no evaluation falls between.
+mov r6,r0
+cmp/eq 0x4,r0
+bf telemetry_build_context_advance
+mov.w @(telemetry_build_margin_idle,pc),r1
+mov r3,r5
+add 0x10,r5
+mov #0x6,r2
+telemetry_build_margin_rearm_loop:
+mov.w r1,@r5
+add 0x2,r5
+dt r2
+bf telemetry_build_margin_rearm_loop
+telemetry_build_context_advance:
 add 0x1,r6
-mov #0x4,r1
+mov #0x5,r1
 cmp/hs r1,r6
 bf telemetry_build_context_store
 mov #0x0,r6
@@ -284,7 +300,101 @@ telemetry_page_table:
 telemetry_context_page_9_table:
 .long 0x000D4CFC
 telemetry_context_page_10_table:
-.long 0x000D4D5C
+.long 0x000D4D74
+telemetry_build_margin_idle:
+.word 0x7FFF
+
+.org 0x000D4600
+// Knock margin latch behind the only literal of the knock slice evaluator.
+// The stock evaluator runs first and leaves the offset-binary metric and the
+// threshold of the evaluated channel in RAM. The wrapper repeats the stock
+// comparison in biased unsigned form and keeps the per-channel minimum of
+// threshold minus metric as a signed word biased by 0x8000. An exceedance
+// saturates at -32768. A margin of 32767 or more never undercuts a latch, so
+// the idle value 0x7FFF also reports it. Channel 0 and channels above 6
+// leave the latches unchanged.
+telemetry_knock_margin_wrapper:
+sts.l pr,@-r15
+mov.l @(telemetry_margin_stock,pc),r0
+jsr @r0
+nop
+mov.l @(telemetry_margin_selector,pc),r1
+mov.b @r1,r0
+tst 0x8,r0
+bt telemetry_margin_primary_channel
+mov.l @(telemetry_margin_channel_alternate,pc),r1
+bra telemetry_margin_channel
+nop
+telemetry_margin_primary_channel:
+mov.l @(telemetry_margin_channel_primary,pc),r1
+telemetry_margin_channel:
+mov.b @r1,r0
+extu.b r0,r4
+tst r4,r4
+bt telemetry_margin_return
+mov #0x6,r1
+cmp/hi r1,r4
+bt telemetry_margin_return
+add -0x1,r4
+mov.l @(telemetry_margin_metric,pc),r1
+mov r4,r0
+shll2 r0
+mov.l @(r0,r1),r7
+mov.l @(telemetry_margin_threshold,pc),r1
+mov r4,r0
+shll r0
+mov.w @(r0,r1),r2
+extu.w r2,r2
+mov.l @(telemetry_margin_bias,pc),r5
+add r5,r2
+mov.w @(telemetry_margin_idle,pc),r3
+add 0x1,r3
+cmp/hi r2,r7
+bt telemetry_margin_exceeded
+sub r7,r2
+add r3,r2
+bra telemetry_margin_compare
+nop
+telemetry_margin_exceeded:
+sub r2,r7
+cmp/hi r3,r7
+bf telemetry_margin_negative
+mov r3,r7
+telemetry_margin_negative:
+mov r3,r2
+sub r7,r2
+telemetry_margin_compare:
+mov.l @(telemetry_margin_latch,pc),r1
+mov.w @(r0,r1),r5
+add r3,r5
+cmp/hs r5,r2
+bt telemetry_margin_return
+sub r3,r2
+mov.w r2,@(r0,r1)
+telemetry_margin_return:
+lds.l @r15+,pr
+rts
+nop
+
+.align 4
+telemetry_margin_stock:
+.long 0x0004A238
+telemetry_margin_selector:
+.long 0x00008B3D
+telemetry_margin_channel_alternate:
+.long 0xFFFF2143
+telemetry_margin_channel_primary:
+.long 0xFFFF11DE
+telemetry_margin_metric:
+.long 0xFFFF21D8
+telemetry_margin_threshold:
+.long 0xFFFF2144
+telemetry_margin_bias:
+.long 0x80000000
+telemetry_margin_latch:
+.long 0xFFFF5E10
+telemetry_margin_idle:
+.word 0x7FFF
 
 .org 0x000D4700
 telemetry_request_page:

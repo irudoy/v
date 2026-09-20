@@ -213,7 +213,9 @@ def _validate_profile_coverage(catalog, manifest):
         for context in manifest.contexts
         for field in context.fields
         if field.kind == "ecu_ram"
-    } | {"knock_count_latched", "knock_channel_mask_latched"}
+    } | {"knock_count_latched", "knock_channel_mask_latched"} | {
+        f"knock_margin_min_ch{channel}_raw" for channel in range(1, 7)
+    }
     missing = sorted(tuning_fields - set(owners))
     if missing:
         raise ValueError(f"current tuning fields lack catalog owners: {missing}")
@@ -281,7 +283,7 @@ def load_catalog(path=DEFAULT_SOURCE):
         or raw["rom"] != "JK08A"
         or raw["telemetry_profile"] != "tuning"
         or raw["full_rate_hz"] != 97.65625
-        or raw["rotating_divisor"] != 4
+        or raw["rotating_divisor"] != 5
     ):
         raise ValueError(f"{path.name}: fixed catalog contract differs")
     signals = tuple(

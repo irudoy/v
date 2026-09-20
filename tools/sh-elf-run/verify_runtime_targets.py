@@ -46,7 +46,7 @@ ROLLING_CASES_BY_VARIANT = {
     "relocated-8mfk": 121,
     "vq37-fuel-coordinator": 124,
 }
-TELEMETRY_CASES = 62
+TELEMETRY_CASES = 76
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 RTE_STUB = bytes.fromhex("002b0009")
@@ -261,6 +261,8 @@ def _install_stock_stubs(fixture, target):
     })
     for key in ("hcan1_primary_init", "hcan1_recovery_init"):
         stubs[can_hooks[key].stock] = RETURN_ONE_STUB
+    evaluator = can_hooks["knock_margin_latch"].stock
+    stubs[evaluator] = can_verifier.knock_evaluator_stub(evaluator)
 
     serializer = map_hooks["cruise_feedback_serializer"].stock
     status_alias = base_verifier.alias_high_ram(
@@ -567,8 +569,8 @@ def _run_harnesses(target, fixture, build_dir):
             rom_object,
             (invoke, exception),
             build_dir,
-            "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=64 entries=10 "
-            "profiles=1 contexts=8 isr_rte=5",
+            "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=78 entries=11 "
+            "profiles=1 contexts=10 isr_rte=5",
             defines=can_defines,
         )
     )

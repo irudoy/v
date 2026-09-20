@@ -259,7 +259,7 @@ def load_manifest(path=DEFAULT_SOURCE):
         or raw["pphi_hz"] != 20_000_000
         or raw["fixed_page_count"] != 9
         or raw["context_pages"] != [9, 10]
-        or raw["context_count"] != 4
+        or raw["context_count"] != 5
         or raw["header_sequence_bits"] != 4
         or raw["table_address"] != 0x000D4C00
         or raw["table_end"] != 0x000D4E00
@@ -323,13 +323,13 @@ def load_manifest(path=DEFAULT_SOURCE):
     )
     if tuple((item.page, item.tag) for item in contexts) != expected_context_identity:
         raise ValueError(
-            "context pages and tags must be ordered as two complete 0 through 3 sets"
+            "context pages and tags must be ordered as two complete 0 through 4 sets"
         )
 
     profile_raw = raw["profile"]
     if tuple(item.get("name") for item in profile_raw) != PROFILE_NAMES:
         raise ValueError("profile names or order differ")
-    expected_profiles = (("tuning", 4, 11),)
+    expected_profiles = (("tuning", 5, 11),)
     profiles = []
     for index, (item, expected) in enumerate(zip(profile_raw, expected_profiles)):
         _require_keys(item, {"name", "id", "page_count"}, (), f"profile[{index}]")
@@ -400,7 +400,7 @@ def render_tables(manifest):
     lines = [
         "// Generated from can-telemetry-profile.toml. Do not edit.",
         "// The capture loop consumes 63 fixed page-byte pointers followed by",
-        "// two sets of four six-byte context pointer groups.",
+        "// two sets of five six-byte context pointer groups.",
         "",
         f".org 0x{manifest.table_address:08X}",
         "telemetry_page_source_table:",

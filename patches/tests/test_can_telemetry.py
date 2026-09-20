@@ -18,6 +18,7 @@ from tools.logs import can_telemetry_schema
 # slot-to-field assignment is pinned per profile ID.
 SLOT_ASSIGNMENT_SHA256 = {
     4: "3e03c72b5d80187d2335f3ea42996aab9b48c3e0e09c4fc11fe7a6b6405e11fd",
+    5: "aee00366d786afd544790945cddd28ca26ddda9f092e60ab2a4221b628391681",
 }
 
 
@@ -35,12 +36,12 @@ class CanTelemetryContractTest(unittest.TestCase):
                 for item in self.manifest.profiles
             ),
             (
-                ("tuning", 4, 11, 0xDB63),
+                ("tuning", 5, 11, 0xE144),
             ),
         )
         self.assertEqual(len(self.manifest.fields), 40)
         self.assertEqual(len(self.manifest.page_sources), 63)
-        self.assertEqual(len(self.manifest.contexts), 8)
+        self.assertEqual(len(self.manifest.contexts), 10)
         names = {item.name for item in self.manifest.fields}
         context_names = {
             field.name
@@ -244,8 +245,8 @@ class CanTelemetryContractTest(unittest.TestCase):
         self.assertEqual(self.layout.reserved_rom.size, 0x1000)
         self.assertEqual(self.layout.ram.active.size, 0x100)
         self.assertEqual(self.layout.ram.future.size, 0x100)
-        self.assertEqual(self.layout.assembled_instruction_count, 647)
-        self.assertEqual(self.layout.assembled_data_bytes, 680)
+        self.assertEqual(self.layout.assembled_instruction_count, 720)
+        self.assertEqual(self.layout.assembled_data_bytes, 770)
 
     def test_static_assembly_and_default_composition_are_locked(self):
         parsed = can_telemetry_assembly.validate_assembly_sources(
@@ -254,7 +255,7 @@ class CanTelemetryContractTest(unittest.TestCase):
         audit = can_telemetry_assembly.validate_instruction_semantics(
             self.layout, parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 647)
+        self.assertEqual(audit.instructions, 720)
         composition = can_telemetry_compose.compose(
             layout=self.layout, blobs=self.blobs
         )
@@ -262,8 +263,8 @@ class CanTelemetryContractTest(unittest.TestCase):
             composition.sha256,
             self.layout.expected_composition_sha256,
         )
-        self.assertEqual(composition.instruction_count, 647)
-        self.assertEqual(composition.code_entry_count, 10)
+        self.assertEqual(composition.instruction_count, 720)
+        self.assertEqual(composition.code_entry_count, 11)
         self.assertEqual(
             composition.data[
                 self.layout.reserved_rom.start : self.layout.reserved_rom.end

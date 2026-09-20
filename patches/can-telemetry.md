@@ -62,8 +62,9 @@ primary or recovery HCAN1 initialization.
 | mailbox-26 record at `0x000097BE` | `05 00 00 00` | type 4, DLC 8, build-selected data ID; remains idle while streaming is disabled |
 | main-loop call literal at `0x00028090` | `0x00020DFE` | call stock scheduler, poll control, capture, return |
 | periodic table entry at `0x00021A70` | `0x000493E8` | latch knock count and mask before the stock consumer clears them |
+| knock slice evaluator literal at `0x0004A9C0` | `0x0004A238` | call the stock evaluator, then fold `threshold - metric` of the evaluated channel into its minimum latch |
 | HCAN1 SLE1 vector at `0x000203A0` | `0x000C7914` | service mailbox 26 and reproduce mailbox-28 success and abort behavior |
-| composed startup wrapper | existing wrapper chain | clear the complete active telemetry RAM allocation |
+| composed startup wrapper | existing wrapper chain | clear the complete active telemetry RAM allocation and arm the six knock margin latches |
 | primary HCAN1 initializer pointer at `0x0002D7FC` | `0x000C338A` | call the stock initializer, preserve its result, then configure mailbox 31 |
 | recovery HCAN1 initializer pointer at `0x000C3B10` | `0x000C338A` | restore mailbox 31 after the stock recovery path reinitializes HCAN1 |
 
@@ -105,6 +106,39 @@ capture boundary. The wrapper at periodic entry 65 therefore latches
 `0xFFFF2142` and `0xFFFF2150` before calling the stock function. The main
 capture includes those latches with the updated timing state.
 
+## Knock margin latches
+
+Slice evaluator `0x0004A238` has one reference in the image, literal
+`0x0004A9C0` of `FUN_0004A8D4`, and no `BSR` caller. After the call the caller
+reads only registers that it sets again, so the wrapper at `0x000D4600` owns
+`r0..r7` and preserves PR alone. It calls the stock evaluator first and then
+repeats the stock channel selection: `ROM8[0x8B3D]` bit 3 clear selects
+`uint8[0xFFFF11DE]`, otherwise `uint8[0xFFFF2143]`. A channel outside `1..6`
+leaves every latch unchanged.
+
+For the evaluated channel the wrapper reads the operands that the evaluator
+leaves in RAM, the offset-binary metric at
+`int32[0xFFFF21D8 + 4 * (channel - 1)]` and the threshold at
+`uint16[0xFFFF2144 + 2 * (channel - 1)]`, and applies the stock comparison
+`threshold + 0x80000000 < metric` on unsigned 32-bit values. The margin is
+`threshold - metric` in evaluator units. An exceedance yields a negative
+margin limited at `-32768`. The signed word at
+`0xFFFF5E10 + 2 * (channel - 1)` keeps the minimum margin of its channel, so
+a margin of 32767 or more never replaces the idle value `32767`.
+
+The bank builder copies the six latches as context tag 4 and rearms them with
+`32767` directly after that copy, inside the same interrupt-masked capture.
+The startup wrapper arms them after clearing the telemetry RAM. A published
+`32767` therefore reports an interval without an evaluation of the channel or
+a margin of 32767 or more. A tag-4 group that the queue replaces, preempts, or
+discards before transmission takes its minimums with it; the overrun and abort
+counters and the host group accounting expose those intervals.
+
+Stock threshold rows 3 and 5 of table `0x1108E` hold `0xFFFF`, so their
+channels publish `32767` until the metric exceeds 32768 units. The metric has
+no physical conversion, and the channel-to-cylinder assignment is not
+established.
+
 ## ROM and RAM layout
 
 The runtime owns `0x000D4280..0x000D6000` inside the audited free ROM region.
@@ -112,9 +146,9 @@ The runtime owns `0x000D4280..0x000D6000` inside the audited free ROM region.
 | ROM range | Size | Purpose |
 | ---: | ---: | --- |
 | `0x000D4280..0x000D4340` | 192 | main, knock, and startup wrappers |
-| `0x000D4340..0x000D4800` | 1,216 | configuration guard, capture, bank builder, and page request |
+| `0x000D4340..0x000D4800` | 1,216 | configuration guard, capture, bank builder, knock margin wrapper at `0x000D4600`, and page request |
 | `0x000D4800..0x000D4C00` | 1,024 | combined SLE1 ISR and bounded queue |
-| `0x000D4C00..0x000D4E00` | 512 | 444-byte generated source-pointer table plus erased tail |
+| `0x000D4C00..0x000D4E00` | 512 | 492-byte generated source-pointer table plus erased tail |
 | `0x000D4E00..0x000D4E10` | 16 | fail-closed build configuration |
 | `0x000D4E10..0x000D5000` | 496 | HCAN1 initialization wrapper, control poller, exact command validator, and shared configuration guard |
 | `0x000D5000..0x000D6000` | 4,096 | exclusive erased future ROM reserve |
@@ -123,7 +157,7 @@ The active RAM allocation is `0xFFFF5E00..0xFFFF5F00`.
 
 | RAM range | Size | Purpose |
 | ---: | ---: | --- |
-| `0xFFFF5E00..0xFFFF5E20` | 32 | queue state, runtime enable override, profile, status, counters, and knock latches |
+| `0xFFFF5E00..0xFFFF5E20` | 32 | queue state, runtime enable override, profile, status, counters, knock latches, and the six knock margin words at `0xFFFF5E10..0xFFFF5E1C` |
 | `0xFFFF5E20..0xFFFF5E78` | 88 | complete frame bank A |
 | `0xFFFF5E78..0xFFFF5ED0` | 88 | complete frame bank B |
 | `0xFFFF5ED0..0xFFFF5EE0` | 16 | reserved event state |
@@ -142,16 +176,16 @@ The 16-byte configuration contains:
 | 0 | 2 | magic `0x4354` |
 | 2 | 1 | protocol version `2` |
 | 3 | 1 | enable byte `0` or `1` |
-| 4 | 1 | profile ID `4` |
+| 4 | 1 | profile ID `5` |
 | 5 | 1 | page count `11` |
 | 6 | 1 | tick divisor `1..255` |
 | 7 | 1 | reserved zero |
 | 8 | 2 | standard CAN ID |
-| 10 | 2 | profile CRC16 `0xDB63` |
+| 10 | 2 | profile CRC16 `0xE144` |
 | 12 | 4 | integrity word `0x54454C32` (`TEL2`) |
 
 The only profile name is `tuning`. The default disabled bytes are
-`43 54 02 00 04 0B 01 00 06 F0 DB 63 54 45 4C 32`.
+`43 54 02 00 05 0B 01 00 06 F0 E1 44 54 45 4C 32`.
 
 Firmware validates every field before incrementing the telemetry tick,
 touching the queue, or accepting a control command. The builder independently
@@ -245,9 +279,9 @@ adjustment states keep candidate or unresolved conversions.
 ### Rotating context pages
 
 Pages 9 and 10 carry the same context tag in byte 1. Tags rotate from 0 through
-3. Both pages are transmitted every snapshot, while each tagged field set is
-refreshed once per four published snapshots. At divisor 1, the context-field
-rate is `24.4140625 Hz`.
+4. Both pages are transmitted every snapshot, while each tagged field set is
+refreshed once per five published snapshots. At divisor 1, the context-field
+rate is `19.53125 Hz`.
 
 | Tag | Page 9 bytes 2..7 | Page 10 bytes 2..7 |
 | ---: | --- | --- |
@@ -255,13 +289,20 @@ rate is `24.4140625 Hz`.
 | 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, intake duty commands B1/B2 `FFFF23B4/23B5` |
 | 2 | LTFT B1/B2 `FFFF2302/2304`, timing states `FFFF2023/564C` | front A/F words `FFFF2780/2782`, adjustment state B1 `FFFF45A0` |
 | 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, adjustment state B2 `FFFF45A2` |
+| 4 | minimum knock margin of channels 1 to 3, latches `FFFF5E10/5E12/5E14` | minimum knock margin of channels 4 to 6, latches `FFFF5E16/5E18/5E1A` |
 
 Tag 1 carries the intake duty monitor pair on page 9 and the intake duty
 command pair on page 10, so one capture pass samples both pairs and a recording
 compares them byte for byte.
 
+Tag 4 carries six signed words in evaluator units. Each word is the minimum of
+`threshold - metric` over the evaluations of its channel since the previous
+capture of the tag, and `32767` stands for no evaluation or a margin of 32767
+or more. At one evaluation of a channel per engine cycle, every tag-4 interval
+at divisor 1 holds an evaluation only above about 2350 rpm.
+
 Schema-dependent conversions stay disabled until page 9 tag 3 reports version
-2, profile ID 4, and CRC `0xDB63`. A later mismatch disables conversions again.
+2, profile ID 5, and CRC `0xE144`. A later mismatch disables conversions again.
 Raw values from an otherwise structurally complete group remain available for
 diagnosis.
 
@@ -330,7 +371,7 @@ banks, source table, payload, decoder, and total load. A schema 2 image remains
 ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 
 - eleven ordered pages and exact tick continuity;
-- version 2, profile ID 4, and CRC `0xDB63` health identity;
+- version 2, profile ID 5, and CRC `0xE144` health identity;
 - no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
 - acceptable stock-frame cadence and whole-bus utilization.
 
@@ -343,21 +384,28 @@ The repository-contained gate independently assembles all injected SH-2E
 instructions and proves identity with the tracked payloads before installing
 simulator-only high-RAM relocations and stock-function stubs. It executes all
 changed entries, relevant branch outcomes, delay slots, call and return paths,
-both banks, all pages, all eight context records, queue boundaries, latest-wins
+both banks, all pages, all ten context records, queue boundaries, latest-wins
 replacement, preemption, TXACK, ABACK, simultaneous mailbox-26/mailbox-28
 flags, both HCAN1 initialization hooks, startup-disabled START, startup-enabled
 STOP, divisor restart, invalid payloads, invalid DLC, remote frames, corrupt
-configuration, rejection of profile IDs 0, 3, and 5 by the capture entry and of
-profile ID 3 by the control receiver, active-group stop, corrupt-state
+configuration, rejection of profile IDs 0, 4, and 6 by the capture entry and of
+profile ID 4 by the control receiver, active-group stop, corrupt-state
 fail-closed behavior, a real `TRAPA` exception entry, and the exact ISR `RTE`.
+The knock margin wrapper runs against a simulator-only evaluator stub that
+stores a staged metric and overwrites `r0..r7`, which binds the order of the
+stock call and the operand reads. Its cases cover channel 0, a channel above
+6, both selector outcomes and the stock selector byte, a positive margin, the
+comparison boundary, an exceedance, the saturated exceedance and its edge,
+keeping and replacing a lower minimum across the sign boundary, a margin
+beyond the signed word, the startup arming, and the rearm behind tag 4 alone.
 
 The locked software result is:
 
-- 647 injected instructions and 680 data bytes;
-- ten executable entries and 64 dynamic telemetry cases;
+- 720 injected instructions and 770 data bytes;
+- eleven executable entries and 78 dynamic telemetry cases;
 - composition SHA-256
-  `6840dcb0ab44ed97e39f0ff1c5d6ea862442dd5ad99b67f34aa92f683dfe3c13`;
-- 1,723 changed bytes inside a 3,484-byte declared write set.
+  `e5c7657bba8edc825333e5ee15c3577c2f8b43027bceb979fea17db5ad4d69d6`;
+- 1,922 changed bytes inside a 3,488-byte declared write set.
 
 This gate proves the bounded software contract. It does not replace physical
 CAN, ECU, sensor, or actuator validation.

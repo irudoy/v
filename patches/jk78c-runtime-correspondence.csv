@@ -85,6 +85,7 @@ rolling_symbol,stock_ignition_consumer,0002a892,0002d6f6,,,mapped,Final ignition
 rolling_symbol,fuel_cut_coordinator,,0006a9b0,,,target-specific,Complete coordinator aggregates stock conditions before its sole final-mask store
 can_hook,coherent_snapshot_call,00028090,0002aa7c,00020f1a,,mapped,Aligned caller instruction binds the coherent snapshot boundary
 can_hook,knock_interval_latch,00021a70,00021b70,00062780,,target-specific,Unique scheduler word binds the target knock-event function
+can_hook,knock_margin_latch,0004a9c0,0006429c,00063ac8,,mapped,Literal 0x6429c is the only reference of the target slice evaluator and its caller sets every register it reads after the call
 can_hook,startup_state_clear,00027d28,0002a6fc,0002f596,,mapped,Telemetry clear chains from the map startup literal
 can_hook,hcan1_sle1_vector,000203a0,000203a0,000f0410,,mapped,SLE1 vector stores the complete stock ISR entry
 can_hook,hcan1_primary_init,0002d7fc,000306a0,000ea582,,mapped,Aligned primary caller literal binds the D800 HCAN initializer
@@ -93,6 +94,11 @@ can_symbol,coherent_snapshot,00020dfe,00020f1a,,,mapped,Unique mapped-neighbor f
 can_symbol,knock_function,000493e8,00062780,,,target-specific,Target event path preserves bit tracking and saturating count behavior
 can_symbol,knock_count,ffff2142,ffff2096,,,mapped,Target knock event function updates this saturating counter
 can_symbol,knock_mask,ffff2150,ffff20a4,,,mapped,Target knock event function sets and clears this channel mask
+can_symbol,knock_selector_config,00008b3d,00008965,,,mapped,Target evaluator tests bit 3 of this byte and stock value 0xBA selects the alternate channel byte
+can_symbol,knock_channel_primary,ffff11de,ffff11c8,,,mapped,Target evaluator reads this channel byte while selector bit 3 is clear
+can_symbol,knock_channel_alternate,ffff2143,ffff2097,,,mapped,Target evaluator reads this channel byte while selector bit 3 is set
+can_symbol,knock_metric_base,ffff21d8,ffff212c,,,mapped,Target evaluator stores the offset-binary metric of channel n at base plus 4 * (n - 1)
+can_symbol,knock_threshold_base,ffff2144,ffff2098,,,mapped,Target threshold lookup stores the threshold of channel n at base plus 2 * (n - 1)
 can_symbol,hcan1_init,000c338a,000ea582,,,mapped,Initializer writes the HCAN1 register window at 0xffffd800
 can_symbol,stock_sle1_isr,000c7914,000f0410,,,mapped,Vector target supplies the complete ISR tail-chain entry
 can_symbol,feedback_config_record,00009766,0000945a,0308aa20,,mapped,Type 03 record selects the exact 0x551 serializer

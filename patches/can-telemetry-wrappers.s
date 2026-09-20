@@ -5,8 +5,9 @@
 // the completed interval before FUN_000493E8 clears its event count. This latch
 // is refreshed on every base tick, so a divisor greater than one can overwrite
 // an interval before publication. Startup clears only the active 256-byte
-// telemetry allocation before continuing the existing Rolling Launch and
-// map-switching startup chain.
+// telemetry allocation, arms the six knock margin latches with the idle
+// value, and continues the existing Rolling Launch and map-switching
+// startup chain.
 
 .org 0x000D4280
 telemetry_main_wrapper:
@@ -70,6 +71,14 @@ mov.l r0,@r1
 add 0x4,r1
 dt r2
 bf telemetry_startup_clear_loop
+mov.l @(telemetry_startup_margin_latch,pc),r1
+mov.w @(telemetry_startup_margin_idle,pc),r0
+mov #0x6,r2
+telemetry_startup_margin_loop:
+mov.w r0,@r1
+add 0x2,r1
+dt r2
+bf telemetry_startup_margin_loop
 mov.l @(telemetry_startup_stock,pc),r0
 jsr @r0
 nop
@@ -82,3 +91,7 @@ telemetry_startup_state:
 .long 0xFFFF5E00
 telemetry_startup_stock:
 .long 0x000D38A0
+telemetry_startup_margin_latch:
+.long 0xFFFF5E10
+telemetry_startup_margin_idle:
+.word 0x7FFF

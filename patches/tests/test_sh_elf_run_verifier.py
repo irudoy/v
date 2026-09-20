@@ -310,8 +310,8 @@ mov #0x5,r1
             result.sha256,
             TELEMETRY_VERIFIER.EXPECTED_COMPOSITION_SHA256,
         )
-        self.assertEqual(result.instruction_count, 647)
-        self.assertEqual(result.code_entry_count, 10)
+        self.assertEqual(result.instruction_count, 720)
+        self.assertEqual(result.code_entry_count, 11)
 
     def test_can_telemetry_relocator_supports_generated_pointer_rows(self):
         fixture = bytearray(32)
@@ -365,7 +365,7 @@ mov #0x5,r1
         self.assertGreater(base_count, 0)
         self.assertGreater(launch_count, 0)
         self.assertGreater(telemetry_count, 0)
-        self.assertEqual(stubs, 9)
+        self.assertEqual(stubs, 10)
         self.assertEqual(
             fixture[
                 TELEMETRY_VERIFIER.TRAPA_VECTOR_ADDRESS :
@@ -397,9 +397,9 @@ mov #0x5,r1
         self.assertIn("verify_can_telemetry.verify", source)
         self.assertIn("can_telemetry_cases", source)
         self.assertIn("can_telemetry_harness.c", verifier)
-        self.assertIn("cases=64", verifier)
+        self.assertIn("cases=78", verifier)
         self.assertIn("trapa #0x40", exception)
-        self.assertIn("entries=10", harness)
+        self.assertIn("entries=11", harness)
 
     def test_top_level_gate_registers_relocated_runtime_targets(self):
         source = MODULE_PATH.read_text(encoding="utf-8")

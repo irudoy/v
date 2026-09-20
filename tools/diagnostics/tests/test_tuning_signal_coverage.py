@@ -20,12 +20,15 @@ def test_catalog_covers_every_current_tuning_field():
     assert owners["knock_count_latched"] == "knock_event_latches"
 
 
-def test_catalog_separates_current_coverage_from_instrumentation():
+def test_catalog_separates_stream_coverage_from_external_measurement():
     catalog = tuning_signal_coverage.load_catalog()
     assert catalog.by_id["pressure_context"].coverage == "rotating"
     assert catalog.by_id["throttle_request_path"].coverage == "fixed"
     assert catalog.by_id["commanded_mixture"].coverage == "rotating"
-    assert catalog.by_id["knock_margin"].coverage == "instrumentation"
+    assert catalog.by_id["knock_margin"].coverage == "rotating"
+    assert catalog.by_id["knock_margin"].current_fields == tuple(
+        f"knock_margin_min_ch{channel}_raw" for channel in range(1, 7)
+    )
     assert catalog.by_id["physical_spark_angle"].coverage == "external"
 
 
@@ -44,13 +47,13 @@ def test_catalog_did_bindings_include_high_value_gaps():
 def test_summary_has_stable_coverage_counts():
     report = tuning_signal_coverage.summary(tuning_signal_coverage.load_catalog())
     assert report["signal_count"] == 38
+    assert report["rotating_rate_hz"] == 19.53125
     assert report["coverage"] == {
         "absent": 2,
         "external": 1,
         "fixed": 19,
-        "instrumentation": 1,
         "latched": 1,
-        "rotating": 13,
+        "rotating": 14,
         "stock-can": 1,
     }
 

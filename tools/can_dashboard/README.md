@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `5.0.0`.
+Current dashboard version: `6.0.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -56,7 +56,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v5.0.0-windows.zip
+  --output tmp/vq-can-telemetry-v6.0.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -117,11 +117,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v5.0.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v6.0.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 5.0.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 6.0.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -206,7 +206,7 @@ distinct snapshots share one timestamp. An interface clock that steps
 backwards, or ahead of the host clock by more than one second, is abandoned
 without breaking elapsed time.
 
-The `tuning` MLG schema has 81 channels: time, schema state, every fixed and
+The `tuning` MLG schema has 87 channels: time, schema state, every fixed and
 rotating custom-telemetry field, a decoded high-detonation-surface selector,
 stock CAN RPM, vehicle speed, selector code, ASCD input, and dashboard state.
 Decoded telemetry and context values use F32, so a rotating context that has
@@ -265,14 +265,28 @@ longer than its reserve is elided, and hover and click still report it in full.
 ## Display semantics
 
 The decoder retains the latest values from the paired page-9 and page-10
-contexts for all four tags.
+contexts for all five tags.
 Schema-dependent conversions stay disabled until the in-band health context
 matches protocol version, profile ID, and CRC16. The bundled schema declares
-profile ID 4 with CRC16 `0xDB63`; a producer that reports another profile ID
+profile ID 5 with CRC16 `0xE144`; a producer that reports another profile ID
 or CRC keeps raw values only, because its slots carry other quantities. The
 CRC covers the wire layout alone, so a restated field name or scale string
 leaves it unchanged. Stale context values remain visible while their update
-cadence is one quarter of the snapshot rate.
+cadence is one fifth of the snapshot rate.
+
+Context tag 4 carries six knock margin latches, one per knock channel. Each
+latch holds the minimum of `threshold - metric` in evaluator units over the
+evaluations of its channel since the previous capture of the tag, saturated at
+-32768 for an exceedance. A negative value is an evaluation that the stock
+comparison counts as a knock event. The idle value 32767 reports that the
+channel had no evaluation in that interval or a margin that the signed word
+cannot hold. With one evaluation of a channel per engine cycle and the base
+snapshot rate, every interval holds an evaluation only above about 2350 rpm.
+Stock threshold rows 3 and 5 hold `0xFFFF`, so those two channels report the
+idle value on stock calibration. The model keeps the last evaluated margin of
+a channel while its latch reports the idle value, and a channel without any
+evaluation yet stays `NaN` in a recording. The channel-to-cylinder assignment
+is not established, so the fields are named by channel.
 
 A field marked with `*` uses a candidate transform; engine torque state at
 `raw * 0.1 Nm` is the only one. The current conversions are:
@@ -294,6 +308,7 @@ A field marked with `*` uses a candidate transform; engine torque state at
 | absolute throttle | `0xFFFF1075` byte | `raw * 100 / 255 percent` | J1979 PID 0x11 returns the byte as `A * 100 / 255` percent |
 | APC command | `apc_command_raw` byte | raw | effective software command consumed by the APC scheduler; normal-path timing coordinate is `110 - raw` |
 | knock timing state | `0xFFFF121A` signed word | `raw / 256 state` | exact Q8 software state; its physical unit remains unresolved |
+| knock margin ch 1..6 | telemetry latches `0xFFFF5E10..0xFFFF5E1B` | raw signed evaluator units | the wrapper behind the only literal of the knock slice evaluator repeats the stock `threshold + 0x80000000 < metric` comparison on the values the evaluator leaves in RAM; the unit of the metric is the summed and gain-scaled sensor difference and has no physical conversion |
 | active hot surface | `0xFFFF2466.bit6` | clear = High Octane, set = High Detonation | exact selector; other bits in the byte have separate roles |
 | exhaust CVTC target and actual B1/B2 | `0xFFFF2327`, `0xFFFF2324..2325` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count; recordings keep the actual bytes within two counts of a steady target in 98 percent of Map 3 samples |
 | intake CVTC target and actual B1/B2 | `0xFFFF2326`, `0xFFFF2442..2443` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count, advance positive; recordings keep the actual bytes within two counts of a steady target in 95 to 100 percent of samples |
@@ -343,6 +358,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 5.0.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 6.0.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

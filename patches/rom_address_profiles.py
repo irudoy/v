@@ -278,6 +278,7 @@ CAN_HOOK_KEYS = frozenset(
     {
         "coherent_snapshot_call",
         "knock_interval_latch",
+        "knock_margin_latch",
         "startup_state_clear",
         "hcan1_sle1_vector",
         "hcan1_primary_init",
@@ -291,6 +292,11 @@ CAN_SYMBOL_KEYS_COMMON = frozenset(
         "knock_function",
         "knock_count",
         "knock_mask",
+        "knock_selector_config",
+        "knock_channel_primary",
+        "knock_channel_alternate",
+        "knock_metric_base",
+        "knock_threshold_base",
         "hcan1_init",
         "stock_sle1_isr",
         "feedback_config_record_address",
@@ -1272,6 +1278,9 @@ def _validate_can_bindings(profile, telemetry_layout):
         ),
         "knock_interval_latch": _rebased(
             telemetry_code["knock_wrapper"].entry, rom_delta
+        ),
+        "knock_margin_latch": _rebased(
+            telemetry_code["knock_margin_wrapper"].entry, rom_delta
         ),
         "startup_state_clear": _rebased(
             telemetry_code["startup_wrapper"].entry, rom_delta

@@ -23,8 +23,8 @@ transport is not the high-rate logging path.
 
 The single `tuning` profile sends eleven DLC-8 frames per snapshot. Pages 0
 through 8 refresh at the `97.65625 Hz` scheduler cadence with divisor 1. Pages
-9 and 10 are transmitted at the same rate and rotate a shared four-value tag,
-so each tagged field set refreshes at `24.4140625 Hz`.
+9 and 10 are transmitted at the same rate and rotate a shared five-value tag,
+so each tagged field set refreshes at `19.53125 Hz`.
 
 The fixed pages provide:
 
@@ -52,6 +52,8 @@ The rotating contexts provide:
 - atmospheric pressure and battery voltage;
 - higher-resolution front A/F sensor words and both adjustment integrators;
 - secondary throttle feedback for both banks;
+- the minimum knock threshold margin of each of the six evaluator channels
+  since the previous capture of its tag;
 - two timing state bytes and the in-band transport identity and counters.
 
 Stock CAN independently provides RPM, vehicle speed, selector position, ASCD
@@ -100,9 +102,23 @@ wideband correlation is recorded.
 The reviewed code and diagnostic layers do not establish a fuel-pressure
 source or confirm that this ECU has a pressure sensor represented in software.
 
-The active knock evaluator uses a transient register-local metric. Existing
-state and latches show intervention, but per-evaluation metric, threshold, or
-margin requires a capture hook in the evaluator path.
+Knock margin fields `knock_margin_min_ch1_raw` through
+`knock_margin_min_ch6_raw` are firmware instrumentation of the slice evaluator
+at `0x0004A238`. The evaluator leaves the offset-binary metric of the evaluated
+channel at `int32[FFFF21D8 + 4 * (channel - 1)]` and its threshold at
+`uint16[FFFF2144 + 2 * (channel - 1)]`, and every evaluation overwrites the
+pair of its channel. The wrapper behind the only literal of the evaluator
+repeats the stock comparison after each evaluation and keeps the per-channel
+minimum of `threshold - metric` as a signed word. A negative value is an
+evaluation that the stock comparison counts as a knock event, limited at
+`-32768`. Context tag 4 publishes the six minimums and rearms them with
+`32767`, which stands for an interval without an evaluation of the channel or
+a margin of 32767 or more. Stock threshold rows 3 and 5 hold `0xFFFF`, so
+their channels report `32767` until the metric exceeds 32768 units. The metric
+is a summed and gain-scaled sensor difference in evaluator units without a
+physical conversion, and the channel-to-cylinder assignment is not
+established. A tag-4 group that the queue replaces, preempts, or discards
+before transmission takes its minimums with it.
 
 The final ignition coordinate and APC command are software values. Neither is
 independent feedback of spark delivery relative to the crankshaft. A physical
@@ -125,7 +141,7 @@ and is not streamed.
 
 ## Transport boundary
 
-Schema 2 uses protocol version 2, profile ID 4, generated CRC16 `0xDB63`, one
+Schema 2 uses protocol version 2, profile ID 5, generated CRC16 `0xE144`, one
 build-selected standard data CAN ID on physical mailbox 26, and the adjacent
 control ID on polled receive mailbox 31. The CRC covers the wire layout alone:
 protocol version, profile ID, page count, and the placement, width, and

@@ -70,13 +70,19 @@ The gate performs these checks:
    layers. The VQ37 fixture stubs the stock final-mask fuel coordinator with a
    deterministic routine that publishes a distinct base mask to the aliased
    final-mask byte and returns that byte zero-extended, so the wrapper return
-   path is executed against an exact expected value. The telemetry fixture also
-   installs a simulator-only TRAPA vector after byte identity is proven. TRAPA
-   creates the architectural exception stack. The canonical combined SLE1 ISR
-   returns through its unchanged `RTE` instruction. Each 8MFK wrapper restores
-   all interrupted registers, including `r0` in the `JMP` delay slot, and
-   tail-chains to an explicit simulator-only `RTE` stub for the unchanged stock
-   ISR. The same tail-chain boundary is executed for the VQ37 mailbox-26
+   path is executed against an exact expected value. The telemetry fixture
+   replaces the stock knock slice evaluator of every target with a stub that
+   stores a staged 32-bit value at a staged address, counts the call, and
+   overwrites `r0..r7`. The harness stages the offset-binary metric of the
+   evaluated channel through the block at `0x0100ff00` of the test window, so
+   a knock margin wrapper that reads its operands before the stock call, or
+   that relies on a register across it, fails the case. The telemetry fixture
+   also installs a simulator-only TRAPA vector after byte identity is proven.
+   TRAPA creates the architectural exception stack. The canonical combined
+   SLE1 ISR returns through its unchanged `RTE` instruction. Each 8MFK wrapper
+   restores all interrupted registers, including `r0` in the `JMP` delay slot,
+   and tail-chains to an explicit simulator-only `RTE` stub for the unchanged
+   stock ISR. The same tail-chain boundary is executed for the VQ37 mailbox-26
    wrappers.
 6. Execute the exact unsafe delayed-branch incident words at their ROM addresses
    and require an illegal-instruction stop, while a control fixture that changes

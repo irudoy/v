@@ -322,7 +322,7 @@ def validate_structure(layout):
 
     required_hooks = {
         "coherent_snapshot_call", "knock_interval_latch",
-        "startup_state_clear", "hcan1_sle1_vector",
+        "knock_margin_latch", "startup_state_clear", "hcan1_sle1_vector",
         "hcan1_primary_init", "hcan1_recovery_init",
     }
     if set(layout.hook_by_key) != required_hooks:
@@ -330,6 +330,7 @@ def validate_structure(layout):
     canonical_hooks = {
         "coherent_snapshot_call": (0x28090, 0x20DFE, 0xD4280),
         "knock_interval_latch": (0x21A70, 0x493E8, 0xD42B0),
+        "knock_margin_latch": (0x4A9C0, 0x4A238, 0xD4600),
         "startup_state_clear": (0x27D28, 0xD38A0, 0xD42F0),
         "hcan1_sle1_vector": (0x203A0, 0xC7914, 0xD4800),
         "hcan1_primary_init": (0x2D7FC, 0xC338A, 0xD4E10),

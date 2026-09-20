@@ -119,6 +119,46 @@ class DashboardModelTest(unittest.TestCase):
         )
         self.assertEqual(dashboard.high_detonation_selected, 1)
 
+    def test_idle_knock_margin_keeps_the_last_evaluated_value(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        channel_5, channel_6 = model.KNOCK_MARGIN_FIELDS[4:6]
+
+        def feed(tick, margin_5, margin_6):
+            group = list(generator.group(tick))
+            page = bytearray(group[10].data)
+            self.assertEqual(page[1], 4)
+            page[4:6] = margin_5.to_bytes(2, "big", signed=True)
+            page[6:8] = margin_6.to_bytes(2, "big", signed=True)
+            group[10] = model.FrameRecord(0x6F0, bytes(page))
+            return feed_group(
+                dashboard, group, tick * model.BASE_TICK_SECONDS
+            )
+
+        for tick in range(1, 5):
+            feed_group(
+                dashboard,
+                generator.group(tick),
+                tick * model.BASE_TICK_SECONDS,
+            )
+        self.assertIsNotNone(feed(5, model.KNOCK_MARGIN_IDLE, -250))
+        evaluated_at = dashboard.updated_at[channel_6]
+        self.assertEqual(dashboard.raw[channel_6], -250)
+        self.assertNotIn(channel_5, dashboard.raw)
+        for tick in range(6, 10):
+            feed_group(
+                dashboard,
+                generator.group(tick),
+                tick * model.BASE_TICK_SECONDS,
+            )
+        snapshot = feed(10, model.KNOCK_MARGIN_IDLE, model.KNOCK_MARGIN_IDLE)
+
+        self.assertEqual(snapshot.fields[channel_6], model.KNOCK_MARGIN_IDLE)
+        self.assertEqual(dashboard.raw[channel_6], -250)
+        self.assertEqual(dashboard.updated_at[channel_6], evaluated_at)
+        self.assertNotIn(channel_5, dashboard.raw)
+        self.assertEqual(dashboard.missed_snapshots, 0)
+
     def test_tick_loss_and_stock_context_are_visible(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
@@ -202,7 +242,8 @@ class DashboardModelTest(unittest.TestCase):
         self.assertTrue(dashboard.schema_verified)
         self.assertIsNotNone(dashboard.value("rpm"))
 
-        bad = list(generator.group(8))
+        bad = list(generator.group(9))
+        self.assertEqual(bad[9].data[1], 3)
         health = bytearray(bad[9].data)
         health[5] ^= 1
         bad[9] = model.FrameRecord(0x6F0, bytes(health))
