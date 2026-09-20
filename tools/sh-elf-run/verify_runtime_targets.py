@@ -29,12 +29,6 @@ from patches import runtime_targets
 from tools.mapkit import vq37_native_fuel_cut
 
 
-MAP_CASES_BY_VARIANT = {
-    "dual-cvtc": 139,
-    "sh7059-1nd": 196,
-    "sh7059-1me3b": 195,
-    "sh7058-jk78": 167,
-}
 # Harness target define and exact PASS marker of every VQ37 map variant.
 VQ37_MAP_HARNESS_BY_VARIANT = {
     "sh7059-1nd": (
@@ -64,11 +58,6 @@ IGNITION_STATE_HARNESS_BASES = {
     "ignition_surface_state_5": 0x0000F690,
     "ignition_surface_state_6_7": 0x0000F6D0,
 }
-ROLLING_CASES_BY_VARIANT = {
-    "relocated-8mfk": 121,
-    "vq37-fuel-coordinator": 124,
-}
-TELEMETRY_CASES = 76
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 RTE_STUB = bytes.fromhex("002b0009")
@@ -675,15 +664,8 @@ def verify_target(rom, locks, verbose=False):
         + (0 if rolling_audit is None else rolling_audit.instructions)
         + can_audit.instructions
     )
-    map_cases = MAP_CASES_BY_VARIANT[target.map_layout.variant]
-    dynamic_cases = (
-        map_cases
-        + (
-            ROLLING_CASES_BY_VARIANT[target.rolling_layout.variant]
-            if target.rolling_layout is not None
-            else 0
-        )
-        + TELEMETRY_CASES
+    dynamic_cases = sum(
+        can_verifier.marker_cases(marker) for marker in markers
     )
     print(
         f"VQ_SH_ELF_RUNTIME_TARGET status=PASS rom={rom} "

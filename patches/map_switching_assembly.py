@@ -650,23 +650,31 @@ def _expected_long_literals(layout):
     }
 
 
-def _long_literals(parsed):
+def _labeled_literals(parsed, kind):
     statement_by_address = parsed.statement_by_address
     literals = {}
     for label, address in parsed.labels.items():
         statement = statement_by_address.get(address)
-        if statement is None or statement.kind != "long":
+        if statement is None or statement.kind != kind:
             continue
         values = _values(
             statement.text, parsed.path, statement.line_number
         )
         if len(values) != 1:
             raise ValueError(
-                f"{parsed.path}:{statement.line_number}: labeled .long "
+                f"{parsed.path}:{statement.line_number}: labeled .{kind} "
                 "must contain one value"
             )
         literals[label] = _number(values[0])
     return literals
+
+
+def _long_literals(parsed):
+    return _labeled_literals(parsed, "long")
+
+
+def _word_literals(parsed):
+    return _labeled_literals(parsed, "word")
 
 
 def _validate_registers_and_control_flow(

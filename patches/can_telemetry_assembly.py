@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from patches import can_telemetry
 from patches import can_telemetry_layout as layout_model
 from patches import can_telemetry_profile
 from patches import map_switching_assembly as common
@@ -176,6 +177,58 @@ def _expected_long_literals():
             "telemetry_control_config_integrity": 0x54454C32,
         },
     }
+
+
+def _manifest_identity(manifest):
+    """Wire identity the ROM configuration guard accepts.
+
+    The guard admits exactly one profile, so every value it compares against
+    is a projection of the manifest and of the configuration record model.
+    """
+    if len(manifest.profiles) != 1:
+        raise ValueError(
+            "the configuration guard admits exactly one profile"
+        )
+    profile = manifest.profiles[0]
+    return {
+        "magic": can_telemetry.CONFIG_MAGIC,
+        "version": can_telemetry.CONFIG_VERSION,
+        "can_id_max": can_telemetry.MAX_DATA_CAN_ID,
+        "profile_id": profile.profile_id,
+        "page_count": profile.page_count,
+        "crc16": profile.crc16,
+    }
+
+
+def _expected_word_literals(identity):
+    return {
+        "capture": {
+            "telemetry_config_magic": identity["magic"],
+            "telemetry_config_can_id_max": identity["can_id_max"],
+            "telemetry_config_crc": identity["crc16"],
+        },
+        "control": {
+            "telemetry_control_config_magic": identity["magic"],
+            "telemetry_control_data_can_id_max": identity["can_id_max"],
+            "telemetry_control_profile_crc": identity["crc16"],
+        },
+    }
+
+
+def _validate_identity_immediates(parsed, unit_key, identity, page_form):
+    """Require the guard to compare against the manifest identity itself."""
+    texts = _texts(parsed)
+    required = (
+        f"cmp/eq {identity['version']:#x},r0",
+        f"cmp/eq {identity['profile_id']:#x},r0",
+        page_form.format(pages=f"{identity['page_count']:#x}"),
+    )
+    for instruction in required:
+        if instruction not in texts:
+            raise ValueError(
+                f"{unit_key}: configuration guard lacks {instruction}, "
+                "which the manifest requires"
+            )
 
 
 def _validate_wrappers(parsed):
@@ -349,6 +402,8 @@ def _validate_control(parsed):
 def validate_assembly_sources(layout=None):
     layout = layout or layout_model.load_layout()
     can_telemetry_profile.generate(check=True)
+    identity = _manifest_identity(can_telemetry_profile.load_manifest())
+    expected_words = _expected_word_literals(identity)
     source_dir = layout_model.DEFAULT_MANIFEST.parent
     parsed_by_unit = {}
     expected_literals = (
@@ -391,14 +446,30 @@ def validate_assembly_sources(layout=None):
                 raise ValueError(f"{unit.key}: {label} entry differs")
         if unit.key != "tables" and common._long_literals(parsed) != expected_literals[unit.key]:
             raise ValueError(f"{unit.key}: long literal contract differs")
+        if unit.key in expected_words:
+            published = common._word_literals(parsed)
+            carried = {
+                label: published.get(label)
+                for label in expected_words[unit.key]
+            }
+            if carried != expected_words[unit.key]:
+                raise ValueError(
+                    f"{unit.key}: wire identity literals differ from the manifest"
+                )
         if unit.key == "wrappers":
             _validate_wrappers(parsed)
         elif unit.key == "capture":
             _validate_capture(parsed)
+            _validate_identity_immediates(
+                parsed, unit.key, identity, "mov #{pages},r6"
+            )
         elif unit.key == "completion":
             _validate_completion(parsed, layout.variant)
         elif unit.key == "control":
             _validate_control(parsed)
+            _validate_identity_immediates(
+                parsed, unit.key, identity, "cmp/eq {pages},r0"
+            )
         elif unit.key == "tables":
             expected = can_telemetry_profile.render_tables(
                 can_telemetry_profile.load_manifest()

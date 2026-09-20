@@ -1,11 +1,14 @@
 import importlib.util
 from pathlib import Path
+import tempfile
 from types import SimpleNamespace
 import unittest
 
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_layout as layout_model
+from patches import can_telemetry
 from patches import can_telemetry_assembly
+from patches import can_telemetry_profile
 from patches import can_telemetry_compose
 from patches import can_telemetry_layout
 from patches import rolling_launch_assembly
@@ -423,6 +426,65 @@ mov #0x5,r1
         self.assertIn("vq37_native_fuel_cut", verifier)
         self.assertIn("TELEMETRY_TAIL_CHAIN", telemetry_harness)
         self.assertIn("RTE_STUB", verifier)
+
+    def test_harness_configuration_fixture_is_the_manifest_record(self):
+        manifest = can_telemetry_profile.load_manifest()
+        expected = can_telemetry.Configuration(
+            enabled=True,
+            can_id=manifest.candidate_can_id,
+            profile=manifest.profiles[0].name,
+            tick_divisor=manifest.candidate_tick_divisor,
+        ).to_bytes(manifest)
+        self.assertEqual(
+            TELEMETRY_VERIFIER.require_harness_configuration(), expected
+        )
+
+    def test_drifted_harness_configuration_fails_the_gate(self):
+        source = TELEMETRY_VERIFIER.HARNESS_SOURCE.read_text(
+            encoding="utf-8"
+        )
+        drifts = (
+            ("profile CRC", "0xe1, 0x44", "0xe1, 0x45"),
+            ("page count", "0x05, 0x0b", "0x05, 0x0c"),
+            ("profile ID", "0x02, 0x01, 0x05", "0x02, 0x01, 0x06"),
+        )
+        original = TELEMETRY_VERIFIER.HARNESS_SOURCE
+        with tempfile.TemporaryDirectory() as directory:
+            drifted = Path(directory) / "can_telemetry_harness.c"
+            for field, carried, replacement in drifts:
+                with self.subTest(field=field):
+                    self.assertIn(carried, source)
+                    drifted.write_text(
+                        source.replace(carried, replacement, 1),
+                        encoding="utf-8",
+                    )
+                    TELEMETRY_VERIFIER.HARNESS_SOURCE = drifted
+                    try:
+                        with self.assertRaises(
+                            TELEMETRY_VERIFIER.VerificationError
+                        ):
+                            TELEMETRY_VERIFIER.require_harness_configuration()
+                    finally:
+                        TELEMETRY_VERIFIER.HARNESS_SOURCE = original
+
+    def test_case_counts_are_read_from_the_harness_markers(self):
+        self.assertEqual(
+            TELEMETRY_VERIFIER.marker_cases(
+                TELEMETRY_VERIFIER.REQUIRED_DYNAMIC_MARKER
+            ),
+            78,
+        )
+        for output in ("no counter here", "cases=1 and cases=2"):
+            with self.subTest(output=output):
+                with self.assertRaises(
+                    TELEMETRY_VERIFIER.VerificationError
+                ):
+                    TELEMETRY_VERIFIER.marker_cases(output)
+        runtime_source = (
+            ROOT / "tools/sh-elf-run/verify_runtime_targets.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("TELEMETRY_CASES", runtime_source)
+        self.assertIn("can_verifier.marker_cases(marker)", runtime_source)
 
 
 if __name__ == "__main__":

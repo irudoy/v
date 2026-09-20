@@ -29,6 +29,41 @@ class CanTelemetryContractTest(unittest.TestCase):
         cls.layout = can_telemetry_layout.load_layout()
         cls.blobs = can_telemetry_assembly.load_payloads(cls.layout)
 
+    def test_rom_configuration_guard_follows_the_manifest_identity(self):
+        base = can_telemetry_assembly._manifest_identity
+        drifts = (
+            ("crc16", 0xE145),
+            ("profile_id", 6),
+            ("page_count", 12),
+            ("version", 3),
+        )
+        for field, value in drifts:
+            with self.subTest(field=field):
+                def drifted(manifest, _field=field, _value=value):
+                    identity = base(manifest)
+                    identity[_field] = _value
+                    return identity
+
+                can_telemetry_assembly._manifest_identity = drifted
+                try:
+                    with self.assertRaises(ValueError):
+                        can_telemetry_assembly.validate_assembly_sources(
+                            self.layout
+                        )
+                finally:
+                    can_telemetry_assembly._manifest_identity = base
+        self.assertEqual(
+            base(self.manifest),
+            {
+                "magic": can_telemetry.CONFIG_MAGIC,
+                "version": can_telemetry.CONFIG_VERSION,
+                "can_id_max": can_telemetry.MAX_DATA_CAN_ID,
+                "profile_id": 5,
+                "page_count": 11,
+                "crc16": 0xE144,
+            },
+        )
+
     def test_generated_profile_identity_and_complete_tables(self):
         self.assertEqual(
             tuple(

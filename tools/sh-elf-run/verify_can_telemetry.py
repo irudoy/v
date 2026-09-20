@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 from pathlib import Path
+import re
 import sys
 import tempfile
 
@@ -21,9 +22,11 @@ if str(ROOT) not in sys.path:
 import verify_map_switching as base_verifier
 import verify_rolling_launch as rolling_verifier
 
+from patches import can_telemetry
 from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
 from patches import can_telemetry_layout
+from patches import can_telemetry_profile
 from patches import map_switching_assembly
 from patches import map_switching_layout
 from patches import rolling_launch_assembly
@@ -37,7 +40,14 @@ EXPECTED_COMPOSITION_CHANGED_BYTES = 1922
 EXPECTED_COMPOSITION_WRITE_BYTES = 3488
 EXPECTED_INSTRUCTION_COUNT = 720
 EXPECTED_CODE_ENTRY_COUNT = 11
-EXPECTED_DYNAMIC_CASES = 76
+REQUIRED_DYNAMIC_MARKER = (
+    "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=78 entries=11 "
+    "profiles=1 contexts=10 isr_rte=5"
+)
+HARNESS_SOURCE = TOOL_DIR / "can_telemetry_harness.c"
+HARNESS_CONFIGURATION = re.compile(
+    r"static const uint8_t configuration\[16\] = \{(?P<bytes>[^}]*)\};"
+)
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 # Simulator-only staging block of the knock evaluator stub inside the test RAM
@@ -288,16 +298,55 @@ def build_and_run_dynamic_harness(fixture, build_dir):
         ],
         timeout=180,
     )
-    marker = (
-        "VQ_SH_ELF_CAN_TELEMETRY status=PASS cases=78 entries=11 "
-        "profiles=1 contexts=10 isr_rte=5"
-    )
-    if marker not in result.stdout:
+    if REQUIRED_DYNAMIC_MARKER not in result.stdout:
         raise VerificationError(
             "CAN telemetry harness returned zero without the exact marker"
             + (f"\n{result.stdout.rstrip()}" if result.stdout else "")
         )
     return result.stdout.strip()
+
+
+def marker_cases(output):
+    """Read the case count a harness reports about itself."""
+    counts = re.findall(r"\bcases=(\d+)\b", output)
+    if len(counts) != 1:
+        raise VerificationError(
+            "a harness output reports its case count exactly once, "
+            f"this one reports it {len(counts)} times"
+        )
+    return int(counts[0])
+
+
+def require_harness_configuration():
+    """Require the harness fixture to be the manifest configuration record."""
+    manifest = can_telemetry_profile.load_manifest()
+    if len(manifest.profiles) != 1:
+        raise VerificationError(
+            "the harness fixture stands for exactly one profile"
+        )
+    expected = can_telemetry.Configuration(
+        enabled=True,
+        can_id=manifest.candidate_can_id,
+        profile=manifest.profiles[0].name,
+        tick_divisor=manifest.candidate_tick_divisor,
+    ).to_bytes(manifest)
+    source = HARNESS_SOURCE.read_text(encoding="utf-8")
+    match = HARNESS_CONFIGURATION.search(source)
+    if match is None:
+        raise VerificationError(
+            f"{HARNESS_SOURCE.name} declares no 16-byte configuration fixture"
+        )
+    carried = bytes(
+        int(item, 0)
+        for item in match.group("bytes").replace("\n", " ").split(",")
+        if item.strip()
+    )
+    if carried != expected:
+        raise VerificationError(
+            f"{HARNESS_SOURCE.name} configuration fixture is "
+            f"{carried.hex()}, the manifest requires {expected.hex()}"
+        )
+    return expected
 
 
 def verify(verbose=False, check_toolchain=True):
@@ -311,6 +360,7 @@ def verify(verbose=False, check_toolchain=True):
     parsed = can_telemetry_assembly.validate_assembly_sources(
         telemetry_layout
     )
+    require_harness_configuration()
     with tempfile.TemporaryDirectory(
         prefix="vq-sh-elf-can-telemetry-"
     ) as directory:
@@ -339,6 +389,7 @@ def verify(verbose=False, check_toolchain=True):
         dynamic_marker = build_and_run_dynamic_harness(
             fixture, build_dir
         )
+    dynamic_cases = marker_cases(dynamic_marker)
     print(dynamic_marker)
     print(
         "VQ_SH_ELF_CAN_TELEMETRY_VERIFY status=PASS"
@@ -349,7 +400,7 @@ def verify(verbose=False, check_toolchain=True):
         f" direct_branches={audit.direct_branches}"
         f" indirect_transfers={audit.indirect_transfers}"
         f" composition_sha256={composition.sha256}"
-        f" dynamic_cases={EXPECTED_DYNAMIC_CASES}"
+        f" dynamic_cases={dynamic_cases}"
         f" base_ram_literals_relocated={base_relocated}"
         f" rolling_ram_literals_relocated={launch_relocated}"
         f" telemetry_ram_literals_relocated={telemetry_relocated}"
@@ -362,7 +413,7 @@ def verify(verbose=False, check_toolchain=True):
     return {
         "composition": composition,
         "audit": audit,
-        "dynamic_cases": EXPECTED_DYNAMIC_CASES,
+        "dynamic_cases": dynamic_cases,
     }
 
 

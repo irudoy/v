@@ -24,8 +24,11 @@ slot-to-field assignment per profile ID. Two producers implementing the same
 placement, widths, signedness, contexts, profile ID, and protocol version
 therefore publish the same wire identity.
 
-The endpoint is disabled by default. The complete software gate passes, but
-schema 2 has not been tested in the target vehicle. The recorded schema 1
+The endpoint is disabled by default. The complete software gate passes, and
+three road drives on 2026-08-26 accepted schema 2 transport and channel
+coverage. Those drives carried profile 1 and the recording of 2026-09-17
+carried profile 3, so the current profile 5 has no vehicle record yet. The
+recorded schema 1
 `wide54` result remains useful bus-capacity and mailbox evidence; it does not
 validate schema 2 and is intentionally not accepted by the current decoder.
 
@@ -188,7 +191,14 @@ The only profile name is `tuning`. The default disabled bytes are
 `43 54 02 00 05 0B 01 00 06 F0 E1 44 54 45 4C 32`.
 
 Firmware validates every field before incrementing the telemetry tick,
-touching the queue, or accepting a control command. The builder independently
+touching the queue, or accepting a control command. The protocol version,
+profile ID, page count, and profile CRC the capture and control guards compare
+against are checked instruction by instruction and literal by literal against
+`can-telemetry-profile.toml`, and the executable gate requires the harness
+configuration fixture to equal the configuration record the same manifest
+produces. A wire layout change that moves the CRC therefore fails the gate
+until both the firmware guards and the fixture carry the new identity. The
+builder independently
 requires mailbox 26 to be a type-4 DLC-8 transmitter for the configured CAN ID.
 This mailbox configuration is present even when startup streaming is disabled,
 because a later START command must be able to transmit without reinitializing

@@ -66,10 +66,10 @@ The gate performs these checks:
    both invalid selector values of each family, plus one unknown base that must
    reach the stock 8x8 lookup unchanged. The harness names the four bases by
    the placeholders `0x0000f610`, `0x0000f710`, `0x0000f690`, and `0x0000f6d0`,
-   and the stock 8x8 lookup is a return stub of the dynamic fixture. The 1ND
-   map harness reports `cases=196 adapters=136 entries=14`, 1ME3B
-   `cases=195 selector=18 adapters=134 entries=14`, and JK78C
-   `cases=167 adapters=107 entries=13`.
+   and the stock 8x8 lookup is a return stub of the dynamic fixture. The three
+   targets differ in selector width, adapter count, and entry count; each
+   marker carries its own values, and the verifier sums the case counts the
+   markers report.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
    unchanged stock callees outside the implementation under test. The Rolling
