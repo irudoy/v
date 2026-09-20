@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.2.3`.
+Current dashboard version: `8.2.4`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.2.3-windows.zip
+  --output tmp/vq-can-telemetry-v8.2.4-windows.zip
 ```
 
 On the Windows laptop:
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.2.3-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.2.4-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.2.3 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.2.4 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -208,8 +208,9 @@ snapshot to one UDP endpoint. The `FEED` button opens its dialog:
 `APPLY` restarts the feed with these values and stores them in the settings
 file, so the feed state returns on the next start. `FEED` stays lit while the
 feed runs. The feed follows every source, so `DEMO` and `REPLAY` exercise a
-receiver without CAN hardware. One datagram is sent per 50 ms UI poll that
-completed at least one snapshot. The payload is ASCII:
+receiver without CAN hardware. One datagram is sent per 25 ms source poll
+that completed at least one snapshot, so the feed carries the latest snapshot
+of each poll and not every snapshot of the group rate. The payload is ASCII:
 
 ```text
 RRUDP1 rpm=2512.5 bfs_ms=5.81543 timing_deg=24 ...
@@ -342,10 +343,13 @@ vehicle speed.
 ## Window layout
 
 The window opens inside the current screen and remains usable down to
-`560x460`. Displayed values follow the source ten times a second, while the
-event queue, the MLG recording, and the live value feed follow it twenty times
-a second. Only the selected panel set follows live values; the other set is
-written when its tab is selected. The header is one compact row: the short product name with the
+`560x460`. The source queue, the MLG recording, and the live value feed run on
+a 25 ms timer, and the window is painted on a 50 ms timer of its own. The two
+timers stay separate because a toolkit rounds a timer up to the step of its own
+event loop: a painting driven from the queue timer lands on the first queue tick
+past its interval, which on a platform whose step is coarser than the queue
+interval halves the rate the painting interval names. Only the selected panel
+set follows live values; the other set is written when its tab is selected. The header is one compact row: the short product name with the
 version as `VQCT vX.Y.Z`, source state, channel and data-ID entries, and the
 tool buttons; the title of the operating-system window carries the full
 product name. Header controls, status fields, and health counters flow into
@@ -570,6 +574,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.3 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.4 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

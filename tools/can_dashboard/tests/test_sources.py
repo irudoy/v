@@ -397,6 +397,46 @@ class DashboardPresentationTest(unittest.TestCase):
             "stop",
         )
 
+    def test_the_window_is_painted_on_a_timer_of_its_own(self):
+        """The queue drain must not carry the painting.
+
+        A toolkit rounds a timer up to the step of its own event loop, so a
+        painting driven from the drain lands on the first drain tick past the
+        painting interval and runs at a fraction of the rate that interval
+        names.
+        """
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        dashboard.events = app.queue.Queue()
+        dashboard.source_generation = 1
+        dashboard.recorder = None
+        dashboard.feed = None
+        delays = []
+        dashboard.root = types.SimpleNamespace(
+            after=lambda delay, _call: delays.append(delay)
+        )
+        dashboard._refresh = mock.Mock()
+
+        dashboard._poll()
+
+        dashboard._refresh.assert_not_called()
+        self.assertEqual(delays, [app.POLL_INTERVAL_MS])
+
+    def test_the_painting_timer_paints_and_renews_itself(self):
+        dashboard = app.DashboardApp.__new__(app.DashboardApp)
+        calls = []
+        dashboard.root = types.SimpleNamespace(
+            after=lambda delay, call: calls.append((delay, call))
+        )
+        dashboard._refresh = mock.Mock()
+
+        dashboard._refresh_tick()
+
+        dashboard._refresh.assert_called_once()
+        self.assertEqual(
+            calls,
+            [(app.REFRESH_INTERVAL_MS, dashboard._refresh_tick)],
+        )
+
     def test_confirmed_stream_command_flips_the_button(self):
         dashboard = app.DashboardApp.__new__(app.DashboardApp)
         dashboard.events = app.queue.Queue()
@@ -412,8 +452,6 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.stream_button = types.SimpleNamespace(configure=configure)
         dashboard.control_var = types.SimpleNamespace(set=lambda text: None)
         dashboard.root = types.SimpleNamespace(after=lambda *arguments: None)
-        dashboard.last_refresh = 0.0
-        dashboard._refresh = lambda now: None
         dashboard.events.put(app.SourceEnvelope(
             3,
             sources.ControlStatus(

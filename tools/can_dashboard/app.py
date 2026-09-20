@@ -187,8 +187,8 @@ def mono_font(size, bold=False):
 
 
 LOG = dashboard_log.logger()
-POLL_INTERVAL_MS = 50
-REFRESH_INTERVAL_MS = 100
+POLL_INTERVAL_MS = 25
+REFRESH_INTERVAL_MS = 50
 PREFERRED_WINDOW_WIDTH = 1520
 PREFERRED_WINDOW_HEIGHT = 920
 MIN_WINDOW_WIDTH = 560
@@ -837,7 +837,6 @@ class DashboardApp:
         self.active_tab = 0
         self.picker = None
         self.feed_dialog = None
-        self.last_refresh = 0.0
         self.status_dot_color = None
         self._create_variables()
         self._restart_feed()
@@ -848,6 +847,7 @@ class DashboardApp:
         if sys.platform == "darwin":
             self.root.tk.createcommand("::tk::mac::Quit", self.close)
         self.root.after(POLL_INTERVAL_MS, self._poll)
+        self.root.after(REFRESH_INTERVAL_MS, self._refresh_tick)
         if args.demo:
             self.root.after(200, self.start_demo)
         elif args.replay:
@@ -1738,10 +1738,20 @@ class DashboardApp:
         if new_snapshot and self.feed is not None:
             self.feed.publish(self.model)
             self.feed_var.set(f"Feed: {self.feed.status()}")
-        if now - self.last_refresh >= REFRESH_INTERVAL_MS / 1000:
-            self.last_refresh = now
-            self._refresh(now)
         self.root.after(POLL_INTERVAL_MS, self._poll)
+
+    def _refresh_tick(self):
+        """Paint the window on a timer of its own.
+
+        The drain of the source queue and the painting of the window keep
+        separate timers, because a painting driven from the drain can only
+        land on a drain tick: a platform that rounds a timer up to its own
+        step then carries the painting to the next tick after the one it
+        was asked for, and the window is painted at half the rate the
+        interval names.
+        """
+        self._refresh(time.monotonic())
+        self.root.after(REFRESH_INTERVAL_MS, self._refresh_tick)
 
     def _metric_value(self, key):
         if key == "rpm":
