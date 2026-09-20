@@ -19,7 +19,6 @@ class WindowsPackageTest(unittest.TestCase):
                 expected = {
                     prefix + "install.cmd",
                     prefix + "run-dashboard.cmd",
-                    prefix + "run-demo.cmd",
                     prefix + "convert-trc-to-mlg.cmd",
                     prefix + "VERSION.txt",
                     prefix + "requirements.txt",
@@ -56,7 +55,6 @@ class WindowsPackageTest(unittest.TestCase):
                     {
                         "install.cmd",
                         "run-dashboard.cmd",
-                        "run-demo.cmd",
                         "convert-trc-to-mlg.cmd",
                     },
                 )

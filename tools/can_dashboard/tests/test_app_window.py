@@ -198,6 +198,30 @@ class DashboardWindowTest(unittest.TestCase):
         self.assertEqual(dashboard.panel_grids[0].winfo_manager(), "")
         self.assertEqual(dashboard.panel_grids[1].winfo_manager(), "pack")
 
+    def test_only_the_shown_tab_follows_live_values(self):
+        dashboard = self.dashboard()
+        dashboard.select_tab(0)
+        dashboard._metric_value = lambda key: 12.0
+        dashboard._refresh(0.0)
+        shown = [
+            panel.variables[metric.key].get()
+            for panel, metrics in dashboard.tab_panels[0]
+            for metric in metrics
+        ]
+        hidden = [
+            panel.variables[metric.key].get()
+            for panel, metrics in dashboard.tab_panels[1]
+            for metric in metrics
+        ]
+        self.assertTrue(all(value != "--" for value in shown))
+        self.assertTrue(all(value == "--" for value in hidden))
+        dashboard.select_tab(1)
+        self.assertTrue(all(
+            panel.variables[metric.key].get() != "--"
+            for panel, metrics in dashboard.tab_panels[1]
+            for metric in metrics
+        ))
+
     def test_card_picker_opens_once_and_applies_into_the_window(self):
         dashboard = self.dashboard()
         dashboard.open_hero_picker()

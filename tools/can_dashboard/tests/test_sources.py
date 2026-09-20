@@ -412,6 +412,7 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.stream_button = types.SimpleNamespace(configure=configure)
         dashboard.control_var = types.SimpleNamespace(set=lambda text: None)
         dashboard.root = types.SimpleNamespace(after=lambda *arguments: None)
+        dashboard.last_refresh = 0.0
         dashboard._refresh = lambda now: None
         dashboard.events.put(app.SourceEnvelope(
             3,

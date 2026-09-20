@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.2.0`.
+Current dashboard version: `8.2.1`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.2.0-windows.zip
+  --output tmp/vq-can-telemetry-v8.2.1-windows.zip
 ```
 
 On the Windows laptop:
@@ -70,9 +70,9 @@ On the Windows laptop:
 2. Install 64-bit Python 3.11 from python.org with the `py` launcher.
 3. Extract the complete ZIP to a writable directory.
 4. Run `install.cmd` once. It creates `.venv` and installs `python-can`.
-5. Run `run-demo.cmd` to verify the UI without CAN hardware.
-6. Run `run-dashboard.cmd`. It opens the adapter in active/ACK mode, which
+5. Run `run-dashboard.cmd`. It opens the adapter in active/ACK mode, which
    START/STOP control requires and which gives an isolated ECU its CAN ACK.
+   The `DEMO` button runs the UI without CAN hardware.
 
 The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
 1.1 paths to it after `install.cmd`; each result is written beside its source.
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.2.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.2.1-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.2.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.2.1 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -339,7 +339,10 @@ vehicle speed.
 ## Window layout
 
 The window opens inside the current screen and remains usable down to
-`560x460`. The header is one compact row: the short product name with the
+`560x460`. Displayed values follow the source ten times a second, while the
+event queue, the MLG recording, and the live value feed follow it twenty times
+a second. Only the selected panel set follows live values; the other set is
+written when its tab is selected. The header is one compact row: the short product name with the
 version as `VQCT vX.Y.Z`, source state, channel and data-ID entries, and the
 tool buttons; the title of the operating-system window carries the full
 product name. Header controls, status fields, and health counters flow into
@@ -382,6 +385,11 @@ the width equally and shrink with the window. A narrowing card steps its value
 font down from 22 pt to 10 pt, drops the unit, and elides the title; hover over
 the title reports the full title, the unit, and the value.
 
+A card asks for a width of its own that its content cannot change: the title
+takes one character and the value row holds its size against its labels. The
+row is therefore laid out from the width of the row alone, and a value that
+does not fit is elided instead of widening every card of the row.
+
 `CARDS` opens a dialog with the available metrics on the left and the shown
 cards, left to right, on the right. Every metric of the primary and extended
 panels can be a card, and the row holds 0 to 12 cards. `DEFAULTS` restores
@@ -415,6 +423,13 @@ file.
 The card and panel area answers both a mouse wheel and a trackpad gesture
 anywhere over its content. Tk reports trackpad scrolling as its own event, so
 each input is bound separately, and the scrollbar keeps its stock bindings.
+
+The scroller holds the height of its content frame, so a panel or a card that
+needs more or less room changes what the content asks for without resizing
+that frame. The scroller re-measures what the content asks for on its own, and
+the scrollbar and the scrollable region follow it. The column of the scrollbar
+holds its width whether it is shown or not, so the content keeps one width in
+both states.
 
 Every status value carries a title, shortens to the available width with a
 trailing ellipsis, and reports its title and full text on hover. A click copies
@@ -524,6 +539,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.1 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

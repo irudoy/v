@@ -11,6 +11,7 @@ from tkinter import ttk
 ELLIPSIS = "..."
 SCROLLBAR_RESERVE = 14
 RELAYOUT_DELAY_MS = 16
+CONTENT_WATCH_MS = 100
 WHEEL_NOTCH = 120.0
 WHEEL_PIXELS = 60
 TOUCHPAD_PIXELS = 20
@@ -826,13 +827,17 @@ class ScrollableFrame(tk.Frame):
             anchor="nw",
         )
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, minsize=SCROLLBAR_RESERVE)
         self.rowconfigure(0, weight=1)
         self.canvas.grid(row=0, column=0, sticky="nsew")
         self._content_height = None
+        self._required = None
+        self._reserve = None
         self._touchpad_events = 0
+        self._reserve_column()
         self.content.bind("<Configure>", self._on_content_configure, add="+")
         self.canvas.bind("<Configure>", self._on_canvas_configure, add="+")
+        self.bind("<Destroy>", self._on_destroy, add="+")
+        self._watch = self.after(CONTENT_WATCH_MS, self._watch_content)
         self.bind_all("<MouseWheel>", self._on_wheel, add="+")
         self.bind_all("<Button-4>", self._on_wheel, add="+")
         self.bind_all("<Button-5>", self._on_wheel, add="+")
@@ -848,9 +853,50 @@ class ScrollableFrame(tk.Frame):
         self.canvas.itemconfigure(self._window, width=event.width)
         self._sync()
 
+    def _watch_content(self):
+        """Follow the height the content asks for while its frame is held.
+
+        The canvas item holds the height of the content frame, so a panel
+        or a card that needs more or less room changes what the content
+        requests without resizing the frame and without any event on it.
+        The scrollbar and the scrollable region would then stand for a
+        content of another height, so the scroller re-measures on its own.
+        """
+        self._watch = None
+        try:
+            if not self.winfo_exists():
+                return
+            if self.content.winfo_reqheight() != self._required:
+                self._sync()
+            self._watch = self.after(CONTENT_WATCH_MS, self._watch_content)
+        except tk.TclError:
+            self._watch = None
+
+    def _on_destroy(self, event):
+        if event.widget is not self or self._watch is None:
+            return
+        try:
+            self.after_cancel(self._watch)
+        except tk.TclError:
+            pass
+        self._watch = None
+
+    def _reserve_column(self):
+        """Hold the width of the scrollbar whether it is shown or not.
+
+        The canvas then keeps one width across both states, so the content
+        is laid out once and the scrollbar cannot flip on its own width.
+        """
+        width = max(SCROLLBAR_RESERVE, self.scrollbar.winfo_reqwidth())
+        if width != self._reserve:
+            self._reserve = width
+            self.columnconfigure(1, minsize=width)
+
     def _sync(self):
+        self._reserve_column()
         viewport = self.canvas.winfo_height()
         required = self.content.winfo_reqheight()
+        self._required = required
         if self._stretch and viewport > 1:
             height = max(required, viewport)
             if height != self._content_height:

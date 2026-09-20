@@ -57,7 +57,7 @@ if errorlevel 1 goto :failed
 ".venv\Scripts\python.exe" -m pip install -r requirements.txt
 if errorlevel 1 goto :failed
 echo.
-echo Installation complete. Run run-demo.cmd, then run-dashboard.cmd.
+echo Installation complete. Run run-dashboard.cmd.
 pause
 exit /b 0
 :failed
@@ -77,11 +77,6 @@ if not exist ".venv\Scripts\pythonw.exe" (
 )
 start "{PRODUCT_NAME}" ".venv\Scripts\pythonw.exe" -m tools.can_dashboard.app --channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile tuning --tick-divisor 1
 """
-
-RUN_DEMO_CMD = RUN_CMD.replace(
-    "--channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile tuning --tick-divisor 1",
-    "--can-id 0x6F0 --profile tuning --tick-divisor 1 --demo",
-)
 
 CONVERT_TRC_CMD = r"""@echo off
 setlocal
@@ -137,7 +132,6 @@ def build_package(output, *, force=False):
                 "requirements.txt": requirements,
                 "install.cmd": INSTALL_CMD,
                 "run-dashboard.cmd": RUN_CMD,
-                "run-demo.cmd": RUN_DEMO_CMD,
                 "convert-trc-to-mlg.cmd": CONVERT_TRC_CMD,
                 "VERSION.txt": __version__ + "\n",
             }

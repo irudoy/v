@@ -101,6 +101,41 @@ class WindowLayoutTest(unittest.TestCase):
                     button.label.winfo_reqwidth() + 2,
                 )
 
+    def test_a_hero_card_asks_for_a_width_its_value_cannot_change(self):
+        card = next(iter(self.dashboard.hero_cards.values()))
+        card.fit(160)
+        self.window.update_idletasks()
+        requested = card.winfo_reqwidth()
+        card.update_value("HIGH DETONATION")
+        self.window.update_idletasks()
+        self.assertEqual(card.winfo_reqwidth(), requested)
+        self.assertTrue(card.value_label.cget("text").endswith(widgets.ELLIPSIS))
+
+    def test_the_value_row_holds_the_height_of_its_labels(self):
+        card = next(iter(self.dashboard.hero_cards.values()))
+        for width in (400, 169, 80):
+            card.fit(width)
+            self.window.update_idletasks()
+            expected = card.value_label.winfo_reqheight()
+            if card.unit_shown:
+                expected = max(
+                    expected,
+                    card.unit_label.winfo_reqheight() + app.HERO_UNIT_TOP,
+                )
+            with self.subTest(width=width):
+                self.assertEqual(int(card.value_row.cget("height")), expected)
+
+    def test_a_long_value_leaves_the_hero_row_its_width(self):
+        row = self.dashboard.hero_row
+        for card in row.cards:
+            card.fit(160)
+        self.window.update_idletasks()
+        requested = row.winfo_reqwidth()
+        for card in row.cards:
+            card.update_value("HIGH DETONATION")
+        self.window.update_idletasks()
+        self.assertEqual(row.winfo_reqwidth(), requested)
+
     def test_panel_minimum_ignores_the_panel_content(self):
         for panels in self.dashboard.panel_grids:
             self.assertEqual(

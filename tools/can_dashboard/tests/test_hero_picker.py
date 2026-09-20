@@ -128,6 +128,19 @@ class HeroPickerTest(unittest.TestCase):
     def rows(self, listbox):
         return list(listbox.get(0, "end"))
 
+    def test_the_lists_are_wide_enough_for_the_catalog_captions(self):
+        self.assertGreaterEqual(hero_picker.LIST_WIDTH_CHARS, 46)
+        for listbox in (self.picker.available_list, self.picker.shown_list):
+            with self.subTest(listbox=str(listbox)):
+                self.assertEqual(
+                    int(listbox.cget("width")),
+                    hero_picker.LIST_WIDTH_CHARS,
+                )
+        self.assertEqual(
+            tuple(self.picker.minsize()),
+            (hero_picker.PICKER_MIN_WIDTH, hero_picker.PICKER_MIN_HEIGHT),
+        )
+
     def test_lists_split_the_catalog(self):
         self.assertEqual(
             self.rows(self.picker.available_list),

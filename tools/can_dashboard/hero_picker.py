@@ -9,6 +9,11 @@ from tkinter import ttk
 from tools.can_dashboard.widgets import ToolButton
 
 
+LIST_WIDTH_CHARS = 46
+PICKER_MIN_WIDTH = 900
+PICKER_MIN_HEIGHT = 440
+
+
 @dataclass(frozen=True)
 class HeroChoice:
     key: str
@@ -94,7 +99,7 @@ class HeroPicker(tk.Toplevel):
         self.title("Hero row cards")
         self.transient(master)
         self.resizable(True, True)
-        self.minsize(520, 320)
+        self.minsize(PICKER_MIN_WIDTH, PICKER_MIN_HEIGHT)
         self.selection = HeroSelection(choices, selected, limit)
         self._defaults = tuple(defaults)
         self._on_apply = on_apply
@@ -200,6 +205,7 @@ class HeroPicker(tk.Toplevel):
             highlightthickness=0,
             borderwidth=0,
             height=14,
+            width=LIST_WIDTH_CHARS,
         )
         listbox.grid(row=0, column=0, sticky="nsew")
         scrollbar = ttk.Scrollbar(

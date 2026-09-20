@@ -185,6 +185,8 @@ def mono_font(size, bold=False):
     return (FONT_MONO, size, "bold") if bold else (FONT_MONO, size)
 
 
+POLL_INTERVAL_MS = 50
+REFRESH_INTERVAL_MS = 100
 PREFERRED_WINDOW_WIDTH = 1520
 PREFERRED_WINDOW_HEIGHT = 920
 MIN_WINDOW_WIDTH = 560
@@ -192,6 +194,7 @@ MIN_WINDOW_HEIGHT = 460
 HERO_PAD = 8
 HERO_SPARKLINE_HEIGHT = 34
 HERO_UNIT_GAP = 5
+HERO_UNIT_TOP = 6
 PANEL_MIN_WIDTH = 250
 PANEL_VALUE_WIDTH = 150
 PANEL_VALUE_MIN_WIDTH = 104
@@ -496,6 +499,12 @@ class HeroCard(tk.Frame):
 
     The value font follows the card width, the title and the value elide, and
     the unit hides when a full-width sample of the value leaves no room.
+
+    The card asks for a width of its own that the shown text cannot change:
+    the title takes one character and the value row holds its size against
+    its labels. A row of cards is therefore laid out from the width of the
+    row alone, and a long value elides instead of widening every card,
+    which would resize the cards and re-elide their values without end.
     """
 
     def __init__(self, master, metric, color, palette, history=None):
@@ -520,12 +529,14 @@ class HeroCard(tk.Frame):
             fg=palette.muted,
             font=self._title_font,
             anchor="w",
+            width=1,
         )
         self.title_label.pack(fill="x", padx=HERO_PAD, pady=(6, 0))
-        value_row = tk.Frame(self, bg=palette.panel)
-        value_row.pack(fill="x", padx=HERO_PAD)
+        self.value_row = tk.Frame(self, bg=palette.panel, width=1, height=1)
+        self.value_row.pack_propagate(False)
+        self.value_row.pack(fill="x", padx=HERO_PAD)
         self.value_label = tk.Label(
-            value_row,
+            self.value_row,
             text=self._value,
             bg=palette.panel,
             fg=color,
@@ -534,14 +545,24 @@ class HeroCard(tk.Frame):
         )
         self.value_label.pack(side="left")
         self.unit_label = tk.Label(
-            value_row,
+            self.value_row,
             text=metric.unit,
             bg=palette.panel,
             fg=palette.muted,
             font=self._unit_font,
         )
         if self._unit_shown:
-            self.unit_label.pack(side="left", padx=(HERO_UNIT_GAP, 0), pady=(6, 0))
+            self.unit_label.pack(
+                side="left",
+                padx=(HERO_UNIT_GAP, 0),
+                pady=(HERO_UNIT_TOP, 0),
+            )
+        self._row_height = None
+        self._label_chrome = (
+            self.value_label.winfo_reqheight()
+            - self._value_font.metrics("linespace")
+        )
+        self._fit_value_row()
         self.sparkline = Sparkline(self, color, palette, history)
         self.sparkline.pack(fill="x", padx=6, pady=(0, 6))
         self.tooltip = Tooltip(
@@ -594,11 +615,30 @@ class HeroCard(tk.Frame):
                 self.unit_label.pack(
                     side="left",
                     padx=(HERO_UNIT_GAP, 0),
-                    pady=(6, 0),
+                    pady=(HERO_UNIT_TOP, 0),
                 )
             else:
                 self.unit_label.pack_forget()
+        self._fit_value_row()
         self._show_value()
+
+    def _fit_value_row(self):
+        """Hold the value row at the height its own fonts ask for.
+
+        The height comes from the fonts, because a label reports the size
+        it asks for one idle pass after the font it draws with changes.
+        """
+        height = self._value_font.metrics("linespace") + self._label_chrome
+        if self._unit_shown:
+            height = max(
+                height,
+                self._unit_font.metrics("linespace")
+                + self._label_chrome
+                + HERO_UNIT_TOP,
+            )
+        if height != self._row_height:
+            self._row_height = height
+            self.value_row.configure(height=height)
 
     def _show_value(self):
         available = 0
@@ -788,18 +828,21 @@ class DashboardApp:
         self.hero_history = {}
         self.hero_cards = {}
         self.data_panels = []
+        self.tab_panels = []
         self.panel_grids = []
         self.tab_buttons = []
         self.active_tab = 0
         self.picker = None
         self.feed_dialog = None
+        self.last_refresh = 0.0
+        self.status_dot_color = None
         self._create_variables()
         self._restart_feed()
         self.root.title(f"{PRODUCT_NAME} v{__version__}")
         self._apply_initial_geometry()
         self._build_window()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
-        self.root.after(50, self._poll)
+        self.root.after(POLL_INTERVAL_MS, self._poll)
         if args.demo:
             self.root.after(200, self.start_demo)
         elif args.replay:
@@ -836,11 +879,13 @@ class DashboardApp:
             child.destroy()
         self.hero_cards = {}
         self.data_panels = []
+        self.tab_panels = []
         self.panel_grids = []
         self.tab_buttons = []
         self.picker = None
         self.feed_dialog = None
         self.source_button_active = None
+        self.status_dot_color = None
         self.root.configure(bg=self.palette.bg)
         self._configure_styles()
         self._build_header()
@@ -1100,9 +1145,12 @@ class DashboardApp:
                 bg=palette.bg,
             )
             self.panel_grids.append(panels)
+            tab_panels = []
             for title, metrics in definitions:
                 panel = panels.add(DataPanel(panels, title, metrics, palette))
+                tab_panels.append((panel, metrics))
                 self.data_panels.append((panel, metrics))
+            self.tab_panels.append(tuple(tab_panels))
         self.select_tab(self.active_tab)
 
         self.footnote = tk.Label(
@@ -1141,6 +1189,7 @@ class DashboardApp:
             self.hero_row.configure(height=1)
 
     def select_tab(self, index):
+        """Show one tab of panels; only a shown panel follows live values."""
         self.active_tab = index
         for position, panels in enumerate(self.panel_grids):
             if position == index:
@@ -1149,6 +1198,8 @@ class DashboardApp:
                 panels.pack_forget()
         for position, button in enumerate(self.tab_buttons):
             button.configure(lit=position == index)
+        if index < len(self.tab_panels):
+            self._refresh_panels(index)
 
     def _store_settings(self, **changes):
         """Adopt changed settings and write them when a file is configured."""
@@ -1664,8 +1715,10 @@ class DashboardApp:
         if new_snapshot and self.feed is not None:
             self.feed.publish(self.model)
             self.feed_var.set(f"Feed: {self.feed.status()}")
-        self._refresh(now)
-        self.root.after(50, self._poll)
+        if now - self.last_refresh >= REFRESH_INTERVAL_MS / 1000:
+            self.last_refresh = now
+            self._refresh(now)
+        self.root.after(POLL_INTERVAL_MS, self._poll)
 
     def _metric_value(self, key):
         if key == "rpm":
@@ -1712,6 +1765,16 @@ class DashboardApp:
             return f"{value:.0f}"
         return f"{value:.{metric.digits}f}"
 
+    def _refresh_panels(self, index):
+        """Write the current values into the panels of one tab."""
+        for panel, metrics in self.tab_panels[index]:
+            for metric in metrics:
+                value = self._metric_value(metric.key)
+                text = self._format(metric, value)
+                if text != "--" and metric.unit:
+                    text = f"{text} {metric.unit}"
+                panel.set_value(metric.key, text)
+
     def _refresh(self, now):
         stats = self.model.stats(now)
         age = stats.last_snapshot_age
@@ -1729,7 +1792,9 @@ class DashboardApp:
         else:
             state, color = "LIVE", palette.green
         self.status_var.set(state)
-        self.status_dot.configure(fg=color)
+        if color != self.status_dot_color:
+            self.status_dot_color = color
+            self.status_dot.configure(fg=color)
         self.status_field.set_foreground(color)
         self._sync_source_button()
         self.schema_var.set(
@@ -1752,13 +1817,7 @@ class DashboardApp:
                 self._format(metric, value),
                 value if new_group and isinstance(value, (int, float)) else None,
             )
-        for panel, metrics in self.data_panels:
-            for metric in metrics:
-                value = self._metric_value(metric.key)
-                text = self._format(metric, value)
-                if text != "--" and metric.unit:
-                    text = f"{text} {metric.unit}"
-                panel.set_value(metric.key, text)
+        self._refresh_panels(self.active_tab)
 
         flags = self.model.telemetry_status_flags
         active_flags = ",".join(

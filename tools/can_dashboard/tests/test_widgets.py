@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 import unittest
 
@@ -499,8 +500,56 @@ class ScrollableFrameTest(unittest.TestCase):
     def _gesture(delta_y):
         return delta_y & 0xFFFF
 
+    def _settle(self, predicate, timeout=3.0):
+        """Run the event loop until predicate holds, or time runs out."""
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            self.window.update()
+            if predicate():
+                return True
+            time.sleep(0.02)
+        return False
+
     def test_the_scrollbar_appears_for_taller_content(self):
         self.assertTrue(self.scroller.scrollbar.winfo_ismapped())
+
+    def test_the_wheel_keeps_the_scrollbar_and_the_offset(self):
+        self.tall.event_generate("<MouseWheel>", delta=-120)
+        self.window.update()
+        self.assertTrue(self.scroller.scrollbar.winfo_ismapped())
+        self.assertGreater(self._offset(), 0)
+
+    def test_content_that_asks_for_less_room_puts_the_scrollbar_away(self):
+        self.tall.configure(height=40)
+        self.assertTrue(
+            self._settle(lambda: not self.scroller.scrollbar.winfo_ismapped()),
+            "the scrollbar stayed for content that fits",
+        )
+
+    def test_content_that_asks_for_more_room_brings_the_scrollbar_back(self):
+        self.tall.configure(height=40)
+        self.assertTrue(
+            self._settle(lambda: not self.scroller.scrollbar.winfo_ismapped())
+        )
+        self.tall.configure(height=1200)
+        self.assertTrue(
+            self._settle(lambda: self.scroller.scrollbar.winfo_ismapped()),
+            "the scrollbar stayed away from content that overflows",
+        )
+        region = self.scroller.canvas.bbox("all")
+        self.assertGreaterEqual(region[3], 1200)
+        self.tall.event_generate("<MouseWheel>", delta=-120)
+        self.window.update()
+        self.assertGreater(self._offset(), 0)
+
+    def test_the_canvas_keeps_one_width_in_both_scrollbar_states(self):
+        self.window.update()
+        with_bar = self.scroller.canvas.winfo_width()
+        self.tall.configure(height=40)
+        self.assertTrue(
+            self._settle(lambda: not self.scroller.scrollbar.winfo_ismapped())
+        )
+        self.assertEqual(self.scroller.canvas.winfo_width(), with_bar)
 
     def test_wheel_over_the_content_scrolls(self):
         self.tall.event_generate("<MouseWheel>", delta=-120)
