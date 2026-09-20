@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.0.0`.
+Current dashboard version: `8.0.1`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.0.0-windows.zip
+  --output tmp/vq-can-telemetry-v8.0.1-windows.zip
 ```
 
 On the Windows laptop:
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.0.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.0.1-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.0.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.0.1 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -139,12 +139,13 @@ start the application with `open -a "VQ CAN Telemetry" --args --listen-only`. A 
 ad-hoc-signed build is not notarized, so the first launch may require Finder's
 Open action after the archive source and SHA-256 are verified.
 
-The `0x551` display uses neutral labels `ASCD STATE 6` and `ASCD STATE 7` for
-byte 5 values `0x62` and `0x72`; every other value is shown in hexadecimal.
-The field is the stock ASCD display state: 4 is CRUISE with steady SET, 5 is
-CRUISE alone, and 6 is CRUISE with a blinking SET lamp. Map-selection feedback
-of the current runtime emits state 4, which appears as `0x42`; firmware through
-`1.11` emits state 6. `../../defs/JK08A.can.md` records the encoding.
+The `0x551` display uses neutral labels `ASCD STATE 4` through `ASCD STATE 7`
+for byte 5 values `0x42`, `0x52`, `0x62`, and `0x72`, and `STOCK` for `0x02`;
+every other value is shown in hexadecimal. The field is the stock ASCD display
+state: 4 is CRUISE with steady SET, 5 is CRUISE alone, and 6 is CRUISE with a
+blinking SET lamp. Map-selection feedback of the current runtime emits state 4;
+firmware through `1.11` emits state 6, and Rolling Launch ACTIVE emits state 7.
+`../../defs/JK08A.can.md` records the encoding.
 
 Schema 2 names `0xFFFF2326` as `intake_cvtc_target_raw` and `0xFFFF2327` as
 `exhaust_cvtc_target_raw`, matching their recovered common-target roles.
@@ -483,6 +484,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.0.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.0.1 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

@@ -159,6 +159,29 @@ class DashboardModelTest(unittest.TestCase):
         self.assertNotIn(channel_5, dashboard.raw)
         self.assertEqual(dashboard.missed_snapshots, 0)
 
+    def test_dashboard_state_names_every_produced_ascd_state(self):
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        expected = {
+            0x02: "STOCK",
+            0x42: "ASCD STATE 4",
+            0x52: "ASCD STATE 5",
+            0x62: "ASCD STATE 6",
+            0x72: "ASCD STATE 7",
+            0x12: "0x12",
+        }
+        for value, label in expected.items():
+            with self.subTest(value=hex(value)):
+                dashboard.process_frame(
+                    model.FrameRecord(
+                        model.DASHBOARD_STATE_ID,
+                        bytes([0, 0, 0, 0, 0, value, 0, 0]),
+                        1.0,
+                    ),
+                    now=1.0,
+                )
+                self.assertEqual(dashboard.dashboard_state_raw, value)
+                self.assertEqual(dashboard.dashboard_state, label)
+
     def test_tick_loss_and_stock_context_are_visible(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
