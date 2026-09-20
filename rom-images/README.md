@@ -371,7 +371,7 @@ is required within this family.
 
 The reviewed JK08A table layer also transfers structurally within this family.
 At the same addresses, JK03A has 460 of 464 table byte ranges identical to
-JK08A, JK03B has 454, and JK00A has 271. All 36 reviewed DTC descriptor and
+JK08A, JK03B has 454, and JK00A has 271. All 48 reviewed DTC descriptor and
 attribute pairs are identical in all four images. Generated definitions must
 measure the selected ROM values rather than copy JK08A values, especially for
 JK00A, but they can share the recovered accessors, geometry, semantics, and

@@ -65,7 +65,7 @@ interpolation registry, and its definition projection. Its 334
 descriptor records start at `0x1BF58` and its attribute pointers at `0x1CF00`,
 against 331 records at `0x1BE00` for `1ND0A`. A 1,936-byte window of that region
 is byte-identical to `1ND0A` at a constant `+0x164` relocation, but the run as a
-whole is not: the 31 codes the two images share sit at relocations of `+0x14C`,
+whole is not: the 38 codes the two images share sit at relocations of `+0x14C`,
 `+0x158`, and `+0x164` and at index offsets of `-1`, `0`, and `+1`. Byte
 identity of the record is what carries the binding, so the projection needs no
 address model. The image carries the same VQ37 group `0x37` boundary. Its
