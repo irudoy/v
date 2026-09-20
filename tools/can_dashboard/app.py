@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import argparse
 from collections import deque
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import math
 from pathlib import Path
 import queue
@@ -22,6 +22,7 @@ if str(ROOT) not in sys.path:
 
 from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
 from tools.can_dashboard import settings as dashboard_settings
+from tools.can_dashboard.feed_dialog import FeedDialog
 from tools.can_dashboard.hero_picker import HeroChoice, HeroPicker
 from tools.can_dashboard.model import (
     DEFAULT_BITRATE,
@@ -699,8 +700,6 @@ class DashboardApp:
         self.recorder = None
         self.recording_clock = None
         self.feed = None
-        if args.publish_udp is not None:
-            self.feed = LiveFeed(*args.publish_udp, args.bfs_reference)
         self.last_ui_group = 0
         self.stream_command = "start"
         self.source_button_active = None
@@ -710,6 +709,7 @@ class DashboardApp:
             catalog=HERO_CATALOG,
             default_hero=DEFAULT_HERO_KEYS,
         )
+        self.feed_settings = self._launch_feed_settings()
         self.palette = PALETTES[self.settings.theme]
         self.hero_history = {}
         self.hero_cards = {}
@@ -718,7 +718,9 @@ class DashboardApp:
         self.tab_buttons = []
         self.active_tab = 0
         self.picker = None
+        self.feed_dialog = None
         self._create_variables()
+        self._restart_feed()
         self.root.title(f"{PRODUCT_NAME} v{__version__}")
         self._apply_initial_geometry()
         self._build_window()
@@ -763,6 +765,7 @@ class DashboardApp:
         self.panel_grids = []
         self.tab_buttons = []
         self.picker = None
+        self.feed_dialog = None
         self.source_button_active = None
         self.root.configure(bg=self.palette.bg)
         self._configure_styles()
@@ -912,6 +915,14 @@ class DashboardApp:
             lit_role="record",
         )
         header.add(self.record_button, align="right")
+        self.feed_button = self._tool_button(
+            header,
+            "FEED",
+            self.open_feed_dialog,
+            "Send live values to RomRaider Logger for the table overlay",
+            lit=self.feed is not None,
+        )
+        header.add(self.feed_button, align="right")
         header.add(
             self._tool_button(
                 header,
@@ -943,8 +954,11 @@ class DashboardApp:
         )
         bar.pack(side="top", fill="x", padx=12, pady=(0, 7))
         for name, title, role, align, sample in STATUS_FIELDS:
-            if name == "feed_var" and self.feed is None:
-                sample = self.feed_var.get()
+            if name == "feed_var":
+                if self.feed is None:
+                    sample = self.feed_var.get()
+                elif self.feed.bfs_reference is None:
+                    sample += ", no load reference"
             bar.add(
                 self._status_field(
                     bar,
@@ -1068,6 +1082,7 @@ class DashboardApp:
         self.settings = dashboard_settings.Settings(**{
             "theme": self.settings.theme,
             "hero": self.settings.hero,
+            "feed": self.settings.feed,
             **changes,
         })
         if self.settings_path is None:
@@ -1121,6 +1136,68 @@ class DashboardApp:
             on_apply=self.apply_hero_keys,
             tooltip_options=palette.tooltip_options(),
         )
+
+    def _launch_feed_settings(self):
+        """Stored feed settings with the command-line overrides of this run."""
+        feed = self.settings.feed
+        if self.args.publish_udp is not None:
+            host, port = self.args.publish_udp
+            feed = replace(feed, enabled=True, host=host, port=port)
+        if self.args.bfs_reference is not None:
+            feed = replace(feed, bfs_reference=self.args.bfs_reference)
+        return feed
+
+    def _restart_feed(self):
+        if self.feed is not None:
+            self.feed.close()
+            self.feed = None
+        feed = self.feed_settings
+        if not feed.enabled:
+            self.feed_var.set("Feed: off")
+            return
+        try:
+            self.feed = LiveFeed(feed.host, feed.port, feed.bfs_reference)
+        except OSError as error:
+            self.feed_var.set(f"Feed: {error}")
+            return
+        self.feed_var.set(f"Feed: {self.feed.status()}")
+
+    def open_feed_dialog(self):
+        if self.feed_dialog is not None and self.feed_dialog.winfo_exists():
+            self.feed_dialog.lift()
+            return
+        palette = self.palette
+        self.feed_dialog = FeedDialog(
+            self.root,
+            feed=self.feed_settings,
+            colors={
+                "bg": palette.bg,
+                "panel": palette.panel,
+                "border": palette.border,
+                "text": palette.text,
+                "muted": palette.muted,
+                "heading": palette.heading,
+                "select": palette.blue,
+                "ok": palette.green,
+                "error": palette.red,
+            },
+            button_colors=palette.button_colors(),
+            fonts={
+                "label": ui_font(9),
+                "heading": ui_font(9, bold=True),
+                "entry": mono_font(10),
+                "button": ui_font(9, bold=True),
+            },
+            on_apply=self.apply_feed,
+            tooltip_options=palette.tooltip_options(),
+        )
+
+    def apply_feed(self, feed):
+        """Run the feed as the dialog set it and remember the choice."""
+        self.feed_settings = feed
+        self._store_settings(feed=feed)
+        self._restart_feed()
+        self._build_window()
 
     def apply_hero_keys(self, keys):
         keys = dashboard_settings.normalize_hero(keys, HERO_CATALOG)
@@ -1690,14 +1767,15 @@ def build_parser():
     parser.add_argument(
         "--publish-udp",
         metavar="[HOST:]PORT",
-        help="send live engineering values to this UDP endpoint",
+        help="send live engineering values to this UDP endpoint in this run, "
+        "whatever the stored feed setting says",
     )
     parser.add_argument(
         "--bfs-reference",
         type=lambda value: int(value, 0),
         metavar="RAW",
-        help="raw Base Fuel Schedule at 100 percent internal load; "
-        "required by --publish-udp",
+        help="raw Base Fuel Schedule at 100 percent internal load, for this "
+        "run instead of the stored feed setting",
     )
     return parser
 
@@ -1712,14 +1790,13 @@ def main(argv=None):
         raise SystemExit("tick divisor must be in 1..255")
     if not math.isfinite(args.replay_speed) or args.replay_speed <= 0:
         raise SystemExit("replay speed must be positive")
-    if args.publish_udp is not None:
-        if args.bfs_reference is None:
-            raise SystemExit("--publish-udp requires --bfs-reference")
-        try:
+    try:
+        if args.publish_udp is not None:
             args.publish_udp = parse_endpoint(args.publish_udp)
+        if args.bfs_reference is not None:
             validate_bfs_reference(args.bfs_reference)
-        except ValueError as error:
-            raise SystemExit(str(error)) from error
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
     if args.pcan_driver_check:
         from tools.can_dashboard.sources import _check_pcan_driver
 

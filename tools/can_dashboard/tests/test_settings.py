@@ -121,6 +121,50 @@ class NormalizeTest(unittest.TestCase):
         )
         self.assertEqual(result, settings.Settings("dark", ("load",)))
 
+    def test_the_feed_is_off_on_loopback_without_a_reference_by_default(self):
+        self.assertEqual(
+            settings.FeedSettings(),
+            settings.FeedSettings(False, "127.0.0.1", 47809, None),
+        )
+        for document in (None, [], "on", 1, {}):
+            with self.subTest(document=document):
+                self.assertEqual(
+                    settings.normalize_feed(document),
+                    settings.FeedSettings(),
+                )
+
+    def test_a_stored_feed_is_kept(self):
+        self.assertEqual(
+            settings.normalize_feed(
+                {
+                    "enabled": True,
+                    "host": " 192.168.1.20 ",
+                    "port": 5000,
+                    "bfs_reference": 27226,
+                }
+            ),
+            settings.FeedSettings(True, "192.168.1.20", 5000, 27226),
+        )
+
+    def test_invalid_feed_fields_fall_back_one_by_one(self):
+        self.assertEqual(
+            settings.normalize_feed(
+                {
+                    "enabled": "yes",
+                    "host": "  ",
+                    "port": 70000,
+                    "bfs_reference": 0,
+                }
+            ),
+            settings.FeedSettings(),
+        )
+        self.assertEqual(
+            settings.normalize_feed(
+                {"enabled": True, "port": "47809", "bfs_reference": 27226.0}
+            ),
+            settings.FeedSettings(True, "127.0.0.1", 47809, None),
+        )
+
 
 class FileTest(unittest.TestCase):
     def setUp(self):
@@ -144,7 +188,11 @@ class FileTest(unittest.TestCase):
 
     def test_saved_settings_load_back(self):
         path = self.directory / "nested" / "settings.json"
-        chosen = settings.Settings("light", ("gear", "rpm"))
+        chosen = settings.Settings(
+            "light",
+            ("gear", "rpm"),
+            settings.FeedSettings(True, "127.0.0.1", 5000, 27226),
+        )
 
         self.assertEqual(settings.save(path, chosen), path)
 
@@ -156,6 +204,12 @@ class FileTest(unittest.TestCase):
                 "version": settings.SETTINGS_VERSION,
                 "theme": "light",
                 "hero": ["gear", "rpm"],
+                "feed": {
+                    "enabled": True,
+                    "host": "127.0.0.1",
+                    "port": 5000,
+                    "bfs_reference": 27226,
+                },
             },
         )
 

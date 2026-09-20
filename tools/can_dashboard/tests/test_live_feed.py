@@ -77,6 +77,24 @@ class EngineLoadTest(unittest.TestCase):
                 live_feed.validate_bfs_reference(value)
         self.assertEqual(live_feed.validate_bfs_reference(27226), 27226)
 
+    def test_editor_milliseconds_name_the_reference_word(self):
+        self.assertEqual(
+            live_feed.BFS_RAW_PER_MS
+            * can_telemetry.RAW_CALIBRATIONS["bfs_raw"].factor,
+            1,
+        )
+        shown = f"{live_feed.reference_ms(JK08A_BFS_REFERENCE):.3f}"
+        self.assertEqual(shown, "13.294")
+        self.assertEqual(
+            live_feed.reference_from_ms(float(shown)), JK08A_BFS_REFERENCE
+        )
+        self.assertEqual(live_feed.reference_from_ms(1), 2048)
+
+    def test_milliseconds_outside_the_rom_word_are_rejected(self):
+        for value in (0, -1, 32, math.nan, math.inf, True, "13.294", None):
+            with self.assertRaises(ValueError):
+                live_feed.reference_from_ms(value)
+
 
 class FeedValuesTest(unittest.TestCase):
     def test_verified_model_yields_engineering_values_and_derived_load(self):
@@ -91,6 +109,18 @@ class FeedValuesTest(unittest.TestCase):
             values["load"],
             min(255, dashboard.raw["bfs_raw"] * 128 // JK08A_BFS_REFERENCE)
             * 0.78125,
+        )
+
+    def test_load_needs_the_reference_and_the_other_values_do_not(self):
+        dashboard = verified_model()
+        values = live_feed.feed_values(dashboard)
+        self.assertEqual(
+            list(values),
+            [
+                channel.key
+                for channel in live_feed.CHANNELS
+                if channel.key != live_feed.LOAD_KEY
+            ],
         )
 
     def test_unverified_model_yields_nothing(self):
@@ -159,6 +189,23 @@ class LiveFeedTest(unittest.TestCase):
         )
         self.assertEqual(feed.sent, 1)
         self.assertIn("1 sent", feed.status())
+        self.assertNotIn("no load reference", feed.status())
+
+    def test_feed_without_a_reference_runs_and_says_so(self):
+        sent = []
+        sock = types.SimpleNamespace(
+            sendto=lambda payload, endpoint: sent.append(payload),
+            close=lambda: None,
+        )
+        feed = live_feed.LiveFeed("127.0.0.1", 47809, sock=sock)
+        self.assertTrue(feed.publish(verified_model()))
+        keys = [
+            token.split("=")[0]
+            for token in sent[0].decode("ascii").split(" ")[1:]
+        ]
+        self.assertIn("rpm", keys)
+        self.assertNotIn(live_feed.LOAD_KEY, keys)
+        self.assertIn("no load reference", feed.status())
 
     def test_unverified_model_sends_nothing(self):
         sent = []
@@ -206,6 +253,36 @@ class PluginFileTest(unittest.TestCase):
         )
         self.assertTrue(all(len(item) == 7 for item in items))
 
+    def test_the_plugin_file_lives_in_the_per_user_romraider_folder(self):
+        self.assertEqual(
+            live_feed.plugin_path("/home/tuner"),
+            Path("/home/tuner/.RomRaider/plugins/vq-telemetry.plugin"),
+        )
+        self.assertEqual(
+            live_feed.plugin_path(), live_feed.plugin_path(Path.home())
+        )
+
+    def test_install_creates_the_folders_and_tracks_the_endpoint(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = live_feed.plugin_path(directory)
+            self.assertEqual(live_feed.plugin_state(path), "missing")
+            for _attempt in range(2):
+                self.assertEqual(
+                    live_feed.install_plugin(path, "127.0.0.1", 5000), path
+                )
+                self.assertEqual(
+                    path.read_text(encoding="ascii"),
+                    live_feed.plugin_properties("127.0.0.1", 5000),
+                )
+            self.assertEqual(
+                live_feed.plugin_state(path, "127.0.0.1", 5000), "current"
+            )
+            self.assertEqual(live_feed.plugin_state(path), "outdated")
+            path.write_bytes(b"\xff\xfe")
+            self.assertEqual(
+                live_feed.plugin_state(path, "127.0.0.1", 5000), "outdated"
+            )
+
     def test_cli_writes_the_plugin_file(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "vq.plugin"
@@ -233,11 +310,12 @@ class DashboardArgumentsTest(unittest.TestCase):
         )
         self.assertEqual(args.bfs_reference, JK08A_BFS_REFERENCE)
 
-    def test_publishing_requires_a_valid_reference_and_endpoint(self):
+    def test_invalid_overrides_are_rejected_before_the_window_opens(self):
         for argv in (
-            ["--publish-udp", "47809"],
             ["--publish-udp", "47809", "--bfs-reference", "0"],
             ["--publish-udp", "0", "--bfs-reference", "27226"],
+            ["--publish-udp", "host:"],
+            ["--bfs-reference", "65536"],
         ):
             with self.assertRaises(SystemExit):
                 app.main(argv)

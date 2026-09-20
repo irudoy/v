@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.0.1`.
+Current dashboard version: `8.1.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.0.1-windows.zip
+  --output tmp/vq-can-telemetry-v8.1.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.0.1-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.1.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.0.1 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.1.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -196,10 +196,20 @@ captures used by the project. It also accepts compact candump lines such as
 
 ## Live value feed
 
-`--publish-udp [HOST:]PORT` sends the engineering values of the latest complete
-schema-verified snapshot to one UDP endpoint; a port alone selects
-`127.0.0.1`. The feed follows every source, so `--demo` and `--replay` exercise
-a receiver without CAN hardware. One datagram is sent per 50 ms UI poll that
+The feed sends the engineering values of the latest complete schema-verified
+snapshot to one UDP endpoint. The `FEED` button opens its dialog:
+
+| Control | Meaning |
+| --- | --- |
+| `PUBLISH` | turns the feed on and off; lit while on |
+| `UDP ENDPOINT` | `HOST:PORT` or a port alone, `127.0.0.1:47809` by default |
+| `100 % LOAD, MS` | the load reference in milliseconds, as RomRaider shows the table `Fuelling / Load Model / Internal Load Normalization Reference` of the flashed ROM; stock JK08A shows `13.294` |
+| `INSTALL PLUGIN` | writes the RomRaider plugin file for the typed endpoint; the caption beside it reports whether the file is installed for this endpoint |
+
+`APPLY` restarts the feed with these values and stores them in the settings
+file, so the feed state returns on the next start. `FEED` stays lit while the
+feed runs. The feed follows every source, so `DEMO` and `REPLAY` exercise a
+receiver without CAN hardware. One datagram is sent per 50 ms UI poll that
 completed at least one snapshot. The payload is ASCII:
 
 ```text
@@ -210,21 +220,27 @@ The first token names the format and its version. Every other token is
 `key=value` with a finite decimal value of seven significant digits. A channel
 without a finite value is left out, and the receiver keeps its previous value.
 Nothing is sent until the wire schema is verified. The `Feed` status field
-reports the endpoint, the datagram count, and the last send error.
+reports the endpoint, the datagram count, a missing load reference, and the
+last send error.
 
-`--bfs-reference RAW` is required with `--publish-udp`. It is the raw Base Fuel
-Schedule at 100 percent internal load, the ROM-specific calibration word that
-the ECU divides Base Fuel Schedule by; decimal and `0x` forms are accepted.
-Stock JK08A holds 27226 at `ROM16[0x9534]`. The `load` channel reconstructs the
-coordinate that the ECU indexes its maps by:
+The load reference is the Base Fuel Schedule at 100 percent internal load, the
+ROM-specific calibration word that the ECU divides Base Fuel Schedule by. One
+word is 1/2048 ms; stock JK08A holds 27226 at `ROM16[0x9534]`, which is
+13.294 ms. The `load` channel reconstructs the coordinate that the ECU indexes
+its maps by:
 
 ```text
 load = min(255, floor(bfs_raw * 128 / RAW)) * 100 / 128
 ```
 
-The host schema stays ROM-neutral, so the reference is a run parameter rather
-than a schema field. A reference that differs from the running calibration
-shifts `load` on every load axis.
+The host schema stays ROM-neutral, so the reference is a stored setting rather
+than a schema field. Without a reference the feed runs and leaves `load` out.
+A reference that differs from the running calibration shifts `load` on every
+load axis.
+
+Two options override the stored feed for one run without changing the
+settings file: `--publish-udp [HOST:]PORT` turns the feed on at that endpoint,
+and `--bfs-reference RAW` sets the reference word in decimal or `0x` form.
 
 | Key | RomRaider Logger ID | Units | Source |
 | --- | --- | --- | --- |
@@ -244,15 +260,16 @@ shifts `load` on every load axis.
 ### RomRaider table overlay
 
 RomRaider Logger receives the feed through its UDP external data source. The
-plugin file declares the same channel table, so the dashboard writes it:
+plugin file declares the same channel table and the listening endpoint, so
+the dashboard writes it: `INSTALL PLUGIN` in the `FEED` dialog places
+`vq-telemetry.plugin` in the per-user RomRaider folder,
+`~/.RomRaider/plugins` (`%USERPROFILE%\.RomRaider\plugins` on Windows), which
+a RomRaider build with the UDP data source reads beside its own `plugins`
+folder when Logger starts. `python3 -m tools.can_dashboard.live_feed
+--write-plugin PATH [--endpoint [HOST:]PORT]` writes the same file to any
+other path.
 
-```bash
-python3 -m tools.can_dashboard.live_feed \
-  --write-plugin <RomRaider>/plugins/vq-telemetry.plugin
-```
-
-`--endpoint [HOST:]PORT` selects another listening endpoint; the default is
-`127.0.0.1:47809`. RomRaider derives a Logger ID from the item name as `X_` plus
+RomRaider derives a Logger ID from the item name as `X_` plus
 the name with underscores for spaces. A table axis whose definition carries
 that ID in `logparam` follows the live value: with `Overlay Log` enabled on the
 table toolbar, RomRaider outlines the cell at the axis values nearest to the
@@ -335,6 +352,7 @@ platform:
 | `DEMO`, `REPLAY` | replace the running source directly | never |
 | `STREAM` | sends START, then STOP once START is confirmed | STOP offered |
 | `REC` | starts and stops the MLG recording | recording |
+| `FEED` | opens the live value feed dialog | feed running |
 | `CARDS` | opens the hero-row card dialog | never |
 | `LIGHT` / `DARK` | switches to the named color theme | never |
 
@@ -359,7 +377,8 @@ The dark theme is a black high-contrast scheme; the light theme is a white
 scheme for daylight. The theme button rebuilds the window in the other theme
 and leaves the source, the recording, and the displayed values in place.
 
-The theme and the card list persist in a per-user JSON file:
+The theme, the card list, and the live value feed persist in a per-user JSON
+file:
 
 | Platform | File |
 | --- | --- |
@@ -369,8 +388,9 @@ The theme and the card list persist in a per-user JSON file:
 
 `--settings PATH` selects another file. A missing or damaged file gives the
 defaults, unknown metric keys are dropped, and every change replaces the file
-atomically. The file holds presentation choices only and never connection
-parameters. `--smoke-test` reads and writes no settings file.
+atomically. The file holds presentation choices and the live value feed, and
+never CAN connection parameters. `--smoke-test` reads and writes no settings
+file.
 
 ### Scrolling and status fields
 
@@ -486,6 +506,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.0.1 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.1.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

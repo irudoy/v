@@ -30,6 +30,13 @@ LOAD_KEY = "load"
 # ROM reference, saturated at one byte. Raw 128 is 100 percent.
 LOAD_RAW_FULL_SCALE = 128
 LOAD_RAW_LIMIT = 255
+# The reference is a Base Fuel Schedule word; editors show it in milliseconds.
+BFS_RAW_PER_MS = 2048
+# RomRaider keeps its per-user files in this folder of the home directory and
+# reads external data source plugin files from its plugins folder.
+ROMRAIDER_USER_DIRECTORY = ".RomRaider"
+PLUGIN_DIRECTORY = "plugins"
+PLUGIN_FILE_NAME = "vq-telemetry.plugin"
 
 
 @dataclass(frozen=True)
@@ -134,6 +141,26 @@ def validate_bfs_reference(value):
     return value
 
 
+def reference_from_ms(milliseconds):
+    """Return the reference word of a Base Fuel Schedule in milliseconds."""
+    if (
+        isinstance(milliseconds, bool)
+        or not isinstance(milliseconds, (int, float))
+        or not math.isfinite(milliseconds)
+    ):
+        raise ValueError("load reference must be a number of milliseconds")
+    raw = round(milliseconds * BFS_RAW_PER_MS)
+    if not 1 <= raw <= 0xFFFF:
+        limit = 0xFFFF / BFS_RAW_PER_MS
+        raise ValueError(f"load reference must be above 0 and below {limit:.3f} ms")
+    return raw
+
+
+def reference_ms(bfs_reference):
+    """Return the reference word as the milliseconds an editor shows."""
+    return validate_bfs_reference(bfs_reference) / BFS_RAW_PER_MS
+
+
 def engine_load_percent(bfs_raw, bfs_reference):
     """Reconstruct the internal load coordinate the ECU indexes its maps by."""
     raw = min(
@@ -143,8 +170,11 @@ def engine_load_percent(bfs_raw, bfs_reference):
     return raw * 100 / LOAD_RAW_FULL_SCALE
 
 
-def feed_values(model, bfs_reference):
-    """Return the finite channel values of a schema-verified model."""
+def feed_values(model, bfs_reference=None):
+    """Return the finite channel values of a schema-verified model.
+
+    The load coordinate needs the ROM reference; without one it is left out.
+    """
     if not model.schema_verified:
         return {}
     values = {}
@@ -153,7 +183,7 @@ def feed_values(model, bfs_reference):
             bfs_raw = model.raw.get("bfs_raw")
             value = (
                 None
-                if bfs_raw is None
+                if bfs_raw is None or bfs_reference is None
                 else engine_load_percent(bfs_raw, bfs_reference)
             )
         else:
@@ -192,8 +222,34 @@ def plugin_properties(host=DEFAULT_HOST, port=DEFAULT_PORT):
     return "\n".join(lines) + "\n"
 
 
+def plugin_path(home=None):
+    """Return the per-user plugin file RomRaider reads at Logger start."""
+    home = Path.home() if home is None else Path(home)
+    return home / ROMRAIDER_USER_DIRECTORY / PLUGIN_DIRECTORY / PLUGIN_FILE_NAME
+
+
+def plugin_state(path, host=DEFAULT_HOST, port=DEFAULT_PORT):
+    """Compare the plugin file with this endpoint and channel table."""
+    try:
+        text = Path(path).read_text(encoding="ascii")
+    except FileNotFoundError:
+        return "missing"
+    except (OSError, ValueError):
+        return "outdated"
+    return "current" if text == plugin_properties(host, port) else "outdated"
+
+
+def install_plugin(path, host=DEFAULT_HOST, port=DEFAULT_PORT):
+    """Write the plugin file, creating its folders; return its path."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(plugin_properties(host, port), encoding="ascii")
+    return path
+
+
 def parse_endpoint(text):
     """Parse ``PORT`` or ``HOST:PORT``."""
+    text = text.strip()
     host, separator, port_text = text.rpartition(":")
     if not separator:
         host = DEFAULT_HOST
@@ -211,9 +267,13 @@ def parse_endpoint(text):
 class LiveFeed:
     """Send the latest model values to one UDP endpoint."""
 
-    def __init__(self, host, port, bfs_reference, sock=None):
+    def __init__(self, host, port, bfs_reference=None, sock=None):
         self.endpoint = (host, port)
-        self.bfs_reference = validate_bfs_reference(bfs_reference)
+        self.bfs_reference = (
+            None
+            if bfs_reference is None
+            else validate_bfs_reference(bfs_reference)
+        )
         self.sent = 0
         self.errors = 0
         self.last_error = None
@@ -236,6 +296,8 @@ class LiveFeed:
     def status(self):
         host, port = self.endpoint
         text = f"udp {host}:{port}, {self.sent} sent"
+        if self.bfs_reference is None:
+            text += ", no load reference"
         if self.errors:
             text += f", {self.errors} errors: {self.last_error}"
         return text
