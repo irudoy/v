@@ -180,11 +180,45 @@ of any inbound reference, and the runtime validator requires the set of lookup
 literals loaded outside that copy to equal the hooked set and every load of a
 state-code table base to be followed by a load of the hooked literal.
 
+`FUN_000797CC` is the only reader of `0xA344`, at eight sites, and of `0xA444`,
+at six. It addresses them through lookup `0x29BA8` over axes `0x13726` and
+`0x13716`, coordinated by the word `0xFFFE819E` and the byte `0xFFFE8034`,
+which is replaced by `0xFF` when bit 3 of `0xFFFE945A` and bit 1 of
+`ROM8[0x8A7C]` are set. The state code is `0xFFFEB826`: 1 selects `0xA444`, 2
+and 8 select `0xA344`, and 3, 4, 5, and 6-7 select the 8x8 surfaces `0xA544`,
+`0xA644`, `0xA5C4`, and `0xA604` over axes `0x13DCE` and `0x13DC6` through
+lookup `0x293D8`. `FUN_00050110` writes the code through `FUN_00050310` from
+the published VVEL mode `0xFFFE99C2`, whose mode byte `0xFFFEF50D` is published
+by `FUN_00061D46`. The output `0xFFFE8606` crossfades the low seven bits of the
+selected surface against the held value `0xFFFE8607` by the weight `0xFFFEB824`
+(`0x8000` is 1.0, `0x40` the midpoint); the held value refreshes on a code
+change, and `0xFFFEB82E` carries the previous code. Consumer `FUN_00077680`
+stores `max(0, 0xFFFE8606 - 0xFFFE818F)` into `0xFFFE8602`. With bit 3 clear
+the coordinator would instead select by the coolant latch `0xFFFE8073` (DID
+`0x1101`, entry of DID table `0x22AE8`) against `ROM8[0x8BED]` and
+`ROM8[0x8BEE]`, both 120 (70 degC), interpolating between the thresholds
+through `FUN_0002238C`; stock never executes that branch. The reference output
+`0xFFFE85E4` reads `0xA344` while bit 0 of `ROM8[0x8659]` is clear, and with
+that bit and bit 4 of `0xFFFEB979` set it reads the 8x8 surface `0xA584` over
+`0x13706` and `0x136FE`.
+
+The mode pair is identical across all four VQ37 images, and its axes are equal.
+As `x - 64`, `0xA344` spans -23 to +17 and `0xA444` spans -23 to +12; they
+differ by -5 to +33 in 114 of 256 cells, and bit 7 is set in 119 cells of each.
+On 1ND0A the mapper `FUN_0004C4B8` is byte-identical to `FUN_00050310`, and
+consumer `FUN_000736F4` takes either the trio samples `0xFFFE866C` and
+`0xFFFE866D` or the mode output `0xFFFE8690`, by the same configuration bit 5
+that gates the trio. 1ME3B runs the same chain without the trio branch and
+without that bit test.
+
 The compensation accessors publish four parallel channels. The two 16x16
 surfaces share index byte `0xFFFF22F8` and axes `0x13AF8` and `0x13B18` and
 write adjacent bytes `0xFFFF1E91` and `0xFFFF1E92`; the consumer at `0x40E86`
 selects one channel per state code and crossfades it against the previous
-state's channel by a normalized progress weight where `0x8000` is 1.0. The
+state's channel by a normalized progress weight where `0x8000` is 1.0. Both
+bucket cells initialize to 1 at `0x30F4A`, and on a latched code change
+(`0xFFFF45A3` bit 4) the consumer substitutes the frozen snapshot `0xFFFF1E93`,
+taken from `0xFFFF114C`, for the origin bucket's value. The
 eight-point timing accessor `FUN_000644D0` reads index byte `0xFFFF11A2` on both
 branches and selects the alternate through bit 0 of `0xFFFF4525`, a latch on the
 u16 transition progress at `0xFFFF447E` that sets at `0x8000` and releases at
@@ -193,9 +227,10 @@ the selector bit means that the transition has completed.
 
 `0xFFFF447E` is the normalized progress of the transition between two states of
 the eight-position machine. `0x46804` writes it as `trunc(f * 32768)` clamped to
-`[0, 0xFFFF]`, which makes `0x8000` exactly 1.0. The float integrator behind it
-is `0xFFFF995C`, clamped to `[0.0, 1.0]`, stepping by the value at `0xFFFF2824`
-divided by 32768, with sign `+1` at state code 5 or 15 and `-1` otherwise.
+`[0, 0xFFFF]`, which makes `0x8000` exactly 1.0. `FUN_00046888` integrates the
+float behind it at `0xFFFF995C`, clamped to `[0.0, 1.0]`, stepping by the value
+at `0xFFFF2824` divided by 32768, with sign `+1` when the state code at
+`0xFFFF2808` is 5 or 15 and `-1` otherwise.
 `FUN_000469E0` resolves the endpoints per state: state 1 is the constant
 `100.0`, and states 2 through 8 read curves `0x1505C`, `0xD94E`, `0xD9CE`,
 `0xDA4E`, `0xDACE`, `0xDB4E`, and `0xDBCE` at scale `1/163.84`.
