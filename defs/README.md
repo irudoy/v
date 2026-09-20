@@ -17,6 +17,7 @@ presentation and generated output.
 | `JK08A-JK00D.interp-correspondence.csv` | Reviewed cross-family interpolation wrapper pairs | yes |
 | `JK08A-JK78C.interp-correspondence.csv` | Reviewed VQ25-to-VQ37 interpolation wrapper pairs and explicit source-only contracts | yes |
 | `JK08A-1ND0A.interp-correspondence.csv` | Reviewed cross-generation interpolation wrapper pairs and explicit source-only contracts | yes |
+| `1ND0A-1ME3B.census-correspondence.csv` | Table-level homology of the 1ME3B accessor census against the 1ND0A census | no, regenerate |
 | `JK08A.findings.csv` | Map semantics, role, scale, confidence, and evidence | yes |
 | `JK08A.axes.csv` | Axis semantics, scale, confidence, and evidence | yes |
 | `JK08A.funcs.csv` | Function semantics, callable contracts, and evidence | yes |
@@ -111,6 +112,30 @@ reviewed accessor-level comparison rather than equal wrapper bytes. That
 comparison is recorded per map and axis in
 `JK08A-1ME3B.definition-addresses.csv`, which names the leaf beside each
 target address.
+
+`1ND0A-1ME3B.census-correspondence.csv` classifies every ROM operand of the
+1ME3B accessor census against the 1ND0A census: 768 maps and 432 arrays read
+only as axes; 26 further axis operands are also read as maps and are listed as
+maps.
+`tools/census_homology.py` writes it from the two Ghidra exports and applies
+three methods in order. `aligned-reference` aligns a 1ND0A function with its
+best 1ME3B function by instruction shape, at a similarity of at least 0.75, and
+pairs the census operands loaded by aligned instructions when every vote of the
+source operand names one target of equal geometry. `unique-exact-content` pairs
+a remaining target whose stored bytes and geometry occur once in each census.
+`published-registry` adds the pairs that the definition correspondences and the
+target-native table registry publish under one role. The ledger pairs 588 maps
+and 356 axes; 557 and 345 of them hold equal stock bytes. No pair of the first
+two methods contradicts a published pair. A published pair may share its source
+with a census pair: the 1ME3B resolver `0x062FAC` and dispatcher `0x07448C`
+read separate copies, `0x00E17C` and `0x01027C`, of the hot-idle surface
+`0x00E748` that both 1ND0A readers share. Five maps and two axes are
+`ambiguous`. The 175 unpaired maps and 74 unpaired axes carry the reason in
+`note`: `flat-content` for uniform stock bytes, `duplicate-content` for bytes
+that recur in the census, and `no-content-match` for bytes absent from the
+1ND0A census. The ledger is a candidate-level address index and assigns no
+semantics. `make check` validates it against both stock images and the
+published registries without Ghidra exports.
 
 `JK08A-JK78C.definition-addresses.csv` binds 27 source maps to JK78C storage
 and records eighteen source maps as unsupported. The unsupported entries cover

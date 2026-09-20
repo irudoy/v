@@ -26,7 +26,7 @@ CORRESPONDENCE_ARGS ?=
 PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
 
 .PHONY: help setup check test-python test-js test verify-firmware verify
-.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence rom-verify rom-build
+.PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence census-homology rom-verify rom-build
 
 help:
 	@printf '%s\n' \
@@ -47,6 +47,7 @@ help:
 		'  defs-generate     Regenerate XML, XDF, and the map ledger from Memgraph.' \
 		'  runtime-targets-generate Rebuild GNU SH-2E payload locks for relocated ROMs.' \
 		'  rom-correspondence Compare two Ghidra function-signature exports.' \
+		'  census-homology   Regenerate the 1ND0A-1ME3B table-level census correspondence.' \
 		'  rom-verify        Verify the unified ROM build in memory; requires INPUT.' \
 		'  rom-build         Build the unified modified ROM; requires INPUT and OUTPUT.' \
 		'' \
@@ -74,6 +75,7 @@ check:
 	$(PYTHON) patches/runtime_targets.py --check
 	$(PYTHON) tools/mapkit/dtc_projection.py
 	$(PYTHON) tools/mapkit/definition_projections.py --check
+	$(PYTHON) tools/census_homology.py --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
 	$(PYTHON) tools/romviz/build.py --check
@@ -128,6 +130,13 @@ rom-correspondence:
 	$(PYTHON) tools/rom_correspondence.py \
 		"$(CORRESPONDENCE_SOURCE_EXPORT)" \
 		"$(CORRESPONDENCE_TARGET_EXPORT)" $(if $(strip $(CORRESPONDENCE_OUTPUT)),--output "$(CORRESPONDENCE_OUTPUT)",) $(CORRESPONDENCE_ARGS)
+
+census-homology:
+	@test -n "$(strip $(CORRESPONDENCE_SOURCE_EXPORT))" || { printf '%s\n' 'CORRESPONDENCE_SOURCE_EXPORT is required' >&2; exit 2; }
+	@test -n "$(strip $(CORRESPONDENCE_TARGET_EXPORT))" || { printf '%s\n' 'CORRESPONDENCE_TARGET_EXPORT is required' >&2; exit 2; }
+	$(PYTHON) tools/census_homology.py \
+		--source-export "$(CORRESPONDENCE_SOURCE_EXPORT)" \
+		--target-export "$(CORRESPONDENCE_TARGET_EXPORT)"
 
 rom-verify:
 	@test -n "$(strip $(INPUT))" || { printf '%s\n' 'INPUT is required' >&2; exit 2; }
