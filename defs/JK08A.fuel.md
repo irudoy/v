@@ -896,51 +896,57 @@ electrically.
 
 ### Homologous targets
 
-JK00C, JK00D, JK78C, and the 1ND pair carry the same chain, so their
+JK00C, JK00D, JK78C, the 1ND pair, and 1ME3B carry the same chain, so their
 end-of-injection word has the JK08A coordinate: `raw * 2 - 590` degrees after
 intake TDC of the injected cylinder. The 1ND addresses are those of `1ND0A`;
 `1ND3B` is byte-identical over every listed range.
 
-| Stage | JK08A | JK00C | JK00D | JK78C | 1ND |
-| --- | --- | --- | --- | --- | --- |
-| writer with the 209-count clamp and doubled store | `0x56BD0` | `0x58AE4` | `0x58AE0` | `0x730CC` | `0x7F4E0` |
-| end-of-injection word | `0xFFFF192E` | `0xFFFF1992` | `0xFFFF1996` | `0xFFFF192A` | `0xFFFE89A2` |
-| reader | `0x521A8` | `0x53BF8` | `0x53BF4` | `0x6E12C` | `0x79D2E` |
-| fallback subtraction | `ROM8[0x83EA] = 30` | `ROM8[0x83EC] = 30` | `ROM8[0x83EC] = 30` | `ROM8[0x839D] = 50` | `ROM8[0x83B9] = 50` |
-| engine-event task table | `0x21B5C` | `0x21BE8` | `0x21BE8` | `0x21C8C` | `0x222A8` |
-| sequencer, entry 1 | `0x54A44` | `0x56978` | `0x56974` | `0x70EDC` | `0x7D3E8` |
-| slot masks `02 04 08 10 20 01` | `0x22695` | `0x22721` | `0x22721` | `0x226FD` | `0x22A55` |
-| delayed-start programmer | `0x2B64A` | `0x2C2D2` | `0x2C2D2` | `0x2E52E` | `0x2F48E` |
-| tooth-count normalizer | `0x28DC8` | `0x29A50` | `0x29A50` | `0x2B820` | inlined |
-| tooth dispatch on 4, 6, 7, 8, 9 | `0x2965A` | `0x2A2E2` | `0x2A2E2` | `0x2C0DE` | `0x2D082` |
-| event index | `0xFFFF11DE` | `0xFFFF11EE` | `0xFFFF11EE` | `0xFFFF11C8` | `0xFFFE81D6` |
-| feeder | `0x208F8` | `0x20926` | `0x20926` | `0x2095C` | `0x20CF4` |
-| ignition task, entry 4 | `0x4E162` | `0x4FAB2` | `0x4FAAE` | `0x69A80` | `0x74AFA` |
-| ignition reference constant `110` | `ROM8[0x83D5]` | `ROM8[0x83D8]` | `ROM8[0x83D8]` | `ROM8[0x838F]` | `ROM8[0x83AB]` |
-| set-edge scheduler | `0x2A892` | `0x2B51A` | `0x2B51A` | `0x2D6F6` | `0x2E464` |
-| misfire attribution map | `0x2265C` | `0x226E8` | `0x226E8` | `0x226C4` | `0x22A1C` |
+| Stage | JK08A | JK00C | JK00D | JK78C | 1ND | 1ME3B |
+| --- | --- | --- | --- | --- | --- | --- |
+| writer with the 209-count clamp and doubled store | `0x56BD0` | `0x58AE4` | `0x58AE0` | `0x730CC` | `0x7F4E0` | `0x841B4` |
+| end-of-injection word | `0xFFFF192E` | `0xFFFF1992` | `0xFFFF1996` | `0xFFFF192A` | `0xFFFE89A2` | `0xFFFE8946` |
+| reader | `0x521A8` | `0x53BF8` | `0x53BF4` | `0x6E12C` | `0x79D2E` | `0x7E736` |
+| fallback subtraction | `ROM8[0x83EA] = 30` | `ROM8[0x83EC] = 30` | `ROM8[0x83EC] = 30` | `ROM8[0x839D] = 50` | `ROM8[0x83B9] = 50` | `ROM8[0x83C0] = 50` |
+| engine-event task table | `0x21B5C` | `0x21BE8` | `0x21BE8` | `0x21C8C` | `0x222A8` | `0x22324` |
+| sequencer, entry 1 | `0x54A44` | `0x56978` | `0x56974` | `0x70EDC` | `0x7D3E8` | `0x81EEC` |
+| slot masks `02 04 08 10 20 01` | `0x22695` | `0x22721` | `0x22721` | `0x226FD` | `0x22A55` | `0x22AC9` |
+| delayed-start programmer | `0x2B64A` | `0x2C2D2` | `0x2C2D2` | `0x2E52E` | `0x2F48E` | `0x321D6` |
+| tooth-count normalizer | `0x28DC8` | `0x29A50` | `0x29A50` | `0x2B820` | inlined | inlined |
+| tooth dispatch on 4, 6, 7, 8, 9 | `0x2965A` | `0x2A2E2` | `0x2A2E2` | `0x2C0DE` | `0x2D082` | `0x2FEC2` |
+| event index | `0xFFFF11DE` | `0xFFFF11EE` | `0xFFFF11EE` | `0xFFFF11C8` | `0xFFFE81D6` | `0xFFFE81BC` |
+| feeder | `0x208F8` | `0x20926` | `0x20926` | `0x2095C` | `0x20CF4` | `0x20D04` |
+| ignition task, entry 4 | `0x4E162` | `0x4FAB2` | `0x4FAAE` | `0x69A80` | `0x74AFA` | `0x78F14` |
+| ignition reference constant `110` | `ROM8[0x83D5]` | `ROM8[0x83D8]` | `ROM8[0x83D8]` | `ROM8[0x838F]` | `ROM8[0x83AB]` | `ROM8[0x83B2]` |
+| set-edge scheduler | `0x2A892` | `0x2B51A` | `0x2B51A` | `0x2D6F6` | `0x2E464` | `0x311B2` |
+| misfire attribution map | `0x2265C` | `0x226E8` | `0x226E8` | `0x226C4` | `0x22A1C` | RAM `0xFFFEEA58` |
 
 The JK08A sequencing constant block `0x22658..0x226A9`, which holds the misfire
 attribution map, the successor and reset-mask cells, the slot masks, and the
 grouped-pulse masks, is byte-identical in the four images at offsets `+0x8C`,
-`+0x8C`, `+0x68`, and `+0x3C0`.
+`+0x8C`, `+0x68`, and `+0x3C0`. 1ME3B holds the same cells without the ROM
+attribution map and its pad byte: JK08A `0x22658..0x2265B` lies at `+0x43C` and
+`0x22664..0x226A9` at `+0x434`, and the byte string `00 04 05 06 01 02 03`
+occurs nowhere in the image.
 
 Every reader computes `k` with constant `0xC49B`, forms `d = 2 * E - 4 * p`,
-divides by 120, and clamps the remainder to 4..116; 1ND divides inline through
-reciprocal `0x88888889`. Every sequencer computes `slot = (n - 1 - lead) mod 6`
+divides by 120, and clamps the remainder to 4..116; 1ND and 1ME3B divide inline
+through reciprocal `0x88888889`. Every sequencer computes `slot = (n - 1 - lead) mod 6`
 with default lead 3, reads the slot mask cell, and passes `0x34` or four times
 the start snapshot to the delayed-start programmer. Every programmer splits the
 angle by ten and applies the normalizer mapping of JK08A, including ten events
 for counts 13 and 14 and `count - 4` for 15..24, so the plate layout of ten
 teeth per 120 degrees with the gap after tooth 7 holds in every target. 1ND
-inlines the division by ten and the mapping in the programmer.
+and 1ME3B inline the division by ten and the mapping in the programmer.
 
 On tooth 7 every tooth handler copies the identified cylinder to the event
 index, forms ignition set mask `1 << (index - 1)`, and calls the feeder. The
 ignition task computes the command as the reference constant minus the final
 timing byte and hands it to the set-edge scheduler, which splits it by ten, so
 tooth 7 is 110 degrees before compression TDC of the event cylinder in every
-target. 1ND inlines the command builder into the ignition task.
+target. 1ND and 1ME3B inline the command builder into the ignition task, and
+the 1ME3B handler forms the set mask through runtime shift helper `0x22674`.
+The 1ME3B reader, sequencer, programmer, ignition task, scheduler, and feeder
+decompile to the 1ND bodies with other displacements and flag bits.
 
 The tooth-9 path of every handler indexes the misfire attribution map with the
 event index. The misfire metric helper keeps the JK08A interval-history
@@ -948,7 +954,32 @@ displacements in JK00C and JK00D (`FUN_0008B308`) and in JK78C
 (`FUN_000A8B72`). 1ND forms its misfire metric through a different algorithm
 whose interval lag is not decompiled, so its identity of event index and
 cylinder number rests on the attribution map and the identical attribution
-read. The JK08A hardware boundaries apply to every target: the mechanical
+read.
+
+1ME3B keeps the attribution map in RAM. The first pass of tooth handler
+`FUN_0002F730` after reset writes `0xFFFEEA58..0xFFFEEA5E` from immediates:
+`00 04 05 06 01 02 03`, the JK08A map, while `0xFFFEBA4D.bit0` is set, and
+`00 05 06 01 02 03 04` while it is clear. `FUN_00034340`, which reset entry
+`FUN_0002E23A` reaches through `FUN_0002DF4E` before its main loop first lowers
+the interrupt mask at `0x2E444`, derives the bit from the misfire interval
+teeth, start tooth `a = ROM8[0x8AF0]` and end tooth `b = ROM8[0x8AEE]`:
+
+```text
+a >= b   bit = not (a >= 7 and b < 7)
+a <  b   bit = a < 7 and b >= 7
+```
+
+The bit is set exactly when tooth 7, which advances the event index, lies
+inside the interval, so both maps charge cylinder `c + 4` of the event index
+`c` at the start tooth. Stock teeth `9` and `9` set the bit and select the
+JK08A map. The handler builds the map once per reset, on its first pass, from
+the bit as it stands then. The tooth-9 path stores the interval to
+`0xFFFE8D50` and the attributed cylinder to `0xFFFEB778` with the 1ND
+instruction sequence, and the 1ME3B misfire metric is not decompiled, so the
+identity of event index and cylinder number rests on this map as it does for
+1ND.
+
+The JK08A hardware boundaries apply to every target: the mechanical
 offset between the crank sensor and the signal plate, and the injector channel
 order from the family Power Balance bit assignment.
 

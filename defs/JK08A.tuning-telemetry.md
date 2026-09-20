@@ -134,11 +134,12 @@ and `raw * 2` is the delay in crank degrees after the reference tooth of the
 scheduled cylinder. The intake-TDC anchor of `-590` degrees rests on the
 reference-tooth and cylinder-order analysis in [`JK08A.fuel.md`](JK08A.fuel.md);
 the mechanical offset between the crank sensor and the signal plate is a
-hardware boundary. JK00C, JK00D, JK78C, and 1ND bind the word their homologous
-stage writes and carry the same chain from the tooth-7 reference with ignition
-constant `110` to the slot masks, so the anchor holds for them. For 1ND the
-identity of event index and cylinder number rests on the misfire attribution
-map, because its misfire metric is not decompiled. Diagnostic word `FFFF162E`
+hardware boundary. JK00C, JK00D, JK78C, 1ND, and 1ME3B bind the word their
+homologous stage writes and carry the same chain from the tooth-7 reference
+with ignition constant `110` to the slot masks, so the anchor holds for them.
+For 1ND and 1ME3B the identity of event index and cylinder number rests on the
+misfire attribution map, which 1ME3B builds in RAM, because their misfire
+metric is not decompiled. Diagnostic word `FFFF162E`
 behind DIDs `0x1131`, `0x1132`, `0x1133`, and `0x113D` has no runtime producer
 in JK08A, reads zero, and is not streamed.
 

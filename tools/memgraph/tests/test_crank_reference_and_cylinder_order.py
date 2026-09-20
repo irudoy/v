@@ -264,6 +264,9 @@ IMAGES = ROOT / "rom-images"
 
 # Homologs of the JK08A end-of-injection reference chain. "block" is the offset
 # of the JK08A sequencing constant block 0x22658..0x226A9 in the target image.
+# 1ME3B holds the block without the ROM misfire attribution map and its pad
+# byte: "block_head" places JK08A 0x22658..0x2265B, "block" places
+# 0x22664..0x226A9, and "ram_map" is the map its tooth handler builds in RAM.
 HOMOLOGS = {
     "JK08A": {
         "image": ROM,
@@ -335,6 +338,22 @@ HOMOLOGS["1ND3B"] = dict(
     HOMOLOGS["1ND0A"],
     image=IMAGES / "23710-1ND3B" / "11ND3B-20260715-stock.bin",
 )
+HOMOLOGS["1ME3B"] = {
+    "image": IMAGES / "23710-1ME3B" / "11ME3B-20260825-stock.bin",
+    "block": 0x434,
+    "block_head": 0x43C,
+    "ram_map": 0xFFFEEA58,
+    "tooth_handler": 0x2F730,
+    "reference": 0x83B2,
+    "reference_literal": 0x83B0,
+    "table": 0x22324,
+    "feeder": 0x20D04,
+    "sequencer": 0x81EEC,
+    "ignition_task": 0x78F14,
+    "scheduler": 0x311B2,
+    "reader": 0x7E736,
+    "dispatch": (0x2FEC2, 0x2FEC6, 0x2FECE, 0x2FED6, 0x2FEDE),
+}
 
 
 def literal_sites(data, value):
@@ -360,10 +379,51 @@ class HomologousInjectionReferenceTest(unittest.TestCase):
         self.assertEqual(reference[0x3D:0x43].hex(), "020408102001")
         for name, facts in HOMOLOGS.items():
             with self.subTest(rom=name):
+                data = self.images[name]
+                if "ram_map" in facts:
+                    head = 0x22658 + facts["block_head"]
+                    tail = 0x22664 + facts["block"]
+                    self.assertEqual(data[head : head + 4], reference[:4])
+                    self.assertEqual(head + 4, tail)
+                    self.assertEqual(
+                        data[tail : tail + len(reference) - 0xC], reference[0xC:]
+                    )
+                    self.assertEqual(data.find(reference[0x4:0xB]), -1)
+                    continue
                 start = 0x22658 + facts["block"]
-                self.assertEqual(
-                    self.images[name][start : start + len(reference)], reference
-                )
+                self.assertEqual(data[start : start + len(reference)], reference)
+
+    def test_1me3b_builds_the_misfire_attribution_map_in_ram(self):
+        data = self.images["1ME3B"]
+        facts = HOMOLOGS["1ME3B"]
+        handler = facts["tooth_handler"]
+        sites = literal_sites(data, facts["ram_map"])
+        self.assertEqual(len(sites), 2)
+        for site in sites:
+            self.assertTrue(handler < site < handler + 0x1500)
+        # tst #1 on 0xFFFEBA4D, then the two immediate sequences stored to
+        # offsets 1..6 of the map; offset 0 receives zero in the delay slot.
+        self.assertEqual(
+            data[0x2F78C:0x2F7C2].hex(),
+            "c8018f0c2520"
+            "e0058051e0068052e0018053e0028054e0038055a00be004"
+            "e0048051e0058052e0068053e0018054e0028055e0038056",
+        )
+        self.assertEqual(u32be(data, 0x2F84C) + 2, 0xFFFEBA4D)
+        # Interval end tooth and start tooth of the misfire capture.
+        self.assertEqual((data[0x8AEE], data[0x8AF0]), (9, 9))
+        self.assertEqual(u32be(data, 0x3595C), 0x8AEB)
+        self.assertEqual(
+            data[0x3581A:0x35830].hex(),
+            "84e5620c84e3660c32638d0ee5073253890136538904",
+        )
+        # Reset entry 0x2E23A: bsr 0x2DF4E, whose tail jumps to 0x34340, comes
+        # before the main loop first lowers the interrupt mask at 0x2E444.
+        self.assertEqual(u32be(data, 0x0), 0x2614)
+        self.assertEqual(data[0x2E40A:0x2E40C].hex(), "bda0")
+        self.assertEqual(data[0x2DF6A:0x2DF70].hex(), "d24a422b4f26")
+        self.assertEqual(u32be(data, 0x2E094), 0x34340)
+        self.assertEqual(data[0x2E43A:0x2E446].hex(), "0502e6ff4618760f2569450e")
 
     def test_tooth_seven_reference_and_ignition_constant(self):
         for name, facts in HOMOLOGS.items():
@@ -401,9 +461,10 @@ class HomologousInjectionReferenceTest(unittest.TestCase):
                 base_sites = literal_sites(data, 0x2268E + facts["block"])
                 self.assertEqual(len(base_sites), 1)
                 self.assertTrue(sequencer < base_sites[0] < sequencer + 0x400)
-                self.assertEqual(
-                    len(literal_sites(data, 0x2265C + facts["block"])), 1
-                )
+                if "ram_map" not in facts:
+                    self.assertEqual(
+                        len(literal_sites(data, 0x2265C + facts["block"])), 1
+                    )
                 reader = facts["reader"]
                 self.assertTrue(
                     any(
@@ -416,6 +477,7 @@ class HomologousInjectionReferenceTest(unittest.TestCase):
         self.assertIn("### Homologous targets", self.fuel)
         self.assertIn("`raw * 2 - 590` degrees after", self.fuel)
         self.assertIn("1ND forms its misfire metric through a different", self.fuel)
+        self.assertIn("1ME3B keeps the attribution map in RAM", self.fuel)
         for facts in HOMOLOGS.values():
             for key in ("table", "sequencer", "ignition_task", "scheduler", "reader"):
                 self.assertIn(f"`0x{facts[key]:X}`", self.fuel)

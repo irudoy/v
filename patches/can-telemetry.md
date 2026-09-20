@@ -261,12 +261,12 @@ injector-open duration is not measured at the injector terminals. The
 end-of-injection angle word holds `2 * min(y, 209)` from `FUN_00056BD0`;
 `raw * 2` is the delay in crank degrees after the reference tooth of the
 scheduled cylinder, and the end of injection lies `raw * 2 - 590` degrees after
-intake TDC of the injected cylinder. JK00C, JK00D, JK78C, and 1ND bind the word
-that their homologous stage writes with the same 209-count clamp: `FFFF1992`,
-`FFFF1996`, `FFFF192A`, and `FFFE89A2`. They carry the JK08A chain from the
-tooth-7 reference with ignition constant `110` to the slot masks, so the same
-anchor holds; [`JK08A.fuel.md`](../defs/JK08A.fuel.md) lists the homologous
-stages and the 1ND boundary. The timing fields are software coordinates rather
+intake TDC of the injected cylinder. JK00C, JK00D, JK78C, 1ND, and 1ME3B bind
+the word that their homologous stage writes with the same 209-count clamp:
+`FFFF1992`, `FFFF1996`, `FFFF192A`, `FFFE89A2`, and `FFFE8946`. They carry the
+JK08A chain from the tooth-7 reference with ignition constant `110` to the slot
+masks, so the same anchor holds; [`JK08A.fuel.md`](../defs/JK08A.fuel.md) lists
+the homologous stages and the 1ND and 1ME3B boundary. The timing fields are software coordinates rather
 than an independent crank-referenced spark measurement.
 
 A scale string without the word `candidate` is fixed by code, by ROM constants
