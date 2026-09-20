@@ -305,6 +305,15 @@ The VVEL TIM pair written by `FUN_000EDF62` reaches the interpolation consumers
 `FUN_0004C2B2` and `FUN_00054FD0` through the latch at `0xFFFF2670` and
 `0xFFFF2672`, outside the direct-read census above.
 
+Over JK08A the service-0x22 pointer table adds exactly two live `0x11xx`
+slots, `0x114C` and `0x114D`, pointing at `0xFFFF117A` and `0xFFFF117B`. With
+the existing `0xFFFF1178` and `0xFFFF1179` they form a four-element array over
+base `0xFFFF1178`, written by index at `0x041456` and tracked for minimum and
+maximum at `0xFFFF2778` and `0xFFFF277A`. Two independent community
+dictionaries name the added pair `HO2S3` bank 1 and bank 2, so these slots are
+not the VVEL cam angles; `VVEL TIM-B1` and `-B2` reach the ECM over CAN and
+need a binding of their own.
+
 The census behind these counts covers interpolation-addressed tables. The
 `direct-row-major` and `direct-scalar` families of the map inventory are
 addressed without the library and lie outside it, so the count constrains

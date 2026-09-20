@@ -9,6 +9,12 @@ schema_version = 3
 # definition. A pointer binding with an offset names a base literal that the
 # accessor displaces; a role that a target does not carry is declared under
 # its absent table with the code fact that removes it.
+#
+# The ignition state surfaces carry mask 7F because the state-code branch of
+# the coordinator takes only the low seven bits of the lookup. Bit 7 survives
+# only through the temperature branch, which stores it at 0xFFFE8632 and
+# 0xFFFE86BA. What it selects downstream is unresolved, so no role publishes
+# it.
 
 [target.JK78C]
 stock_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"

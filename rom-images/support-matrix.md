@@ -28,12 +28,14 @@ engine name or similar graph structure does not permit address inheritance.
 
 | Family | DTC codes | Developer Immobilizer | Native RomRaider checksum |
 | --- | ---: | --- | --- |
-| `7MFKAVN86` | 36 | `0x8725` | `alt` and `alt2` |
-| JK00C | 36 | `0x873F` | `alt` and `alt2` |
-| JK00D | 36 | `0x8740` | `alt` and `alt2` |
-| JK78C | 35 | `0x861C` | `alt` and `alt2` |
-| `1ND` | 35 | `0x8668` | `alt2` |
-| `1ME3B` | 34 | `0x8671` | `alt2` |
+| `7MFKAVN86` | 48 | `0x8725` | `alt` and `alt2` |
+| JK00C | 48 | `0x873F` | `alt` and `alt2` |
+| JK00D | 48 | `0x8740` | `alt` and `alt2` |
+| JK78C | 39 | `0x861C` | `alt` and `alt2` |
+| `1ND` | 39 | `0x8668` | `alt2` |
+| `1ME3B` | 38 | `0x8671` | `alt2` |
+
+`tools/mapkit/dtc_projection.py` prints these counts per target.
 
 Each image stores its diagnostic descriptors as twelve-byte records followed
 immediately by one 32-bit attribute pointer per record. The pointer table is the
@@ -43,6 +45,16 @@ is carried only when exactly one target record is byte-identical to the
 canonical record. VQ37 declares no P1422 record and no exhaust valve timing
 records, which is why its registries hold 39 codes rather than 48, and `1ME3B`
 declares no P0443 record either, which is why it holds 38.
+
+The descriptor table occupies a different span in every family:
+
+| Family | First record | End of table | Records |
+| --- | ---: | ---: | ---: |
+| `7MFKAVN86` | `0x19360` | `0x1A14C` | 297 |
+| JK00C | `0x1C4E0` | `0x1D2B4` | 295 |
+| JK00D | `0x1C500` | `0x1D2D4` | 295 |
+| JK78C | `0x1B7AC` | `0x1C5EC` | 304 |
+| `1ND` | `0x1BE00` | `0x1CD84` | 331 |
 
 The `1ND` layout declares one runtime domain, so it projects to a single `alt2`
 handler. Its boot and vector SUM16 domains end at `0x8200`, below the lowest
@@ -83,7 +95,9 @@ address profile in `../patches/rom-address-profiles.toml`: every stock address
 is recovered in the target image, the runtime occupies `0x13B108..0x13F000` of
 the audited erased region `0x139DC4..0x13FF00`, and
 `../patches/1me3b-runtime-correspondence.csv` records the evidence of every
-binding. The compiler packs flag bytes differently from `1ND`: the
+binding. Of the 63 telemetry fields, 59 bind to 1ME3B ECU RAM; 45 of those
+sources are confirmed against the DID pointer table at `0x22AE4`, whose
+indices match `0x22A70` on 1ND0A. The compiler packs flag bytes differently from `1ND`: the
 ASCD-enabled flag is bit 3 of `0xFFFEB985`, the native fuel-cut state byte
 `0xFFFE948A` keeps its active and armed flags in bits 3 and 2, and the knock
 surface flag sits in bit 7 of `0xFFFE945B`, outside the telemetry wire
@@ -120,6 +134,14 @@ one of them. Canonical `0x0A29A` reaches JK78C `0x09EBA`, 1ND `0x0A1C0`, and
 `0x0A1F4`, and `0x13A2E` have no canonical source and are registered in
 `../defs/vq37-native-tables.toml` with exact stock values and accessor
 literal-pool bindings.
+
+On 1ME3B the timing coordinator `FUN_0007323E`, homologous to 1ND0A `0x6F37A`,
+reads the default `0x13A26` and the alternate `0x13A2E` through the single
+index byte `0xFFFE8194`. The selector is bit 2 of the latch `0xFFFEB9A4`, which
+sets when the progress word `0xFFFEB8DA` reaches `0x8000` (`ROM8[0x854E]` =
+`0x80`) and releases below `0x7300` (`ROM8[0x854F]` = `0x0D`, 0.898). The same
+threshold byte pair `80 0D` sits at `0x8503` on JK78C and at `0x853A` on
+`1ND`.
 
 The stock VQ37 configuration executes the mode-selected half of the ignition
 coordinator. JK78C `0x069AB8` picks the 16x16 surface `0x0A10A` or `0x0A20A`
@@ -166,7 +188,17 @@ state's channel by a normalized progress weight where `0x8000` is 1.0. The
 eight-point timing accessor `FUN_000644D0` reads index byte `0xFFFF11A2` on both
 branches and selects the alternate through bit 0 of `0xFFFF4525`, a latch on the
 u16 transition progress at `0xFFFF447E` that sets at `0x8000` and releases at
-`0x7300`.
+`0x7300`. Bit 0 of `0xFFFF23AF` gates the whole accessor and must be zero, so
+the selector bit means that the transition has completed.
+
+`0xFFFF447E` is the normalized progress of the transition between two states of
+the eight-position machine. `0x46804` writes it as `trunc(f * 32768)` clamped to
+`[0, 0xFFFF]`, which makes `0x8000` exactly 1.0. The float integrator behind it
+is `0xFFFF995C`, clamped to `[0.0, 1.0]`, stepping by the value at `0xFFFF2824`
+divided by 32768, with sign `+1` at state code 5 or 15 and `-1` otherwise.
+`FUN_000469E0` resolves the endpoints per state: state 1 is the constant
+`100.0`, and states 2 through 8 read curves `0x1505C`, `0xD94E`, `0xD9CE`,
+`0xDA4E`, `0xDACE`, `0xDB4E`, and `0xDBCE` at scale `1/163.84`.
 
 The state code is a status-block byte at `0xFFFFA22F`. `FUN_00054FD0` publishes
 it to `0xFFFF2808`, and `FUN_0004692A` reduces it to eight buckets: raw `5` maps

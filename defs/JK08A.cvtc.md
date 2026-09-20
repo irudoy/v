@@ -176,6 +176,19 @@ the whole life of the image, and intake duty is not reachable through them. The
 live intake command is the byte pair `0xFFFF23B4` and `0xFFFF23B5`, and its
 diagnostic companion pair is `0xFFFF2440` and `0xFFFF2441`.
 
+`FUN 000BDEE4` reads the companion pair in the phaser rest condition. No
+instruction of the image writes the pair, and the two pairs share no code, so
+their relationship rests on capture. Recording 2026-08-26 carries the companion
+pair live across 0 to 78.5 percent at correlation 0.76 against the actual
+intake angle. Recording 2026-09-17 puts byte equality against the command pair
+at 21 to 26 percent of nonzero samples, at correlation 0.98 and median
+difference 0, with no span stable long enough to decide the question: profile
+`3` selects the pairs on different ticks from different contexts
+(`0xFFFF2440`/`0xFFFF2441` on page 9 tag 1, `0xFFFF23B4`/`0xFFFF23B5` on page
+10 tag 0), while profile `4` carries both in tag 1 and selects them in one
+capture pass. `tools/logs/mlg_relation_audit.py` reports the measured share as
+`intake_duty_b1_equal_share` and `intake_duty_b2_equal_share`.
+
 ## Exact target surfaces
 
 | Family | Role | Map | Geometry | RPM axis | Load axis | Raw result |
@@ -1353,6 +1366,8 @@ following remain unresolved:
 - the crank-wheel origin of the engine-event segment, which fixes the
   absolute angle of the 44-degree stock rest value;
 - the tester-side meaning of service `0xA0` request 3;
+- the source of the decrement of rest-learning timers `0xFFFF2536` and
+  `0xFFFF2535`, which reload from `ROM8[0x883F]` and `ROM8[0x883D]`, both 10;
 - the engine speed of the VQ25HR learning procedure: the VQ35HR manual holds
   1,800 to 2,000 rpm, while the JK08A capture requires a bank release between
   2200 and 4000 RPM;
@@ -1373,6 +1388,12 @@ where downstream conditioning makes a map replay differ from the published
 byte. The capture does not establish the electrical valve command or the physical
 camshaft angle at the crankshaft; the degree-per-byte conversion rests on the
 code path under "Cam edge phase bytes", not on the capture.
+
+The eight-point curves `0x13392` and `0x1339A` over axes `0x14230` and
+`0x14238` are outside this model. They belong to init procedure
+`FUN_000E56D4`, which writes only sentinel `0x8000` into `0xFFFF23A0` and
+`0xFFFF23A2`; adjacency to the CVTC cells is not a path into the CVTC
+tract.
 
 The CAN telemetry profile names the two sources `intake_cvtc_target_raw` and
 `exhaust_cvtc_target_raw`, matching their recovered common-target roles. The
