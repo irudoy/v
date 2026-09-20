@@ -1697,7 +1697,7 @@
            storageaddress="0x14A71" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -1722,7 +1722,7 @@
            storageaddress="0x14AA5" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -1750,7 +1750,7 @@
            storageaddress="0x14BA5" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -1777,7 +1777,7 @@
            storageaddress="0x14D31" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -1935,7 +1935,7 @@
            storageaddress="0x14493" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -1965,7 +1965,7 @@
            storageaddress="0x1449B" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -2153,7 +2153,7 @@
            storageaddress="0xE0680" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2179,7 +2179,7 @@
            storageaddress="0xDEB00" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2208,7 +2208,7 @@
            storageaddress="0xDEB40" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2236,7 +2236,7 @@
            storageaddress="0xE06C0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2397,7 +2397,7 @@
            storageaddress="0xE0780" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -2428,7 +2428,7 @@
            storageaddress="0xE07A0" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -2618,7 +2618,7 @@
            storageaddress="0xE0690" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2644,7 +2644,7 @@
            storageaddress="0xDEB10" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2673,7 +2673,7 @@
            storageaddress="0xDEB50" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2701,7 +2701,7 @@
            storageaddress="0xE06D0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2862,7 +2862,7 @@
            storageaddress="0xE0788" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -2893,7 +2893,7 @@
            storageaddress="0xE07A8" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -3083,7 +3083,7 @@
            storageaddress="0xE06A0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -3109,7 +3109,7 @@
            storageaddress="0xDEB20" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -3138,7 +3138,7 @@
            storageaddress="0xDEB60" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -3166,7 +3166,7 @@
            storageaddress="0xE06E0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -3327,7 +3327,7 @@
            storageaddress="0xE0790" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -3358,7 +3358,7 @@
            storageaddress="0xE07B0" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -3548,7 +3548,7 @@
            storageaddress="0xE06B0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -3574,7 +3574,7 @@
            storageaddress="0xDEB30" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -3603,7 +3603,7 @@
            storageaddress="0xDEB70" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -3631,7 +3631,7 @@
            storageaddress="0xE06F0" sizex="16" endian="big">
       <scaling units="RPM" expression="x*25" to_byte="x/25" format="0" fineincrement="25"
                coarseincrement="100"/>
-      <table type="Static X Axis" name="Coolant Temperature [deg C]" sizex="16">
+      <table type="Static X Axis" name="Coolant Temperature [deg C]" logparam="X_VQ_Coolant_Temperature" sizex="16">
         <data>-40</data><data>-30</data><data>-20</data><data>-10</data>
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -3792,7 +3792,7 @@
            storageaddress="0xE0798" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>
@@ -3823,7 +3823,7 @@
            storageaddress="0xE07B8" sizex="8" endian="big">
       <scaling units="deg" expression="x-128" to_byte="x+128" format="0" fineincrement="1"
                coarseincrement="4"/>
-      <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
+      <table type="Static X Axis" name="Engine Speed [RPM]" logparam="X_VQ_Engine_Speed" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
         <data>1600</data><data>2000</data><data>2400</data><data>2800</data>
       </table>

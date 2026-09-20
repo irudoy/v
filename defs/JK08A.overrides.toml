@@ -26,11 +26,14 @@ enabled = true
 enabled = true
 
 # RomRaider Overlay Log. Each record names the Logger parameter that carries the
-# physical quantity of one runtime lookup operand and the axis units in which
-# that parameter is expressed. An axis names the parameter in logparam when its
-# code-established scale evidence rests on exactly this indexed_by operand and
-# its units equal the record. The IDs are the external parameters that the CAN
-# dashboard live value feed publishes (tools/can_dashboard/live_feed.py).
+# physical quantity of one runtime lookup operand, the axis units in which that
+# parameter is expressed, and the name of the static axis whose reviewed labels
+# it is comparable with. A ROM array axis names the parameter in logparam when
+# its code-established scale evidence rests on exactly this indexed_by operand
+# and its units equal the record. A static axis names it when the map declares
+# static_axis_operand and carries labels under the declared name. The IDs are
+# the external parameters that the CAN dashboard live value feed publishes
+# (tools/can_dashboard/live_feed.py).
 [logparam.ffff11ae]
 # Scheduler copy of engine speed in 50 RPM counts.
 id = "X_VQ_Engine_Speed"
@@ -46,6 +49,19 @@ units = "RPM"
 # min(255, floor(BFS * 128 / ROM16[0x9534])), 128 counts = 100 percent.
 id = "X_VQ_Engine_Load"
 units = "Normalized BFS [%]"
+
+[logparam.ffff11b2]
+# Scheduler copy of the saturated engine-speed byte in 12.5 RPM counts. It
+# indexes implicit-axis maps whose reviewed labels are engine speed in RPM.
+id = "X_VQ_Engine_Speed"
+static_axis_name = "Engine Speed [RPM]"
+
+[logparam.ffff106f]
+# Previous-cycle normalized engine-coolant-temperature index. In the linear
+# range it is floor(1.6 * (raw - 10)), so its lookup nodes 0, 16, ... 240 are
+# the reviewed labels -40, -30, ... 110 deg C.
+id = "X_VQ_Coolant_Temperature"
+static_axis_name = "Coolant Temperature [deg C]"
 
 [rom]
 xmlid = "JK08A"
@@ -920,6 +936,7 @@ emit = true
 format = "0"
 fine = 25
 coarse = 100
+static_axis_operand = "ffff106f"
 static_axis_name = "Coolant Temperature [deg C]"
 static_axis = [
   -40, -30, -20, -10, 0, 10, 20, 30,
@@ -934,6 +951,7 @@ emit = true
 format = "0"
 fine = 25
 coarse = 100
+static_axis_operand = "ffff106f"
 static_axis_name = "Coolant Temperature [deg C]"
 static_axis = [
   -40, -30, -20, -10, 0, 10, 20, 30,
@@ -948,6 +966,7 @@ emit = true
 format = "0"
 fine = 25
 coarse = 100
+static_axis_operand = "ffff106f"
 static_axis_name = "Coolant Temperature [deg C]"
 static_axis = [
   -40, -30, -20, -10, 0, 10, 20, 30,
@@ -962,6 +981,7 @@ emit = true
 format = "0"
 fine = 25
 coarse = 100
+static_axis_operand = "ffff106f"
 static_axis_name = "Coolant Temperature [deg C]"
 static_axis = [
   -40, -30, -20, -10, 0, 10, 20, 30,
@@ -1483,6 +1503,7 @@ order = 155
 format = "0"
 fine = 1
 coarse = 4
+static_axis_operand = "ffff11b2"
 static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 
@@ -1494,6 +1515,7 @@ order = 156
 format = "0"
 fine = 1
 coarse = 4
+static_axis_operand = "ffff11b2"
 static_axis_name = "Engine Speed [RPM]"
 static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 

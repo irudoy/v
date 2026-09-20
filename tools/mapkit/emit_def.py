@@ -22,10 +22,14 @@
 # Categories remain functional and do not partition tables by confidence.
 #
 # RomRaider Overlay Log follows a Logger parameter along an axis that names it in logparam.
-# [logparam.<operand>] in overrides declares the Logger ID and the axis units of one runtime
-# lookup operand. An axis receives the attribute only when its scaling is established by code,
-# its scale evidence names exactly that one indexed_by operand, and its units equal the
-# declared units; every other axis stays without live data.
+# [logparam.<operand>] in overrides declares the Logger ID of one runtime lookup operand,
+# together with the axis units (ROM array axis) and the axis name (static labels) the
+# parameter is comparable with. A ROM array axis receives the attribute only when its
+# scaling is established by code, its scale evidence names exactly that one indexed_by
+# operand, and its units equal the declared units. A static axis carries reviewed labels
+# instead of stored points, so the map names its lookup operand in static_axis_operand;
+# the attribute follows only when the map evidence records that operand as indexed_by and
+# the axis name equals the declared name. Every other axis stays without live data.
 #
 # Translate wrapper axes to RomRaider axes as established from finishers; see
 # defs/<rom>.notes.md. A finisher addresses a cell as
@@ -120,7 +124,7 @@ MASKED_VIEW_FIELDS = (
     "format", "fine", "coarse",
 )
 PRESENTATION_FIELDS = ("default_emit",)
-LOGPARAM_FIELDS = ("id", "units")
+LOGPARAM_FIELDS = ("id", "units", "static_axis_name")
 LOGPARAM_OPERAND_RE = re.compile(r"^[0-9a-f]{8}$")
 LOGPARAM_ID_RE = re.compile(r"^\S+$")
 MAP_SWITCHING_FIELDS = ("enabled",)
@@ -231,8 +235,16 @@ def fetch(rom):
     return maps, axes
 
 
+@dataclass(frozen=True)
+class LogparamBinding:
+    """A Logger parameter declared for one runtime lookup operand."""
+    id: str
+    units: str | None
+    static_axis_name: str | None
+
+
 def logparam_bindings(ovr):
-    """Return the declared lookup operands: operand address -> (Logger ID, axis units)."""
+    """Return the declared lookup operands: operand address -> LogparamBinding."""
     section = ovr.get("logparam", {})
     if not isinstance(section, dict):
         sys.exit("logparam must be a TOML table")
@@ -247,12 +259,71 @@ def logparam_bindings(ovr):
         if unknown:
             sys.exit(f"{where} contains unknown fields " + ", ".join(unknown))
         for field in LOGPARAM_FIELDS:
-            if not isinstance(entry.get(field), str) or not entry[field]:
+            if field in entry and (
+                not isinstance(entry[field], str) or not entry[field]
+            ):
                 sys.exit(f"{where}: {field} must be a non-empty string")
+        if not isinstance(entry.get("id"), str) or not entry["id"]:
+            sys.exit(f"{where}: id must be a non-empty string")
         if not LOGPARAM_ID_RE.match(entry["id"]):
             sys.exit(f"{where}: id must not contain whitespace")
-        bindings[operand] = (entry["id"], entry["units"])
+        # A parameter is comparable with stored axis points through their units
+        # and with reviewed static labels through the axis name.
+        if "units" not in entry and "static_axis_name" not in entry:
+            sys.exit(f"{where}: units or static_axis_name is required")
+        bindings[operand] = LogparamBinding(
+            entry["id"], entry.get("units"), entry.get("static_axis_name")
+        )
     return bindings
+
+
+def map_lookup_operands(m):
+    """Return the runtime operands the map evidence records as lookup inputs."""
+    try:
+        tokens = provenance.parse_evidence(
+            m.get("evidence") or "", "confidence", f'Map {m["addr"]}'
+        )
+    except provenance.ProvenanceError as error:
+        sys.exit(str(error))
+    return {
+        token.target_addr for token in tokens
+        if token.role == "indexed_by" and token.value == token.target_addr
+    }
+
+
+def static_axis_logparam(m, o, ovr):
+    """Return the Logger parameter ID that follows a static axis, or None.
+
+    Reviewed labels replace stored points, so the map names the lookup operand
+    its evidence records, and the parameter is the one declared for it under the
+    axis name those labels are written in. A relocated definition carries the
+    operand of its source ROM, and its confidence is below code, so it keeps the
+    labels and stays without live data.
+    """
+    operand = o.get("static_axis_operand")
+    if operand is None:
+        return None
+    where = f'[table.{m["addr"]}] static_axis_operand'
+    if not isinstance(operand, str) or not LOGPARAM_OPERAND_RE.match(operand):
+        sys.exit(f"{where} is not eight lowercase hexadecimal digits")
+    if "static_axis" not in o:
+        sys.exit(f"{where} requires static_axis labels")
+    if operand not in map_lookup_operands(m):
+        sys.exit(f"{where}: map evidence does not record indexed_by:{operand}")
+    binding = logparam_bindings(ovr).get(operand)
+    if binding is None:
+        sys.exit(f"{where}: [logparam.{operand}] is not declared")
+    if not binding.static_axis_name:
+        sys.exit(f"{where}: [logparam.{operand}] declares no static_axis_name")
+    name = o.get("static_axis_name")
+    if name != binding.static_axis_name:
+        sys.exit(
+            f"{where}: static_axis_name {name!r} is not the declared "
+            f"{binding.static_axis_name!r}"
+        )
+    if LEVELS.index(m["confidence"]) < LEVELS.index("code"):
+        return None
+    return binding.id
 
 
 def axis_logparam(x, ovr):
@@ -275,8 +346,10 @@ def axis_logparam(x, ovr):
     operands = [token for token in tokens if token.role == "indexed_by"]
     if len(operands) != 1 or operands[0].value != operands[0].target_addr:
         return None
-    logger_id, units = bindings.get(operands[0].target_addr, (None, None))
-    return logger_id if units == x["units"] else None
+    binding = bindings.get(operands[0].target_addr)
+    if binding is None or binding.units != x["units"]:
+        return None
+    return binding.id
 
 
 def axis_xml(kind, x, ovr, size_attr, indent=6):
@@ -299,9 +372,10 @@ def axis_xml(kind, x, ovr, size_attr, indent=6):
 
 
 def static_axis_xml(values, name="Index", axis_type="Static X Axis",
-                    size_attr="sizex", indent=6):
+                    size_attr="sizex", indent=6, logparam=None):
     pad = " " * indent
-    out = [f'{pad}<table type="{att(axis_type)}" name="{att(name)}" '
+    live = f' logparam="{att(logparam)}"' if logparam else ""
+    out = [f'{pad}<table type="{att(axis_type)}" name="{att(name)}"{live} '
            f'{size_attr}="{len(values)}">']
     for i in range(0, len(values), 4):
         out.append(pad + "  " + "".join(f"<data>{att(v)}</data>"
@@ -775,7 +849,8 @@ def table_axes_xml(m, o, ovr, axes):
         # nodes with reviewed physical labels while preserving table geometry.
         if "static_axis" in o:
             out += static_axis_xml(
-                o["static_axis"], o.get("static_axis_name", "X Axis")
+                o["static_axis"], o.get("static_axis_name", "X Axis"),
+                logparam=static_axis_logparam(m, o, ovr),
             )
         else:
             step = m["steps"][0]

@@ -15,8 +15,35 @@ BINDINGS = {
     "logparam": {
         "ffff11ae": {"id": "X_VQ_Engine_Speed", "units": "RPM"},
         "ffff102c": {"id": "X_VQ_Engine_Load", "units": "Normalized BFS [%]"},
+        "ffff106f": {
+            "id": "X_VQ_Coolant_Temperature",
+            "static_axis_name": "Coolant Temperature [deg C]",
+        },
     }
 }
+
+
+def implicit_map(**changes):
+    row = {
+        "addr": "000126e4",
+        "confidence": "code",
+        "evidence": (
+            "consumer:0004fbe2@structural;indexed_by:ffff106f@structural;"
+            "indexed_by:ffff11b3@structural;site:0004fc02"
+        ),
+    }
+    row.update(changes)
+    return row
+
+
+def labelled_table(**changes):
+    row = {
+        "static_axis": [-40, -30, -20, -10, 0, 10, 20, 30],
+        "static_axis_name": "Coolant Temperature [deg C]",
+        "static_axis_operand": "ffff106f",
+    }
+    row.update(changes)
+    return row
 
 
 def axis(**changes):
@@ -135,6 +162,8 @@ class LogparamDeclarationTest(unittest.TestCase):
             {"logparam": {"FFFF11AE": {"id": "X_A", "units": "RPM"}}},
             {"logparam": {"ffff11ae": "X_A"}},
             {"logparam": {"ffff11ae": {"id": "X_A"}}},
+            {"logparam": {"ffff11ae": {"units": "RPM"}}},
+            {"logparam": {"ffff11ae": {"id": "X_A", "static_axis_name": ""}}},
             {"logparam": {"ffff11ae": {"id": "", "units": "RPM"}}},
             {"logparam": {"ffff11ae": {"id": "X A", "units": "RPM"}}},
             {"logparam": {"ffff11ae": {"id": "X_A", "units": 1}}},
@@ -145,18 +174,18 @@ class LogparamDeclarationTest(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     emit_def.logparam_bindings(overrides)
         self.assertEqual(emit_def.logparam_bindings({}), {})
-        self.assertEqual(
-            emit_def.logparam_bindings(BINDINGS)["ffff102c"],
-            ("X_VQ_Engine_Load", "Normalized BFS [%]"),
-        )
+        binding = emit_def.logparam_bindings(BINDINGS)["ffff102c"]
+        self.assertEqual(binding.id, "X_VQ_Engine_Load")
+        self.assertEqual(binding.units, "Normalized BFS [%]")
+        self.assertIsNone(binding.static_axis_name)
 
     def test_tracked_declaration_names_published_feed_parameters(self):
         published = {channel.logger_id for channel in live_feed.CHANNELS}
         bindings = emit_def.logparam_bindings(tracked_overrides())
         self.assertTrue(bindings)
-        for operand, (logger_id, _units) in bindings.items():
+        for operand, binding in bindings.items():
             with self.subTest(operand=operand):
-                self.assertIn(logger_id, published)
+                self.assertIn(binding.id, published)
 
     def test_every_tracked_declaration_binds_an_axis(self):
         overrides = tracked_overrides()
@@ -170,7 +199,87 @@ class LogparamDeclarationTest(unittest.TestCase):
                     )
                     if token.role == "indexed_by"
                 )
+        for table in overrides["table"].values():
+            operand = table.get("static_axis_operand")
+            if operand:
+                used.add(operand)
         self.assertEqual(used, set(emit_def.logparam_bindings(overrides)))
+
+
+class StaticAxisLogparamRuleTest(unittest.TestCase):
+    def test_labels_of_a_declared_operand_name_the_parameter(self):
+        self.assertEqual(
+            emit_def.static_axis_logparam(
+                implicit_map(), labelled_table(), BINDINGS
+            ),
+            "X_VQ_Coolant_Temperature",
+        )
+
+    def test_a_table_without_the_declaration_stays_without_live_data(self):
+        self.assertIsNone(
+            emit_def.static_axis_logparam(
+                implicit_map(),
+                labelled_table(static_axis_operand=None),
+                BINDINGS,
+            )
+        )
+
+    def test_an_operand_outside_the_map_evidence_stops_generation(self):
+        with self.assertRaises(SystemExit):
+            emit_def.static_axis_logparam(
+                implicit_map(evidence="consumer:0004fbe2@structural"),
+                labelled_table(),
+                BINDINGS,
+            )
+
+    def test_an_undeclared_operand_stops_generation(self):
+        with self.assertRaises(SystemExit):
+            emit_def.static_axis_logparam(
+                implicit_map(), labelled_table(), {"logparam": {}}
+            )
+
+    def test_an_axis_name_other_than_the_declared_name_stops_generation(self):
+        with self.assertRaises(SystemExit):
+            emit_def.static_axis_logparam(
+                implicit_map(),
+                labelled_table(static_axis_name="Coolant Temperature"),
+                BINDINGS,
+            )
+
+    def test_a_rom_axis_declaration_does_not_reach_static_labels(self):
+        with self.assertRaises(SystemExit):
+            emit_def.static_axis_logparam(
+                implicit_map(evidence="indexed_by:ffff11ae@structural"),
+                labelled_table(
+                    static_axis_operand="ffff11ae",
+                    static_axis_name="Engine Speed [RPM]",
+                ),
+                BINDINGS,
+            )
+
+    def test_a_relocated_map_keeps_its_labels_without_live_data(self):
+        self.assertIsNone(
+            emit_def.static_axis_logparam(
+                implicit_map(confidence="candidate"), labelled_table(),
+                BINDINGS,
+            )
+        )
+
+    def test_a_declaration_without_labels_stops_generation(self):
+        table = labelled_table()
+        del table["static_axis"]
+        with self.assertRaises(SystemExit):
+            emit_def.static_axis_logparam(implicit_map(), table, BINDINGS)
+
+    def test_static_axis_xml_carries_the_attribute_only_when_bound(self):
+        bound = "\n".join(emit_def.static_axis_xml(
+            [-40, -30], "Coolant Temperature [deg C]",
+            logparam="X_VQ_Coolant_Temperature",
+        ))
+        self.assertIn('logparam="X_VQ_Coolant_Temperature"', bound)
+        ET.fromstring(bound)
+        unbound = "\n".join(emit_def.static_axis_xml([-40, -30], "Index"))
+        self.assertNotIn("logparam", unbound)
 
 
 class TrackedDefinitionLogparamTest(unittest.TestCase):
@@ -197,6 +306,38 @@ class TrackedDefinitionLogparamTest(unittest.TestCase):
                 )
             checked += 1
         self.assertGreater(checked, 0)
+
+    def test_every_static_axis_follows_the_declared_rule(self):
+        bound = set()
+        for table in self.rom.findall("table"):
+            for element in table.findall("table"):
+                if not element.get("type", "").startswith("Static"):
+                    continue
+                if element.get("logparam"):
+                    bound.add((table.get("name"), element.get("logparam")))
+                    self.assertIsNotNone(element.get("name"))
+        parameters = {parameter for _name, parameter in bound}
+        self.assertEqual(
+            parameters,
+            {"X_VQ_Coolant_Temperature", "X_VQ_Engine_Speed"},
+        )
+
+    def test_coolant_and_speed_curves_support_the_overlay(self):
+        expected = {
+            "Map 1 - DFCO Entry RPM Threshold": "X_VQ_Coolant_Temperature",
+            "Map 5 - DFCO Hold RPM Threshold": "X_VQ_Coolant_Temperature",
+            "Map 1 - Timing-State Addend - Default/Post-Transition":
+                "X_VQ_Engine_Speed",
+        }
+        found = {}
+        for table in self.rom.findall("table"):
+            for element in table.findall("table"):
+                if element.get("logparam") and element.get(
+                        "type", "").startswith("Static"):
+                    found[table.get("name")] = element.get("logparam")
+        for name, parameter in expected.items():
+            with self.subTest(table=name):
+                self.assertEqual(found.get(name), parameter)
 
     def test_ignition_and_cam_surfaces_support_the_overlay(self):
         expected = {
