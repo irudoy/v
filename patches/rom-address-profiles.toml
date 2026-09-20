@@ -107,7 +107,7 @@ button_state = 0xFFFF2B4B
 ascd_state = 0xFFFF435F
 fuel_inhibit = 0xFFFF2527
 apc_mode = 0xFFFF2559
-apc_output = 0xFFFF206C
+apc_output = 0xFFFF11F5
 unsigned_divide = 0x00021D6C
 stock_ignition_consumer = 0x0002B51A
 
@@ -151,7 +151,7 @@ mailbox_mask = 0x0100
 [profile.JK00D.telemetry_sources]
 rpm_raw = 0xFFFF1206
 final_timing_raw = 0xFFFF11E4
-apc_command_raw = 0xFFFF206C
+apc_command_raw = 0xFFFF11F5
 fuel_inhibit_mask = 0xFFFF235C
 maf_b1_raw = 0xFFFF1024
 maf_b2_raw = 0xFFFF1026
@@ -328,7 +328,7 @@ button_state = 0xFFFF2B37
 ascd_state = 0xFFFF434B
 fuel_inhibit = 0xFFFF251F
 apc_mode = 0xFFFF2551
-apc_output = 0xFFFF2064
+apc_output = 0xFFFF11F5
 unsigned_divide = 0x00021D6C
 stock_ignition_consumer = 0x0002B51A
 
@@ -372,7 +372,7 @@ mailbox_mask = 0x0100
 [profile.JK00C.telemetry_sources]
 rpm_raw = 0xFFFF1206
 final_timing_raw = 0xFFFF11E4
-apc_command_raw = 0xFFFF2064
+apc_command_raw = 0xFFFF11F5
 fuel_inhibit_mask = 0xFFFF2354
 maf_b1_raw = 0xFFFF1024
 maf_b2_raw = 0xFFFF1026
