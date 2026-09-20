@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.2.2`.
+Current dashboard version: `8.2.3`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.2.2-windows.zip
+  --output tmp/vq-can-telemetry-v8.2.3-windows.zip
 ```
 
 On the Windows laptop:
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.2.2-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.2.3-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.2.2 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.2.3 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -289,8 +289,11 @@ resampled copy, and the MLG recording stays the reference log.
 
 The `REC` button selects a destination and starts an atomic MLVLG v2 recording;
 it stays lit while the recording runs. Only complete strict telemetry snapshots
-produce records. A second press, source stop, source replacement, and window
-close finalize and validate the file.
+produce records. A second press, source stop, source replacement, and
+leaving the window finalize and validate the file. Every way out leads to the
+same shutdown: the close button, the quit command of the platform, and the end
+of the main loop, so a recording survives a quit the same way it survives a
+close.
 No new output is left when no complete snapshot was received; an existing file
 selected for replacement remains unchanged in that case. Existing files require
 an explicit replacement confirmation in the UI and are rejected by `--record`.
@@ -564,6 +567,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.2 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.3 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

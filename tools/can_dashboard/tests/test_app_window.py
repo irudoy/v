@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import sys
 import tempfile
 import tkinter as tk
 import unittest
@@ -129,6 +130,25 @@ class DashboardWindowTest(unittest.TestCase):
         self.assertEqual(tuple(dashboard.hero_cards), app.DEFAULT_HERO_KEYS)
         self.assertNotIn("gear", dashboard.hero_cards)
         self.assertFalse(self.path.exists())
+
+    def test_a_second_close_leaves_the_first_one_alone(self):
+        dashboard = self.dashboard()
+        stops = []
+        dashboard.stop_source = lambda: stops.append(True)
+        dashboard.close()
+        dashboard.close()
+        self.assertEqual(len(stops), 1)
+        self.assertTrue(dashboard.closed)
+        self.assertFalse(self.window.winfo_exists())
+
+    @unittest.skipUnless(sys.platform == "darwin", "macOS quit command")
+    def test_the_quit_command_of_the_platform_closes_the_window(self):
+        dashboard = self.dashboard()
+        stops = []
+        dashboard.stop_source = lambda: stops.append(True)
+        self.window.tk.call("::tk::mac::Quit")
+        self.assertTrue(dashboard.closed)
+        self.assertEqual(len(stops), 1)
 
     def test_hero_cards_share_one_row(self):
         dashboard = self.dashboard()

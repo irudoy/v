@@ -805,6 +805,7 @@ class DashboardApp:
         self.control_requests = None
         self.pcan_active = False
         self.source_generation = 0
+        self.closed = False
         self.source_state = "stopped"
         self.source_detail = "not connected"
         self.model = DashboardModel(
@@ -844,6 +845,8 @@ class DashboardApp:
         self._apply_initial_geometry()
         self._build_window()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
+        if sys.platform == "darwin":
+            self.root.tk.createcommand("::tk::mac::Quit", self.close)
         self.root.after(POLL_INTERVAL_MS, self._poll)
         if args.demo:
             self.root.after(200, self.start_demo)
@@ -1855,11 +1858,24 @@ class DashboardApp:
             self.health_vars[key].set(f"{key}={value}")
 
     def close(self):
+        """Save the recording, release the source and the feed, end the window.
+
+        Every way out of the window leads here: the close button, the quit
+        command of the platform, and the return of the main loop. The first
+        one to arrive does the work, because a recording is saved once and a
+        destroyed window cannot be destroyed again.
+        """
+        if self.closed:
+            return
+        self.closed = True
         LOG.info("window closed")
         self.stop_source()
         if self.feed is not None:
             self.feed.close()
-        self.root.destroy()
+        try:
+            self.root.destroy()
+        except tk.TclError:
+            pass
 
 
 def build_parser():
@@ -1998,6 +2014,7 @@ def main(argv=None):
             raise SystemExit("dashboard smoke test received no complete groups")
         return 0
     root.mainloop()
+    dashboard.close()
     return 0
 
 
