@@ -522,7 +522,7 @@ confidence = "code"
 scale_conf = "candidate"
 scale_expr = "x*0.05"
 to_byte = "x/0.05"
-semantics = "Duration word surface of the state-code dispatcher FUN_000657E4 for state code 5; 1ME3B assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14 in FUN_00050310. The dispatcher evaluates the state bytes 0xFFFF43F2 and 0xFFFF4480 in turn and publishes the duration word 0xFFFF122C. Stock values span 900..1180 = 45.0..59.0."
+semantics = "Duration word surface of the state-code dispatcher FUN_000657E4 for state code 5; FUN_0004692A assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14 from the published mode byte 0xFFFF2808; mode 14 is unreachable on JK78C, so code 7 is never produced. The dispatcher evaluates the state bytes 0xFFFF43F2 and 0xFFFF4480 in turn and publishes the duration word 0xFFFF122C. Stock values span 900..1180 = 45.0..59.0."
 note = "Read by FUN_000657E4 at callsites 0x664B8 and 0x66578, where r4 holds the surface selected before the call through the 8x8 uint16 wrapper 0x28058 with r7 = min(0xFFFF, 0xFFFF11AC << 2), the latched 12.5 RPM per count engine-speed word in the 3.125 RPM domain on the first axis and the stack coordinate the load byte 0xFFFF1032 << 8, the byte that indexes the ignition mode surfaces in FUN_00069AB8 on the second axis. The same dispatcher takes the throttled curve 0x00016D14 for state codes 1 and 3, so the word shares the 0.05 domain of that curve. The resolver pair of modes 12 and 13 is a separate pair of surfaces with its own axes."
 
 [[target.JK78C.table]]
@@ -546,7 +546,7 @@ confidence = "code"
 scale_conf = "candidate"
 scale_expr = "x*0.05"
 to_byte = "x/0.05"
-semantics = "Duration word surface of the state-code dispatcher FUN_000657E4 for state codes 6 and 7; 1ME3B assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14 in FUN_00050310. Stock values span 900..1180 = 45.0..59.0."
+semantics = "Duration word surface of the state-code dispatcher FUN_000657E4 for state codes 6 and 7; FUN_0004692A assigns code 5 to VVEL mode 12, code 6 to mode 13, and code 7 to mode 14 from the published mode byte 0xFFFF2808; mode 14 is unreachable on JK78C, so code 7 is never produced. Stock values span 900..1180 = 45.0..59.0."
 note = "Read by FUN_000657E4 at callsites 0x664B8 and 0x66578, where r4 holds the surface selected before the call through the 8x8 uint16 wrapper 0x28058 with the coordinates and axes of the state code 5 surface 0x000102CE."
 
 [[target.JK78C.table]]

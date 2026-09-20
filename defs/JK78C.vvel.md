@@ -423,13 +423,38 @@ the floor copies `0x0001B28A` and `0x0001B29A` by the word `0xFFFF11BC` into
 `0xFFFF3276` and `0xFFFF3278`. `0xFFFF11BC` latches
 `0xFFFF11F0 = (12000000 / (ROM8[0x87AB] * period 0xFFFF2230)) >> 1` with
 `ROM8[0x87AB] = 3`, which equals the `2000000 / period` form of the primary
-coordinate `0xFFFF11A6` for a second period measurement.
+coordinate `0xFFFF11A6` for a second period measurement. The two period
+samplers are twins: the event handler `FUN_0002095C` calls `FUN_0002B548`
+(period `0xFFFF11E8` of the primary coordinate) and `FUN_0002B5AC` (period
+`0xFFFF2230`) back to back through the adjacent pointer words `0x00020B20` and
+`0x00020B24`. Both take the difference of the same capture word `0xFFFF1864`,
+which the interrupt handler `FUN_0002B8FA` stores at `0x0002C356`, under the
+same gate (`0xFFFF241E` bit 5 clear and the byte `0xFFFF2544` zero) and shift it right by
+five; they differ only in the previous-capture cells `0xFFFF84D4` and
+`0xFFFF84D8`. Both words therefore span the same crank interval, and
+`0xFFFF11BC` carries the 3.125 RPM count weight of `0xFFFF11A6`.
 
 The state-code dispatcher `FUN_000657E4` reads its own hot-intake idle pair
 `0x000102CE` (state code 5) and `0x0001034E` (state codes 6 and 7) over the
 axes `0x00016CF4` and `0x00016CE4`, with `min(0xFFFF, 0xFFFF11AC << 2)` and
 the load byte `0xFFFF1032 << 8` as coordinates, for the state bytes
 `0xFFFF43F2` and `0xFFFF4480`, and publishes the duration word `0xFFFF122C`.
+`FUN_0004678C`, entry 43 of the periodic list `0x00021A4C` (pointer word
+`0x00021AF8`; the VVEL task `FUN_00054FD0` is entry 98), writes all three
+state cells from the published mode byte `0xFFFF2808`. `FUN_0004692A` maps
+the mode to the state code: mode 5 gives 2, mode 3 gives 3, mode 10 gives 4,
+mode 12 gives 5, mode 13 gives 6, mode 14 gives 7, mode 15 gives 8, and every
+other mode gives 1. The 1ND mapper `FUN_0004C4B8` and the 1ME3B mapper
+`FUN_00050310` implement the same table in a different instruction form.
+Mode 14 is unreachable on JK78C, so code 7 is never produced. `0xFFFF43F2`
+holds the current code. `FUN_00046978` keeps in `0xFFFF4480` the code that was
+current before the latest mode change (state block `0xFFFF9959`: held code,
+last code, and last mode at offset `0x0F`). `FUN_000468C6` forms the crossfade
+weight `0xFFFF43F0`: the accumulator `0xFFFF9954` restarts from zero when the
+code differs from `0xFFFF9958`, grows by the step word `0xFFFF2824` on every
+pass, and saturates at `0x8000` = 1.0; while the current or the previous code
+is 8, the weight is the word `0xFFFF281E` instead. The start-up initializer
+`FUN_000302D4` seeds both code bytes.
 1ME3B carries the same pair in `FUN_0007448C`; the 1ND dispatcher
 `FUN_00070514` reads the resolver surfaces at those positions. The delay curve
 of the stepped throttled approach and the start-up blend target exist only in
