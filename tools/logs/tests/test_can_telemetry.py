@@ -248,6 +248,42 @@ class CanTelemetryDecoderTest(unittest.TestCase):
         self.assertIsNone(duplicate)
         self.assertGreaterEqual(decoder.malformed_frames, 1)
 
+    def test_producer_restart_opens_a_new_run(self):
+        decoder = can_telemetry.Decoder("tuning")
+        feed_group(decoder, frames("tuning", 0x281F, context_tag=3))
+        self.assertTrue(decoder.schema_verified)
+        before = feed_group(decoder, frames("tuning", 0x2820))
+        self.assertEqual(before.run, 0)
+        restarted = feed_group(decoder, frames("tuning", 1))
+        self.assertIsNotNone(restarted)
+        self.assertEqual(restarted.run, 1)
+        self.assertEqual(restarted.tick16, 1)
+        self.assertEqual(restarted.unwrapped_tick, 1)
+        self.assertFalse(restarted.schema_verified)
+        self.assertFalse(decoder.schema_verified)
+        self.assertEqual(decoder.producer_restarts, 1)
+        following = feed_group(decoder, frames("tuning", 2, context_tag=3))
+        self.assertEqual(following.run, 1)
+        self.assertEqual(following.unwrapped_tick, 2)
+        self.assertTrue(following.schema_verified)
+        self.assertEqual(decoder.producer_restarts, 1)
+
+    def test_backwards_tick_outside_the_opening_window_is_rejected(self):
+        decoder = can_telemetry.Decoder("tuning")
+        feed_group(decoder, frames("tuning", 0x2820))
+        stale = feed_group(decoder, frames("tuning", 0x2330))
+        self.assertIsNone(stale)
+        self.assertEqual(decoder.producer_restarts, 0)
+        self.assertGreaterEqual(decoder.malformed_frames, 1)
+
+    def test_wrap_into_the_opening_window_is_not_a_restart(self):
+        decoder = can_telemetry.Decoder("tuning")
+        feed_group(decoder, frames("tuning", 0xFFFE))
+        wrapped = feed_group(decoder, frames("tuning", 0x0002))
+        self.assertEqual(wrapped.run, 0)
+        self.assertEqual(wrapped.unwrapped_tick, 0x10002)
+        self.assertEqual(decoder.producer_restarts, 0)
+
     def test_wrong_id_bad_length_bad_header_and_unknown_context_are_rejected(self):
         decoder = can_telemetry.Decoder("tuning", 0x6F0)
         self.assertIsNone(decoder.feed(0x6EF, bytes(8)))

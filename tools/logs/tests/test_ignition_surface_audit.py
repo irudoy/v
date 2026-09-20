@@ -97,6 +97,7 @@ class IgnitionSurfaceFormulaTest(unittest.TestCase):
         def sample(tick, state, count, map_number=1):
             return ignition_surface_audit.IgnitionSample(
                 timestamp=tick / 100,
+                run=0,
                 tick=tick,
                 bfs_raw=0,
                 rpm_raw=0,

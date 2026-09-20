@@ -1828,7 +1828,8 @@ class DashboardApp:
         )
         self.loss_var.set(
             f"Loss: {stats.missed_snapshots} | Incomplete: {stats.incomplete_groups} | "
-            f"Malformed: {stats.malformed_frames} | Source drops: {self.source_drops}"
+            f"Malformed: {stats.malformed_frames} | Restarts: {stats.producer_restarts} | "
+            f"Source drops: {self.source_drops}"
         )
 
         new_group = stats.completed_groups != self.last_ui_group

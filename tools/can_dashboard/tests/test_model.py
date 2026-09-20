@@ -203,6 +203,18 @@ class DashboardModelTest(unittest.TestCase):
             "not observed on primary CAN",
         )
 
+    def test_producer_restart_keeps_the_feed_and_is_not_counted_as_loss(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        feed_group(dashboard, generator.group(900), 1.0)
+        feed_group(dashboard, generator.group(901), 1.01)
+        feed_group(dashboard, generator.group(1), 70.0)
+        feed_group(dashboard, generator.group(2), 70.01)
+        self.assertEqual(dashboard.missed_snapshots, 0)
+        self.assertEqual(dashboard.unexpected_tick_steps, 0)
+        self.assertEqual(dashboard.stats(now=70.02).producer_restarts, 1)
+        self.assertEqual(dashboard.decoder.completed_groups, 4)
+
     def test_target_vehicle_selector_button_and_speed_codes(self):
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)
         for code, label in model.PRND_CODES.items():

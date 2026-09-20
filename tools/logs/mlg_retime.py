@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from tools.logs import can_telemetry
 from tools.logs import mlvlg
 
 TICK_CHANNEL = "Telemetry tick"
@@ -80,6 +81,12 @@ def unwrap_ticks(values) -> list[int]:
         if not 0 <= tick < TICK_MODULUS:
             raise mlvlg.MlvlgError(f"telemetry tick is out of range: {value!r}")
         if previous is not None and tick < previous:
+            if can_telemetry.is_producer_restart(previous, tick):
+                raise mlvlg.MlvlgError(
+                    "the telemetry tick restarts at "
+                    f"{tick} after {previous}, so the recording spans more "
+                    "than one producer run and the tick cannot order it"
+                )
             offset += TICK_MODULUS
         unwrapped.append(offset + tick)
         previous = tick

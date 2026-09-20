@@ -71,6 +71,7 @@ class IgnitionCalibration:
 @dataclass(frozen=True)
 class IgnitionSample:
     timestamp: float
+    run: int
     tick: int
     bfs_raw: int
     rpm_raw: int
@@ -367,6 +368,7 @@ def _samples(trace, commits, profile: str, can_id: int, tick_divisor: int):
         samples.append(
             IgnitionSample(
                 timestamp=timestamp,
+                run=snapshot.run,
                 tick=snapshot.unwrapped_tick,
                 bfs_raw=model.raw["bfs_raw"],
                 rpm_raw=model.raw["rpm_raw"],
@@ -447,7 +449,10 @@ def _state_dynamics(
     event_errors = []
     commit_steps = []
     for previous, current in zip(samples, samples[1:]):
-        if current.tick - previous.tick != tick_divisor:
+        if (
+            current.run != previous.run
+            or current.tick - previous.tick != tick_divisor
+        ):
             continue
         delta = current.state_q8 - previous.state_q8
         if current.knock_count == 0:
@@ -480,7 +485,10 @@ def _alignment_summary(
         source_index = target_index - source_lag
         source = samples[source_index]
         target = samples[target_index]
-        if target.tick - source.tick != source_lag * tick_divisor:
+        if (
+            target.run != source.run
+            or target.tick - source.tick != source_lag * tick_divisor
+        ):
             continue
         point = replay_point(calibration, source, target.map_number)
         base = _signed_u16(target.state_q8 - point.hot_surface_term_q8)

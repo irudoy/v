@@ -239,6 +239,16 @@ the header sequence against `tick16`, and discards incomplete, duplicate,
 reordered, or preempted groups. It never combines pages from different groups
 or fabricates a missing value.
 
+`tick16` lives in producer RAM and restarts with the controller, so a tick that
+drops back into the opening window `0x0000..0x00FF` from a larger value marks a
+new producer run rather than a stale group. The receiver opens a new run there,
+restarts the unwrapped tick, counts the restart, and waits for the next health
+context before it treats the wire contract as verified again. A backwards step
+that lands outside that window remains a rejected stale group, and a 16-bit
+wrap keeps the run because its forward distance stays small. Snapshots of
+different runs are never adjacent: the distance across a restart is a gap of
+unknown length, not a snapshot count.
+
 ### Fixed pages
 
 Pages 0 through 8 are captured at every published snapshot.

@@ -33,6 +33,7 @@ class LoadCalibration:
 @dataclass(frozen=True)
 class LoadSample:
     timestamp: float
+    run: int
     tick: int
     bfs_raw: int
     rpm_raw: int
@@ -171,6 +172,7 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
         samples.append(
             LoadSample(
                 timestamp=timestamp,
+                run=snapshot.run,
                 tick=snapshot.unwrapped_tick,
                 bfs_raw=model.raw["bfs_raw"],
                 rpm_raw=model.raw["rpm_raw"],
@@ -210,7 +212,10 @@ def audit_trace(
     ]
     prior_errors = []
     for previous, current in zip(samples, samples[1:]):
-        if current.tick - previous.tick != tick_divisor:
+        if (
+            current.run != previous.run
+            or current.tick - previous.tick != tick_divisor
+        ):
             continue
         prediction = calculated_load_raw(
             previous.bfs_raw,

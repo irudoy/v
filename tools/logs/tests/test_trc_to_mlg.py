@@ -11,7 +11,7 @@ from tools.can_dashboard import model
 from tools.logs import mlvlg, trc_to_mlg
 
 
-def write_trace(path):
+def write_trace(path, ticks=range(1, 9)):
     generator = model.DemoGenerator()
     lines = [
         ";$FILEVERSION=1.1",
@@ -21,7 +21,7 @@ def write_trace(path):
     ]
     number = 1
     offset_ms = 1000.0
-    for tick in range(1, 9):
+    for index, tick in enumerate(ticks, start=1):
         elapsed = tick * model.BASE_TICK_SECONDS
         frames = (
             *generator.stock_context(tick, elapsed),
@@ -35,8 +35,29 @@ def write_trace(path):
             )
             number += 1
             offset_ms += 0.1
-        offset_ms = 1000.0 + tick * 10.24
+        offset_ms = 1000.0 + index * 10.24
     Path(path).write_text("\n".join(lines) + "\n", encoding="ascii")
+
+
+def read_channel(path, channel):
+    data = Path(path).read_bytes()
+    (_signature, _version, _stamp, _info, begin, record_length, _count) = (
+        struct.unpack(">6sHIIIHH", data[:mlvlg.MLG_HEADER_SIZE])
+    )
+    fields = mlvlg.read_fields(Path(path))
+    record = struct.Struct(
+        ">" + "".join(mlvlg.FIELD_STRUCTS[field.field_type][1:] for field in fields)
+    )
+    index = [field.name for field in fields].index(channel)
+    values = []
+    offset = begin
+    while offset < len(data):
+        if data[offset] == 0:
+            values.append(record.unpack(data[offset + 4 : offset + 4 + record_length])[index])
+            offset += 4 + record_length + 1
+        else:
+            offset += 4 + mlvlg.MLG_MARKER_MESSAGE_SIZE
+    return values
 
 
 def read_field_names(path):
@@ -55,6 +76,19 @@ def read_field_names(path):
 
 
 class TrcToMlgTest(unittest.TestCase):
+    def test_conversion_keeps_the_snapshots_of_a_second_producer_run(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "restart.trc"
+            output = Path(directory) / "restart.mlg"
+            write_trace(source, ticks=(900, 901, 902, 903, 1, 2, 3, 4))
+            summary = trc_to_mlg.convert_trace(source, output)
+            mlvlg.validate_mlg(output)
+            ticks = read_channel(output, "Telemetry tick")
+
+        self.assertEqual(summary.complete_snapshots, 8)
+        self.assertEqual(summary.mlg_records, 8)
+        self.assertEqual(ticks, [900, 901, 902, 903, 1, 2, 3, 4])
+
     def test_conversion_preserves_snapshots_and_field_identity(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "capture.trc"

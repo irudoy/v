@@ -95,6 +95,7 @@ class CvtcTargetFormulaTest(unittest.TestCase):
         def sample(tick, reference):
             return cvtc_target_audit.CvtcSample(
                 timestamp=tick / 100.0,
+                run=0,
                 tick=tick,
                 bfs_raw=1,
                 rpm_raw=4,
@@ -145,6 +146,7 @@ class CvtcTargetFormulaTest(unittest.TestCase):
         samples = [
             cvtc_target_audit.CvtcSample(
                 timestamp=tick / 100.0,
+                run=0,
                 tick=tick,
                 bfs_raw=1,
                 rpm_raw=4,
@@ -186,6 +188,7 @@ class CvtcTargetFormulaTest(unittest.TestCase):
     def test_exhaust_alignment_conditions_against_reference_b(self):
         sample = cvtc_target_audit.CvtcSample(
             timestamp=0.0,
+            run=0,
             tick=0,
             bfs_raw=1,
             rpm_raw=4,

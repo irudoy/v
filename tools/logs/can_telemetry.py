@@ -21,6 +21,22 @@ DEFAULT_SCHEMA = ROOT / "patches" / "can-telemetry-schema.json"
 CANDUMP_COMPACT = re.compile(
     r"(?:^|\s)(?P<can_id>[0-9A-Fa-f]{3})#(?P<data>[0-9A-Fa-f]{16})(?:\s|$)"
 )
+# The producer keeps tick16 in RAM and resets it with the controller, so a run
+# that follows a reset opens with small tick values. A decoder that joined the
+# stream late can miss the first groups of that run, so the opening window is
+# wider than one tick.
+PRODUCER_RUN_TICK_MAX = 0x00FF
+
+
+def is_producer_restart(previous_tick16, tick16):
+    """Report whether a tick pair crosses a producer reset rather than a wrap.
+
+    A 16-bit wrap keeps the forward distance small, while a reset drops the
+    counter back to the opening window of a new run.
+    """
+
+    delta = (tick16 - previous_tick16) & 0xFFFF
+    return delta >= 0x8000 and tick16 <= PRODUCER_RUN_TICK_MAX
 
 
 class DecodeError(ValueError):
@@ -30,6 +46,7 @@ class DecodeError(ValueError):
 @dataclass(frozen=True)
 class Snapshot:
     tick16: int
+    run: int
     unwrapped_tick: int
     sequence: int
     fields: dict[str, int]
@@ -248,12 +265,14 @@ class Decoder:
         self._sequence = None
         self._last_tick = None
         self._unwrapped_tick = None
+        self._run = 0
         self._schema_verified = False
         self._seen_page_zero = False
         self.incomplete_groups = 0
         self.malformed_frames = 0
         self.schema_mismatches = 0
         self.completed_groups = 0
+        self.producer_restarts = 0
 
     @property
     def schema_verified(self):
@@ -308,16 +327,25 @@ class Decoder:
         self._sequence = None
         return self._decode_group(pages, timestamp)
 
+
     def _decode_group(self, pages, timestamp):
         tick16 = int.from_bytes(pages[0][1:3], "big")
+        run = self._run
         if self._last_tick is None:
             unwrapped = tick16
         else:
             delta = (tick16 - self._last_tick) & 0xFFFF
             if delta == 0 or delta >= 0x8000:
-                self.malformed_frames += 1
-                return None
-            unwrapped = self._unwrapped_tick + delta
+                if not is_producer_restart(self._last_tick, tick16):
+                    self.malformed_frames += 1
+                    return None
+                run = self._run + 1
+                unwrapped = tick16
+            else:
+                unwrapped = self._unwrapped_tick + delta
+        if run != self._run:
+            # A new run republishes its identity on the next health context.
+            self._schema_verified = False
 
         values = {}
         for field in self.profile["fields"]:
@@ -364,11 +392,15 @@ class Decoder:
                 self._schema_verified = True
         context_name = " + ".join(context_names)
 
+        if run != self._run:
+            self._run = run
+            self.producer_restarts += 1
         self._last_tick = tick16
         self._unwrapped_tick = unwrapped
         self.completed_groups += 1
         return Snapshot(
             tick16=tick16,
+            run=run,
             unwrapped_tick=unwrapped,
             sequence=tick16 & 0x0F,
             fields=values,
@@ -507,6 +539,7 @@ def main(argv=None):
                 continue
             row = {
                 "tick16": snapshot.tick16,
+                "run": snapshot.run,
                 "unwrapped_tick": snapshot.unwrapped_tick,
                 "timestamp": snapshot.timestamp,
                 "context_tag": snapshot.context_tag,
@@ -525,7 +558,8 @@ def main(argv=None):
         f" completed={decoder.completed_groups}"
         f" incomplete={decoder.incomplete_groups}"
         f" malformed={decoder.malformed_frames}"
-        f" schema_mismatches={decoder.schema_mismatches}",
+        f" schema_mismatches={decoder.schema_mismatches}"
+        f" producer_restarts={decoder.producer_restarts}",
         file=sys.stderr,
     )
     return 0

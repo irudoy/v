@@ -66,9 +66,20 @@ Fuel-trim words retain the firmware's Q8.8 absolute-percent representation,
 whose neutral value is 100.00%. The engineering correction emitted by the
 decoder is therefore `raw / 256 - 100 percent`.
 
+The producer keeps `tick16` in RAM and restarts it with the controller, so a
+capture that spans an ignition cycle carries several producer runs. A tick that
+falls back into the opening window `0x0000..0x00FF` from a larger value opens a
+new run: the decoder keeps decoding, restarts the unwrapped tick, reports the
+run index on every snapshot, counts the restart, and requires a fresh health
+context before it reports the wire contract as verified again. A backwards step
+outside that window is still rejected as a stale group, and a 16-bit wrap stays
+inside the current run. Snapshots of different runs are never treated as
+adjacent, so the audits below skip pairs that cross a restart.
+
 The final stderr marker reports complete, incomplete, malformed, and
-schema-mismatch counts. The decoder never fills a missing page, combines
-different sequence groups, or interpolates a dropped snapshot.
+schema-mismatch counts together with the number of producer restarts. The
+decoder never fills a missing page, combines different sequence groups, or
+interpolates a dropped snapshot.
 
 The cross-platform live dashboard in `../can_dashboard/` uses this same decoder. It
 retains the latest values from rotating contexts, exposes loss and queue health,
@@ -307,7 +318,9 @@ is copied unchanged. The tick period is measured across the log unless
 `--period-ms` provides it, and the first record keeps its recorded offset from
 the start of the recording, so the reconstructed span matches the recorded one.
 A log whose records repeat a tick, such as one holding bridge records, is
-refused: the tick index cannot order them.
+refused: the tick index cannot order them. A log that spans a producer restart
+is refused for the same reason: the tick index restarts with the controller and
+the real gap across the restart is not recorded in it.
 
 ## Diagnostic CSV to MLG
 

@@ -540,8 +540,11 @@ stock coordinate rather than the effective command. The detailed `APC command`
 field carries the effective command.
 
 Health indicators include complete snapshot and frame rates, tick-derived
-loss, incomplete and malformed groups, schema mismatches, source queue drops,
-telemetry status flags, and the rotating overrun and abort counters.
+loss, incomplete and malformed groups, producer restarts, schema mismatches,
+source queue drops, telemetry status flags, and the rotating overrun and abort
+counters. A controller restart reopens the telemetry tick, so the dashboard
+keeps following the stream across an ignition cycle, counts the restart, and
+excludes the gap from the loss count.
 
 Convert an existing PEAK trace without replay timing:
 

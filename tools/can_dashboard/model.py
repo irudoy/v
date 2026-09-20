@@ -118,6 +118,7 @@ class LiveStats:
     completed_groups: int
     missed_snapshots: int
     unexpected_tick_steps: int
+    producer_restarts: int
     incomplete_groups: int
     malformed_frames: int
     schema_mismatches: int
@@ -159,6 +160,7 @@ class DashboardModel:
         self.schema_verified = False
         self.context_name = None
         self.last_tick = None
+        self.last_run = None
         self.last_snapshot_monotonic = None
         self.missed_snapshots = 0
         self.unexpected_tick_steps = 0
@@ -207,6 +209,11 @@ class DashboardModel:
         if snapshot is None:
             return None
 
+        if self.last_run is not None and snapshot.run != self.last_run:
+            # The controller restarted, so its tick counter starts a new run
+            # and the distance across the gap is not a snapshot count.
+            self.last_tick = None
+        self.last_run = snapshot.run
         if self.last_tick is not None:
             delta = snapshot.unwrapped_tick - self.last_tick
             if delta % self.tick_divisor:
@@ -269,6 +276,7 @@ class DashboardModel:
             completed_groups=self.decoder.completed_groups,
             missed_snapshots=self.missed_snapshots,
             unexpected_tick_steps=self.unexpected_tick_steps,
+            producer_restarts=self.decoder.producer_restarts,
             incomplete_groups=self.decoder.incomplete_groups,
             malformed_frames=self.decoder.malformed_frames,
             schema_mismatches=self.decoder.schema_mismatches,

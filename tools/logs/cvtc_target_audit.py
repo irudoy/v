@@ -76,6 +76,7 @@ class CvtcCalibration:
 @dataclass(frozen=True)
 class CvtcSample:
     timestamp: float
+    run: int
     tick: int
     bfs_raw: int
     rpm_raw: int
@@ -484,6 +485,7 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
         samples.append(
             CvtcSample(
                 timestamp=timestamp,
+                run=snapshot.run,
                 tick=snapshot.unwrapped_tick,
                 bfs_raw=model.raw["bfs_raw"],
                 rpm_raw=model.raw["rpm_raw"],
@@ -518,7 +520,10 @@ def _alignment_summary(
         source_index = target_index - source_lag
         source = samples[source_index]
         target = samples[target_index]
-        if target.tick - source.tick != source_lag * tick_divisor:
+        if (
+            target.run != source.run
+            or target.tick - source.tick != source_lag * tick_divisor
+        ):
             continue
         point = points_by_source[source_index]
         predicted = point.coolant_selected_raw
@@ -534,22 +539,25 @@ def _alignment_summary(
         raise ValueError("conditioned reference must be reference A or B")
 
     neutralized_rows = [
-        (target_index, target.tick)
+        (target_index, target.run, target.tick)
         for _, target_index, point, target in rows
         if point.coolant_selected_raw != 0x80
         and getattr(target, conditioned_reference) == 0x80
     ]
     neutralized_runs = 0
     previous_index = None
+    previous_run = None
     previous_tick = None
-    for target_index, tick in neutralized_rows:
+    for target_index, run, tick in neutralized_rows:
         if (
             previous_index is None
             or target_index != previous_index + 1
+            or run != previous_run
             or tick != previous_tick + tick_divisor
         ):
             neutralized_runs += 1
         previous_index = target_index
+        previous_run = run
         previous_tick = tick
 
     without_neutralization = [
@@ -576,7 +584,8 @@ def _alignment_summary(
                 continue
             first = source_index - cycles
             if (
-                samples[source_index].tick - samples[first].tick
+                samples[source_index].run != samples[first].run
+                or samples[source_index].tick - samples[first].tick
                 != cycles * tick_divisor
             ):
                 continue
