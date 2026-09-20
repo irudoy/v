@@ -30,15 +30,25 @@ filesystem path. Ghidra projects and export directories remain outside Git.
 ## On-demand decompilation and listings
 
 `decompile.sh` decompiles functions and, with `-l`, dumps their complete
-listings without a GUI. The ROM key selects the Ghidra program (the file name
-of the registered stock image), outputs land in `~/tools/ghidra-projects/
-export-<ROM>/` as `decomp_<addr>.c` and `funclisting_<addr>.txt`, cached files
-are reused, and the output paths are printed:
+listings without a GUI. The ROM key selects the Ghidra program, outputs land in
+`~/tools/ghidra-projects/export-<ROM>/` as `decomp_<addr>.c` and
+`funclisting_<addr>.txt`, cached files are reused, and the output paths are
+printed:
 
 ```bash
 tools/ghidra/decompile.sh -l 0002a5cc 0002a36a
 tools/ghidra/decompile.sh -r JK00C -o /tmp/inspect 000bfe88
+tools/ghidra/decompile.sh -r 1ND3B -p <program-name> 0007d3e8
 ```
+
+A program keeps the file name it was imported under. `program_name.py` reads
+the project index `<project>.rep/idata/~index.dat` and takes the program named
+after the registered stock image, or else the only root-folder program whose
+name contains the ROM key; `-p` names the program directly. Every headless run
+starts with `ProgramSha256.java`, which reports the executable SHA-256 that
+Ghidra recorded at import. The wrapper stages the output and moves it into the
+export directory only when that value equals the SHA-256 of the registered
+stock image, so a program cannot stand in for a different dump.
 
 `-f` reruns Ghidra for files that already exist. The script wraps
 `DecompileFuncs.java` and `DumpFuncListing.java`; the project location and
