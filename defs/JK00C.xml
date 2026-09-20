@@ -1025,11 +1025,14 @@
     <!-- 0x08E79  1 uint8  map [code]
          scaling x*50 RPM [code]
          Stock value 36 is 1800 RPM with release below 1600 RPM. The flag is one input of
-         override predicate ffff246c bit 1. Definition address projected from JK08A 00008e3b
-         through JK08A-JK00C.definition-addresses.csv: byte 5 of the unique 8-byte constant
-         block at 0x008E74; read by the target exhaust CVTC conditioner 000c5b64 at 000c5baa
-         through the pool slot 000c5d94 as the source conditioner 000bfe88 reads byte 5 at
-         000bfece through 000c0034.
+         override predicate ffff246c bit 1 and has no other consumer, so raw 255 keeps the
+         predicate clear at every reachable engine speed and removes the override stroke, its
+         latch ffff2478 bit 4, and the opportunity it gives the exhaust valve timing control
+         learning. Definition address projected from JK08A 00008e3b through
+         JK08A-JK00C.definition-addresses.csv: byte 5 of the unique 8-byte constant block at
+         0x008E74; read by the target exhaust CVTC conditioner 000c5b64 at 000c5baa through the
+         pool slot 000c5d94 as the source conditioner 000bfe88 reads byte 5 at 000bfece through
+         000c0034.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Exhaust CVTC Standstill Override - RPM Floor"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"

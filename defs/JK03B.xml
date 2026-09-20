@@ -1060,7 +1060,10 @@
          static diagnostic context: ENG SPEED [code, homologous_vq35hr, via map evidence:
          indexed_by]
          Stock value 36 is 1800 RPM with release below 1600 RPM. The flag is one input of
-         override predicate ffff246c bit 1.
+         override predicate ffff246c bit 1 and has no other consumer, so raw 255 keeps the
+         predicate clear at every reachable engine speed and removes the override stroke, its
+         latch ffff2478 bit 4, and the opportunity it gives the exhaust valve timing control
+         learning.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Exhaust CVTC Standstill Override - RPM Floor"
            category="Variable Valve Timing//Exhaust Cam" storagetype="uint8"

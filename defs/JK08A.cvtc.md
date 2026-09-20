@@ -351,6 +351,7 @@ ffff248b bit 2 clear              latch ffff2478 bit 4 cleared at 0xC018C, byte 
 ffff246c bit 1 set, latch clear   byte = clamp_u8(ROM8[0x8E36] + 128) = 168 (+20 degCA);
                                   with ffff24d3 bit 4 set the latch is set at 0xC01C8
                                   instead and byte = 128
+ffff246c bit 1 set, latch set     byte = 128
 ffff246f bit 1 set                byte = 128 on the pass after the predicate falls
 latch set                         byte = previous ffff137e
 otherwise                         byte = coolant-selected map value
@@ -361,11 +362,50 @@ override commands 20 degrees of exhaust retard whenever the engine passes
 1800 RPM with the vehicle at rest while the operational enable is set,
 independently of surfaces `0xB33A`, `0xB2FA`, and `0xAB4A`; it ends when the
 engine speed leaves the window, the vehicle moves, or `0xFFFF244F` bit 2
-clears. `0xFFFF24D3` bit 4 is written at `0xC0A0A` from `0xFFFF247E` bit 0
-together with the published target above 128 or counter `0xFFFF1C74` at most
-2; `0xFFFF247E` bit 0 is set at `0xC098A` when countdown `0xFFFF25E7` reads
-zero, and the countdown is reloaded with `ROM8[0x8CBF] = 50` at `0xBFFBC`
-while byte `0xFFFF1240` or `0xFFFF1241` lies outside `+/- ROM8[0x8E16] = 6`.
+clears.
+
+`0xFFFF244F` is the scheduler copy of `0xFFFF2451` (store at `0x21030`), and
+bit 2 of that byte is the park/neutral position input. Input function
+`FUN 00038618` reads port H data register `0xFFFFF72C` at `0x38636`; a clear
+port bit 4 sets `0xFFFF4217` bit 1 and `0xFFFF1164` bit 2, and a set port bit
+clears both. At `0x3895A..0x38990` the function sets `0xFFFF2451` bit 2 while
+`ROM8[0x8B3F]` bit 7 is clear (stock `0x18`) and battery raw `0xFFFF1188` is
+at most 100 (8.0 V), and otherwise stores the inverse of `0xFFFF1164` bit 2.
+`FUN 0002E0D4` publishes the inverse of `0xFFFF4217` bit 1 as DID `0x1302`
+bit 2, which the structured Nissan profile names `P/N POSI SW`. Bit 2 of
+`0xFFFF244F` is therefore P/N position switch ON, with ON as the low-battery
+default. Four of the eight override events in the 2026-09-17 captures run
+with the selector in D (`0x421` byte 0 = `0x20`) and four with the selector
+in P, so the ECM input of the recorded car reads ON in D as well; the CONSULT
+item `P/N POSI SW` in P, R, N, and D shows whether that input follows the
+selector.
+
+The latch makes the override a single stroke per pedal application.
+`0xFFFF24D3` bit 4 is written at `0xC0A0A` as `0xFFFF247E` bit 0 together
+with the published target above 128 or counter `0xFFFF1C74` at most 2;
+`0xFFFF247E` bit 0 is set at `0xC0992` when countdown `0xFFFF25E7` reads
+zero. The countdown lies in the 10.24 ms timer block of `FUN 0002040C` and is
+reloaded with `ROM8[0x8CBF] = 50` (0.512 s) at `0xBFFBC` while position error
+byte `0xFFFF1240` or `0xFFFF1241` lies outside `+/- ROM8[0x8E16] = 6`;
+`FUN 000C0D32` writes those bytes at `0xC0D62` as `clamp_u8(ffff2327 -
+(ffff2324 + b) + 128)`. Once both banks have tracked the 168 target within 6
+counts for 0.512 s the latch sets and the byte returns to 128. With the latch
+set the stage writes 128 while the predicate or its prior-cycle copy is set
+and the previous `0xFFFF137E` afterwards, so the byte stays at 128 and the
+coolant-selected map value is not used until `0xFFFF248B` bit 2 falls, which
+requires the pedal back at its idle position. The 2026-09-17 captures do not
+reach the latch: all eight events last 0.08 to 0.87 s and end through pedal
+release, engine speed above 4200 RPM, or vehicle motion.
+
+The stroke is the actuation of the exhaust valve timing control learning
+described under "Magnet retarder learning". It also serves the P0014/P0024
+function check of the VQ35HR factory manual without CONSULT (2007 G35,
+EC-144), which starts the engine, revs it above 1,500 rpm, and reads the
+magnet retarder signals at ECM terminals 6 and 7 with an oscilloscope. Bit 0
+of `0xFFFF24AB` has no consumer other than the hysteresis at `0xBFEBE` and
+the predicate at `0xC0158`, so `ROM8[0x8E3B] = 0xFF` keeps the predicate
+clear at every reachable engine speed and removes the stroke, its latch, and
+the learning opportunity it provides, without another effect.
 
 After the limiter for bytes at or above `ROM8[0x8DE4] = 190` (counter
 `0xFFFF1954`, bound `ROM8[0x8E1E] = 120`), the slew stage at
@@ -421,6 +461,89 @@ hold the bank-enable state of the previous scheduler pass. They are consumed
 here, in `FUN 000C1152` at `0xC1320`, and in `FUN 000C2040` at `0xC20B2`,
 where a set snapshot bit beside a clear current bit marks the pass on which
 the enable falls.
+
+### Magnet retarder learning
+
+The standstill override is the stroke of the exhaust valve timing control
+learning, which the VQ35HR factory manual describes as learning the
+characteristic of the magnet retarder by comparing the target angle with the
+actual retarded angle (2007 G35, EC-20). Its procedure without CONSULT warms
+the engine, sets the selector to N with the electrical loads off, and holds
+1,800 to 2,000 rpm for 20 seconds, which is the condition of predicate
+`0xFFFF246C` bit 1.
+
+The learned quantity is the integrator of error stage `FUN 000C1152`. The
+stage keeps one offset-binary longword per bank at `0xFFFF147C + 4b` with
+working copy `0xFFFF148C + 4b`. While bank-enable bit `b` of `0xFFFF1246` is
+set and either duty word `0xFFFF1AAC + 2b` is below 1024 or the target
+`0xFFFF2327` is at most the actual position, it adds position error byte
+`0xFFFF1240 + b` minus 128 through saturating sum `0x000265C4` and clamps the
+result to `ROM16[0x9128] * 4 - 0x20000 = 0 .. ROM16[0x9124] * 4 - 0x20000 =
+9400` (`0xC133C..0xC13A4`). On the first enabled pass, with the bank bit of
+`0xFFFF1284` clear, it preloads the working copy from retained longword
+`0xFFFF4838 + 4b` at `0xC133A`, so the learned value is the integrator state
+from which every exhaust stroke starts.
+
+The tail of `FUN 000BFE88` captures and stores that state:
+
+```text
+ffff24ab bit 2 = ffff24d3 bit 4 && ffff5b33 bit 3            first learning, 0xC0A2C
+ffff24aa bit 2 = ffff24d3 bit 4 && !(ffff24ab bit 2)         refresh, 0xC0A50
+capture, bank b: a clear bit of ffff1246, ffff1c7e bit b set, ffff1284 bit b set
+    ffff1484 + 4b = ffff147c + 4b, ffff147a bit b set        0xC0A6A, 0xC0AAA
+    both bits of ffff1246 set or ffff1c7e bit b clear        ffff147a bit b cleared
+refresh, with ffff1c7e bits 0 and 1 set and a bit of ffff1284 set, per captured bank
+    ffff4838 + 4b = (ffff4840 + 4b) * (256 - k) / 256 + (ffff1484 + 4b) * k / 256
+    k = ROM8[0x8E52] = 77                                    0xC0B64, 0xC0BD8
+    both banks done: ffff1c7f |= 3                           0xC0C02
+first learning, same gate, per captured bank
+    ffff1c8e bit b set                                       0xC0C6A, 0xC0C8A
+    both banks done: ffff5b33 bit 3 cleared                  0xC0CA4
+```
+
+Both request bits are cleared at the end of the pass. `0xFFFF1C7E` bit `b` is
+the clean-release flag of "Demand flag and bank enable": it is set on the
+pass that clears the bank-enable bit while engine-speed byte `0xFFFF11AE`
+lies in 2200 to 4000 RPM, and a set demand flag clears it. The capture
+therefore takes the integrator on the release pass of a stroke that has
+settled, and only when the release happens inside that engine-speed window.
+The refresh products run through `0x0002657C` and `0x000265C4` on values
+relative to `0x80000000`. `FUN 000C1152` serves the two handshake bytes: with
+`0xFFFF1C7F` bit `b` set it loads `0xFFFF4838 + 4b` into both integrator
+longwords (`0xC12C2..0xC12E4`), and with `0xFFFF1C8E` bit `b` set it copies
+the captured `0xFFFF1484 + 4b` into `0xFFFF4838 + 4b` and base
+`0xFFFF4840 + 4b` (`0xC13C6`, `0xC13CA`), clearing the bit in each case.
+
+`0xFFFF5B33` bit 3 is the learning status. Scheduler `FUN 00020DFE` copies
+the byte to `0xFFFF5B32` at `0x2135E`, and status builder `FUN 0002E2E8`
+publishes bit 3 of that copy as bit 3 of DID `0x1311` byte `0xFFFF2C58`
+(store `0x2E404`, support mask `ROM8[0x11A3B] = 0x18`), which the structured
+Nissan profile names `EXH V/T LEARN` with 0 = DONE and 1 = YET. Two paths set
+the bit:
+
+- Retained-memory default initializer `FUN 000BCCF0` sets it, loads the four
+  longwords `0xFFFF4838..0xFFFF4844` with `ROM32[0x96C0] = 0x80000000`, and
+  loads the learned rest edges `0xFFFF479B` and `0xFFFF479C` with
+  `ROM8[0x831D]` and `ROM8[0x831E]`. It runs from `FUN 0002C254` (pointer slot
+  `0x2C4B8`), which `FUN 00026F08` calls before it writes marker `0xAA55` to
+  `0xFFFF5CF6`; `FUN 00026E1C` calls that function when the retained-memory
+  validation fails, and `FUN 000CD85C` holds a second pointer to it at
+  `0xCE844`.
+- Service `0x31` handler `FUN 00033F78` accepts routine identifiers `0x01`
+  to `0x08` and `0x0C` (table `0x22E10`). Routine `0x0C` loads `0xFFFF4838`
+  and `0xFFFF483C` with `ROM32[0x96C0]` (`0x340B6`, `0x340BA`), sets
+  `0xFFFF5B33` bit 3 (`0x340C2`), and clears override latch `0xFFFF2478` bit
+  4 (`0x340CC`), which re-arms the stroke within the current pedal
+  application. The routine matches the CONSULT work support item
+  `EXH V/T CONTROL LEARN`; no tester capture binds the identifier.
+
+With all exhaust surfaces neutral the override is the only source of an
+exhaust stroke, so the learning completes only when one stroke settles and
+releases between 2200 and 4000 RPM; the 2026-09-17 captures contain no such
+stroke. The learning status has no other controller consumer: besides the
+first learning request it is read only by DID `0x1311` and by the service
+`0x32` and `0x33` handlers `FUN 00033DD4` and `FUN 0003348C`, which report
+routine `0x0C` as finished while the bit is clear.
 
 ### Enable bits of `0xFFFF248B`
 
@@ -545,6 +668,54 @@ clears both flag pairs and reloads their timers. `FUN 00090E5E` also forms
 `ROM8[0x8E33] = 0`, which holds on every pass. On stock JK08A the inhibit
 terms therefore reduce to a stored fault of the attribute-bit-8 group or of
 the mass-airflow group.
+
+The reference of the third path is learned by a stage that runs on stock.
+`FUN 00090E5E` calls coordinator `FUN 00090A84` on every scheduler tick
+(`0xFFFF84C3` bit 7) without a mask test. The coordinator forms `0xFFFF24A7`
+bit 4 through comparator `FUN 000259D0` as engine-speed byte `0xFFFF11B2` at
+most `ROM8[0x8DCA] = 0` with release offset 16 (200 RPM), `0xFFFF24A9` bit 2
+as raw coolant `0xFFFF1071`, plus 3 while the bit is set, above
+`ROM8[0x8E03] = 106`, and `0xFFFF24A9` bit 5 as raw coolant at most
+`ROM8[0x8E00] = 170` with release offset 3. It passes enable 1 to
+`FUN 000907E8` for both banks while `0xFFFF248B` bit 0 and those three flags
+are set, `FUN 00025E4E` returns zero, predicates `0x25E20` and `0x259E4` are
+clear for records `0x84..0x87`, and `0xFFFF41BE` bit 6 is clear; the learning
+condition is a stopped engine with the electrical enable set and coolant in
+the 107 to 170 raw window.
+
+`FUN 000907E8(enable, b)` sets the bank bit of gate byte `0xFFFF14F0` while
+the enable is set, the conditioned target `0xFFFF2327` is `0x80`, duty word
+`0xFFFF1AAC + 2b` is zero, timer `0xFFFF2568 + b` has expired, and the bank
+bit of `0xFFFF14B8` is clear; every other state clears the gate bit and
+zeroes sample counter `0xFFFF1930 + b`, and a clear enable also reloads the
+timer with `ROM8[0x8E1A] = 0`. `FUN 00090884(b)` runs only with the gate bit
+set:
+
+```text
+mask ffff48df bit b clear, counter < ROM8[0x863B]
+    ffff17ea + 2b = min(0xFFFF, max(0, word + ROM8[0x831D + b] - uint8[ffff11c8 + b]))
+    counter ffff1930 + b += 1
+mask bit clear, counter >= ROM8[0x863B]
+    ffff14ea + b  = clamp_u8((word - 0x8000) / ROM8[0x863B] + 128)     divider 0x21BBC
+    ffff5578 + 2b = clamp((ROM8[0x831D + b] - uint8[ffff14ea + b] + 128) * 256, 0, 0xFF00)
+    mask bit b set at 0x909BE, counter = 0
+mask bit set
+    ffff5578 + 2b = min(0xFFFF, uint8[ffff11c8 + b] * 8 + ((word * 31) >> 5))
+```
+
+Stock `ROM8[0x863B]` is 0, so the first gated pass takes the second branch
+with a zero divisor: divider `0x21BBC` returns 0 and records `0x044E` in
+`0xFFFF9818`, the learned offset `0xFFFF14EA + b` becomes 128, and the
+reference word becomes `ROM8[0x831D + b] * 256 = 0x5800`. From then on the
+third branch is a first-order filter with gain 1/32 that moves the reference
+word toward 256 times the cam edge phase snapshot. No code clears a bit of
+`0xFFFF48DF`. Retained-memory default initializer `FUN 0007F5B0` (pointer
+slot `0x2C4AC` of `FUN 0002C254`) loads `0xFFFF5578` and `0xFFFF557A` with
+`ROM8[0x831D] << 8` and `ROM8[0x831E] << 8`, and startup initializer
+`FUN 0007F30C` (pointer slot `0x2CC04` of `FUN 0002C648`) initializes
+`0xFFFF14EA`, `0xFFFF14EB`, `0xFFFF17EA`, and `0xFFFF17EC`. The
+whole-program references list `FUN 00090BD2` as the only reader of the mask
+and the reference word, so on stock the learned reference has no effect.
 
 `0xFFFF249C` bit 6 is written by `FUN 0002E466`, reached from `FUN 0002E66C`
 and `FUN 000CA79E`. It sets at `0x2E5EC` while service-0x30 Output Control
@@ -876,8 +1047,9 @@ of `0xFFFF4178` or `0xFFFF4179` (`0x900D2` and `0x900F4` for path A) and,
 when both arm bytes were clear for the bank, raise reset request
 `0xFFFF850C` bit 7 (`0x900D8`, `0x901DE`) under interrupt mask. While the
 indicator bit (`0xFFFF850D` bit `6 + b` for path A, bit `4 + b` for path B) is
-clear they reload timer `0xFFFF43BE + b` with `ROM8[0x8E23] = 100`; when the
-indicator is set and the timer has expired they set the judged latch
+clear they reload timer `0xFFFF43BE + b` with `ROM8[0x8E23] = 100`, which is
+10.24 s in the 102.4 ms timer block of `FUN 0002040C`; when the indicator is
+set and the timer has expired they set the judged latch
 (`0xFFFF3580` at `0x9011C`, `0xFFFF3581` at `0x90222`), which routes to
 P1078/P1084. A clear enable clears the arm bit (`0x90168`) and reloads the
 timer, and a set judged latch clears the arm bit at `0x90182`. Reset helper
@@ -888,12 +1060,28 @@ timer, and a set judged latch clears the arm bit at `0x90182`. Reset helper
 `FUN 000BFE88` and the controller do not raise codes. `FUN 0008F168`, called
 from `FUN 0007C166`, is the exhaust-VTC monitor. Its front stage maintains two
 timers at `0xFFFF43C3` and `0xFFFF43C2`, reloaded with `ROM8[0x8E40] = 60`
-at `0x8F39E` and `0x8F428`:
+(6.14 s) at `0x8F39E` and `0x8F428`:
 
 ```text
 ffff43c3 reloads while non-zero and (ffff4184 bit 7 clear or ffff2327 == 0x80)
 ffff43c2 reloads while non-zero and (ffff24aa bit 4 clear or ffff2327 != 0x80)
 ```
+
+The monitor timers are software countdowns of base-tick handler
+`FUN 0002040C`, which decrements every nonzero cell of three nested modulo-10
+blocks:
+
+| Period | Byte blocks | Word blocks |
+|---|---|---|
+| 10.24 ms | `0xFFFF256A..0xFFFF25F3`, `0xFFFF43C7..0xFFFF4489` | 10 words at `0xFFFF2604`, 34 words at `0xFFFF44C0` |
+| 102.4 ms | `0xFFFF24F9..0xFFFF2569`, `0xFFFF42D3..0xFFFF43C6` | 12 words at `0xFFFF44A8` |
+| 1.024 s | `0xFFFF24D4..0xFFFF24F8`, `0xFFFF4258..0xFFFF42D2` | `0xFFFF2602`, 7 words at `0xFFFF449A` |
+
+The block bounds are the literals at `0x20660..0x2066C` and
+`0x208DC..0x208F4`. Timers `0xFFFF43BE + b`, `0xFFFF43C3`, `0xFFFF43C2`,
+`0xFFFF42E7`, `0xFFFF42F6 + b`, `0xFFFF430A + b`, and `0xFFFF2568 + b`
+therefore count 102.4 ms steps, and countdown `0xFFFF25E7` counts 10.24 ms
+steps.
 
 `0xFFFF424F` bit 2 diverts the monitor into reset helper `FUN 0008FC6A`, which
 clears every latch, counter, and result byte listed below. The sampling stage
@@ -936,8 +1124,11 @@ An enable flag is set only while the helper's judged-latch bit for that bank
 is clear, so each helper judges once per reset cycle. The additional
 conditions are:
 
-- Common front gate: `0xFFFF4184` bits 7 and 6 clear, predicate `0x00025E4E`
-  returns zero, and `0xFFFF2B9A == 0`.
+- Common front gate: `0xFFFF4184` bit 7 set (`0x8F5E4`) and bit 6 clear
+  (`0x8F5EC`), predicate `0x00025E4E` returns zero, and `0xFFFF2B9A == 0`.
+  `0xFFFF4184` is the scheduler copy of `0xFFFF4185`, whose bit 6 is the
+  computed START SIGNAL, so no helper is enabled while the starter request is
+  active.
 - Position sensor paths: `0xFFFF420F` bit 1 clear, then enable mask
   `ROM8[0x186F1] = 0xF0` bits 7 and 6 for path A banks 1 and 2 and bits 5 and
   4 for path B banks 1 and 2.
@@ -953,11 +1144,11 @@ conditions are:
   `ROM8[0x8396] = 10` whenever one of those conditions fails. Mask
   `ROM8[0x186FF]` bit 1 enables bank 1 and bit 0 enables bank 2 for both
   pairs.
-- Magnet retarder circuit: `0xFFFF4184` bit 7 set and bit 6 clear,
-  `0xFFFF41C8` bit 7 clear, `0xFFFF1108` above `0x89` and at most `0xC8`, and
-  `ROM8[0x186DE]` bit 1 for bank 1 and bit 0 for bank 2. `FUN 00090642`
-  returns without judging while the published duty word
-  `0xFFFF1AAC + 2b` is zero.
+- Magnet retarder circuit: `0xFFFF41C8` bit 7 clear, `0xFFFF1108` above `0x89`
+  and at most `0xC8`, and `ROM8[0x186DE]` bit 1 for bank 1 and bit 0 for bank
+  2; the stock byte is `0x03`. `FUN 00090642` evaluates only while the
+  published duty word `0xFFFF1AAC + 2b` is zero (`0x90674`), so the pair
+  judges the de-energized output.
 
 After the helpers return, the routing stage calls `FUN 0008C2D2` to set or
 `FUN 0008C348` to clear the stored-fault bit of each index from the result
@@ -997,6 +1188,39 @@ and clears the stored code through `FUN 0008C348` with index `0xD2` for bank 1
 and `0xD3` for bank 2, while a pending bit without a pass sets the bank bit of
 `0xFFFF358C` and `0xFFFF3583`.
 
+`FUN 00090642` evaluates while its enable is set, the bank bit of judged latch
+`0xFFFF3584` is clear, and duty word `0xFFFF1AAC + 2b` is zero. It then sets
+the bank bit of running byte `0xFFFF28C0`; while the same bit of
+`0xFFFF28F0`, the scheduler copy of that byte (block `0xFFFF2898 ->
+0xFFFF28C8`, `0x30` bytes, at `0x20FD8`), is clear it zeroes fault counter
+`0xFFFF3596 + b`, so the count starts on the second evaluating pass. The
+counter increments with saturation while a driver status byte of the bank
+equals 1 and returns to zero otherwise: bank 1 reads `0xFFFF109E` and
+`0xFFFF109F`, bank 2 reads `0xFFFF10A0` and `0xFFFF10A1`. A count of
+`ROM8[0x8B00] = 10` sets the bank bit of result byte `0xFFFF358D`, and a count
+of `ROM8[0x8B02] = 100` sets the judged latch. A non-zero duty word or a clear
+enable clears the running bit and zeroes the counter. The factory
+confirmation procedure for P0078/P0084 (2007 G35, EC-156) is an idle of 5
+seconds, which is a zero-duty condition.
+
+The four status bytes are scheduler copies of `0xFFFF111E..0xFFFF1121` (block
+`0xFFFF1114 -> 0xFFFF1094`, `0x80` bytes, at `0x20F56`), which driver status
+decoder `FUN 0004110A` writes. The decoder walks the five-device table at
+`0x23290` with the channel pointer table at `0x232B8`, six channels per
+device. For each device it takes the 16-bit diagnostic word that serial read
+state machine `FUN 00040E6C` received (`0xFFFF1EAA`, `0xFFFF1EB2`,
+`0xFFFF1EA2`, `0xFFFF1EA8`, `0xFFFF1EB0`) and accepts it when bits 15..14
+match the device identifier, bit 13 is set, bit 12 is clear, the low 12 bits
+are non-zero, and `0xFFFF24BE` bit 4 is clear; a rejected word zeroes all six
+channel bytes. Channel `k` receives the two-bit field `(word >> (10 - 2k)) &
+3`. Device 1 (`0xFFFF1EB2`, identifier `0x4000`) carries the exhaust magnet
+outputs: channels 0 and 1 are `0xFFFF1120` and `0xFFFF1121` of bank 2, and
+channels 2 and 3 are `0xFFFF111E` and `0xFFFF111F` of bank 1. The circuit
+pair therefore counts passes on which the output driver reports status code 1
+for a de-energized exhaust magnet output; the electrical condition behind
+code 1 belongs to the driver device and is not recoverable from the ECU
+code.
+
 ### Disable path
 
 The calibration-only path keeps every map-derived exhaust target below the
@@ -1015,16 +1239,22 @@ captures of a Map 3 image with all three surfaces neutral show eight such
 excursions, each starting as the engine passed 1800 RPM at rest or while
 creeping and ending on pedal release, on vehicle motion, or above 4200 RPM.
 Calibration byte `ROM8[0x8E36]` is single-copy and not a Map Switching
-family; a value of 0 makes the override command 128 on every map slot and
-leaves the rest of the path unchanged.
+family. A value of 0 makes the override command 128 on every map slot, but
+the stage still replaces the coolant-selected byte with 128 while the
+predicate holds and can still set its latch. `ROM8[0x8E3B] = 0xFF`, also
+single-copy, keeps `0xFFFF24AB` bit 0 and therefore the predicate clear, so
+the stage always passes the coolant-selected byte.
 
 On that path the monitor behaves as follows:
 
 - The target-tracking pair is enabled only during the standstill override,
   because it requires `0xFFFF2327 != 0x80`; otherwise `FUN 000904C2` runs
   its reset path.
-- The magnet retarder circuit pair is never judged, because `FUN 00090642`
-  returns while the published duty word is zero.
+- The magnet retarder circuit pair is judged continuously, because
+  `FUN 00090642` evaluates while the published duty word is zero. It sets
+  P0078 or P0084 after 100 counted passes with driver status code 1 on a
+  de-energized magnet output, so the path depends on both magnets and their
+  wiring staying connected.
 - The rest-position pair is enabled by the neutral target and compares
   `0xFFFF16BA` and `0xFFFF16BB` with the `128 +/- 34` window, which holds
   while the cam edge phase snapshots `0xFFFF11C8` and `0xFFFF11C9` stay
@@ -1070,22 +1300,49 @@ record byte 2.
 | `FUN 000995C4` | `0x25E20`: `0x151`, `0x152` | the P0011/P0021 monitor (records `0xD0`, `0xD1`) does not evaluate |
 | `FUN 0008F168` | `0x25E20`: `0x14F`, `0x151`, `0x152` | the exhaust performance pairs do not evaluate |
 | `FUN 00090A84` | `0x25E20` and `0x259E4`: `0x84..0x87` | the enable argument of `FUN 000907E8` is 0 |
-| `FUN 000420B8` | `0x259E4`: `0x43`, `0x44`, `0x151`, `0x152`, `0x84..0x89`, `0xD0..0xD3` | arm bit `0xFFFF2497` bit 5 is withheld |
-| `FUN 0009BDD0` | `0x259E4`: `0x43`, `0x44`, `0x84..0x88`, `0x14F`, `0x151`, `0x152` | the per-bank entry gate fails |
+| `FUN 000420B8` | `0x259E4`: `0x43`, `0x44`, `0x151`, `0x152`, `0x84..0x89`, `0xD0..0xD3` | arm bit `0xFFFF2497` bit 5 of the after-start idle terms is withheld |
+| `FUN 0009BDD0` | `0x259E4`: `0x43`, `0x44`, `0x84..0x88`, `0x14F`, `0x151`, `0x152` | in-use flag `0xFFFF424F` bit 6 of the cold-start control monitor sets |
+
+`0xFFFF2497` bit 5 belongs to idle function `FUN 000420B8`. With
+`ROM8[0x8B3F]` bit 7 clear and `ROM8[0x8710] = 0x7C` bit 3 set, and with
+latch bit 4 of the same byte clear, the bit is set while intake air
+temperature raw `0xFFFF2733` lies strictly inside `ROM8[0x8B53] = 55 ..
+ROM8[0x8B52] = 100`, word `0xFFFF4524` lies inside `ROM16[0x938C] = 0xA000 ..
+ROM16[0x9388] = 0xE100`, the listed records are clear, `0x25F14(0)`,
+`0x25F14(1)`, and `0x25A12()` return zero, and either `ROM8[0x8710]` bit 7 is
+clear or `0xFFFF4250` bit 7 and `0xFFFF245C` bit 4 are both clear. When the
+arm falls while `0xFFFF244F` bit 5 is set, latch bit 4 sets, and with bit 5
+clear and bit 4 set the three after-start idle terms take their neutral
+values `0xFFFF1510 = 0`, `0xFFFF23ED = 0`, and `0xFFFF23F3 = 0x80`. Idle
+functions `FUN 000413CC`, `FUN 0004355C`, and `FUN 0004207A` consume those
+terms, so a set exhaust record removes the after-start idle terms for the
+rest of the run.
+
+`FUN 0009BDD0` is the routing and in-use stage of the cold-start control
+monitor, whose worker `FUN 0009B1B4` writes pass, fail, and completed bits 7,
+6, and 5 of `0xFFFF41A1` and the capture block `0xFFFF5628`. Its records are
+`0x126` (P1421, `COLD START CONTROL` in the structured Nissan profile) and
+`0x125` (P1422). The stage sets `0xFFFF424F` bit 6 while `0x25A12()`,
+`0x25F14(0)`, `0x25F14(1)`, or predicate `0x259E4` of a listed record is
+nonzero, and it routes the two records through `FUN 000B4EF8` and
+`FUN 0007D8B8` only under `ROM8[0x1870E]` bits 0 and 1. The stock byte is
+`0xF0`, so neither record is routed on JK08A and the exhaust records have no
+reporting effect through this stage.
 
 Registry suppression is a reporting control. On the calibration-only path the
-target-tracking pair, the circuit pair, and the two masked paths are not
-judged, so the rest-position pair of `FUN 00090256` is the single path that
-can set records `0xD2` and `0xD3` and their extension slots; while it passes,
-none of the consumers above changes state.
+target-tracking pair and the two masked paths are not judged. The
+rest-position pair of `FUN 00090256` is the single path that can set records
+`0xD2` and `0xD3` and their extension slots, and the circuit pair of
+`FUN 00090642` is the single path that can set records `0x43` and `0x44`;
+while both pass, none of the consumers above changes state.
 
 ### Evidence boundary of the controller
 
 The state machine, the arithmetic, the stores, the scheduler snapshots, the
 enable coordinator, the capture handlers, the timer configuration, the
-actual-position producer, the rest-edge learning, the edge-count monitor, and
-the descriptor routing are exact code facts read from the whole-program
-export and the headless listings. `FUN 000BF630` has one caller,
+actual-position producer, the rest-edge learning, the magnet retarder
+learning, the edge-count monitor, and the descriptor routing are exact code
+facts read from the whole-program export and the headless listings. `FUN 000BF630` has one caller,
 `FUN 000C21E6` at `0xC21F2`. The 0.5-degree phase unit rests on the
 `phi'/32` configuration of both counters, on `Pphi = 20 MHz` established from
 CAN timestamps, and on the `RPM * 5.12` identity of `0xFFFF1196`. The
@@ -1093,19 +1350,21 @@ following remain unresolved:
 
 - the on-car phase value with both cams at their stops, which is a RAM read of
   `0xFFFF1200`/`0xFFFF1201` or of the learned edges `0xFFFF479B`/`0xFFFF479C`;
-- the writers of mask byte `0xFFFF48DF` (`FUN 00090884`) and of reference
-  word `0xFFFF5578`, which matter only to the masked third P0014/P0024 path,
-  the function armed by `0xFFFF2497` bit 5, and the monitor behind
-  `FUN 0009BDD0`;
 - the crank-wheel origin of the engine-event segment, which fixes the
   absolute angle of the 44-degree stock rest value;
-- the decrement cadence of timer `0xFFFF43BE + b`, the internals of
-  `FUN 00090642` beyond its entry gate, and the tester-side meaning of
-  service `0xA0` request 3;
-- the physical meaning of `0xFFFF244F` bit 2 in the standstill predicate,
-  the decrement site of countdown `0xFFFF25E7`, the identity of bytes
-  `0xFFFF1240` and `0xFFFF1241`, and the purpose of the 20-degree standstill
-  override.
+- the tester-side meaning of service `0xA0` request 3;
+- the engine speed of the VQ25HR learning procedure: the VQ35HR manual holds
+  1,800 to 2,000 rpm, while the JK08A capture requires a bank release between
+  2200 and 4000 RPM;
+- the name of `0xFFFF4184` bit 7, which the common front gate of the monitor
+  requires set and whose writer the export does not resolve;
+- the electrical condition that the output driver reports as status code 1,
+  which the P0078/P0084 pair counts;
+- the published name of P1422, record `0x125` of the cold-start control
+  monitor;
+- the position of the ECM P/N input of the recorded car in R and N, and
+  whether it follows the selector at all, given that it reads ON in both P
+  and D.
 
 ## Evidence boundary
 
@@ -1115,6 +1374,8 @@ byte. The capture does not establish the electrical valve command or the physica
 camshaft angle at the crankshaft; the degree-per-byte conversion rests on the
 code path under "Cam edge phase bytes", not on the capture.
 
-CAN telemetry schema 2 names the two sources `intake_cvtc_target_raw` and
+The CAN telemetry profile names the two sources `intake_cvtc_target_raw` and
 `exhaust_cvtc_target_raw`, matching their recovered common-target roles. The
-generated profile CRC binds those names and sources to the host decoder.
+profile CRC covers the frame layout only, so the names and sources are bound
+to the host decoder by the generated profile definition rather than by the
+CRC.
