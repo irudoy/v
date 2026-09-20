@@ -596,7 +596,7 @@
           "name": "injection_end_angle_raw",
           "offset": 5,
           "page": 7,
-          "scale": "raw * 2 degCA after the reference engine event; JK08A raw * 2 - 590 deg after intake TDC",
+          "scale": "raw * 2 - 590 deg after intake TDC of the injected cylinder; raw * 2 degCA after the reference tooth",
           "signed": false,
           "width": 2
         },

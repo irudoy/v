@@ -260,5 +260,166 @@ class CrankReferenceAndCylinderOrderTest(unittest.TestCase):
         self.assertEqual(self.rom[0x8770], 120)
 
 
+IMAGES = ROOT / "rom-images"
+
+# Homologs of the JK08A end-of-injection reference chain. "block" is the offset
+# of the JK08A sequencing constant block 0x22658..0x226A9 in the target image.
+HOMOLOGS = {
+    "JK08A": {
+        "image": ROM,
+        "block": 0x0,
+        "reference": 0x83D5,
+        "reference_literal": 0x83D5,
+        "table": 0x21B5C,
+        "feeder": 0x208F8,
+        "sequencer": 0x54A44,
+        "ignition_task": 0x4E162,
+        "scheduler": 0x2A892,
+        "reader": 0x521A8,
+        "dispatch": (0x2965A, 0x29662, 0x2966A, 0x29672, 0x2967A),
+    },
+    "JK00C": {
+        "image": IMAGES / "23710-JK00C" / "1JK00C-20260803-stock.bin",
+        "block": 0x8C,
+        "reference": 0x83D8,
+        "reference_literal": 0x83D8,
+        "table": 0x21BE8,
+        "feeder": 0x20926,
+        "sequencer": 0x56978,
+        "ignition_task": 0x4FAB2,
+        "scheduler": 0x2B51A,
+        "reader": 0x53BF8,
+        "dispatch": (0x2A2E2, 0x2A2EA, 0x2A2F2, 0x2A2FA, 0x2A302),
+    },
+    "JK00D": {
+        "image": IMAGES / "23710-JK00D" / "1JK00D-20260726-stock.bin",
+        "block": 0x8C,
+        "reference": 0x83D8,
+        "reference_literal": 0x83D8,
+        "table": 0x21BE8,
+        "feeder": 0x20926,
+        "sequencer": 0x56974,
+        "ignition_task": 0x4FAAE,
+        "scheduler": 0x2B51A,
+        "reader": 0x53BF4,
+        "dispatch": (0x2A2E2, 0x2A2EA, 0x2A2F2, 0x2A2FA, 0x2A302),
+    },
+    "JK78C": {
+        "image": IMAGES / "23710-JK78C" / "1JK78C-20260715-stock.bin",
+        "block": 0x68,
+        "reference": 0x838F,
+        "reference_literal": 0x838F,
+        "table": 0x21C8C,
+        "feeder": 0x2095C,
+        "sequencer": 0x70EDC,
+        "ignition_task": 0x69A80,
+        "scheduler": 0x2D6F6,
+        "reader": 0x6E12C,
+        "dispatch": (0x2C0DE, 0x2C0E6, 0x2C0EE, 0x2C0F6, 0x2C0FE),
+    },
+    "1ND0A": {
+        "image": IMAGES / "23710-1ND0A" / "11ND0A-20260715-stock.bin",
+        "block": 0x3C0,
+        "reference": 0x83AB,
+        "reference_literal": 0x83AA,
+        "table": 0x222A8,
+        "feeder": 0x20CF4,
+        "sequencer": 0x7D3E8,
+        "ignition_task": 0x74AFA,
+        "scheduler": 0x2E464,
+        "reader": 0x79D2E,
+        "dispatch": (0x2D082, 0x2D086, 0x2D08E, 0x2D096, 0x2D09E),
+    },
+}
+HOMOLOGS["1ND3B"] = dict(
+    HOMOLOGS["1ND0A"],
+    image=IMAGES / "23710-1ND3B" / "11ND3B-20260715-stock.bin",
+)
+
+
+def literal_sites(data, value):
+    needle = value.to_bytes(4, "big")
+    return [
+        offset
+        for offset in range(0, len(data) - 3, 4)
+        if data[offset : offset + 4] == needle
+    ]
+
+
+class HomologousInjectionReferenceTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.images = {
+            name: facts["image"].read_bytes() for name, facts in HOMOLOGS.items()
+        }
+        cls.fuel = FUEL.read_text(encoding="utf-8")
+
+    def test_sequencing_constant_block_is_byte_identical(self):
+        reference = self.images["JK08A"][0x22658:0x226AA]
+        self.assertEqual(reference[0x4:0xB].hex(), "00040506010203")
+        self.assertEqual(reference[0x3D:0x43].hex(), "020408102001")
+        for name, facts in HOMOLOGS.items():
+            with self.subTest(rom=name):
+                start = 0x22658 + facts["block"]
+                self.assertEqual(
+                    self.images[name][start : start + len(reference)], reference
+                )
+
+    def test_tooth_seven_reference_and_ignition_constant(self):
+        for name, facts in HOMOLOGS.items():
+            with self.subTest(rom=name):
+                data = self.images[name]
+                self.assertEqual(data[facts["reference"]], 110)
+                words = [
+                    int.from_bytes(data[site : site + 2], "big")
+                    for site in facts["dispatch"]
+                ]
+                self.assertEqual(words, [0x8804, 0x8806, 0x8807, 0x8808, 0x8809])
+                task = facts["ignition_task"]
+                window = range(task - 0x300, task + 0x300)
+                for literal in (facts["reference_literal"], facts["scheduler"]):
+                    self.assertTrue(
+                        any(site in window for site in literal_sites(data, literal)),
+                        f"{literal:#x}",
+                    )
+
+    def test_engine_event_tasks_and_single_literal_bindings(self):
+        for name, facts in HOMOLOGS.items():
+            with self.subTest(rom=name):
+                data = self.images[name]
+                table = facts["table"]
+                self.assertEqual(u32be(data, table + 4), facts["sequencer"])
+                self.assertEqual(u32be(data, table + 16), facts["ignition_task"])
+                feeder = facts["feeder"]
+                self.assertTrue(
+                    any(
+                        feeder < site < feeder + 0x300
+                        for site in literal_sites(data, table)
+                    )
+                )
+                sequencer = facts["sequencer"]
+                base_sites = literal_sites(data, 0x2268E + facts["block"])
+                self.assertEqual(len(base_sites), 1)
+                self.assertTrue(sequencer < base_sites[0] < sequencer + 0x400)
+                self.assertEqual(
+                    len(literal_sites(data, 0x2265C + facts["block"])), 1
+                )
+                reader = facts["reader"]
+                self.assertTrue(
+                    any(
+                        reader < site < reader + 0x300
+                        for site in literal_sites(data, 0xC49B)
+                    )
+                )
+
+    def test_fuel_document_states_the_homologous_anchor(self):
+        self.assertIn("### Homologous targets", self.fuel)
+        self.assertIn("`raw * 2 - 590` degrees after", self.fuel)
+        self.assertIn("1ND forms its misfire metric through a different", self.fuel)
+        for facts in HOMOLOGS.values():
+            for key in ("table", "sequencer", "ignition_task", "scheduler", "reader"):
+                self.assertIn(f"`0x{facts[key]:X}`", self.fuel)
+
+
 if __name__ == "__main__":
     unittest.main()

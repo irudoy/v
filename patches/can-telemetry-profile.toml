@@ -415,7 +415,7 @@ source = 0xFFFF192E
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw * 2 degCA after the reference engine event; JK08A raw * 2 - 590 deg after intake TDC"
+scale = "raw * 2 - 590 deg after intake TDC of the injected cylinder; raw * 2 degCA after the reference tooth"
 
 [[field]]
 name = "exhaust_cvtc_actual_b1_raw"

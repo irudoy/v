@@ -131,13 +131,16 @@ injector-open duration is not measured at the injector terminals.
 The end-of-injection angle word `FFFF192E` is a firmware coordinate:
 `FUN_00056BD0` stores `2 * min(y, 209)` from tables `0x12302` and `0x1230A`,
 and `raw * 2` is the delay in crank degrees after the reference tooth of the
-scheduled cylinder. The intake-TDC anchor of `-590` degrees rests on the JK08A
-reference-tooth and cylinder-order analysis; the mechanical offset between the
-crank sensor and the signal plate is a hardware boundary. JK00C, JK00D, JK78C,
-and 1ND bind the word their homologous stage writes, and their intake-TDC
-anchor is not established. Diagnostic word `FFFF162E` behind DIDs `0x1131`,
-`0x1132`, `0x1133`, and `0x113D` has no runtime producer in JK08A, reads zero,
-and is not streamed.
+scheduled cylinder. The intake-TDC anchor of `-590` degrees rests on the
+reference-tooth and cylinder-order analysis in [`JK08A.fuel.md`](JK08A.fuel.md);
+the mechanical offset between the crank sensor and the signal plate is a
+hardware boundary. JK00C, JK00D, JK78C, and 1ND bind the word their homologous
+stage writes and carry the same chain from the tooth-7 reference with ignition
+constant `110` to the slot masks, so the anchor holds for them. For 1ND the
+identity of event index and cylinder number rests on the misfire attribution
+map, because its misfire metric is not decompiled. Diagnostic word `FFFF162E`
+behind DIDs `0x1131`, `0x1132`, `0x1133`, and `0x113D` has no runtime producer
+in JK08A, reads zero, and is not streamed.
 
 ## Transport boundary
 

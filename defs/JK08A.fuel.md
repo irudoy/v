@@ -777,8 +777,8 @@ constant-propagation sweep of register-relative accesses, and the block-copy
 groups of scheduler walkers `FUN_00020DFE` and `FUN_000209D8` find no other
 access. The four DIDs publish a constant zero, and all 143961 records of the
 2026-09-17 recordings, made with telemetry profile 3, stream 0. The live
-end-of-injection angle is `0xFFFF192E`, which telemetry profile 4 streams in
-place of the diagnostic word.
+end-of-injection angle is `0xFFFF192E`, which the tuning telemetry profile
+streams in place of the diagnostic word.
 
 `FUN_00054A44` is entry 1 of the ten-entry engine-event task table at `0x21B5C`
 and runs from feeder `FUN_000208F8` on every engine event. With `n` the
@@ -893,6 +893,64 @@ The angles are firmware coordinates. The mechanical offset between the crank
 sensor and the signal plate is a hardware boundary, and the injector channel
 order rests on the family Power Balance bit assignment and is not measured
 electrically.
+
+### Homologous targets
+
+JK00C, JK00D, JK78C, and the 1ND pair carry the same chain, so their
+end-of-injection word has the JK08A coordinate: `raw * 2 - 590` degrees after
+intake TDC of the injected cylinder. The 1ND addresses are those of `1ND0A`;
+`1ND3B` is byte-identical over every listed range.
+
+| Stage | JK08A | JK00C | JK00D | JK78C | 1ND |
+| --- | --- | --- | --- | --- | --- |
+| writer with the 209-count clamp and doubled store | `0x56BD0` | `0x58AE4` | `0x58AE0` | `0x730CC` | `0x7F4E0` |
+| end-of-injection word | `0xFFFF192E` | `0xFFFF1992` | `0xFFFF1996` | `0xFFFF192A` | `0xFFFE89A2` |
+| reader | `0x521A8` | `0x53BF8` | `0x53BF4` | `0x6E12C` | `0x79D2E` |
+| fallback subtraction | `ROM8[0x83EA] = 30` | `ROM8[0x83EC] = 30` | `ROM8[0x83EC] = 30` | `ROM8[0x839D] = 50` | `ROM8[0x83B9] = 50` |
+| engine-event task table | `0x21B5C` | `0x21BE8` | `0x21BE8` | `0x21C8C` | `0x222A8` |
+| sequencer, entry 1 | `0x54A44` | `0x56978` | `0x56974` | `0x70EDC` | `0x7D3E8` |
+| slot masks `02 04 08 10 20 01` | `0x22695` | `0x22721` | `0x22721` | `0x226FD` | `0x22A55` |
+| delayed-start programmer | `0x2B64A` | `0x2C2D2` | `0x2C2D2` | `0x2E52E` | `0x2F48E` |
+| tooth-count normalizer | `0x28DC8` | `0x29A50` | `0x29A50` | `0x2B820` | inlined |
+| tooth dispatch on 4, 6, 7, 8, 9 | `0x2965A` | `0x2A2E2` | `0x2A2E2` | `0x2C0DE` | `0x2D082` |
+| event index | `0xFFFF11DE` | `0xFFFF11EE` | `0xFFFF11EE` | `0xFFFF11C8` | `0xFFFE81D6` |
+| feeder | `0x208F8` | `0x20926` | `0x20926` | `0x2095C` | `0x20CF4` |
+| ignition task, entry 4 | `0x4E162` | `0x4FAB2` | `0x4FAAE` | `0x69A80` | `0x74AFA` |
+| ignition reference constant `110` | `ROM8[0x83D5]` | `ROM8[0x83D8]` | `ROM8[0x83D8]` | `ROM8[0x838F]` | `ROM8[0x83AB]` |
+| set-edge scheduler | `0x2A892` | `0x2B51A` | `0x2B51A` | `0x2D6F6` | `0x2E464` |
+| misfire attribution map | `0x2265C` | `0x226E8` | `0x226E8` | `0x226C4` | `0x22A1C` |
+
+The JK08A sequencing constant block `0x22658..0x226A9`, which holds the misfire
+attribution map, the successor and reset-mask cells, the slot masks, and the
+grouped-pulse masks, is byte-identical in the four images at offsets `+0x8C`,
+`+0x8C`, `+0x68`, and `+0x3C0`.
+
+Every reader computes `k` with constant `0xC49B`, forms `d = 2 * E - 4 * p`,
+divides by 120, and clamps the remainder to 4..116; 1ND divides inline through
+reciprocal `0x88888889`. Every sequencer computes `slot = (n - 1 - lead) mod 6`
+with default lead 3, reads the slot mask cell, and passes `0x34` or four times
+the start snapshot to the delayed-start programmer. Every programmer splits the
+angle by ten and applies the normalizer mapping of JK08A, including ten events
+for counts 13 and 14 and `count - 4` for 15..24, so the plate layout of ten
+teeth per 120 degrees with the gap after tooth 7 holds in every target. 1ND
+inlines the division by ten and the mapping in the programmer.
+
+On tooth 7 every tooth handler copies the identified cylinder to the event
+index, forms ignition set mask `1 << (index - 1)`, and calls the feeder. The
+ignition task computes the command as the reference constant minus the final
+timing byte and hands it to the set-edge scheduler, which splits it by ten, so
+tooth 7 is 110 degrees before compression TDC of the event cylinder in every
+target. 1ND inlines the command builder into the ignition task.
+
+The tooth-9 path of every handler indexes the misfire attribution map with the
+event index. The misfire metric helper keeps the JK08A interval-history
+displacements in JK00C and JK00D (`FUN_0008B308`) and in JK78C
+(`FUN_000A8B72`). 1ND forms its misfire metric through a different algorithm
+whose interval lag is not decompiled, so its identity of event index and
+cylinder number rests on the attribution map and the identical attribution
+read. The JK08A hardware boundaries apply to every target: the mechanical
+offset between the crank sensor and the signal plate, and the injector channel
+order from the family Power Balance bit assignment.
 
 ## Hardware validation priorities
 
