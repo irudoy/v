@@ -139,10 +139,12 @@ start the application with `open -a "VQ CAN Telemetry" --args --listen-only`. A 
 ad-hoc-signed build is not notarized, so the first launch may require Finder's
 Open action after the archive source and SHA-256 are verified.
 
-The `0x551` display uses neutral labels `ASCD STATE 6` and `ASCD STATE 7`.
-Exact-target observation shows that custom state 6 illuminates SET together
-with CRUISE, so it is not labeled CRUISE-only. The correct CRUISE-only state
-remains pending a passive stock-state correlation.
+The `0x551` display uses neutral labels `ASCD STATE 6` and `ASCD STATE 7` for
+byte 5 values `0x62` and `0x72`; every other value is shown in hexadecimal.
+The field is the stock ASCD display state: 4 is CRUISE with steady SET, 5 is
+CRUISE alone, and 6 is CRUISE with a blinking SET lamp. Map-selection feedback
+of the current runtime emits state 4, which appears as `0x42`; firmware through
+`1.11` emits state 6. `../../defs/JK08A.can.md` records the encoding.
 
 Schema 2 names `0xFFFF2326` as `intake_cvtc_target_raw` and `0xFFFF2327` as
 `exhaust_cvtc_target_raw`, matching their recovered common-target roles.
