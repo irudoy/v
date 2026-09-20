@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.2.1`.
+Current dashboard version: `8.2.2`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.2.1-windows.zip
+  --output tmp/vq-can-telemetry-v8.2.2-windows.zip
 ```
 
 On the Windows laptop:
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.2.1-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.2.2-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.2.1 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.2.2 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -418,6 +418,31 @@ atomically. The file holds presentation choices and the live value feed, and
 never CAN connection parameters. `--smoke-test` reads and writes no settings
 file.
 
+### Log file
+
+The dashboard writes a text log of what an operator cannot read after the
+fact: the start of a run with its version, profile and CAN ID, every change of
+the telemetry source state, stream commands, recording start, save and
+failure, and every unhandled exception of the process, of a worker thread and
+of a Tk callback. The Windows launcher runs the application through
+`pythonw.exe`, which has no console, so the file is the only trace such an
+exception leaves. Telemetry values are never written, so the log grows with
+events and not with the length of a run.
+
+| Platform | File |
+| --- | --- |
+| macOS | `~/Library/Application Support/VQ CAN Telemetry/vq-can-telemetry.log` |
+| Windows | `%APPDATA%\VQ CAN Telemetry\vq-can-telemetry.log` |
+| other | `$XDG_CONFIG_HOME/vq-can-telemetry/vq-can-telemetry.log`, `~/.config` by default |
+
+Rotation bounds the file and drops the oldest records first: at 512 KiB the
+file becomes `vq-can-telemetry.log.1`, two older files are kept beside it, and
+the log occupies at most 1.5 MiB.
+
+`--log-file PATH` selects another file and `--no-log-file` runs without one. A
+file that cannot be opened leaves the run without a log instead of ending it,
+and `--smoke-test` writes no log file.
+
 ### Scrolling and status fields
 
 The card and panel area answers both a mouse wheel and a trackpad gesture
@@ -539,6 +564,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.1 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.2.2 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

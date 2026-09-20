@@ -26,6 +26,7 @@ from tools.can_dashboard import (
     PRODUCT_SLUG,
     __version__,
 )
+from tools.can_dashboard import logfile as dashboard_log
 from tools.can_dashboard import settings as dashboard_settings
 from tools.can_dashboard.feed_dialog import FeedDialog
 from tools.can_dashboard.hero_picker import HeroChoice, HeroPicker
@@ -185,6 +186,7 @@ def mono_font(size, bold=False):
     return (FONT_MONO, size, "bold") if bold else (FONT_MONO, size)
 
 
+LOG = dashboard_log.logger()
 POLL_INTERVAL_MS = 50
 REFRESH_INTERVAL_MS = 100
 PREFERRED_WINDOW_WIDTH = 1520
@@ -1615,10 +1617,12 @@ class DashboardApp:
             )
         except (OSError, ValueError) as error:
             self.record_var.set(f"MLG error: {error}")
+            LOG.error("recording not started: %s", error)
             return
         self.recording_clock = RecordingClock(time.monotonic())
         self._sync_record_button()
         self.record_var.set(f"MLG: recording {output.name}")
+        LOG.info("recording to %s", output)
 
     def stop_recording(self):
         if self.recorder is None:
@@ -1632,11 +1636,17 @@ class DashboardApp:
         except (OSError, ValueError) as error:
             recorder.abort()
             self.record_var.set(f"MLG error: {error}")
+            LOG.error("recording not saved: %s", error)
             return
         if summary.event_records:
             self.record_var.set(
                 f"MLG: saved {summary.output.name}, "
                 f"{summary.event_records} snapshots"
+            )
+            LOG.info(
+                "recording saved: %s, %d snapshots",
+                summary.output,
+                summary.event_records,
             )
         else:
             detail = (
@@ -1667,6 +1677,9 @@ class DashboardApp:
             self._set_source_status("stopped", "source stopped")
 
     def _set_source_status(self, state, detail):
+        if (state, detail) != (self.source_state, self.source_detail):
+            log = LOG.error if state == "error" else LOG.info
+            log("source %s: %s", state, detail)
         self.source_state = state
         self.source_detail = detail
         self.source_var.set(f"Source: {detail}")
@@ -1691,9 +1704,15 @@ class DashboardApp:
                 if event.state in {"stopped", "error"}:
                     self.stop_recording()
             elif isinstance(event, ControlStatus):
-                prefix = "Control" if event.state == "sent" else "Control error"
+                sent = event.state == "sent"
+                prefix = "Control" if sent else "Control error"
                 self.control_var.set(f"{prefix}: {event.detail}")
-                if event.state == "sent" and event.command in {"start", "stop"}:
+                (LOG.info if sent else LOG.error)(
+                    "control %s: %s",
+                    event.command,
+                    event.detail,
+                )
+                if sent and event.command in {"start", "stop"}:
                     self._set_stream_command(
                         "stop" if event.command == "start" else "start"
                     )
@@ -1712,6 +1731,7 @@ class DashboardApp:
                         self.recording_clock = None
                         self._sync_record_button()
                         self.record_var.set(f"MLG error: {error}")
+                        LOG.error("recording aborted: %s", error)
         if new_snapshot and self.feed is not None:
             self.feed.publish(self.model)
             self.feed_var.set(f"Feed: {self.feed.status()}")
@@ -1835,6 +1855,7 @@ class DashboardApp:
             self.health_vars[key].set(f"{key}={value}")
 
     def close(self):
+        LOG.info("window closed")
         self.stop_source()
         if self.feed is not None:
             self.feed.close()
@@ -1886,6 +1907,17 @@ def build_parser():
         type=Path,
         help="presentation settings file (default: the per-user file)",
     )
+    parser.add_argument(
+        "--log-file",
+        type=Path,
+        help="log file of this run (default: the per-user file beside the "
+        "settings file)",
+    )
+    parser.add_argument(
+        "--no-log-file",
+        action="store_true",
+        help="run without a log file",
+    )
     parser.add_argument("--replay", type=Path)
     parser.add_argument("--replay-speed", type=float, default=1.0)
     parser.add_argument("--no-auto-connect", action="store_true")
@@ -1927,12 +1959,32 @@ def main(argv=None):
         args.demo = True
         args.no_auto_connect = True
         args.settings = None
+        args.no_log_file = True
     elif args.settings is None:
         args.settings = dashboard_settings.default_path(
             PRODUCT_NAME,
             PRODUCT_SLUG,
         )
+    if args.no_log_file:
+        args.log_file = None
+    else:
+        if args.log_file is None:
+            args.log_file = dashboard_log.default_path(
+                PRODUCT_NAME,
+                PRODUCT_SLUG,
+            )
+        dashboard_log.configure(args.log_file)
     root = tk.Tk()
+    dashboard_log.install_hooks(LOG, root)
+    LOG.info(
+        "start %s %s, python %s on %s, profile %s, CAN ID 0x%03X",
+        PRODUCT_NAME,
+        __version__,
+        sys.version.split()[0],
+        sys.platform,
+        args.profile,
+        args.can_id,
+    )
     dashboard = DashboardApp(root, args)
     if args.smoke_test:
         root.withdraw()
