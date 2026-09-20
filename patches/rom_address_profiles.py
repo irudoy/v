@@ -82,8 +82,8 @@ VQ37_MAP_FAMILY_KEYS = frozenset(
         "over_run_fuel_cut",
         "over_run_fuel_restore",
         "over_run_fuel_intermediate_restore",
-        "high_octane_timing_state",
-        "high_detonation_timing_state",
+        "ignition_surface_hot",
+        "ignition_surface_cold",
         "cold_idle_ignition_timing",
         "idle_ignition_timing_default",
         "idle_ignition_timing_alternate",
@@ -191,6 +191,10 @@ VQ37_MAP_SYMBOL_KEYS = frozenset(
         "idle_ignition_lookup",
         "feedback_serializer",
         "feedback_status_byte",
+        "ignition_coordinator_config_byte",
+        "ignition_gated_surface_1",
+        "ignition_gated_surface_2",
+        "ignition_gated_surface_3",
     }
 )
 
@@ -840,8 +844,8 @@ def _map_family_sources(profile):
             "over_run_fuel_intermediate_restore": (
                 "over_run_fuel_intermediate_restore"
             ),
-            "high_octane_timing_state": "high_octane_timing_state",
-            "high_detonation_timing_state": "high_detonation_timing_state",
+            "ignition_surface_hot": "high_octane_timing_state",
+            "ignition_surface_cold": "high_detonation_timing_state",
             "cold_idle_ignition_timing": "cold_idle_ignition_timing",
             "idle_ignition_timing_default": "idle_ignition_timing",
             "idle_ignition_timing_alternate": "idle_ignition_timing",

@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
 TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
 SH7058_HR_UNSUPPORTED = frozenset({"00012302", "0001230a"})
-JK78C_UNSUPPORTED = {
+VQ37_UNSUPPORTED = frozenset({
     "00008e36",
     "00008e3a",
     "00008e3b",
@@ -30,9 +30,13 @@ JK78C_UNSUPPORTED = {
     "00012302",
     "0001230a",
     "00012552",
-}
-VQ37_UNSUPPORTED = JK78C_UNSUPPORTED
-ONE_ME3B_UNSUPPORTED = VQ37_UNSUPPORTED | {"0000991a", "00009a1a", "00009b1a"}
+    # The canonical ignition trio reaches only the gated coordinator half of
+    # JK78C and 1ND, which the stock configuration byte leaves unexecuted, and
+    # has no counterpart in 1ME3B. The executed surfaces are target-native.
+    "0000991a",
+    "00009a1a",
+    "00009b1a",
+})
 
 
 def test_registry_binds_relocated_targets_without_a_default():
@@ -46,7 +50,7 @@ def test_registry_binds_relocated_targets_without_a_default():
     assert projections["JK00D"].unsupported_maps == SH7058_HR_UNSUPPORTED
     for rom in ("JK78C", "1ND0A", "1ND3B"):
         assert projections[rom].unsupported_maps == VQ37_UNSUPPORTED
-    assert projections["1ME3B"].unsupported_maps == ONE_ME3B_UNSUPPORTED
+    assert projections["1ME3B"].unsupported_maps == VQ37_UNSUPPORTED
 
 
 def test_complete_registry_validation_covers_every_target_capability_set():
@@ -61,7 +65,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["map_families"] == 13
         assert values["native_maps"] == 0
         assert values["rolling_configuration"] == 0xE0660
-    assert stats["JK78C"]["mapped"] == 43
+    assert stats["JK78C"]["mapped"] == 40
     assert stats["JK78C"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["JK78C"]["checksum"] is True
     assert stats["JK78C"]["romraider_checksum"] is True
@@ -70,7 +74,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
     assert stats["JK78C"]["rolling_configuration"] == 0x1E960
     for rom in ("1ND0A", "1ND3B"):
         values = stats[rom]
-        assert values["mapped"] == 43
+        assert values["mapped"] == 40
         assert values["unsupported"] == len(VQ37_UNSUPPORTED)
         assert values["checksum"] is True
         assert values["romraider_checksum"] is True
@@ -78,7 +82,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["native_maps"] == 28
         assert values["rolling_configuration"] == 0x133F60
     assert stats["1ME3B"]["mapped"] == 40
-    assert stats["1ME3B"]["unsupported"] == len(ONE_ME3B_UNSUPPORTED)
+    assert stats["1ME3B"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["1ME3B"]["checksum"] is True
     assert stats["1ME3B"]["romraider_checksum"] is True
     assert stats["1ME3B"]["map_families"] == 0

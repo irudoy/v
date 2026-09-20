@@ -12,8 +12,10 @@ map,over_run_fuel_cut,00012718,00013c86,,,mapped,Homologous DFCO coordinator pre
 map,over_run_fuel_restore,00012818,00013d46,,,mapped,Homologous restore coordinator preserves the full-restore role
 map,over_run_fuel_intermediate_restore,0001298c,00013e72,,,mapped,Homologous restore coordinator preserves the intermediate-restore role
 map,over_run_channel_multiplier,000129c0,00013e86,,,mapped,Homologous channel accessor preserves the six unity multipliers
-map,high_octane_timing_state,00009a1a,000096ca,,,mapped,Ignition selector preserves this branch and 16x16 geometry
-map,high_detonation_timing_state,00009b1a,000097ca,,,mapped,Ignition selector preserves this branch and 16x16 geometry
+map,high_octane_timing_state,00009a1a,,,,unsupported,Target surface 0x96ca lies in the coordinator half gated off by stock ROM8[0x8965] bit 5 and is byte-identical to 0x95ca and 0x97ca
+map,high_detonation_timing_state,00009b1a,,,,unsupported,Target surface 0x97ca lies in the coordinator half gated off by stock ROM8[0x8965] bit 5 and is byte-identical to 0x95ca and 0x96ca
+map_native,ignition_surface_hot,,0000a10a,,,target-specific,Executed coordinator half reads this 16x16 surface above the coolant threshold through the hooked ignition lookup literals and has no source counterpart
+map_native,ignition_surface_cold,,0000a20a,,,target-specific,Executed coordinator half reads this 16x16 surface at or below the coolant threshold through the hooked ignition lookup literals and has no source counterpart
 map,cold_idle_ignition_timing,00012196,000137e0,,,mapped,Idle coordinator preserves the fallback-table role
 map,idle_ignition_timing,0001219e,000137e8,,default,target-specific,Default arm of the target state selector preserves the warm-table role
 map,fuel_compensation_main,0000a29a,00009eba,,default,target-specific,Default arm of the target state selector preserves exact geometry and storage
@@ -29,10 +31,10 @@ map_hook,selector_host_call,000ce8dc,000fb260,000fd40c,,mapped,Literal call targ
 map_hook,startup_initializer,00027d28,0002a6fc,0002f596,,mapped,Literal jump target identifies the startup initializer
 map_hook,overrun_cut_lookup,0004fdd0,0006bbfc,000281b0,,mapped,Target cut-request literal calls the exact DFCO lookup
 map_hook,overrun_restore_lookup,00050258,0006c2f0,000281b0,,mapped,Target restore-classifier literal calls the exact DFCO lookup
-map_hook,ignition_lookup,00026230,00062f10,00028018,site_1,target-specific,Knock path literal calls the common ignition lookup
-map_hook,ignition_lookup,00026230,00069db0,00028018,site_2,target-specific,First primary literal group calls the common ignition lookup
-map_hook,ignition_lookup,00026230,0006a058,00028018,site_3,target-specific,Second primary literal group calls the common ignition lookup
-map_hook,ignition_lookup,00026230,0006a1ac,00028018,site_4,target-specific,Final primary literal calls the common ignition lookup
+map_hook,ignition_lookup,00026230,00062f10,00028018,site_1,target-specific,Knock path literal calls the common ignition lookup with the gated-half surfaces 0x96ca and 0x97ca only and every call passes through the adapter
+map_hook,ignition_lookup,00026230,00069db0,00028018,site_2,target-specific,Literal of the gated coordinator half calls the common ignition lookup and every call passes through the adapter
+map_hook,ignition_lookup,00026230,0006a058,00028018,site_3,target-specific,Literal shared by both coordinator halves; the executed half reads the hot and cold surfaces through it
+map_hook,ignition_lookup,00026230,0006a1ac,00028018,site_4,target-specific,Literal of the executed coordinator half reads the hot and cold surfaces
 map_hook,fuel_compensation_lookup,000261f0,0002feb4,00027fd8,startup,target-specific,Startup initializer literal calls the common lookup
 map_hook,fuel_compensation_lookup,000261f0,00040f6c,00027fd8,runtime,target-specific,Runtime coordinator literal calls the common lookup
 map_hook,idle_ignition_lookup,00026370,000645e8,00028198,pool_1,target-specific,First literal-pool copy of the exact idle lookup pointer serves the stock-inert branch
@@ -53,6 +55,10 @@ map_symbol,fuel_compensation_lookup,000261f0,00027fd8,,,mapped,Reviewed interpol
 map_symbol,idle_ignition_lookup,00026370,00028198,,,mapped,Exact-byte target function serves both idle literal-pool hooks
 map_symbol,feedback_serializer,000c5372,000ed03c,,,mapped,Near-exact instruction sequence and dispatcher position bind the serializer
 map_symbol,feedback_status_byte,ffff3ada,ffff3d62,,,mapped,Serializer payload offset 0x2a places status at byte 5
+map_symbol,ignition_coordinator_config_byte,,00008965,,,target-specific,Stock value 0xba sets bit 5 and the ignition coordinator 0x69ab8 tests it at 0x69adc to take its mode-selected half
+map_symbol,ignition_gated_surface_1,0000991a,000095ca,,,target-specific,First 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
+map_symbol,ignition_gated_surface_2,00009a1a,000096ca,,,target-specific,Second 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
+map_symbol,ignition_gated_surface_3,00009b1a,000097ca,,,target-specific,Third 16x16 surface of the gated coordinator half holds the same stock bytes as the other two and passes through the ignition adapter
 map_symbol,rev_fuel_cut_state_machine,,0006aeb8,,,target-specific,Exact 190-byte function is the third Boolean predicate aggregated by the final fuel-mask coordinator
 map_symbol,rev_fuel_cut_selector,,ffff10e5,,,target-specific,Native interpolation selector indexes the shared eight-point axis
 map_symbol,rev_fuel_cut_state,,ffff23f5,,,target-specific,Bits 0x08 and 0x10 retain the armed and active hysteresis state

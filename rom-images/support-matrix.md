@@ -66,10 +66,10 @@ handler. Its calibration access library is registered in
 `../defs/1ME3B.interp.csv` as 34 fused leaves and censused to 768 tables and
 457 axes at candidate confidence. `../defs/JK08A-1ME3B.definition-addresses.csv`
 binds the reviewed VQ37 semantic set to 27 of those tables and thirteen axes
-through `1ND0A` structural correspondence and records eighteen source maps as
-unsupported: the fifteen VQ37 rows and the three canonical ignition surfaces,
-whose gated stock-inert selector path the `1ME3B` ignition coordinator does not
-carry. `../defs/vq37-native-tables.toml` registers thirty-one further tables
+through `1ND0A` structural correspondence and records the same eighteen source
+maps as unsupported as JK78C and 1ND; the three canonical ignition surfaces
+among them have no homolog, because the `1ME3B` ignition coordinator does not
+carry the gated stock-inert selector path. `../defs/vq37-native-tables.toml` registers thirty-one further tables
 and twenty-four axes at code confidence: the two alternate selector arms, the
 six mode-selected ignition surfaces of that coordinator with their two 8x8
 axes, and the
@@ -122,9 +122,14 @@ These surfaces have no canonical source and are registered in
 `../defs/vq37-native-tables.toml` with a `7F` timing-field mask. The canonical
 ignition trio reaches three byte-identical copies in the gated coordinator half
 of JK78C and 1ND, which the stock configuration bytes `0x8965` and `0x8A2B`
-(`0xBA`, bit 5 set) leave unexecuted. The Map Switching ignition families of
-both runtime targets are bound to those copies, so slot selection does not
-reach the executed ignition surfaces on the stock configuration.
+(`0xBA`, bit 5 set) leave unexecuted, so the trio is unsupported on every VQ37
+image. The two Map Switching ignition families of both runtime targets are the
+executed 16x16 surfaces: `0x0A10A` and `0x0A20A` on JK78C, `0x0A410` and
+`0x0A510` on 1ND. The runtime validator requires bit 5 of the stock
+configuration byte, equal stock bytes in the three gated surfaces, and their
+absence from the family set; the ignition adapter passes them through. The four
+8x8 state-code surfaces of 1ND are read through a separate lookup and are not
+switched.
 
 The compensation accessors publish four parallel channels. The two 16x16
 surfaces share index byte `0xFFFF22F8` and axes `0x13AF8` and `0x13B18` and

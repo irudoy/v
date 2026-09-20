@@ -5,6 +5,10 @@
 // bank identity and are named by the selector arm that reaches them. The
 // alternate fuel family reuses the canonical exhaust storage slots; the
 // alternate warm-idle family reuses the canonical fuel-cut storage slots.
+// The ignition adapter selects the two 16x16 surfaces of the mode-selected
+// coordinator half, the half that the stock configuration byte executes; they
+// reuse the storage of the two canonical 16x16 ignition families, and the
+// three byte-identical surfaces of the gated half pass through.
 // All unrecognized bases tail-call the exact stock lookup.
 
 .org 0x000D2300
@@ -42,33 +46,33 @@ overrun_restore_pointers:
 .org 0x000D2340
 ignition_adapter:
 mov.l @(ignition_stock_wrapper,pc),r3
-mov.l @(high_octane_timing_state_base,pc),r0
+mov.l @(ignition_surface_hot_base,pc),r0
 cmp/eq r0,r4
-bt select_high_octane_timing_state
-mov.l @(high_detonation_timing_state_base,pc),r0
+bt select_ignition_surface_hot
+mov.l @(ignition_surface_cold_base,pc),r0
 cmp/eq r0,r4
-bt select_high_detonation_timing_state
+bt select_ignition_surface_cold
 jmp @r3
 nop
-select_high_octane_timing_state:
-mov.l @(high_octane_timing_state_pointers,pc),r2
+select_ignition_surface_hot:
+mov.l @(ignition_surface_hot_pointers,pc),r2
 bra 0x000D2270
 nop
-select_high_detonation_timing_state:
-mov.l @(high_detonation_timing_state_pointers,pc),r2
+select_ignition_surface_cold:
+mov.l @(ignition_surface_cold_pointers,pc),r2
 bra 0x000D2270
 nop
 
 .org 0x000D2360
-high_octane_timing_state_base:
+ignition_surface_hot_base:
 .long 0x00009A1A
-high_detonation_timing_state_base:
+ignition_surface_cold_base:
 .long 0x00009B1A
 ignition_stock_wrapper:
 .long 0x00026230
-high_octane_timing_state_pointers:
+ignition_surface_hot_pointers:
 .long 0x000D3568
-high_detonation_timing_state_pointers:
+ignition_surface_cold_pointers:
 .long 0x000D357C
 
 .org 0x000D2380

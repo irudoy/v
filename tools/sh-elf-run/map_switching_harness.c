@@ -132,6 +132,23 @@ static const struct family adapter_families[] = {
         {0x0001298cU, 0x000d3fc0U, 0x000d3fd0U, 0x000d3fe0U,
          0x000d3ff0U},
     },
+#ifdef TARGET_VQ37
+    /* VQ37 executes the mode-selected half of its ignition coordinator, so the
+       target renderer rewrites the two canonical 16x16 ignition bases to the
+       two executed surfaces of that half and reuses the canonical storage. */
+    {
+        "ignition_surface_hot", IGNITION_ADAPTER, 0x00009a1aU,
+        256U,
+        {0x00009a1aU, 0x000d2500U, 0x000d2600U, 0x000d2700U,
+         0x000d2800U},
+    },
+    {
+        "ignition_surface_cold", IGNITION_ADAPTER, 0x00009b1aU,
+        256U,
+        {0x00009b1aU, 0x000d2900U, 0x000d2a00U, 0x000d2b00U,
+         0x000d2c00U},
+    },
+#else
     {
         "high_octane_timing_state", IGNITION_ADAPTER, 0x00009a1aU,
         256U,
@@ -144,6 +161,7 @@ static const struct family adapter_families[] = {
         {0x00009b1aU, 0x000d2900U, 0x000d2a00U, 0x000d2b00U,
          0x000d2c00U},
     },
+#endif
     {
         "fuel_compensation_main", FUEL_COMP_ADAPTER, 0x0000a29aU, 256U,
         {0x0000a29aU, 0x000d3100U, 0x000d3200U, 0x000d3300U,
@@ -224,6 +242,14 @@ static const struct pass_through pass_throughs[] = {
     {"overrun_bosch_restore", OVER_RUN_ADAPTER, 0x0001298cU},
     {"full_dfco_unknown", FULL_DFCO_ADAPTER, 0x0001298dU},
     {"ignition_cold", IGNITION_ADAPTER, 0x0000991aU},
+#ifdef TARGET_VQ37
+    /* The gated coordinator half reads three byte-identical surfaces through
+       hooked literals. The target renderer rewrites 0x0000991a, 0x0000e91a,
+       and 0x0000ea1a to those three bases; each must reach the stock lookup
+       unchanged while a non-default slot is selected. */
+    {"ignition_gated_surface_2", IGNITION_ADAPTER, 0x0000e91aU},
+    {"ignition_gated_surface_3", IGNITION_ADAPTER, 0x0000ea1aU},
+#endif
     {"fuel_compensation_unknown", FUEL_COMP_ADAPTER, 0x0000a29bU},
 #ifdef TARGET_VQ37
     {"idle_ignition_pool_2_hidden", IDLE_IGNITION_POOL_2_ADAPTER,
@@ -872,8 +898,8 @@ int main(void)
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
 #ifdef TARGET_VQ37
-    if (total_cases != 165U)
-        return fail_value("summary", "case_count", total_cases, 165);
+    if (total_cases != 167U)
+        return fail_value("summary", "case_count", total_cases, 167);
 #elif defined(TARGET_DUAL_CVTC)
     if (total_cases != 139U)
         return fail_value("summary", "case_count", total_cases, 139);
@@ -888,7 +914,7 @@ int main(void)
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
 #ifdef TARGET_VQ37
-        "adapters=105 limiter=14 native_fuel=20 feedback=9 "
+        "adapters=107 limiter=14 native_fuel=20 feedback=9 "
         "feedback_invocations=%lu entries=13\n",
 #elif defined(TARGET_DUAL_CVTC)
         "adapters=99 limiter=14 feedback=9 feedback_invocations=%lu "

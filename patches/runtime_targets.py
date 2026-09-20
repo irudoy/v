@@ -323,8 +323,8 @@ def _address_mapping(profile):
             "over_run_fuel_intermediate_restore": (
                 "over_run_fuel_intermediate_restore"
             ),
-            "high_octane_timing_state": "high_octane_timing_state",
-            "high_detonation_timing_state": "high_detonation_timing_state",
+            "high_octane_timing_state": "ignition_surface_hot",
+            "high_detonation_timing_state": "ignition_surface_cold",
             "cold_idle_ignition_timing": "cold_idle_ignition_timing",
             "idle_ignition_timing": "idle_ignition_timing_default",
             "fuel_compensation_main": "fuel_compensation_main_default",
@@ -860,13 +860,20 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             "over_run_fuel_intermediate_restore": (
                 "over_run_fuel_intermediate_restore"
             ),
-            "high_octane_timing_state": "high_octane_timing_state",
-            "high_detonation_timing_state": "high_detonation_timing_state",
+            "ignition_surface_hot": "high_octane_timing_state",
+            "ignition_surface_cold": "high_detonation_timing_state",
             "cold_idle_ignition_timing": "cold_idle_ignition_timing",
             "idle_ignition_timing_default": "idle_ignition_timing",
             "idle_ignition_timing_alternate": "idle_ignition_timing",
             "fuel_compensation_main_default": "fuel_compensation_main",
             "fuel_compensation_main_alternate": "fuel_compensation_main",
+        }
+        # The executed VQ37 ignition pair has no canonical counterpart; it
+        # reuses the geometry and storage of the two canonical 16x16 ignition
+        # families and is named by the selector arm that reaches it.
+        family_names = {
+            "ignition_surface_hot": "Ignition Timing Surface - Hot",
+            "ignition_surface_cold": "Ignition Timing Surface - Cold",
         }
         for key, source_key in source_keys.items():
             source = base.family_by_key[source_key]
@@ -875,7 +882,10 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             families.append(replace(
                 source,
                 key=key,
-                name=f"{source.name} - {key.rsplit('_', 1)[-1].title()}",
+                name=family_names.get(
+                    key,
+                    f"{source.name} - {key.rsplit('_', 1)[-1].title()}",
+                ),
                 canonical_address=canonical_address,
                 copies=tuple(address + delta for address in storage.copies),
                 pointer_table=storage.pointer_table + delta,
@@ -1561,6 +1571,43 @@ def _validate_projected_bindings(target):
     if allocation_differs:
         raise RuntimeTargetError(
             f"{target.rom}: projected allocation bindings differ"
+        )
+    if profile.map_variant in VQ37_MAP_VARIANTS:
+        _validate_vq37_ignition_halves(target, profile)
+
+
+def _validate_vq37_ignition_halves(target, profile):
+    """Bind the VQ37 ignition families to the executed coordinator half.
+
+    Bit 5 of the stock configuration byte sends the ignition coordinator
+    through its mode-selected half, whose two 16x16 surfaces are the ignition
+    families. The hooked literals also serve the gated half; its three
+    surfaces hold identical stock bytes and stay outside every family, so the
+    adapter passes them through unchanged.
+    """
+    symbols = profile.map_symbol_by_key
+    data = target.stock_image.data
+    if not data[symbols["ignition_coordinator_config_byte"]] & 0x20:
+        raise RuntimeTargetError(
+            f"{target.rom}: stock configuration gates the mode-selected "
+            "ignition half off"
+        )
+    families = target.map_layout.family_by_key
+    size = families["ignition_surface_hot"].byte_length
+    gated = [
+        symbols[f"ignition_gated_surface_{index}"] for index in (1, 2, 3)
+    ]
+    family_bases = {
+        item.canonical_address for item in target.map_layout.families
+    }
+    if family_bases.intersection(gated):
+        raise RuntimeTargetError(
+            f"{target.rom}: a gated ignition surface is a map family"
+        )
+    blocks = {bytes(data[base:base + size]) for base in gated}
+    if len(blocks) != 1:
+        raise RuntimeTargetError(
+            f"{target.rom}: gated ignition surfaces differ in the stock image"
         )
 
 

@@ -304,3 +304,104 @@ def test_projected_hook_must_remain_bound_to_profile():
         match="projected map hooks differ",
     ):
         runtime_targets.validate_relocated_target(damaged, locks)
+
+
+@pytest.mark.parametrize("rom", runtime_targets.VQ37_RUNTIME_ROMS)
+def test_vq37_ignition_families_are_the_executed_coordinator_half(rom):
+    target = runtime_targets.load_runtime_target(rom)
+    symbols = runtime_targets.rom_address_profiles.profile_for_rom(
+        rom
+    ).map_symbol_by_key
+    families = target.map_layout.family_by_key
+    expected = (
+        (0x0000A410, 0x0000A510)
+        if rom in runtime_targets.SH7059_1ND_ROMS
+        else (0x0000A10A, 0x0000A20A)
+    )
+
+    assert "high_octane_timing_state" not in families
+    assert "high_detonation_timing_state" not in families
+    hot = families["ignition_surface_hot"]
+    cold = families["ignition_surface_cold"]
+    assert (hot.canonical_address, cold.canonical_address) == expected
+    assert (hot.name, cold.name) == (
+        "Ignition Timing Surface - Hot",
+        "Ignition Timing Surface - Cold",
+    )
+    assert (hot.adapter, cold.adapter) == (
+        "ignition_adapter", "ignition_adapter"
+    )
+    assert hot.byte_length == cold.byte_length == 256
+    data = target.stock_image.data
+    assert data[symbols["ignition_coordinator_config_byte"]] & 0x20
+    gated = [
+        symbols[f"ignition_gated_surface_{index}"] for index in (1, 2, 3)
+    ]
+    assert not set(gated) & {
+        family.canonical_address for family in target.map_layout.families
+    }
+    assert len({bytes(data[base:base + 256]) for base in gated}) == 1
+
+
+def _with_stock_byte(target, address, value):
+    data = bytearray(target.stock_image.data)
+    data[address] = value
+    stock = target.stock_image
+    return replace(
+        target,
+        stock_image=type(stock)(stock.rom, stock.path, bytes(data)),
+    )
+
+
+@pytest.mark.parametrize("rom", ("JK78C", "1ND0A"))
+def test_vq37_ignition_binding_requires_the_executed_half(rom):
+    target = runtime_targets.load_runtime_target(rom)
+    profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
+    address = profile.map_symbol_by_key["ignition_coordinator_config_byte"]
+    damaged = _with_stock_byte(
+        target, address, target.stock_image.data[address] & ~0x20
+    )
+
+    runtime_targets._validate_vq37_ignition_halves(target, profile)
+    with pytest.raises(
+        runtime_targets.RuntimeTargetError,
+        match="gates the mode-selected ignition half off",
+    ):
+        runtime_targets._validate_vq37_ignition_halves(damaged, profile)
+
+
+@pytest.mark.parametrize("rom", ("JK78C", "1ND0A"))
+def test_vq37_ignition_binding_requires_equal_gated_surfaces(rom):
+    target = runtime_targets.load_runtime_target(rom)
+    profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
+    address = profile.map_symbol_by_key["ignition_gated_surface_2"] + 17
+    damaged = _with_stock_byte(
+        target, address, target.stock_image.data[address] ^ 0x01
+    )
+
+    with pytest.raises(
+        runtime_targets.RuntimeTargetError,
+        match="gated ignition surfaces differ in the stock image",
+    ):
+        runtime_targets._validate_vq37_ignition_halves(damaged, profile)
+
+
+def test_vq37_gated_ignition_surface_must_stay_outside_the_families():
+    target = runtime_targets.load_runtime_target("JK78C")
+    profile = runtime_targets.rom_address_profiles.profile_for_rom("JK78C")
+    gated = profile.map_symbol_by_key["ignition_gated_surface_3"]
+    families = tuple(
+        replace(family, canonical_address=gated)
+        if family.key == "ignition_surface_cold"
+        else family
+        for family in target.map_layout.families
+    )
+    damaged = replace(
+        target, map_layout=replace(target.map_layout, families=families)
+    )
+
+    with pytest.raises(
+        runtime_targets.RuntimeTargetError,
+        match="a gated ignition surface is a map family",
+    ):
+        runtime_targets._validate_vq37_ignition_halves(damaged, profile)

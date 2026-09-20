@@ -31,8 +31,8 @@ from tools.mapkit import vq37_native_fuel_cut
 
 MAP_CASES_BY_VARIANT = {
     "dual-cvtc": 139,
-    "sh7059-1nd": 165,
-    "sh7058-jk78": 165,
+    "sh7059-1nd": 167,
+    "sh7058-jk78": 167,
 }
 ROLLING_CASES_BY_VARIANT = {
     "relocated-8mfk": 121,
@@ -367,7 +367,13 @@ def _render_harness(target, name, build_dir):
     ):
         families = target.map_layout.family_by_key
         native = vq37_native_fuel_cut.load_registry()[target.rom]
+        symbols = runtime_targets.rom_address_profiles.profile_for_rom(
+            target.rom
+        ).map_symbol_by_key
         overrides = {
+            0x0000991A: symbols["ignition_gated_surface_1"],
+            0x0000E91A: symbols["ignition_gated_surface_2"],
+            0x0000EA1A: symbols["ignition_gated_surface_3"],
             0x00009040: families[
                 "rev_limit_fuel_cut_caps"
             ].canonical_address,
@@ -470,8 +476,8 @@ def _run_harnesses(target, fixture, build_dir):
         map_defines = ("TARGET_DUAL_CVTC",)
     elif target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
         map_marker = (
-            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=165 selector=17 "
-            "adapters=105 limiter=14 native_fuel=20 feedback=9 "
+            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=167 selector=17 "
+            "adapters=107 limiter=14 native_fuel=20 feedback=9 "
             "feedback_invocations=17 entries=13"
         )
         map_defines = (

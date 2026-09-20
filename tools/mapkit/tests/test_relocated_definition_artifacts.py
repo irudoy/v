@@ -168,17 +168,28 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 212
-    assert len(tables) == 212
-    assert tables["Ignition Timing Surface - Hot Coolant"].get(
+    assert len(target.findall("table")) == 198
+    assert len(tables) == 198
+    # The ignition families select the two executed surfaces; the canonical
+    # trio reaches only the gated coordinator half and stays unpublished.
+    assert tables["Map 1 - Ignition Timing Surface - Hot Coolant"].get(
         "storageaddress"
     ) == "0x0A10A"
-    assert tables["Ignition Timing Surface - Cold Coolant"].get(
+    assert tables["Map 1 - Ignition Timing Surface - Cold Coolant"].get(
         "storageaddress"
     ) == "0x0A20A"
-    assert tables["Ignition Timing Surface - Cold State"].get(
+    hot_slot = tables["Map 3 - Ignition Timing Surface - Hot Coolant"]
+    assert hot_slot.get("storageaddress") == "0x1D000"
+    assert hot_slot.get("mask") == "7F"
+    assert tables["Map 3 - Ignition Timing Surface - Cold Coolant"].get(
         "storageaddress"
-    ) == "0x095CA"
+    ) == "0x1D400"
+    assert not any(
+        name.endswith(("Cold State", "High-Octane State", "High-Detonation State"))
+        and "Ignition" in name
+        for name in tables
+    )
+    assert not any("Knock-State Path Enable" in name for name in tables)
     assert sum(1 for name in tables if name.startswith("DTC ")) == 77
     assert tables["Rolling Launch Enable by Map"].get(
         "storageaddress"
@@ -206,7 +217,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
     description = root.find("XDFHEADER").findtext("description")
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 131
+    assert len(root.findall("XDFTABLE")) == 117
     patches = root.findall("XDFPATCH")
     patches_by_title = {patch.findtext("title"): patch for patch in patches}
     non_dtc_patches = {
@@ -266,11 +277,27 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 213
-        assert len(tables) == 213
-        assert tables["Ignition Timing Surface - VVEL State Code 1"].get(
+        assert len(target.findall("table")) == 199
+        assert len(tables) == 199
+        # The ignition families select the two executed 16x16 surfaces; the
+        # canonical trio reaches only the gated coordinator half.
+        assert tables[
+            "Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8"
+        ].get("storageaddress") == "0x0A410"
+        assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 1"].get(
             "storageaddress"
         ) == "0x0A510"
+        cold_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 1"]
+        assert cold_slot.get("storageaddress") == "0x132A00"
+        assert cold_slot.get("mask") == "7F"
+        assert not any(
+            name.endswith(
+                ("Cold State", "High-Octane State", "High-Detonation State")
+            )
+            and "Ignition" in name
+            for name in tables
+        )
+        assert not any("Knock-State Path Enable" in name for name in tables)
         assert tables["Ignition Timing Surface - VVEL State Codes 6 and 7"].get(
             "storageaddress"
         ) == "0x0A6D0"
@@ -308,7 +335,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 132
+        assert len(root.findall("XDFTABLE")) == 118
         patches = root.findall("XDFPATCH")
         patches_by_title = {
             patch.findtext("title"): patch for patch in patches

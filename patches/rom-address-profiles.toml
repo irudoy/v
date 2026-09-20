@@ -469,8 +469,8 @@ over_run_fuel_hold = 0x000140C4
 over_run_fuel_cut = 0x00014104
 over_run_fuel_restore = 0x000141D4
 over_run_fuel_intermediate_restore = 0x00014308
-high_octane_timing_state = 0x00009980
-high_detonation_timing_state = 0x00009A80
+ignition_surface_hot = 0x0000A410
+ignition_surface_cold = 0x0000A510
 cold_idle_ignition_timing = 0x00013C12
 idle_ignition_timing_default = 0x00013C1A
 idle_ignition_timing_alternate = 0x00013C22
@@ -511,6 +511,10 @@ fuel_compensation_lookup = 0x000285F4
 idle_ignition_lookup = 0x000287B4
 feedback_serializer = 0x00116E4C
 feedback_status_byte = 0xFFFEB0F2
+ignition_coordinator_config_byte = 0x00008A2B
+ignition_gated_surface_1 = 0x00009880
+ignition_gated_surface_2 = 0x00009980
+ignition_gated_surface_3 = 0x00009A80
 
 [profile.1ND0A.rolling_hooks]
 periodic_scheduler_index_0 = [0x0002205C, 0x000F1880, 0x000F1880, 0x00133860]
@@ -642,7 +646,7 @@ af_adjustment_b2_raw = 0xFFFEBCA4
 [profile.1ND0A.evidence]
 free_rom = "AuditFreeRegion PASS for 0x0012c990..0x0017ff7f: erased tail with no recovered stock ownership; runtime uses the bounded 0x00132108..0x00135fff envelope."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ND0A executable census: no stock access reaches the allocation."
-maps = "Reviewed cross-generation interpolation correspondence, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ND bank structure bind fourteen supported families."
+maps = "Reviewed cross-generation interpolation correspondence, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ND bank structure bind fourteen supported families. The two ignition families are the 16x16 surfaces of the coordinator half that stock ROM8[0x8A2B] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter."
 rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
 telemetry = "Sixty ECU sources are bound by aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state and the two intake solenoid duty command cells are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
@@ -679,8 +683,8 @@ over_run_fuel_hold = 0x00013C5A
 over_run_fuel_cut = 0x00013C86
 over_run_fuel_restore = 0x00013D46
 over_run_fuel_intermediate_restore = 0x00013E72
-high_octane_timing_state = 0x000096CA
-high_detonation_timing_state = 0x000097CA
+ignition_surface_hot = 0x0000A10A
+ignition_surface_cold = 0x0000A20A
 cold_idle_ignition_timing = 0x000137E0
 idle_ignition_timing_default = 0x000137E8
 idle_ignition_timing_alternate = 0x000137F0
@@ -721,6 +725,10 @@ fuel_compensation_lookup = 0x00027FD8
 idle_ignition_lookup = 0x00028198
 feedback_serializer = 0x000ED03C
 feedback_status_byte = 0xFFFF3D62
+ignition_coordinator_config_byte = 0x00008965
+ignition_gated_surface_1 = 0x000095CA
+ignition_gated_surface_2 = 0x000096CA
+ignition_gated_surface_3 = 0x000097CA
 
 [profile.JK78C.rolling_hooks]
 periodic_scheduler_index_0 = [0x00021A4C, 0x000B2294, 0x000B2294, 0x0001E260]
@@ -854,7 +862,7 @@ af_adjustment_b2_raw = 0xFFFF490C
 [profile.JK78C.evidence]
 free_rom = "The 0x0001caac..0x0001ffff envelope is erased; recovered stock references at 0x0001e30c and in the final reserve remain outside every runtime write range."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across 2,969 recovered functions: zero accesses, calls, candidates, or decompiler failures."
-maps = "Reviewed JK08A-to-JK78C interpolation contracts, target call topology, bank-local storage, and the native 190-byte fuel-cut state machine bind fourteen supported VQ37 families."
+maps = "Reviewed JK08A-to-JK78C interpolation contracts, target call topology, bank-local storage, and the native 190-byte fuel-cut state machine bind fourteen supported VQ37 families. The two ignition families are the 16x16 surfaces of the coordinator half that stock ROM8[0x8965] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter."
 rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "HCAN1 D800 initialization, the SLE1 vector, exact serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
 telemetry = "Sixty-two ECU sources are bound by aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state is encoded from cleared reserved RAM and remains explicitly unavailable in metadata."

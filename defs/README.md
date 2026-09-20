@@ -112,13 +112,14 @@ comparison is recorded per map and axis in
 `JK08A-1ME3B.definition-addresses.csv`, which names the leaf beside each
 target address.
 
-`JK08A-JK78C.definition-addresses.csv` projects 29 visible source-map roles to
-31 JK78C tables, including explicit bank variants, and records fifteen source
-maps as unsupported. The unsupported entries cover removed dispatcher slots,
-the three exhaust-cam surfaces and the four standstill exhaust-VTC override
-constants of the removed exhaust valve timing subsystem, and target
-algorithms whose table geometry differs. Thirteen reviewed axis
-pairs complete the emitted geometry. The JK78C registry enables native
+`JK08A-JK78C.definition-addresses.csv` binds 27 source maps to JK78C storage
+and records eighteen source maps as unsupported. The unsupported entries cover
+removed dispatcher slots, the three exhaust-cam surfaces and the four
+standstill exhaust-VTC override constants of the removed exhaust valve timing
+subsystem, target algorithms whose table geometry differs, and the three
+canonical ignition surfaces, whose homologs sit in the coordinator half that
+the stock configuration leaves unexecuted. Thirteen reviewed axis
+bindings complete the emitted geometry. The JK78C registry enables native
 RomRaider checksum handling, fourteen-family target-specific Map Switching,
 Rolling Launch, and the CAN telemetry startup switch from the validated runtime
 profile. The target-native fuel-cut projection adds the adjacent activation and
@@ -133,17 +134,19 @@ both monitor floors, and the hot-intake idle pair of the state-code dispatcher
 the stock configuration executes, `0x00A10A` and `0x00A20A`: stock
 `ROM8[0x8965]` = `0xBA` sends the ignition coordinator `0x069AB8` through its
 mode-selected half, which picks the surface by the coolant byte against the
-thresholds `0x008AC1` and `0x008AC2`. The projected canonical trio `0x0095CA`,
-`0x0096CA`, and `0x0097CA` holds three byte-identical copies in the gated half
-that the stock byte leaves unexecuted. A registry table may declare a `mask`, a
+thresholds `0x008AC1` and `0x008AC2`. Both surfaces are Map Switching families,
+so the definition carries five slot tables of each. The homologs of the
+canonical trio, `0x0095CA`, `0x0096CA`, and `0x0097CA`, hold three
+byte-identical copies in the gated half that the stock byte leaves unexecuted;
+the trio is recorded as unsupported. A registry table may declare a `mask`, a
 contiguous partial bit field of its cell; the ignition surfaces carry `7F`
 because the low seven bits hold the timing field. The
 XML/XDF files expose editor controls; the unified builder remains responsible
 for runtime composition and complete checksum closure.
 
 `JK08A-1ND.definition-addresses.csv` projects the same reviewed VQ37 semantic
-set to the SH7059 1ND layout. It records 31 target maps, thirteen axes, and
-fifteen explicitly unsupported source maps. The projection is established from
+set to the SH7059 1ND layout. It records 27 target maps, thirteen axes, and
+eighteen explicitly unsupported source maps. The projection is established from
 reviewed JK78C-to-1ND0A structural functions, exact storage, interpolation-call
 order, selector branches, and target literals. 1ND3B reuses the address layout
 because all address-bearing executable code is byte-identical to 1ND0A, while
@@ -169,9 +172,11 @@ selection, and the mapper `0x04C4B8` derives the state code from the VVEL mode.
 State codes 2 and 8 read the 16x16 surface `0x00A410`, state code 1 reads
 `0x00A510`, and state codes 3, 4, 5, and 6 with 7 read the 8x8 surfaces
 `0x00A610`, `0x00A710`, `0x00A690`, and `0x00A6D0` over the native axes
-`0x013FE2` and `0x013FDA`. The projected canonical trio `0x009880`, `0x009980`,
-and `0x009A80` holds three byte-identical copies in the gated half that the
-stock byte leaves unexecuted.
+`0x013FE2` and `0x013FDA`. The two 16x16 surfaces are Map Switching families,
+so the definition carries five slot tables of each. The homologs of the
+canonical trio, `0x009880`, `0x009980`, and `0x009A80`, hold three
+byte-identical copies in the gated half that the stock byte leaves unexecuted;
+the trio is recorded as unsupported.
 
 `JK08A-1ME3B.definition-addresses.csv` projects the same reviewed VQ37
 semantic set to the fused-library 1ME3B image. It records 27 target maps,
@@ -181,8 +186,8 @@ structural export: exact-bytes or normalized-shape function pairs that read
 the target address at the same call ordinal, target functions that reproduce
 the 1ND0A reader's operand set, selector arms, and call order, the fused leaf
 whose contract equals the 1ND0A wrapper, exact target storage, and target
-literals. The unsupported rows are the fifteen VQ37 rows and the three canonical
-ignition surfaces: the target ignition coordinator `0x0797CC` carries only its
+literals. The unsupported rows are the eighteen rows of JK78C and 1ND; the three
+canonical ignition surfaces among them have no homolog at all: the target ignition coordinator `0x0797CC` carries only its
 mode-selected surfaces and no target function reproduces the gated stock-inert
 trio path of 1ND0A `0x074D98`. The projection declares checksum support with
 native RomRaider metadata over the `sh7059_1me3b` layout and no runtime

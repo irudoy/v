@@ -160,14 +160,27 @@ same addresses. The file distinguishes direct mappings from target-specific
 adapters and unsupported source semantics.
 
 The 1ND firmware does not retain the separate signed Q8 knock timing state
-used by JK08A. Its ignition path selects the high- or low-octane surface
-directly and keeps byte-sized results. `knock_timing_state_raw` is therefore
-explicitly unsupported instead of being assigned to an unrelated RAM word.
-The surface selector itself remains available at `0xFFFE9488`, where bit 6 is
-consumed by the target ignition and correction paths.
+used by JK08A. Its ignition path keeps byte-sized results, and
+`knock_timing_state_raw` is therefore explicitly unsupported instead of being
+assigned to an unrelated RAM word. Bit 6 of `0xFFFE9488`, which the target
+correction paths also consume, selects the high- or low-octane surface only
+inside the gated half of the ignition coordinator `0x074D98`. Stock `ROM8[0x8A2B]` = `0xBA` (bit 5 set) executes the
+mode-selected half instead, which picks its surface by the state code derived
+from the VVEL mode.
 
-The 1ND address profile binds fourteen switched families: four DFCO rows, two
-ignition surfaces, shared cold-idle timing, default and alternate warm-idle
+The two ignition families are the executed 16x16 surfaces `0x00A410` and
+`0x00A510` of that half. They reuse the geometry, slot storage, and pointer
+tables of the two canonical 16x16 ignition families. The three surfaces of the
+gated half, `0x009880`, `0x009980`, and `0x009A80`, hold equal stock bytes and
+belong to no family. The ignition hook at `0x0757B8` serves a literal that only
+the gated half reads, so every call through it passes through the adapter to
+the stock lookup. The profile validator requires bit 5
+of the stock configuration byte, equal stock bytes in the three gated
+surfaces, and their absence from the family set. The four 8x8 state-code
+surfaces are read through the separate lookup `0x0285B4` and are not switched.
+
+The 1ND address profile binds fourteen switched families: four DFCO rows, the
+two executed ignition surfaces, shared cold-idle timing, default and alternate warm-idle
 timing, default and alternate fuel compensation, native fuel-cut caps and
 curves, and the throttle-limiter scalar. Custom CAN telemetry binds 62
 available schema fields. The unavailable knock timing field is encoded from
@@ -183,7 +196,14 @@ telemetry fields. It distinguishes direct mappings from target-specific
 adapters and unsupported source semantics.
 
 The JK78C address profile binds the same fourteen semantic families as 1ND while
-retaining independent SH7058 addresses and stock code. Custom CAN telemetry
+retaining independent SH7058 addresses and stock code. Its two ignition families
+are the executed surfaces `0x00A10A` and `0x00A20A` of the mode-selected half of
+the coordinator `0x069AB8`, which stock `ROM8[0x8965]` = `0xBA` (bit 5 set)
+executes and which picks the surface by coolant temperature. The three
+equal-byte surfaces of the gated half, `0x0095CA`, `0x0096CA`, and `0x0097CA`,
+belong to no family and pass through the adapter under the same validator
+rules as 1ND. The ignition hooks at `0x062F10` and `0x069DB0` serve the knock
+path and the gated half only, so every call through them passes through. Custom CAN telemetry
 binds 62 available schema fields. The unavailable signed Q8 knock timing field
 is encoded from cleared reserved RAM and remains identified as unavailable in
 metadata. The profile also binds both SUM16 regions and both runtime SUM/XOR

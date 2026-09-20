@@ -48,7 +48,13 @@ The gate performs these checks:
    caps and curves, the exact stock fuel-cut state machine, the throttle
    scalar, Rolling Launch final-mask coordination, mailbox 26, and the stock-ISR
    tail chain. JK78C executes the same VQ37 capability cases through its
-   independent SH7058 addresses, stock hooks, RAM sources, and checksums.
+   independent SH7058 addresses, stock hooks, RAM sources, and checksums. The
+   VQ37 ignition cases select all five slots of the two executed 16x16
+   surfaces and pass the three equal-byte surfaces of the gated coordinator
+   half through the adapter while a non-default slot is active. The harness
+   names those three bases by the placeholders `0x0000991a`, `0x0000e91a`, and
+   `0x0000ea1a`, which the target renderer rewrites to the profile symbols
+   `ignition_gated_surface_1` to `ignition_gated_surface_3`.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
    unchanged stock callees outside the implementation under test. The Rolling
