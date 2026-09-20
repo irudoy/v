@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `8.1.1`.
+Current dashboard version: `8.1.2`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v8.1.1-windows.zip
+  --output tmp/vq-can-telemetry-v8.1.2-windows.zip
 ```
 
 On the Windows laptop:
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v8.1.1-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v8.1.2-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 8.1.1 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 8.1.2 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -339,11 +339,10 @@ The window opens inside the current screen and remains usable down to
 version as `VQCT vX.Y.Z`, source state, channel and data-ID entries, and the
 tool buttons; the title of the operating-system window carries the full
 product name. Header controls, status fields, and health counters flow into
-additional rows instead of leaving the window. A flow bar positions its items
-by coordinates inside itself and gives no item a second container, so an item
-is drawn and clipped in one coordinate system on every platform. The card and
-panel area scrolls vertically when the remaining height is short. `PRIMARY`
-and `EXTENDED` select the panel set.
+additional rows instead of leaving the window; a flow bar positions its items
+by coordinates inside itself, without row frames. The card and panel area
+scrolls vertically when the remaining height is short. `PRIMARY` and
+`EXTENDED` select the panel set.
 
 The four detail panels of a set share one row and shrink with the window down
 to a `250 px` cell. A narrower window folds them into two rows of two, and a
@@ -353,8 +352,12 @@ width from its value column first, from 19 down to 13 characters, and then
 elides its labels in the middle, which keeps a trailing bank or channel suffix
 readable. Hover over a label reports its full text.
 
-Tool buttons are flat labels with a lit state, drawn the same on every
-platform:
+Tool buttons are flat, carry a lit state, and are drawn the same on every
+platform. A button is a label inside a frame whose background is the
+one-pixel border, and the border takes the focus color under keyboard focus.
+No label of the window has a highlight ring of its own: macOS Tk 9 draws the
+ring of a label in the coordinates of its parent instead of the window, which
+shifts the ring by the offset of the parent and draws it across the text.
 
 | Button | Function | Lit |
 | --- | --- | --- |
@@ -517,6 +520,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 8.1.1 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 8.1.2 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

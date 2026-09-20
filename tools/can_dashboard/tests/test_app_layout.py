@@ -68,6 +68,39 @@ class WindowLayoutTest(unittest.TestCase):
                 self.assertEqual(item.winfo_manager(), "place")
                 self.assertEqual(str(item.place_info()["in"]), str(header))
 
+    def test_no_label_of_the_window_draws_a_highlight_ring(self):
+        pending = [self.window]
+        labels = 0
+        while pending:
+            widget = pending.pop()
+            pending.extend(widget.winfo_children())
+            if widget.winfo_class() != "Label":
+                continue
+            labels += 1
+            self.assertEqual(
+                int(widget.cget("highlightthickness")),
+                0,
+                str(widget),
+            )
+        self.assertGreater(labels, 50)
+
+    def test_tool_buttons_keep_their_border_outside_the_label(self):
+        buttons = [
+            self.dashboard.source_button,
+            self.dashboard.stream_button,
+            self.dashboard.record_button,
+            self.dashboard.theme_button,
+            *self.dashboard.tab_buttons,
+        ]
+        for button in buttons:
+            with self.subTest(button=button.cget("text")):
+                self.assertIsInstance(button, widgets.ToolButton)
+                self.assertEqual(button.winfo_class(), "Frame")
+                self.assertEqual(
+                    button.winfo_reqwidth(),
+                    button.label.winfo_reqwidth() + 2,
+                )
+
     def test_panel_minimum_ignores_the_panel_content(self):
         for panels in self.dashboard.panel_grids:
             self.assertEqual(

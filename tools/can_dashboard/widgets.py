@@ -570,13 +570,36 @@ class ResponsiveGrid(tk.Frame):
             self.rowconfigure(row, weight=self._row_weight)
 
 
-class ToolButton(tk.Label):
+class ToolButton(tk.Frame):
     """Flat toolbar button with a lit state, drawn the same on every OS.
 
-    A native button ignores its colors on macOS, so the button is a label.
-    `configure` accepts `lit` beside the label options; a lit button reports
-    an active link, stream, recording, or mode.
+    A native button ignores its colors on macOS, so the button is a label
+    inside a frame, and the frame background is the one-pixel border. The
+    label draws no highlight ring of its own: macOS Tk places that ring in
+    the coordinates of the parent instead of the window, which shifts it by
+    the offset of the parent and draws it across the text.
+
+    `configure` and `cget` accept the label options and `lit` beside the
+    frame options; a lit button reports an active link, stream, recording,
+    or mode.
     """
+
+    LABEL_OPTIONS = frozenset({
+        "anchor",
+        "bg",
+        "background",
+        "fg",
+        "foreground",
+        "font",
+        "justify",
+        "padx",
+        "pady",
+        "text",
+        "textvariable",
+        "underline",
+        "wraplength",
+    })
+    BORDER = 1
 
     def __init__(
         self,
@@ -597,25 +620,43 @@ class ToolButton(tk.Label):
         self._lit_role = lit_role
         self._lit = bool(lit)
         self._hover = False
+        self._focused = False
         self._command = command
+        self.label = None
         super().__init__(
             master,
-            text=text,
-            font=font,
-            padx=padx,
-            pady=pady,
+            borderwidth=0,
+            highlightthickness=0,
             cursor="hand2",
             takefocus=1,
-            highlightthickness=1,
+        )
+        self.label = tk.Label(
+            self,
+            text=text,
+            font=font,
+            padx=padx + 2,
+            pady=pady + 2,
+            borderwidth=0,
+            highlightthickness=0,
+            cursor="hand2",
+        )
+        self.label.pack(
+            fill="both",
+            expand=True,
+            padx=self.BORDER,
+            pady=self.BORDER,
         )
         self._paint()
-        self.bind("<Button-1>", self._on_click, add="+")
+        for widget in (self, self.label):
+            widget.bind("<Button-1>", self._on_click, add="+")
+            widget.bind("<Enter>", self._on_enter, add="+")
+            widget.bind("<Leave>", self._on_leave, add="+")
         self.bind("<Return>", self._on_click, add="+")
         self.bind("<space>", self._on_click, add="+")
-        self.bind("<Enter>", self._on_enter, add="+")
-        self.bind("<Leave>", self._on_leave, add="+")
+        self.bind("<FocusIn>", self._on_focus_in, add="+")
+        self.bind("<FocusOut>", self._on_focus_out, add="+")
         self.tooltip = (
-            Tooltip(self, tooltip, **(tooltip_options or {}))
+            Tooltip(self.label, tooltip, **(tooltip_options or {}))
             if tooltip
             else None
         )
@@ -625,10 +666,24 @@ class ToolButton(tk.Label):
         return self._lit
 
     def configure(self, cnf=None, **options):
+        if self.label is None:
+            return super().configure(cnf, **options)
+        if isinstance(cnf, dict):
+            options = {**cnf, **options}
+            cnf = None
         lit = options.pop("lit", None)
         result = None
-        if cnf is not None or options or lit is None:
-            result = super().configure(cnf, **options)
+        if cnf is not None or (not options and lit is None):
+            result = super().configure(cnf)
+        label_options = {
+            key: options.pop(key)
+            for key in tuple(options)
+            if key in self.LABEL_OPTIONS
+        }
+        if label_options:
+            self.label.configure(**label_options)
+        if options:
+            super().configure(**options)
         if lit is not None and bool(lit) != self._lit:
             self._lit = bool(lit)
             self._paint()
@@ -636,8 +691,23 @@ class ToolButton(tk.Label):
 
     config = configure
 
+    def cget(self, key):
+        if self.label is not None and key in self.LABEL_OPTIONS:
+            return self.label.cget(key)
+        return super().cget(key)
+
     def invoke(self):
         return self._command()
+
+    def winfo_reqwidth(self):
+        """Requested width, known before the packer propagates it at idle."""
+        return self.label.winfo_reqwidth() + 2 * self.BORDER
+
+    def winfo_reqheight(self):
+        return self.label.winfo_reqheight() + 2 * self.BORDER
+
+    def border_color(self):
+        return super().cget("bg")
 
     def _paint(self):
         colors = self._colors
@@ -649,12 +719,10 @@ class ToolButton(tk.Label):
             background = colors["hover" if self._hover else "face"]
             foreground = colors["text"]
             border = colors["border"]
-        super().configure(
-            bg=background,
-            fg=foreground,
-            highlightbackground=border,
-            highlightcolor=colors["focus"],
-        )
+        if self._focused:
+            border = colors["focus"]
+        self.label.configure(bg=background, fg=foreground)
+        super().configure(bg=border)
 
     def _on_click(self, _event=None):
         self.invoke()
@@ -666,6 +734,14 @@ class ToolButton(tk.Label):
 
     def _on_leave(self, _event=None):
         self._hover = False
+        self._paint()
+
+    def _on_focus_in(self, _event=None):
+        self._focused = True
+        self._paint()
+
+    def _on_focus_out(self, _event=None):
+        self._focused = False
         self._paint()
 
 

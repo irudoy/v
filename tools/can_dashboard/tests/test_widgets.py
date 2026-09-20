@@ -606,6 +606,45 @@ class ToolButtonTest(unittest.TestCase):
         self.addCleanup(record.destroy)
         self.assertEqual(record.cget("bg"), BUTTON_COLORS["record"])
 
+    def test_the_label_draws_no_ring_of_its_own(self):
+        label = self.button.label
+        self.assertEqual(label.winfo_class(), "Label")
+        self.assertEqual(int(label.cget("highlightthickness")), 0)
+        self.assertEqual(int(label.cget("borderwidth")), 0)
+        self.assertEqual(int(tk.Frame.cget(self.button, "highlightthickness")), 0)
+
+    def test_the_frame_background_is_the_one_pixel_border(self):
+        self.assertEqual(self.button.border_color(), BUTTON_COLORS["border"])
+        self.assertEqual(
+            self.button.winfo_reqwidth(),
+            self.button.label.winfo_reqwidth() + 2,
+        )
+        self.assertEqual(
+            self.button.winfo_reqheight(),
+            self.button.label.winfo_reqheight() + 2,
+        )
+        self.button.configure(lit=True)
+        self.assertEqual(self.button.border_color(), BUTTON_COLORS["lit"])
+
+    def test_keyboard_focus_shows_in_the_border(self):
+        self.button._on_focus_in()
+        self.assertEqual(self.button.border_color(), BUTTON_COLORS["focus"])
+        self.button._on_focus_out()
+        self.assertEqual(self.button.border_color(), BUTTON_COLORS["border"])
+
+    def test_label_and_frame_options_share_configure_and_cget(self):
+        self.button.configure({"text": "ACK"}, cursor="arrow")
+        self.assertEqual(self.button.cget("text"), "ACK")
+        self.assertEqual(self.button.label.cget("text"), "ACK")
+        self.assertEqual(str(self.button.cget("cursor")), "arrow")
+
+    def test_the_pointer_reaches_the_button_through_its_label(self):
+        for widget in (self.button, self.button.label):
+            for sequence in ("<Button-1>", "<Enter>", "<Leave>"):
+                with self.subTest(widget=str(widget), sequence=sequence):
+                    self.assertTrue(widget.bind(sequence))
+        self.assertIs(self.button.tooltip.widget, self.button.label)
+
     def test_hover_never_repaints_a_lit_button(self):
         self.button.configure(lit=True)
         self.button._on_enter()
