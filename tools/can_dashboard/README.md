@@ -143,8 +143,10 @@ The `0x551` display uses neutral labels `ASCD STATE 4` through `ASCD STATE 7`
 for byte 5 values `0x42`, `0x52`, `0x62`, and `0x72`, and `STOCK` for `0x02`;
 every other value is shown in hexadecimal. The field is the stock ASCD display
 state: 4 is CRUISE with steady SET, 5 is CRUISE alone, and 6 is CRUISE with a
-blinking SET lamp. Map-selection feedback of the current runtime emits state 4;
-firmware through `1.11` emits state 6, and Rolling Launch ACTIVE emits state 7.
+blinking SET lamp. The current runtime emits state 4 for map-selection feedback
+and Rolling Launch ACTIVE, and state 5 for a failed held Rolling Launch
+attempt; firmware through `1.11` emits state 6 for map feedback and the failed
+attempt, and state 7 for Rolling Launch ACTIVE.
 `../../defs/JK08A.can.md` records the encoding.
 
 Schema 2 names `0xFFFF2326` as `intake_cvtc_target_raw` and `0xFFFF2327` as

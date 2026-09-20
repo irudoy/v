@@ -123,6 +123,7 @@ class RollingEndpointSignature:
     configuration_schema_version: int
     unit_sha256: tuple[tuple[str, str], ...]
     hook_values: tuple[tuple[str, int], ...]
+    carries_current_telemetry: bool = False
 
 
 PRE_FEEDBACK_ROLLING_HOOK_VALUES = (
@@ -131,6 +132,13 @@ PRE_FEEDBACK_ROLLING_HOOK_VALUES = (
     ("startup_state_clear", 0x000D38A0),
     ("primary_ignition_command", 0x000D3EA0),
     ("feedback_arbitration", 0x000D35E0),
+)
+CURRENT_ROLLING_HOOK_VALUES = (
+    ("periodic_scheduler_index_0", 0x000D3860),
+    ("selector_arbitration", 0x000D3880),
+    ("startup_state_clear", 0x000D38A0),
+    ("primary_ignition_command", 0x000D3EA0),
+    ("feedback_arbitration", 0x000D41E0),
 )
 ERASED_FEEDBACK_ARBITER_SHA256 = (
     "0052516839b94ee314a4e3b398c8036de3790d672194987a394ee60323848539"
@@ -253,6 +261,49 @@ HISTORICAL_ROLLING_ENDPOINTS = (
         ),
         hook_values=PRE_FEEDBACK_ROLLING_HOOK_VALUES,
     ),
+    # The arbiter of this endpoint emits ASCD state 6 for a failed held attempt
+    # and state 7 for ACTIVE. Every other unit and every hook equals the
+    # current endpoint, so the current CAN telemetry layer is valid above it.
+    RollingEndpointSignature(
+        key="schema-3-state-6-7-indicators",
+        configuration_schema_version=3,
+        unit_sha256=(
+            (
+                "wrappers",
+                "7e650ae06bbfdd33f9da9b99488de8202de64160440bced19719a07c74881e45",
+            ),
+            (
+                "engine",
+                "6420e4f75b36a1ac86691f2d16952c235862db62b57d297a51b8efc0f3379729",
+            ),
+            (
+                "ignition_adapter",
+                "ed76618204bb4f3838f806e090d45882409ad1fb0aa9462ae91d531806d9ca7b",
+            ),
+            (
+                "ignition_controller",
+                "ebb3cbeb3464ac3f53c6e8738a9b4f1fe729965fa7e24bccc0a5d790038b57f7",
+            ),
+            (
+                "threshold_helper",
+                "c1ab086bc1930c841e96be4cae34126af95e44821a03c2c177c33761a6336af7",
+            ),
+            (
+                "feedback_arbiter",
+                "0ec18b26a0ef6556bcb5f6056a2a9b988f8c895f65ec6b2b3665352ce73fb4dc",
+            ),
+        ),
+        hook_values=CURRENT_ROLLING_HOOK_VALUES,
+        carries_current_telemetry=True,
+    ),
+)
+TELEMETRY_LOWER_ROLLING_STATES = frozenset(
+    {"current"}
+    | {
+        endpoint.key
+        for endpoint in HISTORICAL_ROLLING_ENDPOINTS
+        if endpoint.carries_current_telemetry
+    }
 )
 
 HISTORICAL_FEEDBACK_FRAME_COUNTS = ((10, 10), (15, 15))
@@ -1052,7 +1103,10 @@ def _normalize_runtime(source, source_name, target):
             launch_payloads,
             source_name,
         )
-        if telemetry_state == "current" and rolling_state != "current":
+        if (
+            telemetry_state == "current"
+            and rolling_state not in TELEMETRY_LOWER_ROLLING_STATES
+        ):
             raise BuildError(
                 f"{source_name}: current CAN telemetry is not layered "
                 "over the current lower runtime endpoint"

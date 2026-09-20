@@ -318,8 +318,10 @@ state 6 illuminates SET together with CRUISE. The `0x8F` immediate of that
 firmware clears all three state bits before inserting `0x60`, so the SET lamp
 is a property of state 6 on the exact target, not a retained state-7 bit. This
 agrees with the stock encoding, in which state 6 is CRUISE with a blinking SET
-lamp. The current map feedback engine inserts state 4 and appears as `0x42`;
-no saved capture contains that value. State 7 has no stock producer.
+lamp. State 7 has no stock producer. The current runtime inserts only stock
+states: state 4 (`0x42`) for the map feedback ON phase and for Rolling Launch
+ACTIVE, state 5 (`0x52`) for a failed held Rolling Launch attempt, and state 0
+for the OFF phase and COOLDOWN. No saved capture contains `0x42` or `0x52`.
 
 Target-vehicle selector observations establish the following `0x421` byte-0
 mapping:

@@ -347,8 +347,8 @@ def _validate_feedback_arbiter_abi(parsed):
         raise ValueError("feedback arbiter base-wrapper call count differs")
     required = {
         "mov #0x0,r2",
-        "mov #0x60,r2",
-        "mov #0x70,r2",
+        "mov #0x40,r2",
+        "mov #0x50,r2",
         "tst 0x20,r0",
         "and 0x8f,r0",
         "or r2,r0",

@@ -3,13 +3,12 @@
 // The map-switching feedback wrapper and pulse engine always run first. A
 // nonzero map-feedback state owns the serialized frame for this invocation.
 // Otherwise Rolling Launch replaces the complete three-bit ASCD field:
-//   IDLE with a failed CANCEL-held attempt - state 6
-//   ACTIVE                            - state 7
+//   IDLE with a failed CANCEL-held attempt - state 5
+//   ACTIVE                            - state 4
 //   COOLDOWN                          - state 0
-// The field is the latched stock ASCD display state. State 6 is the stock
-// fault state: CRUISE is lit and the SET lamp blinks on its own timer, which
-// the exact target shows as SET following CRUISE. State 7 has no stock
-// producer.
+// The field is the latched stock ASCD display state. State 4 is CRUISE with a
+// steady SET lamp and state 5 is CRUISE alone. State 6 blinks the SET lamp on
+// its own timer and state 7 has no stock producer, so neither is emitted.
 // Normal IDLE and corrupt phases preserve the stock serializer result.
 
 .org 0x000D41E0
@@ -39,7 +38,7 @@ bra rl_feedback_apply
 nop
 
 rl_feedback_active:
-mov #0x70,r2
+mov #0x40,r2
 bra rl_feedback_apply
 nop
 
@@ -51,7 +50,7 @@ mov.w @(0x2,r1),r0
 extu.w r0,r0
 tst 0x20,r0
 bt rl_feedback_return
-mov #0x60,r2
+mov #0x50,r2
 
 rl_feedback_apply:
 mov.l @(rl_feedback_status_byte,pc),r1

@@ -489,6 +489,51 @@ class BuildRomTest(unittest.TestCase):
                 historical, source_name="unregistered feedback engine"
             )
 
+    def _state_6_7_arbiter_image(self):
+        layout = build_rom.rolling_launch_layout.load_layout()
+        unit = layout.assembly_unit_by_key["feedback_arbiter"]
+        active_immediate = unit.span.start + 0x2D
+        failed_immediate = unit.span.start + 0x41
+        historical = bytearray(self.base_result.data)
+        self.assertEqual(historical[active_immediate], 0x40)
+        self.assertEqual(historical[failed_immediate], 0x50)
+        historical[active_immediate] = 0x70
+        historical[failed_immediate] = 0x60
+        historical = checksums.recalculate(historical)
+        endpoint = build_rom.HISTORICAL_ROLLING_ENDPOINTS[-1]
+        self.assertEqual(endpoint.key, "schema-3-state-6-7-indicators")
+        self.assertEqual(
+            dict(endpoint.unit_sha256)["feedback_arbiter"],
+            build_rom.sha256(historical[unit.span.start : unit.span.end]),
+        )
+        return historical
+
+    def test_state_6_7_arbiter_endpoint_migrates_under_telemetry(self):
+        historical = self._state_6_7_arbiter_image()
+
+        result = build_rom.build_image(
+            historical, source_name="state-6/7 arbiter endpoint"
+        )
+
+        self.assertEqual(
+            result.input_state, "complete-runtime-migration"
+        )
+        self.assertEqual(result.data, self.base_result.data)
+
+    def test_telemetry_over_unflagged_historical_endpoint_is_rejected(self):
+        historical = self._state_6_7_arbiter_image()
+        with mock.patch.object(
+            build_rom,
+            "TELEMETRY_LOWER_ROLLING_STATES",
+            frozenset({"current"}),
+        ):
+            with self.assertRaisesRegex(
+                build_rom.BuildError, "not layered"
+            ):
+                build_rom.build_image(
+                    historical, source_name="unflagged lower endpoint"
+                )
+
     def test_pre_feedback_indicator_endpoint_can_be_migrated(self):
         telemetry_layout = build_rom.can_telemetry_layout.load_layout()
         historical = bytearray(build_rom._strip_telemetry_endpoint(

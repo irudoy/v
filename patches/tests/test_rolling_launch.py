@@ -93,8 +93,8 @@ class RollingLaunchTest(unittest.TestCase):
         active = rl.RuntimeState(phase=rl.Phase.ACTIVE)
         cooldown = rl.RuntimeState(phase=rl.Phase.COOLDOWN)
 
-        self.assertEqual(rl.apply_dashboard_feedback(failed, 0xB5), 0xE5)
-        self.assertEqual(rl.apply_dashboard_feedback(active, 0xB5), 0xF5)
+        self.assertEqual(rl.apply_dashboard_feedback(failed, 0xB5), 0xD5)
+        self.assertEqual(rl.apply_dashboard_feedback(active, 0xB5), 0xC5)
         self.assertEqual(
             rl.apply_dashboard_feedback(cooldown, 0xB5), 0x85
         )
@@ -105,14 +105,27 @@ class RollingLaunchTest(unittest.TestCase):
         )
         corrupt = dataclasses.replace(normal, phase=9)
         active = rl.RuntimeState(phase=rl.Phase.ACTIVE)
+        failed = rl.RuntimeState(
+            abort_reason=rl.AbortReason.RPM_LOW,
+            flags=rl.Flag.BUTTON_HELD,
+        )
 
         self.assertEqual(rl.apply_dashboard_feedback(normal, 0xB5), 0xB5)
         self.assertEqual(rl.apply_dashboard_feedback(corrupt, 0xB5), 0xB5)
+        # The map ON value differs from the failed-attempt value and the map
+        # OFF value differs from the ACTIVE value, so each case shows which
+        # source owns the frame.
         self.assertEqual(
             rl.apply_dashboard_feedback(
-                active, 0xE5, map_feedback_active=True
+                failed, 0xC5, map_feedback_active=True
             ),
-            0xE5,
+            0xC5,
+        )
+        self.assertEqual(
+            rl.apply_dashboard_feedback(
+                active, 0x85, map_feedback_active=True
+            ),
+            0x85,
         )
 
         with self.assertRaisesRegex(ValueError, "serialized ASCD status"):

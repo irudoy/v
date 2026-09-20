@@ -107,8 +107,8 @@ three-bit ASCD field in bits 4..6 of byte 5 in CAN frame `0x551`:
 | Runtime state | Dashboard field |
 | --- | --- |
 | normal `IDLE` | preserve the stock serializer result |
-| failed activation while CANCEL remains held | state 6 (`0x60`), the stock CRUISE with blinking SET state; exact target illuminates CRUISE and SET |
-| `ACTIVE` | state 7 (`0x70`), a value without a stock producer |
+| failed activation while CANCEL remains held | state 5 (`0x50`), the stock CRUISE-alone state |
+| `ACTIVE` | state 4 (`0x40`), the stock CRUISE with steady SET state |
 | `COOLDOWN` | state 0 (`0x00`) |
 | corrupt phase | preserve the stock serializer result |
 
@@ -124,12 +124,16 @@ The 2026-08-16 `1.10` vehicle capture contains 233,442 standard frames over
 `hardware-results.toml`. Frame `0x239` byte 3 contains 4,229 release samples,
 282 SET samples, and 1,349 CANCEL samples. Frame `0x551` byte 5 contains 868
 stock-value samples at `0x02`, 193 custom state-6 samples at `0x62`, and 111
-Rolling Launch ACTIVE state-7 samples at `0x72`. Exact-target observation of
-map feedback establishes that state 6 illuminates SET together with CRUISE.
-The stock display-state writer `FUN_000CEABC` assigns state 4 to CRUISE with
-steady SET, state 5 to CRUISE alone, and state 6 to CRUISE with a blinking SET
-lamp; `../defs/JK08A.can.md` records the encoding. The `1.10` capture predates
-the state-4 map feedback of the current runtime.
+Rolling Launch ACTIVE state-7 samples at `0x72`: firmware `1.10` emits state 6
+for map feedback and for a failed held attempt, and state 7 for `ACTIVE`.
+Exact-target observation of map feedback establishes that state 6 illuminates
+SET together with CRUISE. The stock display-state writer `FUN_000CEABC`
+assigns state 4 to CRUISE with steady SET, state 5 to CRUISE alone, and state 6
+to CRUISE with a blinking SET lamp, and produces no state 7;
+`../defs/JK08A.can.md` records the encoding. The current runtime emits only
+states 0, 4, and 5, which appear as `0x02`, `0x42`, and `0x52`; no saved
+capture contains `0x42` or `0x52`, and their lamp result on the exact target
+is a hardware acceptance item.
 
 The full-field isolation correction from firmware `1.9` is present in this
 runtime: both feedback paths clear mask `0x70` with immediate `0x8F` before

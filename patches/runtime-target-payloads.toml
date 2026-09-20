@@ -6,8 +6,8 @@ schema_version = 1
 [target.JK00C]
 stock_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289"
 map_stage_sha256 = "020b54352aa4571e9c9c0e998703651b222f009f11fb69cd85ba74e90a8c404b"
-rolling_stage_sha256 = "fe119c5b6129bac896522edf5b48144da1296c9a6722bd6964024a951863bb9b"
-telemetry_stage_sha256 = "1011a77994927e283124099445a7e1a29660768a6b3128a2b5aa5eccfd0d818a"
+rolling_stage_sha256 = "5d6813721ab472af5ae54dc1660bffd8d90e3a0b3dde6e6221863d3272c57bd1"
+telemetry_stage_sha256 = "1aecbad7eaef4839ecb8935e712bf989abb9c28a9dd4be8b29703efaba50ee53"
 
 [target.JK00C.map_units]
 selector_host = """
@@ -162,8 +162,8 @@ threshold_helper = """
 """
 feedback_arbiter = """
 4f22d124710460122f06d021400b000960f620088b1ad1206010880089098801
-890488028b12e200a00b0009e270a00800098411200889098511600dc8208905
-e260d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
+890488028b12e200a00b0009e240a00800098411200889098511600dc8208905
+e250d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff000dfce0ffff6000ffff6040ffff3c0c
 """
@@ -291,8 +291,8 @@ ffffffffffffffffffffffffffffffff
 [target.JK00D]
 stock_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3"
 map_stage_sha256 = "f89b4a4714e65a51d036ec603baa2dd593802daf266dff1057fd51b1caa88376"
-rolling_stage_sha256 = "77b84dbffe5b3609de14f09cf88d12a3d5be9c69f377818df1b029989a606e87"
-telemetry_stage_sha256 = "1d2a089b0e9e33726d09bcf612d1c109cda2a9417105a99070a7d8a095d32d18"
+rolling_stage_sha256 = "a30b300d69859f3c57939fd807fc7eca8a4e9cee4a3e80c4ac5ef5ce53619885"
+telemetry_stage_sha256 = "111571cbb001eff0f40c5ae87378586fbe165f942edf7609c571f41236a9b64a"
 
 [target.JK00D.map_units]
 selector_host = """
@@ -447,8 +447,8 @@ threshold_helper = """
 """
 feedback_arbiter = """
 4f22d124710460122f06d021400b000960f620088b1ad1206010880089098801
-890488028b12e200a00b0009e270a00800098411200889098511600dc8208905
-e260d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
+890488028b12e200a00b0009e240a00800098411200889098511600dc8208905
+e250d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff000dfce0ffff6000ffff6040ffff3c20
 """
@@ -576,8 +576,8 @@ ffffffffffffffffffffffffffffffff
 [target.1ND0A]
 stock_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
 map_stage_sha256 = "607e0219f7b11498368eaece7069547b788bc3615ce9d43309bee285ac4a3d24"
-rolling_stage_sha256 = "df55340723dab00ade63acce08ff113161c33c13a57167b559008435426cb6fd"
-telemetry_stage_sha256 = "3bfea78217ec58f8bfb745faddf898e47cf14755bb6f57f47b9d78fc1331c6d4"
+rolling_stage_sha256 = "23aa34e97a50e418838b6f5c8007f52b0c5cb67008205549ded51ee7d5b32ea0"
+telemetry_stage_sha256 = "eee7f0ea93537917b47eba8a2afedba20d475dd2790e53ba9a9423f70fc388ac"
 
 [target.1ND0A.map_units]
 selector_host = """
@@ -730,8 +730,8 @@ threshold_helper = """
 """
 feedback_arbiter = """
 4f22d124710460122f06d021400b000960f620088b1ad1206010880089098801
-890488028b12e200a00b0009e270a00800098411200889098511600dc8208905
-e260d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
+890488028b12e200a00b0009e240a00800098411200889098511600dc8208905
+e250d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff001335e0ffff0c00ffff0c40fffeb0f2
 """
@@ -865,8 +865,8 @@ ffffffffffffffffffffffffffffffff
 [target.1ND3B]
 stock_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
 map_stage_sha256 = "93d0785e94d8f1fce0584e7b1f08e379898c31afd01e59f517ebf4ffbc0d6008"
-rolling_stage_sha256 = "9d8c41162784f7a6d940f4a4de40fbb9c2d5f7ab9972d8b8b14957173b6350c0"
-telemetry_stage_sha256 = "c1b502f54e8ca86bef6192c754b8cdad30eb9b3c2d6b0f890880338244ec749d"
+rolling_stage_sha256 = "dfb1fa352242acb669da0175cf618f0f94c15292461c9028e585f1c46a60a9cf"
+telemetry_stage_sha256 = "55511c44cd96ef91798e5daee093dc0663d94b44df8b12cbc5e3843bbd17b33f"
 
 [target.1ND3B.map_units]
 selector_host = """
@@ -1019,8 +1019,8 @@ threshold_helper = """
 """
 feedback_arbiter = """
 4f22d124710460122f06d021400b000960f620088b1ad1206010880089098801
-890488028b12e200a00b0009e270a00800098411200889098511600dc8208905
-e260d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
+890488028b12e200a00b0009e240a00800098411200889098511600dc8208905
+e250d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff001335e0ffff0c00ffff0c40fffeb0f2
 """
@@ -1154,8 +1154,8 @@ ffffffffffffffffffffffffffffffff
 [target.1ME3B]
 stock_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
 map_stage_sha256 = "6cec19eb05012768bd172fab1cfbd952b2ed05c9c14958bcf63469a86e1102dc"
-rolling_stage_sha256 = "6e826a82f4420eaf3e5433906c453afdf385b88c6d6cec9774b669a7f7854f11"
-telemetry_stage_sha256 = "8366168b3b36bea9305d69d8b253730a004a21d0b9297d5ccd67d6a32b030311"
+rolling_stage_sha256 = "4de632d98215224005a1b53afdc4d648db951742df9ab551d3731cd4eb0853c2"
+telemetry_stage_sha256 = "52546cf645a3f7c040403664ef3e0c36e4244d84fd0751fe0f5238dd959404d7"
 
 [target.1ME3B.map_units]
 selector_host = """
@@ -1308,8 +1308,8 @@ threshold_helper = """
 """
 feedback_arbiter = """
 4f22d124710460122f06d021400b000960f620088b1ad1206010880089098801
-890488028b12e200a00b0009e270a00800098411200889098511600dc8208905
-e260d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
+890488028b12e200a00b0009e240a00800098411200889098511600dc8208905
+e250d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff0013c5e0ffff0c00ffff0c40fffeb236
 """
@@ -1443,8 +1443,8 @@ ffffffffffffffffffffffffffffffff
 [target.JK78C]
 stock_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
 map_stage_sha256 = "a8f86cd9002a4ffb643c838feb218cbda17265e5b3152e58b6ce26577dea896c"
-rolling_stage_sha256 = "9525d0c3836785ae48bab5423cd4f82a612a22d3faeea9a8d92bd4d36338dcf8"
-telemetry_stage_sha256 = "c1097170a84e2564b140388b2f3dd70baf0a607d72dde779b88b64c78d045e2f"
+rolling_stage_sha256 = "9bf6cf1c08d74ad45615c65a110c9ea75ffbeee9aea51aee089bfb97d1b5de7c"
+telemetry_stage_sha256 = "2b5caf8c8a64efab4a95f0f109bb7b77ac5758055370fc46de1efe08ea94f10a"
 
 [target.JK78C.map_units]
 selector_host = """
@@ -1591,8 +1591,8 @@ threshold_helper = """
 """
 feedback_arbiter = """
 4f22d124710460122f06d021400b000960f620088b1ad1206010880089098801
-890488028b12e200a00b0009e270a00800098411200889098511600dc8208905
-e260d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
+890488028b12e200a00b0009e240a00800098411200889098511600dc8208905
+e250d1166010c98f202b21004f26000b0009ffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffff0001dfe0ffff0c00ffff0c40ffff3d62
 """

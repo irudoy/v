@@ -61,7 +61,11 @@ The common handler performs these operations in one invocation:
    future reserve. After removing a validated telemetry layer in memory, the
    Rolling Launch layer, when supported, must be wholly absent, match the exact
    current payload and configuration schema, or match one registered historical
-   unit fingerprint and its schema contract. A target without Rolling Launch
+   unit fingerprint and its schema contract. A current telemetry layer is
+   accepted only above the current Rolling Launch endpoint or above a
+   registered endpoint whose hooks and non-arbiter units equal the current
+   ones; the JK08A endpoint whose arbiter emits ASCD states 6 and 7 is the one
+   such registration. A target without Rolling Launch
    must contain no Rolling Launch artifacts. Mixed hooks or DIDs, unknown
    payload bytes, partial pointer tables, invalid configuration records,
    occupied reserves, and unknown protected-code changes are rejected.

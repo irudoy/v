@@ -1189,11 +1189,11 @@ static const struct feedback_case feedback_cases[] = {
     },
     {
         "feedback-failed-held", PHASE_IDLE, REASON_RPM_LOW,
-        FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xe5, {0, 0, 0, 0},
+        FLAG_BUTTON_HELD, {0, 0, 0, 0}, 0xd5, {0, 0, 0, 0},
     },
     {
         "feedback-active", PHASE_ACTIVE, REASON_NONE,
-        FLAGS_OBSERVE_ACTIVE, {0, 0, 0, 0}, 0xf5, {0, 0, 0, 0},
+        FLAGS_OBSERVE_ACTIVE, {0, 0, 0, 0}, 0xc5, {0, 0, 0, 0},
     },
     {
         "feedback-cooldown", PHASE_COOLDOWN, REASON_TIMEOUT, 0,
@@ -1204,8 +1204,10 @@ static const struct feedback_case feedback_cases[] = {
         {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0},
     },
     {
-        "feedback-map-on-priority", PHASE_ACTIVE, REASON_NONE,
-        FLAGS_OBSERVE_ACTIVE, {1, 1, 0, 0}, 0xc5, {1, 2, 0, 0},
+        /* Map ON is state 4 like ACTIVE, so the failed-attempt state 5 is the
+         * Rolling Launch value that a lost priority would expose here. */
+        "feedback-map-on-priority", PHASE_IDLE, REASON_RPM_LOW,
+        FLAG_BUTTON_HELD, {1, 1, 0, 0}, 0xc5, {1, 2, 0, 0},
     },
     {
         "feedback-map-off-priority", PHASE_ACTIVE, REASON_NONE,
