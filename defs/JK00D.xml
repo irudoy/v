@@ -876,12 +876,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1524F"
-             sizex="8" endian="big">
+             sizex="8" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x1526F" sizey="8" endian="big">
+             storageaddress="0x1526F" sizey="8" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -905,12 +905,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x15257"
-             sizex="8" endian="big">
+             sizex="8" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x15277" sizey="8" endian="big">
+             storageaddress="0x15277" sizey="8" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -935,12 +935,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1533B"
-             sizex="4" endian="big">
+             sizex="4" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x15343" sizey="4" endian="big">
+             storageaddress="0x15343" sizey="4" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -962,12 +962,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1533F"
-             sizex="4" endian="big">
+             sizex="4" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x15347" sizey="4" endian="big">
+             storageaddress="0x15347" sizey="4" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -1120,12 +1120,12 @@
       <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.000"
                fineincrement="0.0078125" coarseincrement="0.0625"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13D74"
-             sizex="8" endian="big">
+             sizex="8" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13F95" sizey="8" endian="big">
+             storageaddress="0x13F95" sizey="8" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -1145,7 +1145,7 @@
       <scaling units="ratio" expression="x/128" to_byte="x*128" format="0.000"
                fineincrement="0.0078125" coarseincrement="0.0625"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FAD" sizex="8" endian="big">
+             storageaddress="0x13FAD" sizex="8" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -1603,12 +1603,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152BB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152DB" sizey="16" endian="big">
+             storageaddress="0x152DB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -1642,12 +1642,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152EB" sizey="16" endian="big">
+             storageaddress="0x152EB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -2054,12 +2054,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152EB" sizey="16" endian="big">
+             storageaddress="0x152EB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -2096,12 +2096,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152BB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152DB" sizey="16" endian="big">
+             storageaddress="0x152DB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -2519,12 +2519,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152EB" sizey="16" endian="big">
+             storageaddress="0x152EB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -2561,12 +2561,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152BB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152DB" sizey="16" endian="big">
+             storageaddress="0x152DB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -2984,12 +2984,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152EB" sizey="16" endian="big">
+             storageaddress="0x152EB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -3026,12 +3026,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152BB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152DB" sizey="16" endian="big">
+             storageaddress="0x152DB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -3449,12 +3449,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152CB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152EB" sizey="16" endian="big">
+             storageaddress="0x152EB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>
@@ -3491,12 +3491,12 @@
       <scaling units="degCA" expression="(x-128)*0.5" to_byte="x*2+128" format="0.0"
                fineincrement="0.5" coarseincrement="2.0"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x152BB"
-             sizex="16" endian="big">
+             sizex="16" endian="big" logparam="X_VQ_Engine_Load">
         <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
                  format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x152DB" sizey="16" endian="big">
+             storageaddress="0x152DB" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*50" to_byte="x/50" format="0"/>
       </table>
     </table>

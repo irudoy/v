@@ -15,7 +15,7 @@ not be edited by hand.
 | `defs/JK08A.interp.csv` | Registered interpolation families and resolver census contract |
 | `defs/JK08A.dtc.csv` | Addressed DTC descriptor and attribute controls |
 | `defs/<target>.dtc.csv` | Relocated DTC controls projected by `dtc_projection.py` |
-| `defs/JK08A.overrides.toml` | Editor names, categories, visibility, layout, scaling presentation, and native switches |
+| `defs/JK08A.overrides.toml` | Editor names, categories, visibility, layout, scaling presentation, native switches, and the Logger parameters of lookup operands |
 | `defs/JK08A.diagnostic-bindings.csv` | Reviewed diagnostic context shown in projections |
 | `defs/rom-inheritance.toml` | Exact target-to-canonical source binding and SHA-256 evidence |
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
@@ -162,6 +162,11 @@ reference, including the baseline lookup and downstream target projection.
 - Relocated definitions retain canonical provenance while applying only
   explicit target-address bindings.
 - XML and XDF are rendered from the same in-memory model in one invocation.
+- A RomRaider axis names a Logger parameter in `logparam` only when code
+  establishes its scaling, its scale evidence names exactly one `indexed_by`
+  operand declared under `[logparam.<operand>]`, and its units equal the
+  declared units. The declared IDs are parameters of the CAN dashboard live
+  value feed.
 - Canonical category paths use ` / ` internally. RomRaider XML renders those
   paths with its `//` hierarchy separator, while TunerPro retains flat category
   names.

@@ -294,6 +294,17 @@ research table from editor output without removing its graph or ledger facts.
 Candidate semantic and scaling claims are labeled in generated descriptions;
 functional categories never encode confidence.
 
+RomRaider `Overlay Log` follows a Logger parameter along an axis that names it
+in `logparam`. `[logparam.<operand>]` in the presentation layer declares the
+Logger ID and the axis units for one runtime lookup operand. An axis receives
+the attribute only when code establishes its scaling, its scale evidence names
+exactly that one `indexed_by` operand without an offset, and its units equal the
+declared units. A relocated axis whose scaling confidence falls below `code`,
+an axis with several operands, and an axis without a recorded operand stay
+without live data. A three-dimensional table supports the overlay only when
+both of its axes name a parameter. TunerPro XDF has no counterpart and is
+unchanged by the declaration.
+
 DTC records are checked against the exact stock descriptor and attribute bytes.
 RomRaider receives coordinated native switches; TunerPro receives atomic
 patches for individual records and declared groups. There is no implicit

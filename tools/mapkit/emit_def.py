@@ -21,6 +21,12 @@
 #   scaling below code -> unit suffix " [cand]": the multiplier is not established by code.
 # Categories remain functional and do not partition tables by confidence.
 #
+# RomRaider Overlay Log follows a Logger parameter along an axis that names it in logparam.
+# [logparam.<operand>] in overrides declares the Logger ID and the axis units of one runtime
+# lookup operand. An axis receives the attribute only when its scaling is established by code,
+# its scale evidence names exactly that one indexed_by operand, and its units equal the
+# declared units; every other axis stays without live data.
+#
 # Translate wrapper axes to RomRaider axes as established from finishers; see
 # defs/<rom>.notes.md. A finisher addresses a cell as
 # cell = table + idxY + width*idxX, where idxX is the position on the r5 axis. Therefore,
@@ -78,8 +84,9 @@ else:
     )
     import diagnostic_context
 from tools import rom_sources
+from tools.memgraph import provenance
 
-LEVELS = ("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
+LEVELS =("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
 
 ROMID_FIELDS = definition_targets.ROMID_FIELDS
 CHECKSUM_FIELDS = (
@@ -113,6 +120,9 @@ MASKED_VIEW_FIELDS = (
     "format", "fine", "coarse",
 )
 PRESENTATION_FIELDS = ("default_emit",)
+LOGPARAM_FIELDS = ("id", "units")
+LOGPARAM_OPERAND_RE = re.compile(r"^[0-9a-f]{8}$")
+LOGPARAM_ID_RE = re.compile(r"^\S+$")
 MAP_SWITCHING_FIELDS = ("enabled",)
 ROLLING_LAUNCH_FIELDS = ("enabled",)
 # Axis name derived from its semantics. Several maps can share an axis, so define its name
@@ -221,15 +231,67 @@ def fetch(rom):
     return maps, axes
 
 
+def logparam_bindings(ovr):
+    """Return the declared lookup operands: operand address -> (Logger ID, axis units)."""
+    section = ovr.get("logparam", {})
+    if not isinstance(section, dict):
+        sys.exit("logparam must be a TOML table")
+    bindings = {}
+    for operand, entry in section.items():
+        where = f"[logparam.{operand}]"
+        if not LOGPARAM_OPERAND_RE.match(operand):
+            sys.exit(f"{where}: the operand is not eight lowercase hexadecimal digits")
+        if not isinstance(entry, dict):
+            sys.exit(f"{where} must be a TOML table")
+        unknown = sorted(set(entry) - set(LOGPARAM_FIELDS))
+        if unknown:
+            sys.exit(f"{where} contains unknown fields " + ", ".join(unknown))
+        for field in LOGPARAM_FIELDS:
+            if not isinstance(entry.get(field), str) or not entry[field]:
+                sys.exit(f"{where}: {field} must be a non-empty string")
+        if not LOGPARAM_ID_RE.match(entry["id"]):
+            sys.exit(f"{where}: id must not contain whitespace")
+        bindings[operand] = (entry["id"], entry["units"])
+    return bindings
+
+
+def axis_logparam(x, ovr):
+    """Return the Logger parameter ID that follows an axis, or None.
+
+    The overlay compares a live value with the displayed axis points, so the axis names a
+    parameter only when code establishes its scaling, its evidence names exactly one lookup
+    operand without an offset, the presentation layer declares that operand, and the declared
+    units equal the axis units.
+    """
+    bindings = logparam_bindings(ovr)
+    if not bindings or x.get("scale_conf") != "code":
+        return None
+    try:
+        tokens = provenance.parse_evidence(
+            x.get("scale_evidence") or "", "scale_conf", f'Axis {x["addr"]}'
+        )
+    except provenance.ProvenanceError as error:
+        sys.exit(str(error))
+    operands = [token for token in tokens if token.role == "indexed_by"]
+    if len(operands) != 1 or operands[0].value != operands[0].target_addr:
+        return None
+    logger_id, units = bindings.get(operands[0].target_addr, (None, None))
+    return logger_id if units == x["units"] else None
+
+
 def axis_xml(kind, x, ovr, size_attr, indent=6):
     """Build a ROM-array axis: address, element, and length are facts; name is presentation."""
     o = ovr.get("axis", {}).get(x["addr"], {})
     name = o.get("name") or AXIS_NAMES[x["kind"]]
     pad = " " * indent
-    out = wrap(pad, "<table", [f'type="{kind}"', f'name="{att(name)}"',
-                               f'storagetype="{att(x["storagetype"])}"',
-                               f'storageaddress="{hexa(x["addr"])}"',
-                               f'{size_attr}="{x["len"]}"', 'endian="big"'], ">")
+    attrs = [f'type="{kind}"', f'name="{att(name)}"',
+             f'storagetype="{att(x["storagetype"])}"',
+             f'storageaddress="{hexa(x["addr"])}"',
+             f'{size_attr}="{x["len"]}"', 'endian="big"']
+    logger_id = axis_logparam(x, ovr)
+    if logger_id:
+        attrs.append(f'logparam="{att(logger_id)}"')
+    out = wrap(pad, "<table", attrs, ">")
     out.append(scaling(x["units"], x["scale_expr"], x["to_byte"], x["scale_conf"],
                        o.get("format", "0"), o.get("fine"), o.get("coarse"), indent + 2))
     out.append(f"{pad}</table>")
@@ -1069,6 +1131,7 @@ def emit_target(
         ovr = definition_targets.materialize_overrides(
             target, tomllib.load(f)
         )
+    logparam_bindings(ovr)
 
     if facts_cache is None:
         maps, axes = fetch(source_rom)
