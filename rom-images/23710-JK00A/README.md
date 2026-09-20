@@ -16,10 +16,10 @@ JK00A and JK00C carry the same hardware identifier but use different software
 IDs and are not an exact-code pair. Hardware labeling alone does not establish
 firmware homology.
 
-Application sources:
+ROM strings confirm the local identification; they are tabulated in
+`../README.md#identity-strings`.
 
-- https://www.carsjp.ru/parts/nissan/skyline/blok_upravleniya_dvs
-- https://www.wiweb.ru/vladivostok/parts/auto?mark=nissan&model=skyline&page=2&sort=date_asc
+Application sources are in `../README.md#sources`.
 
 Identity and stock hashes are authoritative in `../roms.csv` and
 `../README.md`.

@@ -19,7 +19,7 @@ the shared manifest, and the machine-readable registry:
 ```text
 rom-images/
   23710-XXXXX/
-    README.md                 # only when the directory has additional evidence
+    README.md                 # source, provenance, and comparison evidence
     <rom-id>-<YYYYMMDD>-stock.bin
     <rom-id>-<YYYYMMDD>-stock.bin.md5
     <other artifacts>
@@ -37,8 +37,9 @@ rom-images/
 
 An MD5 sidecar is named `<binary>.md5` and uses GNU format:
 `<md5> *<filename>`. SHA-256 is the primary identifier and is recorded in
-`roms.csv`; a directory README is present only for additional package,
-provenance, hardware, or comparison evidence.
+`roms.csv`. Every part-number directory carries a README holding the read or
+import record, the labels and listings behind its application, and the
+comparison evidence specific to that image.
 
 Generated JK08A tuning images are not stored under `rom-images`. Concrete tune
 profiles, per-image build recipes, generated ROMs, checksum sidecars, active
@@ -51,7 +52,7 @@ checked with:
 
 ```bash
 uv run python tools/rom_homology.py --check
-uv run python -m unittest patches.tests.test_rom_images_layout -v
+uv run pytest -q tools/tests/test_rom_images_layout.py
 ```
 
 `1ND0A` / `1ND3B` (1.5 MiB, SH7059, JDM) and `JK78C` (1.0 MiB, SH7058,
@@ -91,84 +92,6 @@ Renesas datasheet
 The `23710` prefix is the Nissan/Infiniti part-number prefix for an ECM, according
 to the parts.nissanusa catalog.
 
-`JK03A` is the package under `23710-JK03A/`: the main flash image
-`1JK03A-20260715-stock.bin` and the external **ST95320 SPI EEPROM**
-`ST95320-20260715-nats-sync.bin` (4,096 bytes, NATS
-synchronization/adaptation). The MCU (`SH705822N`), software (`7MFKAVN86`), and
-calibration (`1JK03A00000`) identify themselves through strings in the image.
-A dismantler listing for the exact part number records Hitachi hardware
-`MEC100-190` on a `DBA-V36` registered 2007/2 with the `VQ25-HRTM` engine,
-5AT `RE5R05A`, and FR drive.
-The immobilizer path is analyzed in
-`../patches/immo-off-developer-flag.md`. The directory README records the
-package relationship.
-
-`JK08A` is an owned read from the target V36 Skyline 250GT ECU dated 2026-07-26.
-It was read with PCMFlash 1.2.0, module 18, through Scanmatik-SM2 USB. The ROM
-contains `1JK08A00000`, `7MFKAVN86`, and `SH705822N`. It differs from JK03A at
-121 byte positions within `0x008200..0x0190c9`, while
-`0x000000..0x0081ff` and the entire `0x020000..0x0fffff` range are
-byte-identical. The executable code and Developer Immobilizer flag at `0x8725`
-are an exact match; calibration/configuration data is not identical. The package
-does not contain an EEPROM read or PCMFlash screenshot. The directory README
-records target-specific comparison evidence.
-
-`JK00A` is an owned read dated 2026-08-04. PCMFlash identification and ROM
-strings record calibration `1JK00A00000`, software `7MFKAVN86`, and type
-`SH705822N`; the original filename records Hitachi hardware `MEC100-120 C1`,
-lot `7515`. Public exact-part listings associate it with the automatic JDM PV36
-Skyline 350GT and VQ35HR. Its known executable ranges are byte-identical to the
-VQ25HR JK03A, JK03B, and JK08A images despite the different engine application.
-JK00A differs from those images at 9,125, 9,118, and 9,163 byte positions,
-respectively, all within `0x008200..0x0191ad`. The directory README records
-the original read identity and confidence boundary.
-
-`JK03B` is an owned pre-write read dated 2026-08-04. PCMFlash identification
-and ROM strings record calibration `1JK03B00000`, software `7MFKAVN86`, and
-type `SH705822N`; the original filename records Hitachi hardware
-`MEC100-191 A1`, lot `7911`. Its known executable ranges are byte-identical to
-JK03A and JK08A. JK03B differs from JK03A at 118 byte positions in 44 ranges,
-all within `0x008200..0x014ff1`, and from JK08A at 229 byte positions in 94
-ranges, all within `0x008200..0x0190c9`. Its stock `[0x8080, 0x8100)` line is
-filled with `0xEE`, which rules out an unconditional PCMFlash read transform as
-the cause of the zero line in the later marker-only readback. The directory
-README contains the complete identification and public application evidence.
-
-`JK00C` is an owned pre-write read dated 2026-08-03 from the physical bench ECU
-later used for the controlled map-switching failure reproduction. PCMFlash
-identification and ROM strings record calibration `1JK00C00000`, software
-`8MFKPCN14`, and type `SH705822N`; the original filename records Hitachi
-hardware `MEC100-120 C1`, lot `6Z03`. Public hardware-family evidence associates
-`MEC100-120 C1` with the automatic JDM PV36 Skyline 350GT and VQ35HR, but an
-exact public catalog entry for `23710-JK00C` was not found. JK00C and JK00D
-differ at 466,806 byte positions and are not an exact-code pair. The directory
-README contains the full provenance and confidence boundary.
-
-`JK00D` is an owned read from a physical bench ECU dated 2026-07-26. PCMFlash
-1.2.0 module 18 over Scanmatik-SM2 USB reports `23710-JK00D`, calibration
-`1JK00D00000`, main number `8MFK36N15`, type `SH705822N`, and the Hitachi CAN
-protocol. The same calibration, main number, and type occur as ROM strings at
-`0x8204`, `0x7009`, and `0x50C6`. The package does not contain an external
-EEPROM read; this does not establish that the hardware lacks one. The directory
-README contains the complete local identification.
-
-`1ME3B` is an owned bench read dated 2026-08-25 from a physical ECU whose
-donor is a JDM KY51 Fuga with VQ37VHR. PCMFlash identification and ROM strings
-record calibration `11ME3B00000`, software `9FZ3V5DD1`, and type `SH705927N`;
-the ECU label records Hitachi hardware `MEC108-280 D1`, lot `0705`. The image
-shares the SH7059 class, the 1.5 MiB flash, and the boot and vector blocks
-with the `1ND` pair, differing below `0x008200` at only 14 byte positions, but
-its application is independently laid out and reaches `0x139dc3` against
-`0x12c98f`. It reproduces the four `1ND` SUM16 checksum
-domains at their `1ND` field addresses and relocates the application XOR and
-SUM fields to `0x0096f4` and `0x0096fc`. Its diagnostic descriptor region is
-byte-identical to `1ND0A` across 1,936 bytes at a constant `+0x164`
-relocation and carries the VQ37 group `0x37` sequence without exhaust camshaft
-records. That region holds 334 descriptor records at `0x1bf58` and their
-attribute pointers at `0x1cf00`, from which `../defs/1ME3B.dtc.csv` carries 38
-codes. The directory README contains the complete identification and comparison
-evidence.
-
 `*` Flash sizes (1.0 / 1.5 MiB) and the **SH-2E** core are confirmed by the
 Renesas datasheet. The specific on-board chip model (SH7058 vs SH7059) and CAN
 bus are inferred from flash size and the Hitachi HR CAN ECU family; final
@@ -181,65 +104,70 @@ dump class. Its USDM listing includes
 ### SHA-256 identification
 
 `roms.csv` is the registry, with one row per dump file: path, ROM graph label,
-and SHA-256. It is machine-readable. Stage 4 of the map pipeline resolves the
-image by label and verifies its hash before reading values
-(`../tools/mapkit/rom.py`), so dump identification is a run precondition rather
-than human-only reference data. The label is empty for an image that is not
-  represented in the graph, such as an EEPROM. Derived images are excluded from
-  the stock-source registry; immutable hardware-tested identities are recorded
-  in `../patches/hardware-results.toml`.
+SHA-256, and a one-line read or import record. It is machine-readable. Stage 4
+of the map pipeline resolves the image by label and verifies its hash before
+reading values (`../tools/mapkit/rom.py`), so dump identification is a run
+precondition rather than human-only reference data. The label is empty for an
+image that is not represented in the graph, such as an EEPROM. The note stays a
+single line; the evidence behind it belongs in the directory README. Derived
+images are excluded from the stock-source registry; immutable hardware-tested
+identities are recorded in `../patches/hardware-results.toml`.
+
+### Identity strings
+
+Every image carries two fixed identity blocks. The first begins at `0x006F00`
+with the literal `12345` and the second at `0x007000` with `000000`; each holds
+an eleven-byte software string nine bytes in. The calibration string is at
+`0x008204`, and the MCU type string is at `0x0050C6` for SH7058 and `0x0050D2`
+for SH7059.
+
+| ROM | Calibration `0x008204` | First block `0x006F09` | Second block `0x007009` |
+| --- | --- | --- | --- |
+| 1ME3B | `11ME3B00000` | `9FZ3V5DD1` | empty |
+| 1ND0A | `11ND0A00000` | `8FZ35NEE6` | empty |
+| 1ND3B | `11ND3B00000` | `8FZ35NEE6` | empty |
+| JK00A | `1JK00A00000` | `7MFKAVN86` | empty |
+| JK00C | `1JK00C00000` | `7MFKAVN86` | `8MFKPCN14` |
+| JK00D | `1JK00D00000` | `7MFKAVN86` | `8MFK36N15` |
+| JK03A | `1JK03A00000` | `7MFKAVN86` | empty |
+| JK03B | `1JK03B00000` | `7MFKAVN86` | empty |
+| JK08A | `1JK08A00000` | `7MFKAVN86` | empty |
+| JK78C | `1JK78C00000` | `7MFVH3NM1` | `7MFV68NV` |
+
+PCMFlash reports the second block when the image populates it and the first
+otherwise. Five owned reads record what the tool returned: the identification
+file for 1ME3B and the original read filenames for JK00A, JK00C, JK00D, and
+JK03B. The `7MFKAVN86` string that JK00C and JK00D hold in their first block
+therefore does not identify them and does not place them in the `7MFKAVN86`
+exact-code family; the byte measurements do. JK78C populates both blocks with
+different strings and has no read of its own. The same rule would make
+`7MFV68NV` its reported identifier, but that is an inference from two images,
+so `../defs/rom-identities.toml` keeps its `caseid` unknown.
 
 ### Provenance and confidence
 
-- `1ND0A`: RomRaider thread t=22253 (CKV36, FID `8FZ35NEE6`). Engine and vehicle
-  confidence is high; the part-number-to-CKV36 and FID association is
-  **forum-grade** and should be verified from a dump read.
-- `1ND3B`: RomRaider thread t=22328, "Does anyone have the CKV36 file?
-  (237101ND3B)". High confidence; **forum-grade**.
-- `JK78C`: no RomRaider thread was found. Identification comes from part-number
-  catalogs, where the 23710-JK7xC series denotes a 2008 Infiniti G37 3.7L.
-  **Catalog-grade** (mintt / fs1inc); the replacement list for original
-  23710-JK78B names JK78C.
-- `JK03A`: RomRaider thread t=11098, "Nissan stock ROM list", Break_Neck post
-  p=150228: Skyline V36 VQ25HR 2WD 5AT, 23710-JK03A, software
-  `7MFKAVN86`, 7058 MCU, and "ROM + SPI EEPROM". The part number, software, and
-  calibration (`1JK03A00000`) are confirmed by strings inside the image, giving
-  **high confidence**. A dismantler listing for the exact part number carries
-  the same 2WD 5AT VQ25HR application and adds Hitachi hardware `MEC100-190` at
-  **marketplace-grade** confidence. The `ST95320-20260715-nats-sync.bin` EEPROM
-  dump is from the same post.
-- `JK08A`: an owned physical target ECU from a V36 Skyline 250GT. Local
-  provenance confirms the part number and read method. ROM content confirms the
-  software identifier, calibration, SH7058 class, and flash size, giving
-  **high confidence**. The external EEPROM was not read.
-- `JK00A`: an owned physical ECU read with PCMFlash. The part number,
-  calibration, software ID, MCU class, hardware identifier, and hashes have
-  local provenance. Public exact-part records identify the automatic PV36
-  Skyline 350GT / VQ35HR application at **marketplace-grade** confidence. Its
-  exact-code relationship to JK03A/JK03B/JK08A is established independently by
-  ROM comparison. The external EEPROM was not read.
-- `JK03B`: an owned physical ECU with a pre-write PCMFlash read. The part
-  number, calibration, software ID, MCU class, hardware identifier, and hashes
-  have local provenance. Exact-code homology with JK03A/JK08A and public
-  exact-part/hardware-family records identify the V36 Skyline 250GT / VQ25HR
-  application with **high confidence**. The external EEPROM was not read.
-- `JK00C`: an owned physical ECU with a pre-write PCMFlash read. The part
-  number, calibration, software ID, MCU class, hardware identifier, and hashes
-  have local provenance. The PV36 Skyline 350GT / VQ35HR application is based
-  on public `MEC100-120 C1` hardware-family records rather than an exact
-  `23710-JK00C` catalog record and is therefore **marketplace-grade**. The
-  external EEPROM was not read.
-- `JK00D`: an owned physical bench ECU. PCMFlash reading and identification
-  confirm the part number, software identifier, calibration, SH7058 class,
-  flash size, and CAN protocol, giving **high confidence**. The donor vehicle
-  model and market are unknown; the external EEPROM was not read.
-- `1ME3B`: an owned physical ECU with a bench PCMFlash read. The part number,
-  calibration, software ID, MCU class, hardware identifier, and hashes have
-  local provenance. The donor JDM KY51 Fuga and its VQ37VHR engine are known
-  directly from the vehicle the ECU was removed from, giving **high
-  confidence**. The external EEPROM was not read.
-- The `1ND0A` vs `1ND3B` delta, including model year, trim, and revision, and
-  their exact model years remain unknown.
+Read method, identification records, labels, and the public sources behind each
+application are in the directory README beside the dump. This table carries the
+source kind and the confidence of the vehicle and engine application alone.
+
+| ROM | Source | Application evidence | Confidence |
+| --- | --- | --- | --- |
+| JK08A | owned target ECU read | the vehicle the ECU is installed in | high |
+| JK00A | owned ECU read | public exact-part listings | marketplace-grade |
+| JK00C | owned ECU pre-write read | `MEC100-120 C1` hardware-family records | marketplace-grade |
+| JK00D | owned bench ECU read | none; donor vehicle and market unknown | not established |
+| JK03A | forum package | source post and a dismantler listing for the exact part number | high |
+| JK03B | owned ECU pre-write read | exact-part and hardware-family records | high |
+| 1ME3B | owned bench ECU read | the vehicle the ECU was removed from | high |
+| 1ND0A | forum package | source thread | forum-grade |
+| 1ND3B | forum package | source thread | forum-grade |
+| JK78C | part-number catalogs | `23710-JK7xC` series and the `23710-JK78B` replacement list | catalog-grade |
+
+A grade qualifies the application only. The calibration string, the MCU type
+string, and the flash size are read from the image itself for every entry and
+are independent of the sources above, as is family membership, which rests on
+the byte measurements in `homology.toml` and `homology.csv`. No external EEPROM
+was read for any image.
 
 ### Hitachi hardware identifiers
 

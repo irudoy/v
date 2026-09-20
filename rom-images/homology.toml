@@ -30,7 +30,7 @@ members = ["1ND0A", "1ND3B"]
 canonical = "1ND0A"
 mcu = "SH7059"
 flash_size = 0x180000
-software_ids = []
+software_ids = ["8FZ35NEE6"]
 same_address_inheritance = true
 calibration_region = "0x008200:0x020000"
 exact_ranges = ["0x000000:0x008200", "0x020000:0x180000"]
@@ -62,7 +62,7 @@ members = ["JK78C"]
 canonical = "JK78C"
 mcu = "SH7058"
 flash_size = 0x100000
-software_ids = []
+software_ids = ["7MFVH3NM1", "7MFV68NV"]
 same_address_inheritance = false
 evidence = "No second image in the current collection has exact-code or near-code similarity. The image occupies almost the complete one-MiB flash and uses addresses distinct from the other SH7058 families."
 
