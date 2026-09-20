@@ -204,8 +204,8 @@ the 1ND0A wrapper and always at exact target storage. The registry records 40
 mapped rows and the eighteen unsupported source maps of 1ND. The three
 canonical ignition surfaces among them have no homolog: the target ignition
 coordinator carries only its mode-selected surfaces and no function reproduces
-the gated stock-inert trio path of 1ND0A. The projection declares checksum support and
-no runtime allocation.
+the gated stock-inert trio path of 1ND0A. The projection declares checksum
+support and the runtime allocation of the `1ME3B` address profile.
 
 Three levers reduce the remaining work and are worth measuring first, because
 they hold even when no code relocates. Values below are the 1ME3B measurements.

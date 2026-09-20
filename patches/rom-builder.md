@@ -237,9 +237,12 @@ The 1ND address profile binds eighteen switched families: four DFCO rows, the
 two executed 16x16 ignition surfaces, the four 8x8 state-code ignition
 surfaces, shared cold-idle timing, default and alternate warm-idle
 timing, default and alternate fuel compensation, native fuel-cut caps and
-curves, and the throttle-limiter scalar. Custom CAN telemetry binds 62
-available schema fields. The unavailable knock timing field is encoded from
-cleared reserved RAM and remains identified as unavailable in metadata. 1ND0A
+curves, and the throttle-limiter scalar. Custom CAN telemetry binds 60 of the
+63 schema fields. The unavailable knock timing field and the two intake CVTC
+duty command fields are encoded from cleared reserved RAM and remain
+identified as unavailable in metadata: the target selects ignition surfaces
+directly instead of retaining a signed Q8 state, and it never references the
+ATU-II channel-7 buffer registers that establish the duty command pair. 1ND0A
 and 1ND3B share executable payload bytes but retain separate stock identities,
 stage hashes, and six-field checksum closure.
 

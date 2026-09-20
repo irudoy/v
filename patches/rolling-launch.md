@@ -287,16 +287,18 @@ JK08A source annotations and layouts.
 
 ## Allocation and hooks
 
-| Region or address | Purpose |
-| --- | --- |
-| `0x000D3860..0x000D38E3` | periodic, selector-arbiter, and startup wrappers |
-| `0x000D38E4..0x000D3E9F` | state engine and limiter helpers |
-| `0x000D3EA0..0x000D3F5F` | ignition adapter |
-| `0x000D3F60..0x000D3F7F` | configuration record |
-| `0x000D40C0..0x000D413F` | bounded ignition controller |
-| `0x000D4140..0x000D41DF` | adaptive threshold helper |
-| `0x000D41E0..0x000D427F` | dashboard feedback arbiter |
-| `0xFFFF5D40..0xFFFF5D53` | runtime state |
+Every range names an exclusive end, as `runtime-reservations.md` does.
+
+| Region or address | Size | Purpose |
+| --- | ---: | --- |
+| `0x000D3860..0x000D38E4` | 132 | periodic, selector-arbiter, and startup wrappers |
+| `0x000D38E4..0x000D3EA0` | 1,468 | state engine and limiter helpers |
+| `0x000D3EA0..0x000D3F60` | 192 | ignition adapter |
+| `0x000D3F60..0x000D3F80` | 32 | configuration record |
+| `0x000D40C0..0x000D4140` | 128 | bounded ignition controller |
+| `0x000D4140..0x000D41E0` | 160 | adaptive threshold helper |
+| `0x000D41E0..0x000D4280` | 160 | dashboard feedback arbiter |
+| `0xFFFF5D40..0xFFFF5D54` | 20 | runtime state |
 
 The composition replaces five declared call targets:
 
@@ -374,7 +376,6 @@ The implementation inventory is:
 | `rolling_launch_compose.py` | pure in-memory composition |
 | `apply_rolling_launch.py` | isolated diagnostic application |
 | `build_rom.py` | production composition and checksum closure |
-| `../tools/ghidra/EmulateRollingLaunch.java` | exact p-code execution |
 | `../tools/sh-elf-run/verify_rolling_launch.py` | independent GNU SH gate |
 | `hardware-results.toml` | immutable hardware-result registry |
 
@@ -390,13 +391,13 @@ A candidate is software-valid only when all applicable checks pass:
 4. The independent model covers every gate, phase transition, abort reason,
    corrupt-state recovery, map isolation, rearm boundary, limiter action, and
    ignition boundary.
-5. Ghidra executes the exact bytes across all changed entries, branches, delay
-   slots, call/return paths, and boundary cases.
-6. The GNU SH fixture independently executes the same current payload bytes.
-7. Every final difference is inside the combined component and checksum write
+5. The GNU SH fixture independently executes the same current payload bytes
+   across all changed entries, branches, delay slots, call/return paths, and
+   boundary cases.
+6. Every final difference is inside the combined component and checksum write
    sets.
-8. The generated definition tables agree with the configuration contract.
-9. `build_rom.py --verify-only` accepts the exact candidate input and profile.
+7. The generated definition tables agree with the configuration contract.
+8. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
 Software verification and the recorded JK08A target-vehicle result do not
 authorize another flash. That image qualifies repeated activation, RPM hold,

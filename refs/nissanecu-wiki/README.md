@@ -1,7 +1,7 @@
 # nissanecu-wiki - local NissanECU RE wiki mirror
 
 Complete mirror of fenugrec's community Nissan/Infiniti ECU reverse-engineering
-wiki at `https://nissanecu.miraheze.org`: **30 pages** in the Main namespace plus
+wiki at `https://nissanecu.miraheze.org`: **29 pages** in the Main namespace plus
 `Nissan ECU RE:About`, and **34 images** under `img/`. It is a primary source for
 firmware mechanics, immobilizer and seed-key handling, checksums, protocols, and
 SH705x hardware.

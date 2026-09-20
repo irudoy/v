@@ -350,7 +350,7 @@ Map Switching revisions. See `runtime-reservations.md`.
 | `map_switching_compose.py` | pure in-memory composition |
 | `apply_map_switching.py` | isolated diagnostic application |
 | `build_rom.py` | production composition and checksum closure |
-| `../tools/ghidra/EmulateMapSwitching.java` | exact SH-2E p-code execution |
+| `../tools/ghidra/EmulateMapSwitching*.java` | exact SH-2E p-code execution |
 | `../tools/sh-elf-run/verify_map_switching.py` | independent GNU SH executable gate |
 | `../tools/mapkit/` | RomRaider, XDF, and ledger projections |
 | `hardware-results.toml` | immutable hardware-result registry |

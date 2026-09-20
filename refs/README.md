@@ -104,7 +104,7 @@ whose numeric values can be searched directly in a dump.
 `vendor/` projects vendor documentation into CSV for Stage 5 of the map
 pipeline. Primary sources remain under `ecutek/` and `uprev/`; this directory is
 their machine-readable projection. It contains a name catalog (`catalog.csv`,
-371 entries, 243 factory entries) and anchor facts (`facts.csv`, 135 constants,
+371 entries, 243 factory entries) and anchor facts (`facts.csv`, 138 constants,
 units, mechanics, and vendor-declared gaps). `tools/memgraph/load_vendor.py`
 loads them as `:VendorEntry` and `:VendorFact`. The method, `origin` rule, and
 `concept` annotation are documented in `vendor/README.md`.

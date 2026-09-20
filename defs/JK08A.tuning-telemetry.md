@@ -163,6 +163,8 @@ The dashboard, strict decoder, TRC converter, and MLVLG recorder implement only
 this current schema. Historical schema 1 captures require the historical
 decoder revision and are not accepted as schema 2 input.
 
-The firmware and executable SH-2E gate are complete. Physical validation of
-mailbox-31 START/STOP and the eleven-frame stream remains required before
-schema 2 is used for a normal target-vehicle logging run.
+The firmware and executable SH-2E gate are complete. Three road drives on
+2026-08-26 carried the eleven-frame stream with every transport counter at
+zero across 138,485 records. Physical validation of mailbox-31 START/STOP
+remains required, and those drives carried profile 1 rather than the current
+profile 5.

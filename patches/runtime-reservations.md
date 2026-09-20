@@ -23,8 +23,9 @@ individual layout cannot provide:
 | CAN telemetry | `0xFFFF5E00..0xFFFF5F00` | `0xFFFF5F00..0xFFFF6000` | `0x000D5000..0x000D6000` |
 
 The active RAM total is 336 bytes. The explicit future budgets provide 768
-RAM bytes and 8,688 ROM bytes. Unassigned gaps remain unowned and are not
-silently available to a patch.
+RAM bytes and 8,192 ROM bytes. Unassigned gaps remain unowned and are not
+silently available to a patch. `patches/jk08a_runtime_reservations.py` prints
+all three totals.
 
 CAN telemetry schema 2 uses the complete active 256-byte RAM allocation. Its
 two 88-byte frame banks end at `0xFFFF5ED0`; the remaining active bytes contain

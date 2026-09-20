@@ -102,7 +102,7 @@ Exact JK08A code resolves both scalars. `ROM16[0x9284] = 26806` is K-Value, whil
 `ROM8[0x8A27] = 109` is MAF Factor. `FUN_0003B75C` multiplies both with the combined
 MAF aggregate before dividing by `ROM8[0x88FB] = 3` and engine speed. A second function,
 `FUN_00082604`, reads the same three scalars and again uses MAF Factor separately from K.
-The adjacent literal-pool signature transfers across all six project ROMs: MAF Factor is
+The adjacent literal-pool signature transfers between families: MAF Factor is
 133 in 1ND0A/1ND3B, 131 in JK78C, 109 in JK03A/JK08A, and 132 in JK00D; K stays 26806
 and the V6 event scalar stays 3. The A2L scale gives 0.0109 kg/hr per aggregate count in
 JK08A. The physical units remain subject to hardware validation.
@@ -203,15 +203,19 @@ dilution, EGR, and related coefficients.
 `BFS Multiplier (K-Factor)` has documented default **26806** (`0x68B6`), identical on 2.5 L,
 3.5 L, and 3.7 L engines. This supports an HR-architecture constant and matches both vendors'
 advice not to change it. The value is identified by a homologous scalar-block signature,
-`0000 5E24 A5F0 FFFF [68B6]`, across all six registry images:
+`0000 5E24 A5F0 FFFF [68B6]`, across all ten registry images, once in each:
 
 | ROM | Engine | Address |
 |---|---|---|
+| 1ME3B | VQ37VHR | `0x9170` |
 | 1ND0A | VQ37VHR | `0x9106` |
 | 1ND3B | VQ37VHR | `0x9106` |
 | JK78C | - | `0x8F80` |
 | JK03A | VQ25HR | `0x9284` |
+| JK03B | VQ25HR | `0x9284` |
 | JK08A | VQ25HR | `0x9284` |
+| JK00A | VQ35HR | `0x9284` |
+| JK00C | VQ35HR | `0x930E` |
 | JK00D | VQ35HR | `0x931C` |
 
 The value alone is insufficient. `0x68B6` is the only word-aligned occurrence in four images,

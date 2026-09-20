@@ -187,9 +187,12 @@ The MAF factor `0x008965` holds the value 133 and is read by `0x045634`,
 `0x04570A`, and `0x048298`; the last combines it with the K-value `0x009170`,
 the `0x9F38` reference `0x0094D4`, and the value-3 scalar `0x00885C` exactly as
 the `1ND0A` consumer `0x0C188C` combines its four scalars. The projection
-declares checksum support over the `sh7059_1me3b` layout and no runtime
-allocation. The image has no address profile, and its declared family boundary
-forbids address inheritance from any other image in the collection.
+declares checksum support over the `sh7059_1me3b` layout and the runtime
+allocation the image's own profile in
+`../../patches/rom-address-profiles.toml` audits. That profile carries
+eighteen switched map families, and the declared family boundary forbids
+address inheritance from any other image in the collection, so every address
+in it is independently recovered.
 
 Identity and stock hashes are authoritative in `../roms.csv` and
 `../README.md`; family classification and pairwise measurements are in

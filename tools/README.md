@@ -68,7 +68,6 @@ locations. Narrow tool documents describe usage but do not duplicate versions.
 |---|---|---|
 | Ghidra | 12.1.2 with JDK 21 and ARM native libraries | Homebrew; `$(brew --prefix ghidra)/libexec` |
 | Ghidra project | Local project | `~/tools/ghidra-projects/vq-hr` |
-| GhydraMCP plugin and bridge | 3.0.0-rc.1 for Ghidra 12.1.2 | Ghidra extension plus `~/tools/GhydraMCP` |
 | Memgraph MAGE | 3.11.0 | `memgraph/docker-compose.yml` |
 | Memgraph Lab | Compose image | `memgraph/docker-compose.yml` |
 | `mcp-memgraph` | 0.2.0 | Project-scoped local MCP configuration |
@@ -83,7 +82,8 @@ locations. Narrow tool documents describe usage but do not duplicate versions.
 | `127.0.0.1:7687` | Memgraph Bolt | Empty local authentication; Docker Desktop context |
 | `127.0.0.1:7444` | Memgraph log stream | Compose network to Lab |
 | `127.0.0.1:3100` | Memgraph Lab | Optional local browser UI |
-| `127.0.0.1:8192` and later | GhydraMCP CodeBrowser instances | Optional interactive GUI path |
+| `127.0.0.1:47809` | Dashboard UDP telemetry feed | Local datagrams to a log viewer |
+| `127.0.0.1:8765` | Pin tracer static server | Local browser UI started on demand |
 
 Memgraph must run in the `desktop-linux` Docker context. Starting another copy
 under Lima or Colima can split IPv4 and IPv6 `localhost` traffic between two
@@ -96,10 +96,8 @@ The pipeline does not use a Ghidra GUI. Function decompilation and listings on
 demand come from `ghidra/decompile.sh`, which runs headless Ghidra against the
 local project and caches its output in the machine-local export directory; a
 request for functions that are not cached yet completes in seconds. The
-GhydraMCP bridge only reaches a CodeBrowser window that is already open and is
-not part of the workflow. The project-scoped `mcp-memgraph` server is
-read-only and is suitable for headless queries after tracked loaders build
-the graph.
+project-scoped `mcp-memgraph` server is read-only and is suitable for headless
+queries after tracked loaders build the graph.
 
 ## Data boundaries
 
