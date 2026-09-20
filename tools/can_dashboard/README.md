@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `6.0.0`.
+Current dashboard version: `7.0.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -12,15 +12,19 @@ provides the incompatible schema-2 `tuning` profile with these defaults:
 - classical CAN at `500000 bit/s`;
 - standard ID `0x6F0`;
 - `tuning`, divisor 1;
-- listen-only PCAN state.
+- active/ACK PCAN state.
 
 The fixed dashboard presentation targets the semantic field names in the
 `tuning` profile. Any ROM-specific producer may implement that wire contract;
 producer hooks, RAM addresses, and mailbox ownership stay outside the host
-schema. `--schema` selects another compatible schema file. Listen-only mode
-suppresses CAN transmission and ACK participation. In active/ACK mode the only
-application frames sent by the dashboard are schema-declared START and STOP
-commands initiated by the stream button.
+schema. `--schema` selects another compatible schema file. In active/ACK mode
+the adapter acknowledges bus frames, and the only application frames sent by
+the dashboard are schema-declared START and STOP commands initiated by the
+stream button. The firmware keeps startup streaming disabled by default, so
+START is the normal way to begin a capture. Listen-only mode suppresses CAN
+transmission and ACK participation. The application connects at start, so
+`--listen-only` selects that mode from the first connection; in the window,
+disconnect, clear the visible `Active/ACK` control, and connect again.
 
 The version has one source in `tools/can_dashboard/__init__.py`. It is visible
 in the window title, main heading, Windows portable-package directory,
@@ -56,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v6.0.0-windows.zip
+  --output tmp/vq-can-telemetry-v7.0.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -67,9 +71,8 @@ On the Windows laptop:
 3. Extract the complete ZIP to a writable directory.
 4. Run `install.cmd` once. It creates `.venv` and installs `python-can`.
 5. Run `run-demo.cmd` to verify the UI without CAN hardware.
-6. Run `run-dashboard.cmd` for listen-only vehicle capture.
-7. Use `run-dashboard-active.cmd` when START/STOP control is required or when
-   an isolated ECU needs this adapter to provide CAN ACK.
+6. Run `run-dashboard.cmd`. It opens the adapter in active/ACK mode, which
+   START/STOP control requires and which gives an isolated ECU its CAN ACK.
 
 The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
 1.1 paths to it after `install.cmd`; each result is written beside its source.
@@ -117,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v6.0.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v7.0.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 6.0.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 7.0.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -130,8 +133,9 @@ ZIP and revalidates the archived application before accepting the package.
 
 On the target Mac, install MacCAN `libPCBUSB` 0.13, extract the ZIP, and open
 `VQ CAN Telemetry.app`. No Python installation or shell launcher is needed.
-The main source starts in listen-only mode; clear the visible `Listen-only`
-control when stream control or ACK participation is required. A downloaded
+The main source starts in active/ACK mode. For a listen-only connection,
+disconnect, clear the visible `Active/ACK` control, and connect again, or
+start the application with `open -a "VQ CAN Telemetry" --args --listen-only`. A downloaded
 ad-hoc-signed build is not notarized, so the first launch may require Finder's
 Open action after the archive source and SHA-256 are verified.
 
@@ -162,7 +166,7 @@ Useful modes:
 ```text
 py -3.11 -m tools.can_dashboard.app --demo
 py -3.11 -m tools.can_dashboard.app --replay capture.log
-py -3.11 -m tools.can_dashboard.app --active
+py -3.11 -m tools.can_dashboard.app --listen-only
 py -3.11 -m tools.can_dashboard.app --channel PCAN_USBBUS2
 py -3.11 -m tools.can_dashboard.app --record drive.mlg
 ```
@@ -358,6 +362,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 6.0.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 7.0.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

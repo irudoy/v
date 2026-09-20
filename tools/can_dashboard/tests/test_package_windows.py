@@ -19,7 +19,6 @@ class WindowsPackageTest(unittest.TestCase):
                 expected = {
                     prefix + "install.cmd",
                     prefix + "run-dashboard.cmd",
-                    prefix + "run-dashboard-active.cmd",
                     prefix + "run-demo.cmd",
                     prefix + "convert-trc-to-mlg.cmd",
                     prefix + "VERSION.txt",
@@ -43,10 +42,25 @@ class WindowsPackageTest(unittest.TestCase):
                     requirements.splitlines(),
                     ["python-can[pcan]==4.6.1", "tzdata==2026.3"],
                 )
-                active = archive.read(
-                    prefix + "run-dashboard-active.cmd"
+                launchers = {
+                    name[len(prefix):]
+                    for name in names
+                    if name.endswith(".cmd")
+                }
+                self.assertEqual(
+                    launchers,
+                    {
+                        "install.cmd",
+                        "run-dashboard.cmd",
+                        "run-demo.cmd",
+                        "convert-trc-to-mlg.cmd",
+                    },
+                )
+                dashboard = archive.read(
+                    prefix + "run-dashboard.cmd"
                 ).decode("utf-8")
-                self.assertIn("--active", active)
+                self.assertNotIn("--listen-only", dashboard)
+                self.assertNotIn("--active", dashboard)
                 self.assertEqual(
                     archive.read(prefix + "VERSION.txt").decode("ascii"),
                     __version__ + "\n",

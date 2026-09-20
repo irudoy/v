@@ -530,7 +530,7 @@ class DashboardApp:
 
         self.channel_var = tk.StringVar(value=self.args.channel)
         self.can_id_var = tk.StringVar(value=f"0x{self.args.can_id:03X}")
-        self.listen_only_var = tk.BooleanVar(value=not self.args.active)
+        self.active_var = tk.BooleanVar(value=not self.args.listen_only)
         header.add(
             self._control_entry(header, "Channel", self.channel_var, 15),
             align="right",
@@ -542,8 +542,8 @@ class DashboardApp:
         header.add(
             ttk.Checkbutton(
                 header,
-                text="Listen-only",
-                variable=self.listen_only_var,
+                text="Active/ACK",
+                variable=self.active_var,
             ),
             align="right",
         )
@@ -821,7 +821,7 @@ class DashboardApp:
             channel=channel,
             bitrate=self.args.bitrate,
             can_id=can_id,
-            listen_only=self.listen_only_var.get(),
+            listen_only=not self.active_var.get(),
             reset_channel=self.args.reset_channel,
         )
         self.stop_event = threading.Event()
@@ -861,7 +861,7 @@ class DashboardApp:
             return
         if not self.pcan_active:
             self.control_var.set(
-                "Control error: reconnect with Listen-only disabled"
+                "Control error: reconnect with Active/ACK enabled"
             )
             return
         try:
@@ -1210,7 +1210,11 @@ def build_parser():
     )
     parser.add_argument("--profile", default="tuning")
     parser.add_argument("--tick-divisor", type=int, default=1)
-    parser.add_argument("--active", action="store_true", help="participate in ACK instead of listen-only")
+    parser.add_argument(
+        "--listen-only",
+        action="store_true",
+        help="open PCAN without transmission or ACK participation",
+    )
     parser.add_argument(
         "--reset-channel",
         action=argparse.BooleanOptionalAction,

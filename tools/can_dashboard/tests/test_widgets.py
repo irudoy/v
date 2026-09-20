@@ -109,12 +109,12 @@ class StatusFieldTest(unittest.TestCase):
         self.assertEqual(self.field.text, "Control error: connect PCAN first")
 
     def test_narrow_width_elides_the_displayed_text_only(self):
-        self.variable.set("Control error: reconnect with Listen-only disabled")
+        self.variable.set("Control error: reconnect with Active/ACK enabled")
         self.field.set_available_width(90)
         self.assertTrue(self.field.cget("text").endswith(widgets.ELLIPSIS))
         self.assertEqual(
             self.field.text,
-            "Control error: reconnect with Listen-only disabled",
+            "Control error: reconnect with Active/ACK enabled",
         )
 
     def test_tooltip_reports_the_title_and_the_full_text(self):

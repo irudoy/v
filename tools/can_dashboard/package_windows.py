@@ -74,9 +74,6 @@ if not exist ".venv\Scripts\pythonw.exe" (
 start "{PRODUCT_NAME}" ".venv\Scripts\pythonw.exe" -m tools.can_dashboard.app --channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile tuning --tick-divisor 1
 """
 
-RUN_ACTIVE_CMD = RUN_CMD.replace(
-    "--tick-divisor 1", "--tick-divisor 1 --active"
-)
 RUN_DEMO_CMD = RUN_CMD.replace(
     "--channel PCAN_USBBUS1 --bitrate 500000 --can-id 0x6F0 --profile tuning --tick-divisor 1",
     "--can-id 0x6F0 --profile tuning --tick-divisor 1 --demo",
@@ -136,7 +133,6 @@ def build_package(output, *, force=False):
                 "requirements.txt": requirements,
                 "install.cmd": INSTALL_CMD,
                 "run-dashboard.cmd": RUN_CMD,
-                "run-dashboard-active.cmd": RUN_ACTIVE_CMD,
                 "run-demo.cmd": RUN_DEMO_CMD,
                 "convert-trc-to-mlg.cmd": CONVERT_TRC_CMD,
                 "VERSION.txt": __version__ + "\n",

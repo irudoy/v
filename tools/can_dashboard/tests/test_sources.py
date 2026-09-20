@@ -179,12 +179,42 @@ class PcanSourceTest(unittest.TestCase):
             ["reset", "open", "shutdown", "reset"],
         )
         self.assertEqual(actions[0][1], "PCAN_USBBUS1")
-        self.assertEqual(actions[1][1]["state"], "passive")
+        self.assertEqual(actions[1][1]["state"], "active")
         self.assertEqual(events[0].state, "connected")
         self.assertEqual(
             events[-1],
             sources.SourceStatus("stopped", "PCAN channel closed"),
         )
+
+    def test_listen_only_configuration_opens_the_passive_state(self):
+        states = []
+
+        class FakeBus:
+            def shutdown(self):
+                pass
+
+        def open_bus(**kwargs):
+            states.append(kwargs["state"])
+            return FakeBus()
+
+        fake_can = types.SimpleNamespace(
+            Bus=open_bus,
+            BusState=types.SimpleNamespace(PASSIVE="passive", ACTIVE="active"),
+        )
+        stop_event = threading.Event()
+        stop_event.set()
+        events = []
+
+        with mock.patch.dict(sys.modules, {"can": fake_can}):
+            sources.run_pcan(
+                sources.PcanConfiguration(listen_only=True),
+                stop_event,
+                events.append,
+            )
+
+        self.assertEqual(states, ["passive"])
+        self.assertEqual(events[0].state, "connected")
+        self.assertIn("listen-only", events[0].detail)
 
     def test_reset_releases_channel_after_bus_initialization_failure(self):
         actions = []
@@ -309,6 +339,17 @@ class PcanSourceTest(unittest.TestCase):
         args = app.build_parser().parse_args(["--pcan-driver-check"])
         self.assertTrue(args.pcan_driver_check)
 
+    def test_active_ack_state_is_the_default(self):
+        self.assertFalse(sources.PcanConfiguration().listen_only)
+        self.assertFalse(app.build_parser().parse_args([]).listen_only)
+        self.assertTrue(
+            app.build_parser().parse_args(["--listen-only"]).listen_only
+        )
+        with self.assertRaises(SystemExit), mock.patch.object(
+            app.sys, "stderr"
+        ):
+            app.build_parser().parse_args(["--active"])
+
 
 class DashboardPresentationTest(unittest.TestCase):
     @staticmethod
@@ -417,7 +458,7 @@ class DashboardPresentationTest(unittest.TestCase):
         dashboard.send_stream_command("stop")
 
         self.assertTrue(dashboard.control_requests.empty())
-        self.assertIn("Listen-only disabled", values[-1])
+        self.assertIn("Active/ACK enabled", values[-1])
 
     def test_cvtc_target_labels_match_recovered_roles(self):
         metrics = {

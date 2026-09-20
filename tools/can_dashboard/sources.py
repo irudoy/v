@@ -45,7 +45,7 @@ class PcanConfiguration:
     channel: str = "PCAN_USBBUS1"
     bitrate: int = DEFAULT_BITRATE
     can_id: int = DEFAULT_CAN_ID
-    listen_only: bool = True
+    listen_only: bool = False
     reset_channel: bool = False
 
 
