@@ -89,13 +89,13 @@ rolling_symbol,unsigned_divide,00021ce0,00022318,,,mapped,Exact unsigned divisio
 rolling_symbol,stock_ignition_consumer,0002a892,0002e464,,,mapped,Final ignition command builder calls this consumer
 rolling_symbol,fuel_cut_coordinator,,000760cc,,,target-specific,Complete recovered function aggregates stock conditions before its sole final-mask store
 can_hook,coherent_snapshot_call,00028090,0002fe08,00020cf4,,mapped,Caller literal binds the coherent snapshot boundary
-can_hook,knock_interval_latch,00021a70,0006f17c,0006ea18,,target-specific,Target scheduler literal binds the knock-event function
+can_hook,knock_interval_latch,00021a70,00022184,0006d948,,target-specific,Entry 75 of the periodic task list at 0x22058 is the only literal of the target knock coordinator that consumes and clears the event count
 can_hook,startup_state_clear,00027d28,0002b398,00030810,,mapped,Telemetry clear can chain from the startup literal
 can_hook,hcan1_sle1_vector,000203a0,000203a0,0011b334,,mapped,SLE1 vector stores the complete stock ISR entry
 can_hook,hcan1_primary_init,0002d7fc,00031ce4,0011363c,,mapped,Primary HCAN1 caller literal binds the initializer
 can_hook,hcan1_recovery_init,000c3b10,00114ad8,0011363c,,mapped,Recovery HCAN1 jump literal binds the initializer
 can_symbol,coherent_snapshot,00020dfe,00020cf4,,,mapped,Exact target snapshot function is bound by its caller
-can_symbol,knock_function,000493e8,0006ea18,,,target-specific,Target event path preserves bit tracking and saturating count behavior
+can_symbol,knock_function,000493e8,0006d948,,,target-specific,Target coordinator reads the saturating event count at 0x6dede and 0x6df20 and clears it at 0x6df4a
 can_symbol,knock_count,ffff2142,fffe9136,,,mapped,Target knock event function updates this saturating counter
 can_symbol,knock_mask,ffff2150,fffe9144,,,mapped,Target knock event function sets and clears this channel mask
 can_symbol,hcan1_init,000c338a,0011363c,,,mapped,Primary and recovery callers share this initializer

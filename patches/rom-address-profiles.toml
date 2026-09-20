@@ -558,7 +558,7 @@ fuel_cut_coordinator = 0x000760CC
 
 [profile.1ND0A.can_hooks]
 coherent_snapshot_call = [0x0002FE08, 0x00020CF4, 0x00020CF4, 0x00134280]
-knock_interval_latch = [0x0006F17C, 0x0006EA18, 0x0006EA18, 0x001342B0]
+knock_interval_latch = [0x00022184, 0x0006D948, 0x0006D948, 0x001342B0]
 startup_state_clear = [0x0002B398, 0x00030810, 0x001338A0, 0x001342F0]
 hcan1_sle1_vector = [0x000203A0, 0x0011B334, 0x0011B334, 0x00134800]
 hcan1_primary_init = [0x00031CE4, 0x0011363C, 0x0011363C, 0x00134E10]
@@ -566,7 +566,7 @@ hcan1_recovery_init = [0x00114AD8, 0x0011363C, 0x0011363C, 0x00134E10]
 
 [profile.1ND0A.can_symbols]
 coherent_snapshot = 0x00020CF4
-knock_function = 0x0006EA18
+knock_function = 0x0006D948
 knock_count = 0xFFFE9136
 knock_mask = 0xFFFE9144
 hcan1_init = 0x0011363C
