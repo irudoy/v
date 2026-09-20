@@ -352,7 +352,7 @@ def validate_structure(layout):
         )
         or (
             vq37
-            and layout.rom not in {"JK78C", "1ND0A", "1ND3B"}
+            and layout.rom not in {"JK78C", "1ND0A", "1ND3B", "1ME3B"}
         )
         or layout.variant not in {
             "canonical", "relocated-8mfk", "vq37-fuel-coordinator"

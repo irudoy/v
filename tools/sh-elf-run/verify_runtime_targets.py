@@ -32,10 +32,32 @@ from tools.mapkit import vq37_native_fuel_cut
 MAP_CASES_BY_VARIANT = {
     "dual-cvtc": 139,
     "sh7059-1nd": 196,
+    "sh7059-1me3b": 195,
     "sh7058-jk78": 167,
 }
-# The map harness names the four 1ND state-code ignition bases by placeholders
-# that no canonical address uses.
+# Harness target define and exact PASS marker of every VQ37 map variant.
+VQ37_MAP_HARNESS_BY_VARIANT = {
+    "sh7059-1nd": (
+        "TARGET_1ND",
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=196 selector=17 "
+        "adapters=136 limiter=14 native_fuel=20 feedback=9 "
+        "feedback_invocations=17 entries=14",
+    ),
+    "sh7059-1me3b": (
+        "TARGET_1ME3B",
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=195 selector=18 "
+        "adapters=134 limiter=14 native_fuel=20 feedback=9 "
+        "feedback_invocations=17 entries=14",
+    ),
+    "sh7058-jk78": (
+        "TARGET_JK78",
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=167 selector=17 "
+        "adapters=107 limiter=14 native_fuel=20 feedback=9 "
+        "feedback_invocations=17 entries=13",
+    ),
+}
+# The map harness names the four SH7059 state-code ignition bases by
+# placeholders that no canonical address uses.
 IGNITION_STATE_HARNESS_BASES = {
     "ignition_surface_state_3": 0x0000F610,
     "ignition_surface_state_4": 0x0000F710,
@@ -195,6 +217,7 @@ def _compose_and_lock(target, locks, map_blobs, rolling_blobs, can_blobs):
 
 def _install_stock_stubs(fixture, target):
     """Install only target-specific unchanged stock-call simulator stubs."""
+    profiles = runtime_targets.rom_address_profiles
     map_hooks = {hook.key: hook for hook in target.map_layout.hooks}
     can_hooks = target.telemetry_layout.hook_by_key
     if target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
@@ -203,16 +226,19 @@ def _install_stock_stubs(fixture, target):
             "startup_initializer",
             "overrun_cut_lookup",
             "overrun_restore_lookup",
-            "ignition_lookup_1",
-            "ignition_lookup_2",
-            "ignition_lookup_3",
-            "ignition_lookup_4",
             "fuel_compensation_lookup_startup",
             "fuel_compensation_lookup_runtime",
             "idle_ignition_lookup_pool_1",
             "idle_ignition_lookup_pool_2",
         }
-        if target.map_layout.variant == "sh7059-1nd":
+        map_keys.update(
+            key
+            for key in profiles.MAP_HOOK_KEYS_BY_VARIANT[
+                target.map_layout.variant
+            ]
+            if key.startswith("ignition_lookup_")
+        )
+        if target.map_layout.variant in profiles.IGNITION_STATE_MAP_VARIANTS:
             map_keys.add("ignition_state_lookup")
     else:
         map_keys = {
@@ -383,9 +409,6 @@ def _render_harness(target, name, build_dir):
             target.rom
         ).map_symbol_by_key
         overrides = {
-            0x0000991A: symbols["ignition_gated_surface_1"],
-            0x0000E91A: symbols["ignition_gated_surface_2"],
-            0x0000EA1A: symbols["ignition_gated_surface_3"],
             0x00009040: families[
                 "rev_limit_fuel_cut_caps"
             ].canonical_address,
@@ -398,7 +421,14 @@ def _render_harness(target, name, build_dir):
             0xFFFF23F5: native.state_address,
             0xFFFF2449: native.delay_address,
         }
-        if target.map_layout.variant == "sh7059-1nd":
+        profiles = runtime_targets.rom_address_profiles
+        if target.map_layout.variant in profiles.GATED_IGNITION_MAP_VARIANTS:
+            overrides.update({
+                0x0000991A: symbols["ignition_gated_surface_1"],
+                0x0000E91A: symbols["ignition_gated_surface_2"],
+                0x0000EA1A: symbols["ignition_gated_surface_3"],
+            })
+        if target.map_layout.variant in profiles.IGNITION_STATE_MAP_VARIANTS:
             for key, placeholder in IGNITION_STATE_HARNESS_BASES.items():
                 overrides[placeholder] = families[key].canonical_address
             unknown = IGNITION_STATE_HARNESS_BASES["ignition_surface_state_3"]
@@ -493,22 +523,11 @@ def _run_harnesses(target, fixture, build_dir):
             "entries=13"
         )
         map_defines = ("TARGET_DUAL_CVTC",)
-    elif target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
-        map_marker = (
-            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=196 selector=17 "
-            "adapters=136 limiter=14 native_fuel=20 feedback=9 "
-            "feedback_invocations=17 entries=14"
-            if target.map_layout.variant == "sh7059-1nd"
-            else "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=167 selector=17 "
-            "adapters=107 limiter=14 native_fuel=20 feedback=9 "
-            "feedback_invocations=17 entries=13"
-        )
-        map_defines = (
-            "TARGET_VQ37",
-            "TARGET_1ND"
-            if target.map_layout.variant == "sh7059-1nd"
-            else "TARGET_JK78",
-        )
+    elif target.map_layout.variant in VQ37_MAP_HARNESS_BY_VARIANT:
+        map_define, map_marker = VQ37_MAP_HARNESS_BY_VARIANT[
+            target.map_layout.variant
+        ]
+        map_defines = ("TARGET_VQ37", map_define)
     else:
         raise VerificationError(
             f"{target.rom}: unsupported map harness variant "
@@ -554,7 +573,13 @@ def _run_harnesses(target, fixture, build_dir):
             (invoke,),
             build_dir,
             rolling_marker,
-            defines=("TARGET_VQ37_ROLLING",) if vq37_rolling else (),
+            defines=(
+                ("TARGET_VQ37_ROLLING",) if vq37_rolling else ()
+            ) + (
+                ("TARGET_1ME3B",)
+                if target.map_layout.variant == "sh7059-1me3b"
+                else ()
+            ),
         ))
     can_defines = (
         ("TELEMETRY_TAIL_CHAIN",)

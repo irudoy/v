@@ -4,8 +4,9 @@ Rolling Launch is an optional runtime layered on the complete five-slot
 Map Switching composition. It captures engine speed while CANCEL is held,
 applies a target-specific all-cylinder fuel-cut actuator, and can apply bounded
 retard-only ignition control. The JK00A/JK03A/JK03B/JK08A and JK00C/JK00D
-variants use a temporary map-specific fuel-cut window. JK78C, 1ND0A, and 1ND3B
-use a final-mask coordinator request without modifying the selected VQ37 maps.
+variants use a temporary map-specific fuel-cut window. JK78C, 1ND0A, 1ND3B, and
+1ME3B use a final-mask coordinator request without modifying the selected VQ37
+maps.
 
 The authoritative implementation sources are:
 

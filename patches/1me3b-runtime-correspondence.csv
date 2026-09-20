@@ -1,0 +1,180 @@
+domain,key,source,target,stock,variant,status,evidence
+allocation,injected_rom_start,000d2108,0013b108,,,mapped,Uniform ROM relocation is 0x69000
+allocation,injected_rom_end,000d6000,0013f000,,,mapped,Canonical runtime envelope preserves its 0x3ef8-byte extent
+allocation,injected_ram_start,ffff5d00,ffff0c00,,,mapped,Uniform RAM relocation is -0x5100
+allocation,injected_ram_end,ffff6000,ffff0f00,,,mapped,Runtime uses 0x300 bytes inside the audited 0x400-byte window
+allocation,free_rom_start,,00139dc4,,,target-specific,Erased ROM audit begins at this address
+allocation,free_rom_end,,0013ff00,,,target-specific,Erased ROM audit ends at this exclusive address below the scalar-alias references that begin at 0013ffec
+allocation,free_ram_start,,ffff0c00,,,target-specific,Direct and decompiler-assisted RAM trace found no stock accesses
+allocation,free_ram_end,,ffff1000,,,target-specific,Audited free RAM ends at this exclusive address
+map,over_run_fuel_hold,000126e4,00013ed8,,,mapped,Homologous DFCO coordinator preserves the held-request role
+map,over_run_fuel_cut,00012718,00013f38,,,mapped,Homologous DFCO coordinator preserves the rising-edge role
+map,over_run_fuel_restore,00012818,00014008,,,mapped,Homologous restore coordinator and exact storage agree
+map,over_run_fuel_intermediate_restore,0001298c,00014174,,,mapped,Homologous restore coordinator preserves the upper-table role
+map,over_run_channel_multiplier,000129c0,00014190,,,mapped,Exact-bytes channel accessor pair reads the six unity multipliers at the same call ordinal
+map,high_octane_timing_state,00009a1a,,,,unsupported,Target ignition coordinator 000797cc has no counterpart of the gated 1ND coordinator half and the source surface bytes do not recur in the target image
+map,high_detonation_timing_state,00009b1a,,,,unsupported,Target ignition coordinator 000797cc has no counterpart of the gated 1ND coordinator half and the source surface bytes do not recur in the target image
+map_native,ignition_surface_hot,,0000a344,,,target-specific,Coordinator reads this 16x16 surface for state codes 2 and 8 through the hooked ignition lookup literals and has no source counterpart
+map_native,ignition_surface_cold,,0000a444,,,target-specific,Coordinator reads this 16x16 surface for state code 1 through the hooked ignition lookup literal 00079cac and has no source counterpart
+map_native,ignition_surface_state_3,,0000a544,,,target-specific,Coordinator reads this 8x8 surface for state code 3 through the hooked 8x8 lookup literal and has no source counterpart
+map_native,ignition_surface_state_4,,0000a644,,,target-specific,Coordinator reads this 8x8 surface for state code 4 through the hooked 8x8 lookup literal and has no source counterpart
+map_native,ignition_surface_state_5,,0000a5c4,,,target-specific,Coordinator reads this 8x8 surface for state code 5 through the hooked 8x8 lookup literal and has no source counterpart
+map_native,ignition_surface_state_6_7,,0000a604,,,target-specific,Coordinator reads this 8x8 surface for state codes 6 and 7 through the hooked 8x8 lookup literal and has no source counterpart
+map,cold_idle_ignition_timing,00012196,00013a1e,,,mapped,Idle coordinator preserves the fallback-table role
+map,idle_ignition_timing,0001219e,00013a26,,default,target-specific,Default arm of the target state selector preserves the warm-table role
+map,fuel_compensation_main,0000a29a,0000a0f4,,default,target-specific,Default arm of the target state selector preserves exact geometry and storage
+map_native,idle_ignition_timing_alternate,,00013a2e,,alternate,target-specific,Alternate arm of the target state selector shares the index byte and interpolator of the default table and has no source counterpart
+map_native,fuel_compensation_main_alternate,,0000a1f4,,alternate,target-specific,Alternate compensation channel shares the index byte and both axes and the interpolator of the default surface and has no source counterpart
+map,rev_limit_throttle_cut,0000942c,0000935e,,,mapped,Homologous request limiters preserve the 0x2580 scalar role
+map,rev_limit_fuel_cut,0000934e,,,,unsupported,Target uses interpolated curves and scalar caps instead of the source 2x2 table
+map_native,rev_limit_fuel_cut_caps,,00009266,,activation_release,target-specific,Adjacent uint16 caps limit the activation and release interpolation results
+map_native,rev_limit_fuel_cut_curves,,000172b6,,activation_release,target-specific,Adjacent eight-point uint16 curves share the axis at 00017106 and retain independent activation and release rows
+map_native,rev_limit_fuel_cut_delay_calibration,,00008b40,,zero_delay,target-specific,Exact ROM8 value zero governs the native activation delay state
+map,exhaust_cvtc_target,0000b33a,,,,unsupported,1ME3B declares no P0014 and P0024 descriptor records and the exhaust-cam target surface bytes do not recur in the target image
+map_hook,selector_host_call,000ce8dc,001344c8,001370dc,,mapped,Literal call target identifies the exact selector host
+map_hook,startup_initializer,00027d28,0002e18c,0003357c,,mapped,Literal call target identifies the exact startup initializer
+map_hook,overrun_cut_lookup,0004fdd0,0007bf08,0002aa48,,mapped,Target literal calls the DFCO lookup
+map_hook,overrun_restore_lookup,00050258,0007c3e4,0002aa48,,mapped,Target literal calls the DFCO lookup
+map_hook,ignition_lookup,00026230,00079cac,00029ba8,site_1,target-specific,Coordinator literal reads the hot and cold 16x16 surfaces
+map_hook,ignition_lookup,00026230,00079e24,00029ba8,site_2,target-specific,Coordinator literal reads the hot 16x16 surface
+map_hook,ignition_state_lookup,,00079994,000293d8,,target-specific,Single literal through which the coordinator 000797cc calls the 8x8 lookup for the four state-code surfaces; the second live literal 00079e40 of that lookup serves only the reference surface 0000a584
+map_hook,fuel_compensation_lookup,000261f0,00033ed0,000298b4,startup,target-specific,Startup initializer literal calls the common lookup
+map_hook,fuel_compensation_lookup,000261f0,00048b78,000298b4,runtime,target-specific,Runtime coordinator literal calls the common lookup
+map_hook,idle_ignition_lookup,00026370,000733fc,0002a9f4,pool_1,target-specific,First literal-pool copy of the common idle lookup pointer serves the stock-inert and default branches
+map_hook,idle_ignition_lookup,00026370,00073624,0002a9f4,pool_2,target-specific,Second literal-pool copy of the common idle lookup pointer serves the alternate and fallback branches
+map_hook,rev_fuel_cut_caps_base,,0007b320,00009266,,target-specific,Native state-machine literal selects the adjacent activation and release scalar caps
+map_hook,rev_fuel_cut_activation_curve_base,,0007b32c,000172b6,,target-specific,Native state-machine literal selects the eight-point activation curve
+map_hook,rev_fuel_cut_release_curve_base,,0007b334,000172c6,,target-specific,Native state-machine literal selects the adjacent eight-point release curve
+map_hook,rev_throttle_scalar_base,00077bac,000b31d0,0000935e,,target-specific,Target consumer owns one scalar instead of the source container
+map_hook,cruise_feedback_serializer,000c3fa4,001216e4,00123264,,mapped,Dispatcher literal resolves the exact 0x551 serializer
+map_symbol,selector_function,000d09d8,001370dc,,,mapped,Exact selector entry recovered from its caller
+map_symbol,button_state,ffff2a85,fffe9b8f,,,mapped,Selector reads this button byte and the target keeps the 1ND explicit-mask layout
+map_symbol,diagnostic_state,ffff2a84,fffe9b8e,,,mapped,Selector reads this adjacent diagnostic byte
+map_symbol,ascd_state,ffff41ae,fffeb985,,,target-specific,ASCD functions set and test the enabled flag as bit 3 of this byte; bit 7 of the byte is an unrelated flag of the periodic list walker
+map_symbol,startup_initializer,0002c648,0003357c,,,mapped,Startup function is bound by two stock literals
+map_symbol,dfco_lookup,00026388,0002aa48,,,mapped,Target DFCO hooks share this lookup
+map_symbol,ignition_lookup,00026230,00029ba8,,,mapped,Target ignition hooks share this lookup
+map_symbol,fuel_compensation_lookup,000261f0,000298b4,,,mapped,Both target accessor hooks share this lookup
+map_symbol,idle_ignition_lookup,00026370,0002a9f4,,,mapped,Both target idle literal-pool hooks share this lookup
+map_symbol,feedback_serializer,000c5372,00123264,,,mapped,0x551 dispatcher resolves this serializer
+map_symbol,feedback_status_byte,ffff3ada,fffeb236,,,mapped,Serializer payload offset 0x142 places status at byte 5
+map_symbol,ignition_coordinator_config_byte,,00008a7d,,,target-specific,Stock value 0x1c sets bit 3 and the ignition coordinator 0x797cc selects every surface by the state code alone
+map_symbol,ignition_unreferenced_routine,,000791a4,,,target-specific,Second coordinator copy 000791a4..000797cb has no inbound pointer or branch in the occupied image and keeps its private lookup literals stock
+map_symbol,rev_fuel_cut_state_machine,,0007b1a0,,,target-specific,Exact 190-byte function is the first Boolean predicate aggregated by the final fuel-mask coordinator
+map_symbol,rev_fuel_cut_selector,,fffe80e5,,,target-specific,Native interpolation selector indexes the shared eight-point axis
+map_symbol,rev_fuel_cut_state,,fffe948a,,,target-specific,Bits 0x04 and 0x08 retain the armed and active hysteresis state
+map_symbol,rev_fuel_cut_delay,,fffe94e2,,,target-specific,RAM delay state is governed by the exact zero-valued ROM8 calibration at 00008b40
+rolling_hook,periodic_scheduler_index_0,00021970,000220c8,000fd68c,,mapped,Word 000220c8 of the periodic task list holds the homolog of the 1ND index-0 scheduler task and binds the periodic wrapper
+rolling_hook,selector_arbitration,000ce8dc,001344c8,001370dc,,mapped,Rolling arbitration can chain from the selector literal
+rolling_hook,startup_state_clear,00027d28,0002e18c,0003357c,,mapped,Runtime clear can chain from the startup literal
+rolling_hook,primary_ignition_command,0004e198,00079194,000311b2,,mapped,Target call path consumes the final ignition command
+rolling_hook,feedback_arbitration,000c3fa4,001216e4,00123264,,mapped,Rolling feedback chains from the Map Switching serializer wrapper
+rolling_hook,fuel_cut_coordinator,,00022144,0007a740,,target-specific,Word 31 above the scheduler word points to the sole writer of the final six-cylinder fuel inhibit mask
+rolling_symbol,scheduler_table,00021970,000220c8,,,mapped,Homologous scheduler table preserves task order
+rolling_symbol,scheduler_task,000a9554,000fd68c,,,mapped,Stock task of the hooked word is displaced by the periodic wrapper
+rolling_symbol,rpm,ffff11bc,fffe819e,,,mapped,Direct target consumers use the native RPM word
+rolling_symbol,vehicle_speed,ffff110e,fffe80f8,,,mapped,Homologous DFCO consumers compare this byte against the same raw threshold
+rolling_symbol,pedal,ffff2672,fffe96a0,,,mapped,Pedal activation source is recovered from target consumers
+rolling_symbol,coolant_index,ffff1077,fffe8077,,,mapped,Coolant activation index is recovered from target consumers
+rolling_symbol,button_state,ffff2a85,fffe9b8f,,,mapped,Selector and rolling arbitration share the button byte
+rolling_symbol,ascd_state,ffff41ae,fffeb985,,,target-specific,Selector and rolling arbitration share the ASCD byte and test its bit 3
+rolling_symbol,fuel_inhibit,ffff2497,fffe92b0,,,target-specific,Sole coordinator 0007a740 publishes the final six-cylinder inhibit mask here
+rolling_symbol,apc_mode,ffff24c9,fffe94b6,,,mapped,Primary ignition command builder tests bit 6 of this mode byte at the 1ND instruction positions
+rolling_symbol,apc_output,ffff2022,fffe81c3,,,mapped,APC output is also the telemetry command source
+rolling_symbol,unsigned_divide,00021ce0,00022394,,,mapped,Exact unsigned division helper is recovered from target callers
+rolling_symbol,stock_ignition_consumer,0002a892,000311b2,,,mapped,Final ignition command builder calls this consumer
+rolling_symbol,fuel_cut_coordinator,,0007a740,,,target-specific,Complete recovered function aggregates stock conditions before its sole final-mask store
+can_hook,coherent_snapshot_call,00028090,00032b50,00020d04,,mapped,Caller literal binds the coherent snapshot boundary
+can_hook,knock_interval_latch,00021a70,000221f0,00071d64,,target-specific,Entry 75 of the periodic task list at 0x220c4 points to the target knock coordinator that consumes and clears the event count
+can_hook,knock_margin_latch,0004a9c0,0007308c,00072920,,mapped,Literal 0x7308c is the only reference of the target slice evaluator and the caller instruction words around the call equal the 1ND caller
+can_hook,startup_state_clear,00027d28,0002e18c,0003357c,,mapped,Telemetry clear can chain from the startup literal
+can_hook,hcan1_sle1_vector,000203a0,000203a0,00127910,,mapped,SLE1 vector stores the complete stock ISR entry
+can_hook,hcan1_primary_init,0002d7fc,00034a7c,0011f2ec,,mapped,Primary HCAN1 caller literal binds the initializer
+can_hook,hcan1_recovery_init,000c3b10,001207b8,0011f2ec,,mapped,Recovery HCAN1 jump literal binds the initializer
+can_symbol,coherent_snapshot,00020dfe,00020d04,,,mapped,Exact target snapshot function is bound by its caller
+can_symbol,knock_function,000493e8,00071d64,,,target-specific,Target coordinator clears the saturating event count at 0x720d8
+can_symbol,knock_count,ffff2142,fffe90fe,,,mapped,Target knock event function updates this saturating counter
+can_symbol,knock_mask,ffff2150,fffe910c,,,mapped,Target knock event function sets and clears this channel mask at the 1ND offset from the counter
+can_symbol,knock_selector_config,00008b3d,00008a7c,,,mapped,Target evaluator tests bit 3 of this byte and stock value 0xBA selects the alternate channel byte
+can_symbol,knock_channel_primary,ffff11de,fffe81bc,,,mapped,Target evaluator reads this channel byte while selector bit 3 is clear
+can_symbol,knock_channel_alternate,ffff2143,fffe90ff,,,mapped,Target evaluator reads this channel byte while selector bit 3 is set
+can_symbol,knock_metric_base,ffff21d8,fffe9194,,,mapped,Target evaluator stores the offset-binary metric of channel n at base plus 4 * (n - 1)
+can_symbol,knock_threshold_base,ffff2144,fffe9100,,,mapped,Target threshold lookup stores the threshold of channel n at base plus 2 * (n - 1)
+can_symbol,hcan1_init,000c338a,0011f2ec,,,mapped,Primary and recovery callers share this initializer
+can_symbol,stock_sle1_isr,000c7914,00127910,,,mapped,Vector target supplies the complete ISR tail-chain entry
+can_symbol,feedback_config_record,00009766,0000984c,a308aa20,,target-specific,Type A3 record selects the 0x551 serializer
+can_symbol,feedback_dispatch_literal,000c3fa4,001216e4,00123264,,mapped,Dispatcher literal points to the exact serializer
+can_symbol,feedback_payload_base,ffff3ab5,fffeb0ef,,,target-specific,Target serializer uses payload offset 0x142
+can_symbol,feedback_payload_start,,fffeb231,,,target-specific,Target serializer writes eight bytes at base plus 0x142
+can_symbol,feedback_status_byte,ffff3ada,fffeb236,,,mapped,Target serializer status is payload byte 5
+can_symbol,mailbox_record_address,000097be,00009830,05000000,,mapped,Physical mailbox 26 is stock inactive
+can_symbol,occupied_mailbox_record_address,000097c6,00009838,04000000,,mapped,Adjacent physical mailbox 28 remains stock occupied
+can_symbol,mailbox_index,,0000001a,,,mapped,Target uses physical mailbox 26
+can_symbol,mailbox_data,ffffdc48,ffffdc48,,,mapped,HCAN1 mailbox 26 data address is unchanged
+can_symbol,mailbox_mask,00000400,00000400,,,mapped,HCAN1 mailbox 26 pending mask is unchanged
+telemetry,rpm_raw,ffff11f4,fffe81d6,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,final_timing_raw,ffff11d4,fffe81b4,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,apc_command_raw,ffff2022,fffe81c3,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,fuel_inhibit_mask,ffff22e0,fffe92b0,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,maf_b1_raw,ffff101c,fffe8024,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,maf_b2_raw,ffff101e,fffe8026,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,maf_total_raw,ffff3852,fffeae4e,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,front_oxygen_sensor_b1_raw,ffff22c4,fffe81e4,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,bfs_raw,ffff1026,fffe802e,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,front_oxygen_sensor_b2_raw,ffff22c5,fffe81e5,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,injection_0_raw,ffff23c8,fffe93a6,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,injection_1_raw,ffff23ca,fffe93a8,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,injection_2_raw,ffff23cc,fffe93aa,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
+telemetry,injection_3_raw,ffff23ce,fffe93ac,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
+telemetry,injection_4_raw,ffff23d0,fffe93ae,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
+telemetry,injection_5_raw,ffff23d2,fffe93b0,,,mapped,Contiguous six-word channel array continues the diagnostic-bound words 0 and 1 with the two-byte stride of the 1ND array
+telemetry,knock_timing_state_raw,ffff121a,,,,unsupported,The target selects ignition surfaces by state code and does not retain the separate signed Q8 state
+telemetry,knock_surface_state,ffff2466,,,,unsupported,The target packs the surface flag into bit 7 of fffe945b while the wire contract decodes bit 6 and the target ignition coordinator does not read the flag
+telemetry,app1_raw,ffff269e,fffe96ce,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,app2_raw,ffff26a2,fffe96d2,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,tps_b1_raw,ffff2756,fffe97e2,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,absolute_throttle_raw,ffff1075,fffe8085,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,tps_b2_raw,ffff285c,fffe994a,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,intake_cvtc_actual_b1_raw,ffff2442,fffe942d,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,intake_cvtc_actual_b2_raw,ffff2443,fffe942e,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,intake_cvtc_target_raw,ffff2326,fffe92f4,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,exhaust_cvtc_target_raw,ffff2327,fffe9436,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,calculated_load_raw,ffff413e,fffeb8f8,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,throttle_request_bounded_raw,ffff19c6,fffe941e,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,engine_torque_state_raw,ffff18cc,fffe88b6,,,mapped,Three accessor functions 000975b4 00097ae8 00097bd2 repeat the five 1ND access sites including the writer in the return delay slot
+telemetry,injection_end_angle_raw,ffff192e,fffe8946,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,fffe942f,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,throttle_target_shared_raw,ffff19b2,fffeaa58,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,throttle_target_channel_0_raw,ffff28bc,fffeb80c,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,throttle_target_channel_1_raw,ffff28be,fffeb80e,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,exhaust_cvtc_actual_b2_raw,ffff2325,fffe9430,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,coolant_raw,ffff1079,fffe8079,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,iat_raw,ffff2837,fffe9928,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,fuel_temperature_did_source_raw,ffff1074,fffe8075,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,oil_temperature_did_source_raw,ffff2876,fffe8161,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,af_state_factor_raw,ffff22e8,fffe92e2,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,stft_b1_raw,ffff22dc,fffe92ac,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,stft_b2_raw,ffff22de,fffe92ae,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe942b,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,intake_cvtc_duty_b2_raw,ffff2441,fffe942c,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,ltft_b1_raw,ffff2302,fffe92cc,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,ltft_b2_raw,ffff2304,fffe92ce,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,timing_state_2023_raw,ffff2023,fffe8fce,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,timing_state_564c_raw,ffff564c,fffed0e8,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,,,,unsupported,No intake solenoid duty command cell is established for the target
+telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,,,,unsupported,The adjacent command cell follows the same unestablished pair
+telemetry,ltft_learned_b1_raw,ffff2306,fffe92d0,,,mapped,Initializer 00086ed8 stores the 0x6400 neutral value at offset 8 of the trim block whose offsets 4 and 6 are the diagnostic long-term trim words
+telemetry,ltft_adjustment_b1_raw,ffff5648,fffed0e4,,,mapped,Matched 1ND consumer functions reference this cell at the same instruction ordinals
+telemetry,exhaust_cvtc_duty_b1_word_raw,ffff1aac,fffe8aa4,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,exhaust_cvtc_duty_b2_word_raw,ffff1aae,fffe8aa6,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,atmospheric_pressure_raw,ffff4544,fffebdcc,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,battery_voltage_raw,ffff1188,fffe8164,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,front_af_sensor_b1_word_raw,ffff2780,fffe9810,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,front_af_sensor_b2_word_raw,ffff2782,fffe9812,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,af_adjustment_b1_raw,ffff45a0,fffebdfa,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,secondary_tps_b1_raw,ffff275e,fffe97ea,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,secondary_tps_b2_raw,ffff2864,fffe9952,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+telemetry,af_adjustment_b2_raw,ffff45a2,fffebdfc,,,mapped,Aligned diagnostic pointer tables of 1ND0A and 1ME3B hold this cell at every index of the 1ND source
+capability,map_switching,,,,,target-specific,Requires four DFCO families two fuel compensation surfaces two warm-idle timing tables two ignition hooks one state-code ignition hook native fuel-cut caps and curves and a throttle-scalar commit
+capability,rolling_launch,,,,,target-specific,Dedicated state requests all-cylinder cut after the stock final-mask coordinator without modifying VQ37 map storage
+capability,can_telemetry,,,,,target-specific,Mailbox 26 tail-chain type A3 feedback record and four unavailable fields require explicit variants

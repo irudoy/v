@@ -697,6 +697,252 @@ telemetry = "Sixty ECU sources are bound by aligned diagnostic tables and review
 [profile.1ND3B]
 inherits = "1ND0A"
 
+[profile.1ME3B]
+family = "sh7059_1me3b"
+layout_source = "JK08A"
+rom_size = 0x180000
+rom_delta = 0x69000
+ram_delta = -20736
+free_rom_start = 0x139DC4
+free_rom_end = 0x13FF00
+injected_rom_start = 0x13B108
+injected_rom_end = 0x13F000
+free_ram_start = 0xFFFF0C00
+free_ram_end = 0xFFFF1000
+injected_ram_start = 0xFFFF0C00
+injected_ram_end = 0xFFFF0F00
+map_variant = "sh7059-1me3b"
+telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_unavailable = [
+    "knock_timing_state_raw",
+    "knock_surface_state",
+    "intake_cvtc_duty_command_b1_raw",
+    "intake_cvtc_duty_command_b2_raw",
+]
+telemetry_zero_source = 0xFFFF0DE0
+ascd_enabled_mask = 0x08
+
+[profile.1ME3B.capabilities]
+map_switching = true
+rolling_launch = true
+can_telemetry = true
+
+[profile.1ME3B.map_families]
+over_run_fuel_hold = 0x00013ED8
+over_run_fuel_cut = 0x00013F38
+over_run_fuel_restore = 0x00014008
+over_run_fuel_intermediate_restore = 0x00014174
+ignition_surface_hot = 0x0000A344
+ignition_surface_cold = 0x0000A444
+ignition_surface_state_3 = 0x0000A544
+ignition_surface_state_4 = 0x0000A644
+ignition_surface_state_5 = 0x0000A5C4
+ignition_surface_state_6_7 = 0x0000A604
+cold_idle_ignition_timing = 0x00013A1E
+idle_ignition_timing_default = 0x00013A26
+idle_ignition_timing_alternate = 0x00013A2E
+fuel_compensation_main_default = 0x0000A0F4
+fuel_compensation_main_alternate = 0x0000A1F4
+rev_limit_fuel_cut_caps = 0x00009266
+rev_limit_fuel_cut_curves = 0x000172B6
+rev_limit_throttle_cut = 0x0000935E
+
+[profile.1ME3B.map_hooks]
+selector_host_call = [0x001344C8, 0x001370DC, 0x0013B108]
+startup_initializer = [0x0002E18C, 0x0003357C, 0x0013B2A0]
+overrun_cut_lookup = [0x0007BF08, 0x0002AA48, 0x0013B480]
+overrun_restore_lookup = [0x0007C3E4, 0x0002AA48, 0x0013B480]
+ignition_lookup_1 = [0x00079CAC, 0x00029BA8, 0x0013B340]
+ignition_lookup_2 = [0x00079E24, 0x00029BA8, 0x0013B340]
+ignition_state_lookup = [0x00079994, 0x000293D8, 0x0013E080]
+fuel_compensation_lookup_startup = [0x00033ED0, 0x000298B4, 0x0013B380]
+fuel_compensation_lookup_runtime = [0x00048B78, 0x000298B4, 0x0013B380]
+idle_ignition_lookup_pool_1 = [0x000733FC, 0x0002A9F4, 0x0013D000]
+idle_ignition_lookup_pool_2 = [0x00073624, 0x0002A9F4, 0x0013B3C0]
+rev_fuel_cut_caps_base = [0x0007B320, 0x00009266, 0xFFFF0C10]
+rev_fuel_cut_activation_curve_base = [0x0007B32C, 0x000172B6, 0xFFFF0C14]
+rev_fuel_cut_release_curve_base = [0x0007B334, 0x000172C6, 0xFFFF0C24]
+rev_throttle_scalar_base = [0x000B31D0, 0x0000935E, 0xFFFF0C38]
+cruise_feedback_serializer = [0x001216E4, 0x00123264, 0x0013C5E0]
+
+[profile.1ME3B.map_symbols]
+selector_function = 0x001370DC
+button_state = 0xFFFE9B8F
+diagnostic_state = 0xFFFE9B8E
+ascd_state = 0xFFFEB985
+startup_initializer = 0x0003357C
+dfco_lookup = 0x0002AA48
+ignition_lookup = 0x00029BA8
+fuel_compensation_lookup = 0x000298B4
+idle_ignition_lookup = 0x0002A9F4
+feedback_serializer = 0x00123264
+feedback_status_byte = 0xFFFEB236
+ignition_coordinator_config_byte = 0x00008A7D
+
+[profile.1ME3B.rolling_hooks]
+periodic_scheduler_index_0 = [0x000220C8, 0x000FD68C, 0x000FD68C, 0x0013C860]
+selector_arbitration = [0x001344C8, 0x001370DC, 0x0013B108, 0x0013C880]
+startup_state_clear = [0x0002E18C, 0x0003357C, 0x0013B2A0, 0x0013C8A0]
+primary_ignition_command = [0x00079194, 0x000311B2, 0x000311B2, 0x0013CEA0]
+feedback_arbitration = [0x001216E4, 0x00123264, 0x0013C5E0, 0x0013D1E0]
+fuel_cut_coordinator = [0x00022144, 0x0007A740, 0x0007A740, 0x0013E000]
+
+[profile.1ME3B.rolling_diagnostics]
+phase_abort_reason = [0x1211, 0x00022D28, 0xFFFF0C40, 2]
+flags = [0x1212, 0x00022D2C, 0xFFFF0C42, 2]
+map_mode_snapshot = [0x1213, 0x00022D30, 0xFFFF0C44, 2]
+run_ticks = [0x1216, 0x00022D3C, 0xFFFF0C46, 2]
+rearm_ticks = [0x1217, 0x00022D40, 0xFFFF0C48, 2]
+captured_rpm_native = [0x1224, 0x00022D74, 0xFFFF0C4A, 2]
+cut_rpm_native = [0x1227, 0x00022D80, 0xFFFF0C4C, 2]
+restore_rpm_native = [0x1228, 0x00022D84, 0xFFFF0C4E, 2]
+stock_effective_ignition_command = [0x1229, 0x00022D88, 0xFFFF0C50, 2]
+
+[profile.1ME3B.rolling_symbols]
+scheduler_table = 0x000220C8
+scheduler_task = 0x000FD68C
+rpm = 0xFFFE819E
+vehicle_speed = 0xFFFE80F8
+pedal = 0xFFFE96A0
+coolant_index = 0xFFFE8077
+button_state = 0xFFFE9B8F
+ascd_state = 0xFFFEB985
+fuel_inhibit = 0xFFFE92B0
+apc_mode = 0xFFFE94B6
+apc_output = 0xFFFE81C3
+unsigned_divide = 0x00022394
+stock_ignition_consumer = 0x000311B2
+fuel_cut_coordinator = 0x0007A740
+
+[profile.1ME3B.can_hooks]
+coherent_snapshot_call = [0x00032B50, 0x00020D04, 0x00020D04, 0x0013D280]
+knock_interval_latch = [0x000221F0, 0x00071D64, 0x00071D64, 0x0013D2B0]
+knock_margin_latch = [0x0007308C, 0x00072920, 0x00072920, 0x0013D600]
+startup_state_clear = [0x0002E18C, 0x0003357C, 0x0013C8A0, 0x0013D2F0]
+hcan1_sle1_vector = [0x000203A0, 0x00127910, 0x00127910, 0x0013D800]
+hcan1_primary_init = [0x00034A7C, 0x0011F2EC, 0x0011F2EC, 0x0013DE10]
+hcan1_recovery_init = [0x001207B8, 0x0011F2EC, 0x0011F2EC, 0x0013DE10]
+
+[profile.1ME3B.can_symbols]
+coherent_snapshot = 0x00020D04
+knock_function = 0x00071D64
+knock_count = 0xFFFE90FE
+knock_mask = 0xFFFE910C
+knock_selector_config = 0x00008A7C
+knock_channel_primary = 0xFFFE81BC
+knock_channel_alternate = 0xFFFE90FF
+knock_metric_base = 0xFFFE9194
+knock_threshold_base = 0xFFFE9100
+hcan1_init = 0x0011F2EC
+stock_sle1_isr = 0x00127910
+feedback_config_record_address = 0x0000984C
+feedback_config_record_value = 0xA308AA20
+feedback_dispatch_literal = 0x001216E4
+feedback_payload_base_literal = 0x00123478
+feedback_payload_base = 0xFFFEB0EF
+feedback_payload_offset = 0x142
+feedback_status_byte = 0xFFFEB236
+mailbox_record_address = 0x00009830
+mailbox_record_stock = 0x05000000
+occupied_mailbox_record_address = 0x00009838
+occupied_mailbox_record_stock = 0x04000000
+mailbox_index = 26
+mailbox_data = 0xFFFFDC48
+mailbox_mask = 0x0400
+
+[profile.1ME3B.telemetry_sources]
+rpm_raw = 0xFFFE81D6
+final_timing_raw = 0xFFFE81B4
+apc_command_raw = 0xFFFE81C3
+fuel_inhibit_mask = 0xFFFE92B0
+maf_b1_raw = 0xFFFE8024
+maf_b2_raw = 0xFFFE8026
+maf_total_raw = 0xFFFEAE4E
+front_oxygen_sensor_b1_raw = 0xFFFE81E4
+bfs_raw = 0xFFFE802E
+front_oxygen_sensor_b2_raw = 0xFFFE81E5
+injection_0_raw = 0xFFFE93A6
+injection_1_raw = 0xFFFE93A8
+injection_2_raw = 0xFFFE93AA
+injection_3_raw = 0xFFFE93AC
+injection_4_raw = 0xFFFE93AE
+injection_5_raw = 0xFFFE93B0
+app1_raw = 0xFFFE96CE
+app2_raw = 0xFFFE96D2
+tps_b1_raw = 0xFFFE97E2
+absolute_throttle_raw = 0xFFFE8085
+tps_b2_raw = 0xFFFE994A
+intake_cvtc_actual_b1_raw = 0xFFFE942D
+intake_cvtc_actual_b2_raw = 0xFFFE942E
+intake_cvtc_target_raw = 0xFFFE92F4
+exhaust_cvtc_target_raw = 0xFFFE9436
+calculated_load_raw = 0xFFFEB8F8
+throttle_request_bounded_raw = 0xFFFE941E
+engine_torque_state_raw = 0xFFFE88B6
+injection_end_angle_raw = 0xFFFE8946
+exhaust_cvtc_actual_b1_raw = 0xFFFE942F
+throttle_target_shared_raw = 0xFFFEAA58
+throttle_target_channel_0_raw = 0xFFFEB80C
+throttle_target_channel_1_raw = 0xFFFEB80E
+exhaust_cvtc_actual_b2_raw = 0xFFFE9430
+coolant_raw = 0xFFFE8079
+iat_raw = 0xFFFE9928
+fuel_temperature_did_source_raw = 0xFFFE8075
+oil_temperature_did_source_raw = 0xFFFE8161
+af_state_factor_raw = 0xFFFE92E2
+stft_b1_raw = 0xFFFE92AC
+stft_b2_raw = 0xFFFE92AE
+intake_cvtc_duty_b1_raw = 0xFFFE942B
+intake_cvtc_duty_b2_raw = 0xFFFE942C
+ltft_b1_raw = 0xFFFE92CC
+ltft_b2_raw = 0xFFFE92CE
+timing_state_2023_raw = 0xFFFE8FCE
+timing_state_564c_raw = 0xFFFED0E8
+ltft_learned_b1_raw = 0xFFFE92D0
+ltft_adjustment_b1_raw = 0xFFFED0E4
+exhaust_cvtc_duty_b1_word_raw = 0xFFFE8AA4
+exhaust_cvtc_duty_b2_word_raw = 0xFFFE8AA6
+atmospheric_pressure_raw = 0xFFFEBDCC
+battery_voltage_raw = 0xFFFE8164
+front_af_sensor_b1_word_raw = 0xFFFE9810
+front_af_sensor_b2_word_raw = 0xFFFE9812
+af_adjustment_b1_raw = 0xFFFEBDFA
+secondary_tps_b1_raw = 0xFFFE97EA
+secondary_tps_b2_raw = 0xFFFE9952
+af_adjustment_b2_raw = 0xFFFEBDFC
+
+[profile.1ME3B.ignition_state_storage]
+adapter_start = 0x0013E080
+adapter_end = 0x0013E100
+
+[profile.1ME3B.ignition_state_storage.ignition_surface_state_3]
+pointer_table = 0x0013E100
+copies = [0x0013E180, 0x0013E1C0, 0x0013E200, 0x0013E240]
+
+[profile.1ME3B.ignition_state_storage.ignition_surface_state_4]
+pointer_table = 0x0013E114
+copies = [0x0013E280, 0x0013E2C0, 0x0013E300, 0x0013E340]
+
+[profile.1ME3B.ignition_state_storage.ignition_surface_state_5]
+pointer_table = 0x0013E128
+copies = [0x0013E380, 0x0013E3C0, 0x0013E400, 0x0013E440]
+
+[profile.1ME3B.ignition_state_storage.ignition_surface_state_6_7]
+pointer_table = 0x0013E13C
+copies = [0x0013E480, 0x0013E4C0, 0x0013E500, 0x0013E540]
+
+[profile.1ME3B.ignition_unreferenced_routine]
+start = 0x000791A4
+end = 0x000797CC
+
+[profile.1ME3B.evidence]
+free_rom = "AuditFreeRegion PASS for 0x00139dc4..0x0013feff: erased region with no recovered stock ownership; scalar-alias references begin at 0x0013ffec, above the declared end. Runtime uses the bounded 0x0013b108..0x0013efff envelope."
+free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ME3B executable census: no stock access reaches the allocation."
+maps = "Reviewed 1ND correspondence of the interpolation leaves, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ME3B bank structure bind eighteen supported families. Stock ROM8[0x8A7D] bit 3 makes the ignition coordinator FUN_000797CC dispatch by the VVEL state code alone: the two 16x16 ignition families and the four 8x8 state-code families are every surface it reads besides the 8x8 reference surface 0x0000A584, which stays stock behind its own literal 0x00079E40. The literal 0x00079994 is the only pointer through which FUN_000797CC calls the 8x8 lookup 0x000293D8 for the four state-code surfaces. The routine at 0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer or branch; its private literals stay stock. The ASCD-enabled flag is bit 3 of 0xFFFEB985 by the 1ME3B packing of the flag byte."
+rolling = "The scheduler task behind periodic task-list word 0x000220C8, the sole final-mask coordinator 31 words above it, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
+can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
+telemetry = "Fifty-nine ECU sources are bound by aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state, the two intake solenoid duty command cells, and the knock surface state, whose flag occupies a bit outside the wire contract, are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."
+
 [profile.JK78C]
 family = "sh7058_jk78c"
 layout_source = "JK08A"

@@ -142,9 +142,11 @@ boundary.
 
 ## VQ37 projected variant
 
-JK78C uses fourteen target-specific families; 1ND0A and 1ND3B use eighteen,
-adding the four 8x8 state-code ignition surfaces that their coordinator reads
-through a lookup and an adapter of their own. The VQ37
+JK78C uses fourteen target-specific families; 1ND0A, 1ND3B, and 1ME3B use
+eighteen, adding the four 8x8 state-code ignition surfaces that their
+coordinator reads through a lookup and an adapter of their own. The selector
+aborts on the ASCD-enabled flag through the profile mask `ascd_enabled_mask`:
+bit 7 of the status byte in JK78C and 1ND, bit 3 in 1ME3B. The VQ37
 layout retains the four DFCO rows and two ignition surfaces, provides a default
 and an alternate family for both warm-idle timing and fuel compensation, and
 replaces the canonical 2x2 fuel-cut table with two uint16 caps plus independent

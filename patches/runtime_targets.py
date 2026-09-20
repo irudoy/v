@@ -45,12 +45,16 @@ DEFAULT_PAYLOADS = Path(__file__).with_name("runtime-target-payloads.toml")
 EXACT_FAMILY = "sh7058_7mfkavn86"
 RELOCATED_8MFK_FAMILY = "sh7058_8mfk"
 SH7059_1ND_FAMILY = "sh7059_1nd"
+SH7059_1ME3B_FAMILY = "sh7059_1me3b"
 SH7058_JK78C_FAMILY = "sh7058_jk78c"
 EXACT_ROMS = ("JK00A", "JK03A", "JK03B", "JK08A")
 RELOCATED_8MFK_ROMS = ("JK00C", "JK00D")
 SH7059_1ND_ROMS = ("1ND0A", "1ND3B")
+SH7059_1ME3B_ROMS = ("1ME3B",)
 SH7058_JK78C_ROMS = ("JK78C",)
-VQ37_RUNTIME_ROMS = SH7059_1ND_ROMS + SH7058_JK78C_ROMS
+VQ37_RUNTIME_ROMS = (
+    SH7059_1ND_ROMS + SH7059_1ME3B_ROMS + SH7058_JK78C_ROMS
+)
 VQ37_MAP_VARIANTS = rom_address_profiles.VQ37_MAP_VARIANTS
 RELOCATED_ROMS = RELOCATED_8MFK_ROMS + VQ37_RUNTIME_ROMS
 SUPPORTED_ROMS = EXACT_ROMS + RELOCATED_ROMS
@@ -63,10 +67,10 @@ NUMBER_RE = re.compile(r"(?<![A-Za-z0-9_])0x[0-9A-Fa-f]+")
 # storage for the target exhaust-cam family.
 INTAKE_CVTC_TARGET_NAME = "Intake CVTC Target - Main"
 
-# The 1ND layout switches the four 8x8 state-code ignition surfaces through an
-# adapter of their own. The template names the 1ND0A stock lookup, each table
-# base, and the canonical coordinate of each pointer table; the projection
-# binds all of them from the address profile.
+# The SH7059 VQ37 layouts switch the four 8x8 state-code ignition surfaces
+# through an adapter of their own. The template names the 1ND0A stock lookup,
+# each table base, and the canonical coordinate of each pointer table; the
+# projection binds all of them from the address profile.
 IGNITION_STATE_ADAPTER_SOURCE = "map-switching-ignition-state-adapter.s"
 IGNITION_STATE_TEMPLATE_LOOKUP = 0x000285B4
 IGNITION_STATE_TEMPLATE = {
@@ -406,9 +410,12 @@ def _address_mapping(profile):
         if profile.map_variant == "dual-cvtc"
         else VQ37_MAP_HOOK_KEYS
     )
+    variant_hook_keys = rom_address_profiles.MAP_HOOK_KEYS_BY_VARIANT[
+        profile.map_variant
+    ]
     for hook in canonical_map.hooks:
         target_key = hook_keys.get(hook.key)
-        if target_key is None:
+        if target_key is None or target_key not in variant_hook_keys:
             continue
         target = map_hooks[target_key]
         _add_mapping(mapping, hook.address, target.address, profile.rom)
@@ -553,6 +560,31 @@ def _replace_source_once(source, old, new, context):
     return source.replace(old, new)
 
 
+def _ascd_mask_source(source, profile, canonical, template, context):
+    """Bind the ASCD-enabled bit test to the target flag layout."""
+    if profile.ascd_enabled_mask == (
+        rom_address_profiles.DEFAULT_ASCD_ENABLED_MASK
+    ):
+        return source
+    return _replace_source_once(
+        source,
+        canonical,
+        template.format(mask=profile.ascd_enabled_mask),
+        context,
+    )
+
+
+def _render_selector_host(profile, mapping):
+    source = _ascd_mask_source(
+        _read_source("map-switching-selector-host.s"),
+        profile,
+        "mov #-0x80,r1\ntst r1,r0\nbf host_abort_selector\n",
+        "mov #0x{mask:02X},r1\ntst r1,r0\nbf host_abort_selector\n",
+        "selector host ASCD-enabled mask",
+    )
+    return _render_source(source, profile, mapping)
+
+
 def _render_vq37_rolling_wrappers(profile, mapping):
     source = _read_source("rolling-launch-wrappers.s")
     source = _replace_source_once(
@@ -639,6 +671,13 @@ def _render_vq37_rolling_engine(profile, mapping):
         "rl_helper_fuel_shadow_address:\n.long 0xFFFF5D10\n",
         "",
         "VQ37 fuel-shadow literal removal",
+    )
+    source = _ascd_mask_source(
+        source,
+        profile,
+        "mov.b @r4,r0\ntst 0x80,r0\nbf rl_gate_ascd_fail\n",
+        "mov.b @r4,r0\ntst 0x{mask:02X},r0\nbf rl_gate_ascd_fail\n",
+        "Rolling Launch ASCD-enabled mask",
     )
     return _render_source(source, profile, mapping)
 
@@ -736,6 +775,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         )
         for unit in unit_prototypes
     }
+    source_texts["selector_host"] = _render_selector_host(profile, mapping)
     if profile.map_variant == "dual-cvtc":
         source_texts["limiter_commit"] = _render_unaligned_throttle_limiter(
             profile, mapping
@@ -1690,8 +1730,10 @@ def _validate_projected_bindings(target):
         raise RuntimeTargetError(
             f"{target.rom}: projected allocation bindings differ"
         )
-    if profile.map_variant in VQ37_MAP_VARIANTS:
+    if profile.map_variant in rom_address_profiles.GATED_IGNITION_MAP_VARIANTS:
         _validate_vq37_ignition_halves(target, profile)
+    if profile.ignition_unreferenced_routine is not None:
+        _validate_state_dispatch_coordinator(target, profile)
     if profile.ignition_state_storage is not None:
         _validate_ignition_state_pool(target, profile)
 
@@ -1707,20 +1749,57 @@ def _aligned_literal_sites(data, value):
     return sites
 
 
-def _validate_ignition_state_pool(target, profile):
-    """Bind the state-code ignition families to the hooked literal pool.
+def _literal_loaders(data, site):
+    """Return every PC-relative long load that addresses one literal site."""
+    loaders = []
+    for address in range(max(0, site - 0x400), site, 2):
+        word = int.from_bytes(data[address:address + 2], "big")
+        if (
+            word & 0xF000 == 0xD000
+            and (address & ~3) + 4 + (word & 0xFF) * 4 == site
+        ):
+            loaders.append(address)
+    return loaders
 
-    The coordinator calls the 8x8 lookup through a pointer literal and takes
-    each table base from the same literal pool. Every family base must occur
-    once in the stock image, inside the pool of the hooked literal, so no
-    other pointer to the lookup serves a switched surface.
+
+def _live_literal_sites(data, value, profile):
+    """Return the literal sites that code outside the unreferenced routine
+    loads, or that no PC-relative load reaches at all."""
+    routine = profile.ignition_unreferenced_routine
+    live = []
+    for site in _aligned_literal_sites(data, value):
+        loaders = _literal_loaders(data, site)
+        owned = (
+            routine is not None
+            and loaders
+            and all(routine.start <= item < routine.end for item in loaders)
+        )
+        if not owned:
+            live.append(site)
+    return live
+
+
+def _validate_ignition_state_pool(target, profile):
+    """Bind the state-code ignition families to the hooked literal.
+
+    The coordinator takes each 8x8 table base and the lookup pointer from its
+    literal pool in adjacent loads. Every family base must have one live
+    literal in the stock image, and every load of it must be followed by a
+    load of the hooked literal, so no other pointer to the lookup serves a
+    switched surface.
     """
     data = bytes(target.stock_image.data)
     hook = profile.map_hook_by_key["ignition_state_lookup"]
     families = target.map_layout.family_by_key
+    hook_loaders = set(_literal_loaders(data, hook.address))
     for key in rom_address_profiles.IGNITION_STATE_FAMILY_KEYS:
-        sites = _aligned_literal_sites(data, families[key].canonical_address)
-        if len(sites) != 1 or abs(sites[0] - hook.address) > 0x10:
+        sites = _live_literal_sites(
+            data, families[key].canonical_address, profile
+        )
+        loaders = _literal_loaders(data, sites[0]) if len(sites) == 1 else []
+        if not loaders or any(
+            item + 2 not in hook_loaders for item in loaders
+        ):
             raise RuntimeTargetError(
                 f"{target.rom}.{key}: table base is not a single literal of "
                 "the hooked lookup pool"
@@ -1728,6 +1807,40 @@ def _validate_ignition_state_pool(target, profile):
     if hook.address not in _aligned_literal_sites(data, hook.stock):
         raise RuntimeTargetError(
             f"{target.rom}: ignition state lookup literal differs"
+        )
+
+
+def _validate_state_dispatch_coordinator(target, profile):
+    """Bind the 16x16 ignition families to the live state-code dispatch.
+
+    The image holds an unreferenced earlier copy of the ignition coordinator
+    beside the periodic one. Bit 3 of the stock configuration byte sends the
+    periodic coordinator through its state-code dispatch, which reads the two
+    16x16 families. Every literal of the 16x16 lookup must be hooked or owned
+    by the unreferenced copy, so no executed pointer bypasses the adapter.
+    """
+    symbols = profile.map_symbol_by_key
+    data = bytes(target.stock_image.data)
+    if not data[symbols["ignition_coordinator_config_byte"]] & 0x08:
+        raise RuntimeTargetError(
+            f"{target.rom}: stock configuration gates the state-code "
+            "ignition dispatch off"
+        )
+    hooks = {
+        item.address: item
+        for item in profile.map_hooks
+        if item.key.startswith("ignition_lookup_")
+    }
+    stocks = {item.stock for item in hooks.values()}
+    if len(stocks) != 1:
+        raise RuntimeTargetError(
+            f"{target.rom}: 16x16 ignition hooks name different lookups"
+        )
+    live = _live_literal_sites(data, stocks.pop(), profile)
+    if set(live) != set(hooks):
+        raise RuntimeTargetError(
+            f"{target.rom}: live 16x16 ignition lookup literals differ from "
+            "the hooked literals"
         )
 
 

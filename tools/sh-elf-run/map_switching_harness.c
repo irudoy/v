@@ -23,6 +23,9 @@
 #ifdef TARGET_1ND
 #define NATIVE_ACTIVE_MASK 0x20U
 #define NATIVE_ARMED_MASK 0x10U
+#elif defined(TARGET_1ME3B)
+#define NATIVE_ACTIVE_MASK 0x08U
+#define NATIVE_ARMED_MASK 0x04U
 #elif defined(TARGET_JK78)
 #define NATIVE_ACTIVE_MASK 0x10U
 #define NATIVE_ARMED_MASK 0x08U
@@ -37,6 +40,14 @@
 #define THROTTLE_RUNTIME 0xffff1796U
 #define CURRENT_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
+#ifdef TARGET_1ME3B
+/* 1ME3B packs the ASCD-enabled flag into bit 3 of the status byte; bit 7 of
+   the same byte is an unrelated flag that must not abort the selector. */
+#define ASCD_ENABLED 0x08U
+#define ASCD_FOREIGN_FLAG 0x80U
+#else
+#define ASCD_ENABLED 0x80U
+#endif
 #define DIAGNOSTIC_STATUS 0xffff2a84U
 #define PAYLOAD 0xffff3ad5U
 
@@ -55,11 +66,16 @@
 #ifdef TARGET_DUAL_CVTC
 #define SECONDARY_CVTC_TARGET_ADAPTER 0x000d5000U
 #endif
-#ifdef TARGET_1ND
-/* The 1ND ignition coordinator reads four 8x8 state-code surfaces through a
-   lookup of their own, so the layout carries a separate adapter behind the
+#if defined(TARGET_1ND) || defined(TARGET_1ME3B)
+/* The SH7059 ignition coordinators read four 8x8 state-code surfaces through
+   a lookup of their own, so the layout carries a separate adapter behind the
    VQ37 fuel-cut coordinator wrapper. */
+#define TARGET_IGNITION_STATE 1
 #define IGNITION_STATE_ADAPTER 0x000d5080U
+#endif
+#if defined(TARGET_1ND) || defined(TARGET_JK78)
+/* These coordinators carry a second, configuration-gated half. */
+#define TARGET_GATED_IGNITION 1
 #endif
 #define FEEDBACK_WRAPPER 0x000d35e0U
 #define LIMITER_COMMIT 0x000d3660U
@@ -211,7 +227,7 @@ static const struct family adapter_families[] = {
          0x000d5400U},
     },
 #endif
-#ifdef TARGET_1ND
+#ifdef TARGET_IGNITION_STATE
     /* The state-code surfaces have no canonical counterpart; the runtime
        verifier rewrites 0x0000f610, 0x0000f710, 0x0000f690, and 0x0000f6d0
        to the four target bases. */
@@ -277,7 +293,7 @@ static const struct pass_through pass_throughs[] = {
     {"overrun_bosch_restore", OVER_RUN_ADAPTER, 0x0001298cU},
     {"full_dfco_unknown", FULL_DFCO_ADAPTER, 0x0001298dU},
     {"ignition_cold", IGNITION_ADAPTER, 0x0000991aU},
-#ifdef TARGET_VQ37
+#ifdef TARGET_GATED_IGNITION
     /* The gated coordinator half reads three byte-identical surfaces through
        hooked literals. The target renderer rewrites 0x0000991a, 0x0000e91a,
        and 0x0000ea1a to those three bases; each must reach the stock lookup
@@ -296,7 +312,7 @@ static const struct pass_through pass_throughs[] = {
     {"secondary_cvtc_target_unknown",
      SECONDARY_CVTC_TARGET_ADAPTER, 0x0000b43bU},
 #endif
-#ifdef TARGET_1ND
+#ifdef TARGET_IGNITION_STATE
     {"ignition_state_unknown", IGNITION_STATE_ADAPTER, 0x0000f611U},
 #endif
     {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
@@ -370,9 +386,16 @@ static const struct selector_case selector_cases[] = {
         {2, 0, 0, 0, 0, 0, 0, 0},
     },
     {
-        "ascd-abort", {2, 1, 2, 9, 0, 0, 0, 0}, 8, 8, 0x80,
+        "ascd-abort", {2, 1, 2, 9, 0, 0, 0, 0}, 8, 8, ASCD_ENABLED,
         {2, 0, 0, 0, 0, 0, 0, 0},
     },
+#ifdef TARGET_1ME3B
+    {
+        "ascd-foreign-flag", {1, 1, 2, 7, 0, 0, 0, 0}, 8, 8,
+        ASCD_FOREIGN_FLAG,
+        {1, 1, 2, 8, 0, 0, 0, 0},
+    },
+#endif
     {
         "feedback-blocks", {2, 1, 2, 9, 3, 1, 4, 0}, 8, 0, 0,
         {2, 0, 0, 0, 3, 1, 4, 0},
@@ -938,6 +961,9 @@ int main(void)
 #ifdef TARGET_1ND
     if (total_cases != 196U)
         return fail_value("summary", "case_count", total_cases, 196);
+#elif defined(TARGET_1ME3B)
+    if (total_cases != 195U)
+        return fail_value("summary", "case_count", total_cases, 195);
 #elif defined(TARGET_VQ37)
     if (total_cases != 167U)
         return fail_value("summary", "case_count", total_cases, 167);
@@ -953,9 +979,17 @@ int main(void)
             "summary", "feedback_invocations", feedback_invocations, 17);
 
     printf(
-        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu "
+#ifdef TARGET_1ME3B
+        "selector=18 "
+#else
+        "selector=17 "
+#endif
 #ifdef TARGET_1ND
         "adapters=136 limiter=14 native_fuel=20 feedback=9 "
+        "feedback_invocations=%lu entries=14\n",
+#elif defined(TARGET_1ME3B)
+        "adapters=134 limiter=14 native_fuel=20 feedback=9 "
         "feedback_invocations=%lu entries=14\n",
 #elif defined(TARGET_VQ37)
         "adapters=107 limiter=14 native_fuel=20 feedback=9 "

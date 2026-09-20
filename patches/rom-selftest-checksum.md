@@ -120,6 +120,24 @@ after the application domains.
 | 1ND0A | `2f52` | `b7dd` | `e629` | `41d8` | `e0f04d48` | `7131b24a` |
 | 1ND3B | `5dd1` | `b7dd` | `e629` | `41d8` | `5a01b3c1` | `ab671f91` |
 
+## SH7059 1ME3B layout
+
+1ME3B keeps the four SUM16 domains and the single Runtime A domain of the 1ND
+layout at the same regions and SUM16 fields. Its Runtime A references are
+`0x0096f4` (XOR) and `0x0096fc` (SUM), and the Runtime A exclusions are
+`0x008200`, `0x0096f4`, `0x0096fc`, and `0x020000`.
+
+Function `0x00002c60`, byte-identical to the 1ND verifier, incrementally checks
+the calibration and application SUM16 fields. Functions `0x00021a78` and
+`0x00021b8e` accumulate the application XOR and SUM over
+`[0x008200, 0x180000)`, and `0x00021c74` compares the accumulators with both
+references. Function `0x0013339c` independently checks the runtime pair and
+both lower-code SUM16 fields. The recalculation order equals the 1ND order.
+
+| ROM | Calibration SUM16 | Application SUM16 | Boot SUM16 | Vector SUM16 | A XOR | A SUM |
+|---|---:|---:|---:|---:|---:|---:|
+| 1ME3B | `bed1` | `80ea` | `0b3c` | `27f4` | `53b4709e` | `c5f53006` |
+
 ## JK78C exact-code layout
 
 JK78C retains the four-domain SH7058 algorithm while using target-specific
@@ -261,4 +279,4 @@ observed on a physical ECU.
 ## Scope
 
 Exact layouts are registered for JK00A, JK03A, JK03B, JK08A, JK00C, JK00D,
-JK78C, 1ND0A, and 1ND3B.
+JK78C, 1ND0A, 1ND3B, and 1ME3B.

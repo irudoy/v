@@ -393,7 +393,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             )
 
 
-def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation():
+def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     target, tables = _xml_tables("1ME3B")
     romid = target.find("romid")
 
@@ -413,13 +413,14 @@ def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation()
     assert checksums["alt2"].get("skiploc") == "0x20000"
     assert checksums["alt2"].get("sumloc") == "0x96FC"
     assert checksums["alt2"].get("xorloc") == "0x96F4"
-    assert len(target.findall("table")) == 133
+    assert len(target.findall("table")) == 218
+    assert len(tables) == 218
     assert sum(1 for name in tables if name.startswith("DTC ")) == 75
     assert tables["MAF Factor"].get("storageaddress") == "0x08965"
-    assert tables["Fuel Compensation - Main - Default"].get(
+    assert tables["Map 1 - Fuel Compensation - Main - Default"].get(
         "storageaddress"
     ) == "0x0A0F4"
-    assert tables["Fuel Compensation - Main - Alternate"].get(
+    assert tables["Map 1 - Fuel Compensation - Main - Alternate"].get(
         "storageaddress"
     ) == "0x0A1F4"
     assert tables["VVEL Duration Target - Running"].get(
@@ -429,25 +430,83 @@ def test_1me3b_artifacts_publish_the_correspondence_without_runtime_allocation()
         "storageaddress"
     ) == "0x0E17C"
     assert tables["Base Fuel Schedule K-Value"].get("storageaddress") == "0x09170"
-    assert not any(name.startswith("Map 1 -") for name in tables)
-    assert not any(name.startswith("Map 2 -") for name in tables)
-    assert "Rolling Launch Enable by Map" not in tables
-    assert "CAN Telemetry at Startup" not in tables
     assert tables["Developer Immobilizer"].get("storageaddress") == "0x8671"
     assert not any(
         name.endswith(("Cold State", "High-Octane State", "High-Detonation State"))
         for name in tables
     )
-    hot = tables["Ignition Timing Surface - VVEL State Codes 2 and 8"]
+    # The coordinator dispatches by the VVEL state code alone: two 16x16 and
+    # four 8x8 surfaces are the switched ignition families.
+    hot = tables["Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8"]
     assert hot.get("storageaddress") == "0x0A344"
     assert hot.get("mask") == "7F"
-    assert tables["Ignition Timing Surface - VVEL State Code 3"].get(
+    assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 1"].get(
+        "storageaddress"
+    ) == "0x0A444"
+    cold_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 1"]
+    assert cold_slot.get("storageaddress") == "0x13BA00"
+    assert cold_slot.get("mask") == "7F"
+    assert tables["Map 1 - Ignition Timing Surface - VVEL State Code 3"].get(
         "storageaddress"
     ) == "0x0A544"
+    assert tables[
+        "Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+    ].get("storageaddress") == "0x0A604"
+    state_slot = tables["Map 3 - Ignition Timing Surface - VVEL State Code 3"]
+    assert state_slot.get("storageaddress") == "0x13E1C0"
+    assert (state_slot.get("sizex"), state_slot.get("sizey")) == ("8", "8")
+    assert state_slot.get("mask") == "7F"
+    assert tables[
+        "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+    ].get("storageaddress") == "0x13E540"
+    assert tables["Rolling Launch Enable by Map"].get(
+        "storageaddress"
+    ) == "0x13CF64"
+    assert tables["Rolling Launch Require Accelerator Pedal"].get(
+        "storageaddress"
+    ) == "0x13CF6C"
+    assert tables["CAN Telemetry at Startup"].get(
+        "storageaddress"
+    ) == "0x13DE03"
+    assert "Map 2 - Engine Speed Limit - Fuel Cut" not in tables
+    assert tables["Map 2 - Engine Speed Limit - Fuel Cut Caps"].get(
+        "storageaddress"
+    ) == "0x13B4F4"
+    assert tables["Map 2 - Engine Speed Limit - Fuel Cut Curves"].get(
+        "storageaddress"
+    ) == "0x13C6E0"
+    assert tables["Map 2 - Engine Speed Limit - Throttle Request"].get(
+        "storageaddress"
+    ) == "0x13C520"
+    assert "Map 2 - Fuel Compensation - Main - Default" in tables
+    assert "Map 2 - Fuel Compensation - Main - Alternate" in tables
+
+    xml_text = (DEFS / "1ME3B.xml").read_text(encoding="utf-8")
+    assert "defs/JK08A-1ME3B.definition-addresses.csv" in xml_text
 
     root = ET.parse(DEFS / "1ME3B.xdf").getroot()
     xdf_tables = _xdf_tables(root)
-    assert len(root.findall("XDFTABLE")) == 57
+    assert len(root.findall("XDFTABLE")) == 139
     assert root.find("XDFCHECKSUM") is None
     assert _xdf_table_address(xdf_tables["MAF Factor"]) == "0x8965"
-    assert not root.findall("XDFFLAG")
+    patches_by_title = {
+        patch.findtext("title"): patch for patch in root.findall("XDFPATCH")
+    }
+    assert {
+        title
+        for title in patches_by_title
+        if not title.startswith(("DTC ", "Disable DTC group:"))
+    } == {
+        "Developer Immobilizer",
+        "CAN Telemetry at Startup",
+        "Rolling Launch Require Accelerator Pedal",
+    }
+    assert patches_by_title["CAN Telemetry at Startup"].find(
+        "XDFPATCHENTRY"
+    ).get("address") == "0x13DE03"
+    assert patches_by_title["Rolling Launch Require Accelerator Pedal"].find(
+        "XDFPATCHENTRY"
+    ).get("address") == "0x13CF6C"
+    assert {
+        flag.findtext("title") for flag in root.findall("XDFFLAG")
+    } == {f"Map {slot} - Rolling Launch Enable" for slot in range(1, 6)}

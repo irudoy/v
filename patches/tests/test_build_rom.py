@@ -213,12 +213,15 @@ class BuildRomTest(unittest.TestCase):
                 self.assertTrue(
                     rom_checksums.verify(result.data, checksum_layout).valid
                 )
-                # The 1ND layout adds the 30-instruction state-code
+                # The SH7059 layouts add the 30-instruction state-code
                 # ignition adapter to the VQ37 map stage.
                 self.assertEqual(
                     result.map_instruction_count,
                     467
-                    if rom in runtime_targets.SH7059_1ND_ROMS
+                    if rom in (
+                        runtime_targets.SH7059_1ND_ROMS
+                        + runtime_targets.SH7059_1ME3B_ROMS
+                    )
                     else 437
                     if rom in runtime_targets.VQ37_RUNTIME_ROMS
                     else 453,
@@ -234,6 +237,8 @@ class BuildRomTest(unittest.TestCase):
                         (
                             "sh7059-1nd"
                             if rom in runtime_targets.SH7059_1ND_ROMS
+                            else "sh7059-1me3b"
+                            if rom in runtime_targets.SH7059_1ME3B_ROMS
                             else "sh7058-jk78"
                         )
                         if rom in runtime_targets.VQ37_RUNTIME_ROMS

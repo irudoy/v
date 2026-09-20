@@ -191,9 +191,11 @@ literals. The unsupported rows are the eighteen rows of JK78C and 1ND; the three
 canonical ignition surfaces among them have no homolog at all: the target ignition coordinator `0x0797CC` carries only its
 mode-selected surfaces and no target function reproduces the gated stock-inert
 trio path of 1ND0A `0x074D98`. The projection declares checksum support with
-native RomRaider metadata over the `sh7059_1me3b` layout and no runtime
-allocation: Map Switching, Rolling Launch, and the CAN telemetry switch are
-absent from the definition. The target-native table registry adds the two
+native RomRaider metadata over the `sh7059_1me3b` layout. The definition
+exposes the 1ME3B runtime allocation of `rom-address-profiles.toml`: Map 2-5
+storage for eighteen switched families, the target-native fuel-cut caps and
+curves of the VQ37 registry, the Rolling Launch controls at `0x13CF60`, and the
+CAN telemetry startup switch at `0x13DE03`. The target-native table registry adds the two
 alternate selector arms, the VVEL target set, and the six executed ignition
 surfaces to the 1ME3B definition: thirty-one tables and twenty-four axes, each
 bound to an undisplaced literal-pool word of its reading function. The ignition

@@ -17,21 +17,21 @@ engines.
   queryable Memgraph index from tracked inputs, and projects reviewed facts into
   RomRaider XML, TunerPro XDF, and a map ledger.
 - The unified builder composes the current capability-specific runtime for
-  JK00A, JK03A, JK03B, JK08A, JK00C, JK00D, JK78C, 1ND0A, and 1ND3B. Map
-  Switching, Rolling Launch, and custom CAN telemetry are available on all
-  nine targets. VQ37 targets use their native fuel-cut caps and interpolated
+  JK00A, JK03A, JK03B, JK08A, JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B.
+  Map Switching, Rolling Launch, and custom CAN telemetry are available on all
+  ten targets. VQ37 targets use their native fuel-cut caps and interpolated
   curves for map slots, while Rolling Launch adds an exact all-cylinder
   request after the stock final-mask coordinator. The builder preserves target
   calibration state, closes each ROM's checksum domains, and emits a
   machine-readable build manifest.
 - One canonical annotation and presentation layer plus explicit relocated
   correspondences generate target-specific RomRaider XML and TunerPro XDF
-  files for all nine stock identities. The two SH7059 1ND images share one
+  files for all ten stock identities. The two SH7059 1ND images share one
   reviewed address layout while retaining independent identities and values.
 - Instruction-changing patches have a repository-contained GNU SH-2E
   executable gate. It independently assembles and executes the canonical JK08A
-  runtime and the target-specific JK00C, JK00D, JK78C, 1ND0A, and 1ND3B
-  projections.
+  runtime and the target-specific JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and
+  1ME3B projections.
   Software verification does not replace bench, readback, or engine validation.
 - Concrete tuned images, local calibration profiles, build recipes, active tune
   identities, and generated test artifacts are intentionally outside Git.
@@ -104,7 +104,7 @@ direct Python test contract remains `uv run pytest -q`; the pin-tracer contract
 is documented beside that tool.
 
 `make runtime-targets-generate` regenerates the tracked JK00C, JK00D, JK78C,
-1ND0A, and 1ND3B GNU SH-2E payload locks and capability-specific stage hashes
+1ND0A, 1ND3B, and 1ME3B GNU SH-2E payload locks and capability-specific stage hashes
 from the registered address profiles.
 
 Build the self-contained ROM atlas HTML with:
@@ -171,7 +171,14 @@ stage identities even though their executable ranges are exact.
 registry, the ROM atlas, the DTC projection, which carries 38 codes read out
 of the image itself, the registered `sh7059_1me3b` checksum layout, and
 all-target definition generation through a SHA-bound projection established by
-1ND0A structural correspondence over its own fused interpolation library. It
-has no address profile, runtime allocation, or executable coverage, and its
+1ND0A structural correspondence over its own fused interpolation library. Its
 declared family boundary forbids address inheritance from 1ND0A, 1ND3B, or
-JK78C.
+JK78C, so its `sh7059_1me3b` address profile recovers every stock address in
+the target image. The production runtime includes the same eighteen switched
+calibration families as 1ND, target-native fuel-cut caps and curves, scalar
+throttle-limiter selection, Rolling Launch, custom CAN telemetry, checksum
+closure, and the executable gate. The profile carries the target flag-byte
+layout, including the ASCD-enabled flag in bit 3 of its status byte, and
+declares the unreferenced second copy of the ignition coordinator whose private
+literals stay stock. Its software allocation and byte contracts remain untested
+on bench and vehicle hardware.

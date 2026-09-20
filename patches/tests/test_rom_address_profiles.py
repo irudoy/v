@@ -11,7 +11,9 @@ def profiles():
 
 
 def test_registry_has_only_explicit_exact_profiles(profiles):
-    assert set(profiles) == {"JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B"}
+    assert set(profiles) == {
+        "JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B"
+    }
     assert rom_address_profiles.profile_for_rom("jk00c") is profiles["JK00C"]
     assert rom_address_profiles.profile_for_rom("jk78c") is profiles["JK78C"]
     with pytest.raises(
@@ -226,3 +228,31 @@ def test_1nd_ignition_state_storage_mutation_is_rejected(
         rom_address_profiles.AddressProfileError, match=message
     ):
         rom_address_profiles.load_registry(registry)
+
+
+def test_1me3b_unreferenced_ignition_routine_is_bound_to_the_image(profiles):
+    images = rom_homology.load_images()
+    profile = profiles["1ME3B"]
+    routine = profile.ignition_unreferenced_routine
+
+    assert profile.ascd_enabled_mask == 0x08
+    assert (routine.start, routine.end) == (0x000791A4, 0x000797CC)
+    assert profiles["1ND0A"].ignition_unreferenced_routine is None
+    assert profiles["1ND0A"].ascd_enabled_mask == 0x80
+
+    pointed = bytearray(images["1ME3B"].data)
+    pointed[0x00100000:0x00100004] = (routine.start + 0x40).to_bytes(4, "big")
+    with pytest.raises(
+        rom_address_profiles.AddressProfileError,
+        match="points into the unreferenced ignition routine",
+    ):
+        rom_address_profiles.validate_stock_profile(profile, pointed)
+
+    # bra with displacement 0x10 at 0x00079180 targets the routine entry.
+    branched = bytearray(images["1ME3B"].data)
+    branched[0x00079180:0x00079182] = bytes.fromhex("a010")
+    with pytest.raises(
+        rom_address_profiles.AddressProfileError,
+        match="enters the unreferenced ignition routine",
+    ):
+        rom_address_profiles.validate_stock_profile(profile, branched)

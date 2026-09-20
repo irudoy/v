@@ -85,9 +85,9 @@ def test_complete_registry_validation_covers_every_target_capability_set():
     assert stats["1ME3B"]["unsupported"] == len(VQ37_UNSUPPORTED)
     assert stats["1ME3B"]["checksum"] is True
     assert stats["1ME3B"]["romraider_checksum"] is True
-    assert stats["1ME3B"]["map_families"] == 0
-    assert stats["1ME3B"]["native_maps"] == 31
-    assert stats["1ME3B"]["rolling_configuration"] is None
+    assert stats["1ME3B"]["map_families"] == 18
+    assert stats["1ME3B"]["native_maps"] == 33
+    assert stats["1ME3B"]["rolling_configuration"] == 0x13CF60
 
 
 CVTC_TARGET_CORRESPONDENCE = {

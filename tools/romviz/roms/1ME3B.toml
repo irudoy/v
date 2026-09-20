@@ -9,6 +9,13 @@ dtc = "defs/1ME3B.dtc.csv"
 definition_xml = "defs/1ME3B.xml"
 checksum_registry = "patches/checksum-layouts.toml"
 
+[[patch]]
+id = "runtime-address-profile"
+label = "Unified production runtime profile"
+kind = "address-profile"
+status = "composed"
+path = "patches/rom-address-profiles.toml"
+
 [metadata]
 submodel = "VQ37VHR"
 memmodel = "SH7059"

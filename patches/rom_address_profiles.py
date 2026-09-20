@@ -74,7 +74,18 @@ DUAL_CVTC_MAP_FAMILY_KEYS = frozenset(
     }
 )
 
-VQ37_MAP_VARIANTS = frozenset({"sh7059-1nd", "sh7058-jk78"})
+VQ37_MAP_VARIANTS = frozenset(
+    {"sh7059-1nd", "sh7059-1me3b", "sh7058-jk78"}
+)
+# The SH7059 VQ37 images dispatch four 8x8 state-code ignition surfaces
+# through a lookup of their own and place ECU RAM below 0xFFFF0000.
+IGNITION_STATE_MAP_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b"})
+# These coordinators also reach a gated half of three equal-byte surfaces
+# through the hooked 16x16 literals.
+GATED_IGNITION_MAP_VARIANTS = frozenset({"sh7059-1nd", "sh7058-jk78"})
+SH7059_FAMILIES = frozenset({"sh7059_1nd", "sh7059_1me3b"})
+# Bit of the ASCD state byte that reports an enabled stock cruise control.
+DEFAULT_ASCD_ENABLED_MASK = 0x80
 
 VQ37_MAP_FAMILY_KEYS = frozenset(
     {
@@ -105,6 +116,7 @@ VQ37_1ND_MAP_FAMILY_KEYS = VQ37_MAP_FAMILY_KEYS | frozenset(
 MAP_FAMILY_KEYS_BY_VARIANT = {
     "dual-cvtc": DUAL_CVTC_MAP_FAMILY_KEYS,
     "sh7059-1nd": VQ37_1ND_MAP_FAMILY_KEYS,
+    "sh7059-1me3b": VQ37_1ND_MAP_FAMILY_KEYS,
     "sh7058-jk78": VQ37_MAP_FAMILY_KEYS,
 }
 
@@ -155,6 +167,12 @@ VQ37_1ND_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
     "rev_fuel_cut_release_curve_base",
 }
 
+# The live 1ME3B ignition coordinator holds two literals of the 16x16 lookup.
+VQ37_1ME3B_MAP_HOOK_KEYS = VQ37_1ND_MAP_HOOK_KEYS - {
+    "ignition_lookup_3",
+    "ignition_lookup_4",
+}
+
 VQ37_JK78_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
     "rev_fuel_cut_caps_base",
     "rev_fuel_cut_release_cap_base",
@@ -164,6 +182,7 @@ VQ37_JK78_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
 MAP_HOOK_KEYS_BY_VARIANT = {
     "dual-cvtc": DUAL_CVTC_MAP_HOOK_KEYS,
     "sh7059-1nd": VQ37_1ND_MAP_HOOK_KEYS,
+    "sh7059-1me3b": VQ37_1ME3B_MAP_HOOK_KEYS,
     "sh7058-jk78": VQ37_JK78_MAP_HOOK_KEYS,
 }
 
@@ -206,9 +225,16 @@ VQ37_MAP_SYMBOL_KEYS = frozenset(
     }
 )
 
+VQ37_1ME3B_MAP_SYMBOL_KEYS = VQ37_MAP_SYMBOL_KEYS - {
+    "ignition_gated_surface_1",
+    "ignition_gated_surface_2",
+    "ignition_gated_surface_3",
+}
+
 MAP_SYMBOL_KEYS_BY_VARIANT = {
     "dual-cvtc": DUAL_CVTC_MAP_SYMBOL_KEYS,
     "sh7059-1nd": VQ37_MAP_SYMBOL_KEYS,
+    "sh7059-1me3b": VQ37_1ME3B_MAP_SYMBOL_KEYS,
     "sh7058-jk78": VQ37_MAP_SYMBOL_KEYS,
 }
 
@@ -229,6 +255,7 @@ VQ37_ROLLING_HOOK_KEYS = ROLLING_HOOK_KEYS | {
 ROLLING_HOOK_KEYS_BY_VARIANT = {
     "dual-cvtc": ROLLING_HOOK_KEYS,
     "sh7059-1nd": VQ37_ROLLING_HOOK_KEYS,
+    "sh7059-1me3b": VQ37_ROLLING_HOOK_KEYS,
     "sh7058-jk78": VQ37_ROLLING_HOOK_KEYS,
 }
 
@@ -271,6 +298,7 @@ VQ37_ROLLING_SYMBOL_KEYS = ROLLING_SYMBOL_KEYS | {
 ROLLING_SYMBOL_KEYS_BY_VARIANT = {
     "dual-cvtc": ROLLING_SYMBOL_KEYS,
     "sh7059-1nd": VQ37_ROLLING_SYMBOL_KEYS,
+    "sh7059-1me3b": VQ37_ROLLING_SYMBOL_KEYS,
     "sh7058-jk78": VQ37_ROLLING_SYMBOL_KEYS,
 }
 
@@ -336,6 +364,7 @@ IGNITION_STATE_FAMILY_STORAGE_KEYS = frozenset({"pointer_table", "copies"})
 IGNITION_STATE_ADAPTER_BYTES = 0x80
 # First byte after the VQ37 fuel-cut coordinator wrapper 0x000D5000..0x000D5080.
 IGNITION_STATE_ADAPTER_CANONICAL = 0x000D5080
+UNREFERENCED_ROUTINE_KEYS = frozenset({"start", "end"})
 
 
 class AddressProfileError(ValueError):
@@ -455,6 +484,8 @@ class AddressProfile:
     extra_cvtc_storage: ExtraCvtcStorage | None
     ignition_state_storage: IgnitionStateStorage | None
     evidence: tuple[tuple[str, str], ...]
+    ascd_enabled_mask: int = DEFAULT_ASCD_ENABLED_MASK
+    ignition_unreferenced_routine: AddressRange | None = None
 
     @property
     def map_family_by_key(self):
@@ -633,6 +664,24 @@ def _extra_storage(row, context):
     return result
 
 
+def _ascd_enabled_mask(value, context):
+    mask = _uint(value, context, maximum=0xFF)
+    if mask == 0 or mask & (mask - 1):
+        raise AddressProfileError(f"{context}: expected a single-bit mask")
+    return mask
+
+
+def _unreferenced_routine(row, context):
+    _require_table(row, UNREFERENCED_ROUTINE_KEYS, context)
+    result = AddressRange(
+        _uint(row["start"], f"{context}.start"),
+        _uint(row["end"], f"{context}.end"),
+    )
+    if result.size <= 0 or result.start % 2 or result.end % 2:
+        raise AddressProfileError(f"{context}: invalid routine range")
+    return result
+
+
 def _ignition_state_storage(row, context):
     _require_table(row, IGNITION_STATE_STORAGE_KEYS, context)
     families = []
@@ -705,8 +754,12 @@ def _profile_fields(capabilities, map_variant, telemetry_unavailable):
         expected.update({"can_hooks", "telemetry_sources"})
     if map_variant == "dual-cvtc":
         expected.add("extra_cvtc_storage")
-    if map_variant == "sh7059-1nd":
+    if map_variant in IGNITION_STATE_MAP_VARIANTS:
         expected.add("ignition_state_storage")
+    if map_variant == "sh7059-1me3b":
+        expected.update(
+            {"ascd_enabled_mask", "ignition_unreferenced_routine"}
+        )
     if telemetry_unavailable:
         expected.add("telemetry_zero_source")
     return frozenset(expected)
@@ -928,10 +981,25 @@ def _parse_profile(rom, row, context):
                 row["ignition_state_storage"],
                 f"{context}.ignition_state_storage",
             )
-            if map_variant == "sh7059-1nd"
+            if map_variant in IGNITION_STATE_MAP_VARIANTS
             else None
         ),
         evidence=tuple(sorted(evidence.items())),
+        ascd_enabled_mask=(
+            _ascd_enabled_mask(
+                row["ascd_enabled_mask"], f"{context}.ascd_enabled_mask"
+            )
+            if map_variant == "sh7059-1me3b"
+            else DEFAULT_ASCD_ENABLED_MASK
+        ),
+        ignition_unreferenced_routine=(
+            _unreferenced_routine(
+                row["ignition_unreferenced_routine"],
+                f"{context}.ignition_unreferenced_routine",
+            )
+            if map_variant == "sh7059-1me3b"
+            else None
+        ),
     )
     _validate_structure(profile)
     return profile
@@ -1011,7 +1079,7 @@ def _validate_extra_storage(profile, telemetry_layout):
 
 def _validate_ignition_state_storage(profile):
     storage = profile.ignition_state_storage
-    if profile.map_variant != "sh7059-1nd":
+    if profile.map_variant not in IGNITION_STATE_MAP_VARIANTS:
         if storage is not None:
             raise AddressProfileError(
                 f"{profile.rom}: unexpected ignition state storage"
@@ -1065,7 +1133,7 @@ def _validate_map_bindings(profile, map_layout):
                     f"{profile.rom}.{key}: map exceeds ROM"
                 )
             spans.append(span)
-    if profile.map_variant == "sh7059-1nd":
+    if profile.map_variant in IGNITION_STATE_MAP_VARIANTS:
         for key in IGNITION_STATE_FAMILY_KEYS:
             span = AddressRange(
                 family[key], family[key] + IGNITION_STATE_FAMILY_BYTES
@@ -1138,10 +1206,9 @@ def _validate_map_bindings(profile, map_layout):
     else:
         expected = common | {
             **{
-                f"ignition_lookup_{index}": _rebased(
-                    code["ignition_adapter"].entry, rom_delta
-                )
-                for index in range(1, 5)
+                key: _rebased(code["ignition_adapter"].entry, rom_delta)
+                for key in MAP_HOOK_KEYS_BY_VARIANT[profile.map_variant]
+                if key.startswith("ignition_lookup_")
             },
             "fuel_compensation_lookup_startup": _rebased(
                 code["fuel_compensation_adapter"].entry, rom_delta
@@ -1165,7 +1232,7 @@ def _validate_map_bindings(profile, map_layout):
         fuel_curve_shadow = _rebased(
             map_layout.ram.fuel_cut_shadow.start + 4, ram_delta
         )
-        if profile.map_variant == "sh7059-1nd":
+        if profile.map_variant in IGNITION_STATE_MAP_VARIANTS:
             expected.update({
                 "ignition_state_lookup": (
                     profile.ignition_state_storage.adapter.start
@@ -1324,7 +1391,7 @@ def _validate_can_bindings(profile, telemetry_layout):
     ]
     feedback_record = (
         0xA308AA20
-        if profile.map_variant == "sh7059-1nd"
+        if profile.family in SH7059_FAMILIES
         else 0x0308AA20
     )
     if (
@@ -1359,7 +1426,7 @@ def _validate_can_bindings(profile, telemetry_layout):
     telemetry_addresses = list(telemetry.values())
     if len(telemetry_addresses) != len(set(telemetry_addresses)):
         raise AddressProfileError(f"{profile.rom}: duplicate telemetry sources")
-    if profile.family == "sh7059_1nd":
+    if profile.family in SH7059_FAMILIES:
         lower_bound, upper_bound = 0xFFFE8000, 0xFFFF0000
     else:
         lower_bound, upper_bound = 0xFFFF0000, 0xFFFFC000
@@ -1404,6 +1471,12 @@ def _validate_structure(profile):
         ),
         "sh7059-1nd": (
             "sh7059_1nd",
+            0x180000,
+            "mailbox26-tail-chain",
+            Capabilities(True, True, True),
+        ),
+        "sh7059-1me3b": (
+            "sh7059_1me3b",
             0x180000,
             "mailbox26-tail-chain",
             Capabilities(True, True, True),
@@ -1532,6 +1605,53 @@ def _read_u32(image, address, context):
     return int.from_bytes(image[address : address + 4], "big")
 
 
+def _validate_unreferenced_routine(profile, data):
+    """Verify that the stock image holds no way into the declared routine.
+
+    No word of the occupied image points into the routine, and no PC-relative
+    branch outside it targets its entry, so the literal pools the routine owns
+    serve no executed lookup.
+    """
+    routine = profile.ignition_unreferenced_routine
+    occupied = data[: profile.free_rom.start]
+    high = routine.start >> 16
+    if routine.end - 1 >> 16 != high:
+        raise AddressProfileError(
+            f"{profile.rom}: unreferenced routine crosses a 64 KiB boundary"
+        )
+    prefix = high.to_bytes(2, "big")
+    position = occupied.find(prefix)
+    while position != -1:
+        value = int.from_bytes(occupied[position : position + 4], "big")
+        if position % 2 == 0 and routine.start <= value < routine.end:
+            raise AddressProfileError(
+                f"{profile.rom}: stock word at {position:#x} points into the "
+                "unreferenced ignition routine"
+            )
+        position = occupied.find(prefix, position + 1)
+    for address in range(
+        max(0, routine.start - 0x1004), routine.end + 0x1000, 2
+    ):
+        if routine.start <= address < routine.end:
+            continue
+        word = int.from_bytes(occupied[address : address + 2], "big")
+        if word & 0xE000 == 0xA000:
+            displacement = word & 0x0FFF
+            if displacement & 0x0800:
+                displacement -= 0x1000
+        elif word & 0xF900 == 0x8900:
+            displacement = word & 0x00FF
+            if displacement & 0x0080:
+                displacement -= 0x0100
+        else:
+            continue
+        if address + 4 + displacement * 2 == routine.start:
+            raise AddressProfileError(
+                f"{profile.rom}: branch at {address:#x} enters the "
+                "unreferenced ignition routine"
+            )
+
+
 def validate_stock_profile(profile, image):
     """Bind a profile to its exact stock image and verify every stock anchor."""
     data = bytes(image)
@@ -1609,6 +1729,8 @@ def validate_stock_profile(profile, image):
         size = canonical[source_key].byte_length
         if data[address : address + size] == bytes([0xFF]) * size:
             raise AddressProfileError(f"{profile.rom}.{key}: stock map is erased")
+    if profile.ignition_unreferenced_routine is not None:
+        _validate_unreferenced_routine(profile, data)
     return profile
 
 

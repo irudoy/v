@@ -160,8 +160,8 @@ target_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f
 addresses = "JK08A-1ME3B.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
-map_switching = false
-rolling_launch = false
+map_switching = true
+rolling_launch = true
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis is relocated through the SHA-bound reviewed
@@ -177,10 +177,15 @@ among them because the target coordinator carries only its mode-selected
 surfaces. The project and native RomRaider checksum contracts cover all six
 1ME3B checksum fields. The Developer Immobilizer control addresses the
 configuration byte that the eleven target consumers of the 1ND0A flag read.
-The image has no runtime allocation: Map Switching, Rolling Launch, and CAN
-telemetry are not declared.
+Exact target-native fuel-cut caps and activation/release curves are added from
+the SHA-bound VQ37 registry. Map 2 through Map 5 storage, Rolling Launch
+controls, and the CAN Telemetry at Startup control use the validated 1ME3B
+runtime allocation in patches/rom-address-profiles.toml. The VQ37 Rolling
+Launch variant requests all-cylinder fuel cut after the stock final-mask
+coordinator and does not reuse the VQ35HR fuel-shadow maps.
 """
 evidence = "Reviewed structural function correspondence against 1ND0A, interpolation-call order, contract-equal fused leaves, exact storage anchors, target literals, target axis geometry, checksum code, and independently reproduced stock checksum values."
 
 [projection.1ME3B.switch]
 developer_immobilizer = 0x00008671
+can_telemetry_startup = 0x0013DE03

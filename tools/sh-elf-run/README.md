@@ -28,15 +28,16 @@ The gate performs these checks:
 
 1. Assemble every current Map Switching, Rolling Launch, and CAN telemetry
    source unit with GNU `sh-elf-as --isa=sh2e`. This covers the canonical JK08A
-   units and every rendered JK00C, JK00D, JK78C, 1ND0A, and 1ND3B target unit.
+   units and every rendered JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B
+   target unit.
    Targets without a declared capability have no synthetic stage or payload.
 2. Reconstruct each fill-aware ROM envelope and require byte identity with the
    corresponding SHA-locked payload in the tracked manifest.
 3. Independently compose the current non-flashable capability-specific
-   fixtures for JK08A, JK00C, JK00D, JK78C, 1ND0A, and 1ND3B and enforce their
-   declared write sets, entries, hooks, pointers, mailbox record, stock-image
-   identity, and stage hashes. The SH7058 images are one MiB; the SH7059 1ND
-   images are 1.5 MiB.
+   fixtures for JK08A, JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B and
+   enforce their declared write sets, entries, hooks, pointers, mailbox record,
+   stock-image identity, and stage hashes. The SH7058 images are one MiB; the
+   SH7059 1ND and 1ME3B images are 1.5 MiB.
 4. Execute every declared Map Switching selector, adapter, limiter, startup,
    feedback, Rolling Launch behavior, telemetry HCAN1 initialization, control
    polling, runtime enable overrides, capture, bank publication, page request,
@@ -48,19 +49,26 @@ The gate performs these checks:
    caps and curves, the exact stock fuel-cut state machine, the throttle
    scalar, Rolling Launch final-mask coordination, mailbox 26, and the stock-ISR
    tail chain. JK78C executes the same VQ37 capability cases through its
-   independent SH7058 addresses, stock hooks, RAM sources, and checksums. The
+   independent SH7058 addresses, stock hooks, RAM sources, and checksums.
+   1ME3B executes them through its own SH7059 addresses with the target bit
+   layout: the native fuel-cut state byte keeps the active and armed flags in
+   bits 3 and 2, and the ASCD-enabled flag is bit 3 of its status byte, so the
+   selector and Rolling Launch ASCD cases set `0x08` and one extra selector
+   case proves that bit 7 of the same byte does not abort. The
    VQ37 ignition cases select all five slots of the two executed 16x16
-   surfaces and pass the three equal-byte surfaces of the gated coordinator
-   half through the adapter while a non-default slot is active. The harness
+   surfaces. The 1ND and JK78C cases pass the three equal-byte surfaces of the
+   gated coordinator half, which the 1ME3B coordinator does not carry, through
+   the adapter while a non-default slot is active. The harness
    names those three bases by the placeholders `0x0000991a`, `0x0000e91a`, and
    `0x0000ea1a`, which the target renderer rewrites to the profile symbols
-   `ignition_gated_surface_1` to `ignition_gated_surface_3`. The 1ND targets
-   add the adapter of the four 8x8 state-code ignition surfaces: every slot and
+   `ignition_gated_surface_1` to `ignition_gated_surface_3`. The 1ND and 1ME3B
+   targets add the adapter of the four 8x8 state-code ignition surfaces: every slot and
    both invalid selector values of each family, plus one unknown base that must
    reach the stock 8x8 lookup unchanged. The harness names the four bases by
    the placeholders `0x0000f610`, `0x0000f710`, `0x0000f690`, and `0x0000f6d0`,
    and the stock 8x8 lookup is a return stub of the dynamic fixture. The 1ND
-   map harness reports `cases=196 adapters=136 entries=14`, JK78C
+   map harness reports `cases=196 adapters=136 entries=14`, 1ME3B
+   `cases=195 selector=18 adapters=134 entries=14`, and JK78C
    `cases=167 adapters=107 entries=13`.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
@@ -141,7 +149,8 @@ GNU `sh-elf-run` cannot map the ECU high-RAM windows. The gate first proves the
 original literal bytes, then aliases validated `0xFFFE8000..0xFFFFFFFF` data
 literals into a 64-KiB test window by their low 16 bits. Instruction bytes and
 control-flow addresses remain unchanged. This covers both the SH7058
-`0xFFFFxxxx` application RAM and the SH7059 1ND `0xFFFExxxx` application RAM.
+`0xFFFFxxxx` application RAM and the SH7059 1ND and 1ME3B `0xFFFExxxx`
+application RAM.
 
 HCAN status registers are write-one-to-clear in silicon but ordinary memory in
 the simulator. Canonical simultaneous mailbox-26/mailbox-28 ISR cases place the

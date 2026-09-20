@@ -4,7 +4,7 @@ from tools.mapkit import rom as romkit
 from tools.mapkit import vq37_native_fuel_cut
 
 
-TARGETS = ("JK78C", "1ND0A", "1ND3B")
+TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
 
 
 def test_registry_requires_the_complete_vq37_target_set(tmp_path):

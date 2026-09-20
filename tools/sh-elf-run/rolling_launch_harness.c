@@ -27,6 +27,12 @@
 #define RL_CONFIG 0x000d3f60U
 #define BUTTON_CODE 0xffff2a85U
 #define ASCD_STATUS 0xffff41aeU
+#ifdef TARGET_1ME3B
+/* 1ME3B packs the ASCD-enabled flag into bit 3 of the status byte. */
+#define ASCD_ENABLED 0x08U
+#else
+#define ASCD_ENABLED 0x80U
+#endif
 #define SPEED 0xffff110eU
 #define RPM 0xffff11bcU
 #define PEDAL 0xffff2672U
@@ -478,7 +484,7 @@ static void apply_gate_mutation(enum gate_mutation mutation)
         selector[7] = 1;
         break;
     case GATE_ASCD:
-        ram_pointer(ASCD_STATUS)[0] = 0x80;
+        ram_pointer(ASCD_STATUS)[0] = ASCD_ENABLED;
         break;
     case GATE_BUTTON_RELEASED:
         ram_pointer(BUTTON_CODE)[0] = BUTTON_RELEASED;

@@ -12,6 +12,9 @@ exact target address profiles and independently assembled target payloads.
 The registered `sh7059_1nd` exact-code series contains 1ND0A and 1ND3B. It uses
 a shared SH7059 address profile, independently assembled target payloads, Map
 Switching, Rolling Launch, and custom CAN telemetry.
+The registered `sh7059_1me3b` series contains 1ME3B. It uses its own SH7059
+address profile, independently assembled target payloads, Map Switching,
+Rolling Launch, and custom CAN telemetry.
 The registered `sh7058_jk78c` series contains JK78C. It uses an independent
 SH7058 address profile, independently assembled target payloads, Map Switching,
 Rolling Launch, and custom CAN telemetry.
@@ -76,10 +79,10 @@ The common handler performs these operations in one invocation:
    currently registered family has a target-specific Rolling Launch stage.
 8. Apply the current CAN telemetry composition from the applicable payload
    registry. The built-in profile installs the runtime in fail-closed
-   disabled-at-startup mode. The SH7058 exact-code, JK78C, and SH7059 1ND
-   families use mailbox 26; the 8MFK family uses stock-inactive mailbox 24. All
-   four family layouts use mailbox 31 as the control receiver after each HCAN1
-   initialization.
+   disabled-at-startup mode. The SH7058 exact-code, JK78C, SH7059 1ND, and
+   SH7059 1ME3B families use mailbox 26; the 8MFK family uses stock-inactive
+   mailbox 24. All five family layouts use mailbox 31 as the control receiver
+   after each HCAN1 initialization.
 9. Recalculate self-test B, self-test A, SUM16 A, and SUM16 B in dependency
    order, then verify all stored values again.
 10. Require every final difference from the input to be inside the union of the
@@ -95,8 +98,8 @@ only the current composition modules.
 
 ## Relocated address profiles
 
-`rom-address-profiles.toml` records exact JK00C, JK00D, JK78C, 1ND0A, and 1ND3B
-stock addresses, capabilities, and audited runtime allocations.
+`rom-address-profiles.toml` records exact JK00C, JK00D, JK78C, 1ND0A, 1ND3B,
+and 1ME3B stock addresses, capabilities, and audited runtime allocations.
 `rom_address_profiles.py` binds every profile to its registered stock image,
 verifies all original hook words, requires the complete erased ROM envelope,
 preserves occupied stock mailboxes, and rejects incomplete variant contracts or
@@ -126,6 +129,21 @@ adds an exact all-cylinder request only for an active non-observe state.
 Telemetry uses mailbox 26 and a register-preserving completion wrapper that
 tail-chains to the complete stock ISR.
 
+The 1ME3B runtime uses a uniform ROM relocation of `0x69000` and a RAM
+relocation of `-0x5100`, with explicit nonuniform SH7059 stock hooks and
+application-RAM sources. The audited erased ROM envelope is
+`0x00139DC4..0x0013FF00`, of which the runtime claims
+`0x0013B108..0x0013F000`; the audited RAM allocation is
+`0xFFFF0C00..0xFFFF1000`, of which the runtime claims
+`0xFFFF0C00..0xFFFF0F00`. The adapter, limiter, Rolling Launch, and telemetry
+contract equals the 1ND contract. The compiler lays out the bitfield status
+bytes of this image independently: the active and armed flags of the native
+fuel-cut state byte are bits 3 and 2, and the ASCD-enabled flag is bit 3 of
+`0xFFFEB985`, which the profile declares as `ascd_enabled_mask`. Bytes tested
+through explicit masks keep the 1ND layout. Rolling Launch wraps the final-mask
+coordinator `0x07A740`. Telemetry uses mailbox 26 and the same
+register-preserving completion wrapper.
+
 The JK78C runtime uses a uniform ROM relocation of `-0xB5600` from the VQ37
 assembly layout and a RAM relocation of `-0x5100`, with explicit nonuniform
 stock hooks and SH7058 application-RAM sources. The audited erased ROM envelope
@@ -153,6 +171,7 @@ of JK08A and the stock alternate selection of the other targets:
 | JK00D | `0x04B280` | `0x04BA08` | `0x8B71` = `0x8A` | `FFFF11EE`, `FFFF21BB` | `FFFF2250` | `FFFF21BC` |
 | JK78C | `0x063AC8` | `0x06429C` | `0x8965` = `0xBA` | `FFFF11C8`, `FFFF2097` | `FFFF212C` | `FFFF2098` |
 | 1ND0A, 1ND3B | `0x06EA18` | `0x06F17C` | `0x8A2B` = `0xBA` | `FFFE81D6`, `FFFE9137` | `FFFE91CC` | `FFFE9138` |
+| 1ME3B | `0x072920` | `0x07308C` | `0x8A7C` = `0xBA` | `FFFE81BC`, `FFFE90FF` | `FFFE9194` | `FFFE9100` |
 
 `runtime_targets.py` renders every target source through explicit stock and RAM
 bindings. `runtime-target-payloads.toml` locks the GNU-assembled unit bytes and
@@ -164,7 +183,7 @@ make runtime-targets-generate
 ```
 
 The production builder and executable gate consume the same projected layouts
-and locked payloads for JK00C, JK00D, JK78C, 1ND0A, and 1ND3B.
+and locked payloads for JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B.
 
 ## SH7059 1ND correspondence
 
@@ -219,6 +238,36 @@ available schema fields. The unavailable knock timing field is encoded from
 cleared reserved RAM and remains identified as unavailable in metadata. 1ND0A
 and 1ND3B share executable payload bytes but retain separate stock identities,
 stage hashes, and six-field checksum closure.
+
+## SH7059 1ME3B correspondence
+
+`1me3b-runtime-correspondence.csv` records the reviewed 1ME3B runtime
+allocation, stock hooks, target-specific map topology, CAN bindings, and all 63
+ECU-RAM telemetry fields. It distinguishes direct mappings from
+target-specific adapters and unsupported source semantics, and its test
+requires every target and stock word to equal the validated address profile.
+
+The 1ME3B address profile binds the eighteen 1ND families. The ignition
+coordinator `0x0797CC` carries only the mode-selected half: stock
+`ROM8[0x8A7D]` = `0x1C` has bit 3 set, the two 16x16 surfaces `0x00A344` and
+`0x00A444` are read through the literals `0x079CAC` and `0x079E24`, and the
+four 8x8 state-code surfaces `0x00A544`, `0x00A644`, `0x00A5C4`, and `0x00A604`
+are read through the 8x8 lookup `0x0293D8`, whose pointer the coordinator takes
+from the single literal `0x079994`. The hook `ignition_state_lookup` redirects
+that literal to the adapter at `0x13E080`; the adapter, four pointer tables,
+and sixteen 64-byte slot copies occupy `0x13E080..0x13E580`. The image has no
+gated half, so the profile declares neither the gated surfaces nor a third
+ignition hook. The routine `0x0791A4..0x0797CB` is an unreferenced copy of the
+coordinator with private lookup literals; the profile table
+`ignition_unreferenced_routine` declares it, and the validator rejects an image
+in which an aligned word points into that range or a PC-relative branch outside
+it targets its entry, so the hooked literals are the complete live set.
+
+Custom CAN telemetry binds 59 of the 63 ECU-RAM fields. The knock timing
+state, the knock surface state, and both intake solenoid duty commands are
+encoded from cleared reserved RAM and remain identified as unavailable in
+metadata: the image packs the surface flag into bit 7 of `0xFFFE945B`, while
+the wire contract decodes bit 6 of the source byte.
 
 ## SH7058 JK78C correspondence
 
@@ -296,10 +345,11 @@ The accepted mode names are `observe`, `rpm_hold`, and `rpm_hold_retard`.
 `enabled_maps` uses one-based map numbers. Every field is mandatory, unknown
 fields are rejected, and the resulting 32-byte configuration must pass the
 independent fail-closed model. `rom` may name the complete
-applicable `sh7058_7mfkavn86`, `sh7058_8mfk`, `sh7058_jk78c`, or `sh7059_1nd`
-series, or bind the profile to one exact member. A profile for
-`sh7058_jk78c`, JK78C, `sh7059_1nd`, 1ND0A, or 1ND3B accepts the same three
-modes and one-based map mask as the SH7058 VQ25HR/VQ35HR families.
+applicable `sh7058_7mfkavn86`, `sh7058_8mfk`, `sh7058_jk78c`, `sh7059_1nd`, or
+`sh7059_1me3b` series, or bind the profile to one exact member. A profile for
+`sh7058_jk78c`, JK78C, `sh7059_1nd`, 1ND0A, 1ND3B, `sh7059_1me3b`, or 1ME3B
+accepts the same three modes and one-based map mask as the SH7058
+VQ25HR/VQ35HR families.
 `min_speed = 0` disables the vehicle-speed activation gate, and
 `min_pedal = 0` disables the pedal-position activation gate.
 `hysteresis_ratio_tenths = 20` means 2.0 percent of captured RPM. The runtime

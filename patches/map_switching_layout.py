@@ -33,9 +33,10 @@ COMPATIBLE_PROTECTED_RANGES = (
     (0x000000, COMPATIBLE_CALIBRATION_START),
     (COMPATIBLE_CALIBRATION_END, 0x100000),
 )
-VQ37_VARIANTS = frozenset({"sh7059-1nd", "sh7058-jk78"})
-# The 1ND ignition coordinator reads four 8x8 state-code surfaces through a
-# lookup of their own; JK78C has no state-code dispatch.
+VQ37_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b", "sh7058-jk78"})
+# The SH7059 ignition coordinators read four 8x8 state-code surfaces through
+# a lookup of their own; JK78C has no state-code dispatch.
+IGNITION_STATE_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b"})
 IGNITION_STATE_FAMILY_KEYS = (
     "ignition_surface_state_3",
     "ignition_surface_state_4",
@@ -583,6 +584,10 @@ def validate_structure(layout):
             and layout.rom not in {"1ND0A", "1ND3B"}
         )
         or (
+            layout.variant == "sh7059-1me3b"
+            and layout.rom != "1ME3B"
+        )
+        or (
             layout.variant == "sh7058-jk78"
             and layout.rom != "JK78C"
         )
@@ -643,7 +648,7 @@ def validate_structure(layout):
             "rev_limit_fuel_cut_curves",
             "rev_limit_throttle_cut",
         }
-        if layout.variant == "sh7059-1nd":
+        if layout.variant in IGNITION_STATE_VARIANTS:
             required_family_keys.update(IGNITION_STATE_FAMILY_KEYS)
     if len(layout.families) != len(required_family_keys):
         raise ValueError(
@@ -1066,6 +1071,7 @@ def validate_structure(layout):
         "single-cvtc": (10, 2),
         "dual-cvtc": (11, 2),
         "sh7059-1nd": (11 + len(IGNITION_STATE_FAMILY_KEYS), 3),
+        "sh7059-1me3b": (11 + len(IGNITION_STATE_FAMILY_KEYS), 3),
         "sh7058-jk78": (11, 3),
     }[layout.variant]
     if (adapter_count, shadow_count) != expected_access_split:
@@ -1092,7 +1098,7 @@ def validate_structure(layout):
     elif layout.variant in VQ37_VARIANTS:
         expected_assembled_regions.remove("cvtc_target_adapter")
         expected_assembled_regions.add("idle_ignition_pool_2_adapter")
-        if layout.variant == "sh7059-1nd":
+        if layout.variant in IGNITION_STATE_VARIANTS:
             expected_assembled_regions.add("ignition_state_adapter")
     if layout.assembled_region_keys != expected_assembled_regions:
         raise ValueError(

@@ -22,7 +22,7 @@ engine name or similar graph structure does not permit address inheritance.
 | `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including independent intake-cam and exhaust-cam target switching | Relocated fuel-shadow actuator | Schema 2, mailbox 24 | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut and native table registries | 18 families, including the four 8x8 state-code ignition surfaces | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
-| `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence plus native table registry | None | None | None | Six fields in the project checksum model; no builder target | Stock read only; no derived image exists |
+| `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence plus native fuel-cut and native table registries | 18 families, including the four 8x8 state-code ignition surfaces | Final-mask coordinator actuator | Schema 2, mailbox 26; four fields unavailable | Six fields | `UNTESTED` on bench and vehicle hardware |
 
 ## Diagnostic layer
 
@@ -78,8 +78,17 @@ with floor curves and a constant mode 14 pair, the second copies of the
 shaft-angle conversion and monitor floors, the hot-intake idle pair of the
 state-code dispatcher `0x07448C`, and the two curves that only this image
 holds, the throttled ramp delay `0x01457A` and the start-up blend target
-`0x017136`. The definition declares no Map
-Switching, Rolling Launch, or CAN telemetry.
+`0x017136`. Map Switching, Rolling Launch, and CAN telemetry use the 1ME3B
+address profile in `../patches/rom-address-profiles.toml`: every stock address
+is recovered in the target image, the runtime occupies `0x13B108..0x13F000` of
+the audited erased region `0x139DC4..0x13FF00`, and
+`../patches/1me3b-runtime-correspondence.csv` records the evidence of every
+binding. The compiler packs flag bytes differently from `1ND`: the
+ASCD-enabled flag is bit 3 of `0xFFFEB985`, the native fuel-cut state byte
+`0xFFFE948A` keeps its active and armed flags in bits 3 and 2, and the knock
+surface flag sits in bit 7 of `0xFFFE945B`, outside the telemetry wire
+contract, so that field is declared unavailable beside the knock timing state
+and the two intake solenoid duty commands.
 
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,
@@ -123,17 +132,31 @@ These surfaces have no canonical source and are registered in
 ignition trio reaches three byte-identical copies in the gated coordinator half
 of JK78C and 1ND, which the stock configuration bytes `0x8965` and `0x8A2B`
 (`0xBA`, bit 5 set) leave unexecuted, so the trio is unsupported on every VQ37
-image. The two Map Switching ignition families of both runtime targets are the
+image. The two Map Switching ignition families of every runtime target are the
 executed 16x16 surfaces: `0x0A10A` and `0x0A20A` on JK78C, `0x0A410` and
-`0x0A510` on 1ND. The runtime validator requires bit 5 of the stock
-configuration byte, equal stock bytes in the three gated surfaces, and their
-absence from the family set; the ignition adapter passes them through. The four
-8x8 state-code surfaces of 1ND are four further Map Switching families. The
-coordinator calls their 8x8 lookup `0x0285B4` through the single literal
-`0x074FB0`, which the runtime redirects to an adapter of its own at `0x135080`;
-the second literal of that lookup, `0x075570`, serves only the reference
-surface `0x0A650` of the stock-inert path and stays stock. JK78C has no
-state-code dispatch and carries no such families.
+`0x0A510` on 1ND, `0x0A344` and `0x0A444` on 1ME3B. For JK78C and 1ND the
+runtime validator requires bit 5 of the stock configuration byte, equal stock
+bytes in the three gated surfaces, and their absence from the family set; the
+ignition adapter passes them through. The four 8x8 state-code surfaces of 1ND
+and 1ME3B are four further Map Switching families. The 1ND coordinator calls
+their 8x8 lookup `0x0285B4` through the single literal `0x074FB0`, which the
+runtime redirects to an adapter of its own at `0x135080`; the second literal of
+that lookup, `0x075570`, serves only the reference surface `0x0A650` of the
+stock-inert path and stays stock. JK78C has no state-code dispatch and carries
+no such families.
+
+The 1ME3B coordinator `0x0797CC` has no gated half: bit 3 of the stock
+configuration byte `0x8A7D` (`0x1C`) selects its state-code dispatch, which
+reads the 16x16 lookup `0x029BA8` through the literals `0x079CAC` and
+`0x079E24` and the 8x8 lookup `0x0293D8` through the single literal `0x079994`,
+redirected to the adapter at `0x13E080`; the literal `0x079E40` serves only the
+reference surface `0x0A584` and stays stock. The image also holds a second copy
+of the coordinator at `0x0791A4..0x0797CB` that no pointer or branch of the
+occupied image reaches. Its private literals `0x079404`, `0x079420`,
+`0x0796F4`, and `0x0799A4` stay stock. The profile validator proves the absence
+of any inbound reference, and the runtime validator requires the set of lookup
+literals loaded outside that copy to equal the hooked set and every load of a
+state-code table base to be followed by a load of the hooked literal.
 
 The compensation accessors publish four parallel channels. The two 16x16
 surfaces share index byte `0xFFFF22F8` and axes `0x13AF8` and `0x13B18` and

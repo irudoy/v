@@ -352,6 +352,14 @@ def _series_context(rom=CANONICAL_ROM):
             "same_address_inheritance": True,
             "members": runtime_targets.SH7059_1ND_ROMS,
         },
+        runtime_targets.SH7059_1ME3B_FAMILY: {
+            "kind": "distinct-code",
+            "canonical": "1ME3B",
+            "mcu": "SH7059",
+            "flash_size": 0x180000,
+            "same_address_inheritance": False,
+            "members": runtime_targets.SH7059_1ME3B_ROMS,
+        },
         runtime_targets.SH7058_JK78C_FAMILY: {
             "kind": "distinct-code",
             "canonical": "JK78C",
@@ -403,6 +411,7 @@ def builtin_profile(rom=ROM_SERIES):
     """Return the conservative profile permitted by the target family."""
     observe_only = str(rom).lower() in {
         runtime_targets.SH7059_1ND_FAMILY,
+        runtime_targets.SH7059_1ME3B_FAMILY,
         runtime_targets.SH7058_JK78C_FAMILY,
     }
     calibration = (

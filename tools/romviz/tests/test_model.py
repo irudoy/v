@@ -77,9 +77,9 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers():
     assert rom["metadata"]["Engine"] == "VQ37VHR"
     assert rom["metadata"]["MCU"] == "SH7059"
     assert rom["counts"]["diagnostics"] == 76
-    assert rom["counts"]["maps"] == 57
+    assert rom["counts"]["maps"] == 139
     assert rom["counts"]["axes"] == 37
-    assert rom["counts"]["patches"] == 76
+    assert rom["counts"]["patches"] == 119
     assert rom["counts"]["integrity"] == 11
     assert {
         item["id"]
@@ -122,6 +122,31 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers():
         "checksum layout is not registered" in warning
         for warning in rom["warnings"]
     )
+    by_id = {item["id"]: item for item in rom["objects"]}
+    runtime = by_id[
+        "patch:runtime-address-profile:patch-claim:injected-rom"
+    ]
+    assert runtime["patchStatus"] == "composed"
+    assert runtime["start"] == 0x0013B108
+    assert runtime["end"] == 0x0013F000
+    assert "patch:runtime-address-profile:patch-hook:map-selector_host_call" in by_id
+    assert (
+        "patch:runtime-address-profile:patch-hook:map-ignition_state_lookup"
+    ) in by_id
+    assert (
+        "patch:runtime-address-profile:patch-hook:map-ignition_lookup_3"
+    ) not in by_id
+    assert (
+        "patch:runtime-address-profile:patch-hook:"
+        "rolling-fuel_cut_coordinator"
+    ) in by_id
+    assert "patch:runtime-address-profile:patch-hook:can-hcan1_primary_init" in by_id
+    assert any(
+        item["label"] == "Rolling Launch Minimum Engine Speed"
+        and item["start"] == 0x13CF6A
+        for item in rom["objects"]
+    )
+    assert not any("runtime address profile" in warning for warning in rom["warnings"])
 
 
 @pytest.mark.parametrize("rom_id", REGISTERED_ROMS)

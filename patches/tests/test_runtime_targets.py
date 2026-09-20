@@ -9,13 +9,18 @@ from patches import runtime_targets
 from tools.mapkit import vq37_native_fuel_cut
 
 
+SH7059_ROMS = (
+    runtime_targets.SH7059_1ND_ROMS + runtime_targets.SH7059_1ME3B_ROMS
+)
+
+
 def test_runtime_registry_covers_all_supported_families():
     assert runtime_targets.SUPPORTED_ROMS == (
         "JK00A", "JK03A", "JK03B", "JK08A", "JK00C", "JK00D",
-        "1ND0A", "1ND3B", "JK78C",
+        "1ND0A", "1ND3B", "1ME3B", "JK78C",
     )
     assert set(runtime_targets.load_payload_locks()) == {
-        "JK00C", "JK00D", "1ND0A", "1ND3B", "JK78C"
+        "JK00C", "JK00D", "1ND0A", "1ND3B", "1ME3B", "JK78C"
     }
     for rom in runtime_targets.EXACT_ROMS:
         target = runtime_targets.load_runtime_target(rom)
@@ -102,6 +107,8 @@ def test_vq37_target_has_complete_target_specific_runtime(rom):
     expected = (
         (runtime_targets.SH7059_1ND_FAMILY, "sh7059-1nd")
         if rom in runtime_targets.SH7059_1ND_ROMS
+        else (runtime_targets.SH7059_1ME3B_FAMILY, "sh7059-1me3b")
+        if rom in runtime_targets.SH7059_1ME3B_ROMS
         else (runtime_targets.SH7058_JK78C_FAMILY, "sh7058-jk78")
     )
     assert (target.family, target.map_layout.variant) == expected
@@ -120,7 +127,7 @@ def test_vq37_target_has_complete_target_specific_runtime(rom):
     }
     assert target.telemetry_layout.variant == "mailbox26-tail-chain"
     assert len(target.map_layout.families) == (
-        18 if rom in runtime_targets.SH7059_1ND_ROMS else 14
+        18 if rom in SH7059_ROMS else 14
     )
     assert set(target.map_payloads) == {
         unit.key for unit in target.map_layout.assembly_units
@@ -202,14 +209,14 @@ def test_vq37_sources_encode_target_variants(rom):
     rolling_parsed = rolling_launch_assembly.validate_assembly_sources(
         target.rolling_layout
     )
-    # The 1ND layout adds the 30-instruction state-code ignition adapter.
-    is_1nd = rom in runtime_targets.SH7059_1ND_ROMS
+    # The SH7059 layouts add the 30-instruction state-code ignition adapter.
+    has_state_adapter = rom in SH7059_ROMS
     assert (
         "ignition_state_adapter" in target.map_layout.source_text_by_unit
-    ) == is_1nd
+    ) == has_state_adapter
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
-    ).instructions == (467 if is_1nd else 437)
+    ).instructions == (467 if has_state_adapter else 437)
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
     ).instructions == 690
@@ -238,6 +245,7 @@ def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
         ("JK78C", 0x0001FA00, 0x0001FA80, 0x00020000),
         ("1ND0A", 0x00135000, 0x00135580, 0x00136000),
         ("1ND3B", 0x00135000, 0x00135580, 0x00136000),
+        ("1ME3B", 0x0013E000, 0x0013E580, 0x0013F000),
     ),
 )
 def test_vq37_reserve_starts_after_the_last_injected_block(
@@ -323,6 +331,8 @@ def test_vq37_ignition_families_are_the_executed_coordinator_half(rom):
     expected = (
         (0x0000A410, 0x0000A510)
         if rom in runtime_targets.SH7059_1ND_ROMS
+        else (0x0000A344, 0x0000A444)
+        if rom in runtime_targets.SH7059_1ME3B_ROMS
         else (0x0000A10A, 0x0000A20A)
     )
 
@@ -340,6 +350,12 @@ def test_vq37_ignition_families_are_the_executed_coordinator_half(rom):
     )
     assert hot.byte_length == cold.byte_length == 256
     data = target.stock_image.data
+    if rom in runtime_targets.SH7059_1ME3B_ROMS:
+        # The 1ME3B coordinator has no gated half: bit 3 of its configuration
+        # byte selects the state-code dispatch.
+        assert data[symbols["ignition_coordinator_config_byte"]] & 0x08
+        assert not any(key.startswith("ignition_gated_") for key in symbols)
+        return
     assert data[symbols["ignition_coordinator_config_byte"]] & 0x20
     gated = [
         symbols[f"ignition_gated_surface_{index}"] for index in (1, 2, 3)
@@ -414,19 +430,28 @@ def test_vq37_gated_ignition_surface_must_stay_outside_the_families():
         runtime_targets._validate_vq37_ignition_halves(damaged, profile)
 
 
-@pytest.mark.parametrize("rom", runtime_targets.SH7059_1ND_ROMS)
-def test_1nd_state_code_ignition_families_use_their_own_adapter(rom):
+@pytest.mark.parametrize("rom", SH7059_ROMS)
+def test_sh7059_state_code_ignition_families_use_their_own_adapter(rom):
     target = runtime_targets.load_runtime_target(rom)
     profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
     storage = profile.ignition_state_storage
     families = target.map_layout.family_by_key
     code = target.map_layout.code_region_by_key
-    expected = {
-        "ignition_surface_state_3": 0x0000A610,
-        "ignition_surface_state_4": 0x0000A710,
-        "ignition_surface_state_5": 0x0000A690,
-        "ignition_surface_state_6_7": 0x0000A6D0,
-    }
+    expected = (
+        {
+            "ignition_surface_state_3": 0x0000A544,
+            "ignition_surface_state_4": 0x0000A644,
+            "ignition_surface_state_5": 0x0000A5C4,
+            "ignition_surface_state_6_7": 0x0000A604,
+        }
+        if rom in runtime_targets.SH7059_1ME3B_ROMS
+        else {
+            "ignition_surface_state_3": 0x0000A610,
+            "ignition_surface_state_4": 0x0000A710,
+            "ignition_surface_state_5": 0x0000A690,
+            "ignition_surface_state_6_7": 0x0000A6D0,
+        }
+    )
 
     assert tuple(item.key for item in storage.families) == tuple(expected)
     for item in storage.families:
@@ -440,7 +465,11 @@ def test_1nd_state_code_ignition_families_use_their_own_adapter(rom):
         item for item in target.map_layout.hooks
         if item.key == "ignition_state_lookup"
     )
-    assert (hook.address, hook.stock) == (0x00074FB0, 0x000285B4)
+    assert (hook.address, hook.stock) == (
+        (0x00079994, 0x000293D8)
+        if rom in runtime_targets.SH7059_1ME3B_ROMS
+        else (0x00074FB0, 0x000285B4)
+    )
     assert hook.replacement == code["ignition_state_adapter"].entry
     assert code["ignition_state_adapter"].span.start == (
         target.rolling_layout.code_region_by_key["fuel_cut_wrapper"].span.end
@@ -493,3 +522,98 @@ def test_1nd_state_code_ignition_hook_must_hold_the_stock_lookup():
         match="ignition state lookup literal differs",
     ):
         runtime_targets._validate_ignition_state_pool(damaged, profile)
+
+
+
+def test_1me3b_binds_only_the_live_coordinator_literals():
+    target = runtime_targets.load_runtime_target("1ME3B")
+    profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
+    data = bytes(target.stock_image.data)
+    routine = profile.ignition_unreferenced_routine
+
+    assert (routine.start, routine.end) == (0x000791A4, 0x000797CC)
+    assert {
+        item.key for item in target.map_layout.hooks
+        if item.key.startswith("ignition_lookup_")
+    } == {"ignition_lookup_1", "ignition_lookup_2"}
+    lookup = profile.map_symbol_by_key["ignition_lookup"]
+    # The unreferenced coordinator copy keeps three private literals of the
+    # 16x16 lookup; the periodic coordinator owns the two hooked ones.
+    assert runtime_targets._aligned_literal_sites(data, lookup) == [
+        0x00079420, 0x000796F4, 0x000799A4, 0x00079CAC, 0x00079E24,
+    ]
+    assert runtime_targets._live_literal_sites(data, lookup, profile) == [
+        0x00079CAC, 0x00079E24,
+    ]
+    runtime_targets._validate_state_dispatch_coordinator(target, profile)
+    runtime_targets._validate_ignition_state_pool(target, profile)
+
+
+def test_1me3b_ignition_binding_requires_the_state_code_dispatch():
+    target = runtime_targets.load_runtime_target("1ME3B")
+    profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
+    address = profile.map_symbol_by_key["ignition_coordinator_config_byte"]
+    damaged = _with_stock_byte(
+        target, address, target.stock_image.data[address] & ~0x08
+    )
+
+    with pytest.raises(
+        runtime_targets.RuntimeTargetError,
+        match="gates the state-code ignition dispatch off",
+    ):
+        runtime_targets._validate_state_dispatch_coordinator(damaged, profile)
+
+
+def test_1me3b_live_ignition_lookup_literal_must_be_hooked():
+    target = runtime_targets.load_runtime_target("1ME3B")
+    profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
+    # The live literal 0x00079E40 names the 8x8 lookup 0x000293D8 of the
+    # reference surface; one word turns it into an unhooked 16x16 literal.
+    assert target.stock_image.data[0x00079E40:0x00079E44] == bytes.fromhex(
+        "000293d8"
+    )
+    damaged = _with_stock_byte(target, 0x00079E42, 0x9B)
+    damaged = _with_stock_byte(damaged, 0x00079E43, 0xA8)
+
+    with pytest.raises(
+        runtime_targets.RuntimeTargetError,
+        match="live 16x16 ignition lookup literals differ",
+    ):
+        runtime_targets._validate_state_dispatch_coordinator(damaged, profile)
+
+
+def test_1me3b_state_code_ignition_base_must_stay_in_the_hooked_pool():
+    target = runtime_targets.load_runtime_target("1ME3B")
+    profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
+    # The live pool names the reference surface 0x0000A584 before the
+    # unhooked 8x8 literal; one byte turns it into a second live literal of
+    # the state code 3 base.
+    assert target.stock_image.data[0x00079E3C:0x00079E40] == bytes.fromhex(
+        "0000a584"
+    )
+    damaged = _with_stock_byte(target, 0x00079E3F, 0x44)
+
+    with pytest.raises(
+        runtime_targets.RuntimeTargetError,
+        match="table base is not a single literal of the hooked lookup pool",
+    ):
+        runtime_targets._validate_ignition_state_pool(damaged, profile)
+
+
+def test_1me3b_sources_test_the_target_ascd_flag():
+    target = runtime_targets.load_runtime_target("1ME3B")
+    reference = runtime_targets.load_runtime_target("1ND0A")
+    profile = runtime_targets.rom_address_profiles.profile_for_rom("1ME3B")
+
+    assert profile.ascd_enabled_mask == 0x08
+    host = target.map_layout.source_text_by_unit["selector_host"]
+    engine = target.rolling_layout.source_text_by_unit["engine"]
+    assert "mov #0x08,r1\ntst r1,r0\nbf host_abort_selector\n" in host
+    assert "mov #-0x80,r1" not in host
+    assert "mov.b @r4,r0\ntst 0x08,r0\nbf rl_gate_ascd_fail\n" in engine
+    assert "mov #-0x80,r1\ntst r1,r0\nbf host_abort_selector\n" in (
+        reference.map_layout.source_text_by_unit["selector_host"]
+    )
+    assert "mov.b @r4,r0\ntst 0x80,r0\nbf rl_gate_ascd_fail\n" in (
+        reference.rolling_layout.source_text_by_unit["engine"]
+    )
