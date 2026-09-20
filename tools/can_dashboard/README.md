@@ -1,6 +1,6 @@
 # VQ CAN telemetry dashboard
 
-Current dashboard version: `7.0.0`.
+Current dashboard version: `7.1.0`.
 
 This Tkinter application displays and records VQ custom CAN telemetry from a
 PEAK PCAN-USB adapter on Windows or macOS. The host application is ROM-agnostic:
@@ -60,7 +60,7 @@ Build the ignored transfer archive from the repository root:
 
 ```bash
 python3 tools/can_dashboard/package_windows.py \
-  --output tmp/vq-can-telemetry-v7.0.0-windows.zip
+  --output tmp/vq-can-telemetry-v7.1.0-windows.zip
 ```
 
 On the Windows laptop:
@@ -120,11 +120,11 @@ make dashboard-package-macos
 The target writes:
 
 - `tmp/VQ CAN Telemetry.app` for direct local use;
-- `tmp/vq-can-telemetry-v7.0.0-macos-arm64.zip` for transfer.
+- `tmp/vq-can-telemetry-v7.1.0-macos-arm64.zip` for transfer.
 
 The build uses pinned PyInstaller 6.21.0 in `onedir`, `windowed` mode. It embeds
 the tested Python/Tk runtime and all Python dependencies, preserves bundle
-symlinks in the ZIP, records version 7.0.0 in `Info.plist`, and applies an
+symlinks in the ZIP, records version 7.1.0 in `Info.plist`, and applies an
 ad-hoc signature. The build gate verifies the arm64 architecture, deep code
 signature, complete bundle metadata, and a hidden deterministic UI/demo run.
 The same gate loads the frozen `python-can` PCAN backend and the installed
@@ -187,6 +187,76 @@ when preserving another client's PCAN-Basic ownership is intentional.
 Replay accepts PEAK PCAN-View TRC 1.1 files directly, including the `.trc`
 captures used by the project. It also accepts compact candump lines such as
 `(12.500000) can0 6F0#A001020304050607`.
+
+## Live value feed
+
+`--publish-udp [HOST:]PORT` sends the engineering values of the latest complete
+schema-verified snapshot to one UDP endpoint; a port alone selects
+`127.0.0.1`. The feed follows every source, so `--demo` and `--replay` exercise
+a receiver without CAN hardware. One datagram is sent per 50 ms UI poll that
+completed at least one snapshot. The payload is ASCII:
+
+```text
+RRUDP1 rpm=2512.5 load=43.75 bfs_ms=5.81543 timing_deg=24 ...
+```
+
+The first token names the format and its version. Every other token is
+`key=value` with a finite decimal value of seven significant digits. A channel
+without a finite value is left out, and the receiver keeps its previous value.
+Nothing is sent until the wire schema is verified. The `Feed` status field
+reports the endpoint, the datagram count, and the last send error.
+
+`--bfs-reference RAW` is required with `--publish-udp`. It is the raw Base Fuel
+Schedule at 100 percent internal load, the ROM-specific calibration word that
+the ECU divides Base Fuel Schedule by; decimal and `0x` forms are accepted.
+Stock JK08A holds 27226 at `ROM16[0x9534]`. The `load` channel reconstructs the
+coordinate that the ECU indexes its maps by:
+
+```text
+load = min(255, floor(bfs_raw * 128 / RAW)) * 100 / 128
+```
+
+The host schema stays ROM-neutral, so the reference is a run parameter rather
+than a schema field. A reference that differs from the running calibration
+shifts `load` on every load axis.
+
+| Key | RomRaider Logger ID | Units | Source |
+| --- | --- | --- | --- |
+| `rpm` | `X_VQ_Engine_Speed` | RPM | `rpm_raw * 12.5` |
+| `load` | `X_VQ_Engine_Load` | % | reconstructed internal load coordinate |
+| `bfs_ms` | `X_VQ_Base_Fuel_Schedule` | ms | `bfs_raw / 2048` |
+| `timing_deg` | `X_VQ_Timing_Command` | degBTDC | `final_timing_raw` |
+| `maf_g_s` | `X_VQ_Total_Airflow` | g/s | `maf_total_raw / 100` |
+| `throttle_pct` | `X_VQ_Absolute_Throttle` | % | `absolute_throttle_raw * 100 / 255` |
+| `coolant_c` | `X_VQ_Coolant_Temperature` | C | `coolant_raw - 50` |
+| `iat_c` | `X_VQ_Intake_Air_Temperature` | C | `iat_raw - 50` |
+| `intake_cam_b1_deg`, `intake_cam_b2_deg` | `X_VQ_Intake_Cam_B1`, `X_VQ_Intake_Cam_B2` | degCA | `(raw - 128) * 0.5` |
+| `stft_b1_pct`, `stft_b2_pct` | `X_VQ_STFT_B1`, `X_VQ_STFT_B2` | % | `raw / 256 - 100` |
+| `ltft_b1_pct`, `ltft_b2_pct` | `X_VQ_LTFT_B1`, `X_VQ_LTFT_B2` | % | `raw / 256 - 100` |
+| `battery_v` | `X_VQ_Battery_Voltage` | V | `battery_voltage_raw * 0.08` |
+
+### RomRaider table overlay
+
+RomRaider Logger receives the feed through its UDP external data source. The
+plugin file declares the same channel table, so the dashboard writes it:
+
+```bash
+python3 -m tools.can_dashboard.live_feed \
+  --write-plugin <RomRaider>/plugins/vq-telemetry.plugin
+```
+
+`--endpoint [HOST:]PORT` selects another listening endpoint; the default is
+`127.0.0.1:47809`. RomRaider derives a Logger ID from the item name as `X_` plus
+the name with underscores for spaces. A table axis whose definition carries
+that ID in `logparam` follows the live value: with `Overlay Log` enabled on the
+table toolbar, RomRaider outlines the cell at the axis values nearest to the
+live coordinates.
+
+RomRaider Logger has no transport to this ECU, so it runs with no ECU module
+selected and polls external sources alone. The Logger must be started from the
+RomRaider editor, because the overlay reaches only tables of the same process.
+The Logger samples the last received value; its own CSV is therefore a
+resampled copy, and the MLG recording stays the reference log.
 
 ## MLG recording
 
@@ -362,6 +432,6 @@ operator-confirmed observations outside the saved trace. ASCD byte 3 code
 `10` is RESUME/ACCEL and has the same evidence boundary.
 
 That capture establishes the dashboard source path, stock context bindings,
-mailbox-26 operation, and the earlier bus-load level. Dashboard 7.0.0 does not
+mailbox-26 operation, and the earlier bus-load level. Dashboard 7.1.0 does not
 decode schema 1. The eleven-frame schema-2 stream requires its own bounded
 target-vehicle capture before normal logging use.

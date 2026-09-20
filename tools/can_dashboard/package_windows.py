@@ -30,6 +30,7 @@ SOURCE_FILES = (
     "tools/logs/trc_to_mlg.py",
     "tools/can_dashboard/__init__.py",
     "tools/can_dashboard/app.py",
+    "tools/can_dashboard/live_feed.py",
     "tools/can_dashboard/model.py",
     "tools/can_dashboard/recording.py",
     "tools/can_dashboard/sources.py",

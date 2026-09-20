@@ -27,6 +27,11 @@ from tools.can_dashboard.model import (
     DashboardModel,
     FrameRecord,
 )
+from tools.can_dashboard.live_feed import (
+    LiveFeed,
+    parse_endpoint,
+    validate_bfs_reference,
+)
 from tools.can_dashboard.recording import TelemetryMlgRecorder
 from tools.can_dashboard.sources import (
     ControlRequest,
@@ -432,6 +437,9 @@ class DashboardApp:
         )
         self.recorder = None
         self.recording_clock = None
+        self.feed = None
+        if args.publish_udp is not None:
+            self.feed = LiveFeed(*args.publish_udp, args.bfs_reference)
         self.last_ui_group = 0
         self.stream_command = "start"
         self.source_button_active = False
@@ -592,6 +600,7 @@ class DashboardApp:
         self.loss_var = tk.StringVar(value="Loss: 0 | Incomplete: 0 | Malformed: 0")
         self.control_var = tk.StringVar(value="Control: idle")
         self.record_var = tk.StringVar(value="MLG: idle")
+        self.feed_var = tk.StringVar(value="Feed: off")
         for variable, title, color, align, sample in (
             (
                 self.source_var,
@@ -628,6 +637,13 @@ class DashboardApp:
                 AMBER,
                 "right",
                 "MLG: recording telemetry.mlg",
+            ),
+            (
+                self.feed_var,
+                "Live value feed",
+                MUTED,
+                "right",
+                "Feed: udp 127.0.0.1:47809, 999999 sent",
             ),
         ):
             bar.add(
@@ -1041,6 +1057,7 @@ class DashboardApp:
     def _poll(self):
         now = time.monotonic()
         processed = 0
+        new_snapshot = False
         while processed < 4000:
             try:
                 envelope = self.events.get_nowait()
@@ -1065,6 +1082,7 @@ class DashboardApp:
                     )
             elif isinstance(event, FrameRecord):
                 snapshot = self.model.process_frame(event)
+                new_snapshot = new_snapshot or snapshot is not None
                 if snapshot is not None and self.recorder is not None:
                     elapsed = self.recording_clock.elapsed(event, now)
                     if elapsed is None:
@@ -1077,6 +1095,9 @@ class DashboardApp:
                         self.recording_clock = None
                         self.record_button.configure(text="Record MLG")
                         self.record_var.set(f"MLG error: {error}")
+        if new_snapshot and self.feed is not None:
+            self.feed.publish(self.model)
+            self.feed_var.set(f"Feed: {self.feed.status()}")
         self._refresh(now)
         self.root.after(50, self._poll)
 
@@ -1189,6 +1210,8 @@ class DashboardApp:
 
     def close(self):
         self.stop_source()
+        if self.feed is not None:
+            self.feed.close()
         self.root.destroy()
 
 
@@ -1240,6 +1263,18 @@ def build_parser():
         type=Path,
         help="start MLVLG recording to this new file",
     )
+    parser.add_argument(
+        "--publish-udp",
+        metavar="[HOST:]PORT",
+        help="send live engineering values to this UDP endpoint",
+    )
+    parser.add_argument(
+        "--bfs-reference",
+        type=lambda value: int(value, 0),
+        metavar="RAW",
+        help="raw Base Fuel Schedule at 100 percent internal load; "
+        "required by --publish-udp",
+    )
     return parser
 
 
@@ -1253,6 +1288,14 @@ def main(argv=None):
         raise SystemExit("tick divisor must be in 1..255")
     if not math.isfinite(args.replay_speed) or args.replay_speed <= 0:
         raise SystemExit("replay speed must be positive")
+    if args.publish_udp is not None:
+        if args.bfs_reference is None:
+            raise SystemExit("--publish-udp requires --bfs-reference")
+        try:
+            args.publish_udp = parse_endpoint(args.publish_udp)
+            validate_bfs_reference(args.bfs_reference)
+        except ValueError as error:
+            raise SystemExit(str(error)) from error
     if args.pcan_driver_check:
         from tools.can_dashboard.sources import _check_pcan_driver
 
