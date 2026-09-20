@@ -316,7 +316,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             on_ticks=1,
             off_ticks=1,
         )
-        self.assertEqual(status, 0xED)
+        self.assertEqual(status, 0xCD)
         self.assertEqual(state.phase, selector.FeedbackPhase.OFF)
 
         state, status = selector.advance_visual_feedback(
@@ -341,7 +341,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
             outputs.append(status & selector.FEEDBACK_STATUS_MASK)
         self.assertEqual(
             outputs,
-            [0x60, 0x60, 0, 0, 0x60, 0x60, 0, 0],
+            [0x40, 0x40, 0, 0, 0x40, 0x40, 0, 0],
         )
         self.assertEqual(state, selector.FeedbackState())
 
@@ -389,7 +389,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
         state, status = selector.advance_configured_visual_feedback(
             state, 0xB5
         )
-        self.assertEqual(status, 0xE5)
+        self.assertEqual(status, 0xC5)
         self.assertEqual(
             state,
             selector.FeedbackState(
@@ -410,7 +410,7 @@ class MapSwitchingSelectorTest(unittest.TestCase):
                 off_ticks=2,
             )
             outputs.append(status)
-        self.assertEqual(outputs, [0xE5, 0xE5, 0x85, 0x85])
+        self.assertEqual(outputs, [0xC5, 0xC5, 0x85, 0x85])
         self.assertEqual(state, selector.FeedbackState())
 
 

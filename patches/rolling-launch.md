@@ -107,15 +107,15 @@ three-bit ASCD field in bits 4..6 of byte 5 in CAN frame `0x551`:
 | Runtime state | Dashboard field |
 | --- | --- |
 | normal `IDLE` | preserve the stock serializer result |
-| failed activation while CANCEL remains held | state 6 (`0x60`); exact target illuminates CRUISE and SET |
-| `ACTIVE` | state 7 (`0x70`) |
+| failed activation while CANCEL remains held | state 6 (`0x60`), the stock CRUISE with blinking SET state; exact target illuminates CRUISE and SET |
+| `ACTIVE` | state 7 (`0x70`), a value without a stock producer |
 | `COOLDOWN` | state 0 (`0x00`) |
 | corrupt phase | preserve the stock serializer result |
 
 A failed attempt requires both a nonzero abort reason and the published
 `BUTTON_HELD` gate flag. Releasing CANCEL removes the failure indication on the
 next evaluated state. The indication is level-based and does not change the
-30/30 map-feedback pulse timing.
+map-feedback pulse timing.
 
 ### Passive CAN evidence
 
@@ -125,10 +125,11 @@ The 2026-08-16 `1.10` vehicle capture contains 233,442 standard frames over
 282 SET samples, and 1,349 CANCEL samples. Frame `0x551` byte 5 contains 868
 stock-value samples at `0x02`, 193 custom state-6 samples at `0x62`, and 111
 Rolling Launch ACTIVE state-7 samples at `0x72`. Exact-target observation of
-map feedback establishes that state 6 illuminates SET together with CRUISE; the
-earlier CRUISE-only label is rejected. State 5 is the leading CRUISE-only
-candidate and requires a passive stock-state correlation. That correlation is
-deferred while target-vehicle diagnostics are unavailable.
+map feedback establishes that state 6 illuminates SET together with CRUISE.
+The stock display-state writer `FUN_000CEABC` assigns state 4 to CRUISE with
+steady SET, state 5 to CRUISE alone, and state 6 to CRUISE with a blinking SET
+lamp; `../defs/JK08A.can.md` records the encoding. The `1.10` capture predates
+the state-4 map feedback of the current runtime.
 
 The full-field isolation correction from firmware `1.9` is present in this
 runtime: both feedback paths clear mask `0x70` with immediate `0x8F` before

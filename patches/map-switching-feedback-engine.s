@@ -1,12 +1,14 @@
-// Fail-closed CRUISE-indicator pulse engine for CAN 0x551.
+// Fail-closed CRUISE and SET indicator pulse engine for CAN 0x551.
 //
 // The function runs after the exact stock serializer. It replaces the complete
-// three-bit ASCD state in bits 4-6 of payload byte 5 while a structurally valid
-// feedback sequence is active. The 0x8F mask clears all three stock field bits,
-// so a preserved bit 4 cannot promote state 6 to state 7. The current endpoint
-// emits state 6 for ON and state 0 for OFF. Exact-target observation shows that
-// state 6 itself illuminates SET together with CRUISE, so its CRUISE-only
-// semantics are rejected. Zero or incomplete frame-count configuration disables
+// three-bit ASCD display state in bits 4-6 of payload byte 5 while a
+// structurally valid feedback sequence is active. The 0x8F mask clears all
+// three stock field bits, so no stock bit survives into the injected state.
+// ON emits state 4 and OFF emits state 0. The field is the latched stock ASCD
+// display state: 4 is the engaged state with CRUISE and SET steadily lit, 5 is
+// the standby state with CRUISE alone, and 6 is the fault state in which the
+// SET lamp blinks on its own timer. State 4 therefore switches both lamps
+// together in each phase. Zero or incomplete frame-count configuration disables
 // feedback, clears its transient state, and preserves the complete stock payload.
 //
 // feedback_phase_counts contains two uint8 values:
@@ -60,7 +62,7 @@ mov r0,r7
 mov r6,r0
 cmp/eq 0x1,r0
 bf feedback_status_off
-mov #0x60,r0
+mov #0x40,r0
 bra feedback_status_merge
 nop
 feedback_status_off:

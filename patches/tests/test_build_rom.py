@@ -438,30 +438,56 @@ class BuildRomTest(unittest.TestCase):
         self.assertGreater(result.preserved_map_copy_bytes, 0)
         self.assertTrue(checksums.verify(result.data).valid)
 
-    def test_previous_feedback_state_mask_endpoint_can_be_migrated(self):
-        historical = bytearray(self.base_result.data)
+    def test_state_6_feedback_endpoints_can_be_migrated(self):
         engine = self.map_layout.assembly_unit_by_key[
             "cruise_feedback_engine"
         ]
         status_mask_immediate = engine.span.start + 0x41
-        self.assertEqual(historical[status_mask_immediate], 0x8F)
-        historical[status_mask_immediate] = 0x9F
+        lamp_on_immediate = engine.span.start + 0x4B
+        phase_counts = self.map_layout.feedback.phase_counts_address
+        for status_mask in (0x8F, 0x9F):
+            with self.subTest(status_mask=status_mask):
+                historical = bytearray(self.base_result.data)
+                self.assertEqual(historical[status_mask_immediate], 0x8F)
+                self.assertEqual(historical[lamp_on_immediate], 0x40)
+                self.assertEqual(
+                    historical[phase_counts : phase_counts + 2],
+                    bytes((20, 20)),
+                )
+                historical[status_mask_immediate] = status_mask
+                historical[lamp_on_immediate] = 0x60
+                historical[phase_counts : phase_counts + 2] = bytes((30, 30))
+                historical = checksums.recalculate(historical)
+                self.assertIn(
+                    build_rom.sha256(
+                        historical[engine.span.start : engine.span.end]
+                    ),
+                    build_rom.HISTORICAL_FEEDBACK_ENGINE_SHA256,
+                )
+
+                result = build_rom.build_image(
+                    historical, source_name="state-6 feedback endpoint"
+                )
+
+                self.assertEqual(
+                    result.input_state, "complete-runtime-migration"
+                )
+                self.assertEqual(result.data, self.base_result.data)
+
+    def test_unregistered_feedback_engine_is_rejected(self):
+        historical = bytearray(self.base_result.data)
+        engine = self.map_layout.assembly_unit_by_key[
+            "cruise_feedback_engine"
+        ]
+        historical[engine.span.start + 0x4B] = 0x50
         historical = checksums.recalculate(historical)
-        self.assertIn(
-            build_rom.sha256(
-                historical[engine.span.start : engine.span.end]
-            ),
-            build_rom.HISTORICAL_FEEDBACK_ENGINE_SHA256,
-        )
 
-        result = build_rom.build_image(
-            historical, source_name="previous feedback state mask"
-        )
-
-        self.assertEqual(
-            result.input_state, "complete-runtime-migration"
-        )
-        self.assertEqual(result.data, self.base_result.data)
+        with self.assertRaisesRegex(
+            build_rom.BuildError, "cruise_feedback_engine differs"
+        ):
+            build_rom.build_image(
+                historical, source_name="unregistered feedback engine"
+            )
 
     def test_pre_feedback_indicator_endpoint_can_be_migrated(self):
         telemetry_layout = build_rom.can_telemetry_layout.load_layout()

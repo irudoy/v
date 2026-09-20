@@ -47,14 +47,14 @@ payload_start = 0xFFFF3AD5
 status_byte_index = 5
 status_byte_address = 0xFFFF3ADA
 status_mask = 0x70
-lamp_on_value = 0x60
+lamp_on_value = 0x40
 lamp_off_value = 0x00
 phase_counts_address = 0x000D3848
 payload_on_frames = 10
 payload_off_frames = 10
-default_on_frames = 30
-default_off_frames = 30
-encoding_evidence = "exact_serializer_three_bit_state_and_target_vehicle_feedback"
+default_on_frames = 20
+default_off_frames = 20
+encoding_evidence = "exact_serializer_three_bit_state_and_stock_ascd_display_state_machine"
 
 [[code_region]]
 key = "selector_host"
@@ -224,7 +224,7 @@ start = 0x000D3760
 end = 0x000D3860
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "0e0501f3d91e18a17c6a9bf7c4ebd187809c094fbf701f9d2864fd4792f9b32e"
+expected_sha256 = "ba22128505c18a4f6c635f35e20bcdb65b6fae9c6f98f538fda674bcc0ae215a"
 instruction_count = 84
 data_bytes = 10
 code_regions = ["cruise_feedback_engine"]

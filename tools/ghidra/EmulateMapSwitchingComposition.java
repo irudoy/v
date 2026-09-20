@@ -86,7 +86,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "7eb703d38eef2ab51cd4a2b2b28a7a80e24d475debc1b8ddf69b6ccd7e96b222";
+            "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -182,7 +182,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36"),
         new UnitSpec(
                 "cruise_feedback_engine", 7, 0x000D3760L, 0x100,
-                "0e0501f3d91e18a17c6a9bf7c4ebd187809c094fbf701f9d2864fd4792f9b32e"),
+                "ba22128505c18a4f6c635f35e20bcdb65b6fae9c6f98f538fda674bcc0ae215a"),
         new UnitSpec(
                 "idle_ignition_adapter", 8, 0x000D4000L, 0x40,
                 "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4f35"),
@@ -506,8 +506,8 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     compositeRom, permitted, unit.start(), blob,
                     "assembly." + unit.key());
         }
-        compositeRom[(int) CONFIG_ADDRESS] = 30;
-        compositeRom[(int) CONFIG_ADDRESS + 1] = 30;
+        compositeRom[(int) CONFIG_ADDRESS] = 20;
+        compositeRom[(int) CONFIG_ADDRESS + 1] = 20;
 
         int changed = 0;
         int permittedBytes = 0;
@@ -536,10 +536,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                     + ", expected " + COMPOSED_SHA);
         }
         if (
-                compositeRom[(int) CONFIG_ADDRESS] != 30
-                || compositeRom[(int) CONFIG_ADDRESS + 1] != 30) {
+                compositeRom[(int) CONFIG_ADDRESS] != 20
+                || compositeRom[(int) CONFIG_ADDRESS + 1] != 20) {
             throw new IllegalStateException(
-                    "locked feedback frame counts are not 30/30");
+                    "locked feedback frame counts are not 20/20");
         }
         for (long[] field : CHECKSUM_FIELDS) {
             byte[] stock = slice(stockRom, field[0], (int) field[1]);
@@ -983,14 +983,14 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "two-pulses-2x2", 0x0202,
                 state(0, 0, 0, 0, 2, 1, 0, 0),
                 new int[]{
-                    0xE5, 0xE5, 0x85, 0x85,
-                    0xE5, 0xE5, 0x85, 0x85,
+                    0xC5, 0xC5, 0x85, 0x85,
+                    0xC5, 0xC5, 0x85, 0x85,
                 },
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "one-pulse-1x1", 0x0101,
                 state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xE5, 0x85},
+                new int[]{0xC5, 0x85},
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runFeedbackSequence(
                 "idle", 0x0202, state(0, 0, 0, 0, 0, 0, 0, 0),

@@ -229,10 +229,10 @@ rolling_launch_active_byte5 = 0x72
 hardware_status = "functional_fail"
 operator_observation = "map feedback illuminates SET together with CRUISE"
 code_result = "the v1.9 full-field isolation fix remains present; map feedback and Rolling Launch ACTIVE occupy separate intervals; state 6 itself has incorrect exact-target lamp semantics"
-candidate_cruise_only_state = 5
-candidate_status = "deferred"
-candidate_blocker = "target-vehicle diagnostics unavailable"
-candidate_resume_gate = "passive stock CRUISE MAIN OFF-ON-OFF capture"
+stock_state_semantics = "FUN_000CEABC assigns state 4 to CRUISE with steady SET, state 5 to CRUISE alone, and state 6 to CRUISE with a blinking SET lamp"
+both_lamp_state = 4
+both_lamp_state_byte5 = 0x42
+both_lamp_state_hardware_status = "untested"
 
 [map_switching.calibration_effects_v1_11]
 observed_on = "2026-08-17"

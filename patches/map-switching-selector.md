@@ -2,7 +2,8 @@
 
 This document defines the current map-switching runtime for the exact JK08A
 code base. The runtime provides five calibration slots, a steering-wheel
-selector, atomic limiter publication, and CRUISE-lamp confirmation.
+selector, atomic limiter publication, and confirmation pulses on the CRUISE
+and SET lamps.
 
 The authoritative storage, hook, family, and payload metadata is held in:
 
@@ -19,9 +20,11 @@ derived ROM bytes, and active tune identities remain local and unversioned.
 
 The current endpoint is software-verified. Vehicle capture of firmware `1.11`
 confirms Map 2 and Map 3 commits, serialized pulse counts, and selected
-calibration effects. It rejects the current visual ON state: state 6
-illuminates SET together with CRUISE on the exact target. The timing is 30
-serializer invocations ON followed by 30 invocations OFF for each pulse.
+calibration effects. That firmware emits ASCD display state 6 during the ON
+phase, and the exact target lights CRUISE at once and SET after a delay. The
+current endpoint emits state 4, which the stock display-state machine assigns
+to steadily lit CRUISE and SET, and has no vehicle result. The timing is 20
+serializer invocations ON followed by 20 invocations OFF for each pulse.
 Hardware status is read only from `hardware-results.toml`; successful results
 from earlier compositions do not qualify a changed endpoint.
 
@@ -176,44 +179,76 @@ RAM bindings are recorded in `../defs/vq37-native-fuel-cut.toml`.
 ## Visual feedback
 
 The feedback wrapper calls the stock CAN serializer first. While a valid pulse
-sequence is active, it replaces the complete three-bit ASCD state in bits 4..6
-of byte 5 in CAN frame `0x551`:
+sequence is active, it replaces the complete three-bit ASCD display state in
+bits 4..6 of byte 5 in CAN frame `0x551`:
 
-| Phase | State | Masked value | Exact-target result |
+| Phase | State | Masked value | Lamps |
 | --- | ---: | --- | --- |
-| ON | `6` | `0x60` | CRUISE and SET illuminate; rejected for CRUISE-only feedback |
-| OFF | `0` | `0x00` | both indicators off |
+| ON | `4` | `0x40` | CRUISE and SET lit together |
+| OFF | `0` | `0x00` | both lamps off |
 
-All bits outside this field remain the stock serializer result. The full-field
-mask prevents stock bit 4 from altering the injected state, but it does not make
-state 6 CRUISE-only on the target meter. The pulse count is the selected
-one-based map number. Selector input is blocked until the queue is empty.
-Invalid feedback state clears the queue and preserves the stock frame. A
-zero/zero phase-count configuration disables feedback; a partially zero
-configuration is invalid.
+All bits outside this field remain the stock serializer result, and the `0x8F`
+clear mask removes every stock bit of the field before the state is inserted.
+The pulse count is the selected one-based map number. Selector input is blocked
+until the queue is empty. Invalid feedback state clears the queue and preserves
+the stock frame. A zero/zero phase-count configuration disables feedback; a
+partially zero configuration is invalid.
 
-Firmware `1.9` introduced the full-field isolation fix by changing the engine
-immediate at ROM offset `0xD37A1` from `0x9F` to `0x8F`. Firmware `1.11`
-retains the exact `0x8F` byte, and its capture shows map pulses as `0x62`, not
-`0x72`. The fix therefore closes accidental inheritance of state bit 4. It does
-not establish the lamp semantics of the explicitly selected state 6.
+### Display-state encoding
 
-The current layout default is 30 ON invocations and 30 OFF invocations. The
-serializer runs every `Tcan = 10.24 ms`, while frame `0x551` is transmitted
-every `10*Tcan = 102.4 ms`. Each phase therefore lasts about 307 ms and exposes
-about three transmitted frames, not 30 CAN frames. In the combined runtime, a
-Rolling Launch dashboard arbiter runs after this wrapper only when the pre-call
-feedback state is idle. A queued map pulse has strict priority over Rolling
-Launch indication for the complete serialized frame.
+The field is the stock ASCD display state. Scheduler `FUN_00020DFE` copies the
+`0x58` bytes at `0xFFFF4124` to `0xFFFF40CC` through block copier `0x22038` at
+`0x2132C`, so serializer source `0xFFFF40D0` is the latched copy of state
+`0xFFFF4128`. `FUN_000CEABC` writes that state at `0xCEE1A` and drives SET-lamp
+flag `0xFFFF4252.bit0`; `FUN_000CF020` reports CRUISE LAMP in DID `0x130E` for
+states 4, 5, and 6.
 
-The stock ASCD state machine makes internal state 5 the leading CRUISE-only
-candidate: DID `0x130E` reports CRUISE on and SET off in that state, while
-state 4 sets the SET source and state 6 toggles it. The pointer-mediated
-transfer into serializer source `0xFFFF40D0` is not statically resolved, so CAN
-state 5 (`0x50`) remains unverified. Hardware correlation is deferred while
-target-vehicle diagnostics are unavailable. Work resumes with a passive stock
-CRUISE MAIN `OFF -> ON -> OFF` capture on the current firmware. No executable
-feedback value changes before that correlation.
+| State | Stock condition | CRUISE | SET |
+| ---: | --- | --- | --- |
+| `0` | none of the conditions below | off | off |
+| `4` | `0xFFFF424E.bit1` | on | on |
+| `5` | `0xFFFF4251.bit1` | on | off |
+| `6` | `0xFFFF41AD.bit1`, or `0xFFFF424C.bit0` with `0xFFFF4251.bit1` | on | inverted on a countdown reloaded with 20 |
+
+State 6 has priority over state 4, and state 4 over state 5. The stock writer
+produces no other value. Its display-state block executes only while
+`ROM8[0x8B28]` has bit 0 set and bit 1 clear. Stock JK08A holds `0x2B`, and no
+other store to the state exists in the decompiled image, so the stock frame
+carries state 0; the saved target-vehicle captures agree.
+
+The serializer transmits the state and not the SET-lamp flag. Exact-target
+observations of injected state 6 show CRUISE lighting at the start of each ON
+phase, SET following after a short delay, and both going dark together at
+state 0; firmware `1.11` emits that state as byte 5 value `0x62`. The injected
+field is constant for the whole ON phase, so the delay originates in the meter,
+which is consistent with a meter-side blink timer for state 6. State 4 is the
+only stock state with both lamps steadily lit. The meter firmware is not
+analyzed; the lamp result of state 4 on the exact target is a hardware
+acceptance item.
+
+### Timing
+
+The layout default is 20 ON invocations and 20 OFF invocations. The serializer
+runs every `Tcan = 10.24 ms`, while frame `0x551` is transmitted every
+`10*Tcan = 102.4 ms`. Each phase therefore lasts about 205 ms and spans exactly
+two transmitted frames; one pulse period is about 410 ms. Counts that are
+multiples of ten give every phase the same number of transmitted frames
+regardless of its alignment with the transmit schedule. The locked assembly
+payload keeps 10/10, and complete compositions write the layout default. On
+the exact target 10/10 is too fast to count and 30/30 is slower than needed.
+
+In the combined runtime, a Rolling Launch dashboard arbiter runs after this
+wrapper only when the pre-call feedback state is idle. A queued map pulse has
+strict priority over Rolling Launch indication for the complete serialized
+frame.
+
+### Registered earlier engines
+
+`build_rom.py` migrates complete images whose feedback engine is one of the
+registered exact fingerprints that emit state 6: the partial `0x9F` clear mask
+and the full `0x8F` clear mask, each with 10/10, 15/15, or 30/30 phase counts.
+Firmware `1.11` carries the full-mask engine with 30/30, unit SHA-256
+`d64600dd5be497cf49df077956e2ac86159b0366ecc485b33c5633e146b4e66a`.
 
 ## Active calibration evidence
 

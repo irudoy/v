@@ -6,9 +6,10 @@
 //   IDLE with a failed CANCEL-held attempt - state 6
 //   ACTIVE                            - state 7
 //   COOLDOWN                          - state 0
-// Exact-target map-feedback observation shows that state 6 illuminates SET
-// together with CRUISE. Its use for a failed-attempt indication therefore has
-// known incorrect lamp semantics pending a stock-state correlation.
+// The field is the latched stock ASCD display state. State 6 is the stock
+// fault state: CRUISE is lit and the SET lamp blinks on its own timer, which
+// the exact target shows as SET following CRUISE. State 7 has no stock
+// producer.
 // Normal IDLE and corrupt phases preserve the stock serializer result.
 
 .org 0x000D41E0

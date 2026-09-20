@@ -406,7 +406,7 @@ The locked software result is:
 - 720 injected instructions and 770 data bytes;
 - eleven executable entries and 78 dynamic telemetry cases;
 - composition SHA-256
-  `e5c7657bba8edc825333e5ee15c3577c2f8b43027bceb979fea17db5ad4d69d6`;
+  `700d525cdae4acb46619aa7cbc95dcf98a528261a5ae01742a6b0a17b7a2ea18`;
 - 1,922 changed bytes inside a 3,488-byte declared write set.
 
 This gate proves the bounded software contract. It does not replace physical

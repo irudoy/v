@@ -158,7 +158,7 @@ class CalibrationRuntime:
 
 @dataclass(frozen=True)
 class FeedbackState:
-    """CRUISE-lamp pulse state advanced by CAN 0x551 serializations."""
+    """CRUISE and SET lamp pulse state advanced by CAN 0x551 serializations."""
 
     pulses_remaining: int = 0
     phase: int = FeedbackPhase.IDLE
@@ -494,7 +494,7 @@ def mirror_active_index(status_byte, active_index):
 
 
 def visual_confirmation_count(active_index):
-    """Return the CRUISE-lamp pulse count, with corrupt state shown as map 1."""
+    """Return the lamp pulse count, with corrupt state shown as map 1."""
     if not 0 <= active_index < SLOT_COUNT:
         active_index = 0
     return active_index + 1

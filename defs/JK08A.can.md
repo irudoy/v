@@ -123,7 +123,17 @@ The following payload claims are sufficiently narrow for use as cross-checks:
 - `0x551` byte 0 receives coolant snapshot `0xFFFF3FA4`; code 0 is the lower
   saturation and positive codes use the exact `code - 40` transform.
 - `0x551` byte 5 bits 4 through 6 contain `0xFFFF40D0 & 7`, the complete
-  three-bit ASCD display state.
+  three-bit ASCD display state. `FUN_00020DFE` latches `0xFFFF40D0` from state
+  `0xFFFF4128` through the `0x58`-byte block copy at `0x2132C`. `FUN_000CEABC`
+  writes the state at `0xCEE1A`: 6 for `0xFFFF41AD.bit1` or for
+  `0xFFFF424C.bit0` with `0xFFFF4251.bit1`, else 4 for `0xFFFF424E.bit1`, else
+  5 for `0xFFFF4251.bit1`, else 0. The same function holds SET-lamp flag
+  `0xFFFF4252.bit0` set in state 4, clear in states 0 and 5, and inverts it on
+  a countdown reloaded with 20 in state 6; `FUN_000CF020` reports CRUISE LAMP in DID
+  `0x130E` for states 4, 5, and 6. State 4 is CRUISE with steady SET, state 5
+  is CRUISE alone, and state 6 is CRUISE with blinking SET. The block executes
+  only while `ROM8[0x8B28]` has bit 0 set and bit 1 clear; stock `0x2B` keeps
+  the state at 0.
 - `0x551` byte 4 is forced to zero in exact JK08A.
 - `0x174` byte 3 high nibble is target gear and its low nibble is current gear.
   Values 1 through 7 become zero-based indices 0 through 6; every other value
@@ -301,15 +311,15 @@ Live control correlations establish `0x239` byte 3 values `0x20` for release,
 `0x10` for RESUME/ACCEL, `0x08` for SET, and `0x02` for CANCEL. The saved
 2026-08-17 trace contains release, SET, and CANCEL; the `0x10` RESUME/ACCEL
 code is an operator-confirmed live observation outside that saved trace. Frame
-`0x551` byte 5 preserves low nibble `0x02` while custom state 6 appears as
-`0x62` during map feedback and custom state 7 appears as `0x72` during Rolling
-Launch ACTIVE. Exact-target observation establishes that state 6 illuminates
-SET together with CRUISE. A CRUISE-only value is not yet bound; state 5 is the
-leading candidate from the stock ASCD diagnostic state machine. The map
-feedback mask correction first included in firmware `1.9` is present in
-firmware `1.11`: its `0x8F` immediate clears all three state bits before
-inserting `0x60`. The observed SET lamp is therefore a property of state 6 on
-the exact target, not a retained state-7 bit.
+`0x551` byte 5 preserves low nibble `0x02` while injected state 6 appears as
+`0x62` during firmware `1.11` map feedback and injected state 7 appears as
+`0x72` during Rolling Launch ACTIVE. Exact-target observation establishes that
+state 6 illuminates SET together with CRUISE. The `0x8F` immediate of that
+firmware clears all three state bits before inserting `0x60`, so the SET lamp
+is a property of state 6 on the exact target, not a retained state-7 bit. This
+agrees with the stock encoding, in which state 6 is CRUISE with a blinking SET
+lamp. The current map feedback engine inserts state 4 and appears as `0x42`;
+no saved capture contains that value. State 7 has no stock producer.
 
 Target-vehicle selector observations establish the following `0x421` byte-0
 mapping:

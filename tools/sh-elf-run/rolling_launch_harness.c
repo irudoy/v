@@ -1205,7 +1205,7 @@ static const struct feedback_case feedback_cases[] = {
     },
     {
         "feedback-map-on-priority", PHASE_ACTIVE, REASON_NONE,
-        FLAGS_OBSERVE_ACTIVE, {1, 1, 0, 0}, 0xe5, {1, 2, 0, 0},
+        FLAGS_OBSERVE_ACTIVE, {1, 1, 0, 0}, 0xc5, {1, 2, 0, 0},
     },
     {
         "feedback-map-off-priority", PHASE_ACTIVE, REASON_NONE,

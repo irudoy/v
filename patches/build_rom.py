@@ -256,11 +256,17 @@ HISTORICAL_ROLLING_ENDPOINTS = (
 )
 
 HISTORICAL_FEEDBACK_FRAME_COUNTS = ((10, 10), (15, 15))
+# Exact JK08A engine fingerprints that emit ASCD state 6 during the ON phase:
+# the partial 0x9F mask and the full 0x8F mask, each with 10/10, 15/15, and
+# 30/30 phase counts.
 HISTORICAL_FEEDBACK_ENGINE_SHA256 = frozenset(
     {
         "925a7ebc321e965bfed0fdfdc7e06287b6b794b0525226c4bd9a11187bc1f66f",
         "22c9c42f228cd827610a7e5ef848942e219e0461cbd2c9ba362ca8817130435f",
         "22c69075abb5f0c48207eb3c14a8c538f0fc17cf14f79951d55799186fc1a448",
+        "0e0501f3d91e18a17c6a9bf7c4ebd187809c094fbf701f9d2864fd4792f9b32e",
+        "017a1c01d0f2fba835a93714d1ce9e20a07e5ff709fc41ed997bf92e7124a13a",
+        "d64600dd5be497cf49df077956e2ac86159b0366ecc485b33c5633e146b4e66a",
     }
 )
 

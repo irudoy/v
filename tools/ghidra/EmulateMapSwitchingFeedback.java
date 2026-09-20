@@ -42,7 +42,7 @@ public class EmulateMapSwitchingFeedback extends GhidraScript {
     static final String WRAPPER_SHA =
             "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36";
     static final String ENGINE_SHA =
-            "0e0501f3d91e18a17c6a9bf7c4ebd187809c094fbf701f9d2864fd4792f9b32e";
+            "ba22128505c18a4f6c635f35e20bcdb65b6fae9c6f98f538fda674bcc0ae215a";
 
     // mov.l @(0xc5380,pc),r1; mov #-0x4b,r0; mov.b r0,@r1; rts; nop
     // followed by alignment padding and the 0xFFFF3ADA literal.
@@ -90,14 +90,14 @@ public class EmulateMapSwitchingFeedback extends GhidraScript {
                 "two-pulses-2x2", 0x0202,
                 state(0, 0, 0, 0, 2, 1, 0, 0),
                 new int[]{
-                    0xE5, 0xE5, 0x85, 0x85,
-                    0xE5, 0xE5, 0x85, 0x85,
+                    0xC5, 0xC5, 0x85, 0x85,
+                    0xC5, 0xC5, 0x85, 0x85,
                 },
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "one-pulse-1x1", 0x0101,
                 state(0, 0, 0, 0, 1, 1, 0, 0),
-                new int[]{0xE5, 0x85},
+                new int[]{0xC5, 0x85},
                 state(0, 0, 0, 0, 0, 0, 0, 0));
         runSequence(
                 "idle", 0x0202, state(0, 0, 0, 0, 0, 0, 0, 0),
