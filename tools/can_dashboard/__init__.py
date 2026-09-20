@@ -1,5 +1,6 @@
 """Live VQ CAN telemetry dashboard."""
 
 PRODUCT_NAME = "VQ CAN Telemetry"
+PRODUCT_SHORT_NAME = "VQCT"
 PRODUCT_SLUG = "vq-can-telemetry"
-__version__ = "8.1.0"
+__version__ = "8.1.1"

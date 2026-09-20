@@ -53,6 +53,44 @@ class TextFittingTest(unittest.TestCase):
         self.assertEqual(widgets.elide("value", _monospace, 3), "...")
 
 
+class MiddleElisionTest(unittest.TestCase):
+    def test_text_that_fits_is_returned_unchanged(self):
+        self.assertEqual(
+            widgets.elide_middle("CVTC duty B1", _monospace, 200),
+            "CVTC duty B1",
+        )
+
+    def test_unknown_width_keeps_the_full_text(self):
+        self.assertEqual(
+            widgets.elide_middle("CVTC duty B1", _monospace, 0),
+            "CVTC duty B1",
+        )
+
+    def test_both_ends_of_a_long_text_are_kept(self):
+        full = "Intake CVTC duty command B1"
+        shortened = widgets.elide_middle(full, _monospace, 126)
+        head, _ellipsis, tail = shortened.partition(widgets.ELLIPSIS)
+        self.assertLessEqual(_monospace(shortened), 126)
+        self.assertTrue(head and full.startswith(head))
+        self.assertTrue(tail and full.endswith(tail))
+        self.assertGreater(len(head), len(tail))
+
+    def test_a_trailing_bank_suffix_keeps_labels_distinct(self):
+        shortened = {
+            widgets.elide_middle(full, _monospace, 119)
+            for full in (
+                "Exhaust CVTC actual B1",
+                "Exhaust CVTC actual B2",
+                "Exhaust CVTC duty B1 word",
+                "Exhaust CVTC duty B2 word",
+            )
+        }
+        self.assertEqual(len(shortened), 4)
+
+    def test_hopeless_width_still_returns_the_ellipsis(self):
+        self.assertEqual(widgets.elide_middle("value", _monospace, 3), "...")
+
+
 class RowWrappingTest(unittest.TestCase):
     def test_items_stay_on_one_row_while_they_fit(self):
         self.assertEqual(
@@ -75,6 +113,45 @@ class RowWrappingTest(unittest.TestCase):
     def test_row_width_counts_the_gaps(self):
         self.assertEqual(widgets.row_width((100, 100, 100), 20), 340)
         self.assertEqual(widgets.row_width((), 20), 0)
+
+
+class BalancedColumnsTest(unittest.TestCase):
+    def test_a_full_row_is_kept(self):
+        self.assertEqual(widgets.balanced_columns(4, 4), 4)
+        self.assertEqual(widgets.balanced_columns(4, 9), 4)
+
+    def test_a_leftover_item_is_avoided(self):
+        self.assertEqual(widgets.balanced_columns(4, 3), 2)
+        self.assertEqual(widgets.balanced_columns(5, 4), 3)
+        self.assertEqual(widgets.balanced_columns(6, 4), 3)
+        self.assertEqual(widgets.balanced_columns(3, 2), 2)
+
+    def test_one_column_and_empty_grids(self):
+        self.assertEqual(widgets.balanced_columns(4, 1), 1)
+        self.assertEqual(widgets.balanced_columns(0, 3), 0)
+        self.assertEqual(widgets.balanced_columns(4, 0), 0)
+
+
+class LabelValueSplitTest(unittest.TestCase):
+    def test_a_wide_row_keeps_both_widths(self):
+        self.assertEqual(widgets.split_label_value(400, 120, 150, 80), (120, 150))
+
+    def test_the_value_gives_way_before_the_label(self):
+        self.assertEqual(widgets.split_label_value(240, 120, 150, 80), (120, 120))
+
+    def test_the_label_shrinks_after_the_value_reaches_its_floor(self):
+        self.assertEqual(widgets.split_label_value(180, 120, 150, 80), (100, 80))
+
+    def test_the_parts_never_exceed_the_row(self):
+        for available in range(1, 400, 7):
+            with self.subTest(available=available):
+                label, value = widgets.split_label_value(available, 170, 150, 80)
+                self.assertLessEqual(label + value, max(available, 0))
+                self.assertGreaterEqual(label, 0)
+                self.assertGreater(value, 0)
+
+    def test_an_unmeasured_row_keeps_the_declared_widths(self):
+        self.assertEqual(widgets.split_label_value(0, 120, 150, 80), (120, 150))
 
 
 class ColumnCountTest(unittest.TestCase):
@@ -157,6 +234,38 @@ class StatusFieldTest(unittest.TestCase):
         self.variable.set("Loss: 4 | Incomplete: 12 | Malformed: 3")
         self.assertTrue(field.cget("text").endswith(widgets.ELLIPSIS))
 
+    def test_outer_width_of_a_reserving_field_counts_its_border(self):
+        field = widgets.StatusField(
+            self.root,
+            self.variable,
+            title="Value",
+            background="#1d2430",
+            foreground="#e6edf3",
+            anchor="e",
+            reserve=150,
+        )
+        self.addCleanup(field.destroy)
+        self.assertEqual(field.outer_width(150), field.winfo_reqwidth())
+        self.assertLess(field.outer_width(104), field.outer_width(150))
+
+    def test_outer_width_limit_keeps_the_whole_field_within_it(self):
+        field = widgets.StatusField(
+            self.root,
+            self.variable,
+            title="Value",
+            background="#1d2430",
+            foreground="#e6edf3",
+            anchor="e",
+            reserve=150,
+        )
+        self.addCleanup(field.destroy)
+        for limit in (158, 131, 110, 64):
+            with self.subTest(limit=limit):
+                field.set_outer_width(limit)
+                self.assertLessEqual(field.winfo_reqwidth(), limit)
+        field.set_outer_width(400)
+        self.assertEqual(field.winfo_reqwidth(), field.outer_width(150))
+
     def test_click_copies_the_full_text(self):
         self.variable.set("Source: PCAN_USBBUS1, 500000 bit/s, active/ACK")
         self.field.set_available_width(50)
@@ -188,25 +297,96 @@ class FlowBarTest(unittest.TestCase):
         self.bar.layout(240)
         self.assertGreater(self.bar.rows, 1)
 
-    def test_items_stack_above_the_row_frames_that_hold_them(self):
-        self.bar.layout(2000)
-        self.root.update_idletasks()
-        order = self.bar.winfo_children()
-        frames = [
-            index
-            for index, child in enumerate(order)
-            if child.winfo_class() == "Frame"
+    def shown(self, width):
+        window = tk.Toplevel(self.root)
+        self.addCleanup(window.destroy)
+        bar = widgets.FlowBar(window, spacing_x=10, spacing_y=6, pad_x=4, pad_y=3)
+        bar.pack(fill="x")
+        items = [
+            bar.add(
+                tk.Label(bar, text=f"field {index}", width=14),
+                align="left" if index < 2 else "right",
+            )
+            for index in range(4)
         ]
-        for widget, _align in self.bar._items:
-            self.assertGreater(order.index(widget), max(frames))
+        window.geometry(f"{width}x200")
+        window.deiconify()
+        window.update_idletasks()
+        bar.layout(width)
+        window.update_idletasks()
+        window.update()
+        return bar, items
 
-    def test_wrapped_items_stay_above_their_row_frames(self):
-        self.bar.layout(240)
-        self.root.update_idletasks()
-        order = self.bar.winfo_children()
-        for widget, _align in self.bar._items:
-            frame = widget.nametowidget(widget.pack_info()["in"])
-            self.assertGreater(order.index(widget), order.index(frame))
+    def test_items_are_placed_inside_the_bar_itself(self):
+        bar, items = self.shown(1200)
+        for item in items:
+            self.assertEqual(item.winfo_manager(), "place")
+            self.assertEqual(str(item.place_info()["in"]), str(bar))
+        self.assertEqual(
+            [child for child in bar.winfo_children() if child not in items],
+            [],
+        )
+
+    def test_one_row_aligns_the_right_group_to_the_right_edge(self):
+        bar, items = self.shown(1200)
+        self.assertEqual(bar.rows, 1)
+        self.assertEqual(len({item.winfo_y() for item in items}), 1)
+        self.assertEqual(items[0].winfo_x(), 4)
+        self.assertEqual(
+            items[3].winfo_x() + items[3].winfo_reqwidth(),
+            1200 - 4,
+        )
+        self.assertEqual(
+            items[3].winfo_x() - (items[2].winfo_x() + items[2].winfo_reqwidth()),
+            10,
+        )
+        self.assertLess(
+            items[1].winfo_x() + items[1].winfo_reqwidth(),
+            items[2].winfo_x(),
+        )
+
+    def test_wrapped_rows_flow_left_and_never_overlap(self):
+        bar, items = self.shown(260)
+        self.assertGreater(bar.rows, 1)
+        boxes = [
+            (
+                item.winfo_x(),
+                item.winfo_y(),
+                item.winfo_x() + item.winfo_reqwidth(),
+                item.winfo_y() + item.winfo_reqheight(),
+            )
+            for item in items
+        ]
+        for index, first in enumerate(boxes):
+            self.assertLessEqual(first[2], 260)
+            for second in boxes[index + 1:]:
+                apart = (
+                    first[2] <= second[0]
+                    or second[2] <= first[0]
+                    or first[3] <= second[1]
+                    or second[3] <= first[1]
+                )
+                self.assertTrue(apart, (first, second))
+        self.assertEqual({box[0] for box in boxes if box[1] == 3}, {4})
+
+    def test_bar_height_follows_the_row_count(self):
+        bar, items = self.shown(1200)
+        row = items[0].winfo_reqheight()
+        self.assertEqual(int(bar.cget("height")), row + 2 * 3)
+        bar.layout(260)
+        self.assertEqual(
+            int(bar.cget("height")),
+            bar.rows * row + (bar.rows - 1) * 3 + 2 * 3,
+        )
+
+    def test_a_wider_item_moves_its_neighbours(self):
+        bar, items = self.shown(1200)
+        before = items[1].winfo_x()
+        items[0].configure(width=20)
+        bar.update_idletasks()
+        bar.layout(1200)
+        bar.update_idletasks()
+        self.assertGreater(items[1].winfo_x(), before)
 
     def test_available_width_reaches_status_fields(self):
         variable = tk.StringVar(
@@ -250,6 +430,38 @@ class ResponsiveGridTest(unittest.TestCase):
         self.assertEqual(self.grid.columns, 3)
         self.grid.layout(120)
         self.assertEqual(self.grid.columns, 1)
+
+    def test_cells_shrink_below_their_request_before_the_grid_folds(self):
+        grid = widgets.ResponsiveGrid(
+            self.root,
+            min_column_width=100,
+            spacing=6,
+            min_from_children=False,
+            balanced=True,
+        )
+        self.addCleanup(grid.destroy)
+        for _ in range(4):
+            grid.add(tk.Frame(grid, width=300, height=40))
+        self.root.update_idletasks()
+        grid.layout(430)
+        self.assertEqual(grid.columns, 4)
+
+    def test_a_balanced_grid_folds_four_cells_into_two_rows_of_two(self):
+        grid = widgets.ResponsiveGrid(
+            self.root,
+            min_column_width=100,
+            spacing=6,
+            min_from_children=False,
+            balanced=True,
+        )
+        self.addCleanup(grid.destroy)
+        for _ in range(4):
+            grid.add(tk.Frame(grid, width=300, height=40))
+        self.root.update_idletasks()
+        grid.layout(400)
+        self.assertEqual(grid.columns, 2)
+        grid.layout(150)
+        self.assertEqual(grid.columns, 1)
 
     def test_columns_never_go_below_the_widest_child(self):
         grid = widgets.ResponsiveGrid(self.root, min_column_width=50, spacing=6)

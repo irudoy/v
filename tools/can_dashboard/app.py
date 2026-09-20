@@ -20,7 +20,12 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.can_dashboard import PRODUCT_NAME, PRODUCT_SLUG, __version__
+from tools.can_dashboard import (
+    PRODUCT_NAME,
+    PRODUCT_SHORT_NAME,
+    PRODUCT_SLUG,
+    __version__,
+)
 from tools.can_dashboard import settings as dashboard_settings
 from tools.can_dashboard.feed_dialog import FeedDialog
 from tools.can_dashboard.hero_picker import HeroChoice, HeroPicker
@@ -55,7 +60,9 @@ from tools.can_dashboard.widgets import (
     ToolButton,
     Tooltip,
     elide,
+    elide_middle,
     hero_value_size,
+    split_label_value,
 )
 from tools.logs import can_telemetry
 from tools.logs import can_telemetry_schema
@@ -189,8 +196,11 @@ MIN_WINDOW_HEIGHT = 460
 HERO_PAD = 8
 HERO_SPARKLINE_HEIGHT = 34
 HERO_UNIT_GAP = 5
-PANEL_MIN_WIDTH = 268
+PANEL_MIN_WIDTH = 250
 PANEL_VALUE_WIDTH = 150
+PANEL_VALUE_MIN_WIDTH = 104
+PANEL_PAD = 10
+PANEL_GAP = 6
 FOOTNOTE = (
     "* Candidate transform. Timing is a software "
     "command; injection is a compensated command, not a measured electrical "
@@ -615,6 +625,14 @@ class HeroCard(tk.Frame):
 
 
 class DataPanel(tk.Frame):
+    """Titled list of metric rows that shrinks with its grid cell.
+
+    A narrow cell takes width from the value column down to
+    PANEL_VALUE_MIN_WIDTH and then elides the labels in the middle, which
+    keeps a trailing bank or channel suffix; the tooltip of a label carries
+    its full text.
+    """
+
     def __init__(self, master, title, metrics, palette):
         super().__init__(
             master,
@@ -623,22 +641,46 @@ class DataPanel(tk.Frame):
             highlightthickness=1,
         )
         self.variables = {}
+        self.labels = []
+        self.fields = []
+        self._fitted = None
+        self._label_font = tkfont.Font(root=self, font=ui_font(9))
         tk.Label(
             self,
             text=title.upper(),
             bg=palette.panel,
             fg=palette.heading,
             font=ui_font(9, bold=True),
-        ).grid(row=0, column=0, columnspan=2, sticky="w", padx=10, pady=(8, 6))
+        ).grid(
+            row=0,
+            column=0,
+            columnspan=2,
+            sticky="w",
+            padx=PANEL_PAD,
+            pady=(8, 6),
+        )
         self.columnconfigure(0, weight=1)
         for row, metric in enumerate(metrics, start=1):
-            tk.Label(
+            label = tk.Label(
                 self,
                 text=metric.label,
                 bg=palette.panel,
                 fg=palette.muted,
                 font=ui_font(9),
-            ).grid(row=row, column=0, sticky="w", padx=(10, 6), pady=1)
+            )
+            label.grid(
+                row=row,
+                column=0,
+                sticky="w",
+                padx=(PANEL_PAD, PANEL_GAP),
+                pady=1,
+            )
+            label.tooltip = Tooltip(
+                label,
+                lambda text=metric.label: text,
+                **palette.tooltip_options(),
+            )
+            self.labels.append((label, metric.label))
             variable = tk.StringVar(self, value="--")
             self.variables[metric.key] = variable
             field = StatusField(
@@ -653,7 +695,43 @@ class DataPanel(tk.Frame):
                 reserve=PANEL_VALUE_WIDTH,
                 tooltip_options=palette.tooltip_options(),
             )
-            field.grid(row=row, column=1, sticky="e", padx=(6, 10), pady=1)
+            field.grid(
+                row=row,
+                column=1,
+                sticky="e",
+                padx=(PANEL_GAP, PANEL_PAD),
+                pady=1,
+            )
+            self.fields.append(field)
+        self.bind("<Configure>", self._on_configure, add="+")
+
+    def _on_configure(self, event):
+        self.fit(event.width)
+
+    def fit(self, width):
+        """Share a cell of this pixel width between labels and values."""
+        if width == self._fitted or not self.fields:
+            return
+        self._fitted = width
+        border = int(self.cget("highlightthickness"))
+        available = width - 2 * (border + PANEL_PAD + PANEL_GAP)
+        measure = self._label_font.measure
+        first, _full = self.labels[0]
+        chrome = first.winfo_reqwidth() - measure(first.cget("text"))
+        widest = max(measure(full) for _label, full in self.labels) + chrome
+        field = self.fields[0]
+        label_width, value_width = split_label_value(
+            available,
+            widest,
+            field.outer_width(PANEL_VALUE_WIDTH),
+            field.outer_width(PANEL_VALUE_MIN_WIDTH),
+        )
+        for field in self.fields:
+            field.set_outer_width(value_width)
+        for label, full in self.labels:
+            shown = elide_middle(full, measure, label_width - chrome)
+            if shown != label.cget("text"):
+                label.configure(text=shown)
 
     def set_value(self, key, value):
         self.variables[key].set(value)
@@ -826,9 +904,9 @@ class DashboardApp:
         palette = self.palette
         header = FlowBar(self.root, bg=palette.bg, spacing_x=5, spacing_y=5)
         header.pack(side="top", fill="x", padx=12, pady=(7, 5))
-        header.add(tk.Label(
+        self.title_label = header.add(tk.Label(
             header,
-            text=f"{PRODUCT_NAME.upper()} {__version__}",
+            text=f"{PRODUCT_SHORT_NAME} v{__version__}",
             bg=palette.bg,
             fg=palette.muted,
             font=ui_font(10, bold=True),
@@ -1024,6 +1102,8 @@ class DashboardApp:
                 spacing=6,
                 uniform="panel",
                 row_weight=1,
+                min_from_children=False,
+                balanced=True,
                 bg=palette.bg,
             )
             self.panel_grids.append(panels)

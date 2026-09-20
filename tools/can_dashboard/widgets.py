@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import ttk
@@ -31,6 +32,34 @@ def elide(text, measure, available, ellipsis=ELLIPSIS):
             low = middle + 1
         else:
             high = middle - 1
+    return shortened
+
+
+def elide_middle(text, measure, available, ellipsis=ELLIPSIS, tail_share=0.4):
+    """Shorten text around a middle ellipsis until it fits a pixel width.
+
+    The kept tail holds tail_share of the kept characters, so labels that
+    differ only in a trailing bank or channel suffix stay distinct.
+    """
+    if not text or available <= 0 or measure(text) <= available:
+        return text
+    low = 0
+    high = len(text)
+    shortened = ellipsis
+    while low <= high:
+        kept = (low + high) // 2
+        tail = min(kept, math.ceil(kept * tail_share - 1e-9))
+        head = kept - tail
+        candidate = (
+            text[:head].rstrip()
+            + ellipsis
+            + (text[len(text) - tail:].lstrip() if tail else "")
+        )
+        if measure(candidate) <= available:
+            shortened = candidate
+            low = kept + 1
+        else:
+            high = kept - 1
     return shortened
 
 
@@ -68,6 +97,34 @@ def responsive_columns(count, minimum_width, available, spacing):
         return count
     columns = (available + spacing) // (minimum_width + spacing)
     return max(1, min(count, int(columns)))
+
+
+def balanced_columns(count, maximum):
+    """Return the column count that fills every row evenly.
+
+    Four items that fit three to a row use two rows of two instead of a row
+    of three and a single leftover item.
+    """
+    if count <= 0 or maximum <= 0:
+        return 0
+    maximum = min(count, maximum)
+    rows = -(-count // maximum)
+    return -(-count // rows)
+
+
+def split_label_value(available, label_width, value_width, value_minimum):
+    """Share the width of a panel row between its label and its value.
+
+    The value keeps value_width while the label fits beside it and gives way
+    down to value_minimum; only then does the label lose width. Returns the
+    pixel widths (label, value).
+    """
+    if available <= 0:
+        return label_width, value_width
+    floor = min(value_minimum, value_width)
+    value = max(floor, min(value_width, available - label_width))
+    value = min(value, available)
+    return max(0, min(label_width, available - value)), value
 
 
 HERO_VALUE_SIZES = ((170, 22), (130, 18), (100, 15), (76, 12))
@@ -228,6 +285,18 @@ class StatusField(tk.Label):
         self._available = width
         self._apply()
 
+    def _chrome(self):
+        return self.winfo_reqwidth() - int(self.cget("width")) * self._unit
+
+    def outer_width(self, text_width):
+        """Widget width of a reserving field that shows text_width pixels."""
+        return -(-text_width // self._unit) * self._unit + self._chrome()
+
+    def set_outer_width(self, width):
+        """Keep a reserving field, its border included, within width."""
+        columns = max(1, (width - self._chrome()) // self._unit)
+        self.set_available_width(columns * self._unit)
+
     def _apply(self):
         limit = self._available
         if self._reserved:
@@ -289,7 +358,11 @@ class Cluster(tk.Frame):
 
 
 class FlowBar(tk.Frame):
-    """Row of widgets that wraps into more rows when the width is short."""
+    """Row of widgets that wraps into more rows when the width is short.
+
+    The bar positions its items by coordinates inside itself and sets its own
+    height, so every item stays in the ordinary geometry path of its parent.
+    """
 
     def __init__(
         self,
@@ -307,7 +380,6 @@ class FlowBar(tk.Frame):
         self._pad_x = pad_x
         self._pad_y = pad_y
         self._items = []
-        self._row_frames = []
         self._signature = None
         self._pending = None
         self.bind("<Configure>", self._on_configure, add="+")
@@ -346,60 +418,64 @@ class FlowBar(tk.Frame):
             setter = getattr(widget, "set_available_width", None)
             if setter is not None:
                 setter(inner)
-        widths = [widget.winfo_reqwidth() for widget, _align in self._items]
+        sizes = tuple(
+            (widget.winfo_reqwidth(), widget.winfo_reqheight())
+            for widget, _align in self._items
+        )
+        widths = [width for width, _height in sizes]
         single = row_width(widths, self._spacing_x) <= inner
         rows = (
             (tuple(range(len(widths))),)
             if single
             else wrap_rows(widths, inner, self._spacing_x)
         )
-        signature = (single, rows)
+        signature = (single, rows, sizes, inner)
         if signature == self._signature:
             return
         self._signature = signature
-        self._place(rows, single)
+        self._place(rows, single, sizes, inner)
 
-    def _place(self, rows, single):
-        while len(self._row_frames) < len(rows):
-            self._row_frames.append(tk.Frame(self, bg=self.cget("bg")))
-        for index, frame in enumerate(self._row_frames):
-            if index < len(rows):
-                frame.pack(
-                    fill="x",
-                    padx=self._pad_x,
-                    pady=(self._pad_y if index == 0 else self._spacing_y // 2,
-                          self._pad_y if index == len(rows) - 1 else 0),
-                )
-            else:
-                frame.pack_forget()
+    def _place(self, rows, single, sizes, inner):
+        top = self._pad_y
         for row_index, row in enumerate(rows):
-            frame = self._row_frames[row_index]
-            members = [self._items[index] for index in row]
-            for widget, _align in members:
-                widget.pack_forget()
-            for widget, align in members:
+            if row_index:
+                top += self._spacing_y // 2
+            height = max(sizes[index][1] for index in row)
+            left = self._pad_x
+            right = self._pad_x + inner
+            for index in row:
+                widget, align = self._items[index]
                 if single and align == "right":
                     continue
-                self._mount(widget, frame, "left", (0, self._spacing_x))
-            if not single:
-                continue
-            for widget, align in reversed(members):
-                if align != "right":
-                    continue
-                self._mount(widget, frame, "right", (self._spacing_x, 0))
+                self._put(widget, sizes[index], left, top, height, inner)
+                left += sizes[index][0] + self._spacing_x
+            if single:
+                for index in reversed(row):
+                    widget, align = self._items[index]
+                    if align != "right":
+                        continue
+                    right -= sizes[index][0]
+                    self._put(widget, sizes[index], right, top, height, inner)
+                    right -= self._spacing_x
+            top += height
+        self.configure(height=top + self._pad_y)
 
-    def _mount(self, widget, frame, side, padx):
-        """Pack an item into a row frame and keep it above that frame.
-
-        Items are siblings of the row frames, so a freshly created frame
-        stacks over them and hides everything it holds until they are raised.
-        """
-        widget.pack(in_=frame, side=side, padx=padx)
-        widget.lift()
+    def _put(self, widget, size, x, top, row_height, inner):
+        width, height = size
+        widget.place(
+            x=x,
+            y=top + (row_height - height) // 2,
+            width=inner if width > inner else "",
+        )
 
 
 class ResponsiveGrid(tk.Frame):
-    """Grid that keeps every column at least min_column_width wide."""
+    """Grid that keeps every column at least min_column_width wide.
+
+    With min_from_children off the cells shrink below their requested width
+    down to min_column_width before the grid folds; balanced fills the rows
+    of a folded grid evenly.
+    """
 
     def __init__(
         self,
@@ -410,11 +486,13 @@ class ResponsiveGrid(tk.Frame):
         uniform="cell",
         row_weight=0,
         min_from_children=True,
+        balanced=False,
         **kwargs,
     ):
         super().__init__(master, **kwargs)
         self._min_column_width = min_column_width
         self._min_from_children = min_from_children
+        self._balanced = balanced
         self._spacing = spacing
         self._uniform = uniform
         self._row_weight = row_weight
@@ -465,6 +543,8 @@ class ResponsiveGrid(tk.Frame):
             available,
             self._spacing,
         )
+        if self._balanced:
+            columns = balanced_columns(len(self._items), columns)
         if columns == self._columns:
             return
         self._columns = columns
