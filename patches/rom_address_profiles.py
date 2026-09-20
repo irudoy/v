@@ -95,9 +95,16 @@ VQ37_MAP_FAMILY_KEYS = frozenset(
     }
 )
 
+IGNITION_STATE_FAMILY_KEYS = map_switching_layout.IGNITION_STATE_FAMILY_KEYS
+IGNITION_STATE_FAMILY_BYTES = 64
+
+VQ37_1ND_MAP_FAMILY_KEYS = VQ37_MAP_FAMILY_KEYS | frozenset(
+    IGNITION_STATE_FAMILY_KEYS
+)
+
 MAP_FAMILY_KEYS_BY_VARIANT = {
     "dual-cvtc": DUAL_CVTC_MAP_FAMILY_KEYS,
-    "sh7059-1nd": VQ37_MAP_FAMILY_KEYS,
+    "sh7059-1nd": VQ37_1ND_MAP_FAMILY_KEYS,
     "sh7058-jk78": VQ37_MAP_FAMILY_KEYS,
 }
 
@@ -142,6 +149,7 @@ VQ37_COMMON_MAP_HOOK_KEYS = frozenset(
 )
 
 VQ37_1ND_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
+    "ignition_state_lookup",
     "rev_fuel_cut_caps_base",
     "rev_fuel_cut_activation_curve_base",
     "rev_fuel_cut_release_curve_base",
@@ -315,6 +323,14 @@ EXTRA_STORAGE_KEYS = frozenset(
     {"adapter_start", "adapter_end", "pointer_table", "copies"}
 )
 
+IGNITION_STATE_STORAGE_KEYS = frozenset(
+    {"adapter_start", "adapter_end", *IGNITION_STATE_FAMILY_KEYS}
+)
+IGNITION_STATE_FAMILY_STORAGE_KEYS = frozenset({"pointer_table", "copies"})
+IGNITION_STATE_ADAPTER_BYTES = 0x80
+# First byte after the VQ37 fuel-cut coordinator wrapper 0x000D5000..0x000D5080.
+IGNITION_STATE_ADAPTER_CANONICAL = 0x000D5080
+
 
 class AddressProfileError(ValueError):
     """Raised when an exact address profile is incomplete or inconsistent."""
@@ -368,6 +384,36 @@ class ExtraCvtcStorage:
 
 
 @dataclass(frozen=True)
+class FamilyStorage:
+    key: str
+    pointer_table: int
+    copies: tuple[int, ...]
+
+
+@dataclass(frozen=True)
+class IgnitionStateStorage:
+    adapter: AddressRange
+    families: tuple[FamilyStorage, ...]
+
+    @property
+    def family_by_key(self):
+        return {item.key: item for item in self.families}
+
+    @property
+    def ranges(self):
+        result = [self.adapter]
+        for item in self.families:
+            result.append(
+                AddressRange(item.pointer_table, item.pointer_table + 20)
+            )
+            result.extend(
+                AddressRange(address, address + IGNITION_STATE_FAMILY_BYTES)
+                for address in item.copies
+            )
+        return tuple(result)
+
+
+@dataclass(frozen=True)
 class Capabilities:
     map_switching: bool
     rolling_launch: bool
@@ -401,6 +447,7 @@ class AddressProfile:
     telemetry_unavailable: tuple[str, ...]
     telemetry_zero_source: int | None
     extra_cvtc_storage: ExtraCvtcStorage | None
+    ignition_state_storage: IgnitionStateStorage | None
     evidence: tuple[tuple[str, str], ...]
 
     @property
@@ -580,6 +627,57 @@ def _extra_storage(row, context):
     return result
 
 
+def _ignition_state_storage(row, context):
+    _require_table(row, IGNITION_STATE_STORAGE_KEYS, context)
+    families = []
+    for key in IGNITION_STATE_FAMILY_KEYS:
+        family_context = f"{context}.{key}"
+        family_row = row[key]
+        _require_table(
+            family_row, IGNITION_STATE_FAMILY_STORAGE_KEYS, family_context
+        )
+        copies = family_row["copies"]
+        if (
+            not isinstance(copies, list)
+            or len(copies) != 4
+            or len(set(copies)) != len(copies)
+        ):
+            raise AddressProfileError(
+                f"{family_context}.copies: expected four addresses"
+            )
+        families.append(FamilyStorage(
+            key=key,
+            pointer_table=_uint(
+                family_row["pointer_table"], f"{family_context}.pointer_table"
+            ),
+            copies=tuple(
+                _uint(value, f"{family_context}.copies[{index}]")
+                for index, value in enumerate(copies)
+            ),
+        ))
+    result = IgnitionStateStorage(
+        adapter=AddressRange(
+            _uint(row["adapter_start"], f"{context}.adapter_start"),
+            _uint(row["adapter_end"], f"{context}.adapter_end"),
+        ),
+        families=tuple(families),
+    )
+    if result.adapter.size != IGNITION_STATE_ADAPTER_BYTES:
+        raise AddressProfileError(f"{context}: invalid adapter range")
+    for item in result.families:
+        if item.pointer_table % 4:
+            raise AddressProfileError(
+                f"{context}.{item.key}: pointer table is not four-byte aligned"
+            )
+        if any(
+            address % IGNITION_STATE_FAMILY_BYTES for address in item.copies
+        ):
+            raise AddressProfileError(
+                f"{context}.{item.key}: copies must be 64-byte aligned"
+            )
+    return result
+
+
 def _telemetry_source_keys():
     manifest = can_telemetry_profile.load_manifest()
     fields = list(manifest.fields)
@@ -601,6 +699,8 @@ def _profile_fields(capabilities, map_variant, telemetry_unavailable):
         expected.update({"can_hooks", "telemetry_sources"})
     if map_variant == "dual-cvtc":
         expected.add("extra_cvtc_storage")
+    if map_variant == "sh7059-1nd":
+        expected.add("ignition_state_storage")
     if telemetry_unavailable:
         expected.add("telemetry_zero_source")
     return frozenset(expected)
@@ -817,6 +917,14 @@ def _parse_profile(rom, row, context):
             if map_variant == "dual-cvtc"
             else None
         ),
+        ignition_state_storage=(
+            _ignition_state_storage(
+                row["ignition_state_storage"],
+                f"{context}.ignition_state_storage",
+            )
+            if map_variant == "sh7059-1nd"
+            else None
+        ),
         evidence=tuple(sorted(evidence.items())),
     )
     _validate_structure(profile)
@@ -895,6 +1003,40 @@ def _validate_extra_storage(profile, telemetry_layout):
                 )
 
 
+def _validate_ignition_state_storage(profile):
+    storage = profile.ignition_state_storage
+    if profile.map_variant != "sh7059-1nd":
+        if storage is not None:
+            raise AddressProfileError(
+                f"{profile.rom}: unexpected ignition state storage"
+            )
+        return
+    if storage is None:
+        raise AddressProfileError(
+            f"{profile.rom}: missing ignition state storage"
+        )
+    if storage.adapter.start != _rebased(
+        IGNITION_STATE_ADAPTER_CANONICAL, profile.rom_delta
+    ):
+        raise AddressProfileError(
+            f"{profile.rom}: ignition state adapter does not follow the "
+            "fuel-cut coordinator wrapper"
+        )
+    ranges = storage.ranges
+    for span in ranges:
+        if not profile.injected_rom.contains(span):
+            raise AddressProfileError(
+                f"{profile.rom}: ignition state storage lies outside "
+                "injected ROM"
+            )
+    for index, left in enumerate(ranges):
+        for right in ranges[index + 1 :]:
+            if left.overlaps(right):
+                raise AddressProfileError(
+                    f"{profile.rom}: ignition state storage overlaps"
+                )
+
+
 def _validate_map_bindings(profile, map_layout):
     family = profile.map_family_by_key
     canonical_families = map_layout.family_by_key
@@ -912,6 +1054,16 @@ def _validate_map_bindings(profile, map_layout):
         ):
             address = family[key]
             span = AddressRange(address, address + byte_length)
+            if span.end > profile.rom_size:
+                raise AddressProfileError(
+                    f"{profile.rom}.{key}: map exceeds ROM"
+                )
+            spans.append(span)
+    if profile.map_variant == "sh7059-1nd":
+        for key in IGNITION_STATE_FAMILY_KEYS:
+            span = AddressRange(
+                family[key], family[key] + IGNITION_STATE_FAMILY_BYTES
+            )
             if span.end > profile.rom_size:
                 raise AddressProfileError(
                     f"{profile.rom}.{key}: map exceeds ROM"
@@ -1009,6 +1161,9 @@ def _validate_map_bindings(profile, map_layout):
         )
         if profile.map_variant == "sh7059-1nd":
             expected.update({
+                "ignition_state_lookup": (
+                    profile.ignition_state_storage.adapter.start
+                ),
                 "rev_fuel_cut_activation_curve_base": fuel_curve_shadow,
                 "rev_fuel_cut_release_curve_base": fuel_curve_shadow + 0x10,
             })
@@ -1295,6 +1450,7 @@ def _validate_structure(profile):
         raise AddressProfileError(f"{profile.rom}: injected RAM is not audited free")
 
     _validate_extra_storage(profile, telemetry_layout)
+    _validate_ignition_state_storage(profile)
     _validate_map_bindings(profile, map_layout)
     _validate_rolling_bindings(profile, launch_layout)
     _validate_can_bindings(profile, telemetry_layout)

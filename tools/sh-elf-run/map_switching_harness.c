@@ -55,6 +55,12 @@
 #ifdef TARGET_DUAL_CVTC
 #define SECONDARY_CVTC_TARGET_ADAPTER 0x000d5000U
 #endif
+#ifdef TARGET_1ND
+/* The 1ND ignition coordinator reads four 8x8 state-code surfaces through a
+   lookup of their own, so the layout carries a separate adapter behind the
+   VQ37 fuel-cut coordinator wrapper. */
+#define IGNITION_STATE_ADAPTER 0x000d5080U
+#endif
 #define FEEDBACK_WRAPPER 0x000d35e0U
 #define LIMITER_COMMIT 0x000d3660U
 #define FEEDBACK_COUNTS 0x000d3848U
@@ -205,6 +211,35 @@ static const struct family adapter_families[] = {
          0x000d5400U},
     },
 #endif
+#ifdef TARGET_1ND
+    /* The state-code surfaces have no canonical counterpart; the runtime
+       verifier rewrites 0x0000f610, 0x0000f710, 0x0000f690, and 0x0000f6d0
+       to the four target bases. */
+    {
+        "ignition_surface_state_3", IGNITION_STATE_ADAPTER,
+        0x0000f610U, 64U,
+        {0x0000f610U, 0x000d5180U, 0x000d51c0U, 0x000d5200U,
+         0x000d5240U},
+    },
+    {
+        "ignition_surface_state_4", IGNITION_STATE_ADAPTER,
+        0x0000f710U, 64U,
+        {0x0000f710U, 0x000d5280U, 0x000d52c0U, 0x000d5300U,
+         0x000d5340U},
+    },
+    {
+        "ignition_surface_state_5", IGNITION_STATE_ADAPTER,
+        0x0000f690U, 64U,
+        {0x0000f690U, 0x000d5380U, 0x000d53c0U, 0x000d5400U,
+         0x000d5440U},
+    },
+    {
+        "ignition_surface_state_6_7", IGNITION_STATE_ADAPTER,
+        0x0000f6d0U, 64U,
+        {0x0000f6d0U, 0x000d5480U, 0x000d54c0U, 0x000d5500U,
+         0x000d5540U},
+    },
+#endif
     {
         "cold_idle_ignition_timing", IDLE_IGNITION_ADAPTER,
         0x00012196U, 8U,
@@ -260,6 +295,9 @@ static const struct pass_through pass_throughs[] = {
 #ifdef TARGET_DUAL_CVTC
     {"secondary_cvtc_target_unknown",
      SECONDARY_CVTC_TARGET_ADAPTER, 0x0000b43bU},
+#endif
+#ifdef TARGET_1ND
+    {"ignition_state_unknown", IGNITION_STATE_ADAPTER, 0x0000f611U},
 #endif
     {"idle_ignition_hidden", IDLE_IGNITION_ADAPTER, 0x000121a6U},
 };
@@ -897,7 +935,10 @@ int main(void)
         return 1;
     if (!run_feedback_cases(&feedback_invocations))
         return 1;
-#ifdef TARGET_VQ37
+#ifdef TARGET_1ND
+    if (total_cases != 196U)
+        return fail_value("summary", "case_count", total_cases, 196);
+#elif defined(TARGET_VQ37)
     if (total_cases != 167U)
         return fail_value("summary", "case_count", total_cases, 167);
 #elif defined(TARGET_DUAL_CVTC)
@@ -913,7 +954,10 @@ int main(void)
 
     printf(
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=%lu selector=17 "
-#ifdef TARGET_VQ37
+#ifdef TARGET_1ND
+        "adapters=136 limiter=14 native_fuel=20 feedback=9 "
+        "feedback_invocations=%lu entries=14\n",
+#elif defined(TARGET_VQ37)
         "adapters=107 limiter=14 native_fuel=20 feedback=9 "
         "feedback_invocations=%lu entries=13\n",
 #elif defined(TARGET_DUAL_CVTC)

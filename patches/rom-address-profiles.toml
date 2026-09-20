@@ -471,6 +471,10 @@ over_run_fuel_restore = 0x000141D4
 over_run_fuel_intermediate_restore = 0x00014308
 ignition_surface_hot = 0x0000A410
 ignition_surface_cold = 0x0000A510
+ignition_surface_state_3 = 0x0000A610
+ignition_surface_state_4 = 0x0000A710
+ignition_surface_state_5 = 0x0000A690
+ignition_surface_state_6_7 = 0x0000A6D0
 cold_idle_ignition_timing = 0x00013C12
 idle_ignition_timing_default = 0x00013C1A
 idle_ignition_timing_alternate = 0x00013C22
@@ -489,6 +493,7 @@ ignition_lookup_1 = [0x00074FCC, 0x00028634, 0x00132340]
 ignition_lookup_2 = [0x00075290, 0x00028634, 0x00132340]
 ignition_lookup_3 = [0x00075584, 0x00028634, 0x00132340]
 ignition_lookup_4 = [0x000757B8, 0x00028634, 0x00132340]
+ignition_state_lookup = [0x00074FB0, 0x000285B4, 0x00135080]
 fuel_compensation_lookup_startup = [0x0003115C, 0x000285F4, 0x00132380]
 fuel_compensation_lookup_runtime = [0x000454F4, 0x000285F4, 0x00132380]
 idle_ignition_lookup_pool_1 = [0x0006F4E8, 0x000287B4, 0x00134000]
@@ -643,10 +648,30 @@ secondary_tps_b1_raw = 0xFFFE97BE
 secondary_tps_b2_raw = 0xFFFE98D4
 af_adjustment_b2_raw = 0xFFFEBCA4
 
+[profile.1ND0A.ignition_state_storage]
+adapter_start = 0x00135080
+adapter_end = 0x00135100
+
+[profile.1ND0A.ignition_state_storage.ignition_surface_state_3]
+pointer_table = 0x00135100
+copies = [0x00135180, 0x001351C0, 0x00135200, 0x00135240]
+
+[profile.1ND0A.ignition_state_storage.ignition_surface_state_4]
+pointer_table = 0x00135114
+copies = [0x00135280, 0x001352C0, 0x00135300, 0x00135340]
+
+[profile.1ND0A.ignition_state_storage.ignition_surface_state_5]
+pointer_table = 0x00135128
+copies = [0x00135380, 0x001353C0, 0x00135400, 0x00135440]
+
+[profile.1ND0A.ignition_state_storage.ignition_surface_state_6_7]
+pointer_table = 0x0013513C
+copies = [0x00135480, 0x001354C0, 0x00135500, 0x00135540]
+
 [profile.1ND0A.evidence]
 free_rom = "AuditFreeRegion PASS for 0x0012c990..0x0017ff7f: erased tail with no recovered stock ownership; runtime uses the bounded 0x00132108..0x00135fff envelope."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ND0A executable census: no stock access reaches the allocation."
-maps = "Reviewed cross-generation interpolation correspondence, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ND bank structure bind fourteen supported families. The two ignition families are the 16x16 surfaces of the coordinator half that stock ROM8[0x8A2B] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter."
+maps = "Reviewed cross-generation interpolation correspondence, target call topology, exact stock storage, the native 190-byte fuel-cut state machine, and 1ND bank structure bind eighteen supported families. The two 16x16 ignition families and the four 8x8 state-code ignition families are the surfaces of the coordinator half that stock ROM8[0x8A2B] bit 5 executes; the three equal-byte surfaces of the gated half pass through the adapter. The literal 0x00074FB0 is the only pointer through which FUN_00074D98 calls the 8x8 lookup 0x000285B4 for the four state-code surfaces; the second literal 0x00075570 serves only the reference surface 0x0000A650, which the stock configuration leaves unread."
 rolling = "The index-0 scheduler task, index-31 sole final-mask coordinator, homologous gate inputs, ignition path, and aligned empty UDS slots bind the VQ37 fuel-coordinator runtime."
 can = "Exact target HCAN1 initialization, SLE1 vector, serializer, mailbox records, payload binding, and knock-event path bind the transport runtime."
 telemetry = "Sixty ECU sources are bound by aligned diagnostic tables and reviewed producer-consumer evidence; the absent knock timing state and the two intake solenoid duty command cells are encoded from cleared reserved RAM and remain explicitly unavailable in metadata."

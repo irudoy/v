@@ -575,9 +575,9 @@ ffffffffffffffffffffffffffffffff
 
 [target.1ND0A]
 stock_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
-map_stage_sha256 = "5bde1e11f3c7a1f5c99d11def4316ea4406b90299ac623d52adbdfa7a612c788"
-rolling_stage_sha256 = "2f86411286aa3587386185b04ed1dd4fc2ad5b3bd0f4ee277e9699323e1a27ac"
-telemetry_stage_sha256 = "4fb859e7d0b10180db0f044b46189b5db5cc0cb05d80355bb9ffafcd1aa2be1b"
+map_stage_sha256 = "695cd56caaf3261539ce0a98e2477ddb9097a0b4c31be4db729f825fb947822c"
+rolling_stage_sha256 = "9b728e9b57deeb0b5a94b72756a7c3ebb034a03d61dc099b1110e2c47b1cca25"
+telemetry_stage_sha256 = "5fa55448b227228b56af8cd43e3f96621e71ed8b29efa28e516eda1cbd590b22"
 
 [target.1ND0A.map_units]
 selector_host = """
@@ -643,6 +643,12 @@ ffff0c00fffeb0f20a0affffffffffffffffffffffffffffffffffffffffffff
 idle_ignition_adapter = """
 d30ad00834008904d00734008905432b0009d208d006402b0009d207d004402b
 0009ffff00013c1200013c1a000287b4001322700013404000134054ffffffff
+"""
+ignition_state_adapter = """
+d30ed00fd20f3400890dd00fd20f34008909d00fd20f34008905d00fd20f3400
+8901432b0009d10e6010600ce10530128b00e0004008042e432b0009000285b4
+0000a610001351000000a710001351140000a690001351280000a6d00013513c
+ffff0c00ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 """
 
 [target.1ND0A.rolling_units]
@@ -858,9 +864,9 @@ ffffffffffffffffffffffffffffffff
 
 [target.1ND3B]
 stock_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
-map_stage_sha256 = "17e0d940e45d6549d6e4e5dac3e179efdcd71900678c93da1782c9108d1ef757"
-rolling_stage_sha256 = "f6dd8b3e911a696f0ea4bc9fc04f2ac08da4228621258d41838d2a10bb16496e"
-telemetry_stage_sha256 = "5d82f4bdc2001cfcea37431a937c1aa0f4716815f562ae801602217b50814cda"
+map_stage_sha256 = "255ab6d5dfefe5a814ecd31abe0c8acc78eee87c92fa074ae79b1293ab69a08b"
+rolling_stage_sha256 = "860cba4c1deb22d307d15a4140a8057916005c80245b1bef36e741702cae8a8e"
+telemetry_stage_sha256 = "0c9abeaf2a0b3fd3db6b9ac5778e054450e1f16d4afc42926a4d12061848ebe4"
 
 [target.1ND3B.map_units]
 selector_host = """
@@ -926,6 +932,12 @@ ffff0c00fffeb0f20a0affffffffffffffffffffffffffffffffffffffffffff
 idle_ignition_adapter = """
 d30ad00834008904d00734008905432b0009d208d006402b0009d207d004402b
 0009ffff00013c1200013c1a000287b4001322700013404000134054ffffffff
+"""
+ignition_state_adapter = """
+d30ed00fd20f3400890dd00fd20f34008909d00fd20f34008905d00fd20f3400
+8901432b0009d10e6010600ce10530128b00e0004008042e432b0009000285b4
+0000a610001351000000a710001351140000a690001351280000a6d00013513c
+ffff0c00ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 """
 
 [target.1ND3B.rolling_units]

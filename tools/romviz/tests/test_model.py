@@ -61,11 +61,11 @@ def test_all_models_build_with_exact_registered_identities():
     assert by_id["JK78C"]["structuralFunctions"] > 0
     # 86 projected and fuel-cut maps, the target-native VVEL tables (twenty-one
     # on JK78C, eighteen on the 1ND layout), the ten slot tables of the two
-    # executed 16x16 ignition surfaces, and the four 8x8 ignition surfaces of
-    # the 1ND layout.
+    # executed 16x16 ignition surfaces, and the twenty slot tables of the four
+    # 8x8 state-code ignition surfaces of the 1ND layout.
     assert by_id["JK78C"]["counts"]["maps"] == 117
     for rom_id in ("1ND0A", "1ND3B"):
-        assert by_id[rom_id]["counts"]["maps"] == 118
+        assert by_id[rom_id]["counts"]["maps"] == 134
 
 
 def test_1me3b_model_carries_definition_structure_and_checksum_layers():
@@ -241,7 +241,7 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id):
 
     assert rom["metadata"]["ECU ID"] == f"1{rom_id}"
     assert rom["metadata"]["MCU"] == "SH7059"
-    assert rom["counts"]["maps"] == 118
+    assert rom["counts"]["maps"] == 134
     assert maf_factor["start"] == 0x08939
     assert maf_factor["source"] == f"defs/{rom_id}.xml"
     assert any(

@@ -80,8 +80,9 @@ production builder emits target-specific runtime payloads at those addresses.
 
 1ND0A and 1ND3B load their generated target definitions from one reviewed
 SH7059 address correspondence. Their checksum fields and domains come from the
-project checksum registry. Their composed runtime profiles expose fourteen Map
-Switching families, native fuel-cut caps and curves, Rolling Launch, custom CAN
+project checksum registry. Their composed runtime profiles expose eighteen Map
+Switching families, the four 8x8 state-code ignition surfaces included, native
+fuel-cut caps and curves, Rolling Launch, custom CAN
 telemetry, exact hooks, and the shared SH7059 allocation.
 
 JK78C uses a target-specific SH7058 projection. Its composed runtime profile

@@ -54,7 +54,14 @@ The gate performs these checks:
    half through the adapter while a non-default slot is active. The harness
    names those three bases by the placeholders `0x0000991a`, `0x0000e91a`, and
    `0x0000ea1a`, which the target renderer rewrites to the profile symbols
-   `ignition_gated_surface_1` to `ignition_gated_surface_3`.
+   `ignition_gated_surface_1` to `ignition_gated_surface_3`. The 1ND targets
+   add the adapter of the four 8x8 state-code ignition surfaces: every slot and
+   both invalid selector values of each family, plus one unknown base that must
+   reach the stock 8x8 lookup unchanged. The harness names the four bases by
+   the placeholders `0x0000f610`, `0x0000f710`, `0x0000f690`, and `0x0000f6d0`,
+   and the stock 8x8 lookup is a return stub of the dynamic fixture. The 1ND
+   map harness reports `cases=196 adapters=136 entries=14`, JK78C
+   `cases=167 adapters=107 entries=13`.
 5. Apply only the documented simulator transformations after exact byte
    identity succeeds: high-RAM data-literal relocation and explicit stubs for
    unchanged stock callees outside the implementation under test. The Rolling

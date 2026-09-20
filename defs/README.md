@@ -172,8 +172,9 @@ selection, and the mapper `0x04C4B8` derives the state code from the VVEL mode.
 State codes 2 and 8 read the 16x16 surface `0x00A410`, state code 1 reads
 `0x00A510`, and state codes 3, 4, 5, and 6 with 7 read the 8x8 surfaces
 `0x00A610`, `0x00A710`, `0x00A690`, and `0x00A6D0` over the native axes
-`0x013FE2` and `0x013FDA`. The two 16x16 surfaces are Map Switching families,
-so the definition carries five slot tables of each. The homologs of the
+`0x013FE2` and `0x013FDA`. All six surfaces are Map Switching families, so the
+definition carries five slot tables of each; the four 8x8 families are selected
+by the adapter of the separate 8x8 lookup `0x0285B4`. The homologs of the
 canonical trio, `0x009880`, `0x009980`, and `0x009A80`, hold three
 byte-identical copies in the gated half that the stock byte leaves unexecuted;
 the trio is recorded as unsupported.

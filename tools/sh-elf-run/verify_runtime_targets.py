@@ -31,8 +31,16 @@ from tools.mapkit import vq37_native_fuel_cut
 
 MAP_CASES_BY_VARIANT = {
     "dual-cvtc": 139,
-    "sh7059-1nd": 167,
+    "sh7059-1nd": 196,
     "sh7058-jk78": 167,
+}
+# The map harness names the four 1ND state-code ignition bases by placeholders
+# that no canonical address uses.
+IGNITION_STATE_HARNESS_BASES = {
+    "ignition_surface_state_3": 0x0000F610,
+    "ignition_surface_state_4": 0x0000F710,
+    "ignition_surface_state_5": 0x0000F690,
+    "ignition_surface_state_6_7": 0x0000F6D0,
 }
 ROLLING_CASES_BY_VARIANT = {
     "relocated-8mfk": 121,
@@ -204,6 +212,8 @@ def _install_stock_stubs(fixture, target):
             "idle_ignition_lookup_pool_1",
             "idle_ignition_lookup_pool_2",
         }
+        if target.map_layout.variant == "sh7059-1nd":
+            map_keys.add("ignition_state_lookup")
     else:
         map_keys = {
             "selector_host_call",
@@ -386,6 +396,13 @@ def _render_harness(target, name, build_dir):
             0xFFFF23F5: native.state_address,
             0xFFFF2449: native.delay_address,
         }
+        if target.map_layout.variant == "sh7059-1nd":
+            for key, placeholder in IGNITION_STATE_HARNESS_BASES.items():
+                overrides[placeholder] = families[key].canonical_address
+            unknown = IGNITION_STATE_HARNESS_BASES["ignition_surface_state_3"]
+            overrides[unknown + 1] = (
+                families["ignition_surface_state_3"].canonical_address + 1
+            )
     rendered = runtime_targets.render_target_text(
         target.rom, source, overrides
     )
@@ -476,7 +493,11 @@ def _run_harnesses(target, fixture, build_dir):
         map_defines = ("TARGET_DUAL_CVTC",)
     elif target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
         map_marker = (
-            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=167 selector=17 "
+            "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=196 selector=17 "
+            "adapters=136 limiter=14 native_fuel=20 feedback=9 "
+            "feedback_invocations=17 entries=14"
+            if target.map_layout.variant == "sh7059-1nd"
+            else "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=167 selector=17 "
             "adapters=107 limiter=14 native_fuel=20 feedback=9 "
             "feedback_invocations=17 entries=13"
         )

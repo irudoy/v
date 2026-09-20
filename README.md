@@ -160,8 +160,9 @@ vehicle hardware.
 
 1ND0A and 1ND3B participate in all-target definition and ROM-atlas generation
 with the shared reviewed SH7059 calibration layout and all six verified
-checksum fields. Their production runtime includes fourteen switched
-calibration families, target-native fuel-cut caps and curves, scalar
+checksum fields. Their production runtime includes eighteen switched
+calibration families, four of them the 8x8 state-code ignition surfaces behind
+an adapter of their own, target-native fuel-cut caps and curves, scalar
 throttle-limiter selection, Rolling Launch, custom CAN telemetry, checksum
 closure, and the executable gate. The two images retain independent stock and
 stage identities even though their executable ranges are exact.

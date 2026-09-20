@@ -78,7 +78,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
         assert values["unsupported"] == len(VQ37_UNSUPPORTED)
         assert values["checksum"] is True
         assert values["romraider_checksum"] is True
-        assert values["map_families"] == 14
+        assert values["map_families"] == 18
         assert values["native_maps"] == 28
         assert values["rolling_configuration"] == 0x133F60
     assert stats["1ME3B"]["mapped"] == 40
@@ -174,7 +174,7 @@ def test_runtime_definition_layouts_use_target_allocation():
             "sh7058-jk78" if rom == "JK78C" else "sh7059-1nd"
         )
         assert maps.slot_count == 5
-        assert len(maps.families) == 14
+        assert len(maps.families) == (14 if rom == "JK78C" else 18)
         assert {
             "fuel_compensation_main_default",
             "fuel_compensation_main_alternate",

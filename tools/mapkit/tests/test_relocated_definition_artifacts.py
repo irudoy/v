@@ -277,10 +277,11 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 199
-        assert len(tables) == 199
-        # The ignition families select the two executed 16x16 surfaces; the
-        # canonical trio reaches only the gated coordinator half.
+        assert len(target.findall("table")) == 215
+        assert len(tables) == 215
+        # The ignition families select the two executed 16x16 surfaces and the
+        # four 8x8 state-code surfaces; the canonical trio reaches only the
+        # gated coordinator half.
         assert tables[
             "Map 1 - Ignition Timing Surface - VVEL State Codes 2 and 8"
         ].get("storageaddress") == "0x0A410"
@@ -298,9 +299,18 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             for name in tables
         )
         assert not any("Knock-State Path Enable" in name for name in tables)
-        assert tables["Ignition Timing Surface - VVEL State Codes 6 and 7"].get(
-            "storageaddress"
-        ) == "0x0A6D0"
+        assert tables[
+            "Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+        ].get("storageaddress") == "0x0A6D0"
+        state_slot = tables[
+            "Map 3 - Ignition Timing Surface - VVEL State Code 3"
+        ]
+        assert state_slot.get("storageaddress") == "0x1351C0"
+        assert (state_slot.get("sizex"), state_slot.get("sizey")) == ("8", "8")
+        assert state_slot.get("mask") == "7F"
+        assert tables[
+            "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+        ].get("storageaddress") == "0x135540"
         assert sum(1 for name in tables if name.startswith("DTC ")) == 77
         assert tables["Rolling Launch Enable by Map"].get(
             "storageaddress"
@@ -335,7 +345,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
         xdf_tables = _xdf_tables(root)
-        assert len(root.findall("XDFTABLE")) == 118
+        assert len(root.findall("XDFTABLE")) == 134
         patches = root.findall("XDFPATCH")
         patches_by_title = {
             patch.findtext("title"): patch for patch in patches

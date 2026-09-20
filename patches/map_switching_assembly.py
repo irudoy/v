@@ -1009,6 +1009,28 @@ def _validate_secondary_cvtc_adapter(parsed):
         )
 
 
+def _validate_ignition_state_adapter(parsed):
+    _validate_registers_and_control_flow(parsed, 0)
+    texts = _instruction_texts(parsed)
+    required = {
+        "mov #0x5,r1",
+        "cmp/hs r1,r0",
+        "mov #0x0,r0",
+        "shll2 r0",
+        "mov.l @(r0,r2),r4",
+        "jmp @r3",
+        "nop",
+    }
+    if not required <= set(texts):
+        raise ValueError(
+            f"{parsed.path}: ignition state adapter contract differs"
+        )
+    if texts.count("cmp/eq r0,r4") != 4 or texts.count("jmp @r3") != 2:
+        raise ValueError(
+            f"{parsed.path}: ignition state adapter branch count differs"
+        )
+
+
 def validate_assembly_sources(layout=None):
     """Cross-check all implemented source slices with the exact layout."""
     layout = layout or load_layout()
@@ -1087,6 +1109,8 @@ def validate_assembly_sources(layout=None):
             _validate_startup_wrapper(parsed)
         elif unit.key == "secondary_cvtc_adapter":
             _validate_secondary_cvtc_adapter(parsed)
+        elif unit.key == "ignition_state_adapter":
+            _validate_ignition_state_adapter(parsed)
         else:
             raise ValueError(
                 f"{unit.key}: no source-level ABI validator is registered"

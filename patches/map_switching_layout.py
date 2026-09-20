@@ -34,6 +34,14 @@ COMPATIBLE_PROTECTED_RANGES = (
     (COMPATIBLE_CALIBRATION_END, 0x100000),
 )
 VQ37_VARIANTS = frozenset({"sh7059-1nd", "sh7058-jk78"})
+# The 1ND ignition coordinator reads four 8x8 state-code surfaces through a
+# lookup of their own; JK78C has no state-code dispatch.
+IGNITION_STATE_FAMILY_KEYS = (
+    "ignition_surface_state_3",
+    "ignition_surface_state_4",
+    "ignition_surface_state_5",
+    "ignition_surface_state_6_7",
+)
 
 
 def compatible_protected_ranges(rom_size):
@@ -635,6 +643,8 @@ def validate_structure(layout):
             "rev_limit_fuel_cut_curves",
             "rev_limit_throttle_cut",
         }
+        if layout.variant == "sh7059-1nd":
+            required_family_keys.update(IGNITION_STATE_FAMILY_KEYS)
     if len(layout.families) != len(required_family_keys):
         raise ValueError(
             "the production family count differs from the target variant"
@@ -1052,11 +1062,12 @@ def validate_structure(layout):
     shadow_count = sum(
         family.access_kind == "ram_shadow" for family in layout.families
     )
-    expected_access_split = (
-        (11, 2)
-        if layout.variant == "dual-cvtc"
-        else ((11, 3) if layout.variant in VQ37_VARIANTS else (10, 2))
-    )
+    expected_access_split = {
+        "single-cvtc": (10, 2),
+        "dual-cvtc": (11, 2),
+        "sh7059-1nd": (11 + len(IGNITION_STATE_FAMILY_KEYS), 3),
+        "sh7058-jk78": (11, 3),
+    }[layout.variant]
     if (adapter_count, shadow_count) != expected_access_split:
         raise ValueError(
             "production adapter and RAM-shadow split differs"
@@ -1081,6 +1092,8 @@ def validate_structure(layout):
     elif layout.variant in VQ37_VARIANTS:
         expected_assembled_regions.remove("cvtc_target_adapter")
         expected_assembled_regions.add("idle_ignition_pool_2_adapter")
+        if layout.variant == "sh7059-1nd":
+            expected_assembled_regions.add("ignition_state_adapter")
     if layout.assembled_region_keys != expected_assembled_regions:
         raise ValueError(
             "implemented assembly region set differs: "

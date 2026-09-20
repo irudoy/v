@@ -213,9 +213,15 @@ class BuildRomTest(unittest.TestCase):
                 self.assertTrue(
                     rom_checksums.verify(result.data, checksum_layout).valid
                 )
+                # The 1ND layout adds the 30-instruction state-code
+                # ignition adapter to the VQ37 map stage.
                 self.assertEqual(
                     result.map_instruction_count,
-                    437 if rom in runtime_targets.VQ37_RUNTIME_ROMS else 453,
+                    467
+                    if rom in runtime_targets.SH7059_1ND_ROMS
+                    else 437
+                    if rom in runtime_targets.VQ37_RUNTIME_ROMS
+                    else 453,
                 )
                 self.assertEqual(
                     result.rolling_instruction_count,

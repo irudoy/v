@@ -16,6 +16,10 @@ map,high_octane_timing_state,00009a1a,,,,unsupported,Target surface 0x9980 lies 
 map,high_detonation_timing_state,00009b1a,,,,unsupported,Target surface 0x9a80 lies in the coordinator half gated off by stock ROM8[0x8a2b] bit 5 and is byte-identical to 0x9880 and 0x9980
 map_native,ignition_surface_hot,,0000a410,,,target-specific,Executed coordinator half reads this 16x16 surface for state codes 2 and 8 through the hooked ignition lookup literals and has no source counterpart
 map_native,ignition_surface_cold,,0000a510,,,target-specific,Executed coordinator half reads this 16x16 surface for state code 1 through the hooked ignition lookup literals and has no source counterpart
+map_native,ignition_surface_state_3,,0000a610,,,target-specific,Executed coordinator half reads this 8x8 surface for state code 3 through the hooked 8x8 lookup literal and has no source counterpart
+map_native,ignition_surface_state_4,,0000a710,,,target-specific,Executed coordinator half reads this 8x8 surface for state code 4 through the hooked 8x8 lookup literal and has no source counterpart
+map_native,ignition_surface_state_5,,0000a690,,,target-specific,Executed coordinator half reads this 8x8 surface for state code 5 through the hooked 8x8 lookup literal and has no source counterpart
+map_native,ignition_surface_state_6_7,,0000a6d0,,,target-specific,Executed coordinator half reads this 8x8 surface for state codes 6 and 7 through the hooked 8x8 lookup literal and has no source counterpart
 map,cold_idle_ignition_timing,00012196,00013c12,,,mapped,Idle coordinator preserves the fallback-table role
 map,idle_ignition_timing,0001219e,00013c1a,,default,target-specific,Default arm of the target state selector preserves the warm-table role
 map,fuel_compensation_main,0000a29a,0000a1c0,,default,target-specific,Default arm of the target state selector preserves exact geometry and storage
@@ -35,6 +39,7 @@ map_hook,ignition_lookup,00026230,00074fcc,00028634,site_1,target-specific,Liter
 map_hook,ignition_lookup,00026230,00075290,00028634,site_2,target-specific,Literal of the executed coordinator half reads the hot and cold surfaces
 map_hook,ignition_lookup,00026230,00075584,00028634,site_3,target-specific,Literal shared by both coordinator halves; the executed half reads the hot surface through it
 map_hook,ignition_lookup,00026230,000757b8,00028634,site_4,target-specific,Literal of the gated coordinator half calls the common lookup and every call passes through the adapter
+map_hook,ignition_state_lookup,,00074fb0,000285b4,,target-specific,Single literal through which the executed coordinator half calls the 8x8 lookup for the four state-code surfaces; the second literal 00075570 of that lookup serves only the reference surface 0000a650 of the stock-inert path
 map_hook,fuel_compensation_lookup,000261f0,0003115c,000285f4,startup,target-specific,Startup initializer literal calls the common lookup
 map_hook,fuel_compensation_lookup,000261f0,000454f4,000285f4,runtime,target-specific,Runtime coordinator literal calls the common lookup
 map_hook,idle_ignition_lookup,00026370,0006f4e8,000287b4,pool_1,target-specific,First literal-pool copy of the common idle lookup pointer serves the stock-inert and default branches

@@ -36,8 +36,9 @@ axis against the selected stock image.
 JK78C, 1ND0A, and 1ND3B use independently reviewed VQ37 address projections.
 The two SH7059 images share one address layout because their address-bearing
 executable code is byte-identical, but retain independent image hashes,
-identities, and stock calibration values. Their definitions expose fourteen
-target-specific Map Switching families, the native fuel-cut cap and curve
+identities, and stock calibration values. The JK78C definition exposes fourteen
+target-specific Map Switching families and the 1ND definitions eighteen, the
+four 8x8 state-code ignition surfaces included, together with the native fuel-cut cap and curve
 tables, Rolling Launch controls, and CAN telemetry control from the same
 validated runtime target consumed by the production builder.
 

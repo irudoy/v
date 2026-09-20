@@ -21,7 +21,7 @@ engine name or similar graph structure does not permit address inheritance.
 | `7MFKAVN86` | Canonical JK08A model plus exact-image inheritance | 12 families | Canonical fuel-shadow actuator | Schema 2 | Six fields | JK08A has scoped vehicle evidence; other members inherit no hardware result |
 | `8MFK` | SHA-bound JK00C and JK00D projections | 13 families, including independent intake-cam and exhaust-cam target switching | Relocated fuel-shadow actuator | Schema 2, mailbox 24 | Six fields | Read `../patches/hardware-results.toml`; no result is inherited from JK08A |
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
-| `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut and native table registries | 14 families | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
+| `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut and native table registries | 18 families, including the four 8x8 state-code ignition surfaces | Final-mask coordinator actuator | Schema 2, mailbox 26 | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence plus native table registry | None | None | None | Six fields in the project checksum model; no builder target | Stock read only; no derived image exists |
 
 ## Diagnostic layer
@@ -128,8 +128,12 @@ executed 16x16 surfaces: `0x0A10A` and `0x0A20A` on JK78C, `0x0A410` and
 `0x0A510` on 1ND. The runtime validator requires bit 5 of the stock
 configuration byte, equal stock bytes in the three gated surfaces, and their
 absence from the family set; the ignition adapter passes them through. The four
-8x8 state-code surfaces of 1ND are read through a separate lookup and are not
-switched.
+8x8 state-code surfaces of 1ND are four further Map Switching families. The
+coordinator calls their 8x8 lookup `0x0285B4` through the single literal
+`0x074FB0`, which the runtime redirects to an adapter of its own at `0x135080`;
+the second literal of that lookup, `0x075570`, serves only the reference
+surface `0x0A650` of the stock-inert path and stays stock. JK78C has no
+state-code dispatch and carries no such families.
 
 The compensation accessors publish four parallel channels. The two 16x16
 surfaces share index byte `0xFFFF22F8` and axes `0x13AF8` and `0x13B18` and

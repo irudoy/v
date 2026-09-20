@@ -63,6 +63,33 @@ NUMBER_RE = re.compile(r"(?<![A-Za-z0-9_])0x[0-9A-Fa-f]+")
 # storage for the target exhaust-cam family.
 INTAKE_CVTC_TARGET_NAME = "Intake CVTC Target - Main"
 
+# The 1ND layout switches the four 8x8 state-code ignition surfaces through an
+# adapter of their own. The template names the 1ND0A stock lookup, each table
+# base, and the canonical coordinate of each pointer table; the projection
+# binds all of them from the address profile.
+IGNITION_STATE_ADAPTER_SOURCE = "map-switching-ignition-state-adapter.s"
+IGNITION_STATE_TEMPLATE_LOOKUP = 0x000285B4
+IGNITION_STATE_TEMPLATE = {
+    "ignition_surface_state_3": (0x0000A610, 0x000D5100),
+    "ignition_surface_state_4": (0x0000A710, 0x000D5114),
+    "ignition_surface_state_5": (0x0000A690, 0x000D5128),
+    "ignition_surface_state_6_7": (0x0000A6D0, 0x000D513C),
+}
+IGNITION_STATE_FAMILY_NAMES = {
+    "ignition_surface_state_3": (
+        "Ignition Timing Surface - VVEL State Code 3"
+    ),
+    "ignition_surface_state_4": (
+        "Ignition Timing Surface - VVEL State Code 4"
+    ),
+    "ignition_surface_state_5": (
+        "Ignition Timing Surface - VVEL State Code 5"
+    ),
+    "ignition_surface_state_6_7": (
+        "Ignition Timing Surface - VVEL State Codes 6 and 7"
+    ),
+}
+
 MAP_HOOK_KEYS = {
     "selector_host_call": "selector_host_call",
     "startup_initializer": "startup_initializer",
@@ -721,6 +748,24 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         source_texts["secondary_cvtc_adapter"] = _render_source(
             secondary_template, profile, mapping, secondary_overrides
         )
+    state_storage = profile.ignition_state_storage
+    if state_storage is not None:
+        state_overrides = {
+            IGNITION_STATE_TEMPLATE_LOOKUP: profile.map_hook_by_key[
+                "ignition_state_lookup"
+            ].stock,
+        }
+        for key, (table, pointers) in IGNITION_STATE_TEMPLATE.items():
+            state_overrides[table] = profile.map_family_by_key[key]
+            state_overrides[pointers] = state_storage.family_by_key[
+                key
+            ].pointer_table
+        source_texts["ignition_state_adapter"] = _render_source(
+            _read_source(IGNITION_STATE_ADAPTER_SOURCE),
+            profile,
+            mapping,
+            state_overrides,
+        )
 
     code_regions = []
     for item in base.code_regions:
@@ -764,6 +809,16 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             ),
             profile.extra_cvtc_storage.adapter.start,
         ))
+    if state_storage is not None:
+        code_regions.append(map_switching_layout.CodeRegion(
+            "ignition_state_adapter",
+            map_switching_layout.AddressRange(
+                state_storage.adapter.start,
+                state_storage.adapter.end,
+                "ignition_state_adapter",
+            ),
+            state_storage.adapter.start,
+        ))
     code_regions = tuple(code_regions)
 
     units = tuple(
@@ -798,6 +853,32 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                 profile.extra_cvtc_storage.adapter.start,
                 profile.extra_cvtc_storage.adapter.end,
                 secondary_proto.code_regions,
+                payloads,
+            ),
+        )
+    if state_storage is not None:
+        state_proto = map_switching_layout.AssemblyUnit(
+            key="ignition_state_adapter",
+            source=IGNITION_STATE_ADAPTER_SOURCE,
+            span=map_switching_layout.AddressRange(
+                state_storage.adapter.start - delta,
+                state_storage.adapter.end - delta,
+                "assembly.ignition_state_adapter",
+            ),
+            fill=0xFF,
+            language="SuperH:BE:32:SH-2A",
+            expected_sha256=ZERO_SHA256,
+            instruction_count=0,
+            data_bytes=0,
+            code_regions=("ignition_state_adapter",),
+        )
+        units += (
+            _projected_unit(
+                state_proto,
+                source_texts["ignition_state_adapter"],
+                state_storage.adapter.start,
+                state_storage.adapter.end,
+                state_proto.code_regions,
                 payloads,
             ),
         )
@@ -896,6 +977,28 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
                     else source.adapter
                 ),
             ))
+        if state_storage is not None:
+            for item in state_storage.families:
+                state_address = target_families[item.key]
+                families.append(map_switching_layout.Family(
+                    key=item.key,
+                    group="ignition",
+                    name=IGNITION_STATE_FAMILY_NAMES[item.key],
+                    canonical_address=state_address,
+                    width=8,
+                    height=8,
+                    storage_type="uint8",
+                    access_kind="adapter",
+                    adapter="ignition_state_adapter",
+                    copy_alignment=64,
+                    copies=item.copies,
+                    pointer_table=item.pointer_table,
+                    stock_container_start=state_address,
+                    stock_container_size=64,
+                    selected_offset=0,
+                    shadow_start=None,
+                    runtime_shadow_address=None,
+                ))
         throttle = base.family_by_key["rev_limit_throttle_cut"]
         throttle_address = target_families["rev_limit_throttle_cut"]
         fuel_shadow_start = base.ram.fuel_cut_shadow.start + ram_delta
@@ -1330,8 +1433,11 @@ def _project_can(
         active_reserved=_shift_range(base.ram.active_reserved, ram_delta),
     )
     extra = profile.extra_cvtc_storage
+    state_storage = profile.ignition_state_storage
     extra_end = (
-        base.reserved_rom.start + delta + 0x80
+        max(item.end for item in state_storage.ranges)
+        if state_storage is not None
+        else base.reserved_rom.start + delta + 0x80
         if profile.map_variant in VQ37_MAP_VARIANTS
         else base.reserved_rom.start + delta
         if extra is None
@@ -1568,12 +1674,56 @@ def _validate_projected_bindings(target):
             exhaust.pointer_table
             != profile.extra_cvtc_storage.pointer_table,
         ))
+    if profile.ignition_state_storage is not None:
+        projected = target.map_layout.family_by_key
+        allocation_differs = allocation_differs or any(
+            projected[item.key].copies != item.copies
+            or projected[item.key].pointer_table != item.pointer_table
+            for item in profile.ignition_state_storage.families
+        )
     if allocation_differs:
         raise RuntimeTargetError(
             f"{target.rom}: projected allocation bindings differ"
         )
     if profile.map_variant in VQ37_MAP_VARIANTS:
         _validate_vq37_ignition_halves(target, profile)
+    if profile.ignition_state_storage is not None:
+        _validate_ignition_state_pool(target, profile)
+
+
+def _aligned_literal_sites(data, value):
+    needle = value.to_bytes(4, "big")
+    sites = []
+    position = data.find(needle)
+    while position != -1:
+        if position % 4 == 0:
+            sites.append(position)
+        position = data.find(needle, position + 1)
+    return sites
+
+
+def _validate_ignition_state_pool(target, profile):
+    """Bind the state-code ignition families to the hooked literal pool.
+
+    The coordinator calls the 8x8 lookup through a pointer literal and takes
+    each table base from the same literal pool. Every family base must occur
+    once in the stock image, inside the pool of the hooked literal, so no
+    other pointer to the lookup serves a switched surface.
+    """
+    data = bytes(target.stock_image.data)
+    hook = profile.map_hook_by_key["ignition_state_lookup"]
+    families = target.map_layout.family_by_key
+    for key in rom_address_profiles.IGNITION_STATE_FAMILY_KEYS:
+        sites = _aligned_literal_sites(data, families[key].canonical_address)
+        if len(sites) != 1 or abs(sites[0] - hook.address) > 0x10:
+            raise RuntimeTargetError(
+                f"{target.rom}.{key}: table base is not a single literal of "
+                "the hooked lookup pool"
+            )
+    if hook.address not in _aligned_literal_sites(data, hook.stock):
+        raise RuntimeTargetError(
+            f"{target.rom}: ignition state lookup literal differs"
+        )
 
 
 def _validate_vq37_ignition_halves(target, profile):

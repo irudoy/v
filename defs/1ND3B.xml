@@ -1232,106 +1232,6 @@
       </table>
     </table>
 
-    <!-- 0x0A610  8x8 uint8  map [code]
-         accessor 0x74D98; r4 operand: reviewed-target
-         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
-         [candidate]
-         Exact 1ND3B target-native table at 0xa610 bound to accessor 0x74d98 through literal
-         0x74fbc. Byte-identical to the 1ME3B surface 0xA544. The 8x8 lookup 0x000285B4 serves
-         the four state-code surfaces of this coordinator.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Ignition Timing Surface - VVEL State Code 3"
-           category="Ignition Timing//State Surfaces" storagetype="uint8"
-           storageaddress="0x0A610" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FE2" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
-      </table>
-    </table>
-
-    <!-- 0x0A710  8x8 uint8  map [code]
-         accessor 0x74D98; r4 operand: reviewed-target
-         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
-         [candidate]
-         Exact 1ND3B target-native table at 0xa710 bound to accessor 0x74d98 through literal
-         0x74fb8. Byte-identical to the 1ME3B surface 0xA644. The 8x8 lookup 0x000285B4 serves
-         the four state-code surfaces of this coordinator.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Ignition Timing Surface - VVEL State Code 4"
-           category="Ignition Timing//State Surfaces" storagetype="uint8"
-           storageaddress="0x0A710" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FE2" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
-      </table>
-    </table>
-
-    <!-- 0x0A690  8x8 uint8  map [code]
-         accessor 0x74D98; r4 operand: reviewed-target
-         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
-         [candidate]
-         Exact 1ND3B target-native table at 0xa690 bound to accessor 0x74d98 through literal
-         0x74fb4. Byte-identical to the 1ME3B surface 0xA5C4. The 8x8 lookup 0x000285B4 serves
-         the four state-code surfaces of this coordinator.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Ignition Timing Surface - VVEL State Code 5"
-           category="Ignition Timing//State Surfaces" storagetype="uint8"
-           storageaddress="0x0A690" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FE2" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
-      </table>
-    </table>
-
-    <!-- 0x0A6D0  8x8 uint8  map [code]
-         accessor 0x74D98; r4 operand: reviewed-target
-         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
-         [candidate]
-         Exact 1ND3B target-native table at 0xa6d0 bound to accessor 0x74d98 through literal
-         0x74fac. Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves
-         the four state-code surfaces of this coordinator.
-         Analysis and method - defs/JK08A.notes.md -->
-    <table type="3D" name="Ignition Timing Surface - VVEL State Codes 6 and 7"
-           category="Ignition Timing//State Surfaces" storagetype="uint8"
-           storageaddress="0x0A6D0" sizex="8" sizey="8" endian="big" mask="7F">
-      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
-               coarseincrement="4"/>
-      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
-             sizex="8" endian="big">
-        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
-                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
-      </table>
-      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
-             storageaddress="0x13FE2" sizey="8" endian="big">
-        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
-                 fineincrement="50" coarseincrement="200"/>
-      </table>
-    </table>
-
     <!-- 0x122C8  16x6 uint16  map [candidate]
          scaling x*0.0015259 knock strength [candidate]
          00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 points
@@ -1855,6 +1755,114 @@
       </table>
     </table>
 
+    <!-- 0x0A610  8x8 uint8  common-definition Map 1 storage projected from 0x0A610 [code]
+         Map 1 uses canonical stock storage
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa610 bound to accessor 0x74d98 through literal
+         0x74fbc. Byte-identical to the 1ME3B surface 0xA544. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 3"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A610" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x0A710  8x8 uint8  common-definition Map 1 storage projected from 0x0A710 [code]
+         Map 1 uses canonical stock storage
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa710 bound to accessor 0x74d98 through literal
+         0x74fb8. Byte-identical to the 1ME3B surface 0xA644. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 4"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A710" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x0A690  8x8 uint8  common-definition Map 1 storage projected from 0x0A690 [code]
+         Map 1 uses canonical stock storage
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa690 bound to accessor 0x74d98 through literal
+         0x74fb4. Byte-identical to the 1ME3B surface 0xA5C4. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Code 5"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A690" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x0A6D0  8x8 uint8  common-definition Map 1 storage projected from 0x0A6D0 [code]
+         Map 1 uses canonical stock storage
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa6d0 bound to accessor 0x74d98 through literal
+         0x74fac. Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 1 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x0A6D0" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
     <!-- 0x13C12  8 uint8  common-definition Map 1 storage projected from 0x13C12 [candidate]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
@@ -2238,6 +2246,118 @@
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1399A" sizey="16" endian="big">
         <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x135180  8x8 uint8  common-definition Map 2 storage projected from 0x0A610 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa610 bound to accessor 0x74d98 through literal
+         0x74fbc. Byte-identical to the 1ME3B surface 0xA544. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 3"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135180" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135280  8x8 uint8  common-definition Map 2 storage projected from 0x0A710 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa710 bound to accessor 0x74d98 through literal
+         0x74fb8. Byte-identical to the 1ME3B surface 0xA644. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 4"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135280" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135380  8x8 uint8  common-definition Map 2 storage projected from 0x0A690 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa690 bound to accessor 0x74d98 through literal
+         0x74fb4. Byte-identical to the 1ME3B surface 0xA5C4. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Code 5"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135380" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135480  8x8 uint8  common-definition Map 2 storage projected from 0x0A6D0 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa6d0 bound to accessor 0x74d98 through literal
+         0x74fac. Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 2 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135480" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
       </table>
     </table>
 
@@ -2633,6 +2753,118 @@
       </table>
     </table>
 
+    <!-- 0x1351C0  8x8 uint8  common-definition Map 3 storage projected from 0x0A610 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa610 bound to accessor 0x74d98 through literal
+         0x74fbc. Byte-identical to the 1ME3B surface 0xA544. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 3"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x1351C0" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x1352C0  8x8 uint8  common-definition Map 3 storage projected from 0x0A710 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa710 bound to accessor 0x74d98 through literal
+         0x74fb8. Byte-identical to the 1ME3B surface 0xA644. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 4"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x1352C0" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x1353C0  8x8 uint8  common-definition Map 3 storage projected from 0x0A690 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa690 bound to accessor 0x74d98 through literal
+         0x74fb4. Byte-identical to the 1ME3B surface 0xA5C4. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Code 5"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x1353C0" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x1354C0  8x8 uint8  common-definition Map 3 storage projected from 0x0A6D0 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa6d0 bound to accessor 0x74d98 through literal
+         0x74fac. Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 3 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x1354C0" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
     <!-- 0x134088  8 uint8  common-definition Map 3 storage projected from 0x13C12 [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -3025,6 +3257,118 @@
       </table>
     </table>
 
+    <!-- 0x135200  8x8 uint8  common-definition Map 4 storage projected from 0x0A610 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa610 bound to accessor 0x74d98 through literal
+         0x74fbc. Byte-identical to the 1ME3B surface 0xA544. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 3"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135200" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135300  8x8 uint8  common-definition Map 4 storage projected from 0x0A710 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa710 bound to accessor 0x74d98 through literal
+         0x74fb8. Byte-identical to the 1ME3B surface 0xA644. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 4"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135300" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135400  8x8 uint8  common-definition Map 4 storage projected from 0x0A690 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa690 bound to accessor 0x74d98 through literal
+         0x74fb4. Byte-identical to the 1ME3B surface 0xA5C4. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Code 5"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135400" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135500  8x8 uint8  common-definition Map 4 storage projected from 0x0A6D0 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa6d0 bound to accessor 0x74d98 through literal
+         0x74fac. Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 4 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135500" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
     <!-- 0x134090  8 uint8  common-definition Map 4 storage projected from 0x13C12 [candidate]
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
@@ -3414,6 +3758,118 @@
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1399A" sizey="16" endian="big">
         <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"/>
+      </table>
+    </table>
+
+    <!-- 0x135240  8x8 uint8  common-definition Map 5 storage projected from 0x0A610 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa610 bound to accessor 0x74d98 through literal
+         0x74fbc. Byte-identical to the 1ME3B surface 0xA544. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 3"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135240" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135340  8x8 uint8  common-definition Map 5 storage projected from 0x0A710 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa710 bound to accessor 0x74d98 through literal
+         0x74fb8. Byte-identical to the 1ME3B surface 0xA644. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 4"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135340" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135440  8x8 uint8  common-definition Map 5 storage projected from 0x0A690 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa690 bound to accessor 0x74d98 through literal
+         0x74fb4. Byte-identical to the 1ME3B surface 0xA5C4. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Code 5"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135440" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
+      </table>
+    </table>
+
+    <!-- 0x135540  8x8 uint8  common-definition Map 5 storage projected from 0x0A6D0 [code]
+         Stock firmware does not reference this erased allocation; runtime use requires the
+         project map-switching patch
+         canonical accessor 0x74D98; r4 operand: reviewed-target
+         Runtime redirection and storage ownership - patches/map-switching-selector.md
+         scaling x-64 deg [candidate]; Y Axis 0x13FE2 rpm [candidate]; X Axis 0x13FDA load
+         [candidate]
+         Exact 1ND3B target-native table at 0xa6d0 bound to accessor 0x74d98 through literal
+         0x74fac. Byte-identical to the 1ME3B surface 0xA604. The 8x8 lookup 0x000285B4 serves
+         the four state-code surfaces of this coordinator.
+         Analysis and method - defs/JK08A.notes.md -->
+    <table type="3D" name="Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7"
+           category="Ignition Timing//State Surfaces" storagetype="uint8"
+           storageaddress="0x135540" sizex="8" sizey="8" endian="big" mask="7F">
+      <scaling units="deg [cand]" expression="x-64" to_byte="x+64" format="0" fineincrement="1"
+               coarseincrement="4"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x13FDA"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%] [cand]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
+      </table>
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
+             storageaddress="0x13FE2" sizey="8" endian="big">
+        <scaling units="RPM [cand]" expression="x*50" to_byte="x/50" format="0"
+                 fineincrement="50" coarseincrement="200"/>
       </table>
     </table>
 

@@ -176,11 +176,28 @@ belong to no family. The ignition hook at `0x0757B8` serves a literal that only
 the gated half reads, so every call through it passes through the adapter to
 the stock lookup. The profile validator requires bit 5
 of the stock configuration byte, equal stock bytes in the three gated
-surfaces, and their absence from the family set. The four 8x8 state-code
-surfaces are read through the separate lookup `0x0285B4` and are not switched.
+surfaces, and their absence from the family set.
 
-The 1ND address profile binds fourteen switched families: four DFCO rows, the
-two executed ignition surfaces, shared cold-idle timing, default and alternate warm-idle
+The four 8x8 state-code surfaces `0x00A610`, `0x00A710`, `0x00A690`, and
+`0x00A6D0` are four further ignition families. The coordinator reads them
+through the separate 8x8 lookup `0x0285B4`, whose pointer it takes from the
+single literal `0x074FB0`; the hook `ignition_state_lookup` redirects that
+literal to the adapter `ignition_state_adapter`. The lookup takes `r4` to `r7`
+and one stack argument, so the adapter substitutes only `r4`, leaves `r15` and
+`PR` untouched, and tail-jumps to the stock lookup; any other table base
+passes through unchanged. Its slot selection is local because the shared
+helper lies outside `BRA` range. The second literal of the lookup, `0x075570`,
+serves only the reference surface `0x00A650` of the stock-inert path and stays
+stock. The adapter, four pointer tables, and sixteen 64-byte slot copies occupy
+`0x135080..0x135580`, directly behind the fuel-cut coordinator wrapper, and the
+telemetry reserve starts at `0x135580`. The profile table
+`ignition_state_storage` declares that allocation, and the target validator
+requires each of the four table bases to occur exactly once in the stock
+image, inside the literal pool of the hooked literal.
+
+The 1ND address profile binds eighteen switched families: four DFCO rows, the
+two executed 16x16 ignition surfaces, the four 8x8 state-code ignition
+surfaces, shared cold-idle timing, default and alternate warm-idle
 timing, default and alternate fuel compensation, native fuel-cut caps and
 curves, and the throttle-limiter scalar. Custom CAN telemetry binds 62
 available schema fields. The unavailable knock timing field is encoded from
@@ -195,8 +212,9 @@ allocation, stock hooks, VQ37 map topology, CAN bindings, and all 63 ECU-RAM
 telemetry fields. It distinguishes direct mappings from target-specific
 adapters and unsupported source semantics.
 
-The JK78C address profile binds the same fourteen semantic families as 1ND while
-retaining independent SH7058 addresses and stock code. Its two ignition families
+The JK78C address profile binds fourteen families, the 1ND set without the
+four state-code ignition surfaces that the JK78C coordinator does not carry,
+while retaining independent SH7058 addresses and stock code. Its two ignition families
 are the executed surfaces `0x00A10A` and `0x00A20A` of the mode-selected half of
 the coordinator `0x069AB8`, which stock `ROM8[0x8965]` = `0xBA` (bit 5 set)
 executes and which picks the surface by coolant temperature. The three

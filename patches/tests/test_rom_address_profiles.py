@@ -168,3 +168,61 @@ def test_mailbox_variant_cannot_silently_revert_to_jk08a(tmp_path):
         match="mailbox contract differs",
     ):
         rom_address_profiles.load_registry(registry)
+
+
+def test_1nd_ignition_state_storage_follows_the_fuel_cut_wrapper(profiles):
+    one = profiles["1ND0A"]
+    storage = one.ignition_state_storage
+
+    assert profiles["JK78C"].ignition_state_storage is None
+    assert "ignition_state_lookup" not in profiles["JK78C"].map_hook_by_key
+    assert storage.adapter == rom_address_profiles.AddressRange(
+        0x135080, 0x135100
+    )
+    assert tuple(item.key for item in storage.families) == (
+        rom_address_profiles.IGNITION_STATE_FAMILY_KEYS
+    )
+    assert [item.pointer_table for item in storage.families] == [
+        0x135100, 0x135114, 0x135128, 0x13513C
+    ]
+    assert storage.family_by_key["ignition_surface_state_3"].copies == (
+        0x135180, 0x1351C0, 0x135200, 0x135240
+    )
+    assert max(item.end for item in storage.ranges) == 0x135580
+    hook = one.map_hook_by_key["ignition_state_lookup"]
+    assert (hook.address, hook.stock, hook.replacement) == (
+        0x00074FB0, 0x000285B4, storage.adapter.start
+    )
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    (
+        (
+            "pointer_table = 0x00135114",
+            "pointer_table = 0x00135104",
+            "ignition state storage overlaps",
+        ),
+        (
+            "copies = [0x00135480, 0x001354C0, 0x00135500, 0x00135540]",
+            "copies = [0x00135480, 0x001354C0, 0x00135500, 0x00136000]",
+            "ignition state storage lies outside injected ROM",
+        ),
+        (
+            "copies = [0x00135180, 0x001351C0, 0x00135200, 0x00135240]",
+            "copies = [0x00135180, 0x001351C0, 0x00135200, 0x00135244]",
+            "copies must be 64-byte aligned",
+        ),
+    ),
+)
+def test_1nd_ignition_state_storage_mutation_is_rejected(
+    tmp_path, old, new, message
+):
+    source = rom_address_profiles.DEFAULT_REGISTRY.read_text(encoding="utf-8")
+    assert source.count(old) == 1
+    registry = tmp_path / "profiles.toml"
+    registry.write_text(source.replace(old, new), encoding="utf-8")
+    with pytest.raises(
+        rom_address_profiles.AddressProfileError, match=message
+    ):
+        rom_address_profiles.load_registry(registry)
