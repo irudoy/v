@@ -25,7 +25,7 @@ CORRESPONDENCE_ARGS ?=
 
 PROFILE_OPTION = $(if $(strip $(PROFILE)),--profile "$(PROFILE)",)
 
-.PHONY: help setup check test-python test-js test verify-firmware verify
+.PHONY: help setup check test-python test-js test verify-firmware verify-npkern verify vendor-catalog
 .PHONY: romviz dashboard-package dashboard-package-macos defs-generate runtime-targets-generate rom-correspondence census-homology rom-verify rom-build
 
 help:
@@ -35,12 +35,14 @@ help:
 		'Targets:' \
 		'  help              Show this help.' \
 		'  setup             Synchronize the locked Python environment.' \
-		'  check             Validate generated sources, definitions, and ROM atlas JavaScript.' \
+		'  check             Validate versions, tracked sources, projections, and ROM atlas JavaScript.' \
 		'  test-python       Run the complete Python test contract.' \
-		'  test-js           Run pin-tracer tests and check ROM atlas JavaScript.' \
+		'  test-js           Run the pin-tracer test contract.' \
 		'  test              Run the Python and JavaScript test contracts.' \
 		'  verify-firmware   Run the repository-contained GNU SH-2E executable gate.' \
+		'  verify-npkern     Run the optional exact-revision external npkern gate.' \
 		'  verify            Run check, test, and verify-firmware in sequence.' \
+		'  vendor-catalog    Rebuild the machine-readable vendor catalog.' \
 		'  romviz            Rebuild the self-contained ROM atlas HTML.' \
 		'  dashboard-package Build the portable Windows PCAN dashboard ZIP.' \
 		'  dashboard-package-macos Build the native macOS PCAN dashboard app and ZIP.' \
@@ -65,7 +67,10 @@ help:
 		'  CORRESPONDENCE_SOURCE_EXPORT  Source Ghidra export directory.' \
 		'  CORRESPONDENCE_TARGET_EXPORT  Target Ghidra export directory.' \
 		'  CORRESPONDENCE_OUTPUT  Optional function-correspondence CSV path.' \
-		'  CORRESPONDENCE_ARGS  Optional additional correspondence arguments.'
+		'  CORRESPONDENCE_ARGS  Optional additional correspondence arguments.' \
+		'  UV, PYTHON, PYTEST  Python entry points (default: uv, uv run python, uv run pytest).' \
+		'  NODE, NPM         JavaScript entry points (default: node, npm).' \
+		'  VQ_NPKERN_SOURCE  External npkern checkout for verify-npkern.'
 
 setup:
 	$(UV) sync --frozen
@@ -76,7 +81,9 @@ check:
 	$(PYTHON) patches/runtime_targets.py --check
 	$(PYTHON) tools/mapkit/dtc_projection.py
 	$(PYTHON) tools/mapkit/definition_projections.py --check
+	$(PYTHON) tools/mapkit/presentation_audit.py --check
 	$(PYTHON) tools/census_homology.py --check
+	$(PYTHON) tools/rom_homology.py --check
 	$(PYTHON) patches/can_telemetry_profile.py --check
 	$(PYTHON) tools/mapkit/validate_map_switching.py
 	$(PYTHON) tools/romviz/build.py --check
@@ -86,13 +93,18 @@ test-python:
 	$(PYTEST) -q
 
 test-js:
-	$(NODE) --check tools/romviz/app.js
 	$(NPM) --prefix tools/pin-tracer test
 
 test: test-python test-js
 
 verify-firmware:
 	tools/sh-elf-run/run.sh --verbose
+
+verify-npkern:
+	tools/sh-elf-run/run-npkern.sh --verbose
+
+vendor-catalog:
+	$(PYTHON) tools/vendor/build_catalog.py
 
 verify:
 	+$(MAKE) check

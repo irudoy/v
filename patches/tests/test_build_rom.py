@@ -10,8 +10,10 @@ from patches import build_rom
 from patches import jk08a_checksums as checksums
 from patches import map_switching_layout
 from patches import can_telemetry
+from patches import can_telemetry_assembly
 from patches import rom_checksums
 from patches import rolling_launch
+from patches import rolling_launch_layout
 from patches import runtime_targets
 from tools import rom_homology
 
@@ -113,7 +115,7 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual((selected, detection), ("JK08A", "auto"))
 
     def test_exact_family_builds_preserve_each_target_identity_and_calibration(self):
-        launch_layout = build_rom.rolling_launch_layout.load_layout()
+        launch_layout = rolling_launch_layout.load_layout()
         component_offsets = build_rom._component_offsets(
             self.map_layout, launch_layout
         )
@@ -366,7 +368,7 @@ class BuildRomTest(unittest.TestCase):
         result = self.base_result
         self.assertTrue(checksums.verify(result.data).valid)
         map_layout = map_switching_layout.load_layout()
-        launch_layout = build_rom.rolling_launch_layout.load_layout()
+        launch_layout = rolling_launch_layout.load_layout()
         permitted = build_rom._component_offsets(
             map_layout, launch_layout
         ) | set(checksums.checksum_byte_offsets())
@@ -392,7 +394,7 @@ class BuildRomTest(unittest.TestCase):
         self.assertEqual(rebuilt.changed_bytes, 0)
 
         telemetry_layout = build_rom.can_telemetry_layout.load_layout()
-        telemetry_payloads = build_rom.can_telemetry_assembly.load_payloads(
+        telemetry_payloads = can_telemetry_assembly.load_payloads(
             telemetry_layout
         )
         telemetry_state = build_rom._require_coherent_telemetry_endpoint(
@@ -404,7 +406,7 @@ class BuildRomTest(unittest.TestCase):
         map_only = bytearray(build_rom._strip_telemetry_endpoint(
             self.base_result.data, telemetry_layout, telemetry_state
         ))
-        launch_layout = build_rom.rolling_launch_layout.load_layout()
+        launch_layout = rolling_launch_layout.load_layout()
         for span in launch_layout.claimed_rom_ranges:
             map_only[span.start : span.end] = bytes([0xFF]) * span.size
         for hook in launch_layout.hooks:
@@ -490,7 +492,7 @@ class BuildRomTest(unittest.TestCase):
             )
 
     def _state_6_7_arbiter_image(self):
-        layout = build_rom.rolling_launch_layout.load_layout()
+        layout = rolling_launch_layout.load_layout()
         unit = layout.assembly_unit_by_key["feedback_arbiter"]
         active_immediate = unit.span.start + 0x2D
         failed_immediate = unit.span.start + 0x41
@@ -539,7 +541,7 @@ class BuildRomTest(unittest.TestCase):
         historical = bytearray(build_rom._strip_telemetry_endpoint(
             self.base_result.data, telemetry_layout, "current"
         ))
-        layout = build_rom.rolling_launch_layout.load_layout()
+        layout = rolling_launch_layout.load_layout()
         unit = layout.assembly_unit_by_key["feedback_arbiter"]
         historical[unit.span.start : unit.span.end] = (
             bytes([0xFF]) * unit.span.size
@@ -572,7 +574,7 @@ class BuildRomTest(unittest.TestCase):
             self.base_result.data, telemetry_layout, "current"
         ))
         historical[0xD3900] ^= 0x01
-        layout = build_rom.rolling_launch_layout.load_layout()
+        layout = rolling_launch_layout.load_layout()
         controller = layout.assembly_unit_by_key["ignition_controller"]
         historical[controller.span.start : controller.span.end] = (
             bytes([0xFF]) * controller.span.size
@@ -622,7 +624,7 @@ class BuildRomTest(unittest.TestCase):
         )
 
     def test_partial_and_unknown_rolling_states_are_rejected(self):
-        layout = build_rom.rolling_launch_layout.load_layout()
+        layout = rolling_launch_layout.load_layout()
         cases = {}
 
         unknown_payload = bytearray(self.base_result.data)

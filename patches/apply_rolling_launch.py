@@ -35,7 +35,6 @@ from patches import rolling_launch_layout as rolling_layout_model
 from patches import rom_checksums
 
 
-ROM_SIZE = 0x100000
 PROFILE_NAME = "rpm-hold-map1-test"
 HARDWARE_RESULTS_PATH = Path(__file__).with_name("hardware-results.toml")
 
@@ -434,7 +433,18 @@ def main(argv=None):
         f"entries={result.code_entry_count} "
         f"diagnostics={result.diagnostic_count}"
     )
-    print("ignition_retard=false brake_gate=absent map1_only=true checksums=PASS")
+    enabled_slots = [
+        index + 1
+        for index in range(5)
+        if calibration.enable_mask & (1 << index)
+    ]
+    verification = canonical_checksums.verify(result.data)
+    print(
+        "ignition_retard="
+        f"{str(calibration.mode is rolling_launch.Mode.RPM_HOLD_RETARD).lower()} "
+        f"enabled_map_slots={','.join(str(slot) for slot in enabled_slots) or 'none'} "
+        f"checksums={'PASS' if verification.valid else 'FAIL'}"
+    )
 
     if args.verify_only:
         print("no ROM file was written")

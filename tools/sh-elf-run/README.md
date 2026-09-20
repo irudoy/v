@@ -117,7 +117,7 @@ make runtime-targets-generate
 Run the external gate separately:
 
 ```bash
-tools/sh-elf-run/run-npkern.sh --verbose
+make verify-npkern
 ```
 
 Or request it after the repository-contained gate:

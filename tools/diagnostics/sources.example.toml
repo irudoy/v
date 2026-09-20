@@ -1,9 +1,0 @@
-[nissan_esm_2007_g35_sedan]
-root = "refs/nissan-esm-2007-g35-sedan"
-
-[nissan_esm_2013_g37_sedan]
-root = "refs/nissan-esm-2013-g37-sedan"
-pack = "refs/diagnostics/nissan-esm-2013-g37-sedan/source_pack.toml"
-
-[nissan_datatable]
-path = "/path/to/NissanDatatable.pdf"

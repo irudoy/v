@@ -258,22 +258,6 @@ layout.
 instruction bytes with GNU SH tools and executes the current composition. The
 Ghidra harnesses complement that mandatory gate; they do not replace it.
 
-## Retired stage harness replacement
-
-The removed hardware-isolation harnesses targeted intermediate images that are
-not build products. Their current responsibilities and durable evidence are:
-
-| Retired harness | Current replacement | Durable result record |
-|---|---|---|
-| `EmulateMapSwitchingTrampoline.java` | `Boot`, `Reset`, `Composition`, and GNU startup execution | `patches/hardware-results.toml` |
-| `EmulateMapSwitchingSelectorInit.java` | `Boot`, `Reset`, `Composition`, and GNU startup execution | `patches/hardware-results.toml` |
-| `EmulateMapSwitchingLimiterGate.java` | `Limiter`, `Boot`, `Reset`, `Composition`, and GNU limiter execution | `patches/hardware-results.toml` |
-| `EmulateMapSwitchingLookupGate.java` | `Adapters`, `Composition`, GNU adapter execution, and the delay-slot negative fixture | `patches/hardware-results.toml` |
-
-Git history retains the stage-specific builders and harness source. The result
-manifest retains image identities, readbacks, outcomes, and the unsafe
-delay-slot incident without keeping retired build paths live.
-
 ## Safety boundary
 
 P-code behavior is not silicon behavior. Ghidra does not model every SH-2E

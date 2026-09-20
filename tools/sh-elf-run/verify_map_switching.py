@@ -24,7 +24,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import apply_map_switching
-from patches import jk08a_checksums as checksums
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_compose as composer
 from patches import map_switching_layout as layout_model

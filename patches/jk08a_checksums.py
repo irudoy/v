@@ -37,16 +37,6 @@ ChecksumValues = rom_checksums.ChecksumValues
 ChecksumVerification = rom_checksums.ChecksumVerification
 
 
-def stored_values(image):
-    """Read all six stored checksum references."""
-    return rom_checksums.stored_values(image, LAYOUT)
-
-
-def calculate_values(image):
-    """Calculate all six references from the currently stored image."""
-    return rom_checksums.calculate_values(image, LAYOUT)
-
-
 def verify(image):
     """Return stored and calculated values without mutating the image."""
     return rom_checksums.verify(image, LAYOUT)

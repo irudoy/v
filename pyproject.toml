@@ -20,6 +20,7 @@ testpaths = [
     "patches/tests",
     "tools/tests",
     "tools/mapkit/tests",
+    "tools/maps/tests",
     "tools/memgraph/tests",
     "tools/diagnostics/tests",
     "tools/logs/tests",

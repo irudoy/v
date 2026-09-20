@@ -36,7 +36,6 @@ from patches import apply_map_switching
 from patches import apply_rolling_launch
 from patches import apply_can_telemetry
 from patches import can_telemetry
-from patches import can_telemetry_assembly
 from patches import can_telemetry_compose
 from patches import can_telemetry_layout
 from patches import jk08a_checksums as canonical_checksums
@@ -44,9 +43,7 @@ from patches import jk08a_runtime_reservations
 from patches import map_switching_compose
 from patches import map_switching_layout
 from patches import rolling_launch
-from patches import rolling_launch_assembly
 from patches import rolling_launch_compose
-from patches import rolling_launch_layout
 from patches import rom_checksums
 from patches import runtime_targets
 from tools.mapkit import rom as romkit

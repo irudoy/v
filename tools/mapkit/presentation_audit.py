@@ -194,11 +194,25 @@ def main(argv=None):
     )
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--format", choices=("text", "json"), default="text")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="print one status line instead of the report and ignore --format",
+    )
     args = parser.parse_args(argv)
     try:
         report = audit(args.source)
     except (OSError, ValueError) as error:
         parser.error(str(error))
+    if args.check:
+        print(
+            f"status=PASS canonical={report.canonical_table_count} "
+            f"visible={report.visible_table_count} "
+            f"hidden={report.hidden_table_count} "
+            f"masked_views={report.masked_view_count} "
+            f"families={report.switchable_family_count}"
+        )
+        return 0
     if args.format == "json":
         json.dump(report.as_dict(), sys.stdout, indent=2)
         sys.stdout.write("\n")

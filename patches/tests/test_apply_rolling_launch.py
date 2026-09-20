@@ -80,7 +80,7 @@ class ApplyRollingLaunchTest(unittest.TestCase):
             int(digest, 16)
 
     def test_output_has_valid_checksums_and_exact_size(self):
-        self.assertEqual(len(self.result.data), patcher.ROM_SIZE)
+        self.assertEqual(len(self.result.data), checksums.LAYOUT.rom_size)
         verification = checksums.verify(self.result.data)
         self.assertTrue(verification.valid)
         self.assertEqual(verification.stored, verification.calculated)

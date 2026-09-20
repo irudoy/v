@@ -27,7 +27,7 @@ three independent sources about one subject provides stronger confidence than an
 | `facts.csv` | Anchor facts: constants, units, axes, mechanics, and vendor gaps | 138 |
 
 `catalog.csv` is generated from the first two files. Edit the source transcriptions rather
-than the generated catalog.
+than the generated catalog, then rebuild it with `make vendor-catalog`.
 
 ## Method
 

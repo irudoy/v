@@ -27,7 +27,6 @@ from patches import rolling_launch_assembly
 from patches import rolling_launch_layout
 
 
-ROM_SIZE = 0x100000
 
 
 class PatchError(ValueError):

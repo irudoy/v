@@ -202,39 +202,6 @@ def compose(layout=None, base=None, blobs=None, configuration=None):
     )
 
 
-def validate_composed(layout=None, base=None, composed=None, blobs=None, configuration=None):
-    layout = layout or can_telemetry_layout.load_layout()
-    base = build_base_composition() if base is None else bytes(base)
-    base = can_telemetry_layout.validate_base_composition(layout, base)
-    if composed is None:
-        raise ValueError("composed telemetry bytes are required")
-    blobs = _validated_blobs(layout, blobs or can_telemetry_assembly.load_payloads(layout))
-    model, configuration = _validated_configuration(configuration)
-    mailbox_record = model.mailbox_record()
-    composed = bytes(composed)
-    changed, permitted, instructions, entries = _validate_composed(
-        layout, base, composed, blobs, configuration, mailbox_record
-    )
-    output_sha256 = hashlib.sha256(composed).hexdigest()
-    if (
-        model == can_telemetry.default_configuration()
-        and layout.expected_composition_sha256 != "0" * 64
-        and output_sha256 != layout.expected_composition_sha256
-    ):
-        raise ValueError("default telemetry composition digest differs")
-    return Composition(
-        data=composed,
-        base_sha256=hashlib.sha256(base).hexdigest(),
-        sha256=output_sha256,
-        configuration=configuration,
-        mailbox_record=mailbox_record,
-        changed_bytes=changed,
-        permitted_write_bytes=permitted,
-        instruction_count=instructions,
-        code_entry_count=entries,
-    )
-
-
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--payloads", type=Path, default=can_telemetry_assembly.DEFAULT_PAYLOADS)

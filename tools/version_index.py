@@ -23,6 +23,11 @@ REQUIREMENTS = (
     "tools/can_dashboard/requirements-macos.txt",
     "tools/can_dashboard/requirements-macos-build.txt",
 )
+IMAGE_SCRIPTS = (
+    "tools/sh-elf-run/run.sh",
+    "tools/sh-elf-run/run-npkern.sh",
+    "tools/sh-elf-run/generate-targets.sh",
+)
 
 
 class VersionError(Exception):
@@ -93,6 +98,14 @@ def mcp_memgraph_version():
     return pins[0].split("==", 1)[1]
 
 
+def simulator_version():
+    """Read the GDB SH simulator version the execution gate demands."""
+    return _single(
+        "tools/sh-elf-run/verify_map_switching.py",
+        r'^EXPECTED_SIMULATOR_VERSION = "(\S+)"$',
+    )
+
+
 def toolchain_versions():
     """Read the upstream part of the Debian pins the execution image installs.
 
@@ -122,7 +135,9 @@ COMPONENTS = (
     ("`mcp-memgraph`", ".mcp.json", lambda: tuple(
         version for version in (mcp_memgraph_version(),) if version
     )),
-    ("GNU SH toolchain", "tools/sh-elf-run/Dockerfile", toolchain_versions),
+    ("GNU SH toolchain", "tools/sh-elf-run/", lambda: (
+        *toolchain_versions(), simulator_version(),
+    )),
     ("Python", "pyproject.toml", lambda: (python_version(),)),
     ("CAN dashboard", "tools/can_dashboard/__init__.py", lambda: (
         dashboard_version(),
@@ -213,6 +228,20 @@ def check_repeats(pinned):
                     )
 
 
+def check_execution_image():
+    """Require the execution image tag to name the simulator the gate demands."""
+    expected = simulator_version()
+    for path in IMAGE_SCRIPTS:
+        tag = _single(
+            path, r"^image_name=\$\{VQ_SH_ELF_IMAGE:-vq-sh-elf-run:(\S+)\}$"
+        )
+        if tag != expected:
+            raise VersionError(
+                f"{path} runs vq-sh-elf-run:{tag}, the gate requires the "
+                f"GDB SH simulator {expected}"
+            )
+
+
 def check_launchers():
     """Require a documented `py` launcher selector to be the pinned Python."""
     expected = python_version()
@@ -237,6 +266,7 @@ def main(argv=None):
     try:
         pinned = check_index()
         check_repeats(pinned)
+        check_execution_image()
         check_launchers()
     except VersionError as error:
         print(f"version index: {error}", file=sys.stderr)
