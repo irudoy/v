@@ -116,7 +116,8 @@ target address.
 `1ND0A-1ME3B.census-correspondence.csv` classifies every ROM operand of the
 1ME3B accessor census against the 1ND0A census: 768 maps and 432 arrays read
 only as axes; 26 further axis operands are also read as maps and are listed as
-maps.
+maps. The 458 axis operands exceed the 457 axes of the map layer by `0x016C46`,
+which is read only at call site `0x072794`, where no map base is recovered.
 `tools/census_homology.py` writes it from the two Ghidra exports and applies
 three methods in order. `aligned-reference` aligns a 1ND0A function with its
 best 1ME3B function by instruction shape, at a similarity of at least 0.75, and
