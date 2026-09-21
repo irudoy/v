@@ -8,6 +8,8 @@ import math
 from pathlib import Path
 import time
 
+from tools.can_dashboard.acceleration import AccelerationTimer
+from tools.can_dashboard.selected_map import MapTracker
 from tools.logs import can_telemetry
 
 
@@ -119,6 +121,126 @@ class FrameRecord:
 
 
 @dataclass(frozen=True)
+class SnapshotRecord:
+    """One snapshot of a dashboard MLG recording, raw values by source."""
+
+    timestamp: float
+    values: dict
+    received_monotonic: float | None = None
+
+
+FRAME_CLOCK_TOLERANCE_SECONDS = 1.0
+
+
+def _finite(value) -> bool:
+    return isinstance(value, (int, float)) and math.isfinite(value)
+
+
+class FrameClock:
+    """Elapsed seconds of one source session, measured on the frame clock.
+
+    A frame carries the time it reached the interface, while the host dequeue
+    time collapses a burst drained from the driver queue onto a single tick.
+    Elapsed time starts at the offset of the first frame from the session
+    start and then advances by the interface step, or by the host receive step
+    when the source reports no frame time. An interface clock that steps
+    backwards, or ahead of the host clock by more than the queueing
+    tolerance, is abandoned without breaking elapsed time.
+    """
+
+    def __init__(self, started: float):
+        self.started = started
+        self.source_clock = False
+        self._source_time = None
+        self._host_time = None
+        self._elapsed = 0.0
+
+    def elapsed(self, frame, fallback: float):
+        host_time = (
+            frame.received_monotonic
+            if _finite(frame.received_monotonic)
+            else fallback
+        )
+        if not _finite(self.started) or not _finite(host_time):
+            return None
+        if host_time < self.started:
+            return None
+        source_time = (
+            frame.timestamp
+            if _finite(frame.timestamp) and frame.timestamp >= 0.0
+            else None
+        )
+        if self._host_time is None:
+            self.source_clock = source_time is not None
+            self._source_time = source_time
+            self._host_time = host_time
+            self._elapsed = host_time - self.started
+            return self._elapsed
+        host_step = max(host_time - self._host_time, 0.0)
+        source_step = (
+            source_time - self._source_time
+            if self.source_clock
+            and source_time is not None
+            and self._source_time is not None
+            else None
+        )
+        if source_step is None:
+            step = host_step
+        elif 0.0 <= source_step <= host_step + FRAME_CLOCK_TOLERANCE_SECONDS:
+            step = source_step
+        else:
+            self.source_clock = False
+            step = host_step
+        self._source_time = source_time
+        self._host_time = host_time
+        self._elapsed += step
+        return self._elapsed
+
+
+class DriveObserver:
+    """Feed the selected-map tracker and the acceleration timer.
+
+    Both consume source time: the interface or file time of a frame, or the
+    elapsed time of a recorded snapshot. Replay restores a copy of this
+    observer at a seek target, so everything it keeps is plain state.
+    """
+
+    def __init__(self, can_id=DEFAULT_CAN_ID):
+        self.can_id = can_id
+        self.map = MapTracker()
+        self.acceleration = AccelerationTimer()
+
+    def frame(self, time, can_id, data):
+        self.map.activity(time)
+        if can_id == self.can_id:
+            if len(data) == 8 and data[0] & 0x0F == 0:
+                self.map.tick(time, int.from_bytes(data[1:3], "big"))
+        elif can_id == VEHICLE_SPEED_ID and len(data) >= 6:
+            self.acceleration.speed(
+                time, int.from_bytes(data[4:6], "big") / 100
+            )
+        elif can_id == ASCD_BUTTON_ID and len(data) >= 4:
+            self.map.button(time, data[3])
+        elif can_id == DASHBOARD_STATE_ID and len(data) >= 6:
+            self.map.dashboard(time, data[5])
+
+    def record(self, time, values):
+        self.map.activity(time)
+        tick = values.get("tick16")
+        if _finite(tick):
+            self.map.tick(time, int(tick))
+        speed = values.get("vehicle_speed_kmh")
+        if _finite(speed):
+            self.acceleration.speed(time, speed)
+        button = values.get("ascd_button_raw")
+        if _finite(button):
+            self.map.button(time, int(button))
+        dashboard = values.get("dashboard_state_raw")
+        if _finite(dashboard):
+            self.map.dashboard(time, int(dashboard))
+
+
+@dataclass(frozen=True)
 class LiveStats:
     snapshot_hz: float
     telemetry_frame_hz: float
@@ -184,6 +306,19 @@ class DashboardModel:
         self.gps_lat = None
         self.gps_lon = None
         self.gps_status = "not observed on primary CAN"
+        self.drive = DriveObserver(can_id)
+        self.clock = None
+        self.recorded_groups = 0
+        self._record_tick = None
+        self._record_run = 0
+        self._record_unwrapped = None
+        self._field_names = tuple(
+            field["name"] for field in self.decoder.profile["fields"]
+        ) + tuple(
+            field["name"]
+            for context in self.decoder.profile.get("contexts", ())
+            for field in context["fields"]
+        )
         self._snapshot_times = deque()
         self._telemetry_frame_times = deque()
 
@@ -203,6 +338,11 @@ class DashboardModel:
         if frame.is_extended_id or frame.is_remote_frame:
             return None
 
+        event_time = self._event_time(frame, now)
+        if event_time is not None:
+            self.drive.frame(
+                event_time, frame.arbitration_id, bytes(frame.data)
+            )
         self._decode_stock_context(frame)
         if frame.arbitration_id != self.can_id:
             return None
@@ -215,7 +355,73 @@ class DashboardModel:
         self.schema_verified = self.decoder.schema_verified
         if snapshot is None:
             return None
+        self._accept_snapshot(snapshot, now)
+        return snapshot
 
+    def process_record(self, record, now=None):
+        """Consume one snapshot of a dashboard MLG recording.
+
+        The recording holds the raw value of every field at each snapshot, so
+        a record replaces a decoded group: it carries no page, context tag,
+        or health context of its own, and its verification is the one the
+        recording dashboard held.
+        """
+        if not isinstance(record, SnapshotRecord):
+            raise TypeError("record must be SnapshotRecord")
+        if now is None:
+            now = (
+                record.received_monotonic
+                if record.received_monotonic is not None
+                else time.monotonic()
+            )
+        values = record.values
+        self.drive.record(record.timestamp, values)
+        self._record_stock_context(values)
+        tick = values.get("tick16")
+        if not _finite(tick):
+            return None
+        tick16 = int(tick) & 0xFFFF
+        if self._record_tick is None:
+            unwrapped = tick16
+        else:
+            delta = (tick16 - self._record_tick) & 0xFFFF
+            if delta == 0 or delta >= 0x8000:
+                if not can_telemetry.is_producer_restart(
+                    self._record_tick, tick16
+                ):
+                    return None
+                self._record_run += 1
+                unwrapped = tick16
+            else:
+                unwrapped = self._record_unwrapped + delta
+        self._record_tick = tick16
+        self._record_unwrapped = unwrapped
+        fields = {}
+        for name in self._field_names:
+            value = values.get(name)
+            if _finite(value):
+                fields[name] = int(round(value))
+        snapshot = can_telemetry.Snapshot(
+            tick16=tick16,
+            run=self._record_run,
+            unwrapped_tick=unwrapped,
+            sequence=tick16 & 0x0F,
+            fields=fields,
+            context_tag=None,
+            context_name=None,
+            schema_verified=values.get("schema_verified") == 1,
+            timestamp=record.timestamp,
+        )
+        self.recorded_groups += 1
+        self._accept_snapshot(snapshot, now)
+        return snapshot
+
+    def _event_time(self, frame, now):
+        if self.clock is not None:
+            return self.clock.elapsed(frame, now)
+        return frame.timestamp if _finite(frame.timestamp) else now
+
+    def _accept_snapshot(self, snapshot, now):
         if self.last_run is not None and snapshot.run != self.last_run:
             # The controller restarted, so its tick counter starts a new run
             # and the distance across the gap is not a snapshot count.
@@ -244,7 +450,21 @@ class DashboardModel:
             retained = replace(snapshot, fields=dict(self.raw), schema_verified=True)
             self.engineering.update(can_telemetry.engineering_values(retained))
             self.engineering.update(_dashboard_engineering_values(self.raw))
-        return snapshot
+
+    def _set_gear(self, code):
+        self.gear_raw = code
+        if code == 0:
+            self.gear = "TRANSITION"
+        else:
+            self.gear = PRND_CODES.get(code, f"0x{code:02X}")
+
+    def _set_ascd_button(self, code):
+        self.ascd_button_raw = code
+        self.ascd_button = ASCD_BUTTON_CODES.get(code, f"0x{code:02X}")
+
+    def _set_dashboard_state(self, code):
+        self.dashboard_state_raw = code
+        self.dashboard_state = DASHBOARD_STATE_CODES.get(code, f"0x{code:02X}")
 
     def _decode_stock_context(self, frame):
         data = bytes(frame.data)
@@ -254,21 +474,28 @@ class DashboardModel:
             self.vehicle_speed_raw = int.from_bytes(data[4:6], "big")
             self.vehicle_speed_kmh = self.vehicle_speed_raw / 100
         elif frame.arbitration_id == ASCD_BUTTON_ID and len(data) >= 4:
-            self.ascd_button_raw = data[3]
-            self.ascd_button = ASCD_BUTTON_CODES.get(
-                data[3], f"0x{data[3]:02X}"
-            )
+            self._set_ascd_button(data[3])
         elif frame.arbitration_id == PRND_ID and data:
-            self.gear_raw = data[0]
-            if data[0] == 0:
-                self.gear = "TRANSITION"
-            else:
-                self.gear = PRND_CODES.get(data[0], f"0x{data[0]:02X}")
+            self._set_gear(data[0])
         elif frame.arbitration_id == DASHBOARD_STATE_ID and len(data) >= 6:
-            self.dashboard_state_raw = data[5]
-            self.dashboard_state = DASHBOARD_STATE_CODES.get(
-                data[5], f"0x{data[5]:02X}"
-            )
+            self._set_dashboard_state(data[5])
+
+    def _record_stock_context(self, values):
+        rpm = values.get("stock_rpm")
+        if _finite(rpm):
+            self.stock_rpm = rpm
+        speed = values.get("vehicle_speed_kmh")
+        if _finite(speed):
+            self.vehicle_speed_raw = int(round(speed * 100))
+            self.vehicle_speed_kmh = self.vehicle_speed_raw / 100
+        for name, setter in (
+            ("gear_raw", self._set_gear),
+            ("ascd_button_raw", self._set_ascd_button),
+            ("dashboard_state_raw", self._set_dashboard_state),
+        ):
+            code = values.get(name)
+            if _finite(code):
+                setter(int(code))
 
     def stats(self, now=None):
         now = time.monotonic() if now is None else now
@@ -280,10 +507,14 @@ class DashboardModel:
         return LiveStats(
             snapshot_hz=snapshot_hz,
             telemetry_frame_hz=frame_hz,
-            completed_groups=self.decoder.completed_groups,
+            completed_groups=(
+                self.decoder.completed_groups + self.recorded_groups
+            ),
             missed_snapshots=self.missed_snapshots,
             unexpected_tick_steps=self.unexpected_tick_steps,
-            producer_restarts=self.decoder.producer_restarts,
+            producer_restarts=(
+                self.decoder.producer_restarts + self._record_run
+            ),
             incomplete_groups=self.decoder.incomplete_groups,
             malformed_frames=self.decoder.malformed_frames,
             schema_mismatches=self.decoder.schema_mismatches,
@@ -300,6 +531,10 @@ class DashboardModel:
         if self.schema_verified and name in self.engineering:
             return self.engineering[name]
         return self.raw.get(name, default)
+
+    @property
+    def selected_map(self):
+        return self.drive.map.number
 
     @property
     def high_detonation_selected(self):

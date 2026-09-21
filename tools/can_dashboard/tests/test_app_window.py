@@ -3,9 +3,12 @@ from pathlib import Path
 import sys
 import tempfile
 import tkinter as tk
+import types
 import unittest
 
+from tools.can_dashboard import acceleration
 from tools.can_dashboard import app
+from tools.can_dashboard import replay
 from tools.can_dashboard import settings
 from tools.can_dashboard import widgets
 
@@ -372,6 +375,150 @@ class DashboardWindowTest(unittest.TestCase):
         dashboard = self.dashboard(publish_udp=("127.0.0.1", 5001))
         self.assertEqual(dashboard.feed.endpoint, ("127.0.0.1", 5001))
         self.assertFalse(dashboard.settings.feed.enabled)
+
+
+def speed_trace(path, speeds):
+    """Write a PEAK TRC of one 0x280 frame per 100 ms at the given speeds."""
+    lines = [";$FILEVERSION=1.1", ";$STARTTIME=46250.0", ";"]
+    for number, kmh in enumerate(speeds, start=1):
+        raw = round(kmh * 100)
+        payload = f"00 00 00 00 {raw >> 8:02X} {raw & 0xFF:02X} 00 00"
+        lines.append(
+            f"{number:6d}) {number * 100.0:11.1f}  Rx         0280  8  {payload}"
+        )
+    path.write_text("\n".join(lines) + "\n", encoding="ascii")
+    return path
+
+
+@unittest.skipUnless(TK_AVAILABLE, "Tk display is unavailable")
+class DashboardReplayWindowTest(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.directory = Path(directory.name)
+        self.window = tk.Toplevel(ROOT)
+        self.window.withdraw()
+        self.addCleanup(self._close)
+        args = app.build_parser().parse_args([
+            "--no-auto-connect",
+            "--settings",
+            str(self.directory / "settings.json"),
+        ])
+        self.dashboard = app.DashboardApp(self.window, args)
+        self.window.update_idletasks()
+
+    def _close(self):
+        if self.window.winfo_exists():
+            self.window.destroy()
+
+    def open_replay(self, speeds=(0.0, 10.0, 20.0, 30.0, 40.0, 50.0)):
+        path = speed_trace(self.directory / "drive.trc", speeds)
+        timeline = replay.load_timeline(path, self.dashboard.model.can_id)
+        self.dashboard._open_replay(timeline)
+        self.window.update_idletasks()
+        return timeline
+
+    def test_the_drive_bar_starts_with_an_unknown_map_and_no_times(self):
+        dashboard = self.dashboard
+        dashboard._refresh(0.0)
+        self.assertEqual(dashboard.map_var.get(), "MAP ?")
+        for name in app.RUN_TOOLTIPS:
+            self.assertEqual(dashboard.run_value_vars[name].get(), "--")
+            self.assertEqual(dashboard.run_best_vars[name].get(), "best --")
+        self.assertEqual(dashboard.replay_bar.winfo_manager(), "")
+
+    def test_the_drive_bar_shows_the_map_and_the_run_times(self):
+        dashboard = self.dashboard
+        drive = dashboard.model.drive
+        drive.map.number = 3
+        zero_to_100 = drive.acceleration.run("0-100")
+        zero_to_100.last = zero_to_100.best = acceleration.RunResult(8.5, 1.0)
+        dashboard._refresh(0.0)
+        self.assertEqual(dashboard.map_var.get(), "MAP 3")
+        self.assertEqual(dashboard.run_value_vars["0-100"].get(), "8.50 s")
+        self.assertEqual(dashboard.run_best_vars["0-100"].get(), "best 8.50 s")
+        self.assertEqual(dashboard._metric_value("selected_map"), 3)
+        self.assertEqual(dashboard._metric_value("zero_to_100_s"), 8.5)
+        dashboard.reset_acceleration()
+        dashboard._refresh(0.0)
+        self.assertEqual(dashboard.run_value_vars["0-100"].get(), "--")
+
+    def test_a_loaded_replay_shows_its_transport_and_plays(self):
+        dashboard = self.dashboard
+        timeline = self.open_replay()
+        player = dashboard.player
+        self.assertIs(player.timeline, timeline)
+        self.assertTrue(player.playing)
+        self.assertEqual(dashboard.replay_bar.winfo_manager(), "pack")
+        self.assertEqual(
+            dashboard.play_button.cget("text"), app.PLAY_CAPTIONS[True]
+        )
+        self.assertTrue(dashboard.source_is_active())
+
+        dashboard.toggle_play()
+        dashboard._refresh(0.0)
+        self.assertFalse(player.playing)
+        self.assertEqual(dashboard.status_var.get(), "PAUSED")
+        self.assertEqual(
+            dashboard.play_button.cget("text"), app.PLAY_CAPTIONS[False]
+        )
+
+        dashboard.toggle_loop()
+        dashboard.cycle_speed()
+        self.assertTrue(dashboard.loop_button.lit)
+        self.assertEqual(dashboard.speed_button.cget("text"), "2x")
+        self.assertEqual(dashboard.replay_time_var.get(), "0:00.0 / 0:00.6")
+
+        dashboard.stop_source()
+        self.assertIsNone(dashboard.player)
+        self.assertEqual(dashboard.replay_bar.winfo_manager(), "")
+
+    def test_a_seek_rebuilds_the_model_at_the_target(self):
+        dashboard = self.dashboard
+        self.open_replay()
+        dashboard.toggle_play()
+        dashboard._replay_seek(0.35)
+        self.assertEqual(dashboard.player.position, 0.35)
+        self.assertEqual(dashboard.model.vehicle_speed_kmh, 20.0)
+        dashboard.replay_step(-app.REPLAY_STEP_SECONDS)
+        self.assertEqual(dashboard.player.position, 0.0)
+        self.assertIsNone(dashboard.model.vehicle_speed_kmh)
+
+    def test_a_release_on_the_timeline_seeks_there(self):
+        dashboard = self.dashboard
+        timeline = self.open_replay()
+        dashboard.toggle_play()
+        dashboard._on_timeline_drag(types.SimpleNamespace(x=10_000))
+        self.assertEqual(dashboard.scrub_position, timeline.duration)
+        self.assertEqual(dashboard.player.position, 0.0)
+        dashboard._on_timeline_release(types.SimpleNamespace(x=10_000))
+        self.assertIsNone(dashboard.scrub_position)
+        self.assertEqual(dashboard.player.position, timeline.duration)
+        self.assertEqual(dashboard.model.vehicle_speed_kmh, 50.0)
+
+    def test_playing_to_the_end_pauses_or_loops(self):
+        dashboard = self.dashboard
+        timeline = self.open_replay()
+        dashboard._advance_replay(dashboard.player._anchor_host + 5.0)
+        self.assertFalse(dashboard.player.playing)
+        self.assertEqual(dashboard.player.position, timeline.duration)
+        dashboard.toggle_play()
+        self.assertTrue(dashboard.player.playing)
+        self.assertEqual(dashboard.player.position, 0.0)
+        dashboard.toggle_loop()
+        dashboard._advance_replay(dashboard.player._anchor_host + 5.0)
+        self.assertTrue(dashboard.player.playing)
+        self.assertEqual(dashboard.player.position, 0.0)
+
+    def test_a_theme_change_keeps_the_replay_bar(self):
+        dashboard = self.dashboard
+        self.open_replay()
+        dashboard.toggle_theme()
+        self.window.update_idletasks()
+        self.assertEqual(dashboard.replay_bar.winfo_manager(), "pack")
+        self.assertEqual(
+            dashboard.play_button.cget("text"), app.PLAY_CAPTIONS[True]
+        )
 
 
 if __name__ == "__main__":

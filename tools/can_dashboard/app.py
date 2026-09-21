@@ -34,10 +34,19 @@ from tools.can_dashboard.model import (
     DEFAULT_BITRATE,
     DEFAULT_CAN_ID,
     DashboardModel,
+    FrameClock,
     FrameRecord,
+    SnapshotRecord,
 )
 from tools.can_dashboard.live_feed import LiveFeed, parse_endpoint
 from tools.can_dashboard.recording import TelemetryMlgRecorder
+from tools.can_dashboard.replay import (
+    ReplayError,
+    ReplayLoaded,
+    ReplayPlayer,
+    load_timeline,
+    next_speed,
+)
 from tools.can_dashboard.sources import (
     ControlRequest,
     ControlStatus,
@@ -45,7 +54,6 @@ from tools.can_dashboard.sources import (
     SourceStatus,
     run_demo,
     run_pcan,
-    run_replay,
 )
 from tools.can_dashboard.widgets import (
     Cluster,
@@ -230,7 +238,7 @@ class Metric:
 @dataclass(frozen=True)
 class SourceEnvelope:
     generation: int
-    event: SourceStatus | ControlStatus | FrameRecord
+    event: SourceStatus | ControlStatus | FrameRecord | ReplayLoaded
 
 
 def _parse_standard_can_id(value: str) -> int:
@@ -243,75 +251,6 @@ def _parse_standard_can_id(value: str) -> int:
     return can_id
 
 
-RECORDING_CLOCK_TOLERANCE_SECONDS = 1.0
-
-
-def _finite(value) -> bool:
-    return isinstance(value, (int, float)) and math.isfinite(value)
-
-
-class RecordingClock:
-    """Elapsed seconds of one MLVLG recording, measured on the frame clock.
-
-    A data block carries a 10 us timestamp, so a record must hold the time its
-    frame reached the interface: the host dequeue time collapses a burst
-    drained from the driver queue onto a single tick. Elapsed time starts at
-    the offset of the first recorded frame from the recording start and then
-    advances by the interface step, or by the host receive step when the source
-    reports no frame time. An interface clock that steps backwards, or ahead of
-    the host clock by more than the queueing tolerance, is abandoned without
-    breaking elapsed time.
-    """
-
-    def __init__(self, started: float):
-        self.started = started
-        self.source_clock = False
-        self._source_time = None
-        self._host_time = None
-        self._elapsed = 0.0
-
-    def elapsed(self, frame: FrameRecord, fallback: float):
-        host_time = (
-            frame.received_monotonic
-            if _finite(frame.received_monotonic)
-            else fallback
-        )
-        if not _finite(self.started) or not _finite(host_time):
-            return None
-        if host_time < self.started:
-            return None
-        source_time = (
-            frame.timestamp
-            if _finite(frame.timestamp) and frame.timestamp >= 0.0
-            else None
-        )
-        if self._host_time is None:
-            self.source_clock = source_time is not None
-            self._source_time = source_time
-            self._host_time = host_time
-            self._elapsed = host_time - self.started
-            return self._elapsed
-        host_step = max(host_time - self._host_time, 0.0)
-        source_step = (
-            source_time - self._source_time
-            if self.source_clock
-            and source_time is not None
-            and self._source_time is not None
-            else None
-        )
-        if source_step is None:
-            step = host_step
-        elif 0.0 <= source_step <= host_step + RECORDING_CLOCK_TOLERANCE_SECONDS:
-            step = source_step
-        else:
-            self.source_clock = False
-            step = host_step
-        self._source_time = source_time
-        self._host_time = host_time
-        self._elapsed += step
-        return self._elapsed
-
-
 HERO_METRICS = (
     Metric("rpm", "ENGINE SPEED", "RPM", 0),
     Metric("vehicle_speed_kmh", "VEHICLE SPEED", "km/h", 1),
@@ -321,7 +260,16 @@ HERO_METRICS = (
     Metric("injection_average_ms", "INJECTION CALC", "ms", 2),
     Metric("coolant_deg_c", "COOLANT", "degC", 0),
     Metric("gear", "SELECTOR", "", 0),
+    Metric("selected_map", "SELECTED MAP", "", 0),
+    Metric("zero_to_100_s", "0-100 KM/H", "s", 2),
+    Metric("hundred_to_200_s", "100-200 KM/H", "s", 2),
 )
+OPTIONAL_HERO_KEYS = frozenset({
+    "gear",
+    "selected_map",
+    "zero_to_100_s",
+    "hundred_to_200_s",
+})
 
 PANELS = (
     ("Air and fuel", (
@@ -432,8 +380,9 @@ TABS = (
     ("Extended", EXTENDED_PANELS),
 )
 DEFAULT_HERO_KEYS = tuple(
-    metric.key for metric in HERO_METRICS if metric.key != "gear"
+    metric.key for metric in HERO_METRICS if metric.key not in OPTIONAL_HERO_KEYS
 )
+RUN_METRICS = {"zero_to_100_s": "0-100", "hundred_to_200_s": "100-200"}
 
 
 def _hero_catalog():
@@ -792,9 +741,43 @@ STATUS_FIELDS = (
 STREAM_CAPTIONS = {"start": "\u25b6 STREAM", "stop": "\u25a0 STREAM"}
 RECORD_CAPTIONS = {False: "\u25cf REC", True: "\u25a0 REC"}
 THEME_CAPTIONS = {"dark": "LIGHT", "light": "DARK"}
+PLAY_CAPTIONS = {False: "\u25b6 PLAY", True: "\u2016 PAUSE"}
+REPLAY_STEP_SECONDS = 5.0
+REPLAY_FILETYPES = (
+    ("Replay files", "*.trc *.mlg *.log *.txt"),
+    ("PEAK trace", "*.trc"),
+    ("Dashboard MLG recording", "*.mlg"),
+    ("candump log", "*.log *.txt"),
+    ("All files", "*.*"),
+)
+MAP_TOOLTIP = (
+    "The telemetry stream does not carry the active map index. The dashboard "
+    "sets Map 1 when it observes a controller start, and Map N when a "
+    "SET + CANCEL selector gesture is answered by N feedback pulses of the "
+    "CRUISE and SET lamps."
+)
+RUN_TOOLTIPS = {
+    "0-100": (
+        "0-100 km/h: armed at standstill, started by the first ABS speed "
+        "above zero (about 1.5 km/h), stopped where the speed crosses "
+        "100 km/h. Last run and best run of this source."
+    ),
+    "100-200": (
+        "100-200 km/h: armed below 97 km/h, timed between the crossings of "
+        "100 and 200 km/h. Last run and best run of this source."
+    ),
+}
+
+
+def format_replay_time(seconds):
+    """Minutes and seconds to a tenth, as m:ss.s."""
+    minutes, rest = divmod(round(max(0.0, seconds), 1), 60.0)
+    return f"{int(minutes)}:{rest:04.1f}"
 
 
 class DashboardApp:
+    player = None
+
     def __init__(self, root, args):
         self.root = root
         self.args = args
@@ -838,12 +821,22 @@ class DashboardApp:
         self.picker = None
         self.feed_dialog = None
         self.status_dot_color = None
+        self.map_color = None
+        self.run_colors = {}
+        self.scrub_position = None
         self._create_variables()
         self._restart_feed()
         self.root.title(f"{PRODUCT_NAME} v{__version__}")
         self._apply_initial_geometry()
         self._build_window()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
+        for sequence, handler in (
+            ("<space>", self._on_replay_key_play),
+            ("<Left>", lambda event: self._on_replay_key_step(event, -1)),
+            ("<Right>", lambda event: self._on_replay_key_step(event, 1)),
+            ("<Home>", self._on_replay_key_home),
+        ):
+            self.root.bind(sequence, handler, add="+")
         if sys.platform == "darwin":
             self.root.tk.createcommand("::tk::mac::Quit", self.close)
         self.root.after(POLL_INTERVAL_MS, self._poll)
@@ -873,6 +866,16 @@ class DashboardApp:
         self.control_var = tk.StringVar(self.root, value="Control: idle")
         self.record_var = tk.StringVar(self.root, value="MLG: idle")
         self.feed_var = tk.StringVar(self.root, value="Feed: off")
+        self.map_var = tk.StringVar(self.root, value="MAP ?")
+        self.run_value_vars = {
+            name: tk.StringVar(self.root, value="--")
+            for name in RUN_TOOLTIPS
+        }
+        self.run_best_vars = {
+            name: tk.StringVar(self.root, value="best --")
+            for name in RUN_TOOLTIPS
+        }
+        self.replay_time_var = tk.StringVar(self.root, value="0:00.0 / 0:00.0")
         self.health_vars = {
             key: tk.StringVar(self.root, value=f"{key}=--")
             for key, _title, _sample in HEALTH_FIELDS
@@ -891,14 +894,19 @@ class DashboardApp:
         self.feed_dialog = None
         self.source_button_active = None
         self.status_dot_color = None
+        self.map_color = None
+        self.run_colors = {}
         self.root.configure(bg=self.palette.bg)
         self._configure_styles()
         self._build_header()
         self._build_status_bar()
+        self._build_drive_bar()
+        self._build_replay_bar()
         self._build_health_bar()
         self._build_content()
         self._sync_source_button()
         self._sync_record_button()
+        self._sync_replay_bar()
 
     def _apply_initial_geometry(self):
         screen_width = self.root.winfo_screenwidth()
@@ -1019,7 +1027,8 @@ class DashboardApp:
                 header,
                 "REPLAY",
                 self.select_replay,
-                "Replay a PEAK TRC 1.1 or compact candump log",
+                "Replay a PEAK TRC 1.1 trace, a dashboard MLG recording, or a "
+                "compact candump log",
             ),
             align="right",
         )
@@ -1113,6 +1122,301 @@ class DashboardApp:
                     sample,
                 )
             )
+
+    def _build_drive_bar(self):
+        """Selected map and the acceleration timers, under the status bar."""
+        palette = self.palette
+        bar = FlowBar(self.root, bg=palette.bg, spacing_x=18, spacing_y=4)
+        bar.pack(side="top", fill="x", padx=12, pady=(0, 6))
+        self.drive_bar = bar
+        badge = tk.Frame(bar, bg=palette.border)
+        self.map_label = tk.Label(
+            badge,
+            textvariable=self.map_var,
+            width=6,
+            bg=palette.panel_alt,
+            fg=palette.muted,
+            font=ui_font(15, bold=True),
+            padx=8,
+        )
+        self.map_label.pack(padx=1, pady=1)
+        Tooltip(self.map_label, self._map_tooltip, **palette.tooltip_options())
+        bar.add(badge)
+        self.run_value_labels = {}
+        for name, tooltip in RUN_TOOLTIPS.items():
+            cluster = Cluster(bar, bg=palette.bg)
+            title = tk.Label(
+                cluster,
+                text=name,
+                bg=palette.bg,
+                fg=palette.muted,
+                font=ui_font(9, bold=True),
+            )
+            title.pack(side="left", padx=(0, 6))
+            value = tk.Label(
+                cluster,
+                textvariable=self.run_value_vars[name],
+                width=8,
+                anchor="e",
+                bg=palette.bg,
+                fg=palette.text,
+                font=mono_font(14, bold=True),
+            )
+            value.pack(side="left")
+            best = tk.Label(
+                cluster,
+                textvariable=self.run_best_vars[name],
+                width=14,
+                anchor="w",
+                bg=palette.bg,
+                fg=palette.muted,
+                font=mono_font(9),
+            )
+            best.pack(side="left", padx=(8, 0))
+            for widget in (title, value, best):
+                Tooltip(widget, tooltip, **palette.tooltip_options())
+            self.run_value_labels[name] = value
+            bar.add(cluster)
+        bar.add(
+            self._tool_button(
+                bar,
+                "RESET TIMES",
+                self.reset_acceleration,
+                "Clear the last and best 0-100 and 100-200 km/h times",
+            ),
+            align="right",
+        )
+
+    def _build_replay_bar(self):
+        """Transport controls and the scrub line of a loaded replay."""
+        palette = self.palette
+        bar = tk.Frame(
+            self.root,
+            bg=palette.panel_alt,
+            highlightbackground=palette.border,
+            highlightthickness=1,
+        )
+        self.replay_bar = bar
+        controls = tk.Frame(bar, bg=palette.panel_alt)
+        controls.pack(side="left", padx=(6, 0), pady=4)
+        self.play_button = self._tool_button(
+            controls,
+            PLAY_CAPTIONS[False],
+            self.toggle_play,
+            "Play or pause the replay (Space)",
+            pady=1,
+        )
+        self.loop_button = self._tool_button(
+            controls,
+            "LOOP",
+            self.toggle_loop,
+            "Repeat the replay, or the region between IN and OUT",
+            pady=1,
+        )
+        self.loop_in_button = self._tool_button(
+            controls,
+            "IN",
+            self.toggle_loop_in,
+            "Start the loop region at the current position; click again "
+            "to clear it",
+            pady=1,
+        )
+        self.loop_out_button = self._tool_button(
+            controls,
+            "OUT",
+            self.toggle_loop_out,
+            "End the loop region at the current position; click again "
+            "to clear it",
+            pady=1,
+        )
+        self.speed_button = self._tool_button(
+            controls,
+            "1x",
+            self.cycle_speed,
+            "Replay speed; click for the next of 0.25x to 8x",
+            pady=1,
+        )
+        for button in (
+            self.play_button,
+            self.loop_button,
+            self.loop_in_button,
+            self.loop_out_button,
+            self.speed_button,
+        ):
+            button.pack(side="left", padx=(0, 4))
+        self.replay_time_label = tk.Label(
+            bar,
+            textvariable=self.replay_time_var,
+            width=17,
+            anchor="e",
+            bg=palette.panel_alt,
+            fg=palette.cyan,
+            font=mono_font(9),
+        )
+        self.replay_time_label.pack(side="right", padx=(0, 8))
+        self.timeline_canvas = tk.Canvas(
+            bar,
+            width=160,
+            height=24,
+            bg=palette.panel_alt,
+            highlightthickness=0,
+            cursor="hand2",
+        )
+        self.timeline_canvas.pack(
+            side="left", fill="x", expand=True, padx=8, pady=4
+        )
+        Tooltip(
+            self.timeline_canvas,
+            "Click or drag to move the replay; Left and Right step 5 s, "
+            "Home returns to the loop start",
+            **palette.tooltip_options(),
+        )
+        self.timeline_canvas.bind(
+            "<Configure>", lambda _event: self._draw_timeline(), add="+"
+        )
+        self.timeline_canvas.bind("<Button-1>", self._on_timeline_drag, add="+")
+        self.timeline_canvas.bind("<B1-Motion>", self._on_timeline_drag, add="+")
+        self.timeline_canvas.bind(
+            "<ButtonRelease-1>", self._on_timeline_release, add="+"
+        )
+
+    def _sync_replay_bar(self):
+        bar = getattr(self, "replay_bar", None)
+        if bar is None:
+            return
+        if self.player is None:
+            if bar.winfo_manager():
+                bar.pack_forget()
+            return
+        if not bar.winfo_manager():
+            bar.pack(
+                side="top",
+                fill="x",
+                padx=12,
+                pady=(0, 7),
+                after=self.drive_bar,
+            )
+        self._sync_replay_controls()
+
+    def _sync_replay_controls(self):
+        player = self.player
+        if player is None or getattr(self, "play_button", None) is None:
+            return
+        self.play_button.configure(
+            text=PLAY_CAPTIONS[player.playing],
+            lit=player.playing,
+        )
+        self.loop_button.configure(lit=player.loop)
+        self.loop_in_button.configure(lit=player.loop_in is not None)
+        self.loop_out_button.configure(lit=player.loop_out is not None)
+        self.speed_button.configure(text=f"{player.speed:g}x")
+        self._refresh_replay()
+
+    def _map_tooltip(self):
+        tracker = self.model.drive.map
+        return f"{tracker.reason}.\n\n{MAP_TOOLTIP}"
+
+    def _timeline_bounds(self):
+        width = self.timeline_canvas.winfo_width()
+        return 6, max(7, width - 6)
+
+    def _timeline_x(self, seconds):
+        left, right = self._timeline_bounds()
+        duration = self.player.duration
+        share = seconds / duration if duration > 0 else 0.0
+        return left + max(0.0, min(1.0, share)) * (right - left)
+
+    def _timeline_seconds(self, x):
+        left, right = self._timeline_bounds()
+        share = (x - left) / (right - left)
+        return max(0.0, min(1.0, share)) * self.player.duration
+
+    def _on_timeline_drag(self, event):
+        if self.player is None:
+            return
+        self.scrub_position = self._timeline_seconds(event.x)
+        self._refresh_replay()
+
+    def _on_timeline_release(self, event):
+        if self.player is None:
+            return
+        self.scrub_position = None
+        self._replay_seek(self._timeline_seconds(event.x))
+        self._refresh_replay()
+
+    def _draw_timeline(self):
+        canvas = getattr(self, "timeline_canvas", None)
+        player = self.player
+        if canvas is None or player is None:
+            return
+        palette = self.palette
+        canvas.delete("all")
+        height = max(canvas.winfo_height(), 12)
+        middle = height // 2
+        left, right = self._timeline_bounds()
+        canvas.create_rectangle(
+            left, middle - 2, right, middle + 2,
+            fill=palette.border, outline="",
+        )
+        if player.loop_in is not None or player.loop_out is not None:
+            start, stop = player.region()
+            canvas.create_rectangle(
+                self._timeline_x(start), middle - 6,
+                self._timeline_x(stop), middle + 6,
+                fill="", outline=palette.cyan, width=1,
+            )
+        position = (
+            player.position
+            if self.scrub_position is None
+            else self.scrub_position
+        )
+        cursor = self._timeline_x(position)
+        canvas.create_rectangle(
+            left, middle - 2, cursor, middle + 2,
+            fill=palette.heading, outline="",
+        )
+        canvas.create_line(
+            cursor, 2, cursor, height - 2, fill=palette.text, width=2
+        )
+
+    def _refresh_replay(self):
+        player = self.player
+        if player is None:
+            return
+        position = (
+            player.position
+            if self.scrub_position is None
+            else self.scrub_position
+        )
+        self.replay_time_var.set(
+            f"{format_replay_time(position)} / "
+            f"{format_replay_time(player.duration)}"
+        )
+        self._draw_timeline()
+
+    def _refresh_drive(self):
+        palette = self.palette
+        drive = self.model.drive
+        number = drive.map.number
+        self.map_var.set("MAP ?" if number is None else f"MAP {number}")
+        color = palette.muted if number is None else palette.heading
+        if color != self.map_color:
+            self.map_color = color
+            self.map_label.configure(fg=color)
+        for run in drive.acceleration.runs:
+            elapsed = run.elapsed()
+            if elapsed is not None:
+                text, color = f"{elapsed:.2f} s", palette.amber
+            elif run.last is not None:
+                text, color = f"{run.last.seconds:.2f} s", palette.text
+            else:
+                text, color = "--", palette.muted
+            self.run_value_vars[run.name].set(text)
+            if color != self.run_colors.get(run.name):
+                self.run_colors[run.name] = color
+                self.run_value_labels[run.name].configure(fg=color)
+            best = "--" if run.best is None else f"{run.best.seconds:.2f} s"
+            self.run_best_vars[run.name].set(f"best {best}")
 
     def _build_content(self):
         palette = self.palette
@@ -1423,7 +1727,9 @@ class DashboardApp:
             self.start_pcan()
 
     def source_is_active(self):
-        return self.worker is not None and self.worker.is_alive()
+        return self.player is not None or (
+            self.worker is not None and self.worker.is_alive()
+        )
 
     def _sync_source_button(self):
         active = self.source_is_active()
@@ -1544,35 +1850,173 @@ class DashboardApp:
 
     def select_replay(self):
         path = filedialog.askopenfilename(
-            title="Select PEAK TRC 1.1 or compact candump log",
-            filetypes=(
-                ("PEAK trace", "*.trc"),
-                ("candump log", "*.log *.txt"),
-                ("All files", "*.*"),
-            ),
+            title="Select a TRC, MLG, or candump replay",
+            filetypes=REPLAY_FILETYPES,
         )
         if path:
             self.start_replay(Path(path))
 
     def start_replay(self, path):
+        """Load a replay file in the background, then play it."""
         self.stop_source()
         can_id = self._selected_can_id()
         if can_id is None:
             return
         self._new_model(can_id)
+        path = Path(path)
+        emit = self._source_emitter()
+        profile = self.args.profile
+        schema = self.args.schema
+
+        def load():
+            try:
+                timeline = load_timeline(path, can_id, profile, schema)
+            except (ReplayError, ValueError) as error:
+                emit(SourceStatus("error", f"replay failed: {error}"))
+                return
+            emit(ReplayLoaded(timeline))
+
         self.stop_event = threading.Event()
         self.worker = threading.Thread(
-            target=run_replay,
-            args=(
-                Path(path),
-                self.stop_event,
-                self._source_emitter(),
-                self.args.replay_speed,
-            ),
+            target=load,
             daemon=True,
-            name="telemetry-replay",
+            name="replay-loader",
         )
+        self._set_source_status("connecting", f"loading {path.name}")
         self.worker.start()
+
+    def _open_replay(self, timeline):
+        self.player = ReplayPlayer(
+            timeline,
+            self.args.replay_speed,
+            loop=getattr(self.args, "replay_loop", False),
+        )
+        self._replay_seek(0.0, keep_recording=True)
+        self.player.play(time.monotonic())
+        self._set_source_status(
+            "connected",
+            f"replay {timeline.path.name}, {timeline.kind}, "
+            f"{format_replay_time(timeline.duration)}",
+        )
+        self._sync_replay_bar()
+
+    def _process_item(self, item, now):
+        if isinstance(item, SnapshotRecord):
+            return self.model.process_record(item, now)
+        return self.model.process_frame(item, now)
+
+    def _replay_seek(self, target, keep_recording=False):
+        """Rebuild the model at a source time of the loaded replay.
+
+        A recording holds one continuous time line, so a seek ends it unless
+        the replay has just opened.
+        """
+        player = self.player
+        if player is None:
+            return
+        if not keep_recording:
+            self.stop_recording()
+        host = time.monotonic()
+        first, last = player.seek(target, host)
+        timeline = player.timeline
+        self._new_model(timeline.can_id)
+        self.model.drive = timeline.drive_at(first)
+        for index in range(first, last):
+            item_now = player.host_time(timeline.times[index], host)
+            self._process_item(timeline.item(index, item_now), item_now)
+        for history in self.hero_history.values():
+            history.clear()
+
+    def _advance_replay(self, now):
+        player = self.player
+        timeline = player.timeline
+        first, last, ended = player.advance(now)
+        new_snapshot = False
+        for index in range(first, last):
+            item_now = player.host_time(timeline.times[index], now)
+            item = timeline.item(index, item_now)
+            if self._process_item(item, item_now) is not None:
+                new_snapshot = True
+                self._record_snapshot(item, item_now)
+        if ended:
+            if player.loop:
+                self._replay_seek(player.region()[0])
+            else:
+                player.pause()
+                self._sync_replay_controls()
+        return new_snapshot
+
+    def toggle_play(self):
+        player = self.player
+        if player is None:
+            return
+        if player.playing:
+            player.pause()
+        else:
+            if player.at_stop():
+                self._replay_seek(player.region()[0])
+            player.play(time.monotonic())
+        self._sync_replay_controls()
+
+    def toggle_loop(self):
+        if self.player is not None:
+            self.player.loop = not self.player.loop
+            self._sync_replay_controls()
+
+    def toggle_loop_in(self):
+        player = self.player
+        if player is None:
+            return
+        if player.loop_in is None:
+            player.set_loop_in()
+        else:
+            player.loop_in = None
+        self._sync_replay_controls()
+
+    def toggle_loop_out(self):
+        player = self.player
+        if player is None:
+            return
+        if player.loop_out is None:
+            player.set_loop_out()
+        else:
+            player.loop_out = None
+        self._sync_replay_controls()
+
+    def cycle_speed(self):
+        player = self.player
+        if player is not None:
+            player.set_speed(next_speed(player.speed), time.monotonic())
+            self._sync_replay_controls()
+
+    def replay_step(self, seconds):
+        if self.player is not None:
+            self._replay_seek(self.player.position + seconds)
+
+    def reset_acceleration(self):
+        self.model.drive.acceleration.reset_results()
+
+    @staticmethod
+    def _typing(event):
+        return isinstance(event.widget, (tk.Entry, tk.Text, ttk.Entry))
+
+    def _on_replay_key_play(self, event):
+        if self.player is None or self._typing(event):
+            return None
+        self.toggle_play()
+        return "break"
+
+    def _on_replay_key_step(self, event, direction):
+        if self.player is None or self._typing(event):
+            return None
+        self.replay_step(direction * REPLAY_STEP_SECONDS)
+        return "break"
+
+    def _on_replay_key_home(self, event):
+        if self.player is None or self._typing(event):
+            return None
+        self._replay_seek(self.player.region()[0])
+        return "break"
 
     @staticmethod
     def _default_recording_name():
@@ -1622,7 +2066,7 @@ class DashboardApp:
             self.record_var.set(f"MLG error: {error}")
             LOG.error("recording not started: %s", error)
             return
-        self.recording_clock = RecordingClock(time.monotonic())
+        self.recording_clock = FrameClock(time.monotonic())
         self._sync_record_button()
         self.record_var.set(f"MLG: recording {output.name}")
         LOG.info("recording to %s", output)
@@ -1661,6 +2105,8 @@ class DashboardApp:
 
     def stop_source(self):
         self.stop_recording()
+        self.player = None
+        self._sync_replay_bar()
         self.source_generation += 1
         if self.stop_event is not None:
             self.stop_event.set()
@@ -1704,6 +2150,11 @@ class DashboardApp:
             event = envelope.event
             if isinstance(event, SourceStatus):
                 self._set_source_status(event.state, event.detail)
+                if event.state == "connected":
+                    # Live frames carry source time from the moment the
+                    # source opened; the bus silence before the first frame
+                    # tells a controller start from a running stream.
+                    self.model.clock = FrameClock(now)
                 if event.state in {"stopped", "error"}:
                     self.stop_recording()
             elif isinstance(event, ControlStatus):
@@ -1719,26 +2170,34 @@ class DashboardApp:
                     self._set_stream_command(
                         "stop" if event.command == "start" else "start"
                     )
+            elif isinstance(event, ReplayLoaded):
+                self._open_replay(event.timeline)
             elif isinstance(event, FrameRecord):
-                snapshot = self.model.process_frame(event)
-                new_snapshot = new_snapshot or snapshot is not None
-                if snapshot is not None and self.recorder is not None:
-                    elapsed = self.recording_clock.elapsed(event, now)
-                    if elapsed is None:
-                        continue
-                    try:
-                        self.recorder.append(self.model, elapsed)
-                    except (OSError, ValueError) as error:
-                        self.recorder.abort()
-                        self.recorder = None
-                        self.recording_clock = None
-                        self._sync_record_button()
-                        self.record_var.set(f"MLG error: {error}")
-                        LOG.error("recording aborted: %s", error)
+                if self.model.process_frame(event) is not None:
+                    new_snapshot = True
+                    self._record_snapshot(event, now)
+        if self.player is not None:
+            new_snapshot = self._advance_replay(now) or new_snapshot
         if new_snapshot and self.feed is not None:
             self.feed.publish(self.model)
             self.feed_var.set(f"Feed: {self.feed.status()}")
         self.root.after(POLL_INTERVAL_MS, self._poll)
+
+    def _record_snapshot(self, item, now):
+        if self.recorder is None:
+            return
+        elapsed = self.recording_clock.elapsed(item, now)
+        if elapsed is None:
+            return
+        try:
+            self.recorder.append(self.model, elapsed)
+        except (OSError, ValueError) as error:
+            self.recorder.abort()
+            self.recorder = None
+            self.recording_clock = None
+            self._sync_record_button()
+            self.record_var.set(f"MLG error: {error}")
+            LOG.error("recording aborted: %s", error)
 
     def _refresh_tick(self):
         """Paint the window on a timer of its own.
@@ -1754,6 +2213,11 @@ class DashboardApp:
         self.root.after(REFRESH_INTERVAL_MS, self._refresh_tick)
 
     def _metric_value(self, key):
+        if key == "selected_map":
+            return self.model.selected_map
+        if key in RUN_METRICS:
+            run = self.model.drive.acceleration.run(RUN_METRICS[key])
+            return None if run.last is None else run.last.seconds
         if key == "rpm":
             return self.model.value("rpm", self.model.stock_rpm)
         if key == "stock_rpm":
@@ -1816,6 +2280,8 @@ class DashboardApp:
             state, color = "ERROR", palette.red
         elif self.source_state not in {"connected"}:
             state, color = self.source_state.upper(), palette.muted
+        elif self.player is not None and not self.player.playing:
+            state, color = "PAUSED", palette.amber
         elif age is None:
             state, color = f"WAITING FOR 0x{self.model.can_id:03X}", palette.amber
         elif age > 0.5:
@@ -1852,6 +2318,8 @@ class DashboardApp:
                 value if new_group and isinstance(value, (int, float)) else None,
             )
         self._refresh_panels(self.active_tab)
+        self._refresh_drive()
+        self._refresh_replay()
 
         flags = self.model.telemetry_status_flags
         active_flags = ",".join(
@@ -1947,6 +2415,11 @@ def build_parser():
     )
     parser.add_argument("--replay", type=Path)
     parser.add_argument("--replay-speed", type=float, default=1.0)
+    parser.add_argument(
+        "--replay-loop",
+        action="store_true",
+        help="repeat the replay from its start when it ends",
+    )
     parser.add_argument("--no-auto-connect", action="store_true")
     parser.add_argument(
         "--record",

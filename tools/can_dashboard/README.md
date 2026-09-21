@@ -175,6 +175,7 @@ Useful modes:
 ```text
 py -3.11 -m tools.can_dashboard.app --demo
 py -3.11 -m tools.can_dashboard.app --replay capture.log
+py -3.11 -m tools.can_dashboard.app --replay drive.mlg --replay-loop
 py -3.11 -m tools.can_dashboard.app --listen-only
 py -3.11 -m tools.can_dashboard.app --channel PCAN_USBBUS2
 py -3.11 -m tools.can_dashboard.app --record drive.mlg
@@ -194,9 +195,7 @@ uv run --with-requirements tools/can_dashboard/requirements-macos.txt \
 The macOS default includes the channel reset. Pass `--no-reset-channel` only
 when preserving another client's PCAN-Basic ownership is intentional.
 
-Replay accepts PEAK PCAN-View TRC 1.1 files directly, including the `.trc`
-captures used by the project. It also accepts compact candump lines such as
-`(12.500000) can0 6F0#A001020304050607`.
+[Replay](#replay) describes the accepted files and the transport controls.
 
 ## Live value feed
 
@@ -342,6 +341,95 @@ recording declares no GPS channels rather than storing channels that hold only
 network or another GPS source. The logger never invents coordinates from
 vehicle speed.
 
+## Replay
+
+`REPLAY` opens a PEAK PCAN-View TRC 1.1 trace, a dashboard MLG recording, or a
+compact candump log with lines such as
+`(12.500000) can0 6F0#A001020304050607`; the suffix selects the reader, and
+`--replay PATH` opens a file at start. The file is read completely in the
+background before playback. A trace keeps the telemetry frames, the stock
+frames the dashboard reads, and the PEAK error records. An MLG recording keeps
+one record per snapshot, skips the hold-last bridge records, and requires the
+`Elapsed` and telemetry tick channels of a dashboard recording.
+
+TRC and candump frames pass through the telemetry decoder as live frames do.
+An MLG record replaces a decoded group: it restores the raw value of every
+field, the stock context, and the schema verification that the recording
+dashboard held, so the replayed engineering values equal the recorded
+channels. A rotating context that had not arrived when the record was written
+stays `--`.
+
+While a replay is loaded, a transport bar appears under the drive bar:
+
+| Control | Function |
+| --- | --- |
+| `PLAY` / `PAUSE`, `Space` | plays or pauses; at the end, `PLAY` starts again from the loop start |
+| timeline | a click or drag previews a position, and the release moves the replay there |
+| `Left`, `Right` | move 5 s back or forward |
+| `Home` | returns to the loop start |
+| `LOOP` | repeats the whole replay, or the region between `IN` and `OUT`; lit while on |
+| `IN`, `OUT` | start or end the loop region at the current position; lit while set, and a second press clears the point |
+| speed | cycles through 0.25x, 0.5x, 1x, 2x, 4x, and 8x |
+
+The keys act in the main window outside the `CH` and `ID` entries, and a tool
+button that holds the keyboard focus takes `Space` for itself.
+`--replay-speed` sets the starting speed and `--replay-loop` starts with
+`LOOP` on. A paused
+replay reports `PAUSED` as its link state.
+
+A position change rebuilds the model at the target. The model replays the
+3 s before the target, so rotating contexts and stock frames are current when
+playback continues, and the selected map and the acceleration timers resume
+from a copy of their state that loading takes every 1 s of source time. Hero
+traces restart at the target. When more items fall due than one source poll
+processes, playback falls behind the window clock instead of skipping items.
+An MLG recording holds one continuous time line, so a position change or a
+loop jump ends a running recording.
+
+## Drive bar
+
+The drive bar under the status fields shows the selected map and the 0-100
+and 100-200 km/h timers. `SELECTED MAP`, `0-100 KM/H`, and `100-200 KM/H` are
+also available as hero cards.
+
+### Selected map
+
+The telemetry stream does not carry the active map index, so `MAP N` is an
+inference from the stock bus under the runtime contract of
+[`../../patches/map-switching-selector.md`](../../patches/map-switching-selector.md):
+every controller start selects Map 1, a SET + CANCEL gesture with N CANCEL
+taps commits Map N, and the runtime answers the commit with N pulses of ASCD
+display state 4 on frame `0x551` byte 5 while it ignores selector input.
+
+| Observation | Shown |
+| --- | --- |
+| a telemetry run that opens with tick16 at most `0xFF` after at least 1 s without any frame, or a tick16 restart inside the stream | `MAP 1` |
+| a gesture on frame `0x239` byte 3 answered within 0.6 s of the release by exactly as many ON phases of at most 0.45 s as it counted CANCEL taps, closed by 0.45 s of state 0 | `MAP N` |
+| a gesture answered by another pulse count, or by an ON state that cannot be counted | `MAP ?` |
+| a gesture without feedback | unchanged |
+
+A source that joins a controller run in progress shows `MAP ?` until the next
+controller start or confirmed selection. Hover over the value names the
+observation behind it. The index stays an inference: a selection the bus does
+not show, such as a commit whose frames were lost, is not followed.
+
+### Acceleration timer
+
+The timers read the ABS vehicle speed of frame `0x280`, which reads 0 below
+about 1.5 km/h, at its 20 ms period. A 0-100 run arms at standstill and
+starts at the first sample above zero, so it starts slightly after the vehicle
+begins to move. A 100-200 run arms below 97 km/h and starts where the speed
+crosses 100 km/h. A run ends where the speed crosses its end speed; both
+crossings are interpolated linearly between the samples around them. A run is
+discarded when the speed returns to zero, falls more than 2 km/h below its
+peak, gains nothing for 2 s, exceeds 30 s for 0-100 or 60 s for 100-200, or
+when samples stop for more than 0.5 s.
+
+The value is amber while a run is timed and then shows the last result beside
+the best result of the source. `RESET TIMES` clears both. A new source starts
+empty, and a replay position change restores the results the replay had
+reached at the target.
+
 ## Window layout
 
 The window opens inside the current screen and remains usable down to
@@ -356,8 +444,9 @@ version as `VQCT vX.Y.Z`, source state, channel and data-ID entries, and the
 tool buttons; the title of the operating-system window carries the full
 product name. Header controls, status fields, and health counters flow into
 additional rows instead of leaving the window; a flow bar positions its items
-by coordinates inside itself, without row frames. The card and panel area
-scrolls vertically when the remaining height is short. `PRIMARY` and
+by coordinates inside itself, without row frames. The drive bar follows the
+status fields, and a loaded replay adds its transport bar under it. The card
+and panel area scrolls vertically when the remaining height is short. `PRIMARY` and
 `EXTENDED` select the panel set.
 
 The four detail panels of a set share one row and shrink with the window down
@@ -384,6 +473,7 @@ shifts the ring by the offset of the parent and draws it across the text.
 | `REC` | starts and stops the MLG recording | recording |
 | `FEED` | opens the live value feed dialog | feed running |
 | `CARDS` | opens the hero-row card dialog | never |
+| `RESET TIMES` | clears the last and best 0-100 and 100-200 km/h times | never |
 | `LIGHT` / `DARK` | switches to the named color theme | never |
 
 ### Hero row
