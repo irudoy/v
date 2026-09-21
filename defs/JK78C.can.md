@@ -360,6 +360,67 @@ Records 286, 289, 290, and 292 in the same groups carry `P1608`, `P1607`,
 enable state; the enable state lives in the separate attribute array reached
 through `JK78C.dtc.csv`.
 
+## VVEL identifier publication
+
+The service-0x22 publication tables carry the VVEL addition positively. Family
+`0x11` holds 128 records against 124 on JK08A, and family `0x12` holds 95
+records reaching DID `0x125E` against 81 reaching `0x1250`. Every added
+populated slot belongs to VVEL, and JK08A declares none of them.
+
+| DID | Factory name | RAM | Width |
+| --- | --- | --- | ---: |
+| `0x117D` | VVEL SEN LEARN-B1 | `0xFFFF42FC` | 1 |
+| `0x117E` | VVEL SEN LEARN-B2 | `0xFFFF4300` | 1 |
+| `0x125A` | VVEL POSITION SEN-B1 | `0xFFFF42C0` | 2 |
+| `0x125B` | VVEL POSITION SEN-B2 | `0xFFFF42C2` | 2 |
+| `0x125D` | VVEL TIM-B1 | `0xFFFF276E` | 2 |
+| `0x125E` | VVEL TIM-B2 | `0xFFFF2770` | 2 |
+
+Slot `0x125C` at `0xFFFF443E` is populated and unnamed in the factory manual.
+The word is the latched copy of the VVEL command word `0xFFFF44AA` that supplies
+payload bytes 0 and 1 of frame `0x22B`. It occurs in the image only in the two
+DID address tables at `0x00022A88` and `0x00025F60` and in the literal pool of
+the transmit builder at `0x000EE6E0`; the block copy reaches it by address
+arithmetic.
+
+Across the 18 populated bank-labelled DID pairs in JK78C and the 16 in JK08A,
+bank 1 is the lower RAM address without exception, which is the order the
+factory manual uses for per-bank DTC pairs. The DID table therefore carries bank
+identity where the DTC descriptor table does not.
+
+## Exhaust camshaft control removal
+
+The DTC descriptor table states the removal directly. JK08A group `0x37` holds
+sub-indices `04`, `03`, `02`, `01`, and `00` for P0174, P0011, P0021, P0014, and
+P0024 at `0x019D14`. JK78C at `0x01C0B8` and 1ND0A at `0x01C73C` hold
+byte-identical `04`, `03`, and `02` records and continue directly with group
+`0x38`. The P1078 and P1084 exhaust-timing-sensor records are absent from both
+VQ37 images. No exhaust camshaft monitor exists on VQ37.
+
+The service-0x22 `0x11xx` pointer tables reach the same boundary from the
+diagnostic side. JK08A base `0x226AC` and JK78C base `0x22718` populate 84 of
+124 slots with an identical sparsity pattern. Intake DIDs stay live in both:
+`0x113A` reaches JK08A `0xFFFF2326` and JK78C `0xFFFF227A`. The exhaust triple
+`0x1164`, `0x1165`, and `0x1166` carries 12, 6, and 21 references on JK08A and
+none on JK78C or `1ND`.
+
+Five independent static channels agree that the inherited exhaust target byte is
+never produced. JK78C `0xFFFF23A4` and 1ND `0xFFFE9466` have no direct
+reference, no GBR-relative access, and no decompiler-resolved store through
+pointer arithmetic. Every indexed store whose constant base can reach them has a
+proven index bound that stops short: the two-bank arrays at JK78C `0xFFFF239A`
+and `0xFFFF23A0`, the six-cylinder array at `0xFFFF237A`, and their 1ND
+homologs. Each 32-bit address occurs exactly once in its image, in its own
+pointer-table slot, so no ROM table can deliver it. The same channels recover
+the canonical writers `FUN_000BCED0` and the conditioner store at `0x000C0CEE`,
+so the null result is a property of the target images rather than of the method.
+
+The same channels separate inert bytes from live ones inside the block. The
+inherited intake actual-angle DIDs at JK78C `0xFFFF239C` and `0xFFFF239D` and
+1ND `0xFFFE945D` and `0xFFFE945E` carry decompiler-resolved reads, and the
+two-bank arrays beside them carry resolved writes. The exhaust triple carries
+neither a read nor a write in either image.
+
 ## Recovered periodic entries
 
 Two periodic entry points were not functions in the structural export and are

@@ -229,7 +229,13 @@ surfaces are the mode-selected set of the coordinator `0x0797CC`: the 16x16
 surfaces `0x00A344` and `0x00A444` over the projected ignition axes and the 8x8
 surfaces `0x00A544`, `0x00A644`, `0x00A5C4`, and `0x00A604` over the native
 axes `0x013DCE` and `0x013DC6`, selected by the state code that the mapper
-`0x050310` derives from the VVEL mode. Two curves exist only in this image
+`0x050310` derives from the VVEL mode. `0x071D64` reads a fourth 16x16 surface
+`0x00A774` with axis copies at `0x013599` and `0x0135A9`; it has no 1ND0A
+counterpart and no canonical role. The MAF factor `0x008965` holds the value 133
+and is read by `0x045634`, `0x04570A`, and `0x048298`; the last combines it with
+the K-value `0x009170`, the `0x9F38` reference `0x0094D4`, and the value-3 scalar
+`0x00885C` exactly as the 1ND0A consumer `0x0C188C` combines its four scalars.
+Two curves exist only in this image
 and are declared absent on the other three: the delay curve `0x01457A` of the
 stepped approach to the throttled duration and the start-up blend target
 `0x017136`. The 1ME3B resolver `0x062FAC` carries the JK78C
@@ -279,12 +285,16 @@ as the curve value or as a stepped approach to it from 50.0.
 - `JK08A.can.md` models the exact HCAN1 mailbox table, stock transmit pipeline,
   payload boundaries, and safe extension mailbox.
 - `JK78C.can.md` models the two exact HCAN controllers, the private-bus
-  mailbox table, receive signal placement, transmit composition, and the
-  calibration boundary of the private bus.
+  mailbox table, receive signal placement, transmit composition, the
+  calibration boundary of the private bus, the VVEL identifier publication, and
+  the removal of exhaust camshaft timing control on VQ37.
 - `JK78C.vvel.md` models the VVEL target task, the fifteen-mode target
   selector, the exact sensor and diagnostic bindings of the selector inputs,
   the MAP and brake-booster pressure channel, and the unit boundary of the
   target surfaces.
+- `1ME3B.interp.md` models the fused calibration access library that replaces
+  the `1ND` library, its recovered contracts, the fused census, and the tool
+  boundary of `FindInterpCore.java`.
 
 These documents explain complete relationships and safety boundaries. Addressed
 claims and evidence remain in the CSV layer rather than being copied into prose.
