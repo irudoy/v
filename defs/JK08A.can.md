@@ -321,7 +321,15 @@ agrees with the stock encoding, in which state 6 is CRUISE with a blinking SET
 lamp. State 7 has no stock producer. The current runtime inserts only stock
 states: state 4 (`0x42`) for the map feedback ON phase and for Rolling Launch
 ACTIVE, state 5 (`0x52`) for a failed held Rolling Launch attempt, and state 0
-for the OFF phase and COOLDOWN. No saved capture contains `0x42` or `0x52`.
+for the OFF phase and COOLDOWN. The 2026-09-21 road captures of the current
+runtime contain 19 map selections: each CANCEL tap while SET is held appears as
+a one- or two-frame `0x52` run, and SET release is followed by as many `0x42`
+pulses as the selected map number, each two frames ON and two frames OFF. Each
+of the six moving CANCEL holds of the mixed Map 3 drive appears as one `0x42`
+interval, and switching CRUISE MAIN leaves byte 5 at `0x02`. The captures do
+not record the lamp response to states 4 and 5.
+[`../patches/hardware-results.toml`](../patches/hardware-results.toml) holds
+the observation under `map_switching.feedback_vehicle_2026_09_21`.
 
 Target-vehicle selector observations establish the following `0x421` byte-0
 mapping:

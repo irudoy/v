@@ -230,9 +230,6 @@ hardware_status = "functional_fail"
 operator_observation = "map feedback illuminates SET together with CRUISE"
 code_result = "the v1.9 full-field isolation fix remains present; map feedback and Rolling Launch ACTIVE occupy separate intervals; state 6 itself has incorrect exact-target lamp semantics"
 stock_state_semantics = "FUN_000CEABC assigns state 4 to CRUISE with steady SET, state 5 to CRUISE alone, and state 6 to CRUISE with a blinking SET lamp"
-both_lamp_state = 4
-both_lamp_state_byte5 = 0x42
-both_lamp_state_hardware_status = "untested"
 
 [map_switching.calibration_effects_v1_11]
 observed_on = "2026-08-17"
@@ -263,6 +260,48 @@ matched_map_2_bfs_candidate_ms_median = 1.089
 matched_map_3_bfs_candidate_ms_median = 1.086
 result = "Map 2 and Map 3 commits are observable without a partial-state symptom; both selected calibrations suppress warm sub-5000-RPM DFCO, and the slot-specific 0x12196 change produces the predicted timing-coordinate shift without a corresponding fuel-word shift"
 evidence_boundary = "the initial segment has the stock-family calibration fingerprint but Map 1, Map 4, and Map 5 are byte-identical for all switched families; the trace does not exercise Map 3 DFCO above 5000 RPM, the per-slot main fuel limiter, a physical spark reference, or electrical injector outputs"
+
+[map_switching.feedback_vehicle_2026_09_21]
+recorded_on = "2026-09-21"
+image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
+capture_registry = "can_telemetry.schema2_profile5_captures"
+software_status = "pass"
+bus_status = "pass"
+lamp_status = "untested"
+status_mask = 0x70
+stock_byte5 = 0x02
+map_feedback_state = 4
+map_feedback_byte5 = 0x42
+map_feedback_on_frames = 2
+map_feedback_off_frames = 2
+failed_held_attempt_state = 5
+failed_held_attempt_byte5 = 0x52
+failed_held_attempt_frames = [1, 2]
+rolling_launch_active_state = 4
+rolling_launch_active_byte5 = 0x42
+cruise_main_capture = "2-stationary-cruise-on-off.trc"
+cruise_main_frame_count = 351
+cruise_main_byte5_values = [0x02]
+moving_cancel_capture = "0-mixed-map-3.mlg"
+moving_cancel_hold_count = 6
+moving_cancel_state_4_interval_count = 6
+moving_cancel_full_inhibit_interval_count = 5
+moving_cancel_full_inhibit_mask = 0x3F
+moving_cancel_full_inhibit_outside_record_count = 0
+moving_cancel_hold_seconds = [0.48, 1.26]
+moving_cancel_speed_kmh = [33.2, 72.1]
+moving_cancel_failed_attempt_record_count = 0
+result = "every map selection shows one state-5 run per CANCEL tap while SET is held and, after SET release, as many state-4 pulses as the selected map number, each two frames ON and two frames OFF; each moving CANCEL hold of the mixed Map 3 drive shows one state-4 interval, the full fuel-inhibit mask appears only inside those intervals, and CRUISE MAIN leaves byte 5 at the stock value"
+evidence_boundary = "frame counts come from the TRC captures, while the MLG captures resolve selections and pulses but not individual frames; the lamp response of the meter to states 4 and 5 is not recorded"
+
+[map_switching.feedback_vehicle_2026_09_21.selected_maps]
+"2-stationary-map-1-3-hold.trc" = [1, 3]
+"2-stationary-parking-map-1-3-hold.trc" = [1, 3]
+"3-map-1-3-drive-brake.trc" = [1, 3, 1]
+"3-map-1-stops.trc" = [1]
+"3-map-3-stops.trc" = [3]
+"4-starts-ab.mlg" = [1, 3, 1, 3, 3, 1]
+"6-map-1-3-4-limiter.mlg" = [1, 3, 4, 3]
 
 [[map_switching.incidents]]
 id = "lookup_revision_1_stage_7_delay_slot"

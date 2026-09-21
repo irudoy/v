@@ -131,9 +131,14 @@ SET together with CRUISE. The stock display-state writer `FUN_000CEABC`
 assigns state 4 to CRUISE with steady SET, state 5 to CRUISE alone, and state 6
 to CRUISE with a blinking SET lamp, and produces no state 7;
 `../defs/JK08A.can.md` records the encoding. The current runtime emits only
-states 0, 4, and 5, which appear as `0x02`, `0x42`, and `0x52`; no saved
-capture contains `0x42` or `0x52`, and their lamp result on the exact target
-is a hardware acceptance item.
+states 0, 4, and 5, which appear as `0x02`, `0x42`, and `0x52`. In the
+2026-09-21 road session, each of the six moving CANCEL holds of the mixed Map 3
+drive shows one `0x42` ACTIVE interval, and five of the intervals carry the
+full `0x3F` fuel-inhibit mask, which the drive shows nowhere else. Every
+CANCEL tap of a map-selection gesture shows `0x52` for the tap.
+`hardware-results.toml` records the observation under
+`map_switching.feedback_vehicle_2026_09_21`. The lamp result of states 4 and 5
+on the exact target is a hardware acceptance item.
 
 The full-field isolation correction from firmware `1.9` is present in this
 runtime: both feedback paths clear mask `0x70` with immediate `0x8F` before

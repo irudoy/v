@@ -46,8 +46,9 @@ ASCD_BUTTON_CODES = {
     0x02: "CANCEL",
 }
 # 0x551 byte 5 carries the three-bit ASCD display state in bits 4..6 over the
-# low nibble 0x2. Stock code writes states 0, 4, 5, and 6; the runtime injects
-# state 4 for map-selection feedback and state 7 for Rolling Launch ACTIVE.
+# low nibble 0x2. Stock code writes states 0, 4, 5, and 6. The runtime injects
+# state 4 for map-selection feedback and Rolling Launch ACTIVE and state 5 for a
+# failed held attempt; firmware through 1.11 injects states 6 and 7.
 DASHBOARD_STATE_CODES = {
     0x02: "STOCK",
     0x42: "ASCD STATE 4",
