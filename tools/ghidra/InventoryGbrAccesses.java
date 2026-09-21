@@ -5,8 +5,10 @@
 //
 // Writes:
 //   gbr_accesses.csv  func_addr,ins_addr,mnemonic,operands,disp,access,width,gbr_source,gbr_value,eff_addr
-//                     (disp is the raw instruction field; eff_addr = gbr_value + disp * width;
-//                      access R/W/RW, suffix x for the @(r0,gbr) indexed forms)
+//                     (disp is the byte displacement as Ghidra prints it, already scaled
+//                      by the access width; eff_addr = gbr_value + disp;
+//                      access R/W/RW, suffix x for the @(r0,gbr) indexed forms, which
+//                      leave disp and eff_addr empty)
 //   gbr_loads.csv     func_addr,ins_addr,mnemonic,operands,gbr_value
 //
 // gbr_source is "own" when a constant `ldc Rn,gbr` precedes the access in the
@@ -165,14 +167,12 @@ public class InventoryGbrAccesses extends GhidraScript {
                     disp = sc;
                 }
             }
-            boolean indexed = false;
-            for (int i = 0; i < ins.getNumOperands(); i++) {
-                Register rr = regOperand(ins, i);
-                if (rr != null && rr.getName().equalsIgnoreCase("r0") && mentionsGbr(ins, i)) {
-                    indexed = true;
-                }
-            }
             String mnl = mn.startsWith("_") ? mn.substring(1) : mn;
+            // Only mov addresses GBR with a displacement. The GBR forms of
+            // tst.b, and.b, or.b, and xor.b take an immediate and @(r0,gbr),
+            // and Ghidra prints r0 and gbr as separate operands.
+            boolean indexed = mnl.equals("tst.b") || mnl.equals("and.b")
+                || mnl.equals("or.b") || mnl.equals("xor.b");
             int width = mnl.endsWith(".w") ? 2 : (mnl.endsWith(".l") ? 4 : 1);
             String access;
             if (mnl.startsWith("mov")) {
@@ -205,7 +205,7 @@ public class InventoryGbrAccesses extends GhidraScript {
                     source = l[4];
                     val = l[5];
                     if (source.equals("own") && !val.isEmpty() && disp != null) {
-                        long ea = (Long.parseLong(val, 16) + disp * width) & 0xFFFFFFFFL;
+                        long ea = (Long.parseLong(val, 16) + disp) & 0xFFFFFFFFL;
                         eff = String.format("%08x", ea);
                     }
                 }
