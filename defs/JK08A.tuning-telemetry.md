@@ -107,6 +107,16 @@ target. Commanded lambda is `16384 / raw`. The gasoline AFR scale
 `1881.6 / (raw / 128)` of the public HR A2L remains a candidate until a
 wideband correlation is recorded.
 
+The long-term trim words `FFFF2302` and `FFFF2304` in context tag 2 are the
+sums `FUN_00057B26` forms from the selected learned cell and the adjustment
+term of each bank, limited or neutralized as
+[`JK08A.fuel.md`](JK08A.fuel.md#long-term-trim-publication-and-neutralization)
+describes. Context tag 0 carries the bank 1 summands, learned cell `FFFF2306`
+and adjustment term `FFFF5648`, and `tools/logs/ltft_publication_audit.py`
+compares each bank 1 word with them. The bank 2 summands `FFFF2308` and
+`FFFF564A` are not streamed, so a neutral bank 2 word does not distinguish a
+neutralized publication from neutral summands.
+
 The reviewed code and diagnostic layers do not establish a fuel-pressure
 source or confirm that this ECU has a pressure sensor represented in software.
 

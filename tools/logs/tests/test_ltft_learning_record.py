@@ -9,6 +9,8 @@ from tools.mapkit import rom as romkit
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
 FUEL = ROOT / "defs" / "JK08A.fuel.md"
+TELEMETRY = ROOT / "defs" / "JK08A.tuning-telemetry.md"
+PROFILE = ROOT / "patches" / "can-telemetry-profile.toml"
 LOGS = ROOT / "tmp" / "logs-09-22"
 IMAGE = ROOT / "tmp" / "1JK08A-tune-v3-1.bin"
 RAM_WINDOW = 0xFFFF128C
@@ -431,6 +433,56 @@ class LtftPublisherCodeTest(unittest.TestCase):
             "`0x6400` while runtime record `0x129` or `0xFFFF41B5.bit0` is set",
             self.published,
         )
+
+
+
+class LtftTelemetryCoverageTest(unittest.TestCase):
+    """Bind the published long-term trim coverage to the telemetry profile."""
+
+    @classmethod
+    def setUpClass(cls):
+        with PROFILE.open("rb") as source:
+            profile = tomllib.load(source)
+        cls.context_fields = {
+            field["name"]: (context["tag"], field["source"])
+            for context in profile["context"]
+            for field in context["field"]
+        }
+        cls.sources = {field["source"] for field in profile["field"]} | {
+            source for _, source in cls.context_fields.values()
+        }
+        cls.published = " ".join(TELEMETRY.read_text(encoding="utf-8").split())
+
+    def _field(self, name, tag):
+        field_tag, source = self.context_fields[name]
+        self.assertEqual(field_tag, tag, name)
+        return source
+
+    def test_summand_coverage(self):
+        published_b1 = self._field("ltft_b1_raw", audit.PUBLISHED_TAG)
+        published_b2 = self._field("ltft_b2_raw", audit.PUBLISHED_TAG)
+        learned_b1 = self._field("ltft_learned_b1_raw", audit.LEARNED_TAG)
+        adjustment_b1 = self._field("ltft_adjustment_b1_raw", audit.LEARNED_TAG)
+        self.assertEqual(learned_b1, 0xFFFF2306)
+        self.assertEqual(adjustment_b1, 0xFFFF5648)
+        stride = published_b2 - published_b1
+        learned_b2 = learned_b1 + stride
+        adjustment_b2 = adjustment_b1 + stride
+        self.assertNotIn(learned_b2, self.sources)
+        self.assertNotIn(adjustment_b2, self.sources)
+        self.assertIn("ltft_learned_b1_raw", audit.COLUMNS)
+        self.assertIn("ltft_adjustment_b1_raw", audit.COLUMNS)
+        for phrase in (
+            f"The long-term trim words `{published_b1:08X}` and `{published_b2:08X}` "
+            f"in context tag {audit.PUBLISHED_TAG}",
+            f"Context tag {audit.LEARNED_TAG} carries the bank 1 summands, learned "
+            f"cell `{learned_b1:08X}` and adjustment term `{adjustment_b1:08X}`, and "
+            "`tools/logs/ltft_publication_audit.py` compares each bank 1 word with them",
+            f"The bank 2 summands `{learned_b2:08X}` and `{adjustment_b2:08X}` are "
+            "not streamed",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, self.published)
 
 
 if __name__ == "__main__":
