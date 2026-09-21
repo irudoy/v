@@ -159,19 +159,19 @@
           "fields": [
             {
               "name": "knock_margin_min_ch1_raw",
-              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
               "signed": true,
               "width": 2
             },
             {
               "name": "knock_margin_min_ch2_raw",
-              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
               "signed": true,
               "width": 2
             },
             {
               "name": "knock_margin_min_ch3_raw",
-              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
               "signed": true,
               "width": 2
             }
@@ -296,19 +296,19 @@
           "fields": [
             {
               "name": "knock_margin_min_ch4_raw",
-              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
               "signed": true,
               "width": 2
             },
             {
               "name": "knock_margin_min_ch5_raw",
-              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
               "signed": true,
               "width": 2
             },
             {
               "name": "knock_margin_min_ch6_raw",
-              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation",
+              "scale": "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more",
               "signed": true,
               "width": 2
             }

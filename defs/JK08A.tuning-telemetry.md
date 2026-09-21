@@ -110,12 +110,18 @@ mechanism in
 A negative value is an evaluation that the stock comparison counts as a knock
 event, limited at `-32768`. Context tag 4 publishes the six minimums and
 rearms them with `32767`, which stands for an interval without an evaluation
-of the channel or a margin of 32767 or more. Stock threshold rows 3 and 5 hold
-`0xFFFF`, so their channels report `32767` until the metric exceeds 32768
-units. The metric is a summed and gain-scaled sensor difference without a
-physical conversion, and the channel-to-cylinder assignment is not
-established. A tag-4 group that the queue replaces, preempts, or discards
-before transmission takes its minimums with it.
+of the channel or a margin of 32767 or more. Every channel is evaluated once
+per engine cycle. Stock threshold rows 3 and 5 hold `0xFFFF`, so their
+channels publish a value below `32767` only for a metric above 32768, and on
+them `32767` does not distinguish an interval without an evaluation. The
+metric is the sum of the three largest rises of the window values over the
+channel reference and has no physical conversion. The channel index is the
+cylinder number of the event that opens the window, which spans 10..60
+degrees after compression TDC of the preceding cylinder in firing order; the
+combustion event a window observes is not measured
+([`JK08A.knock-detection.md`](JK08A.knock-detection.md#channel-schedule)). A
+tag-4 group that the queue replaces, preempts, or discards before
+transmission takes its minimums with it.
 
 The final ignition coordinate and APC command are software values. Neither is
 independent feedback of spark delivery relative to the crankshaft. A physical

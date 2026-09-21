@@ -498,10 +498,12 @@ channel had no evaluation in that interval or a margin that the signed word
 cannot hold. With one evaluation of a channel per engine cycle and the base
 snapshot rate, every interval holds an evaluation only above about 2350 rpm.
 Stock threshold rows 3 and 5 hold `0xFFFF`, so those two channels report the
-idle value on stock calibration. The model keeps the last evaluated margin of
-a channel while its latch reports the idle value, and a channel without any
-evaluation yet stays `NaN` in a recording. The channel-to-cylinder assignment
-is not established, so the fields are named by channel.
+idle value on stock calibration although they are evaluated. The model keeps
+the last evaluated margin of a channel while its latch reports the idle value,
+and a channel without any evaluation yet stays `NaN` in a recording. The
+fields are named by channel: the channel index is the cylinder number of the
+event that opens the knock window, and the combustion event a window observes
+is not measured.
 
 A field marked with `*` uses a candidate transform; engine torque state at
 `raw * 0.1 Nm` is the only one. The current conversions are:

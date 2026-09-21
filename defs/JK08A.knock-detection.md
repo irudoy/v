@@ -114,8 +114,8 @@ runtime diagnostic record `0x12D` or `0x13F` has byte-1 bit 7 set (predicate
 `0x00025E20`), the update sets every reference to `ROM16[0x9282] = 0xFFFF`
 instead. Threshold `0xFFFF` admits an exceedance only for a metric above
 65535. A window without a completed DMAC block substitutes `0xFFFF` for every
-value, and its metric is 196605 minus the three smallest references of the
-channel.
+value, and its metric is 196605 minus the sum of the three smallest references
+of the channel.
 
 The evaluator updates three outputs:
 

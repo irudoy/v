@@ -647,7 +647,7 @@ width = 2
 source = 0xFFFF5E10
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation"
+scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
 
 [[context.field]]
 name = "knock_margin_min_ch2_raw"
@@ -655,7 +655,7 @@ width = 2
 source = 0xFFFF5E12
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation"
+scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
 
 [[context.field]]
 name = "knock_margin_min_ch3_raw"
@@ -663,7 +663,7 @@ width = 2
 source = 0xFFFF5E14
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation"
+scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
 
 [[context]]
 page = 10
@@ -808,7 +808,7 @@ width = 2
 source = 0xFFFF5E16
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation"
+scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
 
 [[context.field]]
 name = "knock_margin_min_ch5_raw"
@@ -816,7 +816,7 @@ width = 2
 source = 0xFFFF5E18
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation"
+scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"
 
 [[context.field]]
 name = "knock_margin_min_ch6_raw"
@@ -824,4 +824,4 @@ width = 2
 source = 0xFFFF5E1A
 kind = "telemetry_state"
 signed = true
-scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation"
+scale = "threshold minus metric in evaluator units, minimum since the previous capture of this context; 32767 without an evaluation or for a margin of 32767 or more"

@@ -338,7 +338,7 @@ def test_specification_names_the_bound_code_and_bounds():
         assert text in KNOCK_DOC
     top = ROM[0x8870] * WORD
     assert f"-{top}..{top}" in KNOCK_DOC
-    assert f"its metric is {top} minus the three smallest references" in KNOCK_DOC
+    assert f"its metric is {top} minus the sum of the three smallest references" in KNOCK_DOC
     assert f"only for a metric above {WORD}" in KNOCK_DOC
     assert f"only for a metric above {WORD - IDLE}" in KNOCK_DOC
     assert f"only for a metric above {WORD - IDLE} units" in TELEMETRY_DOC
