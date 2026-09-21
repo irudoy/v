@@ -26,9 +26,10 @@ therefore publish the same wire identity.
 
 The endpoint is disabled by default. The complete software gate passes, and
 three road drives on 2026-08-26 accepted schema 2 transport and channel
-coverage. Those drives carried profile 1 and the recording of 2026-09-17
-carried profile 3, so the current profile 5 has no vehicle record yet. The
-recorded schema 1
+coverage. Those drives carried profile 1, the recording of 2026-09-17 carried
+profile 3, and the road session of 2026-09-21 in registry entry
+`can_telemetry.schema2_profile5_drive_2026_09_21` carried the current
+profile 5. The recorded schema 1
 `wide54` result remains useful bus-capacity and mailbox evidence; it does not
 validate schema 2 and is intentionally not accepted by the current decoder.
 
@@ -137,10 +138,19 @@ a margin of 32767 or more. A tag-4 group that the queue replaces, preempts, or
 discards before transmission takes its minimums with it; the overrun and abort
 counters and the host group accounting expose those intervals.
 
-Stock threshold rows 3 and 5 of table `0x1108E` hold `0xFFFF`, so their
-channels publish `32767` until the metric exceeds 32768 units. The metric has
-no physical conversion, and the channel-to-cylinder assignment is not
-established.
+Stock threshold rows 3 and 5 of table `0x1108E` hold `0xFFFF`. Their channels
+are evaluated once per engine cycle like the others, but they publish a value
+below `32767` only for a metric above 32768 units, so on these channels
+`32767` does not distinguish an interval without an evaluation from an
+evaluated margin of 32767 or more. The profile carries no evaluation count or
+metric per channel. The 2026-09-21 profile-5 recordings publish `32767` on
+both channels in every tag-4 group, including 1,158 groups at 2350 RPM or
+more, where every interval holds an evaluation of each channel; registry entry
+`knock_margin.vehicle_2026_09_21` holds the result, and
+[`../defs/JK08A.knock-detection.md`](../defs/JK08A.knock-detection.md#vehicle-result-of-2026-09-21)
+states the metric bounds. The metric has no physical conversion. The window
+of channel `c` spans 10..60 degrees after compression TDC of cylinder `c - 1`,
+and on the stock path every channel samples the same A/D inputs.
 
 ## ROM and RAM layout
 

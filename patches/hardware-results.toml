@@ -912,6 +912,51 @@ peak_stock_can_rpm = 7781
 result = "the full 0x3F mask activates when the RPM word reaches activation word 612 = 7650 RPM and releases below Map 3 release word 604 = 7550 RPM, so the table words share the x*12.5 RPM units of the RPM word"
 evidence_boundary = "column 1, the stock column-0 release word 596, a nonzero ROM8[0x8C69] activation delay, and injector-terminal fuel shutoff are outside the measurement"
 
+[knock_margin.vehicle_2026_09_21]
+recorded_on = "2026-09-21"
+image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
+capture_registry = "can_telemetry.schema2_profile5_captures"
+software_status = "pass"
+hardware_status = "pass"
+profile_id = 5
+profile_crc16 = 0xE144
+threshold_table = 0x1108E
+all_ffff_rows = [3, 5]
+code_basis = "tooth 7 of FUN_00029588 calls window start 0x0004A5AC at 0x000297B0 before it copies identified cylinder 0xFFFF13C8 into event index 0xFFFF11DE at 0x000297DE; tooth 0 calls 0x0004A8D4 at 0x0002A1DE, which calls evaluator 0x0004A238 through literal 0x0004A9C0 without a channel condition; the evaluator returns early only for index 0, so every channel is evaluated once per engine cycle with the same acquisition, metric, and comparison, and a 0xFFFF threshold row publishes a margin below 32767 only for a metric above 32768"
+method = "tools/logs/can_telemetry.py decodes the seven TRC captures into one tag-4 group per 51.2 ms interval; tools/logs/mlg_relation_audit.py reads the eleven MLG captures, seven of them converted from the TRC captures, in which the dashboard omits the idle value 32767 and keeps the last margin; the metric of a new margin value is the image threshold at the captured rpm_raw minus that margin, exact from rpm_raw 512 upward, where the threshold is the last row cell"
+capture_name = ["0-mixed-map-3.mlg", "1-crank-cold.mlg", "2-stationary-cruise-on-off.trc", "2-stationary-map-1-3-hold.trc", "2-stationary-parking-map-1-3-hold.trc", "3-map-1-3-drive-brake.trc", "3-map-1-stops.trc", "3-map-3-stops.trc", "4-starts-ab.mlg", "6-map-1-3-4-limiter.mlg", "9-turn-off.trc"]
+capture_sha256 = ["d3fd614656d13f60686b83109ab57c7450be07afaf92b71015a022db76e991eb", "8f0dbb2d8610949d6035ea904fe52662a1e1c01be1aeb754a70894512e1d5f96", "c5756798799a3587978e823b7dcb766f27c8e883a49e89d0854386e8b32df0b7", "8253665cd99489b26a3ca03cdb5aa07c832945b0289f9ecd967458744ec8c0ba", "577ce99c756ec0c736c460d77bb3e6587a212bf6cf31ed965caeec7205adc3cf", "e7d726358048c6509ae48bccddb804203a789fb36abed0bb2766b1f8c7fd61b9", "1a160b4e4942b631ccfedda6d9401faed90caa0734f23ce6c2c79b55ec16b07b", "6ff31bf1f19d4989b47ca6424063b37cfef8b0c23dc6ef9be5c2951b0cf1afbe", "ed39b1cecd4b07c0c689304849c43ca6f66c57cbb1ad01f2303dd2891521b406", "b07fd8c73c35267f9216f745274d5ea8d45fc4821e2012d506f6ed509d7a674f", "0847001e4be811b9648b943ef5b817ebcac40458902200aec9a9a68760ed979d"]
+tag4_group_count = 18893
+tag4_group_count_by_trc_capture = [702, 6163, 3696, 1039, 3505, 2591, 1197]
+mlg_record_count = 279143
+channel_3_5_valued_record_count = 0
+idle_group_count = [8731, 8739, 18893, 8730, 18893, 8732]
+valued_channels = [1, 2, 4, 6]
+trc_margin_min = [1122, 777, -3018, -988]
+trc_margin_p5 = [2095, 1408, 1460, 1515]
+trc_margin_p50 = [2528, 2029, 2071, 2528]
+trc_margin_p95 = [25825, 25332, 25278, 25323]
+trc_margin_max = [31829, 31395, 31363, 31377]
+margin_min = [-1957, -1680, -3018, -3939]
+saturated_margin_record_count = 0
+full_coverage_rpm_raw_min = 188
+full_coverage_group_count = 1158
+full_coverage_idle_group_count = [0, 0, 1158, 0, 1158, 0]
+cadence_rpm_raw_min = 64
+cadence_group_count = 11340
+cadence_expected_idle_group_count = 2968
+cadence_idle_group_count = [2942, 2936, 2943, 2944]
+metric_max_capture = "6-map-1-3-4-limiter.mlg"
+metric_max_by_channel = [15190, 14240, 20627, 13226]
+metric_max_margin_by_channel = [2730, 1230, -697, 7088]
+metric_max_rpm_raw_by_channel = [617, 612, 603, 611]
+metric_max_seconds_by_channel = [132.234, 132.078, 132.285, 131.720]
+latched_bitmap_union = 0x2B
+latched_bitmap_nonzero_record_count = 90
+latched_count_max = 1
+result = "channels 3 and 5 publish 32767 in all 18,893 tag-4 groups and carry no value in any of the 279,143 MLG records; channels 1, 2, 4, and 6 carry an evaluated margin in all 1,158 groups at rpm_raw 188 and above, where every interval holds an evaluation of each channel, so every evaluation of channels 3 and 5 in those intervals has a metric of at most 32768; below that speed the idle counts of the valued channels follow the evaluation cadence, the largest metric of a valued channel is 20,627 on channel 4 during the main fuel-cut cycling, and no latched exceedance names channel 3 or 5"
+evidence_boundary = "the recordings bound the metric of channels 3 and 5 from above without observing it; the sensors behind the A/D inputs, the combustion event that each channel window observes, and the physical metric scale are outside the measurement"
+
 [passive_can]
 recorded_on = "2026-08-16"
 format = "PEAK PCAN-View TRC 1.1"
