@@ -195,6 +195,61 @@ override/fallback region rather than zero. This agrees with the static output
 model and does not establish injector-terminal pulse width. A physical spark
 reference and electrical injector measurement remain separate evidence gates.
 
+### Current-runtime vehicle evidence
+
+The mixed Map 3 drive of the 2026-09-21 road session is the moving Rolling
+Launch capture of the current runtime. `hardware-results.toml` records it under
+`rolling_launch.map_3_vehicle_2026_09_21`, and
+`../tools/logs/rolling_launch_audit.py` derives its figures from the recording
+and from the configuration record of the recorded image. The recording holds
+40,298 consecutive telemetry snapshots and no TRC accompanies it, so each event
+time is bounded by the 10.24 ms snapshot spacing and each dashboard state by
+the 102.4 ms period of frame `0x551`. The drive contains no SET hold, and only
+the Map 3 exhaust CVTC target surface reproduces all 40,297 recorded targets
+from the prior snapshot, which confirms the Map 3 selection that the capture
+name declares.
+
+All six moving CANCEL holds, at 33.2 to 72.1 km/h, enter `ACTIVE` state 4, and
+no record shows state 5. The replay of the configuration record bounds the
+captured words of the six holds between 2212.5 and 3287.5 RPM; two of them lie
+inside the 3112.5 to 3637.5 RPM activation range of the firmware `1.11`
+capture. Five holds reach their cut word and cycle the full `0x3F` mask 4, 3,
+3, 1, and 1 times while CANCEL is held. No full mask appears outside the
+activation windows, which run from the first CANCEL record through the later
+of the release and the end of the `ACTIVE` indication and over any full mask
+that continues past that point. The second hold keeps APP1 between 0.75 and
+0.755 V while engine speed stays between 2175 and 2225 RPM, below its 2412.5 to
+2425 RPM cut word, and its stock command 117 is already later than the target
+115, so neither the fuel cut nor the retard acts in that activation.
+
+The APC command stays inside the retard-only bound
+`stock <= command <= max(stock, target)`, with `stock = 110 - final_timing`, in
+every snapshot of the activation windows and reaches the target 115 in the
+other five holds. The normal firmware identity
+`final_timing = 110 - APC command` holds in 39,961 of the 40,298 snapshots; all
+337 differences fall inside the activation windows, 316 while CANCEL is held
+and 21 after its release.
+
+Holds 1 and 2 carry no full mask at the release. Holds 3 to 6 show a full mask
+at or after the first released `0x239` record: hold 4 continues its cycle, and
+holds 3, 5, and 6 start one more. Each of these masks clears while the compared
+engine-speed word remains at or above every consistent restore word, so the
+clear follows the removal of the temporary window rather than the hysteresis.
+The release-to-clear distance lies within 30.7 to 51.2 ms for hold 5 and
+51.2 to 71.7 ms for hold 6, inside the `6.9..81.1 ms` range of the firmware
+`1.11` trace, and within 61.4 to 81.9 ms for hold 3 and 71.7 to 92.2 ms for
+hold 4, which the snapshot spacing does not place on either side of 81.1 ms. A
+TRC of moving CANCEL holds on the recorded image resolves that comparison.
+
+Each later hold starts at least 5.1 s after the preceding release, beyond the
+1.024 s rearm period, and activates; the refusal inside that period is not
+exercised. The longest hold lasts 1.27 s, and the 3.072 s run timeout is not
+exercised. No capture of the recorded image selects Map 2, so the moving Map 2
+activations of the firmware `1.11` capture have no counterpart on this image
+until at least two moving CANCEL holds run on Map 2. The figures are software
+quantities; spark angle at the crankshaft and electrical injector output
+remain outside the measurement.
+
 ## Modes
 
 | Mode | Fuel limiter | Ignition |

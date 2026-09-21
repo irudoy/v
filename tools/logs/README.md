@@ -278,6 +278,58 @@ recorded channels are the quantities the code connects; it does not prove a
 physical unit, and the injection fit reports the gain and additive term of
 the pulse chain rather than an electrical pulse width.
 
+## JK08A Rolling Launch activation audit
+
+`rolling_launch_audit.py` evaluates Rolling Launch activations in a dashboard
+MLVLG recording or a strict schema-2 `tuning` TRC. The 32-byte configuration
+record is read from the calibration image and replayed through the
+independent runtime model in `patches/rolling_launch.py`; `--map` declares the
+selected map of the capture.
+
+```bash
+python3 tools/logs/rolling_launch_audit.py \
+  --calibration-image tmp/1JK08A-tune-v3-1.bin \
+  --map 3 \
+  tmp/logs-09-21/0-mixed-map-3.mlg
+```
+
+- An activation is a CANCEL hold in frame `0x239` during which frame `0x551`
+  starts the `ACTIVE` state 4. A hold without that state counts as refused,
+  and state-5 records count as failed attempts. The activation window runs
+  from the first CANCEL record through the later of the release and the end
+  of the `ACTIVE` indication, extended over a full mask that continues past
+  that point.
+- The runtime writes its cut and restore words into both columns of the
+  fuel-cut shadow, and `FUN_0004F282` compares them with `0xFFFF11BC`, whose
+  value lies between the RPM words of two adjacent snapshots. A full record
+  after a clear one therefore needs a compared word at or above the cut word,
+  a full record after a full one a word at or above the restore word, a clear
+  record after a clear one a word below the cut word, and a clear record after
+  a full one a word below the restore word. The captured RPM word is bounded
+  by the RPM words from three records before the first CANCEL record through
+  the first `ACTIVE` record and by every such transition. Clear records after
+  the release, after the earliest possible timeout, or at an RPM word below
+  the configured minimum do not bound the window.
+- Full-mask cycles are counted inside the CANCEL hold and after its release,
+  and full-mask records outside every activation window are counted
+  separately.
+- The APC command must stay retard-only and bounded by the map target,
+  `stock <= command <= max(stock, target)` with `stock = 110 - final timing`.
+  Differences from that identity are counted inside and outside the
+  activation windows.
+- The release-to-clear distance is bounded by one snapshot on each side. A
+  clear record whose RPM word cannot fall below any consistent restore word is
+  attributed to the removal of the window rather than to the hysteresis.
+- The exhaust CVTC target is replayed at the prior snapshot with every map
+  slot surface, which tests the declared map wherever the slot surfaces
+  differ.
+
+The output is one `key = value` line per figure in TOML syntax. Times are
+counted in telemetry ticks for MLG and TRC inputs alike, so every event time is
+bounded by the 10.24 ms snapshot spacing and the dashboard state by the
+102.4 ms period of frame `0x551`. Every figure is a raw software quantity; the
+capture does not measure spark angle or injector output.
+
 ## MLG field restamping
 
 `mlg_restamp.py` rewrites the field descriptors of an existing MLVLG file from
