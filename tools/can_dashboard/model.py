@@ -74,6 +74,12 @@ DASHBOARD_CALIBRATIONS = {
     "app2_raw": can_telemetry.Calibration("app2_v", 1 / 200),
     "tps_b1_raw": can_telemetry.Calibration("tps_b1_v", 1 / 200),
     "tps_b2_raw": can_telemetry.Calibration("tps_b2_v", 1 / 200),
+    "secondary_tps_b1_raw": can_telemetry.Calibration(
+        "secondary_tps_b1_v", 1 / 200
+    ),
+    "secondary_tps_b2_raw": can_telemetry.Calibration(
+        "secondary_tps_b2_v", 1 / 200
+    ),
     "absolute_throttle_raw": can_telemetry.Calibration(
         "absolute_throttle_percent", 100 / 255
     ),
@@ -375,9 +381,9 @@ class DemoGenerator:
             "knock_channel_mask_latched": 0x04 if wave > 0.94 else 0,
             "app1_raw": 250 + 700 * wave,
             "app2_raw": 245 + 690 * wave,
-            "tps_b1_raw": 300 + 2500 * wave,
+            "tps_b1_raw": 100 + 720 * wave,
             "absolute_throttle_raw": 20 + 180 * wave,
-            "tps_b2_raw": 310 + 2480 * wave,
+            "tps_b2_raw": 104 + 716 * wave,
             "intake_cvtc_actual_b1_raw": (cvtc + 64) * 2,
             "intake_cvtc_actual_b2_raw": (cvtc - 0.5 + 64) * 2,
             "intake_cvtc_target_raw": (5 + 35 * wave + 64) * 2,
@@ -424,8 +430,8 @@ class DemoGenerator:
             "front_af_sensor_b1_word_raw": 1200 + 500 * wave,
             "front_af_sensor_b2_word_raw": 1180 + 510 * wave,
             "af_adjustment_b1_raw": 0x4000 + 400 * math.sin(elapsed),
-            "secondary_tps_b1_raw": 280 + 2450 * wave,
-            "secondary_tps_b2_raw": 290 + 2430 * wave,
+            "secondary_tps_b1_raw": 98 + 722 * wave,
+            "secondary_tps_b2_raw": 102 + 718 * wave,
             "af_adjustment_b2_raw": 0x4000 + 380 * math.sin(elapsed + 0.2),
             **{
                 name: (

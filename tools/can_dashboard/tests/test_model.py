@@ -101,6 +101,26 @@ class DashboardModelTest(unittest.TestCase):
             dashboard.raw["exhaust_cvtc_target_raw"] * 0.5 - 64,
         )
 
+    def test_secondary_throttle_sensors_display_volts(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        for tick in range(1, 65):
+            feed_group(
+                dashboard,
+                generator.group(tick),
+                tick * model.BASE_TICK_SECONDS,
+            )
+            if "secondary_tps_b2_v" in dashboard.engineering:
+                break
+
+        for bank in (1, 2):
+            with self.subTest(bank=bank):
+                raw = dashboard.raw[f"secondary_tps_b{bank}_raw"]
+                self.assertLess(raw, 1024)
+                self.assertAlmostEqual(
+                    dashboard.value(f"secondary_tps_b{bank}_v"), raw / 200
+                )
+
     def test_hot_ignition_surface_selector_decodes_bit_6(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)

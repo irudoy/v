@@ -145,8 +145,8 @@ RAW_FIELD_DISPLAY = {
     "front_af_sensor_b2_word_raw": ("Front A/F sensor B2", "raw", 0, "Fuel"),
     "af_adjustment_b1_raw": ("A/F adjustment B1", "raw", 0, "Fuel"),
     "af_adjustment_b2_raw": ("A/F adjustment B2", "raw", 0, "Fuel"),
-    "secondary_tps_b1_raw": ("Secondary TPS B1", "raw", 0, "Throttle"),
-    "secondary_tps_b2_raw": ("Secondary TPS B2", "raw", 0, "Throttle"),
+    "secondary_tps_b1_raw": ("Secondary TPS B1", "V", 3, "Throttle"),
+    "secondary_tps_b2_raw": ("Secondary TPS B2", "V", 3, "Throttle"),
 }
 
 MLG_CALIBRATIONS = {

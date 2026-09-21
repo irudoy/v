@@ -77,7 +77,7 @@ and fails when the table or another tool document carries a different value.
 | `mcp-memgraph` | 0.4.1 | `../.mcp.json`; machine-local and untracked, so the gate checks it only where it exists |
 | GNU SH toolchain | GCC 13.3.0, binutils 2.44, GDB SH simulator 16.3 | Image built from `sh-elf-run/Dockerfile`; the simulator version is required by `sh-elf-run/verify_map_switching.py` |
 | Python | 3.11 | `../pyproject.toml` and `../uv.lock` |
-| CAN dashboard | 8.2.4 | `can_dashboard/__init__.py` |
+| CAN dashboard | 8.2.5 | `can_dashboard/__init__.py` |
 | PyInstaller | 6.21.0 | `can_dashboard/requirements-macos-build.txt` |
 | `python-can` | 4.6.1 | The three `can_dashboard/requirements-*.txt` pins |
 | `tzdata` | 2026.3 | `can_dashboard/requirements-windows.txt` |

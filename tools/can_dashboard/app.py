@@ -417,8 +417,8 @@ EXTENDED_PANELS = (
         Metric("front_af_sensor_b2_word_raw", "Front A/F sensor B2", "raw", 0),
     )),
     ("Throttle and A/F states", (
-        Metric("secondary_tps_b1_raw", "Secondary TPS B1", "raw", 0),
-        Metric("secondary_tps_b2_raw", "Secondary TPS B2", "raw", 0),
+        Metric("secondary_tps_b1_v", "Secondary TPS B1", "V", 3),
+        Metric("secondary_tps_b2_v", "Secondary TPS B2", "V", 3),
         Metric("af_adjustment_b1_raw", "A/F adjustment B1", "raw", 0, True),
         Metric("af_adjustment_b2_raw", "A/F adjustment B2", "raw", 0, True),
         Metric("protocol_version", "Protocol version", "", 0),

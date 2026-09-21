@@ -184,6 +184,16 @@ class TelemetryMlgRecorderTest(unittest.TestCase):
             knock_specs["High-detonation surface selected"].display_style,
             mlvlg.MLG_ON_OFF,
         )
+        secondary_throttle_specs = [
+            binding.spec
+            for binding in recorder.bindings
+            if binding.spec.name in {"Secondary TPS B1", "Secondary TPS B2"}
+        ]
+        self.assertEqual(len(secondary_throttle_specs), 2)
+        for spec in secondary_throttle_specs:
+            self.assertEqual(spec.scale, 1 / 200)
+            self.assertEqual(spec.units, "V")
+            self.assertEqual(spec.digits, 3)
         self.assertEqual(
             records[-1]["Intake CVTC actual B1"],
             dashboard.raw["intake_cvtc_actual_b1_raw"],
