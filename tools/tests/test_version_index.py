@@ -25,7 +25,15 @@ def test_the_table_is_the_only_tool_document_publishing_a_version():
         ("Memgraph Lab", "3.11.0", "3.12.1"),
         ("`tzdata`", "2026.3", "2026.2"),
         ("CAN dashboard", "8.2.5", "8.2.6"),
-        ("`mcp-memgraph`", "0.4.1", "0.2.0"),
+        pytest.param(
+            "`mcp-memgraph`",
+            "0.4.1",
+            "0.2.0",
+            marks=pytest.mark.skipif(
+                not (version_index.ROOT / ".mcp.json").is_file(),
+                reason="the machine-local .mcp.json is absent, so the row is unchecked",
+            ),
+        ),
     ],
 )
 def test_a_table_row_that_leaves_its_pin_behind_fails(
