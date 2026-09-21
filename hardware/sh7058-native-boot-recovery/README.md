@@ -95,12 +95,22 @@ reset, for example `--baud 9600`.
 
 ## Entry sequence
 
-1. Close SW1 to hold MD1 low.
-2. Hold SW2 to keep nRES low.
-3. Start the selected WDT waveform.
-4. Apply ECU power through J6.
-5. Release SW2 so nRES returns to high impedance.
-6. Perform the non-destructive SCI1 inquiry.
+An output that drives J1 while the ECU is unpowered backfeeds the board. With
+the Arduino WDT output connected and ECU power removed, nRES measures 1.8 V, so
+removing 12 V alone does not power the supervisor off. The WDT source and the
+USB-UART therefore connect only after the board 5 V rail is up.
+
+1. Remove ECU power and disconnect every active output from J1, at least the
+   WDT jumper and the USB-UART TXD, or switch it to high impedance.
+2. Wait for 0 V at `TP84` and nRES.
+3. Close SW1 to hold MD1 low, and hold SW2 to keep nRES low.
+4. Start the selected WDT waveform and verify it at the isolated source output.
+5. Apply ECU power through J6.
+6. After `TP84` reaches 5 V, fit the jumper of the running WDT source and
+   connect the USB-UART.
+7. Release SW2 so nRES returns to high impedance, and confirm that nRES stays
+   high for at least 2-3 s.
+8. Perform the non-destructive SCI1 inquiry.
 
 Do not force nRES high. Do not send command `0x40` during the inquiry.
 
