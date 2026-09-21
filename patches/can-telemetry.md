@@ -29,9 +29,12 @@ three road drives on 2026-08-26 accepted schema 2 transport and channel
 coverage. Those drives carried profile 1, the recording of 2026-09-17 carried
 profile 3, and the road session of 2026-09-21 in registry entry
 `can_telemetry.schema2_profile5_drive_2026_09_21` carried the current
-profile 5. The recorded schema 1
-`wide54` result remains useful bus-capacity and mailbox evidence; it does not
-validate schema 2 and is intentionally not accepted by the current decoder.
+profile 5. The road session of 2026-09-22 in registry entry
+`can_telemetry.schema2_profile5_drive_2026_09_22` carried the same profile,
+and its TRC captures measure the whole-bus load of the stream. The recorded
+schema 1 `wide54` result remains useful bus-capacity and mailbox evidence; it
+does not validate schema 2 and is intentionally not accepted by the current
+decoder.
 
 The objective is a coherent, loss-detectable tuning stream over stock HCAN1
 without diagnostic polling. Sampling occurs immediately after the stock
@@ -241,6 +244,11 @@ frame, clears RXPR, RFPR, and UMSR for every consumed or rejected frame, and
 accepts only an exact command payload with DLC 8. An invalid producer
 configuration does not consume the mailbox and cannot change runtime state.
 
+The executable gate covers STOP, START, and the rejection of invalid control
+frames. On the vehicle they remain untested: registry entry
+`can_telemetry.schema2_transport_2026_09_22` records that no capture carries a
+control frame.
+
 ## Wire protocol
 
 All frames use one standard 11-bit CAN ID and DLC 8. Byte 0 is:
@@ -389,6 +397,17 @@ full theoretical stream is `67.108%..81.504%`. These sums are planning bounds,
 not measurements of schema 2 traffic, and exclude retransmission and error
 frames.
 
+Registry entry `can_telemetry.schema2_transport_2026_09_22` measures the
+profile 5 stream at divisor 1 in three moving TRC captures of the 2026-09-22
+road session, 519.5 s in total. Per capture, the whole-bus average lies within
+`63.671%..77.402%` and the highest 100 ms window within `65.600%..79.760%`, so
+neither exceeds its planning bound. The captures contain no error, warning, or
+remote frame. Each of the 44 stock identifiers of the stationary baselines
+keeps its median period within 0.3 ms, `0x551` at `102.4 ms`, and its longest
+interval within 1.5 ms of the baseline maximum. Every group that the capture
+end does not truncate arrives complete with a `tick16` step of 1, and page 10
+follows page 0 after 3.5..3.6 ms in the median and at most 8.8 ms.
+
 ## Evidence and acceptance boundary
 
 The historical schema 1 target-vehicle capture used `0x6F0`, eight frames per
@@ -406,6 +425,9 @@ ineligible for normal vehicle use until a bounded target-vehicle capture shows:
 - version 2, profile ID 5, and CRC `0xE144` health identity;
 - no sustained incomplete groups, overrun, abort, CAN warning, or CAN error;
 - acceptable stock-frame cadence and whole-bus utilization.
+
+The TRC captures of registry entry `can_telemetry.schema2_transport_2026_09_22`
+measure the last criterion for profile 5 on the target vehicle.
 
 The acceptance run does not need a shutdown cycle, active diagnostic session,
 DTC comparison, or direct scheduler-slack measurement for this logging use.

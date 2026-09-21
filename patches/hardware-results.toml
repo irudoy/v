@@ -1012,6 +1012,235 @@ equal_record_count = 279130
 nonzero_record_count = 112598
 result = "both pairs share context tag 1 and are equal in every record that carries them, which matches the scheduler block-copy latch"
 
+[can_telemetry.schema2_profile5_drive_2026_09_22]
+recorded_on = "2026-09-22"
+image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
+software_status = "pass"
+hardware_status = "pass"
+hardware_scope = "road session with a moving cold start, Map 3 shifts and manual downshifts, a Map 1 cruise with idle, torque-scale runs, a Map 2 Rolling Launch and map-selection drive, and Map 1 and Map 3 acceleration runs"
+can_id = 0x6F0
+tick_divisor = 1
+schema_version = 2
+protocol_version = 2
+profile = "tuning"
+profile_id = 5
+profile_crc16 = 0xE144
+recorder = "tools/can_dashboard"
+trc_converter = "tools/logs/trc_to_mlg.py"
+capture_registry = "can_telemetry.schema2_profile5_captures_2026_09_22"
+record_count_total = 234657
+identity_record_count = 234651
+snapshot_overrun_count_max = 0
+tx_abort_count_max = 0
+missed_snapshot_count = 1
+telemetry_status_nonzero_record_count = 1
+telemetry_status_nonzero_value = 0x08
+trc_error_count = 0
+trc_warning_count = 0
+result = "every record that carries the identity page reports profile 5 with CRC 0xE144 and a verified schema, the six records without it are the first records of two converted TRC captures, overrun and abort counters stay at zero, the three TRC captures convert without errors or warnings, and the cold-start capture holds one missed snapshot followed by one post-ACK preemption latch"
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "10-map-1-cold.mlg"
+capture_sha256 = "10071d018b6f1c956cf2600447b290b13c5e5e59f365d44f0d80c2577dc3328f"
+record_count = 52622
+span_seconds = 538.897
+peak_stock_can_rpm = 3856
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "5-shifts-map-3.trc"
+capture_sha256 = "0248a39e2177a0b234a492a092c1e0cdb3e013632ec5255cfb87598389449f19"
+converted_mlg_sha256 = "18656528bf16c588160e55f341867141bd9d4a7b58efd41b85d33cf0a8224973"
+record_count = 15759
+span_seconds = 161.473
+peak_stock_can_rpm = 5278
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "5-downshifts-map-3.trc"
+capture_sha256 = "494c2209f148c4365a26dc27e0a8d25c92bfa2243cdbd23c0c6bff68154b130c"
+converted_mlg_sha256 = "7cf7451bc500604a23b9dcc55b63633b1a99bd197abb82881c05dee00d12067e"
+record_count = 17618
+span_seconds = 180.527
+peak_stock_can_rpm = 6768
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "7-cruise.mlg"
+capture_sha256 = "53ff07299c8aa03ea80644f419ad0df20425ccf74a0f711a91999d008ce660bc"
+record_count = 65329
+span_seconds = 669.322
+peak_stock_can_rpm = 4081
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "ex-torque-2nd-gear.mlg"
+capture_sha256 = "559a4beb60da9f425eb733fc6821c9326c2fd662519a11001579b2adfb69cbfb"
+record_count = 29585
+span_seconds = 303.138
+peak_stock_can_rpm = 7006
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "11-map-2-rl.trc"
+capture_sha256 = "ef8dfd08cc7f6aff66013091d30f80af9abcd19423db4f3ebe6908cf76e1f28d"
+converted_mlg_sha256 = "9da5517ae1d86d3a36a4765e20eb27078b7854eca34174133ecef842ac392e13"
+record_count = 17324
+span_seconds = 177.470
+peak_stock_can_rpm = 5268
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "xxx-0-100-map-1-1.mlg"
+capture_sha256 = "1082a663e457008f6cb0865b28fab9660b42d12b8d37bcb2247821cdb79a5f3a"
+record_count = 6390
+span_seconds = 65.453
+peak_stock_can_rpm = 7037
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "xxx-0-100-map-3-1.mlg"
+capture_sha256 = "e7b2cc3f158c3e2e214e3b5738ea8311f2253caa549a2ddcb9478599637fc414"
+record_count = 8191
+span_seconds = 83.913
+peak_stock_can_rpm = 7140
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "xxx-0-100-map-1-2.mlg"
+capture_sha256 = "0157a682adbd8134e898047daa80b76ceedbd2925b9737f9270047e444923529"
+record_count = 3167
+span_seconds = 32.440
+peak_stock_can_rpm = 7140
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "xxx-3rd-gear-map-1-1.mlg"
+capture_sha256 = "ad892245835b94fa5fdd64c77507fa6f96ebcca7f26f2a0a6422753dc0e3a177"
+record_count = 3949
+span_seconds = 40.450
+peak_stock_can_rpm = 7140
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "xxx-3rd-gear-map-1-2.mlg"
+capture_sha256 = "c2a6e7d6634261a7e382f40d093814785c429d8e5f0c1ec2e75811304902295a"
+record_count = 3032
+span_seconds = 31.055
+peak_stock_can_rpm = 6612
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "xxx-3rd-gear-map-3-1.mlg"
+capture_sha256 = "214dbdf18429ac7b4af19a2881ba0ea9ea97cb5591fd88e5ff577077c9eec1bf"
+record_count = 6568
+span_seconds = 67.287
+peak_stock_can_rpm = 7412
+
+[[can_telemetry.schema2_profile5_captures_2026_09_22]]
+capture_name = "xxx-3rd-gear-map-3-2.mlg"
+capture_sha256 = "351b11e9b33018dade9375b5e6c044162ea84e8672ef46430371dce472383f2d"
+record_count = 5123
+span_seconds = 52.480
+peak_stock_can_rpm = 7612
+
+[can_telemetry.schema2_transport_2026_09_22]
+recorded_on = "2026-09-22"
+image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
+session = "can_telemetry.schema2_profile5_drive_2026_09_22"
+software_status = "pass"
+hardware_status = "functional_pass_with_open_boundaries"
+hardware_scope = "whole-bus load, stock-frame cadence, and group timing of the profile 5 stream at divisor 1 in the three moving TRC captures of the session"
+audit_tool = "tools/logs/peak_trc_audit.py"
+nominal_bitrate = 500000
+candidate_id = 0x6F0
+stream_theoretical_load_percent = [23.848, 29.004]
+planning_baseline_capture = "startup.trc"
+planning_baseline_average_bus_load_percent = [39.889, 48.402]
+planning_baseline_peak_100ms_bus_load_percent = [43.260, 52.500]
+planning_average_bus_load_percent = [63.737, 77.406]
+planning_peak_100ms_bus_load_percent = [67.108, 81.504]
+period_baseline_captures = ["startup.trc", "idle-ascd-prnd.trc", "ascd-rl.trc"]
+stock_identifier_count = 44
+startup_only_identifiers = [0x71D, 0x71E, 0x71F, 0x72D, 0x72E]
+median_period_max_deviation_ms = 0.3
+p99_period_max_increase_ms = 0.2
+maximum_period_max_increase_ms = 1.5
+maximum_period_max_increase_can_id = 0x625
+dashboard_state_can_id = 0x551
+dashboard_state_median_period_ms = 102.4
+dashboard_state_p99_period_ms = [104.600, 104.800, 104.569]
+dashboard_state_maximum_period_ms = [105.7, 106.0, 105.9]
+dashboard_state_baseline_p99_period_ms_max = 105.792
+dashboard_state_baseline_maximum_period_ms_max = 106.3
+result = "the three moving captures hold no error, warning, remote, or transmitted frame; the whole-bus average and the highest 100 ms window of each capture stay inside the planning bounds; each of the 44 stock identifiers of the stationary baselines keeps its median period within 0.3 ms, 0x551 at 102.4 ms, its 99th percentile within 0.2 ms of the baselines, and its longest interval within 1.5 ms of the baseline maximum; every group that the capture end does not truncate arrives complete with a tick16 step of 1"
+evidence_boundary = "load figures bound the unknown stuff bits between the unstuffed and the maximum-stuffed frame length; the captures do not state whether PCAN-View recorded error frames; no frame was transmitted, which leaves STOP, START, the rejection of invalid control frames, the priority of the runtime override over the startup flag, and the mailbox 31 reinitialization after an HCAN1 recovery untested"
+
+[[can_telemetry.schema2_transport_2026_09_22.captures]]
+capture_name = "5-shifts-map-3.trc"
+observed_span_ms = 161487.9
+frame_count = 487292
+telemetry_frame_count = 173349
+standard_id_count = 45
+extended_id_count = 0
+tx_count = 0
+rtr_count = 0
+warning_record_count = 0
+error_record_count = 0
+average_bus_load_percent = [63.671, 77.326]
+peak_100ms_bus_load_percent = [65.680, 79.760]
+peak_1000ms_bus_load_percent = [63.979, 77.698]
+complete_group_count = 15759
+truncated_final_group_page_count = 0
+tick_step_values = [1]
+group_rate_hz = 97.587
+page_0_to_10_median_ms = 3.6
+page_0_to_10_p99_ms = 7.3
+page_0_to_10_max_ms = 8.8
+
+[[can_telemetry.schema2_transport_2026_09_22.captures]]
+capture_name = "5-downshifts-map-3.trc"
+observed_span_ms = 180539.4
+frame_count = 544850
+telemetry_frame_count = 193804
+standard_id_count = 45
+extended_id_count = 0
+tx_count = 0
+rtr_count = 0
+warning_record_count = 0
+error_record_count = 0
+average_bus_load_percent = [63.678, 77.335]
+peak_100ms_bus_load_percent = [65.600, 79.660]
+peak_1000ms_bus_load_percent = [64.020, 77.748]
+complete_group_count = 17618
+truncated_final_group_page_count = 6
+tick_step_values = [1]
+group_rate_hz = 97.589
+page_0_to_10_median_ms = 3.5
+page_0_to_10_p99_ms = 7.1
+page_0_to_10_max_ms = 8.2
+
+[[can_telemetry.schema2_transport_2026_09_22.captures]]
+capture_name = "11-map-2-rl.trc"
+observed_span_ms = 177487.9
+frame_count = 536084
+telemetry_frame_count = 190564
+standard_id_count = 45
+extended_id_count = 0
+tx_count = 0
+rtr_count = 0
+warning_record_count = 0
+error_record_count = 0
+average_bus_load_percent = [63.734, 77.402]
+peak_100ms_bus_load_percent = [65.634, 79.710]
+peak_1000ms_bus_load_percent = [64.019, 77.748]
+complete_group_count = 17324
+truncated_final_group_page_count = 0
+tick_step_values = [1]
+group_rate_hz = 97.610
+page_0_to_10_median_ms = 3.5
+page_0_to_10_p99_ms = 7.2
+page_0_to_10_max_ms = 8.5
+
+[can_telemetry.schema2_transport_2026_09_22.term_status]
+whole_bus_load = "pass"
+stock_frame_cadence = "pass"
+group_continuity = "pass"
+bus_error_records = "zero_recorded"
+stop_start_control = "untested"
+invalid_control_rejection = "untested"
+override_priority = "untested"
+mailbox_31_after_recovery = "untested"
+
 [throttle_rev_limiter.vehicle_2026_09_21]
 recorded_on = "2026-09-21"
 image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
