@@ -54,6 +54,8 @@ INTAKE_GUIDE = "rom-images/new-rom-intake.md"
 
 # Primary references are transcriptions of external documents.
 UNSCANNED = ("refs/", "defs/reference/")
+# The tests of this gate carry drifted copies on purpose.
+DRIFT_FIXTURES = ("tools/tests/test_single_source.py",)
 TEXT_SUFFIXES = (".md", ".py", ".sh", ".toml", ".yml", ".java", ".js")
 LOOPBACK_HOSTS = ("localhost", "127.0.0.1")
 EXPORT_PATH = re.compile(r"(?:~|\$\{?HOME\}?)((?:/[\w.-]+)*?/ghidra-projects)(?![\w.-])")
@@ -118,7 +120,11 @@ def _tracked(*suffixes):
         check=True,
     ).stdout.decode("utf-8")
     for path in sorted(filter(None, listed.split("\0"))):
-        if path.startswith(UNSCANNED) or not (ROOT / path).is_file():
+        if (
+            path.startswith(UNSCANNED)
+            or path in DRIFT_FIXTURES
+            or not (ROOT / path).is_file()
+        ):
             continue
         if not suffixes or path.endswith(suffixes):
             yield path

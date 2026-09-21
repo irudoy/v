@@ -959,7 +959,9 @@ read.
 1ME3B keeps the attribution map in RAM. The first pass of tooth handler
 `FUN_0002F730` after reset writes `0xFFFEEA58..0xFFFEEA5E` from immediates:
 `00 04 05 06 01 02 03`, the JK08A map, while `0xFFFEBA4D.bit0` is set, and
-`00 05 06 01 02 03 04` while it is clear. `FUN_00034340`, which reset entry
+`00 05 06 01 02 03 04` while it is clear. The block `0x2F784..0x2F7C6` runs
+only while the byte `0xFFFEB7B6` is zero, and its last store at `0x2F7C4` sets
+that byte to 1. `FUN_00034340`, which reset entry
 `FUN_0002E23A` reaches through `FUN_0002DF4E` before its main loop first lowers
 the interrupt mask at `0x2E444`, derives the bit from the misfire interval
 teeth, start tooth `a = ROM8[0x8AF0]` and end tooth `b = ROM8[0x8AEE]`:
