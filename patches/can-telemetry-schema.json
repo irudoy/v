@@ -103,13 +103,13 @@
             },
             {
               "name": "timing_state_2023_raw",
-              "scale": "raw",
+              "scale": "raw; the producer never writes the byte, which reads 0",
               "signed": false,
               "width": 1
             },
             {
               "name": "timing_state_564c_raw",
-              "scale": "raw",
+              "scale": "signed raw deg added to the final timing coordinate, bounded -5..0",
               "signed": false,
               "width": 1
             }
@@ -184,7 +184,7 @@
           "fields": [
             {
               "name": "atmospheric_pressure_raw",
-              "scale": "diagnostic-evidence candidate",
+              "scale": "raw; the barometric input is disabled and the byte holds a fixed calibration default",
               "signed": false,
               "width": 1
             },
@@ -246,19 +246,19 @@
           "fields": [
             {
               "name": "front_af_sensor_b1_word_raw",
-              "scale": "unresolved physical conversion",
+              "scale": "raw / 200 V A/F sensor 1 voltage",
               "signed": false,
               "width": 2
             },
             {
               "name": "front_af_sensor_b2_word_raw",
-              "scale": "unresolved physical conversion",
+              "scale": "raw / 200 V A/F sensor 1 voltage",
               "signed": false,
               "width": 2
             },
             {
               "name": "af_adjustment_b1_raw",
-              "scale": "unresolved signedness and physical conversion",
+              "scale": "candidate signed raw * 0.002 A/F ADJ factor, bounded -1..1",
               "signed": false,
               "width": 2
             }
@@ -283,7 +283,7 @@
             },
             {
               "name": "af_adjustment_b2_raw",
-              "scale": "unresolved signedness and physical conversion",
+              "scale": "candidate signed raw * 0.002 A/F ADJ factor, bounded -1..1",
               "signed": false,
               "width": 2
             }
@@ -348,7 +348,7 @@
           "name": "apc_command_raw",
           "offset": 6,
           "page": 0,
-          "scale": "raw software command",
+          "scale": "110 - raw degBTDC, the ignition advance that J1979 PID 0x0E reports",
           "signed": false,
           "width": 1
         },
@@ -356,7 +356,7 @@
           "name": "fuel_inhibit_mask",
           "offset": 7,
           "page": 0,
-          "scale": "bit mask",
+          "scale": "bit mask; bit k inhibits injector output k, cylinder k + 1 by the diagnostic profile",
           "signed": false,
           "width": 1
         },
@@ -388,7 +388,7 @@
           "name": "front_oxygen_sensor_b1_raw",
           "offset": 7,
           "page": 1,
-          "scale": "raw",
+          "scale": "raw; the producer never writes the byte, which reads 0",
           "signed": false,
           "width": 1
         },
@@ -404,7 +404,7 @@
           "name": "front_oxygen_sensor_b2_raw",
           "offset": 3,
           "page": 2,
-          "scale": "raw",
+          "scale": "raw; the producer never writes the byte, which reads 0",
           "signed": false,
           "width": 1
         },
@@ -492,7 +492,7 @@
           "name": "knock_channel_mask_latched",
           "offset": 7,
           "page": 4,
-          "scale": "six-position bit mask",
+          "scale": "six-position bit mask; bit c - 1 is knock channel c",
           "signed": false,
           "width": 1
         },
@@ -580,7 +580,7 @@
           "name": "throttle_request_bounded_raw",
           "offset": 1,
           "page": 7,
-          "scale": "signed internal request coordinate",
+          "scale": "candidate raw * 0.1 Nm requested torque",
           "signed": true,
           "width": 2
         },
@@ -612,7 +612,7 @@
           "name": "throttle_target_shared_raw",
           "offset": 1,
           "page": 8,
-          "scale": "raw target-area coordinate",
+          "scale": "candidate raw * 0.0008 cm2 target opening area of both throttle bodies",
           "signed": false,
           "width": 2
         },
@@ -620,7 +620,7 @@
           "name": "throttle_target_channel_0_raw",
           "offset": 3,
           "page": 8,
-          "scale": "raw target coordinate",
+          "scale": "raw / 800 V above the learned closed position of the throttle position sensor",
           "signed": false,
           "width": 2
         },
@@ -628,7 +628,7 @@
           "name": "throttle_target_channel_1_raw",
           "offset": 5,
           "page": 8,
-          "scale": "raw target coordinate",
+          "scale": "raw / 800 V above the learned closed position of the throttle position sensor",
           "signed": false,
           "width": 2
         },

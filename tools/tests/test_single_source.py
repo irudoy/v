@@ -53,12 +53,33 @@ def test_the_tree_matches_its_sources(facts):
         ),
         ("raw target coordinate", (1.0, 0.0)),
         ("identity", (1.0, 0.0)),
+        ("110 - raw degBTDC", (-1.0, 110.0)),
+        ("100 - raw / 2 percent", (-0.5, 100.0)),
+        ("110 - raw + 3 deg", None),
+        ("raw / 800 V above the learned closed position", (1 / 800, 0.0)),
+        ("candidate signed raw * 0.002 A/F ADJ factor", (0.002, 0.0)),
+        ("signed raw deg", (1.0, 0.0)),
+        ("signed internal request coordinate", None),
         ("bit mask", None),
         ("unresolved physical conversion", None),
     ],
 )
 def test_a_scale_string_declares_its_conversion(scale, conversion):
     assert single_source.declared_conversion(scale) == conversion
+
+
+@pytest.mark.parametrize(
+    "scale, signed_view",
+    [
+        ("candidate signed raw * 0.002 A/F ADJ factor", True),
+        ("signed raw deg", True),
+        ("candidate raw * 0.1 Nm", False),
+        ("110 - raw degBTDC", False),
+        ("signed internal request coordinate", False),
+    ],
+)
+def test_a_scale_string_declares_its_signed_view(scale, signed_view):
+    assert single_source.declares_signed_view(scale) is signed_view
 
 
 @pytest.mark.parametrize(
@@ -140,6 +161,28 @@ def test_a_host_conversion_the_profile_does_not_declare_fails(monkeypatch):
     with pytest.raises(single_source.SourceError) as error:
         single_source.check_conversions()
     assert "stft_b1_raw" in str(error.value)
+
+
+@pytest.mark.parametrize(
+    "name, scale",
+    [
+        # The host reads the slot as signed, the profile as unsigned.
+        ("af_adjustment_b1_raw", "candidate raw * 0.002 A/F ADJ factor"),
+        # The host reads the slot as unsigned, the profile as signed.
+        ("front_af_sensor_b1_word_raw", "signed raw / 200 V"),
+        # A signed view of a slot that is signed on the wire.
+        ("engine_torque_state_raw", "candidate signed raw * 0.1 Nm"),
+    ],
+)
+def test_a_signed_view_the_profile_does_not_declare_fails(
+    monkeypatch, name, scale
+):
+    scales = single_source._profile_scales()
+    scales[name] = {scale}
+    monkeypatch.setattr(single_source, "_profile_scales", lambda: scales)
+    with pytest.raises(single_source.SourceError) as error:
+        single_source.check_conversions()
+    assert name in str(error.value)
 
 
 @pytest.mark.parametrize(

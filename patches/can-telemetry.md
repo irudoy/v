@@ -312,9 +312,18 @@ against factory limits, or by the ECU's own J1979 declaration: MAF voltage and
 airflow, Base Fuel Schedule at `raw / 2048 ms`, the injection words, the
 end-of-injection angle, CVTC targets and positions, the intake duty command
 and the live duty pair it latches, the exhaust duty words, the four
-temperatures, battery voltage, absolute throttle, and the pedal and throttle
-sensor voltages. Engine torque state, atmospheric pressure, the front A/F
-words, and both adjustment states keep candidate or unresolved conversions.
+temperatures, battery voltage, absolute throttle, the pedal and throttle
+sensor voltages, the APC command at `110 - raw` degrees BTDC, the timing offset
+`FFFF564C` in degrees, both final channel throttle targets at `raw / 800 V`
+above the learned closed position, and the front A/F sensor voltage at
+`raw / 200 V`. Engine torque state, the bounded throttle request, the shared
+throttle target area, and both A/F adjustment states keep candidate
+conversions. The front heated-oxygen-sensor bytes and timing state `FFFF2023`
+have no producer and read 0, and the atmospheric byte holds a fixed
+calibration default because the barometric input is disabled. The word
+`signed` before `raw` reads an unsigned slot as a two's complement value of the
+slot width: the producers of the A/F adjustment words and of `FFFF564C` are
+signed, while the profile and its CRC keep their slots unsigned.
 
 ### Rotating context pages
 
@@ -327,8 +336,8 @@ rate is `19.53125 Hz`.
 | ---: | --- | --- |
 | 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | atmosphere `FFFF4544`, battery `FFFF1188`, LTFT learned B1 `FFFF2306`, LTFT adjustment B1 `FFFF5648` |
 | 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, intake duty commands B1/B2 `FFFF23B4/23B5` |
-| 2 | LTFT B1/B2 `FFFF2302/2304`, timing states `FFFF2023/564C` | front A/F words `FFFF2780/2782`, adjustment state B1 `FFFF45A0` |
-| 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, adjustment state B2 `FFFF45A2` |
+| 2 | LTFT B1/B2 `FFFF2302/2304`, timing state `FFFF2023`, timing offset `FFFF564C` | front A/F words `FFFF2780/2782`, A/F adjustment B1 `FFFF45A0` |
+| 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, A/F adjustment B2 `FFFF45A2` |
 | 4 | minimum knock margin of channels 1 to 3, latches `FFFF5E10/5E12/5E14` | minimum knock margin of channels 4 to 6, latches `FFFF5E16/5E18/5E1A` |
 
 Tag 1 carries the live intake duty pair on page 9 and the intake duty command

@@ -34,7 +34,7 @@ The fixed pages provide:
   latched knock interval count and channel mask;
 - all six calculated injection words, the end-of-injection angle word, and the
   final fuel-output inhibit mask;
-- both front heated-oxygen-sensor bytes;
+- both front heated-oxygen-sensor bytes, which no code writes on this engine;
 - both accelerator channels, primary throttle feedback, absolute throttle,
   bounded request, shared target, and both final channel targets;
 - engine torque state;
@@ -49,12 +49,14 @@ The rotating contexts provide:
 - intake CVTC solenoid duty commands and the live intake duty pair they
   latch under one tag, so both pairs come from the same scheduler pass, and
   high-resolution exhaust duty;
-- atmospheric pressure and battery voltage;
+- the atmospheric-pressure byte, which holds a fixed calibration default, and
+  battery voltage;
 - higher-resolution front A/F sensor words and both adjustment integrators;
 - secondary throttle feedback for both banks;
 - the minimum knock threshold margin of each of the six evaluator channels
   since the previous capture of its tag;
-- two timing state bytes and the in-band transport identity and counters.
+- timing state `FFFF2023`, which no code writes, timing offset `FFFF564C`, and
+  the in-band transport identity and counters.
 
 Stock CAN independently provides RPM, vehicle speed, selector position, ASCD
 input, and dashboard state. The dashboard and MLVLG recorder retain those
@@ -70,7 +72,7 @@ analysis:
 | electronic throttle | `FFFF19C6`, `FFFF19B2`, `FFFF28BC`, `FFFF28BE` | APP `FFFF269E/26A2`, primary TPS `FFFF2756/285C`, secondary TPS `FFFF275E/2864` |
 | intake CVTC | common target `FFFF2326`, low- and high-resolution duty | actual B1/B2 `FFFF2442/2443` |
 | exhaust CVTC | common target `FFFF2327`, high-resolution duty B1/B2 | actual B1/B2 `FFFF2324/2325` |
-| fuel correction | Q14 factor, STFT, LTFT, adjustment B1/B2 | oxygen-sensor bytes and front A/F words |
+| fuel correction | Q14 factor, STFT, LTFT, A/F adjustment B1/B2 | front A/F sensor words |
 | torque | bounded throttle request and target path | signed torque state `FFFF18CC` |
 
 The airflow, coolant, intake-air, timing, vehicle-speed, and absolute-throttle
@@ -83,13 +85,19 @@ positions at `raw * 0.5 - 64 degCA`, the intake duty command at
 `raw * 39 / 100 percent`, exhaust duty at `raw * 100 / 1024 percent`, fuel and
 oil temperature at `raw - 50 degC`, battery voltage at `raw * 0.08 V`, and the
 end-of-injection angle at `raw * 2 - 590` degrees after intake TDC of the
-injected cylinder. The
+injected cylinder, the APC command at `110 - raw` degrees BTDC, timing offset
+`FFFF564C` as a signed byte in degrees, the final channel throttle targets at
+`raw / 800 V` above the learned closed position, and the front A/F sensor
+words at `raw / 200 V`. The
 command pair `FFFF23B4/23B5` is the scheduler block-copy latch of live duty
 pair `FFFF2440/2441`, so the command conversion applies to both pairs. Engine
-torque state, atmospheric pressure, the front A/F words, and both adjustment states
-keep candidate or unresolved conversions; the dashboard and MLG schema mark
-the torque conversion as a candidate, and it requires synchronized target
-validation before its engineering unit is treated as measured fact.
+torque state and the bounded throttle request at `raw * 0.1 Nm`, the shared
+throttle target at `raw * 0.0008 cm2`, and both A/F adjustment states at
+signed `raw * 0.002` keep candidate conversions; the dashboard and MLG schema
+mark them, and each requires synchronized target validation before its
+engineering unit is treated as measured fact. The atmospheric-pressure byte
+reads the default 207 of the disabled barometric input and carries no
+pressure.
 
 ## Remaining semantic gaps
 

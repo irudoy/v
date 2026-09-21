@@ -74,7 +74,7 @@ source = 0xFFFF2022
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw software command"
+scale = "110 - raw degBTDC, the ignition advance that J1979 PID 0x0E reports"
 
 [[field]]
 name = "fuel_inhibit_mask"
@@ -85,7 +85,7 @@ source = 0xFFFF22E0
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "bit mask"
+scale = "bit mask; bit k inhibits injector output k, cylinder k + 1 by the diagnostic profile"
 
 [[field]]
 name = "maf_b1_raw"
@@ -129,7 +129,7 @@ source = 0xFFFF22C4
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw; the producer never writes the byte, which reads 0"
 
 [[field]]
 name = "bfs_raw"
@@ -151,7 +151,7 @@ source = 0xFFFF22C5
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw; the producer never writes the byte, which reads 0"
 
 [[field]]
 name = "injection_0_raw"
@@ -272,7 +272,7 @@ source = 0xFFFF5E0D
 profiles = ["tuning"]
 kind = "telemetry_state"
 signed = false
-scale = "six-position bit mask"
+scale = "six-position bit mask; bit c - 1 is knock channel c"
 
 [[field]]
 name = "app1_raw"
@@ -393,7 +393,7 @@ source = 0xFFFF19C6
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
-scale = "signed internal request coordinate"
+scale = "candidate raw * 0.1 Nm requested torque"
 
 [[field]]
 name = "engine_torque_state_raw"
@@ -437,7 +437,7 @@ source = 0xFFFF19B2
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw target-area coordinate"
+scale = "candidate raw * 0.0008 cm2 target opening area of both throttle bodies"
 
 [[field]]
 name = "throttle_target_channel_0_raw"
@@ -448,7 +448,7 @@ source = 0xFFFF28BC
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw target coordinate"
+scale = "raw / 800 V above the learned closed position of the throttle position sensor"
 
 [[field]]
 name = "throttle_target_channel_1_raw"
@@ -459,7 +459,7 @@ source = 0xFFFF28BE
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "raw target coordinate"
+scale = "raw / 800 V above the learned closed position of the throttle position sensor"
 
 [[field]]
 name = "exhaust_cvtc_actual_b2_raw"
@@ -581,7 +581,7 @@ width = 1
 source = 0xFFFF2023
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "raw; the producer never writes the byte, which reads 0"
 
 [[context.field]]
 name = "timing_state_564c_raw"
@@ -589,7 +589,7 @@ width = 1
 source = 0xFFFF564C
 kind = "ecu_ram"
 signed = false
-scale = "raw"
+scale = "signed raw deg added to the final timing coordinate, bounded -5..0"
 
 [[context]]
 page = 9
@@ -676,7 +676,7 @@ width = 1
 source = 0xFFFF4544
 kind = "ecu_ram"
 signed = false
-scale = "diagnostic-evidence candidate"
+scale = "raw; the barometric input is disabled and the byte holds a fixed calibration default"
 
 [[context.field]]
 name = "battery_voltage_raw"
@@ -750,7 +750,7 @@ width = 2
 source = 0xFFFF2780
 kind = "ecu_ram"
 signed = false
-scale = "unresolved physical conversion"
+scale = "raw / 200 V A/F sensor 1 voltage"
 
 [[context.field]]
 name = "front_af_sensor_b2_word_raw"
@@ -758,7 +758,7 @@ width = 2
 source = 0xFFFF2782
 kind = "ecu_ram"
 signed = false
-scale = "unresolved physical conversion"
+scale = "raw / 200 V A/F sensor 1 voltage"
 
 [[context.field]]
 name = "af_adjustment_b1_raw"
@@ -766,7 +766,7 @@ width = 2
 source = 0xFFFF45A0
 kind = "ecu_ram"
 signed = false
-scale = "unresolved signedness and physical conversion"
+scale = "candidate signed raw * 0.002 A/F ADJ factor, bounded -1..1"
 
 [[context]]
 page = 10
@@ -795,7 +795,7 @@ width = 2
 source = 0xFFFF45A2
 kind = "ecu_ram"
 signed = false
-scale = "unresolved signedness and physical conversion"
+scale = "candidate signed raw * 0.002 A/F ADJ factor, bounded -1..1"
 
 [[context]]
 page = 10

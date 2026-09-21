@@ -593,10 +593,26 @@ the last evaluated margin of a channel while its latch reports the idle value,
 and a channel without any evaluation yet stays `NaN` in a recording. The
 fields are named by channel: the channel index is the cylinder number of the
 event that opens the knock window, and the combustion event a window observes
-is not measured.
+is not measured. The metric has no physical unit, so the display labels the
+signed evaluator counts `cnt`.
 
-A field marked with `*` uses a candidate transform; engine torque state at
-`raw * 0.1 Nm` is the only one. The current conversions are:
+The display leaves out three fields that carry no engine quantity on this
+ECU: the front heated-oxygen-sensor bytes `0xFFFF22C4..22C5` and timing state
+`0xFFFF2023`, which no traced code writes and every recording reads as 0, and
+the atmospheric-pressure byte `0xFFFF4544`, which holds the default 207 of the
+disabled barometric input. The MLG recording keeps all three as raw channels.
+
+The A/F adjustment words and timing offset `0xFFFF564C` hold signed producer
+values in slots the profile declares unsigned, and the profile scale reads
+them as `signed raw`: two's complement values of the slot width. The model
+keeps the wire value in its raw view and converts the signed value, and the
+MLG recorder stores the signed value, because MegaLogViewer applies only scale
+and transform. A replay of a recording that stored the unsigned value decodes
+to the same display value.
+
+A field marked with `*` uses a candidate transform: engine torque state and
+torque request at `raw * 0.1 Nm`, throttle area request at `raw * 0.0008 cm2`,
+and A/F ADJ at signed `raw * 0.002`. The current conversions are:
 
 | Display | Source | Conversion | Evidence boundary |
 | --- | --- | --- | --- |
@@ -614,14 +630,22 @@ A field marked with `*` uses a candidate transform; engine torque state at
 | total airflow | `0xFFFF3852` word | `raw / 100 g/s` | J1979 PID 0x10 publishes the same `105 * 0xFFFF105C / 256` product as g/s*100; the ECU's airflow model, not a hardware measurement |
 | coolant and intake air | `0xFFFF1079`, `0xFFFF2837` | `raw - 50 degC` | J1979 PIDs 0x05 and 0x0F publish the same `0x12DEA` transfer codes minus 10 as `A - 40` degC |
 | absolute throttle | `0xFFFF1075` byte | `raw * 100 / 255 percent` | J1979 PID 0x11 returns the byte as `A * 100 / 255` percent |
-| APC command | `apc_command_raw` byte | raw | effective software command consumed by the APC scheduler; normal-path timing coordinate is `110 - raw` |
+| APC command | `0xFFFF2022` byte | `110 - raw degBTDC` | `FUN_0004DF82` normally writes `110 - final timing`, and J1979 PID 0x0E reports `110 - raw` as the timing advance in every mode, so the field is the delivered command also where Rolling Launch or a stock mode moves it away from the timing coordinate; `tools/logs/mlg_relation_audit.py` checks `final timing = 110 - raw` on recordings; a software command, not a measured spark angle |
+| timing offset 564C | `0xFFFF564C` byte | signed `raw deg` | `FUN_0004DBE8` adds the byte to the final timing coordinate inside its coolant, speed, and load window, and its sources bound it to -5..0; every recording reads 0 |
+| fuel inhibit | `0xFFFF22E0` byte | `none`, `all`, or the list of cut cylinders | code-proven bit `k` = injector output `k`: a set bit replaces channel word `k` with the opening time and withholds the channel from the fire mask; output `k` drives cylinder `k + 1` by the diagnostic Power Balance order, which is not measured electrically |
 | knock timing state | `0xFFFF121A` signed word | `raw / 256 state` | exact Q8 software state; its physical unit remains unresolved |
-| knock margin ch 1..6 | telemetry latches `0xFFFF5E10..0xFFFF5E1B` | raw signed evaluator units | the wrapper behind the only literal of the knock slice evaluator repeats the stock `threshold + 0x80000000 < metric` comparison on the values the evaluator leaves in RAM; the unit of the metric is the summed and gain-scaled sensor difference and has no physical conversion |
+| knock channels | telemetry latch `0xFFFF5E0D` | `none` or the list of channels | code-proven: the evaluator sets bit `c - 1` on an exceedance of channel `c` |
+| knock margin ch 1..6 | telemetry latches `0xFFFF5E10..0xFFFF5E1B` | signed evaluator counts, `cnt` | the wrapper behind the only literal of the knock slice evaluator repeats the stock `threshold + 0x80000000 < metric` comparison on the values the evaluator leaves in RAM; the unit of the metric is the summed and gain-scaled sensor difference and has no physical conversion |
 | active hot surface | `0xFFFF2466.bit6` | clear = High Octane, set = High Detonation | exact selector; other bits in the byte have separate roles |
 | exhaust CVTC target and actual B1/B2 | `0xFFFF2327`, `0xFFFF2324..2325` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count; recordings keep the actual bytes within two counts of a steady target in 98 percent of Map 3 samples |
 | intake CVTC target and actual B1/B2 | `0xFFFF2326`, `0xFFFF2442..2443` | `(raw - 128) * 0.5 degCA` | code-proven edge-phase count, advance positive; recordings keep the actual bytes within two counts of a steady target in 95 to 100 percent of samples |
 | intake CVTC duty live pair and command B1/B2 | `0xFFFF2440..2441`, `0xFFFF23B4..23B5` | `raw * 39 / 100 percent` | code-proven ATU-II conversion; the command pair is the scheduler block-copy latch of the live pair, both pairs share context tag 1 and come from one capture pass, and profile 5 recordings hold them equal in every record |
 | exhaust CVTC duty B1/B2 words | `0xFFFF1AAC`, `0xFFFF1AAE` | `raw * 100 / 1024 percent` | code-proven output-stage conversion |
+| throttle target above closed B1/B2 | `0xFFFF28BC`, `0xFFFF28BE` | `raw / 800 V` | each target is `4 * (TPS counts - learned closed position)`, so one count is 1.25 mV of the primary sensor; the learned closed position is not streamed, and in steady state the target reads the TPS voltage minus that position; steady-state recordings pair TPS bank 1 with channel 0 and TPS bank 2 with channel 1 at a slope of one quarter |
+| throttle area request | `0xFFFF19B2` word | candidate `raw * 0.0008 cm2` | opening area of both throttle bodies in the counts of table `0x13202`; the unit rests on the catalog scale of that table |
+| torque request | `0xFFFF19C6` signed word | candidate `raw * 0.1 Nm` | output of table `0xE98E` minus `0x8000`; at full pedal the recorded request follows the maximum of the table row at the recorded engine speed |
+| A/F sensor 1 B1/B2 | `0xFFFF2780`, `0xFFFF2782` | `raw / 200 V` | the ADC count re-based so that the filtered sensor reference reads 440, which is 2.20 V, the value around which the factory data monitor fluctuates warm at 2000 rpm; lower is richer; under sustained enrichment both words read lean of 440, which is unexplained, so the channel does not validate full-load fuelling without an independent wideband |
+| A/F ADJ B1/B2 | `0xFFFF45A0`, `0xFFFF45A2` | candidate signed `raw * 0.002` | signed integrators bounded to -500..500 counts, read as signed by every consumer; the factor maps the bounds to -1..1 and the factory running range of -0.330..0.330 to 165 counts; every recording reads 0 |
 | end of injection after intake TDC | `0xFFFF192E` word | `raw * 2 - 590 degATDC` | the word holds `2 * min(y, 209)` and `raw * 2` is the code-proven delay in crank degrees after the reference tooth; the intake-TDC anchor rests on the reference-tooth and cylinder-order analysis and is a firmware coordinate, not a measured injector event; JK00C, JK00D, JK78C, 1ND, and 1ME3B stream their homologous word with the same anchor |
 
 The MLG descriptor applies the exact Q8 scale to `Knock timing state` and keeps
@@ -636,7 +660,7 @@ commands rather than verified electrical injector-open durations, and timing is
 a software command, not a measured spark angle. The current top-card label `Timing command` names
 `final_timing_raw`; during a Rolling Launch late override it is the upstream
 stock coordinate rather than the effective command. The detailed `APC command`
-field carries the effective command.
+field carries the effective command in the same unit.
 
 Health indicators include complete snapshot and frame rates, tick-derived
 loss, incomplete and malformed groups, producer restarts, schema mismatches,

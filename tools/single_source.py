@@ -70,8 +70,13 @@ CAN_ID_COMMAND = re.compile(r"--(?:can|candidate)-id[ =](0x[0-9A-Fa-f]+)")
 
 # A profile scale string either states an affine conversion of the raw field or
 # a fixed-point format, or it describes a quantity without a numeric claim.
+# "signed raw" reads an unsigned slot as a two's complement integer of the slot
+# width, and "N - raw" subtracts the scaled raw value from N.
 AFFINE_SCALE = re.compile(
-    r"(?:candidate )?raw"
+    r"(?:candidate )?"
+    r"(?P<signed>signed )?"
+    r"(?:(?P<base>\d+(?:\.\d+)?) - )?"
+    r"raw"
     r"(?: \* (?P<factor>\d+(?:\.\d+)?))?"
     r"(?: / (?P<divisor>\d+(?:\.\d+)?))?"
     r"(?: (?P<sign>[-+]) (?P<offset>\d+(?:\.\d+)?))?"
@@ -242,6 +247,11 @@ def declared_conversion(scale):
     if match:
         factor = float(match["factor"] or 1) / float(match["divisor"] or 1)
         offset = float(match["offset"] or 0)
+        if match["base"] is not None:
+            # "N - raw + M" has no single reading, so it declares nothing.
+            if match["offset"] is not None:
+                return None
+            return -factor, float(match["base"])
         return factor, -offset if match["sign"] == "-" else offset
     match = FIXED_POINT_SCALE.match(scale)
     if match:
@@ -249,13 +259,29 @@ def declared_conversion(scale):
     return None
 
 
-def _profile_scales():
+def declares_signed_view(scale):
+    """Return whether a profile scale string reads its slot as signed."""
+    match = AFFINE_SCALE.match(scale)
+    return bool(match and match["signed"])
+
+
+def _profile_fields():
     manifest = can_telemetry_profile.load_manifest()
+    return (*manifest.fields, *(f for c in manifest.contexts for f in c.fields))
+
+
+def _profile_scales():
     scales = {}
-    fields = (*manifest.fields, *(f for c in manifest.contexts for f in c.fields))
-    for field in fields:
+    for field in _profile_fields():
         scales.setdefault(field.name, set()).add(field.scale)
     return scales
+
+
+def _profile_slots():
+    slots = {}
+    for field in _profile_fields():
+        slots.setdefault(field.name, set()).add((field.width, field.signed))
+    return slots
 
 
 def check_conversions():
@@ -268,13 +294,15 @@ def check_conversions():
             "the decoder and the dashboard both convert " + ", ".join(sorted(shared))
         )
     scales = _profile_scales()
+    slots = _profile_slots()
     for name, calibration in sorted({**decoder, **dashboard}.items()):
-        if len(scales.get(name, ())) != 1:
+        if len(scales.get(name, ())) != 1 or len(slots.get(name, ())) != 1:
             raise SourceError(
                 f"the host converts {name}, which {TELEMETRY_PROFILE} does not "
                 "declare with one scale"
             )
         (scale,) = scales[name]
+        ((width, signed),) = slots[name]
         declared = declared_conversion(scale)
         if declared is None:
             raise SourceError(
@@ -289,6 +317,19 @@ def check_conversions():
             raise SourceError(
                 f"the host converts {name} as raw * {calibration.factor} + "
                 f"{calibration.offset}, {TELEMETRY_PROFILE} declares {scale!r}"
+            )
+        signed_view = declares_signed_view(scale)
+        if signed_view and signed:
+            raise SourceError(
+                f"{TELEMETRY_PROFILE} declares a signed view of {name}, whose "
+                "slot is already signed"
+            )
+        bits = 8 * width if signed_view else 0
+        if calibration.signed_bits != bits:
+            raise SourceError(
+                f"the host reads {name} with signed_bits "
+                f"{calibration.signed_bits}, {TELEMETRY_PROFILE} declares "
+                f"{scale!r} on a {8 * width}-bit slot"
             )
     return len(decoder) + len(dashboard)
 

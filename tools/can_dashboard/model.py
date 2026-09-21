@@ -91,7 +91,55 @@ DASHBOARD_CALIBRATIONS = {
     "oil_temperature_did_source_raw": can_telemetry.Calibration(
         "oil_temperature_deg_c", 1.0, -50
     ),
+    "apc_command_raw": can_telemetry.Calibration("apc_command_deg", -1.0, 110),
+    "timing_state_564c_raw": can_telemetry.Calibration(
+        "timing_offset_564c_deg", signed_bits=8
+    ),
+    "throttle_request_bounded_raw": can_telemetry.Calibration(
+        "torque_request_nm", 0.1
+    ),
+    "throttle_target_shared_raw": can_telemetry.Calibration(
+        "throttle_area_request_cm2", 0.0008
+    ),
+    "throttle_target_channel_0_raw": can_telemetry.Calibration(
+        "throttle_target_b1_v", 1 / 800
+    ),
+    "throttle_target_channel_1_raw": can_telemetry.Calibration(
+        "throttle_target_b2_v", 1 / 800
+    ),
+    "front_af_sensor_b1_word_raw": can_telemetry.Calibration(
+        "af_sensor_b1_v", 1 / 200
+    ),
+    "front_af_sensor_b2_word_raw": can_telemetry.Calibration(
+        "af_sensor_b2_v", 1 / 200
+    ),
+    "af_adjustment_b1_raw": can_telemetry.Calibration(
+        "af_adjustment_b1", 0.002, signed_bits=16
+    ),
+    "af_adjustment_b2_raw": can_telemetry.Calibration(
+        "af_adjustment_b2", 0.002, signed_bits=16
+    ),
 }
+
+FUEL_INHIBIT_ALL = 0x3F
+
+
+def _set_bits(mask):
+    return " ".join(str(bit + 1) for bit in range(8) if mask >> bit & 1)
+
+
+def inhibited_cylinders(mask):
+    """Name the cylinders a fuel inhibit mask cuts; bit k is cylinder k + 1."""
+    if mask == 0:
+        return "none"
+    if mask == FUEL_INHIBIT_ALL:
+        return "all"
+    return f"cyl {_set_bits(mask)}"
+
+
+def knock_channels(mask):
+    """Name the knock channels a latched mask holds; bit c - 1 is channel c."""
+    return "none" if mask == 0 else f"ch {_set_bits(mask)}"
 
 
 def _dashboard_engineering_values(raw):
@@ -105,6 +153,14 @@ def _dashboard_engineering_values(raw):
             "HIGH DETONATION"
             if raw["knock_surface_state"] & 0x40
             else "HIGH OCTANE"
+        )
+    if "fuel_inhibit_mask" in raw:
+        values["fuel_inhibit_cylinders"] = inhibited_cylinders(
+            raw["fuel_inhibit_mask"]
+        )
+    if "knock_channel_mask_latched" in raw:
+        values["knock_channels_latched"] = knock_channels(
+            raw["knock_channel_mask_latched"]
         )
     return values
 
@@ -594,17 +650,18 @@ class DemoGenerator:
         maf_total = 4 + rpm * load / 28_000
         injection = 1.4 + load / 28
         cvtc = 4 + 27 * wave
+        timing = round(8 + 12 * (1 - wave))
         return {
             "rpm_raw": rpm / 12.5,
-            "final_timing_raw": 8 + 12 * (1 - wave),
-            "apc_command_raw": 80 + 90 * wave,
+            "final_timing_raw": timing,
+            "apc_command_raw": 110 - timing,
             "fuel_inhibit_mask": 0,
             "maf_b1_raw": (1.05 + 2.2 * wave) * 200,
             "maf_b2_raw": (1.08 + 2.15 * wave) * 200,
             "maf_total_raw": maf_total * 100,
-            "front_oxygen_sensor_b1_raw": 128 + 12 * math.sin(elapsed * 2.1),
+            "front_oxygen_sensor_b1_raw": 0,
             "bfs_raw": (2.0 + 4.0 * wave) * 2048,
-            "front_oxygen_sensor_b2_raw": 128 + 11 * math.sin(elapsed * 2.0 + 0.2),
+            "front_oxygen_sensor_b2_raw": 0,
             **{
                 f"injection_{index}_raw": (injection + index * 0.02) * 100
                 for index in range(6)
@@ -624,13 +681,13 @@ class DemoGenerator:
             "intake_cvtc_target_raw": (5 + 35 * wave + 64) * 2,
             "exhaust_cvtc_target_raw": (20 * wave + 64) * 2,
             "calculated_load_raw": load * 255 / 100,
-            "throttle_request_bounded_raw": 900 + 2400 * wave,
+            "throttle_request_bounded_raw": 70 + 2400 * wave,
             "engine_torque_state_raw": (45 + 210 * wave) * 10,
             "injection_end_angle_raw": 266 + 134 * wave,
             "exhaust_cvtc_actual_b1_raw": (2 + 18 * wave + 64) * 2,
-            "throttle_target_shared_raw": 1000 + 2600 * wave,
-            "throttle_target_channel_0_raw": 1050 + 2550 * wave,
-            "throttle_target_channel_1_raw": 1030 + 2520 * wave,
+            "throttle_target_shared_raw": 800 + 26_000 * wave,
+            "throttle_target_channel_0_raw": 60 + 2200 * wave,
+            "throttle_target_channel_1_raw": 64 + 2190 * wave,
             "exhaust_cvtc_actual_b2_raw": (1.5 + 17.5 * wave + 64) * 2,
             "coolant_raw": 90 + 50,
             "iat_raw": 32 + 50,
@@ -647,8 +704,8 @@ class DemoGenerator:
             "intake_cvtc_duty_b2_raw": (19 + 54 * wave) * 256 / 100,
             "ltft_b1_raw": 102.1 * 256,
             "ltft_b2_raw": 101.6 * 256,
-            "timing_state_2023_raw": 0x12,
-            "timing_state_564c_raw": 0x20,
+            "timing_state_2023_raw": 0,
+            "timing_state_564c_raw": -round(2 * wave) & 0xFF,
             "protocol_version": 2,
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),
@@ -660,14 +717,14 @@ class DemoGenerator:
             "ltft_adjustment_b1_raw": 100.3 * 256,
             "exhaust_cvtc_duty_b1_word_raw": (12 + 48 * wave) * 1024 / 100,
             "exhaust_cvtc_duty_b2_word_raw": (13 + 47 * wave) * 1024 / 100,
-            "atmospheric_pressure_raw": 100,
+            "atmospheric_pressure_raw": 207,
             "battery_voltage_raw": 175,
-            "front_af_sensor_b1_word_raw": 1200 + 500 * wave,
-            "front_af_sensor_b2_word_raw": 1180 + 510 * wave,
-            "af_adjustment_b1_raw": 0x4000 + 400 * math.sin(elapsed),
+            "front_af_sensor_b1_word_raw": 440 + 12 * math.sin(elapsed * 2.1),
+            "front_af_sensor_b2_word_raw": 438 + 11 * math.sin(elapsed * 2.0 + 0.2),
+            "af_adjustment_b1_raw": round(60 * math.sin(elapsed)) & 0xFFFF,
             "secondary_tps_b1_raw": 98 + 722 * wave,
             "secondary_tps_b2_raw": 102 + 718 * wave,
-            "af_adjustment_b2_raw": 0x4000 + 380 * math.sin(elapsed + 0.2),
+            "af_adjustment_b2_raw": round(55 * math.sin(elapsed + 0.2)) & 0xFFFF,
             **{
                 name: (
                     KNOCK_MARGIN_IDLE

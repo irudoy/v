@@ -413,14 +413,26 @@ class Decoder:
 
 @dataclass(frozen=True)
 class Calibration:
-    """Affine conversion of one raw telemetry field to engineering units."""
+    """Affine conversion of one raw telemetry field to engineering units.
+
+    A nonzero ``signed_bits`` first reads the raw value as a two's complement
+    integer of that width. It serves a producer value that is signed while
+    its wire slot is declared unsigned, and it leaves a value that is already
+    negative unchanged.
+    """
 
     target: str
     factor: float = 1.0
     offset: float = 0.0
+    signed_bits: int = 0
+
+    def signed(self, raw):
+        if self.signed_bits and raw >= 1 << (self.signed_bits - 1):
+            return raw - (1 << self.signed_bits)
+        return raw
 
     def apply(self, raw):
-        return raw * self.factor + self.offset
+        return self.signed(raw) * self.factor + self.offset
 
 
 RAW_CALIBRATIONS = {

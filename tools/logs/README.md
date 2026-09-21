@@ -473,7 +473,11 @@ the current telemetry field table. Channel identity, units, display digits,
 category, and MegaLogViewer scaling live in the header, so a recording adopts
 corrected calibrations without touching its data blocks. Field types and record
 layout are preserved, and a channel the current table does not declare keeps
-its recorded descriptor.
+its recorded descriptor. A channel whose calibration reads the raw value as
+signed also keeps its recorded descriptor when the log stores a value that the
+signed view reads as negative. The current recorder stores the signed value,
+and a descriptor's scale and transform cannot reinterpret an unsigned one; the
+tool lists such channels.
 
 ```bash
 python3 tools/logs/mlg_restamp.py --dry-run tmp/*.mlg

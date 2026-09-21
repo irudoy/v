@@ -121,6 +121,96 @@ class DashboardModelTest(unittest.TestCase):
                     dashboard.value(f"secondary_tps_b{bank}_v"), raw / 200
                 )
 
+    def test_converted_fields_display_engineering_units(self):
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        values = {
+            "tick16": 1,
+            "schema_verified": 1,
+            "apc_command_raw": 90,
+            "timing_state_564c_raw": 0xFE,
+            "throttle_request_bounded_raw": 2565,
+            "throttle_target_shared_raw": 26845,
+            "throttle_target_channel_0_raw": 2143,
+            "throttle_target_channel_1_raw": 2149,
+            "front_af_sensor_b1_word_raw": 440,
+            "front_af_sensor_b2_word_raw": 1013,
+            "af_adjustment_b1_raw": 0xFFFE,
+            "af_adjustment_b2_raw": 165,
+            "fuel_inhibit_mask": 0x15,
+            "knock_channel_mask_latched": 0x2B,
+        }
+        dashboard.process_record(model.SnapshotRecord(0.0, values), now=0.0)
+
+        expected = {
+            "apc_command_deg": 20,
+            "timing_offset_564c_deg": -2,
+            "torque_request_nm": 256.5,
+            "throttle_area_request_cm2": 21.476,
+            "throttle_target_b1_v": 2.67875,
+            "throttle_target_b2_v": 2.68625,
+            "af_sensor_b1_v": 2.2,
+            "af_sensor_b2_v": 5.065,
+            "af_adjustment_b1": -0.004,
+            "af_adjustment_b2": 0.33,
+        }
+        for key, value in expected.items():
+            with self.subTest(key=key):
+                self.assertAlmostEqual(dashboard.value(key), value)
+        self.assertEqual(dashboard.value("fuel_inhibit_cylinders"), "cyl 1 3 5")
+        self.assertEqual(dashboard.value("knock_channels_latched"), "ch 1 2 4 6")
+        self.assertEqual(dashboard.raw["af_adjustment_b1_raw"], 0xFFFE)
+
+        # A recording stores a signed view as the signed value itself.
+        values.update(tick16=2, af_adjustment_b1_raw=-2, timing_state_564c_raw=-2)
+        dashboard.process_record(model.SnapshotRecord(0.01, values), now=0.01)
+        self.assertAlmostEqual(dashboard.value("af_adjustment_b1"), -0.004)
+        self.assertEqual(dashboard.value("timing_offset_564c_deg"), -2)
+
+    def test_masks_name_their_members(self):
+        self.assertEqual(model.inhibited_cylinders(0), "none")
+        self.assertEqual(model.inhibited_cylinders(0x3F), "all")
+        self.assertEqual(model.inhibited_cylinders(0x15), "cyl 1 3 5")
+        self.assertEqual(model.inhibited_cylinders(0x20), "cyl 6")
+        self.assertEqual(model.knock_channels(0), "none")
+        self.assertEqual(model.knock_channels(0x2B), "ch 1 2 4 6")
+
+    def test_mask_names_follow_the_profile_declarations(self):
+        _document, profiles = can_telemetry.load_schema(
+            can_telemetry.DEFAULT_SCHEMA
+        )
+        scales = {
+            field["name"]: field["scale"]
+            for field in profiles["tuning"]["fields"]
+        }
+        self.assertIn(
+            "bit k inhibits injector output k, cylinder k + 1",
+            scales["fuel_inhibit_mask"],
+        )
+        self.assertIn(
+            "bit c - 1 is knock channel c",
+            scales["knock_channel_mask_latched"],
+        )
+
+    def test_demo_signed_views_stay_inside_their_bounds(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        seen = set()
+        for tick in range(1, 400):
+            feed_group(
+                dashboard,
+                generator.group(tick, tick * 0.05),
+                tick * model.BASE_TICK_SECONDS,
+            )
+            for bank in (1, 2):
+                value = dashboard.engineering.get(f"af_adjustment_b{bank}")
+                if value is not None:
+                    self.assertLessEqual(abs(value), 1.0)
+                    seen.add(value < 0)
+            offset = dashboard.engineering.get("timing_offset_564c_deg")
+            if offset is not None:
+                self.assertTrue(-5 <= offset <= 0)
+        self.assertEqual(seen, {False, True})
+
     def test_hot_ignition_surface_selector_decodes_bit_6(self):
         generator = model.DemoGenerator()
         dashboard = model.DashboardModel("tuning", 0x6F0, 1)

@@ -295,12 +295,35 @@ class MlgCalibrationGateTest(unittest.TestCase):
             spec = binding.spec
             for raw in self.RAW_PROBES:
                 with self.subTest(field=spec.name, raw=raw):
+                    stored = recording.recorded_value(binding.source, raw)
                     # MegaLogViewer evaluates (raw + transform) * scale.
                     self.assertAlmostEqual(
-                        (raw + spec.transform) * spec.scale,
+                        (stored + spec.transform) * spec.scale,
                         calibration.apply(raw),
                         places=6,
                     )
+
+    def test_a_signed_view_records_the_signed_value(self):
+        for binding in self.bindings:
+            calibration = recording.MLG_CALIBRATIONS.get(binding.source)
+            if calibration is None or not calibration.signed_bits:
+                continue
+            bits = calibration.signed_bits
+            with self.subTest(field=binding.spec.name):
+                self.assertEqual(
+                    recording.recorded_value(binding.source, (1 << bits) - 2),
+                    -2,
+                )
+                self.assertEqual(
+                    recording.recorded_value(
+                        binding.source, (1 << (bits - 1)) - 1
+                    ),
+                    (1 << (bits - 1)) - 1,
+                )
+                # A replayed signed value decodes to the same display value.
+                self.assertEqual(
+                    calibration.apply(-2), calibration.apply((1 << bits) - 2)
+                )
 
     def test_channel_names_carry_no_candidate_marker(self):
         for binding in self.bindings:

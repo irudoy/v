@@ -48,7 +48,7 @@ RAW_FIELD_DISPLAY = {
     "tick16": ("Telemetry tick", "", 0, "Transport"),
     "rpm_raw": ("Engine speed", "rpm", 0, "Engine"),
     "final_timing_raw": ("Timing command", "degBTDC", 0, "Ignition"),
-    "apc_command_raw": ("APC command", "raw", 0, "Throttle"),
+    "apc_command_raw": ("APC command", "degBTDC", 0, "Ignition"),
     "fuel_inhibit_mask": ("Fuel inhibit mask", "", 0, "Injection"),
     "maf_b1_raw": ("MAF bank 1", "V", 3, "Air"),
     "maf_b2_raw": ("MAF bank 2", "V", 3, "Air"),
@@ -60,10 +60,10 @@ RAW_FIELD_DISPLAY = {
     "knock_timing_state_raw": ("Knock timing state", "state", 3, "Knock"),
     "knock_surface_state": ("Knock surface state", "raw", 0, "Knock"),
     "knock_count_latched": ("Knock interval count", "", 0, "Knock"),
-    "knock_channel_mask_latched": ("Knock channel mask", "raw", 0, "Knock"),
+    "knock_channel_mask_latched": ("Knock channel mask", "", 0, "Knock"),
     **{
         f"knock_margin_min_ch{channel}_raw": (
-            f"Knock margin ch {channel}", "raw", 0, "Knock"
+            f"Knock margin ch {channel}", "cnt", 0, "Knock"
         )
         for channel in range(1, 7)
     },
@@ -82,7 +82,7 @@ RAW_FIELD_DISPLAY = {
     "exhaust_cvtc_target_raw": ("Exhaust CVTC target", "degCA", 1, "CVTC"),
     "calculated_load_raw": ("Calculated load", "%", 1, "Engine"),
     "throttle_request_bounded_raw": (
-        "Bounded throttle request", "raw", 0, "Throttle"
+        "Bounded throttle request", "Nm*", 1, "Throttle"
     ),
     "engine_torque_state_raw": ("Engine torque state", "Nm*", 1, "Engine"),
     "injection_end_angle_raw": (
@@ -95,13 +95,13 @@ RAW_FIELD_DISPLAY = {
         "Exhaust CVTC actual B2", "degCA", 1, "CVTC"
     ),
     "throttle_target_shared_raw": (
-        "Shared throttle target", "raw", 0, "Throttle"
+        "Shared throttle target", "cm2*", 2, "Throttle"
     ),
     "throttle_target_channel_0_raw": (
-        "Throttle target channel 0", "raw", 0, "Throttle"
+        "Throttle target channel 0", "V", 3, "Throttle"
     ),
     "throttle_target_channel_1_raw": (
-        "Throttle target channel 1", "raw", 0, "Throttle"
+        "Throttle target channel 1", "V", 3, "Throttle"
     ),
     "coolant_raw": ("Coolant", "degC", 0, "Temperature"),
     "iat_raw": ("Intake air", "degC", 0, "Temperature"),
@@ -119,7 +119,7 @@ RAW_FIELD_DISPLAY = {
     "ltft_b1_raw": ("LTFT bank 1", "%", 2, "Fuel"),
     "ltft_b2_raw": ("LTFT bank 2", "%", 2, "Fuel"),
     "timing_state_2023_raw": ("Timing state 2023", "raw", 0, "Ignition"),
-    "timing_state_564c_raw": ("Timing state 564C", "raw", 0, "Ignition"),
+    "timing_state_564c_raw": ("Timing state 564C", "deg", 0, "Ignition"),
     "protocol_version": ("Protocol version", "", 0, "Transport"),
     "profile_id": ("Profile ID", "", 0, "Transport"),
     "profile_crc16": ("Profile CRC16", "raw", 0, "Transport"),
@@ -141,10 +141,10 @@ RAW_FIELD_DISPLAY = {
     ),
     "atmospheric_pressure_raw": ("Atmospheric pressure", "raw", 0, "Air"),
     "battery_voltage_raw": ("Battery voltage", "V", 2, "Context"),
-    "front_af_sensor_b1_word_raw": ("Front A/F sensor B1", "raw", 0, "Fuel"),
-    "front_af_sensor_b2_word_raw": ("Front A/F sensor B2", "raw", 0, "Fuel"),
-    "af_adjustment_b1_raw": ("A/F adjustment B1", "raw", 0, "Fuel"),
-    "af_adjustment_b2_raw": ("A/F adjustment B2", "raw", 0, "Fuel"),
+    "front_af_sensor_b1_word_raw": ("Front A/F sensor B1", "V", 3, "Fuel"),
+    "front_af_sensor_b2_word_raw": ("Front A/F sensor B2", "V", 3, "Fuel"),
+    "af_adjustment_b1_raw": ("A/F adjustment B1", "*", 3, "Fuel"),
+    "af_adjustment_b2_raw": ("A/F adjustment B2", "*", 3, "Fuel"),
     "secondary_tps_b1_raw": ("Secondary TPS B1", "V", 3, "Throttle"),
     "secondary_tps_b2_raw": ("Secondary TPS B2", "V", 3, "Throttle"),
 }
@@ -159,13 +159,22 @@ def mlg_scaling(source: str) -> tuple[float, float]:
     """Return the MLVLG scale and transform for one raw telemetry field.
 
     MegaLogViewer evaluates ``(raw + transform) * scale``, so the transform is
-    expressed in raw counts rather than in engineering units.
+    expressed in raw counts rather than in engineering units. A calibration
+    that reads its slot as signed records the signed value, which
+    ``recorded_value`` returns.
     """
 
     calibration = MLG_CALIBRATIONS.get(source)
     if calibration is None:
         return 1.0, 0.0
     return calibration.factor, calibration.offset / calibration.factor
+
+
+def recorded_value(source: str, raw):
+    """Return the value one MLVLG channel stores for a raw telemetry field."""
+
+    calibration = MLG_CALIBRATIONS.get(source)
+    return raw if calibration is None else calibration.signed(raw)
 
 
 def _injection_display(index: int):
@@ -368,7 +377,9 @@ class TelemetryMlgRecorder:
                 if value is None:
                     value = math.nan
             else:
-                value = model.raw.get(binding.source, math.nan)
+                value = recorded_value(
+                    binding.source, model.raw.get(binding.source, math.nan)
+                )
             values.append(value)
         return tuple(values)
 

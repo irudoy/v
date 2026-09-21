@@ -141,6 +141,70 @@ class MlgRestampTest(unittest.TestCase):
                 [],
             )
 
+    def test_signed_channel_with_unsigned_records_keeps_its_descriptor(self):
+        raw_view = {
+            "A/F adjustment B1": 0xFFFE,
+            "A/F adjustment B2": 2,
+            "Timing state 564C": 0xFE,
+        }
+        specs = tuple(
+            replace(
+                binding.spec,
+                units="raw",
+                scale=1.0,
+                transform=0.0,
+                digits=0,
+            )
+            if binding.spec.name in raw_view
+            else binding.spec
+            for binding in recording.build_bindings("tuning")
+        )
+        position = {spec.name: index for index, spec in enumerate(specs)}
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "unsigned.mlg"
+            with log.open("wb") as stream:
+                writer = mlvlg.StreamWriter(stream, specs, 1_776_000_000)
+                for index in range(3):
+                    values = [1] * len(specs)
+                    if index == 1:
+                        for name, value in raw_view.items():
+                            values[position[name]] = value
+                    writer.write(tuple(values), index * 0.01)
+            before_blocks = data_blocks(log)
+
+            summary = mlg_restamp.restamp(log)
+
+            self.assertEqual(
+                summary.unsigned, ("Timing state 564C", "A/F adjustment B1")
+            )
+            fields = {field.name: field for field in mlvlg.read_fields(log)}
+            for name in ("Timing state 564C", "A/F adjustment B1"):
+                self.assertEqual(fields[name], specs[position[name]])
+            self.assertEqual(fields["A/F adjustment B2"].units, "*")
+            self.assertAlmostEqual(
+                fields["A/F adjustment B2"].scale, 0.002, places=6
+            )
+            self.assertEqual(data_blocks(log), before_blocks)
+
+    def test_signed_records_take_the_current_descriptor(self):
+        specs = tuple(
+            binding.spec for binding in recording.build_bindings("tuning")
+        )
+        position = {spec.name: index for index, spec in enumerate(specs)}
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "signed.mlg"
+            with log.open("wb") as stream:
+                writer = mlvlg.StreamWriter(stream, specs, 1_776_000_000)
+                values = [1] * len(specs)
+                values[position["A/F adjustment B1"]] = -2
+                values[position["Timing state 564C"]] = -2
+                writer.write(tuple(values), 0.0)
+
+            summary = mlg_restamp.restamp(log)
+
+            self.assertEqual(summary.unsigned, ())
+            self.assertEqual(summary.changed, ())
+
     def test_invalid_log_is_reported(self):
         with tempfile.TemporaryDirectory() as directory:
             broken = Path(directory) / "broken.mlg"
