@@ -20,3 +20,7 @@ expected_operations = 324
 expected_can_signals = 111
 applicability_status = "exact_manual"
 source_tier = "factory"
+
+[engine_sections]
+VQ25HR = "infiniti-g-sedan-2013-mexico-vq25hr"
+VQ37VHR = "infiniti-g37-sedan-2013-usdm-vq37vhr"

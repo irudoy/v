@@ -40,9 +40,9 @@ All importers validate exact source revision or PDF identity where their source
 manifest provides one. `--check` parses and validates without replacing tracked
 outputs. Source-specific expected inventory is stored in each
 `source_pack.toml`, not duplicated here. `extract_esm.py` reads dataset
-identity, vehicle identity, retained-document count, and its default output
-directory from the `--pack` source pack, so one extractor serves every retained
-ESM corpus.
+identity, vehicle identity, the engine sections of a multi-engine manual,
+retained-document count, and its default output directory from the `--pack`
+source pack, so one extractor serves every retained ESM corpus.
 
 Examples:
 

@@ -33,16 +33,25 @@ DEFAULT_PACK = REFS / "nissan-esm-2007-g35-sedan" / "source_pack.toml"
 DATASET_ID = "nissan-esm-2007-g35-sedan-v1"
 VEHICLE_ID = "infiniti-g35-sedan-2007-usdm-vq35hr"
 EXPECTED_DOCUMENTS = 29
+ENGINE_TAG_RE = re.compile(r"\[([A-Z0-9]+)\]")
+HEADER_LINES = 4
 
 
 @dataclass(frozen=True)
 class SourcePack:
-    """Dataset identity and retained-document count for one ESM corpus."""
+    """Dataset identity, vehicle identities, and retained-document count for
+    one ESM corpus.
+
+    ``engine_sections`` maps the engine tag that a multi-engine manual prints
+    on the running header of each engine-specific page to the vehicle identity
+    of that engine; pages without a declared tag belong to ``vehicle_id``.
+    """
 
     path: Path
     dataset_id: str
     vehicle_id: str
     expected_documents: int
+    engine_sections: tuple[tuple[str, str], ...] = ()
 
     @property
     def output(self) -> Path:
@@ -59,12 +68,49 @@ def load_pack(path: Path) -> SourcePack:
     ]
     if missing:
         raise CatalogError(f"{path}: source pack omits {', '.join(missing)}")
+    sections = raw.get("engine_sections", {})
+    if not isinstance(sections, dict) or not all(
+        isinstance(vehicle, str) and ENGINE_TAG_RE.fullmatch(f"[{tag}]")
+        for tag, vehicle in sections.items()
+    ):
+        raise CatalogError(
+            f"{path}: engine_sections must map engine tags to vehicle ids"
+        )
+    if sections and str(raw["vehicle_id"]) not in sections.values():
+        raise CatalogError(
+            f"{path}: engine_sections omits the pack vehicle {raw['vehicle_id']}"
+        )
     return SourcePack(
         path=path,
         dataset_id=str(raw["id"]),
         vehicle_id=str(raw["vehicle_id"]),
         expected_documents=int(raw["expected_documents"]),
+        engine_sections=tuple(sorted(sections.items())),
     )
+
+
+def page_vehicle_id(text: str, pack: SourcePack, where: str) -> str:
+    """Return the vehicle identity of one page from its running-header tag.
+
+    A manual that covers several engines prints the engine of every
+    engine-specific page in brackets on the running-header line, as in
+    ``< BASIC INSPECTION >  [VQ25HR]``.
+    """
+    sections = dict(pack.engine_sections)
+    if not sections:
+        return pack.vehicle_id
+    header = [line for line in text.splitlines() if line.strip()][:HEADER_LINES]
+    tags = {
+        tag
+        for line in header
+        for tag in ENGINE_TAG_RE.findall(line)
+        if tag in sections
+    }
+    if len(tags) > 1:
+        raise CatalogError(
+            f"{where}: running header names engines {', '.join(sorted(tags))}"
+        )
+    return sections[tags.pop()] if tags else pack.vehicle_id
 
 DOCUMENT_FIELDS = (
     "id",
@@ -3375,6 +3421,7 @@ def build(
             elif not kinds:
                 previous_kind = ""
                 previous_page = 0
+            vehicle_id = page_vehicle_id(text, pack, f"{path.name} page {pdf_page}")
             for kind in kinds:
                 fid = fragment_id(document_id, pdf_page, kind)
                 info_match = INFOID_RE.search(text)
@@ -3387,8 +3434,8 @@ def build(
                     "info_id": info_match.group(1) if info_match else "",
                     "kind": kind,
                     "heading": page_heading(text),
-                    "ecu_id": infer_ecu_id(path.stem, text, pack.vehicle_id),
-                    "vehicle_id": pack.vehicle_id,
+                    "ecu_id": infer_ecu_id(path.stem, text, vehicle_id),
+                    "vehicle_id": vehicle_id,
                     **(
                         {"page_start_kind": page_start_kind}
                         if page_start_kind

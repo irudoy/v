@@ -127,7 +127,7 @@ omitted manual modules.
 | Manual | Directory | Retained PDFs | Engine |
 |---|---|---:|---|
 | 2007 Infiniti G35 Sedan | `nissan-esm-2007-g35-sedan/` | 29 | VQ35HR |
-| 2013 Infiniti G Sedan | `nissan-esm-2013-g37-sedan/` | 31 | VQ37VHR |
+| 2013 Infiniti G Sedan | `nissan-esm-2013-g37-sedan/` | 31 | VQ37VHR, VQ25HR |
 
 The machine-readable diagnostic projections are stored separately under
 `diagnostics/nissan-esm-2007-g35-sedan/` and
@@ -175,11 +175,13 @@ source revision, and completeness boundary are documented in
   - `POWER CONTROL SYSTEM.pdf` and `STEERING CONTROL SYSTEM.pdf` - power and
     ignition modes and, where applicable, the steering lock.
 
-- **Nissan ESM - 2013 Infiniti G Sedan (V36), VQ37VHR engine.** Publication
-  `SM3E-1V36U0`, edition August 2012. The retained factory-manual subset
-  contains 31 PDFs. This is the exact factory manual for the engine and platform
-  behind ROMs `JK78C`, `1ND0A`, and `1ND3B`, so it is the authority for VQ37VHR
-  diagnostic names, per-bank identity, and VVEL system operation.
+- **Nissan ESM - 2013 Infiniti G Sedan (V36), VQ37VHR and VQ25HR engines.**
+  Publication `SM3E-1V36U0`, edition August 2012. The retained factory-manual
+  subset contains 31 PDFs. This is the exact factory manual for the engine and
+  platform behind ROMs `JK78C`, `1ND0A`, and `1ND3B`, so it is the authority for
+  VQ37VHR diagnostic names, per-bank identity, and VVEL system operation. Its
+  VQ25HR sections cover the Mexico-market variant (GI-23) with the engine of
+  the `JK08A` target.
   Repository path: `refs/nissan-esm-2013-g37-sedan/`.
 
   Relevant sections:

@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import csv
 import json
+import re
+import shutil
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -10,6 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 DIAGNOSTICS = ROOT / "refs" / "diagnostics" / "nissan-esm-2007-g35-sedan"
 VQ37_DIAGNOSTICS = ROOT / "refs" / "diagnostics" / "nissan-esm-2013-g37-sedan"
+VQ37_MANUAL = ROOT / "refs" / "nissan-esm-2013-g37-sedan"
+VQ37_VEHICLE = "infiniti-g37-sedan-2013-usdm-vq37vhr"
+VQ25_VEHICLE = "infiniti-g-sedan-2013-mexico-vq25hr"
 sys.path.insert(0, str(ROOT / "tools" / "diagnostics"))
 
 import extract_esm  # noqa: E402
@@ -519,6 +525,158 @@ class EsmCatalogTest(unittest.TestCase):
                 "STEERING CONTROL SYSTEM",
                 str(steering["text"]),
             ),
+        )
+
+    def test_engine_sections_follow_the_running_header_tag(self) -> None:
+        pack = extract_esm.load_pack(VQ37_DIAGNOSTICS / "source_pack.toml")
+        self.assertEqual(VQ37_VEHICLE, pack.vehicle_id)
+        self.assertEqual(
+            {"VQ25HR": VQ25_VEHICLE, "VQ37VHR": VQ37_VEHICLE},
+            dict(pack.engine_sections),
+        )
+
+        def page(tag: str, body: str = "") -> str:
+            return (
+                "INSPECTION AND ADJUSTMENT\n"
+                f"< BASIC INSPECTION >{' ' * 40}{tag}\n"
+                f"IDLE SPEED\n{body}"
+            )
+
+        vehicle = extract_esm.page_vehicle_id
+        self.assertEqual(VQ25_VEHICLE, vehicle(page("[VQ25HR]"), pack, "p"))
+        self.assertEqual(VQ37_VEHICLE, vehicle(page("[VQ37VHR]"), pack, "p"))
+        self.assertEqual(
+            VQ37_VEHICLE,
+            vehicle(page("[BASE AUDIO WITHOUT REAR VIEW CAMERA]"), pack, "p"),
+        )
+        self.assertEqual(
+            VQ37_VEHICLE,
+            vehicle(page("", "A\nB\nC\nSee [VQ25HR] models.\n"), pack, "p"),
+        )
+        with self.assertRaises(extract_esm.CatalogError):
+            vehicle(page("[VQ25HR] [VQ37VHR]"), pack, "p")
+
+        single = extract_esm.load_pack(extract_esm.DEFAULT_PACK)
+        self.assertEqual((), single.engine_sections)
+        self.assertEqual(
+            extract_esm.VEHICLE_ID, vehicle(page("[VQ25HR]"), single, "p")
+        )
+
+    def test_vq37_corpus_attributes_each_engine_section_to_its_vehicle(
+        self,
+    ) -> None:
+        sections = {"VQ25HR": VQ25_VEHICLE, "VQ37VHR": VQ37_VEHICLE}
+        pages: dict[str, list[int]] = {VQ25_VEHICLE: [], VQ37_VEHICLE: []}
+        with (VQ37_DIAGNOSTICS / "fragments.jsonl").open(encoding="utf-8") as source:
+            for line in source:
+                fragment = json.loads(line)
+                header = "\n".join(
+                    row for row in str(fragment["text"]).splitlines() if row.strip()
+                ).splitlines()[:4]
+                tags = {
+                    tag
+                    for row in header
+                    for tag in re.findall(r"\[(VQ25HR|VQ37VHR)\]", row)
+                }
+                expected = sections[tags.pop()] if tags else VQ37_VEHICLE
+                self.assertEqual(expected, fragment["vehicle_id"], fragment["id"])
+                self.assertTrue(
+                    str(fragment["ecu_id"]).startswith(f"{expected}:"),
+                    fragment["id"],
+                )
+                if str(fragment["document_id"]).endswith(":engine-control-system"):
+                    pages[expected].append(int(fragment["pdf_page"]))
+        self.assertEqual(161, len(pages[VQ25_VEHICLE]))
+        self.assertLess(max(pages[VQ37_VEHICLE]), min(pages[VQ25_VEHICLE]))
+
+        definitions = read_csv("dtc_definitions.csv", VQ37_DIAGNOSTICS)
+        parameters = read_csv("diagnostic_parameters.csv", VQ37_DIAGNOSTICS)
+        codes = {
+            vehicle: {
+                row["code"]
+                for row in definitions
+                if row["ecu_id"] == f"{vehicle}:ecm"
+            }
+            for vehicle in (VQ25_VEHICLE, VQ37_VEHICLE)
+        }
+        self.assertEqual(195, len(codes[VQ37_VEHICLE]))
+        self.assertEqual(142, len(codes[VQ25_VEHICLE]))
+        self.assertEqual(
+            {"P0014", "P0024", "P0078", "P0084", "P1078", "P1084", "P1715"},
+            codes[VQ25_VEHICLE] - codes[VQ37_VEHICLE],
+        )
+        vvel = {
+            "P100A",
+            "P100B",
+            "P1087",
+            "P1088",
+            "P1089",
+            "P1090",
+            "P1091",
+            "P1092",
+            "P1093",
+            "P1608",
+        }
+        self.assertLessEqual(vvel, codes[VQ37_VEHICLE])
+        self.assertEqual(set(), vvel & codes[VQ25_VEHICLE])
+        self.assertEqual(
+            {f"{VQ25_VEHICLE}:ecm": 84, f"{VQ37_VEHICLE}:ecm": 96},
+            {
+                ecu: sum(row["ecu_id"] == ecu for row in parameters)
+                for ecu in (f"{VQ25_VEHICLE}:ecm", f"{VQ37_VEHICLE}:ecm")
+            },
+        )
+
+    def test_general_information_lists_the_vq25hr_models_for_mexico(
+        self,
+    ) -> None:
+        if shutil.which("pdftotext") is None:
+            self.skipTest("pdftotext is not installed")
+        text = subprocess.run(
+            [
+                "pdftotext",
+                "-layout",
+                "-f",
+                "23",
+                "-l",
+                "23",
+                str(VQ37_MANUAL / "GENERAL INFORMATION.pdf"),
+                "-",
+            ],
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout
+        self.assertIn("GI-23", text)
+        lines = text.splitlines()
+        models = {
+            match.group(0): number
+            for number, line in enumerate(lines)
+            for match in re.finditer(r"\bBL[A-Z]{5}-E([A-Z])A\b", line)
+        }
+        destinations = {
+            name: number
+            for number, line in enumerate(lines)
+            for name in ("USA", "Canada", "Mexico")
+            if re.match(rf"^\s*{name}\b", line)
+        }
+        for name, suffix in (("USA", "EUA"), ("Canada", "ENA"), ("Mexico", "EJA")):
+            rows = [
+                number for model, number in models.items() if model.endswith(suffix)
+            ]
+            self.assertLessEqual(min(rows), destinations[name])
+            self.assertLessEqual(destinations[name], max(rows))
+        engine_rows = [
+            number for number, line in enumerate(lines) if "VQ25HR" in line
+        ]
+        self.assertEqual(1, len(engine_rows))
+        self.assertEqual(
+            {"BLUALHL-EJA", "BLUALSL-EJA"},
+            {
+                model
+                for model, number in models.items()
+                if abs(number - engine_rows[0]) == 1
+            },
         )
 
     def test_title_first_av_dtc_lists_are_complete(self) -> None:

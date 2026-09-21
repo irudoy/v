@@ -28,7 +28,7 @@ them.
 | Dataset | Applicability | Inventory authority |
 |---|---|---|
 | `nissan-esm-2007-g35-sedan-v1` | Exact factory-manual subset for 2007 USDM V36 VQ35HR; homologous to the target VQ25HR | `source_pack.toml` and generated projections |
-| `nissan-esm-2013-g37-sedan-v1` | Exact factory-manual subset for 2013 USDM V36 VQ37VHR; the engine and platform behind `JK78C`, `1ND0A`, and `1ND3B` | `source_pack.toml` and generated projections |
+| `nissan-esm-2013-g37-sedan-v1` | Exact factory-manual subset for the 2013 V36 G Sedan: VQ37VHR sections for `infiniti-g37-sedan-2013-usdm-vq37vhr`, the engine and platform behind `JK78C`, `1ND0A`, and `1ND3B`; VQ25HR sections for `infiniti-g-sedan-2013-mexico-vq25hr`, the engine of the target in a different market | `source_pack.toml` and generated projections |
 | `vq-hr-sh7058-rom-dtc-v1` | Exact silicon inventory for JK00D, JK03A, and JK08A | `source_pack.toml` and generated descriptor projection |
 | `370z-can-logger-2025-07-05` | Community observations from Z34/VQ37VHR | Pinned revision and generated projections |
 | `obd2tools-d27c9a2` | Nissan-family candidate definitions | Pinned revision and generated projections |
@@ -37,6 +37,14 @@ them.
 
 The source revision and license are recorded in each `source_pack.toml`. License
 does not filter technical ingestion. Applicability and verification status do.
+
+A manual that covers several engines declares `engine_sections` in its
+`source_pack.toml`, a map from the engine tag that an engine-specific page
+prints on its running header, such as `[VQ25HR]`, to the vehicle identity of
+that engine. `extract_esm.py` assigns every fragment, and every row derived from
+it, to the vehicle of its page; a page without a declared tag belongs to the
+pack `vehicle_id`. In the 2013 manual the tagged pages are the two engine
+sections of `ENGINE CONTROL SYSTEM.pdf`.
 
 ## Provenance contract
 

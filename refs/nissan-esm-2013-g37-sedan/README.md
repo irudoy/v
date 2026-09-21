@@ -1,9 +1,14 @@
 # 2013 Infiniti G Sedan ESM source scope
 
 This directory contains the project-relevant subset of the original 60-module
-factory ESM for the 2013 Infiniti G Sedan (V36, VQ37VHR), publication
-`SM3E-1V36U0`, edition August 2012. It is the exact factory manual for the
-engine and platform behind ROMs `JK78C`, `1ND0A`, and `1ND3B`.
+factory ESM for the 2013 Infiniti G Sedan (V36, VQ37VHR and VQ25HR),
+publication `SM3E-1V36U0`, edition August 2012. It is the exact factory manual
+for the engine and platform behind ROMs `JK78C`, `1ND0A`, and `1ND3B`.
+
+GI-23 lists the VQ25HR models for Mexico only. `ENGINE CONTROL SYSTEM.pdf`
+carries a VQ37VHR section followed by a VQ25HR section, and every page of
+either section names its engine on the running header. The VQ25HR section
+describes the engine of the `JK08A` target in a different market.
 
 The distribution names each module by its section code. Retained copies are
 renamed to the module titles published in the manual's own Quick Reference
