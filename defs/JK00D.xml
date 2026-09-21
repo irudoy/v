@@ -890,14 +890,16 @@
          scaling (x-128)*0.5 degCA [code]; Y Axis 0x15277 rpm [code]; X Axis 0x15257 load [code]
          Code proves the cold intake-cam target role, raw coolant selection, centered byte
          representation, and column coordinate at raw*100/128 percent of the fixed BFS
-         reference. The target-vehicle capture remains entirely above the warm threshold and
-         does not dynamically validate this surface or the coolant blend. The output conversion
-         (x-128)*0.5 crank degrees follows the intake edge-phase unit shared with 0000b43a: the
-         cold target enters the same ffff2326 path that FUN 0004d2a6 compares with actual bytes
-         ffff2442/ffff2443. The Cylinder Filling physical name remains a source-derived
-         candidate. Result disposition: consumer. Definition address projected from JK08A
-         0000b53a through JK08A-JK00D.definition-addresses.csv: cold intake-cam target in the
-         stock intake CVTC descriptor block at 0x000C3870.
+         reference. The target-vehicle capture stays above the warm threshold. The cold-start
+         replay in JK08A.cvtc.md validates this surface through the coolant blend, while its
+         stationary cold band follows idle source byte ffff1553 and leaves the direct cold
+         lookup dynamically untested. The output conversion (x-128)*0.5 crank degrees follows
+         the intake edge-phase unit shared with 0000b43a: the cold target enters the same
+         ffff2326 path that FUN 0004d2a6 compares with actual bytes ffff2442/ffff2443. The
+         Cylinder Filling physical name remains a source-derived candidate. Result disposition:
+         consumer. Definition address projected from JK08A 0000b53a through
+         JK08A-JK00D.definition-addresses.csv: cold intake-cam target in the stock intake CVTC
+         descriptor block at 0x000C3870.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Intake CVTC Target - Cold"
            category="Variable Valve Timing//Intake Cam" storagetype="uint8"
