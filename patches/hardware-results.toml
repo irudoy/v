@@ -437,6 +437,7 @@ activation_apc_max = [115, 117, 115, 115, 115, 117]
 activation_apc_target_records = [12, 0, 44, 32, 4, 9]
 activation_apc_outside_bound_records = [0, 0, 0, 0, 0, 0]
 activation_stock_command_range = [[75, 84], [117, 117], [73, 102], [73, 101], [85, 86], [77, 84]]
+activation_stock_command_range_basis = "stock commands of the ACTIVE records while CANCEL is held; activation_apc_max and the retard-bound count cover the whole activation window"
 activation_identity_differences_hold = [98, 0, 52, 35, 83, 48]
 activation_identity_differences_post_release = [0, 0, 5, 8, 2, 6]
 activation_release_full_mask = [false, false, true, true, true, true]
