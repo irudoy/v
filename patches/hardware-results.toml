@@ -267,7 +267,9 @@ image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae
 capture_registry = "can_telemetry.schema2_profile5_captures"
 software_status = "pass"
 bus_status = "pass"
-lamp_status = "untested"
+map_feedback_lamp_status = "pass"
+failed_held_attempt_lamp_status = "untested"
+operator_observation = "each map feedback pulse lights SET together with CRUISE, and the selection indication reads correctly"
 status_mask = 0x70
 stock_byte5 = 0x02
 map_feedback_state = 4
@@ -292,7 +294,7 @@ moving_cancel_hold_seconds = [0.48, 1.26]
 moving_cancel_speed_kmh = [33.2, 72.1]
 moving_cancel_failed_attempt_record_count = 0
 result = "every map selection shows one state-5 run per CANCEL tap while SET is held and, after SET release, as many state-4 pulses as the selected map number, each two frames ON and two frames OFF; each moving CANCEL hold of the mixed Map 3 drive shows one state-4 interval, the full fuel-inhibit mask appears only inside those intervals, and CRUISE MAIN leaves byte 5 at the stock value"
-evidence_boundary = "frame counts come from the TRC captures, while the MLG captures resolve selections and pulses but not individual frames; the lamp response of the meter to states 4 and 5 is not recorded"
+evidence_boundary = "frame counts come from the TRC captures, while the MLG captures resolve selections and pulses but not individual frames; the lamp result rests on operator observation of the map feedback pulses, and the CRUISE-alone lamp of state 5 is not separately observed"
 
 [map_switching.feedback_vehicle_2026_09_21.selected_maps]
 "2-stationary-map-1-3-hold.trc" = [1, 3]

@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
 CAN_DEFS = ROOT / "defs" / "JK08A.can.md"
 ROLLING_LAUNCH = ROOT / "patches" / "rolling-launch.md"
+SELECTOR = ROOT / "patches" / "map-switching-selector.md"
 KEY = "map_switching.feedback_vehicle_2026_09_21"
 # Frame 0x551 leaves the serializer on every tenth 10.24 ms invocation.
 SERIALIZER_CALLS_PER_FRAME = 10
@@ -30,6 +31,7 @@ class MapFeedbackVehicleSessionTest(unittest.TestCase):
         cls.feedback = layout_model.load_layout().feedback
         cls.can_defs = _normalized(CAN_DEFS)
         cls.rolling_launch = _normalized(ROLLING_LAUNCH)
+        cls.selector = _normalized(SELECTOR)
 
     def test_observation_uses_the_registered_session_captures(self):
         result = self.result
@@ -134,18 +136,44 @@ class MapFeedbackVehicleSessionTest(unittest.TestCase):
             self.rolling_launch,
         )
 
-    def test_lamp_boundary_follows_the_registered_status(self):
-        untested = self.result["lamp_status"] == "untested"
-        self.assertEqual(
-            "The captures do not record the lamp response to states 4 and 5"
-            in self.can_defs,
-            untested,
+    def test_lamp_statements_follow_the_registered_status(self):
+        result = self.result
+        both_lamps = result["map_feedback_lamp_status"] == "pass"
+        cruise_alone_open = (
+            result["failed_held_attempt_lamp_status"] == "untested"
         )
-        self.assertEqual(
-            "The lamp result of states 4 and 5 on the exact target is a "
-            "hardware acceptance item" in self.rolling_launch,
-            untested,
+        statements = (
+            (
+                self.can_defs,
+                "each state-4 map feedback pulse lights SET together with CRUISE",
+                both_lamps,
+            ),
+            (
+                self.rolling_launch,
+                "state 4 lights SET together with CRUISE on the exact target",
+                both_lamps,
+            ),
+            (
+                self.selector,
+                "map feedback pulses shows SET lighting together with CRUISE",
+                both_lamps,
+            ),
+            (
+                self.can_defs,
+                "the lamp response to state 5 is not separately observed",
+                cruise_alone_open,
+            ),
+            (
+                self.rolling_launch,
+                "The CRUISE-alone result of state 5 remains a hardware "
+                "acceptance item",
+                cruise_alone_open,
+            ),
         )
+        for text, statement, registered in statements:
+            with self.subTest(statement=statement):
+                self.assertEqual(statement in text, registered)
+        self.assertIn(f"`{KEY}`", self.selector)
 
 
 if __name__ == "__main__":

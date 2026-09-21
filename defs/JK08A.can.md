@@ -326,8 +326,10 @@ runtime contain 19 map selections: each CANCEL tap while SET is held appears as
 a one- or two-frame `0x52` run, and SET release is followed by as many `0x42`
 pulses as the selected map number, each two frames ON and two frames OFF. Each
 of the six moving CANCEL holds of the mixed Map 3 drive appears as one `0x42`
-interval, and switching CRUISE MAIN leaves byte 5 at `0x02`. The captures do
-not record the lamp response to states 4 and 5.
+interval, and switching CRUISE MAIN leaves byte 5 at `0x02`. Operator
+observation in the same session establishes that each state-4 map feedback
+pulse lights SET together with CRUISE; the lamp response to state 5 is not
+separately observed.
 [`../patches/hardware-results.toml`](../patches/hardware-results.toml) holds
 the observation under `map_switching.feedback_vehicle_2026_09_21`.
 
