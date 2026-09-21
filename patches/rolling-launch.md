@@ -238,17 +238,63 @@ clear follows the removal of the temporary window rather than the hysteresis.
 The release-to-clear distance lies within 30.7 to 51.2 ms for hold 5 and
 51.2 to 71.7 ms for hold 6, inside the `6.9..81.1 ms` range of the firmware
 `1.11` trace, and within 61.4 to 81.9 ms for hold 3 and 71.7 to 92.2 ms for
-hold 4, which the snapshot spacing does not place on either side of 81.1 ms. A
-TRC of moving CANCEL holds on the recorded image resolves that comparison.
+hold 4, which the snapshot spacing does not place on either side of 81.1 ms.
+The Map 2 trace of the same image below times one such release with frame
+times.
 
 Each later hold starts at least 5.1 s after the preceding release, beyond the
 1.024 s rearm period, and activates; the refusal inside that period is not
 exercised. The longest hold lasts 1.27 s, and the 3.072 s run timeout is not
-exercised. No capture of the recorded image selects Map 2, so the moving Map 2
-activations of the firmware `1.11` capture have no counterpart on this image
-until at least two moving CANCEL holds run on Map 2. The figures are software
-quantities; spark angle at the crankshaft and electrical injector output
-remain outside the measurement.
+exercised. The figures are software quantities; spark angle at the crankshaft
+and electrical injector output remain outside the measurement.
+
+The Map 2 run of the 2026-09-22 road session is a TRC of the same image.
+`hardware-results.toml` records it under
+`rolling_launch.map_2_vehicle_2026_09_22`, and the audit tool derives its
+figures from the trace and from the configuration record of the recorded
+image. The trace holds 17,320 consecutive verified telemetry snapshots over
+177.347 s, and its frame times place each `0x239` and `0x551` frame. SET
+gestures commit Maps 5, 2, 1, and 2, frame `0x551` answers them with 5, 2, 1,
+and 2 state-4 pulses, and no SET hold follows the last commit. A 3.196 s
+CANCEL hold on Map 1, which has Rolling Launch disabled, shows 31 frames of
+state 5 and no state 4. The exhaust CVTC replay excludes Map 3: its surface
+holds the neutral target, 1,887 recorded targets lie above it, and Maps 1, 2,
+4, and 5 share one surface.
+
+Six CANCEL holds on Map 2 enter `ACTIVE` state 4, three while moving at 44.5
+to 56.8 km/h and three at standstill. The replay of the configuration record
+bounds the captured words of the moving holds at 3300, 3575, and 3275 to
+3287.5 RPM, inside the 3112.5 to 3637.5 RPM activation range of the firmware
+`1.11` capture, and the moving holds cycle the full `0x3F` mask 9, 10, and 10
+times while CANCEL is held. The standstill holds capture 2625 to 2662.5 RPM,
+and engine speed stays below their retard band, which starts at 2725 to
+2762.5 RPM, so neither the fuel cut nor the retard acts in them. All 357
+full-mask snapshots lie inside the activation windows, and no snapshot carries
+a partial mask. The APC command stays inside the retard-only bound in every
+snapshot of the activation windows and reaches the target 115 in 97, 105, and
+64 snapshots of the moving holds. The identity
+`final_timing = 110 - APC command` holds in 16,715 of the 17,320 snapshots,
+and all 605 differences fall inside the activation windows.
+
+The second moving hold lasts 3.504 s; its retard ends 299 to 306 ticks after
+the capture pass and before the release, and its `ACTIVE` indication lasts 30
+frames. The standstill holds of 5.163 and 3.894 s each show 30 `ACTIVE`
+frames followed by 19 and 7 frames of state 0 while CANCEL remains held. These
+runs end by the 300-tick run timeout; the session does not read the abort
+reason of DID `0x1211`. Three presses that start 368.1, 287.0, and 327.7 ms
+after the preceding release show neither state 4 nor state 5: `COOLDOWN`
+restarts its rearm count while a button is pressed. Each hold that starts at
+least 6.9 s after the preceding release activates.
+
+Only the third moving hold carries a full mask at the release. The mask clears
+86.5 to 92.7 ms after the first released `0x239` frame, above the
+`6.9..81.1 ms` range of the firmware `1.11` trace. The replay places the end
+of `ACTIVE` 10.2 to 61.4 ms after the released frame in the first moving hold
+and 61.4 to 184.3 ms after it in the third. The runtime reads the stock
+debounced button code `0xFFFF2A85`, while frame `0x239` carries the
+steering-switch code `0xFFFF36D8`; the delay between the two codes is not
+established. The figures are software quantities; spark angle at the
+crankshaft and electrical injector output remain outside the measurement.
 
 ## Modes
 

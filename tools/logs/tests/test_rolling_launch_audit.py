@@ -339,6 +339,7 @@ class RollingLaunchAuditTest(unittest.TestCase):
         self.assertEqual(result["failed_attempt_record_count"], 10)
         self.assertEqual(result["activation_count"], 3)
         self.assertEqual(result["refused_hold_count"], 1)
+        self.assertEqual(result["gesture_tap_count"], 0)
         self.assertEqual(result["full_mask_record_count"], 24)
         self.assertEqual(result["full_mask_outside_record_count"], 2)
         self.assertEqual(result["partial_mask_record_count"], 1)
@@ -390,6 +391,11 @@ class RollingLaunchAuditTest(unittest.TestCase):
             result["activation_restore_rpm"],
             [[2650.0, 2650.0], [2400.0, 2425.0], [3137.5, 3137.5]],
         )
+        # Every lead record whose RPM hull reaches the captured word can carry
+        # the capture pass.
+        self.assertEqual(
+            result["activation_capture_records"], [[-3, 5], [-3, 4], [-1, 3]]
+        )
         self.assertEqual(result["activation_mask_constraint_count"], [40, 26, 19])
         self.assertEqual(result["activation_full_mask_cycles"], [3, 0, 2])
         self.assertEqual(
@@ -410,6 +416,10 @@ class RollingLaunchAuditTest(unittest.TestCase):
         self.assertEqual(
             result["activation_identity_differences_post_release"], [2, 0, 5]
         )
+        # No record after a retarded one reaches the cut with a stock command.
+        self.assertEqual(result["activation_exit_records"], [[], [], []])
+        self.assertEqual(result["activation_active_ticks_bound"], [[], [], []])
+        self.assertEqual(result["activation_release_exit_bound_ms"], [[], [], []])
         self.assertEqual(result["activation_release_full_mask"], [True, False, True])
         self.assertEqual(result["activation_release_clear_records"], [2, 0, 5])
         self.assertEqual(
@@ -424,6 +434,84 @@ class RollingLaunchAuditTest(unittest.TestCase):
             [True, False, False],
         )
         self.assertEqual(result["activation_rearm_spacing_seconds"], [1.198, 1.741])
+
+    def test_a_stock_command_at_the_cut_bounds_the_end_of_active(self):
+        rows = scenario()
+        # The first runtime ends after record 84; from record 85 the RPM stays
+        # at the 216 cut word with the stock command and a clear mask.
+        put(rows, 85, 90, "rpm_raw", 216)
+        result = audit.audit_capture(
+            capture_from(rows), self.calibration, selected_map=SELECTED_MAP
+        )
+        # Record 87 is the first whose word and the two before it reach the cut.
+        self.assertEqual(result["activation_exit_records"][0], [44, 47])
+        self.assertEqual(result["activation_active_ticks_bound"][0], [39, 50])
+        self.assertEqual(result["activation_release_exit_bound_ms"][0], [0.0, 51.2])
+        # A word below the cut inside the lag window leaves the end unbounded.
+        rows[86]["rpm_raw"] = 215
+        put(rows, 87, 90, "rpm_raw", 215)
+        result = audit.audit_capture(
+            capture_from(rows), self.calibration, selected_map=SELECTED_MAP
+        )
+        self.assertEqual(result["activation_exit_records"][0], [])
+        self.assertEqual(result["activation_active_ticks_bound"][0], [])
+        # A full mask at the cut does not exclude ACTIVE, so the witness moves
+        # to the first clear record.
+        rows = scenario()
+        put(rows, 85, 90, "rpm_raw", 216)
+        rows[88]["fuel_inhibit_mask"] = FULL
+        rows[87]["fuel_inhibit_mask"] = FULL
+        result = audit.audit_capture(
+            capture_from(rows), self.calibration, selected_map=SELECTED_MAP
+        )
+        self.assertEqual(result["activation_exit_records"][0], [44, 49])
+
+    def test_trace_splits_cancel_frames_into_holds_and_taps(self):
+        result = audit.audit_capture(
+            audit.read_trc(self.trace), self.calibration, selected_map=SELECTED_MAP
+        )
+        self.assertEqual(result["trace_cancel_frame_count"], 99)
+        self.assertEqual(result["trace_active_frame_count"], 110)
+        self.assertEqual(result["trace_failed_frame_count"], 10)
+        self.assertEqual(result["trace_gesture_tap_count"], 0)
+        self.assertEqual(result["trace_hold_count"], 4)
+        self.assertEqual(
+            result["trace_hold_start_seconds"], [1.41, 3.048, 3.662, 5.096]
+        )
+        self.assertEqual(result["trace_hold_seconds"], [0.44, 0.307, 0.061, 0.205])
+        self.assertEqual(result["trace_hold_active_frames"], [45, 36, 0, 29])
+        self.assertEqual(result["trace_hold_failed_frames"], [0, 0, 10, 0])
+        self.assertEqual(
+            result["trace_hold_since_previous_release_ms"], [1198.1, 307.2, 1372.2]
+        )
+        # The dashboard frame follows the button frame of a record by 0.1 ms.
+        self.assertEqual(result["trace_activation_active_delay_ms"], [51.3, 41.1, 30.8])
+        self.assertEqual(result["trace_activation_inactive_frames_held"], [0, 0, 0])
+        # Pages 0 to 10 of the clear group follow the release frame by two and
+        # five records plus 0.3 to 1.3 ms.
+        self.assertEqual(
+            result["trace_activation_release_clear_ms"],
+            [[20.8, 21.8], [], [51.5, 52.5]],
+        )
+
+    def test_trace_counts_taps_and_an_indication_that_ends_while_held(self):
+        rows = scenario()
+        # A map-selection tap: CANCEL between two SET frames.
+        rows[342]["ascd_button_raw"] = CANCEL
+        # The coasting hold loses its indication ten records before release.
+        put(rows, 220, 240, "dashboard_state_raw", IDLE_DASHBOARD)
+        trace = Path(self.directory.name) / "variant.trc"
+        write_trace(trace, rows)
+        result = audit.audit_capture(
+            audit.read_trc(trace), self.calibration, selected_map=SELECTED_MAP
+        )
+        self.assertEqual(result["gesture_tap_count"], 1)
+        self.assertEqual(result["refused_hold_count"], 2)
+        self.assertEqual(result["set_hold_count"], 2)
+        self.assertEqual(result["trace_gesture_tap_count"], 1)
+        self.assertEqual(result["trace_hold_count"], 4)
+        self.assertEqual(result["trace_hold_active_frames"], [45, 16, 0, 29])
+        self.assertEqual(result["trace_activation_inactive_frames_held"], [0, 10, 0])
 
     def test_trace_replay_yields_the_recorded_snapshots(self):
         trace = audit.read_trc(self.trace)
@@ -465,6 +553,9 @@ class RollingLaunchAuditTest(unittest.TestCase):
         )
         self.assertIn("timeout_exercised = false", lines)
         self.assertIn('capture_name = "capture.mlg"', lines)
+        self.assertIn("gesture_tap_count = 0", lines)
+        # Frame times exist only in a TRC.
+        self.assertFalse([line for line in lines if line.startswith("trace_")])
 
     def test_command_line_rejects_a_map_without_rolling_launch(self):
         errors = io.StringIO()

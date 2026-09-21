@@ -439,11 +439,21 @@ class RollingLaunchMap3VehicleTest(unittest.TestCase):
             else "functional_pass_with_physical_output_boundaries",
         )
 
-        selected = {
-            index for maps in self.feedback["selected_maps"].values() for index in maps
-        }
         self.assertIn(2, result["enabled_maps"])
-        self.assertEqual(result["map_2_status"] == "untested", 2 not in selected)
+        if result["map_2_status"] == "recorded":
+            map_2 = _entry(self.registry, result["map_2_record"])
+            self.assertEqual(map_2["selected_map"], 2)
+            self.assertEqual(map_2["image_sha256"], result["image_sha256"])
+            self.assertEqual(map_2["reference"], result["reference"])
+            self.assertEqual(map_2["configuration_hex"], result["configuration_hex"])
+        else:
+            self.assertEqual(result["map_2_status"], "untested")
+            selected = {
+                index
+                for maps in self.feedback["selected_maps"].values()
+                for index in maps
+            }
+            self.assertNotIn(2, selected)
 
     def test_published_figures_match_the_registry(self):
         result = self.result

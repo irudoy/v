@@ -376,6 +376,15 @@ python3 tools/logs/rolling_launch_audit.py \
   tmp/logs-09-21/0-mixed-map-3.mlg
 ```
 
+A TRC input adds the `trace_` figures:
+
+```bash
+python3 tools/logs/rolling_launch_audit.py \
+  --calibration-image tmp/1JK08A-tune-v3-1.bin \
+  --map 2 \
+  tmp/logs-09-22/11-map-2-rl.trc
+```
+
 - An activation is a CANCEL hold in frame `0x239` during which frame `0x551`
   starts the `ACTIVE` state 4. A hold without that state counts as refused,
   and state-5 records count as failed attempts. The activation window runs
@@ -403,14 +412,38 @@ python3 tools/logs/rolling_launch_audit.py \
 - The release-to-clear distance is bounded by one snapshot on each side. A
   clear record whose RPM word cannot fall below any consistent restore word is
   attributed to the removal of the window rather than to the hysteresis.
+- `activation_capture_records` bounds the capture pass by the records,
+  counted in ticks from the first CANCEL record, whose compared RPM word can
+  equal a consistent captured word; the pass precedes the first `ACTIVE`
+  record.
+- A record whose stock APC command stays below the target with a clear mask,
+  while its RPM word and the words of the two records before it reach every
+  consistent cut word, excludes `ACTIVE`. `activation_exit_records` gives the
+  last retarded record and that record, `activation_active_ticks_bound`
+  bounds the ticks from the capture pass to the end of `ACTIVE`, and
+  `activation_release_exit_bound_ms` bounds the end of `ACTIVE` after the
+  release when the last retarded record follows the release.
+- A refused hold next to a SET record counts as a map-selection tap in
+  `gesture_tap_count`.
 - The exhaust CVTC target is replayed at the prior snapshot with every map
   slot surface, which tests the declared map wherever the slot surfaces
   differ.
+- A TRC adds frame times from the trace start. The `trace_` figures split the
+  CANCEL frame runs of `0x239` into holds between released frames and taps
+  next to a SET frame, and count in each hold the frames of the first state-4
+  and the first state-5 run of `0x551` that start after its first CANCEL frame
+  and before the next pressed frame. For each activation they give the delay
+  from the first CANCEL frame to the first `ACTIVE` frame, the dashboard
+  frames between the end of the `ACTIVE` run and the release, and the
+  release-to-clear distance from the first released `0x239` frame to the
+  first and the completing frame of the telemetry group that clears the full
+  mask.
 
-The output is one `key = value` line per figure in TOML syntax. Times are
-counted in telemetry ticks for MLG and TRC inputs alike, so every event time is
-bounded by the 10.24 ms snapshot spacing and the dashboard state by the
-102.4 ms period of frame `0x551`. Every figure is a raw software quantity; the
+The output is one `key = value` line per figure in TOML syntax. Figures without
+the `trace_` prefix count telemetry ticks for MLG and TRC inputs alike, so
+their event times are bounded by the 10.24 ms snapshot spacing and the
+dashboard state by the 102.4 ms period of frame `0x551`; the `trace_` figures
+use the frame times of the TRC. Every figure is a raw software quantity; the
 capture does not measure spark angle or injector output.
 
 ## JK08A engine-torque scale audit

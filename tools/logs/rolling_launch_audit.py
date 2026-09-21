@@ -11,7 +11,16 @@ audit also reports the full-mask cycles, the retard-only bound of the APC
 command, the `110 - final timing = APC command` identity inside and outside
 the activations, the release-to-clear distance, the rearm spacing, and the
 timeout margin. Distances are counted in telemetry ticks, so every event time
-is bounded by the snapshot spacing rather than resolved inside it.
+is bounded by the snapshot spacing rather than resolved inside it. The records
+whose compared RPM word can carry the captured word bound the activation pass,
+and a stock APC command with a clear mask at RPM words that reach every
+consistent cut word bounds the end of `ACTIVE`.
+
+A TRC adds frame times. The `trace_` figures split the 0x239 CANCEL frames
+into holds and map-selection taps, count the dashboard states of frame 0x551
+in each hold, and measure the release-to-clear distance from the first
+released 0x239 frame to the first and the completing frame of the telemetry
+group that clears the full mask.
 """
 
 from __future__ import annotations
@@ -31,7 +40,12 @@ from patches import map_switching_layout
 from patches import rolling_launch
 from patches import rolling_launch_layout
 from tools.can_dashboard import recording
-from tools.can_dashboard.model import DashboardModel, FrameRecord
+from tools.can_dashboard.model import (
+    ASCD_BUTTON_ID,
+    DASHBOARD_STATE_ID,
+    DashboardModel,
+    FrameRecord,
+)
 from tools.logs import cvtc_target_audit
 from tools.logs import mlg_relation_audit
 from tools.logs import mlg_retime
@@ -45,10 +59,14 @@ APP1_VOLTS_PER_COUNT = recording.MLG_CALIBRATIONS["app1_raw"].factor
 ACTIVE_STATE = rolling_launch.ASCD_FEEDBACK_CRUISE_SET >> 4
 FAILED_STATE = rolling_launch.ASCD_FEEDBACK_CRUISE >> 4
 EXHAUST_FAMILY = "exhaust_cvtc_target"
-# The capture pass follows the debounced CANCEL, which follows the first
-# CANCEL frame by at most one 0x239 period; three snapshots before the first
-# CANCEL record cover that period and the prior-pass copy of the RPM word.
+# The capture pass follows the debounced CANCEL, which never precedes the
+# first CANCEL frame; three snapshots before the first CANCEL record cover the
+# arrival of that frame inside the snapshot interval and the prior-pass copy
+# of the RPM word.
 CAPTURE_LEAD_RECORDS = 3
+# The APC command of a record can follow the compared RPM word of the pass
+# before the preceding record.
+EXIT_LAG_RECORDS = 2
 TELEMETRY_SOURCES = (
     "rpm_raw",
     "fuel_inhibit_mask",
@@ -95,10 +113,25 @@ class Sample:
 
 
 @dataclass(frozen=True)
+class TraceTiming:
+    """Frame times of a TRC in milliseconds from the trace start.
+
+    The page times align with the verified snapshots; the context frames hold
+    byte 3 of every 0x239 frame and byte 5 of every 0x551 frame.
+    """
+
+    first_page_ms: tuple[float, ...]
+    last_page_ms: tuple[float, ...]
+    button_frames: tuple[tuple[float, int], ...]
+    dashboard_frames: tuple[tuple[float, int], ...]
+
+
+@dataclass(frozen=True)
 class Capture:
     path: Path
     sha256: str
     samples: tuple[Sample, ...]
+    timing: TraceTiming | None = None
 
 
 def load_calibration(
@@ -206,9 +239,19 @@ def read_trc(
     trace = peak_trc_audit.load_trace(path)
     model = DashboardModel(profile, can_id, tick_divisor)
     samples = []
+    first_pages = []
+    last_pages = []
+    buttons = []
+    dashboard = []
+    group_start = None
     run = None
     for frame in trace.frames:
         timestamp = frame.offset_ms / 1000.0
+        standard = not frame.extended and not frame.remote
+        if standard and frame.can_id == can_id and len(frame.data) == 8:
+            # The low nibble of byte 0 is the page index of a group.
+            if not frame.data[0] & 0x0F:
+                group_start = frame.offset_ms
         snapshot = model.process_frame(
             FrameRecord(
                 arbitration_id=frame.can_id,
@@ -220,6 +263,12 @@ def read_trc(
             ),
             now=timestamp,
         )
+        if standard and frame.can_id == ASCD_BUTTON_ID and len(frame.data) >= 4:
+            buttons.append((frame.offset_ms, model.ascd_button_raw))
+        elif (
+            standard and frame.can_id == DASHBOARD_STATE_ID and len(frame.data) >= 6
+        ):
+            dashboard.append((frame.offset_ms, model.dashboard_state_raw))
         if snapshot is None or not model.schema_verified:
             continue
         if any(name not in model.raw for name in TELEMETRY_SOURCES):
@@ -235,7 +284,12 @@ def read_trc(
             return getattr(model, name, None)
 
         samples.append(_sample(snapshot.unwrapped_tick, value))
-    return Capture(path, digest, tuple(samples))
+        first_pages.append(group_start)
+        last_pages.append(frame.offset_ms)
+    timing = TraceTiming(
+        tuple(first_pages), tuple(last_pages), tuple(buttons), tuple(dashboard)
+    )
+    return Capture(path, digest, tuple(samples), timing)
 
 
 def read_capture(path: Path, **options) -> Capture:
@@ -259,10 +313,10 @@ def runs(flags: list[bool]) -> list[tuple[int, int]]:
     return result
 
 
-def thresholds(
+def _active_state(
     configuration: rolling_launch.Calibration, slot: int, captured: int
-) -> tuple[int, int] | None:
-    """Return the model cut and restore words for one captured RPM word."""
+) -> rolling_launch.RuntimeState | None:
+    """Return the model state that captures one RPM word, if it activates."""
     inputs = rolling_launch.Inputs(
         active_index=slot,
         button=rolling_launch.BUTTON_CANCEL,
@@ -275,6 +329,16 @@ def thresholds(
         rolling_launch.RuntimeState(), inputs, configuration
     ).state
     if state.phase != rolling_launch.Phase.ACTIVE:
+        return None
+    return state
+
+
+def thresholds(
+    configuration: rolling_launch.Calibration, slot: int, captured: int
+) -> tuple[int, int] | None:
+    """Return the model cut and restore words for one captured RPM word."""
+    state = _active_state(configuration, slot, captured)
+    if state is None:
         return None
     return state.cut_rpm_native, state.restore_rpm_native
 
@@ -352,6 +416,56 @@ def _identity_differs(sample: Sample) -> bool:
     return _stock_command(sample) != sample.apc_command_raw
 
 
+def _capture_records(samples, start, lead, active_start, words) -> list[int]:
+    """Bound the capture pass by the records that can carry a captured word.
+
+    The offsets count ticks from the first CANCEL record. The pass lies
+    between the preceding snapshot and a record whose compared RPM word can
+    equal a consistent captured word, and it precedes the ACTIVE indication.
+    """
+    offsets = []
+    for index in range(max(lead, 1), active_start + 1):
+        hull = _rpm_hull(samples, index)
+        if hull is not None and any(hull[0] <= word <= hull[1] for word in words):
+            offsets.append(samples[index].tick - samples[start].tick)
+    return [min(offsets), max(offsets)] if offsets else []
+
+
+def _exit_records(
+    samples, configuration, slot, cuts, active_start, window_end
+) -> tuple[int, int] | None:
+    """Return the last retarded record and the first record that excludes ACTIVE.
+
+    At or above the cut word the ACTIVE controller commands the target and the
+    temporary window cuts fuel. A record whose stock command stays below the
+    target with a clear mask, while its RPM word and the two before it reach
+    every consistent cut word, excludes ACTIVE even when the command follows
+    an earlier compared word.
+    """
+    target = configuration.target_commands[slot]
+    last_retarded = None
+    for index in range(active_start, min(window_end + 1, len(samples))):
+        sample = samples[index]
+        stock = _stock_command(sample)
+        if sample.apc_command_raw != stock:
+            last_retarded = index
+            continue
+        if (
+            last_retarded is not None
+            and cuts
+            and index >= EXIT_LAG_RECORDS
+            and stock < target
+            and sample.fuel_inhibit_mask == 0
+            and all(
+                samples[index - lag].tick == sample.tick - lag
+                and samples[index - lag].rpm_raw >= max(cuts)
+                for lag in range(EXIT_LAG_RECORDS + 1)
+            )
+        ):
+            return last_retarded, index
+    return None
+
+
 def within_retard_bound(stock: int, command: int, target: int) -> bool:
     """Return whether a command is retard-only and bounded by the target.
 
@@ -401,6 +515,114 @@ def exhaust_surface_matches(
 
 def _rounded(value: float, digits: int = 3) -> float:
     return round(value + 0.0, digits)
+
+
+def _state_runs(frames, state: int) -> list[tuple[float, float, int]]:
+    """Return the first time, last time, and frame count of each state run."""
+    field = rolling_launch.ASCD_FEEDBACK_MASK
+    flags = [
+        value is not None and value & field == (state << 4) & field
+        for _, value in frames
+    ]
+    return [
+        (frames[first][0], frames[stop - 1][0], stop - first)
+        for first, stop in runs(flags)
+    ]
+
+
+def trace_figures(
+    timing: TraceTiming,
+    activations,
+    clears: list[int | None],
+    *,
+    active_state: int = ACTIVE_STATE,
+    failed_state: int = FAILED_STATE,
+) -> dict:
+    """Split the CANCEL frames into holds and taps and time the activations.
+
+    A hold is a CANCEL frame run between released frames, and a tap is a
+    CANCEL frame run next to a SET frame. The dashboard run of a hold is the
+    first run of a state that starts after the first CANCEL frame and before
+    the next pressed frame after the release. A clear record carries the first
+    clear mask after a full mask at or after the release.
+    """
+    buttons = timing.button_frames
+    released = rolling_launch.BUTTON_RELEASED
+    holds = []
+    taps = 0
+    for first, stop in runs(
+        [code == rolling_launch.BUTTON_CANCEL for _, code in buttons]
+    ):
+        neighbours = (
+            buttons[first - 1][1] if first else None,
+            buttons[stop][1] if stop < len(buttons) else None,
+        )
+        if rolling_launch.BUTTON_SET in neighbours:
+            taps += 1
+        elif neighbours == (released, released):
+            pressed = next(
+                (time for time, code in buttons[stop:] if code != released),
+                math.inf,
+            )
+            holds.append((buttons[first][0], buttons[stop][0], pressed))
+    active_runs = _state_runs(timing.dashboard_frames, active_state)
+    failed_runs = _state_runs(timing.dashboard_frames, failed_state)
+
+    def hold_run(state_runs, hold):
+        begin, _, pressed = hold
+        return next((run for run in state_runs if begin < run[0] < pressed), None)
+
+    delays = []
+    inactive_held = []
+    release_clear = []
+    for (start, *_), clear in zip(activations, clears):
+        moment = timing.last_page_ms[start]
+        hold = next((hold for hold in holds if hold[0] <= moment < hold[1]), None)
+        run = hold_run(active_runs, hold) if hold is not None else None
+        if run is None:
+            raise ValueError(
+                f"no ACTIVE frame run follows the CANCEL frames before "
+                f"{moment / 1000:.3f} s"
+            )
+        begin, end, _ = hold
+        delays.append(_rounded(run[0] - begin, 1))
+        inactive_held.append(
+            sum(1 for time, _ in timing.dashboard_frames if run[1] < time < end)
+        )
+        release_clear.append(
+            [
+                _rounded(timing.first_page_ms[clear] - end, 1),
+                _rounded(timing.last_page_ms[clear] - end, 1),
+            ]
+            if clear is not None and clear < len(timing.last_page_ms)
+            else []
+        )
+    return {
+        "trace_cancel_frame_count": sum(
+            1 for _, code in buttons if code == rolling_launch.BUTTON_CANCEL
+        ),
+        "trace_active_frame_count": sum(run[2] for run in active_runs),
+        "trace_failed_frame_count": sum(run[2] for run in failed_runs),
+        "trace_gesture_tap_count": taps,
+        "trace_hold_count": len(holds),
+        "trace_hold_start_seconds": [_rounded(hold[0] / 1000) for hold in holds],
+        "trace_hold_seconds": [_rounded((hold[1] - hold[0]) / 1000) for hold in holds],
+        "trace_hold_active_frames": [
+            run[2] if run is not None else 0
+            for run in (hold_run(active_runs, hold) for hold in holds)
+        ],
+        "trace_hold_failed_frames": [
+            run[2] if run is not None else 0
+            for run in (hold_run(failed_runs, hold) for hold in holds)
+        ],
+        "trace_hold_since_previous_release_ms": [
+            _rounded(holds[index][0] - holds[index - 1][1], 1)
+            for index in range(1, len(holds))
+        ],
+        "trace_activation_active_delay_ms": delays,
+        "trace_activation_inactive_frames_held": inactive_held,
+        "trace_activation_release_clear_ms": release_clear,
+    }
 
 
 def audit_capture(
@@ -469,6 +691,7 @@ def audit_capture(
 
     inside = [False] * len(samples)
     rows = []
+    clears = []
     previous_release = None
     for start, release, active_start, active_end, window_end in activations:
         for index in range(start, window_end):
@@ -518,7 +741,48 @@ def audit_capture(
             and clear_hull is not None
             and clear_hull[0] >= max(c[2] for c in candidates)
         )
+        clears.append(clear if full_at_release else None)
         stock = [_stock_command(s) for s in samples[active_start:release]]
+        words = [c[0] for c in candidates]
+        capture_records = _capture_records(
+            samples, start, lead, active_start, words
+        )
+        exit_pair = _exit_records(
+            samples,
+            configuration,
+            slot,
+            [c[1] for c in candidates],
+            active_start,
+            window_end,
+        )
+        exit_records = (
+            [samples[index].tick - samples[start].tick for index in exit_pair]
+            if exit_pair is not None
+            else []
+        )
+        # The capture pass follows the snapshot before a capture record. The
+        # command of the last retarded record can come from the pass before
+        # that record, and the exit pass precedes the witness record.
+        active_ticks = (
+            [
+                exit_records[0] - capture_records[1],
+                exit_records[1] - capture_records[0],
+            ]
+            if capture_records and exit_records
+            else []
+        )
+        # The release frame arrives after the snapshot before the release
+        # record, and the exit follows the release only when the last retarded
+        # record does.
+        release_offset = samples[release].tick - samples[start].tick
+        release_exit = (
+            [
+                _rounded((exit_records[0] - 1 - release_offset) * period * 1000, 1),
+                _rounded((exit_records[1] - release_offset + 1) * period * 1000, 1),
+            ]
+            if exit_records and exit_records[0] - 1 >= release_offset
+            else []
+        )
         rows.append(
             {
                 "start_seconds": _rounded(seconds(start)),
@@ -564,6 +828,7 @@ def audit_capture(
                     if candidates
                     else []
                 ),
+                "capture_records": capture_records,
                 "mask_constraint_count": len(constraints),
                 "full_mask_cycles": sum(1 for first, _ in mask_runs if first < release),
                 "post_release_full_mask_cycles": sum(
@@ -592,6 +857,9 @@ def audit_capture(
                 "identity_differences_post_release": sum(
                     1 for s in samples[release:window_end] if _identity_differs(s)
                 ),
+                "exit_records": exit_records,
+                "active_ticks_bound": active_ticks,
+                "release_exit_bound_ms": release_exit,
                 "release_full_mask": full_at_release,
                 "release_clear_records": samples[clear].tick - samples[release].tick,
                 "release_clear_bound_ms": (
@@ -651,6 +919,15 @@ def audit_capture(
         "failed_attempt_record_count": sum(failed),
         "activation_count": len(rows),
         "refused_hold_count": len(refused),
+        "gesture_tap_count": sum(
+            1
+            for start, release in refused
+            if (start and samples[start - 1].button == rolling_launch.BUTTON_SET)
+            or (
+                release < len(samples)
+                and samples[release].button == rolling_launch.BUTTON_SET
+            )
+        ),
         "full_mask_record_count": sum(full),
         "full_mask_outside_record_count": sum(
             1 for flag, within in zip(full, inside) if flag and not within
@@ -677,6 +954,16 @@ def audit_capture(
         if key == "rearm_spacing_seconds":
             values = values[1:]
         result[f"activation_{key}"] = values
+    if capture.timing is not None:
+        result.update(
+            trace_figures(
+                capture.timing,
+                activations,
+                clears,
+                active_state=active_state,
+                failed_state=failed_state,
+            )
+        )
     return result
 
 

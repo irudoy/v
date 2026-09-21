@@ -363,6 +363,19 @@ separately observed.
 [`../patches/hardware-results.toml`](../patches/hardware-results.toml) holds
 the observation under `map_switching.feedback_vehicle_2026_09_21`.
 
+The 2026-09-22 Map 2 Rolling Launch TRC carries 1,733 frames of `0x551`, in
+which byte 5 holds `0x02` 1,494 times, `0x42` 183 times, and `0x52` 56 times.
+Four SET gestures select Maps 5, 2, 1, and 2. Each of the 10 CANCEL taps
+appears as a two- or three-frame `0x52` run, and each commit is followed by
+as many `0x42` pulses as the selected map number, two frames ON and two frames
+OFF. The first ON frame follows SET release by 73.6 to 113.6 ms, and the pulse
+starts of one selection lie 407.9 to 409.9 ms apart on average. A 3.196 s
+CANCEL hold on Map 1, where Rolling Launch is disabled, shows 31 frames of
+`0x52` and no `0x42`, and presses inside the Rolling Launch rearm period keep
+byte 5 at `0x02`.
+[`../patches/hardware-results.toml`](../patches/hardware-results.toml) holds
+the observation under `map_switching.feedback_vehicle_2026_09_22`.
+
 Target-vehicle selector observations establish the following `0x421` byte-0
 mapping:
 
