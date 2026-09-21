@@ -445,7 +445,7 @@ def _values(text, path, line_number):
 
 
 def parse_source_text(source, path, start, end):
-    """Parse the deliberately small source subset accepted by AssembleSh2."""
+    """Parse the deliberately small SH-2E source subset this module accepts."""
     path = Path(path)
     labels = {}
     statements = []

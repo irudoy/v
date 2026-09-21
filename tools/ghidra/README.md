@@ -94,9 +94,9 @@ preflight before graph writes; see `../memgraph/README.md`.
 |---|---|---|
 | Structure | `ExportGraph`, `ExportXrefs`, `ExportFunctionSignatures`, `ExportFunctionTokens`, `RecoverFuncs`, `AnalyzeFuncs`, `RenameFuncs` | Maintain and export function, call, reference, and cross-ROM signature structure |
 | Map discovery | `FindInterpCore`, `MapInventory`, `DirectLookupInventory`, `ResolveAccessors`, `ScanFlags` | Discover interpolation families, operands, accessors, axes, and local selectors |
-| Diagnostics | `ExportDiagnosticRefs`, `ScanImmoAnchors`, `TraceRamAccesses`, `InventoryGbrAccesses`, `InventoryPointerArgs` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
+| Diagnostics | `ExportDiagnosticRefs`, `TraceRamAccesses`, `InventoryGbrAccesses`, `InventoryPointerArgs` | Produce semantic-free review inputs for diagnostic and RAM binding analysis |
 | Inspection | `InspectAddress`, `DumpListing`, `DumpFuncListing`, `DecompileFuncs`, `FindTableRefs`, `FindPoolWords` | Inspect ownership, references, functions, listings, pools, and decompilation |
-| Patch construction | `AuditFreeRegion`, `AssembleSh2` | Prove erased envelopes and assemble bounded Ghidra payload fixtures |
+| Patch construction | `AuditFreeRegion` | Prove erased envelopes for bounded payload placement |
 | P-code execution | `EmulateThrottleLimiter`, `EmulateMapSwitching*` | Execute stock limiter behavior and reconstruct current map-switching behavior in Ghidra |
 
 Each script documents its positional arguments in its source header. Generated
