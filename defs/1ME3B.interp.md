@@ -2,9 +2,9 @@
 
 ## Scope
 
-This specification records the calibration access library of exact ROM
-`f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3` and the
-census taken from it. `1ME3B.interp.csv` is the registry the census populates,
+This specification records the calibration access library of the exact 1ME3B
+stock image registered in `../rom-images/roms.csv` and the census taken from
+it. `1ME3B.interp.csv` is the registry the census populates,
 and `../rom-images/23710-1ME3B/README.md` owns the read record and the image
 identity.
 

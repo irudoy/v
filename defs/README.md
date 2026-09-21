@@ -374,7 +374,7 @@ Byte identity carries a record across a relocation that is not uniform. The
 projection needs no address model: it locates the descriptor run and the pointer
 table in the target image and matches records. 1ME3B is the case that separates
 the two, and it also shows that this registry precedes every other analysis
-layer. Its 334 descriptor records at `0x1bf58` hold the 31 codes it shares with
+layer. Its 334 descriptor records at `0x1bf58` hold the 38 codes it shares with
 the 331 records of `1ND0A` at three different relocations and at index offsets
 of `-1`, `0`, and `+1`, and the projection matches them without reference to the
 structural export, checksum layout, or definition correspondence of the image.

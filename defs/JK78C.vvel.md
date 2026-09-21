@@ -4,8 +4,8 @@
 
 This specification records the VVEL target task, its fifteen-mode target
 selector, the exact sensor and diagnostic bindings of the selector inputs, and
-the unit boundary of the target surfaces of exact ROM
-`86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d`.
+the unit boundary of the target surfaces of the exact JK78C stock image
+registered in `../rom-images/roms.csv`.
 It separates code-proven selection logic and stored scales from candidate
 engineering units, candidate vendor table names, and physical valve response.
 

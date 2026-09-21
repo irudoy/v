@@ -55,6 +55,7 @@ durable claims remain in tracked CSV, TOML, assembly, and specifications.
 | `romviz/build.py` | Self-contained interactive ROM address-space atlas generator |
 | `rom_homology.py` | Validate declared ROM families and regenerate pairwise homology measurements |
 | `version_index.py` | Hold the deployment table to the version pins builds, containers, and wrappers execute |
+| `single_source.py` | Hold repeated constants, ROM lists, and published counts to the file that owns each |
 
 The full Python contract is configured in `../pyproject.toml` and runs with
 `uv run pytest -q`. JavaScript tests belong to the pin tracer and are documented

@@ -26,7 +26,7 @@ from tools.version_index import requirement_pin
 
 APP_NAME = PRODUCT_NAME
 APP_BUNDLE_NAME = f"{APP_NAME}.app"
-BUNDLE_IDENTIFIER = "com.github.irudoy.vhrev.vq-can-telemetry"
+BUNDLE_IDENTIFIER = f"com.github.irudoy.vhrev.{PRODUCT_SLUG}"
 TARGET_ARCHITECTURE = "arm64"
 BUILD_REQUIREMENTS = "tools/can_dashboard/requirements-macos-build.txt"
 PYINSTALLER_VERSION = requirement_pin(BUILD_REQUIREMENTS, "pyinstaller")

@@ -20,11 +20,12 @@ from pathlib import Path
 import sys
 import threading
 
+from tools.can_dashboard import PRODUCT_SLUG
 from tools.can_dashboard import settings as dashboard_settings
 
 
-FILE_NAME = "vq-can-telemetry.log"
-LOGGER_NAME = "vq-can-telemetry"
+FILE_NAME = f"{PRODUCT_SLUG}.log"
+LOGGER_NAME = PRODUCT_SLUG
 MAX_BYTES = 512 * 1024
 BACKUP_COUNT = 2
 FORMAT = "%(asctime)s %(levelname)s %(message)s"

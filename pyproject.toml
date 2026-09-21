@@ -1,5 +1,7 @@
 [project]
 name = "vq-hr-ecu-tuning"
+# uv requires a version in [project]; the project is not packaged and no tool
+# reads this value.
 version = "0.1.0"
 description = "Reverse-engineering and firmware verification tools for Nissan and Infiniti HR-series ECUs"
 requires-python = ">=3.11,<3.12"

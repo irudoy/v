@@ -3,8 +3,8 @@
 ## Scope
 
 This specification records the stock HCAN configuration, the receive dispatch,
-and the transmit composition of exact ROM
-`86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d`.
+and the transmit composition of the exact JK78C stock image registered in
+`../rom-images/roms.csv`.
 It separates code-proven controller behavior from payload names that still
 depend on vehicle capture or homologous diagnostic evidence.
 

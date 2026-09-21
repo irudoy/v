@@ -5,7 +5,7 @@ image. It fixes the order of work: register the identity, measure the image,
 select a scenario branch, and either onboard the image or park it as a declared
 stock identity.
 
-The branches are read from four onboarded families. They are a starting
+The branches are read from five onboarded families. They are a starting
 hypothesis, not a closed taxonomy. An image whose signals conflict is recorded
 as unclassified rather than forced into the nearest branch.
 
@@ -38,7 +38,11 @@ identity.
 | Hitachi hardware identifier and application | `README.md` |
 | Atlas manifest | `../tools/romviz/roms/<LABEL>.toml` |
 
-The ROM label is the five-character part-number suffix.
+The ROM label is the five-character part-number suffix. `make check` holds it
+across the registries: `roms.csv`, the atlas manifest, and the family
+declaration in `homology.toml` carry the same labels, and
+`../defs/rom-identities.toml` and `../patches/checksum-layouts.toml` name only
+registered images.
 
 Read identifiers out of the image rather than from the dump tool: the MCU
 marking `SH705822N` or `SH705927N`, the nine-character software base

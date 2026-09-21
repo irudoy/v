@@ -3,8 +3,8 @@
 ## Scope
 
 This specification records the stock HCAN1 mailbox configuration and the
-transmit path used by exact ROM
-`ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23`.
+transmit path used by the exact JK08A stock image registered in
+`../rom-images/roms.csv`.
 It separates code-proven controller behavior from payload names that still
 depend on vehicle capture or homologous diagnostic evidence.
 

@@ -24,11 +24,13 @@ import math
 from pathlib import Path
 import socket
 
+from tools.can_dashboard import PRODUCT_NAME
+
 MAGIC = "RRUDP1"
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 47809
 DATASOURCE_CLASS = "com.romraider.logger.external.udp.plugin.UdpDataSource"
-DATASOURCE_NAME = "VQ CAN Telemetry"
+DATASOURCE_NAME = PRODUCT_NAME
 LOAD_KEY = "load"
 # The internal map coordinate is a Q7 ratio of the Base Fuel Schedule word to
 # a ROM reference word, saturated at one byte; raw 128 is 100 percent. The

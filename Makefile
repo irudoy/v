@@ -11,10 +11,12 @@ ROM ?= auto
 ROMS ?= all
 DEFS_ROM ?= all
 ROMVIZ_OUTPUT ?= tmp/romviz/rom-atlas.html
+CAN_DASHBOARD_NAME := $(shell sed -n 's/^PRODUCT_NAME = "\([^"]*\)"/\1/p' tools/can_dashboard/__init__.py)
+CAN_DASHBOARD_SLUG := $(shell sed -n 's/^PRODUCT_SLUG = "\([^"]*\)"/\1/p' tools/can_dashboard/__init__.py)
 CAN_DASHBOARD_VERSION := $(shell sed -n 's/^__version__ = "\([^"]*\)"/\1/p' tools/can_dashboard/__init__.py)
-CAN_DASHBOARD_OUTPUT ?= tmp/vq-can-telemetry-v$(CAN_DASHBOARD_VERSION)-windows.zip
-CAN_DASHBOARD_MACOS_OUTPUT ?= tmp/vq-can-telemetry-v$(CAN_DASHBOARD_VERSION)-macos-arm64.zip
-CAN_DASHBOARD_MACOS_APP_OUTPUT ?= tmp/VQ CAN Telemetry.app
+CAN_DASHBOARD_OUTPUT ?= tmp/$(CAN_DASHBOARD_SLUG)-v$(CAN_DASHBOARD_VERSION)-windows.zip
+CAN_DASHBOARD_MACOS_OUTPUT ?= tmp/$(CAN_DASHBOARD_SLUG)-v$(CAN_DASHBOARD_VERSION)-macos-arm64.zip
+CAN_DASHBOARD_MACOS_APP_OUTPUT ?= tmp/$(CAN_DASHBOARD_NAME).app
 INPUT ?=
 OUTPUT ?=
 PROFILE ?=
@@ -77,6 +79,7 @@ setup:
 
 check:
 	$(PYTHON) tools/version_index.py --check
+	$(PYTHON) tools/single_source.py --check
 	$(PYTHON) patches/rom_address_profiles.py --check
 	$(PYTHON) patches/runtime_targets.py --check
 	$(PYTHON) tools/mapkit/dtc_projection.py

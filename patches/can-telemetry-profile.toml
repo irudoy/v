@@ -52,7 +52,7 @@ source = 0xFFFF11F4
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = false
-scale = "x * 12.5 RPM"
+scale = "raw * 12.5 RPM"
 
 [[field]]
 name = "final_timing_raw"
@@ -239,7 +239,7 @@ source = 0xFFFF121A
 profiles = ["tuning"]
 kind = "ecu_ram"
 signed = true
-scale = "raw software state"
+scale = "Q8 software state"
 
 [[field]]
 name = "knock_surface_state"
@@ -528,7 +528,7 @@ width = 2
 source = 0xFFFF22DC
 kind = "ecu_ram"
 signed = true
-scale = "Q8.8 percent"
+scale = "raw / 256 - 100 percent"
 
 [[context.field]]
 name = "stft_b2_raw"
@@ -536,7 +536,7 @@ width = 2
 source = 0xFFFF22DE
 kind = "ecu_ram"
 signed = true
-scale = "Q8.8 percent"
+scale = "raw / 256 - 100 percent"
 
 [[context.field]]
 name = "intake_cvtc_duty_b1_raw"
@@ -565,7 +565,7 @@ width = 2
 source = 0xFFFF2302
 kind = "ecu_ram"
 signed = true
-scale = "Q8.8 percent"
+scale = "raw / 256 - 100 percent"
 
 [[context.field]]
 name = "ltft_b2_raw"
@@ -573,7 +573,7 @@ width = 2
 source = 0xFFFF2304
 kind = "ecu_ram"
 signed = true
-scale = "Q8.8 percent"
+scale = "raw / 256 - 100 percent"
 
 [[context.field]]
 name = "timing_state_2023_raw"
@@ -692,7 +692,7 @@ width = 2
 source = 0xFFFF2306
 kind = "ecu_ram"
 signed = false
-scale = "Q8.8 percent"
+scale = "raw / 256 - 100 percent"
 
 [[context.field]]
 name = "ltft_adjustment_b1_raw"
@@ -700,7 +700,7 @@ width = 2
 source = 0xFFFF5648
 kind = "ecu_ram"
 signed = false
-scale = "Q8.8 percent"
+scale = "raw / 256 - 100 percent"
 
 [[context]]
 page = 10
