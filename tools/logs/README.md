@@ -367,6 +367,59 @@ bounded by the 10.24 ms snapshot spacing and the dashboard state by the
 102.4 ms period of frame `0x551`. Every figure is a raw software quantity; the
 capture does not measure spark angle or injector output.
 
+## JK08A engine-torque scale audit
+
+`torque_scale_audit.py` bounds the physical scale of the JK08A raw torque
+domain with full-pedal road runs in dashboard MLVLG recordings or strict
+schema-2 `tuning` TRC captures.
+
+```bash
+python3 tools/logs/torque_scale_audit.py \
+  --calibration-image tmp/1JK08A-tune-v3-1.bin \
+  --cruise tmp/logs-09-22/7-cruise.mlg \
+  --remainder tmp/logs-09-22/5-shifts-map-3.trc \
+  --remainder tmp/logs-09-22/5-downshifts-map-3.trc \
+  --remainder tmp/logs-09-22/11-map-2-rl.trc \
+  tmp/logs-09-22/ex-torque-2nd-gear.mlg \
+  tmp/logs-09-22/5-downshifts-map-3.trc \
+  tmp/logs-09-22/xxx-0-100-map-*.mlg \
+  tmp/logs-09-22/xxx-3rd-gear-map-*.mlg
+```
+
+- The cruise capture gives the stock RPM per CAN km/h of the
+  converter-locked fifth gear, the median over one-second windows at 60 km/h
+  or more whose samples stay within 0.5 percent of the window median. The
+  RE5R05A ratios of the 2007 G35 service manual scale it to the other gears.
+- Base term `0xFFFF2408` is replayed from the calibration image: table
+  `0x154A0` over RPM axis `0x14ABA` with a Q0.16 fraction, minus
+  `floor(bfs_raw * ROM16[0x92AC] / ROM16[0x9534])`, saturated at zero. The
+  TRC captures give the remainder between `engine_torque_state_raw` minus the
+  base term and the `0x180` actual-torque word, read at the midpoint of its
+  five-count interval, over samples with APP1 of 600 raw or more, a timing
+  command of 20 or more, and no fuel inhibit.
+- A segment is an interval of APP1 at 900 raw or more that lasts at least
+  1.5 s. Points lie 0.1 s apart and use line fits over 0.2 s on each side. A
+  point needs a turbine-to-engine speed ratio of 0.90..1.00 in one gear, the
+  gear of the manual selector position when one is engaged, a timing command
+  of 15 or more, no fuel inhibit, and 2500 RPM or more. A fall of engine speed
+  faster than 1500 RPM/s marks a shift, which removes the points from 0.5 s
+  before to 0.7 s after it.
+- The flywheel torque of a point is the road force of vehicle and rotating
+  mass, rolling and aerodynamic load, and grade, divided by the turbine
+  radians per metre and the driveline efficiency, plus the engine and turbine
+  inertia terms. The converter torque ratio is 1 inside the coupling range.
+  The vehicle constants are assumptions with a nominal value and a box range;
+  the audit reports each figure at the nominal constants and over all 256
+  corners of the box.
+- Each candidate scale receives the road grade that the force balance
+  requires. Two adjacent gears of one run share a short stretch of road, so
+  the scale at which their mean implied grades agree does not depend on the
+  grade. Neutral coasts give the grade that the nominal road load implies.
+
+The output is one `key = value` line per figure in TOML syntax. The captures
+do not measure road grade, vehicle mass, tire radius, or true vehicle speed,
+so the audit bounds the scale and does not determine it.
+
 ## MLG field restamping
 
 `mlg_restamp.py` rewrites the field descriptors of an existing MLVLG file from

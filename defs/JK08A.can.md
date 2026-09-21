@@ -247,9 +247,39 @@ The moving-load capture `new-log-full.trc`, registered in
 - Closed-pedal samples above 2000 RPM have a median actual-torque word of 724
   counts and a minimum of 694.
 
-Candidate physical scale `0.1 Nm` per raw count gives `0.5 Nm` per CAN count
-and a capture span of -73.5..226 Nm. No tracked source declares the CAN scale,
-so the physical unit remains a candidate.
+No tracked source declares the physical scale of the raw torque domain. At
+candidate `0.1 Nm` per raw count one CAN count is `0.5 Nm`, and the
+actual-torque range of the capture above spans -73.5..226 Nm.
+
+The road audit `tools/logs/torque_scale_audit.py`, recorded under
+`engine_torque_scale.vehicle_2026_09_22` in `../patches/hardware-results.toml`,
+bounds the scale with 982 converter-coupled full-pedal points in 12 segments.
+Net torque is state `0xFFFF18CC` minus the replayed base term `0xFFFF2408` and
+a remainder of 10.0 raw, the median difference from the `0x180` word in 3,883
+TRC samples. With the nominal vehicle constants and zero grade, the flywheel
+torque that the longitudinal force balance requires is 0.921 of net torque at
+`0.1 Nm` per raw count, and 0.766..1.109 over the box of vehicle constants.
+Each scale requires a road grade:
+
+| Torque read as flywheel torque | Median grade, nominal constants | Median grade over the box |
+| --- | ---: | ---: |
+| net at `0.0625 Nm` | -9.14 percent | -13.49..-5.26 percent |
+| net at `0.08 Nm` | -3.97 percent | -8.23..1.24 percent |
+| net at `0.1 Nm` | 2.69 percent | -3.05..8.2 percent |
+| net at `0.125 Nm` | 10.72 percent | 4.14..17.52 percent |
+| gross state at `0.1 Nm` | 9.35 percent | 3.48..15.96 percent |
+
+- The 104 neutral-coast windows imply grades of -3.52..6.98 percent at the
+  nominal road load, so scale `0.0625 Nm` requires a road steeper than every
+  coast.
+- Two adjacent gears of one run share the road. The scale at which their
+  implied grades agree spans 0.0603..0.1226 Nm per raw count over the six gear
+  pairs and the box, so scale `0.125 Nm` lies above every pair.
+- Scales `0.08 Nm` and `0.1 Nm` stay compatible. Road grade, vehicle mass,
+  driveline efficiency, and the CAN speed scale are not measured, and the runs
+  do not separate the two scales.
+- Gross state `0xFFFF18CC` still contains base term `0xFFFF2408`, and read as
+  flywheel torque at `0.1 Nm` it requires a median uphill grade of 9.35 percent.
 
 ## Passive vehicle capture evidence
 
