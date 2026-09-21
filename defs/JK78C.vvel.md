@@ -26,7 +26,8 @@ background-loop pass; a pass is the tick of every counter below.
 coolant ffff1069, IAT ffff268c,
 idle target ffff226c, RPM/12.5 ffff11a2 --> FUN 00059c2c --> ffff455b.bit7 (hot-intake idle)
 RPM/25 ffff11a3, CLSD THL POS ffff23b8.bit6, ffff4573.bit1 --> FUN 0005a0da --> ffff456f.bit7 (above idle)
-MAP ffff375e, booster ffff2666, speed ffff10fc --> FUN 0005a314 --> ffff4565.bit6 (throttled)
+reference ffff4ac2, booster ffff2666, speed ffff10fc,
+brake ffff23af.bit6 --> FUN 0005a314 --> ffff4565.bit6 (throttled)
 knock state ffff23c6.bit6, learning window ffff23e5.bit1, fail-safe ffff4577.bit0
         |
         v
@@ -84,11 +85,16 @@ above-idle condition excludes passes on which the idle model is engaged.
 The predicate cells resolve as follows.
 
 - `0xFFFF23B1.bit6` is the direct copy of `PHDR` bit 1 (`0xFFFFF72C`, PH1)
-  that the input sampler `FUN_0003BD78` takes at `0x0003BE74`. `FUN_00031A0C`
+  that the input sampler `FUN_0003BD78` takes at `0x0003BE74`: the bit is set
+  while PH1 reads high. PH1 is SH7058 FP-256H pin 64. `FUN_00031A0C`
   copies it to bit 2 of `0xFFFF34EF`, the DID `0x1305` byte
   (`ROM32[0x22ABC]`, support mask `ROM8[0x1354E]` = `0x54`). The profile names
   that bit `BRAKE SW`, which the factory manual defines as the condition of
-  the stop lamp switch signal.
+  the stop lamp switch signal. The VQ37VHR section of the 2013 factory manual
+  places that signal on ECM terminal 122 (EC-160, EC-568), so PH1 is a
+  terminal 122 candidate by signal identity. `JK08A.rpm-drop-state.md`
+  gives the manual evidence and the bench check for PH1 of the JK08A board,
+  which feeds the same DID bit.
 - `0xFFFF2422.bit7` latches `0xFFFF2428.bit7` through the block copy
   `0xFFFF241D <- 0xFFFF2423`. `FUN_000AF340` sets it when `FUN_000AE5F2`
   passes, `0xFFFF23AF.bit0` is set, and either `0xFFFF45C6.bit4` with
@@ -187,15 +193,31 @@ bit 2 for P0555; stock `0x2C` sets both), and an inhibit byte at zero
 `ROM8[0x89DD]` = `ROM8[0x8A1D]` = 50 while `0xFFFF44DF.bit6` is set). The record
 is raised only after the pass counter `0xFFFF46B9` or `0xFFFF46BA` has run down
 from `ROM8[0x8991]` = `ROM8[0x8993]` = 50. The sensor words are 10-bit ADC
-samples shifted left by 6, so the window is 0.08..4.97 V of a 5 V scale.
+samples shifted left by 6, so the window is 0.08..4.96 V of a 5 V scale.
 
 ## Pressure channel
 
-The ADC sampler `FUN_0002AA88` cycles an 8-step counter at `0xFFFF1688` and
-selects the external multiplexer through bits `0x2000`, `0x4000`, and `0x8000`
-of port word `0xFFFFF74E`. In cycle 4 it stores `0xFFFFF822 >> 6` at
-`0xFFFF256E` and `0xFFFFF802 >> 6` at `0xFFFF3868`. `FUN_0002A488` copies
-`0xFFFF256E` to `0xFFFF2568` in the main loop.
+On each call with `0xFFFF1689` and `0xFFFF168A` clear, the ADC sampler
+`FUN_0002AA88` increments the cycle count `0xFFFF1688` and runs cycle `n` at
+count `n`; cycle 8 clears the count. Each cycle stores converter results in
+cells that depend on the cycle and ends by setting bits 13..15 of `PFDR`
+(`0xFFFFF74E`) to `n mod 8`. Candidate: those port bits select an external
+analog multiplexer ahead of the converter inputs, so one converter channel
+can carry a different signal in each cycle; the board closes it. In cycle 4
+it stores `ADDR13 >> 6` (`0xFFFFF822`, AN13), the 10-bit
+conversion result, at `0xFFFF256E` (`0x0002ABFA`) and `ADDR1 >> 6`
+(`0xFFFFF802`, AN1) at `0xFFFF3868` (`0x0002ABEA`). The per-pass block copy
+`0xFFFF2564 <- 0xFFFF256A` (6 bytes, `FUN_00020F1A` at `0x00020FF0`) copies
+`0xFFFF256E` to `0xFFFF2568`.
+
+In cycle 6 the sampler stores `ADDR12 >> 6` (`0xFFFFF820`, AN12) at
+`0xFFFF1CDC` (`0x0002AC8A`) and, while `ROM8[0x87D1]` bit 7 is set (stock
+`0xC0`), at `0xFFFF1CE2` (`0x0002AC9E`). `FUN_0004185A` reads `0xFFFF1CE2` at
+`0x0004186C`, passes it through `FUN_0003E050`, and stores the result shifted
+left by 6 in `0xFFFF1176` (`0x000418A6`), the DID `0x1116` source
+(`ROM32[0x22770]`). `0xFFFF1CE2` and `0xFFFF256E` therefore sample different
+converter channels, AN12 in cycle 6 and AN13 in cycle 4; they carry the same
+sensor only if the board routes one signal to both channels.
 
 MAP sensor path (P010A monitor):
 
@@ -216,49 +238,127 @@ MAP sensor path (P010A monitor):
   it to `[ROM16[0x9246], ROM16[0x9244]]` = `[40450, 58461]`, which is
   3.09..4.46 V. `FUN_00043E0E` counts passes with `0xFFFF375E >= 0xFFFF57C4`
   at `0xFFFF21BB` and applies the clamp after five.
-- `0xFFFF4AC2` is the scaled reference: `FUN_00021E0C` division of the
-  reference plus `ROM8[0x8816]` = 20, saturated at `0xFFFF`, while
-  `ROM8[0x8ADA]` = 255; otherwise `0xFFFF`. `FUN_00044034` scales
-  `0xFFFF375E` into `0xFFFF3314` on the same path.
+- `0xFFFF4AC2` is the scaled reference. With `W` = `0xFFFF57C4` after the
+  clamp call, the tail of `FUN_00043CDE` (`0x00043DAC..0x00043DF8`) stores
+  `min(0xFFFF, floor(floor(W * ROM8[0x8822] * 10 / 64) / ROM8[0x8ADA]) +
+  ROM8[0x8816])` with `ROM8[0x8822]` = 28, `ROM8[0x8ADA]` = 255, and
+  `ROM8[0x8816]` = 20, or `0xFFFF` while `ROM8[0x8ADA]` is zero. The inner
+  floor is `FUN_00022562`, the outer one `FUN_00021E0C`. `FUN_00044034`,
+  called from `FUN_00043EEC` and `FUN_00043F60`, stores the same expression
+  of its argument at `0xFFFF3314`. The initializer `FUN_0002F1A0` writes
+  `ROM16[0x9242]` = 57878 to `0xFFFF57C4` and `ROM16[0x8D12]` = 1013 to
+  `0xFFFF4AC2`.
 
 Brake booster path (P0555 monitor), `FUN_00045A4C`:
 
-- `0xFFFF42E2` copies `0xFFFF3868`. `0xFFFF27D0` is the first-order filtered
-  `0xFFFF3868 << 6` with gain `ROM8[0x8B76]` = 64 and first-pass
-  initialization through `0xFFFF45AE.bit1`. The periodic-list latch copies it
-  to `0xFFFF26D2`, the cell the P0555 monitor reads.
-- `0xFFFF2764` is the scaled booster pressure: `FUN_00021E0C(0xFF,
-  ROM8[0x8823] = 28, 0xFFFF27D0)` plus `ROM8[0x8817]` = 20, saturated at
-  `0xFFFF`, while `ROM8[0x8ADB]` = 255; otherwise `0xFFFF`. The same latch
-  copies it to `0xFFFF2666`.
+- `0xFFFF42E2` copies `0xFFFF3868`. With `W` = `0xFFFF3868 << 6`, the first
+  pass (`0xFFFF45AE.bit1` clear) stores `W` at `0xFFFF27D0` and sets the bit;
+  later passes store `F = (W * K + F_prev * (128 - K)) >> 7` with
+  `K` = `ROM8[0x8B76]` = 64, plus 1 when `F` equals `F_prev` and is below
+  `W`, saturated at `0xFFFF`. The periodic-list latch copies `0xFFFF27D0` to
+  `0xFFFF26D2`, the cell the P0555 monitor reads.
+- `0xFFFF2764` is the scaled booster pressure:
+  `min(0xFFFF, floor(F * ROM8[0x8823] * 5 / (ROM8[0x8ADB] * 32)) +
+  ROM8[0x8817])` with `ROM8[0x8823]` = 28, `ROM8[0x8ADB]` = 255, and
+  `ROM8[0x8817]` = 20, or `0xFFFF` while `ROM8[0x8ADB]` is zero. The same
+  latch copies it to `0xFFFF2666`.
 
-`FUN_00021E0C` and `FUN_00021CE8` are the fixed-point division helpers
-(divisor in `r0`, dividend in `r1`, 8 or 16 fractional bits, error code
-`0x44E` to `0xFFFF9748` on a zero divisor).
+`FUN_00021E0C` returns `floor(r1 / r0)` for unsigned 32-bit operands on each
+of its three paths: a divisor below 65536 with a quotient below 256 (eight
+`div1` steps), a divisor below 65536 with a larger quotient (two sixteen-step
+stages), and a divisor of 65536 or more (sixteen steps). A zero divisor
+stores `0x44E` at `0xFFFF9748` and returns 0. `FUN_00022562` is an
+arithmetic shift right by 6.
 
 Booster vacuum and the throttled-mode flag, `FUN_0005A314` (entry 97):
 
-- `0xFFFF3338 = max(0, 0xFFFF4AC2 - 0xFFFF2666)`, scaled reference minus
-  scaled booster pressure.
-- `0xFFFF4577` bits 6 and 5 latch vehicle speed `0xFFFF10FC` above
-  `ROM8[0x8B17]` = 2 and `ROM8[0x8B18]` = 7 counts (4 and 14 km/h) with
-  hysteresis `ROM8[0x8AFE]` = 1. They select `0xFFFF3324` from `ROM16[0x9094]`
-  = 0, `ROM16[0x9096]` = 467, and `ROM16[0x9098]` = 547.
-- `0xFFFF4515.bit0` is `0xFFFF3338 >= 0xFFFF3324 + ROM16[0x909C]` = 10.
-  `0xFFFF455E.bit1` follows it: booster vacuum sufficient.
-- `0xFFFF455E.bit0` (sensor abnormal) clears when `0xFFFF4573.bit4` is set or
-  when `0xFFFF4516.bit7` is clear, `0xFFFF23AF.bit6` is clear or
-  `0xFFFF23BD.bit5` or `.bit4` is set, `0xFFFF23AF.bit6` is clear or
-  `0xFFFF10FC < ROM8[0x8AFA]` = 254, and `0xFFFF5FCA.bit7` and
-  `0xFFFF5FCD.bit7` are clear. `0xFFFF4516.bit7` holds with the pass timer
-  `0xFFFF4753` = `ROM8[0x8429]` = 3 and `0xFFFF482C` = `ROM8[0x8428] << 2` = 32.
-- `0xFFFF4565.bit6 = !(0xFFFF455E.bit1 && !0xFFFF455E.bit0)`: the throttled
-  mode is requested while booster vacuum is insufficient or the sensor is
-  abnormal.
+- `0xFFFF3338 = max(0, 0xFFFF4AC2 - 0xFFFF2666)`, the scaled reference minus
+  the scaled booster pressure (`0x0005A3C8`).
+- `0xFFFF4577` bits 6 and 5 latch the vehicle speed byte `0xFFFF10FC` above
+  `ROM8[0x8B17]` = 2 and `ROM8[0x8B18]` = 7 counts (4 and 14 km/h); a set bit
+  adds `ROM8[0x8AFE]` = 1 to the speed before its own comparison. They select
+  the threshold `0xFFFF3324` (`0x0005A3A8`): `ROM16[0x9098]` = 547 while bit 5
+  is set, otherwise `ROM16[0x9096]` = 467 while bit 6 is set, otherwise
+  `ROM16[0x9094]` = 0.
+- `0xFFFF4516.bit7` (vacuum low) sets on a pass with
+  `0xFFFF3338 <= 0xFFFF3324` once the byte counter `0xFFFF4753` is zero; a
+  pass with `0xFFFF3338 > 0xFFFF3324` clears it and reloads the counter with
+  `ROM8[0x8429]` = 3.
+- `0xFFFF4515.bit0` (vacuum sufficient) sets on a pass with
+  `0xFFFF3338 >= 0xFFFF3324 + ROM16[0x909C]` (`ROM16[0x909C]` = 10) once the
+  word counter `0xFFFF482C` is zero; a pass below that bound clears it and
+  reloads the counter with `ROM8[0x8428] << 2` = 32.
+- The vector-120 handler `FUN_0002040C` (`ROM32[0x201E4]`, VBR `0x00020004`)
+  decrements every nonzero byte of `0xFFFF472C..0xFFFF47EF` and every nonzero
+  word of `0xFFFF4822..0xFFFF4867` on every tenth call (call counter
+  `0xFFFFADC0`), so each condition must persist for 3 or 32 such steps.
+- The brake term passes when `0xFFFF23AF.bit6` is clear, or when
+  `0xFFFF23BD.bit5` or `0xFFFF23BD.bit4` is set and the speed byte is below
+  its bound. `0xFFFF23AF.bit6` is the per-pass latch of the PH1 bit
+  `0xFFFF23B1.bit6` (`BRAKE SW`). The status term passes when bit 7 of
+  `0xFFFF5FCA` and bit 7 of `0xFFFF5FCD` are clear; the two bytes are
+  `0xFFFF5E94 + 0x136` and `0xFFFF5E94 + 0x139`, in the table whose base
+  `FUN_0009DFA8` also loads.
+- `0xFFFF455E.bit0` clears when `0xFFFF4573.bit4` is set, or when
+  `0xFFFF4516.bit7` is clear and the brake term with bound `ROM8[0x8AFA]` =
+  254 and the status term pass; otherwise it sets.
+- `0xFFFF455E.bit1` sets when `0xFFFF4573.bit4` is set, or when
+  `0xFFFF4515.bit0` is set and the brake term with bound
+  `ROM8[0x8AFA] - ROM8[0x8AFD]` = 253 and the status term pass; otherwise it
+  clears.
+- `0xFFFF4565.bit6 = 0xFFFF455E.bit0 || !0xFFFF455E.bit1`. Unless
+  `0xFFFF4573.bit4` is set, the throttled mode is requested while
+  `0xFFFF4516.bit7` is set, `0xFFFF4515.bit0` is clear, the brake term with
+  bound 253 fails, or the status term fails: booster vacuum is low or not yet
+  sufficient, the brake input is set without `0xFFFF23BD` bits 5 and 4 or at
+  a speed byte of 253 or more, or a status bit is set.
 
-The physical unit of the scaled words `0xFFFF4AC2`, `0xFFFF2764`, and
-`0xFFFF3338` is not code-proven; the division constants and the thresholds 467
-and 547 are stored values only.
+Units of the scaled words:
+
+- Code-exact transfer. Both scaled words apply the same stored constants to a
+  word `W` that holds a 10-bit sample shifted left by 6, so
+  `S = 20 + floor(7 * W / 408)`; for an unfiltered sample `n` this is
+  `S = 20 + floor(56 * n / 51)`. `S` never exceeds 1144, so the saturation at
+  `0xFFFF` is unreachable. On the 5 V converter scale one count of `S` is
+  255/57344 V (4.447 mV), 224.9 counts per volt:
+  `S = 20 + floor(57344 * V / 255)`.
+- Code-exact defaults. The transfer maps the initializer value 57878 of
+  `0xFFFF57C4` to 1013, the initializer value of `0xFFFF4AC2`, and maps the
+  clamp bounds 40450 and 58461 to 713 and 1023.
+- Candidate unit: one count is 1 hPa of absolute pressure, so
+  `P = 2.0 kPa + 22.49 kPa/V * V`. The default 1013 equals standard
+  sea-level pressure in hPa. The VQ37VHR manual gives one characteristic for
+  the MAP sensor (EC-213, EC-214) and the brake booster pressure sensor
+  (EC-393, EC-394), and the candidate places every row inside its band. The
+  vacuum rows list the voltage difference from the engine-stopped reading.
+
+| Manual row | Band | Candidate |
+| --- | --- | --- |
+| 800 hPa | 3.1 - 3.7 V | 3.47 V |
+| 850 hPa | 3.3 - 3.9 V | 3.69 V |
+| 900 hPa | 3.5 - 4.1 V | 3.91 V |
+| 950 hPa | 3.8 - 4.3 V | 4.14 V |
+| 1000 hPa | 4.0 - 4.6 V | 4.36 V |
+| 1050 hPa | 4.2 - 4.8 V | 4.58 V |
+| -40 kPa (-300 mmHg) | 1.5 - 2.0 V | 1.78 V |
+| -53.3 kPa (-400 mmHg) | 2.0 - 2.6 V | 2.37 V |
+| -66.7 kPa (-500 mmHg) | 2.6 - 3.2 V | 2.97 V |
+| -80 kPa (-600 mmHg) | 3.2 - 3.8 V | 3.56 V |
+
+The vacuum `0xFFFF3338` is a difference of two scaled words, so its
+thresholds convert without the offset; the voltage difference is exact within
+one count and the pressure is the candidate unit.
+
+| `0xFFFF3324` | Selected while | Low at | Sufficient at | Voltage difference | Candidate vacuum |
+| --- | --- | --- | --- | --- | --- |
+| 0 | bits 6 and 5 clear | `<= 0` | `>= 10` | 0 / 0.044 V | 0 / 1.0 kPa |
+| 467 | bit 6 set, bit 5 clear | `<= 467` | `>= 477` | 2.077 / 2.121 V | 46.7 / 47.7 kPa (350.3 / 357.8 mmHg) |
+| 547 | bit 5 set | `<= 547` | `>= 557` | 2.432 / 2.477 V | 54.7 / 55.7 kPa (410.3 / 417.8 mmHg) |
+
+No aligned 32-bit ROM word holds `0xFFFF4AC2`, `0xFFFF2764`, or
+`0xFFFF3338`, so no DID table entry publishes them, and the VQ37VHR data
+monitor marks `ATOM PRES SEN` and `BRAKE BST PRE SE` not efficient for V36
+models (EC-162).
 
 ## Mode machine
 
@@ -475,13 +575,28 @@ the only names this specification carries.
 ## Evidence boundary
 
 Code-exact: the mode machine, the fifteen target pairs, the selector
-conditions, the DID bindings, the descriptor records P010A and P0555, and the
-stored scales listed as code-proven.
+conditions, the DID bindings, the descriptor records P010A and P0555, the
+stored scales listed as code-proven, the cycle schedule and `PFDR` stepping
+of the ADC sampler, the converter channels of the pressure cells, the
+transfer `S = 20 + floor(7 * W / 408)` of the scaled pressure words, and the
+booster-vacuum logic of `FUN_0005A314`.
+`tools/mapkit/tests/test_jk78c_pressure_channel.py` executes the scaling
+paths, the division and block-copy helpers, and `FUN_0005A314` from the exact
+ROM bytes.
 
-Open: the ECM terminal of the PH1 input behind `0xFFFF23B1.bit6`; the
-physical unit of the signed request words behind `0xFFFF45C0.bit0` and
-`0xFFFF23F9.bit4`; the physical unit of the scaled pressure words; whether `0xFFFF1CE2` (DID `0x1116` source
-through `FUN_0004185A`) and `0xFFFF256E` sample the same MAP input; the
-candidate scales above; and the agreement of the computed command with DID
-`0x125C` on live data. The pass period follows the vector-120 handler and
-is not measured on this target.
+Candidate: one count of the scaled pressure words is 1 hPa of absolute
+pressure; the MAP sensor signal voltage with the engine stopped at a known
+barometric pressure of `P` hPa closes it, where the candidate predicts
+`(P - 20) * 255 / 57344` V.
+`PFDR` bits 13..15 select an external analog multiplexer ahead of the
+converter inputs; the board closes it.
+PH1 carries the stop lamp switch signal of ECM terminal 122; a continuity
+check from terminal 122 to MCU pin 64 closes it for a given board.
+
+Open: the physical unit of the signed request words behind `0xFFFF45C0.bit0`
+and `0xFFFF23F9.bit4`; the sensor on AN12 in cycle 6 behind `0xFFFF1CE2`;
+the roles of `0xFFFF23BD.bit5`, `0xFFFF23BD.bit4`, `0xFFFF4573.bit4`, and
+bit 7 of `0xFFFF5FCA` and `0xFFFF5FCD`; the candidate scales above; and the
+agreement of the computed command with DID `0x125C` on live data. Neither the
+pass period nor the period of the vector-120 handler is measured on this
+target.

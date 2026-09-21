@@ -26,10 +26,10 @@ def _filter_step(current_rpm125: int, old_rpm125: int, previous_q8: int) -> int:
     return min(0xFFFF, 64 * drop + 192 * previous_q8 // 256)
 
 
-def _published_drop(retained: int, upstream_mode: bool, ph9: bool, q8: int) -> int:
+def _published_drop(retained: int, upstream_mode: bool, ph1: bool, q8: int) -> int:
     if not upstream_mode:
         return 0
-    if retained != 0 and not ph9:
+    if retained != 0 and not ph1:
         return 0
     return q8 >> 8
 
@@ -52,7 +52,7 @@ def test_exact_rom_binds_table_to_rpm_drop_path() -> None:
     assert tuple(rom[0x11CB5 : 0x11CB9]) == (4, 8, 12, 32)
     assert tuple(rom[0x1299C : 0x129A0]) == RESTORE_FLOORS_RPM25
 
-    # PHDR.PH9DR is tested and copied directly to ffff2451.bit7.
+    # PHDR bit 1 (PH1DR, tst #2) is tested and copied directly to ffff2451.bit7.
     assert rom[0x3870E : 0x3871C] == bytes.fromhex(
         "8522600dc80260d38d01c97fcb80"
     )

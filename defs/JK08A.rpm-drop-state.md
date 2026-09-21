@@ -71,10 +71,14 @@ else:
     0xFFFF1072 = floor(uint16[0xFFFF1E50] / 256)
 ```
 
-`FUN_00038618` copies SH7058 `PHDR.PH9DR` to `0xFFFF2451.bit7` with direct
-polarity. PH9 is MCU pin 74. The diagnostic status packer `FUN_0002E0D4` copies
-`0xFFFF2451.bit7` to bit 2 of `0xFFFF3345` at `0x0002E27C..0x0002E286`, and the
-service-0x22 table publishes that byte as DID `0x1305` with support mask `0x44`:
+`FUN_00038618` keeps the port H base `0xFFFFF728` (`ROM16[0x386B2]`) at
+`@(4,r15)` and at `0x0003870C..0x00038720` reads the 16-bit `PHDR` word at
+`0xFFFFF72C`, tests bit 1 (`tst #2`), and writes the result to
+`0xFFFF2451.bit7` with direct polarity: the bit is set while PH1 reads high.
+`PHDR` bit 1 is `PH1DR`, and PH1 is SH7058 FP-256H pin 64. The diagnostic
+status packer `FUN_0002E0D4` copies `0xFFFF2451.bit7` to bit 2 of
+`0xFFFF3345` at `0x0002E27C..0x0002E286`, and the service-0x22 table
+publishes that byte as DID `0x1305` with support mask `0x44`:
 
 ```text
 ROM32[0x22A08] = 0xFFFF3345
@@ -82,9 +86,48 @@ ROM32[0x22A0C] = 0x00011E44
 ROM8 [0x11E44] = 0x44
 ```
 
-A structured Nissan diagnostic profile names DID `0x1305` bit 2 `BRAKE SW`, and
-the VQ35HR factory manual defines `BRAKE SW` as the ON/OFF condition of the stop
-lamp switch signal. The ECM terminal of PH9 is not established.
+A structured Nissan diagnostic profile names DID `0x1305` bit 2 `BRAKE SW`.
+The factory manuals define `BRAKE SW` as the ON/OFF condition of the stop lamp
+switch signal and `BRAKE SW1` as that of the ASCD brake switch signal, and
+place the two signals on ECM terminals 122 and 126:
+
+| Manual section | Data monitor | Terminal 122, stop lamp switch (P) | Terminal 126, ASCD brake switch (BR) |
+| --- | --- | --- | --- |
+| 2007 G35 Sedan, VQ35HR | EC-118, EC-120 | EC-500, EC-404 | EC-500, EC-403 |
+| 2013 G Sedan, VQ25HR | EC-735, EC-736 | EC-1005 | EC-1006, EC-938 |
+| 2013 G Sedan, VQ37VHR | EC-160, EC-161 | EC-568 | EC-568, EC-469 |
+
+The harness continuity checks connect stop lamp switch connector E110
+terminal 2 to ECM connector M107 terminal 122 (2007 EC-407, 2013 ICC section
+CCS-58) and ASCD brake switch connector E109 terminal 2 to M107 terminal 126
+(2007 EC-404).
+
+Terminal 122 reads 0 V with the brake pedal fully released and battery
+voltage with the pedal slightly depressed, with the ignition switch OFF.
+Terminal 126 reads battery voltage released and 0 V depressed, with the
+ignition switch ON. The 2013 tables measure both against ECM ground terminal
+128.
+
+PH1 is a terminal 122 candidate by signal identity: the DID bit that the
+profile names `BRAKE SW` is the direct copy of PH1, and every covered section
+places the stop lamp switch signal on terminal 122. With a non-inverting input
+stage the bit is set with the pedal depressed, as `BRAKE SW` ON requires; a
+connection to terminal 126 would need an inverting stage for the same
+reading. The manuals describe export-market ECMs and harnesses, and the
+250GT board is not covered by them. The pin tracer connector table
+(`tools/pin-tracer/`) labels terminal 122 `BRAKE` and terminal 126 `BNCSW`.
+
+Bench check on the owned JK08A board:
+
+1. Unpowered: measure the resistance from ECM terminal 122 to MCU pin 64. A
+   direct or series-resistor path confirms the route; terminal 126 to pin 64
+   is the negative control. A transistor stage shows no DC path and leaves
+   the route to step 2. Record the route in the pin tracer.
+2. Powered with the ignition input on: switch terminal 122 between 0 V and
+   battery voltage and read DID `0x1305` bit 2. The candidate predicts the bit
+   clear at 0 V and set at battery voltage. The bit follows
+   `0xFFFF2451.bit7`, so the reading also fixes the polarity of the input
+   stage.
 
 The same packer copies `0xFFFF2459.bit5` to bit 0 of the DID `0x1302` byte
 `0xFFFF3342` at `0x0002E154..0x0002E162`. The profile names that bit
@@ -93,9 +136,9 @@ by the ECM from the accelerator pedal position sensor signal.
 
 All four stock cells at `0x1202E` equal 200. The magnitude is never used after
 the lookup: zero and nonzero are the only operational classes. Stock JK08A
-therefore requires the PH9-derived `BRAKE SW` bit to publish the RPM-drop value
+therefore requires the PH1-derived `BRAKE SW` bit to publish the RPM-drop value
 while the `CLSD THL POS` bit `0xFFFF2459.bit5` is set. Replacing 200 with any
-other nonzero byte has no effect; replacing a cell with zero bypasses that PH9
+other nonzero byte has no effect; replacing a cell with zero bypasses that PH1
 requirement for the corresponding pre-mode RPM range.
 
 ## Scheduled state and DFCO use
