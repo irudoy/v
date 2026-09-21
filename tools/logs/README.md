@@ -138,27 +138,64 @@ python3 tools/logs/cvtc_target_audit.py \
   --target exhaust \
   --calibration-image tmp/1JK08A-tune-v1-11.bin \
   schema2-capture.trc
+
+python3 tools/logs/cvtc_target_audit.py \
+  --coolant-bands cold \
+  --calibration-image tmp/1JK08A-tune-v3-1.bin \
+  dashboard-recording.mlg
 ```
 
 Without `--calibration-image`, the tool uses the hash-verified registered JK08A
 stock ROM. An explicit image is hashed and reported, and every replay constant,
 axis, and surface is read directly from that image.
 
+An input that starts with the `MLVLG\0` signature is read as a dashboard or
+`trc_to_mlg.py` recording; any other input is read as a PEAK TRC. The recorder
+stores every telemetry field as its raw wire integer in F32 and an absent
+field as NaN, so the eight replay inputs are exact, and it records the
+snapshot's `schema_verified` state. The decoder never accepts two consecutive
+groups with the same tick: a record that repeats the preceding `tick16` is a
+hold-last bridge record and must repeat every channel except Date and Elapsed.
+The tool rebuilds run and unwrapped tick from the event records with the
+decoder's tick rule and rejects a value that is not a wire integer of the
+field. An MLG therefore yields the same verified snapshot sequence as the TRC
+it was converted from, and every figure of the report matches. The MLG report
+gives `records=` and `bridge=` in place of the frame count and
+`retained_context_max_age=n/a`, because the recording does not carry the
+context tag of each snapshot; `--can-id` applies only to a TRC.
+
 The report tests same-snapshot and preceding-snapshot input alignment, separates
 downstream neutralization from direct map disagreement, and reports stable
 active intervals where the reconstructed map result remains unchanged for a
-selected number of source cycles. Intake conditioning is evaluated against
+selected number of source cycles. `--coolant-bands` restricts every comparison
+to source snapshots whose replay falls in the listed bands (`cold`, `blend`,
+`warm`). Intake conditioning is evaluated against
 `0xFFFF2326`; exhaust conditioning is evaluated against `0xFFFF2327`. Schema 2
 also carries actual exhaust positions for both banks. The target fields are
 named `intake_cvtc_target_raw` and `exhaust_cvtc_target_raw`, matching the two
 common conditioned targets.
 
+`cold_dependent_active_to_active` keeps the active comparisons whose
+coolant-selected byte differs from the main-surface byte: the cold surface
+decides each of these predictions, and a replay from the main surface alone
+misses all of them. The line reports `n=0` in the warm band.
+
+The intake report also compares `0xFFFF2326` with the replayed byte
+`0xFFFF1553`, over every comparison (`alternate_ffff1553_to_reference_a`) and
+over the comparisons in which both bytes differ from `0x80`
+(`alternate_ffff1553_active_to_active`). `FUN_000BDB66` forms the byte from
+engine-speed table `0x122EA` and coolant-index weight `0x122F2`, and
+`FUN_000BDC66` conditions it in place of the coolant-selected map byte while
+`0xFFFF24A7` bit 1 is set. The tool does not reconstruct that bit or the
+rising-value ramp of the conditioner.
+
 The audit validates only paths exercised by the capture. A warm-engine log with
 the correction selector clear cannot validate the cold surface, coolant blend,
-or conditional correction. Agreement in raw software coordinates also does not
-prove the physical camshaft response. Both degree conversions are code-proven
-through the 0.5-degree edge-phase count of the capture handlers and the
-raw-unit comparison of target and actual bytes.
+or conditional correction, and a cold-band interval in which the intake target
+follows `0xFFFF1553` does not exercise the cold surface. Agreement in raw
+software coordinates also does not prove the physical camshaft response. Both
+degree conversions are code-proven through the 0.5-degree edge-phase count of
+the capture handlers and the raw-unit comparison of target and actual bytes.
 
 ## JK08A ignition timing-state audit
 

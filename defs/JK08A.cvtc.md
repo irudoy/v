@@ -23,6 +23,8 @@ normalized-BFS snapshot ffff102c --------+--> FUN 000bda64
                                               |  intake cold 0xB53A -> ffff1c5e
 ffff2466.bit6 -> correction 0xAB5A -----------+  intake main 0xB43A -> ffff1c5c
                                                                |
+RPM/50 ffff11ae, index ffff106f -> FUN 000bdb66 -> ffff1553 ---+  used while ffff24a7.bit1
+                                                               |
 coolant snapshot ffff1071 -------------------------------------+--> FUN 000bdc66
                                                                     +-> mode/rate/offset
                                                                     +-> intake target ffff2326
@@ -301,6 +303,46 @@ before `0xFFFF2327` at `0xC0CEE`. Either conditioned target can differ from the
 immediate map lookup or be replaced with neutral `0x80`. The exhaust stages
 are listed under "Standstill override and slew" below.
 
+### Intake idle source `0xFFFF1553`
+
+`FUN 000BDB66` forms a second intake source byte from engine speed and
+coolant:
+
+```text
+S        = interpolate_u8(0x122EA over axis 0x12F66, rpm50 ffff11ae)   8 points
+W        = interpolate_u8(0x122F2 by coolant index ffff106f)           16 points, step 16
+ffff1553 = clamp_u8(128 + trunc0((S-128) * W / 128))
+```
+
+`0xFFFF106F` is the scheduler copy of coolant index `0xFFFF1077`, which
+`FUN 00039634` forms from raw coolant as `floor(240 * (raw-10) / 150)`, 0
+below raw 10 and 255 from raw 170. Stock `S` is 128 up to 1200 RPM, 148 at
+1400 RPM, 168 from 1600 to 2000 RPM, and 128 from 2200 RPM. Stock `W` is 128
+from coolant index 96 to 128 (raw 70 to 90, 20 to 40 degC) and 0 at index 80
+and below and at index 144 and above, so the byte is neutral 128 at raw 60 and
+below and at raw 100 and above.
+
+After the coolant-selected byte is stored to `0xFFFF1BEE` at `0xBDE04`,
+`FUN 000BDC66` tests `0xFFFF24A7` bit 1 at `0xBDE0A` and, with the bit set,
+continues from `0xFFFF1553` instead. A value at or below the previous
+`0xFFFF2326` applies at once. A higher value also applies at once unless
+`0xFFFF247B` bit 1 is set and `0xFFFF1A1E` is nonzero; the target then holds
+while countdown `0xFFFF25EE` runs and rises one count each time it reads zero,
+which reloads `0xFFFF1A1E` and the countdown from `0x12EFE` while
+`ROM8[0x8616]` bit 0 is set (stock `0x01`) and from `0x12F06` by coolant index
+otherwise. Both stock tables hold 5 in each of their eight cells.
+`FUN 000BDB66` sets `0xFFFF247B` bit 1 and reloads the same pair while
+`0xFFFF24A7` bit 1 is clear and, while it is set, clears `0xFFFF247B` bit 1
+once `0xFFFF1553` is at or below `0xFFFF2326`, so after `0xFFFF24A7` bit 1
+sets the target climbs to `0xFFFF1553` one count per countdown period.
+
+`FUN 000BD20A` writes `0xFFFF24A7` bit 1 on every call through its single
+exit. It sets the bit at `0xBD994` only on a path that requires, among other
+conditions, `CLSD THL POS` copy `0xFFFF2458` bit 5 and vehicle-speed byte
+`0xFFFF110E` at most `ROM8[0x871D] = 2`, and clears it at `0xBD9C0` or
+`0xBD9C6` on every other path. `0xFFFF1553` therefore replaces the map target
+only with the pedal at its idle position and the vehicle-speed byte at most 2.
+
 ## Target-vehicle replay
 
 The replay reads constants, axes, and surfaces directly from tested image
@@ -328,7 +370,76 @@ The capture coolant range is raw 139..143, all samples use the warm band, and
 warm/main lookup paths, exact RPM and normalized-BFS coordinates, interpolation
 order, scheduler alignment, and convergence of the independently conditioned
 targets. It does not exercise cold surfaces, coolant blends, or conditional
-corrections.
+corrections; "Cold-start replay" below covers the cold and blend bands.
+
+### Cold-start replay
+
+Registry record `can_telemetry.cvtc_cold_start_2026_09_21` holds the replay
+of dashboard recording `1-crank-cold.mlg`, SHA-256
+`8f0dbb2d8610949d6035ea904fe52662a1e1c01be1aeb754a70894512e1d5f96`, with
+image `a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae`,
+which carries registered-stock intake cold surface `0xB53A`, exhaust cold
+surface `0xB2FA`, and `0xFFFF1553` tables. For each of the seven TRC captures
+of the same drive, the registered converted MLG yields the TRC snapshot
+sequence and every figure of the TRC report for both targets: 94,436
+snapshots from 94,684 records, 219 of which are bridge records. The MLG
+report lacks only the CAN frame count and the retained-context age.
+
+The recording holds 71,706 records, all of them snapshots. Coolant rises from
+raw 70 to 141, `ffff2466.bit6` stays clear, and `ascd_button_raw` stays `0x20`
+(RELEASE), so the Map Switching selector keeps Map 1 and the exhaust main
+surface is canonical `0xB33A`. With the preceding snapshot as input, the
+coolant bands divide the drive as follows:
+
+| Band | Elapsed | Coolant raw | Comparisons | Maximum vehicle speed |
+|---|---|---|---:|---:|
+| cold | 0.000..174.919 s | 70..106 | 17,081 | 0.0 km/h |
+| blend | 174.929..434.703 s | 107..131 | 25,370 | 57.36 km/h |
+| warm | 434.709..734.243 s | 132..141 | 29,253 | 84.12 km/h |
+
+An active comparison has both the predicted byte and the target away from
+`0x80`; a cold-dependent comparison is an active one whose coolant-selected
+byte differs from the main-surface byte.
+
+| Target | Band | Check | Exact / comparisons |
+|---|---|---|---:|
+| intake | cold | coolant-selected map | 1,060 / 17,081 |
+| intake | cold | coolant-selected map, active | 316 / 6,330 |
+| intake | cold | replayed `0xFFFF1553` | 15,670 / 17,081 |
+| intake | cold | replayed `0xFFFF1553`, active | 6,108 / 6,330 |
+| intake | blend | map without downstream neutralization | 15,693 / 16,042 |
+| intake | blend | map, active | 6,352 / 6,696 |
+| intake | blend | map, cold-dependent | 5,882 / 6,197 |
+| intake | blend | map, unchanged 16-cycle active | 2,812 / 2,878 |
+| intake | warm | map without downstream neutralization | 24,123 / 24,823 |
+| intake | warm | map, unchanged 16-cycle active | 11,137 / 11,205 |
+| exhaust | cold | map | 17,081 / 17,081 |
+| exhaust | blend | map without downstream neutralization | 17,628 / 17,628 |
+| exhaust | warm | map without downstream neutralization | 18,501 / 22,240 |
+| exhaust | warm | map, unchanged 16-cycle active | 7,530 / 7,992 |
+
+The cold band is stationary, and there the intake target follows
+`0xFFFF1553` rather than cold surface `0xB53A`, so the recording does not
+test the direct cold lookup. The tool reconstructs neither `0xFFFF24A7` bit 1,
+the conditions that neutralize the target, nor the rising ramp, so the 1,411
+cold-band comparisons that differ from the replayed byte stay unassigned. The
+blend band tests cold surface `0xB53A` through the blend: 5,882 of its 6,197
+cold-dependent comparisons are exact, and a replay from main surface `0xB43A`
+alone misses each of them.
+
+In the warm band the intake unchanged 16-cycle agreement of 99.393 percent
+lies within the 98.664 to 99.492 percent of the four warm TRC captures of the
+same drive with such intervals. The exhaust figure of 94.219 percent is below
+the 96.811 percent of Map 1 capture `3-map-1-stops.trc`.
+
+The exhaust target stays `0x80` in all 42,451 cold- and blend-band
+comparisons, 7,742 of them against a blend value other than `0x80`, and every
+cell of exhaust cold surface `0xB2FA` is `0x80`, so the recording discriminates
+neither the exhaust cold surface nor the exhaust blend. Conditional
+corrections stay unexercised, and raw target agreement does not show the
+physical camshaft response. The direct cold lookup of `0xB53A` needs
+cold-band comparisons with `0xFFFF24A7` bit 1 clear, such as the pedal
+applied or the vehicle moving before coolant exceeds raw 106.
 
 ## Exhaust duty controller and disable path
 

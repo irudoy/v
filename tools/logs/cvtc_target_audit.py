@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay JK08A intake- or exhaust-CVTC target maps against a tuning TRC."""
+"""Replay JK08A intake- or exhaust-CVTC target maps against a tuning TRC or MLG."""
 
 from __future__ import annotations
 
@@ -18,8 +18,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.can_dashboard.model import DashboardModel, FrameRecord
-from tools.logs import peak_trc_audit
-from tools.logs.load_axis_audit import internal_load_raw
+from tools.logs import can_telemetry, mlg_relation_audit, peak_trc_audit
+from tools.logs.load_axis_audit import (
+    internal_load_raw,
+    interpolate_implicit_u16,
+)
 from tools.mapkit import rom as romkit
 
 
@@ -50,6 +53,32 @@ EXHAUST_CVTC_CORRECTION_MAP_ADDRESS = 0xAB4A
 EXHAUST_CVTC_CORRECTION_RPM_AXIS_ADDRESS = 0x12F96
 EXHAUST_CVTC_CORRECTION_LOAD_AXIS_ADDRESS = 0x12F8E
 
+# FUN_000BDB66 forms byte 0xFFFF1553 from engine-speed table 0x122EA and
+# coolant-index weight 0x122F2. FUN_000BDC66 conditions it in place of the
+# coolant-selected intake byte while 0xFFFF24A7 bit 1 is set.
+INTAKE_ALTERNATE_TABLE_ADDRESS = 0x122EA
+INTAKE_ALTERNATE_AXIS_ADDRESS = 0x12F66
+INTAKE_ALTERNATE_POINTS = 8
+INTAKE_ALTERNATE_WEIGHT_ADDRESS = 0x122F2
+INTAKE_ALTERNATE_WEIGHT_POINTS = 16
+INTAKE_ALTERNATE_WEIGHT_STEP = 16
+
+COOLANT_BANDS = ("cold", "blend", "warm")
+CVTC_INPUT_FIELDS = (
+    "bfs_raw",
+    "rpm_raw",
+    "coolant_raw",
+    "knock_surface_state",
+    "intake_cvtc_target_raw",
+    "exhaust_cvtc_target_raw",
+    "intake_cvtc_actual_b1_raw",
+    "intake_cvtc_actual_b2_raw",
+)
+MLG_SIGNATURE = b"MLVLG\x00"
+# A hold-last bridge record of the dashboard recorder rewrites only these
+# channels and repeats every other channel of the preceding record.
+MLG_BRIDGE_TIME_SOURCES = ("date", "elapsed")
+
 
 @dataclass(frozen=True)
 class ExplicitU8Map:
@@ -57,6 +86,13 @@ class ExplicitU8Map:
     row_axis: tuple[int, ...]
     column_axis: tuple[int, ...]
     table: tuple[tuple[int, ...], ...]
+
+
+@dataclass(frozen=True)
+class IntakeAlternateSource:
+    speed_axis: tuple[int, ...]
+    speed_table: tuple[int, ...]
+    coolant_weight: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -71,6 +107,7 @@ class CvtcCalibration:
     warm_threshold: int
     target: str
     conditioned_reference: str
+    alternate_source: IntakeAlternateSource | None = None
 
 
 @dataclass(frozen=True)
@@ -100,6 +137,7 @@ class ReplayPoint:
     coolant_selected_raw: int
     coolant_band: str
     correction_active: bool
+    alternate_source_raw: int | None = None
 
 
 @dataclass(frozen=True)
@@ -138,23 +176,30 @@ class AlignmentSummary:
     correction_active_count: int
     coolant_band_counts: tuple[tuple[str, int], ...]
     selected_raw_range: tuple[int, int]
+    alternate_source_to_reference: ErrorSummary | None = None
+    alternate_source_active_to_active: ErrorSummary | None = None
+    cold_dependent_active_to_active: ErrorSummary | None = None
 
 
 @dataclass(frozen=True)
 class TraceCvtcAudit:
     source: Path
     source_sha256: str
+    source_format: str
     target: str
     calibration_image_source: Path
     calibration_image_sha256: str
-    source_frames: int
+    source_frames: int | None
+    source_records: int | None
+    bridge_records: int | None
     complete_snapshots: int
     analyzed_snapshots: int
+    coolant_bands: tuple[str, ...]
     load_scaler: int
     cold_threshold: int
     warm_threshold: int
     coolant_raw_range: tuple[int, int]
-    coolant_age_max_ms: float
+    coolant_age_max_ms: float | None
     reference_a_raw_range: tuple[int, int]
     reference_b_raw_range: tuple[int, int]
     intake_actual_b1_raw_range: tuple[int, int]
@@ -214,6 +259,29 @@ def load_calibration(
             CVTC_CORRECTION_LOAD_AXIS_ADDRESS,
         )
         conditioned_reference = "reference_a_raw"
+        alternate_source = IntakeAlternateSource(
+            speed_axis=tuple(
+                image.values(
+                    INTAKE_ALTERNATE_AXIS_ADDRESS,
+                    INTAKE_ALTERNATE_POINTS,
+                    "uint8",
+                )
+            ),
+            speed_table=tuple(
+                image.values(
+                    INTAKE_ALTERNATE_TABLE_ADDRESS,
+                    INTAKE_ALTERNATE_POINTS,
+                    "uint8",
+                )
+            ),
+            coolant_weight=tuple(
+                image.values(
+                    INTAKE_ALTERNATE_WEIGHT_ADDRESS,
+                    INTAKE_ALTERNATE_WEIGHT_POINTS,
+                    "uint8",
+                )
+            ),
+        )
     elif target == "exhaust":
         main = (
             EXHAUST_CVTC_MAIN_MAP_ADDRESS,
@@ -234,6 +302,7 @@ def load_calibration(
             EXHAUST_CVTC_CORRECTION_LOAD_AXIS_ADDRESS,
         )
         conditioned_reference = "reference_b_raw"
+        alternate_source = None
     else:
         raise ValueError(f"unknown CVTC target {target!r}")
 
@@ -254,6 +323,7 @@ def load_calibration(
         )[0],
         target=target,
         conditioned_reference=conditioned_reference,
+        alternate_source=alternate_source,
     )
 
 
@@ -385,6 +455,44 @@ def coolant_selected_target(
     return min(0xFF, max(0, cold_raw + delta)), "blend"
 
 
+def coolant_index(coolant_raw: int) -> int:
+    """Reproduce FUN_00039634, the producer of coolant index 0xFFFF1077."""
+    _require_u8(coolant_raw, "coolant_raw")
+    if coolant_raw < 10:
+        return 0
+    if coolant_raw >= 170:
+        return 0xFF
+    return 240 * (coolant_raw - 10) // 150
+
+
+def intake_alternate_target(
+    source: IntakeAlternateSource,
+    rpm50_raw: int,
+    coolant_raw: int,
+) -> int:
+    """Reproduce byte 0xFFFF1553 of FUN_000BDB66.
+
+    The engine-speed lookup is centered on 0x80, weighted by the Q0.7
+    coolant-index lookup, divided by 128 toward zero, recentered, and
+    saturated to a byte.
+    """
+    if len(source.speed_table) != len(source.speed_axis):
+        raise ValueError("alternate table geometry differs from its axis")
+    index, fraction = explicit_axis_position(source.speed_axis, rpm50_raw)
+    speed_raw = source.speed_table[index]
+    if fraction:
+        speed_raw = _linear_u8(
+            speed_raw, source.speed_table[index + 1], fraction
+        )
+    weight = interpolate_implicit_u16(
+        source.coolant_weight,
+        coolant_index(coolant_raw),
+        INTAKE_ALTERNATE_WEIGHT_STEP,
+    )
+    value = 0x80 + _trunc_div((speed_raw - 0x80) * weight, 0x80)
+    return min(0xFF, max(0, value))
+
+
 def replay_point(calibration: CvtcCalibration, sample: CvtcSample) -> ReplayPoint:
     load_raw = internal_load_raw(sample.bfs_raw, calibration.load_scaler)
     rpm50_raw = min(0xFF, sample.rpm_raw >> 2)
@@ -419,6 +527,13 @@ def replay_point(calibration: CvtcCalibration, sample: CvtcSample) -> ReplayPoin
         correction_active=bool(
             sample.knock_surface_state & CVTC_CORRECTION_STATE_MASK
         ),
+        alternate_source_raw=(
+            None
+            if calibration.alternate_source is None
+            else intake_alternate_target(
+                calibration.alternate_source, rpm50_raw, sample.coolant_raw
+            )
+        ),
     )
 
 
@@ -451,19 +566,9 @@ def _optional_error_summary(errors: list[int]) -> ErrorSummary | None:
     return _error_summary(errors) if errors else None
 
 
-def _samples(trace, profile: str, can_id: int, tick_divisor: int):
+def _trace_samples(trace, profile: str, can_id: int, tick_divisor: int):
     model = DashboardModel(profile, can_id, tick_divisor)
     samples = []
-    required = (
-        "bfs_raw",
-        "rpm_raw",
-        "coolant_raw",
-        "knock_surface_state",
-        "intake_cvtc_target_raw",
-        "exhaust_cvtc_target_raw",
-        "intake_cvtc_actual_b1_raw",
-        "intake_cvtc_actual_b2_raw",
-    )
     for frame in trace.frames:
         timestamp = frame.offset_ms / 1000.0
         snapshot = model.process_frame(
@@ -479,7 +584,7 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
         )
         if snapshot is None or not model.schema_verified:
             continue
-        if not all(name in model.raw for name in required):
+        if not all(name in model.raw for name in CVTC_INPUT_FIELDS):
             continue
         coolant_updated = model.updated_at["coolant_raw"]
         samples.append(
@@ -501,6 +606,129 @@ def _samples(trace, profile: str, can_id: int, tick_divisor: int):
     return model, samples
 
 
+def is_mlg(path: Path) -> bool:
+    """Report whether a capture starts with the MLVLG signature."""
+    with Path(path).open("rb") as source:
+        return source.read(len(MLG_SIGNATURE)) == MLG_SIGNATURE
+
+
+def _raw_limits(profile: str) -> dict[str, tuple[int, int]]:
+    """Return the wire range of every fixed and context field of a profile."""
+    _document, profiles = can_telemetry.load_schema(can_telemetry.DEFAULT_SCHEMA)
+    try:
+        selected = profiles[profile]
+    except KeyError as error:
+        raise ValueError(f"unknown telemetry profile {profile!r}") from error
+    fields = list(selected["fields"])
+    for context in selected.get("contexts", ()):
+        fields.extend(context["fields"])
+    limits = {}
+    for field in fields:
+        bits = 8 * field["width"]
+        if field["signed"]:
+            limits[field["name"]] = (-(1 << (bits - 1)), (1 << (bits - 1)) - 1)
+        else:
+            limits[field["name"]] = (0, (1 << bits) - 1)
+    return limits
+
+
+def _same_record_value(first: float, second: float) -> bool:
+    return first == second or (math.isnan(first) and math.isnan(second))
+
+
+def _recording_samples(recording, profile: str):
+    """Recover the verified snapshots of one dashboard MLG recording.
+
+    The recorder stores every telemetry field as its raw wire integer in F32,
+    which is exact for the 8- and 16-bit fields of the replay, and stores an
+    absent field as NaN. It writes one event record per completed snapshot and,
+    across a gap, hold-last bridge records that repeat every channel except
+    Date and Elapsed. The decoder never accepts two consecutive groups with
+    the same tick, so a record that repeats the preceding tick is a bridge
+    record, and the decoder's own tick rule rebuilds run and unwrapped tick
+    from the event records.
+    """
+    columns = recording.columns
+    required = ("elapsed", "schema_verified", "tick16", *CVTC_INPUT_FIELDS)
+    missing = [name for name in required if name not in columns]
+    if missing:
+        raise ValueError(f"{recording.path}: MLG lacks {', '.join(missing)}")
+    limits = _raw_limits(profile)
+    repeated = [
+        name for name in columns if name not in MLG_BRIDGE_TIME_SOURCES
+    ]
+
+    def raw(name: str, index: int) -> int:
+        value = columns[name][index]
+        low, high = limits[name]
+        if not (
+            math.isfinite(value) and value.is_integer() and low <= value <= high
+        ):
+            raise ValueError(
+                f"{recording.path}: record {index} carries {name}={value!r}, "
+                f"which is not a raw {profile} wire value"
+            )
+        return int(value)
+
+    samples = []
+    event_records = 0
+    bridge_records = 0
+    last_tick16 = None
+    run = 0
+    tick = 0
+    for index in range(recording.record_count):
+        tick16 = raw("tick16", index)
+        if tick16 == last_tick16:
+            if not all(
+                _same_record_value(columns[name][index], columns[name][index - 1])
+                for name in repeated
+            ):
+                raise ValueError(
+                    f"{recording.path}: record {index} repeats tick {tick16} "
+                    "but not the preceding channel values"
+                )
+            bridge_records += 1
+            continue
+        if last_tick16 is None:
+            tick = tick16
+        else:
+            delta = (tick16 - last_tick16) & 0xFFFF
+            if delta < 0x8000:
+                tick += delta
+            elif can_telemetry.is_producer_restart(last_tick16, tick16):
+                run += 1
+                tick = tick16
+            else:
+                raise ValueError(
+                    f"{recording.path}: record {index} steps tick "
+                    f"{last_tick16} to {tick16}, which the decoder rejects"
+                )
+        last_tick16 = tick16
+        event_records += 1
+        if columns["schema_verified"][index] != 1.0:
+            continue
+        if any(math.isnan(columns[name][index]) for name in CVTC_INPUT_FIELDS):
+            continue
+        values = {name: raw(name, index) for name in CVTC_INPUT_FIELDS}
+        samples.append(
+            CvtcSample(
+                timestamp=columns["elapsed"][index],
+                run=run,
+                tick=tick,
+                bfs_raw=values["bfs_raw"],
+                rpm_raw=values["rpm_raw"],
+                coolant_raw=values["coolant_raw"],
+                coolant_age_ms=math.nan,
+                knock_surface_state=values["knock_surface_state"],
+                reference_a_raw=values["intake_cvtc_target_raw"],
+                reference_b_raw=values["exhaust_cvtc_target_raw"],
+                intake_actual_b1_raw=values["intake_cvtc_actual_b1_raw"],
+                intake_actual_b2_raw=values["intake_cvtc_actual_b2_raw"],
+            )
+        )
+    return event_records, bridge_records, samples
+
+
 def _alignment_summary(
     samples: list[CvtcSample],
     points_by_source: list[ReplayPoint],
@@ -508,6 +736,7 @@ def _alignment_summary(
     tick_divisor: int,
     stable_cycles: tuple[int, ...],
     conditioned_reference: str = "reference_a_raw",
+    coolant_bands: tuple[str, ...] = COOLANT_BANDS,
 ) -> AlignmentSummary:
     if source_lag < 0:
         raise ValueError("source lag must be nonnegative")
@@ -526,6 +755,8 @@ def _alignment_summary(
         ):
             continue
         point = points_by_source[source_index]
+        if point.coolant_band not in coolant_bands:
+            continue
         predicted = point.coolant_selected_raw
         errors_a.append(predicted - target.reference_a_raw)
         errors_b.append(predicted - target.reference_b_raw)
@@ -533,7 +764,10 @@ def _alignment_summary(
         errors_actual_b2.append(predicted - target.intake_actual_b2_raw)
         rows.append((source_index, target_index, point, target))
     if not rows:
-        raise ValueError(f"no contiguous samples for source lag {source_lag}")
+        raise ValueError(
+            f"no contiguous samples for source lag {source_lag} in coolant "
+            f"bands {','.join(coolant_bands)}"
+        )
 
     if conditioned_reference not in ("reference_a_raw", "reference_b_raw"):
         raise ValueError("conditioned reference must be reference A or B")
@@ -572,6 +806,27 @@ def _alignment_summary(
         point.coolant_selected_raw - getattr(target, conditioned_reference)
         for _, _, point, target in rows
         if point.coolant_selected_raw != 0x80
+        and getattr(target, conditioned_reference) != 0x80
+    ]
+    # The cold surface determines a prediction exactly where the
+    # coolant-selected byte differs from the main-surface byte.
+    cold_dependent_active_to_active = [
+        point.coolant_selected_raw - getattr(target, conditioned_reference)
+        for _, _, point, target in rows
+        if point.coolant_selected_raw != 0x80
+        and getattr(target, conditioned_reference) != 0x80
+        and point.coolant_selected_raw != point.main_selected_raw
+    ]
+    alternate_source_errors = [
+        point.alternate_source_raw - getattr(target, conditioned_reference)
+        for _, _, point, target in rows
+        if point.alternate_source_raw is not None
+    ]
+    alternate_active_to_active = [
+        point.alternate_source_raw - getattr(target, conditioned_reference)
+        for _, _, point, target in rows
+        if point.alternate_source_raw is not None
+        and point.alternate_source_raw != 0x80
         and getattr(target, conditioned_reference) != 0x80
     ]
     stable = []
@@ -625,6 +880,15 @@ def _alignment_summary(
             min(point.coolant_selected_raw for point in points),
             max(point.coolant_selected_raw for point in points),
         ),
+        alternate_source_to_reference=_optional_error_summary(
+            alternate_source_errors
+        ),
+        alternate_source_active_to_active=_optional_error_summary(
+            alternate_active_to_active
+        ),
+        cold_dependent_active_to_active=_optional_error_summary(
+            cold_dependent_active_to_active
+        ),
     )
 
 
@@ -639,14 +903,39 @@ def audit_trace(
     source_lags: tuple[int, ...] = (0, 1, 2),
     stable_cycles: tuple[int, ...] = (1, 4, 8, 16),
     target: str = "intake",
+    coolant_bands: tuple[str, ...] = COOLANT_BANDS,
 ) -> TraceCvtcAudit:
+    """Audit a PEAK TRC capture or a dashboard MLG recording.
+
+    Both inputs yield the same verified snapshot sequence. An MLG carries no
+    CAN frames and no context tag, so its report omits the frame count and the
+    age of retained context values; ``can_id`` applies only to a TRC.
+    """
     source = Path(source)
     source_sha256 = _sha256_file(source)
-    trace = peak_trc_audit.load_trace(source)
-    if _sha256_file(source) != source_sha256:
-        raise ValueError(f"{source}: capture changed while it was being parsed")
+    if not coolant_bands or any(band not in COOLANT_BANDS for band in coolant_bands):
+        raise ValueError(f"coolant bands must be drawn from {','.join(COOLANT_BANDS)}")
+    if is_mlg(source):
+        recording = mlg_relation_audit.read_recording(source)
+        if recording.sha256 != source_sha256:
+            raise ValueError(f"{source}: capture changed while it was being parsed")
+        complete_snapshots, bridge_records, samples = _recording_samples(
+            recording, profile
+        )
+        source_format = "mlg"
+        source_frames = None
+        source_records = recording.record_count
+    else:
+        trace = peak_trc_audit.load_trace(source)
+        if _sha256_file(source) != source_sha256:
+            raise ValueError(f"{source}: capture changed while it was being parsed")
+        model, samples = _trace_samples(trace, profile, can_id, tick_divisor)
+        complete_snapshots = model.decoder.completed_groups
+        source_format = "trc"
+        source_frames = len(trace.frames)
+        source_records = None
+        bridge_records = None
     calibration = load_calibration(rom, calibration_image, target)
-    model, samples = _samples(trace, profile, can_id, tick_divisor)
     if len(samples) < 3:
         raise ValueError(f"{source}: fewer than three verified CVTC snapshots")
     if not source_lags or any(type(lag) is not int or lag < 0 for lag in source_lags):
@@ -660,18 +949,23 @@ def audit_trace(
             tick_divisor,
             stable_cycles,
             calibration.conditioned_reference,
+            coolant_bands,
         )
         for lag in source_lags
     )
     return TraceCvtcAudit(
         source=source,
         source_sha256=source_sha256,
+        source_format=source_format,
         target=calibration.target,
         calibration_image_source=calibration.image_source,
         calibration_image_sha256=calibration.image_sha256,
-        source_frames=len(trace.frames),
-        complete_snapshots=model.decoder.completed_groups,
+        source_frames=source_frames,
+        source_records=source_records,
+        bridge_records=bridge_records,
+        complete_snapshots=complete_snapshots,
         analyzed_snapshots=len(samples),
+        coolant_bands=tuple(coolant_bands),
         load_scaler=calibration.load_scaler,
         cold_threshold=calibration.cold_threshold,
         warm_threshold=calibration.warm_threshold,
@@ -679,7 +973,11 @@ def audit_trace(
             min(sample.coolant_raw for sample in samples),
             max(sample.coolant_raw for sample in samples),
         ),
-        coolant_age_max_ms=max(sample.coolant_age_ms for sample in samples),
+        coolant_age_max_ms=(
+            None
+            if source_format == "mlg"
+            else max(sample.coolant_age_ms for sample in samples)
+        ),
         reference_a_raw_range=(
             min(sample.reference_a_raw for sample in samples),
             max(sample.reference_a_raw for sample in samples),
@@ -749,6 +1047,15 @@ def main(argv: list[str] | None = None) -> int:
         default=(1, 4, 8, 16),
         help="comma-separated unchanged-map-input windows for active comparisons",
     )
+    parser.add_argument(
+        "--coolant-bands",
+        type=lambda value: tuple(value.split(",")),
+        default=COOLANT_BANDS,
+        help=(
+            "comma-separated coolant bands (cold, blend, warm) of the replayed "
+            "source snapshot that enter the comparisons"
+        ),
+    )
     args = parser.parse_args(argv)
     if not 1 <= args.can_id <= 0x7FF:
         parser.error("CAN ID must be in 0x001..0x7FF")
@@ -767,6 +1074,7 @@ def main(argv: list[str] | None = None) -> int:
                 source_lags=args.source_lags,
                 stable_cycles=args.stable_cycles,
                 target=args.target,
+                coolant_bands=args.coolant_bands,
             )
             print(result.source)
             print(f"  target={result.target}")
@@ -775,8 +1083,17 @@ def main(argv: list[str] | None = None) -> int:
                 f"  calibration={result.calibration_image_source}, "
                 f"sha256={result.calibration_image_sha256}"
             )
+            if result.source_format == "mlg":
+                source_counts = (
+                    f"records={result.source_records}, "
+                    f"bridge={result.bridge_records}"
+                )
+                context_age = "n/a"
+            else:
+                source_counts = f"frames={result.source_frames}"
+                context_age = f"{result.coolant_age_max_ms:.3f}ms"
             print(
-                f"  frames={result.source_frames}, "
+                f"  {source_counts}, "
                 f"complete={result.complete_snapshots}, "
                 f"analyzed={result.analyzed_snapshots}"
             )
@@ -785,8 +1102,10 @@ def main(argv: list[str] | None = None) -> int:
                 f"coolant_thresholds={result.cold_threshold}.."
                 f"{result.warm_threshold}, coolant_raw="
                 f"{result.coolant_raw_range[0]}..{result.coolant_raw_range[1]}, "
-                f"retained_context_max_age={result.coolant_age_max_ms:.3f}ms"
+                f"retained_context_max_age={context_age}"
             )
+            if result.coolant_bands != COOLANT_BANDS:
+                print(f"  compared_coolant_bands={','.join(result.coolant_bands)}")
             print(
                 "  captured_ranges: "
                 f"reference_a={result.reference_a_raw_range[0]}.."
@@ -835,6 +1154,19 @@ def main(argv: list[str] | None = None) -> int:
                         alignment.selected_to_intake_actual_b2,
                     )
                 )
+                if alignment.alternate_source_to_reference is not None:
+                    print(
+                        _format_errors(
+                            "alternate_ffff1553_to_reference_a",
+                            alignment.alternate_source_to_reference,
+                        )
+                    )
+                    print(
+                        _format_errors(
+                            "alternate_ffff1553_active_to_active",
+                            alignment.alternate_source_active_to_active,
+                        )
+                    )
                 print(
                     "    conditioned_neutralization: "
                     f"samples={alignment.conditioned_neutralization_count}, "
@@ -850,6 +1182,12 @@ def main(argv: list[str] | None = None) -> int:
                     _format_errors(
                         "active_to_active",
                         alignment.active_to_active,
+                    )
+                )
+                print(
+                    _format_errors(
+                        "cold_dependent_active_to_active",
+                        alignment.cold_dependent_active_to_active,
                     )
                 )
                 for stable in alignment.stable_active:
