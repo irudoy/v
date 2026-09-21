@@ -836,11 +836,40 @@ map_3_first_fuel_cut_seconds = 131.733
 map_3_first_fuel_cut_engine_speed_rpm = 7650.0
 map_3_first_fuel_cut_stock_can_rpm = 7656
 map_3_fuel_cut_mask = 0x3F
-map_3_fuel_cut_record_count = 55
+map_3_full_pedal_fuel_cut_record_count = 55
 map_3_peak_stock_can_rpm = 7781
 limiter_interval_fuel_inhibit_record_count = 0
 result = "the limiter closes both throttle plates at the x*0.78125 RPM conversion of the selected scalar without a fuel mask, and the disabled value 0xFFFF leaves the plates open until the main fuel cut at 7650 RPM"
 evidence_boundary = "plate response time, channel-to-bank identity, and ECM terminals are outside the measurement"
+
+[main_fuel_cut.vehicle_2026_09_21]
+recorded_on = "2026-09-21"
+image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
+capture_name = "6-map-1-3-4-limiter.mlg"
+capture_sha256 = "b07fd8c73c35267f9216f745274d5ea8d45fc4821e2012d506f6ed509d7a674f"
+software_status = "pass"
+hardware_status = "pass"
+table_address = 0x0934E
+scale_expr = "x*12.5"
+selected_map = 3
+slot_address = 0xD3508
+slot_words = [612, 596, 604, 368]
+column = 0
+speed_coordinate = "FUN_0004F282 compares the words with uint16[0xFFFF11BC], which FUN_00020DFE copies from 0xFFFF11F4 after the previous telemetry capture of that word and before the current one"
+activation_count = 8
+release_count = 8
+activation_transitions_raw = [[611, 612], [613, 618], [613, 616], [614, 617], [613, 616], [611, 613], [613, 617], [613, 616]]
+release_transitions_raw = [[604, 599], [603, 600], [604, 602], [606, 603], [605, 601], [604, 602], [606, 603], [604, 600]]
+activation_bound_raw = [612, 612]
+release_bound_raw = [604, 606]
+first_activation_seconds = 131.733
+last_release_seconds = 132.917
+cut_record_count = 63
+cut_engine_speed_rpm = [7537.5, 7762.5]
+fuel_cut_mask = 0x3F
+peak_stock_can_rpm = 7781
+result = "the full 0x3F mask activates when the RPM word reaches activation word 612 = 7650 RPM and releases below Map 3 release word 604 = 7550 RPM, so the table words share the x*12.5 RPM units of the RPM word"
+evidence_boundary = "column 1, the stock column-0 release word 596, a nonzero ROM8[0x8C69] activation delay, and injector-terminal fuel shutoff are outside the measurement"
 
 [passive_can]
 recorded_on = "2026-08-16"

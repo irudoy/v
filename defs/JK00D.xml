@@ -1979,9 +1979,14 @@
          column 1. Activation occurs at RPM >= threshold; equality to the release value retains
          cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
-         candidate Normal/Reverse column labels. Definition address projected from JK08A
-         0000934e through JK08A-JK00D.definition-addresses.csv: target literals and reviewed
-         homologous consumer topology.
+         candidate Normal/Reverse column labels. A JK08A vehicle session on 2026-09-21 ran
+         column 0 from the Map 3 slot copy, whose release word is 604: eight activations and
+         eight releases of the full 0x3f mask bound the compared activation word to 612 = 7650
+         RPM and the release word to 604..606 = 7550..7575 RPM, and stock release word 596
+         cannot produce a release whose lower captured RPM word is 599..603. Column 1 and
+         injector-terminal shutoff remain outside that measurement. Definition address projected
+         from JK08A 0000934e through JK08A-JK00D.definition-addresses.csv: target literals and
+         reviewed homologous consumer topology.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Engine Speed Limit - Fuel Cut"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -2448,9 +2453,14 @@
          column 1. Activation occurs at RPM >= threshold; equality to the release value retains
          cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
-         candidate Normal/Reverse column labels. Definition address projected from JK08A
-         0000934e through JK08A-JK00D.definition-addresses.csv: target literals and reviewed
-         homologous consumer topology.
+         candidate Normal/Reverse column labels. A JK08A vehicle session on 2026-09-21 ran
+         column 0 from the Map 3 slot copy, whose release word is 604: eight activations and
+         eight releases of the full 0x3f mask bound the compared activation word to 612 = 7650
+         RPM and the release word to 604..606 = 7550..7575 RPM, and stock release word 596
+         cannot produce a release whose lower captured RPM word is 599..603. Column 1 and
+         injector-terminal shutoff remain outside that measurement. Definition address projected
+         from JK08A 0000934e through JK08A-JK00D.definition-addresses.csv: target literals and
+         reviewed homologous consumer topology.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Engine Speed Limit - Fuel Cut"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -2918,9 +2928,14 @@
          column 1. Activation occurs at RPM >= threshold; equality to the release value retains
          cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
-         candidate Normal/Reverse column labels. Definition address projected from JK08A
-         0000934e through JK08A-JK00D.definition-addresses.csv: target literals and reviewed
-         homologous consumer topology.
+         candidate Normal/Reverse column labels. A JK08A vehicle session on 2026-09-21 ran
+         column 0 from the Map 3 slot copy, whose release word is 604: eight activations and
+         eight releases of the full 0x3f mask bound the compared activation word to 612 = 7650
+         RPM and the release word to 604..606 = 7550..7575 RPM, and stock release word 596
+         cannot produce a release whose lower captured RPM word is 599..603. Column 1 and
+         injector-terminal shutoff remain outside that measurement. Definition address projected
+         from JK08A 0000934e through JK08A-JK00D.definition-addresses.csv: target literals and
+         reviewed homologous consumer topology.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Engine Speed Limit - Fuel Cut"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -3388,9 +3403,14 @@
          column 1. Activation occurs at RPM >= threshold; equality to the release value retains
          cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
-         candidate Normal/Reverse column labels. Definition address projected from JK08A
-         0000934e through JK08A-JK00D.definition-addresses.csv: target literals and reviewed
-         homologous consumer topology.
+         candidate Normal/Reverse column labels. A JK08A vehicle session on 2026-09-21 ran
+         column 0 from the Map 3 slot copy, whose release word is 604: eight activations and
+         eight releases of the full 0x3f mask bound the compared activation word to 612 = 7650
+         RPM and the release word to 604..606 = 7550..7575 RPM, and stock release word 596
+         cannot produce a release whose lower captured RPM word is 599..603. Column 1 and
+         injector-terminal shutoff remain outside that measurement. Definition address projected
+         from JK08A 0000934e through JK08A-JK00D.definition-addresses.csv: target literals and
+         reviewed homologous consumer topology.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Engine Speed Limit - Fuel Cut"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
@@ -3858,9 +3878,14 @@
          column 1. Activation occurs at RPM >= threshold; equality to the release value retains
          cut and release requires RPM below it. ROM8[00008b38]=0x63 keeps alternate words
          00009356/00009358 outside the stock path. The public HR A2L catalog supplies the
-         candidate Normal/Reverse column labels. Definition address projected from JK08A
-         0000934e through JK08A-JK00D.definition-addresses.csv: target literals and reviewed
-         homologous consumer topology.
+         candidate Normal/Reverse column labels. A JK08A vehicle session on 2026-09-21 ran
+         column 0 from the Map 3 slot copy, whose release word is 604: eight activations and
+         eight releases of the full 0x3f mask bound the compared activation word to 612 = 7650
+         RPM and the release word to 604..606 = 7550..7575 RPM, and stock release word 596
+         cannot produce a release whose lower captured RPM word is 599..603. Column 1 and
+         injector-terminal shutoff remain outside that measurement. Definition address projected
+         from JK08A 0000934e through JK08A-JK00D.definition-addresses.csv: target literals and
+         reviewed homologous consumer topology.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Engine Speed Limit - Fuel Cut"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"

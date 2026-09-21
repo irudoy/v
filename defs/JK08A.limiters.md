@@ -14,7 +14,8 @@ and downstream software effects. A controlled vehicle comparison of three
 `0x0942C` values on 2026-09-21, recorded in
 [`../patches/hardware-results.toml`](../patches/hardware-results.toml), fixes the
 `x*0.78125 RPM` conversion of `0x0942C` and the throttle-plate action behind the
-`Throttle Rev Limiter` name.
+`Throttle Rev Limiter` name. The same session ran the main fuel cut from a map
+slot copy and fixes the `x*12.5 RPM` conversion of `0x0934E`.
 
 ## Periodic execution order
 
@@ -57,6 +58,16 @@ retains the cut; only a value below it clears bits 1 and 2.
 
 The returned Boolean is one of the global inputs of `FUN_0004ED88`. An active state
 therefore becomes `0x3F`, not a rotating or partial mask.
+
+The 2026-09-21 vehicle session ran column 0 from the Map 3 slot copy at
+`0xD3508`, whose words are 612/596/604/368; only the column-0 release word
+differs from stock. `FUN_00020DFE` copies `0xFFFF11F4` into the compared word
+`0xFFFF11BC` between two telemetry captures of `0xFFFF11F4`, so each mask
+transition bounds the threshold by the two captured RPM words around it. Eight
+activations and eight releases of the full `0x3F` mask bound the activation word
+to 612 = 7650 RPM and the release word to 604..606 = 7550..7575 RPM. Stock release
+word 596 cannot produce any of the eight releases, whose lower captured word is
+599..603. Column 1 remained unexercised.
 
 ## Stationary fuel-cut state machine
 
@@ -267,8 +278,9 @@ override/fallback paths through `FUN_0004EBA2`, `FUN_00052034`, and
 Static code therefore establishes a hard six-channel fuel-output path for main and
 stationary RPM cut, and a separate softer signed-request path for `0x0942C` that
 reaches ATU-II BFR6A-D through the stock throttle regulator. The 2026-09-21
-vehicle comparison confirms the `0x0942C` scale and throttle-plate closure.
-Hardware validation remains required for plate response time, bank and polarity
-assignment, external injector-driver behavior, and channel-to-cylinder order.
+vehicle session confirms the `0x0942C` scale and throttle-plate closure and the
+`0x0934E` scale in column 0. Hardware validation remains required for plate
+response time, bank and polarity assignment, external injector-driver behavior,
+and channel-to-cylinder order.
 The two shared-status prerequisites are lifecycle-zero and stock-inert under the
 recovered startup, runtime, recovery, and DMAC paths.
