@@ -81,9 +81,19 @@ The package also includes `convert-trc-to-mlg.cmd`. Pass one or more PEAK TRC
 1.1 paths to it after `install.cmd`; each result is written beside its source.
 
 The default hardware filter accepts custom telemetry plus stock context IDs
-`0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide an independent
-RPM cross-check, vehicle speed, ASCD input, selector state, and dashboard
-indication state.
+`0x180`, `0x239`, `0x280`, `0x421`, and `0x551`. They provide an RPM
+cross-check over the stock transmit path, vehicle speed, ASCD input, selector
+state, and dashboard indication state.
+
+`Engine speed` and `Stock CAN RPM` come from one ECU word. `FUN_000384FE`
+shifts the event-interval engine speed `0xFFFF1196`, RPM * 5.12, right by 6
+into telemetry field `0xFFFF11F4` at 12.5 RPM per count, and right by 4 into
+`0xFFFF11EE`, which `FUN_000C577A` multiplies by 25 into frame `0x180` bytes 0
+and 1 at `raw / 8` RPM, 3.125 RPM per count. The telemetry value belongs to
+the snapshot taken at the scheduler boundary, while the frame is serialized in
+its own `Tcan` slot and the display holds the latest frame received, so the
+two values differ by their resolution and by the change of engine speed
+between the two sampling moments.
 
 ## Stream control
 
