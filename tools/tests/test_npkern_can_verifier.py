@@ -1,6 +1,8 @@
+import csv
 import importlib.util
 import hashlib
 from pathlib import Path
+import re
 import sys
 import tempfile
 import unittest
@@ -8,6 +10,14 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
+README = ROOT / "tools" / "sh-elf-run" / "README.md"
+ROM_REGISTRY = ROOT / "rom-images" / "roms.csv"
+LOADER_ABI_ROW = re.compile(
+    r"^\| (?P<rom>\w+) \| `0x(?P<dispatcher>[0-9A-F]{8})` \| "
+    r"`0x(?P<sid>[0-9A-F]{2})` \| `0x(?P<entry>[0-9A-F]{8})` \| "
+    r"`0x(?P<handler>[0-9A-F]{8})` \|$",
+    re.MULTILINE,
+)
 MODULE_PATH = ROOT / "tools" / "sh-elf-run" / "verify_npkern_can.py"
 SPEC = importlib.util.spec_from_file_location("verify_npkern_can", MODULE_PATH)
 assert SPEC and SPEC.loader
@@ -39,6 +49,49 @@ class NpkernCanVerifierTest(unittest.TestCase):
         )
         self.assertEqual(len(verifier.LEGACY_PARSER_SHA256), 64)
         self.assertEqual(len(verifier.LEGACY_SH7058_BINARY_SHA256), 64)
+        for target in verifier.TARGETS:
+            with self.subTest(target=target.name):
+                self.assertEqual(
+                    target.aligned_limit,
+                    (target.boundary - target.origin) & ~0x1F,
+                )
+
+    def test_factory_loader_abi_matches_the_stock_images(self):
+        section = README.read_text(encoding="utf-8").split(
+            "### Factory loader ABI", 1
+        )[1].split("\n## ", 1)[0]
+        rows = [match.groupdict() for match in LOADER_ABI_ROW.finditer(section)]
+        with ROM_REGISTRY.open(newline="", encoding="utf-8") as stream:
+            images = {
+                row["rom"]: ROOT / "rom-images" / row["path"]
+                for row in csv.DictReader(stream)
+                if row["rom"]
+            }
+        self.assertEqual(
+            {(row["rom"], row["sid"]) for row in rows},
+            {
+                (rom, sid)
+                for rom in ("JK08A", "1ND0A")
+                for sid in ("27", "34", "36", "37", "BF")
+            },
+        )
+        self.assertEqual(len(rows), 10)
+        for row in rows:
+            with self.subTest(rom=row["rom"], sid=row["sid"]):
+                image = images[row["rom"]].read_bytes()
+                dispatcher = int(row["dispatcher"], 16)
+                entry = int(row["entry"], 16)
+                self.assertEqual(
+                    int.from_bytes(image[entry : entry + 4], "big"),
+                    int(row["handler"], 16),
+                )
+                loads = [
+                    address
+                    for address in range(dispatcher, entry, 2)
+                    if image[address] >> 4 == 0xD
+                    and (address & ~3) + 4 + 4 * image[address + 1] == entry
+                ]
+                self.assertTrue(loads)
 
     def test_build_definitions_are_explicit_and_fail_closed(self):
         read_only = verifier.common_definitions(verifier.TARGETS[0])

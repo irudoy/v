@@ -143,6 +143,33 @@ ISO-TP, and flash-boundary fixtures, checks production-to-simulator byte
 identity outside declared relocation literals, and verifies the unchanged
 legacy SH7058 K-line target.
 
+### Factory loader ABI
+
+The CAN targets load through the factory reprogramming services `0x27`,
+`0x34`, `0x36`, `0x37`, and `0xBF` of the stock diagnostic dispatcher, in that
+order. The dispatcher selects each service handler with a PC-relative `mov.l`
+from its literal pool:
+
+| ROM | Dispatcher | SID | Literal-pool entry | Handler |
+| --- | --- | --- | --- | --- |
+| JK08A | `0x0002F928` | `0x27` | `0x0002FB44` | `0x00033578` |
+| JK08A | `0x0002F928` | `0x34` | `0x0002FB5C` | `0x00034410` |
+| JK08A | `0x0002F928` | `0x36` | `0x0002FB3C` | `0x000345F4` |
+| JK08A | `0x0002F928` | `0x37` | `0x0002FB40` | `0x0003469C` |
+| JK08A | `0x0002F928` | `0xBF` | `0x0002FB38` | `0x0003475C` |
+| 1ND0A | `0x00035098` | `0x27` | `0x00035290` | `0x00039278` |
+| 1ND0A | `0x00035098` | `0x34` | `0x00035294` | `0x0003A200` |
+| 1ND0A | `0x00035098` | `0x36` | `0x000352C8` | `0x0003A494` |
+| 1ND0A | `0x00035098` | `0x37` | `0x000352CC` | `0x0003A55C` |
+| 1ND0A | `0x00035098` | `0xBF` | `0x000352C4` | `0x0003A624` |
+
+`tools/tests/test_npkern_can_verifier.py` reads every row from the registered
+stock image, requires the entry to hold the handler, and requires a `mov.l`
+between the dispatcher entry point and the literal-pool entry to load it. Each
+target in `verify_npkern_can.py` spans the loader-owned window from `origin`
+to `boundary`, and its `aligned_limit` is that window rounded down to 32
+bytes; the same test holds the relation.
+
 ## Simulator boundaries
 
 GNU `sh-elf-run` cannot map the ECU high-RAM windows. The gate first proves the
