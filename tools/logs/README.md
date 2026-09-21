@@ -315,6 +315,52 @@ recorded channels are the quantities the code connects; it does not prove a
 physical unit, and the injection fit reports the gain and additive term of
 the pulse chain rather than an electrical pulse width.
 
+## JK08A long-term trim audit
+
+`ltft_publication_audit.py` relates the long-term trim channels of schema-2
+`tuning` recordings to the LTFT publisher `FUN 00057B26` and the learned-cell
+selector `FUN 0005796C` of the calibration image. Context tag 0 carries the
+selected bank 1 learned cell `0xFFFF2306` and the adjustment term
+`0xFFFF5648`, and tag 2 the published words `0xFFFF2302` and `0xFFFF2304`. The
+tag phase is the tick residue on which front A/F word `0xFFFF2780` changes; a
+recording with more than one residue is refused.
+
+- Publication: a tag-2 refresh is bracketed when the tag-0 refreshes two
+  ticks before and three ticks after it predict the same word
+  `clamp(learned + adjustment - 0x6400)`. The audit counts exact matches,
+  exact matches with a non-neutral prediction, forced neutral words, other
+  values, and refreshes between two different predictions. It clamps
+  unconditionally; the publisher skips the clamp on `0xFFFF230E` bit `b` or
+  when `uint16[0xFFFF15FC] <= int16[0xFFFF15FE]`, which the stream does not
+  carry.
+- Learning: a learned change is a difference between tag-0 refreshes five
+  ticks apart. The selector is replayed from Base Fuel Schedule and the RPM/50
+  word with the axes and hysteresis read from the image. A change between two
+  tag-0 samples of one replayed cell visit of at least five snapshots is an
+  in-visit change, and an update when it stays within
+  `max|STFT - 0x6400| * max(gain) >> 8` of the capture.
+- Warm window: the part of the capture after coolant reaches `ROM8[0x8CFD]`,
+  with its D, P, and closed-loop proxy seconds and the fueled snapshots whose
+  RPM/12.5 word reaches the `0xC0` MAF summary gate of `FUN 0004F736`.
+- Drive profile: D time, the seconds and intervals inside `--speed-band`,
+  the final P interval with its median STFT, and the D intervals with the full
+  fuel-inhibit mask.
+
+```bash
+python3 tools/logs/ltft_publication_audit.py \
+  --calibration-image tmp/1JK08A-tune-v3-1.bin \
+  tmp/logs-09-22/7-cruise.mlg
+```
+
+Without `--calibration-image`, the tool uses the hash-verified registered
+JK08A stock ROM. `--speed-band` sets the speed band in km/h (default 80 100).
+The output is one `key = value` line per statistic in TOML syntax.
+
+Every relation is evaluated in raw software units. The closed-loop proxy and
+the replayed cell are software constructions, not recorded ECU states. The
+stream carries the bank 2 published word without its summands, and it carries
+neither `0xFFFF41B5` nor the remaining permit terms of `FUN 00057D1E`.
+
 ## JK08A Rolling Launch activation audit
 
 `rolling_launch_audit.py` evaluates Rolling Launch activations in a dashboard

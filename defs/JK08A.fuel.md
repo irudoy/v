@@ -461,7 +461,9 @@ raw_b = uint16[0xFFFF2306 + 2*b] + uint16[0xFFFF5648 + 2*b] - 0x6400
 ```
 
 Limiting is skipped when bit `b` of `0xFFFF230E` is set, or when
-`uint16[0xFFFF15FC] <= uint16[0xFFFF15FE]`. Otherwise the word is clamped
+`uint16[0xFFFF15FC] <= int16[0xFFFF15FE]`: `extu.w` at `0x57B60` zero-extends
+the first word, the load at `0x57B62` sign-extends the second, and `cmp/gt` at
+`0x57B64` compares them as signed 32-bit values. Otherwise the word is clamped
 between two adjacent ROM bytes scaled to Q8.8 percent:
 
 ```text
@@ -475,15 +477,41 @@ before the store to `0xFFFF2302 + 2*b`:
 ```text
 FUN 00025E20(0x0129) != 0
 uint8[0xFFFF41B5].bit0 set
-uint8[0xFFFF41FA].bit0 clear and uint8[0xFFFF248B].bit1 set
+uint8[0xFFFF41FA].bit0 set and uint8[0xFFFF248B].bit1 set
 uint8[0xFFFF249C].bit6 set and uint8[0xFFFF248B].bit0 set
 ```
 
-The published word is therefore either a clamped learned value inside
-`90..110` percent or exactly `100.000` percent. A capture that reads exactly
-`0x6400` does not by itself distinguish a neutralized publication from a
-learned grid that still holds its initialization value; `0xFFFF2306` and
-`0xFFFF5648` separate the two cases.
+`tst #1` at `0x57C02` and `bt 0x57C10` skip the third condition while
+`0xFFFF41FA.bit0` is clear. Runtime record `0x129` is the dual-bank MAF
+diagnostic summary of [`JK08A.fuel-inhibit.md`](JK08A.fuel-inhibit.md).
+
+`FUN 00057D1E` keeps each learned cell inside `ROM8[0x8A9E] << 8` to
+`ROM8[0x8A9F] << 8`, 90 to 110 percent. With a neutral adjustment term the
+published word is therefore the selected learned cell or exactly `100.000`
+percent, whether or not limiting runs. `0xFFFF2306` and `0xFFFF5648`
+distinguish a neutralized publication from the clamped summand sum whenever
+that sum differs from `0x6400`; neutral summands under a neutral word do not.
+`FUN 0005796C` refills the bank grid with `0x6400` and selects `0x6400` while
+runtime record `0x129` or `0xFFFF41B5.bit0` is set, so neutral summands also
+fit a grid that one of these conditions holds at `0x6400`.
+
+The 2026-09-22 road session is recorded under
+`can_telemetry.ltft_learning_2026_09_22` in `patches/hardware-results.toml`,
+and `tools/logs/ltft_publication_audit.py` reproduces its figures from the
+dashboard MLG recordings. The published bank 1 word equals the clamped summand
+sum in all 45,586 tag-2 refreshes whose bracketing tag-0 refreshes agree,
+23,079 of them with a non-neutral prediction, and no refresh publishes a forced
+neutral word. The adjustment term stays `0x6400` in all 46,931 samples, so the
+adjustment path and the neutralizing conditions stay unexercised. The learned
+word changes 1,332 times. Of the 525 changes inside one replayed selector cell,
+520 stay within the single-update bound, and 492 of the 518 with non-neutral
+STFT follow its sign. No learned change occurs in the 7,996 tag-0 pairs in P or
+in the 293.181 s of the cold-start capture after coolant reaches
+`ROM8[0x8CFD]`. The fuel-inhibit mask is zero in 8,745 snapshots of that warm
+part whose RPM/12.5 word reaches the `0xC0` gate of `FUN 0004F736`, which
+requests the full mask while MAF summary snapshot bit `0xFFFF2448.bit7` is set;
+the stream carries neither `0xFFFF41B5` nor the remaining permit terms of
+`FUN 00057D1E`.
 
 ## Six-channel compensated pulse words
 
