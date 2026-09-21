@@ -91,6 +91,7 @@ from tools import rom_sources
 from tools.memgraph import provenance
 
 LEVELS =("pattern", "candidate", "code", "silicon")   # confidence ladder from section 5
+ESTABLISHED_SCALE = frozenset({"code", "silicon"})   # multiplier fixed by code or hardware
 
 ROMID_FIELDS = definition_targets.ROMID_FIELDS
 CHECKSUM_FIELDS = (
@@ -172,8 +173,8 @@ def wrap(pad, head, attrs, tail):
 
 
 def scaling(units, expr, to_byte, conf, fmt, fine, coarse, indent):
-    """Build a <scaling> block, suffixing units when code does not establish the multiplier."""
-    if conf and conf != "code":
+    """Build a <scaling> block, suffixing units when neither code nor hardware establishes the multiplier."""
+    if conf and conf not in ESTABLISHED_SCALE:
         units += " [cand]"
     a = [f'units="{att(units)}"', f'expression="{att(expr)}"',
          f'to_byte="{att(to_byte)}"', f'format="{att(fmt)}"']
@@ -330,12 +331,12 @@ def axis_logparam(x, ovr):
     """Return the Logger parameter ID that follows an axis, or None.
 
     The overlay compares a live value with the displayed axis points, so the axis names a
-    parameter only when code establishes its scaling, its evidence names exactly one lookup
+    parameter only when code or hardware establishes its scaling, its evidence names exactly one lookup
     operand without an offset, the presentation layer declares that operand, and the declared
     units equal the axis units.
     """
     bindings = logparam_bindings(ovr)
-    if not bindings or x.get("scale_conf") != "code":
+    if not bindings or x.get("scale_conf") not in ESTABLISHED_SCALE:
         return None
     try:
         tokens = provenance.parse_evidence(
@@ -1486,8 +1487,8 @@ def emit_target(
     for m in emit:
         lvl[m["confidence"]] = lvl.get(m["confidence"], 0) + 1
     print("  confidence levels: " + ", ".join(f"{k}={lvl[k]}" for k in LEVELS if k in lvl))
-    cand = [m for m in emit if m["scale_conf"] and m["scale_conf"] != "code"]
-    print(f"  scaling not established by code: {len(cand)} "
+    cand = [m for m in emit if m["scale_conf"] and m["scale_conf"] not in ESTABLISHED_SCALE]
+    print(f"  scaling not established by code or hardware: {len(cand)} "
           f"({', '.join(hexa(m['addr']) for m in cand)})")
     print(f"  catalog: {catalog_map_count} maps; "
           f"projected model: {len(maps)} maps; visible: {len(emit)}; "

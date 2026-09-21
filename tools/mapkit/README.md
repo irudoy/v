@@ -180,6 +180,10 @@ reference, including the baseline lookup and downstream target projection.
   a research table from editor output without removing its graph or ledger
   facts. Candidate semantic and scaling claims are labeled in generated
   descriptions; functional categories never encode confidence.
+- A relocated address projection never carries `silicon` to its target: a
+  hardware result holds for the measured ROM, so a reviewed target keeps
+  `code` and a call-level homolog lowers `code` and `silicon` to `candidate`.
+  Exact-code inheritors share the canonical claims unchanged.
 - Hidden or unresolved maps remain in the graph and ledger unless their source
   facts are removed. Visibility is a presentation decision, not deletion.
 - RomRaider `Overlay Log` follows a Logger parameter along an axis that names

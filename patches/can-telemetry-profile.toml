@@ -544,7 +544,7 @@ width = 1
 source = 0xFFFF2440
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 39 / 100 percent"
+scale = "raw * 39 / 100 percent"
 
 [[context.field]]
 name = "intake_cvtc_duty_b2_raw"
@@ -552,7 +552,7 @@ width = 1
 source = 0xFFFF2441
 kind = "ecu_ram"
 signed = false
-scale = "candidate raw * 39 / 100 percent"
+scale = "raw * 39 / 100 percent"
 
 [[context]]
 page = 9

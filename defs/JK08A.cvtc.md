@@ -172,22 +172,25 @@ only caller and invokes `FUN 000C2040` exactly twice, with `r4 = 0` and
 The service-0x22 pointer table nevertheless publishes those two slots as DIDs
 `0x122D` and `0x122E`, named `VTC DTY IN B1` and `VTC DTY IN B2` by structured
 Nissan diagnostics. Both DIDs therefore return the RAM initialization value for
-the whole life of the image, and intake duty is not reachable through them. The
-live intake command is the byte pair `0xFFFF23B4` and `0xFFFF23B5`, and its
-diagnostic companion pair is `0xFFFF2440` and `0xFFFF2441`.
+the whole life of the image, and intake duty is not reachable through them.
+`FUN 000BEACE` drives the intake channels from the byte pair `0xFFFF23B4` and
+`0xFFFF23B5`, the scheduler latch of the live duty pair `0xFFFF2440` and
+`0xFFFF2441`.
 
-`FUN 000BDEE4` reads the companion pair in the phaser rest condition. No
-instruction of the image writes the pair, and the two pairs share no code, so
-their relationship rests on capture. Recording 2026-08-26 carries the companion
-pair live across 0 to 78.5 percent at correlation 0.76 against the actual
-intake angle. Recording 2026-09-17 puts byte equality against the command pair
-at 21 to 26 percent of nonzero samples, at correlation 0.98 and median
-difference 0, with no span stable long enough to decide the question: profile
-`3` selects the pairs on different ticks from different contexts
+`FUN 000BE814` computes the live pair and stores the byte of channel `n` at
+`0xFFFF23BC + 0x84 + n` (`0xBE8DC`). Scheduler `FUN 00020DFE` copies 140 bytes
+from `0xFFFF23BC` to `0xFFFF2330` through the block-copy call at `0x00021318`,
+which places the pair at `0xFFFF23B4`/`0xFFFF23B5` for the following pass.
+`FUN 000BDEE4` reads the live pair in the phaser rest condition. Profile `3`
+selects the pairs on different ticks from different contexts
 (`0xFFFF2440`/`0xFFFF2441` on page 9 tag 1, `0xFFFF23B4`/`0xFFFF23B5` on page
-10 tag 0), while profile `4` carries both in tag 1 and selects them in one
-capture pass. `tools/logs/mlg_relation_audit.py` reports the measured share as
-`intake_duty_b1_equal_share` and `intake_duty_b2_equal_share`.
+10 tag 0), and its 2026-09-17 recordings show byte equality in 21 to 26 percent
+of nonzero samples at correlation 0.98 and median difference 0. Profiles `4`
+and `5` carry both pairs in tag 1 and select them in one capture pass; the
+eleven profile-5 captures of 2026-09-21 hold them equal in all 279,130 records
+that carry them, 112,598 of them nonzero. `tools/logs/mlg_relation_audit.py`
+reports the measured share as `intake_duty_b1_equal_share` and
+`intake_duty_b2_equal_share`.
 
 ## Exact target surfaces
 

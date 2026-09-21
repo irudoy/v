@@ -568,7 +568,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
             ["Cut", "Restore"],
         )
 
-    def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
+    def test_throttle_rev_limiter_uses_exact_scalar_and_hardware_scale(self):
         table = next(
             table for table in self.root.findall("./XDFTABLE")
             if table.findtext("./title") == slot_name(
@@ -581,11 +581,16 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         self.assertEqual(data.get("mmedelementsizebits"), "16")
         self.assertEqual(data.get("mmedrowcount"), "1")
         self.assertEqual(data.get("mmedcolcount"), "1")
-        self.assertEqual(axis.findtext("./units"), "RPM [cand]")
+        self.assertEqual(axis.findtext("./units"), "RPM")
         self.assertEqual(axis.find("./MATH").get("equation"), "X*0.78125")
         description = table.findtext("./description")
         self.assertIn("shared signed request ffff19c6", description)
         self.assertIn("continuous command path to ATU-II BFR6A-D", description)
+
+    def test_units_mark_only_scales_below_code_and_hardware(self):
+        self.assertEqual(tunerpro.units_with_confidence("RPM", "candidate"), "RPM [cand]")
+        self.assertEqual(tunerpro.units_with_confidence("RPM", "code"), "RPM")
+        self.assertEqual(tunerpro.units_with_confidence("RPM", "silicon"), "RPM")
 
     def test_patch_base_data_matches_exact_stock_image(self):
         for patch in self.root.findall("./XDFPATCH"):

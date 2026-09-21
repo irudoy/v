@@ -79,7 +79,7 @@ def decimal_places(fmt):
 
 
 def units_with_confidence(units, confidence):
-    if confidence and confidence != "code":
+    if confidence and confidence not in {"code", "silicon"}:
         return f"{units} [cand]"
     return units
 

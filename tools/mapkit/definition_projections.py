@@ -346,8 +346,10 @@ def verify_image_binding(projection):
 
 def _downgrade(value, binding):
     if binding.status in {"homologous-call", "homologous-exact-chain"}:
-        return "candidate" if value == "code" else value
-    return value
+        return "candidate" if value in {"code", "silicon"} else value
+    # A hardware result holds for the measured ROM; a reviewed target shares
+    # only its code basis.
+    return "code" if value == "silicon" else value
 
 
 def _variant_label(variant):

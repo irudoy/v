@@ -135,6 +135,16 @@ LIMITER_CORRESPONDENCE = {
 }
 
 
+def test_projection_never_carries_a_hardware_result_to_another_rom():
+    homologous = type("Binding", (), {"status": "homologous-call"})()
+    reviewed = type("Binding", (), {"status": "reviewed-target"})()
+    assert definition_projections._downgrade("silicon", homologous) == "candidate"
+    assert definition_projections._downgrade("code", homologous) == "candidate"
+    assert definition_projections._downgrade("silicon", reviewed) == "code"
+    assert definition_projections._downgrade("code", reviewed) == "code"
+    assert definition_projections._downgrade("candidate", reviewed) == "candidate"
+
+
 def test_limiter_and_pedal_thresholds_bind_target_literals():
     for rom, expected in LIMITER_CORRESPONDENCE.items():
         projection = definition_projections.projection_for_rom(rom)

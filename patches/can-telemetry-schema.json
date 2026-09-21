@@ -72,13 +72,13 @@
             },
             {
               "name": "intake_cvtc_duty_b1_raw",
-              "scale": "candidate raw * 39 / 100 percent",
+              "scale": "raw * 39 / 100 percent",
               "signed": false,
               "width": 1
             },
             {
               "name": "intake_cvtc_duty_b2_raw",
-              "scale": "candidate raw * 39 / 100 percent",
+              "scale": "raw * 39 / 100 percent",
               "signed": false,
               "width": 1
             }

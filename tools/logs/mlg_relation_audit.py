@@ -3,8 +3,8 @@
 
 The dashboard recorder stores every custom-telemetry channel as its raw wire
 value, so a recording can be replayed against the exact JK08A formulas that
-connect those values: stock CAN RPM against the RPM/12.5 word, the intake-VTC
-duty monitor pair against the duty command pair, cam-position bytes against
+connect those values: stock CAN RPM against the RPM/12.5 word, the live
+intake-VTC duty pair against its duty command latch, cam-position bytes against
 their common targets, the MAF transfer chain, the J1979 Calculated Load byte,
 the Base Fuel Schedule producer, the compensated injection words, the code
 chain from the schedule to the pulse words, and the final timing to APC

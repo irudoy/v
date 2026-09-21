@@ -181,7 +181,11 @@ They use separate local fields such as `confidence`, `contract_conf`, and
 
 Promotion from `pattern` to `candidate` may use structural automation.
 Promotion to `code` requires a reviewed trace for the specific property.
-Promotion to `silicon` requires hardware evidence. A code-proven association to
+Promotion to `silicon` requires hardware evidence. A silicon claim names its
+record in `patches/hardware-results.toml` with the terminal token
+`spec:hardware-results:<table key>`, and
+`tools/memgraph/tests/test_silicon_grounding.py` requires that record to carry
+`hardware_status = "pass"`. A code-proven association to
 a homologous diagnostic definition does not make that definition exact for the
 target ROM; firmware confidence and source applicability remain separate.
 

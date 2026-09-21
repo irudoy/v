@@ -10,10 +10,11 @@ limiters in the exact JK08A/JK03A executable:
 - the request-limiter branch rooted at scalar `0x0942C`.
 
 The model establishes periodic execution order, state transitions, mask precedence,
-and downstream software effects. No road log or new hardware result is used. The
-physical `Throttle Rev Limiter` name and `x*0.78125 RPM` conversion of `0x0942C`
-remain catalog-supported candidates because the static trace stops at a shared signed
-request coordinate rather than a throttle motor output.
+and downstream software effects. A controlled vehicle comparison of three
+`0x0942C` values on 2026-09-21, recorded in
+[`../patches/hardware-results.toml`](../patches/hardware-results.toml), fixes the
+`x*0.78125 RPM` conversion of `0x0942C` and the throttle-plate action behind the
+`Throttle Rev Limiter` name.
 
 ## Periodic execution order
 
@@ -192,14 +193,26 @@ result `0xFFFF19C0`; in its enabled mixed mode it again takes the signed minimum
 `FUN_00079030` applies additional signed bounds before publishing the shared request
 coordinate.
 
-The HR catalog conversion maps `0x2580` to 7500 RPM, placing the candidate request
+The `x*0.78125 RPM` conversion maps `0x2580` to 7500 RPM, placing the request
 intervention 150 RPM below the column-0 fuel-cut activation and 50 RPM above its
-release point. Exact stock-ROM execution across 7200..7800 candidate RPM and four
-APP requests confirms neutral arbitration through 7500 and progressive request
+release point. Exact stock-ROM execution across 7200..7800 RPM and four APP
+requests confirms neutral arbitration through 7500 and progressive request
 reduction above it. After 20 measured 10.24 ms passes, APP request 10000 produces
 limiter requests 10000, 7601, 5466, and 3086 at 7500, 7600, 7700, and 7800.
-Exact code carries the request to the ATU-II PWM registers, but it does not prove
-actual throttle-plate motion, channel-to-bank identity, or response time.
+
+The 2026-09-21 vehicle comparison selected three map slots whose copies of the
+scalar hold `0x1900`, `0x2580`, and `0xFFFF` and read both primary throttle
+sensor words `0xFFFF2756/285C`:
+
+| Scalar | Conversion | Onset | Throttle sensor counts | Held speed |
+|---|---:|---|---|---|
+| `0x1900` | 5000 RPM | 5000 RPM, APP rising 2.17..3.06 V | 369/371 -> 166/171 | 4915..5137 RPM |
+| `0x2580` | 7500 RPM | 7466..7488 RPM, APP held at 4.70 V | 838 -> 209/214 | 7412..7565 RPM for 1.44 s |
+| `0xFFFF` | disabled | none | 835..837 at full pedal | main fuel cut at 7650 RPM, mask `0x3F` |
+
+No limiter interval sets `0xFFFF22E0`. The measurement carries the request to
+the throttle plates of both banks. Plate response time and channel-to-bank
+identity remain outside it.
 
 ## Exact fuel-mask precedence
 
@@ -253,8 +266,9 @@ override/fallback paths through `FUN_0004EBA2`, `FUN_00052034`, and
 
 Static code therefore establishes a hard six-channel fuel-output path for main and
 stationary RPM cut, and a separate softer signed-request path for `0x0942C` that
-reaches ATU-II BFR6A-D through the stock throttle regulator. Hardware validation
-remains required for physical throttle motion, exact `0x0942C` scale, bank and
-polarity assignment, external injector-driver behavior, and channel-to-cylinder
-order. The two shared-status prerequisites are lifecycle-zero and stock-inert under the
+reaches ATU-II BFR6A-D through the stock throttle regulator. The 2026-09-21
+vehicle comparison confirms the `0x0942C` scale and throttle-plate closure.
+Hardware validation remains required for plate response time, bank and polarity
+assignment, external injector-driver behavior, and channel-to-cylinder order.
+The two shared-status prerequisites are lifecycle-zero and stock-inert under the
 recovered startup, runtime, recovery, and DMAC paths.

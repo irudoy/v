@@ -184,6 +184,56 @@ class ThrottleControlContractTest(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, examples)
 
+    def test_rev_limiter_scale_rests_on_the_vehicle_comparison(self):
+        row = self.findings["0000942c"]
+        result = self.hardware_results["throttle_rev_limiter"][
+            "vehicle_2026_09_21"
+        ]
+        self.assertEqual(row["scale_conf"], "silicon")
+        self.assertIn(
+            "spec:hardware-results:throttle_rev_limiter.vehicle_2026_09_21",
+            row["scale_evidence"].split(";"),
+        )
+        self.assertEqual(result["hardware_status"], "pass")
+        self.assertEqual(result["scale_expr"], row["scale_expr"])
+        self.assertEqual(result["scalar_address"], 0x942C)
+        self.assertEqual(result["map_slot_addresses"]["map_1"], 0x942C)
+        self.assertEqual(result["map_1_scalar"], self.u16(0x942C))
+
+        for slot in (1, 4):
+            with self.subTest(map_slot=slot):
+                converted = result[f"map_{slot}_scalar"] * 0.78125
+                self.assertEqual(result[f"map_{slot}_converted_rpm"], converted)
+                onset = result[f"map_{slot}_onset_engine_speed_rpm"]
+                self.assertLessEqual(abs(onset - converted), 0.01 * converted)
+                for before, minimum in zip(
+                    result[f"map_{slot}_tps_before"],
+                    result[f"map_{slot}_tps_min"],
+                    strict=True,
+                ):
+                    self.assertLess(2 * minimum, before)
+
+        limiters = " ".join(
+            (ROOT / "defs" / "JK08A.limiters.md").read_text(encoding="utf-8").split()
+        )
+        for slot in (1, 4):
+            before = "/".join(map(str, dict.fromkeys(result[f"map_{slot}_tps_before"])))
+            minimum = "/".join(map(str, result[f"map_{slot}_tps_min"]))
+            low, high = result[f"map_{slot}_hold_stock_can_rpm"]
+            with self.subTest(published_slot=slot):
+                self.assertIn(f"{before} to {minimum} counts", row["note"])
+                self.assertIn(f"{before} -> {minimum}", limiters)
+                self.assertIn(f"{low}..{high} RPM", row["note"])
+                self.assertIn(f"{low}..{high} RPM", limiters)
+
+        self.assertEqual(result["map_3_scalar"], 0xFFFF)
+        self.assertGreaterEqual(
+            result["map_3_first_fuel_cut_engine_speed_rpm"],
+            self.u16(0x934E) * 12.5,
+        )
+        self.assertEqual(result["map_3_fuel_cut_mask"], 0x3F)
+        self.assertEqual(result["limiter_interval_fuel_inhibit_record_count"], 0)
+
     def test_direct_app_area_branch_is_stock_disabled(self):
         self.assertEqual(self.rom[0x870C], 0x44)
         self.assertEqual(self.rom[0x870C] & 0x80, 0)
@@ -292,11 +342,12 @@ class ThrottleControlContractTest(unittest.TestCase):
         self.assertIn("channel 0", self.contract)
         self.assertIn("Neither bank assignment", self.contract)
 
-    def test_throttle_rev_limiter_claim_reaches_pwm_but_not_plate_motion(self):
+    def test_throttle_rev_limiter_claim_reaches_the_throttle_plates(self):
         finding = self.findings["0000942c"]
         text = finding["semantics"] + finding["note"]
         self.assertIn("ATU-II BFR6A-D", text)
-        self.assertIn("Physical plate motion", finding["note"])
+        self.assertIn("closes both throttle sensors", finding["note"])
+        self.assertIn("Plate response time", finding["note"])
         self.assertIn("fuel mask ffff22e0", finding["note"])
 
     def test_rotational_speed_limiter_state_contract_is_complete(self):

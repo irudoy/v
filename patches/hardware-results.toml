@@ -676,6 +676,172 @@ battery_raw_range = [[150, 169], [157, 180], [154, 168]]
 injection_timing_state_raw_range = [[0, 0], [0, 0], [0, 0]]
 result = "stock RPM, the duty monitor and command pairs, steady-target tracking of both cam families, the MAF transfer chain, Calculated Load, the BFS producer, pulse linearity, the code chain from the schedule to both bank pulse words, and the final-timing to APC identity hold in raw units on the running engine; the chain replay reproduces the pulse words at a median ratio of 1.000 with the code-defined common gain and opening time, which confirms the code-closed raw/2048 ms Base Fuel Schedule scale against the raw/100 ms pulse scale; the word behind DIDs 0x1131, 0x1132, 0x1133, and 0x113D streams constant zero; both cam conversions of 0.5 degCA per count are fixed by code, the g/s airflow, degC temperature, degBTDC timing, km/h speed, and percent throttle scales are the ECU's J1979 Mode 01 declarations, and both millisecond fuel scales are fixed by code; the stock Map 1 exhaust actual bytes overshoot the low-speed retard target by 9 to 45 counts"
 
+[can_telemetry.schema2_profile5_drive_2026_09_21]
+recorded_on = "2026-09-21"
+image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
+software_status = "pass"
+hardware_status = "pass"
+hardware_scope = "road session with cold start, stationary map holds, stops in D, launches, the throttle rev limiter comparison, key-off, and one mixed Map 3 drive"
+can_id = 0x6F0
+tick_divisor = 1
+schema_version = 2
+protocol_version = 2
+profile = "tuning"
+profile_id = 5
+profile_crc16 = 0xE144
+recorder = "tools/can_dashboard"
+trc_converter = "tools/logs/trc_to_mlg.py"
+record_count_total = 279143
+snapshot_overrun_count_max = 0
+tx_abort_count_max = 0
+telemetry_status_nonzero_record_count = 1
+telemetry_status_nonzero_value = 0x08
+trc_error_count = 0
+trc_warning_count = 0
+result = "every record carries profile 5 with CRC 0xE144 and a verified schema, overrun and abort counters stay at zero, the seven TRC captures convert without errors or warnings, and one post-ACK preemption latch appears in the cold-start capture"
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "0-mixed-map-3.mlg"
+capture_sha256 = "d3fd614656d13f60686b83109ab57c7450be07afaf92b71015a022db76e991eb"
+record_count = 40298
+span_seconds = 412.634
+peak_stock_can_rpm = 6225
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "1-crank-cold.mlg"
+capture_sha256 = "8f0dbb2d8610949d6035ea904fe52662a1e1c01be1aeb754a70894512e1d5f96"
+record_count = 71706
+span_seconds = 734.250
+peak_stock_can_rpm = 4031
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "2-stationary-cruise-on-off.trc"
+capture_sha256 = "c5756798799a3587978e823b7dcb766f27c8e883a49e89d0854386e8b32df0b7"
+converted_mlg_sha256 = "586fe3e0a57d3f2125c054020e8f11f6c85b6a1b0da037e01f49bf69e786780f"
+record_count = 3508
+span_seconds = 35.909
+peak_stock_can_rpm = 675
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "2-stationary-map-1-3-hold.trc"
+capture_sha256 = "8253665cd99489b26a3ca03cdb5aa07c832945b0289f9ecd967458744ec8c0ba"
+converted_mlg_sha256 = "8a9e0d182756112a93ede688dd20ba8467df3852ffc91d38fd9e4d83ecb4fb71"
+record_count = 30814
+span_seconds = 315.501
+peak_stock_can_rpm = 3916
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "2-stationary-parking-map-1-3-hold.trc"
+capture_sha256 = "577ce99c756ec0c736c460d77bb3e6587a212bf6cf31ed965caeec7205adc3cf"
+converted_mlg_sha256 = "2aa2a6a898bfada8e80db830a7f84bb4d0ec450685238fe51a99810db9e7f1d3"
+record_count = 18478
+span_seconds = 189.192
+peak_stock_can_rpm = 3331
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "3-map-1-3-drive-brake.trc"
+capture_sha256 = "e7d726358048c6509ae48bccddb804203a789fb36abed0bb2766b1f8c7fd61b9"
+converted_mlg_sha256 = "75bee1ac7d9b2f6d69a899ce31cc6da58a1cefa4bbc8385137bcbe7f6bcee3e9"
+record_count = 5193
+span_seconds = 53.165
+peak_stock_can_rpm = 822
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "3-map-1-stops.trc"
+capture_sha256 = "1a160b4e4942b631ccfedda6d9401faed90caa0734f23ce6c2c79b55ec16b07b"
+converted_mlg_sha256 = "8770232ff4a582332ee17039c5bfe69b63795646e2d6a3513c701bd0a34301fc"
+record_count = 17528
+span_seconds = 179.476
+peak_stock_can_rpm = 3978
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "3-map-3-stops.trc"
+capture_sha256 = "6ff31bf1f19d4989b47ca6424063b37cfef8b0c23dc6ef9be5c2951b0cf1afbe"
+converted_mlg_sha256 = "093101602d06d371e8cb58b5c10162d6ceea89f83f0d59edb1f4301d38fcd741"
+record_count = 12952
+span_seconds = 132.616
+peak_stock_can_rpm = 4388
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "4-starts-ab.mlg"
+capture_sha256 = "ed39b1cecd4b07c0c689304849c43ca6f66c57cbb1ad01f2303dd2891521b406"
+record_count = 50742
+span_seconds = 519.625
+peak_stock_can_rpm = 4197
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "6-map-1-3-4-limiter.mlg"
+capture_sha256 = "b07fd8c73c35267f9216f745274d5ea8d45fc4821e2012d506f6ed509d7a674f"
+record_count = 21713
+span_seconds = 222.316
+peak_stock_can_rpm = 7781
+
+[[can_telemetry.schema2_profile5_captures]]
+capture_name = "9-turn-off.trc"
+capture_sha256 = "0847001e4be811b9648b943ef5b817ebcac40458902200aec9a9a68760ed979d"
+converted_mlg_sha256 = "6e58cbd4284f07ed4d5e2e2a84d2c41acd23bb02e72c87d0ba2b178ce0dccdee"
+record_count = 6211
+span_seconds = 127.308
+peak_stock_can_rpm = 1228
+
+[can_telemetry.intake_duty_latch_2026_09_21]
+recorded_on = "2026-09-21"
+profile_id = 5
+profile_crc16 = 0xE144
+capture_count = 11
+live_pair = [0xFFFF2440, 0xFFFF2441]
+command_pair = [0xFFFF23B4, 0xFFFF23B5]
+code_basis = "FUN_000BE814 stores the live pair at 0xFFFF23BC + 0x84 + channel through 0x000BE8DC, and FUN_00020DFE copies 140 bytes from 0xFFFF23BC to 0xFFFF2330 through the call at 0x00021318, which latches it into the command pair"
+record_count_with_both_pairs = 279130
+equal_record_count = 279130
+nonzero_record_count = 112598
+result = "both pairs share context tag 1 and are equal in every record that carries them, which matches the scheduler block-copy latch"
+
+[throttle_rev_limiter.vehicle_2026_09_21]
+recorded_on = "2026-09-21"
+image_sha256 = "a7b30e048985c87a41b58d09ff718f1e91079e4581a4a37f3d16544492e39cae"
+capture_name = "6-map-1-3-4-limiter.mlg"
+capture_sha256 = "b07fd8c73c35267f9216f745274d5ea8d45fc4821e2012d506f6ed509d7a674f"
+software_status = "pass"
+hardware_status = "pass"
+scalar_address = 0x0942C
+map_slot_addresses = { map_1 = 0x0942C, map_3 = 0xD3522, map_4 = 0xD3524 }
+scale_expr = "x*0.78125"
+speed_coordinate = "FUN_0007584E compares 4 * uint16[0xFFFF11B6] with the scalar, so one 0xFFFF11B6 count is 3.125 RPM"
+throttle_sensor_fields = ["tps_b1_raw", "tps_b2_raw"]
+map_4_scalar = 0x1900
+map_4_converted_rpm = 5000
+map_4_onset_seconds = 178.123
+map_4_onset_engine_speed_rpm = 5000.0
+map_4_onset_stock_can_rpm = 5003
+map_4_app_v_range = [2.17, 3.06]
+map_4_tps_before = [369, 371]
+map_4_tps_min = [166, 171]
+map_4_hold_seconds = 0.97
+map_4_hold_stock_can_rpm = [4915, 5137]
+map_1_scalar = 0x2580
+map_1_converted_rpm = 7500
+map_1_onset_seconds = 64.000
+map_1_onset_engine_speed_rpm = 7487.5
+map_1_onset_stock_can_rpm = [7466, 7484]
+map_1_onset_app_v = 4.70
+map_1_tps_before = [838, 838]
+map_1_tps_min = [209, 214]
+map_1_hold_seconds = 1.44
+map_1_hold_stock_can_rpm = [7412, 7565]
+map_3_scalar = 0xFFFF
+map_3_full_pedal_tps_bank1 = [835, 837]
+map_3_full_pedal_tps_bank2 = [836, 837]
+map_3_first_fuel_cut_seconds = 131.733
+map_3_first_fuel_cut_engine_speed_rpm = 7650.0
+map_3_first_fuel_cut_stock_can_rpm = 7656
+map_3_fuel_cut_mask = 0x3F
+map_3_fuel_cut_record_count = 55
+map_3_peak_stock_can_rpm = 7781
+limiter_interval_fuel_inhibit_record_count = 0
+result = "the limiter closes both throttle plates at the x*0.78125 RPM conversion of the selected scalar without a fuel mask, and the disabled value 0xFFFF leaves the plates open until the main fuel cut at 7650 RPM"
+evidence_boundary = "plate response time, channel-to-bank identity, and ECM terminals are outside the measurement"
+
 [passive_can]
 recorded_on = "2026-08-16"
 format = "PEAK PCAN-View TRC 1.1"

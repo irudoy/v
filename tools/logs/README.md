@@ -245,7 +245,8 @@ sources through the recorder field table, so any recording with the schema-2
 read from the calibration image. The relations are:
 
 - stock CAN RPM against the RPM/12.5 word;
-- the intake-VTC duty monitor pair against the duty command pair;
+- the live intake-VTC duty pair against its scheduler latch, the duty
+  command pair;
 - intake and exhaust actual positions against a target unchanged for the
   selected number of records;
 - the published total-airflow word against `floor(105 * (A + B) / 256)` of

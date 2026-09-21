@@ -167,8 +167,9 @@ one-sample split. It materially increases reduction during a rising-speed
 transient. At steady speed, a value one count above `D` produces `delta=-1`
 because SH-2E arithmetic shifts round negative products down. Below `D`, gaps
 of 1 through 13 counts produce `delta=0`; a 14-count gap is the first positive
-step. Under the candidate `x*0.78125 RPM` scale, those boundaries correspond to
-0.78125 RPM above and 10.9375 RPM below the threshold.
+step. Under the vehicle-confirmed `x*0.78125 RPM` scale recorded in
+[`JK08A.limiters.md`](JK08A.limiters.md#rotational-speed-request-limiter), those
+boundaries correspond to 0.78125 RPM above and 10.9375 RPM below the threshold.
 
 Let `A=FFFF243C`, `O=FFFF19D8` from the previous pass,
 `R=FFFF19DA`, and `B(N)` be the first-column forward lookup of `0xE98E` at the
@@ -326,7 +327,7 @@ are restricted to branches that stock-neutral values otherwise make inert.
 
 The resulting signed limiter requests are:
 
-| Candidate RPM | APP 5000 | APP 10000 | APP 20000 | APP 30000 |
+| RPM | APP 5000 | APP 10000 | APP 20000 | APP 30000 |
 |---:|---:|---:|---:|---:|
 | 7200 | 5437 | 10437 | 20437 | 30437 |
 | 7300 | 5296 | 10296 | 20296 | 30296 |
@@ -337,7 +338,7 @@ The resulting signed limiter requests are:
 | 7800 | -638 | 3086 | 13086 | 23086 |
 
 Values above APP are neutral in the signed-min arbitration. The exact 7500
-row is the transition point under the candidate RPM conversion. The isolated
+row is the transition point under the RPM conversion. The isolated
 APP-5000 downstream projection produces symmetric channel targets 1820 at
 7200 through 7600, 549 at 7700, and 18 at 7800. This proves executable
 composition and both code channels; it is not a vehicle prediction. Real

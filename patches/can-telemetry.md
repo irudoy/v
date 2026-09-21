@@ -292,11 +292,11 @@ than an independent crank-referenced spark measurement.
 A scale string without the word `candidate` is fixed by code, by ROM constants
 against factory limits, or by the ECU's own J1979 declaration: MAF voltage and
 airflow, Base Fuel Schedule at `raw / 2048 ms`, the injection words, the
-end-of-injection angle, CVTC targets and positions, the intake duty command,
-the exhaust duty words, the four temperatures, battery voltage, absolute
-throttle, and the pedal and throttle sensor voltages. The intake duty monitor
-pair, engine torque state, atmospheric pressure, the front A/F words, and both
-adjustment states keep candidate or unresolved conversions.
+end-of-injection angle, CVTC targets and positions, the intake duty command
+and the live duty pair it latches, the exhaust duty words, the four
+temperatures, battery voltage, absolute throttle, and the pedal and throttle
+sensor voltages. Engine torque state, atmospheric pressure, the front A/F
+words, and both adjustment states keep candidate or unresolved conversions.
 
 ### Rotating context pages
 
@@ -313,9 +313,9 @@ rate is `19.53125 Hz`.
 | 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, adjustment state B2 `FFFF45A2` |
 | 4 | minimum knock margin of channels 1 to 3, latches `FFFF5E10/5E12/5E14` | minimum knock margin of channels 4 to 6, latches `FFFF5E16/5E18/5E1A` |
 
-Tag 1 carries the intake duty monitor pair on page 9 and the intake duty
-command pair on page 10, so one capture pass samples both pairs and a recording
-compares them byte for byte.
+Tag 1 carries the live intake duty pair on page 9 and the intake duty command
+pair, its scheduler latch, on page 10, so one capture pass samples both pairs
+and a recording compares them byte for byte.
 
 Tag 4 carries six signed words in evaluator units. Each word is the minimum of
 `threshold - metric` over the evaluations of its channel since the previous

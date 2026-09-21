@@ -829,7 +829,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
             ["Cut", "Restore"],
         )
 
-    def test_throttle_rev_limiter_uses_exact_scalar_and_candidate_scale(self):
+    def test_throttle_rev_limiter_uses_exact_scalar_and_hardware_scale(self):
         rom = ET.parse(ROOT / "defs" / "JK08A.xml").getroot().find("./rom")
         table = next(
             table for table in rom.findall("./table")
@@ -841,7 +841,7 @@ class EmitDefDtcSwitchTest(unittest.TestCase):
         self.assertEqual(table.get("storageaddress"), "0x0942C")
         self.assertEqual(table.get("storagetype"), "uint16")
         self.assertEqual(table.get("sizex"), "1")
-        self.assertEqual(scaling.get("units"), "RPM [cand]")
+        self.assertEqual(scaling.get("units"), "RPM")
         self.assertEqual(scaling.get("expression"), "x*0.78125")
 
 

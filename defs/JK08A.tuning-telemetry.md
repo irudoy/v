@@ -46,9 +46,9 @@ The rotating contexts provide:
 - coolant, intake-air, fuel, and oil temperature sources;
 - the upstream Q14 fuel multiplier, STFT, and LTFT;
 - the bank 1 long-term trim learned and adjustment summands;
-- intake CVTC solenoid duty commands and the low-resolution intake duty
-  monitor pair under one tag, so both pairs come from the same scheduler pass,
-  and high-resolution exhaust duty;
+- intake CVTC solenoid duty commands and the live intake duty pair they
+  latch under one tag, so both pairs come from the same scheduler pass, and
+  high-resolution exhaust duty;
 - atmospheric pressure and battery voltage;
 - higher-resolution front A/F sensor words and both adjustment integrators;
 - secondary throttle feedback for both banks;
@@ -84,9 +84,9 @@ positions at `raw * 0.5 - 64 degCA`, the intake duty command at
 oil temperature at `raw - 50 degC`, battery voltage at `raw * 0.08 V`, and the
 end-of-injection angle at `raw * 2 - 590` degrees after intake TDC of the
 injected cylinder. The
-intake duty monitor pair `FFFF2440/2441` keeps the command conversion as a
-candidate because no code path proves the two pairs identical. Engine torque
-state, atmospheric pressure, the front A/F words, and both adjustment states
+command pair `FFFF23B4/23B5` is the scheduler block-copy latch of live duty
+pair `FFFF2440/2441`, so the command conversion applies to both pairs. Engine
+torque state, atmospheric pressure, the front A/F words, and both adjustment states
 keep candidate or unresolved conversions; the dashboard and MLG schema mark
 the torque conversion as a candidate, and it requires synchronized target
 validation before its engineering unit is treated as measured fact.
@@ -161,7 +161,8 @@ this current schema. Historical schema 1 captures require the historical
 decoder revision and are not accepted as schema 2 input.
 
 The firmware and executable SH-2E gate are complete. Three road drives on
-2026-08-26 carried the eleven-frame stream with every transport counter at
-zero across 138,485 records. Physical validation of mailbox-31 START/STOP
-remains required, and those drives carried profile 1 rather than the current
-profile 5.
+2026-08-26 with profile 1 and a road session on 2026-09-21 with the current
+profile 5 carried the eleven-frame stream with the overrun and abort counters
+at zero; [`../patches/hardware-results.toml`](../patches/hardware-results.toml)
+records the captures. Physical validation of mailbox-31 START/STOP remains
+required.
