@@ -355,6 +355,18 @@ atomic individual and declared group patches. Duplicate public codes remain
 separate records when the ROM contains distinct paths. No implicit all-DTC
 control exists.
 
+A descriptor and its attribute reach different readers of the same record
+index, so neither switch covers the readers of the other. In exact JK08A code,
+`FUN_0003614C` and `FUN_00036E2C` publish the code of a record only while its
+attribute has bit 7 (`0x80`) set, together with bit 2 or bit 3 of byte 2 of its
+runtime state at `0xFFFF5718 + 3*index`. `FUN_00032C7C`, `FUN_0007FD10`, and
+`FUN_00098A18` select records by runtime state alone and read the descriptor
+without reading the attribute. `FUN_0008C366` walks the attribute pointer table
+at `0x1A14C` and, through `FUN_0008C348`, clears the stored-fault bit (byte 1
+bit 7) of every record whose attribute has bit 5 (`0x20`) set. Stock P1610
+carries attribute `0000`, and its code returns after clearing while the
+descriptor is intact (`../patches/immo-off-developer-flag.md`).
+
 Every image stores its descriptors as twelve-byte records followed immediately
 by one 32-bit attribute pointer per record. That pointer table is the ECU's own
 attribute reference: it reproduces all 48 canonical JK08A attribute addresses
