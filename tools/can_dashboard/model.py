@@ -72,6 +72,12 @@ KNOCK_MARGIN_IDLE = 0x7FFF
 KNOCK_MARGIN_FIELDS = tuple(
     f"knock_margin_min_ch{channel}_raw" for channel in range(1, 7)
 )
+# Retired profile IDs name some slots of the current profile differently.
+# The model keeps such a slot under its current name, so the display, the
+# MLG recorder, and the replay treat every ID alike.
+RENAMED_FIELDS = {
+    "timing_state_564c_raw": "ignition_timing_adjustment_raw",
+}
 # Rolling Launch phase and abort reason codes of the runtime state bytes
 # 0xFFFF5D40 and 0xFFFF5D41, in the order of the enumerations of
 # patches/rolling_launch.py.
@@ -123,8 +129,8 @@ DASHBOARD_CALIBRATIONS = {
         "oil_temperature_deg_c", 1.0, -50
     ),
     "apc_command_raw": can_telemetry.Calibration("apc_command_deg", -1.0, 110),
-    "timing_state_564c_raw": can_telemetry.Calibration(
-        "timing_offset_564c_deg", signed_bits=8
+    "ignition_timing_adjustment_raw": can_telemetry.Calibration(
+        "ignition_timing_adjustment_deg", signed_bits=8
     ),
     "throttle_request_bounded_raw": can_telemetry.Calibration(
         "torque_request_nm", 0.1
@@ -182,10 +188,17 @@ def _code_name(names, code):
     return names[code] if 0 <= code < len(names) else f"0x{code:02X}"
 
 
+def current_field_name(name):
+    """Return the current name of a field that a retired ID names."""
+    return RENAMED_FIELDS.get(name, name)
+
+
 def profile_field_names(profile):
-    """Return the fixed and context field names of one profile, in order."""
-    return tuple(field["name"] for field in profile["fields"]) + tuple(
-        field["name"]
+    """Return the current fixed and context field names of one profile."""
+    return tuple(
+        current_field_name(field["name"]) for field in profile["fields"]
+    ) + tuple(
+        current_field_name(field["name"])
         for context in profile.get("contexts", ())
         for field in context["fields"]
     )
@@ -567,7 +580,7 @@ class DashboardModel:
         ):
             self._select_version(snapshot.profile_id)
         fields = {
-            name: value
+            current_field_name(name): value
             for name, value in snapshot.fields.items()
             if name not in KNOCK_MARGIN_FIELDS or value != KNOCK_MARGIN_IDLE
         }
@@ -817,7 +830,7 @@ class DemoGenerator:
             "ltft_b1_raw": 102.1 * 256,
             "ltft_b2_raw": 101.6 * 256,
             "active_map_index": 0,
-            "timing_state_564c_raw": -round(2 * wave),
+            "ignition_timing_adjustment_raw": -round(2 * wave),
             "protocol_version": 2,
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),

@@ -145,7 +145,7 @@ class MlgRestampTest(unittest.TestCase):
         raw_view = {
             "A/F adjustment B1": 0xFFFE,
             "A/F adjustment B2": 2,
-            "Timing state 564C": 0xFE,
+            "Timing adjustment": 0xFE,
         }
         specs = tuple(
             replace(
@@ -175,10 +175,10 @@ class MlgRestampTest(unittest.TestCase):
             summary = mlg_restamp.restamp(log)
 
             self.assertEqual(
-                summary.unsigned, ("Timing state 564C", "A/F adjustment B1")
+                summary.unsigned, ("Timing adjustment", "A/F adjustment B1")
             )
             fields = {field.name: field for field in mlvlg.read_fields(log)}
-            for name in ("Timing state 564C", "A/F adjustment B1"):
+            for name in ("Timing adjustment", "A/F adjustment B1"):
                 self.assertEqual(fields[name], specs[position[name]])
             self.assertEqual(fields["A/F adjustment B2"].units, "*")
             self.assertAlmostEqual(
@@ -197,13 +197,40 @@ class MlgRestampTest(unittest.TestCase):
                 writer = mlvlg.StreamWriter(stream, specs, 1_776_000_000)
                 values = [1] * len(specs)
                 values[position["A/F adjustment B1"]] = -2
-                values[position["Timing state 564C"]] = -2
+                values[position["Timing adjustment"]] = -2
                 writer.write(tuple(values), 0.0)
 
             summary = mlg_restamp.restamp(log)
 
             self.assertEqual(summary.unsigned, ())
             self.assertEqual(summary.changed, ())
+
+    def test_a_channel_of_an_earlier_name_takes_its_current_name(self):
+        specs = tuple(
+            replace(binding.spec, name="Timing state 564C")
+            if binding.source == "ignition_timing_adjustment_raw"
+            else binding.spec
+            for binding in recording.build_bindings("tuning")
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "earlier.mlg"
+            write_log(log, specs)
+            before_blocks = data_blocks(log)
+
+            summary = mlg_restamp.restamp(log)
+
+            self.assertEqual(summary.unmatched, ())
+            self.assertEqual(
+                [
+                    (change.before.name, change.after.name)
+                    for change in summary.changed
+                ],
+                [("Timing state 564C", "Timing adjustment")],
+            )
+            names = [field.name for field in mlvlg.read_fields(log)]
+            self.assertIn("Timing adjustment", names)
+            self.assertNotIn("Timing state 564C", names)
+            self.assertEqual(data_blocks(log), before_blocks)
 
     def test_invalid_log_is_reported(self):
         with tempfile.TemporaryDirectory() as directory:

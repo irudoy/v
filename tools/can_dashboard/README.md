@@ -686,13 +686,19 @@ reads them as 0, and the fourth holds the default 207 of the disabled
 barometric input. Profile 5 carries them, and the display and the MLG
 recording leave them out of its replays.
 
-The A/F adjustment words and timing offset `0xFFFF564C` hold signed producer
-values. Profile 6 declares their slots signed. Profile 5 declares them
-unsigned, and its scale strings read them as `signed raw`: two's complement
-values of the slot width. The model converts the signed value under either
-profile, and the MLG recorder stores the signed value, because MegaLogViewer
-applies only scale and transform. A replay of a recording that stored the
-unsigned value decodes to the same display value.
+The A/F adjustment words and the ignition-timing adjustment `0xFFFF564C` hold
+signed producer values. Profile 6 declares their slots signed. Profile 5
+declares them unsigned, and its scale strings read them as `signed raw`: two's
+complement values of the slot width. The model converts the signed value
+under either profile, and the MLG recorder stores the signed value, because
+MegaLogViewer applies only scale and transform. A replay of a recording that
+stored the unsigned value decodes to the same display value.
+
+Profile 5 names the slot of the ignition-timing adjustment
+`timing_state_564c_raw`, and recordings of earlier versions name its channel
+`Timing state 564C`. The model keeps the slot under its current name
+`ignition_timing_adjustment_raw` for every profile ID, and the replay and
+`tools/logs/mlg_restamp.py` read the earlier channel as `Timing adjustment`.
 
 A field marked with `*` uses a candidate transform: engine torque state and
 torque request at `raw * 0.1 Nm`, throttle area request at `raw * 0.0008 cm2`,
@@ -717,7 +723,7 @@ and A/F ADJ at signed `raw * 0.002`. The current conversions are:
 | coolant and intake air | `0xFFFF1079`, `0xFFFF2837` | `raw - 50 degC` | J1979 PIDs 0x05 and 0x0F publish the same `0x12DEA` transfer codes minus 10 as `A - 40` degC |
 | absolute throttle | `0xFFFF1075` byte | `raw * 100 / 255 percent` | J1979 PID 0x11 returns the byte as `A * 100 / 255` percent |
 | APC command | `0xFFFF2022` byte | `110 - raw degBTDC` | `FUN_0004DF82` normally writes `110 - final timing`, and J1979 PID 0x0E reports `110 - raw` as the timing advance in every mode, so the field is the delivered command also where Rolling Launch or a stock mode moves it away from the timing coordinate; `tools/logs/mlg_relation_audit.py` checks `final timing = 110 - raw` on recordings; a software command, not a measured spark angle |
-| timing offset 564C | `0xFFFF564C` byte | signed `raw deg` | `FUN_0004DBE8` adds the byte to the final timing coordinate inside its coolant, speed, and load window, and its sources bound it to -5..0; every recording reads 0 |
+| timing adjustment | `0xFFFF564C` byte | signed `raw deg` | the work-support ignition-timing adjustment `TARGET IGN TIM ADJ` of `defs/JK08A.work-support.md`, published as DID `0x112D`; `FUN_0004AAD0` bounds it to -5..0, and `FUN_0004DBE8` adds it to the final timing coordinate only inside its coolant, speed, and load window above idle speed |
 | fuel inhibit | `0xFFFF22E0` byte | `none`, `all`, or the list of cut cylinders | code-proven bit `k` = injector output `k`: a set bit replaces channel word `k` with the opening time and withholds the channel from the fire mask; output `k` drives cylinder `k + 1` by the diagnostic Power Balance order, which is not measured electrically |
 | selected map | `0xFFFF5D00` byte | `raw + 1`, `1` outside 0..4 | active index of the map-switching runtime, which resolves an invalid index to Map 1 |
 | Rolling Launch phase and reason | `0xFFFF5D40`, `0xFFFF5D41` bytes | names of the `Phase` and `AbortReason` codes of `patches/rolling_launch.py`, hex outside them | runtime state of the Rolling Launch patch |

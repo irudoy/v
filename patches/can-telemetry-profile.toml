@@ -586,7 +586,7 @@ signed = false
 scale = "raw + 1 map number; 0 through 4 select Maps 1 through 5, and any other value selects Map 1"
 
 [[context.field]]
-name = "timing_state_564c_raw"
+name = "ignition_timing_adjustment_raw"
 width = 1
 source = 0xFFFF564C
 kind = "ecu_ram"

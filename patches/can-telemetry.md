@@ -317,13 +317,14 @@ airflow, Base Fuel Schedule at `raw / 2048 ms`, the injection words, the
 end-of-injection angle, CVTC targets and positions, the intake duty command
 and the live duty pair it latches, the exhaust duty words, the four
 temperatures, battery voltage, absolute throttle, the pedal and throttle
-sensor voltages, the APC command at `110 - raw` degrees BTDC, the timing offset
-`FFFF564C` in degrees, both final channel throttle targets at `raw / 800 V`
-above the learned closed position, and the front A/F sensor voltage at
-`raw / 200 V`. Engine torque state, the bounded throttle request, the shared
-throttle target area, and both A/F adjustment states keep candidate
-conversions. The A/F adjustment words and timing offset `FFFF564C` occupy
-signed slots, because their producers are signed.
+sensor voltages, the APC command at `110 - raw` degrees BTDC, the
+ignition-timing adjustment `FFFF564C` in degrees, both final channel throttle
+targets at `raw / 800 V` above the learned closed position, and the front A/F
+sensor voltage at `raw / 200 V`. Engine torque state, the bounded throttle
+request, the shared throttle target area, and both A/F adjustment states keep
+candidate conversions. The A/F adjustment words and the ignition-timing
+adjustment `FFFF564C` occupy signed slots, because their producers are
+signed.
 
 Normalized load `FFFF102C` is the scheduler snapshot of the Base Fuel Schedule
 as a Q7 ratio to reference word `ROM16[0x9534]`: `raw * 100 / 128` percent,
@@ -348,7 +349,7 @@ rate is `19.53125 Hz`.
 | ---: | --- | --- |
 | 0 | coolant `FFFF1079`, IAT `FFFF2837`, fuel/oil diagnostic sources `FFFF1074/2876`, Q14 A/F factor `FFFF22E8` | Rolling Launch abort reason `FFFF5D41`, battery `FFFF1188`, LTFT learned B1 `FFFF2306`, LTFT adjustment B1 `FFFF5648` |
 | 1 | STFT B1/B2 `FFFF22DC/22DE`, low-resolution intake duty B1/B2 `FFFF2440/2441` | high-resolution exhaust duty B1/B2 `FFFF1AAC/1AAE`, intake duty commands B1/B2 `FFFF23B4/23B5` |
-| 2 | LTFT B1/B2 `FFFF2302/2304`, active map index `FFFF5D00`, timing offset `FFFF564C` | front A/F words `FFFF2780/2782`, A/F adjustment B1 `FFFF45A0` |
+| 2 | LTFT B1/B2 `FFFF2302/2304`, active map index `FFFF5D00`, ignition-timing adjustment `FFFF564C` | front A/F words `FFFF2780/2782`, A/F adjustment B1 `FFFF45A0` |
 | 3 | protocol version, profile ID, profile CRC, saturated overrun and abort counters | secondary throttle B1/B2 `FFFF275E/2864`, A/F adjustment B2 `FFFF45A2` |
 | 4 | minimum knock margin of channels 1 to 3, latches `FFFF5E10/5E12/5E14` | minimum knock margin of channels 4 to 6, latches `FFFF5E16/5E18/5E1A` |
 

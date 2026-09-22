@@ -15,7 +15,7 @@ def test_catalog_covers_every_current_tuning_field():
     }
     assert owners["rpm_raw"] == "engine_speed"
     assert owners["normalized_load_raw"] == "normalized_load"
-    assert owners["timing_state_564c_raw"] == "ignition_control_state"
+    assert owners["ignition_timing_adjustment_raw"] == "ignition_control_state"
     assert owners["intake_cvtc_target_raw"] == "common_cvtc_targets"
     assert owners["exhaust_cvtc_target_raw"] == "common_cvtc_targets"
     assert owners["knock_count_latched"] == "knock_event_latches"

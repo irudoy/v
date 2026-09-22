@@ -231,7 +231,7 @@ def _load_candump(path, can_id):
 
 
 def _channel_key(name):
-    return name.replace("*", "").strip().lower()
+    return recording.current_channel_name(name).lower()
 
 
 def _load_mlg(path, can_id, profile, schema_path):

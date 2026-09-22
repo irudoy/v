@@ -119,7 +119,9 @@ RAW_FIELD_DISPLAY = {
     "ltft_b1_raw": ("LTFT bank 1", "%", 2, "Fuel"),
     "ltft_b2_raw": ("LTFT bank 2", "%", 2, "Fuel"),
     "active_map_index": ("Selected map", "", 0, "Context"),
-    "timing_state_564c_raw": ("Timing state 564C", "deg", 0, "Ignition"),
+    "ignition_timing_adjustment_raw": (
+        "Timing adjustment", "deg", 0, "Ignition"
+    ),
     "protocol_version": ("Protocol version", "", 0, "Transport"),
     "profile_id": ("Profile ID", "", 0, "Transport"),
     "profile_crc16": ("Profile CRC16", "raw", 0, "Transport"),
@@ -150,6 +152,20 @@ RAW_FIELD_DISPLAY = {
     "secondary_tps_b1_raw": ("Secondary TPS B1", "V", 3, "Throttle"),
     "secondary_tps_b2_raw": ("Secondary TPS B2", "V", 3, "Throttle"),
 }
+
+# Channel names that earlier recorders wrote, mapped to the current names, so
+# a replay or a restamp of an earlier recording finds the channel.
+RENAMED_CHANNELS = {
+    "Timing state 564C": "Timing adjustment",
+}
+
+
+def current_channel_name(name: str) -> str:
+    """Return the current name of a recorded channel without candidate marks."""
+
+    name = name.replace("*", "").strip()
+    return RENAMED_CHANNELS.get(name, name)
+
 
 MLG_CALIBRATIONS = {
     **can_telemetry.RAW_CALIBRATIONS,

@@ -178,12 +178,13 @@ DESCRIPTIONS = {
         "Launch and the stock modes that move the command away from the "
         "timing coordinate. A software command, not a measured spark angle."
     ),
-    "timing_offset_564c_deg": (
-        "Timing offset of 0 to -5 degrees that the ECU adds to the final "
-        "timing coordinate while coolant is above about 60 degC, engine "
-        "speed is 1200..3200 RPM, and the normalized load is 50..75 percent. "
-        "One of three sources supplies it, and the operating meaning of the "
-        "sources is not decoded. Every recording so far reads 0."
+    "ignition_timing_adjustment_deg": (
+        "Ignition timing adjustment of 0 to -5 degrees that the CONSULT "
+        "work-support item TARGET IGN TIM ADJ sets and the ECU stores. The "
+        "ECU adds it to the final timing coordinate only while coolant is "
+        "above about 60 degC, engine speed is about 1200..3000 RPM, and the "
+        "normalized load is about 50..72 percent, so it has no effect at "
+        "idle. 0 means no adjustment."
     ),
     "app1_v": (
         "Accelerator pedal position sensor 1 in volts; it rises with pedal "

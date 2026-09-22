@@ -130,7 +130,7 @@ class DashboardModelTest(unittest.TestCase):
             "tick16": 1,
             "schema_verified": 1,
             "apc_command_raw": 90,
-            "timing_state_564c_raw": 0xFE,
+            "ignition_timing_adjustment_raw": 0xFE,
             "throttle_request_bounded_raw": 2565,
             "throttle_target_shared_raw": 26845,
             "throttle_target_channel_0_raw": 2143,
@@ -146,7 +146,7 @@ class DashboardModelTest(unittest.TestCase):
 
         expected = {
             "apc_command_deg": 20,
-            "timing_offset_564c_deg": -2,
+            "ignition_timing_adjustment_deg": -2,
             "torque_request_nm": 256.5,
             "throttle_area_request_cm2": 21.476,
             "throttle_target_b1_v": 2.67875,
@@ -164,10 +164,12 @@ class DashboardModelTest(unittest.TestCase):
         self.assertEqual(dashboard.raw["af_adjustment_b1_raw"], 0xFFFE)
 
         # A recording stores a signed view as the signed value itself.
-        values.update(tick16=2, af_adjustment_b1_raw=-2, timing_state_564c_raw=-2)
+        values.update(
+            tick16=2, af_adjustment_b1_raw=-2, ignition_timing_adjustment_raw=-2
+        )
         dashboard.process_record(model.SnapshotRecord(0.01, values), now=0.01)
         self.assertAlmostEqual(dashboard.value("af_adjustment_b1"), -0.004)
-        self.assertEqual(dashboard.value("timing_offset_564c_deg"), -2)
+        self.assertEqual(dashboard.value("ignition_timing_adjustment_deg"), -2)
 
     def test_masks_name_their_members(self):
         self.assertEqual(model.inhibited_cylinders(0), "none")
@@ -209,7 +211,7 @@ class DashboardModelTest(unittest.TestCase):
                 if value is not None:
                     self.assertLessEqual(abs(value), 1.0)
                     seen.add(value < 0)
-            offset = dashboard.engineering.get("timing_offset_564c_deg")
+            offset = dashboard.engineering.get("ignition_timing_adjustment_deg")
             if offset is not None:
                 self.assertTrue(-5 <= offset <= 0)
         self.assertEqual(seen, {False, True})
@@ -459,6 +461,10 @@ class DashboardModelTest(unittest.TestCase):
         self.assertLessEqual(set(dashboard.raw), names)
         self.assertLessEqual(set(dashboard.updated_at), names)
         self.assertIn("front_oxygen_sensor_b1_raw", dashboard.raw)
+        # Profile 5 names this slot timing_state_564c_raw.
+        self.assertIn("ignition_timing_adjustment_raw", dashboard.raw)
+        self.assertNotIn("timing_state_564c_raw", dashboard.raw)
+        self.assertIn("ignition_timing_adjustment_deg", dashboard.engineering)
         for key in (
             "normalized_load_percent",
             "rolling_launch_phase_name",
@@ -507,12 +513,14 @@ class DashboardModelTest(unittest.TestCase):
             "profile_id": 5,
             "active_map_index": 3,
             "coolant_raw": 140,
+            "ignition_timing_adjustment_raw": 0xFE,
         }
         dashboard.process_record(model.SnapshotRecord(0.0, values), now=0.0)
         self.assertEqual(dashboard.profile_id, 5)
         self.assertNotIn("active_map_index", dashboard.raw)
         self.assertIsNone(dashboard.telemetry_map)
         self.assertEqual(dashboard.value("coolant_deg_c"), 90)
+        self.assertEqual(dashboard.value("ignition_timing_adjustment_deg"), -2)
 
     def test_rolling_launch_codes_follow_the_runtime_enumerations(self):
         for names, enumeration in (

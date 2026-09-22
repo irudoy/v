@@ -1,10 +1,12 @@
 from array import array
+from dataclasses import replace
 from pathlib import Path
 import tempfile
 import unittest
 
 from tools.can_dashboard import model, recording, replay
 from tools.can_dashboard.replay import ReplayError, ReplayPlayer
+from tools.logs import mlvlg
 
 
 PEAK_TRC = """;$FILEVERSION=1.1
@@ -134,6 +136,27 @@ class RecordingReplayTest(unittest.TestCase):
             source.vehicle_speed_kmh,
             places=3,
         )
+
+    def test_a_channel_of_an_earlier_name_replays_under_its_source(self):
+        bindings = recording.build_bindings("tuning")
+        specs = tuple(
+            replace(binding.spec, name="Timing state 564C")
+            if binding.source == "ignition_timing_adjustment_raw"
+            else binding.spec
+            for binding in bindings
+        )
+        sources = [binding.source for binding in bindings]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "earlier.mlg"
+            with output.open("wb") as stream:
+                writer = mlvlg.StreamWriter(stream, specs, 1_776_000_000)
+                values = [1] * len(specs)
+                values[sources.index("ignition_timing_adjustment_raw")] = -2
+                writer.write(tuple(values), 0.0)
+            timeline = replay.load_timeline(output, 0x6F0)
+
+        record = timeline.item(0, 10.0)
+        self.assertEqual(record.values["ignition_timing_adjustment_raw"], -2)
 
 
 class CheckpointTest(unittest.TestCase):

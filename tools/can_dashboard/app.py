@@ -291,7 +291,7 @@ PANELS = (
     )),
     ("Ignition, throttle, and CVTC", (
         Metric("apc_command_deg", "APC command", "degBTDC", 0),
-        Metric("timing_offset_564c_deg", "Timing offset 564C", "deg", 0),
+        Metric("ignition_timing_adjustment_deg", "Timing adjustment", "deg", 0),
         Metric("app1_v", "APP 1", "V", 3),
         Metric("app2_v", "APP 2", "V", 3),
         Metric("tps_b1_v", "TPS bank 1", "V", 3),

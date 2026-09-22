@@ -21,7 +21,7 @@ from tools.logs import can_telemetry_schema
 SLOT_ASSIGNMENT_SHA256 = {
     4: "3e03c72b5d80187d2335f3ea42996aab9b48c3e0e09c4fc11fe7a6b6405e11fd",
     5: "aee00366d786afd544790945cddd28ca26ddda9f092e60ab2a4221b628391681",
-    6: "e5d5101a8bbd5b3b5fac3f632d65669d9c30a926ae05df20ee01ebd0a55652a0",
+    6: "2110176f4c4c6be218b8e3356ba6f69185082a6e234a9699aa6297f2375d5f19",
 }
 
 

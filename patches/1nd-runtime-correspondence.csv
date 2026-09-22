@@ -162,7 +162,7 @@ telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe945b,,,mapped,Aligned diagnostic 
 telemetry,intake_cvtc_duty_b2_raw,ffff2441,fffe945c,,,mapped,Aligned diagnostic pointer table preserves the adjacent duty byte
 telemetry,ltft_b1_raw,ffff2302,fffe9302,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,ltft_b2_raw,ffff2304,fffe9304,,,mapped,Aligned diagnostic pointer table and direct references agree
-telemetry,timing_state_564c_raw,ffff564c,fffecfe8,,,mapped,Aligned diagnostic pointer table and direct references agree
+telemetry,ignition_timing_adjustment_raw,ffff564c,fffecfe8,,,mapped,Aligned diagnostic pointer table and direct references agree
 telemetry,intake_cvtc_duty_command_b1_raw,ffff23b4,,,,unsupported,The target never references the ATU-II channel-7 buffer registers so no intake solenoid duty command cell is established
 telemetry,intake_cvtc_duty_command_b2_raw,ffff23b5,,,,unsupported,The adjacent command cell follows the same unestablished pair
 telemetry,ltft_learned_b1_raw,ffff2306,fffe9306,,,mapped,The target long-term trim publisher reads this base with the doubled bank index as the first summand

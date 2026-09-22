@@ -4,7 +4,8 @@
 Channel identity, units, and MegaLogViewer scaling live in the header, so a
 recorded log adopts corrected calibrations without rewriting its data blocks.
 Field types and record layout are preserved; a channel that the current table
-does not declare keeps its existing descriptor. A channel whose calibration
+does not declare keeps its existing descriptor, and a channel that an earlier
+recorder named differently takes its current name. A channel whose calibration
 reads its slot as signed also keeps its descriptor when the log stores a value
 that the signed view reads as negative: the recorder stores such a value
 signed, and scale and transform cannot reinterpret an unsigned one.
@@ -55,9 +56,10 @@ def _stored_float(value: float) -> float:
 
 
 def match_key(name: str) -> str:
-    """Return the identity a channel keeps across candidate-marker moves."""
+    """Return the identity a channel keeps across candidate-marker moves
+    and renames."""
 
-    return name.replace("*", "").strip()
+    return recording.current_channel_name(name)
 
 
 def current_bindings(

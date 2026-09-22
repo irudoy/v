@@ -54,8 +54,8 @@ The rotating contexts provide:
 - secondary throttle feedback for both banks;
 - the minimum knock threshold margin of each of the six evaluator channels
   since the previous capture of its tag;
-- the active map index, timing offset `FFFF564C`, and the in-band transport
-  identity and counters.
+- the active map index, the work-support ignition-timing adjustment
+  `FFFF564C`, and the in-band transport identity and counters.
 
 The front heated-oxygen-sensor bytes `FFFF22C4/22C5` and timing state
 `FFFF2023` have no producer on this engine, and the atmospheric-pressure byte
@@ -90,10 +90,10 @@ CVTC targets and positions at `raw * 0.5 - 64 degCA`, the intake duty command at
 `raw * 39 / 100 percent`, exhaust duty at `raw * 100 / 1024 percent`, fuel and
 oil temperature at `raw - 50 degC`, battery voltage at `raw * 0.08 V`, and the
 end-of-injection angle at `raw * 2 - 590` degrees after intake TDC of the
-injected cylinder, the APC command at `110 - raw` degrees BTDC, timing offset
-`FFFF564C` as a signed byte in degrees, the final channel throttle targets at
-`raw / 800 V` above the learned closed position, and the front A/F sensor
-words at `raw / 200 V`. The
+injected cylinder, the APC command at `110 - raw` degrees BTDC, the
+ignition-timing adjustment `FFFF564C` as a signed byte in degrees, the final
+channel throttle targets at `raw / 800 V` above the learned closed position,
+and the front A/F sensor words at `raw / 200 V`. The
 command pair `FFFF23B4/23B5` is the scheduler block-copy latch of live duty
 pair `FFFF2440/2441`, so the command conversion applies to both pairs. Engine
 torque state and the bounded throttle request at `raw * 0.1 Nm`, the shared

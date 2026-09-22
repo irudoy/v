@@ -108,7 +108,7 @@
               "width": 1
             },
             {
-              "name": "timing_state_564c_raw",
+              "name": "ignition_timing_adjustment_raw",
               "scale": "raw deg added to the final timing coordinate, bounded -5..0",
               "signed": true,
               "width": 1
